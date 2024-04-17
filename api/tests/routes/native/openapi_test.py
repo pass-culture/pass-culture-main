@@ -708,7 +708,7 @@ def test_public_api(client):
                     "properties": {
                         "audioDisability": {
                             "allOf": [{"$ref": "#/components/schemas/AudioDisabilityModel"}],
-                            "default": {"deafAndHardOfHearing": "Non renseign\u00e9"},
+                            "default": {"deafAndHardOfHearing": ["Non renseign\u00e9"]},
                             "title": "Audiodisability",
                         },
                         "isAccessibleAudioDisability": {
@@ -744,7 +744,7 @@ def test_public_api(client):
                         "visualDisability": {
                             "allOf": [{"$ref": "#/components/schemas/VisualDisabilityModel"}],
                             "default": {
-                                "audioDescription": "Non renseign\u00e9",
+                                "audioDescription": ["Non renseign\u00e9"],
                                 "soundBeacon": "Non renseign\u00e9",
                             },
                             "title": "Visualdisability",
@@ -2387,9 +2387,10 @@ def test_public_api(client):
                 "AudioDisabilityModel": {
                     "properties": {
                         "deafAndHardOfHearing": {
-                            "default": "Non renseign\u00e9",
+                            "default": ["Non renseign\u00e9"],
                             "title": "Deafandhardofhearing",
-                            "type": "string",
+                            "items": {"type": "string"},
+                            "type": "array",
                         }
                     },
                     "title": "AudioDisabilityModel",
@@ -2419,9 +2420,10 @@ def test_public_api(client):
                 "VisualDisabilityModel": {
                     "properties": {
                         "audioDescription": {
-                            "default": "Non renseign\u00e9",
+                            "default": ["Non renseign\u00e9"],
+                            "items": {"type": "string"},
                             "title": "Audiodescription",
-                            "type": "string",
+                            "type": "array",
                         },
                         "soundBeacon": {"default": "Non renseign\u00e9", "title": "Soundbeacon", "type": "string"},
                     },

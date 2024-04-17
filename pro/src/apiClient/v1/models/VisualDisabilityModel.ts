@@ -3,7 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type VisualDisabilityModel = {
-  audioDescription?: string;
+  audioDescription?: Array<string>;
   soundBeacon?: string;
 };
 

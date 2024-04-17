@@ -626,7 +626,7 @@ ACCESLIBRE_WIDGET_RESULT = {
     "sections": [
         {
             "title": "stationnement",
-            "labels": ["Stationnement adapté dans l'établissement"],
+            "labels": ["Stationnement adapté à proximité"],
         },
         {
             "title": "accès",
@@ -639,18 +639,17 @@ ACCESLIBRE_WIDGET_RESULT = {
         {
             "title": "audiodescription",
             "labels": [
-                "sans équipement, audiodescription audible par toute la salle (selon la programmation), avec équipement permanent nécessitant le téléchargement d'une application sur smartphone"
+                "avec équipement permanent nécessitant le téléchargement d'une application sur smartphone",
+                "avec équipement occasionnel selon la programmation",
             ],
+        },
+        {
+            "title": "équipements sourd et malentendant",
+            "labels": ["boucle à induction magnétique portative", "langue des signes française (LSF)"],
         },
         {
             "title": "sanitaire",
             "labels": ["Sanitaire adapté"],
-        },
-        {
-            "title": "équipements sourd et malentendant",
-            "labels": [
-                "sous-titrage ou transcription simultanée, langue française parlée complétée (LFPC), langue des signes française (LSF)"
-            ],
         },
     ],
 }
