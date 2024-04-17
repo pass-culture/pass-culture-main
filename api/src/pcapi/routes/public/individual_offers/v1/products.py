@@ -127,7 +127,7 @@ def get_music_types() -> serialization.GetMusicTypesResponse:
 
 @blueprint.v1_blueprint.route("/music_types/all", methods=["GET"])
 @spectree_serialize(
-    api=blueprint.v1_event_schema,
+    api=blueprint.v1_product_schema,
     tags=[constants.OFFER_ATTRIBUTES],
     response_model=serialization.GetMusicTypesResponse,
     resp=SpectreeResponse(
