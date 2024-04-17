@@ -3,6 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export type AudioDisabilityModel = {
-  deafAndHardOfHearing?: string;
+  deafAndHardOfHearing?: Array<string>;
 };
 

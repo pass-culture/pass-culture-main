@@ -25,12 +25,13 @@ describe('AccesLibreSection', () => {
             parking: "Stationnement adapté dans l'établissement",
           },
           audioDisability: {
-            deafAndHardOfHearing: 'boucle à induction magnétique fixe',
+            deafAndHardOfHearing: ['boucle à induction magnétique fixe'],
           },
           visualDisability: {
             soundBeacon: 'Non renseigné',
-            audioDescription:
+            audioDescription: [
               'avec équipement permanent, casques et boîtiers disponibles à l’accueil',
+            ],
           },
           mentalDisability: {
             trainedPersonnel: 'Personnel non sensibilisé / formé',
