@@ -212,3 +212,11 @@ class ChangePasswordBodyModel(BaseModel):
 
 class ProFlagsQueryModel(BaseModel):
     firebase: dict
+
+
+class SubmitReviewRequestModel(BaseModel):
+    isPleasant: bool
+    isConvenient: bool
+    comment: str
+    offererId: int
+    location: str
