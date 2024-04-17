@@ -1,11 +1,9 @@
 import { act, renderHook } from '@testing-library/react'
 
-import { AttachImageResponseModel } from 'apiClient/v1'
+import { api } from 'apiClient/api'
 import { imageUploadArgsFactory } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/__tests-utils__/imageUploadArgsFactory'
 import * as deleteCollectiveOfferImageAdapter from 'core/OfferEducational/adapters/deleteCollectiveOfferImageAdapter'
 import * as deleteCollectiveOfferTemplateImageAdapter from 'core/OfferEducational/adapters/deleteCollectiveOfferTemplateImageAdapter'
-import * as postCollectiveOfferImageAdapter from 'core/OfferEducational/adapters/postCollectiveOfferImageAdapter'
-import * as postCollectiveOfferTemplateImageAdapter from 'core/OfferEducational/adapters/postCollectiveOfferTemplateImageAdapter'
 import * as useNotification from 'hooks/useNotification'
 import {
   getCollectiveOfferFactory,
@@ -15,10 +13,6 @@ import {
 import { useCollectiveOfferImageUpload } from '../useCollectiveOfferImageUpload'
 
 vi.mock('hooks/useNotification')
-vi.mock('core/OfferEducational/adapters/postCollectiveOfferImageAdapter')
-vi.mock(
-  'core/OfferEducational/adapters/postCollectiveOfferTemplateImageAdapter'
-)
 
 const mockUseNotification = {
   close: vi.fn(),
@@ -43,13 +37,8 @@ describe('useCollectiveOfferImageUpload', () => {
   it('should submit uploaded image in case of normal offer', async () => {
     const offer = getCollectiveOfferFactory()
     const image = imageUploadArgsFactory()
-    const payload: AttachImageResponseModel = {
+    vi.spyOn(api, 'attachOfferImage').mockResolvedValue({
       imageUrl: 'https://example.com/image.jpg',
-    }
-    vi.spyOn(postCollectiveOfferImageAdapter, 'default').mockResolvedValue({
-      isOk: true,
-      payload,
-      message: 'ok',
     })
 
     const { result } = renderHook(() => useCollectiveOfferImageUpload(offer))
@@ -61,22 +50,14 @@ describe('useCollectiveOfferImageUpload', () => {
       await result.current.handleImageOnSubmit(3)
     })
 
-    expect(postCollectiveOfferImageAdapter.default).toHaveBeenCalled()
+    expect(api.attachOfferImage).toHaveBeenCalled()
   })
 
   it('should submit uploaded image in case of template offer', async () => {
     const offer = getCollectiveOfferTemplateFactory()
     const image = imageUploadArgsFactory()
-    const payload: AttachImageResponseModel = {
+    vi.spyOn(api, 'attachOfferTemplateImage').mockResolvedValue({
       imageUrl: 'https://example.com/image.jpg',
-    }
-    vi.spyOn(
-      postCollectiveOfferTemplateImageAdapter,
-      'default'
-    ).mockResolvedValue({
-      isOk: true,
-      payload,
-      message: 'ok',
     })
 
     const { result } = renderHook(() =>
@@ -90,7 +71,7 @@ describe('useCollectiveOfferImageUpload', () => {
       await result.current.handleImageOnSubmit(3)
     })
 
-    expect(postCollectiveOfferTemplateImageAdapter.default).toHaveBeenCalled()
+    expect(api.attachOfferTemplateImage).toHaveBeenCalled()
   })
 
   it('should delete image in case of normal offer', async () => {
