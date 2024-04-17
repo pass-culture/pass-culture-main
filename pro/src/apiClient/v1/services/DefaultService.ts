@@ -117,6 +117,96 @@ import type { BaseHttpRequest } from '../core/BaseHttpRequest';
 export class DefaultService {
   constructor(public readonly httpRequest: BaseHttpRequest) {}
   /**
+   * get_bookings_csv <GET>
+   * @param page
+   * @param venueId
+   * @param offerId
+   * @param eventDate
+   * @param bookingStatusFilter
+   * @param bookingPeriodBeginningDate
+   * @param bookingPeriodEndingDate
+   * @param offerType
+   * @param exportType
+   * @returns any OK
+   * @throws ApiError
+   */
+  public getBookingsCsv(
+    page: number = 1,
+    venueId?: number | null,
+    offerId?: number | null,
+    eventDate?: string | null,
+    bookingStatusFilter?: BookingStatusFilter | null,
+    bookingPeriodBeginningDate?: string | null,
+    bookingPeriodEndingDate?: string | null,
+    offerType?: OfferType | null,
+    exportType?: BookingExportType | null,
+  ): CancelablePromise<any> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/bookings/csv',
+      query: {
+        'page': page,
+        'venueId': venueId,
+        'offerId': offerId,
+        'eventDate': eventDate,
+        'bookingStatusFilter': bookingStatusFilter,
+        'bookingPeriodBeginningDate': bookingPeriodBeginningDate,
+        'bookingPeriodEndingDate': bookingPeriodEndingDate,
+        'offerType': offerType,
+        'exportType': exportType,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * get_bookings_excel <GET>
+   * @param page
+   * @param venueId
+   * @param offerId
+   * @param eventDate
+   * @param bookingStatusFilter
+   * @param bookingPeriodBeginningDate
+   * @param bookingPeriodEndingDate
+   * @param offerType
+   * @param exportType
+   * @returns any OK
+   * @throws ApiError
+   */
+  public getBookingsExcel(
+    page: number = 1,
+    venueId?: number | null,
+    offerId?: number | null,
+    eventDate?: string | null,
+    bookingStatusFilter?: BookingStatusFilter | null,
+    bookingPeriodBeginningDate?: string | null,
+    bookingPeriodEndingDate?: string | null,
+    offerType?: OfferType | null,
+    exportType?: BookingExportType | null,
+  ): CancelablePromise<any> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/bookings/excel',
+      query: {
+        'page': page,
+        'venueId': venueId,
+        'offerId': offerId,
+        'eventDate': eventDate,
+        'bookingStatusFilter': bookingStatusFilter,
+        'bookingPeriodBeginningDate': bookingPeriodBeginningDate,
+        'bookingPeriodEndingDate': bookingPeriodEndingDate,
+        'offerType': offerType,
+        'exportType': exportType,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
    * export_bookings_for_offer_as_csv <GET>
    * @param offerId
    * @param status
@@ -228,6 +318,78 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'GET',
       url: '/bookings/pro/userHasBookings',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * get_collective_bookings_csv <GET>
+   * @param page
+   * @param venueId
+   * @param eventDate
+   * @param bookingStatusFilter
+   * @param bookingPeriodBeginningDate
+   * @param bookingPeriodEndingDate
+   * @returns any OK
+   * @throws ApiError
+   */
+  public getCollectiveBookingsCsv(
+    page: number = 1,
+    venueId?: number | null,
+    eventDate?: string | null,
+    bookingStatusFilter?: CollectiveBookingStatusFilter | null,
+    bookingPeriodBeginningDate?: string | null,
+    bookingPeriodEndingDate?: string | null,
+  ): CancelablePromise<any> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/collective/bookings/csv',
+      query: {
+        'page': page,
+        'venueId': venueId,
+        'eventDate': eventDate,
+        'bookingStatusFilter': bookingStatusFilter,
+        'bookingPeriodBeginningDate': bookingPeriodBeginningDate,
+        'bookingPeriodEndingDate': bookingPeriodEndingDate,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * get_collective_bookings_excel <GET>
+   * @param page
+   * @param venueId
+   * @param eventDate
+   * @param bookingStatusFilter
+   * @param bookingPeriodBeginningDate
+   * @param bookingPeriodEndingDate
+   * @returns any OK
+   * @throws ApiError
+   */
+  public getCollectiveBookingsExcel(
+    page: number = 1,
+    venueId?: number | null,
+    eventDate?: string | null,
+    bookingStatusFilter?: CollectiveBookingStatusFilter | null,
+    bookingPeriodBeginningDate?: string | null,
+    bookingPeriodEndingDate?: string | null,
+  ): CancelablePromise<any> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/collective/bookings/excel',
+      query: {
+        'page': page,
+        'venueId': venueId,
+        'eventDate': eventDate,
+        'bookingStatusFilter': bookingStatusFilter,
+        'bookingPeriodBeginningDate': bookingPeriodBeginningDate,
+        'bookingPeriodEndingDate': bookingPeriodEndingDate,
+      },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,

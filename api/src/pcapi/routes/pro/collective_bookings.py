@@ -88,6 +88,7 @@ def get_collective_booking_by_id(booking_id: int) -> collective_bookings_seriali
         "Content-Type": "text/csv; charset=utf-8-sig;",
         "Content-Disposition": "attachment; filename=reservations_eac_pass_culture.csv",
     },
+    api=blueprint.pro_private_schema,
 )
 def get_collective_bookings_csv(
     query: collective_bookings_serialize.ListCollectiveBookingsQueryModel,
@@ -103,6 +104,7 @@ def get_collective_bookings_csv(
         "Content-Type": "application/vnd.ms-excel",
         "Content-Disposition": "attachment; filename=reservations_eac_pass_culture.xlsx",
     },
+    api=blueprint.pro_private_schema,
 )
 def get_collective_bookings_excel(
     query: collective_bookings_serialize.ListCollectiveBookingsQueryModel,
