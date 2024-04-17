@@ -9,7 +9,7 @@ import {
   CollectiveOfferResponseModel,
   ListOffersOfferResponseModel,
 } from 'apiClient/v1'
-import { AccessibiltyFormValues } from 'core/shared'
+import { AccessibilityFormValues } from 'core/shared'
 import { hasProperty } from 'utils/types'
 
 export type OfferDatesType = 'permanent' | 'specific_dates'
@@ -27,7 +27,7 @@ export type OfferEducationalFormValues = {
   }
   interventionArea: string[]
   participants: Record<StudentLevels | 'all', boolean>
-  accessibility: AccessibiltyFormValues
+  accessibility: AccessibilityFormValues
   phone: string
   email: string
   contactFormType?: 'form' | 'url'

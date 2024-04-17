@@ -2,7 +2,7 @@
 import { PostOfferBodyModel } from 'apiClient/v1'
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
 import { OfferExtraData } from 'core/Offers/types'
-import { AccessiblityEnum } from 'core/shared'
+import { AccessibilityEnum } from 'core/shared'
 
 /* istanbul ignore next: DEBT, TO FIX */
 const serializeExtraData = (
@@ -65,7 +65,7 @@ export const serializePostOffer = (
   formValues: IndividualOfferFormValues
 ): PostOfferBodyModel => {
   return {
-    audioDisabilityCompliant: formValues.accessibility[AccessiblityEnum.AUDIO],
+    audioDisabilityCompliant: formValues.accessibility[AccessibilityEnum.AUDIO],
     bookingContact: formValues.bookingContact || null,
     bookingEmail: formValues.bookingEmail || null,
     description: formValues.description || null,
@@ -73,14 +73,14 @@ export const serializePostOffer = (
     isNational: formValues.isNational,
     isDuo: formValues.isDuo,
     mentalDisabilityCompliant:
-      formValues.accessibility[AccessiblityEnum.MENTAL],
-    motorDisabilityCompliant: formValues.accessibility[AccessiblityEnum.MOTOR],
+      formValues.accessibility[AccessibilityEnum.MENTAL],
+    motorDisabilityCompliant: formValues.accessibility[AccessibilityEnum.MOTOR],
     name: formValues.name,
     subcategoryId: formValues.subcategoryId,
     // FIXME mageoffray (2023-04-03) : This is a dirty fix until GET /venues route returns dehumanized Id
     venueId: Number(formValues.venueId),
     visualDisabilityCompliant:
-      formValues.accessibility[AccessiblityEnum.VISUAL],
+      formValues.accessibility[AccessibilityEnum.VISUAL],
     withdrawalDelay:
       formValues.withdrawalDelay === undefined
         ? null

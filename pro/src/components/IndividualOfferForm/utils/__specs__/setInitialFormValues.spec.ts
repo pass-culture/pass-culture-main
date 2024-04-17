@@ -4,7 +4,7 @@ import {
   SubcategoryResponseModel,
   WithdrawalTypeEnum,
 } from 'apiClient/v1'
-import { AccessiblityEnum } from 'core/shared'
+import { AccessibilityEnum } from 'core/shared'
 import {
   getOfferVenueFactory,
   getOfferManagingOffererFactory,
@@ -71,11 +71,11 @@ describe('setFormReadOnlyFields', () => {
   it('should fill initial form values from offer', () => {
     const expectedResult = {
       accessibility: {
-        [AccessiblityEnum.AUDIO]: true,
-        [AccessiblityEnum.MENTAL]: true,
-        [AccessiblityEnum.MOTOR]: true,
-        [AccessiblityEnum.VISUAL]: true,
-        [AccessiblityEnum.NONE]: false,
+        [AccessibilityEnum.AUDIO]: true,
+        [AccessibilityEnum.MENTAL]: true,
+        [AccessibilityEnum.MOTOR]: true,
+        [AccessibilityEnum.VISUAL]: true,
+        [AccessibilityEnum.NONE]: false,
       },
       bookingEmail: 'booking@email.com',
       bookingContact: 'roberto@example.com',

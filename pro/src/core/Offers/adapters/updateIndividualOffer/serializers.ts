@@ -7,7 +7,7 @@ import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
 import { SYNCHRONIZED_OFFER_EDITABLE_FIELDS } from 'core/Offers/constants'
 import { OfferExtraData } from 'core/Offers/types'
 import { isAllocineOffer } from 'core/Providers/utils/localProvider'
-import { AccessiblityEnum } from 'core/shared'
+import { AccessibilityEnum } from 'core/shared'
 
 export const serializeExtraData = (
   formValues: Partial<IndividualOfferFormValues>,
@@ -83,17 +83,17 @@ export const serializePatchOffer = ({
   return {
     audioDisabilityCompliant:
       sentValues.accessibility &&
-      sentValues.accessibility[AccessiblityEnum.AUDIO],
+      sentValues.accessibility[AccessibilityEnum.AUDIO],
     description: sentValues.description,
     extraData: serializeExtraData(sentValues, isTiteliveMusicGenreEnabled),
     isNational: sentValues.isNational,
     isDuo: sentValues.isDuo,
     mentalDisabilityCompliant:
       sentValues.accessibility &&
-      sentValues.accessibility[AccessiblityEnum.MENTAL],
+      sentValues.accessibility[AccessibilityEnum.MENTAL],
     motorDisabilityCompliant:
       sentValues.accessibility &&
-      sentValues.accessibility[AccessiblityEnum.MOTOR],
+      sentValues.accessibility[AccessibilityEnum.MOTOR],
     name: sentValues.name,
     withdrawalDelay:
       sentValues.withdrawalDelay === undefined
@@ -104,7 +104,7 @@ export const serializePatchOffer = ({
     withdrawalDetails: sentValues.withdrawalDetails ?? undefined,
     visualDisabilityCompliant:
       sentValues.accessibility &&
-      sentValues.accessibility[AccessiblityEnum.VISUAL],
+      sentValues.accessibility[AccessibilityEnum.VISUAL],
     withdrawalType: sentValues.withdrawalType,
     durationMinutes: serializeDurationMinutes(sentValues.durationMinutes || ''),
     bookingEmail:

@@ -9,7 +9,7 @@ import {
   VenueListItemResponseModel,
 } from 'apiClient/v1'
 import { Accessibility } from 'components/IndividualOfferForm/Accessibility'
-import { AccessiblityEnum, AccessibiltyFormValues } from 'core/shared'
+import { AccessibilityEnum, AccessibilityFormValues } from 'core/shared'
 import {
   getOffererNameFactory,
   venueListItemFactory,
@@ -21,7 +21,7 @@ import { VenueProps } from '../Venue'
 interface InitialValues {
   offererId: string
   venueId: string
-  accessibility: AccessibiltyFormValues
+  accessibility: AccessibilityFormValues
 }
 
 const renderVenue = ({
@@ -104,11 +104,11 @@ describe('IndividualOffer section: venue', () => {
       offererId: '1',
       venueId: '',
       accessibility: {
-        [AccessiblityEnum.VISUAL]: false,
-        [AccessiblityEnum.MENTAL]: false,
-        [AccessiblityEnum.AUDIO]: false,
-        [AccessiblityEnum.MOTOR]: false,
-        [AccessiblityEnum.NONE]: false,
+        [AccessibilityEnum.VISUAL]: false,
+        [AccessibilityEnum.MENTAL]: false,
+        [AccessibilityEnum.AUDIO]: false,
+        [AccessibilityEnum.MOTOR]: false,
+        [AccessibilityEnum.NONE]: false,
       },
     }
     venueProps = {
