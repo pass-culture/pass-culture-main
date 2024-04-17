@@ -1,8 +1,6 @@
 import os
 import sys
 
-import yaml
-
 from pcapi.utils.blueprint import Blueprint
 
 
@@ -39,9 +37,11 @@ def getlist(key: str, separator: str = ",", type_: type = str) -> list:
 
 
 def dump_secret_keys() -> str:
-    secrets = sorted(set(SECRET_KEYS))
-    yaml_content = {"secrets": [{"name": secret} for secret in secrets]}
-    return yaml.dump(yaml_content)
+    out = ["secrets:"]
+    for secret in sorted(set(SECRET_KEYS)):
+        out.append(f"- name: {secret}")
+    out.append("")  # final newline
+    return "\n".join(out)
 
 
 def _check_secret_list_has_been_initialized() -> None:
