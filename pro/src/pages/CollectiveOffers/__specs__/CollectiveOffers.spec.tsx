@@ -102,22 +102,22 @@ describe('route CollectiveOffers', () => {
             })
           )
           await userEvent.click(screen.getByLabelText('Expirée'))
-
           await userEvent.click(screen.getByText('Appliquer'))
-          await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
-          expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
-            undefined,
-            undefined,
-            'EXPIRED',
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined
-          )
+          await waitFor(() => {
+            expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
+              undefined,
+              undefined,
+              'EXPIRED',
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined
+            )
+          })
         })
 
         it('should indicate that no offers match selected filters', async () => {
@@ -133,7 +133,6 @@ describe('route CollectiveOffers', () => {
           )
           await userEvent.click(screen.getByLabelText('Expirée'))
           await userEvent.click(screen.getByText('Appliquer'))
-          await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
           await waitFor(() => {
             expect(
@@ -246,27 +245,26 @@ describe('route CollectiveOffers', () => {
             await renderOffers(store, filters)
 
             await userEvent.click(screen.getByTestId('remove-offerer-filter'))
-            await waitForElementToBeRemoved(() =>
-              screen.queryByTestId('spinner')
-            )
 
+            await waitFor(() => {
+              expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined
+              )
+            })
             expect(
               screen.getByRole('button', {
                 name: 'Statut Afficher ou masquer le filtre par statut',
               })
             ).toBeDisabled()
-            expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
-              undefined,
-              undefined,
-              undefined,
-              undefined,
-              undefined,
-              undefined,
-              undefined,
-              undefined,
-              undefined,
-              undefined
-            )
           })
 
           it('should not reset or disable status filter when offerer filter is removed while venue filter is applied', async () => {
@@ -282,27 +280,26 @@ describe('route CollectiveOffers', () => {
             await renderOffers(store, filters)
 
             await userEvent.click(screen.getByTestId('remove-offerer-filter'))
-            await waitForElementToBeRemoved(() =>
-              screen.queryByTestId('spinner')
-            )
 
+            await waitFor(() => {
+              expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
+                undefined,
+                undefined,
+                'INACTIVE',
+                venueId.toString(),
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined
+              )
+            })
             expect(
               screen.getByRole('button', {
                 name: /Afficher ou masquer le filtre par statut/,
               })
             ).not.toBeDisabled()
-            expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
-              undefined,
-              undefined,
-              'INACTIVE',
-              venueId.toString(),
-              undefined,
-              undefined,
-              undefined,
-              undefined,
-              undefined,
-              undefined
-            )
           })
 
           it('should enable status filters when venue filter is applied', async () => {
