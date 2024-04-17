@@ -5,7 +5,6 @@ import {
   AttachImageResponseModel,
   CreateThumbnailResponseModel,
 } from 'apiClient/v1'
-import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
 import { client } from 'repository/pcapi/pcapiClient'
 import { stringify } from 'utils/query-string'
 
@@ -133,70 +132,3 @@ export const postCollectiveOfferTemplateImage: PostImageMethodType<
   AttachImageResponseModel
 > = (offerId, ...args) =>
   postImage(`/collective/offers-template/${offerId}/image`, offerId, ...args)
-
-//
-// BookingsRecap
-//
-export const buildBookingsRecapQuery = ({
-  venueId = DEFAULT_PRE_FILTERS.offerVenueId,
-  eventDate = DEFAULT_PRE_FILTERS.offerEventDate,
-  bookingPeriodBeginningDate = DEFAULT_PRE_FILTERS.bookingBeginningDate,
-  bookingPeriodEndingDate = DEFAULT_PRE_FILTERS.bookingEndingDate,
-  bookingStatusFilter = DEFAULT_PRE_FILTERS.bookingStatusFilter,
-  offerType = DEFAULT_PRE_FILTERS.offerType,
-  // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'page' implicitly has an 'any' typ... Remove this comment to see the full error message
-  page,
-}) => {
-  const params = { page }
-
-  if (venueId !== DEFAULT_PRE_FILTERS.offerVenueId) {
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'venueId' does not exist on type '{ page:... Remove this comment to see the full error message
-    params.venueId = venueId
-  }
-  if (offerType !== DEFAULT_PRE_FILTERS.offerType) {
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'offerType' does not exist on type '{ pag... Remove this comment to see the full error message
-    params.offerType = offerType
-  }
-  if (eventDate !== DEFAULT_PRE_FILTERS.offerEventDate) {
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'eventDate' does not exist on type '{ pag... Remove this comment to see the full error message
-    params.eventDate = eventDate
-  }
-  if (bookingPeriodBeginningDate) {
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'bookingPeriodBeginningDate' does not exi... Remove this comment to see the full error message
-    params.bookingPeriodBeginningDate = bookingPeriodBeginningDate
-  }
-
-  if (bookingPeriodEndingDate) {
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'bookingPeriodEndingDate' does not exist ... Remove this comment to see the full error message
-    params.bookingPeriodEndingDate = bookingPeriodEndingDate
-  }
-
-  // @ts-expect-error ts-migrate(2339) FIXME: Property 'bookingStatusFilter' does not exist on t... Remove this comment to see the full error message
-  params.bookingStatusFilter = bookingStatusFilter
-
-  return stringify(params)
-}
-
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'filters' implicitly has an 'any' type.
-export const getFilteredBookingsCSV = (filters) => {
-  const queryParams = buildBookingsRecapQuery(filters)
-  return client.getPlainText(`/bookings/csv?${queryParams}`)
-}
-
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'filters' implicitly has an 'any' type.
-export const getFilteredBookingsXLS = (filters) => {
-  const queryParams = buildBookingsRecapQuery(filters)
-  return client.getExcelFile(`/bookings/excel?${queryParams}`)
-}
-
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'filters' implicitly has an 'any' type.
-export const getFilteredCollectiveBookingsCSV = (filters) => {
-  const queryParams = buildBookingsRecapQuery(filters)
-  return client.getPlainText(`/collective/bookings/csv?${queryParams}`)
-}
-
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'filters' implicitly has an 'any' type.
-export const getFilteredCollectiveBookingsXLS = (filters) => {
-  const queryParams = buildBookingsRecapQuery(filters)
-  return client.getExcelFile(`/collective/bookings/excel?${queryParams}`)
-}

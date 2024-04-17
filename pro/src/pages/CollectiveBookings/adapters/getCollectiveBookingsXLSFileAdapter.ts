@@ -1,5 +1,6 @@
+import { api } from 'apiClient/api'
+import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
 import { GetBookingsXLSFileAdapter } from 'core/Bookings/types'
-import * as pcapi from 'repository/pcapi/pcapi'
 
 const FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,
@@ -10,15 +11,18 @@ const FAILING_RESPONSE: AdapterFailure<null> = {
 export const getCollectiveBookingsXLSFileAdapter: GetBookingsXLSFileAdapter =
   async (filters) => {
     try {
-      const bookingsXLSText = await pcapi.getFilteredCollectiveBookingsXLS({
-        bookingPeriodBeginningDate: filters.bookingBeginningDate,
-        bookingPeriodEndingDate: filters.bookingEndingDate,
-        bookingStatusFilter: filters.bookingStatusFilter,
-        eventDate: filters.offerEventDate,
-        offerType: filters.offerType,
-        venueId: filters.offerVenueId,
-        page: filters.page,
-      })
+      const bookingsXLSText = await api.getCollectiveBookingsExcel(
+        filters.page,
+        filters.offerVenueId !== DEFAULT_PRE_FILTERS.offerVenueId
+          ? Number(filters.offerVenueId)
+          : null,
+        filters.offerEventDate,
+        // TODO fix PreFiltersParams type to use CollectiveBookingStatusFilter type
+        // @ts-expect-error
+        filters.bookingStatusFilter as CollectiveBookingStatusFilter,
+        filters.bookingBeginningDate,
+        filters.bookingEndingDate
+      )
 
       const fakeLink = document.createElement('a')
       const dataToBlob = new Uint8Array(bookingsXLSText)

@@ -1,5 +1,7 @@
+import { api } from 'apiClient/api'
+import { CollectiveBookingStatusFilter } from 'apiClient/v1'
+import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
 import { GetBookingsCSVFileAdapter } from 'core/Bookings/types'
-import * as pcapi from 'repository/pcapi/pcapi'
 
 const FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,
@@ -10,15 +12,18 @@ const FAILING_RESPONSE: AdapterFailure<null> = {
 export const getCollectiveBookingsCSVFileAdapter: GetBookingsCSVFileAdapter =
   async (filters) => {
     try {
-      const bookingsCsvText = await pcapi.getFilteredCollectiveBookingsCSV({
-        bookingPeriodBeginningDate: filters.bookingBeginningDate,
-        bookingPeriodEndingDate: filters.bookingEndingDate,
-        bookingStatusFilter: filters.bookingStatusFilter,
-        eventDate: filters.offerEventDate,
-        offerType: filters.offerType,
-        venueId: filters.offerVenueId,
-        page: filters.page,
-      })
+      const bookingsCsvText = await api.getCollectiveBookingsCsv(
+        filters.page,
+        filters.offerVenueId !== DEFAULT_PRE_FILTERS.offerVenueId
+          ? Number(filters.offerVenueId)
+          : null,
+        filters.offerEventDate,
+        // TODO fix PreFiltersParams type to use CollectiveBookingStatusFilter type
+        // @ts-expect-error
+        filters.bookingStatusFilter as CollectiveBookingStatusFilter,
+        filters.bookingBeginningDate,
+        filters.bookingEndingDate
+      )
 
       const fakeLink = document.createElement('a')
       const blob = new Blob([bookingsCsvText], { type: 'text/csv' })
