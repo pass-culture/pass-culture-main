@@ -7,6 +7,7 @@ import pytest
 from pcapi.utils.date import CUSTOM_TIMEZONES
 from pcapi.utils.date import FrenchParserInfo
 from pcapi.utils.date import METROPOLE_TIMEZONE
+from pcapi.utils.date import default_timezone_to_local_datetime
 from pcapi.utils.date import format_time_in_second_to_human_readable
 from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_department_timezone
@@ -163,3 +164,27 @@ class FormatDatetimeFromLocalTimezoneToUtcTest:
 
         # Then
         assert result == datetime.datetime(2022, 6, 24, 10, 0, tzinfo=datetime.timezone.utc)
+
+
+class FormatDatetimeFromUtcTimezoneToLocalTimezoneTest:
+    def test_should_convert_utc_timezone_to_local_timezone(self):
+        # Given
+        dt = datetime.datetime(2022, 6, 24, 10, 0)
+        local_tz = METROPOLE_TIMEZONE
+
+        # when
+        result = default_timezone_to_local_datetime(dt=dt, local_tz=local_tz)
+
+        # Then
+        assert result == datetime.datetime(2022, 6, 24, 12, 0, tzinfo=ZoneInfo(METROPOLE_TIMEZONE))
+
+    def test_should_ignore_default_tz_when_datetime_already_have_a_timezone_convert_to_local(self):
+        # Given
+        dt = datetime.datetime(2022, 6, 24, 10, 0, tzinfo=datetime.timezone.utc)
+        local_tz = METROPOLE_TIMEZONE
+
+        # When
+        result = default_timezone_to_local_datetime(dt=dt, local_tz=local_tz)
+
+        # Then
+        assert result == datetime.datetime(2022, 6, 24, 12, 0, tzinfo=ZoneInfo(METROPOLE_TIMEZONE))
