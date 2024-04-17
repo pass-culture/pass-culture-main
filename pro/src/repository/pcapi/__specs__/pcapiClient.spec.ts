@@ -15,57 +15,6 @@ describe('pcapiClient', () => {
     fetchMock.resetMocks()
   })
 
-  describe('getPlainText', () => {
-    it('should call API with given path and JSON Mime type and credentials by default and correct method', async () => {
-      // Given
-      const path = '/bookings/csv'
-
-      // When
-      await client.getPlainText(path)
-
-      // Then
-      expect(fetchMock).toHaveBeenCalledWith(`${API_URL}${path}`, {
-        credentials: 'include',
-        method: 'GET',
-        headers: { 'Content-Type': 'text/plain' },
-      })
-    })
-
-    it('should return text if response status is 200', async () => {
-      // Given
-      const responseText = "i'm a response text"
-      fetchMock.mockResponseOnce(responseText, { status: 200 })
-
-      // When
-      const response = await client.getPlainText('/bookings/csv')
-
-      // Then
-      expect(response).toStrictEqual(responseText)
-    })
-
-    it('should reject if return response status is not 200', async () => {
-      // Given
-      fetchMock.mockResponseOnce('API error message', { status: 403 })
-
-      // When
-      await expect(client.getPlainText('/bookings/csv')).rejects.toStrictEqual(
-        new Error('An error happened.')
-      )
-    })
-
-    it('should throw an error if return response status is not 200', async () => {
-      fetchMock.mockResponseOnce('API error message', { status: 403 })
-      let throwError
-      try {
-        await client.getPlainText('/bookings/csv')
-      } catch (e) {
-        throwError = e
-      }
-
-      expect(throwError).toStrictEqual(new Error('An error happened.'))
-    })
-  })
-
   describe('get', () => {
     it('should call API with given path and JSON Mime type and credentials by default and correct method', async () => {
       // Given

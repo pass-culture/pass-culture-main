@@ -1,5 +1,7 @@
+import { api } from 'apiClient/api'
+import { OfferType } from 'apiClient/v1'
+import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
 import { GetBookingsXLSFileAdapter } from 'core/Bookings/types'
-import * as pcapi from 'repository/pcapi/pcapi'
 
 const FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,
@@ -11,15 +13,19 @@ export const getBookingsXLSFileAdapter: GetBookingsXLSFileAdapter = async (
   filters
 ) => {
   try {
-    const bookingsXLSText = await pcapi.getFilteredBookingsXLS({
-      bookingPeriodBeginningDate: filters.bookingBeginningDate,
-      bookingPeriodEndingDate: filters.bookingEndingDate,
-      bookingStatusFilter: filters.bookingStatusFilter,
-      eventDate: filters.offerEventDate,
-      offerType: filters.offerType,
-      venueId: filters.offerVenueId,
-      page: filters.page,
-    })
+    const bookingsXLSText = await api.getBookingsExcel(
+      filters.page,
+      filters.offerVenueId !== DEFAULT_PRE_FILTERS.offerVenueId
+        ? Number(filters.offerVenueId)
+        : null,
+      null,
+      filters.offerEventDate,
+      filters.bookingStatusFilter,
+      filters.bookingBeginningDate,
+      filters.bookingEndingDate,
+      // TODO fix PreFiltersParams type to use OfferType instead of string
+      filters.offerType as OfferType
+    )
 
     const fakeLink = document.createElement('a')
 
