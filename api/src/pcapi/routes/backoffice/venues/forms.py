@@ -38,7 +38,7 @@ class EditVenueForm(EditVirtualVenueForm):
     siret = fields.PCOptStringField("SIRET")
     postal_address_autocomplete = fields.PcPostalAddressAutocomplete(
         "Adresse",
-        street="address",
+        street="street",
         ban_id="ban_id",
         city="city",
         postal_code="postal_code",

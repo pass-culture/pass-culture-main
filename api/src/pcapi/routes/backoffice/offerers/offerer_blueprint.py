@@ -188,7 +188,7 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
             ),
             city=offerer.city,
             postal_code=offerer.postalCode,
-            address=offerer.street,
+            street=offerer.street,
             tags=offerer.tags,
         )
 
