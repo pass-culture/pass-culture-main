@@ -1,5 +1,3 @@
-import React from 'react'
-
 import FormLayout from 'components/FormLayout'
 import { InfoBox, TextInput } from 'ui-kit'
 
