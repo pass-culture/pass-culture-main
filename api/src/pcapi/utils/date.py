@@ -15,6 +15,7 @@ import pcapi.utils.postal_code as postal_code_utils
 
 
 DATE_ISO_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+DATETIME_FIELD_FORMAT = "%Y-%m-%dT%H:%M"
 DEFAULT_STORED_TIMEZONE = "UTC"
 MONTHS_IN_FRENCH = [
     None,
@@ -152,6 +153,14 @@ def format_time_in_second_to_human_readable(time_in_second: int) -> str | None:
 def local_datetime_to_default_timezone(dt: datetime, local_tz: str) -> datetime:
     from_zone = ZoneInfo(local_tz)
     to_zone = ZoneInfo(DEFAULT_STORED_TIMEZONE)
+    if dt.tzinfo:
+        return dt.astimezone(to_zone)
+    return dt.replace(tzinfo=from_zone).astimezone(to_zone)
+
+
+def default_timezone_to_local_datetime(dt: datetime, local_tz: str) -> datetime:
+    from_zone = ZoneInfo(DEFAULT_STORED_TIMEZONE)
+    to_zone = ZoneInfo(local_tz)
     if dt.tzinfo:
         return dt.astimezone(to_zone)
     return dt.replace(tzinfo=from_zone).astimezone(to_zone)

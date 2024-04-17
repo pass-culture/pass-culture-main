@@ -249,8 +249,27 @@ class PCOptHiddenIntegerField(wtforms.IntegerField):
                 return string
 
 
+class PCDateTimeField(wtforms.DateTimeField):
+    widget = partial(widget, template="components/forms/date_field.html")
+    input_type = "datetime-local"
+
+    def gettext(self, string: str) -> str:
+        match string:
+            case "Not a valid date value.":
+                return "Date invalide"
+            case _:
+                return string
+
+
+class PCOptDateTimeField(PCDateTimeField):
+    validators = [
+        validators.Optional(""),
+    ]
+
+
 class PCDateField(wtforms.DateField):
     widget = partial(widget, template="components/forms/date_field.html")
+    input_type = "date"
 
     def gettext(self, string: str) -> str:
         match string:
