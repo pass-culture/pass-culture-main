@@ -623,6 +623,8 @@ ACCESLIBRE_RESULTS_BY_SLUG = {
 
 ACCESLIBRE_WIDGET_RESULT = {
     "slug": "mon-super-slug",
+    "created_at": "2022-12-18T16:38:16.774631+01:00",
+    "updated_at": "2022-12-18T16:43:16.100479+01:00",
     "sections": [
         {
             "title": "stationnement",
