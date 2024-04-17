@@ -29,12 +29,12 @@ class MotorDisabilityModel(pydantic_v1.BaseModel):
 
 
 class AudioDisabilityModel(pydantic_v1.BaseModel):
-    deafAndHardOfHearing: str = acceslibre_enum.UNKNOWN.value
+    deafAndHardOfHearing: list[str] = [acceslibre_enum.UNKNOWN.value]
 
 
 class VisualDisabilityModel(pydantic_v1.BaseModel):
     soundBeacon: str = acceslibre_enum.UNKNOWN.value
-    audioDescription: str = acceslibre_enum.UNKNOWN.value
+    audioDescription: list[str] = [acceslibre_enum.UNKNOWN.value]
 
 
 class MentalDisabilityModel(pydantic_v1.BaseModel):
@@ -81,16 +81,14 @@ class ExternalAccessibilityDataModel(pydantic_v1.BaseModel):
 
                 case "deaf_and_hard_of_hearing_amenities":
                     if value:
-                        # In acceslibre widget, deaf and hard of hearing can have several values comma separated
-                        item = ", ".join(value)
-                        accessibility_data.audioDisability.deafAndHardOfHearing = item
+                        # In acceslibre widget, deaf and hard of hearing can have several values in a list
+                        accessibility_data.audioDisability.deafAndHardOfHearing = value
                         accessibility_data.isAccessibleAudioDisability = True
 
                 case "audio_description":
                     if value:
-                        # In acceslibre widget, audiodescription can have several values comma separated
-                        item = ", ".join(value)
-                        accessibility_data.visualDisability.audioDescription = item
+                        # In acceslibre widget, audiodescription can have several values in a list
+                        accessibility_data.visualDisability.audioDescription = value
                         accessibility_data.isAccessibleVisualDisability = True
 
                 case "sound_beacon":

@@ -146,7 +146,7 @@ class AcceslibreTest:
         )
 
     def test_get_accessibility_infos_from_widget(self, requests_mock):
-        slug = "mon-super-slug"
+        slug = "mon-slug-acceslibre"
         requests_mock.get(
             f"https://acceslibre.beta.gouv.fr/api/erps/{slug}/widget/",
             json=fixtures.ACCESLIBRE_WIDGET_RESULT,
@@ -158,12 +158,11 @@ class AcceslibreTest:
             acceslibre_enum.ENTRANCE_RAMP,
         ]
         assert accessibility_infos.audio_description == [
-            acceslibre_enum.AUDIODESCRIPTION_NO_DEVICE,
             acceslibre_enum.AUDIODESCRIPTION_PERMANENT_SMARTPHONE,
+            acceslibre_enum.AUDIODESCRIPTION_OCCASIONAL,
         ]
         assert accessibility_infos.deaf_and_hard_of_hearing_amenities == [
-            acceslibre_enum.DEAF_AND_HARD_OF_HEARING_SUBTITLE,
-            acceslibre_enum.DEAF_AND_HARD_OF_HEARING_CUED_SPEECH,
+            acceslibre_enum.DEAF_AND_HARD_OF_HEARING_PORTABLE_INDUCTION_LOOP,
             acceslibre_enum.DEAF_AND_HARD_OF_HEARING_SIGN_LANGUAGE,
         ]
 

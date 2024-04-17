@@ -337,11 +337,11 @@ def acceslibre_to_accessibility_infos(acceslibre_data: list[AcceslibreWidgetData
             continue
         labels_enum = []
         for label in labels:
-            if not (labels_enum_list := ExpectedFieldsEnum.find_enum_from_string(label)):
+            if label not in [item.value for item in ExpectedFieldsEnum]:
                 # If this exception is raised, you should probably set the ExpectedFieldsEnum for the given label
                 # according to acceslibre API schema, at https://github.com/MTES-MCT/acceslibre/blob/master/erp/views.py
                 raise AccesLibreApiException(f"Acceslibre API returned an unexpected value: {label} for {title}")
-            labels_enum.extend(labels_enum_list)
+            labels_enum.append(ExpectedFieldsEnum(label))
         setattr(accessibility_infos, attribute_name, labels_enum)
     return accessibility_infos
 

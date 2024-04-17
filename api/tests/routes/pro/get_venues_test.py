@@ -77,12 +77,14 @@ def test_response_serialization(client):
                     "parking": acceslibre_enum.PARKING_NEARBY.value,
                 },
                 "audioDisability": {
-                    "deafAndHardOfHearing": f"{acceslibre_enum.DEAF_AND_HARD_OF_HEARING_PORTABLE_INDUCTION_LOOP.value}, "
-                    f"{acceslibre_enum.DEAF_AND_HARD_OF_HEARING_SUBTITLE.value}"
+                    "deafAndHardOfHearing": [
+                        acceslibre_enum.DEAF_AND_HARD_OF_HEARING_PORTABLE_INDUCTION_LOOP.value,
+                        acceslibre_enum.DEAF_AND_HARD_OF_HEARING_SUBTITLE.value,
+                    ]
                 },
                 "visualDisability": {
                     "soundBeacon": acceslibre_enum.SOUND_BEACON.value,
-                    "audioDescription": acceslibre_enum.UNKNOWN.value,
+                    "audioDescription": [acceslibre_enum.UNKNOWN.value],
                 },
                 "mentalDisability": {"trainedPersonnel": acceslibre_enum.PERSONNEL_UNTRAINED.value},
             },
