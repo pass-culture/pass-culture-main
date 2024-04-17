@@ -130,6 +130,11 @@ describe('BookingsSummary', () => {
       total: 3,
     })
 
+    vi.spyOn(
+      api,
+      'getOfferPriceCategoriesAndSchedulesByDates'
+    ).mockResolvedValueOnce([])
+
     render(offer)
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
