@@ -136,20 +136,20 @@ describe('route CollectiveOffers', () => {
         )
 
         await userEvent.click(screen.getByText('Rechercher'))
-        await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-
-        expect(api.getCollectiveOffers).toHaveBeenCalledWith(
-          'Any word',
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined
-        )
+        await waitFor(() => {
+          expect(api.getCollectiveOffers).toHaveBeenCalledWith(
+            'Any word',
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined
+          )
+        })
       })
 
       it('should store search value', async () => {
@@ -160,20 +160,20 @@ describe('route CollectiveOffers', () => {
 
         await userEvent.type(searchInput, 'search string')
         await userEvent.click(screen.getByText('Rechercher'))
-        await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-
-        expect(api.getCollectiveOffers).toHaveBeenCalledWith(
-          'search string',
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined
-        )
+        await waitFor(() => {
+          expect(api.getCollectiveOffers).toHaveBeenCalledWith(
+            'search string',
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined
+          )
+        })
       })
 
       it('should load offers with selected venue filter', async () => {
@@ -185,20 +185,20 @@ describe('route CollectiveOffers', () => {
         await userEvent.selectOptions(venueSelect, firstVenueOption)
 
         await userEvent.click(screen.getByText('Rechercher'))
-        await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-
-        expect(api.getCollectiveOffers).toHaveBeenCalledWith(
-          undefined,
-          undefined,
-          undefined,
-          proVenues[0].id.toString(),
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined
-        )
+        await waitFor(() => {
+          expect(api.getCollectiveOffers).toHaveBeenCalledWith(
+            undefined,
+            undefined,
+            undefined,
+            proVenues[0].id.toString(),
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined
+          )
+        })
       })
 
       it('should load offers with selected period beginning date', async () => {
@@ -210,20 +210,20 @@ describe('route CollectiveOffers', () => {
         )
 
         await userEvent.click(screen.getByText('Rechercher'))
-        await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-
-        expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          '2020-12-25',
-          undefined,
-          undefined,
-          undefined
-        )
+        await waitFor(() => {
+          expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            '2020-12-25',
+            undefined,
+            undefined,
+            undefined
+          )
+        })
       })
 
       it('should load offers with selected period ending date', async () => {
@@ -234,20 +234,20 @@ describe('route CollectiveOffers', () => {
         )
 
         await userEvent.click(screen.getByText('Rechercher'))
-        await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-
-        expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          '2020-12-27',
-          undefined,
-          undefined
-        )
+        await waitFor(() => {
+          expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            '2020-12-27',
+            undefined,
+            undefined
+          )
+        })
       })
 
       it('should load offers with selected offer type', async () => {
@@ -256,20 +256,20 @@ describe('route CollectiveOffers', () => {
         await userEvent.selectOptions(offerTypeSelect, 'template')
 
         await userEvent.click(screen.getByText('Rechercher'))
-        await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-
-        expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          'template',
-          undefined
-        )
+        await waitFor(() => {
+          expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            'template',
+            undefined
+          )
+        })
       })
     })
   })
@@ -372,9 +372,9 @@ describe('route CollectiveOffers', () => {
       )
 
       await userEvent.click(screen.getByText('Rechercher'))
-      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-
-      expect(api.getCollectiveOffers).toHaveBeenCalledTimes(2)
+      await waitFor(() => {
+        expect(api.getCollectiveOffers).toHaveBeenCalledTimes(2)
+      })
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
         2,
         undefined,
@@ -392,9 +392,9 @@ describe('route CollectiveOffers', () => {
       screen.getByText('Aucune offre trouvée pour votre recherche')
 
       await userEvent.click(screen.getByText('Afficher toutes les offres'))
-      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-
-      expect(api.getCollectiveOffers).toHaveBeenCalledTimes(3)
+      await waitFor(() => {
+        expect(api.getCollectiveOffers).toHaveBeenCalledTimes(3)
+      })
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
         3,
         undefined,
@@ -445,8 +445,9 @@ describe('route CollectiveOffers', () => {
       )
 
       await userEvent.click(screen.getByText('Rechercher'))
-      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-      expect(api.getCollectiveOffers).toHaveBeenCalledTimes(2)
+      await waitFor(() => {
+        expect(api.getCollectiveOffers).toHaveBeenCalledTimes(2)
+      })
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
         2,
         undefined,
@@ -462,9 +463,9 @@ describe('route CollectiveOffers', () => {
       )
 
       await userEvent.click(screen.getByText('Réinitialiser les filtres'))
-      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-
-      expect(api.getCollectiveOffers).toHaveBeenCalledTimes(3)
+      await waitFor(() => {
+        expect(api.getCollectiveOffers).toHaveBeenCalledTimes(3)
+      })
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
         3,
         undefined,
