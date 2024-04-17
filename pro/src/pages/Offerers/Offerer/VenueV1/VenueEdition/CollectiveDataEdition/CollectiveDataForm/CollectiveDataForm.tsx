@@ -9,6 +9,7 @@ import { GET_VENUE_QUERY_KEY } from 'config/swrQueryKeys'
 import { handleAllFranceDepartmentOptions } from 'core/shared'
 import { venueInterventionOptions } from 'core/shared/interventionOptions'
 import { SelectOption } from 'custom_types/form'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import { RouteLeavingGuardVenueEdition } from 'pages/VenueEdition/RouteLeavingGuardVenueEdition'
 import { ButtonLink, Select, SubmitButton, TextArea, TextInput } from 'ui-kit'
@@ -23,25 +24,17 @@ import { CollectiveDataFormValues } from './type'
 import { extractInitialValuesFromVenue } from './utils/extractInitialValuesFromVenue'
 import { validationSchema } from './validationSchema'
 
-const studentOptions = [
-  { value: StudentLevels.COLL_GE_4E, label: StudentLevels.COLL_GE_4E },
-  { value: StudentLevels.COLL_GE_3E, label: StudentLevels.COLL_GE_3E },
-  { value: StudentLevels.CAP_1RE_ANN_E, label: StudentLevels.CAP_1RE_ANN_E },
-  { value: StudentLevels.CAP_2E_ANN_E, label: StudentLevels.CAP_2E_ANN_E },
-  { value: StudentLevels.LYC_E_SECONDE, label: StudentLevels.LYC_E_SECONDE },
-  { value: StudentLevels.LYC_E_PREMI_RE, label: StudentLevels.LYC_E_PREMI_RE },
-  {
-    value: StudentLevels.LYC_E_TERMINALE,
-    label: StudentLevels.LYC_E_TERMINALE,
-  },
-]
-
 type CollectiveDataFormProps = {
   statuses: SelectOption[]
   domains: SelectOption[]
   culturalPartners: SelectOption[]
   venue: GetVenueResponseModel
 }
+
+const studentLevels = Object.entries(StudentLevels).map(([value, label]) => ({
+  value,
+  label,
+}))
 
 export const CollectiveDataForm = ({
   statuses,
@@ -58,6 +51,11 @@ export const CollectiveDataForm = ({
     string[] | null
   >(null)
   const initialValues = extractInitialValuesFromVenue(venue)
+
+  const isMarseilleEnabled = useActiveFeature('WIP_ENABLE_MARSEILLE')
+  const studentOptions = isMarseilleEnabled
+    ? studentLevels
+    : studentLevels.filter((level) => !level.label.includes('Marseille'))
 
   const onSubmit = async (values: CollectiveDataFormValues) => {
     const response = await editVenueCollectiveDataAdapter({
