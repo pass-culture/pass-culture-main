@@ -1,6 +1,7 @@
 import { api } from 'apiClient/api'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
 import { GetBookingsXLSFileAdapter } from 'core/Bookings/types'
+import { downloadFile } from 'utils/downloadFile'
 
 const FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,
@@ -24,24 +25,12 @@ export const getCollectiveBookingsXLSFileAdapter: GetBookingsXLSFileAdapter =
         filters.bookingEndingDate
       )
 
-      const fakeLink = document.createElement('a')
-      const dataToBlob = new Uint8Array(bookingsXLSText)
-      const blob = new Blob([dataToBlob], {
-        type: 'application/vnd.ms-excel',
-      })
       const date = new Date().toISOString()
-
-      fakeLink.href = URL.createObjectURL(blob)
-      fakeLink.setAttribute(
-        'download',
-        `reservations_eac_pass_culture-${date}.xlsx`
+      downloadFile(
+        new Uint8Array(bookingsXLSText),
+        `reservations_eac_pass_culture-${date}.xlsx`,
+        'application/vnd.ms-excel'
       )
-
-      document.body.appendChild(fakeLink)
-
-      fakeLink.click()
-
-      document.body.removeChild(fakeLink)
 
       return {
         isOk: true,
