@@ -152,7 +152,6 @@ def synchronize_venues_with_acceslibre(venue_ids: list[int], dry_run: bool = Tru
             logger.info("No match found at acceslibre for Venue %s ", venue_id)
             continue
 
-        offerers_api.set_accessibility_last_update_at_provider(venue)
         offerers_api.set_accessibility_infos_from_provider_id(venue)
         db.session.add(venue)
 

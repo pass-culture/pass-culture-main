@@ -243,13 +243,10 @@ def get_id_at_accessibility_provider(
     )
 
 
-def get_last_update_at_provider(slug: str) -> datetime | None:
-    return _get_backend().get_last_update_at_provider(slug)
-
-
-def get_accessibility_infos(slug: str) -> AccessibilityInfo | None:
-    """Fetch accessibility data from acceslibre and save them in an AccessibilityInfo object
-    This object will then be saved in db in the AccessibilityProvider.externalAccessibilityData JSONB
+def get_accessibility_infos(slug: str) -> tuple[datetime | None, AccessibilityInfo | None]:
+    """Fetch last update and accessibility data from acceslibre and save them in an AccessibilityInfo object
+    This object will then be saved in db in the AccessibilityProvider.LastUpdateAtProvider and
+    AccessibilityProvider.externalAccessibilityData JSONB
     """
     return _get_backend().get_accessibility_infos(slug=slug)
 
@@ -374,10 +371,7 @@ class BaseBackend:
     ) -> AcceslibreInfos | None:
         raise NotImplementedError()
 
-    def get_last_update_at_provider(self, slug: str) -> datetime | None:
-        raise NotImplementedError()
-
-    def get_accessibility_infos(self, slug: str) -> AccessibilityInfo | None:
+    def get_accessibility_infos(self, slug: str) -> tuple[datetime | None, AccessibilityInfo | None]:
         raise NotImplementedError()
 
 
@@ -431,10 +425,7 @@ class TestingBackend(BaseBackend):
     ) -> AcceslibreInfos | None:
         return AcceslibreInfos(slug="mon-lieu-chez-acceslibre", url="https://une-fausse-url.com")
 
-    def get_last_update_at_provider(self, slug: str) -> datetime | None:
-        return datetime(2024, 3, 1, 0, 0)
-
-    def get_accessibility_infos(self, slug: str) -> AccessibilityInfo | None:
+    def get_accessibility_infos(self, slug: str) -> tuple[datetime | None, AccessibilityInfo | None]:
         accesslibre_data_list = [
             {
                 "title": "stationnement",
@@ -461,7 +452,8 @@ class TestingBackend(BaseBackend):
             AcceslibreWidgetData(title=str(item["title"]), labels=[str(label) for label in item["labels"]])
             for item in accesslibre_data_list
         ]
-        return acceslibre_to_accessibility_infos(acceslibre_data)
+        last_update = datetime(2024, 3, 1, 0, 0)
+        return last_update, acceslibre_to_accessibility_infos(acceslibre_data)
 
 
 class AcceslibreBackend(BaseBackend):
@@ -625,17 +617,7 @@ class AcceslibreBackend(BaseBackend):
             return AcceslibreInfos(slug=matching_venue.slug, url=matching_venue.web_url)
         return None
 
-    def get_last_update_at_provider(self, slug: str) -> datetime | None:
-        if response := self._send_request(slug=slug):
-            created_at = parser.isoparse(response["created_at"])
-            updated_at = parser.isoparse(response["updated_at"])
-            if updated_at > created_at:
-                return updated_at
-            return created_at
-        # if Venue is not found at acceslibre, we return None
-        return None
-
-    def get_accessibility_infos(self, slug: str) -> AccessibilityInfo | None:
+    def get_accessibility_infos(self, slug: str) -> tuple[datetime | None, AccessibilityInfo | None]:
         if response := self._send_request(slug=slug, request_widget_infos=True):
             try:
                 response_list = response["sections"]
@@ -643,9 +625,17 @@ class AcceslibreBackend(BaseBackend):
                 raise AccesLibreApiException(
                     "'sections' key is missing in the response from acceslibre. Check API response or contact Acceslibre"
                 )
+            created_at = parser.isoparse(response["created_at"])
+            updated_at = parser.isoparse(response["updated_at"])
+            last_update = updated_at if updated_at > created_at else created_at
+
             acceslibre_data = [
-                AcceslibreWidgetData(title=str(item["title"]), labels=[str(label) for label in item["labels"]])
+                AcceslibreWidgetData(
+                    title=str(item["title"]),
+                    labels=[str(label) for label in item["labels"]],
+                )
                 for item in response_list
             ]
-            return acceslibre_to_accessibility_infos(acceslibre_data)
-        return None
+            accessibility_infos = acceslibre_to_accessibility_infos(acceslibre_data)
+            return (last_update, accessibility_infos)
+        return (None, None)
