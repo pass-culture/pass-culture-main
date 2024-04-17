@@ -7,7 +7,7 @@ import createFetchMock from 'vitest-fetch-mock'
 import Notification from 'components/Notification/Notification'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import ButtonDownloadCSV, { DownloadButtonProps } from '../ButtonDownloadCSV'
+import { ButtonDownloadCSV, DownloadButtonProps } from '../ButtonDownloadCSV'
 
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
