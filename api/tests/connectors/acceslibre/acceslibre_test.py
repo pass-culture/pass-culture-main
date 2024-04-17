@@ -86,24 +86,15 @@ class AcceslibreTest:
             acceslibre_infos["url"] == "https://acceslibre.beta.gouv.fr/app/59-lille/a/librairie/erp/belette-du-nord/"
         )
 
-    def test_check_last_update(self, requests_mock):
-        slug = "office-du-tourisme-4"
-        requests_mock.get(
-            f"https://acceslibre.beta.gouv.fr/api/erps/{slug}/",
-            json=fixtures.ACCESLIBRE_RESULTS_BY_SLUG,
-        )
-        last_update = acceslibre.get_last_update_at_provider(slug=slug)
-        assert last_update == parser.isoparse("2023-04-13T15:10:25.612731+02:00")
-
     @patch("pcapi.connectors.acceslibre.AcceslibreBackend._fetch_request")
     def test_catch_connection_error(self, requests_mock):
         slug = "office-du-tourisme-4"
         requests_mock.side_effect = [requests.exceptions.ConnectionError]
         with pytest.raises(acceslibre.AccesLibreApiException) as exception:
-            acceslibre.get_last_update_at_provider(slug=slug)
+            acceslibre.get_accessibility_infos(slug=slug)
         assert (
             str(exception.value)
-            == f"Error connecting AccesLibre API for https://acceslibre.beta.gouv.fr/api/erps/{slug}/ and query parameters: None"
+            == f"Error connecting AccesLibre API for https://acceslibre.beta.gouv.fr/api/erps/{slug}/widget/ and query parameters: None"
         )
 
     def test_get_accessibility_infos(self):
@@ -151,7 +142,8 @@ class AcceslibreTest:
             f"https://acceslibre.beta.gouv.fr/api/erps/{slug}/widget/",
             json=fixtures.ACCESLIBRE_WIDGET_RESULT,
         )
-        accessibility_infos = acceslibre.get_accessibility_infos(slug)
+        last_update, accessibility_infos = acceslibre.get_accessibility_infos(slug)
+        assert last_update == parser.isoparse("2022-12-18T16:43:16.100479+01:00")
         assert accessibility_infos.trained_personnel == [acceslibre_enum.PERSONNEL_TRAINED]
         assert accessibility_infos.access_modality == [
             acceslibre_enum.EXTERIOR_ONE_LEVEL,

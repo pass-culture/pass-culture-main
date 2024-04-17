@@ -144,7 +144,6 @@ def update_venue(
         )
         if external_accessibility_id:
             set_accessibility_provider_id(venue, external_accessibility_id, external_accessibility_url)
-            set_accessibility_last_update_at_provider(venue)
             set_accessibility_infos_from_provider_id(venue)
         else:
             delete_venue_accessibility_provider(venue)
@@ -2162,22 +2161,15 @@ def set_accessibility_provider_id(
         db.session.add(venue.accessibilityProvider)
 
 
-def set_accessibility_last_update_at_provider(venue: models.Venue) -> None:
-    if venue.accessibilityProvider:
-        venue.accessibilityProvider.lastUpdateAtProvider = accessibility_provider.get_last_update_at_provider(
-            slug=venue.accessibilityProvider.externalAccessibilityId
-        )
-        db.session.add(venue.accessibilityProvider)
-
-
 def set_accessibility_infos_from_provider_id(venue: models.Venue) -> None:
     if venue.accessibilityProvider:
-        accessibility_data = accessibility_provider.get_accessibility_infos(
+        last_update, accessibility_data = accessibility_provider.get_accessibility_infos(
             slug=venue.accessibilityProvider.externalAccessibilityId
         )
         venue.accessibilityProvider.externalAccessibilityData = (
             accessibility_data.dict() if accessibility_data else None
         )
+        venue.accessibilityProvider.lastUpdateAtProvider = last_update
         db.session.add(venue.accessibilityProvider)
 
 
@@ -2248,9 +2240,9 @@ def get_permanent_venues_without_accessibility_provider(batch_size: int, batch_n
 def synchronize_accessibility_provider(venue: models.Venue, force_sync: bool = False) -> None:
     slug = venue.accessibilityProvider.externalAccessibilityId
     try:
-        last_update = accessibility_provider.get_last_update_at_provider(slug=slug)
+        last_update, accessibility_data = accessibility_provider.get_accessibility_infos(slug=slug)
     except accessibility_provider.AccesLibreApiException as e:
-        logger.exception("An error occurred while processing venue: %s, Error: %s", venue, e)
+        logger.exception("An error occurred while requesting Acceslibre widget for venue: %s, Error: %s", venue, e)
         return
 
     # If last_update is not None: match still exist
@@ -2264,13 +2256,6 @@ def synchronize_accessibility_provider(venue: models.Venue, force_sync: bool = F
         or venue.accessibilityProvider.lastUpdateAtProvider.astimezone(pytz.utc) < last_update.astimezone(pytz.utc)
     ):
         venue.accessibilityProvider.lastUpdateAtProvider = last_update
-        try:
-            accessibility_data = accessibility_provider.get_accessibility_infos(
-                slug=venue.accessibilityProvider.externalAccessibilityId
-            )
-        except accessibility_provider.AccesLibreApiException as e:
-            logger.exception("An error occurred while processing venue: %s, Error: %s", venue, e)
-            return
         venue.accessibilityProvider.externalAccessibilityData = (
             accessibility_data.dict() if accessibility_data else None
         )
@@ -2290,17 +2275,19 @@ def synchronize_accessibility_provider(venue: models.Venue, force_sync: bool = F
                 address=venue.street,
             )
         except accessibility_provider.AccesLibreApiException as e:
-            logger.exception("An error occurred while processing venue: %s, Error: %s", venue, e)
+            logger.exception("An error occurred while requesting Acceslibre for venue: %s, Error: %s", venue, e)
             return
         if id_and_url_at_provider:
             new_slug = id_and_url_at_provider["slug"]
             new_url = id_and_url_at_provider["url"]
-            if last_update := accessibility_provider.get_last_update_at_provider(slug=new_slug):
-                try:
-                    accessibility_data = accessibility_provider.get_accessibility_infos(slug=new_slug)
-                except accessibility_provider.AccesLibreApiException as e:
-                    logger.exception("An error occurred while processing venue: %s, Error: %s", venue, e)
-                    return
+            try:
+                last_update, accessibility_data = accessibility_provider.get_accessibility_infos(slug=new_slug)
+            except accessibility_provider.AccesLibreApiException as e:
+                logger.exception(
+                    "An error occurred while requesting Acceslibre widget for venue: %s, Error: %s", venue, e
+                )
+                return
+            if last_update and accessibility_data:
                 venue.accessibilityProvider.externalAccessibilityId = new_slug
                 venue.accessibilityProvider.externalAccessibilityUrl = new_url
                 venue.accessibilityProvider.lastUpdateAtProvider = last_update
