@@ -2,6 +2,7 @@ import { api } from 'apiClient/api'
 import { OfferType } from 'apiClient/v1'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
 import { GetBookingsCSVFileAdapter } from 'core/Bookings/types'
+import { downloadFile } from 'utils/downloadFile'
 
 const FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,
@@ -27,18 +28,12 @@ export const getBookingsCSVFileAdapter: GetBookingsCSVFileAdapter = async (
       filters.offerType as OfferType
     )
 
-    const fakeLink = document.createElement('a')
-    const blob = new Blob([bookingsCsvText], { type: 'text/csv' })
     const date = new Date().toISOString()
-
-    fakeLink.href = URL.createObjectURL(blob)
-    fakeLink.setAttribute('download', `reservations_pass_culture-${date}.csv`)
-
-    document.body.appendChild(fakeLink)
-
-    fakeLink.click()
-
-    document.body.removeChild(fakeLink)
+    downloadFile(
+      bookingsCsvText,
+      `reservations_pass_culture-${date}.csv`,
+      'text/csv'
+    )
 
     return {
       isOk: true,

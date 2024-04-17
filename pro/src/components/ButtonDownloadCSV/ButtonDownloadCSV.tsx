@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 
 import useNotification from 'hooks/useNotification'
 import { Button } from 'ui-kit'
+import { downloadFile } from 'utils/downloadFile'
 
 export interface DownloadButtonProps {
   filename: string
@@ -11,7 +12,7 @@ export interface DownloadButtonProps {
   isDisabled: boolean
 }
 
-const ButtonDownloadCSV = ({
+export const ButtonDownloadCSV = ({
   filename,
   href,
   mimeType,
@@ -28,18 +29,9 @@ const ButtonDownloadCSV = ({
 
       if (status === 200) {
         const text = await result.text()
-        const fakeLink = document.createElement('a')
-        const blob = new Blob([text], { type: mimeType })
-        const date = new Date().toISOString()
 
-        // Ce n’est pas terrible mais nous n’avons pas trouvé mieux.
-        // Aucun code d'avant ne faisait que l’on téléchargeait un fichier
-        // avec l’extension CSV.
-        fakeLink.href = URL.createObjectURL(blob)
-        fakeLink.setAttribute('download', `${filename}-${date}.csv`)
-        document.body.appendChild(fakeLink)
-        fakeLink.click()
-        document.body.removeChild(fakeLink)
+        const date = new Date().toISOString()
+        downloadFile(text, `${filename}-${date}.csv`, mimeType)
 
         return
       }
@@ -66,5 +58,3 @@ const ButtonDownloadCSV = ({
     </Button>
   )
 }
-
-export default ButtonDownloadCSV

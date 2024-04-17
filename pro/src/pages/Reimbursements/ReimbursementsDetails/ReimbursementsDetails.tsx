@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useOutletContext } from 'react-router-dom'
 
 import { VenueListItemResponseModel } from 'apiClient/v1'
-import ButtonDownloadCSV from 'components/ButtonDownloadCSV'
+import { ButtonDownloadCSV } from 'components/ButtonDownloadCSV/ButtonDownloadCSV'
 import getVenuesForOffererAdapter from 'core/Venue/adapters/getVenuesForOffererAdapter'
 import { SelectOption } from 'custom_types/form'
 import useActiveFeature from 'hooks/useActiveFeature'
