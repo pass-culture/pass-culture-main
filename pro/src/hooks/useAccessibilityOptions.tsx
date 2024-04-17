@@ -1,4 +1,4 @@
-import { AccessiblityEnum } from 'core/shared'
+import { AccessibilityEnum } from 'core/shared'
 import strokeAccessibilityBrain from 'icons/stroke-accessibility-brain.svg'
 import audioDisabilitySvg from 'icons/stroke-accessibility-ear.svg'
 import strokeAccessibilityEye from 'icons/stroke-accessibility-eye.svg'
@@ -32,31 +32,31 @@ const useAccessibilityOptions = (
   return [
     {
       label: 'Visuel',
-      name: `accessibility.${AccessiblityEnum.VISUAL}`,
+      name: `accessibility.${AccessibilityEnum.VISUAL}`,
       icon: strokeAccessibilityEye,
       onChange: onNormalOptionChange,
     },
     {
       label: 'Psychique ou cognitif',
-      name: `accessibility.${AccessiblityEnum.MENTAL}`,
+      name: `accessibility.${AccessibilityEnum.MENTAL}`,
       icon: strokeAccessibilityBrain,
       onChange: onNormalOptionChange,
     },
     {
       label: 'Moteur',
-      name: `accessibility.${AccessiblityEnum.MOTOR}`,
+      name: `accessibility.${AccessibilityEnum.MOTOR}`,
       icon: strokeAccessibilityLeg,
       onChange: onNormalOptionChange,
     },
     {
       label: 'Auditif',
-      name: `accessibility.${AccessiblityEnum.AUDIO}`,
+      name: `accessibility.${AccessibilityEnum.AUDIO}`,
       icon: audioDisabilitySvg,
       onChange: onNormalOptionChange,
     },
     {
       label: 'Non accessible',
-      name: `accessibility.${AccessiblityEnum.NONE}`,
+      name: `accessibility.${AccessibilityEnum.NONE}`,
       onChange: onNoneOptionChange,
     },
   ]

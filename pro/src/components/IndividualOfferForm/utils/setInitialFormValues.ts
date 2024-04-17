@@ -6,7 +6,7 @@ import {
   FORM_DEFAULT_VALUES,
   IndividualOfferFormValues,
 } from 'components/IndividualOfferForm'
-import { AccessiblityEnum } from 'core/shared'
+import { AccessibilityEnum } from 'core/shared'
 
 import buildSubcategoryFields from './buildSubCategoryFields'
 
@@ -35,10 +35,10 @@ const setInitialFormValues = (
   )
 
   const baseAccessibility = {
-    [AccessiblityEnum.VISUAL]: offer.visualDisabilityCompliant || false,
-    [AccessiblityEnum.MENTAL]: offer.mentalDisabilityCompliant || false,
-    [AccessiblityEnum.AUDIO]: offer.audioDisabilityCompliant || false,
-    [AccessiblityEnum.MOTOR]: offer.motorDisabilityCompliant || false,
+    [AccessibilityEnum.VISUAL]: offer.visualDisabilityCompliant || false,
+    [AccessibilityEnum.MENTAL]: offer.mentalDisabilityCompliant || false,
+    [AccessibilityEnum.AUDIO]: offer.audioDisabilityCompliant || false,
+    [AccessibilityEnum.MOTOR]: offer.motorDisabilityCompliant || false,
   }
 
   return {
@@ -66,7 +66,8 @@ const setInitialFormValues = (
     withdrawalType: offer.withdrawalType || undefined,
     accessibility: {
       ...baseAccessibility,
-      [AccessiblityEnum.NONE]: !Object.values(baseAccessibility).includes(true),
+      [AccessibilityEnum.NONE]:
+        !Object.values(baseAccessibility).includes(true),
     },
     bookingEmail: offer.bookingEmail || '',
     bookingContact: offer.bookingContact || undefined,

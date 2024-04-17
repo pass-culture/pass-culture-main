@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import React from 'react'
 
-import { AccessiblityEnum } from 'core/shared'
+import { AccessibilityEnum } from 'core/shared'
 import strokeAccessibilityBrain from 'icons/stroke-accessibility-brain.svg'
 import audioDisabilitySvg from 'icons/stroke-accessibility-ear.svg'
 import strokeAccessibilityEye from 'icons/stroke-accessibility-eye.svg'
@@ -11,7 +11,7 @@ import styles from './AccessibilityLabel.module.scss'
 
 interface AccessibilityLabelProps {
   className?: string
-  name: AccessiblityEnum
+  name: AccessibilityEnum
 }
 
 const AccessibilityLabel = ({
@@ -19,23 +19,23 @@ const AccessibilityLabel = ({
   name,
 }: AccessibilityLabelProps): JSX.Element => {
   const labelData = {
-    [AccessiblityEnum.AUDIO]: {
+    [AccessibilityEnum.AUDIO]: {
       label: 'Auditif',
       svg: audioDisabilitySvg,
     },
-    [AccessiblityEnum.MENTAL]: {
+    [AccessibilityEnum.MENTAL]: {
       label: 'Psychique ou cognitif',
       svg: strokeAccessibilityBrain,
     },
-    [AccessiblityEnum.MOTOR]: {
+    [AccessibilityEnum.MOTOR]: {
       label: 'Moteur',
       svg: strokeAccessibilityLeg,
     },
-    [AccessiblityEnum.VISUAL]: {
+    [AccessibilityEnum.VISUAL]: {
       label: 'Visuel',
       svg: strokeAccessibilityEye,
     },
-    [AccessiblityEnum.NONE]: {
+    [AccessibilityEnum.NONE]: {
       label: 'Non accessible',
     },
   }[name]

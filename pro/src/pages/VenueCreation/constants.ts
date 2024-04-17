@@ -1,5 +1,5 @@
 import { DEFAULT_ADDRESS_FORM_VALUES } from 'components/Address/constants'
-import { AccessiblityEnum } from 'core/shared'
+import { AccessibilityEnum } from 'core/shared'
 
 import { VenueCreationFormValues } from './types'
 
@@ -14,11 +14,11 @@ export const DEFAULT_INTITIAL_OPENING_HOURS = {
 export const DEFAULT_FORM_VALUES: VenueCreationFormValues = {
   ...DEFAULT_ADDRESS_FORM_VALUES,
   accessibility: {
-    [AccessiblityEnum.VISUAL]: false,
-    [AccessiblityEnum.MENTAL]: false,
-    [AccessiblityEnum.AUDIO]: false,
-    [AccessiblityEnum.MOTOR]: false,
-    [AccessiblityEnum.NONE]: false,
+    [AccessibilityEnum.VISUAL]: false,
+    [AccessibilityEnum.MENTAL]: false,
+    [AccessibilityEnum.AUDIO]: false,
+    [AccessibilityEnum.MOTOR]: false,
+    [AccessibilityEnum.NONE]: false,
   },
   bannerMeta: undefined,
   bannerUrl: '',

@@ -7,7 +7,7 @@ import {
   WithdrawalTypeEnum,
 } from 'apiClient/v1'
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
-import { AccessiblityEnum } from 'core/shared'
+import { AccessibilityEnum } from 'core/shared'
 
 import { updateIndividualOffer } from '..'
 import { serializePatchOffer } from '../serializers'
@@ -18,11 +18,11 @@ describe('updateIndividualOffer', () => {
       name: 'Test offer',
       description: 'Description for testing offer',
       accessibility: {
-        [AccessiblityEnum.AUDIO]: true,
-        [AccessiblityEnum.MENTAL]: true,
-        [AccessiblityEnum.MOTOR]: true,
-        [AccessiblityEnum.VISUAL]: true,
-        [AccessiblityEnum.NONE]: false,
+        [AccessibilityEnum.AUDIO]: true,
+        [AccessibilityEnum.MENTAL]: true,
+        [AccessibilityEnum.MOTOR]: true,
+        [AccessibilityEnum.VISUAL]: true,
+        [AccessibilityEnum.NONE]: false,
       },
       isNational: true,
       isDuo: true,
@@ -109,11 +109,11 @@ describe('updateIndividualOffer', () => {
       name: 'Test offer',
       description: 'Description for testing offer',
       accessibility: {
-        [AccessiblityEnum.AUDIO]: true,
-        [AccessiblityEnum.MENTAL]: true,
-        [AccessiblityEnum.MOTOR]: true,
-        [AccessiblityEnum.VISUAL]: true,
-        [AccessiblityEnum.NONE]: false,
+        [AccessibilityEnum.AUDIO]: true,
+        [AccessibilityEnum.MENTAL]: true,
+        [AccessibilityEnum.MOTOR]: true,
+        [AccessibilityEnum.VISUAL]: true,
+        [AccessibilityEnum.NONE]: false,
       },
       isNational: true,
       isDuo: true,

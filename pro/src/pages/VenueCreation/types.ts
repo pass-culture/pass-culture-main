@@ -1,8 +1,8 @@
 import { BannerMetaModel } from 'apiClient/v1'
-import { AccessibiltyFormValues } from 'core/shared'
+import { AccessibilityFormValues } from 'core/shared'
 
 export interface VenueCreationFormValues {
-  accessibility: AccessibiltyFormValues
+  accessibility: AccessibilityFormValues
   addressAutocomplete: string
   bannerMeta?: BannerMetaModel | null
   bannerUrl: string | undefined
