@@ -9,7 +9,7 @@ import { VenueEditionFormValues, Day } from '../types'
 import { HourLine } from './HourLine'
 import styles from './OpeningHoursForm.module.scss'
 
-const daysOfWeek: Day[] = [
+export const daysOfWeek: Day[] = [
   'monday',
   'tuesday',
   'wednesday',
