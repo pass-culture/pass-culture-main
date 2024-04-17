@@ -464,17 +464,18 @@ describe('route Offers', () => {
 
           await userEvent.click(screen.getByText('Rechercher'))
 
-          await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-          expect(api.listOffers).toHaveBeenLastCalledWith(
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'CINEMA',
-            undefined,
-            undefined,
-            undefined
-          )
+          await waitFor(() => {
+            expect(api.listOffers).toHaveBeenLastCalledWith(
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              'CINEMA',
+              undefined,
+              undefined,
+              undefined
+            )
+          })
         })
 
         it('should load offers with selected creation mode filter', async () => {
