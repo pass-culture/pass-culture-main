@@ -1,10 +1,15 @@
 import { Form, FormikProvider, useFormik } from 'formik'
 import React from 'react'
+import { useSelector } from 'react-redux'
+import { useLocation } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
 import DialogBox from 'components/DialogBox'
+import { selectCurrentOffererId } from 'store/user/selectors'
 import { Button, RadioButton, SubmitButton, TextArea } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { BaseRadioVariant } from 'ui-kit/form/shared/BaseRadio/types'
+import { sendSentryCustomError } from 'utils/sendSentryCustomError'
 
 import styles from './NewNavReviewDialog.module.scss'
 import { validationSchema } from './validationSchema'
@@ -22,8 +27,18 @@ interface NewNavReviewDialogFormValues {
 const NewNavReviewDialog = ({
   setIsReviewDialogOpen,
 }: NewNavReviewDialogProps) => {
-  const onSubmitReview = () => {
-    // Todo in PC-28494: send review to backend
+  const onSubmitReview = (formValues: NewNavReviewDialogFormValues) => {
+    api
+      .submitNewNavReview({
+        offererId: selectedOffererId!,
+        location: location.pathname,
+        isPleasant: formValues.isPleasant === 'true' ? true : false,
+        isConvenient: formValues.isConvenient === 'true' ? true : false,
+        comment: formValues.comment,
+      })
+      .catch((e) => {
+        sendSentryCustomError(e)
+      })
     setIsReviewDialogOpen(false)
   }
 
@@ -38,6 +53,9 @@ const NewNavReviewDialog = ({
     onSubmit: onSubmitReview,
     validationSchema: validationSchema,
   })
+
+  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const location = useLocation()
 
   return (
     <DialogBox
@@ -64,7 +82,7 @@ const NewNavReviewDialog = ({
                       </>
                     }
                     name="isConvenient"
-                    value={'lessConvenient'}
+                    value="false"
                     className={styles['radio-button']}
                     withBorder
                     variant={BaseRadioVariant.SECONDARY}
@@ -76,7 +94,7 @@ const NewNavReviewDialog = ({
                       </>
                     }
                     name="isConvenient"
-                    value="moreConvenient"
+                    value="true"
                     className={styles['radio-button']}
                     withBorder
                     variant={BaseRadioVariant.SECONDARY}
@@ -93,7 +111,7 @@ const NewNavReviewDialog = ({
                       </>
                     }
                     name="isPleasant"
-                    value="lessPleasant"
+                    value="false"
                     className={styles['radio-button']}
                     withBorder
                     variant={BaseRadioVariant.SECONDARY}
@@ -105,7 +123,7 @@ const NewNavReviewDialog = ({
                       </>
                     }
                     name="isPleasant"
-                    value="morePleasant"
+                    value="true"
                     className={styles['radio-button']}
                     withBorder
                     variant={BaseRadioVariant.SECONDARY}
