@@ -714,7 +714,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public attachOfferTemplateImage(
-    offerId: string,
+    offerId: number,
     formData?: AttachImageFormModel,
   ): CancelablePromise<AttachImageResponseModel> {
     return this.httpRequest.request({

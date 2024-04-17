@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react'
 
+import { api } from 'apiClient/api'
 import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
@@ -7,10 +8,9 @@ import {
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import deleteCollectiveOfferImageAdapter from 'core/OfferEducational/adapters/deleteCollectiveOfferImageAdapter'
 import deleteCollectiveOfferTemplateImageAdapter from 'core/OfferEducational/adapters/deleteCollectiveOfferTemplateImageAdapter'
-import postCollectiveOfferImageAdapter from 'core/OfferEducational/adapters/postCollectiveOfferImageAdapter'
-import postCollectiveOfferTemplateImageAdapter from 'core/OfferEducational/adapters/postCollectiveOfferTemplateImageAdapter'
 import { OfferCollectiveImage } from 'core/Offers/types'
 import useNotification from 'hooks/useNotification'
+import { sendSentryCustomError } from 'utils/sendSentryCustomError'
 
 export const useCollectiveOfferImageUpload = (
   offer?:
@@ -65,23 +65,30 @@ export const useCollectiveOfferImageUpload = (
         return
       }
 
-      const adapter = isTemplate
-        ? postCollectiveOfferTemplateImageAdapter
-        : postCollectiveOfferImageAdapter
-      const { isOk, message, payload } = await adapter({
-        offerId,
-        imageFile: imageToUpload.imageFile,
-        credit: imageToUpload.credit,
-        cropParams: imageToUpload.cropParams,
-      })
+      try {
+        const params = {
+          thumb: imageToUpload.imageFile,
+          credit: imageToUpload.credit ?? '',
+          croppingRectHeight: imageToUpload.cropParams?.height ?? 0,
+          croppingRectWidth: imageToUpload.cropParams?.width ?? 0,
+          croppingRectX: imageToUpload.cropParams?.x ?? 0,
+          croppingRectY: imageToUpload.cropParams?.y ?? 0,
+        }
 
-      if (!isOk) {
-        return notify.error(message)
+        const payload = isTemplate
+          ? await api.attachOfferTemplateImage(offerId, params)
+          : await api.attachOfferImage(offerId, params)
+        setImageOffer({
+          url: payload.imageUrl,
+          credit: imageToUpload.credit,
+        })
+      } catch (error) {
+        sendSentryCustomError(error)
+
+        return notify.error(
+          'Une erreur est survenue lors de l’envoi de votre image'
+        )
       }
-      setImageOffer({
-        url: payload.imageUrl,
-        credit: imageToUpload.credit,
-      })
     },
     [imageOffer, imageToUpload]
   )

@@ -27,6 +27,7 @@ vi.mock('apiClient/api', () => ({
     listEducationalOfferers: vi.fn(),
     getNationalPrograms: vi.fn(),
     createCollectiveOffer: vi.fn(),
+    attachOfferImage: vi.fn(),
   },
 }))
 

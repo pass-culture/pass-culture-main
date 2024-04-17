@@ -1,7 +1,6 @@
 // This file will be replace by apiClient
 /* istanbul ignore file */
 
-import { AttachImageResponseModel } from 'apiClient/v1'
 import { client } from 'repository/pcapi/pcapiClient'
 import { stringify } from 'utils/query-string'
 
@@ -41,48 +40,3 @@ export const postImageToVenue = async (
     body
   )
 }
-
-type PostImageMethodType<T> = (
-  offerId: number,
-  thumb: File,
-  credit: string | null,
-  thumbUrl?: string,
-  x?: number,
-  y?: number,
-  height?: number,
-  width?: number
-) => Promise<T>
-
-export const postImage = (
-  url: string,
-  offerId: number,
-  thumb: File,
-  credit?: string | null,
-  thumbUrl?: string,
-  x?: number,
-  y?: number,
-  height?: number,
-  width?: number
-) => {
-  const body = new FormData()
-  body.append('offerId', offerId.toString())
-  body.append('thumb', thumb)
-  body.append('credit', credit ?? '')
-  body.append('croppingRectX', x !== undefined ? String(x) : '')
-  body.append('croppingRectY', y !== undefined ? String(y) : '')
-  body.append('croppingRectHeight', height !== undefined ? String(height) : '')
-  body.append('croppingRectWidth', width !== undefined ? String(width) : '')
-  body.append('thumbUrl', thumbUrl ?? '')
-
-  return client.postWithFormData(url, body)
-}
-
-export const postCollectiveOfferImage: PostImageMethodType<
-  AttachImageResponseModel
-> = (offerId, ...args) =>
-  postImage(`/collective/offers/${offerId}/image`, offerId, ...args)
-
-export const postCollectiveOfferTemplateImage: PostImageMethodType<
-  AttachImageResponseModel
-> = (offerId, ...args) =>
-  postImage(`/collective/offers-template/${offerId}/image`, offerId, ...args)

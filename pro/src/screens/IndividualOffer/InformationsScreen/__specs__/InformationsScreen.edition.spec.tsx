@@ -21,7 +21,6 @@ import {
 } from 'context/IndividualOfferContext'
 import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
-import * as pcapi from 'repository/pcapi/pcapi'
 import {
   getOfferVenueFactory,
   getIndividualOfferFactory,
@@ -47,8 +46,14 @@ vi.mock('utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn(() => true),
 }))
 
-vi.mock('repository/pcapi/pcapi', () => ({
-  postThumbnail: vi.fn(),
+vi.mock('apiClient/api', () => ({
+  api: {
+    patchOffer: vi.fn(),
+    postOffer: vi.fn(),
+    getOffer: vi.fn(),
+    createThumbnail: vi.fn(),
+    deleteThumbnail: vi.fn(),
+  },
 }))
 
 const renderInformationsScreen = (
@@ -243,7 +248,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
     expect(
       await screen.findByText('There is the summary route content')
     ).toBeInTheDocument()
-    expect(pcapi.postThumbnail).not.toHaveBeenCalled()
+    expect(api.createThumbnail).not.toHaveBeenCalled()
     expect(api.postOffer).not.toHaveBeenCalled()
   })
 
@@ -301,7 +306,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
     expect(
       await screen.findByText('There is the summary route content')
     ).toBeInTheDocument()
-    expect(pcapi.postThumbnail).not.toHaveBeenCalled()
+    expect(api.createThumbnail).not.toHaveBeenCalled()
     expect(api.postOffer).not.toHaveBeenCalled()
   })
 

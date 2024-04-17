@@ -6,16 +6,11 @@ import * as router from 'react-router-dom'
 import createFetchMock from 'vitest-fetch-mock'
 
 import { api } from 'apiClient/api'
-import {
-  ApiError,
-  AttachImageResponseModel,
-  GetCollectiveOfferResponseModel,
-} from 'apiClient/v1'
+import { ApiError, GetCollectiveOfferResponseModel } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import * as createFromTemplateUtils from 'core/OfferEducational/utils/createOfferFromTemplate'
 import * as useNotification from 'hooks/useNotification'
-import * as pcapi from 'repository/pcapi/pcapi'
 import {
   getCollectiveOfferFactory,
   defaultGetVenue,
@@ -205,9 +200,9 @@ describe('DuplicateOfferCell', () => {
         offerDuplicate
       )
 
-      vi.spyOn(pcapi, 'postCollectiveOfferImage').mockResolvedValue(
-        {} as AttachImageResponseModel
-      )
+      vi.spyOn(api, 'attachOfferImage').mockResolvedValue({
+        imageUrl: 'image.jpg',
+      })
 
       fetchMock.mockIf(/image.jpg/, 'some response')
     })
