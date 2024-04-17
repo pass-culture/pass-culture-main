@@ -137,6 +137,7 @@ def export_bookings_for_offer_as_excel(offer_id: int, query: BookingsExportQuery
         "Content-Type": "text/csv; charset=utf-8;",
         "Content-Disposition": "attachment; filename=reservations_pass_culture.csv",
     },
+    api=blueprint.pro_private_schema,
 )
 def get_bookings_csv(query: ListBookingsQueryModel) -> bytes:
     return _create_booking_export_file(query, BookingExportType.CSV)
@@ -150,6 +151,7 @@ def get_bookings_csv(query: ListBookingsQueryModel) -> bytes:
         "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         "Content-Disposition": "attachment; filename=reservations_pass_culture.xlsx",
     },
+    api=blueprint.pro_private_schema,
 )
 def get_bookings_excel(query: ListBookingsQueryModel) -> bytes:
     return _create_booking_export_file(query, BookingExportType.EXCEL)
