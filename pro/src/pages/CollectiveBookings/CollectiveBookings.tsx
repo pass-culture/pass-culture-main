@@ -7,8 +7,6 @@ import { Audience } from 'core/shared'
 import BookingsScreen from 'screens/Bookings'
 
 import {
-  getCollectiveBookingsCSVFileAdapter,
-  getCollectiveBookingsXLSFileAdapter,
   getFilteredCollectiveBookingsRecapAdapter,
   getUserHasCollectiveBookingsAdapter,
 } from './adapters'
@@ -20,8 +18,6 @@ const CollectiveBookings = (): JSX.Element => {
     <AppLayout>
       <BookingsScreen
         audience={Audience.COLLECTIVE}
-        getBookingsCSVFileAdapter={getCollectiveBookingsCSVFileAdapter}
-        getBookingsXLSFileAdapter={getCollectiveBookingsXLSFileAdapter}
         getFilteredBookingsRecapAdapter={
           getFilteredCollectiveBookingsRecapAdapter
         }

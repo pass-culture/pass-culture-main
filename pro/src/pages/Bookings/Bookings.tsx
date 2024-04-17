@@ -7,8 +7,6 @@ import { Audience } from 'core/shared'
 import BookingsScreen from 'screens/Bookings'
 
 import {
-  getBookingsCSVFileAdapter,
-  getBookingsXLSFileAdapter,
   getFilteredBookingsRecapAdapter,
   getUserHasBookingsAdapter,
 } from './adapters'
@@ -20,8 +18,6 @@ export const Bookings = (): JSX.Element => {
     <AppLayout>
       <BookingsScreen
         audience={Audience.INDIVIDUAL}
-        getBookingsCSVFileAdapter={getBookingsCSVFileAdapter}
-        getBookingsXLSFileAdapter={getBookingsXLSFileAdapter}
         getFilteredBookingsRecapAdapter={getFilteredBookingsRecapAdapter}
         getUserHasBookingsAdapter={getUserHasBookingsAdapter}
         getVenuesAdapter={getVenuesAdapter}
