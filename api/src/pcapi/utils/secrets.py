@@ -51,3 +51,15 @@ def print_secret_keys() -> None:
     This output is used in deployment steps.
     """
     print(dump_secret_keys(), file=sys.stdout)
+
+
+@blueprint.cli.command("check_secrets")
+def check_secrets() -> None:
+    """Make sure that all secrets are defined and non-empty."""
+    missing = set()
+    for secret in SECRET_KEYS:
+        if not os.environ.get(secret):
+            missing.add(secret)
+
+    if missing:
+        sys.exit(f"The following secrets are missing: {', '.join(sorted(missing))}")
