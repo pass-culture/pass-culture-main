@@ -10,7 +10,10 @@ import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
-import { venueListItemFactory } from 'utils/individualApiFactories'
+import {
+  defaultGetOffererResponseModel,
+  venueListItemFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { CollectiveOffers } from '../CollectiveOffers'
@@ -222,8 +225,8 @@ describe('route CollectiveOffers', () => {
 
     it('should have offerer filter when user filters by offerer', async () => {
       const filters = { offererId: 'A4' }
-      // @ts-expect-error FIX ME
       vi.spyOn(api, 'getOfferer').mockResolvedValueOnce({
+        ...defaultGetOffererResponseModel,
         name: 'La structure',
       })
 
@@ -235,8 +238,8 @@ describe('route CollectiveOffers', () => {
 
     it('should have offerer value be removed when user removes offerer filter', async () => {
       const filters = { offererId: 'A4' }
-      // @ts-expect-error FIX ME
       vi.spyOn(api, 'getOfferer').mockResolvedValueOnce({
+        ...defaultGetOffererResponseModel,
         name: 'La structure',
       })
       await renderOffers(store, filters)

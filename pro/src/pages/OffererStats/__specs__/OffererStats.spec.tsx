@@ -2,9 +2,12 @@ import { screen, waitFor } from '@testing-library/react'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import { GetOffererResponseModel } from 'apiClient/v1'
 import * as useNotification from 'hooks/useNotification'
-import { getOffererNameFactory } from 'utils/individualApiFactories'
+import {
+  defaultGetOffererResponseModel,
+  defaultGetOffererVenueResponseModel,
+  getOffererNameFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { OffererStats } from '../OffererStats'
@@ -51,11 +54,20 @@ describe('OffererStatsScreen', () => {
   const secondVenueId = 2
   beforeEach(() => {
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
+      ...defaultGetOffererResponseModel,
       managedVenues: [
-        { name: 'Salle 1', id: firstVenueId },
-        { name: 'Stand popcorn', id: secondVenueId },
+        {
+          ...defaultGetOffererVenueResponseModel,
+          name: 'Salle 1',
+          id: firstVenueId,
+        },
+        {
+          ...defaultGetOffererVenueResponseModel,
+          name: 'Stand popcorn',
+          id: secondVenueId,
+        },
       ],
-    } as GetOffererResponseModel)
+    })
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [
         getOffererNameFactory({

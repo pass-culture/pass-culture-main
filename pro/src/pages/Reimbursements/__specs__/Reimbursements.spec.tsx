@@ -6,7 +6,6 @@ import {
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { GetOffererResponseModel } from 'apiClient/v1'
 import { routesReimbursements } from 'app/AppRouter/subroutesReimbursements'
 import {
   defaultGetOffererResponseModel,
@@ -53,13 +52,7 @@ const renderReimbursements = () => {
 }
 
 describe('Reimbursement page', () => {
-  let selectedOfferer: GetOffererResponseModel
-
   beforeEach(() => {
-    selectedOfferer = {
-      ...defaultGetOffererResponseModel,
-    }
-
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [
         getOffererNameFactory({
@@ -69,7 +62,9 @@ describe('Reimbursement page', () => {
       ],
     })
 
-    vi.spyOn(api, 'getOfferer').mockResolvedValue(selectedOfferer)
+    vi.spyOn(api, 'getOfferer').mockResolvedValue(
+      defaultGetOffererResponseModel
+    )
     vi.spyOn(api, 'getOffererBankAccountsAndAttachedVenues').mockResolvedValue({
       bankAccounts: [],
       id: 1,
@@ -94,7 +89,7 @@ describe('Reimbursement page', () => {
 
   it('should render breadcrumb with error icon', async () => {
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
-      ...selectedOfferer,
+      ...defaultGetOffererResponseModel,
       venuesWithNonFreeOffersWithoutBankAccounts: [2],
     })
 

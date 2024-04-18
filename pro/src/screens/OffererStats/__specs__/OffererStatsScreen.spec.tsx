@@ -5,6 +5,7 @@ import React from 'react'
 import { api } from 'apiClient/api'
 import { CancelablePromise, GetOffererResponseModel } from 'apiClient/v1'
 import { SelectOption } from 'custom_types/form'
+import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OffererStatsScreen from '../OffererStatsScreen'
@@ -132,9 +133,9 @@ describe('OffererStatsScreen', () => {
   })
 
   it('should display not display venue select if offerer has no venue', async () => {
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
-      id: 1,
-    } as GetOffererResponseModel)
+    vi.spyOn(api, 'getOfferer').mockResolvedValue(
+      defaultGetOffererResponseModel
+    )
     renderOffererStatsScreen(offererOptions)
     await waitFor(() => {
       expect(api.getOfferer).toHaveBeenCalledTimes(1)
