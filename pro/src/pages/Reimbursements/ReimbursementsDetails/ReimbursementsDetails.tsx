@@ -6,7 +6,6 @@ import { VenueListItemResponseModel } from 'apiClient/v1'
 import { ButtonDownloadCSV } from 'components/ButtonDownloadCSV/ButtonDownloadCSV'
 import getVenuesForOffererAdapter from 'core/Venue/adapters/getVenuesForOffererAdapter'
 import { SelectOption } from 'custom_types/form'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useCurrentUser from 'hooks/useCurrentUser'
 import fullLinkIcon from 'icons/full-link.svg'
 import strokeNoBookingIcon from 'icons/stroke-no-booking.svg'
@@ -52,7 +51,6 @@ const ReimbursementsDetails = (): JSX.Element => {
     !isPeriodFilterSelected || requireVenueFilterForAdmin
 
   const { selectedOfferer }: ReimbursementsContextProps = useOutletContext()
-  const isFFnewInterfaceActive = useActiveFeature('WIP_ENABLE_PRO_SIDE_NAV')
 
   const buildAndSortVenueFilterOptions = (
     venues: VenueListItemResponseModel[]
@@ -140,11 +138,11 @@ const ReimbursementsDetails = (): JSX.Element => {
           isDisabled={shouldDisableButtons}
           link={{
             to: `/remboursements-details?${csvQueryParams}`,
-            target: isFFnewInterfaceActive ? '_blank' : undefined,
+            target: '_blank',
             isExternal: false,
           }}
           variant={ButtonVariant.SECONDARY}
-          icon={isFFnewInterfaceActive ? fullLinkIcon : undefined}
+          icon={fullLinkIcon}
         >
           Afficher
         </ButtonLink>

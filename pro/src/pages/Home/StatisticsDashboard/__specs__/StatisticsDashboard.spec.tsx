@@ -125,14 +125,14 @@ describe('StatisticsDashboard', () => {
     expect(await screen.findByText(/Créer une offre/)).toBeInTheDocument()
   })
 
-  it('should display the create offer button with the WIP_ENABLE_PRO_SIDE_NAV FF enabled and the user is Admin', async () => {
-    renderStatisticsDashboard(false, ['WIP_ENABLE_PRO_SIDE_NAV'], true)
+  it('should display the create offer button if the user is Admin', async () => {
+    renderStatisticsDashboard(false, [], true)
 
     expect(await screen.findByText(/Créer une offre/)).toBeInTheDocument()
   })
 
-  it("should not display the create offer button with the WIP_ENABLE_PRO_SIDE_NAV FF enabled and the user isn't Admin", async () => {
-    renderStatisticsDashboard(false, ['WIP_ENABLE_PRO_SIDE_NAV'], false, true)
+  it("should not display the create offer button if the user isn't Admin", async () => {
+    renderStatisticsDashboard(false, [], false, true)
 
     expect(
       await screen.findByText('à destination du grand public')

@@ -702,18 +702,12 @@ describe('screen Offers', () => {
     expect(screen.getByText(/Créer une offre/)).toBeInTheDocument()
   })
 
-  it('should not display the create offer button with the WIP_ENABLE_PRO_SIDE_NAV FF enabled', async () => {
+  it('should not display the create offer button', async () => {
     vi.spyOn(api, 'listOfferersNames').mockResolvedValueOnce({
       offerersNames: [getOffererNameFactory()],
     })
 
-    renderOffers(
-      props,
-      {
-        features: ['WIP_ENABLE_PRO_SIDE_NAV'],
-      },
-      true
-    )
+    renderOffers(props, {}, true)
     await waitFor(() => {
       expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
     })
