@@ -277,6 +277,7 @@ class DeleteVenueTest:
         educational_factories.CollectiveStockFactory(
             collectiveOffer__venue__managingOfferer=venue_to_delete.managingOfferer
         )
+        educational_factories.CollectiveOfferRequestFactory(collectiveOfferTemplate=template1)
 
         # When
         offerers_api.delete_venue(venue_to_delete.id)
@@ -286,6 +287,7 @@ class DeleteVenueTest:
         assert educational_models.CollectiveOffer.query.count() == 1
         assert educational_models.CollectiveOfferTemplate.query.count() == 0
         assert educational_models.CollectiveStock.query.count() == 1
+        assert educational_models.CollectiveOfferRequest.query.count() == 0
 
     def test_delete_cascade_venue_should_remove_bank_informations_of_venue(self):
         # Given

@@ -490,6 +490,9 @@ def _delete_objects_linked_to_venue(venue_id: int) -> dict:
                 collective_offer_templates_id_chunk
             )
         ).delete(synchronize_session=False)
+        educational_models.CollectiveOfferRequest.query.filter(
+            educational_models.CollectiveOfferRequest.collectiveOfferTemplateId.in_(collective_offer_templates_id_chunk)
+        ).delete(synchronize_session=False)
 
     educational_models.CollectiveOfferTemplate.query.filter(
         educational_models.CollectiveOfferTemplate.venueId == venue_id
