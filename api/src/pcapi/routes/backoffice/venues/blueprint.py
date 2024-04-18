@@ -34,7 +34,6 @@ from pcapi.core.providers import models as providers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import filters
@@ -158,16 +157,11 @@ def get_venue(venue_id: int) -> offerers_models.Venue:
         .exists()
     )
 
-    venue_query = offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id)
-
-    if FeatureToggle.WIP_ENABLE_PRO_SIDE_NAV.is_active():
-        venue_query = venue_query.options(
-            sa.orm.joinedload(offerers_models.Venue.managingOfferer)
-            .with_expression(offerers_models.Offerer.hasNewNavUsers, has_new_nav_users_subquery)
-            .with_expression(offerers_models.Offerer.hasOldNavUsers, has_old_nav_users_subquery)
-        )
-    else:
-        venue_query = venue_query.options(sa.orm.joinedload(offerers_models.Venue.managingOfferer))
+    venue_query = offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id).options(
+        sa.orm.joinedload(offerers_models.Venue.managingOfferer)
+        .with_expression(offerers_models.Offerer.hasNewNavUsers, has_new_nav_users_subquery)
+        .with_expression(offerers_models.Offerer.hasOldNavUsers, has_old_nav_users_subquery)
+    )
 
     venue_query = venue_query.options(
         sa.orm.joinedload(offerers_models.Venue.contact),

@@ -26,7 +26,6 @@ from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.routes.backoffice.pro import forms as pro_forms
 from pcapi.utils import regions as regions_utils
@@ -151,14 +150,10 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
             sa.orm.joinedload(offerers_models.Offerer.individualSubscription).load_only(
                 offerers_models.IndividualOffererSubscription.id
             ),
-        )
-    )
-
-    if FeatureToggle.WIP_ENABLE_PRO_SIDE_NAV.is_active():
-        offerer_query = offerer_query.options(
             sa.orm.with_expression(offerers_models.Offerer.hasNewNavUsers, has_new_nav_users_subquery),
             sa.orm.with_expression(offerers_models.Offerer.hasOldNavUsers, has_old_nav_users_subquery),
         )
+    )
 
     row = offerer_query.one_or_none()
     if not row:

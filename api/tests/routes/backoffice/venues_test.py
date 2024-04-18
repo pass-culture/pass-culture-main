@@ -24,7 +24,6 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.backoffice import api as backoffice_api
 from pcapi.models import db
@@ -279,8 +278,7 @@ class GetVenueTest(GetEndpointHelper):
     # get session (1 query)
     # get user with profile and permissions (1 query)
     # get venue (1 query)
-    # get feature flag: WIP_ENABLE_PRO_SIDE_NAV (1 query)
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     def test_keep_search_parameters_on_top(self, authenticated_client, venue):
         url = url_for(self.endpoint, venue_id=venue.id, q=venue.name, departments=["75", "77"])
@@ -489,21 +487,15 @@ class GetVenueTest(GetEndpointHelper):
         assert "Suspendu" not in badges
 
     @pytest.mark.parametrize(
-        "ff_new_nav_activated,has_new_nav,has_old_nav",
+        "has_new_nav,has_old_nav",
         [
-            (True, False, False),
-            (True, True, False),
-            (True, True, True),
-            (True, False, True),
-            (False, False, False),
-            (False, True, False),
-            (False, True, True),
-            (False, False, True),
+            (True, True),
+            (True, False),
+            (False, True),
+            (False, False),
         ],
     )
-    def test_get_venue_with_new_nav_badges(
-        self, authenticated_client, venue, ff_new_nav_activated, has_new_nav, has_old_nav
-    ):
+    def test_get_venue_with_new_nav_badges(self, authenticated_client, venue, has_new_nav, has_old_nav):
         if has_new_nav:
             user_with_new_nav = users_factories.ProFactory()
             offerers_factories.UserOffererFactory(user=user_with_new_nav, offerer=venue.managingOfferer)
@@ -522,10 +514,7 @@ class GetVenueTest(GetEndpointHelper):
         # count.
         db.session.expire(venue)
 
-        with (
-            override_features(WIP_ENABLE_PRO_SIDE_NAV=ff_new_nav_activated),
-            assert_num_queries(self.expected_num_queries),
-        ):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -533,14 +522,10 @@ class GetVenueTest(GetEndpointHelper):
         assert "Lieu" in badges
         assert "Suspendu" not in badges
 
-        if ff_new_nav_activated:
-            if has_new_nav:
-                assert "Nouvelle interface" in badges
-            if has_old_nav:
-                assert "Ancienne interface" in badges
-        else:
-            assert "Nouvelle interface" not in badges
-            assert "Ancienne interface" not in badges
+        if has_new_nav:
+            assert "Nouvelle interface" in badges
+        if has_old_nav:
+            assert "Ancienne interface" in badges
 
 
 class GetVenueStatsDataTest:

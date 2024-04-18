@@ -50,8 +50,7 @@ class GetOffererTest(GetEndpointHelper):
     # - offerer with joined data except tags (1 query)
     # - get offerer tags (1 query)
     # - get all tags for edit form (1 query)
-    # - get feature flag: WIP_ENABLE_PRO_SIDE_NAV (1 query)
-    expected_num_queries = 6
+    expected_num_queries = 5
 
     def test_keep_search_parameters_on_top(self, authenticated_client, offerer):
         url = url_for(self.endpoint, offerer_id=offerer.id, q=offerer.name, departments=["75", "77"])
@@ -113,21 +112,15 @@ class GetOffererTest(GetEndpointHelper):
         assert "Suspendue" not in badges
 
     @pytest.mark.parametrize(
-        "new_nav_ff_activated,new_nav_users,old_nav_users",
+        "new_nav_users,old_nav_users",
         [
-            (True, True, True),
-            (False, True, True),
-            (True, False, True),
-            (False, False, True),
-            (True, True, False),
-            (False, True, False),
-            (True, False, False),
-            (False, False, False),
+            (True, True),
+            (False, True),
+            (True, False),
+            (False, False),
         ],
     )
-    def test_get_offerer_with_new_nav_badges(
-        self, new_nav_ff_activated, new_nav_users, old_nav_users, authenticated_client, offerer
-    ):
+    def test_get_offerer_with_new_nav_badges(self, new_nav_users, old_nav_users, authenticated_client, offerer):
         if new_nav_users:
             user_with_new_nav = users_factories.ProFactory()
             users_factories.UserProNewNavStateFactory(user=user_with_new_nav)
@@ -161,10 +154,7 @@ class GetOffererTest(GetEndpointHelper):
         # count.
         db.session.expire(offerer)
 
-        with (
-            override_features(WIP_ENABLE_PRO_SIDE_NAV=new_nav_ff_activated),
-            assert_num_queries(self.expected_num_queries),
-        ):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -173,14 +163,10 @@ class GetOffererTest(GetEndpointHelper):
         assert "Validée" in badges
         assert "Suspendue" not in badges
 
-        if new_nav_ff_activated:
-            if new_nav_users:
-                assert "Nouvelle interface" in badges
-            if old_nav_users:
-                assert "Ancienne interface" in badges
-        else:
-            assert "Nouvelle interface" not in badges
-            assert "Ancienne interface" not in badges
+        if new_nav_users:
+            assert "Nouvelle interface" in badges
+        if old_nav_users:
+            assert "Ancienne interface" in badges
 
     def test_offerer_detail_contains_venue_bank_information_stats(
         self,
@@ -1111,51 +1097,6 @@ class GetOffererUsersTest(GetEndpointHelper):
         options = select.find_all("option")
         assert [option["value"] for option in options] == ["", str(user3.id), str(user2.id)]
 
-    @override_features(WIP_ENABLE_PRO_SIDE_NAV=False)
-    def test_user_offerer_details_tab_with_new_nav_tags_without_ff(self, authenticated_client, offerer):
-        user_with_new_nav = users_factories.ProFactory()
-        users_factories.UserProNewNavStateFactory(user=user_with_new_nav)
-        offerers_factories.UserOffererFactory(user=user_with_new_nav, offerer=offerer)
-
-        user_with_old_nav = users_factories.ProFactory()
-        users_factories.UserProNewNavStateFactory(user=user_with_old_nav, eligibilityDate=None, newNavDate=None)
-        offerers_factories.UserOffererFactory(user=user_with_old_nav, offerer=offerer)
-
-        eligible_user_with_inactivated_new_nav = users_factories.ProFactory()
-        users_factories.UserProNewNavStateFactory(
-            user=eligible_user_with_inactivated_new_nav, eligibilityDate=datetime.datetime.utcnow(), newNavDate=None
-        )
-        offerers_factories.UserOffererFactory(user=eligible_user_with_inactivated_new_nav, offerer=offerer)
-
-        url = url_for(self.endpoint, offerer_id=offerer.id)
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url)
-            assert response.status_code == 200
-
-        rows = html_parser.extract_table_rows(response.data)
-
-        assert len(rows) == 3
-
-        assert rows[0]["ID"] == str(user_with_new_nav.id)
-        assert rows[0]["Statut"] == "Validé"
-        assert "Interface" not in rows[0]
-        assert rows[0]["Prénom / Nom"] == user_with_new_nav.full_name
-        assert rows[0]["Email"] == user_with_new_nav.email
-
-        assert rows[1]["ID"] == str(user_with_old_nav.id)
-        assert rows[1]["Statut"] == "Validé"
-        assert "Interface" not in rows[1]
-        assert rows[1]["Prénom / Nom"] == user_with_old_nav.full_name
-        assert rows[1]["Email"] == user_with_old_nav.email
-
-        assert rows[2]["ID"] == str(eligible_user_with_inactivated_new_nav.id)
-        assert rows[2]["Statut"] == "Validé"
-        assert "Interface" not in rows[2]
-        assert rows[2]["Prénom / Nom"] == eligible_user_with_inactivated_new_nav.full_name
-        assert rows[2]["Email"] == eligible_user_with_inactivated_new_nav.email
-
-    @override_features(WIP_ENABLE_PRO_SIDE_NAV=True)
     def test_user_offerer_details_tab_with_new_nav_tags(self, authenticated_client, offerer):
         user_with_new_nav = users_factories.ProFactory()
         users_factories.UserProNewNavStateFactory(user=user_with_new_nav)
