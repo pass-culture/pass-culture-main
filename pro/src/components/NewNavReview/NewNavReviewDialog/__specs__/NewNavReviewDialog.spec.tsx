@@ -2,11 +2,13 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
+import * as useNotification from 'hooks/useNotification'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import NewNavReviewDialog from '../NewNavReviewDialog'
 
 const mockSetIsReviewDialogOpen = vi.fn()
+const notifyError = vi.fn()
 
 const renderNewNavReviewDialog = () => {
   const storeOverrides = {
@@ -38,8 +40,8 @@ describe('NewNavReviewDialog', () => {
     expect(submitButton).toBeDisabled()
   })
 
-  it('should close dialog when submit is clicked', async () => {
-    vi.spyOn(api, 'submitNewNavReview').mockResolvedValue()
+  it('should submit data when submit button is clicked', async () => {
+    vi.spyOn(api, 'submitNewNavReview').mockResolvedValueOnce()
     renderNewNavReviewDialog()
 
     const morePleasantRadioButton = screen.getByRole('radio', {
@@ -68,6 +70,75 @@ describe('NewNavReviewDialog', () => {
       location: location.pathname,
       offererId: 1,
     })
+  })
+
+  it('should show confirmation dialog when submitting data', async () => {
+    vi.spyOn(api, 'submitNewNavReview').mockResolvedValueOnce()
+    renderNewNavReviewDialog()
+
+    const morePleasantRadioButton = screen.getByRole('radio', {
+      name: /Plus agréable/,
+    })
+    await userEvent.click(morePleasantRadioButton)
+    const moreConvenientRadioButton = screen.getByRole('radio', {
+      name: /Plus pratique/,
+    })
+    await userEvent.click(moreConvenientRadioButton)
+
+    const submitButton = screen.getByRole('button', { name: 'Envoyer' })
+
+    await userEvent.click(submitButton)
+    expect(
+      screen.getByText('Merci beaucoup de votre participation !')
+    ).toBeInTheDocument()
+  })
+
+  it('should close confirmation dialog when close button is clicked', async () => {
+    vi.spyOn(api, 'submitNewNavReview').mockResolvedValueOnce()
+    renderNewNavReviewDialog()
+
+    const morePleasantRadioButton = screen.getByRole('radio', {
+      name: /Plus agréable/,
+    })
+    await userEvent.click(morePleasantRadioButton)
+    const moreConvenientRadioButton = screen.getByRole('radio', {
+      name: /Plus pratique/,
+    })
+    await userEvent.click(moreConvenientRadioButton)
+
+    const submitButton = screen.getByRole('button', { name: 'Envoyer' })
+    await userEvent.click(submitButton)
+    await userEvent.click(screen.getByRole('button', { name: 'Fermer' }))
     expect(mockSetIsReviewDialogOpen).toHaveBeenCalledWith(false)
   })
+  it('should show error message and close dialog on error'),
+    async () => {
+      vi.spyOn(api, 'submitNewNavReview').mockRejectedValueOnce({})
+
+      const notifsImport = (await vi.importActual(
+        'hooks/useNotification'
+      )) as ReturnType<typeof useNotification.default>
+      vi.spyOn(useNotification, 'default').mockImplementation(() => ({
+        ...notifsImport,
+        error: notifyError,
+      }))
+
+      renderNewNavReviewDialog()
+
+      const morePleasantRadioButton = screen.getByRole('radio', {
+        name: /Plus agréable/,
+      })
+      await userEvent.click(morePleasantRadioButton)
+      const moreConvenientRadioButton = screen.getByRole('radio', {
+        name: /Plus pratique/,
+      })
+      await userEvent.click(moreConvenientRadioButton)
+
+      const submitButton = screen.getByRole('button', { name: 'Envoyer' })
+      await userEvent.click(submitButton)
+      expect(mockSetIsReviewDialogOpen).toHaveBeenCalledWith(false)
+      expect(notifyError).toHaveBeenCalledWith(
+        'Une erreur est survenue. Merci de réessayer plus tard.'
+      )
+    }
 })

@@ -55,3 +55,21 @@
 .radio-button {
   text-align: center;
 }
+
+.confirmation-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: rem.torem(24px);
+  align-items: center;
+  margin-top: rem.torem(48px);
+
+  &-title {
+    @include fonts.title3;
+  }
+
+  &-icon {
+    width: rem.torem(77px);
+    height: rem.torem(77px);
+    color: var(--color-valid);
+  }
+}
