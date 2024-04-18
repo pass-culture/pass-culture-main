@@ -19,6 +19,7 @@ import {
 import { Validation } from 'screens/SignupJourneyForm/Validation/index'
 import * as utils from 'utils/recaptcha'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 vi.mock('apiClient/api', () => ({
   api: {
@@ -37,16 +38,6 @@ const addressInformations: Address = {
 }
 
 const renderValidationScreen = (contextValue: SignupJourneyContextValues) => {
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        isAdmin: false,
-        email: 'email@example.com',
-      },
-    },
-  }
-
   return renderWithProviders(
     <>
       <SignupJourneyContext.Provider value={contextValue}>
@@ -69,7 +60,7 @@ const renderValidationScreen = (contextValue: SignupJourneyContextValues) => {
       <Notification />
     </>,
     {
-      storeOverrides,
+      user: sharedCurrentUserFactory(),
       initialRouterEntries: ['/parcours-inscription/validation'],
     }
   )

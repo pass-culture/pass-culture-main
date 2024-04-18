@@ -9,6 +9,7 @@ import {
   RenderWithProvidersOptions,
   renderWithProviders,
 } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { Offer } from '../Offer'
 
@@ -17,15 +18,6 @@ const renderOfferPage = (options?: RenderWithProvidersOptions) =>
 
 describe('Offer', () => {
   it('should display admin creation banner when no offererId is given', async () => {
-    const storeOverrides = {
-      user: {
-        initialized: true,
-        currentUser: {
-          isAdmin: true,
-          email: 'email@example.com',
-        },
-      },
-    }
     const url = generatePath(
       getIndividualOfferPath({
         step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
@@ -34,7 +26,10 @@ describe('Offer', () => {
       })
     )
 
-    renderOfferPage({ storeOverrides, initialRouterEntries: [url] })
+    renderOfferPage({
+      user: sharedCurrentUserFactory({ isAdmin: true }),
+      initialRouterEntries: [url],
+    })
 
     expect(
       await screen.findByText(

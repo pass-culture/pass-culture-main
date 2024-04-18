@@ -17,6 +17,7 @@ import {
   venueListItemFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import InformationsScreen, {
   InformationsScreenProps,
@@ -45,21 +46,11 @@ const renderInformationsScreen = (
   props: InformationsScreenProps,
   contextValue: IndividualOfferContextValues
 ) => {
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        isAdmin: false,
-        email: 'email@example.com',
-      },
-    },
-  }
-
   return renderWithProviders(
     <IndividualOfferContext.Provider value={contextValue}>
       <InformationsScreen {...props} />
     </IndividualOfferContext.Provider>,
-    { storeOverrides, initialRouterEntries: ['/creation'] }
+    { user: sharedCurrentUserFactory(), initialRouterEntries: ['/creation'] }
   )
 }
 

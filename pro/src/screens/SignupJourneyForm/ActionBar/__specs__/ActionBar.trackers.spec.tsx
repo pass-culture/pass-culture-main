@@ -10,27 +10,18 @@ import * as useAnalytics from 'hooks/useAnalytics'
 import { ActionBarProps } from 'screens/SignupJourneyForm/ActionBar/ActionBar'
 import { ActionBar } from 'screens/SignupJourneyForm/ActionBar/index'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 const mockLogEvent = vi.fn()
 
 const renderActionBar = (props: ActionBarProps) => {
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        isAdmin: false,
-        email: 'email@example.com',
-      },
-    },
-  }
-
   const propsWithLogs = {
     ...props,
     ...{ logEvent: mockLogEvent },
   }
 
   return renderWithProviders(<ActionBar {...propsWithLogs} />, {
-    storeOverrides,
+    user: sharedCurrentUserFactory(),
     initialRouterEntries: ['/parcours-inscription/activite'],
   })
 }

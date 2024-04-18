@@ -4,26 +4,14 @@ import React from 'react'
 
 import { api } from 'apiClient/api'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { UserPasswordForm } from '..'
 import { UserPasswordFormProps } from '../UserPasswordForm'
 
 const renderUserPasswordForm = (props: UserPasswordFormProps) => {
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        email: 'test@test.test',
-        id: '11',
-        isAdmin: false,
-        firstName: 'John',
-        lastName: 'Do',
-      },
-    },
-  }
-
   return renderWithProviders(<UserPasswordForm {...props} />, {
-    storeOverrides,
+    user: sharedCurrentUserFactory(),
   })
 }
 

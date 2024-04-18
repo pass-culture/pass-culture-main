@@ -6,10 +6,10 @@ import { api } from 'apiClient/api'
 import { BankAccountApplicationStatus } from 'apiClient/v1'
 import Notification from 'components/Notification/Notification'
 import * as useAnalytics from 'hooks/useAnalytics'
-import LinkVenuesDialog, {
-  LinkVenuesDialogProps,
-} from 'pages/Reimbursements/BankInformations/LinkVenuesDialog'
+import { LinkVenuesDialog } from 'pages/Reimbursements/BankInformations/LinkVenuesDialog'
+import { defaultManagedVenues } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 vi.mock('apiClient/api', () => ({
   api: {
@@ -18,57 +18,53 @@ vi.mock('apiClient/api', () => ({
 }))
 
 const mockClose = vi.fn()
-
-const storeOverrides = {
-  user: {
-    currentUser: {
-      isAdmin: false,
-      hasSeenProTutorials: true,
-    },
-    initialized: true,
-  },
-}
-
-const props: LinkVenuesDialogProps = {
-  closeDialog: mockClose,
-  managedVenues: [
-    {
-      bankAccountId: 6877,
-      commonName: 'Lieu 1',
-      id: 1,
-      siret: 'e96a1fd4-3361-41c9-894a-89e0378b0962',
-      hasPricingPoint: true,
-    },
-    {
-      bankAccountId: null,
-      commonName: 'Lieu 2',
-      id: 2,
-      siret: 'e96a1fd4-3361-41c9-894a-89e0378b0962',
-      hasPricingPoint: true,
-    },
-  ],
-  offererId: 1,
-  selectedBankAccount: {
-    bic: '04d374fc-8338-45c2-a1e7-3a221991fda9',
-    dateCreated: '1995-04-07',
-    dsApplicationId: 11,
-    id: 6877,
-    isActive: true,
-    label:
-      'Pizza mattress searches wellness entirely transition azerbaijan, quit tournament.',
-    linkedVenues: [
-      {
-        commonName: 'Lieu 1',
-        id: 1,
-      },
-    ],
-    obfuscatedIban: 'xxxx-xxxxx-xxxx-xxxx-3a221991fda9',
-    status: BankAccountApplicationStatus.ACCEPTE,
-  },
-  updateBankAccountVenuePricingPoint: vi.fn(),
-}
-
 const mockLogEvent = vi.fn()
+
+const renderLinkVenuesDialog = () => {
+  renderWithProviders(
+    <>
+      <LinkVenuesDialog
+        closeDialog={mockClose}
+        managedVenues={[
+          {
+            ...defaultManagedVenues,
+            commonName: 'Lieu 1',
+            id: 1,
+          },
+          {
+            ...defaultManagedVenues,
+            commonName: 'Lieu 2',
+            id: 2,
+          },
+        ]}
+        offererId={1}
+        selectedBankAccount={{
+          bic: '04d374fc-8338-45c2-a1e7-3a221991fda9',
+          dateCreated: '1995-04-07',
+          dsApplicationId: 11,
+          id: 6877,
+          isActive: true,
+          label:
+            'Pizza mattress searches wellness entirely transition azerbaijan, quit tournament.',
+          linkedVenues: [
+            {
+              commonName: 'Lieu 1',
+              id: 1,
+            },
+          ],
+          obfuscatedIban: 'xxxx-xxxxx-xxxx-xxxx-3a221991fda9',
+          status: BankAccountApplicationStatus.ACCEPTE,
+        }}
+        updateBankAccountVenuePricingPoint={vi.fn()}
+      />
+      <Notification />
+    </>,
+    {
+      user: sharedCurrentUserFactory(),
+    }
+  )
+}
+
 describe('LinkVenueDialog', () => {
   beforeEach(() => {
     vi.spyOn(api, 'linkVenueToBankAccount').mockResolvedValue()
@@ -78,9 +74,7 @@ describe('LinkVenueDialog', () => {
   })
 
   it('should display the dialog', () => {
-    renderWithProviders(<LinkVenuesDialog {...props} />, {
-      storeOverrides,
-    })
+    renderLinkVenuesDialog()
 
     expect(
       screen.getByText(
@@ -95,15 +89,7 @@ describe('LinkVenueDialog', () => {
   })
 
   it('should be able to submit the form but only close the modal if no changes were made', async () => {
-    renderWithProviders(
-      <>
-        <LinkVenuesDialog {...props} />
-        <Notification />
-      </>,
-      {
-        storeOverrides,
-      }
-    )
+    renderLinkVenuesDialog()
 
     await userEvent.click(
       screen.getByRole('button', {
@@ -121,15 +107,7 @@ describe('LinkVenueDialog', () => {
   })
 
   it('should be able to submit the form', async () => {
-    renderWithProviders(
-      <>
-        <LinkVenuesDialog {...props} />
-        <Notification />
-      </>,
-      {
-        storeOverrides,
-      }
-    )
+    renderLinkVenuesDialog()
 
     await userEvent.click(
       screen.getByRole('checkbox', {
@@ -165,15 +143,7 @@ describe('LinkVenueDialog', () => {
   it('should handle update failure', async () => {
     vi.spyOn(api, 'linkVenueToBankAccount').mockRejectedValueOnce({})
 
-    renderWithProviders(
-      <>
-        <LinkVenuesDialog {...props} />
-        <Notification />
-      </>,
-      {
-        storeOverrides,
-      }
-    )
+    renderLinkVenuesDialog()
 
     await userEvent.click(
       screen.getByRole('checkbox', {
@@ -195,9 +165,7 @@ describe('LinkVenueDialog', () => {
   })
 
   it('should close the dialog on cancel click', async () => {
-    renderWithProviders(<LinkVenuesDialog {...props} />, {
-      storeOverrides,
-    })
+    renderLinkVenuesDialog()
 
     await userEvent.click(
       screen.getByRole('button', {
@@ -209,9 +177,7 @@ describe('LinkVenueDialog', () => {
   })
 
   it('should show the discard dialog on cancel click', async () => {
-    renderWithProviders(<LinkVenuesDialog {...props} />, {
-      storeOverrides,
-    })
+    renderLinkVenuesDialog()
 
     await userEvent.click(
       screen.getByRole('checkbox', {

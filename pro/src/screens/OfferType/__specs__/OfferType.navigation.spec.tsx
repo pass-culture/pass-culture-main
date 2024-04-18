@@ -10,6 +10,7 @@ import {
   subcategoryFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import OfferType from '../OfferType'
 
@@ -30,18 +31,8 @@ vi.mock('react-router-dom', async () => ({
 }))
 
 const renderOfferTypes = (venueId?: string) => {
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        isAdmin: false,
-        email: 'email@example.com',
-      },
-    },
-  }
-
   renderWithProviders(<OfferType />, {
-    storeOverrides,
+    user: sharedCurrentUserFactory(),
     initialRouterEntries: [`/creation${venueId ? `?lieu=${venueId}` : ''}`],
   })
 }

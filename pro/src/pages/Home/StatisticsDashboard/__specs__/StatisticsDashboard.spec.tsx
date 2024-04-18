@@ -4,6 +4,7 @@ import React from 'react'
 import { api } from 'apiClient/api'
 import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { StatisticsDashboard } from '../StatisticsDashboard'
 
@@ -29,17 +30,12 @@ const renderStatisticsDashboard = (
       }}
     />,
     {
-      storeOverrides: {
-        user: {
-          currentUser: {
-            id: 12,
-            isAdmin,
-            navState: {
-              newNavDate: hasNewNav ? '2021-01-01' : null,
-            },
-          },
+      user: sharedCurrentUserFactory({
+        isAdmin,
+        navState: {
+          newNavDate: hasNewNav ? '2021-01-01' : null,
         },
-      },
+      }),
       features,
     }
   )

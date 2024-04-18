@@ -9,6 +9,7 @@ import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { VenueCreationFormValues } from './types'
 import { VenueCreationFormScreen } from './VenueCreationFormScreen'
@@ -48,15 +49,6 @@ const formValues: VenueCreationFormValues = {
 }
 
 const renderForm = () => {
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        isAdmin: false,
-      },
-    },
-  }
-
   renderWithProviders(
     <Routes>
       <Route
@@ -78,7 +70,10 @@ const renderForm = () => {
         element={<div>Lieu créé</div>}
       />
     </Routes>,
-    { storeOverrides, initialRouterEntries: ['/structures/AE/lieux/creation'] }
+    {
+      user: sharedCurrentUserFactory(),
+      initialRouterEntries: ['/structures/AE/lieux/creation'],
+    }
   )
 }
 

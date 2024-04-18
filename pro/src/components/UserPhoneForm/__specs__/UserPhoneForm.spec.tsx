@@ -4,25 +4,15 @@ import React from 'react'
 
 import { api } from 'apiClient/api'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { UserPhoneForm } from '../'
 import { UserPhoneFormProps } from '../UserPhoneForm'
 
 const renderUserPhoneForm = (props: UserPhoneFormProps) => {
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        email: 'test@test.test',
-        id: '11',
-        isAdmin: false,
-        firstName: 'John',
-        lastName: 'Do',
-      },
-    },
-  }
-
-  return renderWithProviders(<UserPhoneForm {...props} />, { storeOverrides })
+  return renderWithProviders(<UserPhoneForm {...props} />, {
+    user: sharedCurrentUserFactory(),
+  })
 }
 
 describe('components:UserPhoneForm', () => {

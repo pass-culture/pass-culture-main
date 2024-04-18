@@ -17,11 +17,7 @@ import {
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-const renderBankInformations = (
-  offerer: GetOffererResponseModel | null,
-  storeOverrides: any,
-  initialRouterEntriesOverrides = '/remboursements/informations-bancaires'
-) => {
+const renderBankInformations = (offerer: GetOffererResponseModel | null) => {
   renderWithProviders(
     <>
       <Routes>
@@ -45,8 +41,7 @@ const renderBankInformations = (
       <Notification />
     </>,
     {
-      storeOverrides,
-      initialRouterEntries: [initialRouterEntriesOverrides],
+      initialRouterEntries: ['/remboursements/informations-bancaires'],
     }
   )
 }
@@ -54,19 +49,9 @@ const renderBankInformations = (
 const mockLogEvent = vi.fn()
 
 describe('BankInformations page', () => {
-  let store: any
   let offerer: GetOffererResponseModel
 
   beforeEach(() => {
-    store = {
-      user: {
-        currentUser: {
-          isAdmin: false,
-        },
-        initialized: true,
-      },
-    }
-
     offerer = {
       ...defaultGetOffererResponseModel,
       hasValidBankAccount: false,
@@ -82,10 +67,11 @@ describe('BankInformations page', () => {
   })
 
   it('should display not validated bank account message', async () => {
-    renderBankInformations(
-      { ...offerer, hasValidBankAccount: false, hasPendingBankAccount: false },
-      store
-    )
+    renderBankInformations({
+      ...offerer,
+      hasValidBankAccount: false,
+      hasPendingBankAccount: false,
+    })
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     expect(screen.getByText('Informations bancaires')).toBeInTheDocument()
@@ -99,10 +85,11 @@ describe('BankInformations page', () => {
   })
 
   it('should render message when the user has a valid bank account and no pending one', async () => {
-    renderBankInformations(
-      { ...offerer, hasValidBankAccount: true, hasPendingBankAccount: false },
-      store
-    )
+    renderBankInformations({
+      ...offerer,
+      hasValidBankAccount: true,
+      hasPendingBankAccount: false,
+    })
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     expect(screen.getByText('Informations bancaires')).toBeInTheDocument()
@@ -121,7 +108,7 @@ describe('BankInformations page', () => {
   })
 
   it('should render message when has a pending bank account and no valid one', async () => {
-    renderBankInformations({ ...offerer, hasPendingBankAccount: true }, store)
+    renderBankInformations({ ...offerer, hasPendingBankAccount: true })
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     expect(screen.getByText('Informations bancaires')).toBeInTheDocument()
@@ -145,7 +132,7 @@ describe('BankInformations page', () => {
       'getOffererBankAccountsAndAttachedVenues'
     ).mockRejectedValueOnce({})
 
-    renderBankInformations(offerer, store)
+    renderBankInformations(offerer)
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     expect(api.getOffererBankAccountsAndAttachedVenues).toHaveBeenCalledTimes(1)
@@ -158,7 +145,7 @@ describe('BankInformations page', () => {
   })
 
   it('should render with default offerer select ', async () => {
-    renderBankInformations(offerer, store)
+    renderBankInformations(offerer)
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     expect(screen.queryByText('Ajouter un compte bancaire')).toBeInTheDocument()
@@ -183,7 +170,7 @@ describe('BankInformations page', () => {
         }),
       ],
     })
-    renderBankInformations(offerer, store)
+    renderBankInformations(offerer)
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     expect(screen.queryByText('Ajouter un compte bancaire')).toBeInTheDocument()
@@ -197,7 +184,7 @@ describe('BankInformations page', () => {
   })
 
   it('should show AddBankInformationsDialog on click add bank account button', async () => {
-    renderBankInformations(offerer, store)
+    renderBankInformations(offerer)
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     expect(
@@ -229,7 +216,7 @@ describe('BankInformations page', () => {
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
-    renderBankInformations(offerer, store)
+    renderBankInformations(offerer)
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     await userEvent.click(screen.getByText('Ajouter un compte bancaire'))
@@ -249,13 +236,10 @@ describe('BankInformations page', () => {
       managedVenues: [{ ...defaultManagedVenues }],
     })
 
-    renderBankInformations(
-      {
-        ...defaultGetOffererResponseModel,
-        hasValidBankAccount: true,
-      },
-      store
-    )
+    renderBankInformations({
+      ...defaultGetOffererResponseModel,
+      hasValidBankAccount: true,
+    })
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     await userEvent.click(screen.getByRole('button', { name: 'Modifier' }))

@@ -2,34 +2,34 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { AppLayout, AppLayoutProps } from '../AppLayout'
 
-const renderApp = (props: AppLayoutProps, options: any) =>
+const renderApp = (
+  props: AppLayoutProps,
+  options?: RenderWithProvidersOptions
+) =>
   renderWithProviders(
     <AppLayout {...props}>
       <p>Sub component</p>
     </AppLayout>,
-    options
+    {
+      user: sharedCurrentUserFactory(),
+      initialRouterEntries: ['/'],
+      ...options,
+    }
   )
 
 describe('src | AppLayout', () => {
   let props: AppLayoutProps
-  let options: any
-
-  beforeEach(() => {
-    props = {}
-    options = {
-      storeOverrides: {
-        user: { currentUser: { isAdmin: false } },
-      },
-      initialRouterEntries: ['/'],
-    }
-  })
 
   it('should not render domain name banner when arriving from new domain name', async () => {
-    renderApp(props, options)
+    renderApp(props)
 
     await waitFor(() =>
       expect(
@@ -41,8 +41,7 @@ describe('src | AppLayout', () => {
   })
 
   it('should render domain name banner when coming from old domain name', async () => {
-    options.initialRouterEntries = ['/?redirect=true']
-    renderApp(props, options)
+    renderApp(props, { initialRouterEntries: ['/?redirect=true'] })
 
     // Then
     await waitFor(() =>
@@ -55,22 +54,28 @@ describe('src | AppLayout', () => {
   })
 
   describe('side navigation', () => {
-    it('should render the header', () => {
-      options.storeOverrides.user.currentUser.navState = {
-        newNavDate: '2021-01-01',
-      }
-      renderApp(props, options)
+    it('should render the new header when the WIP_ENABLE_PRO_SIDE_NAV is active', () => {
+      renderApp(props, {
+        user: sharedCurrentUserFactory({
+          navState: {
+            newNavDate: '2021-01-01',
+          },
+        }),
+      })
 
       expect(screen.getByText('Se déconnecter')).toBeInTheDocument()
       expect(screen.queryByAltText('Menu')).not.toBeInTheDocument()
     })
 
     it('should display review banner if user has new nav active', () => {
-      options.storeOverrides.user.currentUser.navState = {
-        newNavDate: '2021-01-01',
-        eligibilityDate: '2021-01-01',
-      }
-      renderApp(props, options)
+      renderApp(props, {
+        user: sharedCurrentUserFactory({
+          navState: {
+            newNavDate: '2021-01-01',
+            eligibilityDate: '2021-01-01',
+          },
+        }),
+      })
 
       expect(
         screen.getByRole('button', { name: 'Je donne mon avis' })
@@ -78,11 +83,14 @@ describe('src | AppLayout', () => {
     })
 
     it('should not display review banner if user has new nav active but is not eligible (from a/b test)', () => {
-      options.storeOverrides.user.currentUser.navState = {
-        newNavDate: '2021-01-01',
-        eligibilityDate: null,
-      }
-      renderApp(props, options)
+      renderApp(props, {
+        user: sharedCurrentUserFactory({
+          navState: {
+            newNavDate: '2021-01-01',
+            eligibilityDate: null,
+          },
+        }),
+      })
 
       expect(
         screen.queryByRole('button', { name: 'Je donne mon avis' })
@@ -91,10 +99,13 @@ describe('src | AppLayout', () => {
 
     describe('on smaller screen sizes', () => {
       beforeEach(() => {
-        options.storeOverrides.user.currentUser.navState = {
-          newNavDate: '2021-01-01',
-        }
-        renderApp(props, options)
+        renderApp(props, {
+          user: sharedCurrentUserFactory({
+            navState: {
+              newNavDate: '2021-01-01',
+            },
+          }),
+        })
 
         global.innerWidth = 500
         global.dispatchEvent(new Event('resize'))

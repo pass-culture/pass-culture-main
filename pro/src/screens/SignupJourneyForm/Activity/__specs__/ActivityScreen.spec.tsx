@@ -12,6 +12,7 @@ import {
   SignupJourneyContextValues,
 } from 'context/SignupJourneyContext'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import Activity from '../Activity'
 
@@ -22,16 +23,6 @@ vi.mock('apiClient/api', () => ({
 }))
 
 const renderActivityScreen = (contextValue: SignupJourneyContextValues) => {
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        isAdmin: false,
-        email: 'email@example.com',
-      },
-    },
-  }
-
   return renderWithProviders(
     <>
       <SignupJourneyContext.Provider value={contextValue}>
@@ -49,7 +40,10 @@ const renderActivityScreen = (contextValue: SignupJourneyContextValues) => {
       </SignupJourneyContext.Provider>
       <Notification />
     </>,
-    { storeOverrides, initialRouterEntries: ['/parcours-inscription/activite'] }
+    {
+      user: sharedCurrentUserFactory(),
+      initialRouterEntries: ['/parcours-inscription/activite'],
+    }
   )
 }
 

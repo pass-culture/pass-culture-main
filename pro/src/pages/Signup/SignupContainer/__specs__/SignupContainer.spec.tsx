@@ -13,6 +13,7 @@ import {
   RenderWithProvidersOptions,
   renderWithProviders,
 } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import SignupContainer from '../SignupContainer'
 
@@ -72,17 +73,7 @@ describe('Signup', () => {
   })
 
   it('should redirect to accueil page if the user is logged in', async () => {
-    // when the user is logged in and lands on signup validation page
-    const storeOverrides = {
-      user: {
-        currentUser: {
-          id: 'user_id',
-          isAdmin: false,
-        },
-        initialized: true,
-      },
-    }
-    renderSignUp({ storeOverrides })
+    renderSignUp({ user: sharedCurrentUserFactory() })
     await expect(
       screen.findByText('I’m logged in as a pro user')
     ).resolves.toBeInTheDocument()

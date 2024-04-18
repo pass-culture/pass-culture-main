@@ -4,8 +4,8 @@ import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { routesSignupJourney } from 'app/AppRouter/subroutesSignupJourneyMap'
-import { RootState } from 'store/rootReducer'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { SignupJourneyRoutes } from '../SignupJourneyRoutes'
 
@@ -15,7 +15,7 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-const renderSignupJourneyRoutes = (storeOverrides: Partial<RootState> = {}) => {
+const renderSignupJourneyRoutes = () => {
   renderWithProviders(
     <Routes>
       <Route path="/parcours-inscription" element={<SignupJourneyRoutes />}>
@@ -25,31 +25,19 @@ const renderSignupJourneyRoutes = (storeOverrides: Partial<RootState> = {}) => {
       </Route>
     </Routes>,
     {
-      storeOverrides,
+      user: sharedCurrentUserFactory(),
       initialRouterEntries: ['/parcours-inscription/structure'],
     }
   )
 }
 
 describe('SignupJourneyRoutes', () => {
-  let store: any
-
   beforeEach(() => {
-    store = {
-      user: {
-        initialized: true,
-        currentUser: {
-          isAdmin: false,
-          email: 'email@example.com',
-        },
-      },
-    }
-
     vi.spyOn(api, 'getVenueTypes').mockResolvedValue([])
   })
 
   it('should render component', async () => {
-    renderSignupJourneyRoutes(store)
+    renderSignupJourneyRoutes()
     await waitFor(() => {
       expect(
         screen.getByText('Renseignez le SIRET de votre structure')

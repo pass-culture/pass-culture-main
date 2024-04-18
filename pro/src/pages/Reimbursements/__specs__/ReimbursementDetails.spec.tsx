@@ -12,7 +12,11 @@ import {
   defaultGetOffererResponseModel,
   venueListItemFactory,
 } from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import ReimbursementsDetails from '../ReimbursementsDetails/ReimbursementsDetails'
 
@@ -61,26 +65,21 @@ const BASE_INVOICES: InvoiceResponseV2Model[] = [
   },
 ]
 
-describe('reimbursementsWithFilters', () => {
-  const storeOverrides = {
-    user: {
-      currentUser: {
-        isAdmin: false,
-        hasSeenProTutorials: true,
-      },
-      initialized: true,
-    },
-  }
+const renderReimbursementsDetails = (options?: RenderWithProvidersOptions) => {
+  renderWithProviders(<ReimbursementsDetails />, {
+    user: sharedCurrentUserFactory(),
+    ...options,
+  })
+}
 
+describe('reimbursementsWithFilters', () => {
   beforeEach(() => {
     vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: BASE_VENUES })
     vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
   })
 
   it('should not disable buttons when the period dates are filled', async () => {
-    renderWithProviders(<ReimbursementsDetails />, {
-      storeOverrides,
-    })
+    renderReimbursementsDetails()
 
     expect(
       await screen.findByRole('button', {
@@ -91,11 +90,8 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should disable buttons if user is admin and no venue filter is selected', async () => {
-    renderWithProviders(<ReimbursementsDetails />, {
-      storeOverrides: {
-        ...storeOverrides,
-        user: { currentUser: { isAdmin: true } },
-      },
+    renderReimbursementsDetails({
+      user: sharedCurrentUserFactory({ isAdmin: true }),
     })
 
     expect(
@@ -109,11 +105,8 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should enable buttons when admin user selects a venue', async () => {
-    renderWithProviders(<ReimbursementsDetails />, {
-      storeOverrides: {
-        ...storeOverrides,
-        user: { currentUser: { isAdmin: true } },
-      },
+    renderReimbursementsDetails({
+      user: sharedCurrentUserFactory({ isAdmin: true }),
     })
 
     await userEvent.selectOptions(
@@ -133,9 +126,7 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should reset filters values', async () => {
-    renderWithProviders(<ReimbursementsDetails />, {
-      storeOverrides,
-    })
+    renderReimbursementsDetails()
 
     const startFilter = await screen.findByLabelText('Début de la période')
     const endFilter = screen.getByLabelText('Fin de la période')
@@ -161,9 +152,7 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should order venue option by alphabetical order', async () => {
-    renderWithProviders(<ReimbursementsDetails />, {
-      storeOverrides,
-    })
+    renderReimbursementsDetails()
 
     const options = await within(
       await screen.findByLabelText('Lieu')
@@ -178,9 +167,7 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should prefix with managingOfferer name when venue is digital', async () => {
-    renderWithProviders(<ReimbursementsDetails />, {
-      storeOverrides,
-    })
+    renderReimbursementsDetails()
 
     const options = await within(
       await screen.findByLabelText('Lieu')
@@ -193,9 +180,7 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should update display button url when changing any filter', async () => {
-    renderWithProviders(<ReimbursementsDetails />, {
-      storeOverrides,
-    })
+    renderReimbursementsDetails()
 
     await userEvent.selectOptions(
       await screen.findByLabelText('Lieu'),
@@ -217,9 +202,7 @@ describe('reimbursementsWithFilters', () => {
 
   it('should display no refunds message when user has no associated venues', async () => {
     vi.spyOn(api, 'getVenues').mockResolvedValueOnce({ venues: [] })
-    renderWithProviders(<ReimbursementsDetails />, {
-      storeOverrides,
-    })
+    renderReimbursementsDetails()
 
     expect(
       await screen.findByText('Aucun remboursement à afficher')

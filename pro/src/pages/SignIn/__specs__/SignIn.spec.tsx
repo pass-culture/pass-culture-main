@@ -6,11 +6,7 @@ import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { HTTP_STATUS } from 'apiClient/helpers'
-import {
-  ApiError,
-  SharedCurrentUserResponseModel,
-  SharedLoginUserResponseModel,
-} from 'apiClient/v1'
+import { ApiError, SharedLoginUserResponseModel } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import Notification from 'components/Notification/Notification'
@@ -22,6 +18,7 @@ import {
   RenderWithProvidersOptions,
   renderWithProviders,
 } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { SignIn } from '../SignIn'
 
@@ -71,9 +68,7 @@ const scrollIntoViewMock = vi.fn()
 describe('SignIn', () => {
   beforeEach(() => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
-    vi.spyOn(api, 'getProfile').mockResolvedValue(
-      {} as SharedCurrentUserResponseModel
-    )
+    vi.spyOn(api, 'getProfile').mockResolvedValue(sharedCurrentUserFactory())
     vi.spyOn(api, 'signin').mockResolvedValue(
       {} as SharedLoginUserResponseModel
     )
@@ -172,11 +167,7 @@ describe('SignIn', () => {
       vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
         logEvent: mockLogEvent,
       }))
-      const storeOverrides = {
-        user: { initialized: true, currentUser: null },
-      }
-
-      renderSignIn({ storeOverrides })
+      renderSignIn()
       await userEvent.click(
         screen.getByRole('link', {
           name: 'Créer un compte',
@@ -212,17 +203,7 @@ describe('SignIn', () => {
 
   describe('when user is signed in', () => {
     it('should redirect to offerers page if user is not admin', async () => {
-      const storeOverrides = {
-        user: {
-          currentUser: {
-            id: 'user_id',
-            isAdmin: false,
-          },
-          initialized: true,
-        },
-      }
-
-      renderSignIn({ storeOverrides })
+      renderSignIn({ user: sharedCurrentUserFactory() })
 
       await waitFor(() =>
         expect(
@@ -306,16 +287,7 @@ describe('SignIn', () => {
     it('should not call listOfferersNames if user is admin', () => {
       const listOfferersNamesRequest = vi.spyOn(api, 'listOfferersNames')
 
-      const storeOverrides = {
-        user: {
-          currentUser: {
-            id: 'user_id',
-            isAdmin: true,
-          },
-          initialized: true,
-        },
-      }
-      renderSignIn({ storeOverrides })
+      renderSignIn({ user: sharedCurrentUserFactory({ isAdmin: true }) })
 
       expect(listOfferersNamesRequest).toHaveBeenCalledTimes(0)
     })
@@ -419,10 +391,7 @@ describe('SignIn', () => {
     })
 
     it('should trigger a tracking event', async () => {
-      const storeOverrides = {
-        user: { initialized: true, currentUser: null },
-      }
-      renderSignIn({ storeOverrides })
+      renderSignIn()
       await userEvent.click(
         screen.getByRole('link', {
           name: 'Créer un compte',
@@ -437,10 +406,7 @@ describe('SignIn', () => {
     })
 
     it('should trigger a tracking event when user clicks forgotten password"', async () => {
-      const storeOverrides = {
-        user: { initialized: true, currentUser: null },
-      }
-      renderSignIn({ storeOverrides })
+      renderSignIn()
 
       await userEvent.click(
         screen.getByRole('link', {

@@ -14,6 +14,7 @@ import BankInformations from 'pages/Reimbursements/BankInformations/BankInformat
 import { ReimbursementsContextProps } from 'pages/Reimbursements/Reimbursements'
 import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 const defaultBankAccountResponseModel: BankAccountResponseModel = {
   bic: 'bic',
@@ -54,17 +55,8 @@ vi.mock('react-router-dom', async () => ({
 }))
 
 function renderBankInformations() {
-  const storeOverrides = {
-    user: {
-      currentUser: {
-        isAdmin: false,
-        hasSeenProTutorials: true,
-      },
-      initialized: true,
-    },
-  }
   renderWithProviders(<BankInformations />, {
-    storeOverrides,
+    user: sharedCurrentUserFactory(),
   })
 }
 

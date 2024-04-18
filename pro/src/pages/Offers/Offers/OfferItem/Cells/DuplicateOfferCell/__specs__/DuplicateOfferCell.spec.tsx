@@ -17,6 +17,7 @@ import {
 } from 'utils/collectiveApiFactories'
 import * as localStorageAvailable from 'utils/localStorageAvailable'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import {
   DuplicateOfferCell,
@@ -37,16 +38,6 @@ vi.mock('react-router-dom', async () => ({
 }))
 
 const renderDuplicateOfferCell = () => {
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        isAdmin: false,
-        email: 'email@example.com',
-      },
-    },
-  }
-
   renderWithProviders(
     <Routes>
       <Route
@@ -73,7 +64,7 @@ const renderDuplicateOfferCell = () => {
         element={<div>Parcours de duplication d’offre</div>}
       />
     </Routes>,
-    { storeOverrides, initialRouterEntries: ['/offres'] }
+    { user: sharedCurrentUserFactory(), initialRouterEntries: ['/offres'] }
   )
 }
 
