@@ -73,7 +73,7 @@ export const OfferInfos = () => {
       icon: strokeStarIcon,
     },
     ['mon-etablissement']: {
-      title: 'Mon établissement',
+      title: 'Pour mon établissement',
       link: {
         isExternal: false,
         to: `/adage-iframe/mon-etablissement?token=${adageAuthToken}`,

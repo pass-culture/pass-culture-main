@@ -5,7 +5,11 @@ import * as router from 'react-router-dom'
 import { AuthenticatedResponse, OfferAddressType } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
-import { defaultAdageUser, defaultCollectiveOffer } from 'utils/adageFactories'
+import {
+  defaultAdageUser,
+  defaultCollectiveOffer,
+  defaultCollectiveTemplateOffer,
+} from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OfferCardComponent, { CardComponentProps } from '../OfferCard'
@@ -14,6 +18,11 @@ vi.mock('apiClient/api', () => ({
   apiAdage: {
     logConsultPlaylistElement: vi.fn(),
   },
+}))
+
+vi.mock('react-router-dom', async () => ({
+  ...(await vi.importActual('react-router-dom')),
+  useLocation: vi.fn(),
 }))
 
 const mockOffer = {
@@ -49,7 +58,19 @@ const renderOfferCardComponent = ({
   )
 }
 
+const defaultUseLocationValue = {
+  state: { offer: defaultCollectiveTemplateOffer },
+  hash: '',
+  key: '',
+  pathname: '/adage-iframe/decouverte/offre/10',
+  search: '',
+}
+
 describe('OfferCard component', () => {
+  beforeEach(() => {
+    vi.spyOn(router, 'useLocation').mockReturnValue(defaultUseLocationValue)
+  })
+
   it('should render school tag when offer will happens in school', () => {
     const offer = {
       ...mockOffer,
@@ -113,7 +134,7 @@ describe('OfferCard component', () => {
     expect(screen.getByText('à 1 km - Paris')).toBeInTheDocument()
   })
 
-  it('should redirect on click in offer card', () => {
+  it('should redirect with "découverte" in url on click in offer card', () => {
     vi.spyOn(router, 'useSearchParams').mockReturnValueOnce([
       new URLSearchParams({ token: '123' }),
       vi.fn(),
@@ -129,6 +150,29 @@ describe('OfferCard component', () => {
     expect(offerElement).toHaveAttribute(
       'href',
       '/adage-iframe/decouverte/offre/479?token=123'
+    )
+  })
+
+  it('should redirect with "recherche" in url on click in offer card', () => {
+    vi.spyOn(router, 'useSearchParams').mockReturnValueOnce([
+      new URLSearchParams({ token: '123' }),
+      vi.fn(),
+    ])
+    vi.spyOn(router, 'useLocation').mockReturnValueOnce({
+      ...defaultUseLocationValue,
+      pathname: '/adage-iframe/recherche/offre/479',
+    })
+
+    renderOfferCardComponent({
+      offer: mockOffer,
+      handlePlaylistElementTracking: vi.fn(),
+    })
+
+    const offerElement = screen.getByTestId('card-offer-link')
+
+    expect(offerElement).toHaveAttribute(
+      'href',
+      '/adage-iframe/recherche/offre/479?token=123'
     )
   })
 
