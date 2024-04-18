@@ -175,3 +175,7 @@ class OpeningHoursModel(BaseModel):
     def convert_to_numeric_ranges(cls, timespan: list[str]) -> NumericRange:
         start, end = timespan
         return NumericRange(time_to_int(start), time_to_int(end), "[]")
+
+    @validator("weekday", each_item=True)
+    def return_weekday_upper(cls, weekday: str) -> str:
+        return weekday.upper()
