@@ -55,6 +55,22 @@ def get_offer(offer_id: str) -> serializers.OfferResponse:
     return serializers.OfferResponse.from_orm(offer)
 
 
+@blueprint.native_route("/offers/stocks", methods=["POST"])
+@spectree_serialize(response_model=serializers.OffersStocksResponse, api=blueprint.api)
+def get_offers_showtimes(body: serializers.OffersStocksRequest) -> serializers.OffersStocksResponse:
+    offer_ids = body.offer_ids
+    offers = (
+        Offer.query.filter(Offer.id.in_(offer_ids))
+        .options(joinedload(Offer.stocks).joinedload(Stock.priceCategory).joinedload(PriceCategory.priceCategoryLabel))
+        .options(joinedload(Offer.mediations))
+        .options(joinedload(Offer.venue).joinedload(Venue.managingOfferer))
+        .all()
+    )
+    serialized_offers = [serializers.OfferPreviewResponse.from_orm(offer) for offer in offers]
+    offers_response = serializers.OffersStocksResponse(offers=serialized_offers)
+    return offers_response
+
+
 @blueprint.native_route("/offer/<int:offer_id>/report", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_and_active_user_required

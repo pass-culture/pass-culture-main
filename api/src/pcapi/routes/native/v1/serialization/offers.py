@@ -285,6 +285,40 @@ class OfferResponse(BaseModel):
         json_encoders = {datetime: format_into_utc_date}
 
 
+class OfferPreviewResponse(BaseModel):
+    @classmethod
+    def from_orm(cls, offer: Offer) -> "OfferPreviewResponse":
+        offer_preview = super().from_orm(offer)
+        offer_preview.stocks = [OfferStockResponse.from_orm(stock) for stock in offer.activeStocks]
+
+        return offer_preview
+
+    id: int
+    durationMinutes: int | None
+    extraData: OfferExtraData | None
+    image: OfferImageResponse | None
+    # FIXME: (thconte, 24-04-2024): unused for now
+    # Will be used from the merge of the ticket PC-29406
+    last30DaysBookings: int | None
+    name: str
+    stocks: list[OfferStockResponse]
+
+    class Config:
+        orm_mode = True
+        allow_population_by_field_name = True
+
+
+class OffersStocksResponse(BaseModel):
+    offers: list[OfferPreviewResponse]
+
+    class Config:
+        json_encoders = {datetime: format_into_utc_date}
+
+
+class OffersStocksRequest(BaseModel):
+    offer_ids: list[int]
+
+
 class OfferReportRequest(BaseModel):
     class Config:
         alias_generator = to_camel
