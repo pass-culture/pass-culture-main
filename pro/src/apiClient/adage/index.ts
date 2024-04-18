@@ -49,6 +49,7 @@ export { OfferContactFormEnum } from './models/OfferContactFormEnum';
 export type { OfferDomain } from './models/OfferDomain';
 export type { OfferFavoriteBody } from './models/OfferFavoriteBody';
 export type { OfferIdBody } from './models/OfferIdBody';
+export type { OfferListSwitch } from './models/OfferListSwitch';
 export type { OfferManagingOffererResponse } from './models/OfferManagingOffererResponse';
 export type { OfferStockResponse } from './models/OfferStockResponse';
 export type { OfferVenueResponse } from './models/OfferVenueResponse';

@@ -37,6 +37,25 @@ class LogsTest:
             "userId": get_hashed_user_id(EMAIL),
         }
 
+    def test_log_offer_list_view_switch(self, test_client, caplog):
+        with caplog.at_level(logging.INFO):
+            response = test_client.post(
+                url_for("adage_iframe.log_offer_list_view_switch"),
+                json={"source": "offer_switch", "iframeFrom": "playlist", "queryId": "1234"},
+            )
+
+        assert response.status_code == 204
+        assert caplog.records[0].message == "OfferListSwitch"
+        assert caplog.records[0].extra == {
+            "analyticsSource": "adage",
+            "source": "offer_switch",
+            "queryId": "1234",
+            "from": "playlist",
+            "uai": UAI,
+            "user_role": AdageFrontRoles.READONLY,
+            "userId": get_hashed_user_id(EMAIL),
+        }
+
     @pytest.mark.parametrize(
         "playlist_type,element_id,index,offer_id,venue_id,domain_id",
         [

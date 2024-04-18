@@ -19,6 +19,10 @@ class AdagePlaylistType(enum.Enum):
     DOMAIN = "domain"
 
 
+class OfferListSwitch(AdageBaseModel):
+    source: str
+
+
 class CatalogViewBody(AdageBaseModel):
     source: str
 

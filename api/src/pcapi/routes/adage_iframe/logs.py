@@ -34,6 +34,27 @@ def log_catalog_view(
     return
 
 
+@blueprint.adage_iframe.route("/logs/offer-list-view-switch", methods=["POST"])
+@spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
+@adage_jwt_required
+def log_offer_list_view_switch(
+    authenticated_information: AuthenticatedInformation,
+    body: serialization.OfferListSwitch,
+) -> None:
+    institution = find_educational_institution_by_uai_code(authenticated_information.uai)
+    educational_utils.log_information_for_data_purpose(
+        event_name="OfferListSwitch",
+        extra_data={
+            "source": body.source,
+            "from": body.iframeFrom,
+            "queryId": body.queryId,
+        },
+        uai=authenticated_information.uai,
+        user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
+        user_email=authenticated_information.email,
+    )
+
+
 @blueprint.adage_iframe.route("/logs/search-button", methods=["POST"])
 @spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
 @adage_jwt_required
