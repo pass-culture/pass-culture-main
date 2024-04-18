@@ -50,7 +50,7 @@ const PrebookingButton = ({
   const notification = useNotification()
 
   const handleBookingModalButtonClick = (stockId: number) => {
-    if (LOGS_DATA) {
+    if (LOGS_DATA && !isPreview) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       apiAdage.logBookingModalButtonClick({
         iframeFrom: location.pathname,
@@ -96,6 +96,7 @@ const PrebookingButton = ({
               className="prebooking-tag-icon"
               src={strokeHourglass}
               alt=""
+              width="16"
             />
             Préréservé
           </div>
