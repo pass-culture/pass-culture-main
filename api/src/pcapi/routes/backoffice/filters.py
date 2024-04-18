@@ -611,6 +611,22 @@ def format_show_subtype(show_subtype_id: int | str) -> str:
         return f"Autre[{show_subtype_id}]"
 
 
+def match_opening_hours(info_name: str) -> str | None:
+    day_mapping = {
+        "MONDAY": "lundi",
+        "TUESDAY": "mardi",
+        "WEDNESDAY": "mercredi",
+        "THURSDAY": "jeudi",
+        "FRIDAY": "vendredi",
+        "SATURDAY": "samedi",
+        "SUNDAY": "dimanche",
+    }
+    if match := re.compile(r"^openingHours\.(\w+)\.timespan$").match(info_name):
+        day = match.group(1)
+        return day_mapping.get(day, day)
+    return None
+
+
 def format_modified_info_name(info_name: str) -> str:
     match info_name:
         case "force_debit_note":
@@ -675,8 +691,11 @@ def format_modified_info_name(info_name: str) -> str:
             return "Id chez Acceslibre"
         case "accessibilityProvider.externalAccessibilityUrl":
             return "Url chez Acceslibre"
-        case _:
-            return info_name.replace("_", " ").capitalize()
+
+    if day := match_opening_hours(info_name):
+        return f"Horaires du {day}"
+
+    return info_name.replace("_", " ").capitalize()
 
 
 def format_permission_name(permission_name: str) -> str:
