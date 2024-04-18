@@ -40,9 +40,8 @@ class GetProUserTest(GetEndpointHelper):
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    # session + current user + pro user data + WIP_ENABLE_PRO_SIDE_NAV
-    expected_num_queries = 4
-    expected_num_queries_without_ff_checked = expected_num_queries - 1
+    # session + current user + pro user data
+    expected_num_queries = 3
 
     class EmailValidationButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
@@ -159,26 +158,21 @@ class GetProUserTest(GetEndpointHelper):
         user = users_factories.BeneficiaryGrant18Factory()
         url = url_for(self.endpoint, user_id=user.id)
 
-        with assert_num_queries(self.expected_num_queries_without_ff_checked):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 303
 
         expected_url = url_for("backoffice_web.pro.search_pro", _external=True)
         assert response.location == expected_url
 
-    @pytest.mark.parametrize(
-        "ff_new_nav_activated,has_new_nav", [(True, True), (True, False), (False, True), (False, False)]
-    )
-    def test_get_pro_user_with_new_nav_badges(self, authenticated_client, ff_new_nav_activated, has_new_nav):
+    @pytest.mark.parametrize("has_new_nav", [True, False])
+    def test_get_pro_user_with_new_nav_badges(self, authenticated_client, has_new_nav):
         user = offerers_factories.UserOffererFactory(user__phoneNumber="+33638656565", user__postalCode="29000").user
         if has_new_nav:
             users_factories.UserProNewNavStateFactory(user=user, newNavDate=datetime.datetime.utcnow())
         url = url_for(self.endpoint, user_id=user.id)
 
-        with (
-            override_features(WIP_ENABLE_PRO_SIDE_NAV=ff_new_nav_activated),
-            assert_num_queries(self.expected_num_queries),
-        ):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -187,14 +181,10 @@ class GetProUserTest(GetEndpointHelper):
         assert "Validé" in badges
         assert "Suspendu" not in badges
 
-        if ff_new_nav_activated:
-            if has_new_nav:
-                assert "Nouvelle interface" in badges
-            else:
-                assert "Ancienne interface" in badges
+        if has_new_nav:
+            assert "Nouvelle interface" in badges
         else:
-            assert "Nouvelle interface" not in badges
-            assert "Ancienne interface" not in badges
+            assert "Ancienne interface" in badges
 
 
 class UpdateProUserTest(PostEndpointHelper):
