@@ -28,30 +28,6 @@ jobs:
             echo "This workflow can only be triggered from a tag (starting with a 'v')"
             exit 1
           fi
-      - name: "Ask for deployment review on #shérif"
-        if: success()
-        uses: slackapi/slack-github-action@v1.25.0
-        with:
-          channel-id: "CU0SQ8Y58"
-          payload: |
-            {
-              "attachments": [
-                  {
-                    "mrkdwn_in": ["text"],
-                    "color": "#ff4f00",
-                    "author_name": "${{github.actor}}",
-                    "author_link": "https://github.com/${{github.actor}}",
-                    "author_icon": "https://github.com/${{github.actor}}.png",
-                    "title": "Review Deployment",
-                    "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
-                    "text": "${{github.actor}} souhaite déployer `v${{ needs.version.outputs.APP_VERSION }}` sur `${{ github.event.inputs.target_environment }}` :raised-hand:"
-                  }
-              ],
-              "unfurl_links": false,
-              "unfurl_media": false
-            }
-        env:
-          SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
 
   version:
     name: "Version"
