@@ -4,20 +4,11 @@ import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { Welcome } from '..'
 
 const renderWelcomeScreen = () => {
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        isAdmin: false,
-        email: 'email@example.com',
-      },
-    },
-  }
-
   return renderWithProviders(
     <Routes>
       <Route path="/parcours-inscription" element={<Welcome />} />
@@ -27,7 +18,7 @@ const renderWelcomeScreen = () => {
       />
     </Routes>,
     {
-      storeOverrides,
+      user: sharedCurrentUserFactory(),
       initialRouterEntries: ['/parcours-inscription'],
     }
   )

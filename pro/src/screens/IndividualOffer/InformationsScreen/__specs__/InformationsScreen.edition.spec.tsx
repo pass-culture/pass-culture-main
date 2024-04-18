@@ -31,6 +31,7 @@ import {
   getOffererNameFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import InformationsScreen, {
   InformationsScreenProps,
@@ -60,15 +61,6 @@ const renderInformationsScreen = (
   props: InformationsScreenProps,
   contextOverride: IndividualOfferContextValues
 ) => {
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        isAdmin: false,
-        email: 'email@example.com',
-      },
-    },
-  }
   const contextValue = individualOfferContextValuesFactory(contextOverride)
 
   return renderWithProviders(
@@ -96,7 +88,7 @@ const renderInformationsScreen = (
       <Notification />
     </>,
     {
-      storeOverrides,
+      user: sharedCurrentUserFactory(),
       initialRouterEntries: [
         getIndividualOfferPath({
           step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,

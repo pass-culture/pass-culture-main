@@ -12,6 +12,7 @@ import {
   getOffererNameFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { Reimbursements, ReimbursementsContextProps } from '../Reimbursements'
 
@@ -25,16 +26,6 @@ vi.mock('react-router-dom', async () => ({
 }))
 
 const renderReimbursements = () => {
-  const storeOverrides = {
-    user: {
-      currentUser: {
-        isAdmin: false,
-        hasSeenProTutorials: true,
-      },
-      initialized: true,
-    },
-  }
-
   renderWithProviders(
     <Routes>
       <Route path="/remboursements" element={<Reimbursements />}>
@@ -46,7 +37,7 @@ const renderReimbursements = () => {
     </Routes>,
     {
       initialRouterEntries: ['/remboursements'],
-      storeOverrides,
+      user: sharedCurrentUserFactory(),
     }
   )
 }

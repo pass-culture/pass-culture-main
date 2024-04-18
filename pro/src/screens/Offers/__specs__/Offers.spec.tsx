@@ -23,6 +23,7 @@ import {
   renderWithProviders,
   RenderWithProvidersOptions,
 } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import Offers, { OffersProps } from '../Offers'
 
@@ -32,17 +33,12 @@ const renderOffers = (
   hasNewNav: boolean = false
 ) => {
   renderWithProviders(<Offers {...props} />, {
-    storeOverrides: {
-      user: {
-        currentUser: {
-          id: 12,
-          isAdmin: false,
-          navState: {
-            newNavDate: hasNewNav ? '2021-01-01' : null,
-          },
-        },
+    user: sharedCurrentUserFactory({
+      isAdmin: false,
+      navState: {
+        newNavDate: hasNewNav ? '2021-01-01' : null,
       },
-    },
+    }),
     ...options,
   })
 }

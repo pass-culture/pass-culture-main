@@ -6,6 +6,7 @@ import {
   RenderWithProvidersOptions,
   renderWithProviders,
 } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 const TestComponent = () => {
   const isSideNavActive = useIsNewInterfaceActive()
@@ -14,9 +15,7 @@ const TestComponent = () => {
 }
 
 const defaultOptions: RenderWithProvidersOptions = {
-  storeOverrides: {
-    user: { currentUser: { isAdmin: false } },
-  },
+  user: sharedCurrentUserFactory(),
   features: [],
 }
 
@@ -29,16 +28,12 @@ const renderUseIsNewInterfaceActive = (
 describe('useIsNewInterfaceActive', () => {
   it('should return true if user has new nav date', () => {
     const options = {
-      storeOverrides: {
-        user: {
-          currentUser: {
-            isAdmin: false,
-            navState: {
-              newNavDate: '2021-01-01',
-            },
-          },
+      user: sharedCurrentUserFactory({
+        isAdmin: false,
+        navState: {
+          newNavDate: '2021-01-01',
         },
-      },
+      }),
     }
     renderUseIsNewInterfaceActive(options)
     expect(screen.getByText('Active')).toBeInTheDocument()
@@ -58,16 +53,12 @@ describe('useIsNewInterfaceActive', () => {
 
   it('should return false if user connected but as no new nav date', () => {
     const options = {
-      storeOverrides: {
-        user: {
-          currentUser: {
-            isAdmin: false,
-            navState: {
-              newNavDate: null,
-            },
-          },
+      user: sharedCurrentUserFactory({
+        isAdmin: false,
+        navState: {
+          newNavDate: null,
         },
-      },
+      }),
     }
     renderUseIsNewInterfaceActive(options)
     expect(screen.getByText('Inactive')).toBeInTheDocument()
@@ -75,16 +66,12 @@ describe('useIsNewInterfaceActive', () => {
 
   it('should return false if user connected but as new nav date in future', () => {
     const options = {
-      storeOverrides: {
-        user: {
-          currentUser: {
-            isAdmin: false,
-            navState: {
-              newNavDate: '2999-01-01',
-            },
-          },
+      user: sharedCurrentUserFactory({
+        isAdmin: false,
+        navState: {
+          newNavDate: '2999-01-01',
         },
-      },
+      }),
     }
     renderUseIsNewInterfaceActive(options)
     expect(screen.getByText('Inactive')).toBeInTheDocument()

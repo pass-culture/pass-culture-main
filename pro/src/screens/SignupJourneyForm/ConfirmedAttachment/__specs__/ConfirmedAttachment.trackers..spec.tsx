@@ -12,6 +12,7 @@ import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { ConfirmedAttachment } from '..'
 
@@ -20,23 +21,11 @@ const mockLogEvent = vi.fn()
 const renderConfirmedAttachmentScreen = (
   contextValue: SignupJourneyContextValues
 ) => {
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        isAdmin: false,
-        email: 'email@example.com',
-      },
-    },
-  }
-
   return renderWithProviders(
     <SignupJourneyContext.Provider value={contextValue}>
       <ConfirmedAttachment />
     </SignupJourneyContext.Provider>,
-    {
-      storeOverrides,
-    }
+    { user: sharedCurrentUserFactory() }
   )
 }
 describe('ConfirmedAttachment trackers', () => {

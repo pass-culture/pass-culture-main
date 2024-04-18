@@ -17,6 +17,7 @@ import {
   getOffererNameFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import OfferType from '../OfferType'
 
@@ -66,7 +67,7 @@ const renderOfferTypes = (structureId?: string, venueId?: string) => {
       />
     </Routes>,
     {
-      storeOverrides: { user: { currentUser: { isAdmin: false } } },
+      user: sharedCurrentUserFactory(),
       initialRouterEntries: [
         `/creation${
           structureId

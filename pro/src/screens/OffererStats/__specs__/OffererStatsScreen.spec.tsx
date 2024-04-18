@@ -7,6 +7,7 @@ import { CancelablePromise, GetOffererResponseModel } from 'apiClient/v1'
 import { SelectOption } from 'custom_types/form'
 import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import OffererStatsScreen from '../OffererStatsScreen'
 
@@ -19,23 +20,8 @@ vi.mock('apiClient/api', () => ({
 }))
 
 const renderOffererStatsScreen = (offererOptions: SelectOption[]) => {
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        firstName: 'John',
-        dateCreated: '2022-07-29T12:18:43.087097Z',
-        email: 'john@do.net',
-        id: '1',
-        isAdmin: false,
-        isEmailValidated: true,
-        roles: [],
-      },
-    },
-  }
-
   renderWithProviders(<OffererStatsScreen offererOptions={offererOptions} />, {
-    storeOverrides,
+    user: sharedCurrentUserFactory(),
   })
 }
 
