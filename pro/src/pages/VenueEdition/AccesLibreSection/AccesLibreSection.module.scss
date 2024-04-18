@@ -44,3 +44,13 @@
     text-transform: uppercase;
   }
 }
+
+.details-list {
+  display: flex;
+  flex-direction: column;
+  gap: rem.torem(8px);
+
+  & > *::first-letter {
+    text-transform: uppercase;
+  }
+}
