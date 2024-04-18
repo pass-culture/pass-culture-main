@@ -3,7 +3,7 @@ import { useState } from 'react'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import { BookingsExportStatusFilter } from 'apiClient/v1'
+import { BookingExportType, BookingsExportStatusFilter } from 'apiClient/v1'
 import DialogBox from 'components/DialogBox'
 import { GET_EVENT_PRICE_CATEGORIES_AND_SCHEDULES_BY_DAYE_QUERY_KEY } from 'config/swrQueryKeys'
 import strokeDeskIcon from 'icons/stroke-desk.svg'
@@ -14,6 +14,7 @@ import { BaseRadio } from 'ui-kit/form/shared'
 import RadioButtonWithImage from 'ui-kit/RadioButtonWithImage'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { FORMAT_DD_MM_YYYY } from 'utils/date'
+import { downloadFile } from 'utils/downloadFile'
 import { pluralize } from 'utils/pluralize'
 
 import style from './DownloadBookingsModal.module.scss'
@@ -35,6 +36,36 @@ export const DownloadBookingsModal = ({
     () => api.getOfferPriceCategoriesAndSchedulesByDates(offerId),
     { fallbackData: [] }
   )
+
+  const handleSubmit = async (
+    event: React.SyntheticEvent<HTMLFormElement, SubmitEvent>
+  ) => {
+    event.preventDefault()
+    const fileFormat = event.nativeEvent.submitter?.dataset.export
+    if (fileFormat === BookingExportType.CSV) {
+      downloadFile(
+        await api.exportBookingsForOfferAsCsv(
+          offerId,
+          bookingsType!,
+          selectedDate!
+        ),
+        `reservations-${bookingsType}-${selectedDate}.csv`,
+        'text/csv'
+      )
+    } else if (fileFormat === BookingExportType.EXCEL) {
+      downloadFile(
+        new Uint8Array(
+          await api.exportBookingsForOfferAsExcel(
+            offerId,
+            bookingsType!,
+            selectedDate!
+          )
+        ),
+        `reservations-${bookingsType}-${selectedDate}.xlsx`,
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      )
+    }
+  }
 
   const createDateRow = (
     eventDate: string,
@@ -80,7 +111,7 @@ export const DownloadBookingsModal = ({
       labelledBy="download-bookings-modal"
       onDismiss={onDimiss}
     >
-      <form>
+      <form onSubmit={handleSubmit}>
         <div className={style['container']}>
           <h1 id="download-bookings-modal" className={style['header']}>
             Télécharger vos réservations
@@ -163,10 +194,24 @@ export const DownloadBookingsModal = ({
             <Button variant={ButtonVariant.SECONDARY} onClick={onDimiss}>
               Annuler
             </Button>
-            <Button variant={ButtonVariant.PRIMARY} type="submit" value="csv">
+            <Button
+              variant={ButtonVariant.PRIMARY}
+              type="submit"
+              data-export={BookingExportType.CSV}
+              disabled={
+                selectedDate === undefined || bookingsType === undefined
+              }
+            >
               Télécharger au format CSV
             </Button>
-            <Button variant={ButtonVariant.PRIMARY} type="submit" value="xlsx">
+            <Button
+              variant={ButtonVariant.PRIMARY}
+              type="submit"
+              data-export={BookingExportType.EXCEL}
+              disabled={
+                selectedDate === undefined || bookingsType === undefined
+              }
+            >
               Télécharger au format Excel
             </Button>
           </div>
