@@ -1,6 +1,6 @@
 import cn from 'classnames'
 import { useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useSearchParams } from 'react-router-dom'
 
 import {
   AdageFrontRoles,
@@ -41,6 +41,9 @@ export function AdageOfferListCard({
   const adageAuthToken = searchParams.get('token')
   const { adageUser, setInstitutionOfferCount, institutionOfferCount } =
     useAdageUser()
+  const location = useLocation()
+
+  const currentPathname = location.pathname.split('/')[2]
 
   const [offerPrebooked, setOfferPrebooked] = useState(false)
 
@@ -125,7 +128,7 @@ export function AdageOfferListCard({
           <div className={styles['offer-card-content']}>
             <AdageOfferListCardTags offer={offer} adageUser={adageUser} />
             <Link
-              to={`/adage-iframe/recherche/offre/${offer.id}?token=${adageAuthToken}`}
+              to={`/adage-iframe/${currentPathname}/offre/${offer.id}?token=${adageAuthToken}`}
               state={{ offer }}
               className={styles['offer-card-link']}
               onClick={() => triggerOfferClickLog(offer)}
