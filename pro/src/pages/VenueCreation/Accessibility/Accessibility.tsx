@@ -35,7 +35,7 @@ export const Accessibility = ({ isCreatingVenue }: AccessiblityProps) => {
 
   return (
     <FormSectionComponent title="Modalités d’accessibilité">
-      {isAccesLibreEnabled && (
+      {isAccesLibreEnabled && !isCreatingVenue && (
         <Callout
           links={[
             {
