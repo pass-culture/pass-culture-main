@@ -51,7 +51,8 @@ const Offer = ({
 }: OfferProps): JSX.Element => {
   const [displayDetails, setDisplayDetails] = useState(openDetails)
   const [offerPrebooked, setOfferPrebooked] = useState(false)
-  const { adageUser } = useAdageUser()
+  const { adageUser, setInstitutionOfferCount, institutionOfferCount } =
+    useAdageUser()
 
   const isNewOfferInfoEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_ADAGE_OFFER_DESIGN'
@@ -133,6 +134,8 @@ const Offer = ({
             stock={offer.stock}
             isInSuggestions={isInSuggestions}
             setOfferPrebooked={(value: boolean) => setOfferPrebooked(value)}
+            setInstitutionOfferCount={setInstitutionOfferCount}
+            institutionOfferCount={institutionOfferCount}
           />
         </div>
       )}

@@ -5,6 +5,7 @@ import {
 } from 'apiClient/adage'
 import fullDeskIcon from 'icons/full-desk.svg'
 import strokeTeacherIcon from 'icons/stroke-teacher.svg'
+import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { getDateTimeToFrenchText, toDateStrippedOfTimezone } from 'utils/date'
 
@@ -24,6 +25,8 @@ export default function AdageOfferInstitutionPanel({
   adageUser,
   isPreview = false,
 }: AdageOfferInstitutionPanelProps) {
+  const { setInstitutionOfferCount, institutionOfferCount } = useAdageUser()
+
   return (
     <div className={styles['institution-panel']}>
       <div className={styles['institution-panel-header']}>
@@ -61,6 +64,8 @@ export default function AdageOfferInstitutionPanel({
           stock={offer.stock}
           hideLimitDate={true}
           isPreview={isPreview}
+          setInstitutionOfferCount={setInstitutionOfferCount}
+          institutionOfferCount={institutionOfferCount}
         >
           <SvgIcon
             src={fullDeskIcon}

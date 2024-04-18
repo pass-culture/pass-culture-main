@@ -39,7 +39,8 @@ export function AdageOfferListCard({
 }: AdageOfferListCardProps) {
   const [searchParams] = useSearchParams()
   const adageAuthToken = searchParams.get('token')
-  const { adageUser } = useAdageUser()
+  const { adageUser, setInstitutionOfferCount, institutionOfferCount } =
+    useAdageUser()
 
   const [offerPrebooked, setOfferPrebooked] = useState(false)
 
@@ -96,6 +97,8 @@ export function AdageOfferListCard({
             stock={offer.stock}
             isInSuggestions={isInSuggestions}
             setOfferPrebooked={(value: boolean) => setOfferPrebooked(value)}
+            setInstitutionOfferCount={setInstitutionOfferCount}
+            institutionOfferCount={institutionOfferCount}
           />
         </div>
       )}
