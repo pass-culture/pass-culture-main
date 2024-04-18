@@ -5,6 +5,8 @@ import { Provider } from 'react-redux'
 import { createMemoryRouter, RouterProvider } from 'react-router-dom'
 import { SWRConfig } from 'swr'
 
+import { SharedCurrentUserResponseModel } from 'apiClient/v1'
+import { RootState } from 'store/rootReducer'
 import { configureTestStore } from 'store/testUtils'
 
 export type RenderWithProvidersOptions = {
@@ -12,6 +14,7 @@ export type RenderWithProvidersOptions = {
   storeOverrides?: any
   initialRouterEntries?: string[]
   features?: string[]
+  user?: Partial<SharedCurrentUserResponseModel>
 }
 
 const createRouterFromOverrides = (
@@ -33,13 +36,21 @@ export const renderWithProviders = (
     nameKey: feature,
   }))
 
-  const storeOverrides = {
+  const storeOverrides: Partial<RootState> = {
     ...overrides?.storeOverrides,
     features: {
       list: featuresList,
       lastLoaded: overrides?.storeOverrides?.features?.lastLoaded,
     },
+    user: overrides?.user
+      ? {
+          ...overrides.storeOverrides?.user,
+          selectedOffererId: true,
+          currentUser: overrides.user,
+        }
+      : overrides?.storeOverrides?.user,
   }
+
   const store = configureTestStore(storeOverrides)
   const router = createRouterFromOverrides(component, overrides, initialPath)
 
