@@ -9,6 +9,7 @@ import { findCurrentRoute } from 'app/AppRouter/findCurrentRoute'
 import Notification from 'components/Notification/Notification'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { useConfigureFirebase } from 'hooks/useAnalytics'
+import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
 import useNotification from 'hooks/useNotification'
 import { updateUser } from 'store/user/reducer'
 import { selectCurrentUser } from 'store/user/selectors'
@@ -29,6 +30,15 @@ const App = (): JSX.Element | null => {
   const [consentedToBeamer, setConsentedToBeamer] = useState(false)
   const dispatch = useDispatch()
   const notify = useNotification()
+
+  const isNewInterfaceActive = useIsNewInterfaceActive()
+
+  useEffect(() => {
+    document.documentElement.setAttribute(
+      'data-theme',
+      isNewInterfaceActive ? 'blue' : 'pink'
+    )
+  }, [isNewInterfaceActive])
 
   useEffect(() => {
     // Initialize cookie consent modal
