@@ -14,11 +14,15 @@ import { VenueCreationFormValues } from '../types'
 
 import styles from './Accessibility.module.scss'
 
-interface AccessiblityProps {
+export interface AccessiblityProps {
   isCreatingVenue: boolean
+  isVenuePermanent?: boolean
 }
 
-export const Accessibility = ({ isCreatingVenue }: AccessiblityProps) => {
+export const Accessibility = ({
+  isCreatingVenue,
+  isVenuePermanent,
+}: AccessiblityProps) => {
   const isAccesLibreEnabled = useActiveFeature('WIP_ACCESLIBRE')
   const { values, setFieldValue, initialValues } = useFormikContext<
     VenueCreationFormValues | VenueEditionFormValues
@@ -35,7 +39,7 @@ export const Accessibility = ({ isCreatingVenue }: AccessiblityProps) => {
 
   return (
     <FormSectionComponent title="Modalités d’accessibilité">
-      {isAccesLibreEnabled && !isCreatingVenue && (
+      {isAccesLibreEnabled && !isCreatingVenue && isVenuePermanent && (
         <Callout
           links={[
             {

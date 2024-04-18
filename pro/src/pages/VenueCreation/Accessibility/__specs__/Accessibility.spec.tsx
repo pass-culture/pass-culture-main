@@ -11,18 +11,19 @@ import {
   renderWithProviders,
 } from 'utils/renderWithProviders'
 
-import { Accessibility } from '../Accessibility'
+import { Accessibility, AccessiblityProps } from '../Accessibility'
+
+const onSubmit = vi.fn()
 
 const renderAccessibility = (
   initialValues: Partial<VenueCreationFormValues>,
-  isCreatingVenue: boolean,
-  onSubmit = vi.fn(),
+  props: Partial<AccessiblityProps> = {},
   overrides: RenderWithProvidersOptions = {}
 ) => {
   return renderWithProviders(
     <Formik initialValues={initialValues} onSubmit={onSubmit}>
       <Form>
-        <Accessibility isCreatingVenue={isCreatingVenue} />
+        <Accessibility isCreatingVenue={false} {...props} />
         <SubmitButton isLoading={false}>Submit</SubmitButton>
       </Form>
     </Formik>,
@@ -32,8 +33,6 @@ const renderAccessibility = (
 
 describe('Accessibility', () => {
   let initialValues: Partial<VenueCreationFormValues>
-  let isCreatingVenue: boolean
-  const onSubmit = vi.fn()
 
   beforeEach(() => {
     initialValues = {
@@ -45,11 +44,10 @@ describe('Accessibility', () => {
         [AccessibilityEnum.NONE]: false,
       },
     }
-    isCreatingVenue = true
   })
 
   it('should display initial component', async () => {
-    renderAccessibility(initialValues, isCreatingVenue, onSubmit)
+    renderAccessibility(initialValues, { isCreatingVenue: true })
 
     expect(
       await screen.findByRole('heading', { name: 'Modalités d’accessibilité' })
@@ -72,7 +70,7 @@ describe('Accessibility', () => {
   })
 
   it('should submit valid form', async () => {
-    renderAccessibility(initialValues, isCreatingVenue, onSubmit)
+    renderAccessibility(initialValues, { isCreatingVenue: true })
 
     const checkboxVisuel = screen.getByLabelText('Visuel', { exact: false })
     await userEvent.click(checkboxVisuel)
@@ -93,7 +91,7 @@ describe('Accessibility', () => {
   })
 
   it('should check accessibilities on click', async () => {
-    renderAccessibility(initialValues, isCreatingVenue, onSubmit)
+    renderAccessibility(initialValues, { isCreatingVenue: true })
 
     const checkboxNone = screen.getByLabelText('Non accessible', {
       exact: false,
@@ -134,7 +132,6 @@ describe('Accessibility', () => {
   })
 
   it('should display apply accessibility to all offer when its venue edition and accessibility has changed', async () => {
-    isCreatingVenue = false
     initialValues = {
       accessibility: {
         [AccessibilityEnum.VISUAL]: false,
@@ -144,7 +141,7 @@ describe('Accessibility', () => {
         [AccessibilityEnum.NONE]: true,
       },
     }
-    renderAccessibility(initialValues, isCreatingVenue, onSubmit)
+    renderAccessibility(initialValues, { isCreatingVenue: false })
     const checkboxVisuel = screen.getByLabelText('Visuel', { exact: false })
 
     await userEvent.click(checkboxVisuel)
@@ -156,10 +153,13 @@ describe('Accessibility', () => {
   })
 
   it('should display the acces libre callout in edition', () => {
-    isCreatingVenue = false
-    renderAccessibility(initialValues, isCreatingVenue, onSubmit, {
-      features: ['WIP_ACCESLIBRE'],
-    })
+    renderAccessibility(
+      initialValues,
+      { isCreatingVenue: false, isVenuePermanent: true },
+      {
+        features: ['WIP_ACCESLIBRE'],
+      }
+    )
 
     expect(
       screen.getByText(
@@ -168,11 +168,30 @@ describe('Accessibility', () => {
     ).toBeInTheDocument()
   })
 
+  it('should not display the acces libre callout in edition for non permanent venues', () => {
+    renderAccessibility(
+      initialValues,
+      { isCreatingVenue: false, isVenuePermanent: false },
+      {
+        features: ['WIP_ACCESLIBRE'],
+      }
+    )
+
+    expect(
+      screen.queryByText(
+        'Renseignez facilement les modalités d’accessibilité de votre établissement sur la plateforme collaborative acceslibre.beta.gouv.fr'
+      )
+    ).not.toBeInTheDocument()
+  })
+
   it('should not display the acces libre callout in creation', () => {
-    isCreatingVenue = true
-    renderAccessibility(initialValues, isCreatingVenue, onSubmit, {
-      features: ['WIP_ACCESLIBRE'],
-    })
+    renderAccessibility(
+      initialValues,
+      { isCreatingVenue: true },
+      {
+        features: ['WIP_ACCESLIBRE'],
+      }
+    )
 
     expect(
       screen.queryByText(

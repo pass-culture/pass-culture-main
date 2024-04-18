@@ -60,7 +60,7 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
       {!(isAccesLibreEnabled && venue.externalAccessibilityData) && (
         <AccessibilitySummarySection
           callout={
-            isAccesLibreEnabled ? (
+            isAccesLibreEnabled && venue.isPermanent ? (
               <Callout
                 links={[
                   {
