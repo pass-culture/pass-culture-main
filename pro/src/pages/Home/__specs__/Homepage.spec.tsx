@@ -21,6 +21,7 @@ import {
   renderWithProviders,
   RenderWithProvidersOptions,
 } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { Homepage } from '../Homepage'
 
@@ -51,12 +52,12 @@ Object.defineProperty(window, 'location', {
   writable: true,
 })
 
-const renderHomePage = (storeOverrides?: RenderWithProvidersOptions) => {
+const renderHomePage = (options?: RenderWithProvidersOptions) => {
   renderWithProviders(
     <RemoteContextProvider>
       <Homepage />
     </RemoteContextProvider>,
-    { storeOverrides, features: storeOverrides?.features }
+    { user: sharedCurrentUserFactory(), ...options }
   )
 }
 
@@ -102,25 +103,6 @@ describe('Homepage', () => {
     name: offerer.name,
   }))
 
-  const store = {
-    user: {
-      currentUser: {
-        id: 'fake_id',
-        firstName: 'John',
-        lastName: 'Do',
-        email: 'john.do@dummy.xyz',
-        phoneNumber: '01 00 00 00 00',
-        hasSeenProTutorials: true,
-        navState: {
-          eligibilityDate: '',
-          newNavDate: '',
-        },
-      },
-      initialized: true,
-    },
-    features: [''],
-  }
-
   beforeEach(() => {
     vi.spyOn(api, 'getProfile')
     vi.spyOn(router, 'useLoaderData').mockReturnValue({
@@ -144,7 +126,7 @@ describe('Homepage', () => {
   })
 
   it('pro flags should be sent on page load', async () => {
-    renderHomePage(store)
+    renderHomePage()
 
     await waitFor(() => {
       expect(api.postProFlags).toHaveBeenCalledWith({
@@ -157,21 +139,21 @@ describe('Homepage', () => {
   it('the user should see the home offer steps if they do not have any venues', async () => {
     vi.spyOn(api, 'getOfferer').mockResolvedValue(baseOfferers[1])
 
-    renderHomePage(store)
+    renderHomePage()
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     expect(await screen.findByTestId('home-offer-steps')).toBeInTheDocument()
   })
 
   it('the user should not see the home offer steps if they have some venues', async () => {
-    renderHomePage(store)
+    renderHomePage()
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     expect(screen.queryByTestId('home-offer-steps')).not.toBeInTheDocument()
   })
 
   it('should display profile and support section and subsection titles', async () => {
-    renderHomePage(store)
+    renderHomePage()
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     expect(
@@ -192,7 +174,7 @@ describe('Homepage', () => {
         isActive: true,
       })
 
-      renderHomePage(store)
+      renderHomePage()
 
       expect(
         await screen.findByText('Présence sur le pass Culture')
@@ -208,7 +190,7 @@ describe('Homepage', () => {
         isValidated: false,
         isActive: true,
       })
-      renderHomePage(store)
+      renderHomePage()
       await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
       expect(
@@ -225,7 +207,7 @@ describe('Homepage', () => {
         isValidated: true,
         isActive: false,
       })
-      renderHomePage(store)
+      renderHomePage()
       await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
       expect(
@@ -235,7 +217,7 @@ describe('Homepage', () => {
   })
 
   it('should display new offerer venues informations when selected offerer change', async () => {
-    renderHomePage(store)
+    renderHomePage()
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     const virtualVenueTitle = screen.getByText('Offres numériques')
@@ -270,7 +252,7 @@ describe('Homepage', () => {
     const offererId = baseOfferers[1].id
     localStorage.setItem(SAVED_OFFERER_ID_KEY, offererId.toString())
 
-    renderHomePage(store)
+    renderHomePage()
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     expect(api.getOfferer).toHaveBeenCalledWith(offererId)
@@ -279,7 +261,7 @@ describe('Homepage', () => {
   it('should not used saved offerer in localStorage if it is not an option', async () => {
     localStorage.setItem(SAVED_OFFERER_ID_KEY, '123456')
 
-    renderHomePage(store)
+    renderHomePage()
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     expect(api.getOfferer).toHaveBeenCalledWith(baseOfferers[0].id)
@@ -288,7 +270,7 @@ describe('Homepage', () => {
   it('should display pending offerer banner when rattachement is pending', async () => {
     vi.spyOn(api, 'getOfferer').mockRejectedValueOnce({ status: 403 })
 
-    renderHomePage(store)
+    renderHomePage()
 
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
@@ -300,17 +282,8 @@ describe('Homepage', () => {
   })
 
   describe('beta banner', () => {
-    beforeEach(() => {
-      store.features = ['WIP_ENABLE_PRO_SIDE_NAV']
-    })
-
     it('should not display the banner without de FF', async () => {
-      renderHomePage({
-        ...store,
-        ...{
-          features: [],
-        },
-      })
+      renderHomePage()
       await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
       expect(
         screen.queryByText(/Une nouvelle interface sera bientôt disponible/)
@@ -319,17 +292,13 @@ describe('Homepage', () => {
 
     it('should not display the banner if the user is eligible but is already a beta tester', async () => {
       renderHomePage({
-        ...store,
-        ...{
-          user: {
-            currentUser: {
-              navState: {
-                eligibilityDate: '2020-04-03T12:00:00+04:00',
-                newNavDate: '2020-04-03T12:00:00+04:00',
-              },
-            },
+        features: ['WIP_ENABLE_PRO_SIDE_NAV'],
+        user: sharedCurrentUserFactory({
+          navState: {
+            eligibilityDate: '2020-04-03T12:00:00+04:00',
+            newNavDate: '2020-04-03T12:00:00+04:00',
           },
-        },
+        }),
       })
       await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
       expect(
@@ -341,16 +310,12 @@ describe('Homepage', () => {
       const now = new Date()
       const later = now.setDate(now.getDate() + 14)
       renderHomePage({
-        ...store,
-        ...{
-          user: {
-            currentUser: {
-              navState: {
-                eligibilityDate: formatBrowserTimezonedDateAsUTC(later),
-              },
-            },
+        features: ['WIP_ENABLE_PRO_SIDE_NAV'],
+        user: sharedCurrentUserFactory({
+          navState: {
+            eligibilityDate: formatBrowserTimezonedDateAsUTC(later),
           },
-        },
+        }),
       })
       await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
       expect(
@@ -362,16 +327,12 @@ describe('Homepage', () => {
       vi.spyOn(api, 'postNewProNav').mockResolvedValue()
 
       renderHomePage({
-        ...store,
-        ...{
-          user: {
-            currentUser: {
-              navState: {
-                eligibilityDate: '2020-04-03T12:00:00+04:00',
-              },
-            },
+        features: ['WIP_ENABLE_PRO_SIDE_NAV'],
+        user: sharedCurrentUserFactory({
+          navState: {
+            eligibilityDate: '2020-04-03T12:00:00+04:00',
           },
-        },
+        }),
       })
       await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
       expect(
@@ -389,16 +350,12 @@ describe('Homepage', () => {
     it('should not display the banner if the user already closed the banner', async () => {
       localStorage.setItem('HAS_CLOSED_BETA_TEST_BANNER', 'true')
       renderHomePage({
-        ...store,
-        ...{
-          user: {
-            currentUser: {
-              navState: {
-                eligibilityDate: '2020-04-03T12:00:00+04:00',
-              },
-            },
+        features: ['WIP_ENABLE_PRO_SIDE_NAV'],
+        user: sharedCurrentUserFactory({
+          navState: {
+            eligibilityDate: '2020-04-03T12:00:00+04:00',
           },
-        },
+        }),
       })
       await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
       expect(

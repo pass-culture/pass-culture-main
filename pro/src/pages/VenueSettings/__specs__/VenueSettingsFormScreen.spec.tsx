@@ -20,6 +20,7 @@ import { SelectOption } from 'custom_types/form'
 import { defaultGetVenue } from 'utils/collectiveApiFactories'
 import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { VenueSettingsFormValues } from '../types'
 import { VenueSettingsFormScreen } from '../VenueSettingsScreen'
@@ -74,16 +75,6 @@ const renderForm = (
   hasBookingQuantity?: boolean,
   features: string[] = []
 ) => {
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        id: 'user_id',
-        isAdmin,
-      },
-    },
-  }
-
   renderWithProviders(
     <>
       <Routes>
@@ -119,7 +110,7 @@ const renderForm = (
       <Notification />
     </>,
     {
-      storeOverrides,
+      user: sharedCurrentUserFactory({ isAdmin }),
       initialRouterEntries: ['/structures/AE/lieux/creation'],
       features,
     }
