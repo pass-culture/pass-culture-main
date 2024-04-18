@@ -200,3 +200,12 @@ def numranges_to_timespan_str(numranges: list[NumericRange]) -> list[tuple[str, 
     Convert a list of NumericRange to a list of tuples (start, end) in the format [("HH:MM", "HH:MM"), ...]
     """
     return [(int_to_time(int(numrange.lower)), int_to_time(int(numrange.upper))) for numrange in numranges]
+
+
+def numranges_to_readble_str(numranges: list[NumericRange] | None) -> str:
+    """
+    Convert a list of NumericRange to a list of tuples (start, end) in a str ("HH:MM", "HH:MM")]
+    """
+    if numranges is None:
+        return ""
+    return ", ".join(f"{int_to_time(int(numrange.lower))}-{int_to_time(int(numrange.upper))}" for numrange in numranges)

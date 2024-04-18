@@ -1505,6 +1505,14 @@ class GetVenueHistoryTest(GetEndpointHelper):
                     "withdrawalDetails": {"new_info": "Come here!", "old_info": None},
                     "contact.website": {"new_info": None, "old_info": "https://old.website.com"},
                     "visualDisabilityCompliant": {"new_info": True, "old_info": False},
+                    "openingHours.MONDAY.timespan": {
+                        "old_info": "14:00-19:30",
+                        "new_info": "10:00-13:00, 14:00-19:30",
+                    },
+                    "openingHours.TUESDAY.timespan": {
+                        "old_info": "14:00-19:30",
+                        "new_info": None,
+                    },
                 }
             },
         )
@@ -1531,6 +1539,8 @@ class GetVenueHistoryTest(GetEndpointHelper):
         assert "Site internet de contact : suppression de : https://old.website.com " in rows[0]["Commentaire"]
         assert "Conditions de retrait : ajout de : Come here!" in rows[0]["Commentaire"]
         assert "Accessibilité handicap visuel : Non => Oui" in rows[0]["Commentaire"]
+        assert "Horaires du lundi : 14:00-19:30 => 10:00-13:00, 14:00-19:30" in rows[0]["Commentaire"]
+        assert "Horaires du mardi : suppression de : 14:00-19:30" in rows[0]["Commentaire"]
         assert rows[0]["Auteur"] == legit_user.full_name
         assert rows[1]["Type"] == "Commentaire interne"
         assert rows[1]["Commentaire"] == comment

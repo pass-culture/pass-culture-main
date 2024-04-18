@@ -56,6 +56,7 @@ from pcapi.routes.serialization.offerers_serialize import OffererMemberStatus
 from pcapi.utils import crypto
 from pcapi.utils import human_ids
 from pcapi.utils import image_conversion
+import pcapi.utils.date as date_utils
 import pcapi.utils.db as db_utils
 import pcapi.utils.email as email_utils
 
@@ -115,10 +116,15 @@ def update_venue(
 
     if opening_days:
         for opening_hours_data in opening_days:
-            weekday = models.Weekday(opening_hours_data.weekday.upper())
+            weekday = models.Weekday(opening_hours_data.weekday)
             target = get_venue_opening_hours_by_weekday(venue, weekday)
+            target.timespan = date_utils.numranges_to_readble_str(target.timespan)
+            opening_hours_readable = {
+                "weekday": opening_hours_data.weekday,
+                "timespan": date_utils.numranges_to_readble_str(opening_hours_data.timespan),
+            }
             venue_snapshot.trace_update(
-                opening_hours_data.dict(),
+                opening_hours_readable,
                 target=target,
                 field_name_template=f"openingHours.{opening_hours_data.weekday}.{{}}",
             )
@@ -257,7 +263,7 @@ def upsert_venue_opening_hours(
     Create and attach OpeningHours for a given weekday to a Venue if it has none.
     Update (replace) an existing OpeningHours list otherwise.
     """
-    weekday = models.Weekday(opening_hours_data.weekday.upper())
+    weekday = models.Weekday(opening_hours_data.weekday)
     venue_opening_hours = get_venue_opening_hours_by_weekday(venue, weekday)
 
     modifications = {
