@@ -1109,10 +1109,17 @@ class ListOffersTest(GetEndpointHelper):
 
     def test_list_offers_price_with_different_stocks(self, client, pro_fraud_admin):
         offer = offers_factories.OfferFactory()
-        offers_factories.StockFactory(offer=offer, price=10)
 
         client = client.with_bo_session_auth(pro_fraud_admin)
         searched_id = str(offer.id)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(url_for(self.endpoint, q=searched_id))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert rows[0]["Tarif"] == "-"
+
+        offers_factories.StockFactory(offer=offer, price=10)
         with assert_num_queries(self.expected_num_queries):
             response = client.get(url_for(self.endpoint, q=searched_id))
             assert response.status_code == 200
