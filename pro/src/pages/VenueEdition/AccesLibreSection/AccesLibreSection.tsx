@@ -130,7 +130,17 @@ export const AccesLibreSection = ({ venue }: AccesLibreSectionProps) => {
                 </span>
                 <span className={styles['details-item']}>
                   {venue.externalAccessibilityData.audioDisability
-                    ?.deafAndHardOfHearing ?? 'Non renseigné'}
+                    ?.deafAndHardOfHearing?.length ? (
+                    <ul className={styles['details-list']}>
+                      {venue.externalAccessibilityData.audioDisability.deafAndHardOfHearing.map(
+                        (item) => (
+                          <li key={item}>{item}</li>
+                        )
+                      )}
+                    </ul>
+                  ) : (
+                    'Non renseigné'
+                  )}
                 </span>
               </div>
             </div>
@@ -150,7 +160,17 @@ export const AccesLibreSection = ({ venue }: AccesLibreSectionProps) => {
                 </span>
                 <span className={styles['details-item']}>
                   {venue.externalAccessibilityData.visualDisability
-                    ?.audioDescription ?? 'Non renseigné'}
+                    ?.audioDescription?.length ? (
+                    <ul className={styles['details-list']}>
+                      {venue.externalAccessibilityData.visualDisability.audioDescription.map(
+                        (item) => (
+                          <li key={item}>{item}</li>
+                        )
+                      )}
+                    </ul>
+                  ) : (
+                    'Non renseigné'
+                  )}
                 </span>
               </li>
               <li>
