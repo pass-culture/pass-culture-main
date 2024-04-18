@@ -3,11 +3,7 @@ import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import {
-  GetOffererResponseModel,
-  GetVenueResponseModel,
-  VenueProviderResponse,
-} from 'apiClient/v1'
+import { GetVenueResponseModel, VenueProviderResponse } from 'apiClient/v1'
 import { defaultGetVenue } from 'utils/collectiveApiFactories'
 import {
   RenderWithProvidersOptions,
@@ -16,11 +12,7 @@ import {
 
 import { VenueEdition } from '../VenueEdition'
 
-const renderVenueEdition = (
-  venueId: number,
-  offererId: number,
-  options?: RenderWithProvidersOptions
-) => {
+const renderVenueEdition = (options?: RenderWithProvidersOptions) => {
   const storeOverrides = {
     user: {
       initialized: true,
@@ -42,7 +34,7 @@ const renderVenueEdition = (
     {
       storeOverrides,
       initialRouterEntries: [
-        `/structures/${offererId}/lieux/${venueId}/edition`,
+        `/structures/${defaultGetOffererResponseModel.id}/lieux/${defaultGetVenue.id}/edition`,
       ],
       ...options,
     }
@@ -61,12 +53,10 @@ vi.mock('react-router-dom', async () => ({
 describe('route VenueEdition', () => {
   let venue: GetVenueResponseModel
   let venueProviders: VenueProviderResponse[]
-  let offerer: GetOffererResponseModel
 
   beforeEach(() => {
     venue = {
       ...defaultGetVenue,
-      id: 12,
       publicName: 'Cinéma des iles',
       dmsToken: 'dms-token-12345',
       isPermanent: true,
@@ -92,22 +82,20 @@ describe('route VenueEdition', () => {
       },
     ]
 
-    offerer = {
-      id: 13,
-    } as GetOffererResponseModel
-
     vi.spyOn(api, 'getVenue').mockResolvedValue(venue)
     vi.spyOn(api, 'listVenueProviders').mockResolvedValue({
       venue_providers: venueProviders,
     })
-    vi.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
+    vi.spyOn(api, 'getOfferer').mockResolvedValue(
+      defaultGetOffererResponseModel
+    )
     vi.spyOn(api, 'getVenueTypes').mockResolvedValue([])
     vi.spyOn(api, 'fetchVenueLabels').mockResolvedValue([])
     vi.spyOn(api, 'listOffers').mockResolvedValue([])
   })
 
   it('should call getVenue and display Venue Form screen on success', async () => {
-    renderVenueEdition(venue.id, offerer.id)
+    renderVenueEdition()
 
     const venuePublicName = await screen.findByRole('heading', {
       name: 'Cinéma des iles',
@@ -126,7 +114,7 @@ describe('route VenueEdition', () => {
       motorDisabilityCompliant: false,
     })
 
-    renderVenueEdition(venue.id, offerer.id)
+    renderVenueEdition()
 
     await screen.findByRole('heading', {
       name: 'Cinéma des iles',
@@ -146,7 +134,7 @@ describe('route VenueEdition', () => {
       motorDisabilityCompliant: null,
     })
 
-    renderVenueEdition(venue.id, offerer.id)
+    renderVenueEdition()
 
     await screen.findByRole('heading', {
       name: 'Cinéma des iles',
@@ -163,7 +151,7 @@ describe('route VenueEdition', () => {
       siret: '11111111111111',
     })
 
-    renderVenueEdition(venue.id, offerer.id)
+    renderVenueEdition()
 
     await screen.findByRole('heading', {
       name: 'Cinéma des iles',
@@ -175,9 +163,7 @@ describe('route VenueEdition', () => {
   })
 
   it('should display Opening hours section if WIP_OPENING_HOURS feature flag is enabled and venue is permanent', async () => {
-    renderVenueEdition(venue.id, offerer.id, {
-      features: ['WIP_OPENING_HOURS'],
-    })
+    renderVenueEdition({ features: ['WIP_OPENING_HOURS'] })
 
     await waitForElementToBeRemoved(screen.getByTestId('spinner'))
 
@@ -185,10 +171,46 @@ describe('route VenueEdition', () => {
   })
 
   it('should not display Opening hours section if WIP_OPENING_HOURS feature flag is disabled', async () => {
-    renderVenueEdition(venue.id, offerer.id)
+    renderVenueEdition()
 
     await waitForElementToBeRemoved(screen.getByTestId('spinner'))
 
     expect(screen.queryByText("Horaires d'ouverture")).not.toBeInTheDocument()
+  })
+
+  it('should display the acces libre callout for permanent venues', async () => {
+    venue.isPermanent = true
+    renderVenueEdition({
+      features: ['WIP_ACCESLIBRE'],
+      initialRouterEntries: [
+        `/structures/${defaultGetOffererResponseModel.id}/lieux/${defaultGetVenue.id}`,
+      ],
+    })
+
+    await waitForElementToBeRemoved(screen.getByTestId('spinner'))
+
+    expect(
+      screen.getByText(
+        'Renseignez facilement les modalités d’accessibilité de votre établissement sur la plateforme collaborative acceslibre.beta.gouv.fr'
+      )
+    ).toBeInTheDocument()
+  })
+
+  it('should not display the acces libre callout for non permanent venues', async () => {
+    venue.isPermanent = false
+    renderVenueEdition({
+      features: ['WIP_ACCESLIBRE'],
+      initialRouterEntries: [
+        `/structures/${defaultGetOffererResponseModel.id}/lieux/${defaultGetVenue.id}`,
+      ],
+    })
+
+    await waitForElementToBeRemoved(screen.getByTestId('spinner'))
+
+    expect(
+      screen.queryByText(
+        'Renseignez facilement les modalités d’accessibilité de votre établissement sur la plateforme collaborative acceslibre.beta.gouv.fr'
+      )
+    ).not.toBeInTheDocument()
   })
 })

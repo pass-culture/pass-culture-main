@@ -173,7 +173,10 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
             </FormLayout.SubSection>
 
             {showAccessibilitySection && (
-              <Accessibility isCreatingVenue={false} />
+              <Accessibility
+                isCreatingVenue={false}
+                isVenuePermanent={Boolean(venue.isPermanent)}
+              />
             )}
           </FormLayout.Section>
         </FormLayout>
