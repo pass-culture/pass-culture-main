@@ -12,6 +12,7 @@ import {
   renderWithProviders,
   RenderWithProvidersOptions,
 } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { ReimbursementsInvoices } from '../ReimbursementsInvoices'
 
@@ -34,17 +35,8 @@ vi.mock('react-router-dom', async () => ({
 }))
 
 const renderReimbursementsInvoices = (options?: RenderWithProvidersOptions) => {
-  const storeOverrides = {
-    user: {
-      currentUser: {
-        isAdmin: false,
-        hasSeenProTutorials: true,
-      },
-      initialized: true,
-    },
-  }
   renderWithProviders(<ReimbursementsInvoices />, {
-    storeOverrides,
+    user: sharedCurrentUserFactory(),
     ...options,
   })
 }

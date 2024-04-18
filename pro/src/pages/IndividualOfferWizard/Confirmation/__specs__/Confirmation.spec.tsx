@@ -10,13 +10,13 @@ import {
   IndividualOfferContextValues,
   IndividualOfferContext,
 } from 'context/IndividualOfferContext'
-import { RootState } from 'store/rootReducer'
 import {
   getOfferVenueFactory,
   getIndividualOfferFactory,
   individualOfferContextValuesFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { Confirmation } from '../Confirmation'
 
@@ -30,21 +30,9 @@ vi.mock('utils/config', async () => {
 })
 
 const renderOffer = (
-  contextOverride: Partial<IndividualOfferContextValues>,
-  storeOverride?: Partial<RootState>
+  contextOverride: Partial<IndividualOfferContextValues>
 ) => {
   const contextValue = individualOfferContextValuesFactory(contextOverride)
-
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        isAdmin: false,
-        email: 'email@example.com',
-      },
-    },
-    ...storeOverride,
-  }
 
   return renderWithProviders(
     <>
@@ -60,27 +48,20 @@ const renderOffer = (
       </Routes>
       <Notification />
     </>,
-    { storeOverrides, initialRouterEntries: ['/confirmation'] }
+    {
+      user: sharedCurrentUserFactory(),
+      initialRouterEntries: ['/confirmation'],
+    }
   )
 }
 
 describe('Confirmation', () => {
-  let store: any
   let contextOverride: Partial<IndividualOfferContextValues>
   let offer: GetIndividualOfferResponseModel
   const venueId = 45
   const offererId = 51
 
   beforeEach(() => {
-    store = {
-      user: {
-        initialized: true,
-        currentUser: {
-          isAdmin: false,
-          email: 'email@example.com',
-        },
-      },
-    }
     offer = getIndividualOfferFactory({
       venue: getOfferVenueFactory({
         id: venueId,
@@ -102,7 +83,7 @@ describe('Confirmation', () => {
 
   it('should display a pending message when offer is pending for validation', () => {
     offer.status = OfferStatus.PENDING
-    renderOffer(contextOverride, store)
+    renderOffer(contextOverride)
     expect(screen.getByText('Offre en cours de validation')).toBeInTheDocument()
     expect(
       screen.getByText('Visualiser l’offre dans l’application', {
@@ -121,7 +102,7 @@ describe('Confirmation', () => {
   })
 
   it('should display a success message when offer is accepted', () => {
-    renderOffer(contextOverride, store)
+    renderOffer(contextOverride)
     expect(screen.getByText('Offre publiée !')).toBeInTheDocument()
     expect(
       screen.getByText('Visualiser l’offre dans l’application', {

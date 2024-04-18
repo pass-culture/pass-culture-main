@@ -22,7 +22,7 @@ import { pluralize, pluralizeString } from 'utils/pluralize'
 import styles from './LinkVenuesDialog.module.scss'
 import PricingPointDialog from './PricingPointDialog/PricingPointDialog'
 
-export interface LinkVenuesDialogProps {
+interface LinkVenuesDialogProps {
   offererId: number
   selectedBankAccount: BankAccountResponseModel
   managedVenues: Array<ManagedVenues>
@@ -30,7 +30,7 @@ export interface LinkVenuesDialogProps {
   updateBankAccountVenuePricingPoint: (venueId: number) => void
 }
 
-const LinkVenuesDialog = ({
+export const LinkVenuesDialog = ({
   offererId,
   selectedBankAccount,
   managedVenues,
@@ -264,5 +264,3 @@ const LinkVenuesDialog = ({
     </>
   )
 }
-
-export default LinkVenuesDialog

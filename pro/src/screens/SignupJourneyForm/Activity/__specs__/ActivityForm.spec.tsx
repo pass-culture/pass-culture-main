@@ -13,6 +13,7 @@ import {
 import { ActivityContext } from 'context/SignupJourneyContext/SignupJourneyContext'
 import { SubmitButton } from 'ui-kit'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import ActivityForm, {
   ActivityFormProps,
@@ -43,16 +44,6 @@ const renderActivityForm = ({
   props: ActivityFormProps
   contextValue: SignupJourneyContextValues
 }) => {
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        isAdmin: false,
-        email: 'email@example.com',
-      },
-    },
-  }
-
   return renderWithProviders(
     <SignupJourneyContext.Provider value={contextValue}>
       <Formik
@@ -66,7 +57,10 @@ const renderActivityForm = ({
         </Form>
       </Formik>
     </SignupJourneyContext.Provider>,
-    { storeOverrides, initialRouterEntries: ['/parcours-inscription/activite'] }
+    {
+      user: sharedCurrentUserFactory(),
+      initialRouterEntries: ['/parcours-inscription/activite'],
+    }
   )
 }
 

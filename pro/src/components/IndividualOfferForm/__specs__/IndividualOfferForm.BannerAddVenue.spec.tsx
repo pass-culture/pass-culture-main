@@ -16,6 +16,7 @@ import {
   venueListItemFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import {
   IndividualOfferFormValues,
@@ -35,9 +36,6 @@ const renderIndividualOfferForm = ({
   onSubmit: () => void
   props: IndividualOfferFormProps
 }) => {
-  const storeOverrides = {
-    user: { currentUser: { isAdmin: false } },
-  }
   return renderWithProviders(
     <Formik
       initialValues={initialValues}
@@ -46,7 +44,7 @@ const renderIndividualOfferForm = ({
     >
       <IndividualOfferForm {...props} />
     </Formik>,
-    { storeOverrides }
+    { user: sharedCurrentUserFactory() }
   )
 }
 

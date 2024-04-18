@@ -7,6 +7,7 @@ import { routesSignupJourney } from 'app/AppRouter/subroutesSignupJourneyMap'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { SignupJourneyRoutes } from '../SignupJourneyRoutes'
 
@@ -28,16 +29,7 @@ const renderSignupJourneyRoutes = () => {
       <Route path="/connexion" element={<div>Connexion</div>} />
     </Routes>,
     {
-      storeOverrides: {
-        user: {
-          initialized: true,
-          currentUser: {
-            isAdmin: false,
-            email: 'email@example.com',
-            hasSeenProTutorials: true,
-          },
-        },
-      },
+      user: sharedCurrentUserFactory(),
       initialRouterEntries: ['/parcours-inscription/structure'],
     }
   )

@@ -4,6 +4,7 @@ import React from 'react'
 
 import { defaultGetVenue } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import {
   VenueFormActionBar,
@@ -13,20 +14,14 @@ import {
 const renderVenueFormActionBar = (
   props: Partial<VenueFormActionBarProps> = {}
 ) => {
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        isAdmin: true,
-      },
-    },
-  }
-
   renderWithProviders(
     <Formik initialValues={{}} onSubmit={vi.fn()}>
       <VenueFormActionBar {...props} />
     </Formik>,
-    { storeOverrides, features: ['WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY'] }
+    {
+      user: sharedCurrentUserFactory(),
+      features: ['WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY'],
+    }
   )
 }
 

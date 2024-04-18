@@ -4,20 +4,11 @@ import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { ConfirmedAttachment } from '..'
 
 const renderConfirmedAttachmentScreen = () => {
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        isAdmin: false,
-        email: 'email@example.com',
-      },
-    },
-  }
-
   return renderWithProviders(
     <Routes>
       <Route
@@ -27,7 +18,7 @@ const renderConfirmedAttachmentScreen = () => {
       <Route path="/accueil" element={<div>Home screen</div>} />
     </Routes>,
     {
-      storeOverrides,
+      user: sharedCurrentUserFactory(),
       initialRouterEntries: [
         '/parcours-inscription/structure/rattachement/confirmation',
       ],

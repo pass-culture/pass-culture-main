@@ -8,6 +8,7 @@ import {
 import { Mode } from 'core/OfferEducational'
 import { getCollectiveOfferTemplateFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import CollectiveOfferSummaryEdition from '../CollectiveOfferSummaryEdition'
 
@@ -19,28 +20,13 @@ const renderCollectiveOfferSummaryEdition = (
     | GetCollectiveOfferTemplateResponseModel
     | GetCollectiveOfferResponseModel
 ) => {
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        firstName: 'John',
-        dateCreated: '2022-07-29T12:18:43.087097Z',
-        email: 'john@do.net',
-        id: '1',
-        isAdmin: false,
-        isEmailValidated: true,
-        roles: [],
-      },
-    },
-  }
-
   renderWithProviders(
     <CollectiveOfferSummaryEdition
       offer={offer}
       reloadCollectiveOffer={vi.fn()}
       mode={Mode.EDITION}
     />,
-    { storeOverrides }
+    { user: sharedCurrentUserFactory() }
   )
 }
 

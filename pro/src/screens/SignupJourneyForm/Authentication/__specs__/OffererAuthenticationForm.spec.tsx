@@ -13,6 +13,7 @@ import {
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
 import { SubmitButton } from 'ui-kit'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import OffererAuthenticationForm, {
   OffererAuthenticationFormValues,
@@ -81,16 +82,6 @@ const renderOffererAuthenticationForm = ({
   onSubmit?: () => void
   contextValue: SignupJourneyContextValues
 }) => {
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        isAdmin: false,
-        email: 'email@example.com',
-      },
-    },
-  }
-
   return renderWithProviders(
     <SignupJourneyContext.Provider value={contextValue}>
       <Formik
@@ -105,7 +96,7 @@ const renderOffererAuthenticationForm = ({
       </Formik>
     </SignupJourneyContext.Provider>,
     {
-      storeOverrides,
+      user: sharedCurrentUserFactory(),
       initialRouterEntries: ['/parcours-inscription/identification'],
     }
   )

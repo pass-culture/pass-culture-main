@@ -1,4 +1,3 @@
-import { Store } from '@reduxjs/toolkit'
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
@@ -15,6 +14,7 @@ import {
   venueListItemFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { CollectiveOffers } from '../CollectiveOffers'
 
@@ -26,7 +26,6 @@ vi.mock('react-router-dom', async () => ({
 }))
 
 const renderOffers = async (
-  storeOverrides: Store,
   filters: Partial<SearchFiltersParams> = DEFAULT_SEARCH_FILTERS
 ) => {
   const route = computeCollectiveOffersUrl(filters)
@@ -44,7 +43,7 @@ const renderOffers = async (
       ></router.Route>
     </router.Routes>,
     {
-      storeOverrides,
+      user: sharedCurrentUserFactory(),
       initialRouterEntries: [route],
     }
   )
@@ -72,27 +71,10 @@ vi.mock('repository/venuesService', async () => ({
 }))
 
 describe('route CollectiveOffers', () => {
-  let currentUser: {
-    id: string
-    isAdmin: boolean
-    name: string
-  }
-  let store: any
   let offersRecap: CollectiveOfferResponseModel[]
   const mockNavigate = vi.fn()
 
   beforeEach(() => {
-    currentUser = {
-      id: 'EY',
-      isAdmin: false,
-      name: 'Current User',
-    }
-    store = {
-      user: {
-        initialized: true,
-        currentUser,
-      },
-    }
     offersRecap = [collectiveOfferFactory()]
     vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue(offersRecap)
     vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
@@ -106,7 +88,7 @@ describe('route CollectiveOffers', () => {
         collectiveOfferFactory()
       )
       vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
-      await renderOffers(store)
+      await renderOffers()
       const nextPageIcon = screen.getByRole('button', { name: 'Page suivante' })
 
       await userEvent.click(nextPageIcon)
@@ -115,7 +97,7 @@ describe('route CollectiveOffers', () => {
     })
 
     it('should have offer name value when name search value is not an empty string', async () => {
-      await renderOffers(store)
+      await renderOffers()
 
       await userEvent.type(
         screen.getByPlaceholderText('Rechercher par nom d’offre'),
@@ -129,7 +111,7 @@ describe('route CollectiveOffers', () => {
     })
 
     it('should have offer name value be removed when name search value is an empty string', async () => {
-      await renderOffers(store)
+      await renderOffers()
 
       await userEvent.clear(
         screen.getByPlaceholderText('Rechercher par nom d’offre')
@@ -140,7 +122,7 @@ describe('route CollectiveOffers', () => {
     })
 
     it('should have venue value when user filters by venue', async () => {
-      await renderOffers(store)
+      await renderOffers()
       const firstVenueOption = screen.getByRole('option', {
         name: proVenues[0].name,
       })
@@ -157,7 +139,7 @@ describe('route CollectiveOffers', () => {
     it('should have venue value be removed when user asks for all venues', async () => {
       // Given
       vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
-      await renderOffers(store)
+      await renderOffers()
       const firstTypeOption = screen.getByRole('option', {
         name: 'Concert',
       })
@@ -183,7 +165,7 @@ describe('route CollectiveOffers', () => {
           null
         ),
       ])
-      await renderOffers(store)
+      await renderOffers()
       await userEvent.click(
         screen.getByRole('button', {
           name: 'Statut Afficher ou masquer le filtre par statut',
@@ -210,7 +192,7 @@ describe('route CollectiveOffers', () => {
           null
         ),
       ])
-      await renderOffers(store)
+      await renderOffers()
       await userEvent.click(
         screen.getByRole('button', {
           name: 'Statut Afficher ou masquer le filtre par statut',
@@ -230,7 +212,7 @@ describe('route CollectiveOffers', () => {
         name: 'La structure',
       })
 
-      await renderOffers(store, filters)
+      await renderOffers(filters)
 
       const offererFilter = screen.getByText('La structure')
       expect(offererFilter).toBeInTheDocument()
@@ -242,7 +224,7 @@ describe('route CollectiveOffers', () => {
         ...defaultGetOffererResponseModel,
         name: 'La structure',
       })
-      await renderOffers(store, filters)
+      await renderOffers(filters)
 
       await userEvent.click(screen.getByTestId('remove-offerer-filter'))
 
@@ -253,7 +235,7 @@ describe('route CollectiveOffers', () => {
   describe('page navigation', () => {
     it('should redirect to individual offers when user clicks on individual offers link', async () => {
       vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue(offersRecap)
-      await renderOffers(store)
+      await renderOffers()
       screen.getByText('Rechercher')
       const individualAudienceLink = screen.getByText('Offres individuelles', {
         selector: 'span',

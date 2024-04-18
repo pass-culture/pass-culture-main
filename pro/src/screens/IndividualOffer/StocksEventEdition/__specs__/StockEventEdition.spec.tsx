@@ -37,6 +37,7 @@ import {
   getOfferStockFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 vi.mock('utils/date', async () => {
   return {
@@ -94,14 +95,6 @@ const renderStockEventScreen = async (
     },
   ])
 
-  const storeOverrides = {
-    user: {
-      currentUser: {
-        isAdmin: false,
-      },
-    },
-  }
-
   renderWithProviders(
     <>
       <Routes>
@@ -134,7 +127,7 @@ const renderStockEventScreen = async (
       <Notification />
     </>,
     {
-      storeOverrides,
+      user: sharedCurrentUserFactory(),
       initialRouterEntries: [
         getIndividualOfferUrl({
           step: OFFER_WIZARD_STEP_IDS.STOCKS,

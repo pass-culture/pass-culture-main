@@ -27,6 +27,7 @@ import {
   getOffererNameFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import {
   IndividualOfferFormValues,
@@ -48,9 +49,6 @@ const renderIndividualOfferForm = ({
   props: IndividualOfferFormProps
   contextOverride?: Partial<IndividualOfferContextValues>
 }) => {
-  const storeOverrides = {
-    user: { currentUser: { isAdmin: false } },
-  }
   const contextValues = individualOfferContextValuesFactory(contextOverride)
 
   return renderWithProviders(
@@ -66,7 +64,7 @@ const renderIndividualOfferForm = ({
         </Form>
       </Formik>
     </IndividualOfferContext.Provider>,
-    { storeOverrides }
+    { user: sharedCurrentUserFactory() }
   )
 }
 

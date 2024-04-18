@@ -9,6 +9,7 @@ import {
   getOffererNameFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { OffererStats } from '../OffererStats'
 
@@ -31,22 +32,7 @@ vi.mock('hooks/useRemoteConfig', () => ({
 }))
 
 const renderOffererStats = () => {
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        firstName: 'John',
-        dateCreated: '2022-07-29T12:18:43.087097Z',
-        email: 'john@do.net',
-        id: '1',
-        isAdmin: false,
-        isEmailValidated: true,
-        roles: [],
-      },
-    },
-  }
-
-  renderWithProviders(<OffererStats />, { storeOverrides })
+  renderWithProviders(<OffererStats />, { user: sharedCurrentUserFactory() })
 }
 
 describe('OffererStatsScreen', () => {

@@ -12,6 +12,7 @@ import {
 } from 'context/SignupJourneyContext'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import SignupJourneyStepper from '../SignupJourneyStepper'
 
@@ -19,15 +20,6 @@ const renderSignupStepper = (
   contextValue: SignupJourneyContextValues,
   url = '/parcours-inscription/identification'
 ) => {
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        isAdmin: false,
-        email: 'email@example.com',
-      },
-    },
-  }
   const rtlReturns = renderWithProviders(
     <SignupJourneyContext.Provider value={contextValue}>
       <SignupJourneyStepper />
@@ -46,7 +38,7 @@ const renderSignupStepper = (
         />
       </Routes>
     </SignupJourneyContext.Provider>,
-    { storeOverrides, initialRouterEntries: [url] }
+    { user: sharedCurrentUserFactory(), initialRouterEntries: [url] }
   )
 
   const tabAuthentication = screen.queryByText('Identification')
