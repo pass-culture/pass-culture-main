@@ -160,7 +160,7 @@ describe('Homepage', () => {
     renderHomePage(store)
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
-    expect(screen.getByTestId('home-offer-steps')).toBeInTheDocument()
+    expect(await screen.findByTestId('home-offer-steps')).toBeInTheDocument()
   })
 
   it('the user should not see the home offer steps if they have some venues', async () => {
@@ -175,7 +175,7 @@ describe('Homepage', () => {
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     expect(
-      screen.getByText('Profil et aide', { selector: 'h2' })
+      await screen.findByText('Profil et aide', { selector: 'h2' })
     ).toBeInTheDocument()
     expect(screen.getByText('Profil')).toBeInTheDocument()
     expect(screen.getByText('Aide et support')).toBeInTheDocument()
