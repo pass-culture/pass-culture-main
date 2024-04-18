@@ -115,6 +115,19 @@ describe('OfferInfos', () => {
     )
   })
 
+  it("should display the breadcrumb with a link back to my institution page if the url contains 'mon-etablissement'", () => {
+    vi.spyOn(router, 'useLocation').mockReturnValueOnce({
+      ...defaultUseLocationValue,
+      pathname: '/adage-iframe/mon-etablissement/offre/10',
+    })
+
+    renderOfferInfos()
+
+    expect(
+      screen.getByRole('link', { name: 'Pour mon établissement' })
+    ).toHaveAttribute('href', '/adage-iframe/mon-etablissement?token=null')
+  })
+
   it('should display the breadcrumb with a link back to the search page if the user is admin', () => {
     renderOfferInfos({ ...defaultAdageUser, role: AdageFrontRoles.READONLY })
 
