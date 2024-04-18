@@ -59,12 +59,12 @@ class PostUserNewProNavTest:
 
         assert response.status_code == 204
         assert "User with new nav activated submitting review" in caplog.messages
-        assert caplog.records[0].extra["user_id"] == user.id
         assert caplog.records[0].extra["offerer_id"] == offerer.id
         assert caplog.records[0].extra["isConvenient"] == expected_data["isConvenient"]
         assert caplog.records[0].extra["isPleasant"] == expected_data["isPleasant"]
         assert caplog.records[0].extra["comment"] == expected_data["comment"]
         assert caplog.records[0].extra["source_page"] == f"/offerers/{id}"
+        assert caplog.records[0].technical_message_id == "new_nav_review"
 
     def test_user_without_new_nav_activated_cant_submit_review(self, client, caplog):
         pro_new_nav_state = users_factories.UserProNewNavStateFactory(newNavDate=None)
