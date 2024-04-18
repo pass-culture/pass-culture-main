@@ -118,94 +118,6 @@ COLUMN_INDICES = {
     "code_media_base": 61,
 }
 
-INFO_KEYS = {
-    "AUTEURS": "auteurs",
-    "CLASSEMENT_TOP": "classement_top",
-    "CODE_CLIL": "code_clil",
-    "CODE_CSR": "code_csr",
-    "CODE_DISPO": "code_dispo",
-    "CODE_EDI_FOURNISSEUR": "code_edi_fournisseur",
-    "CODE_REGROUPEMENT": "code_regroupement",
-    "CODE_SUPPORT": "code_support",
-    "CODE_TVA": "code_tva",
-    "COLLECTION": "collection",
-    "COMMENTAIRE": "commentaire",
-    "DATE_PARUTION": "date_parution",
-    "DATE_UPDATED": "date_updated",
-    "DATETIME_CREATED": "datetime_created",
-    "DISTRIBUTEUR": "distributeur",
-    "EAN13": "ean13",
-    "EDITEUR": "editeur",
-    "EPAISSEUR": "epaisseur",
-    "GTL_ID": "gtl_id",
-    "HAS_IMAGE": "has_image",
-    "INDICE_DEWEY": "indice_dewey",
-    "IS_SCOLAIRE": "is_scolaire",
-    "IS_UPDATE": "is_update",
-    "LANGUE_ORIG": "langue_orig",
-    "LARGEUR": "largeur",
-    "LECTORAT_ID": "id_lectorat",
-    "LONGUEUR": "longueur",
-    "N_EXTRAITS_MP3": "n_extraits_mp3",
-    "N_PAGES": "n_pages",
-    "NUM_IN_COLLECTION": "num_in_collection",
-    "POIDS": "poids",
-    "PRIX": "prix",
-    "TAUX_TVA": "taux_tva",
-    "TITRE": "titre",
-    "TRADUCTEUR": "traducteur",
-}
-
-OLD_FILTER_SCHOOL_RELATED_CSR_CODE = [
-    "2700",
-    "2701",
-    "2702",
-    "2703",
-    "2704",
-    "2800",
-    "2801",
-    "2802",
-    "2803",
-    "2804",
-    "2900",
-    "2901",
-    "2902",
-    "2903",
-    "2904",
-    "2905",
-    "2906",
-    "2907",
-    "3000",
-    "3001",
-    "3002",
-    "3003",
-    "3004",
-    "3005",
-    "3006",
-    "3007",
-    "3008",
-    "3302",
-    "3303",
-    "3304",
-    "3511",
-    "3611",
-    "4001",
-    "4002",
-    "4800",
-    "4803",
-    "4806",
-    "4807",
-    "5512",
-    "9620",
-    "9621",
-    "9622",
-    "9623",
-    "9800",
-    "9811",
-    "9812",
-    "9814",
-]
-
 
 def trim_with_ellipsis(string: str, length: int) -> str:
     length_wo_ellipsis = length - 1
@@ -257,8 +169,8 @@ class TiteLiveThings(LocalProvider):
         (
             self.product_subcategory_id,
             self.product_extra_data["bookFormat"],
-        ) = get_subcategory_and_extra_data_from_titelive_type(self.product_infos[INFO_KEYS["CODE_SUPPORT"]])
-        book_unique_identifier = self.product_infos[INFO_KEYS["EAN13"]]
+        ) = get_subcategory_and_extra_data_from_titelive_type(self.product_infos["code_support"])
+        book_unique_identifier = self.product_infos["ean13"]
 
         ineligibility_reason = self.get_ineligibility_reason()
 
@@ -293,26 +205,26 @@ class TiteLiveThings(LocalProvider):
                 )
             return []
 
-        book_information_last_update = read_things_date(self.product_infos[INFO_KEYS["DATE_UPDATED"]])
+        book_information_last_update = read_things_date(self.product_infos["date_updated"])
         providable_info = self.create_providable_info(
             offers_models.Product, book_unique_identifier, book_information_last_update, book_unique_identifier
         )
         logger.info(
             "Providable info %s with date_updated: %s",
             book_unique_identifier,
-            self.product_infos[INFO_KEYS["DATE_UPDATED"]],
+            self.product_infos["date_updated"],
         )
         return [providable_info]
 
     def get_ineligibility_reason(self) -> str | None:
-        gtl_id = self.product_infos[INFO_KEYS["GTL_ID"]].zfill(8)
+        gtl_id = self.product_infos["gtl_id"].zfill(8)
         gtl_level_01_code = gtl_id[:2]
         gtl_level_02_code = gtl_id[2:4]
-        title = self.product_infos.get(INFO_KEYS["TITRE"], "").lower()
+        title = self.product_infos.get("titre", "").lower()
 
         # Ouvrage avec pierres ou encens, jeux de société ou escape game en coffrets,
         # marchandisage : jouets, goodies, peluches, posters, papeterie, etc...
-        if self.product_infos[INFO_KEYS["TAUX_TVA"]] == BASE_VAT:
+        if self.product_infos["taux_tva"] == BASE_VAT:
             return "vat-20"
 
         # ouvrage du rayon scolaire
@@ -324,25 +236,25 @@ class TiteLiveThings(LocalProvider):
         if gtl_level_01_code == GTL_LEVEL_01_EXTRACURRICULAR:
             return "extracurricular"
 
-        if self.product_infos[INFO_KEYS["CODE_SUPPORT"]] == CALENDAR_SUPPORT_CODE:
+        if self.product_infos["code_support"] == CALENDAR_SUPPORT_CODE:
             return "calendar"
 
-        if self.product_infos[INFO_KEYS["CODE_SUPPORT"]] == POSTER_SUPPORT_CODE:
+        if self.product_infos["code_support"] == POSTER_SUPPORT_CODE:
             return "poster"
 
-        if self.product_infos[INFO_KEYS["CODE_SUPPORT"]] == PAPER_CONSUMABLE_SUPPORT_CODE:
+        if self.product_infos["code_support"] == PAPER_CONSUMABLE_SUPPORT_CODE:
             return "paper-consumable"
 
         # Coffrets (contenant un produit + un petit livret)
-        if self.product_infos[INFO_KEYS["CODE_SUPPORT"]] == BOX_SUPPORT_CODE:
+        if self.product_infos["code_support"] == BOX_SUPPORT_CODE:
             return "box"
 
         # Oracles contenant des jeux de tarot
-        if self.product_infos[INFO_KEYS["CODE_SUPPORT"]] == OBJECT_SUPPORT_CODE:
+        if self.product_infos["code_support"] == OBJECT_SUPPORT_CODE:
             return "object"
 
         # ouvrage "lectorat 18+" (Pornographie / ultra-violence)
-        if self.product_infos[INFO_KEYS["LECTORAT_ID"]] == LECTORAT_EIGHTEEN_ID:
+        if self.product_infos["id_lectorat"] == LECTORAT_EIGHTEEN_ID:
             return "pornography-or-violence"
 
         # Petite jeunesse (livres pour le bains, peluches, puzzles, etc...)
@@ -357,8 +269,8 @@ class TiteLiveThings(LocalProvider):
             return "toeic-toefl"
 
         if (
-            self.product_infos[INFO_KEYS["TAUX_TVA"]] == PAPER_PRESS_VAT
-            and self.product_infos[INFO_KEYS["CODE_SUPPORT"]] == PAPER_PRESS_SUPPORT_CODE
+            self.product_infos["taux_tva"] == PAPER_PRESS_VAT
+            and self.product_infos["code_support"] == PAPER_PRESS_SUPPORT_CODE
         ):
             return "press"
 
@@ -368,8 +280,8 @@ class TiteLiveThings(LocalProvider):
         return None
 
     def fill_object_attributes(self, product: offers_models.Product) -> None:
-        product.name = trim_with_ellipsis(self.product_infos[INFO_KEYS["TITRE"]], 140)
-        product.datePublished = parse_things_date_to_string(self.product_infos[INFO_KEYS["DATE_PARUTION"]])
+        product.name = trim_with_ellipsis(self.product_infos["titre"], 140)
+        product.datePublished = parse_things_date_to_string(self.product_infos["date_parution"])
         if not self.product_subcategory_id:
             raise ValueError("product subcategory id is missing")
         subcategory = subcategories.ALL_SUBCATEGORIES_DICT[self.product_subcategory_id]
@@ -449,137 +361,120 @@ def get_lines_from_thing_file(thing_file: str) -> Iterator[str]:
 
 
 def get_subcategory_and_extra_data_from_titelive_type(titelive_type: str) -> tuple[str | None, str | None]:
-    if titelive_type in ("A", "I", "LA"):  # obsolete codes
-        return None, None
-    if titelive_type == "BD":  # bande dessinée
-        return subcategories.LIVRE_PAPIER.id, providers_constants.BookFormat.BANDE_DESSINEE.value
-    if titelive_type == "BL":  # beaux livres
-        return subcategories.LIVRE_PAPIER.id, providers_constants.BookFormat.BEAUX_LIVRES.value
-    if titelive_type == "C":  # carte et plan
-        return None, None
-    if titelive_type == "CA":  # CD audio
-        return None, None
-    if titelive_type == BOX_SUPPORT_CODE:  # coffret / boite
-        return None, None
-    if titelive_type == "CD":  # CD-ROM
-        return None, None
-    if titelive_type == CALENDAR_SUPPORT_CODE:  # calendrier
-        return None, None
-    if titelive_type == "DV":  # DVD
-        return None, None
-    if titelive_type == "EB":  # contenu numérique (hors livre électronique)
-        return None, None
-    if titelive_type == "K7":  # cassette audio vidéo
-        return None, None
-    if titelive_type == "LA":  # obsolete code
-        return None, None
-    if titelive_type == "LC":  # livre + cassette
-        return subcategories.LIVRE_PAPIER.id, providers_constants.BookFormat.LIVRE_CASSETTE.value  # TODO: verify
-    if titelive_type == "LD":  # livre + CD audio
-        return subcategories.LIVRE_PAPIER.id, providers_constants.BookFormat.LIVRE_AUDIO.value  # TODO: verify
-    if titelive_type == "LE":  # livre numérique
-        return None, None
-    if titelive_type == "LR":  # livre + CD-ROM
-        return None, None
-    if titelive_type == "LT":  # liseuses et tablettes
-        return None, None
-    if titelive_type == "LV":  # livre + DVD
-        return None, None
-    if titelive_type == "M":  # moyen format
-        return subcategories.LIVRE_PAPIER.id, providers_constants.BookFormat.MOYEN_FORMAT.value
-    if titelive_type == OBJECT_SUPPORT_CODE:  # objet
-        return None, None
-    if titelive_type == "P":  # poche
-        return subcategories.LIVRE_PAPIER.id, providers_constants.BookFormat.POCHE.value
-    if titelive_type == PAPER_CONSUMABLE_SUPPORT_CODE:  # papeterie / consommable
-        return None, None
-    if titelive_type == POSTER_SUPPORT_CODE:  # poster
-        return None, None
-    if titelive_type == PAPER_PRESS_SUPPORT_CODE:  # revue
-        return subcategories.LIVRE_PAPIER.id, providers_constants.BookFormat.REVUE.value  # TODO: verify
-    if titelive_type in ("T", "TL"):  # livre papier (hors spécificité)
-        return subcategories.LIVRE_PAPIER.id, None
-    if titelive_type == "TR":  # transparents
-        return None, None
-    return None, None
+    empty = (None, None)
+    d = {
+        "A": empty,  # obsolete code
+        "BD": (subcategories.LIVRE_PAPIER.id, providers_constants.BookFormat.BANDE_DESSINEE.value),  # bande dessinée
+        "BL": (subcategories.LIVRE_PAPIER.id, providers_constants.BookFormat.BEAUX_LIVRES.value),  # beaux livres
+        "C": empty,  # carte et plan
+        "CA": empty,  # CD audio
+        BOX_SUPPORT_CODE: empty,  # coffret / boite
+        "CD": empty,  # CD-ROM
+        CALENDAR_SUPPORT_CODE: empty,  # calendrier
+        "DV": empty,  # DVD
+        "EB": empty,  # contenu numérique (hors livre électronique)
+        "I": empty,  # obsolete code
+        "K7": empty,  # cassette audio vidéo
+        "LA": empty,  # obsolete code
+        # TODO: verify:
+        "LC": (subcategories.LIVRE_PAPIER.id, providers_constants.BookFormat.LIVRE_CASSETTE.value),  # livre + cassette
+        # TODO: verify:
+        "LD": (subcategories.LIVRE_PAPIER.id, providers_constants.BookFormat.LIVRE_AUDIO.value),  # livre + CD audio
+        "LE": empty,  # livre numérique
+        "LR": empty,  # livre + CD-ROM
+        "LT": empty,  # liseuses et tablettes
+        "LV": empty,  # livre + DVD
+        "M": (subcategories.LIVRE_PAPIER.id, providers_constants.BookFormat.MOYEN_FORMAT.value),  # moyen format
+        OBJECT_SUPPORT_CODE: empty,  # objet
+        "P": (subcategories.LIVRE_PAPIER.id, providers_constants.BookFormat.POCHE.value),  # poche
+        PAPER_CONSUMABLE_SUPPORT_CODE: empty,  # papeterie / consommable
+        POSTER_SUPPORT_CODE: empty,  # poster
+        # TODO: verify:
+        PAPER_PRESS_SUPPORT_CODE: (subcategories.LIVRE_PAPIER.id, providers_constants.BookFormat.REVUE.value),  # revue
+        "T": (subcategories.LIVRE_PAPIER.id, None),  # livre papier (hors spécificité)
+        "TL": (subcategories.LIVRE_PAPIER.id, None),  # livre papier (hors spécificité)
+        "TR": empty,  # transparents
+    }
+    return d.get(titelive_type, empty)
 
 
 def get_infos_from_data_line(elts: list) -> dict:
-    infos = {}
-    infos[INFO_KEYS["EAN13"]] = elts[COLUMN_INDICES["ean"]]
-    infos[INFO_KEYS["TITRE"]] = elts[COLUMN_INDICES["titre"]]
-    infos[INFO_KEYS["CODE_CSR"]] = elts[COLUMN_INDICES["code_rayon_csr"]]
-    infos[INFO_KEYS["CODE_DISPO"]] = elts[COLUMN_INDICES["disponibilite"]]
-    infos[INFO_KEYS["COLLECTION"]] = elts[COLUMN_INDICES["collection"]]
-    infos[INFO_KEYS["NUM_IN_COLLECTION"]] = elts[COLUMN_INDICES["num_in_collection"]]
-    infos[INFO_KEYS["PRIX"]] = elts[COLUMN_INDICES["prix_ttc"]]
-    infos[INFO_KEYS["EDITEUR"]] = elts[COLUMN_INDICES["editeur"]]
-    infos[INFO_KEYS["DISTRIBUTEUR"]] = elts[COLUMN_INDICES["distributeur"]]
-    infos[INFO_KEYS["DATE_PARUTION"]] = elts[COLUMN_INDICES["date_commercialisation"]]
-    infos[INFO_KEYS["CODE_SUPPORT"]] = elts[COLUMN_INDICES["code_support"]]
-    infos[INFO_KEYS["CODE_TVA"]] = elts[COLUMN_INDICES["code_tva"]]
-    infos[INFO_KEYS["N_PAGES"]] = elts[COLUMN_INDICES["nb_pages"]]
-    infos[INFO_KEYS["LONGUEUR"]] = elts[COLUMN_INDICES["longueur"]]
-    infos[INFO_KEYS["LARGEUR"]] = elts[COLUMN_INDICES["largeur"]]
-    infos[INFO_KEYS["EPAISSEUR"]] = elts[COLUMN_INDICES["epaisseur"]]
-    infos[INFO_KEYS["POIDS"]] = elts[COLUMN_INDICES["poids"]]
-    infos[INFO_KEYS["IS_UPDATE"]] = elts[COLUMN_INDICES["statut_fiche"]]
-    infos[INFO_KEYS["AUTEURS"]] = elts[COLUMN_INDICES["auteurs"]]
-    infos[INFO_KEYS["DATETIME_CREATED"]] = elts[COLUMN_INDICES["date_creation"]]
-    infos[INFO_KEYS["DATE_UPDATED"]] = elts[COLUMN_INDICES["date_derniere_maj"]]
-    infos[INFO_KEYS["TAUX_TVA"]] = elts[COLUMN_INDICES["taux_tva"]]
-    infos[INFO_KEYS["TRADUCTEUR"]] = elts[COLUMN_INDICES["traducteur"]]
-    infos[INFO_KEYS["LANGUE_ORIG"]] = elts[COLUMN_INDICES["langue_vo"]]
-    infos[INFO_KEYS["COMMENTAIRE"]] = elts[COLUMN_INDICES["commentaire"]]
-    infos[INFO_KEYS["CLASSEMENT_TOP"]] = elts[COLUMN_INDICES["palmares_pro"]]
-    infos[INFO_KEYS["HAS_IMAGE"]] = elts[COLUMN_INDICES["image"]]
-    infos[INFO_KEYS["CODE_EDI_FOURNISSEUR"]] = elts[COLUMN_INDICES["fournisseur_edi"]]
-    infos[INFO_KEYS["IS_SCOLAIRE"]] = elts[COLUMN_INDICES["scolaire"]]
-    infos[INFO_KEYS["N_EXTRAITS_MP3"]] = elts[COLUMN_INDICES["compteur_mp3"]]
-    infos[INFO_KEYS["INDICE_DEWEY"]] = elts[COLUMN_INDICES["indice_dewey"]]
-    infos[INFO_KEYS["CODE_REGROUPEMENT"]] = elts[COLUMN_INDICES["code_regroupement"]]
-    infos[INFO_KEYS["GTL_ID"]] = elts[COLUMN_INDICES["genre_tite_live"]]
-    infos[INFO_KEYS["CODE_CLIL"]] = elts[COLUMN_INDICES["code_clil"]]
-    infos[INFO_KEYS["LECTORAT_ID"]] = elts[COLUMN_INDICES["id_lectorat"]]
+    infos = {
+        "ean13": elts[COLUMN_INDICES["ean"]],
+        "titre": elts[COLUMN_INDICES["titre"]],
+        "code_csr": elts[COLUMN_INDICES["code_rayon_csr"]],
+        "code_dispo": elts[COLUMN_INDICES["disponibilite"]],
+        "collection": elts[COLUMN_INDICES["collection"]],
+        "num_in_collection": elts[COLUMN_INDICES["num_in_collection"]],
+        "prix": elts[COLUMN_INDICES["prix_ttc"]],
+        "editeur": elts[COLUMN_INDICES["editeur"]],
+        "distributeur": elts[COLUMN_INDICES["distributeur"]],
+        "date_parution": elts[COLUMN_INDICES["date_commercialisation"]],
+        "code_support": elts[COLUMN_INDICES["code_support"]],
+        "code_tva": elts[COLUMN_INDICES["code_tva"]],
+        "n_pages": elts[COLUMN_INDICES["nb_pages"]],
+        "longueur": elts[COLUMN_INDICES["longueur"]],
+        "largeur": elts[COLUMN_INDICES["largeur"]],
+        "epaisseur": elts[COLUMN_INDICES["epaisseur"]],
+        "poids": elts[COLUMN_INDICES["poids"]],
+        "is_update": elts[COLUMN_INDICES["statut_fiche"]],
+        "auteurs": elts[COLUMN_INDICES["auteurs"]],
+        "datetime_created": elts[COLUMN_INDICES["date_creation"]],
+        "date_updated": elts[COLUMN_INDICES["date_derniere_maj"]],
+        "taux_tva": elts[COLUMN_INDICES["taux_tva"]],
+        "traducteur": elts[COLUMN_INDICES["traducteur"]],
+        "langue_orig": elts[COLUMN_INDICES["langue_vo"]],
+        "commentaire": elts[COLUMN_INDICES["commentaire"]],
+        "classement_top": elts[COLUMN_INDICES["palmares_pro"]],
+        "has_image": elts[COLUMN_INDICES["image"]],
+        "code_edi_fournisseur": elts[COLUMN_INDICES["fournisseur_edi"]],
+        "is_scolaire": elts[COLUMN_INDICES["scolaire"]],
+        "n_extraits_mp3": elts[COLUMN_INDICES["compteur_mp3"]],
+        "indice_dewey": elts[COLUMN_INDICES["indice_dewey"]],
+        "code_regroupement": elts[COLUMN_INDICES["code_regroupement"]],
+        "gtl_id": elts[COLUMN_INDICES["genre_tite_live"]],
+        "code_clil": elts[COLUMN_INDICES["code_clil"]],
+        "id_lectorat": elts[COLUMN_INDICES["id_lectorat"]],
+    }
     return infos
 
 
 def get_extra_data_from_infos(infos: dict) -> offers_models.OfferExtraData:
     extra_data = offers_models.OfferExtraData()
-    extra_data["author"] = infos[INFO_KEYS["AUTEURS"]]
-    extra_data["ean"] = infos[INFO_KEYS["EAN13"]]
-    if infos[INFO_KEYS["GTL_ID"]]:
-        csr_label = get_closest_csr(infos[INFO_KEYS["GTL_ID"]])
-        extra_data["gtl_id"] = infos[INFO_KEYS["GTL_ID"]].zfill(8)
+    extra_data["author"] = infos["auteurs"]
+    extra_data["ean"] = infos["ean13"]
+    if infos["gtl_id"]:
+        csr_label = get_closest_csr(infos["gtl_id"])
+        extra_data["gtl_id"] = infos["gtl_id"].zfill(8)
         if csr_label is not None:
             extra_data["rayon"] = csr_label.get("label")
             extra_data["csr_id"] = csr_label.get("csr_id")
-    if infos[INFO_KEYS["CODE_CLIL"]]:
-        extra_data["code_clil"] = infos[INFO_KEYS["CODE_CLIL"]]
-    if infos[INFO_KEYS["INDICE_DEWEY"]] != "":
-        extra_data["dewey"] = infos[INFO_KEYS["INDICE_DEWEY"]]
-    extra_data["titelive_regroup"] = infos[INFO_KEYS["CODE_REGROUPEMENT"]]
-    extra_data["prix_livre"] = infos[INFO_KEYS["PRIX"]].replace(",", ".")
-    if infos[INFO_KEYS["IS_SCOLAIRE"]] == "1":
+    if infos["code_clil"]:
+        extra_data["code_clil"] = infos["code_clil"]
+    if infos["indice_dewey"] != "":
+        extra_data["dewey"] = infos["indice_dewey"]
+    extra_data["titelive_regroup"] = infos["code_regroupement"]
+    extra_data["prix_livre"] = infos["prix"].replace(",", ".")
+    if infos["is_scolaire"] == "1":
         extra_data["schoolbook"] = True
-    if infos[INFO_KEYS["CLASSEMENT_TOP"]] != "":
-        extra_data["top"] = infos[INFO_KEYS["CLASSEMENT_TOP"]]
-    if infos[INFO_KEYS["COLLECTION"]] != "":
-        extra_data["collection"] = infos[INFO_KEYS["COLLECTION"]]
-    if infos[INFO_KEYS["NUM_IN_COLLECTION"]] != "":
-        extra_data["num_in_collection"] = infos[INFO_KEYS["NUM_IN_COLLECTION"]]
-    if infos[INFO_KEYS["COMMENTAIRE"]] != "":
-        extra_data["comment"] = trim_with_ellipsis(infos[INFO_KEYS["COMMENTAIRE"]], 92)
-    if infos[INFO_KEYS["EDITEUR"]] != "":
-        extra_data["editeur"] = infos[INFO_KEYS["EDITEUR"]]
-    if infos[INFO_KEYS["DATE_PARUTION"]] != "":
-        extra_data["date_parution"] = infos[INFO_KEYS["DATE_PARUTION"]]
-    if infos[INFO_KEYS["DISTRIBUTEUR"]] != "":
-        extra_data["distributeur"] = infos[INFO_KEYS["DISTRIBUTEUR"]]
+    if infos["classement_top"] != "":
+        extra_data["top"] = infos["classement_top"]
+    if infos["collection"] != "":
+        extra_data["collection"] = infos["collection"]
+    if infos["num_in_collection"] != "":
+        extra_data["num_in_collection"] = infos["num_in_collection"]
+    if infos["commentaire"] != "":
+        extra_data["comment"] = trim_with_ellipsis(infos["commentaire"], 92)
+    if infos["editeur"] != "":
+        extra_data["editeur"] = infos["editeur"]
+    if infos["date_parution"] != "":
+        extra_data["date_parution"] = infos["date_parution"]
+    if infos["distributeur"] != "":
+        extra_data["distributeur"] = infos["distributeur"]
     return extra_data
 
 
 def is_unreleased_book(product_infos: dict) -> bool:
-    title = product_infos.get(INFO_KEYS["TITRE"], "").lower()
-    authors = product_infos.get(INFO_KEYS["AUTEURS"], "").lower()
+    title = product_infos.get("titre", "").lower()
+    authors = product_infos.get("auteurs", "").lower()
     return title == authors == offers_models.UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER
