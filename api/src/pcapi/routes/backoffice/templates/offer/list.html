@@ -175,7 +175,9 @@
                     {% endif %}
                   </td>
                   <td>
-                    {% if row.prices.min_price == row.prices.max_price %}
+                    {% if row.prices.min_price is none %}
+                      -
+                    {% elif row.prices.min_price == row.prices.max_price %}
                       <span class="text-nowrap">{{ row.prices.min_price | format_amount }}</span>
                     {% else %}
                       <span class="text-nowrap">{{ row.prices.min_price | format_amount }}</span>
