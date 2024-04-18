@@ -372,8 +372,9 @@ describe('OfferType', () => {
 
   it('should display validation banner if structure not validated for collective offer ', async () => {
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
+      ...defaultGetOffererResponseModel,
       isValidated: false,
-    } as GetOffererResponseModel)
+    })
     renderOfferTypes('123')
 
     expect(

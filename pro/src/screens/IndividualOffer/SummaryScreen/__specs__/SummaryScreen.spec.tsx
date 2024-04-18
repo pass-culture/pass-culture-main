@@ -189,10 +189,8 @@ describe('Summary', () => {
 
   describe('On edition', () => {
     it('should render component with informations', () => {
-      // given / when
       renderSummary(customContext)
 
-      // then
       expectOfferFields()
       expect(
         screen.getByText('Retour à la liste des offres')
@@ -212,7 +210,6 @@ describe('Summary', () => {
     })
 
     it('should render component with informations', () => {
-      // given / when
       renderSummary(
         customContext,
         generatePath(
@@ -224,7 +221,6 @@ describe('Summary', () => {
         )
       )
 
-      // then
       expectOfferFields()
       expect(
         screen.queryByText('Visualiser dans l’app')
@@ -233,7 +229,6 @@ describe('Summary', () => {
 
     describe('When it is form v3', () => {
       it('should render component with right buttons', () => {
-        // when
         renderSummary(
           customContext,
           generatePath(
@@ -245,7 +240,6 @@ describe('Summary', () => {
           )
         )
 
-        // then
         expect(screen.getByText('Retour')).toBeInTheDocument()
         expect(
           screen.getByText('Sauvegarder le brouillon et quitter')
@@ -257,7 +251,7 @@ describe('Summary', () => {
         vi.spyOn(api, 'getOfferer').mockResolvedValue(
           defaultGetOffererResponseModel
         )
-        // when
+
         renderSummary(
           customContext,
           generatePath(
@@ -280,7 +274,6 @@ describe('Summary', () => {
     })
 
     it('should disabled publish button link during submit', async () => {
-      // when
       renderSummary(
         customContext,
         generatePath(
@@ -322,7 +315,6 @@ describe('Summary', () => {
     })
 
     it('should display notification on api error', async () => {
-      // when
       renderSummary(
         customContext,
         generatePath(

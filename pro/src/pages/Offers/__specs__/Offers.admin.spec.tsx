@@ -166,15 +166,11 @@ describe('route Offers when user is admin', () => {
   })
 
   it('should reset and disable status filter when offerer filter is removed', async () => {
-    const offerer = {
-      ...defaultGetOffererResponseModel,
-      name: 'La structure',
-      id: 25,
-    }
-
-    vi.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
+    vi.spyOn(api, 'getOfferer').mockResolvedValue(
+      defaultGetOffererResponseModel
+    )
     const filters = {
-      offererId: offerer.id.toString(),
+      offererId: defaultGetOffererResponseModel.id.toString(),
       status: OfferStatus.INACTIVE,
     }
     await renderOffers(filters)
@@ -202,17 +198,14 @@ describe('route Offers when user is admin', () => {
 
   it('should not reset or disable status filter when offerer filter is removed while venue filter is applied', async () => {
     const { id: venueId } = proVenues[0]
-    const offerer = {
-      ...defaultGetOffererResponseModel,
-      name: 'La structure',
-      id: 65,
-    }
 
-    vi.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
+    vi.spyOn(api, 'getOfferer').mockResolvedValue(
+      defaultGetOffererResponseModel
+    )
     const filters = {
       venueId: venueId.toString(),
       status: OfferStatus.INACTIVE,
-      offererId: offerer.id.toString(),
+      offererId: defaultGetOffererResponseModel.id.toString(),
     }
     await renderOffers(filters)
 
