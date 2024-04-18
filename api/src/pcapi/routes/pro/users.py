@@ -360,14 +360,14 @@ def submit_new_nav_review(body: users_serializers.SubmitReviewRequestModel) -> N
     if not users_repo.user_has_new_nav_activated(current_user):
         raise ForbiddenError()
 
-    logging.info(
+    logger.info(
         "User with new nav activated submitting review",
         extra={
-            "user_id": current_user.id,
             "offerer_id": body.offererId,
             "isConvenient": body.isConvenient,
             "isPleasant": body.isPleasant,
             "comment": body.comment,
             "source_page": body.location,
         },
+        technical_message_id="new_nav_review",
     )
