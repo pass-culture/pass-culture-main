@@ -145,6 +145,7 @@ class BaseVenueResponse(BaseModel):
     externalAccessibilityData: acceslibre_serializers.ExternalAccessibilityDataModel | None
     externalAccessibilityUrl: str | None
     externalAccessibilityId: str | None
+    hasBookingsQuantity: bool
     isPermanent: bool | None
     latitude: float | None
     longitude: float | None

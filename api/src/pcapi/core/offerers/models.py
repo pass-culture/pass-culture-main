@@ -769,6 +769,23 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
             return None
         return self.accessibilityProvider.externalAccessibilityUrl
 
+    @property
+    def hasBookingsQuantity(self) -> bool:
+        from pcapi.core.offers.models import Offer
+        from pcapi.core.offers.models import Stock
+
+        has_bookings_quantity = db.session.query(
+            sa.select(1)
+            .select_from(Offer)
+            .join(Stock, Offer.id == Stock.offerId)
+            .where(
+                Offer.venueId == self.id,
+                Stock.dnBookedQuantity > 0,
+            )
+            .exists()
+        ).scalar()
+        return has_bookings_quantity
+
 
 class GooglePlacesInfo(PcObject, Base, Model):
     __tablename__ = "google_places_info"

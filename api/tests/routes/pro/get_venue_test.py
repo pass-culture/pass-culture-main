@@ -126,6 +126,7 @@ class Returns200Test:
             },
             "externalAccessibilityId": "accessibility-slug",
             "externalAccessibilityUrl": "https://site-d-accessibilite.com/erps/accessibility-slug/",
+            "hasBookingsQuantity": venue.hasBookingsQuantity,
             "isPermanent": venue.isPermanent,
             "isVirtual": venue.isVirtual,
             "latitude": float(venue.latitude),

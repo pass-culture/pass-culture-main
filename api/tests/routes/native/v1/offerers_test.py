@@ -98,6 +98,7 @@ class VenuesTest:
                 "image_credit": venue.bannerMeta["image_credit"],
             },
             "openingHours": venue.opening_days,
+            "hasBookingsQuantity": venue.hasBookingsQuantity,
         }
 
     def test_get_non_permanent_venue(self, client):
