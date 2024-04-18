@@ -41,7 +41,8 @@ export const OfferInfos = () => {
   >(state?.offer)
   const [loading, setLoading] = useState(false)
 
-  const { adageUser } = useAdageUser()
+  const { adageUser, setInstitutionOfferCount, institutionOfferCount } =
+    useAdageUser()
 
   const isNewOfferInfoEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_ADAGE_OFFER_DESIGN'
@@ -132,7 +133,12 @@ export const OfferInfos = () => {
             />
           </div>
           {isNewOfferInfoEnabled ? (
-            <AdageOffer offer={offer} adageUser={adageUser} />
+            <AdageOffer
+              offer={offer}
+              adageUser={adageUser}
+              setInstitutionOfferCount={setInstitutionOfferCount}
+              institutionOfferCount={institutionOfferCount}
+            />
           ) : (
             <div className={styles['offer-container']}>
               <Offer offer={offer} position={0} queryId="" openDetails={true} />
