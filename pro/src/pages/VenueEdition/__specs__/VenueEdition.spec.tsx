@@ -3,9 +3,12 @@ import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { GetVenueResponseModel, VenueProviderResponse } from 'apiClient/v1'
+import { GetVenueResponseModel } from 'apiClient/v1'
 import { defaultGetVenue } from 'utils/collectiveApiFactories'
-import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
+import {
+  defaultGetOffererResponseModel,
+  defaultVenueProvider,
+} from 'utils/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
@@ -45,47 +48,23 @@ const renderVenueEdition = (options?: RenderWithProvidersOptions) => {
 vi.mock('react-router-dom', async () => ({
   ...(await vi.importActual('react-router-dom')),
   useParams: () => ({
-    offererId: '1234',
-    venueId: '12',
+    venueId: defaultGetVenue.id,
   }),
   useNavigate: vi.fn(),
 }))
 
+const baseVenue: GetVenueResponseModel = {
+  ...defaultGetVenue,
+  publicName: 'Cinéma des iles',
+  dmsToken: 'dms-token-12345',
+  isPermanent: true,
+}
+
 describe('route VenueEdition', () => {
-  let venue: GetVenueResponseModel
-  let venueProviders: VenueProviderResponse[]
-
   beforeEach(() => {
-    venue = {
-      ...defaultGetVenue,
-      publicName: 'Cinéma des iles',
-      dmsToken: 'dms-token-12345',
-      isPermanent: true,
-    }
-
-    venueProviders = [
-      {
-        id: 1,
-        isActive: true,
-        isFromAllocineProvider: false,
-        lastSyncDate: undefined,
-        venueId: 2,
-        venueIdAtOfferProvider: 'cdsdemorc1',
-        provider: {
-          name: 'Ciné Office',
-          id: 12,
-          hasOffererProvider: false,
-          isActive: true,
-        },
-        quantity: 0,
-        isDuo: true,
-        price: 0,
-      },
-    ]
-
-    vi.spyOn(api, 'getVenue').mockResolvedValue(venue)
+    vi.spyOn(api, 'getVenue').mockResolvedValue(baseVenue)
     vi.spyOn(api, 'listVenueProviders').mockResolvedValue({
-      venue_providers: venueProviders,
+      venue_providers: [defaultVenueProvider],
     })
     vi.spyOn(api, 'getOfferer').mockResolvedValue(
       defaultGetOffererResponseModel
@@ -101,13 +80,13 @@ describe('route VenueEdition', () => {
     const venuePublicName = await screen.findByRole('heading', {
       name: 'Cinéma des iles',
     })
-    expect(api.getVenue).toHaveBeenCalledWith(12)
+    expect(api.getVenue).toHaveBeenCalledWith(defaultGetVenue.id)
     expect(venuePublicName).toBeInTheDocument()
   })
 
   it('should check none accessibility', async () => {
     vi.spyOn(api, 'getVenue').mockResolvedValueOnce({
-      ...venue,
+      ...baseVenue,
       siret: undefined,
       visualDisabilityCompliant: false,
       mentalDisabilityCompliant: false,
@@ -128,7 +107,7 @@ describe('route VenueEdition', () => {
 
   it('should not check none accessibility if every accessibility parameters are null', async () => {
     vi.spyOn(api, 'getVenue').mockResolvedValueOnce({
-      ...venue,
+      ...baseVenue,
       visualDisabilityCompliant: null,
       mentalDisabilityCompliant: null,
       audioDisabilityCompliant: null,
@@ -148,7 +127,7 @@ describe('route VenueEdition', () => {
 
   it('should not render reimbursement fields when FF bank details is enabled and venue has no siret', async () => {
     vi.spyOn(api, 'getVenue').mockResolvedValueOnce({
-      ...venue,
+      ...baseVenue,
       siret: '11111111111111',
     })
 
@@ -180,7 +159,10 @@ describe('route VenueEdition', () => {
   })
 
   it('should display the acces libre callout for permanent venues', async () => {
-    venue.isPermanent = true
+    vi.spyOn(api, 'getVenue').mockResolvedValueOnce({
+      ...baseVenue,
+      isPermanent: true,
+    })
     renderVenueEdition({
       features: ['WIP_ACCESLIBRE'],
       initialRouterEntries: [
@@ -198,7 +180,10 @@ describe('route VenueEdition', () => {
   })
 
   it('should not display the acces libre callout for non permanent venues', async () => {
-    venue.isPermanent = false
+    vi.spyOn(api, 'getVenue').mockResolvedValueOnce({
+      ...baseVenue,
+      isPermanent: false,
+    })
     renderVenueEdition({
       features: ['WIP_ACCESLIBRE'],
       initialRouterEntries: [

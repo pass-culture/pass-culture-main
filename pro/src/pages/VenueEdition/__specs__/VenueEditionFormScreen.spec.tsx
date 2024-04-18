@@ -141,18 +141,14 @@ vi.mock('core/Venue/siretApiValidate', () => ({
   default: () => Promise.resolve(),
 }))
 
+const baseVenue: GetVenueResponseModel = {
+  ...defaultGetVenue,
+  isPermanent: true,
+}
+
 describe('VenueFormScreen', () => {
-  let venue: GetVenueResponseModel
-
-  beforeEach(() => {
-    venue = {
-      ...defaultGetVenue,
-      isPermanent: true,
-    }
-  })
-
   it('should display readonly info', async () => {
-    renderForm(venue, { initialRouterEntries: ['/'] })
+    renderForm(baseVenue, { initialRouterEntries: ['/'] })
 
     expect(
       await screen.findByText('Vos informations pour le grand public')
@@ -163,7 +159,7 @@ describe('VenueFormScreen', () => {
   })
 
   it('should display the partner info', async () => {
-    renderForm(venue)
+    renderForm(baseVenue)
 
     expect(
       await screen.findByText('À propos de votre activité')
@@ -175,7 +171,7 @@ describe('VenueFormScreen', () => {
   })
 
   it('should display an error when the venue could not be updated', async () => {
-    renderForm(venue)
+    renderForm(baseVenue)
 
     vi.spyOn(api, 'editVenue').mockRejectedValue(
       new ApiError(
@@ -197,7 +193,7 @@ describe('VenueFormScreen', () => {
   })
 
   it('should display the route leaving guard when leaving without saving', async () => {
-    renderForm(venue)
+    renderForm(baseVenue)
 
     await userEvent.type(screen.getByLabelText('Description'), 'test')
     await userEvent.click(screen.getByText('Annuler et quitter'))
@@ -210,8 +206,7 @@ describe('VenueFormScreen', () => {
   })
 
   it('should display specific message when venue is virtual', () => {
-    venue.isVirtual = true
-    renderForm(venue)
+    renderForm({ ...baseVenue, isVirtual: true })
 
     expect(
       screen.getByText(
@@ -223,9 +218,7 @@ describe('VenueFormScreen', () => {
   })
 
   it('should diplay only some fields when the venue is virtual', async () => {
-    venue.isVirtual = true
-
-    renderForm(venue)
+    renderForm({ ...baseVenue, isVirtual: true })
 
     await waitFor(() => {
       expect(screen.queryByTestId('wrapper-publicName')).not.toBeInTheDocument()
@@ -246,17 +239,21 @@ describe('VenueFormScreen', () => {
   })
 
   it('should display the acceslibre section in readonly if the feature is enabled and data is present', () => {
-    venue.externalAccessibilityData = {
-      isAccessibleAudioDisability: true,
-      isAccessibleMentalDisability: false,
-      isAccessibleMotorDisability: true,
-      isAccessibleVisualDisability: true,
-    }
-
-    renderForm(venue, {
-      features: ['WIP_ACCESLIBRE'],
-      initialRouterEntries: ['/'],
-    })
+    renderForm(
+      {
+        ...baseVenue,
+        externalAccessibilityData: {
+          isAccessibleAudioDisability: true,
+          isAccessibleMentalDisability: false,
+          isAccessibleMotorDisability: true,
+          isAccessibleVisualDisability: true,
+        },
+      },
+      {
+        features: ['WIP_ACCESLIBRE'],
+        initialRouterEntries: ['/'],
+      }
+    )
 
     expect(
       screen.queryByText(
@@ -269,14 +266,18 @@ describe('VenueFormScreen', () => {
   })
 
   it('should display the acceslibre section under the form if the feature is enabled and data is present', () => {
-    venue.externalAccessibilityData = {
-      isAccessibleAudioDisability: true,
-      isAccessibleMentalDisability: false,
-      isAccessibleMotorDisability: true,
-      isAccessibleVisualDisability: true,
-    }
-
-    renderForm(venue, { features: ['WIP_ACCESLIBRE'] })
+    renderForm(
+      {
+        ...baseVenue,
+        externalAccessibilityData: {
+          isAccessibleAudioDisability: true,
+          isAccessibleMentalDisability: false,
+          isAccessibleMotorDisability: true,
+          isAccessibleVisualDisability: true,
+        },
+      },
+      { features: ['WIP_ACCESLIBRE'] }
+    )
 
     expect(
       screen.getByText('Modalités d’accessibilité via acceslibre')
