@@ -5,27 +5,13 @@ import React from 'react'
 import { api } from 'apiClient/api'
 import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { VenueCreation } from '../VenueCreation'
 
 const renderVenueCreation = () => {
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        firstName: 'John',
-        dateCreated: '2022-07-29T12:18:43.087097Z',
-        email: 'john@do.net',
-        id: '1',
-        isAdmin: false,
-        isEmailValidated: true,
-        roles: [],
-      },
-    },
-  }
-
   renderWithProviders(<VenueCreation />, {
-    storeOverrides,
+    user: sharedCurrentUserFactory(),
     initialRouterEntries: [
       `/structures/${defaultGetOffererResponseModel.id}/lieux/creation`,
     ],

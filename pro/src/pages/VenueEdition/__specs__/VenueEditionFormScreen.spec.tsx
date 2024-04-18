@@ -14,6 +14,7 @@ import {
   renderWithProviders,
   RenderWithProvidersOptions,
 } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { VenueEditionFormScreen } from '../VenueEditionFormScreen'
 
@@ -24,16 +25,6 @@ const renderForm = (
   venue: GetVenueResponseModel,
   options?: RenderWithProvidersOptions
 ) => {
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        id: 'EY',
-        isAdmin: false,
-      },
-    },
-  }
-
   renderWithProviders(
     <>
       <Routes>
@@ -50,7 +41,7 @@ const renderForm = (
     </>,
     {
       initialRouterEntries: ['/edition'],
-      storeOverrides,
+      user: sharedCurrentUserFactory(),
       ...options,
     }
   )

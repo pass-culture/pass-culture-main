@@ -13,20 +13,11 @@ import {
   RenderWithProvidersOptions,
   renderWithProviders,
 } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { VenueEdition } from '../VenueEdition'
 
 const renderVenueEdition = (options?: RenderWithProvidersOptions) => {
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        id: 'EY',
-        isAdmin: false,
-      },
-    },
-  }
-
   return renderWithProviders(
     <Routes>
       <Route
@@ -36,7 +27,7 @@ const renderVenueEdition = (options?: RenderWithProvidersOptions) => {
       <Route path="/accueil" element={<h1>Home</h1>} />
     </Routes>,
     {
-      storeOverrides,
+      user: sharedCurrentUserFactory(),
       initialRouterEntries: [
         `/structures/${defaultGetOffererResponseModel.id}/lieux/${defaultGetVenue.id}/edition`,
       ],
