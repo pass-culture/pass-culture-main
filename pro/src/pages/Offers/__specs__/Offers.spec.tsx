@@ -534,6 +534,7 @@ describe('route Offers', () => {
       vi.spyOn(api, 'getOfferer').mockResolvedValueOnce({
         ...defaultGetOffererResponseModel,
         name: 'La structure',
+        id,
       })
       const filters = { offererId: id.toString() }
 

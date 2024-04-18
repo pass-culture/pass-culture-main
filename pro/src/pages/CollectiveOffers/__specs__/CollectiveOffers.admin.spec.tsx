@@ -11,7 +11,10 @@ import { ALL_VENUES, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
-import { venueListItemFactory } from 'utils/individualApiFactories'
+import {
+  defaultGetOffererResponseModel,
+  venueListItemFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { CollectiveOffers } from '../CollectiveOffers'
@@ -136,11 +139,13 @@ describe('route CollectiveOffers when user is admin', () => {
   })
 
   it('should reset and disable status filter when offerer filter is removed', async () => {
-    const offerer = { name: 'La structure', id: 'EF' }
-    // @ts-expect-error FIX ME
+    const offerer = {
+      ...defaultGetOffererResponseModel,
+      name: 'La structure',
+    }
     vi.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
     const filters = {
-      offererId: offerer.id,
+      offererId: String(offerer.id),
       status: OfferStatus.INACTIVE,
     }
     await renderOffers(filters)
@@ -170,13 +175,15 @@ describe('route CollectiveOffers when user is admin', () => {
 
   it('should not reset or disable status filter when offerer filter is removed while venue filter is applied', async () => {
     const { id: venueId } = proVenues[0]
-    const offerer = { name: 'La structure', id: 'EF' }
-    // @ts-expect-error FIX ME
+    const offerer = {
+      ...defaultGetOffererResponseModel,
+      name: 'La structure',
+    }
     vi.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
     const filters = {
       venueId: venueId.toString(),
       status: OfferStatus.INACTIVE,
-      offererId: offerer.id,
+      offererId: String(offerer.id),
     }
     await renderOffers(filters)
 

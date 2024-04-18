@@ -5,6 +5,7 @@ import { Route, Routes } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { GetVenueResponseModel, VenueProviderResponse } from 'apiClient/v1'
 import { defaultGetVenue } from 'utils/collectiveApiFactories'
+import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
