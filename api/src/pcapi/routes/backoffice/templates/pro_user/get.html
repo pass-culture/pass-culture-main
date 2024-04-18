@@ -20,12 +20,10 @@
                   <span class="badge rounded-pill text-bg-danger align-middle">{{ user.isActive | format_state }}</span>
                 {% endif %}
                 {{ build_pro_user_status_badge(user) }}
-                {% if is_feature_active('WIP_ENABLE_PRO_SIDE_NAV') %}
-                  {% if user.has_new_nav %}
-                    {{ build_new_navigation_badge() }}
-                  {% else %}
-                    {{ build_old_navigation_badge() }}
-                  {% endif %}
+                {% if user.has_new_nav %}
+                  {{ build_new_navigation_badge() }}
+                {% else %}
+                  {{ build_old_navigation_badge() }}
                 {% endif %}
               </div>
               <div class="d-flex row-reverse justify-content-end flex-grow-1">
