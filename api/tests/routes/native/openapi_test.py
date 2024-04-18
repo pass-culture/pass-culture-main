@@ -71,6 +71,30 @@ def test_public_api(client):
                     "title": "ActivityResponseModel",
                     "type": "object",
                 },
+                "ActivityTypesResponse": {
+                    "properties": {
+                        "activities": {
+                            "items": {"$ref": "#/components/schemas/ActivityResponseModel"},
+                            "title": "Activities",
+                            "type": "array",
+                        }
+                    },
+                    "required": ["activities"],
+                    "title": "ActivityTypesResponse",
+                    "type": "object",
+                },
+                "AudioDisabilityModel": {
+                    "properties": {
+                        "deafAndHardOfHearing": {
+                            "default": ["Non renseign\u00e9"],
+                            "items": {"type": "string"},
+                            "title": "Deafandhardofhearing",
+                            "type": "array",
+                        }
+                    },
+                    "title": "AudioDisabilityModel",
+                    "type": "object",
+                },
                 "Banner": {
                     "properties": {
                         "name": {"$ref": "#/components/schemas/BannerName"},
@@ -188,9 +212,7 @@ def test_public_api(client):
                     "type": "object",
                 },
                 "BookingOfferExtraData": {
-                    "properties": {
-                        "ean": {"nullable": True, "title": "Ean", "type": "string"},
-                    },
+                    "properties": {"ean": {"nullable": True, "title": "Ean", "type": "string"}},
                     "title": "BookingOfferExtraData",
                     "type": "object",
                 },
@@ -580,29 +602,6 @@ def test_public_api(client):
                     "enum": ["GRANT_15_17", "GRANT_18"],
                     "title": "DepositType",
                 },
-                "SubscriptionStepperResponse": {
-                    "properties": {
-                        "allowedIdentityCheckMethods": {
-                            "items": {"$ref": "#/components/schemas/IdentityCheckMethod"},
-                            "type": "array",
-                        },
-                        "maintenancePageType": {
-                            "anyOf": [{"$ref": "#/components/schemas/MaintenancePageType"}],
-                            "nullable": True,
-                        },
-                        "errorMessage": {"nullable": True, "title": "Errormessage", "type": "string"},
-                        "subscriptionStepsToDisplay": {
-                            "items": {"$ref": "#/components/schemas/SubscriptionStepDetailsResponse"},
-                            "title": "Subscriptionstepstodisplay",
-                            "type": "array",
-                        },
-                        "subtitle": {"nullable": True, "title": "Subtitle", "type": "string"},
-                        "title": {"title": "Title", "type": "string"},
-                    },
-                    "required": ["subscriptionStepsToDisplay", "allowedIdentityCheckMethods", "title"],
-                    "title": "SubscriptionStepperResponse",
-                    "type": "object",
-                },
                 "DomainsCredit": {
                     "properties": {
                         "all": {"$ref": "#/components/schemas/Credit"},
@@ -632,6 +631,11 @@ def test_public_api(client):
                     "title": "E2EUbbleIdCheck",
                     "type": "object",
                 },
+                "EligibilityType": {
+                    "description": "An enumeration.",
+                    "enum": ["underage", "age-18"],
+                    "title": "EligibilityType",
+                },
                 "EmailChangeConfirmationResponse": {
                     "properties": {
                         "accessToken": {"title": "Accesstoken", "type": "string"},
@@ -642,11 +646,6 @@ def test_public_api(client):
                     "required": ["accessToken", "refreshToken", "newEmailSelectionToken"],
                     "title": "EmailChangeConfirmationResponse",
                     "type": "object",
-                },
-                "EligibilityType": {
-                    "description": "An enumeration.",
-                    "enum": ["underage", "age-18"],
-                    "title": "EligibilityType",
                 },
                 "EmailHistoryEventTypeEnum": {
                     "description": "An enumeration.",
@@ -677,9 +676,9 @@ def test_public_api(client):
                         "expired": {"title": "Expired", "type": "boolean"},
                         "hasRecentlyResetPassword": {"title": "Hasrecentlyresetpassword", "type": "boolean"},
                         "newEmail": {"nullable": True, "title": "Newemail", "type": "string"},
+                        "resetPasswordToken": {"nullable": True, "title": "Resetpasswordtoken", "type": "string"},
                         "status": {"$ref": "#/components/schemas/EmailHistoryEventTypeEnum"},
                         "token": {"nullable": True, "title": "Token", "type": "string"},
-                        "resetPasswordToken": {"nullable": True, "title": "Resetpasswordtoken", "type": "string"},
                     },
                     "required": ["expired", "status", "hasRecentlyResetPassword"],
                     "title": "EmailUpdateStatusResponse",
@@ -716,15 +715,25 @@ def test_public_api(client):
                             "title": "Isaccessibleaudiodisability",
                             "type": "boolean",
                         },
-                        "mentalDisability": {
-                            "allOf": [{"$ref": "#/components/schemas/MentalDisabilityModel"}],
-                            "default": {"trainedPersonnel": "Non renseign\u00e9"},
-                            "title": "Mentaldisability",
-                        },
                         "isAccessibleMentalDisability": {
                             "default": False,
                             "title": "Isaccessiblementaldisability",
                             "type": "boolean",
+                        },
+                        "isAccessibleMotorDisability": {
+                            "default": False,
+                            "title": "Isaccessiblemotordisability",
+                            "type": "boolean",
+                        },
+                        "isAccessibleVisualDisability": {
+                            "default": False,
+                            "title": "Isaccessiblevisualdisability",
+                            "type": "boolean",
+                        },
+                        "mentalDisability": {
+                            "allOf": [{"$ref": "#/components/schemas/MentalDisabilityModel"}],
+                            "default": {"trainedPersonnel": "Non renseign\u00e9"},
+                            "title": "Mentaldisability",
                         },
                         "motorDisability": {
                             "allOf": [{"$ref": "#/components/schemas/MotorDisabilityModel"}],
@@ -736,11 +745,6 @@ def test_public_api(client):
                             },
                             "title": "Motordisability",
                         },
-                        "isAccessibleMotorDisability": {
-                            "default": False,
-                            "title": "Isaccessiblemotordisability",
-                            "type": "boolean",
-                        },
                         "visualDisability": {
                             "allOf": [{"$ref": "#/components/schemas/VisualDisabilityModel"}],
                             "default": {
@@ -748,11 +752,6 @@ def test_public_api(client):
                                 "soundBeacon": "Non renseign\u00e9",
                             },
                             "title": "Visualdisability",
-                        },
-                        "isAccessibleVisualDisability": {
-                            "default": False,
-                            "title": "Isaccessiblevisualdisability",
-                            "type": "boolean",
                         },
                     },
                     "title": "ExternalAccessibilityDataModel",
@@ -883,9 +882,9 @@ def test_public_api(client):
                 },
                 "GoogleAccountRequest": {
                     "properties": {
+                        "accountCreationToken": {"title": "Accountcreationtoken", "type": "string"},
                         "appsFlyerPlatform": {"nullable": True, "title": "Appsflyerplatform", "type": "string"},
                         "appsFlyerUserId": {"nullable": True, "title": "Appsflyeruserid", "type": "string"},
-                        "accountCreationToken": {"title": "Accountcreationtoken", "type": "string"},
                         "birthdate": {"format": "date", "title": "Birthdate", "type": "string"},
                         "firebasePseudoId": {"nullable": True, "title": "Firebasepseudoid", "type": "string"},
                         "marketingEmailSubscription": {
@@ -919,6 +918,18 @@ def test_public_api(client):
                     "title": "GoogleSigninRequest",
                     "type": "object",
                 },
+                "GtlLabels": {
+                    "properties": {
+                        "label": {"title": "Label", "type": "string"},
+                        "level01Label": {"nullable": True, "title": "Level01Label", "type": "string"},
+                        "level02Label": {"nullable": True, "title": "Level02Label", "type": "string"},
+                        "level03Label": {"nullable": True, "title": "Level03Label", "type": "string"},
+                        "level04Label": {"nullable": True, "title": "Level04Label", "type": "string"},
+                    },
+                    "required": ["label"],
+                    "title": "GtlLabels",
+                    "type": "object",
+                },
                 "HomepageLabelResponseModelv2": {
                     "properties": {
                         "name": {"$ref": "#/components/schemas/_HomepageLabelNameEnumv2"},
@@ -949,6 +960,27 @@ def test_public_api(client):
                     "description": "An enumeration.",
                     "enum": ["with-dms", "without-dms"],
                     "title": "MaintenancePageType",
+                },
+                "MentalDisabilityModel": {
+                    "properties": {
+                        "trainedPersonnel": {
+                            "default": "Non renseign\u00e9",
+                            "title": "Trainedpersonnel",
+                            "type": "string",
+                        }
+                    },
+                    "title": "MentalDisabilityModel",
+                    "type": "object",
+                },
+                "MotorDisabilityModel": {
+                    "properties": {
+                        "entrance": {"default": "Non renseign\u00e9", "title": "Entrance", "type": "string"},
+                        "exterior": {"default": "Non renseign\u00e9", "title": "Exterior", "type": "string"},
+                        "facilities": {"default": "Non renseign\u00e9", "title": "Facilities", "type": "string"},
+                        "parking": {"default": "Non renseign\u00e9", "title": "Parking", "type": "string"},
+                    },
+                    "title": "MotorDisabilityModel",
+                    "type": "object",
                 },
                 "MovieType": {
                     "properties": {
@@ -1073,10 +1105,7 @@ def test_public_api(client):
                             "title": "SubscriptionMessage",
                         },
                     },
-                    "required": [
-                        "allowedIdentityCheckMethods",
-                        "hasIdentityCheckPending",
-                    ],
+                    "required": ["allowedIdentityCheckMethods", "hasIdentityCheckPending"],
                     "title": "NextSubscriptionStepResponse",
                     "type": "object",
                 },
@@ -1151,6 +1180,32 @@ def test_public_api(client):
                     "properties": {"name": {"title": "Name", "type": "string"}},
                     "required": ["name"],
                     "title": "OfferOffererResponse",
+                    "type": "object",
+                },
+                "OfferPreviewResponse": {
+                    "properties": {
+                        "durationMinutes": {"nullable": True, "title": "Durationminutes", "type": "integer"},
+                        "extraData": {
+                            "anyOf": [{"$ref": "#/components/schemas/OfferExtraData"}],
+                            "nullable": True,
+                            "title": "OfferExtraData",
+                        },
+                        "id": {"title": "Id", "type": "integer"},
+                        "image": {
+                            "anyOf": [{"$ref": "#/components/schemas/OfferImageResponse"}],
+                            "nullable": True,
+                            "title": "OfferImageResponse",
+                        },
+                        "last30DaysBookings": {"nullable": True, "title": "Last30Daysbookings", "type": "integer"},
+                        "name": {"title": "Name", "type": "string"},
+                        "stocks": {
+                            "items": {"$ref": "#/components/schemas/OfferStockResponse"},
+                            "title": "Stocks",
+                            "type": "array",
+                        },
+                    },
+                    "required": ["id", "name", "stocks"],
+                    "title": "OfferPreviewResponse",
                     "type": "object",
                 },
                 "OfferReportReasons": {
@@ -1312,6 +1367,24 @@ def test_public_api(client):
                     "title": "OfferVenueResponse",
                     "type": "object",
                 },
+                "OffersStocksRequest": {
+                    "properties": {"offer_ids": {"items": {"type": "integer"}, "title": "Offer Ids", "type": "array"}},
+                    "required": ["offer_ids"],
+                    "title": "OffersStocksRequest",
+                    "type": "object",
+                },
+                "OffersStocksResponse": {
+                    "properties": {
+                        "offers": {
+                            "items": {"$ref": "#/components/schemas/OfferPreviewResponse"},
+                            "title": "Offers",
+                            "type": "array",
+                        }
+                    },
+                    "required": ["offers"],
+                    "title": "OffersStocksResponse",
+                    "type": "object",
+                },
                 "OnlineOfflinePlatformChoicesEnumv2": {
                     "description": "An enumeration.",
                     "enum": ["OFFLINE", "ONLINE", "ONLINE_OR_OFFLINE"],
@@ -1349,63 +1422,26 @@ def test_public_api(client):
                     "additionalProperties": False,
                     "properties": {
                         "categories": {
-                            "items": {
-                                "type": "string",
-                            },
+                            "items": {"type": "string"},
                             "nullable": True,
                             "title": "Categories",
                             "type": "array",
                         },
-                        "endDate": {
-                            "nullable": True,
-                            "title": "Enddate",
-                            "type": "string",
-                        },
-                        "isDuo": {
-                            "nullable": True,
-                            "title": "Isduo",
-                            "type": "boolean",
-                        },
-                        "isEvent": {
-                            "nullable": True,
-                            "title": "Isevent",
-                            "type": "boolean",
-                        },
-                        "isRecoShuffled": {
-                            "nullable": True,
-                            "title": "Isrecoshuffled",
-                            "type": "boolean",
-                        },
+                        "endDate": {"nullable": True, "title": "Enddate", "type": "string"},
+                        "isDuo": {"nullable": True, "title": "Isduo", "type": "boolean"},
+                        "isEvent": {"nullable": True, "title": "Isevent", "type": "boolean"},
+                        "isRecoShuffled": {"nullable": True, "title": "Isrecoshuffled", "type": "boolean"},
                         "offerTypeList": {
-                            "items": {
-                                "additionalProperties": {
-                                    "type": "string",
-                                },
-                                "type": "object",
-                            },
+                            "items": {"additionalProperties": {"type": "string"}, "type": "object"},
                             "nullable": True,
                             "title": "Offertypelist",
                             "type": "array",
                         },
-                        "priceMax": {
-                            "nullable": True,
-                            "title": "Pricemax",
-                            "type": "number",
-                        },
-                        "priceMin": {
-                            "nullable": True,
-                            "title": "Pricemin",
-                            "type": "number",
-                        },
-                        "startDate": {
-                            "nullable": True,
-                            "title": "Startdate",
-                            "type": "string",
-                        },
+                        "priceMax": {"nullable": True, "title": "Pricemax", "type": "number"},
+                        "priceMin": {"nullable": True, "title": "Pricemin", "type": "number"},
+                        "startDate": {"nullable": True, "title": "Startdate", "type": "string"},
                         "subcategories": {
-                            "items": {
-                                "type": "string",
-                            },
+                            "items": {"type": "string"},
                             "nullable": True,
                             "title": "Subcategories",
                             "type": "array",
@@ -1417,21 +1453,9 @@ def test_public_api(client):
                 "PlaylistRequestQuery": {
                     "additionalProperties": False,
                     "properties": {
-                        "latitude": {
-                            "nullable": True,
-                            "title": "Latitude",
-                            "type": "number",
-                        },
-                        "longitude": {
-                            "nullable": True,
-                            "title": "Longitude",
-                            "type": "number",
-                        },
-                        "modelEndpoint": {
-                            "nullable": True,
-                            "title": "Modelendpoint",
-                            "type": "string",
-                        },
+                        "latitude": {"nullable": True, "title": "Latitude", "type": "number"},
+                        "longitude": {"nullable": True, "title": "Longitude", "type": "number"},
+                        "modelEndpoint": {"nullable": True, "title": "Modelendpoint", "type": "string"},
                     },
                     "title": "PlaylistRequestQuery",
                     "type": "object",
@@ -1440,18 +1464,6 @@ def test_public_api(client):
                     "description": "An enumeration.",
                     "enum": ["INFO", "ERROR", "WARNING", "CLOCK", "FILE", "MAGNIFYING_GLASS"],
                     "title": "PopOverIcon",
-                },
-                "ActivityTypesResponse": {
-                    "properties": {
-                        "activities": {
-                            "items": {"$ref": "#/components/schemas/ActivityResponseModel"},
-                            "title": "Activities",
-                            "type": "array",
-                        },
-                    },
-                    "required": ["activities"],
-                    "title": "ActivityTypesResponse",
-                    "type": "object",
                 },
                 "ProfileUpdateRequest": {
                     "properties": {
@@ -1588,30 +1600,6 @@ def test_public_api(client):
                     "title": "SendPhoneValidationRequest",
                     "type": "object",
                 },
-                "ShowSubType": {
-                    "properties": {
-                        "code": {"title": "Code", "type": "integer"},
-                        "label": {"title": "Label", "type": "string"},
-                        "slug": {"title": "Slug", "type": "string"},
-                    },
-                    "required": ["code", "label", "slug"],
-                    "title": "ShowSubType",
-                    "type": "object",
-                },
-                "ShowType": {
-                    "properties": {
-                        "children": {
-                            "items": {"$ref": "#/components/schemas/ShowSubType"},
-                            "title": "Children",
-                            "type": "array",
-                        },
-                        "code": {"title": "Code", "type": "integer"},
-                        "label": {"title": "Label", "type": "string"},
-                    },
-                    "required": ["children", "code", "label"],
-                    "title": "ShowType",
-                    "type": "object",
-                },
                 "SettingsResponse": {
                     "properties": {
                         "accountCreationMinimumAge": {"title": "Accountcreationminimumage", "type": "integer"},
@@ -1645,6 +1633,30 @@ def test_public_api(client):
                     "title": "SettingsResponse",
                     "type": "object",
                 },
+                "ShowSubType": {
+                    "properties": {
+                        "code": {"title": "Code", "type": "integer"},
+                        "label": {"title": "Label", "type": "string"},
+                        "slug": {"title": "Slug", "type": "string"},
+                    },
+                    "required": ["code", "label", "slug"],
+                    "title": "ShowSubType",
+                    "type": "object",
+                },
+                "ShowType": {
+                    "properties": {
+                        "children": {
+                            "items": {"$ref": "#/components/schemas/ShowSubType"},
+                            "title": "Children",
+                            "type": "array",
+                        },
+                        "code": {"title": "Code", "type": "integer"},
+                        "label": {"title": "Label", "type": "string"},
+                    },
+                    "required": ["children", "code", "label"],
+                    "title": "ShowType",
+                    "type": "object",
+                },
                 "SigninRequest": {
                     "properties": {
                         "deviceInfo": {
@@ -1674,27 +1686,15 @@ def test_public_api(client):
                     "additionalProperties": False,
                     "properties": {
                         "categories": {
-                            "items": {
-                                "type": "string",
-                            },
+                            "items": {"type": "string"},
                             "nullable": True,
                             "title": "Categories",
                             "type": "array",
                         },
-                        "latitude": {
-                            "nullable": True,
-                            "title": "Latitude",
-                            "type": "number",
-                        },
-                        "longitude": {
-                            "nullable": True,
-                            "title": "Longitude",
-                            "type": "number",
-                        },
+                        "latitude": {"nullable": True, "title": "Latitude", "type": "number"},
+                        "longitude": {"nullable": True, "title": "Longitude", "type": "number"},
                         "subcategories": {
-                            "items": {
-                                "type": "string",
-                            },
+                            "items": {"type": "string"},
                             "nullable": True,
                             "title": "Subcategories",
                             "type": "array",
@@ -1939,7 +1939,7 @@ def test_public_api(client):
                             "nullable": True,
                             "title": "CallToActionMessage",
                         },
-                        "messageSummary": {"title": "Messagesummary", "type": "string", "nullable": True},
+                        "messageSummary": {"nullable": True, "title": "Messagesummary", "type": "string"},
                         "popOverIcon": {"anyOf": [{"$ref": "#/components/schemas/PopOverIcon"}], "nullable": True},
                         "updatedAt": {"format": "date-time", "nullable": True, "title": "Updatedat", "type": "string"},
                         "userMessage": {"title": "Usermessage", "type": "string"},
@@ -1985,6 +1985,29 @@ def test_public_api(client):
                     "description": "An enumeration.",
                     "enum": ["Numéro de téléphone", "Profil", "Identification", "Confirmation"],
                     "title": "SubscriptionStepTitle",
+                },
+                "SubscriptionStepperResponse": {
+                    "properties": {
+                        "allowedIdentityCheckMethods": {
+                            "items": {"$ref": "#/components/schemas/IdentityCheckMethod"},
+                            "type": "array",
+                        },
+                        "errorMessage": {"nullable": True, "title": "Errormessage", "type": "string"},
+                        "maintenancePageType": {
+                            "anyOf": [{"$ref": "#/components/schemas/MaintenancePageType"}],
+                            "nullable": True,
+                        },
+                        "subscriptionStepsToDisplay": {
+                            "items": {"$ref": "#/components/schemas/SubscriptionStepDetailsResponse"},
+                            "title": "Subscriptionstepstodisplay",
+                            "type": "array",
+                        },
+                        "subtitle": {"nullable": True, "title": "Subtitle", "type": "string"},
+                        "title": {"title": "Title", "type": "string"},
+                    },
+                    "required": ["subscriptionStepsToDisplay", "allowedIdentityCheckMethods", "title"],
+                    "title": "SubscriptionStepperResponse",
+                    "type": "object",
                 },
                 "SubscriptionStepperResponseV2": {
                     "properties": {
@@ -2300,9 +2323,9 @@ def test_public_api(client):
                         "latitude": {"nullable": True, "title": "Latitude", "type": "number"},
                         "longitude": {"nullable": True, "title": "Longitude", "type": "number"},
                         "name": {"title": "Name", "type": "string"},
+                        "openingHours": {"nullable": True, "title": "Openinghours", "type": "object"},
                         "postalCode": {"nullable": True, "title": "Postalcode", "type": "string"},
                         "publicName": {"nullable": True, "title": "Publicname", "type": "string"},
-                        "openingHours": {"nullable": True, "title": "Openinghours", "type": "object"},
                         "street": {"nullable": True, "title": "Street", "type": "string"},
                         "venueTypeCode": {"$ref": "#/components/schemas/VenueTypeCodeKey"},
                         "withdrawalDetails": {"nullable": True, "title": "Withdrawaldetails", "type": "string"},
@@ -2337,6 +2360,19 @@ def test_public_api(client):
                         "VISUAL_ARTS",
                     ],
                     "title": "VenueTypeCodeKey",
+                },
+                "VisualDisabilityModel": {
+                    "properties": {
+                        "audioDescription": {
+                            "default": ["Non renseign\u00e9"],
+                            "items": {"type": "string"},
+                            "title": "Audiodescription",
+                            "type": "array",
+                        },
+                        "soundBeacon": {"default": "Non renseign\u00e9", "title": "Soundbeacon", "type": "string"},
+                    },
+                    "title": "VisualDisabilityModel",
+                    "type": "object",
                 },
                 "WithdrawalTypeEnum": {
                     "description": "An enumeration.",
@@ -2383,64 +2419,6 @@ def test_public_api(client):
                         "VISITES",
                     ],
                     "title": "(HomepageLabelNameEnumv2",
-                },
-                "AudioDisabilityModel": {
-                    "properties": {
-                        "deafAndHardOfHearing": {
-                            "default": ["Non renseign\u00e9"],
-                            "title": "Deafandhardofhearing",
-                            "items": {"type": "string"},
-                            "type": "array",
-                        }
-                    },
-                    "title": "AudioDisabilityModel",
-                    "type": "object",
-                },
-                "MentalDisabilityModel": {
-                    "properties": {
-                        "trainedPersonnel": {
-                            "default": "Non renseign\u00e9",
-                            "title": "Trainedpersonnel",
-                            "type": "string",
-                        }
-                    },
-                    "title": "MentalDisabilityModel",
-                    "type": "object",
-                },
-                "MotorDisabilityModel": {
-                    "properties": {
-                        "entrance": {"default": "Non renseign\u00e9", "title": "Entrance", "type": "string"},
-                        "exterior": {"default": "Non renseign\u00e9", "title": "Exterior", "type": "string"},
-                        "facilities": {"default": "Non renseign\u00e9", "title": "Facilities", "type": "string"},
-                        "parking": {"default": "Non renseign\u00e9", "title": "Parking", "type": "string"},
-                    },
-                    "title": "MotorDisabilityModel",
-                    "type": "object",
-                },
-                "VisualDisabilityModel": {
-                    "properties": {
-                        "audioDescription": {
-                            "default": ["Non renseign\u00e9"],
-                            "items": {"type": "string"},
-                            "title": "Audiodescription",
-                            "type": "array",
-                        },
-                        "soundBeacon": {"default": "Non renseign\u00e9", "title": "Soundbeacon", "type": "string"},
-                    },
-                    "title": "VisualDisabilityModel",
-                    "type": "object",
-                },
-                "GtlLabels": {
-                    "properties": {
-                        "label": {"title": "Label", "type": "string"},
-                        "level01Label": {"nullable": True, "title": "Level01Label", "type": "string"},
-                        "level02Label": {"nullable": True, "title": "Level02Label", "type": "string"},
-                        "level03Label": {"nullable": True, "title": "Level03Label", "type": "string"},
-                        "level04Label": {"nullable": True, "title": "Level04Label", "type": "string"},
-                    },
-                    "required": ["label"],
-                    "title": "GtlLabels",
-                    "type": "object",
                 },
             },
             "securitySchemes": {"JWTAuth": {"bearerFormat": "JWT", "scheme": "bearer", "type": "http"}},
@@ -3061,16 +3039,16 @@ def test_public_api(client):
                             },
                             "description": "OK",
                         },
-                        "400": {"description": "Bad " "Request"},
+                        "400": {"description": "Bad Request"},
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
-                            "description": "Unprocessable " "Entity",
+                            "description": "Unprocessable Entity",
                         },
                     },
-                    "summary": "create_account_with_google_sso " "<POST>",
+                    "summary": "create_account_with_google_sso <POST>",
                     "tags": [],
                 }
             },
@@ -3122,10 +3100,10 @@ def test_public_api(client):
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
-                            "description": "Unprocessable " "Entity",
+                            "description": "Unprocessable Entity",
                         },
                     },
-                    "summary": "google_oauth_state " "<GET>",
+                    "summary": "google_oauth_state <GET>",
                     "tags": [],
                 }
             },
@@ -3240,6 +3218,35 @@ def test_public_api(client):
                     },
                     "security": [{"JWTAuth": []}],
                     "summary": "user_reported_offers <GET>",
+                    "tags": [],
+                }
+            },
+            "/native/v1/offers/stocks": {
+                "post": {
+                    "description": "",
+                    "operationId": "post__native_v1_offers_stocks",
+                    "parameters": [],
+                    "requestBody": {
+                        "content": {
+                            "application/json": {"schema": {"$ref": "#/components/schemas/OffersStocksRequest"}}
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/OffersStocksResponse"}}
+                            },
+                            "description": "OK",
+                        },
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "summary": "get_offers_showtimes <POST>",
                     "tags": [],
                 }
             },
@@ -3466,70 +3473,42 @@ def test_public_api(client):
                             "in": "query",
                             "name": "modelEndpoint",
                             "required": False,
-                            "schema": {
-                                "nullable": True,
-                                "title": "Modelendpoint",
-                                "type": "string",
-                            },
+                            "schema": {"nullable": True, "title": "Modelendpoint", "type": "string"},
                         },
                         {
                             "description": "",
                             "in": "query",
                             "name": "longitude",
                             "required": False,
-                            "schema": {
-                                "nullable": True,
-                                "title": "Longitude",
-                                "type": "number",
-                            },
+                            "schema": {"nullable": True, "title": "Longitude", "type": "number"},
                         },
                         {
                             "description": "",
                             "in": "query",
                             "name": "latitude",
                             "required": False,
-                            "schema": {
-                                "nullable": True,
-                                "title": "Latitude",
-                                "type": "number",
-                            },
+                            "schema": {"nullable": True, "title": "Latitude", "type": "number"},
                         },
                     ],
                     "requestBody": {
                         "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/PlaylistRequestBody",
-                                },
-                            },
-                        },
+                            "application/json": {"schema": {"$ref": "#/components/schemas/PlaylistRequestBody"}}
+                        }
                     },
                     "responses": {
-                        "200": {
-                            "description": "OK",
-                        },
-                        "403": {
-                            "description": "Forbidden",
-                        },
+                        "200": {"description": "OK"},
+                        "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {
-                                    "schema": {
-                                        "$ref": "#/components/schemas/ValidationError",
-                                    },
-                                },
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
                     },
-                    "security": [
-                        {
-                            "JWTAuth": [],
-                        },
-                    ],
+                    "security": [{"JWTAuth": []}],
                     "summary": "playlist <POST>",
                     "tags": [],
-                },
+                }
             },
             "/native/v1/recommendation/similar_offers/{offer_id}": {
                 "get": {
@@ -3541,32 +3520,21 @@ def test_public_api(client):
                             "in": "path",
                             "name": "offer_id",
                             "required": True,
-                            "schema": {
-                                "format": "int32",
-                                "type": "integer",
-                            },
+                            "schema": {"format": "int32", "type": "integer"},
                         },
                         {
                             "description": "",
                             "in": "query",
                             "name": "longitude",
                             "required": False,
-                            "schema": {
-                                "nullable": True,
-                                "title": "Longitude",
-                                "type": "number",
-                            },
+                            "schema": {"nullable": True, "title": "Longitude", "type": "number"},
                         },
                         {
                             "description": "",
                             "in": "query",
                             "name": "latitude",
                             "required": False,
-                            "schema": {
-                                "nullable": True,
-                                "title": "Latitude",
-                                "type": "number",
-                            },
+                            "schema": {"nullable": True, "title": "Latitude", "type": "number"},
                         },
                         {
                             "description": "",
@@ -3574,9 +3542,7 @@ def test_public_api(client):
                             "name": "categories",
                             "required": False,
                             "schema": {
-                                "items": {
-                                    "type": "string",
-                                },
+                                "items": {"type": "string"},
                                 "nullable": True,
                                 "title": "Categories",
                                 "type": "array",
@@ -3588,9 +3554,7 @@ def test_public_api(client):
                             "name": "subcategories",
                             "required": False,
                             "schema": {
-                                "items": {
-                                    "type": "string",
-                                },
+                                "items": {"type": "string"},
                                 "nullable": True,
                                 "title": "Subcategories",
                                 "type": "array",
@@ -3598,26 +3562,18 @@ def test_public_api(client):
                         },
                     ],
                     "responses": {
-                        "200": {
-                            "description": "OK",
-                        },
-                        "403": {
-                            "description": "Forbidden",
-                        },
+                        "200": {"description": "OK"},
+                        "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {
-                                    "schema": {
-                                        "$ref": "#/components/schemas/ValidationError",
-                                    },
-                                },
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
                     },
                     "summary": "similar_offers <GET>",
                     "tags": [],
-                },
+                }
             },
             "/native/v1/refresh_access_token": {
                 "post": {
@@ -4197,7 +4153,7 @@ def test_public_api(client):
                     },
                     "summary": "get_venue <GET>",
                     "tags": [],
-                },
+                }
             },
             "/native/v2/profile/email_update/confirm": {
                 "post": {
@@ -4288,35 +4244,23 @@ def test_public_api(client):
                         "200": {
                             "content": {
                                 "application/json": {
-                                    "schema": {
-                                        "$ref": "#/components/schemas/EmailUpdateStatusResponse",
-                                    },
-                                },
+                                    "schema": {"$ref": "#/components/schemas/EmailUpdateStatusResponse"}
+                                }
                             },
                             "description": "OK",
                         },
-                        "403": {
-                            "description": "Forbidden",
-                        },
+                        "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {
-                                    "schema": {
-                                        "$ref": "#/components/schemas/ValidationError",
-                                    },
-                                },
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
                     },
-                    "security": [
-                        {
-                            "JWTAuth": [],
-                        },
-                    ],
+                    "security": [{"JWTAuth": []}],
                     "summary": "get_email_update_status <GET>",
                     "tags": [],
-                },
+                }
             },
             "/native/v2/profile/update_email": {
                 "post": {
