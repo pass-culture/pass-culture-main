@@ -27,6 +27,12 @@ import { VenueSettingsFormScreen } from '../VenueSettingsScreen'
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
 
+const siret = '88145723823022'
+const baseVenue: GetVenueResponseModel = {
+  ...defaultGetVenue,
+  siret,
+}
+
 const venueLabels: SelectOption[] = [
   { value: '13', label: 'Architecture contemporaine remarquable' },
   {
@@ -39,6 +45,27 @@ const venueTypes: VenueTypeResponseModel[] = [
   { id: 'ARTISTIC_COURSE', label: 'Cours et pratique artistiques' },
   { id: 'SCIENTIFIC_CULTURE', label: 'Culture scientifique' },
 ]
+
+const baseFormValues: VenueSettingsFormValues = {
+  comment: '',
+  bookingEmail: 'em@ail.fr',
+  name: 'MINISTERE DE LA CULTURE',
+  publicName: 'Melodie Sims',
+  siret,
+  venueType: VenueTypeCode.JEUX_JEUX_VID_OS,
+  street: 'PARIS',
+  banId: '35288_7283_00001',
+  addressAutocomplete: 'Allee Rene Omnes 35400 Saint-Malo',
+  'search-addressAutocomplete': 'PARIS',
+  city: 'Saint-Malo',
+  latitude: 48.635699,
+  longitude: -2.006961,
+  postalCode: '35400',
+  withdrawalDetails: 'withdrawal details field',
+  venueSiret: null,
+  venueLabel: '13',
+  isWithdrawalAppliedOnAllOffers: false,
+}
 
 const renderForm = (
   initialValues: VenueSettingsFormValues,
@@ -117,7 +144,7 @@ vi.spyOn(api, 'getSiretInfo').mockResolvedValue({
     street: 'rue de paris',
   },
   name: 'lieu',
-  siret: '88145723823022',
+  siret,
   ape_code: '95.07A',
   legal_category_code: '1000',
 })
@@ -184,156 +211,11 @@ vi.mock('core/Venue/siretApiValidate', () => ({
   default: () => Promise.resolve(),
 }))
 
-const venueResponse: GetVenueResponseModel = {
-  demarchesSimplifieesApplicationId: '',
-  collectiveDomains: [],
-  dateCreated: '2022-02-02',
-  isVirtual: false,
-  visualDisabilityCompliant: false,
-  audioDisabilityCompliant: false,
-  motorDisabilityCompliant: false,
-  mentalDisabilityCompliant: false,
-  bannerMeta: null,
-  bannerUrl: '',
-  city: 'city',
-  comment: 'comment',
-  contact: {
-    email: 'email',
-    phoneNumber: '0606060606',
-    website: 'web',
-  },
-  description: 'description',
-  departementCode: '75008',
-  dmsToken: 'dms-token-12345',
-  isPermanent: true,
-  latitude: 0,
-  longitude: 0,
-  bookingEmail: 'a@b.c',
-  name: 'name',
-  id: 0,
-  pricingPoint: null,
-  postalCode: '75008',
-  publicName: 'name',
-  siret: '88145723823022',
-  street: 'Address',
-  timezone: 'Europe/Paris',
-  venueTypeCode: VenueTypeCode.COURS_ET_PRATIQUE_ARTISTIQUES,
-  venueLabelId: 1,
-  withdrawalDetails: 'string',
-  collectiveAccessInformation: 'string',
-  collectiveDescription: 'string',
-  collectiveEmail: 'string',
-  collectiveInterventionArea: [],
-  collectiveLegalStatus: null,
-  collectiveNetwork: [],
-  collectivePhone: 'string',
-  collectiveStudents: [],
-  collectiveWebsite: 'string',
-  adageInscriptionDate: null,
-  hasAdageId: false,
-  collectiveDmsApplications: [],
-  managingOfferer: {
-    city: 'string',
-    dateCreated: 'string',
-    demarchesSimplifieesApplicationId: null,
-    id: 1,
-    isValidated: true,
-    name: 'name',
-    postalCode: 'string',
-    siren: null,
-    street: null,
-    allowedOnAdage: true,
-  },
-}
-
 describe('VenueFormScreen', () => {
-  let formValues: VenueSettingsFormValues
-  let expectedEditVenue: Partial<EditVenueBodyModel>
-  let venue: GetVenueResponseModel
-
-  beforeEach(() => {
-    formValues = {
-      comment: '',
-      bookingEmail: 'em@ail.fr',
-      name: 'MINISTERE DE LA CULTURE',
-      publicName: 'Melodie Sims',
-      siret: '88145723823022',
-      venueType: VenueTypeCode.JEUX_JEUX_VID_OS,
-      street: 'PARIS',
-      banId: '35288_7283_00001',
-      addressAutocomplete: 'Allee Rene Omnes 35400 Saint-Malo',
-      'search-addressAutocomplete': 'PARIS',
-      city: 'Saint-Malo',
-      latitude: 48.635699,
-      longitude: -2.006961,
-      postalCode: '35400',
-      withdrawalDetails: 'withdrawal details field',
-      venueSiret: null,
-      venueLabel: '13',
-      isWithdrawalAppliedOnAllOffers: false,
-    }
-
-    venue = {
-      ...defaultGetVenue,
-      demarchesSimplifieesApplicationId: '',
-      collectiveDomains: [],
-      dateCreated: '2022-02-02',
-      isVirtual: false,
-      street: 'Address',
-      banId: 'ban_id',
-      bannerMeta: null,
-      bannerUrl: '',
-      city: 'city',
-      comment: 'comment',
-      contact: {
-        email: 'email',
-        phoneNumber: '0606060606',
-        website: 'web',
-      },
-      description: 'description',
-      departementCode: '75008',
-      dmsToken: '',
-      isPermanent: true,
-      latitude: 0,
-      longitude: 0,
-      name: 'name',
-      id: 15,
-      pricingPoint: null,
-      postalCode: '75008',
-      publicName: 'name',
-      siret: '88145723823022',
-      withdrawalDetails: 'string',
-      collectiveAccessInformation: 'string',
-      collectiveDescription: 'string',
-      collectiveEmail: 'string',
-      collectiveInterventionArea: [],
-      collectiveLegalStatus: null,
-      collectiveNetwork: [],
-      collectivePhone: 'string',
-      collectiveStudents: [],
-      collectiveWebsite: 'string',
-      managingOfferer: {
-        city: 'string',
-        dateCreated: 'string',
-        demarchesSimplifieesApplicationId: null,
-        id: 1,
-        isValidated: true,
-        name: 'name',
-        postalCode: 'string',
-        siren: null,
-        street: null,
-        allowedOnAdage: true,
-      },
-      hasAdageId: false,
-      adageInscriptionDate: null,
-      bankAccount: null,
-    }
-  })
-
   it('should display an error when the venue could not be updated', async () => {
-    renderForm(formValues, venue)
+    renderForm(baseFormValues, baseVenue)
 
-    vi.spyOn(api, 'editVenue').mockRejectedValue(
+    vi.spyOn(api, 'editVenue').mockRejectedValueOnce(
       new ApiError(
         {} as ApiRequestOptions,
         {
@@ -355,33 +237,40 @@ describe('VenueFormScreen', () => {
   })
 
   it('should let update venue without siret', async () => {
-    formValues.siret = ''
-    formValues.comment = 'comment'
-    const testedVenue = {
-      ...venue,
-      siret: null,
-    }
-
-    renderForm(formValues, testedVenue)
+    renderForm(
+      { ...baseFormValues, siret: '', comment: 'comment' },
+      {
+        ...baseVenue,
+        siret: null,
+      }
+    )
 
     const editVenue = vi
       .spyOn(api, 'editVenue')
-      .mockResolvedValue(venueResponse)
+      .mockResolvedValue(defaultGetVenue)
 
     await userEvent.click(screen.getByText(/Enregistrer/))
 
-    expect(editVenue).toHaveBeenCalled()
-    expect(editVenue).not.toHaveBeenCalledWith(15, { siret: '' })
+    await waitFor(() => {
+      expect(editVenue).toHaveBeenCalled()
+    })
+    expect(editVenue).not.toHaveBeenCalledWith(defaultGetVenue.id, {
+      siret: '',
+    })
   })
 
   it('should display error on submit for non virtual venues when adress is not selected from suggestions', async () => {
-    formValues.addressAutocomplete = ''
-    formValues.street = ''
-    formValues.postalCode = ''
+    renderForm(
+      {
+        ...baseFormValues,
+        addressAutocomplete: '',
+        street: '',
+        postalCode: '',
+      },
+      baseVenue
+    )
 
-    renderForm(formValues, venue)
     const adressInput = screen.getByLabelText('Adresse postale *')
-
     await userEvent.type(adressInput, '12 rue des fleurs')
     await userEvent.click(screen.getByText(/Enregistrer/))
 
@@ -393,7 +282,7 @@ describe('VenueFormScreen', () => {
   })
 
   it('should not display error on submit when venue is virtual', async () => {
-    renderForm(formValues, venue)
+    renderForm(baseFormValues, baseVenue)
 
     const adressInput = screen.getByLabelText('Adresse postale *')
 
@@ -408,9 +297,7 @@ describe('VenueFormScreen', () => {
   })
 
   it('should diplay only some fields when the venue is virtual', async () => {
-    venue.isVirtual = true
-
-    renderForm(formValues, venue, false)
+    renderForm(baseFormValues, { ...baseVenue, isVirtual: true }, false)
 
     await waitFor(() => {
       expect(screen.queryByTestId('wrapper-publicName')).not.toBeInTheDocument()
@@ -434,8 +321,7 @@ describe('VenueFormScreen', () => {
 
   describe('Displaying with new onboarding', () => {
     it('should display new onboarding wording labels', async () => {
-      venue.isVirtual = false
-      renderForm(formValues, venue, false)
+      renderForm(baseFormValues, { ...baseVenue, isVirtual: false }, false)
 
       await waitFor(() => {
         expect(screen.queryByTestId('wrapper-publicName')).toBeInTheDocument()
@@ -456,29 +342,27 @@ describe('VenueFormScreen', () => {
   })
 
   describe('Withdrawal dialog to send mail', () => {
-    beforeEach(() => {
-      expectedEditVenue = {
-        street: 'PARIS',
-        banId: '35288_7283_00001',
-        bookingEmail: 'em@ail.fr',
-        city: 'Saint-Malo',
-        comment: '',
-        isEmailAppliedOnAllOffers: true,
-        latitude: 48.635699,
-        longitude: -2.006961,
-        name: 'MINISTERE DE LA CULTURE',
-        postalCode: '35400',
-        publicName: 'Melodie Sims',
-        shouldSendMail: false,
-        siret: '88145723823022',
-        venueTypeCode: VenueTypeCode.JEUX_JEUX_VID_OS,
-        venueLabelId: 13,
-        withdrawalDetails: 'Nouvelle information de retrait',
-      }
-    })
+    const expectedEditVenue: EditVenueBodyModel = {
+      street: 'PARIS',
+      banId: '35288_7283_00001',
+      bookingEmail: 'em@ail.fr',
+      city: 'Saint-Malo',
+      comment: '',
+      isEmailAppliedOnAllOffers: true,
+      latitude: 48.635699,
+      longitude: -2.006961,
+      name: 'MINISTERE DE LA CULTURE',
+      postalCode: '35400',
+      publicName: 'Melodie Sims',
+      shouldSendMail: false,
+      siret: siret,
+      venueTypeCode: VenueTypeCode.JEUX_JEUX_VID_OS,
+      venueLabelId: 13,
+      withdrawalDetails: 'Nouvelle information de retrait',
+    }
 
     it('should display withdrawal and submit on confirm dialog button when offer has bookingQuantity and withdrawalDetails is updated and isWithdrawalAppliedOnAllOffers is true', async () => {
-      renderForm(formValues, venue, true, true)
+      renderForm(baseFormValues, baseVenue, true, true)
 
       const editVenue = vi
         .spyOn(api, 'editVenue')
@@ -503,15 +387,12 @@ describe('VenueFormScreen', () => {
       await waitFor(() => {
         expect(screen.getByText('Nouvelle information de retrait'))
       })
-      venue.withdrawalDetails = 'Nouvelle information de retrait'
 
       await userEvent.click(
         screen.getByText(
           'Appliquer le changement à toutes les offres déjà existantes'
         )
       )
-      expectedEditVenue.shouldSendMail = true
-      expectedEditVenue.isWithdrawalAppliedOnAllOffers = true
 
       await userEvent.click(screen.getByText(/Enregistrer et quitter/))
       expect(
@@ -528,7 +409,11 @@ describe('VenueFormScreen', () => {
         )
       ).not.toBeInTheDocument()
 
-      expect(editVenue).toHaveBeenCalledWith(15, expectedEditVenue)
+      expect(editVenue).toHaveBeenCalledWith(defaultGetVenue.id, {
+        ...expectedEditVenue,
+        shouldSendMail: true,
+        isWithdrawalAppliedOnAllOffers: true,
+      })
 
       await waitFor(() => {
         expect(screen.getByText(PATCH_SUCCESS_MESSAGE)).toBeInTheDocument()
@@ -536,7 +421,7 @@ describe('VenueFormScreen', () => {
     })
 
     it('should display withdrawal dialog and submit on cancel click and should not send mail', async () => {
-      renderForm(formValues, venue, false, true)
+      renderForm(baseFormValues, baseVenue, false, true)
 
       const editVenue = vi
         .spyOn(api, 'editVenue')
@@ -561,14 +446,12 @@ describe('VenueFormScreen', () => {
       await waitFor(() => {
         expect(screen.getByText('Nouvelle information de retrait'))
       })
-      venue.withdrawalDetails = 'Nouvelle information de retrait'
 
       await userEvent.click(
         screen.getByText(
           'Appliquer le changement à toutes les offres déjà existantes'
         )
       )
-      expectedEditVenue.isWithdrawalAppliedOnAllOffers = true
 
       await userEvent.click(screen.getByText(/Enregistrer et quitter/))
 
@@ -588,13 +471,14 @@ describe('VenueFormScreen', () => {
         ).not.toBeInTheDocument()
       })
 
-      expect(editVenue).toHaveBeenCalledWith(15, expectedEditVenue)
+      expect(editVenue).toHaveBeenCalledWith(defaultGetVenue.id, {
+        ...expectedEditVenue,
+        isWithdrawalAppliedOnAllOffers: true,
+      })
     })
 
     it("should not display withdrawal if offer has no bookingQuantity or withdrawalDetails doesn't change or isWithdrawalAppliedOnAllOffers is not check", async () => {
-      expectedEditVenue.isWithdrawalAppliedOnAllOffers = false
-
-      renderForm(formValues, venue, false)
+      renderForm(baseFormValues, baseVenue, false)
 
       const editVenue = vi
         .spyOn(api, 'editVenue')
@@ -619,14 +503,16 @@ describe('VenueFormScreen', () => {
       await waitFor(() => {
         expect(screen.getByText('Nouvelle information de retrait'))
       })
-      venue.withdrawalDetails = 'Nouvelle information de retrait'
 
       await userEvent.click(screen.getByText(/Enregistrer et quitter/))
-      expect(editVenue).toHaveBeenCalledWith(15, expectedEditVenue)
+      expect(editVenue).toHaveBeenCalledWith(defaultGetVenue.id, {
+        ...expectedEditVenue,
+        isWithdrawalAppliedOnAllOffers: false,
+      })
     })
 
     it('should close withdrawal dialog and not submit if user close dialog', async () => {
-      renderForm(formValues, venue, false, true)
+      renderForm(baseFormValues, baseVenue, false, true)
 
       const editVenue = vi
         .spyOn(api, 'editVenue')
@@ -651,14 +537,12 @@ describe('VenueFormScreen', () => {
       await waitFor(() => {
         expect(screen.getByText('Nouvelle information de retrait'))
       })
-      venue.withdrawalDetails = 'Nouvelle information de retrait'
 
       await userEvent.click(
         screen.getByText(
           'Appliquer le changement à toutes les offres déjà existantes'
         )
       )
-      expectedEditVenue.isWithdrawalAppliedOnAllOffers = true
 
       await userEvent.click(screen.getByText(/Enregistrer et quitter/))
 
@@ -683,7 +567,7 @@ describe('VenueFormScreen', () => {
     })
 
     it('should not display withdrawal dialog if withdrawalDetails value after update is the same', async () => {
-      renderForm(formValues, venue, false)
+      renderForm(baseFormValues, baseVenue, false)
 
       await waitFor(() => {
         expect(
@@ -706,7 +590,6 @@ describe('VenueFormScreen', () => {
           'Appliquer le changement à toutes les offres déjà existantes'
         )
       )
-      expectedEditVenue.isWithdrawalAppliedOnAllOffers = true
 
       await userEvent.click(screen.getByText(/Enregistrer et quitter/))
       expect(
