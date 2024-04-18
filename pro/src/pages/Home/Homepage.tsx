@@ -23,7 +23,6 @@ import { GET_OFFERER_QUERY_KEY } from 'config/swrQueryKeys'
 import { hasStatusCode } from 'core/OfferEducational'
 import { SAVED_OFFERER_ID_KEY } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
 import useNotification from 'hooks/useNotification'
@@ -76,7 +75,6 @@ export const Homepage = (): JSX.Element => {
   const [searchParams, setSearchParams] = useSearchParams()
   const { offererNames } = useLoaderData() as HomepageLoaderData
   const navigate = useNavigate()
-  const isNewNavActive = useActiveFeature('WIP_ENABLE_PRO_SIDE_NAV')
   const hasNewSideBarNavigation = useIsNewInterfaceActive()
   const { currentUser } = useCurrentUser()
   const notify = useNotification()
@@ -91,10 +89,7 @@ export const Homepage = (): JSX.Element => {
 
   const [isUserOffererValidated, setIsUserOffererValidated] = useState(false)
   const [seesNewNavAvailableBanner, setSeesNewNavAvailableBanner] = useState(
-    userClosedBetaTestBanner &&
-      isNewNavActive &&
-      !hasNewSideBarNavigation &&
-      isEligibleToNewNav
+    userClosedBetaTestBanner && !hasNewSideBarNavigation && isEligibleToNewNav
   )
 
   const [isNewNavEnabled, setIsNewNavEnabled] = useState(false)

@@ -27,9 +27,8 @@ const renderUseIsNewInterfaceActive = (
 }
 
 describe('useIsNewInterfaceActive', () => {
-  it('should return true if the feature is active and user has new nav date', () => {
+  it('should return true if user has new nav date', () => {
     const options = {
-      features: ['WIP_ENABLE_PRO_SIDE_NAV'],
       storeOverrides: {
         user: {
           currentUser: {
@@ -47,7 +46,6 @@ describe('useIsNewInterfaceActive', () => {
 
   it('should return false if user is not connected', () => {
     const options = {
-      features: ['WIP_ENABLE_PRO_SIDE_NAV'],
       storeOverrides: {
         user: {
           currentUser: null,
@@ -58,27 +56,8 @@ describe('useIsNewInterfaceActive', () => {
     expect(screen.getByText('Inactive')).toBeInTheDocument()
   })
 
-  it('should return false if the feature is inactive', () => {
-    const options = {
-      features: [],
-      storeOverrides: {
-        user: {
-          currentUser: {
-            isAdmin: false,
-            navState: {
-              newNavDate: '2021-01-01',
-            },
-          },
-        },
-      },
-    }
-    renderUseIsNewInterfaceActive(options)
-    expect(screen.getByText('Inactive')).toBeInTheDocument()
-  })
-
   it('should return false if user connected but as no new nav date', () => {
     const options = {
-      features: ['WIP_ENABLE_PRO_SIDE_NAV'],
       storeOverrides: {
         user: {
           currentUser: {
@@ -96,7 +75,6 @@ describe('useIsNewInterfaceActive', () => {
 
   it('should return false if user connected but as new nav date in future', () => {
     const options = {
-      features: ['WIP_ENABLE_PRO_SIDE_NAV'],
       storeOverrides: {
         user: {
           currentUser: {

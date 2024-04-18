@@ -282,14 +282,6 @@ describe('Homepage', () => {
   })
 
   describe('beta banner', () => {
-    it('should not display the banner without de FF', async () => {
-      renderHomePage()
-      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-      expect(
-        screen.queryByText(/Une nouvelle interface sera bientôt disponible/)
-      ).not.toBeInTheDocument()
-    })
-
     it('should not display the banner if the user is eligible but is already a beta tester', async () => {
       renderHomePage({
         features: ['WIP_ENABLE_PRO_SIDE_NAV'],

@@ -55,8 +55,7 @@ describe('src | AppLayout', () => {
   })
 
   describe('side navigation', () => {
-    it('should render the new header when the WIP_ENABLE_PRO_SIDE_NAV is active', () => {
-      options.features = ['WIP_ENABLE_PRO_SIDE_NAV']
+    it('should render the header', () => {
       options.storeOverrides.user.currentUser.navState = {
         newNavDate: '2021-01-01',
       }
@@ -67,7 +66,6 @@ describe('src | AppLayout', () => {
     })
 
     it('should display review banner if user has new nav active', () => {
-      options.features = ['WIP_ENABLE_PRO_SIDE_NAV']
       options.storeOverrides.user.currentUser.navState = {
         newNavDate: '2021-01-01',
         eligibilityDate: '2021-01-01',
@@ -80,7 +78,6 @@ describe('src | AppLayout', () => {
     })
 
     it('should not display review banner if user has new nav active but is not eligible (from a/b test)', () => {
-      options.features = ['WIP_ENABLE_PRO_SIDE_NAV']
       options.storeOverrides.user.currentUser.navState = {
         newNavDate: '2021-01-01',
         eligibilityDate: null,
@@ -94,7 +91,6 @@ describe('src | AppLayout', () => {
 
     describe('on smaller screen sizes', () => {
       beforeEach(() => {
-        options.features = ['WIP_ENABLE_PRO_SIDE_NAV']
         options.storeOverrides.user.currentUser.navState = {
           newNavDate: '2021-01-01',
         }
@@ -113,7 +109,6 @@ describe('src | AppLayout', () => {
 
         expect(screen.getByLabelText('Fermer')).toHaveFocus()
       })
-
       it('should trap focus when side nav is open', async () => {
         await userEvent.click(screen.getByLabelText('Menu'))
 
