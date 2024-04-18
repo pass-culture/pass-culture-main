@@ -23,12 +23,16 @@ export type AdageOfferProps = {
   offer: CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel
   adageUser?: AuthenticatedResponse
   isPreview?: boolean
+  setInstitutionOfferCount?: (value: number) => void
+  institutionOfferCount?: number
 }
 
 export default function AdageOffer({
   offer,
   adageUser,
   isPreview = false,
+  setInstitutionOfferCount,
+  institutionOfferCount,
 }: AdageOfferProps) {
   const isOfferBookable = isCollectiveOfferBookable(offer)
 
@@ -102,6 +106,8 @@ export default function AdageOffer({
                 offer={offer}
                 adageUser={adageUser}
                 isPreview={isPreview}
+                setInstitutionOfferCount={setInstitutionOfferCount}
+                institutionOfferCount={institutionOfferCount}
               />
             )
           ) : (
