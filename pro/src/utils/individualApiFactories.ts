@@ -22,6 +22,7 @@ import {
   SubcategoryIdEnum,
   SubcategoryResponseModel,
   VenueListItemResponseModel,
+  VenueProviderResponse,
   VenueTypeCode,
 } from 'apiClient/v1'
 import {
@@ -426,4 +427,22 @@ export const defaultManagedVenues: ManagedVenues = {
   id: 1,
   siret: '123456789',
   hasPricingPoint: true,
+}
+
+export const defaultVenueProvider: VenueProviderResponse = {
+  id: 1,
+  isActive: true,
+  isFromAllocineProvider: false,
+  lastSyncDate: undefined,
+  venueId: 2,
+  venueIdAtOfferProvider: 'cdsdemorc1',
+  provider: {
+    name: 'Ciné Office',
+    id: 12,
+    hasOffererProvider: false,
+    isActive: true,
+  },
+  quantity: 0,
+  isDuo: true,
+  price: 0,
 }
