@@ -40,6 +40,7 @@ def get_offer(offer_id: str) -> serializers.OfferResponse:
             .joinedload(Venue.managingOfferer)
             .load_only(Offerer.name, Offerer.validationStatus, Offerer.isActive)
         )
+        .options(joinedload(Offer.venue).joinedload(Venue.googlePlacesInfo))
         .options(joinedload(Offer.mediations))
         .options(joinedload(Offer.product).load_only(Product.id, Product.thumbCount))
         .outerjoin(Offer.lastProvider)
