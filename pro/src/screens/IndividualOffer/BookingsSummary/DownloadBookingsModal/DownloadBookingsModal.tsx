@@ -6,6 +6,8 @@ import { api } from 'apiClient/api'
 import { BookingExportType, BookingsExportStatusFilter } from 'apiClient/v1'
 import DialogBox from 'components/DialogBox'
 import { GET_EVENT_PRICE_CATEGORIES_AND_SCHEDULES_BY_DAYE_QUERY_KEY } from 'config/swrQueryKeys'
+import { Events } from 'core/FirebaseEvents/constants'
+import useAnalytics from 'hooks/useAnalytics'
 import strokeDeskIcon from 'icons/stroke-desk.svg'
 import { daysOfWeek } from 'pages/VenueEdition/OpeningHoursForm/OpeningHoursForm'
 import { Button } from 'ui-kit'
@@ -30,6 +32,7 @@ export const DownloadBookingsModal = ({
 }: DownloadBookingsModalProps) => {
   const [bookingsType, setBookingsType] = useState<BookingsExportStatusFilter>()
   const [selectedDate, setSelectedDate] = useState<string>()
+  const { logEvent } = useAnalytics()
 
   const stockSchedulesAndPricesByDateQuery = useSWR(
     [GET_EVENT_PRICE_CATEGORIES_AND_SCHEDULES_BY_DAYE_QUERY_KEY],
@@ -74,6 +77,11 @@ export const DownloadBookingsModal = ({
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
       )
     }
+    logEvent?.(Events.CLICKED_DOWNLOAD_OFFER_BOOKINGS, {
+      format: fileFormat,
+      bookingStatus: bookingsType,
+      offerId,
+    })
   }
 
   const createDateRow = (

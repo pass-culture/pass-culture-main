@@ -3,11 +3,13 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { api } from 'apiClient/api'
+import * as useAnalytics from 'hooks/useAnalytics'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { DownloadBookingsModal } from '../DownloadBookingsModal'
 
 const MOCK_OFFER_ID = 1
+const mockLogEvent = jest.fn()
 
 const render = () => {
   renderWithProviders(
@@ -122,6 +124,9 @@ describe('DownloadBookingModal', () => {
     ])
 
     vi.spyOn(api, 'exportBookingsForOfferAsCsv').mockResolvedValueOnce('')
+    vi.spyOn(useAnalytics, 'default').mockReturnValue({
+      logEvent: mockLogEvent,
+    })
 
     render()
 
@@ -150,6 +155,12 @@ describe('DownloadBookingModal', () => {
       'validated',
       '2022-01-01'
     )
+
+    expect(mockLogEvent).toBeCalledWith('hasDownloadedBookings', {
+      format: 'csv',
+      bookingStatus: 'validated',
+      offerId: MOCK_OFFER_ID,
+    })
   })
 
   it('should download all bookings as Excel', async () => {
@@ -174,6 +185,9 @@ describe('DownloadBookingModal', () => {
       },
     ])
     vi.spyOn(api, 'exportBookingsForOfferAsExcel').mockResolvedValueOnce({})
+    vi.spyOn(useAnalytics, 'default').mockReturnValue({
+      logEvent: mockLogEvent,
+    })
 
     render()
 
@@ -201,5 +215,11 @@ describe('DownloadBookingModal', () => {
       'all',
       '2022-01-02'
     )
+
+    expect(mockLogEvent).toBeCalledWith('hasDownloadedBookings', {
+      format: 'excel',
+      bookingStatus: 'all',
+      offerId: MOCK_OFFER_ID,
+    })
   })
 })
