@@ -54,7 +54,6 @@ const Validation = (): JSX.Element => {
 
   useEffect(() => {
     // This is needed because `ReactRouter` is reloaded because of useIsNewInterfaceActive()
-    // Remove this when WIP_ENABLE_PRO_SIDE_NAV is disabled
     if (currentUser.hasUserOfferer) {
       navigate('/accueil')
     } else {
