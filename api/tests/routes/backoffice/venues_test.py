@@ -1238,6 +1238,21 @@ class UpdateVenueTest(PostEndpointHelper):
 
         assert response.status_code == 400
 
+    @pytest.mark.parametrize("removed_field", ["street", "postal_code", "city"])
+    def test_update_venue_remove_address_blocked_by_constraint(self, authenticated_client, removed_field):
+        venue = offerers_factories.VenueWithoutSiretFactory()
+
+        data = self._get_current_data(venue)
+        data[removed_field] = ""
+
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+
+        assert response.status_code == 400
+        assert "Les données envoyées comportent des erreurs." in html_parser.extract_alert(response.data)
+        assert venue.street
+        assert venue.postalCode
+        assert venue.city
+
     def test_update_venue_siret_disabled(self, client, roles_with_permissions, offerer):
         bo_user = users_factories.AdminFactory()
         backoffice_api.upsert_roles(bo_user, [perm_models.Roles.SUPPORT_PRO])
