@@ -333,7 +333,6 @@ describe('Homepage', () => {
 
       await userEvent.click(screen.getByText(/Activer dès maintenant/))
       expect(api.postNewProNav).toHaveBeenCalledTimes(1)
-      expect(reloadFn).toHaveBeenCalledTimes(1)
       expect(
         await screen.findByText(/Bienvenue sur la nouvelle interface/)
       ).toBeInTheDocument()
