@@ -31,6 +31,9 @@
     "storybook": "NODE_PATH=src storybook dev -p 6006",
     "build-storybook": "NODE_PATH=src storybook build -o docs-build"
   },
+  "cypress-cucumber-preprocessor": {
+    "stepDefinitions": "cypress/integration/step-definitions/**/*.ts"
+  },  
   "dependencies": {
     "@algolia/autocomplete-plugin-query-suggestions": "^1.17.0",
     "@algolia/autocomplete-plugin-recent-searches": "^1.17.0",
@@ -73,6 +76,8 @@
     "yup": "^1.4.0"
   },
   "devDependencies": {
+    "@badeball/cypress-cucumber-preprocessor": "^20.0.3",
+    "@bahmutov/cypress-esbuild-preprocessor": "^2.2.0",
     "@storybook/addon-a11y": "^8.0.8",
     "@storybook/addon-controls": "^8.0.8",
     "@storybook/preset-scss": "^1.0.3",
@@ -98,6 +103,7 @@
     "@vitejs/plugin-react": "^4.2.1",
     "@vitest/coverage-v8": "^1.5.0",
     "cypress": "^13.7.3",
+    "esbuild": "^0.20.2",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.29.1",
@@ -125,7 +131,9 @@
     "vitest-fetch-mock": "^0.2.2"
   },
   "resolutions": {
-    "@babel/traverse": ">=7.23.2"
+    "@babel/traverse": ">=7.23.2",
+    "wrap-ansi": "7.0.0",
+    "string-width": "4.1.0"
   },
   "engines": {
     "node": ">=20 <21"
