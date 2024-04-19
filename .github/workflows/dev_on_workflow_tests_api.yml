@@ -70,7 +70,7 @@ jobs:
           run: mypy src
       - name: "Slack Notification"
         if: ${{ failure() && github.ref == 'refs/heads/master'  }}
-        uses: slackapi/slack-github-action@v1.25.0
+        uses: slackapi/slack-github-action@v1.26.0
         with:
           # channel #dev
           channel-id: "CPZ7U1CNP"
@@ -138,7 +138,7 @@ jobs:
           run: pylint src tests --jobs=15
       - name: "Slack Notification"
         if: ${{ failure() && github.ref == 'refs/heads/master'  }}
-        uses: slackapi/slack-github-action@v1.25.0
+        uses: slackapi/slack-github-action@v1.26.0
         with:
           # channel #dev
           channel-id: "CPZ7U1CNP"
@@ -317,7 +317,7 @@ jobs:
             exit $status_code
       - name: "Slack Notification"
         if: ${{ failure() && github.ref == 'refs/heads/master'  }}
-        uses: slackapi/slack-github-action@v1.25.0
+        uses: slackapi/slack-github-action@v1.26.0
         with:
           # channel #dev
           channel-id: "CPZ7U1CNP"
@@ -449,7 +449,7 @@ jobs:
           fail_on_failure: true
       - name: "Slack Notification"
         if: ${{ failure() && github.ref == 'refs/heads/master'  }}
-        uses: slackapi/slack-github-action@v1.25.0
+        uses: slackapi/slack-github-action@v1.26.0
         with:
           # channel #dev
           channel-id: "CPZ7U1CNP"
