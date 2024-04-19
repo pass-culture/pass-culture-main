@@ -1,5 +1,5 @@
 import format from 'date-fns/format'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -36,6 +36,15 @@ export const DownloadBookingsModal = ({
     () => api.getOfferPriceCategoriesAndSchedulesByDates(offerId),
     { fallbackData: [] }
   )
+
+  useEffect(() => {
+    if (
+      !stockSchedulesAndPricesByDateQuery.isLoading &&
+      stockSchedulesAndPricesByDateQuery.data.length === 1
+    ) {
+      setSelectedDate(stockSchedulesAndPricesByDateQuery.data[0].eventDate)
+    }
+  }, [stockSchedulesAndPricesByDateQuery])
 
   const handleSubmit = async (
     event: React.SyntheticEvent<HTMLFormElement, SubmitEvent>
@@ -117,13 +126,23 @@ export const DownloadBookingsModal = ({
             Télécharger vos réservations
           </h1>
           <fieldset className={style['date-select-section']}>
-            <legend>
-              <div>Sélectionner la date:</div>
-            </legend>
             {stockSchedulesAndPricesByDateQuery.isLoading ? (
               <Spinner />
+            ) : stockSchedulesAndPricesByDateQuery.data.length === 1 ? (
+              <h2 className={style['one-booking-date-section']}>
+                Date de votre évènement:{' '}
+                {format(
+                  new Date(
+                    stockSchedulesAndPricesByDateQuery.data[0].eventDate
+                  ),
+                  FORMAT_DD_MM_YYYY
+                )}
+              </h2>
             ) : (
               <>
+                <legend>
+                  <div>Sélectionner la date:</div>
+                </legend>
                 <div className={style['bookings-date-count']}>
                   {pluralize(
                     stockSchedulesAndPricesByDateQuery.data.length,
