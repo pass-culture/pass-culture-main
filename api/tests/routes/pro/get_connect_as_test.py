@@ -62,6 +62,51 @@ class Returns200Test:
             assert session["internal_admin_email"] == admin.email
             assert session["internal_admin_id"] == admin.id
 
+    @override_features(WIP_CONNECT_AS=True)
+    def test_current_user_already_impersonnating_a_pro(self, client, db_session):
+        # given
+        admin = users_factories.AdminFactory(email="admin@example.com")
+        intermediary_target = users_factories.ProFactory()
+        real_target = users_factories.ProFactory()
+
+        expected_redirect_link = "https://example.com"
+        intermediary_secure_token = SecureToken(
+            data=ConnectAsInternalModel(
+                redirect_link=expected_redirect_link,
+                user_id=intermediary_target.id,
+                internal_admin_email=admin.email,
+                internal_admin_id=admin.id,
+            ).dict(),
+        )
+        real_secure_token = SecureToken(
+            data=ConnectAsInternalModel(
+                redirect_link=expected_redirect_link,
+                user_id=real_target.id,
+                internal_admin_email=admin.email,
+                internal_admin_id=admin.id,
+            ).dict(),
+        )
+
+        # use connect as to connect to a pro
+        response = client.with_session_auth(admin.email).get(f"/users/connect-as/{intermediary_secure_token.token}")
+        assert response.status_code == 302
+        assert response.location == expected_redirect_link
+
+        # when
+        response = client.with_session_auth(admin.email).get(f"/users/connect-as/{real_secure_token.token}")
+        assert response.status_code == 302
+        assert response.location == expected_redirect_link
+
+        # then
+        assert response.status_code == 302
+        assert response.location == expected_redirect_link
+        # check user is impersonated
+        with client.client.session_transaction() as session:
+            assert session["user_id"] == real_target.id
+            assert session["_user_id"] == str(real_target.id)
+            assert session["internal_admin_email"] == admin.email
+            assert session["internal_admin_id"] == admin.id
+
 
 class Returns401Test:
     @override_features(WIP_CONNECT_AS=True)
