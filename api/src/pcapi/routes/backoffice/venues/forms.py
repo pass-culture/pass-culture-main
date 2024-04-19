@@ -113,6 +113,12 @@ class EditVenueForm(EditVirtualVenueForm):
 
         return siret
 
+    def validate_street(self, street: fields.PCStringField) -> fields.PCStringField:
+        # database constraint: check_is_virtual_xor_has_address
+        if not street.data and not self.siret.data:
+            raise validators.ValidationError("L'adresse est obligatoire pour un lieu sans SIRET")
+        return street
+
     def validate_acceslibre_url(self, acceslibre_url: fields.PCOptStringField) -> fields.PCOptStringField:
         if acceslibre_url.data and not (
             acceslibre_url.data.startswith("https://") or acceslibre_url.data.startswith("http://")
