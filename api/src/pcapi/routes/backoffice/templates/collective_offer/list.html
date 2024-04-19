@@ -128,7 +128,9 @@
                 <td>{{ collective_offer.collectiveStock.beginningDatetime | format_date }}</td>
                 {% if has_permission("PRO_FRAUD_ACTIONS") %}
                   <td>
-                    {% if collective_offer.collectiveStock %}{{ collective_offer.collectiveStock.price | format_amount }}{% endif %}
+                    {% if collective_offer.collectiveStock %}
+                      <span class="text-nowrap">{{ collective_offer.collectiveStock.price | format_amount }}</span>
+                    {% endif %}
                   </td>
                 {% endif %}
                 <td>{{ links.build_offerer_name_to_details_link(collective_offer.venue.managingOfferer) }}</td>
