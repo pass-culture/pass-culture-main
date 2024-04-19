@@ -74,6 +74,31 @@ describe('DownloadBookingModal', () => {
     ).toBeInTheDocument()
   })
 
+  it('should not display date selection table if only one date is returned', async () => {
+    vi.spyOn(
+      api,
+      'getOfferPriceCategoriesAndSchedulesByDates'
+    ).mockResolvedValueOnce([
+      {
+        eventDate: '2022-01-01',
+        scheduleCount: 1,
+        priceCategoriesCount: 1,
+      },
+    ])
+
+    render()
+
+    expect(screen.getByText('Télécharger vos réservations')).toBeInTheDocument()
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(screen.queryByRole('cell')).not.toBeInTheDocument()
+
+    expect(
+      screen.getByText('Date de votre évènement: 01/01/2022')
+    ).toBeInTheDocument()
+  })
+
   it('should download validated bookings as CSV', async () => {
     vi.spyOn(
       api,
