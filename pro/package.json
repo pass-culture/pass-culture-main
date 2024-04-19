@@ -23,6 +23,7 @@
     "prettier:js:changed:fix": "./scripts/lint_diff.sh",
     "serve": "vite preview",
     "start": "vite",
+    "test:bdd": "cypress run --e2e --browser chrome --env tags=@P0",
     "test:e2e": "cypress open --e2e --browser chrome",
     "test:unit": "TZ=UTC vitest",
     "test:unit:hook": "TZ=UTC vitest related --run",
