@@ -38,6 +38,7 @@ import { formatBrowserTimezonedDateAsUTC, isDateValid } from 'utils/date'
 import { localStorageAvailable } from 'utils/localStorageAvailable'
 import { sortByLabel } from 'utils/strings'
 
+import screen from './assets/screen.gif'
 import styles from './Homepage.module.scss'
 import { OffererBanners } from './Offerers/OffererBanners'
 import { Offerers } from './Offerers/Offerers'
@@ -189,19 +190,26 @@ export const Homepage = (): JSX.Element => {
 
       {seesNewNavAvailableBanner && (
         <div className={styles['beta-banner']}>
-          <div className={styles['beta-banner-titles']}>
-            <div className={styles['beta-banner-title']}>
-              Une nouvelle interface sera bientôt disponible
+          <div className={styles['beta-banner-left']}>
+            <div className={styles['beta-banner-titles']}>
+              <div className={styles['beta-banner-title']}>
+                Une nouvelle interface sera bientôt disponible
+              </div>
+              <span>
+                Le pass Culture se modernise pour devenir plus pratique
+              </span>
             </div>
-            <span>Le pass Culture se modernise pour devenir plus pratique</span>
-          </div>
 
-          <Button
-            onClick={showNewNav}
-            className={styles['beta-banner-activate']}
-          >
-            Activer dès maintenant
-          </Button>
+            <Button
+              onClick={showNewNav}
+              className={styles['beta-banner-activate']}
+            >
+              Activer dès maintenant
+            </Button>
+          </div>
+          <div className={styles['beta-banner-right']}>
+            <img src={screen} alt="" />
+          </div>
           <Button
             onClick={hideBanner}
             className={styles['beta-banner-close']}
