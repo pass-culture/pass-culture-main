@@ -23,31 +23,46 @@
 
 .beta-banner {
   position: relative;
-  background: linear-gradient(
-    258deg,
-    var(--colors-secondary-light) 11.7%,
-    #280078 113.36%
-  );
+  background: url("./assets/background.svg");
   border-radius: rem.torem(8px);
   display: flex;
+  flex-direction: row;
+  gap: rem.torem(16px);
   padding: rem.torem(32px) rem.torem(16px);
-  flex-direction: column;
-  align-items: flex-start;
-  gap: rem.torem(32px);
-  flex-shrink: 0;
-  align-self: stretch;
   margin-top: rem.torem(32px);
+  overflow: hidden;
+  height: rem.torem(181px);
+  background-size: cover;
+
+  &-left {
+    flex-grow: 3;
+  }
+
+  &-right {
+    flex-grow: 1;
+
+    img {
+      max-width: rem.torem(300px);
+      width: 100%;
+      margin-top: rem.torem(25px);
+      display: none;
+    }
+  }
 
   &-titles {
     color: var(--color-white);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: rem.torem(32px);
   }
 
-  @media (min-width: size.$tablet) {
-    background: url("./assets/background.svg");
-    height: rem.torem(181px);
+  @media (width >= 825px) {
+    img {
+      display: block;
+    }
 
     &-titles {
-      width: 70%;
       color: var(--color-white);
     }
   }
@@ -63,6 +78,10 @@
     top: rem.torem(16px);
     right: rem.torem(16px);
     color: var(--color-white);
+
+    &:focus-visible {
+      outline-color: var(--color-white);
+    }
   }
 
   &-activate {
