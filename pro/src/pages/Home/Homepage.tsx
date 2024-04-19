@@ -1,11 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import {
-  RouteObject,
-  useLoaderData,
-  useNavigate,
-  useSearchParams,
-} from 'react-router-dom'
+import { RouteObject, useLoaderData, useSearchParams } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -30,7 +25,7 @@ import useRemoteConfig from 'hooks/useRemoteConfig'
 import strokeCloseIcon from 'icons/stroke-close.svg'
 import { WelcomeToTheNewBetaBanner } from 'pages/Home/WelcomeToTheNewBetaBanner/WelcomeToTheNewBetaBanner'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
-import { updateSelectedOffererId } from 'store/user/reducer'
+import { updateSelectedOffererId, updateUser } from 'store/user/reducer'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -69,13 +64,11 @@ const getSavedOffererId = (offererOptions: SelectOption[]): string | null => {
 
 export const Homepage = (): JSX.Element => {
   const HAS_CLOSED_BETA_TEST_BANNER = 'HAS_CLOSED_BETA_TEST_BANNER'
-  const NEW_NAV_ENABLED = 'NEW_NAV_ENABLED'
 
   const profileRef = useRef<HTMLElement>(null)
   const offerersRef = useRef<HTMLElement>(null)
-  const [searchParams, setSearchParams] = useSearchParams()
+  const [searchParams] = useSearchParams()
   const { offererNames } = useLoaderData() as HomepageLoaderData
-  const navigate = useNavigate()
   const hasNewSideBarNavigation = useIsNewInterfaceActive()
   const { currentUser } = useCurrentUser()
   const notify = useNotification()
@@ -94,17 +87,24 @@ export const Homepage = (): JSX.Element => {
   )
 
   const [isNewNavEnabled, setIsNewNavEnabled] = useState(false)
+
   const { remoteConfigData } = useRemoteConfig()
   const dispatch = useDispatch()
 
   async function showNewNav() {
     try {
       await api.postNewProNav()
-      hideBanner()
-      navigate({ search: `${location.search}&${NEW_NAV_ENABLED}=true` })
-
-      // We need to reload so the new interface is loaded.
-      window.location.reload()
+      setSeesNewNavAvailableBanner(false)
+      dispatch(
+        updateUser({
+          ...currentUser,
+          navState: {
+            newNavDate: formatBrowserTimezonedDateAsUTC(new Date()),
+            eligibilityDate: currentUser.navState?.eligibilityDate,
+          },
+        })
+      )
+      setIsNewNavEnabled(true)
     } catch (error) {
       notify.error("Impossible de réaliser l'action. Réessayez plus tard")
     }
@@ -115,15 +115,6 @@ export const Homepage = (): JSX.Element => {
       localStorage.setItem(HAS_CLOSED_BETA_TEST_BANNER, 'true')
     setSeesNewNavAvailableBanner(false)
   }
-
-  // TODO: Remove when removing useIsNewInterfaceActive
-  useEffect(() => {
-    if (searchParams.get(NEW_NAV_ENABLED)) {
-      searchParams.delete(NEW_NAV_ENABLED)
-      setSearchParams(searchParams)
-      setIsNewNavEnabled(true)
-    }
-  }, [searchParams.get(NEW_NAV_ENABLED)])
 
   const offererOptions = sortByLabel(
     offererNames.map((item) => ({
@@ -267,7 +258,7 @@ export const Homepage = (): JSX.Element => {
       </section>
 
       <TutorialDialog />
-      {isNewNavEnabled && (
+      {isNewNavEnabled && hasNewSideBarNavigation && (
         <WelcomeToTheNewBetaBanner setIsNewNavEnabled={setIsNewNavEnabled} />
       )}
     </AppLayout>
