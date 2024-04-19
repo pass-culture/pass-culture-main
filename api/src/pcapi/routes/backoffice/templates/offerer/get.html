@@ -159,7 +159,10 @@
             </div>
             <div class="col-4">
               <p class="mb-1">
-                <span class="fw-bold">Référencement Adage : {{ adage_information }}</span>
+                <span class="fw-bold">Peut créer une offre EAC : {{ can_create_adage_offer | format_bool }}</span>
+              </p>
+              <p class="mb-1">
+                <span class="fw-bold">Lieux référencés : {{ adage_information }}</span>
               </p>
               <p class="mb-1">
                 <span class="fw-bold">Présence CB dans les lieux :</span>
