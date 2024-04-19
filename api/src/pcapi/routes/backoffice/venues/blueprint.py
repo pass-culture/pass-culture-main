@@ -167,13 +167,6 @@ def get_venue(venue_id: int) -> offerers_models.Venue:
         sa.orm.joinedload(offerers_models.Venue.contact),
         sa.orm.joinedload(offerers_models.Venue.venueLabel),
         sa.orm.joinedload(offerers_models.Venue.criteria).load_only(criteria_models.Criterion.name),
-        sa.orm.joinedload(offerers_models.Venue.collectiveDmsApplications).load_only(
-            educational_models.CollectiveDmsApplication.state,
-            educational_models.CollectiveDmsApplication.depositDate,
-            educational_models.CollectiveDmsApplication.lastChangeDate,
-            educational_models.CollectiveDmsApplication.application,
-            educational_models.CollectiveDmsApplication.procedure,
-        ),
         sa.orm.joinedload(offerers_models.Venue.venueProviders)
         .load_only(
             providers_models.VenueProvider.id,
@@ -470,6 +463,56 @@ def get_history(venue_id: int) -> utils.BackofficeResponse:
         actions=actions,
         dst=dst,
         form=form,
+    )
+
+
+@venue_blueprint.route("/<int:venue_id>/protected-info", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.READ_PRO_ENTREPRISE_INFO)
+def get_entreprise_info(venue_id: int) -> utils.BackofficeResponse:
+    venue = offerers_models.Venue.query.get_or_404(venue_id)
+
+    if not venue.siret:
+        raise NotFound()
+
+    if not is_valid_siret(venue.siret):
+        return render_template("venue/get/entreprise_info.html", is_invalid_siret=True, venue=venue)
+
+    siret_info = None
+    siret_error = None
+
+    try:
+        siret_info = entreprise_api.get_siret(venue.siret, raise_if_non_public=False)
+    except entreprise_exceptions.UnknownEntityException:
+        siret_error = "Ce SIRET est inconnu dans la base de données Sirene, y compris dans les non-diffusibles"
+    except entreprise_exceptions.SireneException:
+        siret_error = "Une erreur s'est produite lors de l'appel à API Entreprise"
+
+    return render_template("venue/get/entreprise_info.html", siret_info=siret_info, siret_error=siret_error)
+
+
+@venue_blueprint.route("/<int:venue_id>/collective-dms-applications", methods=["GET"])
+def get_collective_dms_applications(venue_id: int) -> utils.BackofficeResponse:
+
+    collective_dms_applications = (
+        educational_models.CollectiveDmsApplication.query.filter(
+            educational_models.CollectiveDmsApplication.siret
+            == sa.select(offerers_models.Venue.siret).filter(offerers_models.Venue.id == venue_id).scalar_subquery()
+        )
+        .options(
+            sa.orm.load_only(
+                educational_models.CollectiveDmsApplication.state,
+                educational_models.CollectiveDmsApplication.depositDate,
+                educational_models.CollectiveDmsApplication.lastChangeDate,
+                educational_models.CollectiveDmsApplication.application,
+                educational_models.CollectiveDmsApplication.procedure,
+            ),
+        )
+        .order_by(educational_models.CollectiveDmsApplication.depositDate.desc())
+    )
+
+    return render_template(
+        "venue/get/collective_dms_applications.html",
+        collective_dms_applications=collective_dms_applications,
     )
 
 
@@ -965,27 +1008,3 @@ def remove_siret(venue_id: int) -> utils.BackofficeResponse:
         return _render_remove_siret_content(venue, form=form, error=str(exc))
 
     return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
-
-
-@venue_blueprint.route("/<int:venue_id>/protected-info", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.READ_PRO_ENTREPRISE_INFO)
-def get_entreprise_info(venue_id: int) -> utils.BackofficeResponse:
-    venue = offerers_models.Venue.query.get_or_404(venue_id)
-
-    if not venue.siret:
-        raise NotFound()
-
-    if not is_valid_siret(venue.siret):
-        return render_template("venue/get/entreprise_info.html", is_invalid_siret=True, venue=venue)
-
-    siret_info = None
-    siret_error = None
-
-    try:
-        siret_info = entreprise_api.get_siret(venue.siret, raise_if_non_public=False)
-    except entreprise_exceptions.UnknownEntityException:
-        siret_error = "Ce SIRET est inconnu dans la base de données Sirene, y compris dans les non-diffusibles"
-    except entreprise_exceptions.SireneException:
-        siret_error = "Une erreur s'est produite lors de l'appel à API Entreprise"
-
-    return render_template("venue/get/entreprise_info.html", siret_info=siret_info, siret_error=siret_error)
