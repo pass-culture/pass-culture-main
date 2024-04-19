@@ -14,7 +14,7 @@ export type RenderWithProvidersOptions = {
   storeOverrides?: any
   initialRouterEntries?: string[]
   features?: string[]
-  user?: Partial<SharedCurrentUserResponseModel>
+  user?: Partial<SharedCurrentUserResponseModel> | null
 }
 
 const createRouterFromOverrides = (
@@ -44,9 +44,9 @@ export const renderWithProviders = (
     },
     user: overrides?.user
       ? {
-          ...overrides.storeOverrides?.user,
-          selectedOffererId: true,
+          selectedOffererId: null,
           currentUser: overrides.user,
+          ...overrides.storeOverrides?.user,
         }
       : overrides?.storeOverrides?.user,
   }

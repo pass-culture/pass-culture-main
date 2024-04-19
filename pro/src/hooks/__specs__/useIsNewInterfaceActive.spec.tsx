@@ -40,13 +40,7 @@ describe('useIsNewInterfaceActive', () => {
   })
 
   it('should return false if user is not connected', () => {
-    const options = {
-      storeOverrides: {
-        user: {
-          currentUser: null,
-        },
-      },
-    }
+    const options = { user: null }
     renderUseIsNewInterfaceActive(options)
     expect(screen.getByText('Inactive')).toBeInTheDocument()
   })
