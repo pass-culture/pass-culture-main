@@ -27,7 +27,6 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.backoffice import api as backoffice_api
 from pcapi.models import db
-from pcapi.routes.backoffice.filters import format_dms_status
 from pcapi.routes.backoffice.pro.forms import TypeOptions
 from pcapi.routes.backoffice.venues import blueprint as venues_blueprint
 from pcapi.utils import urls
@@ -329,8 +328,7 @@ class GetVenueTest(GetEndpointHelper):
         assert f"Code postal : {venue.postalCode} " in response_text
         assert f"Email : {venue.bookingEmail} " in response_text
         assert f"Numéro de téléphone : {venue.contact.phone_number} " in response_text
-        assert "Peut créer une offre EAC : Non" in response_text
-        assert "Statut dossier DMS Adage :" not in response_text
+        assert "Référencé Adage : Non" in response_text
         assert "ID Adage" not in response_text
         assert "Site web : https://www.example.com" in response_text
         assert f"Activité principale : {venue.venueTypeCode.value}" in response_text
@@ -349,7 +347,7 @@ class GetVenueTest(GetEndpointHelper):
             assert response.status_code == 200
 
         response_text = html_parser.content_as_text(response.data)
-        assert "Peut créer une offre EAC : Oui" in response_text
+        assert "Référencé Adage : Oui" in response_text
         assert "ID Adage : 7122022" in response_text
 
     def test_get_venue_with_no_contact(self, authenticated_client):
@@ -362,42 +360,6 @@ class GetVenueTest(GetEndpointHelper):
         response_text = html_parser.content_as_text(response.data)
         assert f"Email : {venue.bookingEmail}" in response_text
         assert "Numéro de téléphone :" not in response_text
-
-    def test_get_venue_with_no_dms_adage_application(self, authenticated_client, random_venue):
-        venue_id = random_venue.id
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
-            assert response.status_code == 200
-
-        content = html_parser.content_as_text(response.data)
-        assert "Pas de dossier DMS Adage" in content
-
-    @pytest.mark.parametrize(
-        "state,dateKey,label",
-        [
-            ("en_construction", "depositDate", "Date de dépôt DMS Adage"),
-            ("accepte", "lastChangeDate", "Date de validation DMS Adage"),
-        ],
-    )
-    def test_get_venue_with_dms_adage_application(self, authenticated_client, random_venue, state, dateKey, label):
-        collectiveDmsApplication = educational_factories.CollectiveDmsApplicationFactory(
-            venue=random_venue, state=state
-        )
-        venue_id = random_venue.id
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
-            assert response.status_code == 200
-
-        content = html_parser.content_as_text(response.data)
-        assert f"Statut du dossier DMS Adage : {format_dms_status(state)}" in content
-        assert f"{label} : " + (getattr(collectiveDmsApplication, dateKey)).strftime("%d/%m/%Y") in content
-        assert f"Numéro de dossier DMS Adage : {collectiveDmsApplication.application}" in content
-        assert (
-            f"https://www.demarches-simplifiees.fr/procedures/{collectiveDmsApplication.procedure}/dossiers/{collectiveDmsApplication.application}"
-            in str(response.data)
-        )
 
     def test_get_venue_with_provider(self, authenticated_client, random_venue):
         venue_provider = providers_factories.AllocineVenueProviderFactory(
@@ -477,8 +439,7 @@ class GetVenueTest(GetEndpointHelper):
         assert f"Venue ID : {venue.id} " in response_text
         assert f"Email : {venue.bookingEmail} " in response_text
         assert f"Numéro de téléphone : {venue.contact.phone_number} " in response_text
-        assert "Peut créer une offre EAC : Non" in response_text
-        assert "Statut dossier DMS Adage :" not in response_text
+        assert "Référencé Adage : Non" in response_text
         assert "ID Adage" not in response_text
         assert "Site web : https://my.website.com" in response_text
 
@@ -1585,6 +1546,75 @@ class CommentVenueTest(PostEndpointHelper):
         assert response.status_code == 303
         redirected_response = authenticated_client.get(response.headers["location"])
         assert "Les données envoyées comportent des erreurs" in redirected_response.data.decode("utf8")
+
+
+class GetVenueCollectiveDmsApplicationsTest(GetEndpointHelper):
+    endpoint = "backoffice_web.venue.get_collective_dms_applications"
+    endpoint_kwargs = {"venue_id": 1}
+    needed_permission = perm_models.Permissions.READ_PRO_ENTITY
+
+    # get session (1 query)
+    # get user with profile and permissions (1 query)
+    # get applications (1 query)
+    expected_num_queries = 3
+
+    def test_venue_with_dms_adage_application(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(siret="1234567891234")
+
+        url = url_for(self.endpoint, venue_id=venue.id)
+
+        # if venue is not removed from the current session, any get
+        # query won't be executed because of this specific testing
+        # environment. this would tamper the real database queries
+        # count.
+        db.session.expire(venue)
+
+        accepted_application = educational_factories.CollectiveDmsApplicationFactory(
+            venue=venue, depositDate=datetime.utcnow() - timedelta(days=10), state="accepte"
+        )
+        expired_application = educational_factories.CollectiveDmsApplicationFactory(
+            venue=venue, depositDate=datetime.utcnow() - timedelta(days=5), state="refuse"
+        )
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 2
+        assert rows[0]["ID"] == str(expired_application.application)
+        assert (
+            f"https://www.demarches-simplifiees.fr/procedures/{expired_application.procedure}/dossiers/{expired_application.application}"
+            in str(response.data)
+        )
+        assert rows[0]["Date de dépôt"] == expired_application.depositDate.strftime("%d/%m/%Y")
+        assert rows[0]["État"] == "Refusé"
+        assert rows[0]["Date de dernière mise à jour"] == expired_application.lastChangeDate.strftime("%d/%m/%Y")
+        assert rows[1]["ID"] == str(accepted_application.application)
+        assert (
+            f"https://www.demarches-simplifiees.fr/procedures/{accepted_application.procedure}/dossiers/{accepted_application.application}"
+            in str(response.data)
+        )
+        assert rows[1]["Date de dépôt"] == accepted_application.depositDate.strftime("%d/%m/%Y")
+        assert rows[1]["État"] == "Accepté"
+        assert rows[1]["Date de dernière mise à jour"] == accepted_application.lastChangeDate.strftime("%d/%m/%Y")
+
+    def test_venue_with_no_dms_adage_application(self, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+
+        url = url_for(self.endpoint, venue_id=venue.id)
+
+        # if venue is not removed from the current session, any get
+        # query won't be executed because of this specific testing
+        # environment. this would tamper the real database queries
+        # count.
+        db.session.expire(venue)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        assert html_parser.count_table_rows(response.data) == 0
 
 
 class GetBatchEditVenuesFormTest(PostEndpointHelper):
