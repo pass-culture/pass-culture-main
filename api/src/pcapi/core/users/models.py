@@ -273,6 +273,9 @@ class User(PcObject, Base, Model, DeactivableMixin):
     def get_notification_subscriptions(self) -> NotificationSubscriptions:
         return NotificationSubscriptions(**self.notificationSubscriptions or {})
 
+    def set_marketing_email_subscription(self, subscribe: bool) -> None:
+        self.notificationSubscriptions = (self.notificationSubscriptions or {}) | {"marketing_email": subscribe}
+
     def has_access(self, offerer_id: int) -> bool:
         # FIXME (dbaty, 2021-11-26): consider moving to a function in `core.users.api`?
         from pcapi.core.offerers.models import UserOfferer

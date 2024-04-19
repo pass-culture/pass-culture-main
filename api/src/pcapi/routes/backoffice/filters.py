@@ -691,6 +691,10 @@ def format_modified_info_name(info_name: str) -> str:
             return "Id chez Acceslibre"
         case "accessibilityProvider.externalAccessibilityUrl":
             return "Url chez Acceslibre"
+        case "notificationSubscriptions.marketing_email":
+            return "Abonné aux emails marketing"
+        case "notificationSubscriptions.marketing_push":
+            return "Abonné aux notifications push"
 
     if day := match_opening_hours(info_name):
         return f"Horaires du {day}"

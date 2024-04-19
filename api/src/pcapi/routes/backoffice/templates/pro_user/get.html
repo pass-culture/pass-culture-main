@@ -113,6 +113,9 @@
                     {{ build_modal_form("validate-email", url_for("backoffice_web.pro_user.validate_pro_user_email", user_id=user.id) , empty_form, "Valider l'adresse email", "Confirmer la validation de l'adresse email", "Vous êtes sur le point de valider l'adresse email, êtes-vous sûr ?") }}
                   </p>
                 {% endif %}
+                <p class="mb-1">
+                  <span class="fw-bold">Abonné aux emails marketing :</span> {{ user.get_notification_subscriptions().marketing_email | format_bool }}
+                </p>
               </div>
             </div>
           </div>

@@ -613,6 +613,7 @@ def update_user_info(
     city: str | T_UNCHANGED = UNCHANGED,
     validated_birth_date: datetime.date | T_UNCHANGED = UNCHANGED,
     id_piece_number: str | T_UNCHANGED = UNCHANGED,
+    marketing_email_subscription: bool | T_UNCHANGED = UNCHANGED,
     commit: bool = True,
 ) -> history_api.ObjectUpdateSnapshot:
     old_email = None
@@ -661,6 +662,13 @@ def update_user_info(
         if id_piece_number != user.idPieceNumber:
             snapshot.set("idPieceNumber", old=user.idPieceNumber, new=id_piece_number)
         user.idPieceNumber = id_piece_number
+    if marketing_email_subscription is not UNCHANGED:
+        snapshot.trace_update(
+            {"marketing_email": marketing_email_subscription},
+            target=user.get_notification_subscriptions(),
+            field_name_template="notificationSubscriptions.{}",
+        )
+        user.set_marketing_email_subscription(marketing_email_subscription)
 
     # keep using repository as long as user is validated in pcapi.validation.models.user
     if commit:
@@ -941,6 +949,11 @@ def update_notification_subscription(
         return
 
     old_subscriptions = user.get_notification_subscriptions()
+    history_api.ObjectUpdateSnapshot(user, user).trace_update(
+        {"marketing_email": subscriptions.marketing_email, "marketing_push": subscriptions.marketing_push},
+        target=old_subscriptions,
+        field_name_template="notificationSubscriptions.{}",
+    ).add_action()
     user.notificationSubscriptions = {
         "marketing_push": subscriptions.marketing_push,
         "marketing_email": subscriptions.marketing_email,

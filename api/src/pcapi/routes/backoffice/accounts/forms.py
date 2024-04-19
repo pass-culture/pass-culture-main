@@ -51,6 +51,7 @@ class EditAccountForm(utils.PCForm):
     street = fields.PCOptHiddenField("Adresse")
     postal_code = fields.PCOptPostalCodeHiddenField("Code postal")
     city = fields.PCOptHiddenField("Ville")
+    marketing_email_subscription = fields.PCSwitchBooleanField("Abonné aux emails marketing", full_row=True)
 
 
 class ManualReviewForm(FlaskForm):

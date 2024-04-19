@@ -334,6 +334,7 @@ def render_public_account_details(
                 street=user.address,
                 postal_code=user.postalCode,
                 city=user.city,
+                marketing_email_subscription=user.get_notification_subscriptions().marketing_email,
             )
 
         kwargs.update(
@@ -904,6 +905,7 @@ def update_public_account(user_id: int) -> utils.BackofficeResponse:
             postal_code=form.postal_code.data,
             city=form.city.data,
             commit=False,
+            marketing_email_subscription=form.marketing_email_subscription.data,
         )
     except phone_validation_exceptions.InvalidPhoneNumber:
         flash("Le numéro de téléphone est invalide", "warning")
@@ -927,7 +929,7 @@ def update_public_account(user_id: int) -> utils.BackofficeResponse:
         external_attributes_api.update_external_user(user)
 
     flash("Les informations ont été mises à jour", "success")
-    return redirect(get_public_account_link(user_id), code=303)
+    return redirect(get_public_account_link(user_id, active_tab="history"), code=303)
 
 
 @public_accounts_blueprint.route("/<int:user_id>/resend-validation-email", methods=["POST"])
