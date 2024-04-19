@@ -50,6 +50,7 @@ class GetOffererTest(GetEndpointHelper):
     # - offerer with joined data except tags (1 query)
     # - get offerer tags (1 query)
     # - get all tags for edit form (1 query)
+    # - get feature flag: WIP_ENABLE_PRO_SIDE_NAV (1 query)
     expected_num_queries = 5
 
     def test_keep_search_parameters_on_top(self, authenticated_client, offerer):
@@ -103,9 +104,10 @@ class GetOffererTest(GetEndpointHelper):
         assert f"Ville : {offerer.city} " in content
         assert f"Code postal : {offerer.postalCode} " in content
         assert f"Adresse : {offerer.street} " in content
+        assert "Peut créer une offre EAC : Oui" in content
+        assert "Lieux référencés : 0/0" in content
         assert "Présence CB dans les lieux : 0 OK / 0 KO " in content
         assert "Tags structure : Collectivité Top acteur " in content
-
         badges = html_parser.extract(response.data, tag="span", class_="badge")
         assert "Structure" in badges
         assert "Validée" in badges
@@ -215,25 +217,29 @@ class GetOffererTest(GetEndpointHelper):
         assert "Présence CB dans les lieux : 2 OK / 1 KO " in html_parser.content_as_text(response.data)
 
     def test_offerer_with_educational_venue_has_adage_data(self, authenticated_client, offerer):
-        offerers_factories.CollectiveVenueFactory(managingOfferer=offerer)
+        offerers_factories.CollectiveVenueFactory(managingOfferer=offerer, adageId="1234")
 
         url = url_for(self.endpoint, offerer_id=offerer.id)
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
-        assert "Référencement Adage : 1/1" in html_parser.content_as_text(response.data)
+        assert "Peut créer une offre EAC : Oui" in html_parser.content_as_text(response.data)
+        assert "Lieux référencés : 1/1" in html_parser.content_as_text(response.data)
 
-    def test_offerer_with_no_educational_venue_has_adage_data(
-        self, authenticated_client, offerer, venue_with_accepted_bank_account
-    ):
-        offerer_id = offerer.id
+    def test_offerer_with_no_right_educational_offer(self, authenticated_client):
+        offerer_not_allowed = offerers_factories.OffererFactory(allowedOnAdage=False)
+        offerers_factories.VirtualVenueFactory(
+            managingOfferer=offerer_not_allowed,
+        )
 
+        url = url_for(self.endpoint, offerer_id=offerer_not_allowed.id)
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, offerer_id=offerer_id))
+            response = authenticated_client.get(url)
             assert response.status_code == 200
 
-        assert "Référencement Adage : 0/1" in html_parser.content_as_text(response.data)
+        assert "Peut créer une offre EAC : Non" in html_parser.content_as_text(response.data)
+        assert "Lieux référencés : 0/0" in html_parser.content_as_text(response.data)
 
     def test_offerer_with_no_individual_subscription_tab(self, authenticated_client, offerer):
         offerer_id = offerer.id
