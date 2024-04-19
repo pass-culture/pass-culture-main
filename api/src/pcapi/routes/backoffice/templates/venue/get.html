@@ -276,9 +276,7 @@
                 <p class="mb-1">
                   <span class="fw-bold">Page Acceslibre :</span>
                   {% if venue.accessibilityProvider.externalAccessibilityUrl %}
-                    <a href="{{ venue.accessibilityProvider.externalAccessibilityUrl | format_website }}"
-                       target="_blank"
-                       class="link-primary">{{ venue.accessibilityProvider.externalAccessibilityUrl | format_website }} <i class="bi bi-box-arrow-up-right"></i></a>
+                    {{ links.build_safe_redirect_link(venue.accessibilityProvider.externalAccessibilityUrl | format_website) }}
                   {% elif venue.accessibilityProvider.externalAccessibilityId and not venue.accessibilityProvider.externalAccessibilityUrl %}
                     Attention, l'URL pour l'identifiant Acceslibre <i>{{ venue.accessibilityProvider.externalAccessibilityId }}</i> n'est pas renseignée
                   {% elif not venue.accessibilityProvider.externalAccessibilityId and not venue.accessibilityProvider.externalAccessibilityUrl %}

@@ -86,6 +86,7 @@ class EditVenueForm(EditVirtualVenueForm):
         self._fields.move_to_end("booking_email")
         self._fields.move_to_end("phone_number")
         self._fields.move_to_end("venue_type_code")
+        self._fields.move_to_end("acceslibre_url")
         self._fields.move_to_end("is_permanent")
 
     def filter_siret(self, raw_siret: str | None) -> str | None:
