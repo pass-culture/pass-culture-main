@@ -288,7 +288,6 @@ class Returns200Test:
         event_stock = offers_factories.EventStockFactory(
             offer=event_offer, beginningDatetime=datetime.datetime(2022, 9, 21, 13, 19)
         )
-
         response = client.with_session_auth(email=pro.email).get("/offers")
 
         assert response.status_code == 200
@@ -323,6 +322,51 @@ class Returns200Test:
                     "departementCode": "75",
                 },
                 "status": "EXPIRED",
+                "isShowcase": False,
+            }
+        ]
+
+    def should_not_return_soft_deleted_stocks(self, client):
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+
+        event_offer = offers_factories.EventOfferFactory(venue=venue)
+
+        offers_factories.EventStockFactory(
+            offer=event_offer, beginningDatetime=datetime.datetime(2022, 9, 21, 13, 19), isSoftDeleted=True
+        )
+        offers_factories.EventStockFactory(
+            offer=event_offer, beginningDatetime=datetime.datetime(2022, 9, 22, 13, 19), isSoftDeleted=True
+        )
+
+        response = client.with_session_auth(email=pro.email).get("/offers")
+
+        assert response.status_code == 200
+        assert response.json == [
+            {
+                "hasBookingLimitDatetimesPassed": False,
+                "id": event_offer.id,
+                "isActive": True,
+                "isEditable": True,
+                "isEvent": True,
+                "isThing": False,
+                "isEducational": False,
+                "name": event_offer.name,
+                "stocks": [],
+                "thumbUrl": None,
+                "productIsbn": None,
+                "subcategoryId": "SEANCE_CINE",
+                "venue": {
+                    "id": venue.id,
+                    "isVirtual": False,
+                    "name": venue.name,
+                    "offererName": venue.managingOfferer.name,
+                    "publicName": venue.publicName,
+                    "departementCode": "75",
+                },
+                "status": "SOLD_OUT",
                 "isShowcase": False,
             }
         ]

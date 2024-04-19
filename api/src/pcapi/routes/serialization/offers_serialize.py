@@ -244,7 +244,8 @@ def _serialize_offer_paginated(offer: offers_models.Offer) -> ListOffersOfferRes
         isThing=offer.isThing,
         isEducational=False,
         name=offer.name,
-        stocks=[_serialize_stock(stock) for stock in offer.stocks],
+        # TODO: front pro doesn't need the soft deleted stocks but maybe this could be handled in the request directly
+        stocks=[_serialize_stock(stock) for stock in offer.stocks if not stock.isSoftDeleted],
         thumbUrl=offer.thumbUrl,
         productIsbn=offer.extraData.get("ean") if offer.extraData else None,
         subcategoryId=offer.subcategoryId,  # type: ignore[arg-type]
