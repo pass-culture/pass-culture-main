@@ -90,6 +90,23 @@ class LogActionTest:
             )
             db.session.commit()
 
+    def test_add_action_from_impersonated_user(self):
+        admin = users_factories.AdminFactory()
+        pro = users_factories.ProFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
+        pro.impersonator = admin
+
+        history_api.add_action(
+            history_models.ActionType.OFFERER_REJECTED,
+            author=pro,
+            offerer=user_offerer.offerer,
+            custom_data="Test",
+        )
+        db.session.commit()
+
+        action = history_models.ActionHistory.query.one()
+        assert action.authorUser == admin
+
 
 class ObjectUpdateSnapshotTest:
     def test_trace_update(self):
