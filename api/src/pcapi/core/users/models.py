@@ -636,6 +636,18 @@ class User(PcObject, Base, Model, DeactivableMixin):
             and self.pro_new_nav_state.newNavDate <= datetime.utcnow()
         )
 
+    @property
+    def impersonator(self) -> "User | None":
+        return getattr(self, "_impersonator", None)
+
+    @impersonator.setter
+    def impersonator(self, impersonator: "User") -> None:
+        self._impersonator = impersonator
+
+    @property
+    def real_user(self) -> "User":
+        return self.impersonator or self
+
 
 User.trig_ensure_password_or_sso_exists_ddl = sa.DDL(
     """

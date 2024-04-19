@@ -58,7 +58,7 @@ def add_action(
 
     action = models.ActionHistory(
         actionType=action_type,
-        authorUser=author,
+        authorUser=author.real_user if author else None,
         user=user,
         # FIXME remove type ignores when upgrading to sqlalchemy 2.0
         offerer=offerer,  # type: ignore [arg-type]

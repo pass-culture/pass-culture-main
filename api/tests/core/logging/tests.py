@@ -11,6 +11,7 @@ from flask_login import login_user
 import pytest
 
 from pcapi.core.logging import JsonFormatter
+from pcapi.core.logging import get_logged_impersonator_id
 from pcapi.core.logging import get_logged_in_user_id
 from pcapi.core.logging import get_or_set_correlation_id
 from pcapi.core.logging import log_elapsed
@@ -47,6 +48,30 @@ class GetLoggedInUserIdTest:
             login_user(user)
             user_id = get_logged_in_user_id()
             assert user_id == user.id
+
+
+@pytest.mark.usefixtures("db_session")
+class GetLoggedImpersonatorIdTest:
+    def test_request_from_anonymous_user(self, app):
+        with app.test_request_context():
+            impersonator_id = get_logged_impersonator_id()
+            assert impersonator_id is None
+
+    def test_request_from_not_impersonated_user(self, app):
+        user = users_factories.UserFactory()
+        with app.test_request_context():
+            login_user(user)
+            impersonator_id = get_logged_impersonator_id()
+            assert impersonator_id is None
+
+    def test_request_from_impersonated_user(self, app):
+        user = users_factories.UserFactory()
+        impersonator = users_factories.UserFactory()
+        with app.test_request_context():
+            login_user(user)
+            user.impersonator = impersonator
+            impersonator_id = get_logged_impersonator_id()
+            assert impersonator_id == impersonator.id
 
 
 class JsonFormatterTest:
@@ -129,6 +154,20 @@ class JsonFormatterTest:
         deserialized = json.loads(serialized)
         assert deserialized["message"] == "Frobulated 12 blobs"
         assert deserialized["extra"] == {"unserializable": str({"blobs": obj})}
+
+    @pytest.mark.usefixtures("db_session")
+    def test_impersonator(self, app):
+        user = users_factories.UserFactory()
+        impersonator = users_factories.UserFactory()
+        with app.test_request_context():
+            login_user(user)
+            user.impersonator = impersonator
+            formatter = JsonFormatter()
+            record = self._make_record("Frobulated %d blobs", 12)
+            serialized = formatter.format(record)
+
+        deserialized = json.loads(serialized)
+        assert deserialized["impersonator_id"] == impersonator.id
 
 
 class LogElapsedTest:

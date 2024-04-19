@@ -260,7 +260,9 @@ def connect_as(token: str) -> Response:
             status_code=404,
         )
 
-    if not current_user.has_admin_role:
+    admin = current_user.real_user
+
+    if not admin.has_admin_role:
         raise ForbiddenError(
             errors={
                 "global": "L'utilisateur doit être connecté avec un compte admin pour pouvoir utiliser cet endpoint",
@@ -278,7 +280,7 @@ def connect_as(token: str) -> Response:
 
     token_data = ConnectAsInternalModel(**secure_token.data)
 
-    if not token_data.internal_admin_id == current_user.id:
+    if not token_data.internal_admin_id == admin.id:
         raise ForbiddenError(
             errors={
                 "global": "Le token a été généré pour un autre admin",

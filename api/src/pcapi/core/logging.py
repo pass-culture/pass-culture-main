@@ -66,6 +66,25 @@ def get_logged_in_user_id() -> int | None:
         return None
 
 
+def get_logged_impersonator_id() -> int | None:
+    if not _is_within_app_context():
+        return None
+    try:
+        if not current_user:
+            return None
+    except AttributeError:
+        # For some reason, we may get an AttributeError if this
+        # function is called very soon (before some initialization is
+        # done, I guess):
+        #     'Flask' object has no attribute 'login_manager'
+        return None
+
+    # handle both not impersonated and anonymous users
+    if not getattr(current_user, "impersonator", None):
+        return None
+    return current_user.impersonator.id
+
+
 def get_api_key_offerer_id() -> int | None:
     return (
         flask.g.current_api_key.offererId
@@ -169,6 +188,7 @@ class JsonFormatter(logging.Formatter):
         # We need to be able to deactivate current_user accession
         # in case we are logging inside the current_user context itself.
         user_id = None if extra.get("avoid_current_user") else get_logged_in_user_id()
+        impersonator_id = get_logged_impersonator_id() if user_id else None
 
         json_record = {
             "api_key_offerer_id": get_api_key_offerer_id(),
@@ -180,6 +200,8 @@ class JsonFormatter(logging.Formatter):
             "technical_message_id": tech_msg_id,
             "extra": extra,
         }
+        if impersonator_id:
+            json_record["impersonator_id"] = impersonator_id
         try:
             return json.dumps(json_record, cls=JsonLogEncoder)
         except TypeError:
