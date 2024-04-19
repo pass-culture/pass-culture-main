@@ -36,7 +36,6 @@ interface VenueSettingsFormScreenProps {
   venueTypes: VenueTypeResponseModel[]
   venueProviders?: VenueProviderResponse[]
   venue: GetVenueResponseModel
-  hasBookingQuantity?: boolean
 }
 
 export const VenueSettingsFormScreen = ({
@@ -46,7 +45,6 @@ export const VenueSettingsFormScreen = ({
   venueTypes,
   venueProviders,
   venue,
-  hasBookingQuantity,
 }: VenueSettingsFormScreenProps): JSX.Element => {
   const navigate = useNavigate()
   const location = useLocation()
@@ -85,11 +83,7 @@ export const VenueSettingsFormScreen = ({
   }
 
   const onSubmit = async (values: VenueSettingsFormValues) => {
-    if (
-      values.isWithdrawalAppliedOnAllOffers &&
-      hasBookingQuantity &&
-      !handleWithdrawalDialog()
-    ) {
+    if (values.isWithdrawalAppliedOnAllOffers && !handleWithdrawalDialog()) {
       return
     }
 

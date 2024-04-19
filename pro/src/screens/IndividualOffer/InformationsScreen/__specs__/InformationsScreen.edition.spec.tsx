@@ -534,80 +534,41 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       expect(screen.getByText('Titre de l’offre *')).toBeInTheDocument()
     })
 
-    /**
-     * In Order:
-     *  - No change on widthdrawal and bookingsQuantity
-     *  - change but no bookingsQuantity
-     *  - No change and no bookingsQuantity
-     */
-    const shouldNotOpenConditions = [
-      {
-        modifyWithdrawailDetails: false,
-        hasBookingQuantity: true,
-      },
-      {
-        modifyWithdrawailDetails: true,
-        hasBookingQuantity: false,
-      },
-      {
-        modifyWithdrawailDetails: false,
-        hasBookingQuantity: false,
-      },
-    ]
-    it.each(shouldNotOpenConditions)(
-      "should not open widthdrawal send mail modal when user doesn't change withdrawal and stocks has bookingQuantity and submit form",
-      async (condition) => {
-        contextOverride.offer = {
-          ...offer,
-          venue: getOfferVenueFactory({ id: virtualVenueId }),
-          subcategoryId: SubcategoryIdEnum.ABO_JEU_VIDEO,
-          isEvent: true,
-          withdrawalDelay: undefined,
-          withdrawalType: null,
-          bookingsCount: condition.hasBookingQuantity ? 1 : 0,
-        }
-
-        renderInformationsScreen(props, contextOverride)
-
-        const nameField = screen.getByLabelText('Titre de l’offre *')
-        await userEvent.clear(nameField)
-        await userEvent.type(nameField, 'Le nom de mon offre édité')
-
-        if (condition.modifyWithdrawailDetails) {
-          const withdrawalDetailsField = screen.getByDisplayValue(
-            'Offer withdrawalDetails'
-          )
-          await userEvent.click(withdrawalDetailsField)
-          await userEvent.clear(withdrawalDetailsField)
-          await userEvent.type(
-            withdrawalDetailsField,
-            'Nouvelle information de retrait'
-          )
-          expectedBody.withdrawalDetails = 'Nouvelle information de retrait'
-          await waitFor(() => {
-            expect(screen.getByText('Nouvelle information de retrait'))
-          })
-        }
-
-        const submitButton = await screen.findByText(
-          'Enregistrer les modifications'
-        )
-
-        await userEvent.click(submitButton)
-
-        expect(
-          screen.queryByText(
-            'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
-          )
-        ).not.toBeInTheDocument()
-
-        expect(api.patchOffer).toHaveBeenCalledTimes(1)
-        expect(api.patchOffer).toHaveBeenCalledWith(offer.id, expectedBody)
-        expect(
-          await screen.findByText('There is the summary route content')
-        ).toBeInTheDocument()
+    it("should not open widthdrawal send mail modal when user doesn't change withdrawal and submit form", async () => {
+      contextOverride.offer = {
+        ...offer,
+        venue: getOfferVenueFactory({ id: virtualVenueId }),
+        subcategoryId: SubcategoryIdEnum.ABO_JEU_VIDEO,
+        isEvent: true,
+        withdrawalDelay: undefined,
+        withdrawalType: null,
+        bookingsCount: 1,
       }
-    )
+
+      renderInformationsScreen(props, contextOverride)
+
+      const nameField = screen.getByLabelText('Titre de l’offre *')
+      await userEvent.clear(nameField)
+      await userEvent.type(nameField, 'Le nom de mon offre édité')
+
+      const submitButton = await screen.findByText(
+        'Enregistrer les modifications'
+      )
+
+      await userEvent.click(submitButton)
+
+      expect(
+        screen.queryByText(
+          'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
+        )
+      ).not.toBeInTheDocument()
+
+      expect(api.patchOffer).toHaveBeenCalledTimes(1)
+      expect(api.patchOffer).toHaveBeenCalledWith(offer.id, expectedBody)
+      expect(
+        await screen.findByText('There is the summary route content')
+      ).toBeInTheDocument()
+    })
 
     it('should not open widthdrawal dialog if offer is not active', async () => {
       contextOverride.offer = {

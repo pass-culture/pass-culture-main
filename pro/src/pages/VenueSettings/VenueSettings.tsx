@@ -2,7 +2,6 @@ import { useParams } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import { OfferStatus } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import {
   GET_OFFERER_QUERY_KEY,
@@ -11,15 +10,8 @@ import {
   GET_VENUE_QUERY_KEY,
   GET_VENUE_TYPES_QUERY_KEY,
 } from 'config/swrQueryKeys'
-import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
-import { useAdapter } from 'hooks'
-import {
-  getFilteredOffersAdapter,
-  Payload,
-} from 'pages/Offers/adapters/getFilteredOffersAdapter'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
-import { offerHasBookingQuantity } from './offerHasBookingQuantity'
 import { setInitialFormValues } from './setInitialFormValues'
 import { VenueSettingsFormScreen } from './VenueSettingsScreen'
 
@@ -58,19 +50,6 @@ const VenueSettings = (): JSX.Element | null => {
   )
   const venueProviders = venueProvidersQuery.data?.venue_providers
 
-  // TODO This is a bug!!! The /offers route is paginated so there is no guarantee that
-  // hasBookingQuantity is exactly what we want
-  const apiFilters = {
-    ...DEFAULT_SEARCH_FILTERS,
-    status: OfferStatus.ACTIVE,
-    venueId: venue?.id.toString() ?? '',
-  }
-  const { isLoading: isLoadingVenueOffers, data: venueOffers } = useAdapter<
-    Payload,
-    Payload
-  >(() => getFilteredOffersAdapter(apiFilters))
-  const hasBookingQuantity = offerHasBookingQuantity(venueOffers?.offers)
-
   if (
     offererQuery.isLoading ||
     venueQuery.isLoading ||
@@ -80,8 +59,7 @@ const VenueSettings = (): JSX.Element | null => {
     !offerer ||
     !venue ||
     !venueTypes ||
-    !venueProviders ||
-    isLoadingVenueOffers
+    !venueProviders
   ) {
     return (
       <AppLayout>
@@ -104,7 +82,6 @@ const VenueSettings = (): JSX.Element | null => {
         venueTypes={venueTypes}
         venue={venue}
         venueProviders={venueProviders}
-        hasBookingQuantity={venue.id ? hasBookingQuantity : false}
       />
     </AppLayout>
   )
