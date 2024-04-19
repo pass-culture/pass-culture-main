@@ -79,6 +79,7 @@ export const LinkVenuesDialog = ({
         })
         notification.success('Vos modifications ont bien été prises en compte.')
         closeDialog(true)
+        formik.setSubmitting(false)
       } catch (e) {
         notification.error(
           'Un erreur est survenue. Vos modifications n’ont pas été prises en compte.'
@@ -213,7 +214,9 @@ export const LinkVenuesDialog = ({
               <Button variant={ButtonVariant.SECONDARY} onClick={onCancel}>
                 Annuler
               </Button>
-              <SubmitButton>Enregistrer</SubmitButton>
+              <SubmitButton isLoading={formik.isSubmitting}>
+                Enregistrer
+              </SubmitButton>
             </div>
           </form>
         </FormikProvider>
