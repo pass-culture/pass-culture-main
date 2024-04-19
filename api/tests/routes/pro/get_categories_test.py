@@ -65,7 +65,7 @@ class Returns200Test:
                     "categoryId": "CINEMA",
                     "proLabel": "Cinéma plein air",
                     "appLabel": "Cinéma plein air",
-                    "searchGroupName": "FILMS_SERIES_CINEMA",
+                    "searchGroupName": "CINEMA",
                     "isEvent": True,
                     "conditionalFields": ["author", "visa", "stageDirector"],
                     "canExpire": False,
