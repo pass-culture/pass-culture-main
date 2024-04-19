@@ -115,7 +115,7 @@ export const Homepage = (): JSX.Element => {
     setSeesNewNavAvailableBanner(false)
   }
 
-  // TODO: remove when removing WIP_ENABLE_PRO_SIDE_NAV
+  // TODO: Remove when removing useIsNewInterfaceActive
   useEffect(() => {
     if (searchParams.get(NEW_NAV_ENABLED)) {
       searchParams.delete(NEW_NAV_ENABLED)
