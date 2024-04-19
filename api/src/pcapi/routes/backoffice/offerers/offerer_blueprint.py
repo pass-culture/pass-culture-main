@@ -78,13 +78,16 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
     adage_query = (
         sa.select(
             sa.func.concat(
-                sa.func.sum(sa.case([(offerers_models.Venue.adageId.is_not(None), 1)], else_=0)),
+                sa.func.coalesce(sa.func.sum(sa.case([(offerers_models.Venue.adageId.is_not(None), 1)], else_=0)), 0),
                 "/",
                 sa.func.count(offerers_models.Venue.id),
             )
         )
         .select_from(offerers_models.Venue)
-        .filter(offerers_models.Venue.managingOffererId == offerers_models.Offerer.id)
+        .filter(
+            offerers_models.Venue.managingOffererId == offerers_models.Offerer.id,
+            offerers_models.Venue.isVirtual.is_(False),
+        )
         .correlate(offerers_models.Offerer)
         .scalar_subquery()
     )
@@ -209,6 +212,8 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
         and utils.has_current_user_permission(perm_models.Permissions.VALIDATE_OFFERER)
     )
 
+    can_create_adage_offer = int(row.adage_information[0]) > 0 or offerer.allowedOnAdage
+
     return render_template(
         "offerer/get.html",
         search_form=search_form,
@@ -217,6 +222,7 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
         region=regions_utils.get_region_name_from_postal_code(offerer.postalCode),
         creator_phone_number=row.creator_phone_number,
         adage_information=row.adage_information,
+        can_create_adage_offer=can_create_adage_offer,
         bank_information_status=bank_information_status,
         edit_offerer_form=edit_offerer_form,
         suspension_form=offerer_forms.SuspendOffererForm(),
