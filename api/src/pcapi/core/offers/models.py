@@ -162,6 +162,19 @@ class Mediation(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Deactivab
     thumb_path_component = "mediations"
 
 
+class TiteliveImageType(enum.Enum):
+    RECTO = "recto"
+    VERSO = "verso"
+
+
+class ProductMediation(PcObject, Base, Model, ProvidableMixin):
+    __tablename__ = "product_mediation"
+
+    productId: int = sa.Column(sa.BigInteger, sa.ForeignKey("product.id"), index=True, nullable=False)
+    url: str = sa.Column(sa.String(255), nullable=False, unique=True)
+    imageType = sa.Column(sa.Enum(TiteliveImageType), nullable=False)
+
+
 class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
     __tablename__ = "stock"
 
