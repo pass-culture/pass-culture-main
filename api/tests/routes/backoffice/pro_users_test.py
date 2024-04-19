@@ -19,6 +19,7 @@ from pcapi.core.token import SecureToken
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+from pcapi.models import db
 from pcapi.routes.backoffice.filters import format_date
 from pcapi.utils import email as email_utils
 from pcapi.utils import urls
@@ -191,44 +192,78 @@ class UpdateProUserTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
     def test_update_pro_user(self, authenticated_client, legit_user):
-        user_to_edit = offerers_factories.UserOffererFactory(user__postalCode="74000").user
+        pro_user = offerers_factories.UserOffererFactory(
+            user__postalCode="74000",
+            user__notificationSubscriptions={"marketing_push": False, "marketing_email": False},
+        ).user
 
-        old_last_name = user_to_edit.lastName
+        old_last_name = pro_user.lastName
         new_last_name = "La Fripouille"
-        old_email = user_to_edit.email
+        old_email = pro_user.email
         new_email = old_email + ".UPDATE  "
         expected_new_email = email_utils.sanitize_email(new_email)
-        old_postal_code = user_to_edit.postalCode
-        expected_new_postal_code = "75000"
+        old_postal_code = pro_user.postalCode
+        new_postal_code = "75000"
 
-        base_form = {
-            "first_name": user_to_edit.firstName,
+        form_data = {
+            "first_name": pro_user.firstName,
             "last_name": new_last_name,
             "email": new_email,
-            "postal_code": expected_new_postal_code,
-            "phone_number": user_to_edit.phoneNumber,
+            "postal_code": new_postal_code,
+            "phone_number": pro_user.phoneNumber,
+            "marketing_email_subscription": "on",
         }
 
-        response = self.post_to_endpoint(authenticated_client, user_id=user_to_edit.id, form=base_form)
+        response = self.post_to_endpoint(authenticated_client, user_id=pro_user.id, form=form_data)
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.pro_user.get", user_id=user_to_edit.id, _external=True)
-        assert response.location == expected_url
+        db.session.refresh(pro_user)
+        assert pro_user.lastName == new_last_name
+        assert pro_user.email == expected_new_email
+        assert pro_user.postalCode == new_postal_code
+        assert pro_user.notificationSubscriptions["marketing_email"] is True
+        assert pro_user.notificationSubscriptions["marketing_push"] is False
 
-        history_url = url_for("backoffice_web.pro_user.get_details", user_id=user_to_edit.id)
-        response = authenticated_client.get(history_url)
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert action.authorUser == legit_user
+        assert action.user == pro_user
+        assert action.offererId is None
+        assert action.extraData == {
+            "modified_info": {
+                "lastName": {"old_info": old_last_name, "new_info": pro_user.lastName},
+                "email": {"old_info": old_email, "new_info": pro_user.email},
+                "postalCode": {"old_info": old_postal_code, "new_info": pro_user.postalCode},
+                "notificationSubscriptions.marketing_email": {"old_info": False, "new_info": True},
+            }
+        }
 
-        user_to_edit = users_models.User.query.filter_by(id=user_to_edit.id).one()
-        assert user_to_edit.lastName == new_last_name
-        assert user_to_edit.email == expected_new_email
-        assert user_to_edit.postalCode == expected_new_postal_code
+    def test_unsubscribe_from_marketing_emails(self, authenticated_client, legit_user):
+        pro_user = offerers_factories.UserOffererFactory().user
 
-        content = html_parser.content_as_text(response.data)
+        form_data = {
+            "first_name": pro_user.firstName,
+            "last_name": pro_user.lastName,
+            "email": pro_user.email,
+            "postal_code": pro_user.postalCode,
+            "phone_number": pro_user.phoneNumber,
+            # "marketing_email_subscription" not sent by the browser when not checked
+        }
 
-        assert history_models.ActionType.INFO_MODIFIED.value in content
-        assert f"{old_last_name} => {user_to_edit.lastName}" in content
-        assert f"{old_email} => {user_to_edit.email}" in content
-        assert f"{old_postal_code} => {user_to_edit.postalCode}" in content
+        response = self.post_to_endpoint(authenticated_client, user_id=pro_user.id, form=form_data)
+        assert response.status_code == 303
+
+        db.session.refresh(pro_user)
+        assert pro_user.notificationSubscriptions["marketing_email"] is False
+
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert action.authorUser == legit_user
+        assert action.user == pro_user
+        assert action.offererId is None
+        assert action.extraData == {
+            "modified_info": {"notificationSubscriptions.marketing_email": {"old_info": True, "new_info": False}}
+        }
 
     @pytest.mark.parametrize("user_factory", [users_factories.BeneficiaryGrant18Factory, users_factories.AdminFactory])
     def test_update_non_pro_user(self, authenticated_client, user_factory):

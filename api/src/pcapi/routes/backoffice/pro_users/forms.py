@@ -12,6 +12,7 @@ class EditProUserForm(utils.PCForm):
         "Téléphone",
     )
     postal_code = fields.PCOptPostalCodeField("Code postal")
+    marketing_email_subscription = fields.PCSwitchBooleanField("Abonné aux emails marketing", full_row=True)
 
 
 class DeleteProUser(utils.PCForm):

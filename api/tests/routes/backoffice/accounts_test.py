@@ -938,44 +938,46 @@ class UpdatePublicAccountTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
 
     def test_update_field(self, legit_user, authenticated_client):
-        user_to_edit = users_factories.BeneficiaryGrant18Factory()
-        old_email = user_to_edit.email
+        user = users_factories.BeneficiaryGrant18Factory()
+        old_email = user.email
 
         new_phone_number = "+33836656565"
-        new_email = user_to_edit.email + ".UPDATE  "
+        new_email = user.email + ".UPDATE  "
         expected_new_email = email_utils.sanitize_email(new_email)
         expected_new_postal_code = "75000"
-        expected_city = user_to_edit.city
+        expected_city = user.city
 
-        base_form = {
-            "first_name": user_to_edit.firstName,
-            "last_name": user_to_edit.lastName,
+        form_data = {
+            "first_name": user.firstName,
+            "last_name": user.lastName,
             "email": new_email,
-            "birth_date": user_to_edit.birth_date,
+            "birth_date": user.birth_date,
             "phone_number": new_phone_number,
-            "id_piece_number": user_to_edit.idPieceNumber,
-            "street": user_to_edit.address,
+            "id_piece_number": user.idPieceNumber,
+            "street": user.address,
             "postal_code": expected_new_postal_code,
             "city": expected_city,
+            "marketing_email_subscription": "on",
         }
 
-        response = self.post_to_endpoint(authenticated_client, user_id=user_to_edit.id, form=base_form)
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=form_data)
         assert response.status_code == 303
 
         expected_url = url_for(
-            "backoffice_web.public_accounts.get_public_account", user_id=user_to_edit.id, _external=True
+            "backoffice_web.public_accounts.get_public_account", user_id=user.id, active_tab="history", _external=True
         )
         assert response.location == expected_url
 
-        user_to_edit = users_models.User.query.filter_by(id=user_to_edit.id).one()
-        assert user_to_edit.email == expected_new_email
-        assert user_to_edit.phoneNumber == new_phone_number
-        assert user_to_edit.idPieceNumber == user_to_edit.idPieceNumber
-        assert user_to_edit.postalCode == expected_new_postal_code
-        assert user_to_edit.city == expected_city
+        user = users_models.User.query.filter_by(id=user.id).one()
+        assert user.email == expected_new_email
+        assert user.phoneNumber == new_phone_number
+        assert user.idPieceNumber == user.idPieceNumber
+        assert user.postalCode == expected_new_postal_code
+        assert user.city == expected_city
+        assert user.notificationSubscriptions["marketing_email"] is True
 
-        assert len(user_to_edit.email_history) == 1
-        history = user_to_edit.email_history[0]
+        assert len(user.email_history) == 1
+        history = user.email_history[0]
         assert history.oldEmail == old_email
         assert history.newEmail == expected_new_email
         assert history.eventType == users_models.EmailHistoryEventTypeEnum.ADMIN_UPDATE
@@ -984,7 +986,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         assert action.actionType == history_models.ActionType.INFO_MODIFIED
         assert action.actionDate is not None
         assert action.authorUserId == legit_user.id
-        assert action.userId == user_to_edit.id
+        assert action.userId == user.id
         assert action.offererId is None
         assert action.venueId is None
         assert action.extraData["modified_info"] == {
@@ -996,7 +998,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         date_of_birth = datetime.datetime.combine(
             datetime.date.today() - relativedelta(years=18, months=5, days=3), datetime.time.min
         )
-        user_to_edit = users_factories.BeneficiaryGrant18Factory(
+        user = users_factories.BeneficiaryGrant18Factory(
             firstName="Edmond",
             lastName="Dantès",
             address="Château d'If",
@@ -1006,7 +1008,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
             email="ed@example.com",
         )
 
-        base_form = {
+        form_data = {
             "first_name": "Comte ",
             "last_name": "de Monte-Cristo",
             "email": "mc@example.com",
@@ -1016,30 +1018,31 @@ class UpdatePublicAccountTest(PostEndpointHelper):
             "street": "Chemin du Haut des Ormes",
             "postal_code": "78560\t",
             "city": "Port-Marly",
+            # implicit "marketing_email_subscription": "",
         }
 
-        response = self.post_to_endpoint(authenticated_client, user_id=user_to_edit.id, form=base_form)
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=form_data)
         assert response.status_code == 303
 
         expected_url = url_for(
-            "backoffice_web.public_accounts.get_public_account", user_id=user_to_edit.id, _external=True
+            "backoffice_web.public_accounts.get_public_account", user_id=user.id, active_tab="history", _external=True
         )
         assert response.location == expected_url
 
-        user = users_models.User.query.filter_by(id=user_to_edit.id).one()
-        assert user.firstName == base_form["first_name"].strip()
-        assert user.lastName == base_form["last_name"].strip()
-        assert user.email == base_form["email"]
+        user = users_models.User.query.filter_by(id=user.id).one()
+        assert user.firstName == form_data["first_name"].strip()
+        assert user.lastName == form_data["last_name"].strip()
+        assert user.email == form_data["email"]
         assert user.dateOfBirth == date_of_birth
-        assert user.validatedBirthDate == base_form["birth_date"]
-        assert user.idPieceNumber == base_form["id_piece_number"].strip()
-        assert user.address == base_form["street"]
-        assert user.postalCode == base_form["postal_code"].strip()
-        assert user.departementCode == base_form["postal_code"][:2]
-        assert user.city == base_form["city"]
+        assert user.validatedBirthDate == form_data["birth_date"]
+        assert user.idPieceNumber == form_data["id_piece_number"].strip()
+        assert user.address == form_data["street"]
+        assert user.postalCode == form_data["postal_code"].strip()
+        assert user.departementCode == form_data["postal_code"][:2]
+        assert user.city == form_data["city"]
 
-        assert len(user_to_edit.email_history) == 1
-        history = user_to_edit.email_history[0]
+        assert len(user.email_history) == 1
+        history = user.email_history[0]
         assert history.oldEmail == "ed@example.com"
         assert history.newEmail == "mc@example.com"
         assert history.eventType == users_models.EmailHistoryEventTypeEnum.ADMIN_UPDATE
@@ -1048,20 +1051,21 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         assert action.actionType == history_models.ActionType.INFO_MODIFIED
         assert action.actionDate is not None
         assert action.authorUserId == legit_user.id
-        assert action.userId == user_to_edit.id
+        assert action.userId == user.id
         assert action.offererId is None
         assert action.venueId is None
         assert action.extraData["modified_info"] == {
             "firstName": {"new_info": "Comte", "old_info": "Edmond"},
             "lastName": {"new_info": "de Monte-Cristo", "old_info": "Dantès"},
             "validatedBirthDate": {
-                "new_info": base_form["birth_date"].isoformat(),
+                "new_info": form_data["birth_date"].isoformat(),
                 "old_info": date_of_birth.date().isoformat(),
             },
             "idPieceNumber": {"new_info": "A123B456C", "old_info": None},
             "address": {"new_info": "Chemin du Haut des Ormes", "old_info": "Château d'If"},
             "postalCode": {"new_info": "78560", "old_info": "13007"},
             "city": {"new_info": "Port-Marly", "old_info": "Marseille"},
+            "notificationSubscriptions.marketing_email": {"new_info": False, "old_info": True},
         }
 
     def test_unknown_field(self, authenticated_client):
