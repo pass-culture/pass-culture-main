@@ -2667,7 +2667,7 @@ def update_bank_account_venues_links(
             action_history_bulk_insert_mapping.append(
                 {
                     "actionType": history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED,
-                    "authorUserId": user.id,
+                    "authorUserId": user.real_user.id,
                     "venueId": link.venueId,
                     "bankAccountId": bank_account.id,
                 }
@@ -2700,7 +2700,7 @@ def update_bank_account_venues_links(
             action_history_bulk_insert_mapping.append(
                 {
                     "actionType": history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED,
-                    "authorUserId": user.id,
+                    "authorUserId": user.real_user.id,
                     "venueId": venue_id,
                     "bankAccountId": bank_account.id,
                 }
