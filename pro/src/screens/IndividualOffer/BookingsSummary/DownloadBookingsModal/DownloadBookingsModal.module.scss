@@ -12,6 +12,12 @@
     @include fonts.title3;
 }
 
+.one-booking-date-section {
+    @include fonts.title4;
+
+    margin: rem.torem(8px) 0;
+}
+
 .date-select-section {
     width: 100%;
 }
