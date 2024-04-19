@@ -59,6 +59,7 @@ export enum Events {
   CLICKED_ADD_IMAGE = 'hasClickedAddImage',
   CLICKED_DELETE_STOCK = 'hasClickedDeleteStock',
   CLICKED_BULK_DELETE_STOCK = 'hasClickedBulkDeleteStock',
+  CLICKED_DOWNLOAD_OFFER_BOOKINGS = 'hasDownloadedBookings',
 }
 
 export enum VenueEvents {
