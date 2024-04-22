@@ -44,7 +44,7 @@ describe('BookingsSummary', () => {
       ],
       page: 1,
       pages: 1,
-      total: 12,
+      total: 3,
     })
 
     render(offer)
@@ -52,7 +52,6 @@ describe('BookingsSummary', () => {
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(screen.getByText(/Réservations/)).toBeInTheDocument()
-    expect(screen.getByText('12 réservations')).toBeInTheDocument()
     expect(
       screen.getByRole('button', { name: 'Télécharger les réservations' })
     ).toBeInTheDocument()
@@ -80,7 +79,6 @@ describe('BookingsSummary', () => {
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(screen.getByText(/Réservations/)).toBeInTheDocument()
-    expect(screen.getByText('1 réservation')).toBeInTheDocument()
     expect(
       screen.getByRole('button', { name: 'Télécharger les réservations' })
     ).toBeInTheDocument()
@@ -106,8 +104,6 @@ describe('BookingsSummary', () => {
     expect(
       screen.getByText('Vous n’avez pas encore de réservations')
     ).toBeInTheDocument()
-
-    expect(screen.queryByText(/\d réservation.?/)).not.toBeInTheDocument()
   })
 
   it('should open a download modal', async () => {

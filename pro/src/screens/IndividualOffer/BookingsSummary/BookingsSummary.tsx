@@ -14,7 +14,6 @@ import strokeBookingHold from 'icons/stroke-booking-hold.svg'
 import { getFilteredBookingsRecapAdapter } from 'pages/Bookings/adapters'
 import { IndividualBookingsTable } from 'screens/Bookings/BookingsRecapTable/BookingsTable/IndividualBookingsTable'
 import { DEFAULT_OMNISEARCH_CRITERIA } from 'screens/Bookings/BookingsRecapTable/Filters/constants'
-import { Header } from 'screens/Bookings/BookingsRecapTable/Header/Header'
 import filterBookingsRecap from 'screens/Bookings/BookingsRecapTable/utils/filterBookingsRecap'
 import { Button } from 'ui-kit/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -35,7 +34,6 @@ export const BookingsSummaryScreen = ({
   const [bookings, setBookings] = useState<BookingRecapResponseModel[] | null>(
     null
   )
-  const [totalBookings, setTotalBookings] = useState<number>(0)
   const [bookingsStatusFilters, setBookingsStatusFilter] = useState<string[]>(
     []
   )
@@ -57,7 +55,6 @@ export const BookingsSummaryScreen = ({
 
       if (response.isOk) {
         setBookings(response.payload.bookings)
-        setTotalBookings(response.payload.total)
       }
     }
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -120,21 +117,14 @@ export const BookingsSummaryScreen = ({
           )}
       </div>
       {bookings !== null ? (
-        <>
-          <Header
-            bookingsRecapFilteredLength={totalBookings}
-            isLoading={false}
-            resetBookings={() => setBookingsStatusFilter([])}
-          />
-          <IndividualBookingsTable
-            bookings={filteredBookings}
-            bookingStatuses={bookingsStatusFilters}
-            updateGlobalFilters={({ bookingStatus }) => {
-              setBookingsStatusFilter(bookingStatus ?? [])
-            }}
-            resetFilters={() => setBookingsStatusFilter([])}
-          />
-        </>
+        <IndividualBookingsTable
+          bookings={filteredBookings}
+          bookingStatuses={bookingsStatusFilters}
+          updateGlobalFilters={({ bookingStatus }) => {
+            setBookingsStatusFilter(bookingStatus ?? [])
+          }}
+          resetFilters={() => setBookingsStatusFilter([])}
+        />
       ) : (
         <Spinner />
       )}
