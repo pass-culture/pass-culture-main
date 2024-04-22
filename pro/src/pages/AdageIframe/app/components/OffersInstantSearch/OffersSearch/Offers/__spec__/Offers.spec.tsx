@@ -45,6 +45,7 @@ vi.mock('apiClient/api', () => ({
     logTrackingFilter: vi.fn(),
     logSearchShowMore: vi.fn(),
     logOfferListViewSwitch: vi.fn(),
+    logOfferTemplateDetailsButtonClick: vi.fn(),
   },
 }))
 
@@ -55,6 +56,13 @@ Object.defineProperty(window, 'matchMedia', {
     addListener: jest.fn(),
     removeListener: jest.fn(),
   }),
+})
+
+vi.mock('utils/config', async () => {
+  return {
+    ...(await vi.importActual('utils/config')),
+    LOGS_DATA: true,
+  }
 })
 
 const searchFakeResults = [
@@ -837,9 +845,90 @@ describe('offers', () => {
     expect(
       screen.queryByText('Une offre vraiment chouette')
     ).not.toBeInTheDocument()
+
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: () => ({
+        matches: false,
+        addListener: jest.fn(),
+        removeListener: jest.fn(),
+      }),
+    })
+  })
+
+  it('should trigger a log event when clicking the offer with the FF WIP_ENABLE_ADAGE_VISUALIZATION is active and the offers are in list mode', async () => {
+    vi.spyOn(apiAdage, 'getCollectiveOfferTemplate').mockResolvedValueOnce({
+      ...offerInCayenne,
+    })
+
+    vi.spyOn(instantSearch, 'useInfiniteHits').mockImplementation(() => ({
+      ...defaultUseInfiniteHitsReturn,
+      hits: [{ ...otherFakeSearchResult, isTemplate: true }],
+    }))
+
+    renderOffers(offersProps, adageUser, {
+      features: ['WIP_ENABLE_ADAGE_VISUALIZATION'],
+    })
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    const link = screen.getByRole('link', {
+      name: 'Coco channel',
+    })
+    await userEvent.click(link)
+
+    expect(apiAdage.logOfferTemplateDetailsButtonClick).toHaveBeenCalled()
+  })
+
+  it('should trigger a log event when clicking the offer with the FF WIP_ENABLE_ADAGE_VISUALIZATION is active and the offers are in grid mode', async () => {
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: () => ({
+        matches: true,
+        addListener: jest.fn(),
+        removeListener: jest.fn(),
+      }),
+    })
+
+    vi.spyOn(apiAdage, 'getCollectiveOfferTemplate').mockResolvedValueOnce({
+      ...offerInCayenne,
+    })
+
+    vi.spyOn(instantSearch, 'useInfiniteHits').mockImplementation(() => ({
+      ...defaultUseInfiniteHitsReturn,
+      hits: [{ ...otherFakeSearchResult, isTemplate: true }],
+    }))
+
+    renderOffers(offersProps, adageUser, {
+      features: ['WIP_ENABLE_ADAGE_VISUALIZATION'],
+    })
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    const link = screen.getByRole('link', {
+      name: 'Sortie Coco channel Le Petit Rintintin 33',
+    })
+    await userEvent.click(link)
+
+    expect(apiAdage.logOfferTemplateDetailsButtonClick).toHaveBeenCalled()
+
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: () => ({
+        matches: false,
+        addListener: jest.fn(),
+        removeListener: jest.fn(),
+      }),
+    })
   })
 
   it('should call tracker when clicking on toggle button view', async () => {
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: () => ({
+        matches: true,
+        addListener: jest.fn(),
+        removeListener: jest.fn(),
+      }),
+    })
     vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(offerInParis)
     vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
       offerInCayenne
@@ -856,5 +945,13 @@ describe('offers', () => {
     expect(apiAdage.logOfferListViewSwitch).toHaveBeenCalledWith(
       expect.objectContaining({ iframeFrom: '/', source: 'list' })
     )
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: () => ({
+        matches: false,
+        addListener: jest.fn(),
+        removeListener: jest.fn(),
+      }),
+    })
   })
 })

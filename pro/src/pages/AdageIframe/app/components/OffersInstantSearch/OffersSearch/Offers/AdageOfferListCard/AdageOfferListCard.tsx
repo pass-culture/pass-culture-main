@@ -7,7 +7,6 @@ import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
 } from 'apiClient/adage'
-import { apiAdage } from 'apiClient/api'
 import strokeOfferIcon from 'icons/stroke-offer.svg'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import {
@@ -15,7 +14,6 @@ import {
   isCollectiveOfferTemplate,
 } from 'pages/AdageIframe/app/types/offers'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { LOGS_DATA } from 'utils/config'
 
 import OfferFavoriteButton from '../OfferFavoriteButton/OfferFavoriteButton'
 import OfferShareLink from '../OfferShareLink/OfferShareLink'
@@ -30,12 +28,16 @@ export type AdageOfferListCardProps = {
   afterFavoriteChange?: (isFavorite: boolean) => void
   isInSuggestions?: boolean
   queryId?: string
+  viewType?: 'grid' | 'list'
+  onCardClicked?: () => void
 }
 export function AdageOfferListCard({
   offer,
   afterFavoriteChange,
   isInSuggestions,
   queryId = '',
+  viewType,
+  onCardClicked,
 }: AdageOfferListCardProps) {
   const [searchParams] = useSearchParams()
   const adageAuthToken = searchParams.get('token')
@@ -50,22 +52,6 @@ export function AdageOfferListCard({
   const isOfferTemplate = isCollectiveOfferTemplate(offer)
   const canAddOfferToFavorites =
     isOfferTemplate && adageUser.role !== AdageFrontRoles.READONLY
-
-  function triggerOfferClickLog(
-    offer: CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
-  ) {
-    if (!LOGS_DATA) {
-      return
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    apiAdage.logOfferTemplateDetailsButtonClick({
-      iframeFrom: location.pathname,
-      offerId: isCollectiveOfferTemplate(offer) ? offer.id : offer.stock.id,
-      queryId: queryId,
-      isFromNoResult: isInSuggestions,
-    })
-  }
 
   return (
     <div
@@ -131,7 +117,7 @@ export function AdageOfferListCard({
               to={`/adage-iframe/${currentPathname}/offre/${offer.id}?token=${adageAuthToken}`}
               state={{ offer }}
               className={styles['offer-card-link']}
-              onClick={() => triggerOfferClickLog(offer)}
+              onClick={onCardClicked}
             >
               <h2 className={styles['offer-title']}>{offer.name}</h2>
             </Link>
@@ -143,6 +129,7 @@ export function AdageOfferListCard({
               <OfferFavoriteButton
                 offer={offer}
                 afterFavoriteChange={afterFavoriteChange}
+                viewType={viewType}
               />
             )}
             {isOfferTemplate && <OfferShareLink offer={offer} />}

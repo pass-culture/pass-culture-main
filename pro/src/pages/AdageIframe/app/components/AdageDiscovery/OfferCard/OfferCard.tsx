@@ -14,10 +14,15 @@ import styles from './OfferCard.module.scss'
 
 export interface CardComponentProps {
   offer: CollectiveOfferTemplateResponseModel
-  handleTracking: () => void
+  onCardClicked: () => void
+  viewType?: 'grid' | 'list'
 }
 
-const OfferCardComponent = ({ offer, handleTracking }: CardComponentProps) => {
+const OfferCardComponent = ({
+  offer,
+  onCardClicked,
+  viewType,
+}: CardComponentProps) => {
   const location = useLocation()
 
   const currentPathname = location.pathname.split('/')[2]
@@ -32,9 +37,7 @@ const OfferCardComponent = ({ offer, handleTracking }: CardComponentProps) => {
         data-testid="card-offer-link"
         to={`/adage-iframe/${currentPathname}/offre/${offer.id}?token=${adageAuthToken}`}
         state={{ offer }}
-        onClick={() => {
-          handleTracking()
-        }}
+        onClick={onCardClicked}
       >
         <div className={styles['offer-image-container']}>
           {offer.imageUrl ? (
@@ -99,6 +102,7 @@ const OfferCardComponent = ({ offer, handleTracking }: CardComponentProps) => {
       <OfferFavoriteButton
         offer={{ ...offer, isTemplate: true }}
         className={styles['offer-favorite-button']}
+        viewType={viewType}
       />
     </div>
   )
