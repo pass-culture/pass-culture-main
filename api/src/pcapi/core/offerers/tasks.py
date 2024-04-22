@@ -96,7 +96,9 @@ def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
             urssaf_status = f"Erreur : {str(exc)}"
 
         if entreprise_api.siren_is_individual_or_public(siren_info):
-            dgfip_status = "N/A"
+            dgfip_status = "N/A : Hors périmètre"
+        elif siren_info.creation_date.year >= datetime.date.today().year:
+            dgfip_status = "N/A : Entreprise créée dans l'année en cours"
         else:
             try:
                 dgfip_status = "OK" if entreprise_api.get_dgfip(payload.siren).attestation_delivered else "REFUS"

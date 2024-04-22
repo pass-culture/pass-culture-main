@@ -932,7 +932,10 @@ def get_entreprise_info(offerer_id: int) -> utils.BackofficeResponse:
 
     # I don't have a list but corporate taxes do not apply at least to "Entreprise Individuelle" and public structures
     if siren_info and siren_info.legal_category_code:
-        data["show_dgfip_card"] = not entreprise_api.siren_is_individual_or_public(siren_info)
+        data["show_dgfip_card"] = not (
+            entreprise_api.siren_is_individual_or_public(siren_info)
+            or siren_info.creation_date.year >= datetime.date.today().year
+        )
 
     return render_template("offerer/get/details/entreprise_info.html", offerer=offerer, **data)
 
