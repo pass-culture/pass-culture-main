@@ -4,7 +4,7 @@ import { createRoot } from 'react-dom/client'
 
 import Root from 'Root'
 import { initializeSentry } from 'sentry'
-import { ENVIRONMENT_NAME, SENTRY_SERVER_URL } from 'utils/config'
+import { SENTRY_SERVER_URL } from 'utils/config'
 
 import { unregister } from './registerServiceWorker'
 
@@ -33,18 +33,10 @@ if (!isAdageIframe) {
     a = o.getElementsByTagName('head')[0]
     r = o.createElement('script')
     r.async = 1
-    // We do not change hotjar loading in production until it is tested
-    if (ENVIRONMENT_NAME !== 'production') {
-      r.setAttribute(
-        'data-src',
-        t + h._hjSettings.hjid + j + h._hjSettings.hjsv
-      )
-      r.setAttribute('data-type', 'application/javascript')
-      r.setAttribute('data-name', 'hotjar')
-      r.type = 'opt-in'
-    } else {
-      r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv
-    }
+    r.setAttribute('data-src', t + h._hjSettings.hjid + j + h._hjSettings.hjsv)
+    r.setAttribute('data-type', 'application/javascript')
+    r.setAttribute('data-name', 'hotjar')
+    r.type = 'opt-in'
     a.appendChild(r)
   })(window, document, 'https://static.hotjar.com/c/hotjar-', '.js?sv=')
 }
