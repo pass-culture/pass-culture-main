@@ -17,6 +17,7 @@ from pcapi.core.offerers import api
 from pcapi.core.offerers import repository
 import pcapi.core.offerers.exceptions as offerers_exceptions
 import pcapi.core.offerers.models as offerers_models
+from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.repository import transaction
@@ -307,3 +308,17 @@ def get_offerer_addresses(offerer_id: int) -> offerers_serialize.GetOffererAddre
             for offerer_address in offerer_addresses
         ]
     )
+
+
+@private_api.route("/offerers/<int:offerer_id>/address/<int:offerer_address_id>", methods=["PATCH"])
+@login_required
+@spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
+def patch_offerer_address(
+    offerer_id: int, offerer_address_id: int, body: offerers_serialize.PatchOffererAddressRequest
+) -> None:
+    with transaction():
+        with db.session.no_autoflush:
+            check_user_has_access_to_offerer(current_user, offerer_id)
+            if not repository.offerer_address_exists(offerer_id, offerer_address_id):
+                raise ResourceNotFoundError()
+            api.update_offerer_address_label(offerer_address_id, body.label)
