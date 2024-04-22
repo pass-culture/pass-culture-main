@@ -24,6 +24,7 @@ from pcapi.connectors.entreprise import models
 from pcapi.connectors.entreprise.backends.base import BaseBackend
 from pcapi.core import logging as pcapi_logging
 from pcapi.utils import cache as cache_utils
+from pcapi.utils import date as date_utils
 from pcapi.utils import requests
 
 
@@ -216,9 +217,7 @@ class EntrepriseBackend(BaseBackend):
         if with_address:
             # Also get head office SIRET data to avoid a second API call to get address
             subpath += "/siege_social"
-        data = self._cached_get(
-            subpath,
-        )["data"]
+        data = self._cached_get(subpath)["data"]
         siren_data = data["unite_legale"] if with_address else data
 
         is_diffusible = self._is_diffusible(siren_data)
@@ -238,6 +237,11 @@ class EntrepriseBackend(BaseBackend):
             diffusible=is_diffusible,
             legal_category_code=siren_data["forme_juridique"]["code"],
             address=address,
+            creation_date=date_utils.utc_datetime_to_department_timezone(
+                # API Entreprise dates are timestamped at 0:00 Metropolitan French time
+                datetime.datetime.fromtimestamp(siren_data["date_creation"]),
+                departement_code=None,
+            ).date(),
         )
 
     def get_siret(self, siret: str, raise_if_non_public: bool = False) -> models.SiretInfo:
@@ -245,9 +249,7 @@ class EntrepriseBackend(BaseBackend):
         Documentation: https://entreprise.api.gouv.fr/catalogue/insee/etablissements
         """
         subpath = f"/v3/insee/sirene/etablissements/{siret}"
-        data = self._cached_get(
-            subpath,
-        )["data"]
+        data = self._cached_get(subpath)["data"]
 
         is_diffusible = self._is_diffusible(data)
         if raise_if_non_public and not is_diffusible:
@@ -270,9 +272,7 @@ class EntrepriseBackend(BaseBackend):
         """
         subpath = f"/v3/infogreffe/rcs/unites_legales/{siren}/extrait_kbis"
         try:
-            data = self._cached_get(
-                subpath,
-            )["data"]
+            data = self._cached_get(subpath)["data"]
         except exceptions.UnknownEntityException:
             return models.RCSInfo(registered=False)
 
@@ -298,9 +298,7 @@ class EntrepriseBackend(BaseBackend):
         Documentation: https://entreprise.api.gouv.fr/catalogue/urssaf/attestation_vigilance
         """
         subpath = f"/v4/urssaf/unites_legales/{siren}/attestation_vigilance"
-        data = self._cached_get(
-            subpath,
-        )["data"]
+        data = self._cached_get(subpath)["data"]
         return models.UrssafInfo(
             attestation_delivered=data["entity_status"]["code"] == "ok",  # always "ok" or "refus_de_delivrance"
             details=data["entity_status"]["description"],
@@ -314,9 +312,7 @@ class EntrepriseBackend(BaseBackend):
         Documentation: https://entreprise.api.gouv.fr/catalogue/dgfip/attestations_fiscales
         """
         subpath = f"/v4/dgfip/unites_legales/{siren}/attestation_fiscale"
-        data = self._cached_get(
-            subpath,
-        )["data"]
+        data = self._cached_get(subpath)["data"]
         return models.DgfipInfo(
             attestation_delivered=bool(data["document_url"]),
             attestation_date=data["date_delivrance_attestation"],

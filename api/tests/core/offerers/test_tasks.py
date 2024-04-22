@@ -22,7 +22,7 @@ def siren_caduc_tag_fixture():
     return offerers_factories.OffererTagFactory(name="siren-caduc", label="SIREN caduc")
 
 
-class CheckOffererIsActiveTest:
+class CheckOffererTest:
     @override_features(ENABLE_CODIR_OFFERERS_REPORT=False)
     @patch("pcapi.connectors.googledrive.TestingBackend.append_to_spreadsheet")
     def test_active_offerer(self, mock_append_to_spreadsheet, client, siren_caduc_tag):
@@ -46,7 +46,7 @@ class CheckOffererIsActiveTest:
     def test_active_offerer_with_report(
         self, mock_search_file, mock_create_spreadsheet, mock_append_to_spreadsheet, client, siren_caduc_tag
     ):
-        offerer = offerers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory(siren="900150004")  # See TestingBackend for SIREN digits
 
         response = client.post(
             f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
@@ -65,10 +65,10 @@ class CheckOffererIsActiveTest:
                 [
                     datetime.date.today().strftime("%d/%m/%Y"),
                     offerer.siren,
-                    "MINISTERE DE LA CULTURE",
+                    "[ND]",
                     "Oui",
                     "OK",
-                    "N/A",
+                    "N/A : Hors périmètre",
                     "Entrepreneur individuel",
                     0,
                     0.0,
@@ -84,7 +84,7 @@ class CheckOffererIsActiveTest:
     def test_active_offerer_with_first_report(
         self, mock_search_file, mock_create_spreadsheet, mock_append_to_spreadsheet, client, siren_caduc_tag
     ):
-        offerer = offerers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory(siren="010500007")  # See TestingBackend for SIREN digits
 
         response = client.post(
             f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
@@ -118,8 +118,8 @@ class CheckOffererIsActiveTest:
                     "MINISTERE DE LA CULTURE",
                     "Oui",
                     "OK",
-                    "N/A",
-                    "Entrepreneur individuel",
+                    "N/A : Entreprise créée dans l'année en cours",
+                    "Société à responsabilité limitée (sans autre indication)",
                     0,
                     0.0,
                     f"{settings.BACKOFFICE_URL}/pro/offerer/{offerer.id}",

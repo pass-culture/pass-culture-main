@@ -31,6 +31,7 @@ class SirenInfo(pydantic_v1.BaseModel):
     diffusible: bool
     legal_category_code: str
     address: SireneAddress | None
+    creation_date: datetime.date
 
 
 class SiretInfo(pydantic_v1.BaseModel):

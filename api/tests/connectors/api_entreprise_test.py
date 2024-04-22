@@ -32,6 +32,7 @@ def test_get_siren_without_address():
         assert siren_info.address is None
         assert siren_info.active is True
         assert siren_info.diffusible is True
+        assert siren_info.creation_date == datetime.date(2019, 7, 23)
 
 
 @override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
@@ -54,6 +55,7 @@ def test_get_siren_with_address():
         assert siren_info.address.city == "LA CHARITE-SUR-LOIRE"
         assert siren_info.active is True
         assert siren_info.diffusible is True
+        assert siren_info.creation_date == datetime.date(2019, 7, 23)
 
     # Test cache, no HTTP request
     siren_info = api.get_siren(siren)
@@ -80,6 +82,7 @@ def test_get_siren_of_entreprise_individuelle():
         assert siren_info.address.city == "PARIS"
         assert siren_info.active is True
         assert siren_info.diffusible is True
+        assert siren_info.creation_date == datetime.date(2024, 1, 1)
 
 
 @override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
@@ -114,6 +117,7 @@ def test_get_siren_with_non_public_data_do_not_raise():
         assert siren_info.address.city == "PARIS"
         assert siren_info.active is True
         assert siren_info.diffusible is False
+        assert siren_info.creation_date == datetime.date(2021, 4, 12)
 
 
 @override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
@@ -134,6 +138,7 @@ def test_get_siren_of_inactive_company():
         assert siren_info.address is None
         assert siren_info.active is False
         assert siren_info.diffusible is True
+        assert siren_info.creation_date == datetime.date(2010, 1, 1)
 
 
 @override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
