@@ -1,7 +1,7 @@
 import { FormikProvider, useFormik } from 'formik'
 import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { useSearchParams } from 'react-router-dom'
+import { Navigate, useSearchParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { HTTP_STATUS, isErrorAPIError } from 'apiClient/helpers'
@@ -37,6 +37,7 @@ export const SignIn = (): JSX.Element => {
   const notify = useNotification()
   const dispatch = useDispatch()
   const [searchParams, setSearchParams] = useSearchParams()
+  const [shouldRedirect, setshouldRedirect] = React.useState(false)
   useInitReCaptcha()
 
   useEffect(() => {
@@ -64,6 +65,7 @@ export const SignIn = (): JSX.Element => {
         captchaToken,
       })
       dispatch(updateUser(user))
+      setshouldRedirect(true)
     } catch (error) {
       if (isErrorAPIError(error)) {
         updateUser(null)
@@ -93,7 +95,9 @@ export const SignIn = (): JSX.Element => {
     }
   }
 
-  return (
+  return shouldRedirect ? (
+    <Navigate to="/" replace />
+  ) : (
     <AppLayout pageName="sign-in" layout="without-nav">
       <header className={styles['logo-side']}>
         <SvgIcon
