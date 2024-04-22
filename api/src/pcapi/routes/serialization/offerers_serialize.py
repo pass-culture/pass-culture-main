@@ -381,3 +381,7 @@ class GetOffererAddressResponseModel(BaseModel):
 
 class GetOffererAddressesResponseModel(BaseModel):
     __root__: list[GetOffererAddressResponseModel]
+
+
+class PatchOffererAddressRequest(BaseModel):
+    label: str
