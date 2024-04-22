@@ -36,24 +36,20 @@ class TiteliveMusicSearch(TiteliveSearch[TiteliveMusicOeuvre]):
     ) -> TiteliveProductSearchResponse[TiteliveMusicOeuvre]:
         return pydantic.parse_obj_as(TiteliveProductSearchResponse[TiteliveMusicOeuvre], titelive_json_response)
 
-    def filter_allowed_products(
+    def partition_allowed_products(
         self, titelive_product_page: TiteliveProductSearchResponse[TiteliveMusicOeuvre]
-    ) -> TiteliveProductSearchResponse[TiteliveMusicOeuvre]:
+    ) -> tuple[TiteliveProductSearchResponse[TiteliveMusicOeuvre], list[str]]:
+        non_allowed_eans = set()
         for oeuvre in titelive_product_page.result:
-            oeuvre.article = [
-                article for article in oeuvre.article if is_music_codesupport_allowed(article.codesupport)
-            ]
-        return titelive_product_page
+            article_ok = []
+            for article in oeuvre.article:
+                if is_music_codesupport_allowed(article.codesupport):
+                    article_ok.append(article)
+                else:
+                    non_allowed_eans.add(article.gencod)
+            oeuvre.article = article_ok
 
-    def get_not_allowed_eans(
-        self, titelive_product_page: TiteliveProductSearchResponse[TiteliveMusicOeuvre]
-    ) -> list[str]:
-        not_cgu_compliant_eans = []
-        for oeuvre in titelive_product_page.result:
-            not_cgu_compliant_eans += [
-                article.gencod for article in oeuvre.article if not is_music_codesupport_allowed(article.codesupport)
-            ]
-        return not_cgu_compliant_eans
+        return titelive_product_page, list(non_allowed_eans)
 
     def upsert_titelive_result_in_dict(
         self, titelive_search_result: TiteliveMusicOeuvre, products_by_ean: dict[str, offers_models.Product]
