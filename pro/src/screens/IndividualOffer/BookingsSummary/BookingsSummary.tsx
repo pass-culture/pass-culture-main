@@ -1,10 +1,13 @@
 import format from 'date-fns/format'
 import React, { useEffect, useState } from 'react'
+import useSWR from 'swr'
 
+import { api } from 'apiClient/api'
 import {
   BookingRecapResponseModel,
   GetIndividualOfferResponseModel,
 } from 'apiClient/v1'
+import { GET_EVENT_PRICE_CATEGORIES_AND_SCHEDULES_BY_DAYE_QUERY_KEY } from 'config/swrQueryKeys'
 import {
   DEFAULT_PRE_FILTERS,
   EMPTY_FILTER_VALUE,
@@ -36,6 +39,12 @@ export const BookingsSummaryScreen = ({
   )
   const [bookingsStatusFilters, setBookingsStatusFilter] = useState<string[]>(
     []
+  )
+
+  const stockSchedulesAndPricesByDateQuery = useSWR(
+    [GET_EVENT_PRICE_CATEGORIES_AND_SCHEDULES_BY_DAYE_QUERY_KEY],
+    () => api.getOfferPriceCategoriesAndSchedulesByDates(offer.id),
+    { fallbackData: [] }
   )
 
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -98,6 +107,9 @@ export const BookingsSummaryScreen = ({
       {isModalOpen && (
         <DownloadBookingsModal
           offerId={offer.id}
+          priceCategoryAndScheduleCountByDate={
+            stockSchedulesAndPricesByDateQuery.data
+          }
           onDimiss={() => setIsModalOpen(false)}
         />
       )}
@@ -105,6 +117,7 @@ export const BookingsSummaryScreen = ({
       <div className={styles['header']}>
         <h2 className={styles['header-title']}>Réservations</h2>
         {isDownloadBookingsFeatureEnabled &&
+          !stockSchedulesAndPricesByDateQuery.isLoading &&
           offer.isEvent &&
           bookings !== null &&
           bookings.length && (

@@ -1,8 +1,9 @@
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { api } from 'apiClient/api'
+import { EventDatesInfos } from 'apiClient/v1'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -11,9 +12,13 @@ import { DownloadBookingsModal } from '../DownloadBookingsModal'
 const MOCK_OFFER_ID = 1
 const mockLogEvent = jest.fn()
 
-const render = () => {
+const render = (priceCategoryAndScheduleCountByDate: EventDatesInfos) => {
   renderWithProviders(
-    <DownloadBookingsModal offerId={MOCK_OFFER_ID} onDimiss={() => {}} />,
+    <DownloadBookingsModal
+      offerId={MOCK_OFFER_ID}
+      priceCategoryAndScheduleCountByDate={priceCategoryAndScheduleCountByDate}
+      onDimiss={() => {}}
+    />,
     { features: ['WIP_ENABLE_DOWNLOAD_BOOKINGS'] }
   )
 }
@@ -21,11 +26,8 @@ const render = () => {
 vi.mock('utils/downloadFile', () => ({ downloadFile: vi.fn() }))
 
 describe('DownloadBookingModal', () => {
-  it('should display offer dates table', async () => {
-    vi.spyOn(
-      api,
-      'getOfferPriceCategoriesAndSchedulesByDates'
-    ).mockResolvedValueOnce([
+  it('should display offer dates table', () => {
+    render([
       {
         eventDate: '2022-01-01',
         scheduleCount: 1,
@@ -43,11 +45,7 @@ describe('DownloadBookingModal', () => {
       },
     ])
 
-    render()
-
     expect(screen.getByText('Télécharger vos réservations')).toBeInTheDocument()
-
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     // 3 lines = 9 cells
     const tableCells = screen.getAllByRole('cell')
@@ -76,11 +74,8 @@ describe('DownloadBookingModal', () => {
     ).toBeInTheDocument()
   })
 
-  it('should not display date selection table if only one date is returned', async () => {
-    vi.spyOn(
-      api,
-      'getOfferPriceCategoriesAndSchedulesByDates'
-    ).mockResolvedValueOnce([
+  it('should not display date selection table if only one date is returned', () => {
+    render([
       {
         eventDate: '2022-01-01',
         scheduleCount: 1,
@@ -88,11 +83,7 @@ describe('DownloadBookingModal', () => {
       },
     ])
 
-    render()
-
     expect(screen.getByText('Télécharger vos réservations')).toBeInTheDocument()
-
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(screen.queryByRole('cell')).not.toBeInTheDocument()
 
@@ -102,10 +93,12 @@ describe('DownloadBookingModal', () => {
   })
 
   it('should download validated bookings as CSV', async () => {
-    vi.spyOn(
-      api,
-      'getOfferPriceCategoriesAndSchedulesByDates'
-    ).mockResolvedValueOnce([
+    vi.spyOn(api, 'exportBookingsForOfferAsCsv').mockResolvedValueOnce('')
+    vi.spyOn(useAnalytics, 'default').mockReturnValue({
+      logEvent: mockLogEvent,
+    })
+
+    render([
       {
         eventDate: '2022-01-01',
         scheduleCount: 1,
@@ -123,16 +116,7 @@ describe('DownloadBookingModal', () => {
       },
     ])
 
-    vi.spyOn(api, 'exportBookingsForOfferAsCsv').mockResolvedValueOnce('')
-    vi.spyOn(useAnalytics, 'default').mockReturnValue({
-      logEvent: mockLogEvent,
-    })
-
-    render()
-
     expect(screen.getByText('Télécharger vos réservations')).toBeInTheDocument()
-
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     // 3 lines = 9 cells
     const tableCells = screen.getAllByRole('cell')
@@ -164,10 +148,12 @@ describe('DownloadBookingModal', () => {
   })
 
   it('should download all bookings as Excel', async () => {
-    vi.spyOn(
-      api,
-      'getOfferPriceCategoriesAndSchedulesByDates'
-    ).mockResolvedValueOnce([
+    vi.spyOn(api, 'exportBookingsForOfferAsExcel').mockResolvedValueOnce({})
+    vi.spyOn(useAnalytics, 'default').mockReturnValue({
+      logEvent: mockLogEvent,
+    })
+
+    render([
       {
         eventDate: '2022-01-01',
         scheduleCount: 1,
@@ -184,16 +170,8 @@ describe('DownloadBookingModal', () => {
         priceCategoriesCount: 2,
       },
     ])
-    vi.spyOn(api, 'exportBookingsForOfferAsExcel').mockResolvedValueOnce({})
-    vi.spyOn(useAnalytics, 'default').mockReturnValue({
-      logEvent: mockLogEvent,
-    })
-
-    render()
 
     expect(screen.getByText('Télécharger vos réservations')).toBeInTheDocument()
-
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     // 3 lines = 9 cells
     const tableCells = screen.getAllByRole('cell')
