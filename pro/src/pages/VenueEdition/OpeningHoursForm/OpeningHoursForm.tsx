@@ -1,8 +1,8 @@
 import cn from 'classnames'
 import { useFormikContext } from 'formik'
 
-import { mapDayToFrench } from 'pages/VenueEdition/OpeningHoursReadOnly/utils'
 import { DayCheckbox } from 'screens/IndividualOffer/StocksEventCreation/DayCheckbox'
+import { mapDayToFrench } from 'utils/date'
 
 import { VenueEditionFormValues, Day } from '../types'
 
