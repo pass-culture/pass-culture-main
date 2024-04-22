@@ -44,6 +44,7 @@ vi.mock('apiClient/api', () => ({
     logSearchButtonClick: vi.fn(),
     logTrackingFilter: vi.fn(),
     logSearchShowMore: vi.fn(),
+    logOfferListViewSwitch: vi.fn(),
   },
 }))
 
@@ -836,5 +837,24 @@ describe('offers', () => {
     expect(
       screen.queryByText('Une offre vraiment chouette')
     ).not.toBeInTheDocument()
+  })
+
+  it('should call tracker when clicking on toggle button view', async () => {
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(offerInParis)
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
+      offerInCayenne
+    )
+    renderOffers({ ...offersProps, isBackToTopVisibile: true }, adageUser, {
+      features: ['WIP_ENABLE_ADAGE_VISUALIZATION'],
+    })
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    const toggleButtonView = screen.getByTestId('toggle-button')
+
+    await userEvent.click(toggleButtonView)
+
+    expect(apiAdage.logOfferListViewSwitch).toHaveBeenCalledWith(
+      expect.objectContaining({ iframeFrom: '/', source: 'list' })
+    )
   })
 })

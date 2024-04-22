@@ -205,6 +205,11 @@ export const Offers = ({
   function toggleButtonClicked(button: ToggleButton) {
     const viewType = button.id === 'list' ? 'list' : 'grid'
     dispatch(setSearchView(viewType))
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    apiAdage.logOfferListViewSwitch({
+      iframeFrom: location.pathname,
+      source: viewType,
+    })
   }
 
   return (
