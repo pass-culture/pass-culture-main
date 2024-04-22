@@ -13,7 +13,12 @@ logger = logging.getLogger(__name__)
 @public_api.route("/webhooks/zendesk/ticket_notification", methods=["POST"])
 @spectree_serialize(on_success_status=204, on_error_statuses=[400, 403])
 def zendesk_webhook_ticket_notification(body: zendesk_validation.WebhookRequest) -> None:
-    logger.info("Zendesk webhook called: %s", body, extra=body.dict())
+    anonymized_body = {
+        "is_new_ticket": body.is_new_ticket,
+        "requester_id": body.requester_id,
+        "ticket_id": body.ticket_id,
+    }
+    logger.info("Zendesk webhook called: %s", anonymized_body, extra=anonymized_body)
 
     update_zendesk_attributes_task.delay(
         UpdateZendeskAttributesRequest(
