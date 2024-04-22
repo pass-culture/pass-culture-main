@@ -15,7 +15,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { BaseRadio } from 'ui-kit/form/shared'
 import RadioButtonWithImage from 'ui-kit/RadioButtonWithImage'
 import Spinner from 'ui-kit/Spinner/Spinner'
-import { FORMAT_DD_MM_YYYY } from 'utils/date'
+import { FORMAT_DD_MM_YYYY, mapDayToFrench } from 'utils/date'
 import { downloadFile } from 'utils/downloadFile'
 import { pluralize } from 'utils/pluralize'
 
@@ -90,7 +90,7 @@ export const DownloadBookingsModal = ({
     priceCategoriesCount: number
   ) => {
     const date = new Date(eventDate)
-    const day = daysOfWeek[date.getDay()]
+    const day = mapDayToFrench(daysOfWeek[date.getDay()])
     return (
       <tr key={eventDate} className={style['table-row']}>
         <td className={style['table-column']}>
