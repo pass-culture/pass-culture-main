@@ -6,8 +6,8 @@ import fullLessIcon from 'icons/full-less.svg'
 import fullMoreIcon from 'icons/full-more.svg'
 import { Button, TimePicker } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { mapDayToFrench } from 'utils/date'
 
-import { mapDayToFrench } from '../OpeningHoursReadOnly/utils'
 import { Day, VenueEditionFormValues } from '../types'
 
 import styles from './OpeningHoursForm.module.scss'
