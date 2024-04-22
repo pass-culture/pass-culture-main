@@ -6,28 +6,19 @@ import { Routes, Route } from 'react-router-dom'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { ProfileAndSupport } from '../ProfileAndSupport'
 
 const mockLogEvent = vi.fn()
 
 const renderProfileAndSupport = () => {
-  const currentUser = {
-    id: 'EY',
-  }
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser,
-    },
-  }
-
   return renderWithProviders(
     <Routes>
       <Route path="/profil" element={<h1>Page profil</h1>} />
       <Route path="/accueil" element={<ProfileAndSupport />} />
     </Routes>,
-    { storeOverrides, initialRouterEntries: ['/accueil'] }
+    { user: sharedCurrentUserFactory(), initialRouterEntries: ['/accueil'] }
   )
 }
 

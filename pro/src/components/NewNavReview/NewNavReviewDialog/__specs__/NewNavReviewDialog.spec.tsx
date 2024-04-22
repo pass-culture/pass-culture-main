@@ -4,6 +4,7 @@ import { userEvent } from '@testing-library/user-event'
 import { api } from 'apiClient/api'
 import * as useNotification from 'hooks/useNotification'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import NewNavReviewDialog from '../NewNavReviewDialog'
 
@@ -14,6 +15,7 @@ const renderNewNavReviewDialog = () => {
   const storeOverrides = {
     user: {
       selectedOffererId: 1,
+      currentUser: sharedCurrentUserFactory(),
     },
   }
   return renderWithProviders(

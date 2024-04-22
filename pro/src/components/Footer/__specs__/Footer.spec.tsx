@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import Footer from '../Footer'
 
@@ -8,22 +9,16 @@ const renderFooter = (
   isConnected: boolean = true,
   hasNewNav: boolean = false
 ) => {
-  const storeOverrides = {
-    user: {
-      currentUser: isConnected
-        ? {
-            isAdmin: false,
-            hasSeenProTutorials: true,
-            navState: {
-              newNavDate: hasNewNav ? '2021-01-01' : null,
-            },
-          }
-        : null,
-      initialized: true,
-    },
-  }
   renderWithProviders(<Footer />, {
-    storeOverrides: storeOverrides,
+    user: isConnected
+      ? sharedCurrentUserFactory({
+          isAdmin: false,
+          hasSeenProTutorials: true,
+          navState: {
+            newNavDate: hasNewNav ? '2021-01-01' : null,
+          },
+        })
+      : null,
   })
 }
 
