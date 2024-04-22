@@ -6,9 +6,49 @@ import {
   FORM_DEFAULT_VALUES,
   IndividualOfferFormValues,
 } from 'components/IndividualOfferForm'
-import { buildAccessibilityFormValues } from 'pages/VenueEdition/setInitialFormValues'
+import { AccessibilityEnum } from 'core/shared'
 
 import buildSubcategoryFields from './buildSubCategoryFields'
+
+export const buildAccessibilityFormValues = (
+  venue: VenueListItemResponseModel
+) => {
+  if (venue.externalAccessibilityData) {
+    return {
+      [AccessibilityEnum.VISUAL]: Boolean(
+        venue.externalAccessibilityData.isAccessibleVisualDisability
+      ),
+      [AccessibilityEnum.MENTAL]: Boolean(
+        venue.externalAccessibilityData.isAccessibleMentalDisability
+      ),
+      [AccessibilityEnum.AUDIO]: Boolean(
+        venue.externalAccessibilityData.isAccessibleAudioDisability
+      ),
+      [AccessibilityEnum.MOTOR]: Boolean(
+        venue.externalAccessibilityData.isAccessibleMotorDisability
+      ),
+      [AccessibilityEnum.NONE]: [
+        venue.externalAccessibilityData.isAccessibleVisualDisability,
+        venue.externalAccessibilityData.isAccessibleMentalDisability,
+        venue.externalAccessibilityData.isAccessibleAudioDisability,
+        venue.externalAccessibilityData.isAccessibleMotorDisability,
+      ].every((accessibility) => accessibility === false),
+    }
+  }
+
+  return {
+    [AccessibilityEnum.VISUAL]: venue.visualDisabilityCompliant || false,
+    [AccessibilityEnum.MENTAL]: venue.mentalDisabilityCompliant || false,
+    [AccessibilityEnum.AUDIO]: venue.audioDisabilityCompliant || false,
+    [AccessibilityEnum.MOTOR]: venue.motorDisabilityCompliant || false,
+    [AccessibilityEnum.NONE]: [
+      venue.visualDisabilityCompliant,
+      venue.mentalDisabilityCompliant,
+      venue.audioDisabilityCompliant,
+      venue.motorDisabilityCompliant,
+    ].every((accessibility) => accessibility === false),
+  }
+}
 
 const setDefaultInitialFormValues = (
   offererNames: GetOffererNameResponseModel[],

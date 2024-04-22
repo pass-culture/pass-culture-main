@@ -1,54 +1,25 @@
-import { GetVenueResponseModel, VenueListItemResponseModel } from 'apiClient/v1'
+import { GetVenueResponseModel } from 'apiClient/v1'
 import { AccessibilityEnum } from 'core/shared'
 import { DEFAULT_INTITIAL_OPENING_HOURS } from 'pages/VenueCreation/constants'
 
 import { DayValues, VenueEditionFormValues, Day } from './types'
 
-export const buildAccessibilityFormValues = (
-  venue: GetVenueResponseModel | VenueListItemResponseModel
-) => {
-  if (venue.externalAccessibilityData) {
-    return {
-      [AccessibilityEnum.VISUAL]: Boolean(
-        venue.externalAccessibilityData.isAccessibleVisualDisability
-      ),
-      [AccessibilityEnum.MENTAL]: Boolean(
-        venue.externalAccessibilityData.isAccessibleMentalDisability
-      ),
-      [AccessibilityEnum.AUDIO]: Boolean(
-        venue.externalAccessibilityData.isAccessibleAudioDisability
-      ),
-      [AccessibilityEnum.MOTOR]: Boolean(
-        venue.externalAccessibilityData.isAccessibleMotorDisability
-      ),
-      [AccessibilityEnum.NONE]: [
-        venue.externalAccessibilityData.isAccessibleVisualDisability,
-        venue.externalAccessibilityData.isAccessibleMentalDisability,
-        venue.externalAccessibilityData.isAccessibleAudioDisability,
-        venue.externalAccessibilityData.isAccessibleMotorDisability,
-      ].every((accessibility) => accessibility === false),
-    }
-  }
-
-  return {
-    [AccessibilityEnum.VISUAL]: venue.visualDisabilityCompliant || false,
-    [AccessibilityEnum.MENTAL]: venue.mentalDisabilityCompliant || false,
-    [AccessibilityEnum.AUDIO]: venue.audioDisabilityCompliant || false,
-    [AccessibilityEnum.MOTOR]: venue.motorDisabilityCompliant || false,
-    [AccessibilityEnum.NONE]: [
-      venue.visualDisabilityCompliant,
-      venue.mentalDisabilityCompliant,
-      venue.audioDisabilityCompliant,
-      venue.motorDisabilityCompliant,
-    ].every((accessibility) => accessibility === false),
-  }
-}
-
 export const setInitialFormValues = (
   venue: GetVenueResponseModel
 ): VenueEditionFormValues => {
   return {
-    accessibility: buildAccessibilityFormValues(venue),
+    accessibility: {
+      [AccessibilityEnum.VISUAL]: venue.visualDisabilityCompliant || false,
+      [AccessibilityEnum.MENTAL]: venue.mentalDisabilityCompliant || false,
+      [AccessibilityEnum.AUDIO]: venue.audioDisabilityCompliant || false,
+      [AccessibilityEnum.MOTOR]: venue.motorDisabilityCompliant || false,
+      [AccessibilityEnum.NONE]: [
+        venue.visualDisabilityCompliant,
+        venue.mentalDisabilityCompliant,
+        venue.audioDisabilityCompliant,
+        venue.motorDisabilityCompliant,
+      ].every((accessibility) => accessibility === false),
+    },
     description: venue.description || '',
     email: venue.contact?.email || '',
     isAccessibilityAppliedOnAllOffers: false,
