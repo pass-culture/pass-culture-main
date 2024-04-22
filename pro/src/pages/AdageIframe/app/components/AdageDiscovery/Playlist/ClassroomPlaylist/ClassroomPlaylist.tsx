@@ -71,7 +71,7 @@ export const ClassroomPlaylist = ({
       loading={loading}
       elements={offers.map((offerElement, index) => (
         <OfferCardComponent
-          handleTracking={() =>
+          onCardClicked={() =>
             trackPlaylistElementClicked({
               playlistId: CLASSROOM_PLAYLIST,
               playlistType: AdagePlaylistType.OFFER,
