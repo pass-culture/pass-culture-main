@@ -60,6 +60,9 @@
               <p class="mb-1">
                 <span class="fw-bold">Activité principale :</span> {{ siren_info.ape_label | empty_string_if_null }}
               </p>
+              <p class="mb-1">
+                <span class="fw-bold">Date de création :</span> {{ siren_info.creation_date | format_date }}
+              </p>
             </div>
           </div>
         {% else %}

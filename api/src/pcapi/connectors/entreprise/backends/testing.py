@@ -8,6 +8,19 @@ from pcapi.utils import siren as siren_utils
 
 
 class TestingBackend(BaseBackend):
+    """
+    About SIREN digits:
+    [0] allows to get a non-diffusible offerer: any SIREN which starts with '9'
+    [1] allows to get a company registered at the RCS or not
+    [2] allows to get a company for which attestation can not be generated (taxes not paid on time)
+    [3] allows to get an offerer with a different legal category
+    [4] is the company age (from 0 to 9 years old), used for DGFIP endpoint available or not
+    [4-5] allows to get a closed offerer: any SIREN like "xxxx99xxx" (company is always 9 years old)
+    [6]
+    [7]
+    [8] is the key computed from Luhn algorithm so that SIREN format is valid (see pcapi.utils.siren)
+    """
+
     address = models.SireneAddress(
         street="3 RUE DE VALOIS",
         postal_code="75001",
@@ -50,7 +63,6 @@ class TestingBackend(BaseBackend):
 
     @classmethod
     def _legal_category_code(cls, siren_or_siret: str) -> str:
-        # allows to get an offerer with a different legal category depending on siren
         match siren_or_siret[3]:
             case "5":
                 return "5499"  # Société à responsabilité limitée (sans autre indication)
@@ -65,23 +77,18 @@ class TestingBackend(BaseBackend):
 
     @classmethod
     def _is_diffusible(cls, siren_or_siret: str) -> bool:
-        # allows to get a non-diffusible offerer in dev/testing environments: any SIREN which starts with '9'
         return siren_or_siret[0] != "9"
 
     @classmethod
     def _is_commercial(cls, siren_or_siret: str) -> bool:
-        # allows to get companies registered at the RCS or not, depending on the second digit in the SIREN/SIRET
         return int(siren_or_siret[1]) % 2 == 1
 
     @classmethod
     def _is_late_for_taxes(cls, siren_or_siret: str) -> bool:
-        # allows to get companies registered at the RCS or not, depending on the third digit in the SIREN/SIRET
         return siren_or_siret[2] == "9"
 
     @classmethod
     def _is_active(cls, siren_or_siret: str) -> bool:
-        # allows to get a closed offerer in dev/testing environments:
-        # any SIREN which are like "xxxx99xxx"
         return siren_or_siret[4:6] != "99"
 
     @classmethod
@@ -91,6 +98,8 @@ class TestingBackend(BaseBackend):
 
     def get_siren(self, siren: str, with_address: bool = True, raise_if_non_public: bool = True) -> models.SirenInfo:
         self._check_siren(siren)
+
+        year_created = datetime.date.today().year - int(siren[4])
 
         if not self._is_diffusible(siren):
             if raise_if_non_public:
@@ -105,6 +114,7 @@ class TestingBackend(BaseBackend):
                 address=self.nd_address if with_address else None,
                 active=self._is_active(siren),
                 diffusible=False,
+                creation_date=datetime.date(year_created, 1, 1),
             )
 
         ape_code, ape_label = self._ape_code_and_label(siren)
@@ -119,6 +129,7 @@ class TestingBackend(BaseBackend):
             address=self.address if with_address else None,
             active=self._is_active(siren),
             diffusible=True,
+            creation_date=datetime.date(year_created, 1, 1),
         )
 
     def get_siret(self, siret: str, raise_if_non_public: bool = False) -> models.SiretInfo:

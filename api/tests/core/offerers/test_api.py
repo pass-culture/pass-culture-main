@@ -67,6 +67,7 @@ def test_new_offerer_auto_tagging(db_session, ape_code, expected_tag):
         legal_category_code="don't know",
         active=True,
         diffusible=True,
+        creation_date=datetime.date(2023, 1, 1),
     )
     user = users_factories.UserFactory()
 

@@ -1,3 +1,5 @@
+import datetime
+
 import pytest
 import requests_mock
 
@@ -31,6 +33,7 @@ def test_get_siren():
         assert siren_info.address.city == "PARIS"
         assert siren_info.active
         assert siren_info.diffusible
+        assert siren_info.creation_date == datetime.date(2022, 5, 24)
 
     # Test cache, no HTTP request
     siren_info = sirene.get_siren(siren)

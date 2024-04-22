@@ -1,3 +1,4 @@
+import datetime
 from decimal import Decimal
 import logging
 import re
@@ -759,6 +760,7 @@ class CreateOffererTest(PostEndpointHelper):
                 "address": {"city": "CANNES", "insee_code": "06029", "postal_code": "[ND]", "street": "[ND]"},
                 "ape_code": "90.01Z",
                 "ape_label": "Arts du spectacle vivant",
+                "creation_date": f"{datetime.date.today().year}-01-01",
                 "diffusible": False,
                 "head_office_siret": "90000000100017",
                 "legal_category_code": "1000",
