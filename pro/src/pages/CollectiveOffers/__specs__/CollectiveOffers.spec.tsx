@@ -16,6 +16,7 @@ import { computeCollectiveOffersUrl } from 'core/Offers/utils'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
 import { venueListItemFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { CollectiveOffers } from '../CollectiveOffers'
 
@@ -38,19 +39,9 @@ const renderOffers = async (
   filters: Partial<SearchFiltersParams> = DEFAULT_SEARCH_FILTERS
 ) => {
   const route = computeCollectiveOffersUrl(filters)
-  const currentUser = {
-    id: 'EY',
-    isAdmin: false,
-    name: 'Current User',
-  }
-  const store = {
-    user: {
-      initialized: true,
-      currentUser,
-    },
-  }
+
   renderWithProviders(<CollectiveOffers />, {
-    storeOverrides: store,
+    user: sharedCurrentUserFactory(),
     initialRouterEntries: [route],
   })
 
