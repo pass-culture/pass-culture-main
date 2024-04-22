@@ -20,6 +20,7 @@ import pcapi.core.providers.constants as providers_constants
 import pcapi.core.providers.models as providers_models
 import pcapi.core.providers.repository as providers_repository
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.utils import requests
 
 
@@ -157,7 +158,8 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
             offers_models.Product.lastProviderId.is_not(None),
         ).all()
 
-        titelive_page, products = self.dodge_sync_collision(titelive_page, products)
+        if not FeatureToggle.WIP_ENABLE_TITELIVE_API_FOR_BOOKS.is_active():
+            titelive_page, products = self.dodge_sync_collision(titelive_page, products)
 
         products_by_ean: dict[str, offers_models.Product] = {p.extraData["ean"]: p for p in products}
         for titelive_search_result in titelive_page.result:
@@ -170,8 +172,11 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
         titelive_page: TiteliveProductSearchResponse[TiteliveSearchResultType],
         existing_products: list[offers_models.Product],
     ) -> tuple[TiteliveProductSearchResponse[TiteliveSearchResultType], list[offers_models.Product]]:
-        """Returns the titelive search page and product list without products that were already imported
-        by another provider, and logs as error the removed products EAN and their provider."""
+        """
+        Returns the titelive search page and product list without products that were already imported
+        by another provider, and logs as error the removed products EAN and their provider.
+        """
+        # TODO: Remove when FeatureToggle.WIP_ENABLE_TITELIVE_API_FOR_BOOKS is removed
         products_from_other_provider = [p for p in existing_products if p.lastProvider != self.provider]
         if not products_from_other_provider:
             return titelive_page, existing_products
