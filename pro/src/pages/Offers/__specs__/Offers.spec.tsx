@@ -24,6 +24,7 @@ import {
   venueListItemFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { OffersRoute } from '../../../pages/Offers/OffersRoute'
 
@@ -59,17 +60,7 @@ const renderOffers = async (
   } = DEFAULT_SEARCH_FILTERS
 ) => {
   const route = computeOffersUrl(filters)
-  const currentUser = {
-    id: 'EY',
-    isAdmin: false,
-    name: 'Current User',
-  }
-  const store = {
-    user: {
-      initialized: true,
-      currentUser,
-    },
-  }
+
   renderWithProviders(
     <Routes>
       <Route path="/offres" element={<OffersRoute />} />
@@ -79,7 +70,7 @@ const renderOffers = async (
       />
     </Routes>,
     {
-      storeOverrides: store,
+      user: sharedCurrentUserFactory(),
       initialRouterEntries: [route],
     }
   )

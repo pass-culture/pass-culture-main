@@ -5,6 +5,7 @@ import { api } from 'apiClient/api'
 import {
   ListOffersOfferResponseModel,
   OfferStatus,
+  SharedCurrentUserResponseModel,
   UserRole,
 } from 'apiClient/v1'
 import {
@@ -89,23 +90,16 @@ vi.mock('apiClient/api', () => ({
 
 describe('screen Offers', () => {
   let props: OffersProps
-  let currentUser: {
-    id: string
-    isAdmin: boolean
-    name: string
-    roles: Array<UserRole>
-  }
+  let currentUser: SharedCurrentUserResponseModel
   let offersRecap: ListOffersOfferResponseModel[]
 
   const mockNotifyError = vi.fn()
   const mockNotifyPending = vi.fn()
   beforeEach(async () => {
-    currentUser = {
-      id: 'EY',
+    currentUser = sharedCurrentUserFactory({
       isAdmin: false,
-      name: 'Current User',
       roles: [UserRole.PRO],
-    }
+    })
     offersRecap = [listOffersOfferFactory()]
 
     props = {
@@ -403,13 +397,7 @@ describe('screen Offers', () => {
 
     describe('select all offers checkbox', () => {
       it('should disable select all checkbox when no venue nor offerer filter is applied', () => {
-        const storeOverrides = {
-          user: {
-            initialized: true,
-            currentUser,
-          },
-        }
-        renderOffers(props, { storeOverrides })
+        renderOffers(props, { user: currentUser })
 
         const selectAllOffersCheckbox =
           screen.getByLabelText('Tout sélectionner')
@@ -417,13 +405,7 @@ describe('screen Offers', () => {
       })
 
       it('should disable select all checkbox when venue filter is not set', async () => {
-        const storeOverrides = {
-          user: {
-            initialized: true,
-            currentUser,
-          },
-        }
-        renderOffers(props, { storeOverrides })
+        renderOffers(props, { user: currentUser })
 
         await userEvent.selectOptions(screen.getByLabelText('Lieu'), 'all')
 
@@ -435,13 +417,6 @@ describe('screen Offers', () => {
       })
 
       it('should enable select all checkbox when venue filter is applied', async () => {
-        const storeOverrides = {
-          user: {
-            initialized: true,
-            currentUser,
-          },
-        }
-
         renderOffers(
           {
             ...props,
@@ -450,7 +425,7 @@ describe('screen Offers', () => {
               venueId: 'IJ',
             },
           },
-          { storeOverrides }
+          { user: currentUser }
         )
 
         await userEvent.selectOptions(screen.getByLabelText('Lieu'), 'JI')
@@ -463,12 +438,6 @@ describe('screen Offers', () => {
       })
 
       it('should enable select all checkbox when offerer filter is applied', () => {
-        const storeOverrides = {
-          user: {
-            initialized: true,
-            currentUser,
-          },
-        }
         renderOffers(
           {
             ...props,
@@ -477,7 +446,7 @@ describe('screen Offers', () => {
               offererId: 'A4',
             },
           },
-          { storeOverrides }
+          { user: currentUser }
         )
 
         const selectAllOffersCheckbox =
@@ -550,13 +519,7 @@ describe('screen Offers', () => {
   })
 
   it('should display actionsBar when at least one offer is selected', async () => {
-    const storeOverrides = {
-      user: {
-        initialized: true,
-        currentUser,
-      },
-    }
-    renderWithProviders(<Offers {...props} />, { storeOverrides })
+    renderWithProviders(<Offers {...props} />, { user: currentUser })
 
     const checkbox = screen.getByLabelText(offersRecap[0].name)
     await userEvent.click(checkbox)
