@@ -1,5 +1,4 @@
 import abc
-import copy
 import datetime
 import functools
 import logging
@@ -105,17 +104,27 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
         page_index = from_page
         has_next_page = True
         while has_next_page:
-            titelive_json_response = titelive.search_products(self.titelive_base, from_date, page_index)
-            titelive_product_page = self.deserialize_titelive_search_json(titelive_json_response)
-            titlive_recent_product_page = self.filter_recent_products(titelive_product_page, from_date)
-            allowed_product_page = self.filter_allowed_products(copy.deepcopy(titlive_recent_product_page))
-            not_compliant_eans: list[str] = self.get_not_allowed_eans(copy.deepcopy(titlive_recent_product_page))
-            offers_api.reject_inappropriate_products(not_compliant_eans, None)
+            json_response = titelive.search_products(self.titelive_base, from_date, page_index)
+            product_page = self.deserialize_titelive_search_json(json_response)
+            recent_product_page = self.filter_recent_products(product_page, from_date)
+            allowed_product_page, not_allowed_eans = self.partition_allowed_products(recent_product_page)
             allowed_product_page.result = [oeuvre for oeuvre in allowed_product_page.result if oeuvre.article]
+            offers_api.reject_inappropriate_products(not_allowed_eans, author=None)
+
             yield allowed_product_page
+
             # sometimes titelive returns a partially filled page while having a next page in store for us
-            has_next_page = bool(titelive_product_page.result)
+            has_next_page = bool(product_page.result)
             page_index += 1
+
+    @abc.abstractmethod
+    def partition_allowed_products(
+        self, titelive_product_page: TiteliveProductSearchResponse[TiteliveSearchResultType]
+    ) -> tuple[
+        TiteliveProductSearchResponse[TiteliveSearchResultType],
+        list[str],
+    ]:
+        raise NotImplementedError()
 
     @abc.abstractmethod
     def deserialize_titelive_search_json(
@@ -136,17 +145,6 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
                 if article.datemodification is None or article.datemodification >= from_date
             ]
         return titelive_product_page
-
-    def filter_allowed_products(
-        self,
-        titelive_product_page: TiteliveProductSearchResponse[TiteliveSearchResultType],
-    ) -> TiteliveProductSearchResponse[TiteliveSearchResultType]:
-        return titelive_product_page
-
-    def get_not_allowed_eans(
-        self, titelive_product_page: TiteliveProductSearchResponse[TiteliveSearchResultType]
-    ) -> list[str]:
-        return []
 
     def upsert_titelive_page(
         self,
