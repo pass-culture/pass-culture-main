@@ -46,11 +46,11 @@ const adageUser: AuthenticatedResponse = {
 
 const renderOfferCardComponent = ({
   offer,
-  handleTracking,
+  onCardClicked,
 }: CardComponentProps) => {
   renderWithProviders(
     <AdageUserContextProvider adageUser={adageUser}>
-      <OfferCardComponent offer={offer} handleTracking={handleTracking} />
+      <OfferCardComponent offer={offer} onCardClicked={onCardClicked} />
     </AdageUserContextProvider>
   )
 }
@@ -76,7 +76,7 @@ describe('OfferCard component', () => {
         addressType: OfferAddressType.SCHOOL,
       },
     }
-    renderOfferCardComponent({ offer, handleTracking: vi.fn() })
+    renderOfferCardComponent({ offer, onCardClicked: vi.fn() })
 
     expect(
       screen.getByText(/Dans l’établissement scolaire/)
@@ -91,7 +91,7 @@ describe('OfferCard component', () => {
         addressType: OfferAddressType.OFFERER_VENUE,
       },
     }
-    renderOfferCardComponent({ offer, handleTracking: vi.fn() })
+    renderOfferCardComponent({ offer, onCardClicked: vi.fn() })
 
     expect(screen.getByText(/Sortie/)).toBeInTheDocument()
     expect(screen.getByText(/À 10 km/)).toBeInTheDocument()
@@ -105,7 +105,7 @@ describe('OfferCard component', () => {
         addressType: OfferAddressType.OTHER,
       },
     }
-    renderOfferCardComponent({ offer, handleTracking: vi.fn() })
+    renderOfferCardComponent({ offer, onCardClicked: vi.fn() })
 
     expect(screen.getByText(/Sortie/)).toBeInTheDocument()
     expect(screen.getByText(/Lieu à définir/)).toBeInTheDocument()
@@ -126,7 +126,7 @@ describe('OfferCard component', () => {
         },
       },
     }
-    renderOfferCardComponent({ offer, handleTracking: vi.fn() })
+    renderOfferCardComponent({ offer, onCardClicked: vi.fn() })
 
     expect(screen.getByText('à 1 km - Paris')).toBeInTheDocument()
   })
@@ -139,7 +139,7 @@ describe('OfferCard component', () => {
 
     renderOfferCardComponent({
       offer: mockOffer,
-      handleTracking: vi.fn(),
+      onCardClicked: vi.fn(),
     })
 
     const offerElement = screen.getByTestId('card-offer-link')
@@ -162,7 +162,7 @@ describe('OfferCard component', () => {
 
     renderOfferCardComponent({
       offer: mockOffer,
-      handleTracking: vi.fn(),
+      onCardClicked: vi.fn(),
     })
 
     const offerElement = screen.getByTestId('card-offer-link')
@@ -179,7 +179,7 @@ describe('OfferCard component', () => {
 
     renderOfferCardComponent({
       offer: mockOffer,
-      handleTracking: mockHandleTracking,
+      onCardClicked: mockHandleTracking,
     })
 
     const offerElement = screen.getByTestId('card-offer-link')

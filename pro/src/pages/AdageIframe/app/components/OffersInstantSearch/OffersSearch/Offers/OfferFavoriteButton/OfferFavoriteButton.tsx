@@ -18,6 +18,7 @@ export interface OfferFavoriteButtonProps {
   afterFavoriteChange?: (isFavorite: boolean) => void
   isInSuggestions?: boolean
   className?: string
+  viewType?: 'grid' | 'list'
 }
 
 const OfferFavoriteButton = ({
@@ -26,6 +27,7 @@ const OfferFavoriteButton = ({
   afterFavoriteChange,
   isInSuggestions,
   className,
+  viewType,
 }: OfferFavoriteButtonProps): JSX.Element => {
   const [isFavorite, setIsFavorite] = useState(offer.isFavorite)
   const [isLoading, setIsLoading] = useState(false)
@@ -51,6 +53,7 @@ const OfferFavoriteButton = ({
         iframeFrom: location.pathname,
         isFavorite: false,
         isFromNoResult: isInSuggestions,
+        vueType: viewType,
       })
 
       afterFavoriteChange?.(false)
@@ -79,6 +82,7 @@ const OfferFavoriteButton = ({
         iframeFrom: location.pathname,
         isFavorite: true,
         isFromNoResult: isInSuggestions,
+        vueType: viewType,
       })
 
       afterFavoriteChange?.(true)

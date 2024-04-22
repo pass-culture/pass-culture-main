@@ -20,12 +20,14 @@ import fullGoTop from 'icons/full-go-top.svg'
 import fullGrid from 'icons/full-grid.svg'
 import fullList from 'icons/full-list.svg'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
+import { isCollectiveOfferTemplate } from 'pages/AdageIframe/app/types/offers'
 import { setSearchView } from 'store/adageFilter/reducer'
 import { adageSearchViewSelector } from 'store/adageFilter/selectors'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { LOGS_DATA } from 'utils/config'
 import { sendSentryCustomError } from 'utils/sendSentryCustomError'
 
 import OfferCardComponent from '../../../AdageDiscovery/OfferCard/OfferCard'
@@ -212,6 +214,23 @@ export const Offers = ({
     })
   }
 
+  function triggerOfferClickLog(
+    offer: CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
+  ) {
+    if (!LOGS_DATA) {
+      return
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    apiAdage.logOfferTemplateDetailsButtonClick({
+      iframeFrom: location.pathname,
+      offerId: isCollectiveOfferTemplate(offer) ? offer.id : offer.stock.id,
+      queryId: results?.queryID,
+      isFromNoResult: isInSuggestions,
+      vueType: adageViewType,
+    })
+  }
+
   return (
     <>
       <div className={styles['offers-view']}>
@@ -261,14 +280,15 @@ export const Offers = ({
                   offer={offer}
                   queryId={results.queryID ?? ''}
                   isInSuggestions={indexId?.startsWith('no_results_offers')}
+                  viewType={adageViewType}
+                  onCardClicked={() => triggerOfferClickLog(offer)}
                 />
               ) : (
                 <OfferCardComponent
-                  handleTracking={() =>
-                    console.log('call tracking quand ticket back terminé')
-                  }
+                  onCardClicked={() => triggerOfferClickLog(offer)}
                   key={offer.id}
                   offer={offer}
+                  viewType={adageViewType}
                 />
               )
             ) : (
