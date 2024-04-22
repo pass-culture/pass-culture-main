@@ -27,6 +27,12 @@ const render = (offer: GetIndividualOfferResponseModel) => {
 }
 
 describe('BookingsSummary', () => {
+  beforeEach(() => {
+    vi.spyOn(
+      api,
+      'getOfferPriceCategoriesAndSchedulesByDates'
+    ).mockResolvedValue([])
+  })
   it('should render a list of bookings', async () => {
     const offer = getIndividualOfferFactory({ name: 'Offre de test' })
 
@@ -53,7 +59,9 @@ describe('BookingsSummary', () => {
 
     expect(screen.getByText(/Réservations/)).toBeInTheDocument()
     expect(
-      screen.getByRole('button', { name: 'Télécharger les réservations' })
+      await screen.findByRole('button', {
+        name: 'Télécharger les réservations',
+      })
     ).toBeInTheDocument()
     expect(screen.getAllByRole('link', { name: 'Offre de test' })).toHaveLength(
       3
@@ -80,7 +88,9 @@ describe('BookingsSummary', () => {
 
     expect(screen.getByText(/Réservations/)).toBeInTheDocument()
     expect(
-      screen.getByRole('button', { name: 'Télécharger les réservations' })
+      await screen.findByRole('button', {
+        name: 'Télécharger les réservations',
+      })
     ).toBeInTheDocument()
     expect(screen.getAllByRole('link', { name: 'Offre de test' })).toHaveLength(
       1
@@ -126,16 +136,11 @@ describe('BookingsSummary', () => {
       total: 3,
     })
 
-    vi.spyOn(
-      api,
-      'getOfferPriceCategoriesAndSchedulesByDates'
-    ).mockResolvedValueOnce([])
-
     render(offer)
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
-    const downloadButton = screen.getByRole('button', {
+    const downloadButton = await screen.findByRole('button', {
       name: 'Télécharger les réservations',
     })
 

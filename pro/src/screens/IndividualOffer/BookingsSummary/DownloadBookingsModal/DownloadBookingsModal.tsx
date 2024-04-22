@@ -1,11 +1,13 @@
 import format from 'date-fns/format'
-import { useEffect, useState } from 'react'
-import useSWR from 'swr'
+import { useState } from 'react'
 
 import { api } from 'apiClient/api'
-import { BookingExportType, BookingsExportStatusFilter } from 'apiClient/v1'
+import {
+  BookingExportType,
+  BookingsExportStatusFilter,
+  EventDatesInfos,
+} from 'apiClient/v1'
 import DialogBox from 'components/DialogBox'
-import { GET_EVENT_PRICE_CATEGORIES_AND_SCHEDULES_BY_DAYE_QUERY_KEY } from 'config/swrQueryKeys'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import strokeDeskIcon from 'icons/stroke-desk.svg'
@@ -14,7 +16,6 @@ import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { BaseRadio } from 'ui-kit/form/shared'
 import RadioButtonWithImage from 'ui-kit/RadioButtonWithImage'
-import Spinner from 'ui-kit/Spinner/Spinner'
 import { FORMAT_DD_MM_YYYY, mapDayToFrench } from 'utils/date'
 import { downloadFile } from 'utils/downloadFile'
 import { pluralize } from 'utils/pluralize'
@@ -23,31 +24,18 @@ import style from './DownloadBookingsModal.module.scss'
 
 interface DownloadBookingsModalProps {
   offerId: number
+  priceCategoryAndScheduleCountByDate: EventDatesInfos
   onDimiss: () => void
 }
 
 export const DownloadBookingsModal = ({
   offerId,
+  priceCategoryAndScheduleCountByDate,
   onDimiss,
 }: DownloadBookingsModalProps) => {
   const [bookingsType, setBookingsType] = useState<BookingsExportStatusFilter>()
   const [selectedDate, setSelectedDate] = useState<string>()
   const { logEvent } = useAnalytics()
-
-  const stockSchedulesAndPricesByDateQuery = useSWR(
-    [GET_EVENT_PRICE_CATEGORIES_AND_SCHEDULES_BY_DAYE_QUERY_KEY],
-    () => api.getOfferPriceCategoriesAndSchedulesByDates(offerId),
-    { fallbackData: [] }
-  )
-
-  useEffect(() => {
-    if (
-      !stockSchedulesAndPricesByDateQuery.isLoading &&
-      stockSchedulesAndPricesByDateQuery.data.length === 1
-    ) {
-      setSelectedDate(stockSchedulesAndPricesByDateQuery.data[0].eventDate)
-    }
-  }, [stockSchedulesAndPricesByDateQuery])
 
   const handleSubmit = async (
     event: React.SyntheticEvent<HTMLFormElement, SubmitEvent>
@@ -134,15 +122,11 @@ export const DownloadBookingsModal = ({
             Télécharger vos réservations
           </h1>
           <fieldset className={style['date-select-section']}>
-            {stockSchedulesAndPricesByDateQuery.isLoading ? (
-              <Spinner />
-            ) : stockSchedulesAndPricesByDateQuery.data.length === 1 ? (
+            {priceCategoryAndScheduleCountByDate.length === 1 ? (
               <h2 className={style['one-booking-date-section']}>
                 Date de votre évènement:{' '}
                 {format(
-                  new Date(
-                    stockSchedulesAndPricesByDateQuery.data[0].eventDate
-                  ),
+                  new Date(priceCategoryAndScheduleCountByDate[0].eventDate),
                   FORMAT_DD_MM_YYYY
                 )}
               </h2>
@@ -153,7 +137,7 @@ export const DownloadBookingsModal = ({
                 </legend>
                 <div className={style['bookings-date-count']}>
                   {pluralize(
-                    stockSchedulesAndPricesByDateQuery.data.length,
+                    priceCategoryAndScheduleCountByDate.length,
                     'date'
                   )}
                 </div>
@@ -173,7 +157,7 @@ export const DownloadBookingsModal = ({
                     </tr>
                   </thead>
                   <tbody>
-                    {stockSchedulesAndPricesByDateQuery.data.map((date) =>
+                    {priceCategoryAndScheduleCountByDate.map((date) =>
                       createDateRow(
                         date.eventDate,
                         date.scheduleCount,
