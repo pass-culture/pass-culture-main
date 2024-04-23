@@ -10,7 +10,7 @@ interface DividerProps {
   className?: string
 }
 
-const Divider: FC<DividerProps> = ({ size, className }) => {
+export const Divider: FC<DividerProps> = ({ size, className }) => {
   const sizeClassName = {
     medium: styles['divider-medium'],
     large: styles['divider-large'],
@@ -20,4 +20,3 @@ const Divider: FC<DividerProps> = ({ size, className }) => {
     <div className={classnames(styles.divider, sizeClassName, className)} />
   )
 }
-export default Divider
