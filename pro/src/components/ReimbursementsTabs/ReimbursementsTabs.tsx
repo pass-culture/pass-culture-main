@@ -4,8 +4,7 @@ import { GetOffererResponseModel } from 'apiClient/v1'
 import useActiveStep from 'hooks/useActiveStep'
 import fullErrorIcon from 'icons/full-error.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import Tabs from 'ui-kit/Tabs'
-import { Tab } from 'ui-kit/Tabs/Tabs'
+import { Tab, Tabs } from 'ui-kit/Tabs/Tabs'
 
 import {
   STEP_ID_BANK_INFORMATIONS,

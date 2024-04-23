@@ -24,7 +24,7 @@ interface FilterTabsProps {
 }
 const NAV_ITEM_ICON_SIZE = '24'
 
-const Tabs = ({
+export const Tabs = ({
   nav,
   selectedKey,
   tabs,
@@ -81,5 +81,3 @@ const Tabs = ({
 
   return nav ? <nav aria-label={nav}>{content}</nav> : content
 }
-
-export default Tabs

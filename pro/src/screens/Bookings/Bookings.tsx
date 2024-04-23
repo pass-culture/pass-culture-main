@@ -27,7 +27,7 @@ import strokeUserIcon from 'icons/stroke-user.svg'
 import ChoosePreFiltersMessage from 'pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
 import NoBookingsForPreFiltersMessage from 'pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
 import Spinner from 'ui-kit/Spinner/Spinner'
-import Tabs from 'ui-kit/Tabs'
+import { Tabs } from 'ui-kit/Tabs/Tabs'
 import Titles from 'ui-kit/Titles/Titles'
 
 import { stringify } from '../../utils/query-string'
