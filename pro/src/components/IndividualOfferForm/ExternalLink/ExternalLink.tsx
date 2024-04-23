@@ -1,5 +1,6 @@
 import FormLayout from 'components/FormLayout'
-import { InfoBox, TextInput } from 'ui-kit'
+import { TextInput } from 'ui-kit'
+import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
 export interface ExternalLinkProps {
   readOnlyFields?: string[]

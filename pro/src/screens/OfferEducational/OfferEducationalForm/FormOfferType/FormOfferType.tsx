@@ -8,9 +8,10 @@ import {
 } from 'core/OfferEducational'
 import { SelectOption } from 'custom_types/form'
 import { getNationalProgramsForDomains } from 'screens/OfferEducational/constants/getNationalProgramsForDomains'
-import { InfoBox, Select, TextArea, TextInput } from 'ui-kit'
+import { Select, TextArea, TextInput } from 'ui-kit'
 import { MultiSelectAutocomplete } from 'ui-kit/form/MultiSelectAutoComplete/MultiSelectAutocomplete'
 import SelectAutocomplete from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
+import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
 import {
   DESCRIPTION_LABEL,

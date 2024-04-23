@@ -6,9 +6,10 @@ import FormLayout from 'components/FormLayout'
 import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import { validationSchema } from 'pages/VenueSettings/VenueProvidersManager/AllocineProviderForm/validationSchema'
-import { Banner, Checkbox, InfoBox, TextInput } from 'ui-kit'
+import { Banner, Checkbox, TextInput } from 'ui-kit'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
 import styles from './AllocineProviderForm.module.scss'
 
