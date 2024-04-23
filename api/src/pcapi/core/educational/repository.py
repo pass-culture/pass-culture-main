@@ -959,7 +959,8 @@ def get_collective_offer_template_by_ids(offer_ids: list[int]) -> list[education
 def get_collective_offer_templates_for_playlist_query(
     institution_id: int,
     playlist_type: educational_models.PlaylistType,
-    max_distance: int | None = 60,
+    max_distance: int | None = None,
+    min_distance: int | None = None,
 ) -> BaseQuery:
     query = educational_models.CollectivePlaylist.query.filter(
         educational_models.CollectivePlaylist.type == playlist_type,
@@ -968,6 +969,9 @@ def get_collective_offer_templates_for_playlist_query(
 
     if max_distance:
         query = query.filter(educational_models.CollectivePlaylist.distanceInKm <= max_distance)
+
+    if min_distance:
+        query = query.filter(educational_models.CollectivePlaylist.distanceInKm > min_distance)
 
     query = query.options(
         sa.orm.joinedload(educational_models.CollectivePlaylist.collective_offer_template)
@@ -987,8 +991,10 @@ def get_collective_offer_templates_for_playlist_query(
             educational_models.CollectiveOfferTemplate.venue,
             innerjoin=True,
         )
-        .selectinload(offerers_models.Venue.googlePlacesInfo),
-        sa.orm.joinedload(educational_models.CollectivePlaylist.venue),
+        .joinedload(offerers_models.Venue.googlePlacesInfo),
+        sa.orm.joinedload(educational_models.CollectivePlaylist.venue).joinedload(
+            offerers_models.Venue.googlePlacesInfo
+        ),
     )
     return query
 

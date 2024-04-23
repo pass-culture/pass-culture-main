@@ -9,6 +9,8 @@ from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository
 import pcapi.core.educational.api.favorites as favorites_api
+import pcapi.core.educational.api.institution as institution_api
+import pcapi.core.educational.api.playlists as playlists_api
 from pcapi.core.offerers.repository import get_venue_by_id
 from pcapi.models import Model
 from pcapi.models.api_errors import ApiErrors
@@ -57,7 +59,9 @@ def get_classroom_playlist(
 
     playlist_items = (
         repository.get_collective_offer_templates_for_playlist_query(
-            institution_id=institution.id, playlist_type=educational_models.PlaylistType.CLASSROOM
+            institution_id=institution.id,
+            playlist_type=educational_models.PlaylistType.CLASSROOM,
+            max_distance=institution_api.get_playlist_max_distance(institution),
         )
         .order_by(func.random())
         .limit(10)
@@ -140,7 +144,7 @@ def new_template_offers_playlist(
         repository.get_collective_offer_templates_for_playlist_query(
             institution_id=institution.id,
             playlist_type=educational_models.PlaylistType.NEW_OFFER,
-            max_distance=educational_models.PLAYLIST_RURALITY_MAX_DISTANCE_MAPPING.get(institution.ruralLevel, 60),
+            max_distance=institution_api.get_playlist_max_distance(institution),
         )
         .order_by(educational_models.CollectivePlaylist.distanceInKm)
         .limit(10)
@@ -185,17 +189,7 @@ def get_local_offerers_playlist(
     if not institution:
         raise ApiErrors({"message": "institutionId is mandatory"}, status_code=403)
 
-    playlist_items = (
-        repository.get_collective_offer_templates_for_playlist_query(
-            institution_id=institution.id,
-            playlist_type=educational_models.PlaylistType.LOCAL_OFFERER,
-            max_distance=educational_models.PLAYLIST_RURALITY_MAX_DISTANCE_MAPPING.get(institution.ruralLevel, 60),
-        )
-        .order_by(func.random())
-        .limit(10)
-        .all()
-    )
-    # TODO: add some more items if the playlist is too empty
+    playlist_items = playlists_api.get_playlist_items(institution, educational_models.PlaylistType.LOCAL_OFFERER)
 
     return playlists_serializers.LocalOfferersPlaylist(
         venues=[
