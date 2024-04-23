@@ -294,7 +294,9 @@ class PriceEventTest:
         )
 
         author = users_factories.UserFactory()
-        api.validate_finance_incident(total_booking_incident.incident, force_debit_note=False, author=author)
+        api.validate_finance_overpayment_incident(
+            total_booking_incident.incident, force_debit_note=False, author=author
+        )
 
         assert total_booking_incident.booking.status == bookings_models.BookingStatus.CANCELLED
 
@@ -3619,7 +3621,7 @@ class ValidateFinanceIncidentTest:
             )
 
         author = users_factories.UserFactory()
-        api.validate_finance_incident(
+        api.validate_finance_overpayment_incident(
             collective_booking_finance_incident.incident, force_debit_note=False, author=author
         )
 

@@ -172,6 +172,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
     "codir_admin": [
         perm_models.Permissions.READ_INCIDENTS,
         perm_models.Permissions.MANAGE_INCIDENTS,
+        perm_models.Permissions.VALIDATE_COMMERCIAL_GESTURE,
     ],
     "gestionnaire_des_droits": [
         perm_models.Permissions.MANAGE_PERMISSIONS,
@@ -237,6 +238,14 @@ def support_pro_n2_fixture(roles_with_permissions: None) -> users_models.User:
 def pro_fraud_admin_fixture(roles_with_permissions: None) -> users_models.User:
     user = users_factories.UserFactory(roles=["ADMIN"])
     backoffice_api.upsert_roles(user, {perm_models.Roles.FRAUDE_CONFORMITE})
+    db.session.flush()
+    return user
+
+
+@pytest.fixture
+def codir_admin(roles_with_permissions):
+    user = users_factories.UserFactory(roles=["ADMIN"])
+    backoffice_api.upsert_roles(user, {perm_models.Roles.CODIR_ADMIN})
     db.session.flush()
     return user
 

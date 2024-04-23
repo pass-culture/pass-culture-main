@@ -374,6 +374,32 @@ class FinanceIncidentFactory(BaseFactory):
     }
 
 
+class FinanceCommercialGestureFactory(BaseFactory):
+    class Meta:
+        model = models.FinanceIncident
+
+    venue = factory.SubFactory(offerers_factories.VenueFactory)
+    kind = models.IncidentType.COMMERCIAL_GESTURE
+    status = models.IncidentStatus.CREATED
+    details = {
+        "origin": "Demande e-mail",
+        "createdAt": datetime.datetime.utcnow().isoformat(),
+        "authorId": 1,
+        "validator": "",
+        "validatedAt": "",
+    }
+
+
+class IndividualBookingFinanceCommercialGestureFactory(BaseFactory):
+    class Meta:
+        model = models.BookingFinanceIncident
+
+    booking = factory.SubFactory(bookings_factories.CancelledBookingFactory)
+    incident = factory.SubFactory(FinanceCommercialGestureFactory)
+    beneficiary = factory.SelfAttribute("booking.user")
+    newTotalAmount = factory.LazyAttribute(lambda x: x.booking.total_amount - 100)
+
+
 class IndividualBookingFinanceIncidentFactory(BaseFactory):
     class Meta:
         model = models.BookingFinanceIncident
