@@ -64,7 +64,9 @@ describe('SurveySatisfaction', () => {
   it('should log info when opening sastisfaction survey', async () => {
     renderWithProviders(<SurveySatisfaction {...defaultProps} />)
 
-    const openButton = screen.getByRole('link', { name: 'Je donne mon avis' })
+    const openButton = screen.getByRole('link', {
+      name: 'Nouvelle fenêtre Je donne mon avis',
+    })
 
     await userEvent.click(openButton)
 

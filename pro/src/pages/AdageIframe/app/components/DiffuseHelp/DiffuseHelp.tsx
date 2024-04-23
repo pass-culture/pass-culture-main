@@ -1,8 +1,8 @@
 import cn from 'classnames'
 import React, { useState } from 'react'
 
-import fullClear from 'icons/full-clear.svg'
 import helpIcon from 'icons/shadow-tips-help.svg'
+import strokeCloseIcon from 'icons/stroke-close.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { localStorageAvailable } from 'utils/localStorageAvailable'
 
@@ -34,20 +34,18 @@ export const DiffuseHelp = ({
       <div className={styles['diffuse-help-infos']}>
         <div className={styles['diffuse-help-container']}>
           <div className={styles['diffuse-help-header']}>
-            <SvgIcon src={helpIcon} alt="help" width="32" />
+            <SvgIcon src={helpIcon} alt="" width="32" />
             <div className={styles['diffuse-help-title']}>Le saviez-vous ?</div>
           </div>
-          <div
-            className={styles['diffuse-help-close']}
+          <button
             onClick={onCloseDiffuseHelp}
+            title="Masquer le bandeau"
+            type="button"
+            className={styles['diffuse-help-close']}
             data-testid="close-diffuse-help"
           >
-            <SvgIcon
-              src={fullClear}
-              alt=""
-              className={styles['diffuse-help-close-icon']}
-            />{' '}
-          </div>
+            <SvgIcon src={strokeCloseIcon} alt="" width="24" />
+          </button>
         </div>
         <div className={styles['diffuse-help-description']}>{description}</div>
       </div>

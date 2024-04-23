@@ -53,7 +53,8 @@
 
   &-container {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
+    align-items: center;
     width: 100%;
     gap: rem.torem(16px);
   }
@@ -134,7 +135,7 @@
 
   &-text {
     display: flex;
-    flex-direction: column
+    flex-direction: column;
   }
 
   .intended-for {
@@ -151,7 +152,6 @@
     display: flex;
     flex-direction: column;
   }
-
 }
 
 .offer-prebooking-button {
@@ -162,6 +162,11 @@
   .offer-card {
     flex-direction: column;
     align-items: flex-start;
+
+    &-container {
+      flex-direction: row;
+      align-items: unset;
+    }
 
     &-right {
       flex-direction: row;
