@@ -1,0 +1,10 @@
+import{j as t}from"./jsx-runtime-CKrituN3.js";import{b as s}from"./formik.esm-BvpVdGSF.js";import{a}from"./Thumb-DsO7f-1W.js";import"./index-CBqU2yxZ.js";import"./_commonjsHelpers-BosuxZz1.js";import"./full-next-DBJ5r-A4.js";import"./ButtonLink-DeFf5Dx2.js";import"./index-BpvXyOxN.js";import"./index-D-qxk1LK.js";import"./index-Bc47ZfBr.js";import"./SvgIcon-B4BQC89V.js";import"./Button.module-C_p_qTrE.js";import"./Button-Bsju4TqZ.js";import"./stroke-pass-C0Oiu4_F.js";import"./Tooltip-DQk13cIf.js";import"./useTooltipProps-DrCYBs0a.js";import"./stroke-offer-Dcn8dcIZ.js";import"./BaseInput-DYA9YpR4.js";import"./BaseRadio-Ba86le1p.js";import"./FieldError-JTJv5SQU.js";import"./stroke-error-BKdTEWJV.js";import"./FieldSuccess-CpHTDnww.js";import"./stroke-valid-D5TrCdxa.js";import"./full-clear-CvNWe6Ae.js";import"./Divider-BgRDNfKi.js";import"./SubmitButton-Bjbuuogl.js";import"./index-Dk74W0Oi.js";import"./SelectInput-B3vLyJOl.js";import"./stroke-down-DYCZHAeS.js";import"./BaseCheckbox-CMtHdr2j.js";import"./index-B_8VvXQ8.js";import"./date-BzyGEX3I.js";import"./typeof-QjJsDpFa.js";import"./Banner-W8CLLOg5.js";import"./shadow-tips-help-BWD8Tj4_.js";import"./shadow-tips-warning-Cyw-iOmq.js";import"./stroke-close-C6KSko98.js";import"./LinkNodes-DlTx8ZMF.js";import"./full-link-Ct7SQyQr.js";import"./InfoBox-B8QB1DRf.js";const U={title:"ui-kit/forms/CheckboxGroup",component:a,decorators:[o=>t.jsx(s,{initialValues:{accessibility:!1},onSubmit:()=>{},children:({getFieldProps:e})=>t.jsx(o,{...e("group")})})]},r={args:{group:["foo","bar","baz"].map(o=>({label:o,name:`checkBoxes.${o}`})),groupName:"checkBoxes",legend:"This is the legend"}};var i,m,p;r.parameters={...r.parameters,docs:{...(i=r.parameters)==null?void 0:i.docs,source:{originalSource:`{
+  args: {
+    group: ['foo', 'bar', 'baz'].map(item => ({
+      label: item,
+      name: \`checkBoxes.\${item}\`
+    })),
+    groupName: 'checkBoxes',
+    legend: 'This is the legend'
+  }
+}`,...(p=(m=r.parameters)==null?void 0:m.docs)==null?void 0:p.source}}};const W=["Default"];export{r as Default,W as __namedExportsOrder,U as default};
