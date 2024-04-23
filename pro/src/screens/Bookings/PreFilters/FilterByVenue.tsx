@@ -3,7 +3,7 @@ import React from 'react'
 import { ALL_VENUES_OPTION } from 'core/Bookings/constants'
 import { PreFiltersParams } from 'core/Bookings/types'
 import SelectInput from 'ui-kit/form/Select/SelectInput'
-import { FieldLayout } from 'ui-kit/form/shared'
+import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
 
 import styles from './PreFilters.module.scss'
 

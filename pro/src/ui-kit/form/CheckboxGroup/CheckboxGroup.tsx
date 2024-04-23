@@ -2,7 +2,7 @@ import cn from 'classnames'
 import { useField } from 'formik'
 import React from 'react'
 
-import { FieldSetLayout } from '../shared'
+import { FieldSetLayout } from '../shared/FieldSetLayout/FieldSetLayout'
 
 import styles from './CheckboxGroup.module.scss'
 import CheckboxGroupItem from './CheckboxGroupItem'
