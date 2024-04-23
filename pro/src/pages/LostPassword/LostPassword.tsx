@@ -7,7 +7,7 @@ import useInitReCaptcha from 'hooks/useInitReCaptcha'
 import useNotification from 'hooks/useNotification'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
-import Hero from 'ui-kit/Hero'
+import { Hero } from 'ui-kit/Hero/Hero'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { getReCaptchaToken } from 'utils/recaptcha'
 
