@@ -8,7 +8,7 @@ import { GetBookingResponse } from 'apiClient/v2'
 import { AppLayout } from 'app/AppLayout'
 import Callout from 'components/Callout/Callout'
 import { TextInput } from 'ui-kit'
-import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
+import { Button } from 'ui-kit/Button/Button'
 import Titles from 'ui-kit/Titles/Titles'
 
 import { BookingDetails } from './BookingDetails'
@@ -169,9 +169,9 @@ export const Desk = (): JSX.Element => {
                 onConfirm={() => handleSubmitInvalidate(token)}
               />
             ) : (
-              <SubmitButton disabled={formik.isSubmitting || !booking}>
+              <Button type="submit" disabled={formik.isSubmitting || !booking}>
                 Valider la contremarque
-              </SubmitButton>
+              </Button>
             )}
           </div>
 

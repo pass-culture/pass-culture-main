@@ -6,7 +6,7 @@ import * as yup from 'yup'
 
 import { apiAdresse } from 'apiClient/adresse'
 import { VenueCreationFormValues } from 'pages/VenueCreation/types'
-import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
+import { Button } from 'ui-kit/Button/Button'
 
 import { AddressSelect, validationSchema as addressValidationSchema } from '../'
 
@@ -57,7 +57,9 @@ const renderAddress = ({
       {({ handleSubmit }) => (
         <Form onSubmit={handleSubmit}>
           <AddressSelect />
-          <SubmitButton isLoading={false}>Submit</SubmitButton>
+          <Button type="submit" isLoading={false}>
+            Submit
+          </Button>
         </Form>
       )}
     </Formik>

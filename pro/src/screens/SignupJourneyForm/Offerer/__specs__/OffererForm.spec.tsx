@@ -13,7 +13,7 @@ import {
   SignupJourneyContext,
   SignupJourneyContextValues,
 } from 'context/SignupJourneyContext'
-import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
+import { Button } from 'ui-kit/Button/Button'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
@@ -70,7 +70,9 @@ const renderOffererForm = ({
       >
         <Form>
           <OffererForm />
-          <SubmitButton isLoading={false}>Submit</SubmitButton>
+          <Button type="submit" isLoading={false}>
+            Submit
+          </Button>
         </Form>
       </Formik>
     </SignupJourneyContext.Provider>,

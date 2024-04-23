@@ -10,7 +10,6 @@ import fullLeftIcon from 'icons/full-left.svg'
 import fullRightIcon from 'icons/full-right.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
-import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 
 export interface ActionBarProps {
   onClickNext?: () => void
@@ -75,7 +74,8 @@ const ActionBar = ({
     }
 
     return (
-      <SubmitButton
+      <Button
+        type="submit"
         icon={withRightIcon ? fullRightIcon : undefined}
         iconPosition={IconPositionEnum.RIGHT}
         disabled={isDisabled}
@@ -85,7 +85,7 @@ const ActionBar = ({
         }}
       >
         {nextStepTitle}
-      </SubmitButton>
+      </Button>
     )
   }
 

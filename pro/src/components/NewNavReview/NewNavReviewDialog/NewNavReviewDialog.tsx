@@ -12,7 +12,6 @@ import { RadioButton, TextArea } from 'ui-kit'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { BaseRadioVariant } from 'ui-kit/form/shared/BaseRadio/types'
-import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { sendSentryCustomError } from 'utils/sendSentryCustomError'
 
@@ -160,14 +159,15 @@ const NewNavReviewDialog = ({
               >
                 Annuler
               </Button>
-              <SubmitButton
+              <Button
+                type="submit"
                 disabled={
                   formik.values.isPleasant === initialValues.isPleasant ||
                   formik.values.isConvenient === initialValues.isConvenient
                 }
               >
                 Envoyer
-              </SubmitButton>
+              </Button>
             </div>
           </Form>
         </FormikProvider>

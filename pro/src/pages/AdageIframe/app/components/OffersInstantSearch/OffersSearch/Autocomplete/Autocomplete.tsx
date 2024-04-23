@@ -30,7 +30,6 @@ import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { setAdageQuery } from 'store/adageFilter/reducer'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import {
   ALGOLIA_API_KEY,
@@ -407,7 +406,8 @@ export const Autocomplete = ({
                 </span>
               </div>
 
-              <SubmitButton
+              <Button
+                type="submit"
                 onBlur={() => {
                   if (shouldDisplayRecentSearch) {
                     return
@@ -421,7 +421,7 @@ export const Autocomplete = ({
                 className={styles['form-search-button']}
               >
                 Rechercher
-              </SubmitButton>
+              </Button>
             </div>
 
             <dialog

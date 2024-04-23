@@ -25,9 +25,9 @@ import {
 import { isOfferDisabled } from 'core/Offers/utils'
 import { NBSP } from 'core/shared'
 import { Banner, TextArea } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 
 import { DETAILS_PRICE_LABEL } from './constants/labels'
 import FormStock from './FormStock'
@@ -206,7 +206,8 @@ const OfferEducationalStock = <
                     ? 'Étape précédente'
                     : 'Annuler et quitter'}
                 </ButtonLink>
-                <SubmitButton
+                <Button
+                  type="submit"
                   className=""
                   disabled={
                     (offerIsDisabled || mode === Mode.READ_ONLY) &&
@@ -217,7 +218,7 @@ const OfferEducationalStock = <
                   {mode !== Mode.CREATION
                     ? 'Enregistrer les modifications'
                     : 'Étape suivante'}
-                </SubmitButton>
+                </Button>
               </ActionsBarSticky.Left>
             </ActionsBarSticky>
           </FormLayout>
