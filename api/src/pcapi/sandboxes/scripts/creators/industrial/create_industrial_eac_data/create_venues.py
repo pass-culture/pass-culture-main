@@ -66,7 +66,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         postalCode="91000",
         city="CORBEIL-ESSONNES",
         siret="44460844212351",
-        venueTypeCode=offerers_models.VenueTypeCode.CULTURAL_CENTRE,
+        venueTypeCode=offerers_models.VenueTypeCode.LIBRARY,
     )
     create_venue(
         managingOfferer=offerer,
