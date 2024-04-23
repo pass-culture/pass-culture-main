@@ -681,7 +681,7 @@ def delete_api_key_by_user(user: users_models.User, api_key_prefix: str) -> None
 def _fill_in_offerer(
     offerer: offerers_models.Offerer, offerer_informations: offerers_serialize.CreateOffererQueryModel
 ) -> None:
-    offerer.street = offerer_informations.street  # type: ignore [method-assign]
+    offerer.street = offerer_informations.street
     offerer.city = offerer_informations.city
     offerer.name = offerer_informations.name
     offerer.postalCode = offerer_informations.postalCode
@@ -873,7 +873,7 @@ def update_offerer(
         offerer.postalCode = postal_code
     if street is not offerers_constants.UNCHANGED and offerer.street != street:
         modified_info["street"] = {"old_info": offerer.street, "new_info": street}
-        offerer.street = street  # type: ignore [method-assign]
+        offerer.street = street
     if tags is not offerers_constants.UNCHANGED:
         if set(offerer.tags) != set(tags):
             modified_info["tags"] = {
