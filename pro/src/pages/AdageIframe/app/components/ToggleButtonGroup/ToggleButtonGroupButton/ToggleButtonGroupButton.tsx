@@ -2,7 +2,7 @@ import classNames from 'classnames'
 
 import fullCheck from 'icons/full-check.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import Tooltip from 'ui-kit/Tooltip'
+import { Tooltip } from 'ui-kit/Tooltip/Tooltip'
 import { useTooltipProps } from 'ui-kit/Tooltip/useTooltipProps'
 
 import { ToggleButton } from '../ToggleButtonGroup'

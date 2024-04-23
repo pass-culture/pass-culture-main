@@ -4,7 +4,7 @@ import React, { MouseEvent } from 'react'
 import { Link } from 'react-router-dom'
 
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import Tooltip from 'ui-kit/Tooltip'
+import { Tooltip } from 'ui-kit/Tooltip/Tooltip'
 import { useTooltipProps } from 'ui-kit/Tooltip/useTooltipProps'
 
 import styles from './ListIconButton.module.scss'

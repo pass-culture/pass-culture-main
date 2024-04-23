@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 
-import Tooltip from '../Tooltip'
+import { Tooltip } from '../Tooltip'
 
 describe('Tooltip', () => {
   it('should render without error', () => {
