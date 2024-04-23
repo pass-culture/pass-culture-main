@@ -11,7 +11,7 @@ interface ThumbProps {
   className?: string
 }
 
-const Thumb = ({ url = '', className }: ThumbProps) => {
+export const Thumb = ({ url = '', className }: ThumbProps) => {
   return (
     <div className={styles['thumb-container']}>
       {url ? (
@@ -31,5 +31,3 @@ const Thumb = ({ url = '', className }: ThumbProps) => {
     </div>
   )
 }
-
-export default Thumb
