@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import React, { FocusEventHandler, MouseEventHandler } from 'react'
+import React, { MouseEventHandler } from 'react'
 import { Link } from 'react-router-dom'
 
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -18,13 +18,11 @@ export type LinkProps = {
   download?: boolean
 }
 
-export interface ButtonLinkProps extends SharedButtonProps {
+export interface ButtonLinkProps
+  extends SharedButtonProps,
+    React.HTMLProps<HTMLAnchorElement> {
   link: LinkProps
-  children?: React.ReactNode | React.ReactNode[]
-  className?: string
   isDisabled?: boolean
-  onClick?: MouseEventHandler<HTMLAnchorElement>
-  onBlur?: FocusEventHandler<HTMLAnchorElement>
   svgAlt?: string
 }
 
