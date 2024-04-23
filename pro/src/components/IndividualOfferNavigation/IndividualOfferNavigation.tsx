@@ -12,7 +12,7 @@ import {
   getOfferSubtypeFromParam,
   isOfferSubtypeEvent,
 } from 'screens/IndividualOffer/InformationsScreen/utils/filterCategories/filterCategories'
-import Tabs from 'ui-kit/Tabs'
+import { Tabs } from 'ui-kit/Tabs/Tabs'
 
 import { OFFER_WIZARD_STEP_IDS } from './constants'
 import styles from './IndividualOfferNavigation.module.scss'

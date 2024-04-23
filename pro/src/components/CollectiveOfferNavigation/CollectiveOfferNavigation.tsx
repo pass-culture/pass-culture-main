@@ -20,7 +20,7 @@ import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Divider } from 'ui-kit/Divider/Divider'
-import Tabs from 'ui-kit/Tabs'
+import { Tabs } from 'ui-kit/Tabs/Tabs'
 
 import styles from './CollectiveOfferNavigation.module.scss'
 

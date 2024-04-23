@@ -31,7 +31,7 @@ import ActionsBar from 'pages/Offers/Offers/ActionsBar'
 import OffersContainer from 'pages/Offers/Offers/Offers'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import Tabs from 'ui-kit/Tabs'
+import { Tabs } from 'ui-kit/Tabs/Tabs'
 import Titles from 'ui-kit/Titles/Titles'
 
 import SearchFilters from './SearchFilters'
