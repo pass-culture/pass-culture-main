@@ -11,7 +11,7 @@ import {
   SignupJourneyContextValues,
 } from 'context/SignupJourneyContext'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
-import { SubmitButton } from 'ui-kit'
+import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 

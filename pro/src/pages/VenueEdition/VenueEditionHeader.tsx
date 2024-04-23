@@ -18,7 +18,7 @@ import useNotification from 'hooks/useNotification'
 import fullPlusIcon from 'icons/full-more.svg'
 import fullParametersIcon from 'icons/full-parameters.svg'
 import { postImageToVenue } from 'repository/pcapi/pcapi'
-import { ButtonLink } from 'ui-kit'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './VenueEditionHeader.module.scss'

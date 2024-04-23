@@ -9,16 +9,12 @@ import LegalInfos from 'components/LegalInfos/LegalInfos'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import CookiesFooter from 'pages/CookiesFooter/CookiesFooter'
 import MaybeAppUserDialog from 'pages/Signup/SignupContainer/MaybeAppUserDialog'
-import {
-  Button,
-  Checkbox,
-  EmailSpellCheckInput,
-  SubmitButton,
-  TextInput,
-} from 'ui-kit'
+import { Checkbox, EmailSpellCheckInput, TextInput } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { PasswordInput } from 'ui-kit/form'
 import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
+import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 
 import styles from './SignupContainer.module.scss'
 

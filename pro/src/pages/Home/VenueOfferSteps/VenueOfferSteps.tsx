@@ -7,7 +7,7 @@ import {
 } from 'apiClient/v1'
 import fullInfoIcon from 'icons/full-info.svg'
 import fullNextIcon from 'icons/full-next.svg'
-import { ButtonLink } from 'ui-kit'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import {

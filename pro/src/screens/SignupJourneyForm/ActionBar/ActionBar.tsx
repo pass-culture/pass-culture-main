@@ -8,8 +8,9 @@ import { logEventType } from 'context/analyticsContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import fullLeftIcon from 'icons/full-left.svg'
 import fullRightIcon from 'icons/full-right.svg'
-import { Button, SubmitButton } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
+import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 
 export interface ActionBarProps {
   onClickNext?: () => void

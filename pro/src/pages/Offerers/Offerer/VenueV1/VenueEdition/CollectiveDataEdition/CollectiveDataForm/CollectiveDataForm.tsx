@@ -15,10 +15,12 @@ import { SelectOption } from 'custom_types/form'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import { RouteLeavingGuardVenueEdition } from 'pages/VenueEdition/RouteLeavingGuardVenueEdition'
-import { ButtonLink, Select, SubmitButton, TextArea, TextInput } from 'ui-kit'
+import { Select, TextArea, TextInput } from 'ui-kit'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { MultiSelectAutocomplete } from 'ui-kit/form/MultiSelectAutoComplete/MultiSelectAutocomplete'
 import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
+import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 
 import editVenueCollectiveDataAdapter from '../adapters/editVenueCollectiveDataAdapter'
 

@@ -1,7 +1,7 @@
 import React from 'react'
 
 import strokeErrorIcon from 'icons/stroke-error.svg'
-import { Button } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import Dialog, { DialogProps } from '../Dialog'

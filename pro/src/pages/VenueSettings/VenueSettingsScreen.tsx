@@ -20,7 +20,7 @@ import useNotification from 'hooks/useNotification'
 import fullBackIcon from 'icons/full-back.svg'
 import strokeMailIcon from 'icons/stroke-mail.svg'
 import { generateSiretValidationSchema } from 'pages/VenueCreation/SiretOrCommentFields/validationSchema'
-import { ButtonLink } from 'ui-kit'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { serializeEditVenueBodyModel } from './serializers'

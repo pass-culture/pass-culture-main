@@ -7,7 +7,7 @@ import useIsElementVisible from 'hooks/useIsElementVisible'
 import useNotification from 'hooks/useNotification'
 import fullLinkIcon from 'icons/full-link.svg'
 import { Option } from 'pages/AdageIframe/app/types'
-import { ButtonLink } from 'ui-kit'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './AdageDiscovery.module.scss'

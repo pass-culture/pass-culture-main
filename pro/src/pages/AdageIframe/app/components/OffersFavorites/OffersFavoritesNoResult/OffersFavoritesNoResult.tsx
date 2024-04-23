@@ -1,5 +1,5 @@
 import strokeNoFavorite from 'icons/stroke-no-favorite.svg'
-import { ButtonLink } from 'ui-kit'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 

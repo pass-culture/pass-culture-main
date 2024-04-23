@@ -1,7 +1,7 @@
 import React from 'react'
 
 import DialogBox from 'components/DialogBox'
-import { Button } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 
 import topImage from './assets/new-banner-beta.svg'
 import styles from './WelcomeToTheNewBetaBanner.module.scss'

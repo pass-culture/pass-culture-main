@@ -1,7 +1,5 @@
 /* istanbul ignore file */
 export { default as Divider } from './Divider'
-export { default as SubmitButton } from './SubmitButton'
-export * from './Button'
 export * from './form'
 export * from './typography'
 export { default as Banner } from './Banners/Banner/Banner'

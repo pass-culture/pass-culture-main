@@ -5,7 +5,7 @@ import { BankAccountEvents } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import fullLinkIcon from 'icons/full-link.svg'
 import strokeLinkIcon from 'icons/stroke-link.svg'
-import { ButtonLink } from 'ui-kit/Button'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { DS_BANK_ACCOUNT_PROCEDURE_ID } from 'utils/config'
 

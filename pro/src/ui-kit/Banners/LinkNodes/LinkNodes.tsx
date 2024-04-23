@@ -2,7 +2,7 @@ import React from 'react'
 
 import fullLinkIcon from 'icons/full-link.svg'
 import fullNextIcon from 'icons/full-next.svg'
-import ButtonLink, { LinkProps } from 'ui-kit/Button/ButtonLink'
+import { ButtonLink, LinkProps } from 'ui-kit/Button/ButtonLink'
 
 import styles from './LinkNodes.module.scss'
 

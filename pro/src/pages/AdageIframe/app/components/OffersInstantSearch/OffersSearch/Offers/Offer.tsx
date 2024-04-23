@@ -16,7 +16,7 @@ import {
   isCollectiveOfferBookable,
   isCollectiveOfferTemplate,
 } from 'pages/AdageIframe/app/types/offers'
-import { ButtonLink } from 'ui-kit'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'

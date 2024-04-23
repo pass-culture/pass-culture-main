@@ -6,7 +6,7 @@ import * as yup from 'yup'
 
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
 import { AccessibilityEnum } from 'core/shared'
-import { SubmitButton } from 'ui-kit'
+import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 
 import { Accessibility, validationSchema } from '..'
 

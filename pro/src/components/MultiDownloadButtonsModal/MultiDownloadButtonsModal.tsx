@@ -7,7 +7,7 @@ import useOnClickOrFocusOutside from 'hooks/useOnClickOrFocusOutside'
 import fullDownIcon from 'icons/full-down.svg'
 import fullDownloadIcon from 'icons/full-download.svg'
 import fullUpIcon from 'icons/full-up.svg'
-import { Button } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 

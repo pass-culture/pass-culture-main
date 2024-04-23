@@ -28,7 +28,7 @@ export interface ButtonLinkProps extends SharedButtonProps {
   svgAlt?: string
 }
 
-const ButtonLink = ({
+export const ButtonLink = ({
   className,
   children,
   icon,
@@ -122,5 +122,3 @@ const ButtonLink = ({
 }
 
 ButtonLink.variant = ButtonVariant
-
-export default ButtonLink

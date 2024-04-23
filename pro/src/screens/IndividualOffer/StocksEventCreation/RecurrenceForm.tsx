@@ -11,19 +11,19 @@ import strokeClockIcon from 'icons/stroke-clock.svg'
 import strokeDateIcon from 'icons/stroke-date.svg'
 import strokeEventsIcon from 'icons/stroke-events.svg'
 import {
-  Button,
-  ButtonLink,
   DatePicker,
   RadioButton,
   Select,
-  SubmitButton,
   TextInput,
   TimePicker,
   Title,
 } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { FieldError } from 'ui-kit/form/shared'
 import { BaseRadioVariant } from 'ui-kit/form/shared/BaseRadio/types'
+import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { isDateValid } from 'utils/date'
 import { formatLocalTimeDateString } from 'utils/timezone'

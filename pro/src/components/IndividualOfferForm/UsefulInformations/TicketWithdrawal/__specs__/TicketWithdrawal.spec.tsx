@@ -6,7 +6,7 @@ import * as yup from 'yup'
 
 import { WithdrawalTypeEnum } from 'apiClient/v1'
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm/types'
-import { SubmitButton } from 'ui-kit'
+import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 
 import TicketWithdrawal, { TicketWithdrawalProps } from '../TicketWithdrawal'
 import validationSchema from '../validationSchema'
