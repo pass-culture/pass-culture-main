@@ -20,12 +20,13 @@ import strokeNewOfferIcon from 'icons/stroke-new-offer.svg'
 import strokeTemplateOfferIcon from 'icons/stroke-template-offer.svg'
 import { getFilteredCollectiveOffersAdapter } from 'pages/CollectiveOffers/adapters'
 import { Banner } from 'ui-kit'
-import RadioButtonWithImage from 'ui-kit/RadioButtonWithImage'
+import { RadioButtonWithImage } from 'ui-kit/RadioButtonWithImage/RadioButtonWithImage'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { getLastDmsApplicationForOfferer } from 'utils/getLastCollectiveDmsApplication'
 
 import styles from '../OfferType.module.scss'
 import { OfferTypeFormValues } from '../types'
+import FormLayout from 'components/FormLayout'
 
 interface CollectiveOfferTypeProps {
   setHasCollectiveTemplateOffer: (arg: boolean) => void

@@ -15,7 +15,7 @@ import { daysOfWeek } from 'pages/VenueEdition/OpeningHoursForm/OpeningHoursForm
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { BaseRadio } from 'ui-kit/form/shared'
-import RadioButtonWithImage from 'ui-kit/RadioButtonWithImage'
+import { RadioButtonWithImage } from 'ui-kit/RadioButtonWithImage/RadioButtonWithImage'
 import { FORMAT_DD_MM_YYYY, mapDayToFrench } from 'utils/date'
 import { downloadFile } from 'utils/downloadFile'
 import { pluralize } from 'utils/pluralize'
