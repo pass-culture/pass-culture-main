@@ -1,9 +1,13 @@
 from dataclasses import dataclass
 import logging
+import random
+import typing
 
 import pcapi.connectors.big_query.queries as big_query
 import pcapi.connectors.big_query.queries.adage_playlists as bq_playlists
 from pcapi.connectors.big_query.queries.base import BaseQuery
+from pcapi.core.educational import repository
+import pcapi.core.educational.api.institution as institution_api
 import pcapi.core.educational.models as educational_models
 from pcapi.models import db
 from pcapi.repository import transaction
@@ -121,3 +125,36 @@ def synchronize_collective_playlist(playlist_type: educational_models.PlaylistTy
         except Exception:  # pylint: disable=broad-exception-caught
             logger.exception("Failed to synchronize institution %s playlist from BigQuery", institution.id)
             db.session.rollback()
+
+
+def get_playlist_items(
+    institution: educational_models.EducationalInstitution,
+    playlist_type: educational_models.PlaylistType,
+    min_items: int = 10,
+) -> typing.Collection[educational_models.CollectivePlaylist]:
+    playlist_items = (
+        repository.get_collective_offer_templates_for_playlist_query(
+            institution_id=institution.id,
+            playlist_type=playlist_type,
+            max_distance=institution_api.get_playlist_max_distance(institution),
+        )
+        .distinct(educational_models.CollectivePlaylist.venueId)
+        .limit(10)
+        .all()
+    )
+
+    if len(playlist_items) < min_items:
+        missing_count = min_items - len(playlist_items)
+        playlist_items += (
+            repository.get_collective_offer_templates_for_playlist_query(
+                institution_id=institution.id,
+                playlist_type=playlist_type,
+                min_distance=institution_api.get_playlist_max_distance(institution),
+            )
+            .distinct(educational_models.CollectivePlaylist.venueId)
+            .limit(missing_count)
+            .all()
+        )
+
+    random.shuffle(playlist_items)
+    return playlist_items
