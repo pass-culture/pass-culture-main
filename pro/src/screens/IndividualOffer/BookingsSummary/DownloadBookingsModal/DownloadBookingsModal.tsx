@@ -133,7 +133,7 @@ export const DownloadBookingsModal = ({
             ) : (
               <>
                 <legend>
-                  <div>Sélectionner la date:</div>
+                  <div>Sélectionner la date :</div>
                 </legend>
                 <div className={style['bookings-date-count']}>
                   {pluralize(
