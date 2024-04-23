@@ -67,6 +67,7 @@ class Permissions(enum.Enum):
 
     READ_INCIDENTS = "visualiser les incidents"
     MANAGE_INCIDENTS = "gérer les incidents"
+    VALIDATE_COMMERCIAL_GESTURE = "valider les gestes commerciaux"
 
     GENERATE_INVOICES = "générer les justificatifs de remboursement"
 

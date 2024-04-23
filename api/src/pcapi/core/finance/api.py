@@ -2913,7 +2913,11 @@ def _create_finance_events_from_incident(
                 incident_validation_date=incident_validation_date,
             )
         )
-    else:
+    elif booking_finance_incident.incident.kind in (
+        models.IncidentType.OVERPAYMENT,
+        models.IncidentType.OFFER_PRICE_REGULATION,
+        models.IncidentType.FRAUD,
+    ):
         # Retrieve initial amount of the booking
         finance_events.append(
             add_event(
@@ -2938,7 +2942,7 @@ def _create_finance_events_from_incident(
     return finance_events
 
 
-def validate_finance_incident(
+def validate_finance_overpayment_incident(
     finance_incident: models.FinanceIncident,
     force_debit_note: bool,
     author: users_models.User,
@@ -2993,20 +2997,66 @@ def validate_finance_incident(
     db.session.commit()
 
     # send mail to pro
-    match finance_incident.kind:
-        case models.IncidentType.OVERPAYMENT:
-            send_finance_incident_emails(finance_incident)
-            # send mail to beneficiaries or educational redactor
-            for booking_incident in finance_incident.booking_finance_incidents:
-                if not booking_incident.is_partial:
-                    if booking_incident.collectiveBooking:
-                        educational_api_booking.notify_reimburse_collective_booking(
-                            collective_booking=booking_incident.collectiveBooking, reason="NO_EVENT"
-                        )
-                    else:
-                        send_booking_cancellation_by_pro_to_beneficiary_email(booking_incident.booking)
-        case models.IncidentType.COMMERCIAL_GESTURE:
-            send_commercial_gesture_email(finance_incident)
+    send_finance_incident_emails(finance_incident)
+    # send mail to beneficiaries or educational redactor
+    for booking_incident in finance_incident.booking_finance_incidents:
+        if not booking_incident.is_partial:
+            if booking_incident.collectiveBooking:
+                educational_api_booking.notify_reimburse_collective_booking(
+                    collective_booking=booking_incident.collectiveBooking, reason="NO_EVENT"
+                )
+            else:
+                send_booking_cancellation_by_pro_to_beneficiary_email(booking_incident.booking)
+
+
+def validate_finance_commercial_gesture(
+    finance_incident: models.FinanceIncident,
+    force_debit_note: bool,
+    author: users_models.User,
+) -> None:
+    incident_validation_date = datetime.datetime.utcnow()
+    finance_events = []
+    for booking_incident in finance_incident.booking_finance_incidents:
+        finance_events += _create_finance_events_from_incident(
+            booking_finance_incident=booking_incident,
+            incident_validation_date=incident_validation_date,
+        )
+
+    db.session.add_all(finance_events)
+
+    if not finance_incident.relates_to_collective_bookings:
+        beneficiaries = {
+            booking_incident.beneficiary for booking_incident in finance_incident.booking_finance_incidents
+        }
+        for beneficiary in beneficiaries:
+            history_api.add_action(
+                history_models.ActionType.FINANCE_INCIDENT_USER_RECREDIT,
+                author=author,
+                user=beneficiary,
+                linked_incident_id=finance_incident.id,
+            )
+
+    finance_incident.status = models.IncidentStatus.VALIDATED
+    finance_incident.forceDebitNote = force_debit_note
+    db.session.add(finance_incident)
+
+    history_api.add_action(
+        history_models.ActionType.FINANCE_INCIDENT_VALIDATED,
+        author=author,
+        venue=finance_incident.venue,
+        finance_incident=finance_incident,
+        comment=(
+            "Génération d'une note de débit à la prochaine échéance."
+            if force_debit_note
+            else "Récupération sur les prochaines réservations."
+        ),
+        linked_incident_id=finance_incident.id,
+    )
+
+    db.session.commit()
+
+    # send mail to pro
+    send_commercial_gesture_email(finance_incident)
 
 
 def cancel_finance_incident(
