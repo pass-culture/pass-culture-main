@@ -6,7 +6,7 @@ import useAnalytics from 'hooks/useAnalytics'
 import fullLinkIcon from 'icons/full-link.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import Timeline, { TimelineStepType } from 'ui-kit/Timeline/Timeline'
+import { Timeline, TimelineStepType } from 'ui-kit/Timeline/Timeline'
 import { getDateToFrenchText } from 'utils/date'
 
 import styles from './CollectiveDmsTimeline.module.scss'
