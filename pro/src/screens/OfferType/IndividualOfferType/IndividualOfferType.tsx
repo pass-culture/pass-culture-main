@@ -6,7 +6,7 @@ import strokeDateIcon from 'icons/stroke-date.svg'
 import thingStrokeIcon from 'icons/stroke-thing.svg'
 import strokeVirtualEventIcon from 'icons/stroke-virtual-event.svg'
 import strokeVirtualThingIcon from 'icons/stroke-virtual-thing.svg'
-import RadioButtonWithImage from 'ui-kit/RadioButtonWithImage'
+import { RadioButtonWithImage } from 'ui-kit/RadioButtonWithImage/RadioButtonWithImage'
 
 import styles from '../OfferType.module.scss'
 import { OfferTypeFormValues } from '../types'

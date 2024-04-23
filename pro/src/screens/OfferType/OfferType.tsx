@@ -20,7 +20,7 @@ import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
 import strokeProfIcon from 'icons/stroke-prof.svg'
-import RadioButtonWithImage from 'ui-kit/RadioButtonWithImage'
+import { RadioButtonWithImage } from 'ui-kit/RadioButtonWithImage/RadioButtonWithImage'
 
 import ActionsBar from './ActionsBar/ActionsBar'
 import CollectiveOfferType from './CollectiveOfferType/CollectiveOfferType'

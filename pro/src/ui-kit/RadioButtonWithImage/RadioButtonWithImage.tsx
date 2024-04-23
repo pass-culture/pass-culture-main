@@ -20,7 +20,7 @@ interface RadioButtonWithImageProps {
   dataTestid?: string
 }
 
-const RadioButtonWithImage = ({
+export const RadioButtonWithImage = ({
   name,
   isChecked,
   icon,
@@ -84,5 +84,3 @@ const RadioButtonWithImage = ({
     </span>
   </label>
 )
-
-export default RadioButtonWithImage
