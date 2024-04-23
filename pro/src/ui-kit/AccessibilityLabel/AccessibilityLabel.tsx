@@ -14,7 +14,7 @@ interface AccessibilityLabelProps {
   name: AccessibilityEnum
 }
 
-const AccessibilityLabel = ({
+export const AccessibilityLabel = ({
   className,
   name,
 }: AccessibilityLabelProps): JSX.Element => {
@@ -39,6 +39,7 @@ const AccessibilityLabel = ({
       label: 'Non accessible',
     },
   }[name]
+
   return (
     <div className={cn(styles['accessibility-label'], className)}>
       {labelData.svg && <img src={labelData.svg} className={styles['icon']} />}
@@ -46,5 +47,3 @@ const AccessibilityLabel = ({
     </div>
   )
 }
-
-export default AccessibilityLabel
