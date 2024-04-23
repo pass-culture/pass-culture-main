@@ -6,9 +6,9 @@ import fullLinkIcon from 'icons/full-link.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { copyTextToClipboard } from 'ui-kit/CopyLink/CopyLink'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 import { WEBAPP_URL } from 'utils/config'
+import { copyTextToClipboard } from 'utils/copyTextToClipboard'
 
 import styles from './PartnerPage.module.scss'
 
