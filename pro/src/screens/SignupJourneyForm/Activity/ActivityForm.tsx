@@ -10,7 +10,7 @@ import { buildVenueTypesOptions } from 'pages/VenueCreation/buildVenueTypesOptio
 import { CheckboxGroup, Select, TextInput } from 'ui-kit'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import ListIconButton from 'ui-kit/ListIconButton'
+import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
 
 import styles from './ActivityForm.module.scss'
 import { activityTargetCustomerCheckboxGroup } from './constants'

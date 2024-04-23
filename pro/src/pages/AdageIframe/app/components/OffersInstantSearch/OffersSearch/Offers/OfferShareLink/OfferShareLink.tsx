@@ -6,8 +6,10 @@ import {
 } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import strokeShareIcon from 'icons/stroke-share.svg'
-import ListIconButton from 'ui-kit/ListIconButton'
-import { ListIconButtonVariant } from 'ui-kit/ListIconButton/ListIconButton'
+import {
+  ListIconButton,
+  ListIconButtonVariant,
+} from 'ui-kit/ListIconButton/ListIconButton'
 import { LOGS_DATA } from 'utils/config'
 
 export interface OfferShareLinkProps {
