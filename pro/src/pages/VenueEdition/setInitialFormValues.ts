@@ -39,13 +39,13 @@ function buildOpeningHoursValues(
   if (!openingHours || openingHours.length === 0) {
     return {
       days: [],
-      monday: DEFAULT_INTITIAL_OPENING_HOURS,
-      tuesday: DEFAULT_INTITIAL_OPENING_HOURS,
-      wednesday: DEFAULT_INTITIAL_OPENING_HOURS,
-      thursday: DEFAULT_INTITIAL_OPENING_HOURS,
-      friday: DEFAULT_INTITIAL_OPENING_HOURS,
-      saturday: DEFAULT_INTITIAL_OPENING_HOURS,
-      sunday: DEFAULT_INTITIAL_OPENING_HOURS,
+      monday: { ...DEFAULT_INTITIAL_OPENING_HOURS },
+      wednesday: { ...DEFAULT_INTITIAL_OPENING_HOURS },
+      tuesday: { ...DEFAULT_INTITIAL_OPENING_HOURS },
+      thursday: { ...DEFAULT_INTITIAL_OPENING_HOURS },
+      friday: { ...DEFAULT_INTITIAL_OPENING_HOURS },
+      saturday: { ...DEFAULT_INTITIAL_OPENING_HOURS },
+      sunday: { ...DEFAULT_INTITIAL_OPENING_HOURS },
     }
   }
   const days = filledDays.map((dateAndHour) =>
@@ -87,5 +87,5 @@ function buildHourOfDay(
           : '',
         isAfternoonOpen: Object.values(dayOpeningHour)[1] ? true : false,
       }
-    : DEFAULT_INTITIAL_OPENING_HOURS
+    : { ...DEFAULT_INTITIAL_OPENING_HOURS }
 }
