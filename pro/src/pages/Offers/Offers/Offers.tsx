@@ -13,7 +13,7 @@ import { getOffersCountToDisplay } from 'pages/Offers/domain/getOffersCountToDis
 import NoResults from 'screens/Offers/NoResults'
 import { Banner } from 'ui-kit'
 import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
-import { Pagination } from 'ui-kit/Pagination'
+import { Pagination } from 'ui-kit/Pagination/Pagination'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 import styles from './Offers.module.scss'
