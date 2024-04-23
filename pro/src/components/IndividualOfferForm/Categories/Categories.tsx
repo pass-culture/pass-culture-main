@@ -19,7 +19,8 @@ import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers/constants'
 import { SelectOption } from 'custom_types/form'
 import useActiveFeature from 'hooks/useActiveFeature'
 import fullMoreIcon from 'icons/full-more.svg'
-import { InfoBox, Select } from 'ui-kit'
+import { Select } from 'ui-kit'
+import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
 import styles from '../IndividualOfferForm.module.scss'
 import { onVenueChange } from '../UsefulInformations/Venue/Venue'
@@ -30,6 +31,7 @@ import { SUBCATEGORIES_FIELDS_DEFAULT_VALUES } from './constants'
 import { LegacyMusicTypes, MusicTypes } from './MusicTypes'
 import { OfferSubtypeTag } from './OfferSubtypeTag/OfferSubtypeTag'
 import { ShowTypes } from './ShowTypes'
+
 export interface CategoriesProps {
   categories: CategoryResponseModel[]
   subCategories: SubcategoryResponseModel[]

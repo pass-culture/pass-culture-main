@@ -5,7 +5,8 @@ import { StudentLevels } from 'apiClient/adage'
 import FormLayout from 'components/FormLayout'
 import { OfferEducationalFormValues } from 'core/OfferEducational'
 import useActiveFeature from 'hooks/useActiveFeature'
-import { CheckboxGroup, InfoBox } from 'ui-kit'
+import { CheckboxGroup } from 'ui-kit'
+import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
 import useParticipantsOptions from './useParticipantsOptions'
 
