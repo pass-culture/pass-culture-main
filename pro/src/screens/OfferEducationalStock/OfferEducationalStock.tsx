@@ -12,6 +12,7 @@ import {
 } from 'apiClient/v1'
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import BannerPublicApi from 'components/Banner/BannerPublicApi'
+import Callout from 'components/Callout/Callout'
 import FormLayout from 'components/FormLayout'
 import OfferEducationalActions from 'components/OfferEducationalActions'
 import {
@@ -24,7 +25,6 @@ import {
 } from 'core/OfferEducational'
 import { isOfferDisabled } from 'core/Offers/utils'
 import { NBSP } from 'core/shared'
-import { Banner } from 'ui-kit/Banners/Banner/Banner'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -38,7 +38,6 @@ import {
   generateValidationSchema,
   showcaseOfferValidationSchema,
 } from './validationSchema'
-
 export interface OfferEducationalStockProps<
   T = GetCollectiveOfferResponseModel | GetCollectiveOfferTemplateResponseModel,
 > {
@@ -143,7 +142,7 @@ const OfferEducationalStock = <
                 <ShowcaseBannerInfo />
               ) : (
                 <>
-                  <Banner
+                  <Callout
                     className={styles['offer-educational-stock-banner']}
                     links={[
                       {
@@ -153,11 +152,10 @@ const OfferEducationalStock = <
                         isExternal: true,
                       },
                     ]}
-                    type="notification-info"
                   >
                     Vous pourrez modifier ces informations en fonction de vos
                     échanges avec l’établissement scolaire.
-                  </Banner>
+                  </Callout>
                   <p className={styles['description-text']}>
                     Indiquez le prix global TTC de l’évènement et le nombre de
                     personnes qui y participeront.
