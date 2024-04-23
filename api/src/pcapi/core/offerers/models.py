@@ -281,9 +281,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     bookingEmail = Column(String(120), nullable=True)
     sa.Index("idx_venue_bookingEmail", bookingEmail)
 
-    _address = Column("address", String(200), nullable=True)
-
-    _street = Column("street", Text(), nullable=True)
+    street = Column("street", Text(), nullable=True)
 
     postalCode = Column(String(6), nullable=True)
 
@@ -442,24 +440,6 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     openingHours: Mapped[list["OpeningHours | None"]] = relationship(
         "OpeningHours", back_populates="venue", passive_deletes=True
     )
-
-    def __init__(self, street: str | None = None, **kwargs: typing.Any) -> None:
-        if street:
-            self.street = street  # type: ignore [method-assign]
-        super().__init__(**kwargs)
-
-    @hybrid_property
-    def street(self) -> str | None:
-        return self._address
-
-    @street.setter  # type: ignore [no-redef]
-    def street(self, value: str | None) -> None:
-        self._address = value
-        self._street = value
-
-    @street.expression  # type: ignore [no-redef]
-    def street(cls):  # pylint: disable=no-self-argument
-        return cls._address
 
     def _get_type_banner_url(self) -> str | None:
         elligible_banners: tuple[str, ...] = VENUE_TYPE_DEFAULT_BANNERS.get(self.venueTypeCode, tuple())
