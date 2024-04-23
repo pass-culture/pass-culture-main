@@ -21,7 +21,6 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import PeriodSelector from 'ui-kit/form/PeriodSelector/PeriodSelector'
 import SelectInput from 'ui-kit/form/Select/SelectInput'
 import { BaseInput, FieldLayout } from 'ui-kit/form/shared'
-import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './SearchFilters.module.scss'
@@ -254,7 +253,9 @@ const SearchFilters = ({
         </div>
         <div className={styles['search-separator']}>
           <div className={styles['separator']} />
-          <SubmitButton disabled={disableAllFilters}>Rechercher</SubmitButton>
+          <Button type="submit" disabled={disableAllFilters}>
+            Rechercher
+          </Button>
           <div className={styles['separator']} />
         </div>
       </form>

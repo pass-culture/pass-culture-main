@@ -12,9 +12,9 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import fullBackIcon from 'icons/full-back.svg'
 import { SirenInput } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 import Titles from 'ui-kit/Titles/Titles'
 
 import styles from './OffererCreation.module.scss'
@@ -126,12 +126,13 @@ export const OffererCreation = (): JSX.Element => {
                   </ButtonLink>
                 </div>
                 <div>
-                  <SubmitButton
+                  <Button
+                    type="submit"
                     variant={ButtonVariant.PRIMARY}
                     disabled={isSubmitting}
                   >
                     Créer
-                  </SubmitButton>
+                  </Button>
                 </div>
               </div>
             </form>

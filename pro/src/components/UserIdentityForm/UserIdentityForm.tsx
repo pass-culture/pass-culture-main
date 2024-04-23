@@ -11,7 +11,6 @@ import { updateUser } from 'store/user/reducer'
 import { TextInput } from 'ui-kit'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 
 import { UserIdentityFormValues } from './types'
 import styles from './UserIdentityForm.module.scss'
@@ -88,9 +87,9 @@ const UserIdentityForm = ({
               <Button onClick={onCancel} variant={ButtonVariant.SECONDARY}>
                 Annuler
               </Button>
-              <SubmitButton isLoading={formik.isSubmitting}>
+              <Button type="submit" isLoading={formik.isSubmitting}>
                 Enregistrer
-              </SubmitButton>
+              </Button>
             </div>
           </Form>
         </FormikProvider>

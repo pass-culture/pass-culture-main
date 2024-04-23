@@ -4,7 +4,7 @@ import { Formik, Form } from 'formik'
 import * as yup from 'yup'
 
 import { TextInput } from 'ui-kit'
-import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
+import { Button } from 'ui-kit/Button/Button'
 
 import { ScrollToFirstErrorAfterSubmit } from '../ScrollToFirstErrorAfterSubmit'
 
@@ -27,7 +27,7 @@ const TestComponent = () => {
     >
       <Form>
         <TextInput name="test" label="test" />
-        <SubmitButton />
+        <Button type="submit">Enregistrer</Button>
 
         <ScrollToFirstErrorAfterSubmit />
       </Form>

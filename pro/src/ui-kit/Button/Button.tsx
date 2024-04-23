@@ -11,7 +11,7 @@ import { useTooltipProps } from 'ui-kit/Tooltip/useTooltipProps'
 import styles from './Button.module.scss'
 import { ButtonVariant, IconPositionEnum, SharedButtonProps } from './types'
 
-interface ButtonProps
+export interface ButtonProps
   extends SharedButtonProps,
     React.ButtonHTMLAttributes<HTMLButtonElement> {
   hasTooltip?: boolean
@@ -30,6 +30,7 @@ export const Button = forwardRef(
       hasTooltip,
       testId,
       isLoading = false,
+      disabled,
       ...buttonAttrs
     }: ButtonProps,
     buttonRef: ForwardedRef<HTMLButtonElement>
@@ -83,6 +84,7 @@ export const Button = forwardRef(
         )}
         type={type}
         data-testid={testId}
+        disabled={disabled || isLoading}
         {...buttonAttrs}
         {...(hasTooltip && tooltipProps)}
         ref={buttonRef}

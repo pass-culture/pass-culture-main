@@ -11,7 +11,7 @@ import {
   SignupJourneyContextValues,
 } from 'context/SignupJourneyContext'
 import { ActivityContext } from 'context/SignupJourneyContext/SignupJourneyContext'
-import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
+import { Button } from 'ui-kit/Button/Button'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
@@ -53,7 +53,9 @@ const renderActivityForm = ({
       >
         <Form noValidate>
           <ActivityForm {...props} />
-          <SubmitButton isLoading={false}>Submit</SubmitButton>
+          <Button type="submit" isLoading={false}>
+            Submit
+          </Button>
         </Form>
       </Formik>
     </SignupJourneyContext.Provider>,

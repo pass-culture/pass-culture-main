@@ -8,7 +8,6 @@ import useNotification from 'hooks/useNotification'
 import { Select } from 'ui-kit'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 
 import styles from './PricingPointDialog.module.scss'
 import validationSchema from './validationSchema'
@@ -102,7 +101,7 @@ const PricingPointDialog = ({
             <Button variant={ButtonVariant.SECONDARY} onClick={closeDialog}>
               Annuler
             </Button>
-            <SubmitButton>Valider la sélection</SubmitButton>
+            <Button type="submit">Valider la sélection</Button>
           </div>
         </form>
       </FormikProvider>

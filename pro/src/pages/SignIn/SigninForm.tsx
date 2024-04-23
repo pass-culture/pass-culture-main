@@ -10,9 +10,9 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import fullKeyIcon from 'icons/full-key.svg'
 import { PasswordInput, TextInput } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
 import styles from './Signin.module.scss'
@@ -73,13 +73,14 @@ const SigninForm = (): JSX.Element => {
           >
             Créer un compte
           </ButtonLink>
-          <SubmitButton
+          <Button
+            type="submit"
             className={styles['buttons']}
             isLoading={formik.isSubmitting}
             disabled={!formik.dirty || !formik.isValid}
           >
             Se connecter
-          </SubmitButton>
+          </Button>
         </div>
         <BannerRGS />
       </FormLayout>

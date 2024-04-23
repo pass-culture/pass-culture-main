@@ -3,9 +3,9 @@ import React from 'react'
 
 import FormLayout from 'components/FormLayout'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import EmailSpellCheckInput from 'ui-kit/form/EmailSpellCheckInput'
-import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 
 import styles from './ChangePasswordRequestForm.module.scss'
 
@@ -30,13 +30,14 @@ const ChangePasswordRequestForm = (): JSX.Element => {
             />
           </FormLayout.Row>
           <FormLayout.Row>
-            <SubmitButton
+            <Button
+              type="submit"
               className={styles['validation-button']}
               disabled={field.value === ''}
               variant={ButtonVariant.PRIMARY}
             >
               Valider
-            </SubmitButton>
+            </Button>
           </FormLayout.Row>
         </FormLayout>
       </Form>

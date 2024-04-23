@@ -10,7 +10,6 @@ import fullValidateIcon from 'icons/full-validate.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
-import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './ActionBar.module.scss'
@@ -62,9 +61,9 @@ const ActionBar = ({
           Annuler et quitter
         </Button>
 
-        <SubmitButton onClick={onClickNext} disabled={isDisabled}>
+        <Button type="submit" onClick={onClickNext} disabled={isDisabled}>
           Enregistrer les modifications
-        </SubmitButton>
+        </Button>
       </>
     )
   }
@@ -108,14 +107,15 @@ const ActionBar = ({
               </Button>
             </>
           ) : (
-            <SubmitButton
+            <Button
+              type="submit"
               icon={fullRightIcon}
               iconPosition={IconPositionEnum.RIGHT}
               disabled={isDisabled}
               onClick={onClickNext}
             >
               Enregistrer et continuer
-            </SubmitButton>
+            </Button>
           )}
         </>
       )

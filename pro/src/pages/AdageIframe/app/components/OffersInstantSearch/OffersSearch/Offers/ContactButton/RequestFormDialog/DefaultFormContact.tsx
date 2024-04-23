@@ -6,7 +6,6 @@ import { DatePicker, TextArea, TextInput } from 'ui-kit'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
-import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 
 import styles from './NewRequestFormDialog.module.scss'
 import { RequestFormValues } from './type'
@@ -78,13 +77,14 @@ const DefaultFormContact = ({
             >
               Annuler
             </Button>
-            <SubmitButton
+            <Button
+              type="submit"
               iconPosition={IconPositionEnum.LEFT}
               icon={fullMailIcon}
               disabled={isPreview}
             >
               Envoyer ma demande
-            </SubmitButton>
+            </Button>
           </div>
         </FormLayout>
       </form>

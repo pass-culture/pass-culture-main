@@ -19,9 +19,9 @@ import { computeCollectiveOffersUrl } from 'core/Offers/utils'
 import { SelectOption } from 'custom_types/form'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 import { sortByLabel } from 'utils/strings'
 
 import { OfferEducationalProps } from '../OfferEducational'
@@ -199,11 +199,14 @@ const OfferEducationalForm = ({
           >
             Annuler et quitter
           </ButtonLink>
-          <SubmitButton disabled={!isEligible || mode === Mode.READ_ONLY}>
+          <Button
+            type="submit"
+            disabled={!isEligible || mode === Mode.READ_ONLY}
+          >
             {mode === Mode.CREATION
               ? 'Étape suivante'
               : 'Enregistrer les modifications'}
-          </SubmitButton>
+          </Button>
         </ActionsBarSticky.Left>
       </ActionsBarSticky>
     </>
