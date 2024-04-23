@@ -5,7 +5,7 @@ import React, { ForwardedRef, forwardRef } from 'react'
 
 import strokePassIcon from 'icons/stroke-pass.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import Tooltip from 'ui-kit/Tooltip'
+import { Tooltip } from 'ui-kit/Tooltip/Tooltip'
 import { useTooltipProps } from 'ui-kit/Tooltip/useTooltipProps'
 
 import styles from './Button.module.scss'

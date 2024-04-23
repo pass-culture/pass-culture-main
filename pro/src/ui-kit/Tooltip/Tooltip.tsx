@@ -11,7 +11,7 @@ interface TooltipProps {
   visuallyHidden: boolean
 }
 
-const Tooltip = ({
+export const Tooltip = ({
   children,
   content,
   tooltipContainerClassName,
@@ -40,5 +40,3 @@ const Tooltip = ({
     </span>
   )
 }
-
-export default Tooltip
