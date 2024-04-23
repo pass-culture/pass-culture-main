@@ -52,7 +52,7 @@ export const ButtonImageEdit = ({
         <Button
           onClick={onClickButtonImageAdd}
           variant={ButtonVariant.TERNARY}
-          alt="Modifier l’image"
+          aria-label="Modifier l’image"
           icon={fullEditIcon}
         >
           {children ?? 'Modifier'}

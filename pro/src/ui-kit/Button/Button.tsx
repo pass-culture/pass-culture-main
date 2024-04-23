@@ -13,9 +13,7 @@ import { ButtonVariant, IconPositionEnum, SharedButtonProps } from './types'
 
 interface ButtonProps
   extends SharedButtonProps,
-    React.HTMLProps<HTMLButtonElement> {
-  type?: 'button' | 'submit'
-  className?: string
+    React.ButtonHTMLAttributes<HTMLButtonElement> {
   hasTooltip?: boolean
   isLoading?: boolean
 }
