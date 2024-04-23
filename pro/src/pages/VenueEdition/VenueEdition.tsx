@@ -20,7 +20,7 @@ import { SAVED_OFFERER_ID_KEY } from 'core/shared'
 import { CollectiveDataEdition } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/CollectiveDataEdition'
 import { updateSelectedOffererId } from 'store/user/reducer'
 import Spinner from 'ui-kit/Spinner/Spinner'
-import Tabs, { Tab } from 'ui-kit/Tabs/Tabs'
+import { Tab, Tabs } from 'ui-kit/Tabs/Tabs'
 
 import styles from './VenueEdition.module.scss'
 import { VenueEditionFormScreen } from './VenueEditionFormScreen'
