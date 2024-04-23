@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 
-import Timeline, { TimelineStepType } from '../Timeline'
+import { Timeline, TimelineStepType } from '../Timeline'
 
 describe('Timeline', () => {
   it('should render without error', () => {
