@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 
 import FormLayout from 'components/FormLayout'
 import { TextInput } from 'ui-kit'
-import { BoxRounded } from 'ui-kit/BoxRounded'
+import { BoxRounded } from 'ui-kit/BoxRounded/BoxRounded'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
