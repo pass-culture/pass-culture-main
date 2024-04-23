@@ -5,7 +5,7 @@ import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constan
 import { useSignupJourneyContext } from 'context/SignupJourneyContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
-import { ButtonLink } from 'ui-kit'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './ConfirmedAttachment.module.scss'

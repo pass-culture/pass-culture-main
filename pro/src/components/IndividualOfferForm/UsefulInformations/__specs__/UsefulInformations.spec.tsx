@@ -14,7 +14,7 @@ import {
 } from 'components/IndividualOfferForm'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
-import { SubmitButton } from 'ui-kit'
+import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 import {
   getOffererNameFactory,
   subcategoryFactory,

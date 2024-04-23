@@ -12,7 +12,8 @@ import AdagePreviewLayout from 'pages/AdageIframe/app/components/OfferInfos/Adag
 import publishCollectiveOfferAdapter from 'screens/CollectiveOfferSummaryCreation/adapters/publishCollectiveOfferAdapter'
 import publishCollectiveOfferTemplateAdapter from 'screens/CollectiveOfferSummaryCreation/adapters/publishCollectiveOfferTemplateAdapter'
 import { RedirectToBankAccountDialog } from 'screens/Offers/RedirectToBankAccountDialog'
-import { Button, ButtonLink } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 export interface CollectiveOfferSummaryCreationProps {

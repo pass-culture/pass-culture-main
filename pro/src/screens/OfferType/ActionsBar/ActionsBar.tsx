@@ -5,8 +5,9 @@ import { Events } from 'core/FirebaseEvents/constants'
 import { computeOffersUrl } from 'core/Offers/utils'
 import useAnalytics from 'hooks/useAnalytics'
 import fullRightIcon from 'icons/full-right.svg'
-import { ButtonLink, SubmitButton } from 'ui-kit'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
+import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 
 interface ActionsBarProps {
   disableNextButton?: boolean

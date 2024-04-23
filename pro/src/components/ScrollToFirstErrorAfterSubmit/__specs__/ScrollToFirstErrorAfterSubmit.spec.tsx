@@ -3,7 +3,8 @@ import { userEvent } from '@testing-library/user-event'
 import { Formik, Form } from 'formik'
 import * as yup from 'yup'
 
-import { SubmitButton, TextInput } from 'ui-kit'
+import { TextInput } from 'ui-kit'
+import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 
 import { ScrollToFirstErrorAfterSubmit } from '../ScrollToFirstErrorAfterSubmit'
 

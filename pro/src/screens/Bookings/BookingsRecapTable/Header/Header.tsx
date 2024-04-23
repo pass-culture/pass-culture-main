@@ -1,7 +1,7 @@
 import React from 'react'
 
 import fullRefreshIcon from 'icons/full-refresh.svg'
-import { Button } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { pluralize } from 'utils/pluralize'
 

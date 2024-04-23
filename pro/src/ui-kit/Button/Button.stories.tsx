@@ -5,9 +5,8 @@ import fullEditIcon from 'icons/full-edit.svg'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullNextIcon from 'icons/full-next.svg'
 
+import { Button } from './Button'
 import { ButtonVariant, IconPositionEnum } from './types'
-
-import { Button } from './index'
 
 export default {
   title: 'ui-kit/Button',

@@ -13,7 +13,7 @@ import fullValidateIcon from 'icons/full-validate.svg'
 import { GET_COLLECTIVE_OFFERS_QUERY_KEY } from 'pages/CollectiveOffers/CollectiveOffers'
 import { getOffersCountToDisplay } from 'pages/Offers/domain/getOffersCountToDisplay'
 import { GET_OFFERS_QUERY_KEY } from 'pages/Offers/OffersRoute'
-import { Button } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { deleteDraftOffersAdapter } from '../adapters/deleteDraftOffers'

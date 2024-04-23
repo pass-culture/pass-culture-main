@@ -5,7 +5,7 @@ import { Route, Routes } from 'react-router-dom'
 
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import ButtonLink from '../ButtonLink'
+import { ButtonLink } from '../ButtonLink'
 
 describe('ButtonLink', () => {
   const props = { to: '#', isExternal: true }

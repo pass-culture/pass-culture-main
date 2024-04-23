@@ -16,7 +16,7 @@ import {
   getCollectiveBookingsCSVFileAdapter,
   getCollectiveBookingsXLSFileAdapter,
 } from 'pages/CollectiveBookings/adapters'
-import { Button } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { isDateValid } from 'utils/date'
 

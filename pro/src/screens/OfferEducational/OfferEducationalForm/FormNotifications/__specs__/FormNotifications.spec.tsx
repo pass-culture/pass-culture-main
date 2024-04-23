@@ -5,7 +5,7 @@ import React from 'react'
 import * as yup from 'yup'
 
 import { OfferEducationalFormValues } from 'core/OfferEducational'
-import { SubmitButton } from 'ui-kit'
+import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 
 import FormNotifications from '../FormNotifications'
 

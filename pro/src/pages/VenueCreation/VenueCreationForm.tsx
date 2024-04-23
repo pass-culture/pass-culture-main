@@ -10,15 +10,10 @@ import ActionsBarSticky from 'components/ActionsBarSticky'
 import { AddressSelect } from 'components/Address'
 import FormLayout from 'components/FormLayout'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
-import {
-  TextInput,
-  InfoBox,
-  Select,
-  Banner,
-  ButtonLink,
-  SubmitButton,
-} from 'ui-kit'
+import { TextInput, InfoBox, Select, Banner } from 'ui-kit'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 
 import RouteLeavingGuard, {
   BlockerFunction,

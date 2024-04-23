@@ -1,7 +1,7 @@
 import React from 'react'
 
 import fullLinkIcon from 'icons/full-link.svg'
-import { ButtonLink } from 'ui-kit'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import newsletterImage from './assets/newsletter.svg'

@@ -3,9 +3,11 @@ import { Form, FormikProvider, useFormik } from 'formik'
 import React, { useState } from 'react'
 
 import FormLayout from 'components/FormLayout'
-import { Button, SubmitButton, TextInput } from 'ui-kit'
+import { TextInput } from 'ui-kit'
 import { BoxRounded } from 'ui-kit/BoxRounded'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 
 import { BoxFormLayoutProps } from './BoxFormLayout'
 

@@ -1,7 +1,7 @@
 import React, { Dispatch, SetStateAction } from 'react'
 
 import strokeSearchIcon from 'icons/stroke-search.svg'
-import { Button } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 

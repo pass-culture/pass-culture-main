@@ -2,7 +2,7 @@ import { useField, useFormikContext } from 'formik'
 import React, { useState } from 'react'
 
 import fullNextIcon from 'icons/full-next.svg'
-import { Button } from 'ui-kit/Button'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { suggestEmail } from 'ui-kit/form/EmailSpellCheckInput/suggestEmail'
 import { TextInput } from 'ui-kit/form/index'

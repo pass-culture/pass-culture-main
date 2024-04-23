@@ -7,7 +7,7 @@ import useNotification from 'hooks/useNotification'
 import fullStockIcon from 'icons/full-stock.svg'
 import strokeHourglass from 'icons/stroke-hourglass.svg'
 import { logOfferConversion } from 'pages/AdageIframe/libs/initAlgoliaAnalytics'
-import { Button } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { LOGS_DATA } from 'utils/config'
 

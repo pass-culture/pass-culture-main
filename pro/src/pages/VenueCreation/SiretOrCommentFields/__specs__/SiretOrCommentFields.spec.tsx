@@ -6,7 +6,7 @@ import React from 'react'
 import * as siretApiValidate from 'core/Venue/siretApiValidate'
 import { VenueCreationFormValues } from 'pages/VenueCreation/types'
 import { VenueEditionFormValues } from 'pages/VenueEdition/types'
-import { SubmitButton } from 'ui-kit'
+import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 
 import {
   SiretOrCommentFields,

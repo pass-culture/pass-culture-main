@@ -1,7 +1,7 @@
 import '../src/styles/index.scss'
-import React from 'react';
+import React from 'react'
 
-import { Preview } from '@storybook/react';
+import { Preview } from '@storybook/react'
 
 const preview: Preview = {
   decorators: [
@@ -11,9 +11,9 @@ const preview: Preview = {
       </div>
     ),
   ],
-};
+}
 
-export default preview;
+export default preview
 
 export const parameters = {
   backgrounds: {
@@ -34,5 +34,3 @@ export const parameters = {
     },
   },
 }
-
-

@@ -28,8 +28,9 @@ import strokeClockIcon from 'icons/stroke-clock.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { setAdageQuery } from 'store/adageFilter/reducer'
-import { Button, SubmitButton } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import {
   ALGOLIA_API_KEY,

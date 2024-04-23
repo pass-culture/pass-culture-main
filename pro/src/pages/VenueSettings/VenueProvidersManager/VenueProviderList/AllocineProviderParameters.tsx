@@ -4,8 +4,8 @@ import { api } from 'apiClient/api'
 import { getHumanReadableApiError } from 'apiClient/helpers'
 import { PostVenueProviderBody, VenueProviderResponse } from 'apiClient/v1'
 import useNotification from 'hooks/useNotification'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { Button } from 'ui-kit/index'
 
 import { FormValuesProps } from '../AllocineProviderForm/AllocineProviderForm'
 

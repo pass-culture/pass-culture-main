@@ -9,7 +9,7 @@ import {
   OfferEducationalFormValues,
 } from 'core/OfferEducational'
 import { getOfferEducationalValidationSchema } from 'screens/OfferEducational/validationSchema'
-import { SubmitButton } from 'ui-kit'
+import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 
 import FormDates, { FormDatesProps } from '../FormDates'

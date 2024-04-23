@@ -6,11 +6,12 @@ import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import fullLink from 'icons/full-link.svg'
 import fullMailIcon from 'icons/full-mail.svg'
-import { ButtonLink } from 'ui-kit'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './LegalInfos.module.scss'
+
 interface LegalInfoProps {
   title: string
   className: string

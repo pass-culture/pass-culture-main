@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
 import fullShowIcon from 'icons/full-show.svg'
-import { Button } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { UploaderModeEnum } from '../types'
