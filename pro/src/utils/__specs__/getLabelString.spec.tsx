@@ -1,6 +1,6 @@
 import React from 'react'
 
-import Tooltip from 'ui-kit/Tooltip'
+import { Tooltip } from 'ui-kit/Tooltip/Tooltip'
 
 import { getLabelString } from '../getLabelString'
 
