@@ -34,7 +34,11 @@ export const DownloadBookingsModal = ({
   onDimiss,
 }: DownloadBookingsModalProps) => {
   const [bookingsType, setBookingsType] = useState<BookingsExportStatusFilter>()
-  const [selectedDate, setSelectedDate] = useState<string>()
+  const [selectedDate, setSelectedDate] = useState<string | undefined>(
+    priceCategoryAndScheduleCountByDate.length === 1
+      ? priceCategoryAndScheduleCountByDate[0].eventDate
+      : undefined
+  )
   const { logEvent } = useAnalytics()
 
   const handleSubmit = async (
@@ -124,7 +128,7 @@ export const DownloadBookingsModal = ({
           <fieldset className={style['date-select-section']}>
             {priceCategoryAndScheduleCountByDate.length === 1 ? (
               <h2 className={style['one-booking-date-section']}>
-                Date de votre évènement:{' '}
+                Date de votre évènement :{' '}
                 {format(
                   new Date(priceCategoryAndScheduleCountByDate[0].eventDate),
                   FORMAT_DD_MM_YYYY

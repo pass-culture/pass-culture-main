@@ -74,7 +74,7 @@ describe('DownloadBookingModal', () => {
     ).toBeInTheDocument()
   })
 
-  it('should not display date selection table if only one date is returned', () => {
+  it('should not display date selection table and submit should be clickable if only one date is returned', async () => {
     render([
       {
         eventDate: '2022-01-01',
@@ -88,8 +88,15 @@ describe('DownloadBookingModal', () => {
     expect(screen.queryByRole('cell')).not.toBeInTheDocument()
 
     expect(
-      screen.getByText('Date de votre évènement: 01/01/2022')
+      screen.getByText('Date de votre évènement : 01/01/2022')
     ).toBeInTheDocument()
+
+    const allBookings = screen.getByText('Toutes les réservations')
+    await userEvent.click(allBookings)
+
+    expect(
+      screen.getByRole('button', { name: 'Télécharger au format CSV' })
+    ).toBeEnabled()
   })
 
   it('should download validated bookings as CSV', async () => {
