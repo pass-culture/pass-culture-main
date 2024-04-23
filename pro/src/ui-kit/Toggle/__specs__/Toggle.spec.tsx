@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
-import Toggle, { ToggleProps } from '../Toggle'
+import { Toggle, ToggleProps } from '../Toggle'
 
 const renderToggle = (props: ToggleProps) => {
   return render(<Toggle {...props} />)

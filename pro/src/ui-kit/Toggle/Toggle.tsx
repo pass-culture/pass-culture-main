@@ -10,7 +10,7 @@ export interface ToggleProps {
   handleClick?: () => void
 }
 
-const Toggle = ({
+export const Toggle = ({
   isActiveByDefault = false,
   isDisabled = false,
   label = 'Label',
@@ -40,4 +40,3 @@ const Toggle = ({
     </button>
   )
 }
-export default Toggle
