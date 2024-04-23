@@ -17,7 +17,8 @@ import { buildVenueTypesOptions } from 'pages/VenueCreation/buildVenueTypesOptio
 import { SiretOrCommentFields } from 'pages/VenueCreation/SiretOrCommentFields/SiretOrCommentFields'
 import { VenueFormActionBar } from 'pages/VenueCreation/VenueFormActionBar/VenueFormActionBar'
 import { WithdrawalDetails } from 'pages/VenueCreation/WithdrawalDetails'
-import { TextInput, InfoBox, Select } from 'ui-kit'
+import { TextInput, Select } from 'ui-kit'
+import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
 import { VenueSettingsFormValues } from './types'
 import { OffersSynchronization } from './VenueProvidersManager/OffersSynchronization'

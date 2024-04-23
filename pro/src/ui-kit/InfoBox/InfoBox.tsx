@@ -18,7 +18,11 @@ interface InfoBoxProps {
   svgAlt?: string
 }
 
-const InfoBox = ({ children, link, svgAlt }: InfoBoxProps): JSX.Element => {
+export const InfoBox = ({
+  children,
+  link,
+  svgAlt,
+}: InfoBoxProps): JSX.Element => {
   return (
     <div className={cn(styles['info-box'])}>
       <div className={styles['info-box-header']}>
@@ -49,5 +53,3 @@ const InfoBox = ({ children, link, svgAlt }: InfoBoxProps): JSX.Element => {
     </div>
   )
 }
-
-export default InfoBox

@@ -1,8 +1,8 @@
 import React from 'react'
 
 import FormLayout from 'components/FormLayout'
-import { InfoBox } from 'ui-kit'
 import { Checkbox, TextArea } from 'ui-kit/form'
+import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
 const WithdrawalDetails = () => {
   return (

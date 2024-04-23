@@ -10,7 +10,7 @@ import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { IndividualOfferImage } from 'core/Offers/types'
 import { useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
-import { InfoBox } from 'ui-kit'
+import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
 import styles from './ImageUploaderOffer.module.scss'
 import { buildInitialValues } from './utils'

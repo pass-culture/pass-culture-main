@@ -14,8 +14,9 @@ import {
 import { handleAllFranceDepartmentOptions } from 'core/shared'
 import { offerInterventionOptions } from 'core/shared/interventionOptions'
 import { SelectOption } from 'custom_types/form'
-import { RadioGroup, Select, TextArea, Banner, InfoBox } from 'ui-kit'
+import { RadioGroup, Select, TextArea, Banner } from 'ui-kit'
 import { MultiSelectAutocomplete } from 'ui-kit/form/MultiSelectAutoComplete/MultiSelectAutocomplete'
+import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
 import {
   EVENT_ADDRESS_OFFERER_LABEL,
