@@ -29,8 +29,6 @@ export function HourLine({ day }: HourLineProps) {
     await setFieldValue(`${day}.afternoonStartingHour`, '')
     await setFieldValue(`${day}.afternoonEndingHour`, '')
     await setFieldValue(`${day}.isAfternoonOpen`, false)
-    await setFieldTouched(`${day}.afternoonStartingHour`, false)
-    await setFieldTouched(`${day}.afternoonEndingHour`, false)
   }
 
   return (
@@ -85,6 +83,8 @@ export function HourLine({ day }: HourLineProps) {
               icon={fullMoreIcon}
               onClick={async () => {
                 await setFieldValue(`${day}.isAfternoonOpen`, true)
+                await setFieldTouched(`${day}.afternoonStartingHour`, false)
+                await setFieldTouched(`${day}.afternoonEndingHour`, false)
                 setIsFullLineDisplayed(true)
               }}
               hasTooltip
