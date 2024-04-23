@@ -26,7 +26,6 @@ import { getLastDmsApplicationForOfferer } from 'utils/getLastCollectiveDmsAppli
 
 import styles from '../OfferType.module.scss'
 import { OfferTypeFormValues } from '../types'
-import FormLayout from 'components/FormLayout'
 
 interface CollectiveOfferTypeProps {
   setHasCollectiveTemplateOffer: (arg: boolean) => void

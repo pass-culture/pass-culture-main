@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 
 import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 
-import { BaseInput } from '../shared'
+import { BaseInput } from '../shared/BaseInput/BaseInput'
 
 import styles from './AdageMultiselect.module.scss'
 

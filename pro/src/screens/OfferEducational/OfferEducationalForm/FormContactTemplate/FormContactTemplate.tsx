@@ -5,7 +5,7 @@ import FormLayout from 'components/FormLayout'
 import { OfferEducationalFormValues } from 'core/OfferEducational'
 import { Checkbox, TextInput } from 'ui-kit'
 import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
-import { FieldSetLayout } from 'ui-kit/form/shared'
+import { FieldSetLayout } from 'ui-kit/form/shared/FieldSetLayout/FieldSetLayout'
 
 import styles from './FormContactTemplate.module.scss'
 import FormContactCustomForm from './FormContactTemplateCustomForm/FormContactTemplateCustomForm'

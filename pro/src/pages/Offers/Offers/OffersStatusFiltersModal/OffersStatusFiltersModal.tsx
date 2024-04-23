@@ -4,7 +4,7 @@ import { SearchFiltersParams } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import useOnClickOrFocusOutside from 'hooks/useOnClickOrFocusOutside'
 import { Button } from 'ui-kit/Button/Button'
-import { BaseRadio } from 'ui-kit/form/shared'
+import { BaseRadio } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
 
 import {
   collectiveFilterStatus,

@@ -5,7 +5,7 @@ import fullClearIcon from 'icons/full-clear.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
-import FieldError from '../FieldError'
+import { FieldError } from '../FieldError/FieldError'
 
 import styles from './FieldLayout.module.scss'
 
@@ -40,7 +40,7 @@ type FieldLayoutProps = FieldLayoutBaseProps & {
 }
 
 /* istanbul ignore next: DEBT, TO FIX */
-const FieldLayout = ({
+export const FieldLayout = ({
   children,
   label,
   isLabelHidden = false,
@@ -151,5 +151,3 @@ const FieldLayout = ({
     </div>
   )
 }
-
-export default FieldLayout

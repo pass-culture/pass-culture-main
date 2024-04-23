@@ -3,8 +3,8 @@ import { useField } from 'formik'
 import React from 'react'
 
 import { RadioButton } from '..'
-import { FieldSetLayout } from '../shared'
 import { BaseRadioVariant } from '../shared/BaseRadio/types'
+import { FieldSetLayout } from '../shared/FieldSetLayout/FieldSetLayout'
 
 import styles from './RadioGroup.module.scss'
 
