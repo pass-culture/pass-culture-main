@@ -9,7 +9,7 @@ import { humanizeSiret, unhumanizeSiret } from 'core/Venue/utils'
 import { VenueCreationFormValues } from 'pages/VenueCreation/types'
 import { TextArea, TextInput } from 'ui-kit'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
-import Toggle from 'ui-kit/Toggle'
+import { Toggle } from 'ui-kit/Toggle/Toggle'
 
 import { isSiretStartingWithSiren, valideSiretLength } from './validationSchema'
 
