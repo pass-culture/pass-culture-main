@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 import fullDuplicate from 'icons/full-duplicate.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
-import { Button } from 'ui-kit/Button'
+import { Button } from 'ui-kit/Button/Button'
 
 import styles from './CopyLink.module.scss'
 

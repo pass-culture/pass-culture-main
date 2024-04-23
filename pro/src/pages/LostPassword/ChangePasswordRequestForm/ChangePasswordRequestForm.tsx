@@ -3,9 +3,9 @@ import React from 'react'
 
 import FormLayout from 'components/FormLayout'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
-import { SubmitButton } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import EmailSpellCheckInput from 'ui-kit/form/EmailSpellCheckInput'
+import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 
 import styles from './ChangePasswordRequestForm.module.scss'
 

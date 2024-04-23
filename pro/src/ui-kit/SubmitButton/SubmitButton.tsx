@@ -1,6 +1,6 @@
 import React, { ForwardedRef } from 'react'
 
-import { Button } from 'ui-kit/Button'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant, SharedButtonProps } from 'ui-kit/Button/types'
 
 export interface SubmitButtonProps extends SharedButtonProps {
@@ -15,7 +15,7 @@ export interface SubmitButtonProps extends SharedButtonProps {
   type?: 'submit' | 'button'
 }
 
-const SubmitButton = ({
+export const SubmitButton = ({
   children = 'Enregistrer',
   className,
   disabled = false,
@@ -42,5 +42,3 @@ const SubmitButton = ({
     {children}
   </Button>
 )
-
-export default SubmitButton

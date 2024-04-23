@@ -25,10 +25,11 @@ import useNotification from 'hooks/useNotification'
 import strokeSearch from 'icons/stroke-search.svg'
 import getOfferRequestInformationsAdapter from 'pages/CollectiveOfferFromRequest/adapters/getOfferRequestInformationsAdapter'
 import { PatchEducationalInstitutionAdapter } from 'pages/CollectiveOfferVisibility/adapters/patchEducationalInstitutionAdapter'
-import { ButtonLink, SubmitButton } from 'ui-kit'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import SelectAutocomplete from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
 import Spinner from 'ui-kit/Spinner/Spinner'
+import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 import {
   normalizeStrForSearch,
   searchPatternInOptions,

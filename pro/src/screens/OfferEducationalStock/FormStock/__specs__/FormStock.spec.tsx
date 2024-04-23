@@ -11,7 +11,7 @@ import {
   OfferEducationalStockFormValues,
 } from 'core/OfferEducational'
 import { generateValidationSchema } from 'screens/OfferEducationalStock/validationSchema'
-import { SubmitButton } from 'ui-kit'
+import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 
 import FormStock, { FormStockProps } from '../FormStock'

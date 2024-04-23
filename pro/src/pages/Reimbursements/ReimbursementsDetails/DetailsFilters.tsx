@@ -2,7 +2,7 @@ import React, { Dispatch, SetStateAction, useState } from 'react'
 
 import FormLayout from 'components/FormLayout/FormLayout'
 import { SelectOption } from 'custom_types/form'
-import { Button } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import PeriodSelector from 'ui-kit/form/PeriodSelector/PeriodSelector'
 import SelectInput from 'ui-kit/form/Select/SelectInput'

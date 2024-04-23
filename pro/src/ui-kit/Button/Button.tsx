@@ -20,7 +20,7 @@ interface ButtonProps
   isLoading?: boolean
 }
 
-const Button = forwardRef(
+export const Button = forwardRef(
   (
     {
       className,
@@ -101,5 +101,3 @@ const Button = forwardRef(
   }
 )
 Button.displayName = 'Button'
-
-export default Button

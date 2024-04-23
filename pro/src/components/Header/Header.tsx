@@ -16,7 +16,7 @@ import strokeHomeIcon from 'icons/stroke-home.svg'
 import strokeLogoutIcon from 'icons/stroke-logout.svg'
 import strokeOffersIcon from 'icons/stroke-offers.svg'
 import strokePieIcon from 'icons/stroke-pie.svg'
-import { Button } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 

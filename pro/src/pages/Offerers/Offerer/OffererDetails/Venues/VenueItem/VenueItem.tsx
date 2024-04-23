@@ -3,7 +3,7 @@ import React from 'react'
 import { GetOffererVenueResponseModel } from 'apiClient/v1'
 import fullMoreIcon from 'icons/full-more.svg'
 import strokeVenueIcon from 'icons/stroke-venue.svg'
-import { ButtonLink } from 'ui-kit'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './VenueItem.module.scss'

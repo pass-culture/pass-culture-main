@@ -13,7 +13,7 @@ import {
   SignupJourneyContext,
   SignupJourneyContextValues,
 } from 'context/SignupJourneyContext'
-import { SubmitButton } from 'ui-kit'
+import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 

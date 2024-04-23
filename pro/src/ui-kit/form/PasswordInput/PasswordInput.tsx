@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 
 import strokeHideIcon from 'icons/stroke-hide.svg'
 import strokeShowIcon from 'icons/stroke-show.svg'
-import { Button } from 'ui-kit/Button'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import TextInput from '../TextInput'

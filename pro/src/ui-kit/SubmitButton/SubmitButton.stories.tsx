@@ -1,6 +1,6 @@
 import type { StoryObj } from '@storybook/react'
 
-import SubmitButton, { SubmitButtonProps } from './SubmitButton'
+import { SubmitButton, SubmitButtonProps } from './SubmitButton'
 
 export default {
   title: 'ui-kit/SubmitButton',

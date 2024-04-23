@@ -3,8 +3,7 @@ import React, { ReactNode } from 'react'
 
 import fullLinkIcon from 'icons/full-link.svg'
 import shadowTipsHelpIcon from 'icons/shadow-tips-help.svg'
-import { ButtonLink } from 'ui-kit/Button'
-import type { LinkProps } from 'ui-kit/Button/ButtonLink'
+import { ButtonLink, type LinkProps } from 'ui-kit/Button/ButtonLink'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './InfoBox.module.scss'

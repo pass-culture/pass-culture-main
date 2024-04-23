@@ -1,7 +1,7 @@
 import React from 'react'
 
 import fullRefreshIcon from 'icons/full-refresh.svg'
-import Button from 'ui-kit/Button/Button'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './ModalFilterLayout.module.scss'

@@ -15,7 +15,8 @@ import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/ge
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
-import { Button, Title } from 'ui-kit'
+import { Title } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { getDateToFrenchText } from 'utils/date'
 

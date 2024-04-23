@@ -5,7 +5,7 @@ import React from 'react'
 import * as yup from 'yup'
 
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
-import { SubmitButton } from 'ui-kit'
+import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 
 import { EXTERNAL_LINK_DEFAULT_VALUES } from '../constants'
 import ExternalLink, { ExternalLinkProps } from '../ExternalLink'

@@ -5,7 +5,7 @@ import React from 'react'
 
 import { AccessibilityEnum } from 'core/shared'
 import { VenueCreationFormValues } from 'pages/VenueCreation/types'
-import { SubmitButton } from 'ui-kit'
+import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,

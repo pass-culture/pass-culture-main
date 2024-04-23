@@ -1,6 +1,5 @@
 import rightIcon from 'icons/stroke-right.svg'
-import { ButtonLink } from 'ui-kit'
-import { ButtonLinkProps } from 'ui-kit/Button/ButtonLink'
+import { ButtonLink, ButtonLinkProps } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 

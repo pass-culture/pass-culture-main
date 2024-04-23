@@ -2,9 +2,11 @@ import { FormikContextType, FormikProvider } from 'formik'
 
 import FormLayout from 'components/FormLayout'
 import fullMailIcon from 'icons/full-mail.svg'
-import { Button, DatePicker, SubmitButton, TextArea, TextInput } from 'ui-kit'
+import { DatePicker, TextArea, TextInput } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
+import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 
 import styles from './NewRequestFormDialog.module.scss'
 import { RequestFormValues } from './type'

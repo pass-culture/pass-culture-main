@@ -6,7 +6,7 @@ import * as yup from 'yup'
 
 import { apiAdresse } from 'apiClient/adresse'
 import { VenueCreationFormValues } from 'pages/VenueCreation/types'
-import { SubmitButton } from 'ui-kit'
+import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 
 import { AddressSelect, validationSchema as addressValidationSchema } from '../'
 
