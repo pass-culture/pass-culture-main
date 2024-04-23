@@ -84,11 +84,11 @@ export const CinemaProviderForm = ({
               >
                 <Checkbox name="isDuo" label="Accepter les réservations DUO" />
               </FormLayout.Row>
+
               {isCreatedEntity ? (
                 <SubmitButton
                   variant={ButtonVariant.PRIMARY}
                   isLoading={formik.isSubmitting}
-                  onClick={formik.handleSubmit}
                 >
                   Lancer la synchronisation
                 </SubmitButton>
