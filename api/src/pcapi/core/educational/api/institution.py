@@ -247,3 +247,7 @@ def get_offers_for_my_institution(uai: str) -> BaseQuery:
         )
         .filter(educational_models.EducationalInstitution.institutionId == uai)
     )
+
+
+def get_playlist_max_distance(institution: educational_models.EducationalInstitution) -> int:
+    return educational_models.PLAYLIST_RURALITY_MAX_DISTANCE_MAPPING.get(institution.ruralLevel, 60)
