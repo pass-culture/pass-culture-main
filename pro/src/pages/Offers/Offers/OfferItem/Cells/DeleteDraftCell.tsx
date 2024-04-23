@@ -15,7 +15,7 @@ import useNotification from 'hooks/useNotification'
 import fullTrashIcon from 'icons/full-trash.svg'
 import strokeTrashIcon from 'icons/stroke-trash.svg'
 import { GET_OFFERS_QUERY_KEY } from 'pages/Offers/OffersRoute'
-import ListIconButton from 'ui-kit/ListIconButton/ListIconButton'
+import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
 
 import { deleteDraftOffersAdapter } from '../../adapters/deleteDraftOffers'
 import styles from '../OfferItem.module.scss'
