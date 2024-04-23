@@ -7,7 +7,6 @@ import { TextInput } from 'ui-kit'
 import { BoxRounded } from 'ui-kit/BoxRounded'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 
 import { BoxFormLayoutProps } from './BoxFormLayout'
 
@@ -64,9 +63,9 @@ const DefaultBoxFormLayout = (args: BoxFormLayoutProps) => {
                     >
                       Annuler
                     </Button>
-                    <SubmitButton isLoading={formik.isSubmitting}>
+                    <Button type="submit" isLoading={formik.isSubmitting}>
                       Enregistrer
-                    </SubmitButton>
+                    </Button>
                   </div>
                 </Form>
               </FormikProvider>

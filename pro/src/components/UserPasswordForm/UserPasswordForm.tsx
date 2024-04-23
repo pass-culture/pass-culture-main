@@ -7,7 +7,6 @@ import FormLayout from 'components/FormLayout'
 import { PasswordInput } from 'ui-kit'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 
 import styles from './UserPasswordForm.module.scss'
 import validationSchema from './validationSchema'
@@ -86,9 +85,9 @@ const UserPasswordForm = ({
               <Button onClick={onCancel} variant={ButtonVariant.SECONDARY}>
                 Annuler
               </Button>
-              <SubmitButton isLoading={formik.isSubmitting}>
+              <Button type="submit" isLoading={formik.isSubmitting}>
                 Enregistrer
-              </SubmitButton>
+              </Button>
             </div>
           </Form>
         </FormikProvider>

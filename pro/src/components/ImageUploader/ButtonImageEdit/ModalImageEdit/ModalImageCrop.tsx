@@ -16,7 +16,6 @@ import fullTrashIcon from 'icons/full-trash.svg'
 import { Divider, TextInput } from 'ui-kit'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 
 import style from './ModalImageCrop.module.scss'
 import { getCropMaxDimension } from './utils/getCropMaxDimension'
@@ -193,7 +192,7 @@ export const ModalImageCrop = ({
           <Divider />
 
           <footer className={style['modal-image-crop-footer']}>
-            <SubmitButton>{submitButtonText}</SubmitButton>
+            <Button type="submit">{submitButtonText}</Button>
           </footer>
         </Form>
       </FormikProvider>

@@ -14,9 +14,9 @@ import useNotification from 'hooks/useNotification'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import { getFilteredCollectiveOffersAdapter } from 'pages/CollectiveOffers/adapters'
 import { RadioButton, TextInput, Thumb } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import Titles from 'ui-kit/Titles/Titles'
 import { pluralize } from 'utils/pluralize'
@@ -114,14 +114,15 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
                 className={styles['search-input']}
                 aria-labelledby="search-filter"
               />
-              <SubmitButton
+              <Button
+                type="submit"
                 className={styles['search-button']}
                 isLoading={isLoading}
                 aria-label="Button de recherche"
                 icon={strokeSearchIcon}
               >
                 Rechercher
-              </SubmitButton>
+              </Button>
             </Form>
           </FormikProvider>
           <FormikProvider value={formikSelection}>
@@ -186,7 +187,9 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
                   </ButtonLink>
                 </ActionsBarSticky.Left>
                 <ActionsBarSticky.Right>
-                  <SubmitButton disabled={false}>Étape suivante</SubmitButton>
+                  <Button type="submit" disabled={false}>
+                    Étape suivante
+                  </Button>
                 </ActionsBarSticky.Right>
               </ActionsBarSticky>
             </Form>

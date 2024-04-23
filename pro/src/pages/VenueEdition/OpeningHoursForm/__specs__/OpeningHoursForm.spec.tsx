@@ -5,7 +5,7 @@ import { Formik, Form } from 'formik'
 import { setInitialFormValues } from 'pages/VenueEdition/setInitialFormValues'
 import { VenueEditionFormValues } from 'pages/VenueEdition/types'
 import { getValidationSchema } from 'pages/VenueEdition/validationSchema'
-import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
+import { Button } from 'ui-kit/Button/Button'
 import { defaultGetVenue } from 'utils/collectiveApiFactories'
 
 import { OpeningHoursForm } from '../OpeningHoursForm'
@@ -25,7 +25,9 @@ const renderOpeningHoursForm = ({
     >
       <Form>
         <OpeningHoursForm />
-        <SubmitButton isLoading={false}>Submit</SubmitButton>
+        <Button type="submit" isLoading={false}>
+          Submit
+        </Button>
       </Form>
     </Formik>
   )

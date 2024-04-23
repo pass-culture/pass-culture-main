@@ -14,7 +14,6 @@ import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { PasswordInput } from 'ui-kit/form'
 import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
-import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 
 import styles from './SignupContainer.module.scss'
 
@@ -86,13 +85,14 @@ const SignupForm = (): JSX.Element => {
           >
             J’ai déjà un compte
           </Button>
-          <SubmitButton
+          <Button
+            type="submit"
             className={styles['buttons']}
             isLoading={isSubmitting}
             disabled={isSubmitting}
           >
             Créer mon compte
-          </SubmitButton>
+          </Button>
         </div>
         <BannerRGS />
         <CookiesFooter className={styles['cookie-footer']} />

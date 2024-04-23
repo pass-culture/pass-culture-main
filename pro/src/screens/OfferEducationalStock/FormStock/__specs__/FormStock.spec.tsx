@@ -11,7 +11,7 @@ import {
   OfferEducationalStockFormValues,
 } from 'core/OfferEducational'
 import { generateValidationSchema } from 'screens/OfferEducationalStock/validationSchema'
-import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
+import { Button } from 'ui-kit/Button/Button'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 
 import FormStock, { FormStockProps } from '../FormStock'
@@ -36,7 +36,9 @@ const renderFormStock = ({
     >
       <Form>
         <FormStock {...props} />
-        <SubmitButton isLoading={false}>Enregistrer</SubmitButton>
+        <Button type="submit" isLoading={false}>
+          Enregistrer
+        </Button>
       </Form>
     </Formik>
   )

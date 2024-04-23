@@ -8,7 +8,6 @@ import useAnalytics from 'hooks/useAnalytics'
 import { Checkbox, InfoBox } from 'ui-kit'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 
 import styles from './CinemaProviderForm.module.scss'
 import { DEFAULT_CINEMA_PROVIDER_FORM_VALUES } from './constants'
@@ -86,12 +85,13 @@ export const CinemaProviderForm = ({
               </FormLayout.Row>
 
               {isCreatedEntity ? (
-                <SubmitButton
+                <Button
+                  type="submit"
                   variant={ButtonVariant.PRIMARY}
                   isLoading={formik.isSubmitting}
                 >
                   Lancer la synchronisation
-                </SubmitButton>
+                </Button>
               ) : (
                 <div>
                   <Button
@@ -101,12 +101,13 @@ export const CinemaProviderForm = ({
                   >
                     Annuler
                   </Button>
-                  <SubmitButton
+                  <Button
+                    type="submit"
                     variant={ButtonVariant.PRIMARY}
                     isLoading={formik.isSubmitting}
                   >
                     Modifier
-                  </SubmitButton>
+                  </Button>
                 </div>
               )}
             </div>

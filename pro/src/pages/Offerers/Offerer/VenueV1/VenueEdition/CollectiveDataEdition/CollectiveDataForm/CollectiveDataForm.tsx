@@ -16,11 +16,11 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import { RouteLeavingGuardVenueEdition } from 'pages/VenueEdition/RouteLeavingGuardVenueEdition'
 import { Select, TextArea, TextInput } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { MultiSelectAutocomplete } from 'ui-kit/form/MultiSelectAutoComplete/MultiSelectAutocomplete'
 import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
-import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 
 import editVenueCollectiveDataAdapter from '../adapters/editVenueCollectiveDataAdapter'
 
@@ -223,9 +223,9 @@ export const CollectiveDataForm = ({
             >
               Annuler et quitter
             </ButtonLink>
-            <SubmitButton isLoading={formik.isSubmitting}>
+            <Button type="submit" isLoading={formik.isSubmitting}>
               Enregistrer et quitter
-            </SubmitButton>
+            </Button>
           </div>
         </form>
       </FormikProvider>

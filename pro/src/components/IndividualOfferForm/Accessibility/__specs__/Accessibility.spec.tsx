@@ -6,7 +6,7 @@ import * as yup from 'yup'
 
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
 import { AccessibilityEnum } from 'core/shared'
-import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
+import { Button } from 'ui-kit/Button/Button'
 
 import { Accessibility, validationSchema } from '..'
 
@@ -25,7 +25,9 @@ const renderAccessibility = ({
     >
       <Form>
         <Accessibility />
-        <SubmitButton isLoading={false}>Submit</SubmitButton>
+        <Button type="submit" isLoading={false}>
+          Submit
+        </Button>
       </Form>
     </Formik>
   )

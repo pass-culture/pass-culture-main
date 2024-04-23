@@ -17,7 +17,6 @@ import strokeWarningIcon from 'icons/stroke-warning.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
-import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 import { pluralize, pluralizeString } from 'utils/pluralize'
 
 import styles from './LinkVenuesDialog.module.scss'
@@ -215,9 +214,9 @@ export const LinkVenuesDialog = ({
               <Button variant={ButtonVariant.SECONDARY} onClick={onCancel}>
                 Annuler
               </Button>
-              <SubmitButton isLoading={formik.isSubmitting}>
+              <Button type="submit" isLoading={formik.isSubmitting}>
                 Enregistrer
-              </SubmitButton>
+              </Button>
             </div>
           </form>
         </FormikProvider>

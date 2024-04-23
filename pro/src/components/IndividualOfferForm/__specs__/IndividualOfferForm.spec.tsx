@@ -17,7 +17,7 @@ import {
   CATEGORY_STATUS,
   INDIVIDUAL_OFFER_SUBTYPE,
 } from 'core/Offers/constants'
-import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
+import { Button } from 'ui-kit/Button/Button'
 import {
   getIndividualOfferFactory,
   categoryFactory,
@@ -60,7 +60,9 @@ const renderIndividualOfferForm = ({
       >
         <Form>
           <IndividualOfferForm {...props} />
-          <SubmitButton isLoading={false}>Submit</SubmitButton>
+          <Button type="submit" isLoading={false}>
+            Submit
+          </Button>
         </Form>
       </Formik>
     </IndividualOfferContext.Provider>,

@@ -2,9 +2,9 @@ import { useFormikContext } from 'formik'
 import React from 'react'
 
 import { GetVenueResponseModel } from 'apiClient/v1'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 
 import { VenueCreationFormValues } from '../types'
 
@@ -28,9 +28,9 @@ export const VenueFormActionBar = ({ venue }: VenueFormActionBarProps) => {
       >
         Annuler et quitter
       </ButtonLink>
-      <SubmitButton isLoading={isSubmitting}>
+      <Button type="submit" isLoading={isSubmitting}>
         Enregistrer et quitter
-      </SubmitButton>
+      </Button>
     </div>
   )
 }

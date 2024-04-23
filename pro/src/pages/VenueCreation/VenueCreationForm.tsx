@@ -11,9 +11,9 @@ import { AddressSelect } from 'components/Address'
 import FormLayout from 'components/FormLayout'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { TextInput, InfoBox, Select, Banner } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { SubmitButton } from 'ui-kit/SubmitButton/SubmitButton'
 
 import RouteLeavingGuard, {
   BlockerFunction,
@@ -196,9 +196,9 @@ export const VenueCreationForm = ({
           </ButtonLink>
         </ActionsBarSticky.Left>
         <ActionsBarSticky.Right>
-          <SubmitButton isLoading={isSubmitting}>
+          <Button type="submit" isLoading={isSubmitting}>
             Enregistrer et créer le lieu
-          </SubmitButton>
+          </Button>
         </ActionsBarSticky.Right>
       </ActionsBarSticky>
     </div>
