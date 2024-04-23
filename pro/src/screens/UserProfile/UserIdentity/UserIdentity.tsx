@@ -1,7 +1,7 @@
 import { BoxFormLayout } from 'components/BoxFormLayout'
 import { UserIdentityForm } from 'components/UserIdentityForm'
 import { UserIdentityFormValues } from 'components/UserIdentityForm/types'
-import { BoxRounded } from 'ui-kit/BoxRounded'
+import { BoxRounded } from 'ui-kit/BoxRounded/BoxRounded'
 
 import { Forms } from '../constants'
 

@@ -4,7 +4,7 @@ import { api } from 'apiClient/api'
 import { BannerPendingEmailValidation } from 'components/Banner'
 import { BoxFormLayout } from 'components/BoxFormLayout'
 import { UserEmailForm } from 'components/UserEmailForm'
-import { BoxRounded } from 'ui-kit/BoxRounded'
+import { BoxRounded } from 'ui-kit/BoxRounded/BoxRounded'
 
 import { Forms } from '../constants'
 

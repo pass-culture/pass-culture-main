@@ -2,7 +2,7 @@ import { UserPhoneBodyModel } from 'apiClient/v1'
 import { BoxFormLayout } from 'components/BoxFormLayout'
 import { UserPhoneForm } from 'components/UserPhoneForm'
 import { formatPhoneNumber } from 'pages/Home/ProfileAndSupport/Profile'
-import { BoxRounded } from 'ui-kit/BoxRounded'
+import { BoxRounded } from 'ui-kit/BoxRounded/BoxRounded'
 
 import { Forms } from '../constants'
 

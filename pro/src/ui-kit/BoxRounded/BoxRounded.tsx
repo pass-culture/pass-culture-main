@@ -13,7 +13,7 @@ interface BoxRoundedProps {
   showButtonModify?: boolean
 }
 
-const BoxRounded = ({
+export const BoxRounded = ({
   children,
   onClickModify,
   showButtonModify = true,
@@ -38,5 +38,3 @@ const BoxRounded = ({
     </div>
   )
 }
-
-export default BoxRounded
