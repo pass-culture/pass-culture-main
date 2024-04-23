@@ -65,7 +65,15 @@
   }
 
   &-close {
-    width: rem.torem(32px);
+    background-color: transparent;
+    border: none;
+    width: rem.torem(24px);
+    height: rem.torem(24px);
     cursor: pointer;
+
+    &:focus-visible {
+      outline: rem.torem(1px) solid var(--color-input-text-color);
+      outline-offset: rem.torem(2px);
+    }
   }
 }
