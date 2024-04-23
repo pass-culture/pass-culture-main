@@ -540,7 +540,7 @@ class SQLFunctionsTest:
         )  # +10 on user's wallet
 
         author = users_factories.UserFactory()
-        finance_api.validate_finance_incident(incident, force_debit_note=False, author=author)
+        finance_api.validate_finance_overpayment_incident(incident, force_debit_note=False, author=author)
 
         assert incident.status == finance_models.IncidentStatus.VALIDATED
 
@@ -566,7 +566,7 @@ class SQLFunctionsTest:
 
         # When
         author = users_factories.UserFactory()
-        finance_api.validate_finance_incident(incident, force_debit_note=False, author=author)
+        finance_api.validate_finance_overpayment_incident(incident, force_debit_note=False, author=author)
 
         # Then
         assert incident.status == finance_models.IncidentStatus.VALIDATED

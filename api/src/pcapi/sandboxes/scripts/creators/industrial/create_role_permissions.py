@@ -16,6 +16,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
     "codir_admin": [
         perm_models.Permissions.READ_INCIDENTS,
         perm_models.Permissions.MANAGE_INCIDENTS,
+        perm_models.Permissions.VALIDATE_COMMERCIAL_GESTURE,
     ],
     "support_n1": [
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,

@@ -1,5 +1,6 @@
 from pcapi.core import mails
 from pcapi.core.bookings import models as bookings_models
+from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.mails import models as mails_models
@@ -58,7 +59,9 @@ def send_commercial_gesture_email(finance_incident: finance_models.FinanceIncide
         return
     booking_email = venue.bookingEmail
 
-    offers_incidents: dict[tuple, list[finance_models.BookingFinanceIncident]] = {}
+    offers_incidents: dict[
+        bookings_models.Booking | educational_models.CollectiveBooking, list[finance_models.BookingFinanceIncident]
+    ] = {}
     for booking_finance_incident in finance_incident.booking_finance_incidents:
         booking = booking_finance_incident.booking or booking_finance_incident.collectiveBooking
         if isinstance(booking, bookings_models.Booking):
@@ -67,16 +70,19 @@ def send_commercial_gesture_email(finance_incident: finance_models.FinanceIncide
             offer = booking.collectiveStock.collectiveOffer
 
         # if a given offer has multiple incidents, we need to group them under one key
-        offers_incidents.setdefault((offer.id, offer.name), []).extend([booking_finance_incident])
+        offers_incidents.setdefault(offer, []).append(booking_finance_incident)
 
-    for (_, offer_name), offer_booking_incidents in offers_incidents.items():
+    for offer, offer_booking_incidents in offers_incidents.items():
         data = mails_models.TransactionalEmailData(
             template=TransactionalEmail.COMMERCIAL_GESTURE_REIMBURSEMENT.value,
             params={
-                "OFFER_NAME": offer_name,
+                "OFFER_NAME": offer.name,
                 "VENUE_NAME": venue.common_name,
                 "MONTANT_REMBOURSEMENT": finance_utils.to_euros(
-                    sum(booking_incident.newTotalAmount for booking_incident in offer_booking_incidents)
+                    sum(
+                        (booking_incident.commercial_gesture_amount or 0)
+                        for booking_incident in offer_booking_incidents
+                    )
                 ),
                 "TOKEN_LIST": ", ".join(
                     [

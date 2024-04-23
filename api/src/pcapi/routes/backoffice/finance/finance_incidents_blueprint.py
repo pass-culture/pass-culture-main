@@ -775,14 +775,17 @@ def get_finance_incident_validation_form(finance_incident_id: int) -> utils.Back
 
     incident_total_amount_euros = finance_utils.to_euros(finance_incident.due_amount_by_offerer)
     bank_account_link = finance_incident.venue.current_bank_account_link
-    bank_account_details_str = f"{'du lieu' if not bank_account_link else bank_account_link.bankAccount.label}"
+    bank_account_details_str = "du lieu" if not bank_account_link else bank_account_link.bankAccount.label
+    validation_url = (
+        "backoffice_web.finance_incidents.validate_finance_commercial_gesture"
+        if finance_incident.kind == finance_models.IncidentType.COMMERCIAL_GESTURE
+        else "backoffice_web.finance_incidents.validate_finance_overpayment_incident"
+    )
 
     return render_template(
         "components/turbo/modal_form.html",
         form=forms.IncidentValidationForm(),
-        dst=url_for(
-            "backoffice_web.finance_incidents.validate_finance_incident", finance_incident_id=finance_incident_id
-        ),
+        dst=url_for(validation_url, finance_incident_id=finance_incident_id),
         div_id=f"finance-incident-validation-modal-{finance_incident_id}",
         title="Valider l'incident",
         button_text="Confirmer",
@@ -796,10 +799,10 @@ def get_finance_incident_validation_form(finance_incident_id: int) -> utils.Back
     )
 
 
-@finance_incidents_blueprint.route("/<int:finance_incident_id>/validate", methods=["POST"])
+@finance_incidents_blueprint.route("/overpayment/<int:finance_incident_id>/validate", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
-def validate_finance_incident(finance_incident_id: int) -> utils.BackofficeResponse:
-    finance_incident = _get_incident(finance_incident_id)
+def validate_finance_overpayment_incident(finance_incident_id: int) -> utils.BackofficeResponse:
+    finance_incident = _get_incident(finance_incident_id, kind=finance_models.IncidentType.OVERPAYMENT)
     form = forms.IncidentValidationForm()
 
     if not form.validate():
@@ -807,12 +810,35 @@ def validate_finance_incident(finance_incident_id: int) -> utils.BackofficeRespo
     elif finance_incident.status != finance_models.IncidentStatus.CREATED:
         flash("L'incident ne peut être validé que s'il est au statut 'créé'.", "warning")
     else:
-        finance_api.validate_finance_incident(
+        finance_api.validate_finance_overpayment_incident(
             finance_incident=finance_incident,
             force_debit_note=form.compensation_mode.data == forms.IncidentCompensationModes.FORCE_DEBIT_NOTE.name,
             author=current_user,
         )
-        flash("L'incident a été validé", "success")
+        flash("L'incident a été validé.", "success")
+
+    return redirect(
+        url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=finance_incident_id), 303
+    )
+
+
+@finance_incidents_blueprint.route("/commercial-gesture/<int:finance_incident_id>/validate", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.VALIDATE_COMMERCIAL_GESTURE)
+def validate_finance_commercial_gesture(finance_incident_id: int) -> utils.BackofficeResponse:
+    finance_incident = _get_incident(finance_incident_id, kind=finance_models.IncidentType.COMMERCIAL_GESTURE)
+    form = forms.IncidentValidationForm()
+
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+    elif finance_incident.status != finance_models.IncidentStatus.CREATED:
+        flash("Le geste commercial ne peut être validé que s'il est au statut 'créé'.", "warning")
+    else:
+        finance_api.validate_finance_commercial_gesture(
+            finance_incident=finance_incident,
+            force_debit_note=form.compensation_mode.data == forms.IncidentCompensationModes.FORCE_DEBIT_NOTE.name,
+            author=current_user,
+        )
+        flash("Le geste commercial a été validé.", "success")
 
     return redirect(
         url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=finance_incident.id), 303
@@ -921,9 +947,9 @@ def cancel_debit_note(finance_incident_id: int) -> utils.BackofficeResponse:
     )
 
 
-def _get_incident(finance_incident_id: int) -> finance_models.FinanceIncident:
+def _get_incident(finance_incident_id: int, **args: typing.Any) -> finance_models.FinanceIncident:
     incident = (
-        finance_models.FinanceIncident.query.filter_by(id=finance_incident_id)
+        finance_models.FinanceIncident.query.filter_by(id=finance_incident_id, **args)
         .join(finance_models.FinanceIncident.venue)
         .outerjoin(
             offerer_models.VenueBankAccountLink,
