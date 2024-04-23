@@ -16,7 +16,7 @@ export interface BaseInputProps
   id?: string
 }
 
-const BaseInput = forwardRef(
+export const BaseInput = forwardRef(
   (
     {
       className,
@@ -95,4 +95,3 @@ const BaseInput = forwardRef(
   }
 )
 BaseInput.displayName = 'BaseInput'
-export default BaseInput

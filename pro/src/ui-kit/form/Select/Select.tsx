@@ -3,8 +3,10 @@ import React, { useCallback } from 'react'
 
 import { SelectOption } from 'custom_types/form'
 
-import { FieldLayout } from '../shared'
-import { FieldLayoutBaseProps } from '../shared/FieldLayout/FieldLayout'
+import {
+  FieldLayout,
+  FieldLayoutBaseProps,
+} from '../shared/FieldLayout/FieldLayout'
 
 import SelectInput from './SelectInput'
 

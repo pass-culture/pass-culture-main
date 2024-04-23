@@ -4,10 +4,7 @@ import React from 'react'
 
 import { FORMAT_ISO_DATE_ONLY, isDateValid } from 'utils/date'
 
-import {
-  default as BaseInput,
-  BaseInputProps,
-} from '../shared/BaseInput/BaseInput'
+import { BaseInputProps, BaseInput } from '../shared/BaseInput/BaseInput'
 
 import styles from './BaseDatePicker.module.scss'
 

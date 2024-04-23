@@ -13,7 +13,7 @@ interface FieldErrorProps {
   iconAlt?: string
 }
 
-const FieldError = ({
+export const FieldError = ({
   children,
   className,
   name,
@@ -26,5 +26,3 @@ const FieldError = ({
     </span>
   </div>
 )
-
-export default FieldError

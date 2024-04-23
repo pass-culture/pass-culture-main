@@ -6,7 +6,7 @@ import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import PeriodSelector from 'ui-kit/form/PeriodSelector/PeriodSelector'
 import SelectInput from 'ui-kit/form/Select/SelectInput'
-import { FieldLayout } from 'ui-kit/form/shared'
+import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
 import { getToday } from 'utils/date'
 
 import styles from './DetailsFilters.module.scss'

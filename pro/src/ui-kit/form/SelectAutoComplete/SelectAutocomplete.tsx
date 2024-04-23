@@ -5,9 +5,11 @@ import React, { KeyboardEventHandler, useEffect, useRef, useState } from 'react'
 import { SelectOption } from 'custom_types/form'
 import { getLabelString } from 'utils/getLabelString'
 
-import { BaseInput } from '../shared'
-import FieldLayout from '../shared/FieldLayout'
-import { FieldLayoutBaseProps } from '../shared/FieldLayout/FieldLayout'
+import { BaseInput } from '../shared/BaseInput/BaseInput'
+import {
+  FieldLayout,
+  FieldLayoutBaseProps,
+} from '../shared/FieldLayout/FieldLayout'
 
 import OptionsList from './OptionsList'
 import styles from './SelectAutocomplete.module.scss'

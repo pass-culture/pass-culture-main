@@ -22,7 +22,7 @@ type AutocompleteListProps = {
   hideArrow?: boolean
 }
 
-const AutocompleteList = ({
+export const AutocompleteList = ({
   isOpen,
   onButtonClick,
   filteredOptions,
@@ -70,5 +70,3 @@ const AutocompleteList = ({
     </div>
   )
 }
-
-export default AutocompleteList

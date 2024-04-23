@@ -3,7 +3,8 @@ import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import type { CountryCode } from 'libphonenumber-js'
 import React, { ChangeEvent, FocusEvent, useEffect, useState } from 'react'
 
-import { BaseInput, FieldError } from '../shared'
+import { BaseInput } from '../shared/BaseInput/BaseInput'
+import { FieldError } from '../shared/FieldError/FieldError'
 import { FieldLayoutBaseProps } from '../shared/FieldLayout/FieldLayout'
 
 import CodeCountrySelect from './CodeCountrySelect/CountryCodeSelect'

@@ -5,8 +5,8 @@ import {
   getPasswordRuleLabel,
   passwordValidationStatus,
 } from 'core/shared/utils/validation'
-
-import { FieldError, FieldSuccess } from '../../shared'
+import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
+import { FieldSuccess } from 'ui-kit/form/shared/FieldSuccess/FieldSuccess'
 
 import styles from './ValidationMessageList.module.scss'
 

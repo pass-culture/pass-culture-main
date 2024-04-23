@@ -6,7 +6,7 @@ import { Audience } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
 import useAnalytics from 'hooks/useAnalytics'
 import SelectInput from 'ui-kit/form/Select/SelectInput'
-import { BaseInput } from 'ui-kit/form/shared'
+import { BaseInput } from 'ui-kit/form/shared/BaseInput/BaseInput'
 
 import { BookingsFilters } from '../types'
 

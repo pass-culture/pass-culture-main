@@ -2,7 +2,7 @@ import cn from 'classnames'
 import { useField } from 'formik'
 import React, { useCallback } from 'react'
 
-import { BaseRadio } from '../shared'
+import { BaseRadio } from '../shared/BaseRadio/BaseRadio'
 import { BaseRadioVariant } from '../shared/BaseRadio/types'
 
 interface RadioButtonProps

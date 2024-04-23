@@ -3,8 +3,10 @@ import { useField } from 'formik'
 import React from 'react'
 import Textarea from 'react-autosize-textarea'
 
-import { FieldLayout } from '../shared'
-import { FieldLayoutBaseProps } from '../shared/FieldLayout/FieldLayout'
+import {
+  FieldLayout,
+  FieldLayoutBaseProps,
+} from '../shared/FieldLayout/FieldLayout'
 
 import styles from './TextArea.module.scss'
 
