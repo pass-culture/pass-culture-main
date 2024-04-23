@@ -28,7 +28,7 @@ interface ListIconButtonProps extends React.HTMLProps<HTMLButtonElement> {
 
 const LIST_ICON_SIZE = '16'
 
-const ListIconButton = ({
+export const ListIconButton = ({
   children,
   className,
   variant = ListIconButtonVariant.DEFAULT,
@@ -100,5 +100,3 @@ const ListIconButton = ({
 
   return url ? link : button
 }
-
-export default ListIconButton
