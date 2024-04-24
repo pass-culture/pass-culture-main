@@ -3,7 +3,8 @@ import React, { useEffect } from 'react'
 
 import { WithdrawalTypeEnum } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
-import { RadioGroup, Select } from 'ui-kit'
+import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
+import { Select } from 'ui-kit/form/Select/Select'
 
 import { IndividualOfferFormValues } from '../../types'
 

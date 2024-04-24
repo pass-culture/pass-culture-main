@@ -1,6 +1,6 @@
 import type { StoryObj } from '@storybook/react'
 
-import BaseRadio from './BaseRadio'
+import { BaseRadio } from './BaseRadio'
 import { BaseRadioVariant } from './types'
 
 export default {

@@ -1,7 +1,7 @@
 import { StoryObj } from '@storybook/react'
 import { Formik } from 'formik'
 
-import TimePicker from './TimePicker'
+import { TimePicker } from './TimePicker'
 
 export default {
   title: 'ui-kit/forms/TimePicker',

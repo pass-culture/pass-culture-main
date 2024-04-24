@@ -2,8 +2,9 @@ import { useFormikContext } from 'formik'
 import React from 'react'
 
 import FormLayout from 'components/FormLayout'
-import { TextArea, TextInput } from 'ui-kit'
 import { DurationInput } from 'ui-kit/form/DurationInput/DurationInput'
+import { TextArea } from 'ui-kit/form/TextArea/TextArea'
+import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import styles from '../IndividualOfferForm.module.scss'
 import { IndividualOfferFormValues } from '../types'

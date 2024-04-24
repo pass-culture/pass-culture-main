@@ -15,7 +15,7 @@ interface RadioButtonProps
   variant?: BaseRadioVariant
 }
 
-const RadioButton = ({
+export const RadioButton = ({
   disabled,
   name,
   label,
@@ -54,5 +54,3 @@ const RadioButton = ({
     />
   )
 }
-
-export default RadioButton

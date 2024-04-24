@@ -1,7 +1,7 @@
 import FormLayout from 'components/FormLayout'
 import { FORM_DEFAULT_VALUES } from 'components/IndividualOfferForm'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
-import { Select } from 'ui-kit'
+import { Select } from 'ui-kit/form/Select/Select'
 
 interface MusicTypesProps {
   readOnly?: boolean

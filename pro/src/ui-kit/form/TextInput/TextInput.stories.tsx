@@ -4,7 +4,7 @@ import React from 'react'
 
 import strokeSearch from 'icons/stroke-search.svg'
 
-import TextInput from './TextInput'
+import { TextInput } from './TextInput'
 
 export default {
   title: 'ui-kit/forms/TextInput',

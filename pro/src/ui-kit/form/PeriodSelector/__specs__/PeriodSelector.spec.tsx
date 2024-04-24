@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
-import PeriodSelector from '../PeriodSelector'
+import { PeriodSelector } from '../PeriodSelector'
 
 describe('PeriodSelector', () => {
   const mockOnBeginningDateChange = vi.fn()

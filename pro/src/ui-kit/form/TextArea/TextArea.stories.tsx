@@ -2,7 +2,7 @@ import type { StoryObj } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
 
-import TextArea from './TextArea'
+import { TextArea } from './TextArea'
 
 export default {
   title: 'ui-kit/forms/TextArea',

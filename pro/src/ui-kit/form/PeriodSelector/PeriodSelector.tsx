@@ -16,7 +16,7 @@ interface PeriodSelectorProps {
   periodEndingDate: string
 }
 
-const PeriodSelector = ({
+export const PeriodSelector = ({
   className,
   onBeginningDateChange,
   onEndingDateChange,
@@ -74,5 +74,3 @@ const PeriodSelector = ({
     </div>
   </div>
 )
-
-export default PeriodSelector

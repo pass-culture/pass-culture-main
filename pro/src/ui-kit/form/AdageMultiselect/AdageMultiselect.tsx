@@ -69,7 +69,7 @@ const isIncluded = (
   return fieldValue.includes(value)
 }
 
-const AdageMultiselect = ({
+export const AdageMultiselect = ({
   options,
   placeholder,
   name,
@@ -192,5 +192,3 @@ const AdageMultiselect = ({
     </div>
   )
 }
-
-export default AdageMultiselect

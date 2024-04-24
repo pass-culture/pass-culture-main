@@ -3,7 +3,7 @@ import React from 'react'
 
 import FormLayout from 'components/FormLayout'
 import { humanizeSiret, unhumanizeSiret } from 'core/Venue/utils'
-import { TextInput } from 'ui-kit'
+import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import styles from './OffererForm.module.scss'
 

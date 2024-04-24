@@ -6,8 +6,9 @@ import * as yup from 'yup'
 
 import { searchPatternInOptions } from 'utils/searchPatternInOptions'
 
-import SelectAutocomplete, {
+import {
   SelectAutocompleteProps,
+  SelectAutocomplete,
 } from '../SelectAutocomplete'
 
 describe('SelectAutocomplete', () => {

@@ -5,11 +5,14 @@ import Callout from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 import FormLayout from 'components/FormLayout'
 import { OfferEducationalFormValues } from 'core/OfferEducational'
-import { DatePicker, RadioGroup, TimePicker } from 'ui-kit'
+import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
+import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 import { BaseRadioVariant } from 'ui-kit/form/shared/BaseRadio/types'
+import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
 import { isDateValid } from 'utils/date'
 
 import styles from './FormDates.module.scss'
+
 export interface FormDatesProps {
   disableForm: boolean
   dateCreated: string | undefined

@@ -5,7 +5,7 @@ import {
   GetOffererVenueResponseModel,
 } from 'apiClient/v1'
 import { SelectOption } from 'custom_types/form'
-import SelectInput from 'ui-kit/form/Select/SelectInput'
+import { SelectInput } from 'ui-kit/form/Select/SelectInput'
 import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
 import { localStorageAvailable } from 'utils/localStorageAvailable'
 

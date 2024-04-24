@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { Formik } from 'formik'
 import React from 'react'
 
-import Slider, { SliderProps } from '../Slider'
+import { Slider, SliderProps } from '../Slider'
 
 const renderSlider = (props: SliderProps) =>
   render(

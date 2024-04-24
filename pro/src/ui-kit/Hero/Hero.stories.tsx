@@ -1,7 +1,7 @@
 import { StoryObj } from '@storybook/react'
 import { withRouter } from 'storybook-addon-react-router-v6'
 
-import Hero from './Hero'
+import { Hero } from './Hero'
 
 export default {
   title: 'components/Hero',

@@ -14,7 +14,7 @@ interface CheckboxGroupItemProps {
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-const CheckboxGroupItem = ({
+export const CheckboxGroupItem = ({
   setGroupTouched,
   label,
   name,
@@ -44,5 +44,3 @@ const CheckboxGroupItem = ({
     />
   )
 }
-
-export default CheckboxGroupItem

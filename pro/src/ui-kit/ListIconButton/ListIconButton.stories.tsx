@@ -3,7 +3,7 @@ import React from 'react'
 
 import fullTrashIcon from 'icons/full-trash.svg'
 
-import ListIconButton from './ListIconButton'
+import { ListIconButton } from './ListIconButton'
 
 export default {
   title: 'ui-kit/ListIconButton',

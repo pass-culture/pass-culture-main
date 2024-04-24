@@ -1,7 +1,7 @@
 import { useField } from 'formik'
 import React from 'react'
 
-import TextInput from '../TextInput'
+import { TextInput } from '../TextInput/TextInput'
 
 import { parseMinutesToHours } from './utils/parseMinutesToHours'
 

@@ -17,7 +17,7 @@ interface SelectInputProps extends ComponentProps<'select'> {
   value: string
 }
 
-const SelectInput = ({
+export const SelectInput = ({
   hasError = false,
   filterVariant,
   hasDescription = false,
@@ -65,5 +65,3 @@ const SelectInput = ({
     </div>
   </div>
 )
-
-export default SelectInput

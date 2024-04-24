@@ -13,7 +13,7 @@ import fullLinkIcon from 'icons/full-link.svg'
 import strokeValidIcon from 'icons/stroke-valid.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { Select } from 'ui-kit/form'
+import { Select } from 'ui-kit/form/Select/Select'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './PricingPoint.module.scss'

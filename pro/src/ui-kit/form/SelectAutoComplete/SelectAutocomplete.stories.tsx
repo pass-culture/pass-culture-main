@@ -4,8 +4,10 @@ import React from 'react'
 
 import { searchPatternInOptions } from 'utils/searchPatternInOptions'
 
-import SelectAutocomplete from './SelectAutocomplete'
-import type { SelectAutocompleteProps } from './SelectAutocomplete'
+import {
+  SelectAutocomplete,
+  SelectAutocompleteProps,
+} from './SelectAutocomplete'
 
 const ComponentWithFormik = (args: Args) => (
   <Formik initialValues={args.initialValues} onSubmit={() => {}}>

@@ -1,6 +1,6 @@
 import { Formik } from 'formik'
 
-import RadioGroup, { Direction } from './RadioGroup'
+import { Direction, RadioGroup } from './RadioGroup'
 
 export default {
   title: 'ui-kit/forms/RadioGroup',

@@ -5,7 +5,7 @@ import React from 'react'
 import { FieldSetLayout } from '../shared/FieldSetLayout/FieldSetLayout'
 
 import styles from './CheckboxGroup.module.scss'
-import CheckboxGroupItem from './CheckboxGroupItem'
+import { CheckboxGroupItem } from './CheckboxGroupItem'
 
 interface CheckboxGroupProps {
   groupName: string
@@ -22,7 +22,7 @@ interface CheckboxGroupProps {
   isOptional?: boolean
 }
 
-const CheckboxGroup = ({
+export const CheckboxGroup = ({
   group,
   groupName,
   legend,
@@ -58,5 +58,3 @@ const CheckboxGroup = ({
     </FieldSetLayout>
   )
 }
-
-export default CheckboxGroup

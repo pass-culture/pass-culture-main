@@ -2,7 +2,7 @@ import type { StoryObj } from '@storybook/react'
 
 import strokeCalendarIcon from 'icons/stroke-calendar.svg'
 
-import BaseInput from './BaseInput'
+import { BaseInput } from './BaseInput'
 
 export default {
   title: 'ui-kit/forms/shared/BaseInput',

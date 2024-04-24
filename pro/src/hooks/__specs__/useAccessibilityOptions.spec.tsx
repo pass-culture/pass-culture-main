@@ -4,7 +4,8 @@ import { Formik } from 'formik'
 import React from 'react'
 
 import { useAccessibilityOptions } from 'hooks'
-import { CheckboxGroup } from 'ui-kit'
+import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'
+
 const mockSetFieldValue = vi.fn()
 
 function TestCheckboxGroup() {
