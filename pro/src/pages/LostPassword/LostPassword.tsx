@@ -37,7 +37,7 @@ export const LostPassword = (): JSX.Element => {
   }
 
   return (
-    <AppLayout pageName="lost-password" layout="without-nav">
+    <AppLayout layout="without-nav">
       <header className={styles['logo-side']}>
         <SvgIcon
           className="logo-unlogged"

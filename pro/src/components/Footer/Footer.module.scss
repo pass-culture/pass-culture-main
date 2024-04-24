@@ -5,17 +5,13 @@
 .footer {
   margin-left: rem.torem(32px);
 
-  @media (min-width: size.$tablet) {
-    margin-left: calc(size.$side-nav-width + rem.torem(32px));
-  }
-
   @media (min-width: size.$mobile) {
-    height: size.$footer-height;
+    min-height: size.$footer-height;
   }
 
   &-layout-sticky-actions {
     height: size.$footer-height + size.$action-bar-sticky-height;
-    padding-bottom: size.$action-bar-sticky-height;
+    margin-bottom: size.$action-bar-sticky-height;
   }
 
   &-layout-funnel {

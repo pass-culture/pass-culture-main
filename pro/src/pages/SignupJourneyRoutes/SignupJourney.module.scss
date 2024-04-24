@@ -2,11 +2,6 @@
 @use "styles/variables/_size.scss" as size;
 @use "styles/mixins/_fonts.scss" as fonts;
 
-.sign-up-journey {
-  width: 100%;
-  max-height: calc(100vh - #{size.$action-bar-sticky-height});
-}
-
 .header {
   box-shadow: 0 3px 4px var(--color-medium-shadow);
   padding: rem.torem(15px) 0;

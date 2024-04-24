@@ -63,9 +63,15 @@
     border-top: unset;
 
     &-new-interface {
-      margin-left: calc(rem.torem(size.$side-nav-width));
+      padding-left: calc(rem.torem(size.$side-nav-width) + rem.torem(32px));
       justify-content: flex-start;
-      padding-left: rem.torem(32px);
+      max-width: size.$desktop;
+
+      @media (min-width: size.$desktop) {
+        margin: 0 auto;
+        border: 1px solid var(--color-grey-medium);
+        border-top: none;
+      }
     }
 
     .actions-bar-content {

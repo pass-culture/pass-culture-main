@@ -60,7 +60,7 @@ export const Reimbursements = (): JSX.Element => {
   }
 
   return (
-    <AppLayout pageName="reimbursements">
+    <AppLayout>
       <div className={styles['reimbursements-container']}>
         <h1 className={styles['title']}>Gestion financière</h1>
         <div>
