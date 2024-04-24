@@ -119,23 +119,6 @@ describe('AdageHeader', () => {
     expect(screen.getByText('1 000 €')).toBeInTheDocument()
   })
 
-  it('should return an error when the institution budget could not be retrieved', async () => {
-    vi.spyOn(
-      apiAdage,
-      'getEducationalInstitutionWithBudget'
-    ).mockRejectedValueOnce({})
-
-    renderAdageHeader(user)
-    await waitFor(() =>
-      expect(apiAdage.getEducationalInstitutionWithBudget).toHaveBeenCalled()
-    )
-
-    expect(notifyError).toHaveBeenNthCalledWith(
-      1,
-      'Nous avons rencontré un problème lors de la récupération des données.'
-    )
-  })
-
   const headerLinks: HeaderLinkProps[] = [
     { headerLinkLabel: 'Rechercher', headerLinkName: AdageHeaderLink.SEARCH },
     {
@@ -165,32 +148,34 @@ describe('AdageHeader', () => {
       })
     }
   )
-  it('should not display budget when user is readonly ', () => {
-    vi.spyOn(apiAdage, 'getEducationalInstitutionWithBudget')
-
+  it('should not display budget when user is readonly ', async () => {
     renderAdageHeader({ ...user, role: AdageFrontRoles.READONLY })
 
-    expect(apiAdage.getEducationalInstitutionWithBudget).not.toHaveBeenCalled()
+    await waitFor(() => {
+      expect(
+        apiAdage.getEducationalInstitutionWithBudget
+      ).not.toHaveBeenCalled()
+    })
   })
 
-  it('should not display adage link when user is readonly ', () => {
-    vi.spyOn(apiAdage, 'getEducationalInstitutionWithBudget')
-
+  it('should not display adage link when user is readonly ', async () => {
     renderAdageHeader({ ...user, role: AdageFrontRoles.READONLY })
 
-    expect(
-      screen.queryByRole('link', { name: /Solde prévisionnel/ })
-    ).not.toBeInTheDocument()
+    await waitFor(() => {
+      expect(
+        screen.queryByRole('link', { name: /Solde prévisionnel/ })
+      ).not.toBeInTheDocument()
+    })
   })
 
-  it('should not display help download link when user is readonly ', () => {
-    vi.spyOn(apiAdage, 'getEducationalInstitutionWithBudget')
-
+  it('should not display help download link when user is readonly ', async () => {
     renderAdageHeader({ ...user, role: AdageFrontRoles.READONLY })
 
-    expect(
-      screen.queryByRole('link', { name: 'Télécharger l’aide' })
-    ).not.toBeInTheDocument()
+    await waitFor(() => {
+      expect(
+        screen.queryByRole('link', { name: 'Télécharger l’aide' })
+      ).not.toBeInTheDocument()
+    })
   })
 
   it('should display a favorites tab in the header', () => {

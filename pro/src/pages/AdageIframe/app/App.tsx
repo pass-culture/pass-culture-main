@@ -1,3 +1,4 @@
+import { setUser as setSentryUser } from '@sentry/browser'
 import * as React from 'react'
 import { useEffect, useId, useState } from 'react'
 
@@ -30,6 +31,7 @@ export const App = (): JSX.Element => {
       try {
         const user = await apiAdage.authenticate()
         setUser(user)
+        user.email && setSentryUser({ email: user.email })
       } catch {
         setUser(null)
       } finally {
