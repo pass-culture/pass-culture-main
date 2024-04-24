@@ -141,7 +141,7 @@ export const AppLayout = ({
                       src={logoPassCultureProIcon}
                       viewBox="0 0 119 40"
                       width="119"
-                      className="logo"
+                      className={styles['lateral-panel-logo']}
                     />
                   </div>
                 )}
