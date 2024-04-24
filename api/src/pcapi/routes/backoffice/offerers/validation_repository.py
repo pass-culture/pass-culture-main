@@ -40,48 +40,6 @@ def _apply_query_filters(
     offerer_id_column: sa.orm.InstrumentedAttribute,
 ) -> sa.orm.Query:
     is_venue_table_joined = False
-    if q:
-        sanitized_q = email_utils.sanitize_email(q)
-
-        if sanitized_q.isnumeric():
-            num_digits = len(sanitized_q)
-            # for dmsToken containing digits only
-            if num_digits == 12:
-                query, is_venue_table_joined = _join_venue(query, is_venue_table_joined)
-                query = query.filter(offerers_models.Venue.dmsToken == sanitized_q)
-            elif num_digits == 9:
-                query = query.filter(offerers_models.Offerer.siren == sanitized_q)
-            elif num_digits == 5:
-                query = query.filter(offerers_models.Offerer.postalCode == sanitized_q)
-            elif num_digits in (2, 3):
-                query = query.filter(offerers_models.Offerer.departementCode == sanitized_q)
-            else:
-                raise ApiErrors(
-                    {
-                        "q": [
-                            "Le nombre de chiffres ne correspond pas à un SIREN, code postal, département ou ID DMS CB"
-                        ]
-                    },
-                    status_code=400,
-                )
-        elif email_utils.is_valid_email(sanitized_q):
-            query = query.filter(users_models.User.email == sanitized_q)
-        # We theoretically can have venues which name is 12 letters between a and f
-        # But it never happened in the database, and it's costly to handle
-        elif dms_token_term := re.match(offerers_api.DMS_TOKEN_REGEX, q):
-            query, is_venue_table_joined = _join_venue(query, is_venue_table_joined)
-            query = query.filter(offerers_models.Venue.dmsToken == dms_token_term.group(1).lower())
-        else:
-            name_query = "%{}%".format(clean_accents(q))
-            query = query.filter(
-                sa.or_(
-                    sa.func.immutable_unaccent(offerers_models.Offerer.name).ilike(name_query),
-                    sa.func.immutable_unaccent(offerers_models.Offerer.city).ilike(name_query),
-                    sa.func.immutable_unaccent(users_models.User.firstName + " " + users_models.User.lastName).ilike(
-                        name_query
-                    ),
-                )
-            )
 
     if status:
         query = query.filter(cls.validationStatus.in_(status))  # type: ignore [attr-defined]
@@ -128,6 +86,55 @@ def _apply_query_filters(
         for region in regions:
             department_codes += get_department_codes_for_region(region)
         query = query.filter(offerers_models.Offerer.departementCode.in_(department_codes))  # type: ignore [attr-defined]
+
+    if q:
+        sanitized_q = email_utils.sanitize_email(q)
+
+        if sanitized_q.isnumeric():
+            num_digits = len(sanitized_q)
+            # for dmsToken containing digits only
+            if num_digits == 12:
+                query, is_venue_table_joined = _join_venue(query, is_venue_table_joined)
+                query = query.filter(offerers_models.Venue.dmsToken == sanitized_q)
+            elif num_digits == 9:
+                query = query.filter(offerers_models.Offerer.siren == sanitized_q)
+            elif num_digits == 5:
+                query = query.filter(offerers_models.Offerer.postalCode == sanitized_q)
+            elif num_digits in (2, 3):
+                query = query.filter(offerers_models.Offerer.departementCode == sanitized_q)
+            else:
+                raise ApiErrors(
+                    {
+                        "q": [
+                            "Le nombre de chiffres ne correspond pas à un SIREN, code postal, département ou ID DMS CB"
+                        ]
+                    },
+                    status_code=400,
+                )
+        elif email_utils.is_valid_email(sanitized_q):
+            query = query.filter(users_models.User.email == sanitized_q)
+        # We theoretically can have venues which name is 12 letters between a and f
+        # But it never happened in the database, and it's costly to handle
+        elif dms_token_term := re.match(offerers_api.DMS_TOKEN_REGEX, q):
+            query, is_venue_table_joined = _join_venue(query, is_venue_table_joined)
+            query = query.filter(offerers_models.Venue.dmsToken == dms_token_term.group(1).lower())
+        else:
+            name_query = "%{}%".format(clean_accents(q))
+            # UNION is really faster than OR when filtering on different tables (verified experimentally):
+            # - everything in `OR` => sequential scan on offerer
+            # - using `UNION` to split between offerer conditions and user condition => index scan
+            query = query.filter(
+                sa.or_(
+                    sa.func.immutable_unaccent(offerers_models.Offerer.name).ilike(name_query),
+                    sa.func.immutable_unaccent(offerers_models.Offerer.city).ilike(name_query),
+                )
+            ).union(
+                query.filter(
+                    sa.func.immutable_unaccent(users_models.User.firstName + " " + users_models.User.lastName).ilike(
+                        name_query
+                    )
+                )
+            )
 
     return query
 
