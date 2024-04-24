@@ -154,7 +154,7 @@ jobs:
                         "type": "section",
                         "text": {
                             "type": "mrkdwn",
-                            "text": ":white_check_mark: La version`v${{ needs.version.outputs.APP_VERSION }}` a été déployée sur `${{ github.event.inputs.target_environment }}`"
+                            "text": ":white_check_mark: La version `v${{ needs.version.outputs.APP_VERSION }}` a été déployée sur `${{ github.event.inputs.target_environment }}`"
                         }
                     }
                 ]
