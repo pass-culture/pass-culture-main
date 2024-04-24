@@ -16,6 +16,7 @@ import pcapi.core.educational.api.institution as institution_api
 import pcapi.core.educational.api.playlists as playlists_api
 import pcapi.core.educational.models as educational_models
 from pcapi.core.educational.utils import create_adage_jwt_fake_valid_token
+from pcapi.models import db
 from pcapi.repository import transaction
 from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
 from pcapi.utils.blueprint import Blueprint
@@ -131,10 +132,17 @@ def import_deposit_csv(path: str, year: int, ministry: str, conflict: str, final
 def synchronize_venues_from_adage_cultural_partners(debug: bool = False, with_timestamp: bool = False) -> None:
     timestamp = date_utils.days_ago_timestamp(2) if with_timestamp else None
     adage_api.synchronize_adage_ids_on_venues(debug=debug, timestamp=timestamp)
+    # This commit is very much needed at this time.
+    # log_cron_with_transaction will only commit IF the session is dirty
+    # Since synchronize_adage_ids_on_venues changes are wrapped inside an atomic
+    # all the changes are pushed to the DB and the session is cleaned which
+    # will NOT trigger the commit
+    db.session.commit()
 
 
 @blueprint.cli.command("synchronize_offerers_from_adage_cultural_partners")
 @click.option("--with-timestamp", type=bool, is_flag=True, default=False, help="Add timestamp (couple days ago)")
+@log_cron_with_transaction
 def synchronize_offerers_from_adage_cultural_partners(with_timestamp: bool = False) -> None:
     timestamp = date_utils.days_ago_timestamp(2) if with_timestamp else None
     with transaction():
