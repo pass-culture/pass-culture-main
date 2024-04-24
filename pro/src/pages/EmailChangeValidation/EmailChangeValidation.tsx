@@ -5,7 +5,7 @@ import { useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { AppLayout } from 'app/AppLayout'
-import { EmailChangeValidationScreen } from 'screens/EmailChangeValidation'
+import { EmailChangeValidationScreen } from 'screens/EmailChangeValidation/EmailChangeValidation'
 import { updateUser } from 'store/user/reducer'
 import { parse } from 'utils/query-string'
 

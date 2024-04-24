@@ -15,7 +15,7 @@ import {
 } from 'core/OfferEducational'
 import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
 import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
-import CollectiveOfferVisibilityScreen from 'screens/CollectiveOfferVisibility'
+import { CollectiveOfferVisibilityScreen } from 'screens/CollectiveOfferVisibility/CollectiveOfferVisibility'
 import {
   MandatoryCollectiveOfferFromParamsProps,
   withCollectiveOfferFromParams,

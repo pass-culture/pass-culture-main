@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { CsvTableScreen } from 'screens/CsvTable'
+import { CsvTableScreen } from 'screens/CsvTable/CsvTable'
 
 import { getCsvData } from './adapters/getCsvData'
 

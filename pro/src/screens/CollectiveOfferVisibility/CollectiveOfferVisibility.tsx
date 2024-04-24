@@ -74,7 +74,7 @@ interface TeacherOption extends SelectOption {
   email: string
 }
 
-const CollectiveOfferVisibility = ({
+export const CollectiveOfferVisibilityScreen = ({
   mode,
   patchInstitution,
   initialValues,
@@ -346,5 +346,3 @@ const CollectiveOfferVisibility = ({
     </>
   )
 }
-
-export default CollectiveOfferVisibility

@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
-import type { ITableData } from 'screens/CsvTable'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { API_URL } from 'utils/config'
 import { getKey } from 'utils/strings'
 
+import { TableData } from './types'
+
 export interface CsvTableProps {
-  getCsvData: (url: string) => Promise<ITableData | null>
+  getCsvData: (url: string) => Promise<TableData | null>
 }
 
-const CsvTable = ({ getCsvData }: CsvTableProps): JSX.Element => {
+export const CsvTableScreen = ({ getCsvData }: CsvTableProps): JSX.Element => {
   const { search } = useLocation()
-  const [dataFromCsv, setDataFromCsv] = useState<ITableData | null>()
+  const [dataFromCsv, setDataFromCsv] = useState<TableData | null>()
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
   useEffect(() => {
@@ -73,5 +74,3 @@ const CsvTable = ({ getCsvData }: CsvTableProps): JSX.Element => {
     </main>
   )
 }
-
-export default CsvTable
