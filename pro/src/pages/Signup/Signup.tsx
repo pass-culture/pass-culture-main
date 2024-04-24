@@ -14,7 +14,7 @@ export const Signup = () => {
     'ENABLE_PRO_ACCOUNT_CREATION'
   )
   return (
-    <AppLayout pageName="sign-up" layout="without-nav">
+    <AppLayout layout="without-nav">
       <header className={styles['logo-side']}>
         <SvgIcon
           className="logo-unlogged"

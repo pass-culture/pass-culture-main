@@ -10,17 +10,10 @@ import styles from './OldLayout.module.scss'
 
 interface OldLayoutProps {
   children?: React.ReactNode
-  pageName?: string
-  className?: string
   layout?: 'basic' | 'funnel' | 'without-nav' | 'sticky-actions'
 }
 
-export const OldLayout = ({
-  children,
-  className,
-  pageName = 'Accueil',
-  layout = 'basic',
-}: OldLayoutProps) => {
+export const OldLayout = ({ children, layout = 'basic' }: OldLayoutProps) => {
   return (
     <>
       <SkipLinks />
@@ -28,17 +21,12 @@ export const OldLayout = ({
 
       <main
         id="content"
-        className={classnames(
-          {
-            page: true,
-            [`${pageName}-page`]: true,
-            [styles.container]:
-              layout === 'basic' || layout === 'sticky-actions',
-            [styles['container-sticky-actions']]: layout === 'sticky-actions',
-            [styles['container-without-nav']]: layout === 'without-nav',
-          },
-          className
-        )}
+        className={classnames({
+          page: true,
+          [styles.container]: layout === 'basic' || layout === 'sticky-actions',
+          [styles['container-sticky-actions']]: layout === 'sticky-actions',
+          [styles['container-without-nav']]: layout === 'without-nav',
+        })}
       >
         {layout === 'funnel' || layout === 'without-nav' ? (
           children
