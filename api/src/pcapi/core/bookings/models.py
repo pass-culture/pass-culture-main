@@ -154,7 +154,7 @@ class Booking(PcObject, Base, Model):
 
     validationAuthorType: BookingValidationAuthorType = Column(Enum(BookingValidationAuthorType), nullable=True)
 
-    reimbursementDate = Column(DateTime, nullable=True, index=True)
+    reimbursementDate = Column(DateTime, nullable=True)
 
     depositId = Column(BigInteger, ForeignKey("deposit.id"), index=True, nullable=True)
 
