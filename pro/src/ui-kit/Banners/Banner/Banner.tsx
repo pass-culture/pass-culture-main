@@ -23,7 +23,7 @@ export interface BannerProps {
   isProvider?: boolean
 }
 
-const Banner = ({
+export const Banner = ({
   children,
   type = 'attention',
   closable = false,
@@ -114,5 +114,3 @@ const Banner = ({
     </div>
   )
 }
-
-export default Banner

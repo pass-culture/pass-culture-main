@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Banner } from 'ui-kit'
+import { Banner } from 'ui-kit/Banners/Banner/Banner'
 
 const ShowcaseBannerInfo = (): JSX.Element => (
   <Banner
