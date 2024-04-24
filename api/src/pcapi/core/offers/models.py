@@ -1072,7 +1072,9 @@ class BookMacroSection(PcObject, Base, Model):
     __tablename__ = "book_macro_section"
 
     macroSection: str = sa.Column(sa.Text, nullable=False)
-    section: str = sa.Column(sa.Text, nullable=False, unique=True)
+    section: str = sa.Column(sa.Text, nullable=False)
+
+    __table_args__ = (sa.Index("book_macro_section_section_idx", sa.func.lower(section), unique=True),)
 
 
 class PriceCategoryLabel(PcObject, Base, Model):
