@@ -73,6 +73,10 @@
 }
 
 .lateral-panel {
+  &-logo {
+    width: rem.torem(80px);
+  }
+
   &-wrapper {
     display: none;
     position: fixed;
