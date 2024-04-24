@@ -12,7 +12,7 @@ interface EmailChangeValidationProps {
   isSuccess: boolean
 }
 
-const EmailChangeValidation = ({
+export const EmailChangeValidationScreen = ({
   isSuccess,
 }: EmailChangeValidationProps): JSX.Element => {
   return (
@@ -61,5 +61,3 @@ const EmailChangeValidation = ({
     </>
   )
 }
-
-export default EmailChangeValidation

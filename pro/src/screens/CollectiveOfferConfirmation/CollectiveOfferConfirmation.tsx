@@ -106,7 +106,7 @@ const mapOfferStatusToData = (
   return activeOffer(institutionName)
 }
 
-const CollectiveOfferConfirmation = ({
+export const CollectiveOfferConfirmationScreen = ({
   offererId,
   offerStatus,
   isShowcase,
@@ -191,5 +191,3 @@ const CollectiveOfferConfirmation = ({
     </div>
   )
 }
-
-export default CollectiveOfferConfirmation

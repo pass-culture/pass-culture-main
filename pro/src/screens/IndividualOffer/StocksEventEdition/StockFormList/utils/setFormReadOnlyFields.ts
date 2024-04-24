@@ -22,7 +22,7 @@ interface SetReadOnlyFieldsArgs {
   offerStatus: OfferStatus
 }
 
-const setFormReadOnlyFields = ({
+export const setFormReadOnlyFields = ({
   beginningDate,
   today,
   lastProviderName,
@@ -58,5 +58,3 @@ const setFormReadOnlyFields = ({
 
   return []
 }
-
-export default setFormReadOnlyFields

@@ -17,7 +17,7 @@ interface CollectiveOfferSummaryCreationProps {
     | GetCollectiveOfferResponseModel
 }
 
-const CollectiveOfferSummaryCreation = ({
+export const CollectiveOfferSummaryCreationScreen = ({
   offer,
 }: CollectiveOfferSummaryCreationProps) => {
   const { requete: requestId } = useParams()
@@ -67,5 +67,3 @@ const CollectiveOfferSummaryCreation = ({
     </div>
   )
 }
-
-export default CollectiveOfferSummaryCreation

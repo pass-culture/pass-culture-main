@@ -66,7 +66,7 @@ import {
   StockEventFormValues,
   StocksEventFormValues,
 } from './StockFormList/types'
-import { buildInitialValues } from './StockFormList/utils'
+import { buildInitialValues } from './StockFormList/utils/buildInitialValues'
 import { getValidationSchema } from './StockFormList/validationSchema'
 import styles from './StocksEventEdition.module.scss'
 import { submitToApi } from './submitToApi'

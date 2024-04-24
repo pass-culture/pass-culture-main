@@ -3,10 +3,10 @@ import React from 'react'
 
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import CsvTable, { CsvTableProps } from '../CsvTable'
+import { CsvTableScreen, CsvTableProps } from '../CsvTable'
 
 const renderCsvTable = (props: CsvTableProps) =>
-  renderWithProviders(<CsvTable {...props} />)
+  renderWithProviders(<CsvTableScreen {...props} />)
 
 describe('src | components | layout | CsvTable', () => {
   describe('render', () => {

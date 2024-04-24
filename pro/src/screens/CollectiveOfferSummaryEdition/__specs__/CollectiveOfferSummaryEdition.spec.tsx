@@ -10,7 +10,7 @@ import { getCollectiveOfferTemplateFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
-import CollectiveOfferSummaryEdition from '../CollectiveOfferSummaryEdition'
+import { CollectiveOfferSummaryEditionScreen } from '../CollectiveOfferSummaryEdition'
 
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
@@ -21,7 +21,7 @@ const renderCollectiveOfferSummaryEdition = (
     | GetCollectiveOfferResponseModel
 ) => {
   renderWithProviders(
-    <CollectiveOfferSummaryEdition
+    <CollectiveOfferSummaryEditionScreen
       offer={offer}
       reloadCollectiveOffer={vi.fn()}
       mode={Mode.EDITION}
