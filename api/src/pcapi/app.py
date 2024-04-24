@@ -8,10 +8,10 @@ from pcapi.flask_app import setup_metrics
 
 
 app.config["SESSION_COOKIE_HTTPONLY"] = True
-app.config["SESSION_COOKIE_SECURE"] = not settings.IS_DEV
+app.config["SESSION_COOKIE_SECURE"] = settings.SESSION_COOKIE_SECURE
 app.config["SESSION_COOKIE_SAMESITE"] = settings.SESSION_COOKIE_SAMESITE
 app.config["REMEMBER_COOKIE_HTTPONLY"] = True
-app.config["REMEMBER_COOKIE_SECURE"] = not settings.IS_DEV
+app.config["REMEMBER_COOKIE_SECURE"] = settings.SESSION_COOKIE_SECURE
 app.config["REMEMBER_COOKIE_DURATION"] = 90 * 24 * 3600
 app.config["PERMANENT_SESSION_LIFETIME"] = 90 * 24 * 3600
 app.config["FLASK_ADMIN_SWATCH"] = "flatly"
