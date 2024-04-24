@@ -17,11 +17,11 @@ from pcapi.routes.backoffice.scss import preprocess_scss
 
 
 app.config["SESSION_COOKIE_HTTPONLY"] = True
-app.config["SESSION_COOKIE_SECURE"] = not settings.IS_DEV
+app.config["SESSION_COOKIE_SECURE"] = settings.SESSION_COOKIE_SECURE
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 app.config["SESSION_COOKIE_NAME"] = "bo_session"
 app.config["REMEMBER_COOKIE_HTTPONLY"] = True
-app.config["REMEMBER_COOKIE_SECURE"] = not settings.IS_DEV
+app.config["REMEMBER_COOKIE_SECURE"] = settings.SESSION_COOKIE_SECURE
 app.config["REMEMBER_COOKIE_DURATION"] = 120 * 60
 app.config["REMEMBER_COOKIE_NAME"] = "bo_remember_me"
 app.config["PERMANENT_SESSION_LIFETIME"] = 120 * 60
