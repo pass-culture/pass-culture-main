@@ -46,6 +46,7 @@ export const initializeSentry = () => {
     ignoreErrors: [
       // Random plugins/extensions
       '_avast_submit',
+      'window.norton',
       'top.GLOBALS',
       '__AutoFillPopupClose__', // create by a random chinese web extension for mobile safari
       // See: http://blog.errorception.com/2012/03/tale-of-unfindable-js-error.html
