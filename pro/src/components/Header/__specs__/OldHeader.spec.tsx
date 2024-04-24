@@ -10,7 +10,7 @@ import {
   renderWithProviders,
 } from 'utils/renderWithProviders'
 
-import Header from '../Header'
+import OldHeader from '../OldHeader'
 
 const mockLogEvent = vi.fn()
 vi.mock('apiClient/api', () => ({
@@ -18,7 +18,7 @@ vi.mock('apiClient/api', () => ({
 }))
 
 const renderHeader = (options?: RenderWithProvidersOptions) =>
-  renderWithProviders(<Header />, {
+  renderWithProviders(<OldHeader />, {
     ...options,
     initialRouterEntries: ['/accueil'],
   })
