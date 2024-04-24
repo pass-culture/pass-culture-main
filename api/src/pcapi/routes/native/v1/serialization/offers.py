@@ -222,6 +222,11 @@ def get_gtl_labels(gtl_id: str) -> GtlLabels | None:
     return None
 
 
+class OfferUpdatedStocksResponse(BaseModel):
+    offerId: int
+    stocks: list[OfferStockResponse]
+
+
 class OfferResponse(BaseModel):
     @classmethod
     def from_orm(cls, offer: Offer) -> "OfferResponse":

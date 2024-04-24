@@ -1,3 +1,4 @@
+from flask import abort
 import sqlalchemy as sa
 from sqlalchemy.orm import joinedload
 
@@ -48,10 +49,20 @@ def get_offer(offer_id: str) -> serializers.OfferResponse:
         .first_or_404()
     )
 
+
+@blueprint.native_route("/offer/<int:offer_id>/updated_stocks", methods=["GET"])
+@spectree_serialize(response_model=serializers.OfferResponse, api=blueprint.api, on_error_statuses=[404])
+def get_offer_updated_stocks(offer_id: str) -> serializers.OfferUpdatedStocksResponse:
+    offer = Offer.query.get(offer_id)
+    if not offer:
+        abort(404)
+
     if offer.isActive and providers_repository.is_cinema_external_ticket_applicable(offer):
         api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
 
-    return serializers.OfferResponse.from_orm(offer)
+    return serializers.OfferUpdatedStocksResponse(
+        offerId=offer.id, stocks=[serializers.OfferStockResponse.from_orm(stock) for stock in offer.stocks]
+    )
 
 
 @blueprint.native_route("/offer/<int:offer_id>/report", methods=["POST"])

@@ -551,6 +551,50 @@ class OffersTest:
         assert len(offer.stocks) == 2
 
 
+class UpdatedOfferStocksTest:
+    @override_features(ENABLE_BOOST_API_INTEGRATION=True)
+    @patch("pcapi.connectors.boost.requests.get")
+    def test_updates_stocks(self, request_get, client):
+        movie_id = 207
+        first_show_id = 36683
+        will_be_sold_out_show = 36684
+
+        response_return_value = mock.MagicMock(status_code=200, text="", headers={"Content-Type": "application/json"})
+        response_return_value.json = mock.MagicMock(
+            return_value=boost_fixtures.ShowtimesWithFilmIdEndpointResponse.PAGE_1_JSON_DATA_3_SHOWTIMES
+        )
+        request_get.return_value = response_return_value
+
+        boost_provider = get_provider_by_local_class("BoostStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=boost_provider)
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            idAtProvider=venue_provider.venueIdAtOfferProvider,
+        )
+        providers_factories.BoostCinemaDetailsFactory(
+            cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/"
+        )
+        offer_id_at_provider = f"{movie_id}%{venue_provider.venueId}%Boost"
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            idAtProvider=offer_id_at_provider,
+            lastProviderId=venue_provider.providerId,
+            venue=venue_provider.venue,
+        )
+        first_show_stock = offers_factories.EventStockFactory(
+            offer=offer, idAtProviders=f"{offer_id_at_provider}#{first_show_id}", quantity=96
+        )
+        will_be_sold_out_show_stock = offers_factories.EventStockFactory(
+            offer=offer, idAtProviders=f"{offer_id_at_provider}#{will_be_sold_out_show}", quantity=96
+        )
+
+        response = client.get(f"/native/v1/offer/{offer.id}/updated_stocks")
+        assert response.status_code == 200
+        assert first_show_stock.remainingQuantity == 96
+        assert will_be_sold_out_show_stock.remainingQuantity == 0
+
+
 class SendOfferWebAppLinkTest:
     def test_sendinblue_send_offer_webapp_link_by_email(self, client):
         """
