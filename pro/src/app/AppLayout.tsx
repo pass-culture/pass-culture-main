@@ -1,24 +1,9 @@
-import classnames from 'classnames'
-import React, { useEffect, useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
+import React from 'react'
 
-import DomainNameBanner from 'components/DomainNameBanner'
-import Footer from 'components/Footer/Footer'
-import Header from 'components/Header/Header'
-import OldHeader from 'components/Header/OldHeader'
-import NewNavReview from 'components/NewNavReview/NewNavReview'
-import SideNavLinks from 'components/SideNavLinks/SideNavLinks'
-import SkipLinks from 'components/SkipLinks'
 import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
-import logoPassCultureProIcon from 'icons/logo-pass-culture-pro.svg'
-import strokeCloseIcon from 'icons/stroke-close.svg'
-import { selectCurrentUser } from 'store/user/selectors'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant } from 'ui-kit/Button/types'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import styles from './AppLayout.module.scss'
-
+import { Layout } from './App/layout/Layout'
+import { OldLayout } from './App/layout/OldLayout'
 export interface AppLayoutProps {
   children?: React.ReactNode
   pageName?: string
@@ -33,179 +18,14 @@ export const AppLayout = ({
   layout = 'basic',
 }: AppLayoutProps) => {
   const isNewSideBarNavigation = useIsNewInterfaceActive()
-  const currentUser = useSelector(selectCurrentUser)
-  const [lateralPanelOpen, setLateralPanelOpen] = useState(false)
 
-  const openButtonRef = useRef<HTMLButtonElement>(null)
-  const closeButtonRef = useRef<HTMLButtonElement>(null)
-  const navPanel = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const modalElement = navPanel.current
-    if (!modalElement) {
-      return () => {}
-    }
-
-    const focusableElements = modalElement.querySelectorAll<HTMLElement>(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-    )
-    const firstElement = focusableElements[0]
-    const lastElement = focusableElements[focusableElements.length - 1]
-
-    const handleTabKeyPress = (event: KeyboardEvent) => {
-      if (event.key === 'Tab') {
-        if (event.shiftKey && document.activeElement === firstElement) {
-          event.preventDefault()
-          lastElement.focus()
-        } else if (!event.shiftKey && document.activeElement === lastElement) {
-          event.preventDefault()
-          firstElement.focus()
-        }
-      }
-    }
-
-    if (lateralPanelOpen) {
-      modalElement.addEventListener('keydown', handleTabKeyPress)
-    }
-
-    return () => {
-      modalElement.removeEventListener('keydown', handleTabKeyPress)
-    }
-  }, [lateralPanelOpen])
-
-  return (
-    <>
-      <SkipLinks />
-      {(layout === 'basic' || layout === 'sticky-actions') &&
-        (isNewSideBarNavigation ? (
-          <Header
-            lateralPanelOpen={lateralPanelOpen}
-            setLateralPanelOpen={setLateralPanelOpen}
-            focusCloseButton={() => {
-              setTimeout(() => {
-                closeButtonRef.current?.focus()
-              })
-            }}
-            ref={openButtonRef}
-          />
-        ) : (
-          <OldHeader />
-        ))}
-      <div
-        className={classnames({
-          [styles['page-layout']]: true,
-          [styles['page-layout-full']]: layout === 'without-nav',
-          [styles[`content-layout-${layout}`]]: isNewSideBarNavigation,
-          [styles[`content-layout-${layout}-with-review-banner`]]:
-            isNewSideBarNavigation &&
-            Boolean(currentUser?.navState?.eligibilityDate),
-        })}
-        onKeyDown={(e) => {
-          if (e.key === 'Escape' && lateralPanelOpen) {
-            setLateralPanelOpen(false)
-          }
-        }}
-      >
-        {isNewSideBarNavigation &&
-          (layout === 'basic' || layout === 'sticky-actions') && (
-            <nav
-              id="lateral-panel"
-              className={classnames({
-                [styles['lateral-panel-wrapper']]: true,
-                [styles['lateral-panel-wrapper-open']]: lateralPanelOpen,
-              })}
-              ref={navPanel}
-              aria-label="Menu principal"
-            >
-              <div className={styles['lateral-panel-menu']}>
-                {lateralPanelOpen && (
-                  <div
-                    className={classnames({
-                      [styles['lateral-panel-nav']]: true,
-                      [styles['lateral-panel-nav-open']]: lateralPanelOpen,
-                    })}
-                  >
-                    <Button
-                      aria-expanded={lateralPanelOpen}
-                      variant={ButtonVariant.TERNARY}
-                      onClick={() => {
-                        setLateralPanelOpen(!lateralPanelOpen)
-                        openButtonRef.current?.focus()
-                      }}
-                      aria-label="Fermer"
-                      aria-controls="lateral-panel"
-                      ref={closeButtonRef}
-                      className={styles['lateral-panel-nav-button']}
-                    >
-                      <SvgIcon src={strokeCloseIcon} alt="" width="24" />
-                    </Button>
-                    <SvgIcon
-                      alt="Pass Culture pro, l’espace des acteurs culturels"
-                      src={logoPassCultureProIcon}
-                      viewBox="0 0 119 40"
-                      width="119"
-                      className={styles['lateral-panel-logo']}
-                    />
-                  </div>
-                )}
-                <SideNavLinks isLateralPanelOpen={lateralPanelOpen} />
-              </div>
-            </nav>
-          )}
-        <div
-          className={classnames({
-            [styles['main-wrapper']]: true,
-            [styles['main-wrapper-old']]:
-              !isNewSideBarNavigation || layout === 'funnel',
-          })}
-        >
-          {isNewSideBarNavigation &&
-            Boolean(currentUser?.navState?.eligibilityDate) &&
-            layout !== 'funnel' &&
-            layout !== 'without-nav' && <NewNavReview />}
-          <main
-            id="content"
-            className={classnames(
-              {
-                page: true,
-                [`${pageName}-page`]: true,
-                [styles['container-full']]:
-                  isNewSideBarNavigation && layout === 'basic',
-                [styles.container]:
-                  layout === 'basic' || layout === 'sticky-actions',
-                [styles['container-sticky-actions']]:
-                  layout === 'sticky-actions',
-                [styles['container-sticky-actions-new-interface']]:
-                  isNewSideBarNavigation && layout === 'sticky-actions',
-                [styles['container-without-nav']]: layout === 'without-nav',
-                [styles[`content-layout`]]: isNewSideBarNavigation,
-                [styles[`content-layout-${layout}`]]: isNewSideBarNavigation,
-              },
-              className
-            )}
-          >
-            {layout === 'funnel' || layout === 'without-nav' ? (
-              children
-            ) : (
-              <div
-                className={classnames({
-                  [styles['page-content']]: true,
-                  [styles['page-content-with-review-banner']]:
-                    isNewSideBarNavigation &&
-                    Boolean(currentUser?.navState?.eligibilityDate),
-                  [styles['page-content-old']]: !isNewSideBarNavigation,
-                })}
-              >
-                <div className={styles['after-notification-content']}>
-                  <DomainNameBanner />
-                  {children}
-                </div>
-              </div>
-            )}
-          </main>
-          {layout !== 'funnel' && <Footer layout={layout} />}
-        </div>
-      </div>
-    </>
+  return isNewSideBarNavigation ? (
+    <Layout className={className} pageName={pageName} layout={layout}>
+      {children}
+    </Layout>
+  ) : (
+    <OldLayout className={className} pageName={pageName} layout={layout}>
+      {children}
+    </OldLayout>
   )
 }
