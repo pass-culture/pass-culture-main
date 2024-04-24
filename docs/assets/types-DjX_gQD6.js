@@ -1,0 +1,1 @@
+var R=(r=>(r.PRIMARY="primary",r.SECONDARY="secondary",r.TERNARY="ternary",r.TERNARYPINK="ternary-pink",r.QUATERNARY="quaternary",r.QUATERNARYPINK="quaternary-pink",r.BOX="box",r))(R||{}),e=(r=>(r.RIGHT="right",r.LEFT="left",r.CENTER="center",r))(e||{});export{R as B,e as I};
