@@ -2,7 +2,7 @@ import React, { useCallback } from 'react'
 
 import { GetOffererResponseModel, GetVenueResponseModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
-import { Banner } from 'ui-kit'
+import { Banner } from 'ui-kit/Banners/Banner/Banner'
 
 import PricingPoint from '../PricingPoint'
 
