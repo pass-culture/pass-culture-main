@@ -9,7 +9,7 @@ import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/compute
 import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
 import { useAdapter } from 'hooks'
 import useNotification from 'hooks/useNotification'
-import CollectiveOfferVisibilityScreen from 'screens/CollectiveOfferVisibility'
+import { CollectiveOfferVisibilityScreen } from 'screens/CollectiveOfferVisibility/CollectiveOfferVisibility'
 import {
   MandatoryCollectiveOfferFromParamsProps,
   withCollectiveOfferFromParams,

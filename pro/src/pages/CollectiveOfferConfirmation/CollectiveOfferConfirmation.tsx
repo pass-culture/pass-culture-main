@@ -3,7 +3,7 @@ import React from 'react'
 import { AppLayout } from 'app/AppLayout'
 import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
 import { isCollectiveOfferTemplate } from 'core/OfferEducational'
-import CollectiveOfferConfirmationScreen from 'screens/CollectiveOfferConfirmation'
+import { CollectiveOfferConfirmationScreen } from 'screens/CollectiveOfferConfirmation/CollectiveOfferConfirmation'
 import {
   MandatoryCollectiveOfferFromParamsProps,
   withCollectiveOfferFromParams,

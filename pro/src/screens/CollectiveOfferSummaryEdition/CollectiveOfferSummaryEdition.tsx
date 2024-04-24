@@ -21,7 +21,7 @@ interface CollectiveOfferSummaryEditionProps {
   mode: Mode
 }
 
-const CollectiveOfferSummaryEdition = ({
+export const CollectiveOfferSummaryEditionScreen = ({
   offer,
   reloadCollectiveOffer,
   mode,
@@ -72,5 +72,3 @@ const CollectiveOfferSummaryEdition = ({
     </>
   )
 }
-
-export default CollectiveOfferSummaryEdition

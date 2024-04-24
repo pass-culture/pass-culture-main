@@ -14,7 +14,8 @@ import getOfferRequestInformationsAdapter from 'pages/CollectiveOfferFromRequest
 import { getCollectiveOfferFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import CollectiveOfferVisibility, {
+import {
+  CollectiveOfferVisibilityScreen,
   CollectiveOfferVisibilityProps,
 } from '../CollectiveOfferVisibility'
 
@@ -63,7 +64,7 @@ const institutions: EducationalInstitutionResponseModel[] = [
 ]
 
 const renderVisibilityStep = (props: CollectiveOfferVisibilityProps) => {
-  return renderWithProviders(<CollectiveOfferVisibility {...props} />)
+  return renderWithProviders(<CollectiveOfferVisibilityScreen {...props} />)
 }
 
 describe('CollectiveOfferVisibility', () => {

@@ -6,7 +6,8 @@ import { FORMAT_HH_mm, FORMAT_ISO_DATE_ONLY, isDateValid } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import { StocksEventFormValues } from '../types'
-import { setFormReadOnlyFields } from '../utils'
+
+import { setFormReadOnlyFields } from './setFormReadOnlyFields'
 
 interface BuildInitialValuesArgs {
   departementCode?: string | null
