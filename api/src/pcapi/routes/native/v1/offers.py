@@ -134,3 +134,55 @@ def get_subcategories_v2() -> subcategories_v2_serializers.SubcategoriesResponse
             for genre_type in subcategories_v2.GenreType
         ],
     )
+
+
+@blueprint.native_route("/category_tree", methods=["GET"])
+@spectree_serialize(api=blueprint.api, response_model=dict)
+def get_category_tree() -> dict:
+    return [
+        {
+            "children": [
+                {
+                    "label": "Sous Cinéma",
+                    "children": [
+                        {
+                            "label": "Événements cinéma",
+                            "name": "EVENEMENT_CINEMA",
+                            "position": 1,
+                            "type": "NativeCategory",
+                            "children": [],
+                            "blockName": "SousCinéma",
+                            "blockPosition": 1,
+                        },
+                        {
+                            "label": "Séances de cinéma",
+                            "name": "SEANCE_CINEMA",
+                            "position": 1,
+                            "type": "NativeCategory",
+                            "parent": "SEARCH_GROUP_FILMS_SERIES_CINEMA",
+                            "children": [
+                                {
+                                    "label": "Action",
+                                    "name": "ACTION",
+                                    "position": 1,
+                                    "searchCriteria": {
+                                        "searchName": "ACTION",
+                                        "searchFilter": "genres",
+                                        "gtls": [],
+                                    },
+                                    "type": "GenreType",
+                                    "children": [],
+                                }
+                            ],
+                        },
+                    ],
+                }
+            ],
+            "containsBlocks": True,
+            "id": "SEARCH_GROUP_FILMS_SERIES_CINEMA",
+            "label": "Cinéma, films et séries",
+            "name": "FILMS_SERIES_CINEMA",
+            "position": 1,
+            "type": "SearchGroup",
+        }
+    ]

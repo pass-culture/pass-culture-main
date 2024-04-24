@@ -2170,3 +2170,35 @@ class SubcategoriesTest:
                 ],
             },
         ]
+
+
+class NewArboTest:
+    def test_returns_new_arbo(self, client):
+        response = client.get("/native/v1/category_tree")
+
+        assert response.status_code == 200
+
+        # children: CategoryNode[] // [Romances, Thriller....]
+        # parent: CategoryNode // Livres
+        # position: number // 1
+        # label: string // 'Romans et ...'
+        # searchName?: string // undefined
+        # gtls?: GTL[] // []
+        # containsBlock: boolean // false
+        # blockLabel?: string // Livres papier
+        # blocks: string[]
+        # type: ['SearchGroup', 'NativeCategory', 'GenreTypeKey', 'SubcategoryId', 'GTL'] // GenreTypeKey
+        # }
+
+        assert response.json == {
+            "categoryNodes": [
+                {
+                    "children": [],
+                    "name": "FILMS_SERIES_CINEMA",
+                    "label": "Cinéma, films et séries",
+                    "parent": None,
+                    "position": 1,
+                    "type": "SearchGroup",
+                },
+            ]
+        }
