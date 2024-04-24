@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux'
 import DomainNameBanner from 'components/DomainNameBanner'
 import Footer from 'components/Footer/Footer'
 import Header from 'components/Header/Header'
+import OldHeader from 'components/Header/OldHeader'
 import NewNavReview from 'components/NewNavReview/NewNavReview'
 import SideNavLinks from 'components/SideNavLinks/SideNavLinks'
 import SkipLinks from 'components/SkipLinks'
@@ -75,19 +76,21 @@ export const AppLayout = ({
   return (
     <>
       <SkipLinks />
-      {(layout === 'basic' || layout === 'sticky-actions') && (
-        <Header
-          lateralPanelOpen={lateralPanelOpen}
-          isTopMenuVisible
-          setLateralPanelOpen={setLateralPanelOpen}
-          focusCloseButton={() => {
-            setTimeout(() => {
-              closeButtonRef.current?.focus()
-            })
-          }}
-          ref={openButtonRef}
-        />
-      )}
+      {(layout === 'basic' || layout === 'sticky-actions') &&
+        (isNewSideBarNavigation ? (
+          <Header
+            lateralPanelOpen={lateralPanelOpen}
+            setLateralPanelOpen={setLateralPanelOpen}
+            focusCloseButton={() => {
+              setTimeout(() => {
+                closeButtonRef.current?.focus()
+              })
+            }}
+            ref={openButtonRef}
+          />
+        ) : (
+          <OldHeader />
+        ))}
       <div
         className={classnames({
           [styles['page-layout']]: true,

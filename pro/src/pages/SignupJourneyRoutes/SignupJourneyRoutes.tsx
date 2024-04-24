@@ -39,7 +39,7 @@ export const SignupJourneyRoutes = () => {
         layout="funnel"
       >
         {hasNewInterface ? (
-          <Header isTopMenuVisible disableHomeLink isFixed={false} />
+          <Header disableHomeLink isFixed={false} />
         ) : (
           <header className={styles['header']}>
             <div className={styles['header-content']}>
