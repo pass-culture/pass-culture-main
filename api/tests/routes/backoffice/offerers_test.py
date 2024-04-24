@@ -105,7 +105,6 @@ class GetOffererTest(GetEndpointHelper):
         assert f"Code postal : {offerer.postalCode} " in content
         assert f"Adresse : {offerer.street} " in content
         assert "Peut créer une offre EAC : Oui" in content
-        assert "Lieux référencés : 0/0" in content
         assert "Présence CB dans les lieux : 0 OK / 0 KO " in content
         assert "Tags structure : Collectivité Top acteur " in content
         badges = html_parser.extract(response.data, tag="span", class_="badge")
@@ -216,8 +215,11 @@ class GetOffererTest(GetEndpointHelper):
 
         assert "Présence CB dans les lieux : 2 OK / 1 KO " in html_parser.content_as_text(response.data)
 
-    def test_offerer_with_educational_venue_has_adage_data(self, authenticated_client, offerer):
-        offerers_factories.CollectiveVenueFactory(managingOfferer=offerer, adageId="1234")
+    def test_offerer_with_adage_venue_has_adage_data(self, authenticated_client):
+        offerer = offerers_factories.OffererFactory(allowedOnAdage=True)
+        offerers_factories.VenueFactory(managingOfferer=offerer, adageId="1234")
+        offerers_factories.VenueFactory(managingOfferer=offerer, adageId=None)
+        offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
 
         url = url_for(self.endpoint, offerer_id=offerer.id)
         with assert_num_queries(self.expected_num_queries):
@@ -225,21 +227,20 @@ class GetOffererTest(GetEndpointHelper):
             assert response.status_code == 200
 
         assert "Peut créer une offre EAC : Oui" in html_parser.content_as_text(response.data)
-        assert "Lieux référencés : 1/1" in html_parser.content_as_text(response.data)
+        # One venue with adageId out of two physical venues
+        assert "Lieux référencés : 1/2" in html_parser.content_as_text(response.data)
 
-    def test_offerer_with_no_right_educational_offer(self, authenticated_client):
-        offerer_not_allowed = offerers_factories.OffererFactory(allowedOnAdage=False)
-        offerers_factories.VirtualVenueFactory(
-            managingOfferer=offerer_not_allowed,
-        )
+    def test_offerer_with_no_adage_venue_has_adage_data(self, authenticated_client, offerer):
+        offerer = offerers_factories.OffererFactory(allowedOnAdage=True)
+        offerers_factories.VenueFactory(managingOfferer=offerer, adageId=None)
 
-        url = url_for(self.endpoint, offerer_id=offerer_not_allowed.id)
+        url = url_for(self.endpoint, offerer_id=offerer.id)
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
-        assert "Peut créer une offre EAC : Non" in html_parser.content_as_text(response.data)
-        assert "Lieux référencés : 0/0" in html_parser.content_as_text(response.data)
+        assert "Peut créer une offre EAC : Oui" in html_parser.content_as_text(response.data)
+        assert "Lieux référencés : 0/1" in html_parser.content_as_text(response.data)
 
     def test_offerer_with_no_individual_subscription_tab(self, authenticated_client, offerer):
         offerer_id = offerer.id
@@ -1232,7 +1233,6 @@ class GetOffererVenuesTest(GetEndpointHelper):
         assert not rows[0].get("Type de lieu")
         assert rows[0]["Présence web"] == ""
         assert rows[0]["Offres cibles"] == ""
-        assert rows[0]["Statut DMS Adage"] == ""
 
         assert rows[1]["ID"] == str(venue_2.id)
         assert rows[1]["SIRET"] == venue_2.siret
@@ -1242,9 +1242,109 @@ class GetOffererVenuesTest(GetEndpointHelper):
         assert not rows[1].get("Type de lieu")
         assert rows[1]["Présence web"] == "https://example.com https://pass.culture.fr"
         assert rows[1]["Offres cibles"] == "Indiv. et coll."
-        assert rows[1]["Statut DMS Adage"] == "En construction"
-        assert rows[1]["Dossier DMS Adage"] == "35"
-        assert "https://www.demarches-simplifiees.fr/procedures/1/dossiers/35" in str(response.data)
+
+
+class GetOffererCollectiveDmsApplicationsTest(GetEndpointHelper):
+    endpoint = "backoffice_web.offerer.get_collective_dms_applications"
+    endpoint_kwargs = {"offerer_id": 1}
+    needed_permission = perm_models.Permissions.READ_PRO_ENTITY
+
+    # - session + authenticated user (2 queries)
+    # - dms applications with joined data (1 query)
+    expected_num_queries = 3
+
+    def test_get_collective_dms_applications(self, authenticated_client):
+        offerer = offerers_factories.OffererFactory(siren="123456789")
+        venue_1 = offerers_factories.VenueFactory(managingOfferer=offerer, siret="12345678900001")
+        venue_2 = offerers_factories.VenueFactory(managingOfferer=offerer, siret="12345678900002")
+        educational_factories.CollectiveDmsApplicationFactory(
+            venue=venue_1,
+            application=35,
+            state="refuse",
+            depositDate=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        )
+        educational_factories.CollectiveDmsApplicationFactory(
+            venue=venue_2, application=36, depositDate=datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        )
+        educational_factories.CollectiveDmsApplicationFactory(
+            venue=venue_1,
+            application=37,
+            state="accepte",
+            depositDate=datetime.datetime.utcnow() - datetime.timedelta(days=3),
+        )
+        educational_factories.CollectiveDmsApplicationWithNoVenueFactory(
+            siret="12345678900003",
+            application=38,
+            depositDate=datetime.datetime.utcnow() - datetime.timedelta(days=4),
+        )
+        educational_factories.CollectiveDmsApplicationFactory(application=39)
+        educational_factories.CollectiveDmsApplicationWithNoVenueFactory(siret="12345123456789")
+        educational_factories.CollectiveDmsApplicationWithNoVenueFactory(siret="12345678000009")
+
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 4
+
+        assert rows[0]["ID"] == "35"
+        assert rows[0]["Date de dépôt"] == (datetime.datetime.utcnow() - datetime.timedelta(days=1)).strftime(
+            "%d/%m/%Y"
+        )
+        assert rows[0]["État"] == "Refusé"
+        assert rows[0]["Date de dernière mise à jour"] == (
+            datetime.datetime.utcnow() - datetime.timedelta(hours=1)
+        ).strftime("%d/%m/%Y")
+        assert rows[0]["Lieu"] == venue_1.name
+        assert rows[0]["SIRET"] == venue_1.siret
+
+        assert rows[1]["ID"] == "36"
+        assert rows[1]["Date de dépôt"] == (datetime.datetime.utcnow() - datetime.timedelta(days=2)).strftime(
+            "%d/%m/%Y"
+        )
+        assert rows[1]["État"] == "En construction"
+        assert rows[1]["Date de dernière mise à jour"] == (
+            datetime.datetime.utcnow() - datetime.timedelta(hours=1)
+        ).strftime("%d/%m/%Y")
+        assert rows[1]["Lieu"] == venue_2.name
+        assert rows[1]["SIRET"] == venue_2.siret
+
+        assert rows[2]["ID"] == "37"
+        assert rows[2]["Date de dépôt"] == (datetime.datetime.utcnow() - datetime.timedelta(days=3)).strftime(
+            "%d/%m/%Y"
+        )
+        assert rows[2]["État"] == "Accepté"
+        assert rows[2]["Date de dernière mise à jour"] == (
+            datetime.datetime.utcnow() - datetime.timedelta(hours=1)
+        ).strftime("%d/%m/%Y")
+        assert rows[2]["Lieu"] == venue_1.name
+        assert rows[2]["SIRET"] == venue_1.siret
+
+        assert rows[3]["ID"] == "38"
+        assert rows[3]["Date de dépôt"] == (datetime.datetime.utcnow() - datetime.timedelta(days=4)).strftime(
+            "%d/%m/%Y"
+        )
+        assert rows[3]["État"] == "En construction"
+        assert rows[3]["Date de dernière mise à jour"] == (
+            datetime.datetime.utcnow() - datetime.timedelta(hours=1)
+        ).strftime("%d/%m/%Y")
+        assert rows[3]["Lieu"] == ""
+        assert rows[3]["SIRET"] == "12345678900003"
+
+    def test_offerer_with_no_dms_adage_application(self, authenticated_client):
+        offerer = offerers_factories.OffererFactory(siren="123456789")
+        offerers_factories.VenueFactory(managingOfferer=offerer, siret="12345678900001")
+
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        assert html_parser.count_table_rows(response.data) == 0
 
 
 class GetOffererBankAccountTest(GetEndpointHelper):

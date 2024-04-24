@@ -212,8 +212,6 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
         and utils.has_current_user_permission(perm_models.Permissions.VALIDATE_OFFERER)
     )
 
-    can_create_adage_offer = int(row.adage_information[0]) > 0 or offerer.allowedOnAdage
-
     return render_template(
         "offerer/get.html",
         search_form=search_form,
@@ -222,7 +220,6 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
         region=regions_utils.get_region_name_from_postal_code(offerer.postalCode),
         creator_phone_number=row.creator_phone_number,
         adage_information=row.adage_information,
-        can_create_adage_offer=can_create_adage_offer,
         bank_information_status=bank_information_status,
         edit_offerer_form=edit_offerer_form,
         suspension_form=offerer_forms.SuspendOffererForm(),
@@ -749,6 +746,41 @@ def get_managed_venues(offerer_id: int) -> utils.BackofficeResponse:
     return render_template(
         "offerer/get/details/managed_venues.html",
         venues=venues,
+    )
+
+
+@offerer_blueprint.route("/collective-dms-applications", methods=["GET"])
+def get_collective_dms_applications(offerer_id: int) -> utils.BackofficeResponse:
+    collective_dms_applications = (
+        educational_models.CollectiveDmsApplication.query.filter(
+            educational_models.CollectiveDmsApplication.siret.startswith(
+                sa.select(offerers_models.Offerer.siren)
+                .filter(offerers_models.Offerer.id == offerer_id)
+                .scalar_subquery()
+            )
+        )
+        .options(
+            sa.orm.load_only(
+                educational_models.CollectiveDmsApplication.siret,
+                educational_models.CollectiveDmsApplication.state,
+                educational_models.CollectiveDmsApplication.depositDate,
+                educational_models.CollectiveDmsApplication.lastChangeDate,
+                educational_models.CollectiveDmsApplication.application,
+                educational_models.CollectiveDmsApplication.procedure,
+            ),
+            sa.orm.joinedload(educational_models.CollectiveDmsApplication.venue).load_only(
+                offerers_models.Venue.id,
+                offerers_models.Venue.name,
+                offerers_models.Venue.publicName,
+                offerers_models.Venue.siret,
+            ),
+        )
+        .order_by(educational_models.CollectiveDmsApplication.depositDate.desc())
+    )
+
+    return render_template(
+        "offerer/get/details/collective_dms_applications.html",
+        collective_dms_applications=collective_dms_applications,
     )
 
 
