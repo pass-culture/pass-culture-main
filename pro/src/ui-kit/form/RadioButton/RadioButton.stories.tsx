@@ -3,7 +3,7 @@ import { Formik } from 'formik'
 
 import logoPassCultureIcon from 'icons/logo-pass-culture.svg'
 
-import RadioButton from './RadioButton'
+import { RadioButton } from './RadioButton'
 
 export default {
   title: 'ui-kit/forms/RadioButton',

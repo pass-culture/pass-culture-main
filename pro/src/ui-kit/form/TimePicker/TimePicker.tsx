@@ -15,7 +15,7 @@ type TimePickerProps = FieldLayoutBaseProps & {
   min?: string
 }
 
-const TimePicker = ({
+export const TimePicker = ({
   name,
   className,
   classNameLabel,
@@ -59,5 +59,3 @@ const TimePicker = ({
     </FieldLayout>
   )
 }
-
-export default TimePicker

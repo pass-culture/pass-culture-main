@@ -22,7 +22,7 @@ import { getPriceCategoryOptions } from 'screens/IndividualOffer/StocksEventEdit
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { BaseDatePicker } from 'ui-kit/form/DatePicker/BaseDatePicker'
-import SelectInput from 'ui-kit/form/Select/SelectInput'
+import { SelectInput } from 'ui-kit/form/Select/SelectInput'
 import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { BaseTimePicker } from 'ui-kit/form/TimePicker/BaseTimePicker'
 import { Pagination } from 'ui-kit/Pagination/Pagination'

@@ -3,7 +3,7 @@ import React, { useEffect } from 'react'
 
 import { humanizeSiren } from 'core/Offerers/utils'
 
-import TextInput from '../TextInput'
+import { TextInput } from '../TextInput/TextInput'
 
 const formatSiren = (siren: string) => {
   const lastChar = siren.charAt(siren.length - 1)
@@ -22,7 +22,7 @@ interface SirenInputProps {
   onValidSiren: (value: string) => void
 }
 
-const SirenInput = ({
+export const SirenInput = ({
   label,
   name = 'siren',
   placeholder = '123456789',
@@ -52,5 +52,3 @@ const SirenInput = ({
     />
   )
 }
-
-export default SirenInput

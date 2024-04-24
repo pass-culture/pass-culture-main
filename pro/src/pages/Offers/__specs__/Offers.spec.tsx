@@ -576,9 +576,8 @@ describe('route Offers', () => {
       await userEvent.selectOptions(screen.getByDisplayValue('Tous'), 'manual')
       await userEvent.click(searchButton)
 
-      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
       await userEvent.selectOptions(
-        screen.getByDisplayValue('Manuel'),
+        await screen.findByDisplayValue('Manuel'),
         ALL_CREATION_MODES
       )
       await userEvent.click(searchButton)

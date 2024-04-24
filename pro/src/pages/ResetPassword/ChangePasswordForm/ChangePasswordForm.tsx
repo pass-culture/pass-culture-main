@@ -3,8 +3,8 @@ import React from 'react'
 
 import FormLayout from 'components/FormLayout'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
-import { PasswordInput } from 'ui-kit'
 import { Button } from 'ui-kit/Button/Button'
+import { PasswordInput } from 'ui-kit/form/PasswordInput/PasswordInput'
 
 import styles from './ChangePasswordForm.module.scss'
 

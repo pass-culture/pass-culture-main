@@ -5,7 +5,7 @@ import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import React from 'react'
 
 import { PHONE_CODE_COUNTRY_CODE_OPTIONS, PLACEHOLDER_MAP } from '../constants'
-import PhoneNumberInput from '../PhoneNumberInput'
+import { PhoneNumberInput } from '../PhoneNumberInput'
 
 vi.mock('libphonenumber-js', () => ({
   ...vi.importActual('libphonenumber-js'),

@@ -3,9 +3,9 @@ import React from 'react'
 import FormLayout from 'components/FormLayout'
 import fullTrashIcon from 'icons/full-trash.svg'
 import { NOTIFICATIONS_EMAIL_LABEL } from 'screens/OfferEducational/constants/labels'
-import { TextInput } from 'ui-kit'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
+import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import styles from './EmailInputRow.module.scss'
 

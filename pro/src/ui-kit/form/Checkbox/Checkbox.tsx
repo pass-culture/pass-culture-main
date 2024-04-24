@@ -20,7 +20,7 @@ interface CheckboxProps {
   withBorder?: boolean
 }
 
-const Checkbox = ({
+export const Checkbox = ({
   name,
   value,
   label,
@@ -52,5 +52,3 @@ const Checkbox = ({
     </div>
   )
 }
-
-export default Checkbox

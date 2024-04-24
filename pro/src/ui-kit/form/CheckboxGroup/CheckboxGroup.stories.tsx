@@ -1,7 +1,7 @@
 import { Formik } from 'formik'
 import React from 'react'
 
-import CheckboxGroup from './CheckboxGroup'
+import { CheckboxGroup } from './CheckboxGroup'
 
 export default {
   title: 'ui-kit/forms/CheckboxGroup',

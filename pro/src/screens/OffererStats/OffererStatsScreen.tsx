@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
 import { SelectOption } from 'custom_types/form'
-import SelectInput from 'ui-kit/form/Select/SelectInput'
+import { SelectInput } from 'ui-kit/form/Select/SelectInput'
 import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
 import Titles from 'ui-kit/Titles/Titles'
 import { sortByLabel } from 'utils/strings'

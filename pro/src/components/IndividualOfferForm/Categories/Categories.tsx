@@ -19,7 +19,7 @@ import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers/constants'
 import { SelectOption } from 'custom_types/form'
 import useActiveFeature from 'hooks/useActiveFeature'
 import fullMoreIcon from 'icons/full-more.svg'
-import { Select } from 'ui-kit'
+import { Select } from 'ui-kit/form/Select/Select'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
 import styles from '../IndividualOfferForm.module.scss'

@@ -14,7 +14,7 @@ export interface SliderProps extends React.HTMLProps<HTMLInputElement> {
   displayValue?: boolean
 }
 
-const Slider = ({
+export const Slider = ({
   fieldName,
   scale = '',
   hideLabel = false,
@@ -65,5 +65,3 @@ const Slider = ({
     </div>
   )
 }
-
-export default Slider

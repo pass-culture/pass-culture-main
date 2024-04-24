@@ -1,7 +1,7 @@
 import { Formik } from 'formik'
 import React from 'react'
 
-import { EmailSpellCheckInput } from 'ui-kit/form/index'
+import { EmailSpellCheckInput } from './EmailSpellCheckInput'
 
 export default {
   title: 'ui-kit/forms/EmailSpellCheckInput',

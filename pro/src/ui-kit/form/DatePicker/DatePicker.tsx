@@ -15,7 +15,7 @@ interface DatePickerProps extends FieldLayoutBaseProps {
   onChange?: React.InputHTMLAttributes<HTMLInputElement>['onChange']
 }
 
-const DatePicker = ({
+export const DatePicker = ({
   name,
   maxDate,
   minDate,
@@ -74,5 +74,3 @@ const DatePicker = ({
     </FieldLayout>
   )
 }
-
-export default DatePicker
