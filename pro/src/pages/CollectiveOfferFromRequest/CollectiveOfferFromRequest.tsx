@@ -15,7 +15,6 @@ import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/ge
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
-import { Title } from 'ui-kit'
 import { Button } from 'ui-kit/Button/Button'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { getDateToFrenchText } from 'utils/date'
@@ -101,7 +100,7 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
       ) : (
         <>
           <div className={styles['eac-section']}>
-            <Title level={1}>Récapitulatif de la demande</Title>
+            <h1 className={styles['title']}>Récapitulatif de la demande</h1>
           </div>
           <div className={styles['eac-section']}>
             Vous avez reçu une demande de création d’offres de la part d’un

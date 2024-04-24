@@ -13,7 +13,6 @@ import useNotification from 'hooks/useNotification'
 import { VenueCreationFormValues } from 'pages/VenueCreation/types'
 import { validationSchema } from 'pages/VenueCreation/validationSchema'
 import { VenueCreationForm } from 'pages/VenueCreation/VenueCreationForm'
-import { Title } from 'ui-kit'
 
 import { serializePostVenueBodyModel } from './serializers'
 import { generateSiretValidationSchema } from './SiretOrCommentFields/validationSchema'
@@ -108,7 +107,7 @@ export const VenueCreationFormScreen = ({
     <div>
       <div className={style['venue-form-heading']}>
         <div className={style['title-page']}>
-          <Title level={1}>Création d’un lieu</Title>
+          <h1 className={style['title']}>Création d’un lieu</h1>
         </div>
       </div>
 
