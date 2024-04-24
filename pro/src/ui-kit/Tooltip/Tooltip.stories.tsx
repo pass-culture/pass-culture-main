@@ -1,7 +1,7 @@
 import type { StoryObj } from '@storybook/react'
 import React from 'react'
 
-import Tooltip from './Tooltip'
+import { Tooltip } from './Tooltip'
 
 export default {
   title: 'ui-kit/Tooltip',

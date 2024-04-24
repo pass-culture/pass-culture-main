@@ -24,10 +24,11 @@ import {
 } from 'core/OfferEducational'
 import { isOfferDisabled } from 'core/Offers/utils'
 import { NBSP } from 'core/shared'
-import { Banner, TextArea } from 'ui-kit'
+import { Banner } from 'ui-kit'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 
 import { DETAILS_PRICE_LABEL } from './constants/labels'
 import FormStock from './FormStock'

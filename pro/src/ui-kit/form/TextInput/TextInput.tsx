@@ -24,7 +24,7 @@ type TextInputProps = React.InputHTMLAttributes<HTMLInputElement> &
     maxLength?: number
   }
 
-const TextInput = ({
+export const TextInput = ({
   name,
   type = 'text',
   className,
@@ -133,5 +133,3 @@ const TextInput = ({
     </FieldLayout>
   )
 }
-
-export default TextInput

@@ -2,7 +2,7 @@ import type { StoryObj } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
 
-import Slider from './Slider'
+import { Slider } from './Slider'
 
 export default {
   title: 'ui-kit/forms/Slider',

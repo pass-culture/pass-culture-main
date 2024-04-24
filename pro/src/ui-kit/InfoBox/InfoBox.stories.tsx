@@ -1,7 +1,7 @@
 import type { StoryObj } from '@storybook/react'
 import React from 'react'
 
-import InfoBox from './InfoBox'
+import { InfoBox } from './InfoBox'
 
 export default {
   title: 'ui-kit/InfoBox',

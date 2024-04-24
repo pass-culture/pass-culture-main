@@ -2,9 +2,9 @@ import type { StoryObj } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
 
-import { TextInput } from 'ui-kit'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import FormLayout, { FormLayoutProps } from './FormLayout'
 

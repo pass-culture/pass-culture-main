@@ -8,7 +8,8 @@ import FormLayout from 'components/FormLayout'
 import { useAccessibilityOptions } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { VenueEditionFormValues } from 'pages/VenueEdition/types'
-import { Checkbox, CheckboxGroup } from 'ui-kit'
+import { Checkbox } from 'ui-kit/form/Checkbox/Checkbox'
+import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'
 
 import { VenueCreationFormValues } from '../types'
 

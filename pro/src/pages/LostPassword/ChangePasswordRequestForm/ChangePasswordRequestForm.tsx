@@ -5,7 +5,7 @@ import FormLayout from 'components/FormLayout'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import EmailSpellCheckInput from 'ui-kit/form/EmailSpellCheckInput'
+import { EmailSpellCheckInput } from 'ui-kit/form/EmailSpellCheckInput/EmailSpellCheckInput'
 
 import styles from './ChangePasswordRequestForm.module.scss'
 

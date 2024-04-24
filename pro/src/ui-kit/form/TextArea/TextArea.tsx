@@ -17,7 +17,7 @@ type TextAreaProps = React.InputHTMLAttributes<HTMLTextAreaElement> &
     maxLength?: number
   }
 
-const TextArea = ({
+export const TextArea = ({
   name,
   className,
   disabled,
@@ -59,5 +59,3 @@ const TextArea = ({
     </FieldLayout>
   )
 }
-
-export default TextArea

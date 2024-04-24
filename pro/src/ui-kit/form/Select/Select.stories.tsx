@@ -2,7 +2,7 @@ import { StoryObj } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
 
-import Select from './Select'
+import { Select } from './Select'
 
 export default {
   title: 'ui-kit/forms/Select',

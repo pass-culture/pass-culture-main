@@ -3,9 +3,10 @@ import React from 'react'
 import FormLayout from 'components/FormLayout'
 import { MAX_DETAILS_LENGTH } from 'core/OfferEducational'
 import { PRICE_INFORMATION } from 'screens/OfferEducational/constants/labels'
-import { TextArea } from 'ui-kit'
+import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 
 import styles from '../OfferEducationalForm.module.scss'
+
 interface FormPriceDetailsProps {
   disableForm: boolean
 }

@@ -1,7 +1,7 @@
 import type { StoryObj } from '@storybook/react'
 import { Formik } from 'formik'
 
-import PhoneNumberInput from './PhoneNumberInput'
+import { PhoneNumberInput } from './PhoneNumberInput'
 
 export default {
   title: 'ui-kit/forms/PhoneNumberInput',

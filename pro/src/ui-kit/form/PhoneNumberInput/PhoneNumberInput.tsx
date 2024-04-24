@@ -17,7 +17,7 @@ type PhoneNumberInputProps = FieldLayoutBaseProps & {
   maxLength?: number
 }
 
-const PhoneNumberInput = ({
+export const PhoneNumberInput = ({
   name,
   label,
   disabled,
@@ -146,5 +146,3 @@ const PhoneNumberInput = ({
     </fieldset>
   )
 }
-
-export default PhoneNumberInput

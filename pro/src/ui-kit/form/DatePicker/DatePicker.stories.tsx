@@ -1,7 +1,7 @@
 import { Formik } from 'formik'
 import React from 'react'
 
-import DatePicker from './DatePicker'
+import { DatePicker } from './DatePicker'
 
 export default {
   title: 'ui-kit/forms/DatePicker',

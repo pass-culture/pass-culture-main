@@ -13,7 +13,7 @@ import { updateSelectedOffererId } from 'store/user/reducer'
 import { selectCurrentOffererId } from 'store/user/selectors'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import SelectInput from 'ui-kit/form/Select/SelectInput'
+import { SelectInput } from 'ui-kit/form/Select/SelectInput'
 import { localStorageAvailable } from 'utils/localStorageAvailable'
 
 import { Card } from '../Card'

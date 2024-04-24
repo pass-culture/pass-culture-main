@@ -4,7 +4,9 @@ import React from 'react'
 import FormLayout from 'components/FormLayout'
 import { Mode, OfferEducationalStockFormValues } from 'core/OfferEducational'
 import strokeEuroIcon from 'icons/stroke-euro.svg'
-import { DatePicker, TextInput, TimePicker } from 'ui-kit'
+import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
+import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
 import { isDateValid } from 'utils/date'
 
 import {
