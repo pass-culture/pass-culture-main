@@ -7,16 +7,10 @@
     display: flex;
     gap: rem.torem(8px);
     justify-content: center;
-    align-items: flex-start;
+    align-items: center;
     padding: rem.torem(16px) rem.torem(24px);
     border-bottom: solid rem.torem(1px) var(--color-grey-medium);
-    margin-top: size.$top-menu-height;
     background-color: var(--color-white);
-
-    @media (min-width: size.$tablet) {
-      margin-left: size.$side-nav-width;
-      align-items: center;
-    }
   }
 
   &-icon {

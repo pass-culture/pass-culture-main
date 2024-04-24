@@ -8,7 +8,7 @@
     position: fixed;
     top: size.$top-menu-height;
     left: 0;
-    width: 100%;
+    min-width: size.$side-nav-width;
     z-index: zIndex.$lateral-menu-z-index-mobile;
     min-height: calc(100vh - size.$top-menu-height);
 
@@ -70,12 +70,9 @@
   .lateral-panel {
     &-wrapper {
       z-index: zIndex.$lateral-menu-z-index;
-      position: fixed;
-      top: size.$top-menu-height;
-      left: 0;
-      bottom: 0;
       display: block;
-      width: size.$side-nav-width;
+      position: initial;
+      height: 100%;
 
       &::before {
         display: none;

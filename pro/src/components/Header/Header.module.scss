@@ -6,6 +6,24 @@
 .top-menu {
   z-index: zIndex.$top-header-z-index;
   border-bottom: rem.torem(1px) solid var(--color-grey-medium);
+  background: var(--color-white);
+  padding: 0 rem.torem(16px) 0 0;
+  min-height: rem.torem(size.$top-menu-height);
+  display: flex;
+  align-items: center;
+
+  &-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    width: 100%;
+
+    @media (min-width: size.$desktop) {
+      max-width: size.$desktop;
+      margin: 0 auto;
+    }
+  }
 
   .burger-icon {
     display: flex;
@@ -27,21 +45,6 @@
     .burger-icon {
       display: none;
     }
-  }
-
-  background: var(--color-white);
-  padding: 0 rem.torem(16px) 0 0;
-  min-height: rem.torem(size.$top-menu-height);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-shrink: 0;
-
-  &-fixed {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
   }
 
   .nav-brand {

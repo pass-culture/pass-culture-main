@@ -42,7 +42,7 @@ const EmailChangeValidation = (): JSX.Element => {
   }
 
   return (
-    <AppLayout pageName="sign-in" layout="without-nav">
+    <AppLayout layout="without-nav">
       <EmailChangeValidationScreen isSuccess={isSuccess} />
     </AppLayout>
   )

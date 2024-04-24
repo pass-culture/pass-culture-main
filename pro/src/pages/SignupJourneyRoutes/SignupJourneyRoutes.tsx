@@ -33,13 +33,9 @@ export const SignupJourneyRoutes = () => {
 
   return (
     <>
-      <AppLayout
-        pageName="sign-up-journey"
-        className={styles['sign-up-journey']}
-        layout="funnel"
-      >
+      <AppLayout layout="funnel">
         {hasNewInterface ? (
-          <Header disableHomeLink isFixed={false} />
+          <Header disableHomeLink />
         ) : (
           <header className={styles['header']}>
             <div className={styles['header-content']}>
