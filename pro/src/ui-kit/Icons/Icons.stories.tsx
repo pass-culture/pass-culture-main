@@ -3,7 +3,6 @@ import React, { useState } from 'react'
 
 import { BaseInput } from 'ui-kit/form/shared/BaseInput/BaseInput'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { Title } from 'ui-kit/typography'
 
 import styles from './Icons.module.scss'
 import { fullIcons, otherIcons, shadowIcons, strokeIcons } from './iconsList'
@@ -79,7 +78,7 @@ export const Icons = () => {
 
         return (
           <div key={section.title}>
-            <Title level={2}>{section.title}</Title>
+            <h1 className={styles['title']}>{section.title}</h1>
 
             <div className={styles['icon-list']}>
               {filteredIcons.map((icon) => {

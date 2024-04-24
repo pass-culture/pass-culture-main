@@ -1,16 +1,20 @@
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
 
+.title {
+  @include fonts.title1;
+}
 
 .eac {
-    position: relative;
-  
-    &-section {
-      margin-bottom: rem.torem(32px);
-    }
-  
-    &-sub-heading {
-      max-width: rem.torem(588px);
-      margin-top: rem.torem(4px);
-      font-weight: 500;
-    }
+  position: relative;
+
+  &-section {
+    margin-bottom: rem.torem(32px);
+  }
+
+  &-sub-heading {
+    max-width: rem.torem(588px);
+    margin-top: rem.torem(4px);
+    font-weight: 500;
+  }
 }

@@ -4,7 +4,6 @@ import React from 'react'
 import { OfferStatus } from 'apiClient/v1'
 import fullValidateIcon from 'icons/full-validate.svg'
 import fullWaitIcon from 'icons/full-wait.svg'
-import { Title } from 'ui-kit'
 import { Banner } from 'ui-kit/Banners/Banner/Banner'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -125,9 +124,7 @@ const CollectiveOfferConfirmation = ({
         {icon}
         <div className={styles['confirmation-section']}>
           <div className={styles['confirmation-section-header']}>
-            <Title as="h1" level={3}>
-              {title}
-            </Title>
+            <h1 className={styles['confirmation-section-title']}>{title}</h1>
           </div>
           <p className={styles['form-layout-section-description']}>
             {description}
@@ -155,6 +152,7 @@ const CollectiveOfferConfirmation = ({
           </ButtonLink>
         </div>
       </div>
+
       <Banner
         type="notification-info"
         className={styles['confirmation-banner']}

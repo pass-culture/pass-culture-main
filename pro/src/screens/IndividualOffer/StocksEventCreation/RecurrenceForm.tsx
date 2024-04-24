@@ -10,7 +10,6 @@ import strokeBookedIcon from 'icons/stroke-booked.svg'
 import strokeClockIcon from 'icons/stroke-clock.svg'
 import strokeDateIcon from 'icons/stroke-date.svg'
 import strokeEventsIcon from 'icons/stroke-events.svg'
-import { Title } from 'ui-kit'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
@@ -127,9 +126,7 @@ export const RecurrenceForm = ({
   return (
     <FormikProvider value={formik}>
       <form onSubmit={formik.handleSubmit}>
-        <Title as="h1" level={3} className={styles['title']}>
-          Ajouter une ou plusieurs dates
-        </Title>
+        <h1 className={styles['title']}>Ajouter une ou plusieurs dates</h1>
 
         <div className={styles['mandatory']}>
           Tous les champs suivis d’un * sont obligatoires.

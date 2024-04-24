@@ -1,8 +1,6 @@
 import cn from 'classnames'
 import React from 'react'
 
-import { Title } from 'ui-kit'
-
 import style from './FormLayout.module.scss'
 import { FormLayoutDescription } from './FormLayoutDescription'
 
@@ -23,9 +21,7 @@ const Section = ({
 }: FormLayoutSectionProps): JSX.Element => (
   <fieldset className={cn(style['form-layout-section'], className)} id={id}>
     <legend>
-      <Title as="h2" level={3}>
-        {title}
-      </Title>
+      <h2 className={style['form-layout-section-title']}>{title}</h2>
     </legend>
     <div className={style['form-layout-section-header']}>
       <FormLayoutDescription description={description} />
