@@ -11,6 +11,7 @@ from sqlalchemy.orm import joinedload
 from pcapi.analytics.amplitude import events as amplitude_events
 from pcapi.connectors.ems import EMSAPIException
 from pcapi.core import search
+from pcapi.core.bookings import exceptions as bookings_exceptions
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
@@ -714,6 +715,12 @@ def mark_as_used_with_uncancelling(booking: Booking, validation_author_type: Boo
     # a rollback if we raise a validation exception.
     # Since I lock the stock, I really want to make sure the lock is
     # removed ASAP.
+    if (
+        booking.deposit
+        and booking.deposit.expirationDate
+        and booking.deposit.expirationDate < datetime.datetime.utcnow()
+    ):
+        raise bookings_exceptions.BookingDepositCreditExpired()
     with transaction():
         if booking.status == BookingStatus.CANCELLED:
             booking.uncancel_booking_set_used()
