@@ -366,8 +366,8 @@ def export_validated_bookings_by_offer_id(
 ) -> str | bytes:
     offer_validated_bookings_query = _create_export_query(offer_id, event_beginning_date)
     offer_validated_bookings_query = offer_validated_bookings_query.filter(
-        or_(  # type: ignore [type-var]
-            Booking.isConfirmed,
+        or_(
+            and_(Booking.isConfirmed, Booking.status != BookingStatus.CANCELLED),
             Booking.status == BookingStatus.USED,
         )
     )
