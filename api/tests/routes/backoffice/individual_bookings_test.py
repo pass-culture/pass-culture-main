@@ -32,6 +32,7 @@ from pcapi.routes.backoffice.bookings import forms
 
 from tests.connectors.cgr import soap_definitions
 from tests.local_providers.cinema_providers.cgr import fixtures as cgr_fixtures
+from tests.routes.backoffice.helpers.html_parser import extract_alert
 
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
@@ -853,6 +854,24 @@ class BatchMarkBookingAsUsedTest(PostEndpointHelper):
             db.session.refresh(booking)
             assert booking.status is bookings_models.BookingStatus.USED
             assert booking.validationAuthorType == bookings_models.BookingValidationAuthorType.BACKOFFICE
+
+    def test_batch_mark_as_used_bookings_with_expired_deposit(self, legit_user, authenticated_client):
+        booking1 = bookings_factories.BookingFactory(
+            status=bookings_models.BookingStatus.CANCELLED,
+            deposit=users_factories.DepositGrantFactory(
+                expirationDate=datetime.datetime.utcnow() - datetime.timedelta(days=1)
+            ),
+        )
+        booking2 = bookings_factories.BookingFactory()
+        parameter_ids = str(booking1.id) + "," + str(booking2.id)
+
+        response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids})
+
+        redirected_response = authenticated_client.get(response.headers["location"])
+        assert (
+            f"La réservation {booking1.token} ne peut être validée, car le crédit associé est expiré."
+            in extract_alert(redirected_response.data)
+        )
 
 
 class GetBatchCancelIndividualBookingsFormTest(GetEndpointHelper):
