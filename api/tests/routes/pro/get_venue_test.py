@@ -344,6 +344,7 @@ class Returns200Test:
                     "width_crop_percent": 0.42,
                 },
                 "image_credit": "test 2",
+                "image_credit_url": "test 2",
             },
         )
 

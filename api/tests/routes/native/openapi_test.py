@@ -113,7 +113,9 @@ def test_public_api(client):
                             "nullable": True,
                             "title": "Image Credit",
                             "type": "string",
-                        }
+                        },
+                        "image_credit_url": {"nullable": True, "title": "Image Credit Url", "type": "string"},
+                        "is_from_google": {"nullable": True, "title": "Is From Google", "type": "boolean"},
                     },
                     "title": "BannerMetaModel",
                     "type": "object",

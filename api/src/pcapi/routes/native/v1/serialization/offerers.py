@@ -53,6 +53,8 @@ VenueTypeCodeKey = enum.Enum(  # type: ignore [misc]
 
 class BannerMetaModel(typing.TypedDict, total=False):
     image_credit: base.VenueImageCredit | None
+    image_credit_url: str | None
+    is_from_google: bool
 
 
 class VenueAccessibilityModel(BaseModel):

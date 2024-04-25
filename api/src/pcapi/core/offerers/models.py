@@ -4,6 +4,7 @@ import decimal
 import enum
 import logging
 import os
+import re
 import typing
 
 import psycopg2.extras
@@ -57,6 +58,7 @@ from pcapi.models.has_address_mixin import HasAddressMixin
 from pcapi.models.has_thumb_mixin import HasThumbMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.validation_status_mixin import ValidationStatusMixin
+from pcapi.routes.native.v1.serialization.offerers import BannerMetaModel
 from pcapi.routes.native.v1.serialization.offerers import VenueTypeCode
 from pcapi.utils import crypto
 from pcapi.utils.date import METROPOLE_TIMEZONE
@@ -304,7 +306,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
         "GooglePlacesInfo", back_populates="venue", uselist=False
     )
 
-    bannerMeta: dict | None = Column(MutableDict.as_mutable(JSONB), nullable=True)
+    _bannerMeta: dict | None = Column(MutableDict.as_mutable(JSONB), nullable=True, name="bannerMeta")
 
     adageId = Column(Text, nullable=True)
     adageInscriptionDate = Column(DateTime, nullable=True)
@@ -443,6 +445,37 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     @bannerUrl.expression  # type: ignore [no-redef]
     def bannerUrl(cls):  # pylint: disable=no-self-argument
         return cls._bannerUrl
+
+    @hybrid_property
+    def bannerMeta(self) -> str | None:
+        if self._bannerMeta is not None:
+            return self._bannerMeta
+        if (
+            self.googlePlacesInfo
+            and self.googlePlacesInfo.bannerMeta
+            and FeatureToggle.WIP_GOOGLE_MAPS_VENUE_IMAGES.is_active()
+        ):
+            # Google Places API returns a list of HTML attributions, formatted like this:
+            # <a href="https://url-of-contributor">John D.</a>
+            # Regex to extract URL and text
+            regex = r'<a href="(.*?)">(.*?)</a>'
+
+            # TODO: (lixxday 2024-04-25) handle multiple attributions
+            first_attribution = self.googlePlacesInfo.bannerMeta.get("html_attributions")[0]
+            match = re.search(regex, first_attribution)
+            if match:
+                url, credit = match.groups()
+
+                return BannerMetaModel(image_credit=credit, image_credit_url=url, is_from_google=True)
+        return None
+
+    @bannerMeta.setter  # type: ignore [no-redef]
+    def bannerMeta(self, value: str | None) -> None:
+        self._bannerMeta = value
+
+    @bannerMeta.expression  # type: ignore [no-redef]
+    def bannerMeta(cls):  # pylint: disable=no-self-argument
+        return cls._bannerMeta
 
     @property
     def is_eligible_for_search(self) -> bool:

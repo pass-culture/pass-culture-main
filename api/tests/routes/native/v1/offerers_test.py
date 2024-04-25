@@ -104,6 +104,51 @@ class VenuesTest:
             "openingHours": venue.opening_days,
         }
 
+    def test_get_venue_google_banner_meta(self, client):
+        venue = offerer_factories.VenueFactory(isPermanent=True)
+        offerer_factories.GooglePlacesInfoFactory(
+            venue=venue,
+            bannerMeta={"html_attributions": ['<a href="http://python.org">Henri</a>']},
+        )
+        response = client.get(f"/native/v1/venue/{venue.id}")
+
+        assert response.status_code == 200
+        assert response.json["bannerUrl"] == venue.bannerUrl
+        assert response.json["bannerMeta"] == {
+            "image_credit": "Henri",
+            "image_credit_url": "http://python.org",
+            "is_from_google": True,
+        }
+
+    def test_get_venue_google_banner_meta_multiple_attributions(self, client):
+        venue = offerer_factories.VenueFactory(isPermanent=True)
+        offerer_factories.GooglePlacesInfoFactory(
+            venue=venue,
+            bannerMeta={
+                "html_attributions": [
+                    '<a href="http://python.org">Henri</a>',
+                    '<a href="http://leblogdufun.fr">Kelly</a>',
+                ]
+            },
+        )
+        response = client.get(f"/native/v1/venue/{venue.id}")
+
+        assert response.status_code == 200
+        assert response.json["bannerUrl"] == venue.bannerUrl
+        assert response.json["bannerMeta"] == {
+            "image_credit": "Henri",
+            "image_credit_url": "http://python.org",
+            "is_from_google": True,
+        }
+
+    def test_get_venue_google_banner_meta_not_from_google(self, client):
+        venue = offerer_factories.VenueFactory(isPermanent=True, _bannerMeta={"image_credit": "Henri"})
+        response = client.get(f"/native/v1/venue/{venue.id}")
+
+        assert response.status_code == 200
+        assert response.json["bannerUrl"] == venue.bannerUrl
+        assert response.json["bannerMeta"] == {"image_credit": "Henri"}
+
     def test_get_non_permanent_venue(self, client):
         venue = offerer_factories.VenueFactory(isPermanent=False)
         response = client.get(f"/native/v1/venue/{venue.id}")
