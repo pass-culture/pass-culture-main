@@ -4,10 +4,10 @@ import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
 import { PreFiltersParams } from 'core/Bookings/types'
 import { downloadFile } from 'utils/downloadFile'
 
-export const downloadBookingsXLSFile = async (
+export const downloadIndividualBookingsCSVFile = async (
   filters: PreFiltersParams & { page?: number }
 ) => {
-  const bookingsXLSText = await api.getBookingsExcel(
+  const bookingsCsvText = await api.getBookingsCsv(
     filters.page,
     filters.offerVenueId !== DEFAULT_PRE_FILTERS.offerVenueId
       ? Number(filters.offerVenueId)
@@ -24,10 +24,7 @@ export const downloadBookingsXLSFile = async (
       ? (filters.offerType as OfferType)
       : null
   )
+
   const date = new Date().toISOString()
-  downloadFile(
-    new Uint8Array(bookingsXLSText),
-    `reservations_pass_culture-${date}.xlsx`,
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-  )
+  downloadFile(bookingsCsvText, `reservations_pass_culture-${date}.csv`)
 }

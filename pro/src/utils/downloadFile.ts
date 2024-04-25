@@ -1,14 +1,7 @@
-export const downloadFile = (
-  data: BlobPart,
-  filename: string,
-  mimeType: string
-) => {
+export const downloadFile = (data: Blob, filename: string) => {
   const fakeLink = document.createElement('a')
-  const blob = new Blob([data], {
-    type: mimeType,
-  })
 
-  fakeLink.href = URL.createObjectURL(blob)
+  fakeLink.href = URL.createObjectURL(data)
   fakeLink.setAttribute('download', filename)
 
   document.body.appendChild(fakeLink)
