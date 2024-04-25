@@ -33,25 +33,26 @@ export function getOfferTags(
 ) {
   const isTemplate = isCollectiveOfferTemplate(offer)
 
+  const distanceToOfferer =
+    offer.venue.coordinates.latitude &&
+    offer.venue.coordinates.longitude &&
+    (adageUser.lat || adageUser.lat === 0) &&
+    (adageUser.lon || adageUser.lon === 0) &&
+    getHumanizeRelativeDistance(
+      {
+        latitude: offer.venue.coordinates.latitude,
+        longitude: offer.venue.coordinates.longitude,
+      },
+      {
+        latitude: adageUser.lat,
+        longitude: adageUser.lon,
+      }
+    )
+
   const tags: OfferTag[] = []
   switch (offer.offerVenue.addressType) {
     case OfferAddressType.SCHOOL: {
       tags.push({ icon: '📚', text: 'Dans l’établissement scolaire' })
-      const distanceToOfferer =
-        offer.venue.coordinates.latitude &&
-        offer.venue.coordinates.longitude &&
-        (adageUser.lat || adageUser.lat === 0) &&
-        (adageUser.lon || adageUser.lon === 0) &&
-        getHumanizeRelativeDistance(
-          {
-            latitude: offer.venue.coordinates.latitude,
-            longitude: offer.venue.coordinates.longitude,
-          },
-          {
-            latitude: adageUser.lat,
-            longitude: adageUser.lon,
-          }
-        )
       if (distanceToOfferer && showAllTags) {
         tags.push({
           icon: '👩‍🎨',
@@ -75,6 +76,13 @@ export function getOfferTags(
         { icon: '🎒', text: 'Sortie' },
         { icon: '📍', text: 'Lieu à définir' }
       )
+
+      if (distanceToOfferer && showAllTags) {
+        tags.push({
+          icon: '👩‍🎨',
+          text: `Partenaire situé à ${distanceToOfferer}`,
+        })
+      }
       break
     }
     default:
