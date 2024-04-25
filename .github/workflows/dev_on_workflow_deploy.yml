@@ -148,7 +148,6 @@ jobs:
         run: |
           PASSCULTURE_USERNAME="oauth2accesstoken" \
           PASSCULTURE_PASSWORD=${{ steps.openid-auth-infra.outputs.access_token }} \
-          PCAPI_VALUES_FILE=./pass-culture-deployment/helm/pcapi/values.${{ inputs.environment }}.yaml \
           PCAPI_SECRETS_FILE=<(echo '${{ needs.generate-pcapi-helm-secrets-file.outputs.pcapi_helm_secrets_file_base64 }}' | base64 -d) \
           helmfile -e ${{ inputs.environment }} template --set image.tag=${{ inputs.app_version }} --output-dir ./rendered-manifests/ --output-dir-template "{{ .OutputDir }}/{{ .State.BaseName }}-{{ .Release.Name  }}"
       - name: "Push manifests to rendered-manifests repository"
