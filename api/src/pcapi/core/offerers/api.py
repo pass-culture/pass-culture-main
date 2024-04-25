@@ -1536,7 +1536,7 @@ def get_offerer_offers_stats(offerer_id: int, max_offer_count: int = 0) -> dict:
         return sa.select(sa.func.jsonb_object_agg(sa.text("status"), sa.text("number"))).select_from(
             sa.select(
                 sa.case(
-                    (sa.and_(offer_class.isActive, sa.not_(offer_class.is_expired)), "active"),  # type: ignore [type-var]
+                    (sa.and_(offer_class.isActive, sa.not_(offer_class.is_expired)), "active"),
                     else_="inactive",
                 ).label("status"),
                 sa.func.count(offer_class.id).label("number"),
@@ -1569,7 +1569,7 @@ def get_offerer_offers_stats(offerer_id: int, max_offer_count: int = 0) -> dict:
 
     def _max_count_query(offer_class: type[offers_api.AnyOffer]) -> BaseQuery:
         return sa.select(sa.func.count(sa.text("offer_id"))).select_from(
-            sa.select(offer_class.id.label("offer_id"))  # type: ignore [attr-defined]
+            sa.select(offer_class.id.label("offer_id"))
             .join(offerers_models.Venue, offer_class.venue)
             .filter(offerers_models.Venue.managingOffererId == offerer_id)
             .limit(max_offer_count)
@@ -1666,7 +1666,7 @@ def get_venue_offers_stats(venue_id: int, max_offer_count: int = 0) -> dict:
 
     def _max_count_query(offer_class: type[offers_api.AnyOffer]) -> BaseQuery:
         return sa.select(sa.func.count(sa.text("offer_id"))).select_from(
-            sa.select(offer_class.id.label("offer_id"))  # type: ignore [attr-defined]
+            sa.select(offer_class.id.label("offer_id"))
             .filter(offer_class.venueId == venue_id)
             .limit(max_offer_count)
             .subquery()

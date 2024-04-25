@@ -50,14 +50,14 @@ def get_bookings(
         base_query = base_query.filter(stock_class.beginningDatetime <= event_to_datetime)
 
     if form.offerer.data:
-        base_query = base_query.filter(booking_class.offererId.in_(form.offerer.data))  # type: ignore [attr-defined]
+        base_query = base_query.filter(booking_class.offererId.in_(form.offerer.data))
 
     if form.venue.data:
-        base_query = base_query.filter(booking_class.venueId.in_(form.venue.data))  # type: ignore [attr-defined]
+        base_query = base_query.filter(booking_class.venueId.in_(form.venue.data))
 
     if getattr(offer_class, "subcategoryId", None) and hasattr(form, "category") and form.category.data:
         base_query = base_query.filter(
-            offer_class.subcategoryId.in_(  # type: ignore[union-attr]
+            offer_class.subcategoryId.in_(
                 subcategory.id
                 for subcategory in subcategories.ALL_SUBCATEGORIES
                 if subcategory.category.id in form.category.data
@@ -65,7 +65,7 @@ def get_bookings(
         )
     elif hasattr(offer_class, "formats") and hasattr(form, "formats") and form.formats.data:
         base_query = base_query.filter(
-            offer_class.formats.overlap(sa.dialects.postgresql.array((fmt for fmt in form.formats.data)))  # type: ignore[union-attr]
+            offer_class.formats.overlap(sa.dialects.postgresql.array((fmt for fmt in form.formats.data)))
         )
 
     if form.status.data:
@@ -91,14 +91,14 @@ def get_bookings(
                     status_in.append(status)
 
             if status_in:
-                status_filters.append(booking_class.status.in_(status_in))  # type: ignore [union-attr]
+                status_filters.append(booking_class.status.in_(status_in))  # type: ignore [arg-type]
 
             if len(status_filters) > 1:
                 base_query = base_query.filter(or_(*status_filters))
             else:
                 base_query = base_query.filter(status_filters[0])
         else:
-            base_query = base_query.filter(booking_class.status.in_(form.status.data))  # type: ignore [union-attr]
+            base_query = base_query.filter(booking_class.status.in_(form.status.data))
 
     if form.cashflow_batches.data:
         base_query = (
@@ -107,7 +107,7 @@ def get_bookings(
         base_query = base_query.filter(finance_models.Cashflow.batchId.in_(form.cashflow_batches.data))
 
     if hasattr(form, "cancellation_reason") and form.cancellation_reason.data:
-        base_query = base_query.filter(booking_class.cancellationReason.in_(form.cancellation_reason.data))  # type: ignore [union-attr]
+        base_query = base_query.filter(booking_class.cancellationReason.in_(form.cancellation_reason.data))
 
     if form.q.data:
         search_query = form.q.data
