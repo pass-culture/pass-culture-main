@@ -105,7 +105,7 @@ def _get_gtls_from_csv_reader(reader: typing.Any) -> dict[str, Gtl]:
 
 
 def generate_titelive_gtl_from_file(file: str) -> None:
-    if not settings.IS_DEV:
+    if not settings.TITELIVE_GENERATE_FROM_FILE_IN_DEV:
         raise RuntimeError("Not DEV environment")
     assert HAS_BLACK
 
