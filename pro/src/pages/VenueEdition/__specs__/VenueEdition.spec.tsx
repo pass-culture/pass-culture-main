@@ -1,5 +1,4 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
-import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -189,5 +188,33 @@ describe('route VenueEdition', () => {
         'Renseignez facilement les modalités d’accessibilité de votre établissement sur la plateforme collaborative acceslibre.beta.gouv.fr'
       )
     ).not.toBeInTheDocument()
+  })
+
+  it('should not display tab navigation for permanent venues', async () => {
+    vi.spyOn(api, 'getVenue').mockResolvedValueOnce({
+      ...baseVenue,
+      isPermanent: true,
+    })
+    renderVenueEdition({
+      user: sharedCurrentUserFactory({
+        navState: { newNavDate: '2002-07-29T12:18:43.087097Z' },
+      }),
+    })
+    await waitForElementToBeRemoved(screen.getByTestId('spinner'))
+
+    expect(screen.queryByText('Pour le grand public')).not.toBeInTheDocument()
+    expect(screen.queryByText('Pour les enseignants')).not.toBeInTheDocument()
+  })
+
+  it('should display tab navigation for not permanent venues', async () => {
+    vi.spyOn(api, 'getVenue').mockResolvedValueOnce({
+      ...baseVenue,
+      isPermanent: false,
+    })
+    renderVenueEdition({})
+    await waitForElementToBeRemoved(screen.getByTestId('spinner'))
+
+    expect(screen.getByText('Pour le grand public')).toBeInTheDocument()
+    expect(screen.getByText('Pour les enseignants')).toBeInTheDocument()
   })
 })
