@@ -34,6 +34,7 @@
         "virtual(PRODUCTION Top offres)"
     ],
     "attributesForFaceting": [
+        "filterOnly(offer.allocineId)",
         "searchable(offer.artist)",
         "offer.bookMacroSection",
         "filterOnly(offer.category)",
