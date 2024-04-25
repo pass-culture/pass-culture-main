@@ -3,11 +3,13 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
+import { api } from 'apiClient/api'
 import { GetVenueResponseModel, StudentLevels } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import { GET_VENUE_QUERY_KEY } from 'config/swrQueryKeys'
 import {
   DEFAULT_MARSEILLE_STUDENTS,
+  SENT_DATA_ERROR_MESSAGE,
   handleAllFranceDepartmentOptions,
 } from 'core/shared'
 import { venueInterventionOptions } from 'core/shared/interventionOptions'
@@ -24,8 +26,6 @@ import { Select } from 'ui-kit/form/Select/Select'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
-import editVenueCollectiveDataAdapter from '../adapters/editVenueCollectiveDataAdapter'
-
 import styles from './CollectiveDataForm.module.scss'
 import { CollectiveDataFormValues } from './type'
 import { extractInitialValuesFromVenue } from './utils/extractInitialValuesFromVenue'
@@ -38,9 +38,9 @@ type CollectiveDataFormProps = {
   venue: GetVenueResponseModel
 }
 
-const studentLevels = Object.entries(StudentLevels).map(([value, label]) => ({
+const studentLevels = Object.entries(StudentLevels).map(([, value]) => ({
   value,
-  label,
+  label: value,
 }))
 
 export const CollectiveDataForm = ({
@@ -63,22 +63,27 @@ export const CollectiveDataForm = ({
   const studentOptions = isMarseilleEnabled
     ? studentLevels
     : studentLevels.filter(
-        (level) => !DEFAULT_MARSEILLE_STUDENTS.includes(level.label)
+        (level) => !DEFAULT_MARSEILLE_STUDENTS.includes(level.value)
       )
 
   const onSubmit = async (values: CollectiveDataFormValues) => {
-    const response = await editVenueCollectiveDataAdapter({
-      venueId: venue.id,
-      values,
-    })
+    try {
+      await api.editVenueCollectiveData(venue.id, {
+        ...values,
+        collectiveDomains: values.collectiveDomains.map((stringId) =>
+          Number(stringId)
+        ),
+        venueEducationalStatusId: values.collectiveLegalStatus
+          ? Number(values.collectiveLegalStatus)
+          : null,
+      })
 
-    if (!response.isOk) {
-      notify.error(response.message)
+      await mutate([GET_VENUE_QUERY_KEY, String(venue.id)])
+
+      navigate(`/structures/${venue.managingOfferer.id}/lieux/${venue.id}/eac`)
+    } catch {
+      notify.error(SENT_DATA_ERROR_MESSAGE)
     }
-
-    await mutate([GET_VENUE_QUERY_KEY, String(venue.id)])
-
-    navigate(`/structures/${venue.managingOfferer.id}/lieux/${venue.id}/eac`)
   }
 
   const formik = useFormik<CollectiveDataFormValues>({
