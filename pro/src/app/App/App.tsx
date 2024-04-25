@@ -22,6 +22,9 @@ import usePageTitle from './hook/usePageTitle'
 
 window.beamer_config = { product_id: 'vjbiYuMS52566', lazy: true }
 
+export const FETCH_ERROR_MESSAGE =
+  'Nous avons rencontré un problème lors de la récupération des données.'
+
 const App = (): JSX.Element | null => {
   const isBeamerEnabled = useActiveFeature('ENABLE_BEAMER')
   const location = useLocation()
@@ -141,9 +144,7 @@ const App = (): JSX.Element | null => {
       <SWRConfig
         value={{
           onError: () => {
-            notify.error(
-              'Nous avons rencontré un problème lors de la récupération des données.'
-            )
+            notify.error(FETCH_ERROR_MESSAGE)
           },
           revalidateOnFocus: false,
         }}
