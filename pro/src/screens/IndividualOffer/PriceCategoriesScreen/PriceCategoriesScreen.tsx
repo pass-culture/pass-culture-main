@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
-import ConfirmDialog from 'components/Dialog/ConfirmDialog'
+import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'

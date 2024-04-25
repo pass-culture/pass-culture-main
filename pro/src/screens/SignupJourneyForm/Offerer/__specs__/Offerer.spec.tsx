@@ -18,8 +18,8 @@ import * as sirenApiValidate from 'core/Venue/siretApiValidate'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
-import { Offerer } from '..'
 import { DEFAULT_OFFERER_FORM_VALUES } from '../constants'
+import { Offerer } from '../Offerer'
 
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
@@ -28,7 +28,7 @@ vi.spyOn(sirenApiValidate, 'default').mockResolvedValue(undefined)
 
 // Mock l’appel à https://api-adresse.data.gouv.fr/search/?limit=${limit}&q=${address}
 // Appel fait dans apiAdresse.getDataFromAddress
-vi.mock('apiClient/adresse', () => ({
+vi.mock('apiClient/adresse/apiAdresse', () => ({
   apiAdresse: {
     getDataFromAddressParts: () =>
       Promise.resolve([

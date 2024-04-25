@@ -4,7 +4,7 @@ import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 import createFetchMock from 'vitest-fetch-mock'
 
-import { apiAdresse } from 'apiClient/adresse'
+import { apiAdresse } from 'apiClient/adresse/apiAdresse'
 import Notification from 'components/Notification/Notification'
 import {
   SignupJourneyContext,
@@ -14,14 +14,14 @@ import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/c
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
-import { OffererAuthentication } from '..'
+import { OffererAuthentication } from '../OffererAuthentication'
 
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
 
-vi.mock('apiClient/adresse', async () => {
+vi.mock('apiClient/adresse/apiAdresse', async () => {
   return {
-    ...(await vi.importActual('apiClient/adresse')),
+    ...(await vi.importActual('apiClient/adresse/apiAdresse')),
     default: {
       getDataFromAddress: vi.fn(),
     },

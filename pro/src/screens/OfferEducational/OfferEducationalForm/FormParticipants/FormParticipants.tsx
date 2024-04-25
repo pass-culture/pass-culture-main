@@ -2,7 +2,7 @@ import { useFormikContext } from 'formik'
 import React from 'react'
 
 import { StudentLevels } from 'apiClient/adage'
-import FormLayout from 'components/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OfferEducationalFormValues } from 'core/OfferEducational'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'

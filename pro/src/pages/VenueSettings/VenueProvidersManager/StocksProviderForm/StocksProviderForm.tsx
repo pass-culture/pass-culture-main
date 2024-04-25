@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
 import { PostVenueProviderBody } from 'apiClient/v1'
-import ConfirmDialog from 'components/Dialog/ConfirmDialog'
+import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import fullLinkIcon from 'icons/full-link.svg'

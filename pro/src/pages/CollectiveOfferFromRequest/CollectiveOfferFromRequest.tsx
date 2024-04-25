@@ -6,7 +6,7 @@ import {
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
-import ActionsBarSticky from 'components/ActionsBarSticky'
+import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import { Events } from 'core/FirebaseEvents/constants'

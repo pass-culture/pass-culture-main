@@ -18,7 +18,7 @@ export interface DialogProps {
   dangerouslyBypassFocusLock?: boolean
 }
 
-const Dialog = ({
+export const Dialog = ({
   onCancel,
   title,
   secondTitle,
@@ -57,5 +57,3 @@ const Dialog = ({
     </DialogBox>
   )
 }
-
-export default Dialog

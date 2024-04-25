@@ -31,7 +31,7 @@ import { ActionBar } from '../ActionBar'
 
 import styles from './Validation.module.scss'
 
-const Validation = (): JSX.Element => {
+export const Validation = (): JSX.Element => {
   const { logEvent } = useAnalytics()
   const notify = useNotification()
   const navigate = useNavigate()
@@ -220,5 +220,3 @@ const Validation = (): JSX.Element => {
     </div>
   )
 }
-
-export default Validation

@@ -16,7 +16,7 @@ import {
   SignupJourneyContextValues,
   SignupJourneyContext,
 } from 'context/SignupJourneyContext'
-import { Validation } from 'screens/SignupJourneyForm/Validation/index'
+import { Validation } from 'screens/SignupJourneyForm/Validation/Validation'
 import * as utils from 'utils/recaptcha'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'

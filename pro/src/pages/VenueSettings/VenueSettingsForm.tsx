@@ -8,7 +8,7 @@ import {
   VenueTypeResponseModel,
 } from 'apiClient/v1'
 import { AddressSelect } from 'components/Address'
-import FormLayout from 'components/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { SelectOption } from 'custom_types/form'
 import ReimbursementFields from 'pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'

@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { AppLayout } from 'app/AppLayout'
-import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
+import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
 import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
 import { isCollectiveOffer } from 'core/OfferEducational'
 import { CollectiveOfferSummaryCreationScreen } from 'screens/CollectiveOfferSummaryCreation/CollectiveOfferSummaryCreation'

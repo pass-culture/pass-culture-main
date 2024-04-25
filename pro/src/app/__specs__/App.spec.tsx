@@ -11,7 +11,7 @@ import {
 } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
-import { App } from '../App'
+import { App } from '../App/App'
 
 vi.mock('hooks/useAnalytics', () => ({ useConfigureFirebase: vi.fn() }))
 vi.mock('app/App/hook/useLogNavigation', () => ({ default: vi.fn() }))

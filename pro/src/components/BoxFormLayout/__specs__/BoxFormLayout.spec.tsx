@@ -3,7 +3,7 @@
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 
-import { BoxFormLayout } from '../'
+import { BoxFormLayout } from '../BoxFormLayout'
 
 describe('components:BoxFormLayout', () => {
   it('renders component successfully', () => {

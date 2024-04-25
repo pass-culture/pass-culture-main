@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router-dom'
 import createFetchMock from 'vitest-fetch-mock'
 
-import { apiAdresse } from 'apiClient/adresse'
+import { apiAdresse } from 'apiClient/adresse/apiAdresse'
 import { api } from 'apiClient/api'
 import { ApiError, GetVenueResponseModel } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
@@ -70,9 +70,9 @@ vi.spyOn(api, 'getSiretInfo').mockResolvedValue({
   legal_category_code: '1000',
 })
 
-vi.mock('apiClient/adresse', async () => {
+vi.mock('apiClient/adresse/apiAdresse', async () => {
   return {
-    ...(await vi.importActual('apiClient/adresse')),
+    ...(await vi.importActual('apiClient/adresse/apiAdresse')),
     default: {
       getDataFromAddress: vi.fn(),
     },

@@ -1,7 +1,7 @@
 import React, { FormEvent } from 'react'
 
 import { EacFormat, GetOffererResponseModel } from 'apiClient/v1'
-import FormLayout from 'components/FormLayout/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import {
   ALL_CATEGORIES_OPTION,
   ALL_FORMATS_OPTION,

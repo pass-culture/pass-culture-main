@@ -1,4 +1,4 @@
-import FormLayout from 'components/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import { FORM_DEFAULT_VALUES } from 'components/IndividualOfferForm'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import { Select } from 'ui-kit/form/Select/Select'

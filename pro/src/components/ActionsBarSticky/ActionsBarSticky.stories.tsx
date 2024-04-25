@@ -5,7 +5,7 @@ import { configureTestStore } from 'store/testUtils'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
-import ActionsBarSticky from './ActionsBarSticky'
+import { ActionsBarSticky } from './ActionsBarSticky'
 
 export default {
   title: 'components/ActionsBarSticky',

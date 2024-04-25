@@ -8,7 +8,7 @@ import { Audience } from 'core/shared'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import ActionsBar, { ActionBarProps } from '../ActionsBar'
+import { ActionsBar, ActionBarProps } from '../ActionsBar'
 
 const renderActionsBar = (props: ActionBarProps) => {
   renderWithProviders(

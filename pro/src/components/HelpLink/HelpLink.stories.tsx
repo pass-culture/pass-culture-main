@@ -1,6 +1,6 @@
 import React from 'react'
 
-import HelpLink from './HelpLink'
+import { HelpLink } from './HelpLink'
 
 export default {
   title: 'components/HelpLink',

@@ -6,7 +6,7 @@ import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
-import FormLayout, { FormLayoutProps } from './FormLayout'
+import { FormLayout, FormLayoutProps } from './FormLayout'
 
 export default {
   title: 'components/FormLayout',

@@ -1,7 +1,7 @@
 import { useFormikContext } from 'formik'
 import React from 'react'
 
-import FormLayout from 'components/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import { Mode, OfferEducationalStockFormValues } from 'core/OfferEducational'
 import strokeEuroIcon from 'icons/stroke-euro.svg'
 import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'

@@ -10,7 +10,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './ConfirmedAttachment.module.scss'
 
-const ConfirmedAttachment = (): JSX.Element => {
+export const ConfirmedAttachment = (): JSX.Element => {
   const { logEvent } = useAnalytics()
   const { offerer } = useSignupJourneyContext()
 
@@ -40,4 +40,3 @@ const ConfirmedAttachment = (): JSX.Element => {
     </div>
   )
 }
-export default ConfirmedAttachment

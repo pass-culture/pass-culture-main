@@ -9,7 +9,7 @@ import {
 } from 'apiClient/v1'
 import Callout from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
-import FormLayout from 'components/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import {
   FORM_DEFAULT_VALUES,
   IndividualOfferFormValues,

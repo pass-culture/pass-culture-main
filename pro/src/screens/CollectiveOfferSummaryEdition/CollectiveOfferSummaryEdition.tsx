@@ -2,8 +2,8 @@ import {
   GetCollectiveOfferTemplateResponseModel,
   GetCollectiveOfferResponseModel,
 } from 'apiClient/v1'
-import ActionsBarSticky from 'components/ActionsBarSticky'
-import CollectiveOfferSummary from 'components/CollectiveOfferSummary'
+import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
+import { CollectiveOfferSummary } from 'components/CollectiveOfferSummary/CollectiveOfferSummary'
 import OfferEducationalActions from 'components/OfferEducationalActions'
 import { isCollectiveOfferTemplate, Mode } from 'core/OfferEducational'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'

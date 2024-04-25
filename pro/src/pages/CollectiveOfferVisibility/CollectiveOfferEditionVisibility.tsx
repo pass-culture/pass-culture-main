@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
-import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
+import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
 import { isCollectiveOfferTemplate, Mode } from 'core/OfferEducational'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'

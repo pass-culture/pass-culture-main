@@ -1,7 +1,7 @@
 import { FieldArray, useFormikContext } from 'formik'
 import React from 'react'
 
-import FormLayout from 'components/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OfferEducationalFormValues } from 'core/OfferEducational'
 import fullMoreIcon from 'icons/full-more.svg'
 import { Button } from 'ui-kit/Button/Button'

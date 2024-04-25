@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import ConfirmDialog from 'components/Dialog/ConfirmDialog'
+import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import { Button } from 'ui-kit/Button/Button'
 
 interface ButtonInvalidateTokenProps {

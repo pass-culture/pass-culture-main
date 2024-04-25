@@ -2,7 +2,7 @@ import cn from 'classnames'
 import React from 'react'
 
 import { CollectiveOfferResponseModel, OfferStatus } from 'apiClient/v1'
-import { CollectiveStatusLabel } from 'components/CollectiveStatusLabel'
+import { CollectiveStatusLabel } from 'components/CollectiveStatusLabel/CollectiveStatusLabel'
 import fullHideIcon from 'icons/full-hide.svg'
 import strokeCalendarIcon from 'icons/stroke-calendar.svg'
 import strokeCheckIcon from 'icons/stroke-check.svg'

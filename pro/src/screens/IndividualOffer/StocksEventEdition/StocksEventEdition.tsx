@@ -11,9 +11,9 @@ import {
   StocksOrderedBy,
 } from 'apiClient/v1'
 import { OfferStatus } from 'apiClient/v2'
-import ConfirmDialog from 'components/Dialog/ConfirmDialog'
+import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import DialogBox from 'components/DialogBox'
-import FormLayout from 'components/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { StockFormActions } from 'components/StockFormActions'

@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 import { useField, useFormikContext } from 'formik'
 
-import FormLayout from 'components/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OfferEducationalFormValues } from 'core/OfferEducational'
 import { Checkbox } from 'ui-kit/form/Checkbox/Checkbox'
 import { PhoneNumberInput } from 'ui-kit/form/PhoneNumberInput/PhoneNumberInput'

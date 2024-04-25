@@ -14,7 +14,7 @@ import {
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
-import Activity from '../Activity'
+import { Activity } from '../Activity'
 
 vi.mock('apiClient/api', () => ({
   api: {

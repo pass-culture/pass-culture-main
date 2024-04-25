@@ -3,7 +3,7 @@ import { FieldArray, useFormikContext } from 'formik'
 import React from 'react'
 
 import { VenueTypeResponseModel } from 'apiClient/v1'
-import FormLayout from 'components/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import fullMoreIcon from 'icons/full-more.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import { buildVenueTypesOptions } from 'pages/VenueCreation/buildVenueTypesOptions'
@@ -30,7 +30,9 @@ export interface ActivityFormProps {
   venueTypes: VenueTypeResponseModel[]
 }
 
-const ActivityForm = ({ venueTypes }: ActivityFormProps): JSX.Element => {
+export const ActivityForm = ({
+  venueTypes,
+}: ActivityFormProps): JSX.Element => {
   const { values } = useFormikContext<ActivityFormValues>()
   const venueTypesOptions = buildVenueTypesOptions(venueTypes)
 
@@ -112,5 +114,3 @@ const ActivityForm = ({ venueTypes }: ActivityFormProps): JSX.Element => {
     </FormLayout.Section>
   )
 }
-
-export default ActivityForm

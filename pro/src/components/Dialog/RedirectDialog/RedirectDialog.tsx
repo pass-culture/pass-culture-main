@@ -6,7 +6,7 @@ import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink, LinkProps } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
-import Dialog, { DialogProps } from '../Dialog'
+import { Dialog, DialogProps } from '../Dialog/Dialog'
 
 import styles from './RedirectDialog.module.scss'
 
@@ -20,7 +20,7 @@ type RedirectDialogProps = DialogProps & {
   cancelIcon?: string
 }
 
-const RedirectDialog = ({
+export const RedirectDialog = ({
   title,
   secondTitle,
   children,
@@ -71,5 +71,3 @@ const RedirectDialog = ({
     </Dialog>
   )
 }
-
-export default RedirectDialog

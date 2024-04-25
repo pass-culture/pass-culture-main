@@ -6,8 +6,8 @@ import {
   GetOffererNameResponseModel,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
-import ConfirmDialog from 'components/Dialog/ConfirmDialog'
-import FormLayout from 'components/FormLayout'
+import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import {
   IndividualOfferForm,
   IndividualOfferFormValues,

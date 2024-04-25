@@ -1,7 +1,7 @@
 import React from 'react'
 import { Provider } from 'react-redux'
 
-import { AppRouter } from 'app/AppRouter'
+import { AppRouter } from 'app/AppRouter/AppRouter'
 import { AnalyticsContextProvider } from 'context/analyticsContext'
 import createStore from 'store/store'
 import StoreProvider from 'store/StoreProvider/StoreProvider'

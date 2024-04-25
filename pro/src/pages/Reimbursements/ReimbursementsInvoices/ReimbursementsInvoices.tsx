@@ -4,7 +4,7 @@ import { useOutletContext } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { InvoiceResponseV2Model } from 'apiClient/v1'
-import { BannerReimbursementsInfo } from 'components/Banner'
+import { BannerReimbursementsInfo } from 'components/Banner/BannerReimbursementsInfo'
 import { SelectOption } from 'custom_types/form'
 import { ReimbursementsContextProps } from 'pages/Reimbursements/Reimbursements'
 import Spinner from 'ui-kit/Spinner/Spinner'

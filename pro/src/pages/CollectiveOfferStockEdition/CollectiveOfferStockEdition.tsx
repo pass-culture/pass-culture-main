@@ -4,7 +4,7 @@ import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
 import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
-import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
+import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
 import {
   Mode,
   OfferEducationalStockFormValues,
