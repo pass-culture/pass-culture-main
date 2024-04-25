@@ -235,7 +235,7 @@ def create_or_update_users(rows: Iterable[dict], update_if_exists: bool = False)
     # The purpose of this function is to recreate test users on
     # staging after the staging database is reset. It's not meant to
     # be used anywhere else, and certainly not on production.
-    if settings.IS_PROD:
+    if not settings.ENABLE_IMPORT_TEST_USERS:
         raise ValueError("This function is not supposed to be run on production")
 
     users = []
