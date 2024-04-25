@@ -12,7 +12,7 @@ const renderSideNavLinks = (initialRoute = '/') => {
 }
 
 describe('SideNavLinks', () => {
-  it('should togle individual section on individual section button click', async () => {
+  it('should toggle individual section on individual section button click', async () => {
     renderSideNavLinks()
 
     await userEvent.click(screen.getByRole('button', { name: 'Individuel' }))
@@ -23,7 +23,7 @@ describe('SideNavLinks', () => {
     expect(screen.getByRole('link', { name: 'Guichet' })).toBeInTheDocument()
   })
 
-  it('should togle collective section on collective section button click', async () => {
+  it('should toggle collective section on collective section button click', async () => {
     renderSideNavLinks()
 
     await userEvent.click(screen.getByRole('button', { name: 'Collectif' }))
