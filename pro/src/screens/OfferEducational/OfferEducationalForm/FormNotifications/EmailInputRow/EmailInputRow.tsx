@@ -1,6 +1,6 @@
 import React from 'react'
 
-import FormLayout from 'components/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import fullTrashIcon from 'icons/full-trash.svg'
 import { NOTIFICATIONS_EMAIL_LABEL } from 'screens/OfferEducational/constants/labels'
 import { Button } from 'ui-kit/Button/Button'

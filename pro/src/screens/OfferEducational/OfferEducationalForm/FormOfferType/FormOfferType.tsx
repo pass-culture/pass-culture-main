@@ -1,7 +1,7 @@
 import { useFormikContext } from 'formik'
 
 import { EacFormat } from 'apiClient/adage'
-import FormLayout from 'components/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import {
   OfferEducationalFormValues,
   MAX_DETAILS_LENGTH,

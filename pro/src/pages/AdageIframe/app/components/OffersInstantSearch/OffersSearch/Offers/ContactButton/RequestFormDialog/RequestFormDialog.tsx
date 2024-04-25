@@ -2,7 +2,7 @@ import { useFormik } from 'formik'
 
 import { AdageFrontRoles } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import Dialog from 'components/Dialog/Dialog'
+import { Dialog } from 'components/Dialog/Dialog/Dialog'
 import MandatoryInfo from 'components/FormLayout/FormLayoutMandatoryInfo'
 import useNotification from 'hooks/useNotification'
 import { isDateValid } from 'utils/date'

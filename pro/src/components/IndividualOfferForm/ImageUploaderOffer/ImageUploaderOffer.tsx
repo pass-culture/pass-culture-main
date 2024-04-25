@@ -1,6 +1,6 @@
 import React from 'react'
 
-import FormLayout from 'components/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { ImageUploader } from 'components/ImageUploader/ImageUploader'
 import { UploaderModeEnum } from 'components/ImageUploader/types'

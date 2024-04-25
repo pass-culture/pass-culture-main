@@ -2,8 +2,8 @@ import cn from 'classnames'
 import React from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
-import CollectiveOfferNavigation from 'components/CollectiveOfferNavigation'
-import HelpLink from 'components/HelpLink'
+import { CollectiveOfferNavigation } from 'components/CollectiveOfferNavigation/CollectiveOfferNavigation'
+import { HelpLink } from 'components/HelpLink/HelpLink'
 import { getActiveStep } from 'pages/CollectiveOfferRoutes/utils/getActiveStep'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 
@@ -18,7 +18,7 @@ export interface CollectiveOfferLayoutProps {
   requestId?: string | null
 }
 
-const CollectiveOfferLayout = ({
+export const CollectiveOfferLayout = ({
   children,
   subTitle,
   isFromTemplate = false,
@@ -89,5 +89,3 @@ const CollectiveOfferLayout = ({
     </div>
   )
 }
-
-export default CollectiveOfferLayout

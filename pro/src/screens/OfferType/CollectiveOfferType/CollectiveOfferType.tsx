@@ -6,7 +6,7 @@ import { api } from 'apiClient/api'
 import { DMSApplicationForEAC } from 'apiClient/v1'
 import Callout from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
-import FormLayout from 'components/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import {
   COLLECTIVE_OFFER_SUBTYPE,
   OFFER_TYPES,

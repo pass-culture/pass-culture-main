@@ -1,6 +1,7 @@
 import React from 'react'
 
-import { ImagePreview, ImagePreviewsWrapper } from 'components/ImagePreview'
+import { ImagePreview } from 'components/ImagePreview/ImagePreview'
+import { ImagePreviewsWrapper } from 'components/ImagePreview/ImagePreviewsWrapper'
 
 import homeShell from '../assets/offer-home-shell.png'
 import offerShell from '../assets/offer-shell.png'

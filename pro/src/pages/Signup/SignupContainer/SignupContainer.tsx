@@ -14,7 +14,7 @@ import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
 import { getReCaptchaToken } from 'utils/recaptcha'
 
 import { SIGNUP_FORM_DEFAULT_VALUES } from './constants'
-import OperatingProcedures from './OperationProcedures'
+import { OperatingProcedures } from './OperationProcedures/OperationProcedures'
 import styles from './SignupContainer.module.scss'
 import SignupForm from './SignupForm'
 import { validationSchema } from './validationSchema'

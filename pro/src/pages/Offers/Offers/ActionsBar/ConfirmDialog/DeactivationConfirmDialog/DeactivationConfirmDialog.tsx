@@ -1,7 +1,7 @@
 import React from 'react'
 import { useLocation } from 'react-router-dom'
 
-import ConfirmDialog from 'components/Dialog/ConfirmDialog'
+import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import { Events } from 'core/FirebaseEvents/constants'
 import { Audience, NBSP } from 'core/shared'
 import useAnalytics from 'hooks/useAnalytics'

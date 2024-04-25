@@ -43,7 +43,7 @@ export interface CollectiveOfferNavigationProps {
   requestId?: string | null
 }
 
-const CollectiveOfferNavigation = ({
+export const CollectiveOfferNavigation = ({
   activeStep,
   isCreatingOffer,
   isTemplate = false,
@@ -235,5 +235,3 @@ const CollectiveOfferNavigation = ({
     <Stepper activeStep={activeStep} className={className} steps={steps} />
   )
 }
-
-export default CollectiveOfferNavigation

@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react'
 import { useSWRConfig } from 'swr'
 
-import ActionsBarSticky from 'components/ActionsBarSticky'
+import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
 import { SearchFiltersParams } from 'core/Offers/types'
@@ -72,7 +72,7 @@ const getUpdateActiveStatusAdapter = (
     updateOffersActiveStatusAdapter({ ids: selectedOfferIds, isActive })
 }
 
-const ActionsBar = ({
+export const ActionsBar = ({
   selectedOfferIds,
   clearSelectedOfferIds,
   toggleSelectAllCheckboxes,
@@ -238,5 +238,3 @@ const ActionsBar = ({
     </>
   )
 }
-
-export default ActionsBar

@@ -6,7 +6,7 @@ import {
   GetCollectiveOfferTemplateResponseModel,
   GetOffererResponseModel,
 } from 'apiClient/v1'
-import ActionsBarSticky from 'components/ActionsBarSticky'
+import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import useNotification from 'hooks/useNotification'
 import AdagePreviewLayout from 'pages/AdageIframe/app/components/OfferInfos/AdagePreviewLayout/AdagePreviewLayout'
 import publishCollectiveOfferAdapter from 'screens/CollectiveOfferSummaryCreation/adapters/publishCollectiveOfferAdapter'

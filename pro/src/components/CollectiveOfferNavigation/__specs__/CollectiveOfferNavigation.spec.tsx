@@ -23,7 +23,8 @@ import {
 } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import CollectiveOfferNavigation, {
+import {
+  CollectiveOfferNavigation,
   CollectiveOfferStep,
   CollectiveOfferNavigationProps,
 } from '../CollectiveOfferNavigation'

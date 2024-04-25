@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react'
 import { useSWRConfig } from 'swr'
 
 import { ListOffersOfferResponseModel } from 'apiClient/v1'
-import ConfirmDialog from 'components/Dialog/ConfirmDialog'
+import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import {
   Events,
   OFFER_FORM_NAVIGATION_IN,

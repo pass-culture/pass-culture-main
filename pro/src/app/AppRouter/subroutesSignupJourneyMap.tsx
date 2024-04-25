@@ -2,13 +2,13 @@
 /* istanbul ignore file */
 import React from 'react'
 
-import { Activity } from 'screens/SignupJourneyForm/Activity'
-import { OffererAuthentication } from 'screens/SignupJourneyForm/Authentication'
-import { ConfirmedAttachment } from 'screens/SignupJourneyForm/ConfirmedAttachment'
-import { Offerer } from 'screens/SignupJourneyForm/Offerer'
-import { Offerers as SignupJourneyOfferers } from 'screens/SignupJourneyForm/Offerers'
-import { Validation } from 'screens/SignupJourneyForm/Validation'
-import { Welcome } from 'screens/SignupJourneyForm/Welcome'
+import { Activity } from 'screens/SignupJourneyForm/Activity/Activity'
+import { OffererAuthentication } from 'screens/SignupJourneyForm/Authentication/OffererAuthentication'
+import { ConfirmedAttachment } from 'screens/SignupJourneyForm/ConfirmedAttachment/ConfirmedAttachment'
+import { Offerer } from 'screens/SignupJourneyForm/Offerer/Offerer'
+import { Offerers as SignupJourneyOfferers } from 'screens/SignupJourneyForm/Offerers/Offerers'
+import { Validation } from 'screens/SignupJourneyForm/Validation/Validation'
+import { Welcome } from 'screens/SignupJourneyForm/Welcome/Welcome'
 
 import type { RouteConfig } from './routesMap'
 

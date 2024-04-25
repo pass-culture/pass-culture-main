@@ -8,7 +8,7 @@ interface Props {
   className?: string
 }
 
-const BannerRGS: React.FC<Props> = ({
+export const BannerRGS: React.FC<Props> = ({
   closable,
   onClose,
   className,
@@ -31,5 +31,3 @@ const BannerRGS: React.FC<Props> = ({
     recommandations.
   </Callout>
 )
-
-export default BannerRGS

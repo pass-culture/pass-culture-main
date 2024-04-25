@@ -2,7 +2,7 @@ import React from 'react'
 
 import Callout from 'components/Callout/Callout'
 
-const BannerReimbursementsInfo = (): JSX.Element => {
+export const BannerReimbursementsInfo = (): JSX.Element => {
   return (
     <Callout
       title="Les remboursements s'effectuent toutes les 2 à 3 semaines"
@@ -33,5 +33,3 @@ const BannerReimbursementsInfo = (): JSX.Element => {
     </Callout>
   )
 }
-
-export default BannerReimbursementsInfo

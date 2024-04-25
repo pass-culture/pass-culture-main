@@ -1,5 +1,5 @@
 import { UserPhoneBodyModel } from 'apiClient/v1'
-import { BoxFormLayout } from 'components/BoxFormLayout'
+import { BoxFormLayout } from 'components/BoxFormLayout/BoxFormLayout'
 import { UserPhoneForm } from 'components/UserPhoneForm'
 import { formatPhoneNumber } from 'pages/Home/ProfileAndSupport/Profile'
 import { BoxRounded } from 'ui-kit/BoxRounded/BoxRounded'

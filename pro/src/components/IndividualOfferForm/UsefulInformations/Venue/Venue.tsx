@@ -5,7 +5,7 @@ import {
   GetOffererNameResponseModel,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
-import FormLayout from 'components/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
 import { IndividualOfferForm } from 'components/IndividualOfferForm/types'
 import { buildAccessibilityFormValues } from 'components/IndividualOfferForm/utils/setDefaultInitialFormValues'

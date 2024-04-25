@@ -1,7 +1,7 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import RedirectDialog from 'components/Dialog/RedirectDialog'
+import { RedirectDialog } from 'components/Dialog/RedirectDialog/RedirectDialog'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { Events, VenueEvents } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'

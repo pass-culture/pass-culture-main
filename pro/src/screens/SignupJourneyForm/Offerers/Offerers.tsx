@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { CreateOffererQueryModel } from 'apiClient/v1'
-import ConfirmDialog from 'components/Dialog/ConfirmDialog'
+import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
 import { Offerer, useSignupJourneyContext } from 'context/SignupJourneyContext'
@@ -29,7 +29,7 @@ import { ActionBar } from '../ActionBar'
 
 import styles from './Offerers.module.scss'
 
-const Offerers = (): JSX.Element => {
+export const Offerers = (): JSX.Element => {
   const { logEvent } = useAnalytics()
   const notify = useNotification()
   const navigate = useNavigate()
@@ -216,5 +216,3 @@ const Offerers = (): JSX.Element => {
     </div>
   )
 }
-
-export default Offerers

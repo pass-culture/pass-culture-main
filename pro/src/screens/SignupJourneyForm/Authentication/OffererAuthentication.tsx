@@ -2,7 +2,7 @@ import { FormikProvider, useFormik } from 'formik'
 import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import FormLayout from 'components/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
 import { useSignupJourneyContext } from 'context/SignupJourneyContext'
 import useAnalytics from 'hooks/useAnalytics'
@@ -16,7 +16,7 @@ import OffererAuthenticationForm, {
 } from './OffererAuthenticationForm'
 import { validationSchema } from './validationSchema'
 
-const OffererAuthentication = (): JSX.Element => {
+export const OffererAuthentication = (): JSX.Element => {
   const { logEvent } = useAnalytics()
   const navigate = useNavigate()
 
@@ -82,5 +82,3 @@ const OffererAuthentication = (): JSX.Element => {
     </FormLayout>
   )
 }
-
-export default OffererAuthentication

@@ -3,7 +3,7 @@ import React from 'react'
 import Callout from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 
-const OfferRefundWarning = () => {
+export const OfferRefundWarning = () => {
   return (
     <Callout
       links={[
@@ -20,5 +20,3 @@ const OfferRefundWarning = () => {
     </Callout>
   )
 }
-
-export default OfferRefundWarning
