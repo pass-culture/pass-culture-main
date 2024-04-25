@@ -867,6 +867,80 @@ class GetOfferBookingsByStatusCSVTest:
             dict(zip(headers, data[1])), beneficiary_2, offer, venue, validated_booking_2, "confirmé", "Non"
         )
 
+    def should_return_validated_bookings_for_offer_with_old_cancelled_booking(self):
+        # Given
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
+        )
+        beneficiary_2 = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary2@example.com", firstName="Harry", lastName="Potter", postalCode="97300"
+        )
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+
+        offer = offers_factories.OfferFactory(venue=venue)
+        stock = offers_factories.EventStockFactory(
+            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=10)
+        )
+
+        validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary)
+        validated_booking_2 = bookings_factories.BookingFactory(
+            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+        )
+        bookings_factories.BookingFactory(stock=stock)
+        bookings_factories.CancelledBookingFactory(
+            stock=stock, user=beneficiary_2, cancellation_limit_date=datetime.utcnow() - timedelta(days=2)
+        )
+
+        stock_2 = offers_factories.EventStockFactory(
+            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=40)
+        )
+        bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary_2)
+        bookings_factories.BookingFactory(stock=stock_2)
+
+        # When
+        queries = 1  # Get bookings
+
+        offer_id = offer.id
+        with assert_num_queries(queries):
+            bookings_csv = booking_repository.export_validated_bookings_by_offer_id(
+                offer_id=offer_id,
+                event_beginning_date=date.today() + timedelta(days=10),
+                export_type=BookingExportType.CSV,
+            )
+
+        # Then
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+        assert headers == [
+            "Lieu",
+            "Nom de l’offre",
+            "Date de l'évènement",
+            "EAN",
+            "Nom et prénom du bénéficiaire",
+            "Email du bénéficiaire",
+            "Téléphone du bénéficiaire",
+            "Date et heure de réservation",
+            "Date et heure de validation",
+            "Contremarque",
+            "Intitulé du tarif",
+            "Prix de la réservation",
+            "Statut de la contremarque",
+            "Date et heure de remboursement",
+            "Type d'offre",
+            "Code postal du bénéficiaire",
+            "Duo",
+        ]
+        assert len(data) == 2
+        self._validate_csv_row(
+            dict(zip(headers, data[0])), beneficiary, offer, venue, validated_booking, "validé", "Non"
+        )
+        self._validate_csv_row(
+            dict(zip(headers, data[1])), beneficiary_2, offer, venue, validated_booking_2, "confirmé", "Non"
+        )
+
     def should_return_validated_bookings_for_offer_with_duo(self):
         # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory(
