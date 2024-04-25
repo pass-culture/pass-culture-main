@@ -17,6 +17,7 @@ import {
   GET_VENUE_TYPES_QUERY_KEY,
 } from 'config/swrQueryKeys'
 import { SAVED_OFFERER_ID_KEY } from 'core/shared/constants'
+import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
 import { CollectiveDataEdition } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/CollectiveDataEdition'
 import { updateSelectedOffererId } from 'store/user/reducer'
 import Spinner from 'ui-kit/Spinner/Spinner'
@@ -33,6 +34,7 @@ export const VenueEdition = (): JSX.Element | null => {
   }>()
   const location = useLocation()
   const dispatch = useDispatch()
+  const isNewSideBarNavigation = useIsNewInterfaceActive()
 
   const venueQuery = useSWR(
     [GET_VENUE_QUERY_KEY, venueId],
@@ -104,7 +106,13 @@ export const VenueEdition = (): JSX.Element | null => {
           venueTypes={venueTypes}
         />
 
-        <Tabs tabs={tabs} selectedKey={activeStep} className={styles['tabs']} />
+        {(!isNewSideBarNavigation || !venue.isPermanent) && (
+          <Tabs
+            tabs={tabs}
+            selectedKey={activeStep}
+            className={styles['tabs']}
+          />
+        )}
 
         <Routes>
           <Route
