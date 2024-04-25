@@ -1,22 +1,22 @@
 environments:
   testing:
     values:
-      - chartVersion: 0.25.0
+      - chartVersion: 0.26.1
   staging:
     values:
-      - chartVersion: 0.25.0
+      - chartVersion: 0.26.1
   integration:
     values:
-      - chartVersion: 0.25.0
+      - chartVersion: 0.26.1
   production:
     values:
-      - chartVersion: 0.25.0
+      - chartVersion: 0.26.1
   ops:
     values:
-      - chartVersion: 0.25.0
+      - chartVersion: 0.26.1
   perf:
     values:
-      - chartVersion: 0.25.0
+      - chartVersion: 0.26.1
 ---
 helmDefaults:
   wait: true
@@ -32,5 +32,5 @@ releases:
     chart: passCulture/pass-culture-helm-registry/pcapi
     version: {{ .Values.chartVersion }}
     values:
-      - {{ requiredEnv "PCAPI_VALUES_FILE" }}
+      -  ./pass-culture-deployment/helm/pcapi/values.{{ .Environment.Name }}.yaml
       - {{ requiredEnv "PCAPI_SECRETS_FILE" }}
