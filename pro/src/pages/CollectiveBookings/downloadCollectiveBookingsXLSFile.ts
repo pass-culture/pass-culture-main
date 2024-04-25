@@ -22,9 +22,5 @@ export const downloadCollectiveBookingsXLSFile = async (
   )
 
   const date = new Date().toISOString()
-  downloadFile(
-    new Uint8Array(bookingsXLSText),
-    `reservations_eac_pass_culture-${date}.xlsx`,
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-  )
+  downloadFile(bookingsXLSText, `reservations_eac_pass_culture-${date}.xlsx`)
 }

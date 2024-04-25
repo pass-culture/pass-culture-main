@@ -18,7 +18,7 @@ import {
 } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
-import ReimbursementsDetails from '../ReimbursementsDetails/ReimbursementsDetails'
+import { ReimbursementsDetails } from '../ReimbursementsDetails/ReimbursementsDetails'
 
 vi.mock('utils/date', async () => ({
   ...(await vi.importActual('utils/date')),

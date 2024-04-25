@@ -2,17 +2,16 @@ import classNames from 'classnames'
 import isEqual from 'lodash.isequal'
 import React, { useCallback, useEffect, useState } from 'react'
 
-import { FETCH_ERROR_MESSAGE } from 'app/App/App'
 import FormLayout from 'components/FormLayout/FormLayout'
 import MultiDownloadButtonsModal from 'components/MultiDownloadButtonsModal/MultiDownloadButtonsModal'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
 import { PreFiltersParams } from 'core/Bookings/types'
-import { Audience } from 'core/shared'
+import { Audience, GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import fullRefreshIcon from 'icons/full-refresh.svg'
-import { downloadBookingsCSVFile } from 'pages/Bookings/downloadBookingsCSVFile'
-import { downloadBookingsXLSFile } from 'pages/Bookings/downloadBookingsXLSFile'
+import { downloadIndividualBookingsCSVFile } from 'pages/Bookings/downloadIndividualBookingsCSVFile'
+import { downloadIndividualBookingsXLSFile } from 'pages/Bookings/downloadIndividualBookingsXLSFile'
 import { downloadCollectiveBookingsCSVFile } from 'pages/CollectiveBookings/downloadCollectiveBookingsCSVFile'
 import { downloadCollectiveBookingsXLSFile } from 'pages/CollectiveBookings/downloadCollectiveBookingsXLSFile'
 import { Button } from 'ui-kit/Button/Button'
@@ -142,9 +141,9 @@ export const PreFilters = ({
         if (audience === Audience.INDIVIDUAL) {
           /* istanbul ignore next: DEBT to fix */
           if (type === 'CSV') {
-            await downloadBookingsCSVFile(filters)
+            await downloadIndividualBookingsCSVFile(filters)
           } else {
-            await downloadBookingsXLSFile(filters)
+            await downloadIndividualBookingsXLSFile(filters)
           }
         } else {
           if (type === 'CSV') {
@@ -154,7 +153,7 @@ export const PreFilters = ({
           }
         }
       } catch {
-        notify.error(FETCH_ERROR_MESSAGE)
+        notify.error(GET_DATA_ERROR_MESSAGE)
       }
 
       setIsDownloadingCSV(false)
