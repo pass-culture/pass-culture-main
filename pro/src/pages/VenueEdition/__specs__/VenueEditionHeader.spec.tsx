@@ -8,7 +8,11 @@ import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { Events } from 'core/FirebaseEvents/constants'
 import { defaultGetVenue } from 'utils/collectiveApiFactories'
 import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import {
   VenueEditionHeader,
@@ -17,14 +21,18 @@ import {
 
 const mockLogEvent = vi.fn()
 
-const renderPartnerPages = (props: Partial<VenueEditionHeaderProps>) => {
+const renderPartnerPages = (
+  props: Partial<VenueEditionHeaderProps>,
+  options?: RenderWithProvidersOptions
+) => {
   renderWithProviders(
     <VenueEditionHeader
       offerer={{ ...defaultGetOffererResponseModel }}
       venue={{ ...defaultGetVenue }}
       venueTypes={[{ id: VenueTypeCode.FESTIVAL, label: 'Festival' }]}
       {...props}
-    />
+    />,
+    { ...options }
   )
 }
 
@@ -85,5 +93,23 @@ describe('PartnerPages', () => {
       'src',
       'https://www.example.com/image.png'
     )
+  })
+
+  it('should not display new offer button in new nav', () => {
+    renderPartnerPages(
+      {
+        venue: {
+          ...defaultGetVenue,
+          venueTypeCode: VenueTypeCode.FESTIVAL,
+        },
+      },
+      {
+        user: sharedCurrentUserFactory({
+          navState: { newNavDate: '2002-07-29T12:18:43.087097Z' },
+        }),
+      }
+    )
+
+    expect(screen.queryByText('Créer une offre')).not.toBeInTheDocument()
   })
 })

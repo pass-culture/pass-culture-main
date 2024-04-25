@@ -14,6 +14,7 @@ import { UploadImageValues } from 'components/ImageUploader/ButtonImageEdit/type
 import { ImageUploader } from 'components/ImageUploader/ImageUploader'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { Events } from 'core/FirebaseEvents/constants'
+import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
 import useNotification from 'hooks/useNotification'
 import fullPlusIcon from 'icons/full-more.svg'
 import fullParametersIcon from 'icons/full-parameters.svg'
@@ -58,6 +59,8 @@ export const VenueEditionHeader = ({
 }: VenueEditionHeaderProps) => {
   const { logEvent } = useAnalytics()
   const notify = useNotification()
+  const isNewSideBarNavigation = useIsNewInterfaceActive()
+
   const venueType = venueTypes.find(
     (venueType) => venueType.id === venue.venueTypeCode
   )
@@ -156,16 +159,18 @@ export const VenueEditionHeader = ({
           </ButtonImageEdit>
         )}
 
-        <ButtonLink
-          variant={ButtonVariant.PRIMARY}
-          icon={fullPlusIcon}
-          className={styles['venue-button']}
-          link={{
-            to: `/offre/creation?lieu=${venue.id}&structure=${offerer.id}`,
-          }}
-        >
-          Créer une offre
-        </ButtonLink>
+        {!isNewSideBarNavigation && (
+          <ButtonLink
+            variant={ButtonVariant.PRIMARY}
+            icon={fullPlusIcon}
+            className={styles['venue-button']}
+            link={{
+              to: `/offre/creation?lieu=${venue.id}&structure=${offerer.id}`,
+            }}
+          >
+            Créer une offre
+          </ButtonLink>
+        )}
       </div>
     </div>
   )
