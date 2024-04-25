@@ -171,7 +171,7 @@ def notify_soon_to_be_expired_individual_bookings() -> None:
 @blueprint.cli.command("notify_newly_eligible_age_18_users")
 @log_cron_with_transaction
 def notify_newly_eligible_age_18_users() -> None:
-    if not settings.IS_PROD and not settings.IS_TESTING:
+    if not settings.NOTIFY_NEWLY_ELIGIBLE_USERS:
         return
     yesterday = datetime.date.today() - datetime.timedelta(days=1)
     for user in get_newly_eligible_age_18_users(yesterday):
