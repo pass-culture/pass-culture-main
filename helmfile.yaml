@@ -17,6 +17,7 @@ environments:
   perf:
     values:
       - chartVersion: 0.26.3
+
 helmDefaults:
   wait: true
 
