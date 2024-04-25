@@ -49,18 +49,6 @@ export type GetFilteredCollectiveBookingsRecapAdapter = Adapter<
   GetFilteredCollectiveBookingsRecapAdapterPayload
 >
 
-export type GetBookingsCSVFileAdapter = Adapter<
-  PreFiltersParams & { page?: number },
-  null,
-  null
->
-
-export type GetBookingsXLSFileAdapter = Adapter<
-  PreFiltersParams & { page?: number },
-  null,
-  null
->
-
 export type GetUserHasBookingsAdapter = Adapter<void, boolean, boolean>
 
 export type VenuesPayload = { venues: { value: string; label: string }[] }
