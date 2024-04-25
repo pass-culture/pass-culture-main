@@ -2,7 +2,10 @@ import classnames from 'classnames'
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { NavLink, useLocation } from 'react-router-dom'
+import useSWR from 'swr'
 
+import { api } from 'apiClient/api'
+import { GET_OFFERER_QUERY_KEY } from 'config/swrQueryKeys'
 import { SAVED_OFFERER_ID_KEY } from 'core/shared/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import fullDownIcon from 'icons/full-down.svg'
@@ -20,6 +23,7 @@ import {
   selectIsCollectiveSectionOpen,
   selectIsIndividualSectionOpen,
 } from 'store/nav/selector'
+import { selectCurrentOffererId } from 'store/user/selectors'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -42,6 +46,24 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   const dispatch = useDispatch()
   const isIndividualSectionOpen = useSelector(selectIsIndividualSectionOpen)
   const isCollectiveSectionOpen = useSelector(selectIsCollectiveSectionOpen)
+  const selectedOffererId = useSelector(selectCurrentOffererId)
+
+  // Question: is it ok to call getOfferer here ?
+  const selectedOffererQuery = useSWR(
+    [GET_OFFERER_QUERY_KEY, selectedOffererId],
+    async ([, offererId]) => {
+      const offerer = await api.getOfferer(Number(offererId))
+
+      return offerer
+    },
+    { fallbackData: undefined }
+  )
+
+  const selectedOfferer = selectedOffererQuery.data
+  const permanentVenues =
+    selectedOfferer?.managedVenues?.filter((venue) => venue.isPermanent) ?? []
+
+  const venueId = permanentVenues[0]?.id
 
   useEffect(() => {
     if (INDIVIDUAL_LINKS.includes(location.pathname)) {
@@ -143,6 +165,20 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                   Guichet
                 </span>
               </NavLink>
+              {/* TODO: display only if it has partner page */}
+              <NavLink
+                to={`/structures/${offererId}/lieux/${venueId}`}
+                className={({ isActive }) =>
+                  classnames(styles['nav-links-item'], {
+                    [styles['nav-links-item-active']]: isActive,
+                  })
+                }
+                end
+              >
+                <span className={styles['nav-links-item-without-icon']}>
+                  Page sur l’application
+                </span>
+              </NavLink>
             </>
           )}
         </li>
@@ -192,6 +228,20 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
               >
                 <span className={styles['nav-links-item-without-icon']}>
                   Réservations
+                </span>
+              </NavLink>
+              {/* TODO: display only if it has partner page */}
+              <NavLink
+                to={`/structures/${offererId}/lieux/${venueId}/eac`}
+                className={({ isActive }) =>
+                  classnames(styles['nav-links-item'], {
+                    [styles['nav-links-item-active']]: isActive,
+                  })
+                }
+                end
+              >
+                <span className={styles['nav-links-item-without-icon']}>
+                  Page sur adage
                 </span>
               </NavLink>
             </>
