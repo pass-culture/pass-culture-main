@@ -30,19 +30,19 @@ def adage_jwt_required(route_function: typing.Callable) -> typing.Callable:
                 adage_jwt_decoded = user_utils.decode_jwt_token_rs256(adage_jwt)
             except InvalidSignatureError as invalid_signature_error:
                 logger.error("Signature of adage jwt cannot be verified", extra={"error": invalid_signature_error})
-                raise UnauthorizedError("Unrecognized token")
+                raise UnauthorizedError(errors={"msg": "Unrecognized token"})
             except ExpiredSignatureError as expired_signature_error:
                 logger.warning("Token has expired", extra={"error": expired_signature_error})
-                raise UnauthorizedError("Token expired")
+                raise UnauthorizedError(errors={"msg": "Token expired"})
 
             if not adage_jwt_decoded.get("exp"):
                 logger.warning("Token does not contain an expiration date")
-                raise UnauthorizedError("No expiration date provided")
+                raise UnauthorizedError(errors={"msg": "No expiration date provided"})
 
             email = adage_jwt_decoded.get("mail")
             if not email:
                 logger.warning("Token does not contain an email")
-                raise UnauthorizedError("Unrecognized token")
+                raise UnauthorizedError(errors={"Authorization": "Unrecognized token"})
 
             authenticated_information = AuthenticatedInformation(
                 civility=adage_jwt_decoded.get("civilite"),
@@ -56,6 +56,6 @@ def adage_jwt_required(route_function: typing.Callable) -> typing.Callable:
             kwargs["authenticated_information"] = authenticated_information
             return route_function(*args, **kwargs)
 
-        raise UnauthorizedError("Unrecognized token")
+        raise UnauthorizedError(errors={"msg": "Unrecognized token"})
 
     return wrapper
