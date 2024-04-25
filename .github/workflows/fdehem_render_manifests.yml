@@ -37,14 +37,6 @@ jobs:
           repository: pass-culture/pass-culture-deployment
           token: ${{ steps.secrets.outputs.PASSCULTURE_SA_ACCESS_TOKEN }}
           path: ./pass-culture-deployment
-      - name: "OpenID Connect Authentication"
-        id: "openid-auth-infra"
-        uses: 'google-github-actions/auth@v2'
-        with:
-          create_credentials_file: false
-          token_format: 'access_token'
-          workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
       - name: "Install Teleport"
         uses: teleport-actions/setup@v1
         with:
@@ -62,9 +54,8 @@ jobs:
           helmfile-version: "v0.147.0"
       - name: "Render manifests"
         run: |
-          PASSCULTURE_USERNAME="oauth2accesstoken" \
-          PASSCULTURE_PASSWORD=${{ steps.openid-auth-infra.outputs.access_token }} \
-          PCAPI_VALUES_FILE=./pass-culture-deployment/helm/pcapi/values.testing.yaml \
+          : #PASSCULTURE_USERNAME="oauth2accesstoken" \
+          : #PASSCULTURE_PASSWORD=${{ steps.openid-auth-infra.outputs.access_token }} \
           PCAPI_SECRETS_FILE=<(echo '${{ needs.generate-pcapi-helm-secrets-file.outputs.pcapi_helm_secrets_file_base64 }}' | base64 -d) \
           helmfile -e testing template --set image.tag=xxx.xxx --output-dir ./rendered-manifests/ --output-dir-template "{{ .OutputDir }}/{{ .State.BaseName }}-{{ .Release.Name}}"
       - name: "Push manifests to rendered-manifests repository"
