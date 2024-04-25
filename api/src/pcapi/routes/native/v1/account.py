@@ -75,10 +75,7 @@ def reset_recredit_amount_to_show(user: users_models.User) -> serializers.UserPr
 
 @blueprint.native_route("/profile/update_email", methods=["POST"])
 @blueprint.api.validate(deprecated=True)
-@spectree_serialize(
-    on_success_status=204,
-    api=blueprint.api,
-)
+@spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_and_active_user_required
 def update_user_email(user: users_models.User, body: serializers.UserProfileEmailUpdate) -> None:
     try:
