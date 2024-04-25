@@ -4,7 +4,7 @@ import { Form, Formik } from 'formik'
 import React from 'react'
 import createFetchMock from 'vitest-fetch-mock'
 
-import { apiAdresse } from 'apiClient/adresse'
+import { apiAdresse } from 'apiClient/adresse/apiAdresse'
 import {
   Offerer,
   SignupJourneyContext,
@@ -23,9 +23,9 @@ import { validationSchema } from '../validationSchema'
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
 
-vi.mock('apiClient/adresse', async () => {
+vi.mock('apiClient/adresse/apiAdresse', async () => {
   return {
-    ...(await vi.importActual('apiClient/adresse')),
+    ...(await vi.importActual('apiClient/adresse/apiAdresse')),
     default: {
       getDataFromAddress: vi.fn(),
     },

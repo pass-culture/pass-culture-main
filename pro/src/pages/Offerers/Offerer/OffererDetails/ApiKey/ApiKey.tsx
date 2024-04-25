@@ -2,7 +2,7 @@ import cn from 'classnames'
 import { useState } from 'react'
 
 import { api } from 'apiClient/api'
-import ConfirmDialog from 'components/Dialog/ConfirmDialog'
+import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import useNotification from 'hooks/useNotification'
 import strokeTrashIcon from 'icons/stroke-trash.svg'
 import { Banner } from 'ui-kit/Banners/Banner/Banner'

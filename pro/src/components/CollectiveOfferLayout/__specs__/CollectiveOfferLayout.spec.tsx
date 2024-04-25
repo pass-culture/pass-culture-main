@@ -10,7 +10,8 @@ vi.mock('apiClient/api', () => ({
 
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import CollectiveOfferLayout, {
+import {
+  CollectiveOfferLayout,
   CollectiveOfferLayoutProps,
 } from '../CollectiveOfferLayout'
 

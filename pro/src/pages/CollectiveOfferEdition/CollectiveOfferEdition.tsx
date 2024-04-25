@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { AppLayout } from 'app/AppLayout'
-import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
+import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
 import { Mode, isCollectiveOfferTemplate } from 'core/OfferEducational'
 import OfferEducationalScreen from 'screens/OfferEducational'
 import {

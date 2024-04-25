@@ -1,6 +1,6 @@
 import React from 'react'
 
-import ConfirmDialog from 'components/Dialog/ConfirmDialog'
+import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import strokeTrashIcon from 'icons/stroke-trash.svg'
 
 interface OfferEducationalModalProps {
@@ -8,7 +8,7 @@ interface OfferEducationalModalProps {
   onValidate(): void
 }
 
-const CancelCollectiveBookingModal = ({
+export const CancelCollectiveBookingModal = ({
   onDismiss,
   onValidate,
 }: OfferEducationalModalProps): JSX.Element => {
@@ -28,5 +28,3 @@ const CancelCollectiveBookingModal = ({
     </ConfirmDialog>
   )
 }
-
-export default CancelCollectiveBookingModal

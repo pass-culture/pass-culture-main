@@ -23,7 +23,7 @@ import usePageTitle from './hook/usePageTitle'
 
 window.beamer_config = { product_id: 'vjbiYuMS52566', lazy: true }
 
-const App = (): JSX.Element | null => {
+export const App = (): JSX.Element | null => {
   const isBeamerEnabled = useActiveFeature('ENABLE_BEAMER')
   const location = useLocation()
   const currentUser = useSelector(selectCurrentUser)
@@ -153,5 +153,3 @@ const App = (): JSX.Element | null => {
     </>
   )
 }
-
-export default App

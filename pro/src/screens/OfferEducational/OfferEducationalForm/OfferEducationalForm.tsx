@@ -6,9 +6,9 @@ import {
   GetCollectiveOfferTemplateResponseModel,
   GetEducationalOffererResponseModel,
 } from 'apiClient/v1'
-import ActionsBarSticky from 'components/ActionsBarSticky'
-import BannerPublicApi from 'components/Banner/BannerPublicApi'
-import FormLayout from 'components/FormLayout'
+import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
+import { BannerPublicApi } from 'components/Banner/BannerPublicApi'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import {
   Mode,

@@ -5,7 +5,7 @@ import React from 'react'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { createImageFile } from 'utils/testFileHelpers'
 
-import ImageUploadBrowserForm from '../ImageUploadBrowserForm'
+import { ImageUploadBrowserForm } from '../ImageUploadBrowserForm'
 
 const onSubmit = vi.fn()
 const mockCreateImageBitmap = vi.fn()

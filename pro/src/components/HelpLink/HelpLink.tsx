@@ -7,7 +7,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './HelpLink.module.scss'
 
-const HelpLink = (): JSX.Element => {
+export const HelpLink = (): JSX.Element => {
   const { logEvent } = useAnalytics()
 
   return (
@@ -25,5 +25,3 @@ const HelpLink = (): JSX.Element => {
     </a>
   )
 }
-
-export default HelpLink

@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import { BannerCreateOfferAdmin } from 'components/Banner'
+import { BannerCreateOfferAdmin } from 'components/Banner/BannerCreateOfferAdmin'
 import {
   GET_VENUES_QUERY_KEY,
   GET_OFFERER_NAMES_QUERY_KEY,

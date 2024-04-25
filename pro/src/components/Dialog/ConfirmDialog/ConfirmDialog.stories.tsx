@@ -2,7 +2,7 @@ import type { StoryObj } from '@storybook/react'
 
 import strokeTrashIcon from 'icons/stroke-trash.svg'
 
-import ConfirmDialog from './ConfirmDialog'
+import { ConfirmDialog } from './ConfirmDialog'
 
 export default {
   title: 'components/ConfirmDialog',

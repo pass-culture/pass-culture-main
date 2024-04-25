@@ -2,7 +2,7 @@ import { FormikProvider, useFormik } from 'formik'
 import React, { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
-import FormLayout from 'components/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import {
   Events,

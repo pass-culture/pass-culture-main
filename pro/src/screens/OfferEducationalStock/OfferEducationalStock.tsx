@@ -10,10 +10,10 @@ import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
-import ActionsBarSticky from 'components/ActionsBarSticky'
-import BannerPublicApi from 'components/Banner/BannerPublicApi'
+import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
+import { BannerPublicApi } from 'components/Banner/BannerPublicApi'
 import Callout from 'components/Callout/Callout'
-import FormLayout from 'components/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import OfferEducationalActions from 'components/OfferEducationalActions'
 import {
   EducationalOfferType,
@@ -38,6 +38,7 @@ import {
   generateValidationSchema,
   showcaseOfferValidationSchema,
 } from './validationSchema'
+
 export interface OfferEducationalStockProps<
   T = GetCollectiveOfferResponseModel | GetCollectiveOfferTemplateResponseModel,
 > {

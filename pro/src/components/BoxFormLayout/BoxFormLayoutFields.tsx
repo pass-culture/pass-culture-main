@@ -8,10 +8,11 @@ interface BoxFormLayoutFields {
   children?: React.ReactNode | React.ReactNode[]
 }
 
-const Fields = ({ className, children }: BoxFormLayoutFields): JSX.Element => (
+export const Fields = ({
+  className,
+  children,
+}: BoxFormLayoutFields): JSX.Element => (
   <div className={cn(style['box-form-layout-fields'], className)}>
     {children}
   </div>
 )
-
-export default Fields

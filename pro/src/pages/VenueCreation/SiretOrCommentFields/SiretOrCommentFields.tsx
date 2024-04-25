@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 
 import { getAdressDataAdapter } from 'components/Address/adapter'
 import { handleAddressSelect } from 'components/Address/Address'
-import FormLayout from 'components/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import getSiretData from 'core/Venue/adapters/getSiretDataAdapter'
 import { humanizeSiret, unhumanizeSiret } from 'core/Venue/utils'
 import { VenueCreationFormValues } from 'pages/VenueCreation/types'

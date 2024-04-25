@@ -1,6 +1,6 @@
 import React from 'react'
 
-import Dialog from 'components/Dialog/Dialog'
+import { Dialog } from 'components/Dialog/Dialog/Dialog'
 import { BankAccountEvents } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import fullLinkIcon from 'icons/full-link.svg'

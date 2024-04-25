@@ -6,8 +6,9 @@ import {
   SubcategoryResponseModel,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
-import { OfferRefundWarning, WithdrawalReminder } from 'components/Banner'
-import FormLayout from 'components/FormLayout'
+import { OfferRefundWarning } from 'components/Banner/OfferRefundWarning'
+import { WithdrawalReminder } from 'components/Banner/WithdrawalReminder'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { Checkbox } from 'ui-kit/form/Checkbox/Checkbox'

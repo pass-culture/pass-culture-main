@@ -31,7 +31,7 @@ function formatAdressApiResponse(response: AdresseApiJson) {
   }))
 }
 
-export default {
+export const apiAdresse = {
   getDataFromAddressParts: async (
     street: string,
     city: string,

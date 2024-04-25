@@ -5,7 +5,7 @@ import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import { GetVenueResponseModel, StudentLevels } from 'apiClient/v1'
-import FormLayout from 'components/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import { GET_VENUE_QUERY_KEY } from 'config/swrQueryKeys'
 import {
   DEFAULT_MARSEILLE_STUDENTS,

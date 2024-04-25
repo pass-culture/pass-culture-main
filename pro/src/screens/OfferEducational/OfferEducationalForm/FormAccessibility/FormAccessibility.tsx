@@ -1,7 +1,7 @@
 import { useFormikContext } from 'formik'
 import React from 'react'
 
-import FormLayout from 'components/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OfferEducationalFormValues } from 'core/OfferEducational'
 import useAccessibilityOptions from 'hooks/useAccessibilityOptions'
 import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'

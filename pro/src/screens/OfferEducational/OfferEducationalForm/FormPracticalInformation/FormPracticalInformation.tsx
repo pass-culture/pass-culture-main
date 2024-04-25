@@ -6,7 +6,7 @@ import {
   GetEducationalOffererVenueResponseModel,
   OfferAddressType,
 } from 'apiClient/v1'
-import FormLayout from 'components/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import {
   DEFAULT_EAC_FORM_VALUES,
   OfferEducationalFormValues,

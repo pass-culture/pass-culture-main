@@ -2,18 +2,18 @@ import cn from 'classnames'
 import React from 'react'
 
 import style from './BoxFormLayout.module.scss'
-import Banner from './BoxFormLayoutBanner'
-import Fields from './BoxFormLayoutFields'
-import FormHeader from './BoxFormLayoutFormHeader'
-import Header from './BoxFormLayoutHeader'
-import RequiredMessage from './BoxFormLayoutRequiredMessage'
+import { Banner } from './BoxFormLayoutBanner'
+import { Fields } from './BoxFormLayoutFields'
+import { FormHeader } from './BoxFormLayoutFormHeader'
+import { Header } from './BoxFormLayoutHeader'
+import { RequiredMessage } from './BoxFormLayoutRequiredMessage'
 
 export interface BoxFormLayoutProps {
   children?: React.ReactNode | React.ReactNode[]
   className?: string
 }
 
-const BoxFormLayout = ({
+export const BoxFormLayout = ({
   children,
   className,
 }: BoxFormLayoutProps): JSX.Element => (
@@ -25,5 +25,3 @@ BoxFormLayout.Banner = Banner
 BoxFormLayout.Fields = Fields
 BoxFormLayout.FormHeader = FormHeader
 BoxFormLayout.RequiredMessage = RequiredMessage
-
-export default BoxFormLayout

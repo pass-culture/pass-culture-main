@@ -1,6 +1,6 @@
 import React from 'react'
 
-import ConfirmDialog from 'components/Dialog/ConfirmDialog'
+import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 
 interface DialogStocksEventEditConfirmProps {
   onConfirm: () => void

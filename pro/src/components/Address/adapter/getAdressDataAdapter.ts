@@ -1,4 +1,4 @@
-import { apiAdresse } from 'apiClient/adresse'
+import { apiAdresse } from 'apiClient/adresse/apiAdresse'
 import { AutocompleteItemProps } from 'ui-kit/form/shared/AutocompleteList/type'
 
 import { serializeAdressData } from './serializer'

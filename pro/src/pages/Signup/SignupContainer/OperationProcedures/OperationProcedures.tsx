@@ -7,7 +7,7 @@ import useAnalytics from 'hooks/useAnalytics'
 
 import styles from './OperationProcedures.module.scss'
 
-const OperatingProcedures = (): JSX.Element => {
+export const OperatingProcedures = (): JSX.Element => {
   const location = useLocation()
   const { logEvent } = useAnalytics()
 
@@ -31,5 +31,3 @@ const OperatingProcedures = (): JSX.Element => {
     </Callout>
   )
 }
-
-export default OperatingProcedures
