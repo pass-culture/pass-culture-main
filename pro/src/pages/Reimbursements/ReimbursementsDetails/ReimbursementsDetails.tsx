@@ -2,20 +2,23 @@ import { format, subMonths } from 'date-fns'
 import React, { useEffect, useState } from 'react'
 import { useOutletContext } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
 import { VenueListItemResponseModel } from 'apiClient/v1'
-import { ButtonDownloadCSV } from 'components/ButtonDownloadCSV/ButtonDownloadCSV'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import getVenuesForOffererAdapter from 'core/Venue/adapters/getVenuesForOffererAdapter'
 import { SelectOption } from 'custom_types/form'
 import useCurrentUser from 'hooks/useCurrentUser'
+import useNotification from 'hooks/useNotification'
 import fullLinkIcon from 'icons/full-link.svg'
 import strokeNoBookingIcon from 'icons/stroke-no-booking.svg'
 import { ReimbursementsContextProps } from 'pages/Reimbursements/Reimbursements'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { API_URL } from 'utils/config'
 import { FORMAT_ISO_DATE_ONLY, getToday } from 'utils/date'
+import { downloadFile } from 'utils/downloadFile'
 import { sortByLabel } from 'utils/strings'
 
 import DetailsFilters from './DetailsFilters'
@@ -27,9 +30,30 @@ type CsvQueryParams = {
   reimbursementPeriodEndingDate?: string
 }
 
-const ReimbursementsDetails = (): JSX.Element => {
+const ALL_VENUES_OPTION_ID = 'allVenues'
+
+const getCsvQueryParams = (
+  venue: string,
+  periodStart?: string,
+  periodEnd?: string
+) => {
+  const params: CsvQueryParams = {}
+  if (periodStart) {
+    params.reimbursementPeriodBeginningDate = periodStart
+  }
+  if (periodEnd) {
+    params.reimbursementPeriodEndingDate = periodEnd
+  }
+  if (venue && venue !== ALL_VENUES_OPTION_ID) {
+    params.venueId = venue
+  }
+  return new URLSearchParams(params).toString()
+}
+
+export const ReimbursementsDetails = (): JSX.Element => {
+  const notify = useNotification()
   const { currentUser } = useCurrentUser()
-  const ALL_VENUES_OPTION_ID = 'allVenues'
+
   const today = getToday()
   const oneMonthAGo = subMonths(today, 1)
   const INITIAL_FILTERS = {
@@ -40,7 +64,6 @@ const ReimbursementsDetails = (): JSX.Element => {
 
   const [filters, setFilters] = useState(INITIAL_FILTERS)
   const { venue, periodStart, periodEnd } = filters
-  const [csvQueryParams, setCsvQueryParams] = useState('')
   const [venuesOptions, setVenuesOptions] = useState<SelectOption[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
@@ -80,20 +103,6 @@ const ReimbursementsDetails = (): JSX.Element => {
     void loadVenues()
   }, [selectedOfferer])
 
-  useEffect(() => {
-    const params: CsvQueryParams = {}
-    if (periodStart) {
-      params.reimbursementPeriodBeginningDate = periodStart
-    }
-    if (periodEnd) {
-      params.reimbursementPeriodEndingDate = periodEnd
-    }
-    if (venue && venue !== ALL_VENUES_OPTION_ID) {
-      params.venueId = venue
-    }
-    setCsvQueryParams(new URLSearchParams(params).toString())
-  }, [periodEnd, periodStart, venue])
-
   if (isLoading) {
     return (
       <div className="spinner">
@@ -117,6 +126,21 @@ const ReimbursementsDetails = (): JSX.Element => {
     )
   }
 
+  const downloadCSVFile = async () => {
+    try {
+      downloadFile(
+        await api.getReimbursementsCsv(
+          venue !== ALL_VENUES_OPTION_ID ? Number(venue) : undefined,
+          periodStart,
+          periodEnd
+        ),
+        'remboursements_pass_culture'
+      )
+    } catch {
+      notify.error(GET_DATA_ERROR_MESSAGE)
+    }
+  }
+
   return (
     <>
       <DetailsFilters
@@ -126,18 +150,14 @@ const ReimbursementsDetails = (): JSX.Element => {
         selectableOptions={venuesOptions}
         setFilters={setFilters}
       >
-        <ButtonDownloadCSV
-          filename="remboursements_pass_culture"
-          href={`${API_URL}/reimbursements/csv?${csvQueryParams}`}
-          isDisabled={shouldDisableButtons}
-          mimeType="text/csv"
-        >
+        <Button onClick={downloadCSVFile} disabled={shouldDisableButtons}>
           Télécharger
-        </ButtonDownloadCSV>
+        </Button>
+
         <ButtonLink
           isDisabled={shouldDisableButtons}
           link={{
-            to: `/remboursements-details?${csvQueryParams}`,
+            to: `/remboursements-details?${getCsvQueryParams(venue, periodStart, periodEnd)}`,
             target: '_blank',
             isExternal: false,
           }}
@@ -147,6 +167,7 @@ const ReimbursementsDetails = (): JSX.Element => {
           Afficher
         </ButtonLink>
       </DetailsFilters>
+
       <p className={styles['format-mention']}>
         Le fichier est au format CSV, compatible avec tous les tableurs et
         éditeurs de texte.
@@ -154,5 +175,3 @@ const ReimbursementsDetails = (): JSX.Element => {
     </>
   )
 }
-
-export default ReimbursementsDetails

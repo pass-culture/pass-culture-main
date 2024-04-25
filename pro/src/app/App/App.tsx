@@ -1,5 +1,5 @@
 import { setUser as setSentryUser } from '@sentry/browser'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import { SWRConfig } from 'swr'
@@ -7,6 +7,7 @@ import { SWRConfig } from 'swr'
 import { api } from 'apiClient/api'
 import { findCurrentRoute } from 'app/AppRouter/findCurrentRoute'
 import Notification from 'components/Notification/Notification'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { useConfigureFirebase } from 'hooks/useAnalytics'
 import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
@@ -21,9 +22,6 @@ import useLogNavigation from './hook/useLogNavigation'
 import usePageTitle from './hook/usePageTitle'
 
 window.beamer_config = { product_id: 'vjbiYuMS52566', lazy: true }
-
-export const FETCH_ERROR_MESSAGE =
-  'Nous avons rencontré un problème lors de la récupération des données.'
 
 const App = (): JSX.Element | null => {
   const isBeamerEnabled = useActiveFeature('ENABLE_BEAMER')
@@ -144,7 +142,7 @@ const App = (): JSX.Element | null => {
       <SWRConfig
         value={{
           onError: () => {
-            notify.error(FETCH_ERROR_MESSAGE)
+            notify.error(GET_DATA_ERROR_MESSAGE)
           },
           revalidateOnFocus: false,
         }}
