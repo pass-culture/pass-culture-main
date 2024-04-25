@@ -23,9 +23,5 @@ export const downloadCollectiveBookingsCSVFile = async (
   )
 
   const date = new Date().toISOString()
-  downloadFile(
-    bookingsCsvText,
-    `reservations_eac_pass_culture-${date}.csv`,
-    'text/csv'
-  )
+  downloadFile(bookingsCsvText, `reservations_eac_pass_culture-${date}.csv`)
 }

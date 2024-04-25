@@ -53,20 +53,16 @@ export const DownloadBookingsModal = ({
           bookingsType!,
           selectedDate!
         ),
-        `reservations-${bookingsType}-${selectedDate}.csv`,
-        'text/csv'
+        `reservations-${bookingsType}-${selectedDate}.csv`
       )
     } else if (fileFormat === BookingExportType.EXCEL) {
       downloadFile(
-        new Uint8Array(
-          await api.exportBookingsForOfferAsExcel(
-            offerId,
-            bookingsType!,
-            selectedDate!
-          )
+        await api.exportBookingsForOfferAsExcel(
+          offerId,
+          bookingsType!,
+          selectedDate!
         ),
-        `reservations-${bookingsType}-${selectedDate}.xlsx`,
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        `reservations-${bookingsType}-${selectedDate}.xlsx`
       )
     }
     logEvent?.(Events.CLICKED_DOWNLOAD_OFFER_BOOKINGS, {

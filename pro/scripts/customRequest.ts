@@ -252,10 +252,25 @@ const getResponseBody = async (response: Response): Promise<any> => {
   if (response.status !== 204) {
     try {
       const contentType = response.headers.get('Content-Type')
+
       if (contentType) {
-        const isJSON = contentType.toLowerCase().startsWith('application/json')
+        const lowercaseContentType = contentType.toLowerCase()
+        const isJSON = lowercaseContentType.startsWith('application/json')
+
+        // Get around this issue
+        // https://github.com/ferdikoomen/openapi-typescript-codegen/issues/1739
+        const isDownloadable = [
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          'application/vnd.ms-excel',
+          'text/csv',
+        ].some((downloadableMimeType) =>
+          lowercaseContentType.includes(downloadableMimeType)
+        )
+
         if (isJSON) {
           return await response.json()
+        } else if (isDownloadable) {
+          return await response.blob()
         } else {
           return await response.text()
         }
