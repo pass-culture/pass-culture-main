@@ -28,7 +28,6 @@ class TiteliveGtl(BaseModel):
 
 class TiteliveImage(BaseModel):
     recto: str
-    verso: str | None
 
 
 class TiteliveArticle(BaseModel):
