@@ -1173,7 +1173,7 @@ def rm_previous_venue_thumbs(venue: models.Venue) -> None:
         storage.remove_thumb(venue, storage_id_suffix=original_image_timestamp)
 
     venue.bannerUrl = None  # type: ignore [method-assign]
-    venue.bannerMeta = None
+    venue.bannerMeta = None  # type: ignore [method-assign]
     venue.thumbCount = 1
 
 
@@ -1212,7 +1212,7 @@ def save_venue_banner(
     )
 
     venue.bannerUrl = f"{venue.thumbUrl}_{banner_timestamp}"  # type: ignore [method-assign]
-    venue.bannerMeta = {
+    venue.bannerMeta = {  # type: ignore [method-assign]
         "image_credit": image_credit,
         "author_id": user.id,
         "original_image_url": f"{venue.thumbUrl}_{original_image_timestamp}",
