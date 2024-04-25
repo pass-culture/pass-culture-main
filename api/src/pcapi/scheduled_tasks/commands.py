@@ -389,10 +389,12 @@ def notify_users_bookings_not_retrieved_command() -> None:
 @log_cron_with_transaction
 def handle_inactive_dms_applications_cron() -> None:
     dms_script.handle_inactive_dms_applications(
-        settings.DMS_ENROLLMENT_PROCEDURE_ID_FR, with_never_eligible_applicant_rule=settings.IS_TESTING
+        settings.DMS_ENROLLMENT_PROCEDURE_ID_FR,
+        with_never_eligible_applicant_rule=settings.DMS_NEVER_ELIGIBLE_APPLICANT,
     )
     dms_script.handle_inactive_dms_applications(
-        settings.DMS_ENROLLMENT_PROCEDURE_ID_ET, with_never_eligible_applicant_rule=settings.IS_TESTING
+        settings.DMS_ENROLLMENT_PROCEDURE_ID_ET,
+        with_never_eligible_applicant_rule=settings.DMS_NEVER_ELIGIBLE_APPLICANT,
     )
 
 
