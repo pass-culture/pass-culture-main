@@ -46,4 +46,4 @@ class FavoriteOfferTest:
         )
 
         assert response.status_code == 401
-        assert response.json == "Unrecognized token"
+        assert response.json["msg"] == "Unrecognized token"

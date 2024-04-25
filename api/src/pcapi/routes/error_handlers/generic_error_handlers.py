@@ -64,7 +64,7 @@ def unauthorized_error(error: UnauthorizedError) -> Response:
         headers["WWW-Authenticate"] = error.www_authenticate
         if error.realm:
             headers["WWW-Authenticate"] = '%s realm="%s"' % (headers["WWW-Authenticate"], error.realm)
-    return Response(json.dumps(error.errors), 401, headers)
+    return Response(json.dumps(error.errors), 401, headers, mimetype="application/json")
 
 
 @app.errorhandler(MethodNotAllowed)
