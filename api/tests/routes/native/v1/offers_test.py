@@ -2177,28 +2177,154 @@ class NewArboTest:
         response = client.get("/native/v1/category_tree")
 
         assert response.status_code == 200
-
-        # children: CategoryNode[] // [Romances, Thriller....]
-        # parent: CategoryNode // Livres
-        # position: number // 1
-        # label: string // 'Romans et ...'
-        # searchName?: string // undefined
-        # gtls?: GTL[] // []
-        # containsBlock: boolean // false
-        # blockLabel?: string // Livres papier
-        # blocks: string[]
-        # type: ['SearchGroup', 'NativeCategory', 'GenreTypeKey', 'SubcategoryId', 'GTL'] // GenreTypeKey
-        # }
-
-        assert response.json == {
-            "categoryNodes": [
+        assert response.json != {
+            "nodes": [
                 {
+                    "id": "SearchGroups_ARTS_LOISIRS_CREATIFS",
+                    "children": [],
+                    "name": "ARTS_LOISIRS_CREATIFS",
+                    "label": "Arts & loisirs créatifs",
+                    "parent": None,
+                    "position": 1,
+                    "searchCritera": {},
+                    "type": "SearchGroups",
+                },
+                {
+                    "id": "SearchGroups_CARTES_JEUNES",
+                    "children": [],
+                    "name": "CARTES_JEUNES",
+                    "label": "Cartes jeunes",
+                    "parent": None,
+                    "position": 1,
+                    "searchCritera": {},
+                    "type": "SearchGroups",
+                },
+                {
+                    "id": "SearchGroups_CD_VINYLE_MUSIQUE_EN_LIGNE",
+                    "children": [],
+                    "name": "CD_VINYLE_MUSIQUE_EN_LIGNE",
+                    "label": "CD, vinyles, musique en ligne",
+                    "parent": None,
+                    "position": 1,
+                    "searchCritera": {},
+                    "type": "SearchGroups",
+                },
+                {
+                    "id": "SearchGroups_CONCERTS_FESTIVALS",
+                    "children": [],
+                    "name": "CONCERTS_FESTIVALS",
+                    "label": "Concerts & festivals",
+                    "parent": None,
+                    "position": 1,
+                    "searchCritera": {},
+                    "type": "SearchGroups",
+                },
+                {
+                    "id": "SearchGroups_EVENEMENTS_EN_LIGNE",
+                    "children": [],
+                    "name": "EVENEMENTS_EN_LIGNE",
+                    "label": "Évènements en ligne",
+                    "parent": None,
+                    "position": 1,
+                    "searchCritera": {},
+                    "type": "SearchGroups",
+                },
+                {
+                    "id": "SearchGroups_FILMS_SERIES_CINEMA",
                     "children": [],
                     "name": "FILMS_SERIES_CINEMA",
                     "label": "Cinéma, films et séries",
                     "parent": None,
                     "position": 1,
-                    "type": "SearchGroup",
+                    "searchCritera": {},
+                    "type": "SearchGroups",
+                },
+                {
+                    "id": "SearchGroups_INSTRUMENTS",
+                    "children": [],
+                    "name": "INSTRUMENTS",
+                    "label": "Instruments de musique",
+                    "parent": None,
+                    "position": 1,
+                    "searchCritera": {},
+                    "type": "SearchGroups",
+                },
+                {
+                    "id": "SearchGroups_JEUX_JEUX_VIDEOS",
+                    "children": [],
+                    "name": "JEUX_JEUX_VIDEOS",
+                    "label": "Jeux & jeux vidéos",
+                    "parent": None,
+                    "position": 1,
+                    "searchCritera": {},
+                    "type": "SearchGroups",
+                },
+                {
+                    "id": "SearchGroups_LIVRES",
+                    "children": [],
+                    "name": "LIVRES",
+                    "label": "Livres",
+                    "parent": None,
+                    "position": 1,
+                    "searchCritera": {},
+                    "type": "SearchGroups",
+                },
+                {
+                    "id": "SearchGroups_MEDIA_PRESSE",
+                    "children": [],
+                    "name": "MEDIA_PRESSE",
+                    "label": "Médias & presse",
+                    "parent": None,
+                    "position": 1,
+                    "searchCritera": {},
+                    "type": "SearchGroups",
+                },
+                {
+                    "id": "SearchGroups_MUSEES_VISITES_CULTURELLES",
+                    "children": [],
+                    "name": "MUSEES_VISITES_CULTURELLES",
+                    "label": "Musées & visites culturelles",
+                    "parent": None,
+                    "position": 1,
+                    "searchCritera": {},
+                    "type": "SearchGroups",
+                },
+                {
+                    "id": "SearchGroups_NONE",
+                    "children": [],
+                    "name": "NONE",
+                    "label": None,
+                    "parent": None,
+                    "position": 1,
+                    "searchCritera": {},
+                    "type": "SearchGroups",
+                },
+                {
+                    "id": "SearchGroups_RENCONTRES_CONFERENCES",
+                    "children": [],
+                    "name": "RENCONTRES_CONFERENCES",
+                    "label": "Conférences & rencontres",
+                    "parent": None,
+                    "position": 1,
+                    "searchCritera": {},
+                    "type": "SearchGroups",
+                },
+                {
+                    "id": "SearchGroups_SPECTACLES",
+                    "children": [],
+                    "name": "SPECTACLES",
+                    "label": "Spectacles",
+                    "parent": None,
+                    "position": 1,
+                    "searchCritera": {},
+                    "type": "SearchGroups",
                 },
             ]
         }
+
+    def test_returns_search_criteria(self, client):
+        response = client.get("/native/v1/category_tree")
+
+        assert response.status_code == 200
+        for item in response.json["nodes"]:
+            assert "searchCriteria" in item

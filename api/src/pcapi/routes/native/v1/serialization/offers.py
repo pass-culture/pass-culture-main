@@ -328,3 +328,24 @@ class UserReportedOffersResponse(BaseModel):
 
     class Config:
         alias_generator = to_camel
+
+
+class SearchCriteria(BaseModel):
+    filter: str | None
+    value: str | None
+    gtls: list[str] | None
+
+
+class CategoryNode(BaseModel):
+    id: str
+    children: list[str]
+    name: str
+    label: str | None
+    parent: str | None
+    position: int | None
+    searchCriteria: SearchCriteria
+    type: str
+
+
+class CategoryTree(BaseModel):
+    nodes: list[CategoryNode]

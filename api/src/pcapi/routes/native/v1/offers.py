@@ -1,3 +1,4 @@
+from enum import Enum
 import sqlalchemy as sa
 from sqlalchemy.orm import joinedload
 
@@ -136,53 +137,113 @@ def get_subcategories_v2() -> subcategories_v2_serializers.SubcategoriesResponse
     )
 
 
+# @blueprint.native_route("/category_tree", methods=["GET"])
+# @spectree_serialize(api=blueprint.api, response_model=dict)
+# def get_category_tree() -> dict:
+#     return [
+#         {
+#             "children": [
+#                 {
+#                     "label": "Sous Cinéma",
+#                     "children": [
+#                         {
+#                             "label": "Événements cinéma",
+#                             "name": "EVENEMENT_CINEMA",
+#                             "position": 1,
+#                             "type": "NativeCategory",
+#                             "children": [],
+#                             "blockName": "SousCinéma",
+#                             "blockPosition": 1,
+#                         },
+#                         {
+#                             "label": "Séances de cinéma",
+#                             "name": "SEANCE_CINEMA",
+#                             "position": 1,
+#                             "type": "NativeCategory",
+#                             "parent": "SEARCH_GROUP_FILMS_SERIES_CINEMA",
+#                             "children": [
+#                                 {
+#                                     "label": "Action",
+#                                     "name": "ACTION",
+#                                     "position": 1,
+#                                     "searchCriteria": {
+#                                         "searchName": "ACTION",
+#                                         "searchFilter": "genres",
+#                                         "gtls": [],
+#                                     },
+#                                     "type": "GenreType",
+#                                     "children": [],
+#                                 }
+#                             ],
+#                         },
+#                     ],
+#                 }
+#             ],
+#             "containsBlocks": True,
+#             "id": "SEARCH_GROUP_FILMS_SERIES_CINEMA",
+#             "label": "Cinéma, films et séries",
+#             "name": "FILMS_SERIES_CINEMA",
+#             "position": 1,
+#             "type": "SearchGroup",
+#         }
+#     ]
+
+
 @blueprint.native_route("/category_tree", methods=["GET"])
-@spectree_serialize(api=blueprint.api, response_model=dict)
-def get_category_tree() -> dict:
-    return [
-        {
-            "children": [
-                {
-                    "label": "Sous Cinéma",
-                    "children": [
-                        {
-                            "label": "Événements cinéma",
-                            "name": "EVENEMENT_CINEMA",
-                            "position": 1,
-                            "type": "NativeCategory",
-                            "children": [],
-                            "blockName": "SousCinéma",
-                            "blockPosition": 1,
-                        },
-                        {
-                            "label": "Séances de cinéma",
-                            "name": "SEANCE_CINEMA",
-                            "position": 1,
-                            "type": "NativeCategory",
-                            "parent": "SEARCH_GROUP_FILMS_SERIES_CINEMA",
-                            "children": [
-                                {
-                                    "label": "Action",
-                                    "name": "ACTION",
-                                    "position": 1,
-                                    "searchCriteria": {
-                                        "searchName": "ACTION",
-                                        "searchFilter": "genres",
-                                        "gtls": [],
-                                    },
-                                    "type": "GenreType",
-                                    "children": [],
-                                }
-                            ],
-                        },
-                    ],
-                }
-            ],
-            "containsBlocks": True,
-            "id": "SEARCH_GROUP_FILMS_SERIES_CINEMA",
-            "label": "Cinéma, films et séries",
-            "name": "FILMS_SERIES_CINEMA",
-            "position": 1,
-            "type": "SearchGroup",
-        }
-    ]
+@spectree_serialize(api=blueprint.api, response_model=serializers.CategoryTree)
+def get_category_tree() -> serializers.CategoryTree:
+    search_group_nodes = []
+    for search_group in subcategories_v2.SearchGroups:
+        node = serializers.CategoryNode(
+            id=search_group.id,
+            children=[],
+            name=search_group.name,
+            label=search_group.value,
+            parent=None,
+            position=search_group._position,
+            searchCriteria=serializers.SearchCriteria(
+                filter=search_group.search_filter,
+                value=search_group.search_value,
+                gtls=search_group._gtls,
+            ),
+            type=search_group.__class__.__name__,
+        )
+        search_group_nodes.append(node)
+
+    native_categories_nodes = []
+    for native_category in subcategories_v2.SearchGroups:
+        node = serializers.CategoryNode(
+            id=native_category.id,
+            children=[],
+            name=native_category.name,
+            label=native_category.value,
+            parent=None,
+            position=None,
+            searchCriteria=serializers.SearchCriteria(
+                filter=native_category.search_filter,
+                value=native_category.search_value,
+                gtls=native_category._gtls,
+            ),
+            type=native_category.__class__.__name__,
+        )
+        native_categories_nodes.append(node)
+
+    genre_types_nodes = []
+    for genre_type in set(subcategories_v2.NATIVE_CATEGORY_GENRES_TYPES_MAPPING.values()):
+        node = serializers.CategoryNode(
+            id=genre_type.id,
+            children=[],
+            name=genre_type.name,
+            label=genre_type.value,
+            parent=None,
+            position=None,
+            searchCriteria=serializers.SearchCriteria(
+                filter=genre_type.search_filter,
+                value=None,
+                gtls=genre_type.gtls,
+            ),
+            type=genre_type.__class__.__name__,
+        )
+        native_categories_nodes.append(node)
+
+    return serializers.CategoryTree(nodes=search_group_nodes + native_categories_nodes)

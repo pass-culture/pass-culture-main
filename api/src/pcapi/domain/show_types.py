@@ -1,18 +1,23 @@
 from dataclasses import dataclass
 
+from pcapi.core.categories.subcategories_v2 import SearchNode
+
 
 @dataclass
-class ShowSubType:
+class ShowSubType(SearchNode):
     code: int
     label: str
     slug: str
 
 
 @dataclass
-class ShowType:
+class ShowType(SearchNode):
     children: list[ShowSubType]
     code: int
     label: str
+
+    @property
+    
 
 
 OTHER_SHOW_TYPE_SLUG = "OTHER"

@@ -1,15 +1,17 @@
 from dataclasses import dataclass
 
+from pcapi.core.categories.subcategories_v2 import SearchNode
+
 
 @dataclass
-class MusicSubType:
+class MusicSubType(SearchNode):
     code: int
     label: str
     slug: str
 
 
 @dataclass
-class MusicType:
+class MusicType(SearchNode):
     code: int
     label: str
     children: list[MusicSubType]

@@ -17,13 +17,38 @@ from pcapi.domain.show_types import ShowType
 from pcapi.domain.show_types import show_types
 
 
+class Category: ...
+
+
+class SearchNode:
+    @property
+    def id(self) -> str | None:
+        return f"{self.__class__.__name__}_{self.name}"
+
+    @property
+    def _gtls(self) -> list[str] | None:
+        return None
+
+    @property
+    def _position(self) -> int | None:
+        return None
+
+    @property
+    def search_filter(self) -> str | None:
+        raise NotImplementedError()
+
+    @property
+    def search_value(self) -> str | None:
+        raise NotImplementedError()
+
+
 class OnlineOfflinePlatformChoices(Enum):
     OFFLINE = "OFFLINE"
     ONLINE = "ONLINE"
     ONLINE_OR_OFFLINE = "ONLINE_OR_OFFLINE"
 
 
-class SearchGroups(Enum):
+class SearchGroups(Enum, SearchNode):
     ARTS_LOISIRS_CREATIFS = "Arts & loisirs créatifs"
     CARTES_JEUNES = "Cartes jeunes"
     CD_VINYLE_MUSIQUE_EN_LIGNE = "CD, vinyles, musique en ligne"
@@ -38,6 +63,37 @@ class SearchGroups(Enum):
     NONE = None
     RENCONTRES_CONFERENCES = "Conférences & rencontres"
     SPECTACLES = "Spectacles"
+
+    @property
+    def id(self) -> str:
+        f"{self.__class__.__name__}_{self.name}"
+
+    @property
+    def _position(self) -> int | None:
+        return {
+            type(self).ARTS_LOISIRS_CREATIFS.name: 5,
+            type(self).CARTES_JEUNES.name: 11,
+            type(self).CD_VINYLE_MUSIQUE_EN_LIGNE.name: 4,
+            type(self).CONCERTS_FESTIVALS.name: 1,
+            type(self).EVENEMENTS_EN_LIGNE.name: 12,
+            type(self).FILMS_SERIES_CINEMA.name: 13,
+            type(self).INSTRUMENTS.name: 2,
+            type(self).JEUX_JEUX_VIDEOS.name: 9,
+            type(self).LIVRES.name: 8,
+            type(self).MEDIA_PRESSE.name: 3,
+            type(self).MUSEES_VISITES_CULTURELLES.name: 10,
+            type(self).NONE.name: None,
+            type(self).RENCONTRES_CONFERENCES.name: 7,
+            type(self).SPECTACLES.name: 6,
+        }[self.name]
+
+    @property
+    def search_filter(self) -> str | None:
+        return "SearchGroupv2"
+
+    @property
+    def search_value(self) -> str | None:
+        return self.name
 
 
 class HomepageLabels(Enum):
@@ -113,7 +169,7 @@ class GenreType(Enum):
         return sorted(values, key=lambda x: x.value)
 
 
-class NativeCategory(Enum):
+class NativeCategory(Enum, SearchNode):
     ABONNEMENTS_MUSEE = "Abonnements musée"
     ABONNEMENTS_SPECTACLE = "Abonnements spectacle"
     ACHAT_LOCATION_INSTRUMENT = "Achat & location d'instrument"
@@ -165,6 +221,18 @@ class NativeCategory(Enum):
             return NATIVE_CATEGORY_GENRES_TYPES_MAPPING[self]
         except KeyError:
             return None
+
+    @property
+    def id(self) -> str:
+        f"{self.__class__.__name__}_{self.name}"
+
+    @property
+    def search_filter(self) -> str | None:
+        return "nativeCategoryId"
+
+    @property
+    def search_value(self) -> str | None:
+        return self.name
 
 
 NATIVE_CATEGORY_GENRES_TYPES_MAPPING = {
