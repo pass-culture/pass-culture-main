@@ -30,12 +30,16 @@ const OfferCardComponent = ({
   const adageAuthToken = searchParams.get('token')
   const { adageUser } = useAdageUser()
 
+  const offerLinkUrl = document.referrer
+    ? `${document.referrer}adage/passculture/offres/offerid/${offer.isTemplate ? '' : 'B-'}${offer.id}`
+    : `/adage-iframe/${currentPathname}/offre/${offer.id}?token=${adageAuthToken}`
+
   return (
     <div className={styles['container']}>
       <Link
         className={styles['offer-link']}
         data-testid="card-offer-link"
-        to={`/adage-iframe/${currentPathname}/offre/${offer.id}?token=${adageAuthToken}`}
+        to={offerLinkUrl}
         state={{ offer }}
         onClick={onCardClicked}
       >
