@@ -19,8 +19,8 @@ import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
-import deletePriceCategoryAdapter from './adapters/deletePriceCategoryAdapter'
-import postPriceCategoriesAdapter from './adapters/postPriceCategoriesAdapter'
+import { deletePriceCategoryAdapter } from './adapters/deletePriceCategoryAdapter'
+import { postPriceCategoriesAdapter } from './adapters/postPriceCategoriesAdapter'
 import { computeInitialValues } from './form/computeInitialValues'
 import {
   INITIAL_PRICE_CATEGORY,

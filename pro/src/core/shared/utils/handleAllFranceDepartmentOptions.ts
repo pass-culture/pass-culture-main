@@ -10,7 +10,7 @@ const areAllMainlandDepartmentsSelected = (formikValues: string[]) =>
     formikValues.includes(departmentValue)
   )
 
-export const areAllDepartmentsSelected = (formikValues: string[]) =>
+const areAllDepartmentsSelected = (formikValues: string[]) =>
   allDepartmentValues.every((departmentValue) =>
     formikValues.includes(departmentValue)
   )

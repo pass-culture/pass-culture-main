@@ -8,9 +8,8 @@ import { RootState } from 'store/rootReducer'
 import { getCollectiveOfferFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import OfferEducational from '../'
 import { defaultCreationProps } from '../__tests-utils__'
-import { OfferEducationalProps } from '../OfferEducational'
+import { OfferEducational, OfferEducationalProps } from '../OfferEducational'
 
 vi.mock('apiClient/api', () => ({
   api: {
@@ -53,7 +52,10 @@ describe('screens | OfferEducational : event address step', () => {
   })
 
   it('should redirect to stock on submit', async () => {
-    vi.spyOn(patchCollectiveOfferAdapter, 'default').mockResolvedValueOnce({
+    vi.spyOn(
+      patchCollectiveOfferAdapter,
+      'patchCollectiveOfferAdapter'
+    ).mockResolvedValueOnce({
       isOk: true,
       message: '',
       payload: offer,
@@ -71,7 +73,10 @@ describe('screens | OfferEducational : event address step', () => {
   })
 
   it('should redirect to right url if requete params exist on submit', async () => {
-    vi.spyOn(patchCollectiveOfferAdapter, 'default').mockResolvedValueOnce({
+    vi.spyOn(
+      patchCollectiveOfferAdapter,
+      'patchCollectiveOfferAdapter'
+    ).mockResolvedValueOnce({
       isOk: true,
       message: '',
       payload: offer,

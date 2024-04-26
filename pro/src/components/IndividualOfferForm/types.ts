@@ -1,7 +1,7 @@
 import type { FormikProps } from 'formik'
 
 import { WithdrawalTypeEnum } from 'apiClient/v1'
-import { AccessibilityFormValues } from 'core/shared'
+import { AccessibilityFormValues } from 'core/shared/types'
 
 export interface IndividualOfferFormValues {
   isEvent?: boolean

@@ -14,7 +14,7 @@ import {
 } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import AdagePreviewLayout from '../AdagePreviewLayout'
+import { AdagePreviewLayout } from '../AdagePreviewLayout'
 
 function renderAdagePreviewLayout(
   offer: GetCollectiveOfferTemplateResponseModel = getCollectiveOfferTemplateFactory()

@@ -1,7 +1,7 @@
 import classnames from 'classnames'
 import React from 'react'
 
-import DomainNameBanner from 'components/DomainNameBanner'
+import { DomainNameBanner } from 'components/DomainNameBanner/DomainNameBanner'
 import Footer from 'components/Footer/Footer'
 import OldHeader from 'components/Header/OldHeader'
 import SkipLinks from 'components/SkipLinks'

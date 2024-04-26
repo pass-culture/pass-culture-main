@@ -7,10 +7,10 @@ import {
   WithdrawalTypeEnum,
 } from 'apiClient/v1'
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
-import { AccessibilityEnum } from 'core/shared'
+import { AccessibilityEnum } from 'core/shared/types'
 
-import { updateIndividualOffer } from '..'
 import { serializePatchOffer } from '../serializers'
+import { updateIndividualOffer } from '../updateIndividualOffer'
 
 describe('updateIndividualOffer', () => {
   it('should sent PatchOfferBodyModel to api', async () => {

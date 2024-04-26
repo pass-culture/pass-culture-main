@@ -1,7 +1,7 @@
 import invert from 'lodash/invert'
 
 import { OfferStatus } from 'apiClient/v1'
-import { CollectiveOfferStatus } from 'core/OfferEducational'
+import { CollectiveOfferStatus } from 'core/OfferEducational/types'
 import { SearchFiltersParams } from 'core/Offers/types'
 
 const translateObjectKeysAndValues = (

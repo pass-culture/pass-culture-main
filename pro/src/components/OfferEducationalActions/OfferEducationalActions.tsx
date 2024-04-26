@@ -8,13 +8,13 @@ import {
   OfferStatus,
 } from 'apiClient/v1'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
+import { patchIsCollectiveOfferActiveAdapter } from 'core/OfferEducational/adapters/patchIsCollectiveOfferActiveAdapter'
+import { patchIsTemplateOfferActiveAdapter } from 'core/OfferEducational/adapters/patchIsTemplateOfferActiveAdapter'
 import {
   isCollectiveOffer,
   isCollectiveOfferTemplate,
   Mode,
-  patchIsCollectiveOfferActiveAdapter,
-  patchIsTemplateOfferActiveAdapter,
-} from 'core/OfferEducational'
+} from 'core/OfferEducational/types'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import fullHideIcon from 'icons/full-hide.svg'
@@ -42,7 +42,7 @@ export interface OfferEducationalActionsProps {
   reloadCollectiveOffer?: () => void
 }
 
-const OfferEducationalActions = ({
+export const OfferEducationalActions = ({
   className,
   isBooked,
   offer,
@@ -173,5 +173,3 @@ const OfferEducationalActions = ({
     </>
   )
 }
-
-export default OfferEducationalActions

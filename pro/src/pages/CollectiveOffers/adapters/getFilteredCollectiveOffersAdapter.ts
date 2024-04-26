@@ -4,8 +4,8 @@ import {
   CollectiveOfferResponseModel,
 } from 'apiClient/v1'
 import { SearchFiltersParams } from 'core/Offers/types'
-import { serializeApiFilters } from 'core/Offers/utils'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+import { serializeApiFilters } from 'core/Offers/utils/serializer'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 
 type Payload = {
   offers: CollectiveOfferResponseModel[]
@@ -25,7 +25,7 @@ const FAILING_RESPONSE: AdapterFailure<Payload> = {
   },
 }
 
-const getFilteredCollectiveOffersAdapter: GetFilteredCollectiveOffersAdapter =
+export const getFilteredCollectiveOffersAdapter: GetFilteredCollectiveOffersAdapter =
   async (apiFilters) => {
     try {
       const {
@@ -65,5 +65,3 @@ const getFilteredCollectiveOffersAdapter: GetFilteredCollectiveOffersAdapter =
       return FAILING_RESPONSE
     }
   }
-
-export default getFilteredCollectiveOffersAdapter

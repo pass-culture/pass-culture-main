@@ -14,7 +14,7 @@ import { useOfferWizardMode } from 'hooks'
 import useCurrentUser from 'hooks/useCurrentUser'
 import IndivualOfferLayout from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
 import { getTitle } from 'screens/IndividualOffer/IndivualOfferLayout/utils/getTitle'
-import InformationsScreen from 'screens/IndividualOffer/InformationsScreen/InformationsScreen'
+import { InformationsScreen } from 'screens/IndividualOffer/InformationsScreen/InformationsScreen'
 import { selectCurrentOffererId } from 'store/user/selectors'
 import Spinner from 'ui-kit/Spinner/Spinner'
 

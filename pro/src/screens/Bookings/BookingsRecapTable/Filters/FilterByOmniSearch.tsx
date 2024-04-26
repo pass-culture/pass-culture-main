@@ -2,7 +2,7 @@ import cn from 'classnames'
 import React, { ChangeEvent } from 'react'
 
 import { Events } from 'core/FirebaseEvents/constants'
-import { Audience } from 'core/shared'
+import { Audience } from 'core/shared/types'
 import { SelectOption } from 'custom_types/form'
 import useAnalytics from 'hooks/useAnalytics'
 import { SelectInput } from 'ui-kit/form/Select/SelectInput'

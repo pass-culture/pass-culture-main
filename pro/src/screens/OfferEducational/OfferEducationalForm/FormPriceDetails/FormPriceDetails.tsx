@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { MAX_DETAILS_LENGTH } from 'core/OfferEducational'
+import { MAX_DETAILS_LENGTH } from 'core/OfferEducational/constants'
 import { PRICE_INFORMATION } from 'screens/OfferEducational/constants/labels'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 
@@ -11,7 +11,7 @@ interface FormPriceDetailsProps {
   disableForm: boolean
 }
 
-const FormPriceDetails = ({ disableForm }: FormPriceDetailsProps) => {
+export const FormPriceDetails = ({ disableForm }: FormPriceDetailsProps) => {
   return (
     <FormLayout.Section title="Prix">
       <FormLayout.Row>
@@ -29,5 +29,3 @@ const FormPriceDetails = ({ disableForm }: FormPriceDetailsProps) => {
     </FormLayout.Section>
   )
 }
-
-export default FormPriceDetails

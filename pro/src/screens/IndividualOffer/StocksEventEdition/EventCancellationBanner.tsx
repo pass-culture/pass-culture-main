@@ -2,7 +2,7 @@ import React from 'react'
 
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { FormLayoutDescription } from 'components/FormLayout/FormLayoutDescription'
-import { isOfferDisabled } from 'core/Offers/utils'
+import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
 
 interface EventCancellationBannerProps {
   offer: GetIndividualOfferResponseModel

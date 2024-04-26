@@ -2,9 +2,9 @@ import { screen, waitFor } from '@testing-library/react'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
+import { getCollectiveOfferTemplateAdapter } from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
 import * as useNotification from 'hooks/useNotification'
-import getOfferRequestInformationsAdapter from 'pages/CollectiveOfferFromRequest/adapters/getOfferRequestInformationsAdapter'
+import { getOfferRequestInformationsAdapter } from 'pages/CollectiveOfferFromRequest/adapters/getOfferRequestInformationsAdapter'
 import { MandatoryCollectiveOfferFromParamsProps } from 'screens/OfferEducational/useCollectiveOfferFromParams'
 import {
   getCollectiveOfferFactory,

@@ -7,18 +7,19 @@ import {
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { MAX_OFFERS_TO_DISPLAY } from 'core/Offers/constants'
 import { SearchFiltersParams } from 'core/Offers/types'
-import { hasSearchFilters, isOfferDisabled } from 'core/Offers/utils'
-import { Audience } from 'core/shared'
+import { hasSearchFilters } from 'core/Offers/utils/hasSearchFilters'
+import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
+import { Audience } from 'core/shared/types'
 import { getOffersCountToDisplay } from 'pages/Offers/domain/getOffersCountToDisplay'
-import NoResults from 'screens/Offers/NoResults'
+import { NoResults } from 'screens/Offers/NoResults/NoResults'
 import { Banner } from 'ui-kit/Banners/Banner/Banner'
 import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { Pagination } from 'ui-kit/Pagination/Pagination'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 import styles from './Offers.module.scss'
-import OffersTableBody from './OffersTableBody/OffersTableBody'
-import OffersTableHead from './OffersTableHead/OffersTableHead'
+import { OffersTableBody } from './OffersTableBody/OffersTableBody'
+import { OffersTableHead } from './OffersTableHead/OffersTableHead'
 
 type OffersProps = {
   applyFilters: () => void

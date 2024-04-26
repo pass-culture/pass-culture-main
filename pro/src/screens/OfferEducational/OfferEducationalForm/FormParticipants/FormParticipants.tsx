@@ -3,14 +3,14 @@ import React from 'react'
 
 import { StudentLevels } from 'apiClient/adage'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { OfferEducationalFormValues } from 'core/OfferEducational'
+import { OfferEducationalFormValues } from 'core/OfferEducational/types'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
 import useParticipantsOptions from './useParticipantsOptions'
 
-const FormParticipants = ({
+export const FormParticipants = ({
   disableForm,
   isTemplate,
 }: {
@@ -64,5 +64,3 @@ const FormParticipants = ({
     </FormLayout.Section>
   )
 }
-
-export default FormParticipants

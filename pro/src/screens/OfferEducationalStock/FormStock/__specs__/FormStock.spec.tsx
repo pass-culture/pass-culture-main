@@ -6,15 +6,15 @@ import { Form, Formik } from 'formik'
 import React from 'react'
 
 import {
-  EducationalOfferType,
-  Mode,
   OfferEducationalStockFormValues,
-} from 'core/OfferEducational'
+  Mode,
+  EducationalOfferType,
+} from 'core/OfferEducational/types'
 import { generateValidationSchema } from 'screens/OfferEducationalStock/validationSchema'
 import { Button } from 'ui-kit/Button/Button'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 
-import FormStock, { FormStockProps } from '../FormStock'
+import { FormStock, FormStockProps } from '../FormStock'
 
 const renderFormStock = ({
   initialValues,

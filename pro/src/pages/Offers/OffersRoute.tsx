@@ -5,22 +5,20 @@ import useSWR from 'swr'
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
-import { getOffererAdapter } from 'core/Offers/adapters'
+import { getOffererAdapter } from 'core/Offers/adapters/getOffererAdapter'
 import { DEFAULT_PAGE, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
 import { SearchFiltersParams } from 'core/Offers/types'
-import {
-  hasSearchFilters,
-  computeOffersUrl,
-  serializeApiFilters,
-} from 'core/Offers/utils'
-import { Audience } from 'core/shared'
-import getVenuesForOffererAdapter from 'core/Venue/adapters/getVenuesForOffererAdapter'
+import { computeOffersUrl } from 'core/Offers/utils/computeOffersUrl'
+import { hasSearchFilters } from 'core/Offers/utils/hasSearchFilters'
+import { serializeApiFilters } from 'core/Offers/utils/serializer'
+import { Audience } from 'core/shared/types'
+import { getVenuesForOffererAdapter } from 'core/Venue/adapters/getVenuesForOffererAdapter/getVenuesForOffererAdapter'
 import { SelectOption } from 'custom_types/form'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
 import { formatAndOrderVenues } from 'repository/venuesService'
-import OffersScreen from 'screens/Offers'
+import { Offers } from 'screens/Offers/Offers'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { sortByLabel } from 'utils/strings'
 
@@ -152,7 +150,7 @@ export const OffersRoute = (): JSX.Element => {
       {!initialSearchFilters || offersQuery.isLoading ? (
         <Spinner />
       ) : (
-        <OffersScreen
+        <Offers
           audience={Audience.INDIVIDUAL}
           categories={categories}
           currentPageNumber={currentPageNumber}

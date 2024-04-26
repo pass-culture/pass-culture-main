@@ -7,7 +7,7 @@ type PublishCollectiveOfferTemplateAdapter = Adapter<
   null
 >
 
-const publishCollectiveOfferTemplateAdapter: PublishCollectiveOfferTemplateAdapter =
+export const publishCollectiveOfferTemplateAdapter: PublishCollectiveOfferTemplateAdapter =
   async (offerId) => {
     try {
       const offer = await api.patchCollectiveOfferTemplatePublication(offerId)
@@ -25,5 +25,3 @@ const publishCollectiveOfferTemplateAdapter: PublishCollectiveOfferTemplateAdapt
       }
     }
   }
-
-export default publishCollectiveOfferTemplateAdapter

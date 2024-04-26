@@ -27,13 +27,13 @@ export type AdageOfferProps = {
   institutionOfferCount?: number
 }
 
-export default function AdageOffer({
+export const AdageOffer = ({
   offer,
   adageUser,
   isPreview = false,
   setInstitutionOfferCount,
   institutionOfferCount,
-}: AdageOfferProps) {
+}: AdageOfferProps) => {
   const isOfferBookable = isCollectiveOfferBookable(offer)
 
   return (

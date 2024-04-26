@@ -9,7 +9,7 @@ import {
 import { OfferRefundWarning } from 'components/Banner/OfferRefundWarning'
 import { WithdrawalReminder } from 'components/Banner/WithdrawalReminder'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { REIMBURSEMENT_RULES } from 'core/Finances'
+import { REIMBURSEMENT_RULES } from 'core/Finances/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { Checkbox } from 'ui-kit/form/Checkbox/Checkbox'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
@@ -31,7 +31,7 @@ export interface UsefulInformationsProps {
   readOnlyFields?: string[]
 }
 
-const UsefulInformations = ({
+export const UsefulInformations = ({
   offererNames,
   venueList,
   isUserAdmin,
@@ -162,5 +162,3 @@ const UsefulInformations = ({
     </FormLayout.Section>
   )
 }
-
-export default UsefulInformations

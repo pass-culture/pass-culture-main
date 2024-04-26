@@ -10,9 +10,9 @@ import { GET_VENUE_QUERY_KEY } from 'config/swrQueryKeys'
 import {
   DEFAULT_MARSEILLE_STUDENTS,
   SENT_DATA_ERROR_MESSAGE,
-  handleAllFranceDepartmentOptions,
-} from 'core/shared'
+} from 'core/shared/constants'
 import { venueInterventionOptions } from 'core/shared/interventionOptions'
+import { handleAllFranceDepartmentOptions } from 'core/shared/utils/handleAllFranceDepartmentOptions'
 import { SelectOption } from 'custom_types/form'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'

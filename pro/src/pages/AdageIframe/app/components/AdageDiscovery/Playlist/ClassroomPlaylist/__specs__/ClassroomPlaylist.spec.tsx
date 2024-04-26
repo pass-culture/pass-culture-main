@@ -7,7 +7,7 @@ import { userEvent } from '@testing-library/user-event'
 
 import { AdageFrontRoles } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import * as useNotification from 'hooks/useNotification'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import { defaultCollectiveOffer } from 'utils/adageFactories'

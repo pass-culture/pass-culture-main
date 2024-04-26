@@ -76,7 +76,10 @@ describe('useCollectiveOfferImageUpload', () => {
 
   it('should delete image in case of normal offer', async () => {
     const offer = getCollectiveOfferTemplateFactory()
-    vi.spyOn(deleteCollectiveOfferImageAdapter, 'default').mockResolvedValue({
+    vi.spyOn(
+      deleteCollectiveOfferImageAdapter,
+      'deleteCollectiveOfferImageAdapter'
+    ).mockResolvedValue({
       isOk: true,
       payload: null,
       message: 'ok',
@@ -91,14 +94,16 @@ describe('useCollectiveOfferImageUpload', () => {
       await result.current.handleImageOnSubmit(3)
     })
 
-    expect(deleteCollectiveOfferImageAdapter.default).toHaveBeenCalled()
+    expect(
+      deleteCollectiveOfferImageAdapter.deleteCollectiveOfferImageAdapter
+    ).toHaveBeenCalled()
   })
 
   it('should delete image in case of template offer', async () => {
     const offer = getCollectiveOfferTemplateFactory()
     vi.spyOn(
       deleteCollectiveOfferTemplateImageAdapter,
-      'default'
+      'deleteCollectiveOfferTemplateImageAdapter'
     ).mockResolvedValue({
       isOk: true,
       payload: null,
@@ -116,14 +121,16 @@ describe('useCollectiveOfferImageUpload', () => {
       await result.current.handleImageOnSubmit(3)
     })
 
-    expect(deleteCollectiveOfferTemplateImageAdapter.default).toHaveBeenCalled()
+    expect(
+      deleteCollectiveOfferTemplateImageAdapter.deleteCollectiveOfferTemplateImageAdapter
+    ).toHaveBeenCalled()
   })
 
   it('should not delete image if offer initially had one and onImageDelete was not called', async () => {
     const offer = getCollectiveOfferTemplateFactory()
     vi.spyOn(
       deleteCollectiveOfferTemplateImageAdapter,
-      'default'
+      'deleteCollectiveOfferTemplateImageAdapter'
     ).mockResolvedValue({
       isOk: true,
       payload: null,
@@ -139,7 +146,7 @@ describe('useCollectiveOfferImageUpload', () => {
     })
 
     expect(
-      deleteCollectiveOfferTemplateImageAdapter.default
+      deleteCollectiveOfferTemplateImageAdapter.deleteCollectiveOfferTemplateImageAdapter
     ).not.toHaveBeenCalled()
   })
 })

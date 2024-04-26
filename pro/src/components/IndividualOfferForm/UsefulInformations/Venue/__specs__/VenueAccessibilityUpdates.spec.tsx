@@ -9,7 +9,7 @@ import {
   VenueListItemResponseModel,
 } from 'apiClient/v1'
 import { Accessibility } from 'components/IndividualOfferForm/Accessibility'
-import { AccessibilityEnum, AccessibilityFormValues } from 'core/shared'
+import { AccessibilityFormValues, AccessibilityEnum } from 'core/shared/types'
 import {
   getOffererNameFactory,
   venueListItemFactory,

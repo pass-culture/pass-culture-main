@@ -2,7 +2,7 @@
 import { PatchOfferBodyModel } from 'apiClient/v1'
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
 import { OfferExtraData } from 'core/Offers/types'
-import { AccessibilityEnum } from 'core/shared'
+import { AccessibilityEnum } from 'core/shared/types'
 import { getIndividualOfferFactory } from 'utils/individualApiFactories'
 
 import {

@@ -31,5 +31,3 @@ export const getEducationalRedactorsAdapter: GetEducationalRedactorAdapter =
       }
     }
   }
-
-export default getEducationalRedactorsAdapter

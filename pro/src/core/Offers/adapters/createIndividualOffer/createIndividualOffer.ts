@@ -14,7 +14,9 @@ type CreateIndividualOffer = Adapter<
   FailurePayload
 >
 
-const createIndividualOffer: CreateIndividualOffer = async (formValues) => {
+export const createIndividualOffer: CreateIndividualOffer = async (
+  formValues
+) => {
   try {
     const response = await api.postOffer(serializePostOffer(formValues))
     return {
@@ -42,5 +44,3 @@ const createIndividualOffer: CreateIndividualOffer = async (formValues) => {
     }
   }
 }
-
-export default createIndividualOffer

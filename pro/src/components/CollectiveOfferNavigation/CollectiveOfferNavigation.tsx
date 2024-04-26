@@ -7,8 +7,8 @@ import {
   Events,
   OFFER_FROM_TEMPLATE_ENTRIES,
 } from 'core/FirebaseEvents/constants'
-import { createOfferFromTemplate } from 'core/OfferEducational'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
+import { createOfferFromTemplate } from 'core/OfferEducational/utils/createOfferFromTemplate'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'

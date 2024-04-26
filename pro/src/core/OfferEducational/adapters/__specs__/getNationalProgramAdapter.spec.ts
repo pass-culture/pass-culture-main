@@ -1,5 +1,5 @@
 import { api } from 'apiClient/api'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 
 import { getNationalProgramsAdapter } from '../getNationalProgramAdapter'
 

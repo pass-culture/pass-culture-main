@@ -21,7 +21,7 @@ const buildInitialValues = (
   credit: imageOffer?.credit || '',
 })
 
-const FormImageUploader = ({
+export const FormImageUploader = ({
   onImageUpload,
   onImageDelete,
   imageOffer,
@@ -37,5 +37,3 @@ const FormImageUploader = ({
     </FormLayout.Row>
   </FormLayout.Section>
 )
-
-export default FormImageUploader

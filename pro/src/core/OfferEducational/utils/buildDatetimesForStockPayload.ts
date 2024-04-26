@@ -8,7 +8,7 @@ import {
 } from '../../../utils/date'
 import { getUtcDateTimeFromLocalDepartement } from '../../../utils/timezone'
 
-export const getBookingLimitDatetime = (
+const getBookingLimitDatetime = (
   bookingLimitDatetime: string,
   beginningDateTimeInDepartmentTimezone: Date
 ): Date => {

@@ -8,9 +8,9 @@ import {
 } from 'apiClient/v1'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import useNotification from 'hooks/useNotification'
-import AdagePreviewLayout from 'pages/AdageIframe/app/components/OfferInfos/AdagePreviewLayout/AdagePreviewLayout'
-import publishCollectiveOfferAdapter from 'screens/CollectiveOfferSummaryCreation/adapters/publishCollectiveOfferAdapter'
-import publishCollectiveOfferTemplateAdapter from 'screens/CollectiveOfferSummaryCreation/adapters/publishCollectiveOfferTemplateAdapter'
+import { AdagePreviewLayout } from 'pages/AdageIframe/app/components/OfferInfos/AdagePreviewLayout/AdagePreviewLayout'
+import { publishCollectiveOfferAdapter } from 'screens/CollectiveOfferSummaryCreation/adapters/publishCollectiveOfferAdapter'
+import { publishCollectiveOfferTemplateAdapter } from 'screens/CollectiveOfferSummaryCreation/adapters/publishCollectiveOfferTemplateAdapter'
 import { RedirectToBankAccountDialog } from 'screens/Offers/RedirectToBankAccountDialog'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
@@ -28,7 +28,7 @@ export interface CollectiveOfferSummaryCreationProps {
   offerer: GetOffererResponseModel | undefined
 }
 
-const CollectiveOfferPreviewCreationScreen = ({
+export const CollectiveOfferPreviewCreationScreen = ({
   offer,
   setOffer,
   offerer,
@@ -112,5 +112,3 @@ const CollectiveOfferPreviewCreationScreen = ({
     </div>
   )
 }
-
-export default CollectiveOfferPreviewCreationScreen

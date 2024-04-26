@@ -5,7 +5,7 @@ import {
   GetFilteredCollectiveBookingsRecapAdapterPayload,
 } from 'core/Bookings/types'
 import { buildBookingsRecapQuery } from 'core/Bookings/utils'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 
 const MAX_LOADED_PAGES = 5
 

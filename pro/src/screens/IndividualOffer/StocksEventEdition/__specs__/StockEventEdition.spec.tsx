@@ -28,7 +28,7 @@ import {
   getIndividualOfferPath,
   getIndividualOfferUrl,
 } from 'core/Offers/utils/getIndividualOfferUrl'
-import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
+import { PATCH_SUCCESS_MESSAGE } from 'core/shared/constants'
 import { Stocks } from 'pages/IndividualOfferWizard/Stocks/Stocks'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'

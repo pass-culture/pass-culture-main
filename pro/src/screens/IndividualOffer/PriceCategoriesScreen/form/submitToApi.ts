@@ -1,8 +1,8 @@
 import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
-import { updateIndividualOffer } from 'core/Offers/adapters'
+import { updateIndividualOffer } from 'core/Offers/adapters/updateIndividualOffer/updateIndividualOffer'
 
-import postPriceCategoriesAdapter from '../adapters/postPriceCategoriesAdapter'
+import { postPriceCategoriesAdapter } from '../adapters/postPriceCategoriesAdapter'
 import { serializePriceCategories } from '../adapters/serializePriceCategories'
 
 import { computeInitialValues } from './computeInitialValues'

@@ -9,7 +9,7 @@ import {
   CollectiveOfferResponseModel,
   ListOffersOfferResponseModel,
 } from 'apiClient/v1'
-import { AccessibilityFormValues } from 'core/shared'
+import { AccessibilityFormValues } from 'core/shared/types'
 import { hasProperty } from 'utils/types'
 
 export type OfferDatesType = 'permanent' | 'specific_dates'

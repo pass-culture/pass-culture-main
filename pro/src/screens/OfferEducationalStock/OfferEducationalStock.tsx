@@ -1,5 +1,4 @@
 /* @debt standard "Gautier: Do not load internal page dependencies"*/
-
 import { addDays, isAfter, isBefore } from 'date-fns'
 import { FormikProvider, useFormik } from 'formik'
 import React, { useEffect, useState } from 'react'
@@ -14,24 +13,24 @@ import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { BannerPublicApi } from 'components/Banner/BannerPublicApi'
 import Callout from 'components/Callout/Callout'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import OfferEducationalActions from 'components/OfferEducationalActions'
+import { OfferEducationalActions } from 'components/OfferEducationalActions/OfferEducationalActions'
+import { MAX_DETAILS_LENGTH } from 'core/OfferEducational/constants'
 import {
-  EducationalOfferType,
-  isCollectiveOffer,
-  isCollectiveOfferTemplate,
-  MAX_DETAILS_LENGTH,
-  Mode,
   OfferEducationalStockFormValues,
-} from 'core/OfferEducational'
-import { isOfferDisabled } from 'core/Offers/utils'
-import { NBSP } from 'core/shared'
+  isCollectiveOffer,
+  Mode,
+  EducationalOfferType,
+  isCollectiveOfferTemplate,
+} from 'core/OfferEducational/types'
+import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
+import { NBSP } from 'core/shared/constants'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 
 import { DETAILS_PRICE_LABEL } from './constants/labels'
-import FormStock from './FormStock'
+import { FormStock } from './FormStock/FormStock'
 import styles from './OfferEducationalStock.module.scss'
 import ShowcaseBannerInfo from './ShowcaseBannerInfo'
 import {
@@ -50,7 +49,7 @@ export interface OfferEducationalStockProps<
   requestId?: string | null
 }
 
-const OfferEducationalStock = <
+export const OfferEducationalStock = <
   T extends
     | GetCollectiveOfferResponseModel
     | GetCollectiveOfferTemplateResponseModel,
@@ -227,5 +226,3 @@ const OfferEducationalStock = <
     </>
   )
 }
-
-export default OfferEducationalStock
