@@ -47,6 +47,10 @@ export function AdageOfferListCard({
 
   const currentPathname = location.pathname.split('/')[2]
 
+  const offerLinkUrl = document.referrer
+    ? `${document.referrer}adage/passculture/offres/offerid/${offer.isTemplate ? '' : 'B-'}${offer.id}`
+    : `/adage-iframe/${currentPathname}/offre/${offer.id}?token=${adageAuthToken}`
+
   const [offerPrebooked, setOfferPrebooked] = useState(false)
 
   const isOfferTemplate = isCollectiveOfferTemplate(offer)
@@ -114,8 +118,7 @@ export function AdageOfferListCard({
           <div className={styles['offer-card-content']}>
             <AdageOfferListCardTags offer={offer} adageUser={adageUser} />
             <Link
-              to={`/adage-iframe/${currentPathname}/offre/${offer.id}?token=${adageAuthToken}`}
-              state={{ offer }}
+              to={offerLinkUrl}
               className={styles['offer-card-link']}
               onClick={onCardClicked}
             >
