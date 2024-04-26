@@ -76,10 +76,11 @@ if typing.TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+
 CONSTRAINT_CHECK_IS_VIRTUAL_XOR_HAS_ADDRESS = """
 (
     "isVirtual" IS TRUE
-    AND (address IS NULL AND "postalCode" IS NULL AND city IS NULL AND "departementCode" IS NULL)
+    AND (street IS NULL AND "postalCode" IS NULL AND city IS NULL AND "departementCode" IS NULL)
 )
 OR
 (
@@ -91,7 +92,7 @@ OR
 (
     "isVirtual" IS FALSE
     AND (siret is NULL and comment is NOT NULL)
-    AND (address IS NOT NULL AND "postalCode" IS NOT NULL AND city IS NOT NULL AND "departementCode" IS NOT NULL)
+    AND (street IS NOT NULL AND "postalCode" IS NOT NULL AND city IS NOT NULL AND "departementCode" IS NOT NULL)
 )
 
 """
@@ -280,9 +281,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     bookingEmail = Column(String(120), nullable=True)
     sa.Index("idx_venue_bookingEmail", bookingEmail)
 
-    _address = Column("address", String(200), nullable=True)
-
-    _street = Column("street", Text(), nullable=True)
+    street = Column("street", Text(), nullable=True)
 
     postalCode = Column(String(6), nullable=True)
 
@@ -302,7 +301,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
 
     isVirtual: bool = Column(
         Boolean,
-        CheckConstraint(CONSTRAINT_CHECK_IS_VIRTUAL_XOR_HAS_ADDRESS, name="check_is_virtual_xor_has_address"),
+        CheckConstraint(CONSTRAINT_CHECK_IS_VIRTUAL_XOR_HAS_ADDRESS, name="check_is_virtual_xor_has_address_"),
         nullable=False,
         default=False,
         server_default=expression.false(),
@@ -441,24 +440,6 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     openingHours: Mapped[list["OpeningHours | None"]] = relationship(
         "OpeningHours", back_populates="venue", passive_deletes=True
     )
-
-    def __init__(self, street: str | None = None, **kwargs: typing.Any) -> None:
-        if street:
-            self.street = street  # type: ignore [method-assign]
-        super().__init__(**kwargs)
-
-    @hybrid_property
-    def street(self) -> str | None:
-        return self._address
-
-    @street.setter  # type: ignore [no-redef]
-    def street(self, value: str | None) -> None:
-        self._address = value
-        self._street = value
-
-    @street.expression  # type: ignore [no-redef]
-    def street(cls):  # pylint: disable=no-self-argument
-        return cls._address
 
     def _get_type_banner_url(self) -> str | None:
         elligible_banners: tuple[str, ...] = VENUE_TYPE_DEFAULT_BANNERS.get(self.venueTypeCode, tuple())
@@ -1025,28 +1006,10 @@ class Offerer(
 
     allowedOnAdage: bool = Column(Boolean, nullable=False, default=False, server_default=sa.sql.expression.false())
 
-    _street = Column("street", Text(), nullable=True)
+    street = Column("street", Text(), nullable=True)
 
     hasNewNavUsers: sa_orm.Mapped["bool | None"] = sa.orm.query_expression()
     hasOldNavUsers: sa_orm.Mapped["bool | None"] = sa.orm.query_expression()
-
-    def __init__(self, street: str | None = None, **kwargs: typing.Any) -> None:
-        if street:
-            self.street = street  # type: ignore [method-assign]
-        super().__init__(**kwargs)
-
-    @hybrid_property
-    def street(self) -> str | None:
-        return self._address
-
-    @street.setter  # type: ignore [no-redef]
-    def street(self, value: str | None) -> None:
-        self._address = value
-        self._street = value
-
-    @street.expression  # type: ignore [no-redef]
-    def street(cls):  # pylint: disable=no-self-argument
-        return cls._address
 
     @property
     def bic(self) -> str | None:
