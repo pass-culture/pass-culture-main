@@ -82,7 +82,7 @@ zeep = "4.2.1"
 optional = true
 
 [tool.poetry.group.dev.dependencies]
-black = "^24.4.1"
+black = "^24.4.2"
 commitizen = "^3.24.0"
 debugpy = "^1.8.1"
 djlint = "1.34.1"
