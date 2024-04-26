@@ -67,7 +67,7 @@ jobs:
           PCAPI_SECRETSs=$(cat api/src/pcapi/settings.py | grep "secrets_utils.getlist(" | awk -F'=' '{print $1}')
           PCAPI_SECRETS+=(cat api/src/pcapi/settings.py | grep "secrets_utils.get(" | grep -oP '(?<=secrets_utils.get\(\").*?(?=\")')
           #Transform list into helm readable parameter list (pattern: --set value={item1,item2,item3})
-          PCAPI_SECRETS="secrets="{$(echo $pcapi_secrets | sed -r 's/ /,/g')}" >> "$GITHUB_OUTPUT"
+          PCAPI_SECRETS="secrets={$(echo $pcapi_secrets | sed -r 's/ /,/g')}" >> "$GITHUB_OUTPUT"
       - name: "Render manifests"
         run: |
           PASSCULTURE_USERNAME="oauth2accesstoken" \
