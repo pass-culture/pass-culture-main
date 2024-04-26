@@ -181,9 +181,7 @@ def search_public_accounts() -> utils.BackofficeResponse:
 
     # Do NOT call users.count() after search_public_account, this would make one more request on all users every time
     # (so it would select count twice: in users.count() and in users.paginate)
-    if paginated_rows.total == 0 and email_utils.is_valid_email_or_email_domain(
-        email_utils.sanitize_email(form.q.data)
-    ):
+    if paginated_rows.total == 0 and email_utils.is_valid_email(email_utils.sanitize_email(form.q.data)):
         users_query = users_api.search_public_account_in_history_email(form.q.data)
         users_query = _join_suspension_history(users_query)
         paginated_rows = users_query.paginate(page=form.page.data, per_page=form.per_page.data)
