@@ -1003,6 +1003,18 @@ class ListOffersTest(GetEndpointHelper):
 
         assert html_parser.extract_alert(response.data) == "Le filtre « Tag » est vide."
 
+    def test_list_offers_advanced_search_using_invalid_operator(self, authenticated_client, offers):
+        query_args = {
+            "search-0-search_field": "CATEGORY",
+            "search-0-operator": "OUT",
+            "search-0-category": "13",
+        }
+        with assert_num_queries(2):  # only session + current user, before form validation
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 400
+
+        assert html_parser.extract_alert(response.data) == "Un élément de l'adresse saisie est invalide : 'OUT'"
+
     # === Result content ===
 
     @pytest.mark.parametrize("first_quantity,second_quantity,expected_remaining", [(10, 7, 12), (5, 7, 7)])
