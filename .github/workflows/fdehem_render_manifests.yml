@@ -68,12 +68,12 @@ jobs:
           PCAPI_SECRETS+=$(cat api/src/pcapi/settings.py | grep "secrets_utils.get(" | grep -oP '(?<=secrets_utils.get\(\").*?(?=\")')
           #Transform list into helm readable parameter list (pattern: --set value={item1,item2,item3})
           PCAPI_SECRETS="secrets={$(echo $PCAPI_SECRETS | sed -r 's/ /,/g')}" >> "$GITHUB_OUTPUT"
+          echo $PCAPI_SECRETS
       - name: "Render manifests"
         run: |
           PASSCULTURE_USERNAME="oauth2accesstoken" \
           PASSCULTURE_PASSWORD=${{ steps.openid-auth-infra.outputs.access_token }} \
-          echo ${{ steps.get-pcapi-secrets.outputs.PCAPI_SECRETS }}
-          helmfile -e testing template --set image.tag=xxx.xxx --set ${{ steps.get-pcapi-secrets.outputs.PCAPI_SECRETS }} --output-dir ./rendered-manifests/ --output-dir-template "{{ .OutputDir }}/{{ .State.BaseName }}-{{ .Release.Name}}"
+          helmfile -e testing template --set ${{ steps.get-pcapi-secrets.outputs.PCAPI_SECRETS }} --set image.tag=xxx.xxx --output-dir ./rendered-manifests/ --output-dir-template "{{ .OutputDir }}/{{ .State.BaseName }}-{{ .Release.Name}}"
       - name: "Push manifests to rendered-manifests repository"
         id: push_manifests
         uses: cpina/github-action-push-to-another-repository@main
