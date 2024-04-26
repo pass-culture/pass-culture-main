@@ -258,6 +258,7 @@ const getResponseBody = async (response: Response): Promise<any> => {
         const isJSON = lowercaseContentType.startsWith('application/json')
 
         // Get around this issue
+        // https://github.com/ferdikoomen/openapi-typescript-codegen/issues/1739
         const isDownloadable = [
           'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
           'application/vnd.ms-excel',
