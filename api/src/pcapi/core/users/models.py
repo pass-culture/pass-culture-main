@@ -744,7 +744,7 @@ class UserEmailHistory(PcObject, Base, Model):
     )
 
     oldUserEmail: str = sa.Column(sa.String(120), nullable=False, unique=False)
-    oldDomainEmail: str = sa.Column(sa.String(120), nullable=False, unique=False, index=True)
+    oldDomainEmail: str = sa.Column(sa.String(120), nullable=False, unique=False)
 
     newUserEmail: str | None = sa.Column(sa.String(120), nullable=True, unique=False)
     newDomainEmail: str | None = sa.Column(sa.String(120), nullable=True, unique=False)
