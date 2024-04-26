@@ -1290,18 +1290,25 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
                     == educational_models.EducationalInstitution.id,
                 ),
             )
+            # max 1 program because of unique constraint on EducationalInstitutionProgramAssociation.institutionId
+            .outerjoin(educational_models.EducationalInstitution.programs)
             .filter(models.Cashflow.batchId == batch_id)
             .group_by(
                 models.BankAccount.id,
                 offerers_models.Offerer.id,
                 educational_models.EducationalDeposit.ministry,
+                educational_models.EducationalInstitutionProgram.id,
             )
             .with_entities(
                 models.BankAccount.id.label("bank_account_id"),
                 models.BankAccount.label.label("bank_account_label"),
                 offerers_models.Offerer.name.label("offerer_name"),
                 offerers_models.Offerer.siren.label("offerer_siren"),
-                educational_models.EducationalDeposit.ministry.label("ministry"),
+                sqla.func.coalesce(
+                    educational_models.EducationalInstitutionProgram.label,
+                    educational_models.EducationalInstitutionProgram.name,
+                    educational_models.EducationalDeposit.ministry.cast(sqla.String),
+                ).label("ministry"),
                 sqla_func.sum(models.Pricing.amount).label("pricing_amount"),
             )
         )
@@ -1616,6 +1623,7 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
                 models.PricingLine.category.label("pricing_line_category"),
                 sqla.func.coalesce(
                     educational_models.EducationalInstitutionProgram.label,
+                    educational_models.EducationalInstitutionProgram.name,
                     educational_models.EducationalDeposit.ministry.cast(sqla.String),
                 ).label("ministry"),
                 sqla_func.sum(models.PricingLine.amount).label("pricing_line_amount"),
