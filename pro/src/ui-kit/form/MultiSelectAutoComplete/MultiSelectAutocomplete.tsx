@@ -7,10 +7,12 @@ import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { getLabelString } from 'utils/getLabelString'
 
 import { SelectedValuesTags } from '../SelectAutoComplete/SelectedValuesTags/SelectedValuesTags'
-import { BaseInput } from '../shared'
-import AutocompleteList from '../shared/AutocompleteList'
-import FieldLayout from '../shared/FieldLayout'
-import { FieldLayoutBaseProps } from '../shared/FieldLayout/FieldLayout'
+import { AutocompleteList } from '../shared/AutocompleteList/AutocompleteList'
+import { BaseInput } from '../shared/BaseInput/BaseInput'
+import {
+  FieldLayout,
+  FieldLayoutBaseProps,
+} from '../shared/FieldLayout/FieldLayout'
 
 import styles from './MultiSelectAutocomplete.module.scss'
 

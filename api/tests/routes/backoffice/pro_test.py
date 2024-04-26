@@ -1,3 +1,4 @@
+import datetime
 from decimal import Decimal
 import logging
 import re
@@ -715,7 +716,7 @@ class CreateOffererTest(PostEndpointHelper):
         new_offerer: offerers_models.Offerer = offerers_models.Offerer.query.one()
         assert new_offerer.siren == "900000001"
         assert new_offerer.name == form_data["public_name"]
-        assert new_offerer.address == "[ND]"
+        assert new_offerer.street == "[ND]"
         assert new_offerer.postalCode == "06400"
         assert new_offerer.city == "CANNES"
         assert new_offerer.isActive
@@ -731,7 +732,7 @@ class CreateOffererTest(PostEndpointHelper):
         assert new_venue.name == form_data["public_name"]
         assert new_venue.publicName == form_data["public_name"]
         assert new_venue.venueTypeCode == offerers_models.VenueTypeCode.PERFORMING_ARTS
-        assert new_venue.address == "[ND]"
+        assert new_venue.street == "[ND]"
         assert new_venue.departementCode == "06"
         assert new_venue.postalCode == "06400"
         assert new_venue.city == "CANNES"
@@ -759,6 +760,7 @@ class CreateOffererTest(PostEndpointHelper):
                 "address": {"city": "CANNES", "insee_code": "06029", "postal_code": "[ND]", "street": "[ND]"},
                 "ape_code": "90.01Z",
                 "ape_label": "Arts du spectacle vivant",
+                "creation_date": f"{datetime.date.today().year}-01-01",
                 "diffusible": False,
                 "head_office_siret": "90000000100017",
                 "legal_category_code": "1000",

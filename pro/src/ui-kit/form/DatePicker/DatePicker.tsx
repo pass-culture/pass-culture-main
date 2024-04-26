@@ -1,8 +1,10 @@
 import { useField } from 'formik'
 import React, { useCallback } from 'react'
 
-import { FieldLayout } from '../shared'
-import { FieldLayoutBaseProps } from '../shared/FieldLayout/FieldLayout'
+import {
+  FieldLayout,
+  FieldLayoutBaseProps,
+} from '../shared/FieldLayout/FieldLayout'
 
 import { BaseDatePicker } from './BaseDatePicker'
 
@@ -13,7 +15,7 @@ interface DatePickerProps extends FieldLayoutBaseProps {
   onChange?: React.InputHTMLAttributes<HTMLInputElement>['onChange']
 }
 
-const DatePicker = ({
+export const DatePicker = ({
   name,
   maxDate,
   minDate,
@@ -72,5 +74,3 @@ const DatePicker = ({
     </FieldLayout>
   )
 }
-
-export default DatePicker

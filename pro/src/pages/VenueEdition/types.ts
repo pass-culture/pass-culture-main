@@ -1,4 +1,4 @@
-import { AccessibiltyFormValues } from 'core/shared'
+import { AccessibilityFormValues } from 'core/shared'
 
 export type DayValues = {
   morningStartingHour: string
@@ -9,7 +9,7 @@ export type DayValues = {
 }
 
 export interface VenueEditionFormValues {
-  accessibility: AccessibiltyFormValues
+  accessibility: AccessibilityFormValues
   description: string
   email: string | null
   isAccessibilityAppliedOnAllOffers: boolean

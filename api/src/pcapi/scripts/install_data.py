@@ -25,8 +25,8 @@ def install_data() -> None:
     logger.info("Roles synced")
 
 
-@cron_decorators.log_cron_with_transaction
 @blueprint.cli.command("check_feature_flags")
+@cron_decorators.log_cron_with_transaction
 def check_feature_flags() -> None:
     check_feature_flags_completeness()
 

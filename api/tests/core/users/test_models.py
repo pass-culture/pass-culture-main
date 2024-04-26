@@ -518,7 +518,8 @@ class SQLFunctionsTest:
             booking=booking_reimbursed_2, incident=incident, newTotalAmount=3000
         )  # +10 on user's wallet
 
-        finance_api.validate_finance_incident(incident, force_debit_note=False)
+        author = users_factories.UserFactory()
+        finance_api.validate_finance_incident(incident, force_debit_note=False, author=author)
 
         assert incident.status == finance_models.IncidentStatus.VALIDATED
 
@@ -543,7 +544,8 @@ class SQLFunctionsTest:
         bookings_factories.ReimbursedBookingFactory(deposit=deposit, amount=30)
 
         # When
-        finance_api.validate_finance_incident(incident, force_debit_note=False)
+        author = users_factories.UserFactory()
+        finance_api.validate_finance_incident(incident, force_debit_note=False, author=author)
 
         # Then
         assert incident.status == finance_models.IncidentStatus.VALIDATED
@@ -563,7 +565,10 @@ class SQLFunctionsTest:
             booking=booking_reimbursed_2, incident=incident, newTotalAmount=3000
         )  # +10 on user's wallet
 
-        finance_api.cancel_finance_incident(incident=incident, comment="Cancellation for the purpose of this test")
+        author = users_factories.UserFactory()
+        finance_api.cancel_finance_incident(
+            incident=incident, comment="Cancellation for the purpose of this test", author=author
+        )
 
         assert incident.status == finance_models.IncidentStatus.CANCELLED
 

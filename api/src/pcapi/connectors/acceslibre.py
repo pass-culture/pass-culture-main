@@ -8,6 +8,9 @@ from datetime import datetime
 import enum
 import json
 import logging
+from math import ceil
+import time
+from typing import Any
 from typing import TypedDict
 
 from dateutil import parser
@@ -21,7 +24,7 @@ from pcapi.utils import requests
 
 logger = logging.getLogger(__name__)
 
-ACCESLIBRE_REQUEST_TIMEOUT = 3
+ACCESLIBRE_REQUEST_TIMEOUT = 6
 REQUEST_PAGE_SIZE = 50
 ADDRESS_MATCHING_RATIO = 80
 NAME_MATCHING_RATIO = 45
@@ -131,10 +134,6 @@ class AccesLibreApiException(Exception):
     pass
 
 
-class AccessibilityParsingException(Exception):
-    pass
-
-
 class AccessibilityInfo(pydantic_v1.BaseModel):
     access_modality: list[ExpectedFieldsEnum] = pydantic_v1.Field(default_factory=list)
     audio_description: list[ExpectedFieldsEnum] = pydantic_v1.Field(default_factory=list)
@@ -157,16 +156,28 @@ class AcceslibreInfos(TypedDict):
     url: str
 
 
-class AcceslibreResult(TypedDict):
+class AcceslibreResult(pydantic_v1.BaseModel):
     activite: dict[str, str]
     nom: str
-    adresse: str
-    commune: str
-    code_postal: str
-    ban_id: str
-    siret: str
     slug: str
     web_url: str
+    adresse: str | None
+    commune: str | None
+    code_postal: str | None
+    ban_id: str | None
+    siret: str | None
+
+    @pydantic_v1.validator("activite", pre=True)
+    def activite_must_be_dict(cls, value: dict) -> dict:
+        if not isinstance(value, dict):
+            raise AccesLibreApiException(f"Acceslibre activite should be a dict, but received: {value}")
+        return value
+
+    @pydantic_v1.validator("nom", "slug", "web_url", pre=True)
+    def non_empty_string(cls, value: str, field: Any) -> str:
+        if value is None or not isinstance(value, str):
+            raise AccesLibreApiException(f"Acceslibre returned None for: {field.name}")
+        return value
 
 
 class AcceslibreWidgetData(TypedDict):
@@ -202,6 +213,13 @@ def find_venue_at_accessibility_provider(
     )
 
 
+def find_new_entries_by_activity(activity: AcceslibreActivity) -> list[AcceslibreResult] | None:
+    """
+    Requests acceslibre for last week new entries for a given activity
+    """
+    return _get_backend().find_new_entries_by_activity(activity=activity)
+
+
 def get_id_at_accessibility_provider(
     name: str,
     public_name: str | None = None,
@@ -225,13 +243,10 @@ def get_id_at_accessibility_provider(
     )
 
 
-def get_last_update_at_provider(slug: str) -> datetime | None:
-    return _get_backend().get_last_update_at_provider(slug)
-
-
-def get_accessibility_infos(slug: str) -> AccessibilityInfo | None:
-    """Fetch accessibility data from acceslibre and save them in an AccessibilityInfo object
-    This object will then be saved in db in the AccessibilityProvider.externalAccessibilityData JSONB
+def get_accessibility_infos(slug: str) -> tuple[datetime | None, AccessibilityInfo | None]:
+    """Fetch last update and accessibility data from acceslibre and save them in an AccessibilityInfo object
+    This object will then be saved in db in the AccessibilityProvider.LastUpdateAtProvider and
+    AccessibilityProvider.externalAccessibilityData JSONB
     """
     return _get_backend().get_accessibility_infos(slug=slug)
 
@@ -245,10 +260,10 @@ def extract_street_name(address: str | None = None, city: str | None = None, pos
 def match_venue_with_acceslibre(
     acceslibre_results: list[AcceslibreResult],
     venue_name: str,
-    venue_public_name: str | None,
-    venue_address: str | None,
-    venue_ban_id: str | None,
-    venue_siret: str | None,
+    venue_public_name: str | None = None,
+    venue_address: str | None = None,
+    venue_ban_id: str | None = None,
+    venue_siret: str | None = None,
 ) -> AcceslibreResult | None:
     """
     From the results we get from requesting acceslibre API, we try a match with our venue
@@ -260,11 +275,11 @@ def match_venue_with_acceslibre(
     venue_address = venue_address.lower() if venue_address else "ADDRESS_MISSING"
 
     for result in acceslibre_results:
-        acceslibre_name = result["nom"].lower()
-        acceslibre_address = extract_street_name(result["adresse"], result["commune"], result["code_postal"])
-        acceslibre_activity = result["activite"]["slug"]
-        acceslibre_ban_id = result["ban_id"]
-        acceslibre_siret = result["siret"]
+        acceslibre_name = result.nom.lower()
+        acceslibre_address = extract_street_name(result.adresse, result.commune, result.code_postal)
+        acceslibre_activity = result.activite["slug"]
+        acceslibre_ban_id = result.ban_id
+        acceslibre_siret = result.siret
         # check siret matching
         if venue_siret and venue_siret == acceslibre_siret:
             return result
@@ -319,11 +334,11 @@ def acceslibre_to_accessibility_infos(acceslibre_data: list[AcceslibreWidgetData
             continue
         labels_enum = []
         for label in labels:
-            if not (labels_enum_list := ExpectedFieldsEnum.find_enum_from_string(label)):
+            if label not in [item.value for item in ExpectedFieldsEnum]:
                 # If this exception is raised, you should probably set the ExpectedFieldsEnum for the given label
                 # according to acceslibre API schema, at https://github.com/MTES-MCT/acceslibre/blob/master/erp/views.py
                 raise AccesLibreApiException(f"Acceslibre API returned an unexpected value: {label} for {title}")
-            labels_enum.extend(labels_enum_list)
+            labels_enum.append(ExpectedFieldsEnum(label))
         setattr(accessibility_infos, attribute_name, labels_enum)
     return accessibility_infos
 
@@ -341,6 +356,9 @@ class BaseBackend:
     ) -> AcceslibreResult | None:
         raise NotImplementedError()
 
+    def find_new_entries_by_activity(self, activity: AcceslibreActivity) -> list[AcceslibreResult] | None:
+        raise NotImplementedError()
+
     def get_id_at_accessibility_provider(
         self,
         name: str,
@@ -353,10 +371,7 @@ class BaseBackend:
     ) -> AcceslibreInfos | None:
         raise NotImplementedError()
 
-    def get_last_update_at_provider(self, slug: str) -> datetime | None:
-        raise NotImplementedError()
-
-    def get_accessibility_infos(self, slug: str) -> AccessibilityInfo | None:
+    def get_accessibility_infos(self, slug: str) -> tuple[datetime | None, AccessibilityInfo | None]:
         raise NotImplementedError()
 
 
@@ -383,6 +398,21 @@ class TestingBackend(BaseBackend):
             siret="",
         )
 
+    def find_new_entries_by_activity(self, activity: AcceslibreActivity) -> list[AcceslibreResult] | None:
+        return [
+            AcceslibreResult(
+                slug="mon-lieu-chez-acceslibre",
+                web_url="https://une-fausse-url.com",
+                nom="Un lieu",
+                adresse="3 Rue de Valois 75001 Paris",
+                code_postal="75001",
+                commune="Paris",
+                ban_id="75001_1234_abcde",
+                activite={"nom": "Bibliothèque Médiathèque", "slug": "bibliotheque-mediatheque"},
+                siret="",
+            )
+        ]
+
     def get_id_at_accessibility_provider(
         self,
         name: str,
@@ -395,10 +425,7 @@ class TestingBackend(BaseBackend):
     ) -> AcceslibreInfos | None:
         return AcceslibreInfos(slug="mon-lieu-chez-acceslibre", url="https://une-fausse-url.com")
 
-    def get_last_update_at_provider(self, slug: str) -> datetime | None:
-        return datetime(2024, 3, 1, 0, 0)
-
-    def get_accessibility_infos(self, slug: str) -> AccessibilityInfo | None:
+    def get_accessibility_infos(self, slug: str) -> tuple[datetime | None, AccessibilityInfo | None]:
         accesslibre_data_list = [
             {
                 "title": "stationnement",
@@ -425,35 +452,28 @@ class TestingBackend(BaseBackend):
             AcceslibreWidgetData(title=str(item["title"]), labels=[str(label) for label in item["labels"]])
             for item in accesslibre_data_list
         ]
-        return acceslibre_to_accessibility_infos(acceslibre_data)
+        last_update = datetime(2024, 3, 1, 0, 0)
+        return last_update, acceslibre_to_accessibility_infos(acceslibre_data)
 
 
 class AcceslibreBackend(BaseBackend):
+    @staticmethod
+    def _build_url(slug: str | None = None, request_widget_infos: bool | None = False) -> str:
+        base_url = settings.ACCESLIBRE_API_URL
+        if slug:
+            return base_url + slug + "/widget/" if request_widget_infos else base_url + slug + "/"
+        return base_url
+
+    @staticmethod
+    def _fetch_request(
+        url: str, headers: dict | None = None, params: dict[str, str | int] | None = None
+    ) -> requests.Response:
+        return requests.get(url, headers=headers, params=params, timeout=ACCESLIBRE_REQUEST_TIMEOUT)
+
     def _send_request(
         self,
-        query_params: dict[str, str],
-    ) -> dict:
-        api_key = settings.ACCESLIBRE_API_KEY
-        url = settings.ACCESLIBRE_API_URL
-        headers = {"Authorization": f"Api-Key {api_key}"}
-        try:
-            response = requests.get(url, headers=headers, params=query_params, timeout=ACCESLIBRE_REQUEST_TIMEOUT)
-        except requests.exceptions.RequestException:
-            raise AccesLibreApiException(
-                f"Error connecting AccesLibre API for {url} and query parameters: {query_params}"
-            )
-        try:
-            return response.json()
-        except json.JSONDecodeError:
-            logger.error(
-                "Got non-JSON or malformed JSON response from AccesLibre",
-                extra={"url": response.url, "response": response.content},
-            )
-            raise AccesLibreApiException(f"Non-JSON response from AccesLibre API for {response.url}")
-
-    def _send_request_with_slug(
-        self,
-        slug: str,
+        query_params: dict[str, str | int] | None = None,
+        slug: str | None = None,
         request_widget_infos: bool | None = False,
     ) -> dict | None:
         """
@@ -462,14 +482,16 @@ class AcceslibreBackend(BaseBackend):
         Venue.accessibilityProvider.externalAccessibilityId field on our side.
         """
         api_key = settings.ACCESLIBRE_API_KEY
-        url = settings.ACCESLIBRE_API_URL + slug
-        if request_widget_infos:
-            url += "/widget"
+        url = self._build_url(slug=slug, request_widget_infos=request_widget_infos)
         headers = {"Authorization": f"Api-Key {api_key}"}
         try:
-            response = requests.get(url, headers=headers, timeout=ACCESLIBRE_REQUEST_TIMEOUT)
+            response = self._fetch_request(url, headers, query_params)
         except requests.exceptions.RequestException:
-            raise AccesLibreApiException(f"Error connecting AccesLibre API for {url}")
+            raise AccesLibreApiException(
+                f"Error connecting AccesLibre API for {url} and query parameters: {query_params}"
+            )
+        if settings.ACCESLIBRE_SHOULD_AVOID_TOO_MANY_REQUESTS:
+            time.sleep(0.3)  # request limit on acceslibre side is 3 per seconds
         if response.status_code == 200:
             try:
                 return response.json()
@@ -511,24 +533,21 @@ class AcceslibreBackend(BaseBackend):
         for criterion in search_criteria:
             if all(v is not None for v in criterion.values()):
                 response = self._send_request(query_params=criterion)
-                if response["count"]:
-                    try:
-                        results = [
-                            AcceslibreResult(
-                                activite=item["activite"],
-                                nom=str(item["nom"]),
-                                adresse=str(item["adresse"]),
-                                commune=str(item["commune"]),
-                                code_postal=str(item["code_postal"]),
-                                ban_id=str(item["ban_id"]),
-                                siret=str(item["siret"]),
-                                slug=str(item["slug"]),
-                                web_url=str(item["web_url"]),
-                            )
-                            for item in response["results"]
-                        ]
-                    except:
-                        raise AccesLibreApiException("Could not find required informations")
+                if response and response.get("count"):
+                    results = [
+                        AcceslibreResult(
+                            activite=item["activite"],
+                            nom=item["nom"],
+                            adresse=item["adresse"],
+                            commune=item["commune"],
+                            code_postal=item["code_postal"],
+                            ban_id=item["ban_id"],
+                            siret=item["siret"],
+                            slug=item["slug"],
+                            web_url=item["web_url"],
+                        )
+                        for item in response["results"]
+                    ]
                     if matching_venue := match_venue_with_acceslibre(
                         acceslibre_results=results,
                         venue_name=name,
@@ -538,6 +557,47 @@ class AcceslibreBackend(BaseBackend):
                         venue_siret=siret,
                     ):
                         return matching_venue
+        return None
+
+    def find_new_entries_by_activity(self, activity: AcceslibreActivity) -> list[AcceslibreResult] | None:
+        query_params = {
+            "activite": activity.value,
+            "created_or_updated_in_last_days": 7,
+            "page_size": 1,
+        }
+        response = self._send_request(query_params=query_params)
+        if response and (new_entries_count := response.get("count")):
+            num_pages = ceil(new_entries_count / REQUEST_PAGE_SIZE)
+            activity_results: list[AcceslibreResult] = []
+            for i in range(num_pages):
+                query_params = {
+                    "activite": activity.value,
+                    "created_or_updated_in_last_days": 7,
+                    "page_size": REQUEST_PAGE_SIZE,
+                    "page": i + 1,
+                }
+                new_entries = self._send_request(query_params=query_params)
+                try:
+                    if new_entries and new_entries.get("count"):
+                        activity_results.extend(
+                            [
+                                AcceslibreResult(
+                                    activite=item["activite"],
+                                    nom=item["nom"],
+                                    adresse=item["adresse"],
+                                    commune=item["commune"],
+                                    code_postal=item["code_postal"],
+                                    ban_id=item["ban_id"],
+                                    siret=item["siret"],
+                                    slug=item["slug"],
+                                    web_url=item["web_url"],
+                                )
+                                for item in new_entries["results"]
+                            ]
+                        )
+                except:
+                    raise AccesLibreApiException("Could not find required informations")
+            return activity_results
         return None
 
     def get_id_at_accessibility_provider(
@@ -554,30 +614,28 @@ class AcceslibreBackend(BaseBackend):
             name, public_name, siret, ban_id, city, postal_code, address
         )
         if matching_venue:
-            return AcceslibreInfos(slug=matching_venue["slug"], url=matching_venue["web_url"])
+            return AcceslibreInfos(slug=matching_venue.slug, url=matching_venue.web_url)
         return None
 
-    def get_last_update_at_provider(self, slug: str) -> datetime | None:
-        if response := self._send_request_with_slug(slug=slug):
-            created_at = parser.isoparse(response["created_at"])
-            updated_at = parser.isoparse(response["updated_at"])
-            if updated_at > created_at:
-                return updated_at
-            return created_at
-        # if Venue is not found at acceslibre, we return None
-        return None
-
-    def get_accessibility_infos(self, slug: str) -> AccessibilityInfo | None:
-        if response := self._send_request_with_slug(slug=slug, request_widget_infos=True):
+    def get_accessibility_infos(self, slug: str) -> tuple[datetime | None, AccessibilityInfo | None]:
+        if response := self._send_request(slug=slug, request_widget_infos=True):
             try:
                 response_list = response["sections"]
             except KeyError:
                 raise AccesLibreApiException(
                     "'sections' key is missing in the response from acceslibre. Check API response or contact Acceslibre"
                 )
+            created_at = parser.isoparse(response["created_at"])
+            updated_at = parser.isoparse(response["updated_at"])
+            last_update = updated_at if updated_at > created_at else created_at
+
             acceslibre_data = [
-                AcceslibreWidgetData(title=str(item["title"]), labels=[str(label) for label in item["labels"]])
+                AcceslibreWidgetData(
+                    title=str(item["title"]),
+                    labels=[str(label) for label in item["labels"]],
+                )
                 for item in response_list
             ]
-            return acceslibre_to_accessibility_infos(acceslibre_data)
-        return None
+            accessibility_infos = acceslibre_to_accessibility_infos(acceslibre_data)
+            return (last_update, accessibility_infos)
+        return (None, None)

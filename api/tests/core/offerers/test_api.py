@@ -9,6 +9,8 @@ import jwt
 import pytest
 import time_machine
 
+from pcapi.connectors.acceslibre import AcceslibreInfos
+from pcapi.connectors.acceslibre import AccessibilityInfo
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
 from pcapi.connectors.entreprise import models as sirene_models
 from pcapi.core import search
@@ -67,6 +69,7 @@ def test_new_offerer_auto_tagging(db_session, ape_code, expected_tag):
         legal_category_code="don't know",
         active=True,
         diffusible=True,
+        creation_date=datetime.date(2023, 1, 1),
     )
     user = users_factories.UserFactory()
 
@@ -81,7 +84,7 @@ def test_new_offerer_auto_tagging(db_session, ape_code, expected_tag):
 class CreateVenueTest:
     def base_data(self, offerer):
         return {
-            "address": "rue du test",
+            "street": "rue du test",
             "city": "Paris",
             "postalCode": "75000",
             "banId": "75113_1834_00007",
@@ -104,7 +107,7 @@ class CreateVenueTest:
         offerers_api.create_venue(data)
 
         venue = offerers_models.Venue.query.one()
-        assert venue.address == "rue du test"
+        assert venue.street == "rue du test"
         assert venue.banId == "75113_1834_00007"
         assert venue.city == "Paris"
         assert venue.postalCode == "75000"
@@ -277,6 +280,7 @@ class DeleteVenueTest:
         educational_factories.CollectiveStockFactory(
             collectiveOffer__venue__managingOfferer=venue_to_delete.managingOfferer
         )
+        educational_factories.CollectiveOfferRequestFactory(collectiveOfferTemplate=template1)
 
         # When
         offerers_api.delete_venue(venue_to_delete.id)
@@ -286,6 +290,7 @@ class DeleteVenueTest:
         assert educational_models.CollectiveOffer.query.count() == 1
         assert educational_models.CollectiveOfferTemplate.query.count() == 0
         assert educational_models.CollectiveStock.query.count() == 1
+        assert educational_models.CollectiveOfferRequest.query.count() == 0
 
     def test_delete_cascade_venue_should_remove_bank_informations_of_venue(self):
         # Given
@@ -637,7 +642,8 @@ class EditVenueTest:
 
         assert history_models.ActionHistory.query.count() == 0
 
-    def test_update_only_venue_contact(self, app):
+    @patch("pcapi.connectors.virustotal.request_url_scan")
+    def test_update_only_venue_contact(self, mock_request_url_scan):
         user_offerer = offerers_factories.UserOffererFactory(
             user__email="user.pro@test.com",
         )
@@ -651,6 +657,26 @@ class EditVenueTest:
         assert venue.contact
         assert venue.contact.phone_number == contact_data.phone_number
         assert venue.contact.email == contact_data.email
+        mock_request_url_scan.assert_not_called()
+
+    @patch("pcapi.connectors.virustotal.request_url_scan")
+    def test_update_only_venue_website(self, mock_request_url_scan):
+        user_offerer = offerers_factories.UserOffererFactory(
+            user__email="user.pro@test.com",
+        )
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+
+        contact_data = serialize_base.VenueContactModel(
+            email=venue.contact.email, phone_number=venue.contact.phone_number, website="https://new.website.com"
+        )
+
+        offerers_api.update_venue(venue, contact_data=contact_data, author=user_offerer.user)
+
+        venue = offerers_models.Venue.query.get(venue.id)
+        assert venue.contact.phone_number == "+33102030405"
+        assert venue.contact.email == "contact@venue.com"
+        assert venue.contact.website == "https://new.website.com"
+        mock_request_url_scan.assert_called_once_with(contact_data.website, skip_if_recent_scan=True)
 
     def test_no_venue_contact_created_if_no_data(self, app):
         user_offerer = offerers_factories.UserOffererFactory(
@@ -675,7 +701,8 @@ class EditVenueTest:
         msg = "Vous ne pouvez pas modifier un lieu Offre Numérique."
         assert error.value.errors == {"venue": [msg]}
 
-    def test_no_venue_contact_no_modification(self, app) -> None:
+    @patch("pcapi.connectors.virustotal.request_url_scan")
+    def test_no_venue_contact_no_modification(self, mock_request_url_scan) -> None:
         # given
         user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory(contact=None)
@@ -693,8 +720,10 @@ class EditVenueTest:
         # then
         # nothing has changed => nothing to save nor update
         assert history_models.ActionHistory.query.count() == 0
+        mock_request_url_scan.assert_not_called()
 
-    def test_no_venue_contact_add_contact(self, app) -> None:
+    @patch("pcapi.connectors.virustotal.request_url_scan")
+    def test_no_venue_contact_add_contact(self, mock_request_url_scan) -> None:
         # given
         user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory(contact=None)
@@ -725,6 +754,7 @@ class EditVenueTest:
             "contact.email": {"new_info": contact_data.email, "old_info": None},
             "contact.website": {"new_info": contact_data.website, "old_info": None},
         }
+        mock_request_url_scan.assert_called_once_with(contact_data.website, skip_if_recent_scan=True)
 
 
 class EditVenueContactTest:
@@ -815,7 +845,7 @@ class CreateOffererTest:
         created_offerer = created_user_offerer.offerer
         assert created_offerer.name == offerer_informations.name
         assert created_offerer.siren == offerer_informations.siren
-        assert created_offerer.address == offerer_informations.address
+        assert created_offerer.street == offerer_informations.street
         assert created_offerer.postalCode == offerer_informations.postalCode
         assert created_offerer.city == offerer_informations.city
         assert created_offerer.validationStatus == ValidationStatus.NEW
@@ -923,7 +953,7 @@ class CreateOffererTest:
         assert created_offerer.id == offerer.id
         assert created_offerer.name == offerer_informations.name
         assert created_offerer.siren == offerer_informations.siren
-        assert created_offerer.address == offerer_informations.address
+        assert created_offerer.street == offerer_informations.street
         assert created_offerer.postalCode == offerer_informations.postalCode
         assert created_offerer.city == offerer_informations.city
         assert created_offerer.validationStatus == ValidationStatus.NEW
@@ -1142,28 +1172,26 @@ class CreateOffererTest:
 
 class UpdateOffererTest:
     def test_update_offerer(self):
-        offerer = offerers_factories.OffererFactory(city="Portus Namnetum", address="1 rue d'Armorique")
+        offerer = offerers_factories.OffererFactory(city="Portus Namnetum", street="1 rue d'Armorique")
         author = users_factories.UserFactory()
 
-        offerers_api.update_offerer(
-            offerer, author, city="Nantes", postal_code="44000", address="29 avenue de Bretagne"
-        )
+        offerers_api.update_offerer(offerer, author, city="Nantes", postal_code="44000", street="29 avenue de Bretagne")
         offerer = offerers_models.Offerer.query.one()
         assert offerer.city == "Nantes"
         assert offerer.postalCode == "44000"
-        assert offerer.address == "29 avenue de Bretagne"
+        assert offerer.street == "29 avenue de Bretagne"
 
         offerers_api.update_offerer(offerer, author, city="Naoned")
         offerer = offerers_models.Offerer.query.one()
         assert offerer.city == "Naoned"
         assert offerer.postalCode == "44000"
-        assert offerer.address == "29 avenue de Bretagne"
+        assert offerer.street == "29 avenue de Bretagne"
 
     def test_update_offerer_logs_action(self):
-        offerer = offerers_factories.OffererFactory(city="Portus Namnetum", address="1 rue d'Armorique")
+        offerer = offerers_factories.OffererFactory(city="Portus Namnetum", street="1 rue d'Armorique")
         author = users_factories.UserFactory()
 
-        offerers_api.update_offerer(offerer, author, city="Nantes", address="29 avenue de Bretagne")
+        offerers_api.update_offerer(offerer, author, city="Nantes", street="29 avenue de Bretagne")
 
         action = history_models.ActionHistory.query.one()
         assert action.actionType == history_models.ActionType.INFO_MODIFIED
@@ -1174,7 +1202,7 @@ class UpdateOffererTest:
         assert action.venueId is None
         assert action.extraData["modified_info"] == {
             "city": {"new_info": "Nantes", "old_info": "Portus Namnetum"},
-            "address": {"new_info": "29 avenue de Bretagne", "old_info": "1 rue d'Armorique"},
+            "street": {"new_info": "29 avenue de Bretagne", "old_info": "1 rue d'Armorique"},
         }
 
 
@@ -2043,12 +2071,12 @@ class LinkVenueToPricingPointTest:
         assert link.pricingPoint == pricing_point_2
 
     def test_fails_if_venue_has_siret(self):
-        reimbursement_point = offerers_factories.VenueFactory()
-        offerer = reimbursement_point.managingOfferer
+        pricing_point = offerers_factories.VenueFactory()
+        offerer = pricing_point.managingOfferer
         venue = offerers_factories.VenueFactory(managingOfferer=offerer, siret="1234")
 
         with pytest.raises(api_errors.ApiErrors) as error:
-            offerers_api.link_venue_to_pricing_point(venue, reimbursement_point.id)
+            offerers_api.link_venue_to_pricing_point(venue, pricing_point.id)
         msg = "Ce lieu a un SIRET, vous ne pouvez donc pas choisir un autre lieu pour le calcul du barème de remboursement."
         assert error.value.errors == {"pricingPointId": [msg]}
 
@@ -2212,11 +2240,10 @@ class UpdateOffererTagTest:
 
 class CreateFromOnboardingDataTest:
     def assert_common_venue_attrs(self, venue: offerers_models.Venue) -> None:
-        assert venue.address == "3 RUE DE VALOIS"
+        assert venue.street == "3 RUE DE VALOIS"
         assert venue.banId == "75101_9575_00003"
         assert venue.bookingEmail == "pro@example.com"
         assert venue.city == "Paris"
-        assert not venue.current_reimbursement_point_id
         assert venue.dmsToken
         assert venue.latitude == decimal.Decimal("2.30829")
         assert venue.longitude == decimal.Decimal("48.87171")
@@ -2253,7 +2280,6 @@ class CreateFromOnboardingDataTest:
         self, create_venue_without_siret: bool
     ) -> offerers_serialize.SaveNewOnboardingDataQueryModel:
         return offerers_serialize.SaveNewOnboardingDataQueryModel(
-            address="3 RUE DE VALOIS",
             banId="75101_9575_00003",
             city="Paris",
             createVenueWithoutSiret=create_venue_without_siret,
@@ -2262,6 +2288,7 @@ class CreateFromOnboardingDataTest:
             postalCode="75001",
             publicName="Nom public de mon lieu",
             siret="85331845900031",
+            street="3 RUE DE VALOIS",
             target=offerers_models.Target.INDIVIDUAL,
             venueTypeCode=offerers_models.VenueTypeCode.MOVIE.name,
             webPresence="https://www.example.com, https://instagram.com/example, https://mastodon.social/@example",
@@ -2279,7 +2306,7 @@ class CreateFromOnboardingDataTest:
         created_offerer = created_user_offerer.offerer
         assert created_offerer.name == "MINISTERE DE LA CULTURE"
         assert created_offerer.siren == "853318459"
-        assert created_offerer.address == "3 RUE DE VALOIS"
+        assert created_offerer.street == "3 RUE DE VALOIS"
         assert created_offerer.postalCode == "75001"
         assert created_offerer.city == "Paris"
         assert created_offerer.validationStatus == ValidationStatus.NEW
@@ -2420,7 +2447,7 @@ class CreateFromOnboardingDataTest:
         user = users_factories.UserFactory(email="pro@example.com")
         user.add_non_attached_pro_role()
         onboarding_data = self.get_onboarding_data(create_venue_without_siret=False)
-        onboarding_data.address = None
+        onboarding_data.street = None
 
         created_user_offerer = offerers_api.create_from_onboarding_data(user, onboarding_data)
 
@@ -2428,13 +2455,13 @@ class CreateFromOnboardingDataTest:
         created_offerer = created_user_offerer.offerer
         assert created_offerer.name == "MINISTERE DE LA CULTURE"
         assert created_offerer.siren == "853318459"
-        assert created_offerer.address is None
+        assert created_offerer.street is None
         assert created_offerer.city == "Paris"
         assert created_offerer.postalCode == "75001"
         # 1 virtual Venue + 1 Venue with siret have been created
         assert len(created_user_offerer.offerer.managedVenues) == 2
         created_venue, _ = sorted(created_user_offerer.offerer.managedVenues, key=lambda v: v.isVirtual)
-        assert created_venue.address == "n/d"
+        assert created_venue.street == "n/d"
         assert created_venue.city == "Paris"
         assert created_venue.latitude == decimal.Decimal("2.30829")
         assert created_venue.longitude == decimal.Decimal("48.87171")
@@ -2452,18 +2479,34 @@ class CreateFromOnboardingDataTest:
         created_offerer = created_user_offerer.offerer
         assert created_offerer.name == "MINISTERE DE LA CULTURE"
         assert created_offerer.siren == "853318459"
-        assert created_offerer.address == "3 RUE DE VALOIS"
+        assert created_offerer.street == "3 RUE DE VALOIS"
         assert created_offerer.city == "Paris"
         assert created_offerer.postalCode == "75001"
         # 1 virtual Venue + 1 Venue with siret have been created
         assert len(created_user_offerer.offerer.managedVenues) == 2
         created_venue, _ = sorted(created_user_offerer.offerer.managedVenues, key=lambda v: v.isVirtual)
-        assert created_venue.address == "3 RUE DE VALOIS"
+        assert created_venue.street == "3 RUE DE VALOIS"
         assert created_venue.banId is None
         assert created_venue.city == "Paris"
         assert created_venue.latitude == decimal.Decimal("2.30829")
         assert created_venue.longitude == decimal.Decimal("48.87171")
         assert created_venue.postalCode == "75001"
+
+    @patch("pcapi.connectors.virustotal.request_url_scan")
+    def test_web_presence_url_scanned(self, mock_request_url_scan):
+        user = users_factories.UserFactory(email="pro@example.com")
+        user.add_non_attached_pro_role()
+
+        onboarding_data = self.get_onboarding_data(create_venue_without_siret=False)
+        offerers_api.create_from_onboarding_data(user, onboarding_data)
+
+        mock_request_url_scan.assert_called()
+        assert mock_request_url_scan.call_count == 3
+        assert {item[0][0] for item in mock_request_url_scan.call_args_list} == {
+            "https://www.example.com",
+            "https://instagram.com/example",
+            "https://mastodon.social/@example",
+        }
 
 
 class InviteMembersTest:
@@ -2675,7 +2718,7 @@ class AccessibilityProviderTest:
             city="Paris",
         )
         offerers_factories.AccessibilityProviderFactory(venue=venue)
-        offerers_api.set_accessibility_last_update_at_provider(venue)
+        offerers_api.set_accessibility_infos_from_provider_id(venue)
         assert venue.accessibilityProvider.lastUpdateAtProvider == datetime.datetime(2024, 3, 1, 0, 0)
 
     def test_set_accessibility_infos_from_provider_id(self):
@@ -2690,3 +2733,64 @@ class AccessibilityProviderTest:
             acceslibre_enum.EXTERIOR_ONE_LEVEL,
             acceslibre_enum.ENTRANCE_ONE_LEVEL,
         ]
+
+    def test_synchronize_accessibility_provider_no_data(self):
+        venue = offerers_factories.VenueFactory(
+            name="Une librairie de test",
+            postalCode="75001",
+            city="Paris",
+        )
+        accessibility_provider = offerers_factories.AccessibilityProviderFactory(
+            venue=venue, externalAccessibilityData=None
+        )
+        offerers_api.synchronize_accessibility_provider(venue)
+        assert accessibility_provider.externalAccessibilityData is not None
+
+    def test_synchronize_accessibility_provider_with_new_update(self):
+        venue = offerers_factories.VenueFactory(
+            name="Une librairie de test",
+            postalCode="75001",
+            city="Paris",
+        )
+        accessibility_provider = offerers_factories.AccessibilityProviderFactory(
+            venue=venue, lastUpdateAtProvider=datetime.datetime(2023, 2, 1)
+        )
+        # TestingBackend for acceslibre get_id_at_accessibility_provider returns datetime(2024, 3, 1, 0, 0)
+        accessibility_provider.externalAccessibilityData["audio_description"] = (
+            acceslibre_enum.AUDIODESCRIPTION_NO_DEVICE
+        )
+
+        # Synchronize should happen as provider last update is more recent than accessibility_provider.lastUpdateAtProvider
+        offerers_api.synchronize_accessibility_provider(venue)
+        assert accessibility_provider.externalAccessibilityData["audio_description"] == [
+            acceslibre_enum.AUDIODESCRIPTION_OCCASIONAL
+        ]
+
+    @patch("pcapi.connectors.acceslibre.get_accessibility_infos")
+    @patch("pcapi.connectors.acceslibre.get_id_at_accessibility_provider")
+    def test_synchronize_accessibility_provider_with_new_slug(
+        self, mock_get_id_at_accessibility_provider, mock_get_accessibility_infos
+    ):
+        venue = offerers_factories.VenueFactory(
+            name="Une librairie de test",
+            postalCode="75001",
+            city="Paris",
+        )
+        mock_get_id_at_accessibility_provider.side_effect = [
+            AcceslibreInfos(slug="nouveau-slug", url="https://nouvelle.adresse/nouveau-slug")
+        ]
+        # While trying to synchronize venue with acceslibre, we receive None when fetching widget data
+        # This means the entry with this slug (ie. externalAccessibilityId) has been removed
+        # from acceslibre database (usualy because of deduplication);
+        # In that case, we try a new match and look for the new slug
+        mock_get_accessibility_infos.side_effect = [
+            (None, None),
+            (datetime.datetime(2024, 3, 1, 0, 0), AccessibilityInfo()),
+        ]
+
+        accessibility_provider = offerers_factories.AccessibilityProviderFactory(
+            venue=venue, externalAccessibilityId="slug-qui-n-existe-plus"
+        )
+        offerers_api.synchronize_accessibility_provider(venue, force_sync=True)
+        assert accessibility_provider.externalAccessibilityId == "nouveau-slug"
+        assert accessibility_provider.externalAccessibilityUrl == "https://nouvelle.adresse/nouveau-slug"

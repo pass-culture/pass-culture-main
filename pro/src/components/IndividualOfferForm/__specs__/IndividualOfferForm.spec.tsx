@@ -17,7 +17,7 @@ import {
   CATEGORY_STATUS,
   INDIVIDUAL_OFFER_SUBTYPE,
 } from 'core/Offers/constants'
-import { SubmitButton } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import {
   getIndividualOfferFactory,
   categoryFactory,
@@ -27,6 +27,7 @@ import {
   getOffererNameFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import {
   IndividualOfferFormValues,
@@ -48,9 +49,6 @@ const renderIndividualOfferForm = ({
   props: IndividualOfferFormProps
   contextOverride?: Partial<IndividualOfferContextValues>
 }) => {
-  const storeOverrides = {
-    user: { currentUser: { isAdmin: false } },
-  }
   const contextValues = individualOfferContextValuesFactory(contextOverride)
 
   return renderWithProviders(
@@ -62,11 +60,13 @@ const renderIndividualOfferForm = ({
       >
         <Form>
           <IndividualOfferForm {...props} />
-          <SubmitButton isLoading={false}>Submit</SubmitButton>
+          <Button type="submit" isLoading={false}>
+            Submit
+          </Button>
         </Form>
       </Formik>
     </IndividualOfferContext.Provider>,
-    { storeOverrides }
+    { user: sharedCurrentUserFactory() }
   )
 }
 

@@ -3,7 +3,8 @@ import React from 'react'
 
 import FormLayout from 'components/FormLayout'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
-import { PasswordInput, SubmitButton } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
+import { PasswordInput } from 'ui-kit/form/PasswordInput/PasswordInput'
 
 import styles from './ChangePasswordForm.module.scss'
 
@@ -22,12 +23,13 @@ const ChangePasswordForm = (): JSX.Element => {
             withErrorPreview
           />
         </FormLayout.Row>
-        <SubmitButton
+        <Button
+          type="submit"
           className={styles['validation-button']}
           isLoading={isSubmitting}
         >
           Valider
-        </SubmitButton>
+        </Button>
       </FormLayout>
     </Form>
   )

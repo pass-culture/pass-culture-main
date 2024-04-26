@@ -5,9 +5,8 @@ import { withRouter } from 'storybook-addon-react-router-v6'
 import fullBackIcon from 'icons/full-back.svg'
 import fullEditIcon from 'icons/full-edit.svg'
 
+import { ButtonLink } from './ButtonLink'
 import { ButtonVariant } from './types'
-
-import { ButtonLink } from './index'
 
 export default {
   title: 'ui-kit/ButtonLink',

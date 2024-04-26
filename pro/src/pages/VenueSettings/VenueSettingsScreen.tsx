@@ -8,11 +8,11 @@ import {
   VenueProviderResponse,
   GetOffererResponseModel,
   GetVenueResponseModel,
+  VenueTypeResponseModel,
 } from 'apiClient/v1'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import { Events } from 'core/FirebaseEvents/constants'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
-import { Providers } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
@@ -20,7 +20,7 @@ import useNotification from 'hooks/useNotification'
 import fullBackIcon from 'icons/full-back.svg'
 import strokeMailIcon from 'icons/stroke-mail.svg'
 import { generateSiretValidationSchema } from 'pages/VenueCreation/SiretOrCommentFields/validationSchema'
-import { ButtonLink } from 'ui-kit'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { serializeEditVenueBodyModel } from './serializers'
@@ -33,11 +33,9 @@ interface VenueSettingsFormScreenProps {
   initialValues: VenueSettingsFormValues
   offerer: GetOffererResponseModel
   venueLabels: SelectOption[]
-  venueTypes: SelectOption[]
-  providers?: Providers[]
+  venueTypes: VenueTypeResponseModel[]
   venueProviders?: VenueProviderResponse[]
   venue: GetVenueResponseModel
-  hasBookingQuantity?: boolean
 }
 
 export const VenueSettingsFormScreen = ({
@@ -47,8 +45,6 @@ export const VenueSettingsFormScreen = ({
   venueTypes,
   venueProviders,
   venue,
-  providers,
-  hasBookingQuantity,
 }: VenueSettingsFormScreenProps): JSX.Element => {
   const navigate = useNavigate()
   const location = useLocation()
@@ -87,11 +83,7 @@ export const VenueSettingsFormScreen = ({
   }
 
   const onSubmit = async (values: VenueSettingsFormValues) => {
-    if (
-      values.isWithdrawalAppliedOnAllOffers &&
-      hasBookingQuantity &&
-      !handleWithdrawalDialog()
-    ) {
+    if (values.isWithdrawalAppliedOnAllOffers && !handleWithdrawalDialog()) {
       return
     }
 
@@ -189,7 +181,6 @@ export const VenueSettingsFormScreen = ({
             venueLabels={venueLabels}
             venueTypes={venueTypes}
             venueProvider={venueProviders}
-            provider={providers}
             venue={venue}
             offerer={offerer}
           />

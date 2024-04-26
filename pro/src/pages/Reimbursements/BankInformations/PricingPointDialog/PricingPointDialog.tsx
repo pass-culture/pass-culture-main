@@ -5,8 +5,9 @@ import { ManagedVenues } from 'apiClient/v1'
 import Callout from 'components/Callout/Callout'
 import DialogBox from 'components/DialogBox'
 import useNotification from 'hooks/useNotification'
-import { Button, Select, SubmitButton } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { Select } from 'ui-kit/form/Select/Select'
 
 import styles from './PricingPointDialog.module.scss'
 import validationSchema from './validationSchema'
@@ -100,7 +101,7 @@ const PricingPointDialog = ({
             <Button variant={ButtonVariant.SECONDARY} onClick={closeDialog}>
               Annuler
             </Button>
-            <SubmitButton>Valider la sélection</SubmitButton>
+            <Button type="submit">Valider la sélection</Button>
           </div>
         </form>
       </FormikProvider>

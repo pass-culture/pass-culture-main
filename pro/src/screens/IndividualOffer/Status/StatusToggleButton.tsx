@@ -5,7 +5,7 @@ import { OfferStatus } from 'apiClient/v1'
 import useNotification from 'hooks/useNotification'
 import fullHideIcon from 'icons/full-hide.svg'
 import strokeCheckIcon from 'icons/stroke-check.svg'
-import { Button } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 export interface StatusToggleButtonProps {

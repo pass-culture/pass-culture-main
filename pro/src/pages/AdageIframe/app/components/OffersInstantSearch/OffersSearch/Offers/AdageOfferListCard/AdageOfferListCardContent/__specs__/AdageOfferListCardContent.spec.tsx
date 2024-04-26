@@ -49,19 +49,4 @@ describe('AdageOfferListCardContent', () => {
 
     expect(screen.queryByRole('list')).not.toBeInTheDocument()
   })
-
-  it('should crop the description at the end if it is too long', () => {
-    const description = Array(500).fill('d').join(' ')
-    renderAdageOfferListCardContent({
-      offer: {
-        ...defaultCollectiveTemplateOffer,
-        description: description,
-      },
-    })
-
-    expect(screen.queryByText(description)).not.toBeInTheDocument()
-    expect(
-      screen.getByText(`${description.substring(0, 400)}...`)
-    ).toBeInTheDocument()
-  })
 })

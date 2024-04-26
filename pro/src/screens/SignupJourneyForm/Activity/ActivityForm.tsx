@@ -2,13 +2,17 @@ import cn from 'classnames'
 import { FieldArray, useFormikContext } from 'formik'
 import React from 'react'
 
+import { VenueTypeResponseModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
-import { SelectOption } from 'custom_types/form'
 import fullMoreIcon from 'icons/full-more.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
-import { Button, CheckboxGroup, Select, TextInput } from 'ui-kit'
+import { buildVenueTypesOptions } from 'pages/VenueCreation/buildVenueTypesOptions'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import ListIconButton from 'ui-kit/ListIconButton'
+import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'
+import { Select } from 'ui-kit/form/Select/Select'
+import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
 
 import styles from './ActivityForm.module.scss'
 import { activityTargetCustomerCheckboxGroup } from './constants'
@@ -23,11 +27,12 @@ export interface ActivityFormValues {
 }
 
 export interface ActivityFormProps {
-  venueTypes: SelectOption[]
+  venueTypes: VenueTypeResponseModel[]
 }
 
 const ActivityForm = ({ venueTypes }: ActivityFormProps): JSX.Element => {
   const { values } = useFormikContext<ActivityFormValues>()
+  const venueTypesOptions = buildVenueTypesOptions(venueTypes)
 
   return (
     <FormLayout.Section
@@ -41,7 +46,7 @@ const ActivityForm = ({ venueTypes }: ActivityFormProps): JSX.Element => {
               value: '',
               label: 'Sélectionnez votre activité principale',
             },
-            ...venueTypes,
+            ...venueTypesOptions,
           ]}
           name="venueTypeCode"
           label="Activité principale"

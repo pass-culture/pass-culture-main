@@ -9,7 +9,7 @@ import {
   OfferEducationalFormValues,
 } from 'core/OfferEducational'
 import { getOfferEducationalValidationSchema } from 'screens/OfferEducational/validationSchema'
-import { SubmitButton } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 
 import FormDates, { FormDatesProps } from '../FormDates'
@@ -27,7 +27,9 @@ const renderFormDates = (
       {({ handleSubmit }) => (
         <form onSubmit={handleSubmit}>
           <FormDates {...props} />
-          <SubmitButton isLoading={false}>Submit</SubmitButton>
+          <Button type="submit" isLoading={false}>
+            Submit
+          </Button>
         </form>
       )}
     </Formik>

@@ -5,7 +5,6 @@ from spectree import SecurityScheme
 from werkzeug.exceptions import BadRequest
 
 from pcapi.models import api_errors
-from pcapi.models import feature
 from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.serialization.utils import public_api_before_handler
 from pcapi.validation.routes import users_authentifications
@@ -18,8 +17,6 @@ def check_api_is_enabled_and_json_valid() -> None:
         _ = request.get_json()
     except BadRequest as e:
         raise api_errors.ApiErrors({"global": [e.description]}, status_code=400)
-    if not feature.FeatureToggle.WIP_ENABLE_OFFER_CREATION_API_V1.is_active():
-        raise api_errors.ApiErrors({"global": ["This API is not enabled"]}, status_code=400)
 
 
 class IndividualApiSpectree(ExtendedSpecTree):

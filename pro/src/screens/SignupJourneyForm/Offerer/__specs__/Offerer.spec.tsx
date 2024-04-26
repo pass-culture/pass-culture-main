@@ -16,6 +16,7 @@ import {
 } from 'context/SignupJourneyContext'
 import * as sirenApiValidate from 'core/Venue/siretApiValidate'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { Offerer } from '..'
 import { DEFAULT_OFFERER_FORM_VALUES } from '../constants'
@@ -45,16 +46,6 @@ vi.mock('apiClient/adresse', () => ({
 }))
 
 const renderOffererScreen = (contextValue: SignupJourneyContextValues) => {
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        isAdmin: false,
-        email: 'email@example.com',
-      },
-    },
-  }
-
   return renderWithProviders(
     <>
       <SignupJourneyContext.Provider value={contextValue}>
@@ -73,7 +64,7 @@ const renderOffererScreen = (contextValue: SignupJourneyContextValues) => {
       <Notification />
     </>,
     {
-      storeOverrides,
+      user: sharedCurrentUserFactory(),
       initialRouterEntries: ['/parcours-inscription/structure'],
     }
   )

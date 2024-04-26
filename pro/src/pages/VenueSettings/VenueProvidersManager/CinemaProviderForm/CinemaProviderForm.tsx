@@ -5,8 +5,10 @@ import { PostVenueProviderBody } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
-import { Button, Checkbox, InfoBox, SubmitButton } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { Checkbox } from 'ui-kit/form/Checkbox/Checkbox'
+import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
 import styles from './CinemaProviderForm.module.scss'
 import { DEFAULT_CINEMA_PROVIDER_FORM_VALUES } from './constants'
@@ -82,14 +84,15 @@ export const CinemaProviderForm = ({
               >
                 <Checkbox name="isDuo" label="Accepter les réservations DUO" />
               </FormLayout.Row>
+
               {isCreatedEntity ? (
-                <SubmitButton
+                <Button
+                  type="submit"
                   variant={ButtonVariant.PRIMARY}
                   isLoading={formik.isSubmitting}
-                  onClick={formik.handleSubmit}
                 >
                   Lancer la synchronisation
-                </SubmitButton>
+                </Button>
               ) : (
                 <div>
                   <Button
@@ -99,12 +102,13 @@ export const CinemaProviderForm = ({
                   >
                     Annuler
                   </Button>
-                  <SubmitButton
+                  <Button
+                    type="submit"
                     variant={ButtonVariant.PRIMARY}
                     isLoading={formik.isSubmitting}
                   >
                     Modifier
-                  </SubmitButton>
+                  </Button>
                 </div>
               )}
             </div>

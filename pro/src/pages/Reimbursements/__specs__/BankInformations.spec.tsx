@@ -14,6 +14,7 @@ import BankInformations from 'pages/Reimbursements/BankInformations/BankInformat
 import { ReimbursementsContextProps } from 'pages/Reimbursements/Reimbursements'
 import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 const defaultBankAccountResponseModel: BankAccountResponseModel = {
   bic: 'bic',
@@ -54,27 +55,16 @@ vi.mock('react-router-dom', async () => ({
 }))
 
 function renderBankInformations() {
-  const storeOverrides = {
-    user: {
-      currentUser: {
-        isAdmin: false,
-        hasSeenProTutorials: true,
-      },
-      initialized: true,
-    },
-  }
   renderWithProviders(<BankInformations />, {
-    storeOverrides,
+    user: sharedCurrentUserFactory(),
   })
 }
 
 describe('BankInformations', () => {
   beforeEach(() => {
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
-      ...defaultGetOffererResponseModel,
-      name: 'toto',
-      id: 1,
-    })
+    vi.spyOn(api, 'getOfferer').mockResolvedValue(
+      defaultGetOffererResponseModel
+    )
     vi.spyOn(api, 'getOffererBankAccountsAndAttachedVenues').mockResolvedValue({
       bankAccounts: [defaultBankAccountResponseModel],
       id: 1,

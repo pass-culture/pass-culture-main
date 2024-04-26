@@ -7,6 +7,7 @@ import pcapi.core.mails.transactional.pro.offerer_attachment_invitation as oai
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import override_settings
+import pcapi.core.token as token_utils
 import pcapi.core.users.factories as users_factories
 
 
@@ -33,7 +34,8 @@ class ProOffererAttachmentInvitationTest:
     @override_settings(PRO_URL="http://pcpro.com")
     def test_email_data_existing_not_validated_user(self):
         offerer = offerers_factories.OffererFactory(name="Le Théâtre SAS")
-        user = users_factories.UserFactory(isEmailValidated=False, validationToken="123ABC")
+        user = users_factories.UserFactory(isEmailValidated=False)
+        token = token_utils.Token.create(token_utils.TokenType.EMAIL_VALIDATION, None, user_id=user.id)
 
         mail_data = oai.retrieve_data_for_offerer_attachment_invitation_existing_user_with_not_validated_email(
             offerer, user
@@ -45,7 +47,7 @@ class ProOffererAttachmentInvitationTest:
         )
         assert mail_data.params == {
             "OFFERER_NAME": "Le Théâtre SAS",
-            "EMAIL_VALIDATION_LINK": "http://pcpro.com/inscription/validation/123ABC",
+            "EMAIL_VALIDATION_LINK": f"http://pcpro.com/inscription/validation/{token.encoded_token}",
         }
 
     def test_send_email_new_user(self):
@@ -75,7 +77,7 @@ class ProOffererAttachmentInvitationTest:
 
     def test_send_email_existing_not_validated_user(self):
         offerer = offerers_factories.OffererFactory(name="Le Théâtre SAS")
-        user = users_factories.UserFactory(isEmailValidated=False, validationToken="123ABC")
+        user = users_factories.UserFactory(isEmailValidated=False)
 
         oai.send_offerer_attachment_invitation([user.email], offerer, user)
 

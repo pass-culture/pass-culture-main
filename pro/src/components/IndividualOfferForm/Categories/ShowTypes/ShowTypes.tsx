@@ -8,7 +8,7 @@ import {
 } from 'components/IndividualOfferForm'
 import { showOptionsTree } from 'core/Offers/categoriesSubTypes'
 import { SelectOption } from 'custom_types/form'
-import { Select } from 'ui-kit'
+import { Select } from 'ui-kit/form/Select/Select'
 
 interface ShowTypesProps {
   readOnly?: boolean

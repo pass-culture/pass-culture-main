@@ -1,46 +1,30 @@
 import { screen } from '@testing-library/react'
 
-import {
-  RenderWithProvidersOptions,
-  renderWithProviders,
-} from 'utils/renderWithProviders'
+import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import Footer from '../Footer'
 
 const renderFooter = (
   isConnected: boolean = true,
-  options?: RenderWithProvidersOptions,
   hasNewNav: boolean = false
 ) => {
-  const storeOverrides = {
-    user: {
-      currentUser: isConnected
-        ? {
-            isAdmin: false,
-            hasSeenProTutorials: true,
-            navState: {
-              newNavDate: hasNewNav ? '2021-01-01' : null,
-            },
-          }
-        : null,
-      initialized: true,
-    },
-  }
   renderWithProviders(<Footer />, {
-    storeOverrides: storeOverrides,
-    ...options,
+    user: isConnected
+      ? sharedCurrentUserFactory({
+          isAdmin: false,
+          hasSeenProTutorials: true,
+          navState: {
+            newNavDate: hasNewNav ? '2021-01-01' : null,
+          },
+        })
+      : null,
   })
 }
 
 describe('Footer', () => {
-  it('should  render footer if ff is active', () => {
-    renderFooter(
-      true,
-      {
-        features: ['WIP_ENABLE_PRO_SIDE_NAV'],
-      },
-      true
-    )
+  it('should  render footer', () => {
+    renderFooter(true, true)
 
     expect(
       screen.queryByRole('link', { name: /CGU professionnels/ })
@@ -56,9 +40,7 @@ describe('Footer', () => {
   })
 
   it('should not render sitemap if user is not connected', () => {
-    renderFooter(false, {
-      features: ['WIP_ENABLE_PRO_SIDE_NAV'],
-    })
+    renderFooter(false)
 
     expect(
       screen.queryByRole('link', { name: 'Plan du site' })

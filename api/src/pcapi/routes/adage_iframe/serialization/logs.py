@@ -9,25 +9,33 @@ class AdageBaseModel(BaseModel):
     isFromNoResult: bool | None
 
 
+class VueTypeMixin(BaseModel):
+    vueType: str | None
+
+
 class AdagePlaylistType(enum.Enum):
     OFFER = "offer"
     VENUE = "venue"
     DOMAIN = "domain"
 
 
+class OfferListSwitch(AdageBaseModel):
+    source: str
+
+
 class CatalogViewBody(AdageBaseModel):
     source: str
 
 
-class StockIdBody(AdageBaseModel):
+class StockIdBody(AdageBaseModel, VueTypeMixin):
     stockId: int
 
 
-class OfferIdBody(AdageBaseModel):
+class OfferIdBody(AdageBaseModel, VueTypeMixin):
     offerId: int
 
 
-class OfferFavoriteBody(AdageBaseModel):
+class OfferFavoriteBody(AdageBaseModel, VueTypeMixin):
     offerId: int
     isFavorite: bool
 
@@ -85,6 +93,6 @@ class TrackingShowMoreBody(AdageBaseModel):
     source: str
 
 
-class TrackingCTAShareBody(AdageBaseModel):
+class TrackingCTAShareBody(AdageBaseModel, VueTypeMixin):
     source: str
     offerId: int

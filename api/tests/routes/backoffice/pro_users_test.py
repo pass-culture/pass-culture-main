@@ -19,6 +19,7 @@ from pcapi.core.token import SecureToken
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+from pcapi.models import db
 from pcapi.routes.backoffice.filters import format_date
 from pcapi.utils import email as email_utils
 from pcapi.utils import urls
@@ -40,9 +41,8 @@ class GetProUserTest(GetEndpointHelper):
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    # session + current user + pro user data + WIP_ENABLE_PRO_SIDE_NAV
-    expected_num_queries = 4
-    expected_num_queries_without_ff_checked = expected_num_queries - 1
+    # session + current user + pro user data
+    expected_num_queries = 3
 
     class EmailValidationButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
@@ -64,9 +64,7 @@ class GetProUserTest(GetEndpointHelper):
             assert url in response.data.decode("utf-8")
 
         def test_no_button_if_validated_email(self, authenticated_client):
-            user = offerers_factories.UserOffererFactory(
-                user__isEmailValidated=True, user__validationToken="AZERTY1234"
-            ).user
+            user = offerers_factories.UserOffererFactory(user__isEmailValidated=True).user
             response = authenticated_client.get(url_for("backoffice_web.pro_user.get", user_id=user.id))
             assert response.status_code == 200
 
@@ -159,26 +157,21 @@ class GetProUserTest(GetEndpointHelper):
         user = users_factories.BeneficiaryGrant18Factory()
         url = url_for(self.endpoint, user_id=user.id)
 
-        with assert_num_queries(self.expected_num_queries_without_ff_checked):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 303
 
         expected_url = url_for("backoffice_web.pro.search_pro", _external=True)
         assert response.location == expected_url
 
-    @pytest.mark.parametrize(
-        "ff_new_nav_activated,has_new_nav", [(True, True), (True, False), (False, True), (False, False)]
-    )
-    def test_get_pro_user_with_new_nav_badges(self, authenticated_client, ff_new_nav_activated, has_new_nav):
+    @pytest.mark.parametrize("has_new_nav", [True, False])
+    def test_get_pro_user_with_new_nav_badges(self, authenticated_client, has_new_nav):
         user = offerers_factories.UserOffererFactory(user__phoneNumber="+33638656565", user__postalCode="29000").user
         if has_new_nav:
             users_factories.UserProNewNavStateFactory(user=user, newNavDate=datetime.datetime.utcnow())
         url = url_for(self.endpoint, user_id=user.id)
 
-        with (
-            override_features(WIP_ENABLE_PRO_SIDE_NAV=ff_new_nav_activated),
-            assert_num_queries(self.expected_num_queries),
-        ):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -187,14 +180,10 @@ class GetProUserTest(GetEndpointHelper):
         assert "Validé" in badges
         assert "Suspendu" not in badges
 
-        if ff_new_nav_activated:
-            if has_new_nav:
-                assert "Nouvelle interface" in badges
-            else:
-                assert "Ancienne interface" in badges
+        if has_new_nav:
+            assert "Nouvelle interface" in badges
         else:
-            assert "Nouvelle interface" not in badges
-            assert "Ancienne interface" not in badges
+            assert "Ancienne interface" in badges
 
 
 class UpdateProUserTest(PostEndpointHelper):
@@ -203,44 +192,78 @@ class UpdateProUserTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
     def test_update_pro_user(self, authenticated_client, legit_user):
-        user_to_edit = offerers_factories.UserOffererFactory(user__postalCode="74000").user
+        pro_user = offerers_factories.UserOffererFactory(
+            user__postalCode="74000",
+            user__notificationSubscriptions={"marketing_push": False, "marketing_email": False},
+        ).user
 
-        old_last_name = user_to_edit.lastName
+        old_last_name = pro_user.lastName
         new_last_name = "La Fripouille"
-        old_email = user_to_edit.email
+        old_email = pro_user.email
         new_email = old_email + ".UPDATE  "
         expected_new_email = email_utils.sanitize_email(new_email)
-        old_postal_code = user_to_edit.postalCode
-        expected_new_postal_code = "75000"
+        old_postal_code = pro_user.postalCode
+        new_postal_code = "75000"
 
-        base_form = {
-            "first_name": user_to_edit.firstName,
+        form_data = {
+            "first_name": pro_user.firstName,
             "last_name": new_last_name,
             "email": new_email,
-            "postal_code": expected_new_postal_code,
-            "phone_number": user_to_edit.phoneNumber,
+            "postal_code": new_postal_code,
+            "phone_number": pro_user.phoneNumber,
+            "marketing_email_subscription": "on",
         }
 
-        response = self.post_to_endpoint(authenticated_client, user_id=user_to_edit.id, form=base_form)
+        response = self.post_to_endpoint(authenticated_client, user_id=pro_user.id, form=form_data)
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.pro_user.get", user_id=user_to_edit.id, _external=True)
-        assert response.location == expected_url
+        db.session.refresh(pro_user)
+        assert pro_user.lastName == new_last_name
+        assert pro_user.email == expected_new_email
+        assert pro_user.postalCode == new_postal_code
+        assert pro_user.notificationSubscriptions["marketing_email"] is True
+        assert pro_user.notificationSubscriptions["marketing_push"] is False
 
-        history_url = url_for("backoffice_web.pro_user.get_details", user_id=user_to_edit.id)
-        response = authenticated_client.get(history_url)
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert action.authorUser == legit_user
+        assert action.user == pro_user
+        assert action.offererId is None
+        assert action.extraData == {
+            "modified_info": {
+                "lastName": {"old_info": old_last_name, "new_info": pro_user.lastName},
+                "email": {"old_info": old_email, "new_info": pro_user.email},
+                "postalCode": {"old_info": old_postal_code, "new_info": pro_user.postalCode},
+                "notificationSubscriptions.marketing_email": {"old_info": False, "new_info": True},
+            }
+        }
 
-        user_to_edit = users_models.User.query.filter_by(id=user_to_edit.id).one()
-        assert user_to_edit.lastName == new_last_name
-        assert user_to_edit.email == expected_new_email
-        assert user_to_edit.postalCode == expected_new_postal_code
+    def test_unsubscribe_from_marketing_emails(self, authenticated_client, legit_user):
+        pro_user = offerers_factories.UserOffererFactory().user
 
-        content = html_parser.content_as_text(response.data)
+        form_data = {
+            "first_name": pro_user.firstName,
+            "last_name": pro_user.lastName,
+            "email": pro_user.email,
+            "postal_code": pro_user.postalCode,
+            "phone_number": pro_user.phoneNumber,
+            # "marketing_email_subscription" not sent by the browser when not checked
+        }
 
-        assert history_models.ActionType.INFO_MODIFIED.value in content
-        assert f"{old_last_name} => {user_to_edit.lastName}" in content
-        assert f"{old_email} => {user_to_edit.email}" in content
-        assert f"{old_postal_code} => {user_to_edit.postalCode}" in content
+        response = self.post_to_endpoint(authenticated_client, user_id=pro_user.id, form=form_data)
+        assert response.status_code == 303
+
+        db.session.refresh(pro_user)
+        assert pro_user.notificationSubscriptions["marketing_email"] is False
+
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert action.authorUser == legit_user
+        assert action.user == pro_user
+        assert action.offererId is None
+        assert action.extraData == {
+            "modified_info": {"notificationSubscriptions.marketing_email": {"old_info": True, "new_info": False}}
+        }
 
     @pytest.mark.parametrize("user_factory", [users_factories.BeneficiaryGrant18Factory, users_factories.AdminFactory])
     def test_update_non_pro_user(self, authenticated_client, user_factory):
@@ -422,9 +445,7 @@ class ValidateProEmailTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
     def test_validate_pro_user_email_ff_on(self, authenticated_client):
-        pro_user = offerers_factories.NotValidatedUserOffererFactory(
-            user__validationToken=False, user__isEmailValidated=False
-        ).user
+        pro_user = offerers_factories.NotValidatedUserOffererFactory(user__isEmailValidated=False).user
         assert not pro_user.isEmailValidated
 
         response = self.post_to_endpoint(authenticated_client, user_id=pro_user.id)
@@ -436,7 +457,7 @@ class ValidateProEmailTest(PostEndpointHelper):
         assert len(mails_testing.outbox) == 0
 
     def test_validate_non_pro_user_email(self, authenticated_client):
-        user = users_factories.UserFactory(validationToken=False, isEmailValidated=False)
+        user = users_factories.UserFactory(isEmailValidated=False)
         assert not user.isEmailValidated
 
         response = self.post_to_endpoint(authenticated_client, user_id=user.id)

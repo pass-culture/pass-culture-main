@@ -470,10 +470,6 @@ class StockEdition(BaseStockEdition):
     price: offer_price_model | None = PRICE_FIELD
 
 
-class InAppDetails(serialization.ConfiguredBaseModel):
-    way: typing.Literal["in_app"] = "in_app"
-
-
 class ProductOfferCreation(OfferCreationBase):
     category_related_fields: product_category_creation_fields
     stock: StockCreation | None
@@ -593,13 +589,6 @@ class ProductOfferEdition(OfferEditionBase):
         None,
         description="To override category related fields, the category must be specified, even if it cannot be changed. Other category related fields may be left undefined to keep their current value.",
     )
-    stock: StockEdition | None = STOCK_EDITION_FIELD
-
-    class Config:
-        extra = "forbid"
-
-
-class ProductOfferByEanEdition(serialization.ConfiguredBaseModel):
     stock: StockEdition | None = STOCK_EDITION_FIELD
 
     class Config:
@@ -778,14 +767,10 @@ class ProductOfferResponse(OfferResponse):
         )
 
 
-def _serialize_has_ticket(
-    offer: offers_models.Offer,
-) -> bool:
+def _serialize_has_ticket(offer: offers_models.Offer) -> bool:
     # hasTicket is True only if the bookings are linked to an externalBooking
     # This is the case for offers with withdrawalType IN_APP.
-    if offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP:
-        return True
-    return False
+    return offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP
 
 
 class EventOfferResponse(OfferResponse, PriceCategoriesResponse):
@@ -796,7 +781,6 @@ class EventOfferResponse(OfferResponse, PriceCategoriesResponse):
     @classmethod
     def build_event_offer(cls, offer: offers_models.Offer) -> "EventOfferResponse":
         base_offer_response = OfferResponse.build_offer(offer)
-
         return cls(
             category_related_fields=serialize_extra_data(offer),
             duration_minutes=offer.durationMinutes,

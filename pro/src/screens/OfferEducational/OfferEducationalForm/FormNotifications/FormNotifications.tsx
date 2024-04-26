@@ -4,7 +4,7 @@ import React from 'react'
 import FormLayout from 'components/FormLayout'
 import { OfferEducationalFormValues } from 'core/OfferEducational'
 import fullMoreIcon from 'icons/full-more.svg'
-import { Button } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import EmailInputRow from './EmailInputRow/EmailInputRow'

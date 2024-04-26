@@ -22,7 +22,7 @@ from pcapi.utils.email import sanitize_email
 
 class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     adageInscriptionDate: datetime | None
-    address: str | None
+    street: str | None
     bookingEmail: str | None
     city: str | None
     comment: str | None
@@ -78,7 +78,6 @@ class PostOffererResponseModel(BaseModel):
 # GetOffererResponseModel includes sensitive information and can be returned only if authenticated user has a validated
 # access to the offerer. During subscription process, use PostOffererResponseModel
 class GetOffererResponseModel(BaseModel):
-    address: str | None
     apiKey: OffererApiKey
     city: str
     dateCreated: datetime
@@ -94,6 +93,7 @@ class GetOffererResponseModel(BaseModel):
     postalCode: str
     # FIXME (dbaty, 2020-11-09): optional until we populate the database (PC-5693)
     siren: str | None
+    street: str | None
     # FIXME (mageoffray, 2023-09-14): optional until we populate the database
     hasValidBankAccount: bool
     hasPendingBankAccount: bool
@@ -193,13 +193,13 @@ class GetOfferersNamesQueryModel(BaseModel):
 
 
 class GetEducationalOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
-    address: str | None
     city: str | None
     id: int
     isVirtual: bool
     publicName: str | None
     name: str
     postalCode: str | None
+    street: str | None
     collectiveInterventionArea: list[str] | None
     collectivePhone: str | None
     collectiveEmail: str | None
@@ -238,17 +238,16 @@ class GenerateOffererApiKeyResponse(BaseModel):
 
 
 class CreateOffererQueryModel(BaseModel):
-    address: str | None
     city: str
     latitude: float | None
     longitude: float | None
     name: str
     postalCode: str
     siren: str
+    street: str | None
 
 
 class SaveNewOnboardingDataQueryModel(BaseModel):
-    address: str | None
     banId: str | None
     city: str
     createVenueWithoutSiret: bool = False
@@ -257,6 +256,7 @@ class SaveNewOnboardingDataQueryModel(BaseModel):
     postalCode: str
     publicName: str | None
     siret: str
+    street: str | None
     target: Target
     venueTypeCode: str
     webPresence: str
@@ -354,3 +354,30 @@ class GetOffererV2StatsResponseModel(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class GetOffererAddressResponseModel(BaseModel):
+    id: int
+    label: str
+    street: str
+    postalCode: str
+    city: str
+    isEditable: bool
+
+    @classmethod
+    def from_orm(cls, offerer_address: offerers_models.OffererAddress) -> "GetOffererAddressResponseModel":
+        offerer_address.street = offerer_address.address.street
+        offerer_address.postalCode = offerer_address.address.postalCode
+        offerer_address.city = offerer_address.address.city
+        offerer_address.isEditable = (
+            False  # TODO (yacine) default value until the relation between Venue and OffererAddress be added
+        )
+
+        return super().from_orm(offerer_address)
+
+    class Config:
+        orm_mode = True
+
+
+class GetOffererAddressesResponseModel(BaseModel):
+    __root__: list[GetOffererAddressResponseModel]

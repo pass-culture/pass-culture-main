@@ -2,8 +2,8 @@ import React, { ReactNode } from 'react'
 
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
-import { AccessiblityEnum } from 'core/shared'
-import { AccessibilityLabel } from 'ui-kit/AccessibilityLabel'
+import { AccessibilityEnum } from 'core/shared'
+import { AccessibilityLabel } from 'ui-kit/AccessibilityLabel/AccessibilityLabel'
 
 import styles from './AccessibilitySummarySection.module.scss'
 
@@ -41,28 +41,28 @@ export const AccessibilitySummarySection = ({
     {accessibleItem.visualDisabilityCompliant && (
       <AccessibilityLabel
         className={styles['accessibility-row']}
-        name={AccessiblityEnum.VISUAL}
+        name={AccessibilityEnum.VISUAL}
       />
     )}
 
     {accessibleItem.mentalDisabilityCompliant && (
       <AccessibilityLabel
         className={styles['accessibility-row']}
-        name={AccessiblityEnum.MENTAL}
+        name={AccessibilityEnum.MENTAL}
       />
     )}
 
     {accessibleItem.motorDisabilityCompliant && (
       <AccessibilityLabel
         className={styles['accessibility-row']}
-        name={AccessiblityEnum.MOTOR}
+        name={AccessibilityEnum.MOTOR}
       />
     )}
 
     {accessibleItem.audioDisabilityCompliant && (
       <AccessibilityLabel
         className={styles['accessibility-row']}
-        name={AccessiblityEnum.AUDIO}
+        name={AccessibilityEnum.AUDIO}
       />
     )}
   </SummarySubSection>

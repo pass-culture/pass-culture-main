@@ -11,7 +11,7 @@ import {
 import fullDownloadIcon from 'icons/full-download.svg'
 import strokeLessIcon from 'icons/stroke-less.svg'
 import strokeMoreIcon from 'icons/stroke-more.svg'
-import { ButtonLink } from 'ui-kit'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { FORMAT_DD_MM_YYYY } from 'utils/date'

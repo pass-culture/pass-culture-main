@@ -82,7 +82,7 @@ export default function AdageOfferDetailsSection({
       )}
 
       {offer.description && (
-        <div className={styles['offer-section-group-item']}>
+        <div className={styles['offer-section-group-item-description']}>
           <h3 className={styles['offer-section-group-item-subtitle']}>
             Description
           </h3>

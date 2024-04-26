@@ -76,6 +76,7 @@ def spectree_serialize(
     raw_response: bool = False,
     response_headers: dict[str, str] | None = None,
     resp: SpectreeResponse | None = None,
+    deprecated: bool = False,
 ) -> Callable[[Any], Any]:
     """A decorator that serialize/deserialize and validate input/output
 
@@ -127,6 +128,7 @@ def spectree_serialize(
             after=after,
             before=before,
             cookies=cookies,
+            deprecated=deprecated,
             form=form_in_kwargs,
             headers=headers,
             json=body_in_kwargs,

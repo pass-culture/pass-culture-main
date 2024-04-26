@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 
-import { Banner } from 'ui-kit'
+import { Banner } from 'ui-kit/Banners/Banner/Banner'
 import { parse, stringify } from 'utils/query-string'
 
 export const DomainNameBanner = () => {

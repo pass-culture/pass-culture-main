@@ -44,10 +44,31 @@ def dump_secret_keys() -> str:
     return yaml.dump(yaml_content)
 
 
+def _check_secret_list_has_been_initialized() -> None:
+    if not SECRET_KEYS:
+        raise ValueError("The list of secrets has not been initialized.")
+
+
 @blueprint.cli.command("print_secret_keys")
 def print_secret_keys() -> None:
     """
     Prints secret's keys list in yaml format.
     This output is used in deployment steps.
     """
-    print(dump_secret_keys(), file=sys.stdout)
+    _check_secret_list_has_been_initialized()
+
+    print(dump_secret_keys())
+
+
+@blueprint.cli.command("check_secrets")
+def check_secrets() -> None:
+    """Make sure that all secrets are defined and non-empty."""
+    _check_secret_list_has_been_initialized()
+
+    missing = set()
+    for secret in SECRET_KEYS:
+        if not os.environ.get(secret):
+            missing.add(secret)
+
+    if missing:
+        sys.exit(f"The following secrets are missing: {', '.join(sorted(missing))}")

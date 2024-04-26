@@ -52,6 +52,12 @@ def reservation_pass_culture(
     password = decrypt(cinema_details.password)
     cinema_url = cinema_details.cinemaUrl
     service = get_cgr_service_proxy(cinema_url)
+    # We need to wait a little longer than the value we send them
+    # Otherwise, for attempts very (very) close to the value of `CGR_TIMEOUT`
+    # they might consider the booking as valid on their side
+    # while on ours, the duration of the attempt + delay of the HTTP request + delay of HTTP response
+    # could exceed the `CGR_TIMEOUT` value
+    timeout = CGR_TIMEOUT - 2
     params = {
         "User": user,
         "mdp": password,
@@ -64,7 +70,7 @@ def reservation_pass_culture(
         "pEmail": body.pEmail,
         "pToken": body.pToken,
         "pDateLimiteAnnul": body.pDateLimiteAnnul,
-        "pTimeoutReservation": CGR_TIMEOUT,
+        "pTimeoutReservation": timeout,
     }
 
     response = service.ReservationPassCulture(**params)

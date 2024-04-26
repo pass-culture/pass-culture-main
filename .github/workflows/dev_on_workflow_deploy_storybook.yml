@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout 🛎️"
-        uses: actions/checkout@v4.1.2
+        uses: actions/checkout@v4.1.4
         with:
           persist-credentials: false
       - uses: actions/setup-node@v3
@@ -22,7 +22,7 @@ jobs:
         working-directory: pro
         run: yarn build-storybook
       - name: "Deploy 🚀"
-        uses: JamesIves/github-pages-deploy-action@v4.4.1
+        uses: JamesIves/github-pages-deploy-action@v4.6.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: "docs"

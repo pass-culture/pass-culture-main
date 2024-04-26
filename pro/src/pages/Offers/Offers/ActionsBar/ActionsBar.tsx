@@ -1,14 +1,19 @@
-import React, { useCallback, useState } from 'react'
+import { useCallback, useState } from 'react'
+import { useSWRConfig } from 'swr'
 
 import ActionsBarSticky from 'components/ActionsBarSticky'
+import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
+import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import useNotification from 'hooks/useNotification'
 import fullHideIcon from 'icons/full-hide.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
+import { GET_COLLECTIVE_OFFERS_QUERY_KEY } from 'pages/CollectiveOffers/CollectiveOffers'
 import { getOffersCountToDisplay } from 'pages/Offers/domain/getOffersCountToDisplay'
-import { Button } from 'ui-kit'
+import { GET_OFFERS_QUERY_KEY } from 'pages/Offers/OffersRoute'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { deleteDraftOffersAdapter } from '../adapters/deleteDraftOffers'
@@ -21,11 +26,9 @@ import DeactivationConfirmDialog from './ConfirmDialog/DeactivationConfirmDialog
 import DeleteConfirmDialog from './ConfirmDialog/DeleteConfirmDialog'
 
 export interface ActionBarProps {
-  urlSearchFilters: Partial<SearchFiltersParams>
   areAllOffersSelected: boolean
   clearSelectedOfferIds: () => void
   nbSelectedOffers: number
-  refreshOffers: () => void
   selectedOfferIds: string[]
   toggleSelectAllCheckboxes: () => void
   audience: Audience
@@ -70,8 +73,6 @@ const getUpdateActiveStatusAdapter = (
 }
 
 const ActionsBar = ({
-  urlSearchFilters,
-  refreshOffers,
   selectedOfferIds,
   clearSelectedOfferIds,
   toggleSelectAllCheckboxes,
@@ -81,9 +82,18 @@ const ActionsBar = ({
   getUpdateOffersStatusMessage,
   canDeleteOffers,
 }: ActionBarProps): JSX.Element => {
+  const urlSearchFilters = useQuerySearchFilters()
+  const { mutate } = useSWRConfig()
+
   const notify = useNotification()
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+
+  const apiFilters = {
+    ...DEFAULT_SEARCH_FILTERS,
+    ...urlSearchFilters,
+  }
+  delete apiFilters.page
 
   const handleClose = useCallback(() => {
     clearSelectedOfferIds()
@@ -101,7 +111,10 @@ const ActionsBar = ({
     )
 
     const { isOk, message } = await adapter()
-    refreshOffers()
+
+    audience === Audience.COLLECTIVE
+      ? await mutate([GET_COLLECTIVE_OFFERS_QUERY_KEY, apiFilters])
+      : await mutate([GET_OFFERS_QUERY_KEY, apiFilters])
 
     if (!isOk) {
       notify.error(message)
@@ -147,7 +160,7 @@ const ActionsBar = ({
       notify.error(message)
     } else {
       notify.success(message)
-      refreshOffers()
+      await mutate([GET_OFFERS_QUERY_KEY, apiFilters])
       clearSelectedOfferIds()
     }
     setIsDeleteDialogOpen(false)

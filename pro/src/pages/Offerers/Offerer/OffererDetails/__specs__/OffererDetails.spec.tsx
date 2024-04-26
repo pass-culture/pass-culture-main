@@ -2,7 +2,10 @@ import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 
 import { api } from 'apiClient/api'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
-import { defaultGetOffererVenueResponseModel } from 'utils/individualApiFactories'
+import {
+  defaultGetOffererResponseModel,
+  defaultGetOffererVenueResponseModel,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { OffererDetails } from '../OffererDetails'
@@ -16,30 +19,8 @@ vi.mock('react-router-dom', async () => ({
 
 describe('src | components | pages | Offerer | OffererDetails', () => {
   beforeEach(() => {
-    const offererId = 1
-
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
-      id: offererId,
-      name: 'fake offerer name',
-      city: 'Paris',
-      postalCode: '75000',
-      address: 'fake address',
-      dateCreated: '2020-01-01T00:00:00.000Z',
-      apiKey: {
-        maxAllowed: 100,
-        prefixes: [],
-      },
-      hasAvailablePricingPoints: true,
-      hasDigitalVenueAtLeastOneOffer: true,
-      hasValidBankAccount: true,
-      hasPendingBankAccount: false,
-      hasBankAccountWithPendingCorrections: false,
-      venuesWithNonFreeOffersWithoutBankAccounts: [],
-      hasNonFreeOffer: true,
-      hasActiveOffer: true,
-      isValidated: true,
-      isActive: true,
-      allowedOnAdage: true,
+      ...defaultGetOffererResponseModel,
       managedVenues: [
         {
           ...defaultGetOffererVenueResponseModel,

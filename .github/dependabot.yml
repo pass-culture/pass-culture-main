@@ -18,6 +18,9 @@ updates:
       time: '03:00'
     open-pull-requests-limit: 15
     ignore:
+      # Exclude packages that have very frequent updates. They have a
+      # specific configuration, see block below.
+      - dependency-name: boto3
       # Except for critical ones where we only allow patches update
       - dependency-name: 'flask'
         update-types: ['version-update:semver-major', 'version-update:semver-minor']
@@ -28,6 +31,23 @@ updates:
       # We are not ready to handle upper version of spectree, even for patches
       - dependency-name: 'spectree'
     # Disable automatic rebasing for poetry pull requests
+    rebase-strategy: "disabled"
+
+  # Special configuration for Python packages that have very frequent updates.
+  # We don't want to get a pull request every day for insignificant changes.
+  - package-ecosystem: 'pip'
+    directory: '/api'
+    # Specify a branch here (but _not_ in the block above), to work
+    # around uniqueness requirement on the directory.
+    # https://github.com/dependabot/dependabot-core/issues/1778#issuecomment-1988140291
+    target-branch: master
+    schedule:
+      interval: 'weekly'
+      day: 'wednesday'
+      time: '03:00'
+    open-pull-requests-limit: 15
+    allow:
+      - dependency-name: boto3
     rebase-strategy: "disabled"
 
   - package-ecosystem: 'github-actions'

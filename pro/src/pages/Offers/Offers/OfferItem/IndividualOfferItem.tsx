@@ -22,7 +22,6 @@ type IndividualOfferItemProps = {
   editionOfferLink: string
   editionStockLink: string
   venue: ListOffersVenueResponseModel
-  refreshOffers: () => void
   audience: Audience
 }
 
@@ -34,7 +33,6 @@ export const IndividualOfferItem = ({
   editionOfferLink,
   editionStockLink,
   venue,
-  refreshOffers,
   audience,
 }: IndividualOfferItemProps) => {
   return (
@@ -67,7 +65,6 @@ export const IndividualOfferItem = ({
         offer={offer}
         editionOfferLink={editionOfferLink}
         editionStockLink={editionStockLink}
-        refreshOffers={refreshOffers}
       />
     </>
   )

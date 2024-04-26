@@ -6,6 +6,7 @@ import {
   RenderWithProvidersOptions,
   renderWithProviders,
 } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 const TestComponent = () => {
   const isSideNavActive = useIsNewInterfaceActive()
@@ -14,9 +15,7 @@ const TestComponent = () => {
 }
 
 const defaultOptions: RenderWithProvidersOptions = {
-  storeOverrides: {
-    user: { currentUser: { isAdmin: false } },
-  },
+  user: sharedCurrentUserFactory(),
   features: [],
 }
 
@@ -27,68 +26,33 @@ const renderUseIsNewInterfaceActive = (
 }
 
 describe('useIsNewInterfaceActive', () => {
-  it('should return true if the feature is active and user has new nav date', () => {
+  it('should return true if user has new nav date', () => {
     const options = {
-      features: ['WIP_ENABLE_PRO_SIDE_NAV'],
-      storeOverrides: {
-        user: {
-          currentUser: {
-            isAdmin: false,
-            navState: {
-              newNavDate: '2021-01-01',
-            },
-          },
+      user: sharedCurrentUserFactory({
+        isAdmin: false,
+        navState: {
+          newNavDate: '2021-01-01',
         },
-      },
+      }),
     }
     renderUseIsNewInterfaceActive(options)
     expect(screen.getByText('Active')).toBeInTheDocument()
   })
 
   it('should return false if user is not connected', () => {
-    const options = {
-      features: ['WIP_ENABLE_PRO_SIDE_NAV'],
-      storeOverrides: {
-        user: {
-          currentUser: null,
-        },
-      },
-    }
-    renderUseIsNewInterfaceActive(options)
-    expect(screen.getByText('Inactive')).toBeInTheDocument()
-  })
-
-  it('should return false if the feature is inactive', () => {
-    const options = {
-      features: [],
-      storeOverrides: {
-        user: {
-          currentUser: {
-            isAdmin: false,
-            navState: {
-              newNavDate: '2021-01-01',
-            },
-          },
-        },
-      },
-    }
+    const options = { user: null }
     renderUseIsNewInterfaceActive(options)
     expect(screen.getByText('Inactive')).toBeInTheDocument()
   })
 
   it('should return false if user connected but as no new nav date', () => {
     const options = {
-      features: ['WIP_ENABLE_PRO_SIDE_NAV'],
-      storeOverrides: {
-        user: {
-          currentUser: {
-            isAdmin: false,
-            navState: {
-              newNavDate: null,
-            },
-          },
+      user: sharedCurrentUserFactory({
+        isAdmin: false,
+        navState: {
+          newNavDate: null,
         },
-      },
+      }),
     }
     renderUseIsNewInterfaceActive(options)
     expect(screen.getByText('Inactive')).toBeInTheDocument()
@@ -96,17 +60,12 @@ describe('useIsNewInterfaceActive', () => {
 
   it('should return false if user connected but as new nav date in future', () => {
     const options = {
-      features: ['WIP_ENABLE_PRO_SIDE_NAV'],
-      storeOverrides: {
-        user: {
-          currentUser: {
-            isAdmin: false,
-            navState: {
-              newNavDate: '2999-01-01',
-            },
-          },
+      user: sharedCurrentUserFactory({
+        isAdmin: false,
+        navState: {
+          newNavDate: '2999-01-01',
         },
-      },
+      }),
     }
     renderUseIsNewInterfaceActive(options)
     expect(screen.getByText('Inactive')).toBeInTheDocument()

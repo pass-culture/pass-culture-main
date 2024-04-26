@@ -46,12 +46,9 @@
       fill: var(--color-secondary-light);
     }
 
-    .discovery-banner-svg-cross {
-      fill: rgb(var(--color-grey-light) 0.4);
-    }
-
+    .discovery-banner-svg-cross,
     .discovery-banner-svg-circle {
-      fill: rgb(var(--color-grey-light) 0.3);
+      fill: rgb(from var(--color-grey-light) r g b / 40%);
     }
   }
 }

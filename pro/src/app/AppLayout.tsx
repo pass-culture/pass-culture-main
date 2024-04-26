@@ -12,7 +12,7 @@ import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
 import logoPassCultureProIcon from 'icons/logo-pass-culture-pro.svg'
 import strokeCloseIcon from 'icons/stroke-close.svg'
 import { selectCurrentUser } from 'store/user/selectors'
-import { Button } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
@@ -93,6 +93,9 @@ export const AppLayout = ({
           [styles['page-layout']]: true,
           [styles['page-layout-full']]: layout === 'without-nav',
           [styles[`content-layout-${layout}`]]: isNewSideBarNavigation,
+          [styles[`content-layout-${layout}-with-review-banner`]]:
+            isNewSideBarNavigation &&
+            Boolean(currentUser?.navState?.eligibilityDate),
         })}
         onKeyDown={(e) => {
           if (e.key === 'Escape' && lateralPanelOpen) {
@@ -138,7 +141,7 @@ export const AppLayout = ({
                       src={logoPassCultureProIcon}
                       viewBox="0 0 119 40"
                       width="119"
-                      className="logo"
+                      className={styles['lateral-panel-logo']}
                     />
                   </div>
                 )}
@@ -149,11 +152,14 @@ export const AppLayout = ({
         <div
           className={classnames({
             [styles['main-wrapper']]: true,
-            [styles['main-wrapper-old']]: !isNewSideBarNavigation,
+            [styles['main-wrapper-old']]:
+              !isNewSideBarNavigation || layout === 'funnel',
           })}
         >
           {isNewSideBarNavigation &&
-            Boolean(currentUser?.navState?.eligibilityDate) && <NewNavReview />}
+            Boolean(currentUser?.navState?.eligibilityDate) &&
+            layout !== 'funnel' &&
+            layout !== 'without-nav' && <NewNavReview />}
           <main
             id="content"
             className={classnames(
@@ -166,6 +172,8 @@ export const AppLayout = ({
                   layout === 'basic' || layout === 'sticky-actions',
                 [styles['container-sticky-actions']]:
                   layout === 'sticky-actions',
+                [styles['container-sticky-actions-new-interface']]:
+                  isNewSideBarNavigation && layout === 'sticky-actions',
                 [styles['container-without-nav']]: layout === 'without-nav',
                 [styles[`content-layout`]]: isNewSideBarNavigation,
                 [styles[`content-layout-${layout}`]]: isNewSideBarNavigation,
@@ -192,7 +200,7 @@ export const AppLayout = ({
               </div>
             )}
           </main>
-          <Footer layout={layout} />
+          {layout !== 'funnel' && <Footer layout={layout} />}
         </div>
       </div>
     </>

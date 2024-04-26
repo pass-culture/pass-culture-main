@@ -1,9 +1,9 @@
 import type { StoryObj } from '@storybook/react'
 import React from 'react'
 
-import { BaseInput } from '../'
+import { BaseInput } from '../BaseInput/BaseInput'
 
-import FieldLayout from './FieldLayout'
+import { FieldLayout } from './FieldLayout'
 
 export default {
   title: 'ui-kit/forms/shared/FieldLayout',

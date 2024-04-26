@@ -18,6 +18,10 @@
   &-section {
     margin-bottom: rem.torem(32px);
 
+    &-title {
+      @include fonts.title3;
+    }
+
     &-header {
       margin-bottom: rem.torem(24px);
     }

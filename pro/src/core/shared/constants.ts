@@ -1,14 +1,4 @@
-export const urlRegex = new RegExp(
-  // eslint-disable-next-line no-useless-escape
-  /^(?:http(s)?:\/\/)?[\w.-\.-\.@]+(?:\.[\w\.-\.@]+)+[\w\-\._~:\/?#[\]@%!\$&'\(\)\*\+,;=.]+$/,
-  'i'
-)
-
-export const offerFormUrlRegex = new RegExp(
-  /*eslint-disable-next-line no-useless-escape*/
-  /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)(([a-z0-9]+([\-\.\.-\.@_a-z0-9]+)*\.[a-z]{2,5})|((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.){3}(25[0-5]|(2[0-4]|1\d|[1-9]|)\d))(:[0-9]{1,5})?\S*?$/,
-  'i'
-)
+import { StudentLevels } from 'apiClient/v1'
 
 export const PATCH_SUCCESS_MESSAGE =
   'Vos modifications ont bien été enregistrées'
@@ -22,3 +12,9 @@ export const FORM_ERROR_MESSAGE =
 export const NBSP = '\u00a0'
 
 export const SAVED_OFFERER_ID_KEY = 'homepageSelectedOffererId'
+
+export const DEFAULT_MARSEILLE_STUDENTS = [
+  StudentLevels._COLES_MARSEILLE_MATERNELLE,
+  StudentLevels._COLES_MARSEILLE_CP_CE1_CE2,
+  StudentLevels._COLES_MARSEILLE_CM1_CM2,
+]

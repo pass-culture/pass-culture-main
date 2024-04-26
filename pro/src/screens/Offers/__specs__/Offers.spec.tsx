@@ -5,20 +5,11 @@ import { api } from 'apiClient/api'
 import {
   ListOffersOfferResponseModel,
   OfferStatus,
+  SharedCurrentUserResponseModel,
   UserRole,
 } from 'apiClient/v1'
 import {
-  ALL_CATEGORIES,
-  ALL_COLLECTIVE_OFFER_TYPE,
-  ALL_CREATION_MODES,
-  ALL_EVENT_PERIODS,
-  ALL_FORMATS,
-  ALL_OFFERERS,
-  ALL_OFFERS,
-  ALL_STATUS,
-  ALL_VENUES,
   ALL_VENUES_OPTION,
-  DEFAULT_PAGE,
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
 import { Audience } from 'core/shared'
@@ -33,6 +24,7 @@ import {
   renderWithProviders,
   RenderWithProvidersOptions,
 } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import Offers, { OffersProps } from '../Offers'
 
@@ -42,17 +34,12 @@ const renderOffers = (
   hasNewNav: boolean = false
 ) => {
   renderWithProviders(<Offers {...props} />, {
-    storeOverrides: {
-      user: {
-        currentUser: {
-          id: 12,
-          isAdmin: false,
-          navState: {
-            newNavDate: hasNewNav ? '2021-01-01' : null,
-          },
-        },
+    user: sharedCurrentUserFactory({
+      isAdmin: false,
+      navState: {
+        newNavDate: hasNewNav ? '2021-01-01' : null,
       },
-    },
+    }),
     ...options,
   })
 }
@@ -103,36 +90,26 @@ vi.mock('apiClient/api', () => ({
 
 describe('screen Offers', () => {
   let props: OffersProps
-  let currentUser: {
-    id: string
-    isAdmin: boolean
-    name: string
-    roles: Array<UserRole>
-  }
+  let currentUser: SharedCurrentUserResponseModel
   let offersRecap: ListOffersOfferResponseModel[]
 
   const mockNotifyError = vi.fn()
   const mockNotifyPending = vi.fn()
   beforeEach(async () => {
-    currentUser = {
-      id: 'EY',
+    currentUser = sharedCurrentUserFactory({
       isAdmin: false,
-      name: 'Current User',
       roles: [UserRole.PRO],
-    }
+    })
     offersRecap = [listOffersOfferFactory()]
 
     props = {
       currentPageNumber: 1,
       currentUser,
       isLoading: false,
-      loadAndUpdateOffers: vi.fn().mockResolvedValue(offersRecap),
       offerer: { ...defaultGetOffererResponseModel },
       offers: offersRecap,
-      setIsLoading: vi.fn(),
       setOfferer: vi.fn(),
       urlSearchFilters: DEFAULT_SEARCH_FILTERS,
-      separateIndividualAndCollectiveOffers: false,
       initialSearchFilters: DEFAULT_SEARCH_FILTERS,
       audience: Audience.INDIVIDUAL,
       redirectWithUrlFilters: vi.fn(),
@@ -140,7 +117,7 @@ describe('screen Offers', () => {
       categories: categoriesAndSubcategories.categories.map(
         ({ id, proLabel }) => ({ value: id, label: proLabel })
       ),
-    } as OffersProps
+    }
 
     const notifsImport = (await vi.importActual(
       'hooks/useNotification'
@@ -150,24 +127,6 @@ describe('screen Offers', () => {
       error: mockNotifyError,
       pending: mockNotifyPending,
     }))
-  })
-
-  it('should load offers from API with defaults props', () => {
-    renderOffers(props)
-
-    expect(props.loadAndUpdateOffers).toHaveBeenCalledWith({
-      nameOrIsbn: ALL_OFFERS,
-      venueId: ALL_VENUES,
-      categoryId: ALL_CATEGORIES,
-      offererId: ALL_OFFERERS,
-      status: ALL_STATUS,
-      creationMode: ALL_CREATION_MODES,
-      page: DEFAULT_PAGE,
-      periodBeginningDate: ALL_EVENT_PERIODS,
-      periodEndingDate: ALL_EVENT_PERIODS,
-      collectiveOfferType: ALL_COLLECTIVE_OFFER_TYPE,
-      format: ALL_FORMATS,
-    })
   })
 
   it('should display column titles when offers are returned', () => {
@@ -438,13 +397,7 @@ describe('screen Offers', () => {
 
     describe('select all offers checkbox', () => {
       it('should disable select all checkbox when no venue nor offerer filter is applied', () => {
-        const storeOverrides = {
-          user: {
-            initialized: true,
-            currentUser,
-          },
-        }
-        renderOffers(props, { storeOverrides })
+        renderOffers(props, { user: currentUser })
 
         const selectAllOffersCheckbox =
           screen.getByLabelText('Tout sélectionner')
@@ -452,13 +405,7 @@ describe('screen Offers', () => {
       })
 
       it('should disable select all checkbox when venue filter is not set', async () => {
-        const storeOverrides = {
-          user: {
-            initialized: true,
-            currentUser,
-          },
-        }
-        renderOffers(props, { storeOverrides })
+        renderOffers(props, { user: currentUser })
 
         await userEvent.selectOptions(screen.getByLabelText('Lieu'), 'all')
 
@@ -470,13 +417,6 @@ describe('screen Offers', () => {
       })
 
       it('should enable select all checkbox when venue filter is applied', async () => {
-        const storeOverrides = {
-          user: {
-            initialized: true,
-            currentUser,
-          },
-        }
-
         renderOffers(
           {
             ...props,
@@ -485,7 +425,7 @@ describe('screen Offers', () => {
               venueId: 'IJ',
             },
           },
-          { storeOverrides }
+          { user: currentUser }
         )
 
         await userEvent.selectOptions(screen.getByLabelText('Lieu'), 'JI')
@@ -498,12 +438,6 @@ describe('screen Offers', () => {
       })
 
       it('should enable select all checkbox when offerer filter is applied', () => {
-        const storeOverrides = {
-          user: {
-            initialized: true,
-            currentUser,
-          },
-        }
         renderOffers(
           {
             ...props,
@@ -512,7 +446,7 @@ describe('screen Offers', () => {
               offererId: 'A4',
             },
           },
-          { storeOverrides }
+          { user: currentUser }
         )
 
         const selectAllOffersCheckbox =
@@ -544,26 +478,6 @@ describe('screen Offers', () => {
     expect(screen.queryByLabelText(offers[0].name)).toBeDisabled()
     expect(screen.queryByLabelText(offers[1].name)).toBeDisabled()
     expect(screen.queryByLabelText(offers[2].name)).toBeEnabled()
-  })
-
-  it('should load offers on click on search button with default filters when no changes where made', async () => {
-    renderOffers(props)
-
-    await userEvent.click(screen.getByText('Rechercher'))
-
-    expect(props.loadAndUpdateOffers).toHaveBeenCalledWith({
-      nameOrIsbn: DEFAULT_SEARCH_FILTERS.nameOrIsbn,
-      venueId: DEFAULT_SEARCH_FILTERS.venueId,
-      categoryId: DEFAULT_SEARCH_FILTERS.categoryId,
-      offererId: DEFAULT_SEARCH_FILTERS.offererId,
-      status: DEFAULT_SEARCH_FILTERS.status,
-      creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
-      page: DEFAULT_SEARCH_FILTERS.page,
-      periodBeginningDate: DEFAULT_SEARCH_FILTERS.periodBeginningDate,
-      periodEndingDate: DEFAULT_SEARCH_FILTERS.periodEndingDate,
-      collectiveOfferType: ALL_COLLECTIVE_OFFER_TYPE,
-      format: ALL_FORMATS,
-    })
   })
 
   it('should not display the button to create an offer when user is an admin', () => {
@@ -605,13 +519,7 @@ describe('screen Offers', () => {
   })
 
   it('should display actionsBar when at least one offer is selected', async () => {
-    const storeOverrides = {
-      user: {
-        initialized: true,
-        currentUser,
-      },
-    }
-    renderWithProviders(<Offers {...props} />, { storeOverrides })
+    renderWithProviders(<Offers {...props} />, { user: currentUser })
 
     const checkbox = screen.getByLabelText(offersRecap[0].name)
     await userEvent.click(checkbox)
@@ -753,18 +661,12 @@ describe('screen Offers', () => {
     expect(screen.getByText(/Créer une offre/)).toBeInTheDocument()
   })
 
-  it('should not display the create offer button with the WIP_ENABLE_PRO_SIDE_NAV FF enabled', async () => {
+  it('should not display the create offer button', async () => {
     vi.spyOn(api, 'listOfferersNames').mockResolvedValueOnce({
       offerersNames: [getOffererNameFactory()],
     })
 
-    renderOffers(
-      props,
-      {
-        features: ['WIP_ENABLE_PRO_SIDE_NAV'],
-      },
-      true
-    )
+    renderOffers(props, {}, true)
     await waitFor(() => {
       expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
     })

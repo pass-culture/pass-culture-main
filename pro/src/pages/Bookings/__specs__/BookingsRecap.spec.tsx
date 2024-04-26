@@ -7,9 +7,12 @@ import {
   SharedCurrentUserResponseModel,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
+import { ApiError } from 'apiClient/v2'
+import { ApiRequestOptions } from 'apiClient/v2/core/ApiRequestOptions'
+import { ApiResult } from 'apiClient/v2/core/ApiResult'
 import Notification from 'components/Notification/Notification'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
-import * as pcapi from 'repository/pcapi/pcapi'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import {
   FORMAT_ISO_DATE_ONLY,
   formatBrowserTimezonedDateAsUTC,
@@ -22,16 +25,13 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { Bookings } from '../Bookings'
 
-vi.mock('repository/pcapi/pcapi', () => ({
-  getFilteredBookingsCSV: vi.fn(),
-}))
-
 vi.mock('apiClient/api', () => ({
   api: {
     getProfile: vi.fn(),
     getBookingsPro: vi.fn(),
     getVenues: vi.fn(),
     getUserHasBookings: vi.fn(),
+    getBookingsCsv: vi.fn(),
   },
 }))
 
@@ -122,10 +122,8 @@ describe('components | BookingsRecap | Pro user', () => {
   })
 
   it('should show a pre-filter section', async () => {
-    // When
     await renderBookingsRecap(store)
 
-    // Then
     const eventDateFilter = screen.getByLabelText('Date de l’évènement')
     const eventVenueFilter = screen.getByLabelText('Lieu')
     const eventBookingPeriodFilter = screen.getByText('Période de réservation')
@@ -137,10 +135,8 @@ describe('components | BookingsRecap | Pro user', () => {
   })
 
   it('should ask user to select a pre-filter before clicking on "Afficher"', async () => {
-    // When
     await renderBookingsRecap(store)
 
-    // Then
     expect(api.getBookingsPro).not.toHaveBeenCalled()
     const choosePreFiltersMessage = screen.getByText(
       'Pour visualiser vos réservations, veuillez sélectionner un ou plusieurs des filtres précédents et cliquer sur « Afficher »'
@@ -149,7 +145,6 @@ describe('components | BookingsRecap | Pro user', () => {
   })
 
   it('should request bookings of venue requested by user when user clicks on "Afficher"', async () => {
-    // Given
     const bookingRecap = bookingRecapFactory()
     const spyGetBookingsPro = vi
       .spyOn(api, 'getBookingsPro')
@@ -161,14 +156,12 @@ describe('components | BookingsRecap | Pro user', () => {
       })
     const { submitFilters } = await renderBookingsRecap(store)
 
-    // When
     await userEvent.selectOptions(
       screen.getByLabelText('Lieu'),
       venue.id.toString()
     )
     await submitFilters()
 
-    // Then
     await screen.findAllByText(bookingRecap.stock.offerName)
     expect(
       spyGetBookingsPro.mock.calls[0][NTH_ARGUMENT_GET_BOOKINGS.venueId - 1]
@@ -176,7 +169,6 @@ describe('components | BookingsRecap | Pro user', () => {
   })
 
   it('should warn user that his prefilters returned no booking when no bookings where returned by selected pre-filters', async () => {
-    // Given
     vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
       page: 1,
       pages: 0,
@@ -185,10 +177,8 @@ describe('components | BookingsRecap | Pro user', () => {
     })
     const { submitFilters } = await renderBookingsRecap(store)
 
-    // When
     await submitFilters()
 
-    // Then
     const noBookingsForPreFilters = await screen.findByText(
       'Aucune réservation trouvée pour votre recherche'
     )
@@ -196,7 +186,6 @@ describe('components | BookingsRecap | Pro user', () => {
   })
 
   it('should allow user to reset its pre-filters in the no bookings warning', async () => {
-    // Given
     vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
       page: 1,
       pages: 0,
@@ -210,20 +199,17 @@ describe('components | BookingsRecap | Pro user', () => {
     )
     await submitFilters()
 
-    // When
     const resetButton = screen.getByText('Afficher toutes les réservations', {
       selector: '.button-ternary-pink',
     })
     await userEvent.click(resetButton)
 
-    // Then
     expect(screen.getByLabelText('Lieu')).toHaveValue(
       DEFAULT_PRE_FILTERS.offerVenueId
     )
   })
 
   it('should not allow user to reset prefilters when none were applied', async () => {
-    // Given
     const bookingRecap = bookingRecapFactory()
     vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
       page: 1,
@@ -233,17 +219,14 @@ describe('components | BookingsRecap | Pro user', () => {
     })
     const { submitFilters } = await renderBookingsRecap(store)
 
-    // When
     await submitFilters()
 
-    // Then
     expect(
       screen.getByRole('button', { name: 'Réinitialiser les filtres' })
     ).toBeDisabled()
   })
 
   it('should allow user to reset prefilters when some where applied', async () => {
-    // Given
     const bookingRecap = bookingRecapFactory()
     vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
       page: 1,
@@ -265,11 +248,9 @@ describe('components | BookingsRecap | Pro user', () => {
     await userEvent.type(endingPeriodInput, '2019-02-01')
     await submitFilters()
 
-    // When
     const resetButton = await screen.findByText('Réinitialiser les filtres')
     await userEvent.click(resetButton)
 
-    // Then
     expect(screen.getByLabelText('Lieu')).toHaveValue(
       DEFAULT_PRE_FILTERS.offerVenueId
     )
@@ -281,7 +262,6 @@ describe('components | BookingsRecap | Pro user', () => {
   })
 
   it('should ask user to select a pre-filter when user reset them', async () => {
-    // Given
     const bookingRecap = bookingRecapFactory()
     vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
       page: 1,
@@ -296,11 +276,9 @@ describe('components | BookingsRecap | Pro user', () => {
     )
     await submitFilters()
 
-    // When
     const resetButton = await screen.findByText('Réinitialiser les filtres')
     await userEvent.click(resetButton)
 
-    // Then
     expect(
       screen.getByRole('button', { name: 'Réinitialiser les filtres' })
     ).toBeDisabled()
@@ -311,23 +289,18 @@ describe('components | BookingsRecap | Pro user', () => {
   })
 
   it('should have a CSV download button', async () => {
-    // When
     await renderBookingsRecap(store)
 
-    // Then
     expect(
       screen.getByRole('button', { name: 'Télécharger' })
     ).toBeInTheDocument()
   })
 
   it('should fetch API for CSV when clicking on the download button and disable button while its loading', async () => {
-    // Given
-
     const { submitDownloadFilters } = await renderBookingsRecap({
       ...store,
     })
 
-    // When
     // submit utils method wait for button to become disabled then enabled.
     await submitDownloadFilters()
     const downloadSubButton = await screen.findByRole('button', {
@@ -335,46 +308,39 @@ describe('components | BookingsRecap | Pro user', () => {
     })
     await userEvent.click(downloadSubButton)
 
-    // Then
-    expect(pcapi.getFilteredBookingsCSV).toHaveBeenCalledWith({
-      bookingPeriodBeginningDate: DEFAULT_PRE_FILTERS.bookingBeginningDate,
-      bookingPeriodEndingDate: DEFAULT_PRE_FILTERS.bookingEndingDate,
-      bookingStatusFilter: DEFAULT_PRE_FILTERS.bookingStatusFilter,
-      eventDate: 'all',
-      offerType: 'all',
-      page: 1,
-      venueId: 'all',
-    })
+    expect(api.getBookingsCsv).toHaveBeenCalledWith(
+      1,
+      null,
+      null,
+      null,
+      DEFAULT_PRE_FILTERS.bookingStatusFilter,
+      DEFAULT_PRE_FILTERS.bookingBeginningDate,
+      DEFAULT_PRE_FILTERS.bookingEndingDate,
+      null
+    )
   })
 
   it('should display an error message on CSV download when API returns a status other than 200', async () => {
-    // Given
-    vi.spyOn(pcapi, 'getFilteredBookingsCSV').mockImplementation(() =>
-      Promise.reject(new Error('An error happened.'))
+    vi.spyOn(api, 'getBookingsCsv').mockRejectedValueOnce(
+      new ApiError({} as ApiRequestOptions, { status: 400 } as ApiResult, '')
     )
 
     const { submitDownloadFilters } = await renderBookingsRecap({
       ...store,
     })
 
-    // When
     await submitDownloadFilters()
     const downloadSubButton = await screen.findByRole('button', {
       name: 'Fichier CSV (.csv)',
     })
     await userEvent.click(downloadSubButton)
 
-    // Then
-    await expect(
-      screen.findByText(
-        'Une erreur s’est produite. Veuillez réessayer ultérieurement',
-        { exact: false }
-      )
-    ).resolves.toBeInTheDocument()
+    expect(
+      await screen.findByText(GET_DATA_ERROR_MESSAGE, { exact: false })
+    ).toBeInTheDocument()
   })
 
   it('should fetch bookings for the filtered venue as many times as the number of pages', async () => {
-    // Given
     const bookings1 = bookingRecapFactory()
     const bookings2 = bookingRecapFactory()
     const paginatedBookingRecapReturned = {
@@ -396,14 +362,12 @@ describe('components | BookingsRecap | Pro user', () => {
 
     const { submitFilters } = await renderBookingsRecap(store)
 
-    // When
     await userEvent.selectOptions(
       screen.getByLabelText('Lieu'),
       venue.id.toString()
     )
     await submitFilters()
 
-    // Then
     expect(screen.getByText(bookings2.stock.offerName)).toBeInTheDocument()
 
     expect(screen.getByText(bookings1.stock.offerName)).toBeInTheDocument()
@@ -424,7 +388,6 @@ describe('components | BookingsRecap | Pro user', () => {
   })
 
   it('should request bookings of event date requested by user when user clicks on "Afficher"', async () => {
-    // Given
     const bookingRecap = bookingRecapFactory()
     const spyGetBookingsPro = vi
       .spyOn(api, 'getBookingsPro')
@@ -436,14 +399,12 @@ describe('components | BookingsRecap | Pro user', () => {
       })
     const { submitFilters } = await renderBookingsRecap(store)
 
-    // When
     await userEvent.type(
       screen.getByLabelText('Date de l’évènement'),
       '2020-06-08'
     )
     await submitFilters()
 
-    // Then
     await screen.findAllByText(bookingRecap.stock.offerName)
     expect(
       spyGetBookingsPro.mock.calls[0][NTH_ARGUMENT_GET_BOOKINGS.eventDate - 1]
@@ -456,7 +417,6 @@ describe('components | BookingsRecap | Pro user', () => {
   })
 
   it('should set booking period to null when user select event date', async () => {
-    // Given
     const bookingRecap = bookingRecapFactory()
     const spyGetBookingsPro = vi
       .spyOn(api, 'getBookingsPro')
@@ -468,13 +428,12 @@ describe('components | BookingsRecap | Pro user', () => {
       })
     const { submitFilters } = await renderBookingsRecap(store)
 
-    // When
     await userEvent.type(
       screen.getByLabelText('Date de l’évènement'),
       '2020-08-10'
     )
     await submitFilters()
-    // Then
+
     await screen.findAllByText(bookingRecap.stock.offerName)
     expect(
       spyGetBookingsPro.mock.calls[0][
@@ -489,7 +448,6 @@ describe('components | BookingsRecap | Pro user', () => {
   })
 
   it('should request bookings of default period when user clicks on "Afficher" without selecting a period', async () => {
-    // Given
     const bookingRecap = bookingRecapFactory()
 
     const spyGetBookingsPro = vi
@@ -502,10 +460,8 @@ describe('components | BookingsRecap | Pro user', () => {
       })
     const { submitFilters } = await renderBookingsRecap(store)
 
-    // When
     await submitFilters()
 
-    // Then
     await screen.findAllByText(bookingRecap.stock.offerName)
     expect(
       spyGetBookingsPro.mock.calls[0][
@@ -520,7 +476,6 @@ describe('components | BookingsRecap | Pro user', () => {
   })
 
   it('should request bookings of selected period when user clicks on "Afficher"', async () => {
-    // Given
     const bookingRecap = bookingRecapFactory()
     const spyGetBookingsPro = vi
       .spyOn(api, 'getBookingsPro')
@@ -535,14 +490,12 @@ describe('components | BookingsRecap | Pro user', () => {
     const beginningPeriodInput = screen.getByLabelText('Début de la période')
     const endingPeriodInput = screen.getByLabelText('Fin de la période')
 
-    // When
     await userEvent.clear(beginningPeriodInput)
     await userEvent.clear(endingPeriodInput)
     await userEvent.type(beginningPeriodInput, '2020-05-10')
     await userEvent.type(endingPeriodInput, '2020-06-05')
     await submitFilters()
 
-    // Then
     await screen.findAllByText(bookingRecap.stock.offerName)
     expect(
       spyGetBookingsPro.mock.calls[0][
@@ -557,7 +510,6 @@ describe('components | BookingsRecap | Pro user', () => {
   })
 
   it('should reset bookings recap list when applying filters', async () => {
-    // Given
     const booking = bookingRecapFactory()
     const otherVenueBooking = bookingRecapFactory()
     const otherVenue = venueListItemFactory()
@@ -588,14 +540,12 @@ describe('components | BookingsRecap | Pro user', () => {
     )
     await submitFilters()
 
-    // When
     await userEvent.selectOptions(
       screen.getByLabelText('Lieu'),
       venue.id.toString()
     )
     await submitFilters()
 
-    // Then
     expect(screen.getByText(booking.stock.offerName)).toBeInTheDocument()
     expect(
       screen.queryByText(otherVenueBooking.stock.offerName)
@@ -603,7 +553,6 @@ describe('components | BookingsRecap | Pro user', () => {
   })
 
   it('should show notification with information message when there are more than 5 pages', async () => {
-    // Given
     const bookingsRecap = { pages: 6, bookingsRecap: [] }
     vi.spyOn(api, 'getBookingsPro')
       // @ts-expect-error FIX ME
@@ -620,14 +569,12 @@ describe('components | BookingsRecap | Pro user', () => {
       .mockResolvedValueOnce({ ...bookingsRecap, page: 6 })
     await renderBookingsRecap(store)
 
-    // when
     await userEvent.selectOptions(
       screen.getByLabelText('Lieu'),
       venue.id.toString()
     )
     await userEvent.click(screen.getByText('Afficher', { selector: 'button' }))
 
-    // Then
     const informationalMessage = await screen.findByText(
       'L’affichage des réservations a été limité à 5 000 réservations. Vous pouvez modifier les filtres pour affiner votre recherche.'
     )
@@ -636,7 +583,6 @@ describe('components | BookingsRecap | Pro user', () => {
   })
 
   it('should not show notification with information message when there are 5 pages or less', async () => {
-    // Given
     const bookingsRecap = { pages: 5, bookingsRecap: [] }
     vi.spyOn(api, 'getBookingsPro')
       // @ts-expect-error FIX ME
@@ -651,14 +597,12 @@ describe('components | BookingsRecap | Pro user', () => {
       .mockResolvedValueOnce({ ...bookingsRecap, page: 5 })
     await renderBookingsRecap(store)
 
-    // when
     await userEvent.selectOptions(
       screen.getByLabelText('Lieu'),
       venue.id.toString()
     )
     await userEvent.click(screen.getByText('Afficher', { selector: 'button' }))
 
-    // Then
     expect(api.getBookingsPro).toHaveBeenCalledTimes(5)
     const informationalMessage = screen.queryByText(
       'L’affichage des réservations a été limité à 5 000 réservations. Vous pouvez modifier les filtres pour affiner votre recherche.'
@@ -667,17 +611,14 @@ describe('components | BookingsRecap | Pro user', () => {
   })
 
   it('should inform the user that the filters have been modified when at least one of them was and before clicking on the "Afficher" button', async () => {
-    // Given
     const { submitFilters } = await renderBookingsRecap(store)
     await submitFilters()
 
-    // When
     await userEvent.selectOptions(
       screen.getByLabelText('Lieu'),
       venue.publicName ?? venue.name
     )
 
-    // Then
     const informationalMessage = await screen.findByTestId(
       'refresh-required-message'
     )
@@ -685,20 +626,17 @@ describe('components | BookingsRecap | Pro user', () => {
   })
 
   it('should not inform the user when the selected filter is the same than the actual filter', async () => {
-    // Given
     await renderBookingsRecap(store)
     await userEvent.selectOptions(
       screen.getByLabelText('Lieu'),
       venue.publicName ?? venue.name
     )
 
-    // When
     await userEvent.selectOptions(
       screen.getByLabelText('Lieu'),
       screen.getByText('Tous les lieux')
     )
 
-    // Then
     const informationalMessage = screen.queryByText(
       'Vos filtres ont été modifiés. Veuillez cliquer sur « Afficher » pour actualiser votre recherche.'
     )
@@ -706,16 +644,13 @@ describe('components | BookingsRecap | Pro user', () => {
   })
 
   it('should not inform the user of pre-filter modifications before first click on "Afficher" button', async () => {
-    // Given
     await renderBookingsRecap(store)
 
-    // When
     await userEvent.selectOptions(
       screen.getByLabelText('Lieu'),
       venue.publicName ?? venue.name
     )
 
-    // Then
     const informationalMessage = screen.queryByText(
       'Vos filtres ont été modifiés. Veuillez cliquer sur « Afficher » pour actualiser votre recherche.'
     )

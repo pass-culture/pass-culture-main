@@ -7,7 +7,7 @@ import strokeAccessibilityBrain from 'icons/stroke-accessibility-brain.svg'
 import strokeAccessibilityEar from 'icons/stroke-accessibility-ear.svg'
 import strokeAccessibilityEye from 'icons/stroke-accessibility-eye.svg'
 import strokeAccessibilityLeg from 'icons/stroke-accessibility-leg.svg'
-import { ButtonLink } from 'ui-kit'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { AccesLibreCollapse } from './AccesLibreCollapse'
@@ -28,7 +28,7 @@ export const AccesLibreSection = ({ venue }: AccesLibreSectionProps) => {
       editLink={
         <ButtonLink
           link={{
-            to: '',
+            to: `https://acceslibre.beta.gouv.fr/contrib/edit-infos/${venue.externalAccessibilityId}/`,
             isExternal: true,
           }}
           icon={fullLinkIcon}
@@ -41,7 +41,12 @@ export const AccesLibreSection = ({ venue }: AccesLibreSectionProps) => {
         Les modalités ci-dessous sont issues de la plateforme{' '}
         <ButtonLink
           variant={ButtonVariant.TERNARY}
-          link={{ isExternal: true, to: 'TODO' }}
+          link={{
+            isExternal: true,
+            to:
+              venue.externalAccessibilityUrl ??
+              'https://acceslibre.beta.gouv.fr/',
+          }}
         >
           acceslibre.gouv.fr
         </ButtonLink>
@@ -125,7 +130,17 @@ export const AccesLibreSection = ({ venue }: AccesLibreSectionProps) => {
                 </span>
                 <span className={styles['details-item']}>
                   {venue.externalAccessibilityData.audioDisability
-                    ?.deafAndHardOfHearing ?? 'Non renseigné'}
+                    ?.deafAndHardOfHearing?.length ? (
+                    <ul className={styles['details-list']}>
+                      {venue.externalAccessibilityData.audioDisability.deafAndHardOfHearing.map(
+                        (item) => (
+                          <li key={item}>{item}</li>
+                        )
+                      )}
+                    </ul>
+                  ) : (
+                    'Non renseigné'
+                  )}
                 </span>
               </div>
             </div>
@@ -145,7 +160,17 @@ export const AccesLibreSection = ({ venue }: AccesLibreSectionProps) => {
                 </span>
                 <span className={styles['details-item']}>
                   {venue.externalAccessibilityData.visualDisability
-                    ?.audioDescription ?? 'Non renseigné'}
+                    ?.audioDescription?.length ? (
+                    <ul className={styles['details-list']}>
+                      {venue.externalAccessibilityData.visualDisability.audioDescription.map(
+                        (item) => (
+                          <li key={item}>{item}</li>
+                        )
+                      )}
+                    </ul>
+                  ) : (
+                    'Non renseigné'
+                  )}
                 </span>
               </li>
               <li>

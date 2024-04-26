@@ -2,7 +2,6 @@ import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import {
   generatePath,
-  Navigate,
   Route,
   Routes,
   useLocation,
@@ -12,28 +11,26 @@ import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import { AppLayout } from 'app/AppLayout'
-import useGetOfferer from 'core/Offerers/getOffererAdapter/useGetOfferer'
+import {
+  GET_OFFERER_QUERY_KEY,
+  GET_VENUE_QUERY_KEY,
+  GET_VENUE_TYPES_QUERY_KEY,
+} from 'config/swrQueryKeys'
 import { SAVED_OFFERER_ID_KEY } from 'core/shared'
-import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
-import useNotification from 'hooks/useNotification'
 import { CollectiveDataEdition } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/CollectiveDataEdition'
 import { updateSelectedOffererId } from 'store/user/reducer'
 import Spinner from 'ui-kit/Spinner/Spinner'
-import Tabs, { Tab } from 'ui-kit/Tabs/Tabs'
+import { Tab, Tabs } from 'ui-kit/Tabs/Tabs'
 
 import styles from './VenueEdition.module.scss'
 import { VenueEditionFormScreen } from './VenueEditionFormScreen'
 import { VenueEditionHeader } from './VenueEditionHeader'
 
-export const GET_VENUE_QUERY_KEY = 'getVenue'
-
 export const VenueEdition = (): JSX.Element | null => {
-  const homePath = '/accueil'
   const { offererId, venueId } = useParams<{
     offererId: string
     venueId: string
   }>()
-  const notify = useNotification()
   const location = useLocation()
   const dispatch = useDispatch()
 
@@ -41,18 +38,18 @@ export const VenueEdition = (): JSX.Element | null => {
     [GET_VENUE_QUERY_KEY, venueId],
     ([, venueIdParam]) => api.getVenue(Number(venueIdParam))
   )
+  const venue = venueQuery.data
 
-  const {
-    isLoading: isLoadingVenueTypes,
-    error: errorVenueTypes,
-    data: venueTypes,
-  } = useGetVenueTypes()
+  const offererQuery = useSWR(
+    [GET_OFFERER_QUERY_KEY, offererId],
+    ([, offererIdParam]) => api.getOfferer(Number(offererIdParam))
+  )
+  const offerer = offererQuery.data
 
-  const {
-    isLoading: isLoadingOfferer,
-    error: errorOfferer,
-    data: offerer,
-  } = useGetOfferer(offererId)
+  const venueTypesQuery = useSWR([GET_VENUE_TYPES_QUERY_KEY], () =>
+    api.getVenueTypes()
+  )
+  const venueTypes = venueTypesQuery.data
 
   useEffect(() => {
     if (offererId) {
@@ -61,27 +58,13 @@ export const VenueEdition = (): JSX.Element | null => {
     }
   }, [offererId, dispatch])
 
-  if (errorOfferer || venueQuery.error || errorVenueTypes) {
-    const loadingError = [errorOfferer, venueQuery.error, errorVenueTypes].find(
-      (error) => error !== undefined
-    )
-    if (loadingError !== undefined) {
-      notify.error(
-        'Une erreur est survenue lors de la récupération de votre lieu'
-      )
-      return <Navigate to={homePath} />
-    }
-    /* istanbul ignore next: Never */
-    return null
-  }
-
-  const venue = venueQuery.data
-
   if (
     venueQuery.isLoading ||
-    isLoadingVenueTypes ||
-    isLoadingOfferer ||
-    !venue
+    venueTypesQuery.isLoading ||
+    offererQuery.isLoading ||
+    !venue ||
+    !offerer ||
+    !venueTypes
   ) {
     return (
       <AppLayout>

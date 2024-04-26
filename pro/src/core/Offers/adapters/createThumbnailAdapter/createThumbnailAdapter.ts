@@ -1,6 +1,6 @@
+import { api } from 'apiClient/api'
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { IndividualOfferImage } from 'core/Offers/types'
-import * as pcapi from 'repository/pcapi/pcapi'
 
 interface Params extends OnImageUploadArgs {
   offerId: number
@@ -21,16 +21,18 @@ const createThumbnailAdapter: CreateThumbnailAdapter = async ({
   cropParams,
 }) => {
   try {
-    const response = await pcapi.postThumbnail(
-      offerId.toString(),
-      imageFile,
-      credit,
-      undefined, // api don't use thumbUrl
-      cropParams?.x,
-      cropParams?.y,
-      cropParams?.height,
-      cropParams?.width
-    )
+    const response = await api.createThumbnail({
+      // TODO This TS error will be removed when spectree is updated to the latest
+      // version (dependant on Flask update) which will include files in the generated schema
+      // @ts-expect-error
+      thumb: imageFile,
+      credit: credit ?? '',
+      croppingRectHeight: cropParams?.height,
+      croppingRectWidth: cropParams?.width,
+      croppingRectX: cropParams?.x,
+      croppingRectY: cropParams?.y,
+      offerId,
+    })
 
     return {
       isOk: true,

@@ -19,7 +19,7 @@ interface OptionsListProps {
   multi: boolean
 }
 
-const OptionsList = ({
+export const OptionsList = ({
   className,
   fieldName,
   selectedValues,
@@ -89,5 +89,3 @@ const OptionsList = ({
     </div>
   )
 }
-
-export default OptionsList

@@ -6,7 +6,7 @@ import * as yup from 'yup'
 
 import { apiAdresse } from 'apiClient/adresse'
 import { VenueCreationFormValues } from 'pages/VenueCreation/types'
-import { SubmitButton } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 
 import { AddressSelect, validationSchema as addressValidationSchema } from '../'
 
@@ -57,7 +57,9 @@ const renderAddress = ({
       {({ handleSubmit }) => (
         <Form onSubmit={handleSubmit}>
           <AddressSelect />
-          <SubmitButton isLoading={false}>Submit</SubmitButton>
+          <Button type="submit" isLoading={false}>
+            Submit
+          </Button>
         </Form>
       )}
     </Formik>
@@ -77,13 +79,13 @@ describe('AddressSelect', () => {
 
   beforeEach(() => {
     initialValues = {
-      address: '',
       addressAutocomplete: '',
       'search-addressAutocomplete': '',
       city: '',
       postalCode: '',
       latitude: 0,
       longitude: 0,
+      street: '',
     }
     vi.spyOn(apiAdresse, 'getDataFromAddress').mockResolvedValue(mockAdressData)
   })
@@ -103,7 +105,6 @@ describe('AddressSelect', () => {
     await waitFor(() => {
       expect(onSubmit).toHaveBeenCalledWith(
         {
-          address: '12 rue des tournesols',
           addressAutocomplete: '12 rue des tournesols 75003 Paris',
           city: 'Paris',
           banId: '2',
@@ -111,6 +112,7 @@ describe('AddressSelect', () => {
           longitude: -2.22,
           postalCode: '75003',
           'search-addressAutocomplete': '12 rue des tournesols 75003 Paris',
+          street: '12 rue des tournesols',
         },
         expect.anything()
       )

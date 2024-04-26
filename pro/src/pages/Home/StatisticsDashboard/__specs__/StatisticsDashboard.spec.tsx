@@ -4,6 +4,7 @@ import React from 'react'
 import { api } from 'apiClient/api'
 import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { StatisticsDashboard } from '../StatisticsDashboard'
 
@@ -29,17 +30,12 @@ const renderStatisticsDashboard = (
       }}
     />,
     {
-      storeOverrides: {
-        user: {
-          currentUser: {
-            id: 12,
-            isAdmin,
-            navState: {
-              newNavDate: hasNewNav ? '2021-01-01' : null,
-            },
-          },
+      user: sharedCurrentUserFactory({
+        isAdmin,
+        navState: {
+          newNavDate: hasNewNav ? '2021-01-01' : null,
         },
-      },
+      }),
       features,
     }
   )
@@ -125,14 +121,14 @@ describe('StatisticsDashboard', () => {
     expect(await screen.findByText(/Créer une offre/)).toBeInTheDocument()
   })
 
-  it('should display the create offer button with the WIP_ENABLE_PRO_SIDE_NAV FF enabled and the user is Admin', async () => {
-    renderStatisticsDashboard(false, ['WIP_ENABLE_PRO_SIDE_NAV'], true)
+  it('should display the create offer button if the user is Admin', async () => {
+    renderStatisticsDashboard(false, [], true)
 
     expect(await screen.findByText(/Créer une offre/)).toBeInTheDocument()
   })
 
-  it("should not display the create offer button with the WIP_ENABLE_PRO_SIDE_NAV FF enabled and the user isn't Admin", async () => {
-    renderStatisticsDashboard(false, ['WIP_ENABLE_PRO_SIDE_NAV'], false, true)
+  it("should not display the create offer button if the user isn't Admin", async () => {
+    renderStatisticsDashboard(false, [], false, true)
 
     expect(
       await screen.findByText('à destination du grand public')

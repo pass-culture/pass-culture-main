@@ -21,19 +21,17 @@ import { PartnerPages } from './PartnerPages'
 import { VenueCreationLinks } from './VenueCreationLinks'
 
 export interface OfferersProps {
-  selectedOfferer?: GetOffererResponseModel | null
+  selectedOfferer: GetOffererResponseModel | null
   isLoading: boolean
   isUserOffererValidated: boolean
   offererOptions: SelectOption[]
-  setSelectedOfferer: (offerer: GetOffererResponseModel) => void
 }
 
-const Offerers = ({
+export const Offerers = ({
   offererOptions,
   selectedOfferer,
   isLoading,
   isUserOffererValidated,
-  setSelectedOfferer,
 }: OfferersProps) => {
   const [openSuccessDialog, setOpenSuccessDialog] = useState(false)
 
@@ -69,9 +67,9 @@ const Offerers = ({
 
   return (
     <>
-      {userHasOfferers && selectedOfferer && (
+      {userHasOfferers && (
         <>
-          {openSuccessDialog && (
+          {selectedOfferer && openSuccessDialog && (
             <RedirectDialog
               icon={strokePartyIcon}
               redirectText="Créer une offre"
@@ -105,18 +103,13 @@ const Offerers = ({
           <OffererDetails
             isUserOffererValidated={isUserOffererValidated}
             offererOptions={offererOptions}
-            selectedOfferer={selectedOfferer}
           />
 
-          {permanentVenues.length > 0 && (
-            <PartnerPages
-              venues={permanentVenues}
-              offerer={selectedOfferer}
-              setSelectedOfferer={setSelectedOfferer}
-            />
+          {selectedOfferer && permanentVenues.length > 0 && (
+            <PartnerPages venues={permanentVenues} offerer={selectedOfferer} />
           )}
 
-          {!isOffererSoftDeleted && (
+          {selectedOfferer && !isOffererSoftDeleted && (
             <>
               {/*
                * The whole sectionning of the homepage should be refactored to account
@@ -152,5 +145,3 @@ const Offerers = ({
     </>
   )
 }
-
-export default Offerers

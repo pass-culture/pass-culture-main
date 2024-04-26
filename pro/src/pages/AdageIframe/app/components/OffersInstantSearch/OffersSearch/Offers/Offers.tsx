@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   useInfiniteHits,
   useInstantSearch,
   useStats,
 } from 'react-instantsearch'
-import { useParams } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { useLocation, useParams } from 'react-router-dom'
 
 import {
   AdageFrontRoles,
@@ -14,16 +15,27 @@ import {
 } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import useActiveFeature from 'hooks/useActiveFeature'
+import { useMediaQuery } from 'hooks/useMediaQuery'
 import fullGoTop from 'icons/full-go-top.svg'
+import fullGrid from 'icons/full-grid.svg'
+import fullList from 'icons/full-list.svg'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
-import { Button } from 'ui-kit'
+import { isCollectiveOfferTemplate } from 'pages/AdageIframe/app/types/offers'
+import { setSearchView } from 'store/adageFilter/reducer'
+import { adageSearchViewSelector } from 'store/adageFilter/selectors'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { LOGS_DATA } from 'utils/config'
 import { sendSentryCustomError } from 'utils/sendSentryCustomError'
 
+import OfferCardComponent from '../../../AdageDiscovery/OfferCard/OfferCard'
 import { DiffuseHelp } from '../../../DiffuseHelp/DiffuseHelp'
 import { SurveySatisfaction } from '../../../SurveySatisfaction/SurveySatisfaction'
+import ToggleButtonGroup, {
+  ToggleButton,
+} from '../../../ToggleButtonGroup/ToggleButtonGroup'
 
 import { AdageOfferListCard } from './AdageOfferListCard/AdageOfferListCard'
 import { NoResultsPage } from './NoResultsPage/NoResultsPage'
@@ -57,6 +69,9 @@ export const Offers = ({
   indexId,
   venue,
 }: OffersProps): JSX.Element | null => {
+  const dispatch = useDispatch()
+
+  const adageViewType = useSelector(adageSearchViewSelector)
   const { hits, isLastPage, showMore } = useInfiniteHits()
   const { nbHits } = useStats()
   const { scopedResults, results: nonScopedResult } = useInstantSearch()
@@ -64,6 +79,10 @@ export const Offers = ({
     siret: string
     venueId: string
   }>()
+
+  const isMobileScreen = useMediaQuery('(max-width: 46.5rem)')
+
+  const location = useLocation()
 
   const isNewOfferCardEnabled = useActiveFeature(
     'WIP_ENABLE_ADAGE_VISUALIZATION'
@@ -77,6 +96,8 @@ export const Offers = ({
   const [fetchedOffers, setFetchedOffers] = useState<OfferMap>(new Map())
 
   const showDiffuseHelp = (submitCount ?? 0) > 0
+
+  const isInSuggestions = indexId?.startsWith('no_results_offers')
 
   const { adageUser } = useAdageUser()
 
@@ -161,6 +182,10 @@ export const Offers = ({
       })
   }, [results?.queryID])
 
+  useEffect(() => {
+    isMobileScreen && dispatch(setSearchView('grid'))
+  }, [isMobileScreen])
+
   const offers = hits
     .map((hit) => fetchedOffers.get(hit.objectID))
     .filter((offer): offer is CollectiveOffer => !!offer)
@@ -179,25 +204,93 @@ export const Offers = ({
     ) : null
   }
 
+  function toggleButtonClicked(button: ToggleButton) {
+    const viewType = button.id === 'list' ? 'list' : 'grid'
+    dispatch(setSearchView(viewType))
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    apiAdage.logOfferListViewSwitch({
+      iframeFrom: location.pathname,
+      source: viewType,
+    })
+  }
+
+  function triggerOfferClickLog(
+    offer: CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
+  ) {
+    if (!LOGS_DATA) {
+      return
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    apiAdage.logOfferTemplateDetailsButtonClick({
+      iframeFrom: location.pathname,
+      offerId: isCollectiveOfferTemplate(offer) ? offer.id : offer.stock.id,
+      queryId: results?.queryID,
+      isFromNoResult: isInSuggestions,
+      vueType: adageViewType,
+    })
+  }
+
   return (
     <>
-      {displayStats && (
-        <div className={styles['offers-stats']}>
-          {`${nbHits} résultat${nbHits > 1 ? 's' : ''}`}
-        </div>
-      )}
-      <ul className={styles['offers-list']}>
+      <div className={styles['offers-view']}>
+        {displayStats && (
+          <div className={styles['offers-stats']}>
+            {new Intl.NumberFormat('fr-FR').format(nbHits)}{' '}
+            {nbHits === 1 ? 'offre' : 'offres'} au total
+          </div>
+        )}
+        {isNewOfferCardEnabled && !isInSuggestions && (
+          <ToggleButtonGroup
+            className={styles['offer-type-vue']}
+            groupLabel="Choix du type de vue des offres"
+            buttons={[
+              {
+                label: 'Vue liste',
+                id: 'list',
+                content: <SvgIcon width="24" src={fullList} alt="" />,
+                onClick: toggleButtonClicked,
+              },
+              {
+                label: 'Vue grille',
+                id: 'grid',
+                content: <SvgIcon width="24" src={fullGrid} alt="" />,
+                onClick: toggleButtonClicked,
+              },
+            ]}
+            activeButton={adageViewType}
+          />
+        )}
+      </div>
+      <ul
+        className={
+          styles[
+            `offers-${!isNewOfferCardEnabled || isInSuggestions ? 'list' : adageViewType}`
+          ]
+        }
+      >
         {offers.map((offer, index) => (
           <li
             key={`${offer.isTemplate ? 'T' : ''}${offer.id}`}
             data-testid="offer-listitem"
           >
             {isNewOfferCardEnabled ? (
-              <AdageOfferListCard
-                offer={offer}
-                queryId={results.queryID ?? ''}
-                isInSuggestions={indexId?.startsWith('no_results_offers')}
-              />
+              adageViewType === 'list' || isInSuggestions ? (
+                <AdageOfferListCard
+                  offer={offer}
+                  queryId={results.queryID ?? ''}
+                  isInSuggestions={indexId?.startsWith('no_results_offers')}
+                  viewType={adageViewType}
+                  onCardClicked={() => triggerOfferClickLog(offer)}
+                />
+              ) : (
+                <OfferCardComponent
+                  onCardClicked={() => triggerOfferClickLog(offer)}
+                  key={offer.id}
+                  offer={offer}
+                  viewType={adageViewType}
+                />
+              )
             ) : (
               <Offer
                 offer={offer}
@@ -206,43 +299,45 @@ export const Offers = ({
                 isInSuggestions={indexId?.startsWith('no_results_offers')}
               />
             )}
-            {index === 0 && showDiffuseHelp && (
+            {adageViewType === 'list' && index === 0 && showDiffuseHelp && (
               <DiffuseHelp
                 description={
                   "Pour certaines offres, le pass Culture peut prendre en charge certains coûts accessoires nécessaires à la réalisation d'activités d'éducation artistique et culturelle menées en classe ou hors les murs. Cela peut inclure par exemple les frais de transport d’un intervenant ou le matériel consommable d’un atelier artistique. Cette prise en charge doit bien sûr faire l’objet d’un accord entre vous et le partenaire qui porte le projet. Il n’est en revanche pas possible d'acheter des livres ou des équipements pérennes avec les crédits pass Culture ou de financer le transport des élèves."
                 }
               />
             )}
-            {index === 1 && showSurveySatisfaction && (
-              <SurveySatisfaction queryId={results.queryID} />
-            )}
+            {adageViewType === 'list' &&
+              index === 1 &&
+              showSurveySatisfaction && (
+                <SurveySatisfaction queryId={results.queryID} />
+              )}
           </li>
         ))}
-        {displayShowMore && (
-          <div className={styles['offers-load-more']}>
-            <div className={styles['offers-load-more-text']}>
-              {!isLastPage
-                ? `Vous avez vu ${offers.length} offre${
-                    offers.length > 1 ? 's' : ''
-                  } sur ${nbHits}`
-                : 'Vous avez vu toutes les offres qui correspondent à votre recherche.'}
-            </div>
-            {!isLastPage &&
-              (queriesAreLoading ? (
-                <div className={styles['offers-loader']}>
-                  <Spinner />
-                </div>
-              ) : (
-                <Button
-                  onClick={showMoreAndTrack}
-                  variant={ButtonVariant.SECONDARY}
-                >
-                  Voir plus d’offres
-                </Button>
-              ))}
-          </div>
-        )}
       </ul>
+      {displayShowMore && (
+        <div className={styles['offers-load-more']}>
+          <div className={styles['offers-load-more-text']}>
+            {!isLastPage
+              ? `Vous avez vu ${offers.length} offre${
+                  offers.length > 1 ? 's' : ''
+                } sur ${nbHits}`
+              : 'Vous avez vu toutes les offres qui correspondent à votre recherche.'}
+          </div>
+          {!isLastPage &&
+            (queriesAreLoading ? (
+              <div className={styles['offers-loader']}>
+                <Spinner />
+              </div>
+            ) : (
+              <Button
+                onClick={showMoreAndTrack}
+                variant={ButtonVariant.SECONDARY}
+              >
+                Voir plus d’offres
+              </Button>
+            ))}
+        </div>
+      )}
       {isBackToTopVisibile && (
         <a href="#root" className={styles['back-to-top-button']}>
           <SvgIcon

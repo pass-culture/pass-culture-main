@@ -12,6 +12,7 @@ import {
 } from 'context/SignupJourneyContext'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { OffererAuthentication } from '..'
 
@@ -72,16 +73,6 @@ fetchMock.mockResponse(
 const renderOffererAuthentiationScreen = (
   contextValue: SignupJourneyContextValues
 ) => {
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        isAdmin: false,
-        email: 'email@example.com',
-      },
-    },
-  }
-
   return renderWithProviders(
     <>
       <SignupJourneyContext.Provider value={contextValue}>
@@ -103,7 +94,7 @@ const renderOffererAuthentiationScreen = (
       <Notification />
     </>,
     {
-      storeOverrides,
+      user: sharedCurrentUserFactory(),
       initialRouterEntries: ['/parcours-inscription/identification'],
     }
   )
@@ -117,7 +108,7 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
         ...DEFAULT_OFFERER_FORM_VALUES,
         siret: '123 456 789 33333',
         name: 'Test name',
-        address: '3 Rue de Valois',
+        street: '3 Rue de Valois',
         city: 'Paris',
         latitude: 0,
         longitude: 0,

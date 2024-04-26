@@ -1,4 +1,5 @@
 from datetime import datetime
+import logging
 
 import pytest
 
@@ -18,7 +19,7 @@ class ZendeskWebhookTest:
     @pytest.mark.parametrize(
         "phone_number,postal_code", [("0612345678", 55270), ("06 12 34 56 78", None), ("+33612345678", 97600)]
     )
-    def test_webhook_update_user_by_email(self, client, phone_number, postal_code):
+    def test_webhook_update_user_by_email(self, client, caplog, phone_number, postal_code):
         birth_year = datetime.utcnow().year - user_constants.ELIGIBILITY_AGE_18
 
         user = users_factories.BeneficiaryGrant18Factory(
@@ -28,16 +29,17 @@ class ZendeskWebhookTest:
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
         )
 
-        response = client.post(
-            "/webhooks/zendesk/ticket_notification",
-            json={
-                "is_new_ticket": True,
-                "ticket_id": 123,
-                "requester_id": 456,
-                "requester_email": user.email,
-                "requester_phone": None,
-            },
-        )
+        with caplog.at_level(logging.INFO):
+            response = client.post(
+                "/webhooks/zendesk/ticket_notification",
+                json={
+                    "is_new_ticket": True,
+                    "ticket_id": 123,
+                    "requester_id": 456,
+                    "requester_email": user.email,
+                    "requester_phone": None,
+                },
+            )
 
         expected_bo_url = f"{settings.BACKOFFICE_URL}/public-accounts/{user.id}"
 
@@ -66,6 +68,16 @@ class ZendeskWebhookTest:
         }
         assert expected_bo_url in str(users_testing.zendesk_requests[1]["data"]["ticket"]["comment"]["html_body"])
         assert users_testing.zendesk_requests[1]["data"]["ticket"]["comment"]["public"] is False
+
+        assert (
+            caplog.records[0].message
+            == "Zendesk webhook called: {'is_new_ticket': True, 'requester_id': '456', 'ticket_id': '123'}"
+        )
+        assert caplog.records[0].extra["is_new_ticket"] is True
+        assert caplog.records[0].extra["requester_id"] == "456"
+        assert caplog.records[0].extra["ticket_id"] == "123"
+        assert "requester_email" not in caplog.records[0].extra
+        assert "requester_phone" not in caplog.records[0].extra
 
     def test_webhook_update_user_by_phone(self, client):
         # not beneficiary, no credit, suspended

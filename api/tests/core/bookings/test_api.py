@@ -1,6 +1,7 @@
 import dataclasses
 from datetime import datetime
 from datetime import timedelta
+import json
 import logging
 import re
 from unittest import mock
@@ -13,6 +14,7 @@ from sqlalchemy.sql import text
 
 from pcapi.analytics.amplitude.backends.amplitude_connector import AmplitudeEventType
 import pcapi.analytics.amplitude.testing as amplitude_testing
+from pcapi.connectors.ems import EMSBookingConnector
 from pcapi.core import search
 from pcapi.core.bookings import api
 from pcapi.core.bookings import exceptions
@@ -29,6 +31,7 @@ from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.external.batch import BATCH_DATETIME_FORMAT
 from pcapi.core.external_bookings import factories as external_bookings_factories
+from pcapi.core.external_bookings.ems import constants
 import pcapi.core.external_bookings.exceptions as external_bookings_exceptions
 from pcapi.core.external_bookings.factories import ExternalBookingFactory
 from pcapi.core.external_bookings.models import Ticket
@@ -51,6 +54,7 @@ from pcapi.models import feature
 import pcapi.notifications.push.testing as push_testing
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import BookingAction
 from pcapi.utils import queue
+from pcapi.utils.requests import exceptions as requests_exception
 
 from tests.conftest import clean_database
 
@@ -251,6 +255,7 @@ class BookOfferTest:
         booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
 
         assert booking.status is BookingStatus.USED
+        assert booking.validationAuthorType == models.BookingValidationAuthorType.AUTO
         event = finance_models.FinanceEvent.query.filter_by(booking=booking).one()
         assert event.motive == finance_models.FinanceEventMotive.BOOKING_USED
 
@@ -533,6 +538,263 @@ class BookOfferTest:
                 "num_ope": 147150,
             }
 
+        @patch("flask.current_app.redis_client.llen")
+        @patch("pcapi.core.external_bookings.ems.client.current_app.redis_client.lpush")
+        @patch("pcapi.core.external_bookings.ems.client.current_app.redis_client.rpop")
+        @patch("pcapi.core.bookings.api.generate_booking_token")
+        @patch("pcapi.core.external_bookings.ems.client.EMSClientAPI.cancel_booking_with_tickets")
+        @override_features(ENABLE_EMS_INTEGRATION=True, EMS_CANCEL_PENDING_EXTERNAL_BOOKING=True)
+        @pytest.mark.parametrize("exception", [requests_exception.Timeout, requests_exception.ReadTimeout])
+        def test_timeout_during_ems_external_booking_trigger_a_cancel_call(
+            self,
+            mock_cancel_booking,
+            mock_generate_booking_token,
+            mock_rpop,
+            mock_lpush,
+            mock_llen,
+            exception,
+            requests_mock,
+        ):
+            token = "AAAAAA"
+            mock_generate_booking_token.return_value = token
+
+            beneficiary = users_factories.BeneficiaryGrant18Factory()
+            ems_provider = get_provider_by_local_class("EMSStocks")
+            venue_provider = providers_factories.VenueProviderFactory(
+                provider=ems_provider, venueIdAtOfferProvider="9997"
+            )
+            cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
+            offer = offers_factories.EventOfferFactory(
+                name="Film",
+                venue=venue_provider.venue,
+                subcategoryId=subcategories.SEANCE_CINE.id,
+                lastProviderId=cinema_provider_pivot.provider.id,
+            )
+            stock = offers_factories.EventStockFactory(offer=offer, idAtProviders="1111%2222%EMS#3333")
+
+            payload = {
+                "num_cine": venue_provider.venueIdAtOfferProvider,
+                "id_seance": stock.idAtProviders.split("#")[-1],
+                "qte_place": 1,
+                "pass_culture_price": float(stock.price),
+                "total_price": float(stock.price),
+                "email": beneficiary.email,
+                "num_pass_culture": str(beneficiary.id),
+                "num_cmde": token,
+            }
+            url = EMSBookingConnector()._build_url("VENTE", payload)
+            booking_adapter = requests_mock.post(url=re.compile(rf"{url}"), exc=exception)
+
+            with pytest.raises(external_bookings_exceptions.ExternalBookingException):
+                api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
+
+            assert not Booking.query.all()
+            assert booking_adapter.call_count == 1
+            assert mock_lpush.call_count == 1
+            assert mock_lpush.mock_calls[0].args[0] == constants.EMS_EXTERNAL_BOOKINGS_TO_CANCEL
+            booking_queued = json.loads(mock_lpush.mock_calls[0].args[1])
+            assert booking_queued["cinema_id"] == venue_provider.venueIdAtOfferProvider
+            assert booking_queued["token"] == token
+            timestamp = booking_queued["timestamp"]
+            assert timestamp == pytest.approx(datetime.utcnow().timestamp())
+
+            mock_llen.side_effect = [1, 0]
+            mock_rpop.return_value = json.dumps(
+                {
+                    "cinema_id": venue_provider.venueIdAtOfferProvider,
+                    "token": token,
+                    # Mocking an older booking, otherwise tests runs too fast
+                    "timestamp": (datetime.utcnow() - timedelta(seconds=180)).timestamp(),
+                }
+            )
+
+            # Few minutes later, a cron trigger our task
+            # First we should check that the external booking has been successfully created
+            # Otherwise, there's nothing to cancel
+            payload = {"num_cine": venue_provider.venueIdAtOfferProvider, "num_cmde": token}
+            url = EMSBookingConnector()._build_url("STATUT", payload)
+            get_tickets_adapter = requests_mock.post(
+                url=re.compile(rf"{url}"),
+                json={
+                    "statut": 1,
+                    "num_cine": "9997",
+                    "id_seance": "999700078774",
+                    "qte_place": 1,
+                    "pass_culture_price": 5.15,
+                    "total_price": 5.15,
+                    "email": "email@email.fr",
+                    "num_pass_culture": "",
+                    "num_cmde": "",
+                    "billets": [
+                        {
+                            "num_caisse": "255",
+                            "code_barre": "000000139863",
+                            "num_trans": 475,
+                            "num_ope": 139863,
+                            "code_tarif": "0RG",
+                            "num_serie": 5,
+                            "montant": 5.15,
+                            "num_place": "",
+                        }
+                    ],
+                },
+            )
+
+            api.cancel_ems_external_bookings()
+
+            assert get_tickets_adapter.call_count == 1
+            assert mock_rpop.call_count == 1
+            assert mock_cancel_booking.call_count == 1
+            assert not Booking.query.all()
+
+        @patch("flask.current_app.redis_client.llen")
+        @patch("flask.current_app.redis_client.rpush")
+        @patch("flask.current_app.redis_client.lpush")
+        @patch("pcapi.core.external_bookings.ems.client.current_app.redis_client.rpop")
+        @patch("pcapi.core.bookings.api.generate_booking_token")
+        @patch("pcapi.core.external_bookings.ems.client.EMSClientAPI.cancel_booking_with_tickets")
+        @override_features(ENABLE_EMS_INTEGRATION=True, EMS_CANCEL_PENDING_EXTERNAL_BOOKING=True)
+        @pytest.mark.parametrize("exception", [requests_exception.Timeout, requests_exception.ReadTimeout])
+        def test_we_dont_cancel_too_early_failing_booking(
+            self,
+            mock_cancel_booking,
+            mock_generate_booking_token,
+            mock_rpop,
+            mock_lpush,
+            mock_rpush,
+            mock_llen,
+            exception,
+            requests_mock,
+        ):
+            token = "AAAAAA"
+            mock_generate_booking_token.return_value = token
+
+            beneficiary = users_factories.BeneficiaryGrant18Factory()
+            ems_provider = get_provider_by_local_class("EMSStocks")
+            venue_provider = providers_factories.VenueProviderFactory(
+                provider=ems_provider, venueIdAtOfferProvider="9997"
+            )
+            cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
+            offer = offers_factories.EventOfferFactory(
+                name="Film",
+                venue=venue_provider.venue,
+                subcategoryId=subcategories.SEANCE_CINE.id,
+                lastProviderId=cinema_provider_pivot.provider.id,
+            )
+            stock = offers_factories.EventStockFactory(offer=offer, idAtProviders="1111%2222%EMS#3333")
+
+            payload = {
+                "num_cine": venue_provider.venueIdAtOfferProvider,
+                "id_seance": stock.idAtProviders.split("#")[-1],
+                "qte_place": 1,
+                "pass_culture_price": float(stock.price),
+                "total_price": float(stock.price),
+                "email": beneficiary.email,
+                "num_pass_culture": str(beneficiary.id),
+                "num_cmde": token,
+            }
+            url = EMSBookingConnector()._build_url("VENTE", payload)
+            booking_adapter = requests_mock.post(url=re.compile(rf"{url}"), exc=exception)
+
+            with pytest.raises(external_bookings_exceptions.ExternalBookingException):
+                api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
+
+            assert not Booking.query.all()
+            assert booking_adapter.call_count == 1
+            assert mock_lpush.call_count == 1
+            assert mock_lpush.mock_calls[0].args[0] == constants.EMS_EXTERNAL_BOOKINGS_TO_CANCEL
+            booking_queued = json.loads(mock_lpush.mock_calls[0].args[1])
+            assert booking_queued["cinema_id"] == venue_provider.venueIdAtOfferProvider
+            assert booking_queued["token"] == token
+            timestamp = booking_queued["timestamp"]
+            assert timestamp == pytest.approx(datetime.utcnow().timestamp())
+
+            mock_llen.side_effect = [1, 0]
+            mock_rpop.return_value = json.dumps(
+                {
+                    "cinema_id": venue_provider.venueIdAtOfferProvider,
+                    "token": token,
+                    "timestamp": timestamp,
+                }
+            )
+
+            get_tickets_adapter = requests_mock.post(
+                url=re.compile(r"https://fake_url.com/STATUT/*"),
+            )
+
+            api.cancel_ems_external_bookings()
+
+            assert mock_rpop.call_count == 1
+            assert mock_rpush.call_count == 1
+            assert get_tickets_adapter.call_count == 0
+            assert mock_cancel_booking.call_count == 0
+            assert not Booking.query.all()
+
+        @patch("flask.current_app.redis_client.llen")
+        @patch("pcapi.core.external_bookings.ems.client.current_app.redis_client.lpush")
+        @patch("pcapi.core.external_bookings.ems.client.current_app.redis_client.rpop")
+        @patch("pcapi.core.bookings.api.generate_booking_token")
+        @patch("pcapi.core.external_bookings.ems.client.EMSClientAPI.cancel_booking_with_tickets")
+        @override_features(ENABLE_EMS_INTEGRATION=True, EMS_CANCEL_PENDING_EXTERNAL_BOOKING=False)
+        @pytest.mark.parametrize("exception", [requests_exception.Timeout, requests_exception.ReadTimeout])
+        def test_timeout_during_ems_external_booking_dont_do_anything_if_ff_deactivated(
+            self,
+            mock_cancel_booking,
+            mock_generate_booking_token,
+            mock_rpop,
+            mock_lpush,
+            mock_llen,
+            exception,
+            requests_mock,
+        ):
+            token = "AAAAAA"
+            mock_generate_booking_token.return_value = token
+
+            beneficiary = users_factories.BeneficiaryGrant18Factory()
+            ems_provider = get_provider_by_local_class("EMSStocks")
+            venue_provider = providers_factories.VenueProviderFactory(
+                provider=ems_provider, venueIdAtOfferProvider="9997"
+            )
+            cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
+            offer = offers_factories.EventOfferFactory(
+                name="Film",
+                venue=venue_provider.venue,
+                subcategoryId=subcategories.SEANCE_CINE.id,
+                lastProviderId=cinema_provider_pivot.provider.id,
+            )
+            stock = offers_factories.EventStockFactory(offer=offer, idAtProviders="1111%2222%EMS#3333")
+
+            payload = {
+                "num_cine": venue_provider.venueIdAtOfferProvider,
+                "id_seance": stock.idAtProviders.split("#")[-1],
+                "qte_place": 1,
+                "pass_culture_price": float(stock.price),
+                "total_price": float(stock.price),
+                "email": beneficiary.email,
+                "num_pass_culture": str(beneficiary.id),
+                "num_cmde": token,
+            }
+            url = EMSBookingConnector()._build_url("VENTE", payload)
+            booking_adapter = requests_mock.post(url=re.compile(rf"{url}"), exc=exception)
+
+            with pytest.raises(external_bookings_exceptions.ExternalBookingException):
+                api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
+
+            assert not Booking.query.all()
+            assert booking_adapter.call_count == 1
+            assert mock_lpush.call_count == 0
+
+            mock_llen.return_value = 0
+
+            # Few minutes later, a cron trigger our task
+            # First we should check that the external booking has been successfully created
+            # Otherwise, there's nothing to cancel
+            api.cancel_ems_external_bookings()
+
+            assert mock_rpop.call_count == 0
+            assert mock_cancel_booking.call_count == 0
+            assert not Booking.query.all()
+
         @patch("pcapi.core.bookings.api.external_bookings_api.book_cinema_ticket")
         @override_features(ENABLE_CDS_IMPLEMENTATION=True)
         def test_solo_external_booking(self, mocked_book_cinema_ticket):
@@ -806,7 +1068,7 @@ class CancelByBeneficiaryTest:
         providers_factories.OffererProviderFactory(provider=provider)
         stock = offers_factories.StockFactory(
             offer__lastProvider=provider,
-            offer__venue__address="1 boulevard Poissonniere",
+            offer__venue__street="1 boulevard Poissonniere",
             offer__extraData={"ean": "1234567890123"},
             dnBookedQuantity=1,
             idAtProviders="",
@@ -849,7 +1111,7 @@ class CancelByBeneficiaryTest:
         providers_factories.OffererProviderFactory(provider=provider)
         stock = offers_factories.EventStockFactory(
             offer__lastProvider=provider,
-            offer__venue__address="1 boulevard Poissonniere",
+            offer__venue__street="1 boulevard Poissonniere",
             offer__extraData={"ean": "1234567890123"},
             offer__withdrawalType=offers_models.WithdrawalTypeEnum.NO_TICKET,
             dnBookedQuantity=1,
@@ -1245,12 +1507,13 @@ def test_mark_as_cancelled():
     booking = bookings_factories.BookingFactory(
         stock__offer__venue__pricing_point="self",
     )
-    api.mark_as_used(booking)
+    api.mark_as_used(booking, models.BookingValidationAuthorType.OFFERER)
 
     event = finance_models.FinanceEvent.query.one()
     finance_api.price_event(event)
     pricing = finance_models.Pricing.query.one()
     assert booking.status == BookingStatus.USED
+    assert booking.validationAuthorType == models.BookingValidationAuthorType.OFFERER
     assert pricing.status == finance_models.PricingStatus.VALIDATED
 
     api.mark_as_cancelled(booking, BookingCancellationReasons.FRAUD)
@@ -1268,9 +1531,10 @@ class MarkAsUsedTest:
     def test_mark_as_used(self):
         booking = bookings_factories.BookingFactory()
 
-        api.mark_as_used(booking)
+        api.mark_as_used(booking, models.BookingValidationAuthorType.OFFERER)
 
         assert booking.status is BookingStatus.USED
+        assert booking.validationAuthorType == models.BookingValidationAuthorType.OFFERER
         assert len(push_testing.requests) == 2
         event = finance_models.FinanceEvent.query.filter_by(booking=booking).one()
         assert event.motive == finance_models.FinanceEventMotive.BOOKING_USED
@@ -1278,9 +1542,10 @@ class MarkAsUsedTest:
     def test_mark_as_used_with_uncancel(self):
         booking = bookings_factories.CancelledBookingFactory()
 
-        api.mark_as_used_with_uncancelling(booking)
+        api.mark_as_used_with_uncancelling(booking, models.BookingValidationAuthorType.BACKOFFICE)
 
         assert booking.status is BookingStatus.USED
+        assert booking.validationAuthorType == models.BookingValidationAuthorType.BACKOFFICE
         assert booking.dateUsed is not None
         assert not booking.cancellationReason
         event = finance_models.FinanceEvent.query.filter_by(booking=booking).one()
@@ -1288,34 +1553,35 @@ class MarkAsUsedTest:
 
     def test_mark_as_used_when_stock_starts_soon(self):
         booking = bookings_factories.BookingFactory(stock__beginningDatetime=datetime.utcnow() + timedelta(days=1))
-        api.mark_as_used(booking)
+        api.mark_as_used(booking, models.BookingValidationAuthorType.OFFERER)
         assert booking.status is BookingStatus.USED
+        assert booking.validationAuthorType == models.BookingValidationAuthorType.OFFERER
 
     def test_raise_if_already_used(self):
         booking = bookings_factories.UsedBookingFactory()
         with pytest.raises(exceptions.BookingIsAlreadyUsed):
-            api.mark_as_used(booking)
+            api.mark_as_used(booking, models.BookingValidationAuthorType.OFFERER)
 
     def test_raise_if_cancelled(self):
         booking = bookings_factories.CancelledBookingFactory()
         with pytest.raises(exceptions.BookingIsAlreadyCancelled):
-            api.mark_as_used(booking)
+            api.mark_as_used(booking, models.BookingValidationAuthorType.OFFERER)
         assert booking.status is not BookingStatus.USED
 
     def test_raise_if_already_reimbursed(self):
         booking = bookings_factories.ReimbursedBookingFactory()
         with pytest.raises(exceptions.BookingIsAlreadyRefunded):
-            api.mark_as_used(booking)
+            api.mark_as_used(booking, models.BookingValidationAuthorType.OFFERER)
 
     def test_raise_if_too_soon_to_mark_as_used(self):
         booking = bookings_factories.BookingFactory(stock__beginningDatetime=datetime.utcnow() + timedelta(days=4))
         with pytest.raises(exceptions.BookingIsNotConfirmed):
-            api.mark_as_used(booking)
+            api.mark_as_used(booking, models.BookingValidationAuthorType.OFFERER)
         assert booking.status is not BookingStatus.USED
 
     def test_mark_as_used_tracked_to_amplitude(self):
         booking = bookings_factories.BookingFactory()
-        api.mark_as_used(booking)
+        api.mark_as_used(booking, models.BookingValidationAuthorType.OFFERER)
         assert len(amplitude_testing.requests) == 1
         assert amplitude_testing.requests[0] == {
             "event_name": "BOOKING_USED",
@@ -1371,11 +1637,12 @@ class MarkAsUnusedTest:
             stock__offer__venue__pricing_point="self",
         )
 
-        api.mark_as_used(booking)
+        api.mark_as_used(booking, models.BookingValidationAuthorType.OFFERER)
         event = finance_models.FinanceEvent.query.one()
         finance_api.price_event(event)
         pricing = finance_models.Pricing.query.one()
         assert booking.status == BookingStatus.USED
+        assert booking.validationAuthorType == models.BookingValidationAuthorType.OFFERER
         assert pricing.status == finance_models.PricingStatus.VALIDATED
 
         api.mark_as_unused(booking)
@@ -1501,6 +1768,7 @@ class AutoMarkAsUsedAfterEventTest:
 
         booking = Booking.query.first()
         assert booking.status is BookingStatus.USED
+        assert booking.validationAuthorType == models.BookingValidationAuthorType.AUTO
         assert booking.dateUsed is not None
 
     def test_create_finance_event_for_individual_booking(self):

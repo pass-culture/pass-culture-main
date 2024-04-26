@@ -328,7 +328,7 @@ class ZendeskSellBackend(ZendeskSellReadOnlyBackend):
                 "twitter": social_medias.get("twitter", ""),
                 "facebook": social_medias.get("facebook", ""),
                 "address": {
-                    "line1": venue.address,
+                    "line1": venue.street,
                     "city": venue.city,
                     "postal_code": venue.postalCode,
                 },
@@ -367,7 +367,7 @@ class ZendeskSellBackend(ZendeskSellReadOnlyBackend):
                 # "name" is not updated because sometimes the name in the product is not the same in Zendesk Sell,
                 "last_name": "",
                 "address": {
-                    "line1": offerer.address,
+                    "line1": offerer.street,
                     "city": offerer.city,
                     "postal_code": offerer.postalCode,
                 },

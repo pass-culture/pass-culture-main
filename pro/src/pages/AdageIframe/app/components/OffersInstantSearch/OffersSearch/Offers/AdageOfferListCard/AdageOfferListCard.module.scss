@@ -28,7 +28,6 @@
   display: flex;
   flex-direction: column;
   gap: rem.torem(16px);
-  padding: rem.torem(16px);
   border: 2px solid var(--color-grey-light);
   border-radius: rem.torem(16px);
   transition: box-shadow 0.1s ease-out;
@@ -46,6 +45,22 @@
         transform: none;
       }
     }
+  }
+
+  &-template {
+    padding: rem.torem(16px);
+  }
+
+  &-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: rem.torem(16px);
+  }
+
+  &-bookable {
+    padding: 0 rem.torem(16px) rem.torem(16px);
   }
 
   &-right {
@@ -89,6 +104,7 @@
   &-content {
     flex: 1;
     word-break: break-word;
+    overflow: hidden;
   }
 
   &-actions {
@@ -104,10 +120,53 @@
   @include fonts.title3;
 }
 
+.offer-headband {
+  display: flex;
+  justify-content: space-between;
+  background-color: var(--color-adage-salmon-light);
+  padding: rem.torem(18px) rem.torem(16px);
+  width: 100%;
+  border-top-right-radius: rem.torem(14px);
+  border-top-left-radius: rem.torem(14px);
+
+  &-prebooked {
+    background-color: var(--color-grey-light);
+  }
+
+  &-text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .intended-for {
+    @include fonts.caption;
+
+    margin-bottom: rem.torem(8px);
+  }
+
+  .infos {
+    @include fonts.body-important;
+  }
+
+  &-button {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.offer-prebooking-button {
+  z-index: 2;
+}
+
 @container adage (min-width: #{size.$tablet}) {
   .offer-card {
-    flex-direction: row;
+    flex-direction: column;
     align-items: flex-start;
+
+    &-container {
+      flex-direction: row;
+      align-items: unset;
+    }
 
     &-right {
       flex-direction: row;

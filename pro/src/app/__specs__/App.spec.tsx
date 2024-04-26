@@ -5,7 +5,11 @@ import { Route, Routes } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as cookieConsentModal from 'utils/cookieConsentModal'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { App } from '../App'
 
@@ -14,7 +18,7 @@ vi.mock('app/App/hook/useLogNavigation', () => ({ default: vi.fn() }))
 vi.mock('app/App/hook/usePageTitle', () => ({ default: vi.fn() }))
 vi.mock('@sentry/browser', () => ({ setUser: vi.fn() }))
 
-const renderApp = (storeOverrides: any, url = '/') =>
+const renderApp = (options?: RenderWithProvidersOptions) =>
   renderWithProviders(
     <>
       <div id="root"></div>
@@ -32,7 +36,11 @@ const renderApp = (storeOverrides: any, url = '/') =>
         </Route>
       </Routes>
     </>,
-    { storeOverrides, initialRouterEntries: [url] }
+    {
+      initialRouterEntries: ['/'],
+      user: sharedCurrentUserFactory(),
+      ...options,
+    }
   )
 
 global.window = Object.create(window)
@@ -44,33 +52,23 @@ Object.defineProperty(window, 'location', {
 })
 
 describe('App', () => {
-  let store: any
-
   beforeEach(() => {
-    store = {
-      user: {
-        currentUser: {
-          id: 12,
-          isAdmin: false,
-          hasUserOfferer: true,
-        },
-      },
-    }
     vi.spyOn(window, 'scrollTo')
     vi.spyOn(api, 'listFeatures').mockResolvedValue([])
   })
 
   it('should render App and children components when isMaintenanceActivated is false', async () => {
-    renderApp(store)
+    const user = sharedCurrentUserFactory({ hasUserOfferer: true })
+    renderApp({ user })
 
     expect(await screen.findByText('Sub component')).toBeInTheDocument()
     expect(setUser).toHaveBeenCalledWith({
-      id: store.user.currentUser.id.toString(),
+      id: user.id.toString(),
     })
   })
 
   it('should render the cookie banner', async () => {
-    renderApp(store)
+    renderApp()
     expect(
       await screen.findByText(
         /Nous utilisons des cookies et traceurs afin d’analyser l’utilisation de la plateforme et vous proposer la meilleure expérience possible/
@@ -79,25 +77,16 @@ describe('App', () => {
   })
 
   it('should redirect to login if not logged in on a private page', async () => {
-    const loggedOutStore = {
-      user: { currentUser: null },
-    }
-    renderApp(loggedOutStore, '/offres')
+    renderApp({ initialRouterEntries: ['/offres'], user: undefined })
 
     expect(await screen.findByText('Login page')).toBeInTheDocument()
   })
 
   it('should redirect to onboarding if has no user_offerer on private page', async () => {
-    const noUserOffererStore = {
-      user: {
-        currentUser: {
-          id: 12,
-          isAdmin: false,
-          hasUserOfferer: false,
-        },
-      },
-    }
-    renderApp(noUserOffererStore, '/offres')
+    renderApp({
+      user: sharedCurrentUserFactory({ hasUserOfferer: false }),
+      initialRouterEntries: ['/offres'],
+    })
 
     expect(await screen.findByText('Onboarding page')).toBeInTheDocument()
   })
@@ -117,14 +106,7 @@ describe('App', () => {
       .spyOn(useAnalytics, 'useConfigureFirebase')
       .mockImplementation(() => {})
 
-    const loggedInStore = {
-      user: {
-        currentUser: {
-          id: 12,
-        },
-      },
-    }
-    renderApp(loggedInStore, '/adage-iframe')
+    renderApp({ initialRouterEntries: ['/adage-iframe'] })
 
     await screen.findByText('ADAGE')
 

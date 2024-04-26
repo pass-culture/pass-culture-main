@@ -13,8 +13,10 @@ import { useGetImageBitmap } from 'hooks/useGetBitmap'
 import useNotification from 'hooks/useNotification'
 import fullDownloadIcon from 'icons/full-download.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
-import { Button, Divider, SubmitButton, TextInput } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { Divider } from 'ui-kit/Divider/Divider'
+import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import style from './ModalImageCrop.module.scss'
 import { getCropMaxDimension } from './utils/getCropMaxDimension'
@@ -191,7 +193,7 @@ export const ModalImageCrop = ({
           <Divider />
 
           <footer className={style['modal-image-crop-footer']}>
-            <SubmitButton>{submitButtonText}</SubmitButton>
+            <Button type="submit">{submitButtonText}</Button>
           </footer>
         </Form>
       </FormikProvider>

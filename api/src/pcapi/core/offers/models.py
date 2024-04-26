@@ -44,8 +44,8 @@ if typing.TYPE_CHECKING:
     from pcapi.core.criteria.models import Criterion
     from pcapi.core.educational.models import CollectiveOffer
     from pcapi.core.educational.models import CollectiveOfferTemplate
-    from pcapi.core.geography.models import OffererAddress
     from pcapi.core.offerers.models import Offerer
+    from pcapi.core.offerers.models import OffererAddress
     from pcapi.core.offerers.models import Venue
     from pcapi.core.providers.models import Provider
     from pcapi.core.users.models import User
@@ -160,6 +160,19 @@ class Mediation(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Deactivab
     offer: sa_orm.Mapped["Offer"] = sa.orm.relationship("Offer", backref="mediations")
     offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
     thumb_path_component = "mediations"
+
+
+class TiteliveImageType(enum.Enum):
+    RECTO = "recto"
+    VERSO = "verso"
+
+
+class ProductMediation(PcObject, Base, Model, ProvidableMixin):
+    __tablename__ = "product_mediation"
+
+    productId: int = sa.Column(sa.BigInteger, sa.ForeignKey("product.id"), index=True, nullable=False)
+    url: str = sa.Column(sa.String(255), nullable=False, unique=True)
+    imageType = sa.Column(sa.Enum(TiteliveImageType), nullable=False)
 
 
 class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
@@ -716,11 +729,11 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         return None
 
     @property
-    def max_price(self) -> float:  # used in validation rule, do not remove
+    def max_price(self) -> decimal.Decimal:
         try:
             return max(stock.price for stock in self.stocks if not stock.isSoftDeleted)
         except ValueError:  # if no non-deleted stocks
-            return 0
+            return decimal.Decimal(0)
 
     @property
     def showSubType(self) -> str | None:  # used in validation rule, do not remove
@@ -1072,7 +1085,9 @@ class BookMacroSection(PcObject, Base, Model):
     __tablename__ = "book_macro_section"
 
     macroSection: str = sa.Column(sa.Text, nullable=False)
-    section: str = sa.Column(sa.Text, nullable=False, unique=True)
+    section: str = sa.Column(sa.Text, nullable=False)
+
+    __table_args__ = (sa.Index("book_macro_section_section_idx", sa.func.lower(section), unique=True),)
 
 
 class PriceCategoryLabel(PcObject, Base, Model):

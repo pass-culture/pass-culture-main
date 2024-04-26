@@ -9,16 +9,13 @@ import LegalInfos from 'components/LegalInfos/LegalInfos'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import CookiesFooter from 'pages/CookiesFooter/CookiesFooter'
 import MaybeAppUserDialog from 'pages/Signup/SignupContainer/MaybeAppUserDialog'
-import {
-  Button,
-  Checkbox,
-  EmailSpellCheckInput,
-  SubmitButton,
-  TextInput,
-} from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { PasswordInput } from 'ui-kit/form'
-import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
+import { Checkbox } from 'ui-kit/form/Checkbox/Checkbox'
+import { EmailSpellCheckInput } from 'ui-kit/form/EmailSpellCheckInput/EmailSpellCheckInput'
+import { PasswordInput } from 'ui-kit/form/PasswordInput/PasswordInput'
+import { PhoneNumberInput } from 'ui-kit/form/PhoneNumberInput/PhoneNumberInput'
+import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import styles from './SignupContainer.module.scss'
 
@@ -90,13 +87,14 @@ const SignupForm = (): JSX.Element => {
           >
             J’ai déjà un compte
           </Button>
-          <SubmitButton
+          <Button
+            type="submit"
             className={styles['buttons']}
             isLoading={isSubmitting}
             disabled={isSubmitting}
           >
             Créer mon compte
-          </SubmitButton>
+          </Button>
         </div>
         <BannerRGS />
         <CookiesFooter className={styles['cookie-footer']} />

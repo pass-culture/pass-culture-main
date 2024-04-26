@@ -9,7 +9,8 @@ import {
 } from 'components/Tutorial/Step'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
-import { Button } from 'ui-kit'
+import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { TUTO_DIALOG_LABEL_ID } from './constants'
@@ -46,14 +47,22 @@ interface TutorialProps {
 const Tutorial = ({ onFinish }: TutorialProps): JSX.Element => {
   const { logEvent } = useAnalytics()
   const [activeStepPosition, setActiveStepPosition] = useState<number>(1)
-  const hasNextStep: boolean = activeStepPosition < steps.length
+  const isNewInterfaceActive = useIsNewInterfaceActive()
+
+  const stepsToShow = isNewInterfaceActive
+    ? steps.filter((step) => step.position !== 4)
+    : steps
+
+  const hasNextStep: boolean = activeStepPosition < stepsToShow.length
   const hasPreviousStep: boolean = activeStepPosition > 1
   const goToStep = useCallback(
     (newStepPosition: number) => () => setActiveStepPosition(newStepPosition),
     []
   )
+
   const activeStep =
-    steps.find((step: Step) => step.position === activeStepPosition) ?? steps[0]
+    stepsToShow.find((step: Step) => step.position === activeStepPosition) ??
+    stepsToShow[0]
 
   useEffect(() => {
     logEvent?.(Events.TUTO_PAGE_VIEW, {
@@ -70,8 +79,11 @@ const Tutorial = ({ onFinish }: TutorialProps): JSX.Element => {
 
       <section className={styles['tutorial-footer']}>
         <div className={styles['nav-step-list-section']}>
-          {steps.map((step) => {
+          {stepsToShow.map((step) => {
             const isActiveStep = activeStepPosition === step.position
+            if (isNewInterfaceActive && step.position === 4) {
+              return null
+            }
             return (
               <button
                 className={cn(styles['nav-step'], {
@@ -83,7 +95,7 @@ const Tutorial = ({ onFinish }: TutorialProps): JSX.Element => {
                 onClick={goToStep(step.position)}
                 type="button"
                 aria-current={isActiveStep ? 'page' : false}
-                aria-label={`Étape du tutoriel ${step.position} sur ${steps.length}`}
+                aria-label={`Étape du tutoriel ${step.position} sur ${stepsToShow.length}`}
               />
             )
           })}

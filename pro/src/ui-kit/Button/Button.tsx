@@ -5,22 +5,20 @@ import React, { ForwardedRef, forwardRef } from 'react'
 
 import strokePassIcon from 'icons/stroke-pass.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import Tooltip from 'ui-kit/Tooltip'
+import { Tooltip } from 'ui-kit/Tooltip/Tooltip'
 import { useTooltipProps } from 'ui-kit/Tooltip/useTooltipProps'
 
 import styles from './Button.module.scss'
 import { ButtonVariant, IconPositionEnum, SharedButtonProps } from './types'
 
-interface ButtonProps
+export interface ButtonProps
   extends SharedButtonProps,
-    React.HTMLProps<HTMLButtonElement> {
-  type?: 'button' | 'submit'
-  className?: string
+    React.ButtonHTMLAttributes<HTMLButtonElement> {
   hasTooltip?: boolean
   isLoading?: boolean
 }
 
-const Button = forwardRef(
+export const Button = forwardRef(
   (
     {
       className,
@@ -32,6 +30,7 @@ const Button = forwardRef(
       hasTooltip,
       testId,
       isLoading = false,
+      disabled,
       ...buttonAttrs
     }: ButtonProps,
     buttonRef: ForwardedRef<HTMLButtonElement>
@@ -85,6 +84,7 @@ const Button = forwardRef(
         )}
         type={type}
         data-testid={testId}
+        disabled={disabled || isLoading}
         {...buttonAttrs}
         {...(hasTooltip && tooltipProps)}
         ref={buttonRef}
@@ -101,5 +101,3 @@ const Button = forwardRef(
   }
 )
 Button.displayName = 'Button'
-
-export default Button

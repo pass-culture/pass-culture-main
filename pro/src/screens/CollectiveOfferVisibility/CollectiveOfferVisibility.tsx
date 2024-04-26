@@ -25,9 +25,10 @@ import useNotification from 'hooks/useNotification'
 import strokeSearch from 'icons/stroke-search.svg'
 import getOfferRequestInformationsAdapter from 'pages/CollectiveOfferFromRequest/adapters/getOfferRequestInformationsAdapter'
 import { PatchEducationalInstitutionAdapter } from 'pages/CollectiveOfferVisibility/adapters/patchEducationalInstitutionAdapter'
-import { ButtonLink, SubmitButton } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import SelectAutocomplete from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
+import { SelectAutocomplete } from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import {
   normalizeStrForSearch,
@@ -73,7 +74,7 @@ interface TeacherOption extends SelectOption {
   email: string
 }
 
-const CollectiveOfferVisibility = ({
+export const CollectiveOfferVisibilityScreen = ({
   mode,
   patchInstitution,
   initialValues,
@@ -324,7 +325,8 @@ const CollectiveOfferVisibility = ({
                     ? 'Étape précédente'
                     : 'Annuler et quitter'}
                 </ButtonLink>
-                <SubmitButton
+                <Button
+                  type="submit"
                   disabled={
                     buttonPressed ||
                     !formik.values.institution ||
@@ -335,7 +337,7 @@ const CollectiveOfferVisibility = ({
                   {mode === Mode.CREATION
                     ? 'Étape suivante'
                     : 'Enregistrer les modifications'}
-                </SubmitButton>
+                </Button>
               </ActionsBarSticky.Left>
             </ActionsBarSticky>
           </FormLayout>
@@ -344,5 +346,3 @@ const CollectiveOfferVisibility = ({
     </>
   )
 }
-
-export default CollectiveOfferVisibility

@@ -1,7 +1,8 @@
 import React from 'react'
 
-import { Button, DatePicker } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
 
 import styles from './ActivationCodeFormDialog.module.scss'
 

@@ -2,6 +2,7 @@ import datetime
 import logging
 
 from pcapi.core.bookings import factories as booking_factories
+from pcapi.core.finance import factories as finance_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
@@ -16,30 +17,32 @@ def create_offerer_with_several_venues() -> offerers_models.Offerer:
         name="Compagnie de théâtre",
         managingOfferer=user_offerer.offerer,
         pricing_point="self",
-        reimbursement_point="self",
         venueTypeCode=offerers_models.VenueTypeCode.PERFORMING_ARTS,
     )
+    bank_account1 = finance_factories.BankAccountFactory(offerer=venue1.managingOfferer)
+    offerers_factories.VenueBankAccountLinkFactory(bankAccount=bank_account1, venue=venue1)
     venue2 = offerers_factories.VenueFactory(
         name="Musée",
         managingOfferer=user_offerer.offerer,
         pricing_point="self",
-        reimbursement_point="self",
         venueTypeCode=offerers_models.VenueTypeCode.MUSEUM,
     )
-    offerers_factories.VenueFactory(
+    bank_account2 = finance_factories.BankAccountFactory(offerer=venue2.managingOfferer)
+    offerers_factories.VenueBankAccountLinkFactory(bankAccount=bank_account2, venue=venue2)
+    venue3 = offerers_factories.VenueFactory(
         name="Festival de musique",
         managingOfferer=user_offerer.offerer,
         pricing_point="self",
-        reimbursement_point=venue1,
         venueTypeCode=offerers_models.VenueTypeCode.FESTIVAL,
     )
-    offerers_factories.VenueWithoutSiretFactory(
+    offerers_factories.VenueBankAccountLinkFactory(bankAccount=bank_account1, venue=venue3)
+    venue4 = offerers_factories.VenueWithoutSiretFactory(
         name="Bibliothèque sans SIRET",
         managingOfferer=user_offerer.offerer,
         pricing_point=venue1,
-        reimbursement_point=venue1,
         venueTypeCode=offerers_models.VenueTypeCode.LIBRARY,
     )
+    offerers_factories.VenueBankAccountLinkFactory(bankAccount=bank_account1, venue=venue4)
     # offerers have always a virtual venue so we have to create one to match reality
     virtual_venue = offerers_factories.VirtualVenueFactory(
         name="Lieu virtuel de la structure avec plusieurs lieux ", managingOfferer=user_offerer.offerer

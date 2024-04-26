@@ -1,0 +1,25 @@
+{% import "components/links.html" as links %}
+<turbo-frame id="venue_collective_dms_applications_frame">
+<table class="table table-hover my-4">
+  <thead>
+    <tr>
+      <th scope="col"></th>
+      <th scope="col">ID</th>
+      <th scope="col">Date de dépôt</th>
+      <th scope="col">État</th>
+      <th scope="col">Date de dernière mise à jour</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for collective_dms_application in collective_dms_applications %}
+      <tr>
+        <th scope="row"></th>
+        <td class="fw-bolder">{{ links.build_dms_adage_application_external_link(collective_dms_application) }}</td>
+        <td>{{ collective_dms_application.depositDate | format_date }}</td>
+        <td>{{ collective_dms_application.state | format_dms_status }}</td>
+        <td>{{ collective_dms_application.lastChangeDate | format_date }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</turbo-frame>

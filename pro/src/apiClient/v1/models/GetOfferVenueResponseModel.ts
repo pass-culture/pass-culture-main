@@ -4,7 +4,6 @@
 /* eslint-disable */
 import type { GetOfferManagingOffererResponseModel } from './GetOfferManagingOffererResponseModel';
 export type GetOfferVenueResponseModel = {
-  address?: string | null;
   audioDisabilityCompliant?: boolean | null;
   bookingEmail?: string | null;
   city?: string | null;
@@ -17,6 +16,7 @@ export type GetOfferVenueResponseModel = {
   name: string;
   postalCode?: string | null;
   publicName?: string | null;
+  street?: string | null;
   visualDisabilityCompliant?: boolean | null;
 };
 

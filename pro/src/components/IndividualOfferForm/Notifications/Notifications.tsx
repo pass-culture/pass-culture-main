@@ -3,7 +3,8 @@ import { useEffect } from 'react'
 
 import FormLayout from 'components/FormLayout'
 import useCurrentUser from 'hooks/useCurrentUser'
-import { Checkbox, TextInput } from 'ui-kit'
+import { Checkbox } from 'ui-kit/form/Checkbox/Checkbox'
+import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import { IndividualOfferFormValues } from '../types'
 

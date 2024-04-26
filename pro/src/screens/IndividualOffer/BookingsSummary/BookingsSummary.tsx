@@ -1,25 +1,31 @@
 import format from 'date-fns/format'
 import React, { useEffect, useState } from 'react'
+import useSWR from 'swr'
 
+import { api } from 'apiClient/api'
 import {
   BookingRecapResponseModel,
   GetIndividualOfferResponseModel,
 } from 'apiClient/v1'
-import { SummarySection } from 'components/SummaryLayout/SummarySection'
+import { GET_EVENT_PRICE_CATEGORIES_AND_SCHEDULES_BY_DAYE_QUERY_KEY } from 'config/swrQueryKeys'
 import {
   DEFAULT_PRE_FILTERS,
   EMPTY_FILTER_VALUE,
 } from 'core/Bookings/constants'
+import useActiveFeature from 'hooks/useActiveFeature'
 import strokeBookingHold from 'icons/stroke-booking-hold.svg'
 import { getFilteredBookingsRecapAdapter } from 'pages/Bookings/adapters'
 import { IndividualBookingsTable } from 'screens/Bookings/BookingsRecapTable/BookingsTable/IndividualBookingsTable'
-import { DEFAULT_OMNISEARCH_CRITERIA } from 'screens/Bookings/BookingsRecapTable/Filters'
+import { DEFAULT_OMNISEARCH_CRITERIA } from 'screens/Bookings/BookingsRecapTable/Filters/constants'
 import filterBookingsRecap from 'screens/Bookings/BookingsRecapTable/utils/filterBookingsRecap'
+import { Button } from 'ui-kit/Button/Button'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 
 import styles from './BookingsSummary.module.scss'
+import { DownloadBookingsModal } from './DownloadBookingsModal/DownloadBookingsModal'
 
 interface BookingsSummaryScreenProps {
   offer: GetIndividualOfferResponseModel
@@ -33,6 +39,18 @@ export const BookingsSummaryScreen = ({
   )
   const [bookingsStatusFilters, setBookingsStatusFilter] = useState<string[]>(
     []
+  )
+
+  const stockSchedulesAndPricesByDateQuery = useSWR(
+    [GET_EVENT_PRICE_CATEGORIES_AND_SCHEDULES_BY_DAYE_QUERY_KEY],
+    () => api.getOfferPriceCategoriesAndSchedulesByDates(offer.id),
+    { fallbackData: [] }
+  )
+
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const isDownloadBookingsFeatureEnabled = useActiveFeature(
+    'WIP_ENABLE_DOWNLOAD_BOOKINGS'
   )
 
   useEffect(() => {
@@ -85,21 +103,44 @@ export const BookingsSummaryScreen = ({
   })
 
   return (
-    <SummarySection title="Réservations">
+    <>
+      {isModalOpen && (
+        <DownloadBookingsModal
+          offerId={offer.id}
+          priceCategoryAndScheduleCountByDate={
+            stockSchedulesAndPricesByDateQuery.data
+          }
+          onDimiss={() => setIsModalOpen(false)}
+        />
+      )}
+
+      <div className={styles['header']}>
+        <h2 className={styles['header-title']}>Réservations</h2>
+        {isDownloadBookingsFeatureEnabled &&
+          !stockSchedulesAndPricesByDateQuery.isLoading &&
+          offer.isEvent &&
+          bookings !== null &&
+          bookings.length && (
+            <Button
+              variant={ButtonVariant.PRIMARY}
+              onClick={() => setIsModalOpen(true)}
+            >
+              Télécharger les réservations
+            </Button>
+          )}
+      </div>
       {bookings !== null ? (
-        <>
-          <IndividualBookingsTable
-            bookings={filteredBookings}
-            bookingStatuses={bookingsStatusFilters}
-            updateGlobalFilters={({ bookingStatus }) => {
-              setBookingsStatusFilter(bookingStatus ?? [])
-            }}
-            resetFilters={() => setBookingsStatusFilter([])}
-          />
-        </>
+        <IndividualBookingsTable
+          bookings={filteredBookings}
+          bookingStatuses={bookingsStatusFilters}
+          updateGlobalFilters={({ bookingStatus }) => {
+            setBookingsStatusFilter(bookingStatus ?? [])
+          }}
+          resetFilters={() => setBookingsStatusFilter([])}
+        />
       ) : (
         <Spinner />
       )}
-    </SummarySection>
+    </>
   )
 }

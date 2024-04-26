@@ -143,10 +143,10 @@
                   <span class="fw-bold">Code postal :</span>
                   {{ offerer.postalCode }}
                 </p>
-                {% if offerer.address %}
+                {% if offerer.street %}
                   <p class="mb-1">
                     <span class="fw-bold">Adresse :</span>
-                    {{ offerer.address }}
+                    {{ offerer.street }}
                   </p>
                 {% endif %}
                 {% if creator_phone_number %}
@@ -159,7 +159,10 @@
             </div>
             <div class="col-4">
               <p class="mb-1">
-                <span class="fw-bold">Référencement Adage : {{ adage_information }}</span>
+                <span class="fw-bold">Peut créer une offre EAC : {{ offerer.allowedOnAdage | format_bool_badge }}</span>
+              </p>
+              <p class="mb-1">
+                <span class="fw-bold">Lieux référencés : {{ adage_information }}</span>
               </p>
               <p class="mb-1">
                 <span class="fw-bold">Présence CB dans les lieux :</span>
@@ -263,6 +266,7 @@
           {% endif %}
           {{ build_details_tab("pro-users", "Compte(s) pro rattaché(s)", active_tab == 'users') }}
           {{ build_details_tab("managed-venues", "Lieux associés", active_tab == 'managed_venues') }}
+          {{ build_details_tab("dms-adage", "Dossiers DMS Adage", active_tab == 'dms_adage') }}
           {{ build_details_tab("bank-accounts", "Comptes bancaires", active_tab == 'bank_accounts') }}
         {% endcall %}
         {% call build_details_tabs_content_wrapper() %}
@@ -292,6 +296,11 @@
           {% endcall %}
           {% call build_details_tab_content("managed-venues", active_tab == 'managed_venues') %}
             <turbo-frame data-turbo="false" id="offerer_venues_frame" loading="lazy" src="{{ url_for("backoffice_web.offerer.get_managed_venues", offerer_id=offerer.id) }}">
+            {{ build_loading_spinner() }}
+            </turbo-frame>
+          {% endcall %}
+          {% call build_details_tab_content("dms-adage", active_tab == 'dms_adage') %}
+            <turbo-frame data-turbo="false" id="offerer_collective_dms_applications_frame" loading="lazy" src="{{ url_for("backoffice_web.offerer.get_collective_dms_applications", offerer_id=offerer.id) }}">
             {{ build_loading_spinner() }}
             </turbo-frame>
           {% endcall %}

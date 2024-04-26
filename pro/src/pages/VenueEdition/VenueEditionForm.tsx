@@ -7,14 +7,16 @@ import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
 import { GetVenueResponseModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { GET_VENUE_QUERY_KEY } from 'config/swrQueryKeys'
 import { Events } from 'core/FirebaseEvents/constants'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
-import { TextArea, TextInput } from 'ui-kit'
-import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
+import { PhoneNumberInput } from 'ui-kit/form/PhoneNumberInput/PhoneNumberInput'
+import { TextArea } from 'ui-kit/form/TextArea/TextArea'
+import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import { Accessibility } from '../VenueCreation/Accessibility/Accessibility'
 import { VenueFormActionBar } from '../VenueCreation/VenueFormActionBar/VenueFormActionBar'
@@ -25,7 +27,6 @@ import { serializeEditVenueBodyModel } from './serializers'
 import { setInitialFormValues } from './setInitialFormValues'
 import { VenueEditionFormValues } from './types'
 import { getValidationSchema } from './validationSchema'
-import { GET_VENUE_QUERY_KEY } from './VenueEdition'
 
 interface VenueFormProps {
   venue: GetVenueResponseModel
@@ -120,7 +121,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
               description={
                 venue.isVirtual
                   ? undefined
-                  : 'Cet espace vous permet de présenter votre activité culturelle aux utilisateurs de l’application pass Culture. Vous pouvez décrire les différentes actions que vous menez, votre histoire ou préciser des informations sur votre activité.'
+                  : 'Vous pouvez décrire les différentes actions que vous menez, votre histoire ou préciser des informations sur votre activité.'
               }
             >
               <FormLayout.Row>
@@ -143,10 +144,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
 
             <FormLayout.SubSection
               title="Contact"
-              description={
-                'Ces informations seront affichées dans votre page partenaire, sur l’application pass Culture. ' +
-                'Elles permettront aux bénéficiaires de vous contacter en cas de besoin.'
-              }
+              description="Ces informations permettront aux bénéficiaires de vous contacter en cas de besoin."
             >
               <FormLayout.Row>
                 <PhoneNumberInput
@@ -176,7 +174,10 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
             </FormLayout.SubSection>
 
             {showAccessibilitySection && (
-              <Accessibility isCreatingVenue={false} />
+              <Accessibility
+                isCreatingVenue={false}
+                isVenuePermanent={Boolean(venue.isPermanent)}
+              />
             )}
           </FormLayout.Section>
         </FormLayout>

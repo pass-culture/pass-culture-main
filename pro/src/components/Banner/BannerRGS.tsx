@@ -5,9 +5,14 @@ import Callout from 'components/Callout/Callout'
 interface Props {
   closable?: boolean
   onClose?: () => void
+  className?: string
 }
 
-const BannerRGS: React.FC<Props> = ({ closable, onClose }: Props) => (
+const BannerRGS: React.FC<Props> = ({
+  closable,
+  onClose,
+  className,
+}: Props) => (
   <Callout
     closable={closable}
     onClose={onClose}
@@ -19,6 +24,7 @@ const BannerRGS: React.FC<Props> = ({ closable, onClose }: Props) => (
       },
     ]}
     title="Soyez vigilant !"
+    className={className}
   >
     Vos identifiants de connexion sont personnels et ne doivent pas être
     partagés. Pour assurer la protection de votre compte, découvrez nos

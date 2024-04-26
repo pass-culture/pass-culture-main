@@ -4,17 +4,15 @@ import { useLocation, useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
-import { GetOffererResponseModel } from 'apiClient/v1'
+import { GetOffererResponseModel, VenueTypeResponseModel } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
-import { SelectOption } from 'custom_types/form'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
 import { VenueCreationFormValues } from 'pages/VenueCreation/types'
 import { validationSchema } from 'pages/VenueCreation/validationSchema'
 import { VenueCreationForm } from 'pages/VenueCreation/VenueCreationForm'
-import { Title } from 'ui-kit'
 
 import { serializePostVenueBodyModel } from './serializers'
 import { generateSiretValidationSchema } from './SiretOrCommentFields/validationSchema'
@@ -24,7 +22,7 @@ import { venueSubmitRedirectUrl } from './venueSubmitRedirectUrl'
 interface VenueEditionProps {
   initialValues: VenueCreationFormValues
   offerer: GetOffererResponseModel
-  venueTypes: SelectOption[]
+  venueTypes: VenueTypeResponseModel[]
 }
 
 export const VenueCreationFormScreen = ({
@@ -109,7 +107,7 @@ export const VenueCreationFormScreen = ({
     <div>
       <div className={style['venue-form-heading']}>
         <div className={style['title-page']}>
-          <Title level={1}>Création d’un lieu</Title>
+          <h1 className={style['title']}>Création d’un lieu</h1>
         </div>
       </div>
 

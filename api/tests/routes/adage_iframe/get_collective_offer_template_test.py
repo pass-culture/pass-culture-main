@@ -99,7 +99,7 @@ class CollectiveOfferTemplateTest:
             "contactUrl": offer.contactUrl,
             "offerVenue": {
                 "addressType": "offererVenue",
-                "address": venue.address,
+                "address": venue.street,
                 "city": venue.city,
                 "distance": None,
                 "name": venue.name,

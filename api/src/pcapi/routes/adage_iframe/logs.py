@@ -34,6 +34,27 @@ def log_catalog_view(
     return
 
 
+@blueprint.adage_iframe.route("/logs/offer-list-view-switch", methods=["POST"])
+@spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
+@adage_jwt_required
+def log_offer_list_view_switch(
+    authenticated_information: AuthenticatedInformation,
+    body: serialization.OfferListSwitch,
+) -> None:
+    institution = find_educational_institution_by_uai_code(authenticated_information.uai)
+    educational_utils.log_information_for_data_purpose(
+        event_name="OfferListSwitch",
+        extra_data={
+            "source": body.source,
+            "from": body.iframeFrom,
+            "queryId": body.queryId,
+        },
+        uai=authenticated_information.uai,
+        user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
+        user_email=authenticated_information.email,
+    )
+
+
 @blueprint.adage_iframe.route("/logs/search-button", methods=["POST"])
 @spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
 @adage_jwt_required
@@ -64,7 +85,7 @@ def log_offer_details_button_click(
     institution = find_educational_institution_by_uai_code(authenticated_information.uai)
     educational_utils.log_information_for_data_purpose(
         event_name="OfferDetailButtonClick",
-        extra_data={"stockId": body.stockId, "from": body.iframeFrom, "queryId": body.queryId},
+        extra_data={"stockId": body.stockId, "from": body.iframeFrom, "queryId": body.queryId, "vueType": body.vueType},
         user_email=authenticated_information.email,
         uai=authenticated_information.uai,
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
@@ -82,7 +103,7 @@ def log_offer_template_details_button_click(
     institution = find_educational_institution_by_uai_code(authenticated_information.uai)
     educational_utils.log_information_for_data_purpose(
         event_name="TemplateOfferDetailButtonClick",
-        extra_data={"offerId": body.offerId, "from": body.iframeFrom, "queryId": body.queryId},
+        extra_data={"offerId": body.offerId, "from": body.iframeFrom, "queryId": body.queryId, "vueType": body.vueType},
         user_email=authenticated_information.email,
         uai=authenticated_information.uai,
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
@@ -177,6 +198,7 @@ def log_fav_offer_button_click(
             "queryId": body.queryId,
             "isFavorite": body.isFavorite,
             "isFromNoResult": body.isFromNoResult,
+            "vueType": body.vueType,
         },
         user_email=authenticated_information.email,
         uai=authenticated_information.uai,

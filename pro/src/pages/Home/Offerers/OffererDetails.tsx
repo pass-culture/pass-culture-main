@@ -1,9 +1,8 @@
 import cn from 'classnames'
 import React from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 
-import { GetOffererResponseModel } from 'apiClient/v1'
 import { Events, OffererLinkEvents } from 'core/FirebaseEvents/constants'
 import { SAVED_OFFERER_ID_KEY } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
@@ -11,9 +10,10 @@ import useAnalytics from 'hooks/useAnalytics'
 import fullAddUserIcon from 'icons/full-add-user.svg'
 import fullEditIcon from 'icons/full-edit.svg'
 import { updateSelectedOffererId } from 'store/user/reducer'
-import { ButtonLink } from 'ui-kit'
+import { selectCurrentOffererId } from 'store/user/selectors'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import SelectInput from 'ui-kit/form/Select/SelectInput'
+import { SelectInput } from 'ui-kit/form/Select/SelectInput'
 import { localStorageAvailable } from 'utils/localStorageAvailable'
 
 import { Card } from '../Card'
@@ -25,18 +25,17 @@ const CREATE_OFFERER_SELECT_ID = 'creation'
 export interface OffererDetailsProps {
   isUserOffererValidated: boolean
   offererOptions: SelectOption[]
-  selectedOfferer: GetOffererResponseModel
 }
 
 export const OffererDetails = ({
   isUserOffererValidated,
   offererOptions,
-  selectedOfferer,
 }: OffererDetailsProps) => {
   const { logEvent } = useAnalytics()
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const dispatch = useDispatch()
+  const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const addOffererOption: SelectOption = {
     label: '+ Ajouter une structure',
@@ -47,7 +46,7 @@ export const OffererDetails = ({
     const newOffererId = event.target.value
     if (newOffererId === CREATE_OFFERER_SELECT_ID) {
       navigate('/structures/creation')
-    } else if (newOffererId !== selectedOfferer.id.toString()) {
+    } else if (Number(newOffererId) !== selectedOffererId) {
       searchParams.set('structure', newOffererId)
       setSearchParams(searchParams)
       dispatch(updateSelectedOffererId(Number(newOffererId)))
@@ -65,7 +64,7 @@ export const OffererDetails = ({
             onChange={handleChangeOfferer}
             name="offererId"
             options={[...offererOptions, addOffererOption]}
-            value={selectedOfferer.id.toString()}
+            value={selectedOffererId ? String(selectedOffererId) : ''}
             aria-label="Structure"
           />
         </div>
@@ -76,14 +75,14 @@ export const OffererDetails = ({
           <ButtonLink
             variant={ButtonVariant.TERNARY}
             link={{
-              to: `/structures/${selectedOfferer.id}`,
+              to: `/structures/${selectedOffererId}`,
               isExternal: false,
             }}
             icon={fullAddUserIcon}
             isDisabled={!isUserOffererValidated}
             onClick={() => {
               logEvent?.(OffererLinkEvents.CLICKED_INVITE_COLLABORATOR, {
-                offererId: selectedOfferer.id,
+                offererId: selectedOffererId ?? undefined,
               })
             }}
           >
@@ -95,14 +94,14 @@ export const OffererDetails = ({
           <ButtonLink
             variant={ButtonVariant.TERNARY}
             link={{
-              to: `/structures/${selectedOfferer.id}`,
+              to: `/structures/${String(selectedOffererId)}`,
               isExternal: false,
             }}
             icon={fullEditIcon}
             isDisabled={!isUserOffererValidated}
             onClick={() =>
               logEvent?.(Events.CLICKED_MODIFY_OFFERER, {
-                offerer_id: selectedOfferer.id,
+                offerer_id: selectedOffererId ?? undefined,
               })
             }
           >

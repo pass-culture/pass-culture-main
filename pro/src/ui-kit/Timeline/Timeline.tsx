@@ -119,7 +119,7 @@ const getLineStyle = (
   }
 }
 
-const Timeline = ({ steps }: TimelineProps): JSX.Element => {
+export const Timeline = ({ steps }: TimelineProps): JSX.Element => {
   const hasErrorSteps =
     steps.filter((x) => x.type === TimelineStepType.ERROR).length > 0
   return (
@@ -141,5 +141,3 @@ const Timeline = ({ steps }: TimelineProps): JSX.Element => {
     </ol>
   )
 }
-
-export default Timeline

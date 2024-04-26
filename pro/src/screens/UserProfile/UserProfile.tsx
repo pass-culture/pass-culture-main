@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 
 import { UserPhoneBodyModel } from 'apiClient/v1'
 import { BannerRGS } from 'components/Banner'
@@ -26,7 +26,7 @@ const UserProfile = ({
   return (
     <>
       <h1 className={styles['profil-title']}>Profil</h1>
-      <BannerRGS />
+      <BannerRGS className={styles.banner} />
       <UserIdentity
         setCurrentForm={(value: Forms | null) => setCurrentForm(value)}
         initialValues={userIdentityInitialValues}

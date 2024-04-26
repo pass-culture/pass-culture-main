@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { Formik } from 'formik'
 import React from 'react'
 
-import TimePicker from '../TimePicker'
+import { TimePicker } from '../TimePicker'
 
 const renderTimePicker = (initialValue: string | Date | null | undefined) => {
   render(

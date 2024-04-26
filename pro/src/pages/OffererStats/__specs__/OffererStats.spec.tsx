@@ -2,10 +2,14 @@ import { screen, waitFor } from '@testing-library/react'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import { GetOffererResponseModel } from 'apiClient/v1'
 import * as useNotification from 'hooks/useNotification'
-import { getOffererNameFactory } from 'utils/individualApiFactories'
+import {
+  defaultGetOffererResponseModel,
+  defaultGetOffererVenueResponseModel,
+  getOffererNameFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { OffererStats } from '../OffererStats'
 
@@ -28,22 +32,7 @@ vi.mock('hooks/useRemoteConfig', () => ({
 }))
 
 const renderOffererStats = () => {
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        firstName: 'John',
-        dateCreated: '2022-07-29T12:18:43.087097Z',
-        email: 'john@do.net',
-        id: '1',
-        isAdmin: false,
-        isEmailValidated: true,
-        roles: [],
-      },
-    },
-  }
-
-  renderWithProviders(<OffererStats />, { storeOverrides })
+  renderWithProviders(<OffererStats />, { user: sharedCurrentUserFactory() })
 }
 
 describe('OffererStatsScreen', () => {
@@ -51,11 +40,20 @@ describe('OffererStatsScreen', () => {
   const secondVenueId = 2
   beforeEach(() => {
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
+      ...defaultGetOffererResponseModel,
       managedVenues: [
-        { name: 'Salle 1', id: firstVenueId },
-        { name: 'Stand popcorn', id: secondVenueId },
+        {
+          ...defaultGetOffererVenueResponseModel,
+          name: 'Salle 1',
+          id: firstVenueId,
+        },
+        {
+          ...defaultGetOffererVenueResponseModel,
+          name: 'Stand popcorn',
+          id: secondVenueId,
+        },
       ],
-    } as GetOffererResponseModel)
+    })
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [
         getOffererNameFactory({

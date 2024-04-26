@@ -4,7 +4,7 @@ import React, { MouseEvent } from 'react'
 import { Link } from 'react-router-dom'
 
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import Tooltip from 'ui-kit/Tooltip'
+import { Tooltip } from 'ui-kit/Tooltip/Tooltip'
 import { useTooltipProps } from 'ui-kit/Tooltip/useTooltipProps'
 
 import styles from './ListIconButton.module.scss'
@@ -28,7 +28,7 @@ interface ListIconButtonProps extends React.HTMLProps<HTMLButtonElement> {
 
 const LIST_ICON_SIZE = '16'
 
-const ListIconButton = ({
+export const ListIconButton = ({
   children,
   className,
   variant = ListIconButtonVariant.DEFAULT,
@@ -100,5 +100,3 @@ const ListIconButton = ({
 
   return url ? link : button
 }
-
-export default ListIconButton

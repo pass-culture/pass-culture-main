@@ -51,7 +51,7 @@ class GetOffererTest(GetEndpointHelper):
     # - get offerer tags (1 query)
     # - get all tags for edit form (1 query)
     # - get feature flag: WIP_ENABLE_PRO_SIDE_NAV (1 query)
-    expected_num_queries = 6
+    expected_num_queries = 5
 
     def test_keep_search_parameters_on_top(self, authenticated_client, offerer):
         url = url_for(self.endpoint, offerer_id=offerer.id, q=offerer.name, departments=["75", "77"])
@@ -103,31 +103,25 @@ class GetOffererTest(GetEndpointHelper):
         assert "Région : Occitanie " in content
         assert f"Ville : {offerer.city} " in content
         assert f"Code postal : {offerer.postalCode} " in content
-        assert f"Adresse : {offerer.address} " in content
+        assert f"Adresse : {offerer.street} " in content
+        assert "Peut créer une offre EAC : Oui" in content
         assert "Présence CB dans les lieux : 0 OK / 0 KO " in content
         assert "Tags structure : Collectivité Top acteur " in content
-
         badges = html_parser.extract(response.data, tag="span", class_="badge")
         assert "Structure" in badges
         assert "Validée" in badges
         assert "Suspendue" not in badges
 
     @pytest.mark.parametrize(
-        "new_nav_ff_activated,new_nav_users,old_nav_users",
+        "new_nav_users,old_nav_users",
         [
-            (True, True, True),
-            (False, True, True),
-            (True, False, True),
-            (False, False, True),
-            (True, True, False),
-            (False, True, False),
-            (True, False, False),
-            (False, False, False),
+            (True, True),
+            (False, True),
+            (True, False),
+            (False, False),
         ],
     )
-    def test_get_offerer_with_new_nav_badges(
-        self, new_nav_ff_activated, new_nav_users, old_nav_users, authenticated_client, offerer
-    ):
+    def test_get_offerer_with_new_nav_badges(self, new_nav_users, old_nav_users, authenticated_client, offerer):
         if new_nav_users:
             user_with_new_nav = users_factories.ProFactory()
             users_factories.UserProNewNavStateFactory(user=user_with_new_nav)
@@ -161,10 +155,7 @@ class GetOffererTest(GetEndpointHelper):
         # count.
         db.session.expire(offerer)
 
-        with (
-            override_features(WIP_ENABLE_PRO_SIDE_NAV=new_nav_ff_activated),
-            assert_num_queries(self.expected_num_queries),
-        ):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -173,14 +164,10 @@ class GetOffererTest(GetEndpointHelper):
         assert "Validée" in badges
         assert "Suspendue" not in badges
 
-        if new_nav_ff_activated:
-            if new_nav_users:
-                assert "Nouvelle interface" in badges
-            if old_nav_users:
-                assert "Ancienne interface" in badges
-        else:
-            assert "Nouvelle interface" not in badges
-            assert "Ancienne interface" not in badges
+        if new_nav_users:
+            assert "Nouvelle interface" in badges
+        if old_nav_users:
+            assert "Ancienne interface" in badges
 
     def test_offerer_detail_contains_venue_bank_information_stats(
         self,
@@ -228,26 +215,32 @@ class GetOffererTest(GetEndpointHelper):
 
         assert "Présence CB dans les lieux : 2 OK / 1 KO " in html_parser.content_as_text(response.data)
 
-    def test_offerer_with_educational_venue_has_adage_data(self, authenticated_client, offerer):
-        offerers_factories.CollectiveVenueFactory(managingOfferer=offerer)
+    def test_offerer_with_adage_venue_has_adage_data(self, authenticated_client):
+        offerer = offerers_factories.OffererFactory(allowedOnAdage=True)
+        offerers_factories.VenueFactory(managingOfferer=offerer, adageId="1234")
+        offerers_factories.VenueFactory(managingOfferer=offerer, adageId=None)
+        offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
 
         url = url_for(self.endpoint, offerer_id=offerer.id)
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
-        assert "Référencement Adage : 1/1" in html_parser.content_as_text(response.data)
+        assert "Peut créer une offre EAC : Oui" in html_parser.content_as_text(response.data)
+        # One venue with adageId out of two physical venues
+        assert "Lieux référencés : 1/2" in html_parser.content_as_text(response.data)
 
-    def test_offerer_with_no_educational_venue_has_adage_data(
-        self, authenticated_client, offerer, venue_with_accepted_bank_account
-    ):
-        offerer_id = offerer.id
+    def test_offerer_with_no_adage_venue_has_adage_data(self, authenticated_client, offerer):
+        offerer = offerers_factories.OffererFactory(allowedOnAdage=True)
+        offerers_factories.VenueFactory(managingOfferer=offerer, adageId=None)
 
+        url = url_for(self.endpoint, offerer_id=offerer.id)
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, offerer_id=offerer_id))
+            response = authenticated_client.get(url)
             assert response.status_code == 200
 
-        assert "Référencement Adage : 0/1" in html_parser.content_as_text(response.data)
+        assert "Peut créer une offre EAC : Oui" in html_parser.content_as_text(response.data)
+        assert "Lieux référencés : 0/1" in html_parser.content_as_text(response.data)
 
     def test_offerer_with_no_individual_subscription_tab(self, authenticated_client, offerer):
         offerer_id = offerer.id
@@ -424,14 +417,14 @@ class UpdateOffererTest(PostEndpointHelper):
         old_postal_code = offerer_to_edit.postalCode
         new_postal_code = "29000"
         expected_new_region = "Bretagne"
-        old_address = offerer_to_edit.address
-        new_address = "1 Rue de Siam"
+        old_street = offerer_to_edit.street
+        new_street = "1 Rue de Siam"
 
         base_form = {
             "name": new_name,
             "city": new_city,
             "postal_code": new_postal_code,
-            "address": new_address,
+            "street": new_street,
             "tags": [tag.id for tag in offerer_to_edit.tags],
         }
 
@@ -454,7 +447,7 @@ class UpdateOffererTest(PostEndpointHelper):
         assert offerer_to_edit.name == new_name
         assert offerer_to_edit.city == new_city
         assert offerer_to_edit.postalCode == new_postal_code
-        assert offerer_to_edit.address == new_address
+        assert offerer_to_edit.street == new_street
 
         assert len(offerer_to_edit.action_history) == 1
         assert offerer_to_edit.action_history[0].actionType == history_models.ActionType.INFO_MODIFIED
@@ -463,7 +456,7 @@ class UpdateOffererTest(PostEndpointHelper):
             "name",
             "city",
             "postalCode",
-            "address",
+            "street",
         }
 
         history_rows = html_parser.extract_table_rows(history_response.data)
@@ -472,11 +465,11 @@ class UpdateOffererTest(PostEndpointHelper):
         assert f"Nom juridique : {old_name} => {offerer_to_edit.name}" in history_rows[0]["Commentaire"]
         assert f"Ville : {old_city} => {offerer_to_edit.city}" in history_rows[0]["Commentaire"]
         assert f"Code postal : {old_postal_code} => {offerer_to_edit.postalCode}" in history_rows[0]["Commentaire"]
-        assert f"Adresse : {old_address} => {offerer_to_edit.address}" in history_rows[0]["Commentaire"]
+        assert f"Adresse : {old_street} => {offerer_to_edit.street}" in history_rows[0]["Commentaire"]
 
     def test_update_offerer_tags(self, legit_user, authenticated_client):
         offerer_to_edit = offerers_factories.OffererFactory(
-            address="Place de la Liberté", postalCode="29200", city="Brest"
+            street="Place de la Liberté", postalCode="29200", city="Brest"
         )
         tag1 = offerers_factories.OffererTagFactory(label="Premier tag")
         tag2 = offerers_factories.OffererTagFactory(label="Deuxième tag")
@@ -487,7 +480,7 @@ class UpdateOffererTest(PostEndpointHelper):
             "name": offerer_to_edit.name,
             "city": offerer_to_edit.city,
             "postal_code": offerer_to_edit.postalCode,
-            "address": offerer_to_edit.address,
+            "street": offerer_to_edit.street,
             "tags": [tag2.id, tag3.id],
         }
 
@@ -501,7 +494,7 @@ class UpdateOffererTest(PostEndpointHelper):
         updated_offerer = offerers_models.Offerer.query.filter_by(id=offerer_to_edit.id).one()
         assert updated_offerer.city == "Brest"
         assert updated_offerer.postalCode == "29200"
-        assert updated_offerer.address == "Place de la Liberté"
+        assert updated_offerer.street == "Place de la Liberté"
 
         history_rows = html_parser.extract_table_rows(history_response.data)
         assert len(history_rows) == 1
@@ -518,7 +511,7 @@ class UpdateOffererTest(PostEndpointHelper):
             "name": "",
             "city": offerer.city,
             "postal_code": offerer.postalCode,
-            "address": offerer.address,
+            "street": offerer.street,
             "tags": [],
         }
 
@@ -916,6 +909,9 @@ class GetOffererUsersTest(GetEndpointHelper):
             offerer=offerer, user=users_factories.ProFactory(firstName="Jean", lastName="Bon")
         )
         uo3 = offerers_factories.NotValidatedUserOffererFactory(offerer=offerer)
+        uo4 = offerers_factories.UserOffererFactory(
+            offerer=offerer, user=users_factories.ProFactory(firstName="Hang", lastName="Man", isActive=False)
+        )
 
         offerers_factories.UserOffererFactory()
 
@@ -925,7 +921,7 @@ class GetOffererUsersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert len(rows) == 3
+        assert len(rows) == 4
 
         assert rows[0]["ID"] == str(uo1.user.id)
         assert rows[0]["Statut"] == "Validé"
@@ -947,6 +943,13 @@ class GetOffererUsersTest(GetEndpointHelper):
         assert rows[2]["Email"] == uo3.user.email
         assert rows[2]["Invitation"] == ""
         assert "Connect as" not in rows[2]
+
+        assert rows[3]["ID"] == str(uo4.user.id)
+        assert rows[3]["Statut"] == "Validé Suspendu"
+        assert rows[3]["Prénom / Nom"] == uo4.user.full_name
+        assert rows[3]["Email"] == uo4.user.email
+        assert rows[3]["Invitation"] == ""
+        assert "Connect as" not in rows[3]
 
     @override_features(WIP_CONNECT_AS=True)
     @pytest.mark.parametrize(
@@ -1101,51 +1104,6 @@ class GetOffererUsersTest(GetEndpointHelper):
         options = select.find_all("option")
         assert [option["value"] for option in options] == ["", str(user3.id), str(user2.id)]
 
-    @override_features(WIP_ENABLE_PRO_SIDE_NAV=False)
-    def test_user_offerer_details_tab_with_new_nav_tags_without_ff(self, authenticated_client, offerer):
-        user_with_new_nav = users_factories.ProFactory()
-        users_factories.UserProNewNavStateFactory(user=user_with_new_nav)
-        offerers_factories.UserOffererFactory(user=user_with_new_nav, offerer=offerer)
-
-        user_with_old_nav = users_factories.ProFactory()
-        users_factories.UserProNewNavStateFactory(user=user_with_old_nav, eligibilityDate=None, newNavDate=None)
-        offerers_factories.UserOffererFactory(user=user_with_old_nav, offerer=offerer)
-
-        eligible_user_with_inactivated_new_nav = users_factories.ProFactory()
-        users_factories.UserProNewNavStateFactory(
-            user=eligible_user_with_inactivated_new_nav, eligibilityDate=datetime.datetime.utcnow(), newNavDate=None
-        )
-        offerers_factories.UserOffererFactory(user=eligible_user_with_inactivated_new_nav, offerer=offerer)
-
-        url = url_for(self.endpoint, offerer_id=offerer.id)
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url)
-            assert response.status_code == 200
-
-        rows = html_parser.extract_table_rows(response.data)
-
-        assert len(rows) == 3
-
-        assert rows[0]["ID"] == str(user_with_new_nav.id)
-        assert rows[0]["Statut"] == "Validé"
-        assert "Interface" not in rows[0]
-        assert rows[0]["Prénom / Nom"] == user_with_new_nav.full_name
-        assert rows[0]["Email"] == user_with_new_nav.email
-
-        assert rows[1]["ID"] == str(user_with_old_nav.id)
-        assert rows[1]["Statut"] == "Validé"
-        assert "Interface" not in rows[1]
-        assert rows[1]["Prénom / Nom"] == user_with_old_nav.full_name
-        assert rows[1]["Email"] == user_with_old_nav.email
-
-        assert rows[2]["ID"] == str(eligible_user_with_inactivated_new_nav.id)
-        assert rows[2]["Statut"] == "Validé"
-        assert "Interface" not in rows[2]
-        assert rows[2]["Prénom / Nom"] == eligible_user_with_inactivated_new_nav.full_name
-        assert rows[2]["Email"] == eligible_user_with_inactivated_new_nav.email
-
-    @override_features(WIP_ENABLE_PRO_SIDE_NAV=True)
     def test_user_offerer_details_tab_with_new_nav_tags(self, authenticated_client, offerer):
         user_with_new_nav = users_factories.ProFactory()
         users_factories.UserProNewNavStateFactory(user=user_with_new_nav)
@@ -1275,7 +1233,6 @@ class GetOffererVenuesTest(GetEndpointHelper):
         assert not rows[0].get("Type de lieu")
         assert rows[0]["Présence web"] == ""
         assert rows[0]["Offres cibles"] == ""
-        assert rows[0]["Statut DMS Adage"] == ""
 
         assert rows[1]["ID"] == str(venue_2.id)
         assert rows[1]["SIRET"] == venue_2.siret
@@ -1285,9 +1242,109 @@ class GetOffererVenuesTest(GetEndpointHelper):
         assert not rows[1].get("Type de lieu")
         assert rows[1]["Présence web"] == "https://example.com https://pass.culture.fr"
         assert rows[1]["Offres cibles"] == "Indiv. et coll."
-        assert rows[1]["Statut DMS Adage"] == "En construction"
-        assert rows[1]["Dossier DMS Adage"] == "35"
-        assert "https://www.demarches-simplifiees.fr/procedures/1/dossiers/35" in str(response.data)
+
+
+class GetOffererCollectiveDmsApplicationsTest(GetEndpointHelper):
+    endpoint = "backoffice_web.offerer.get_collective_dms_applications"
+    endpoint_kwargs = {"offerer_id": 1}
+    needed_permission = perm_models.Permissions.READ_PRO_ENTITY
+
+    # - session + authenticated user (2 queries)
+    # - dms applications with joined data (1 query)
+    expected_num_queries = 3
+
+    def test_get_collective_dms_applications(self, authenticated_client):
+        offerer = offerers_factories.OffererFactory(siren="123456789")
+        venue_1 = offerers_factories.VenueFactory(managingOfferer=offerer, siret="12345678900001")
+        venue_2 = offerers_factories.VenueFactory(managingOfferer=offerer, siret="12345678900002")
+        educational_factories.CollectiveDmsApplicationFactory(
+            venue=venue_1,
+            application=35,
+            state="refuse",
+            depositDate=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        )
+        educational_factories.CollectiveDmsApplicationFactory(
+            venue=venue_2, application=36, depositDate=datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        )
+        educational_factories.CollectiveDmsApplicationFactory(
+            venue=venue_1,
+            application=37,
+            state="accepte",
+            depositDate=datetime.datetime.utcnow() - datetime.timedelta(days=3),
+        )
+        educational_factories.CollectiveDmsApplicationWithNoVenueFactory(
+            siret="12345678900003",
+            application=38,
+            depositDate=datetime.datetime.utcnow() - datetime.timedelta(days=4),
+        )
+        educational_factories.CollectiveDmsApplicationFactory(application=39)
+        educational_factories.CollectiveDmsApplicationWithNoVenueFactory(siret="12345123456789")
+        educational_factories.CollectiveDmsApplicationWithNoVenueFactory(siret="12345678000009")
+
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 4
+
+        assert rows[0]["ID"] == "35"
+        assert rows[0]["Date de dépôt"] == (datetime.datetime.utcnow() - datetime.timedelta(days=1)).strftime(
+            "%d/%m/%Y"
+        )
+        assert rows[0]["État"] == "Refusé"
+        assert rows[0]["Date de dernière mise à jour"] == (
+            datetime.datetime.utcnow() - datetime.timedelta(hours=1)
+        ).strftime("%d/%m/%Y")
+        assert rows[0]["Lieu"] == venue_1.name
+        assert rows[0]["SIRET"] == venue_1.siret
+
+        assert rows[1]["ID"] == "36"
+        assert rows[1]["Date de dépôt"] == (datetime.datetime.utcnow() - datetime.timedelta(days=2)).strftime(
+            "%d/%m/%Y"
+        )
+        assert rows[1]["État"] == "En construction"
+        assert rows[1]["Date de dernière mise à jour"] == (
+            datetime.datetime.utcnow() - datetime.timedelta(hours=1)
+        ).strftime("%d/%m/%Y")
+        assert rows[1]["Lieu"] == venue_2.name
+        assert rows[1]["SIRET"] == venue_2.siret
+
+        assert rows[2]["ID"] == "37"
+        assert rows[2]["Date de dépôt"] == (datetime.datetime.utcnow() - datetime.timedelta(days=3)).strftime(
+            "%d/%m/%Y"
+        )
+        assert rows[2]["État"] == "Accepté"
+        assert rows[2]["Date de dernière mise à jour"] == (
+            datetime.datetime.utcnow() - datetime.timedelta(hours=1)
+        ).strftime("%d/%m/%Y")
+        assert rows[2]["Lieu"] == venue_1.name
+        assert rows[2]["SIRET"] == venue_1.siret
+
+        assert rows[3]["ID"] == "38"
+        assert rows[3]["Date de dépôt"] == (datetime.datetime.utcnow() - datetime.timedelta(days=4)).strftime(
+            "%d/%m/%Y"
+        )
+        assert rows[3]["État"] == "En construction"
+        assert rows[3]["Date de dernière mise à jour"] == (
+            datetime.datetime.utcnow() - datetime.timedelta(hours=1)
+        ).strftime("%d/%m/%Y")
+        assert rows[3]["Lieu"] == ""
+        assert rows[3]["SIRET"] == "12345678900003"
+
+    def test_offerer_with_no_dms_adage_application(self, authenticated_client):
+        offerer = offerers_factories.OffererFactory(siren="123456789")
+        offerers_factories.VenueFactory(managingOfferer=offerer, siret="12345678900001")
+
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        assert html_parser.count_table_rows(response.data) == 0
 
 
 class GetOffererBankAccountTest(GetEndpointHelper):

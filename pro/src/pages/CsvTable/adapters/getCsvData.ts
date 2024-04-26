@@ -1,8 +1,8 @@
 /* istanbul ignore file: DEBT, TO FIX */
-import { ITableData } from 'screens/CsvTable'
+import { TableData } from 'screens/CsvTable/types'
 import csvConverter from 'utils/csvConverter'
 
-export const getCsvData = (csvUrl: string): Promise<ITableData | null> => {
+export const getCsvData = (csvUrl: string): Promise<TableData | null> => {
   return new Promise((resolve, reject) => {
     // eslint-disable-next-line @typescript-eslint/no-extra-semi
     // eslint-disable-next-line @typescript-eslint/no-floating-promises

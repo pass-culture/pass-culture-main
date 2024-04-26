@@ -3,10 +3,10 @@ import React, { useState } from 'react'
 
 import strokeHideIcon from 'icons/stroke-hide.svg'
 import strokeShowIcon from 'icons/stroke-show.svg'
-import { Button } from 'ui-kit/Button'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
-import TextInput from '../TextInput'
+import { TextInput } from '../TextInput/TextInput'
 
 import styles from './PasswordInput.module.scss'
 import ValidationMessageList from './ValidationMessageList'
@@ -19,7 +19,7 @@ interface PasswordInputProps {
   autoComplete?: string
 }
 
-const PasswordInput = ({
+export const PasswordInput = ({
   label,
   name,
   placeholder,
@@ -65,5 +65,3 @@ const PasswordInput = ({
     </div>
   )
 }
-
-export default PasswordInput

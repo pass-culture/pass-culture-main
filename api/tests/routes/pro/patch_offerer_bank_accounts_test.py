@@ -3,12 +3,15 @@ import datetime
 
 import pytest
 
+from pcapi.core import testing
+from pcapi.core import token
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 import pcapi.core.history.models as history_models
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
+import pcapi.core.token.serialization as token_serialization
 import pcapi.core.users.factories as users_factories
 
 
@@ -70,6 +73,50 @@ class OffererPatchBankAccountsTest:
             assert action_logged.authorUserId == action_occurred.authorUserId
             assert action_logged.venueId == action_occurred.venueId
             assert action_logged.bankAccountId == action_occurred.bankAccountId
+
+    @testing.override_features(WIP_CONNECT_AS=True)
+    def test_impersonated_user_can_link_venue_to_bank_account(self, db_session, client):
+        offerer = offerers_factories.OffererFactory()
+        impersonator = users_factories.AdminFactory()
+        pro_user = users_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        bank_account = finance_factories.BankAccountFactory(offerer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
+        # impersonate pro user
+        secure_token = token.SecureToken(
+            data=token_serialization.ConnectAsInternalModel(
+                redirect_link="http://example.com",
+                user_id=pro_user.id,
+                internal_admin_email=impersonator.email,
+                internal_admin_id=impersonator.id,
+            ).dict(),
+        )
+        impersonated_client = client.with_session_auth(impersonator.email)
+        impersonated_client.get(f"/users/connect-as/{secure_token.token}")
+
+        assert not bank_account.venueLinks
+
+        response = impersonated_client.patch(
+            f"/offerers/{offerer.id}/bank-accounts/{bank_account.id}", json={"venues_ids": [venue.id]}
+        )
+
+        assert response.status_code == 204
+
+        response = impersonated_client.get(f"/offerers/{offerer.id}/bank-accounts/")
+
+        assert response.status_code == 200
+
+        db_session.refresh(bank_account)
+
+        assert len(bank_account.venueLinks) == 1
+
+        action_logged = history_models.ActionHistory.query.filter(
+            history_models.ActionHistory.actionType == history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED,
+        ).one()
+
+        assert action_logged.authorUserId == impersonator.id
+        assert action_logged.venueId == venue.id
+        assert action_logged.bankAccountId == bank_account.id
 
     def test_user_cannot_link_venue_to_a_bank_account_that_doesnt_depend_on_its_offerer(self, db_session, client):
         actions_occured = []

@@ -5,18 +5,21 @@ import {
   GetOffererResponseModel,
   VenueProviderResponse,
   GetVenueResponseModel,
+  VenueTypeResponseModel,
 } from 'apiClient/v1'
 import { AddressSelect } from 'components/Address'
 import FormLayout from 'components/FormLayout'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
-import { Providers } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 import ReimbursementFields from 'pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
 import BankAccountInfos from 'pages/VenueCreation/BankAccountInfos/BankAccountInfos'
+import { buildVenueTypesOptions } from 'pages/VenueCreation/buildVenueTypesOptions'
 import { SiretOrCommentFields } from 'pages/VenueCreation/SiretOrCommentFields/SiretOrCommentFields'
 import { VenueFormActionBar } from 'pages/VenueCreation/VenueFormActionBar/VenueFormActionBar'
 import { WithdrawalDetails } from 'pages/VenueCreation/WithdrawalDetails'
-import { TextInput, InfoBox, Select } from 'ui-kit'
+import { Select } from 'ui-kit/form/Select/Select'
+import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
 import { VenueSettingsFormValues } from './types'
 import { OffersSynchronization } from './VenueProvidersManager/OffersSynchronization'
@@ -25,8 +28,7 @@ interface VenueFormProps {
   offerer: GetOffererResponseModel
   updateIsSiretValued: (isSiretValued: boolean) => void
   venueLabels: SelectOption[]
-  venueTypes: SelectOption[]
-  provider?: Providers[]
+  venueTypes: VenueTypeResponseModel[]
   venueProvider?: VenueProviderResponse[]
   venue: GetVenueResponseModel
 }
@@ -36,23 +38,19 @@ export const VenueSettingsForm = ({
   updateIsSiretValued,
   venueLabels,
   venueTypes,
-  provider,
   venueProvider,
   venue,
 }: VenueFormProps) => {
   const { initialValues } = useFormikContext<VenueSettingsFormValues>()
   const location = useLocation()
+  const venueTypesOptions = buildVenueTypesOptions(venueTypes)
 
   return (
     <>
       <ScrollToFirstErrorAfterSubmit />
 
-      {!venue.isVirtual && provider && venueProvider && (
-        <OffersSynchronization
-          provider={provider}
-          venueProvider={venueProvider}
-          venue={venue}
-        />
+      {!venue.isVirtual && venueProvider && (
+        <OffersSynchronization venueProvider={venueProvider} venue={venue} />
       )}
 
       <FormLayout fullWidthActions>
@@ -106,7 +104,7 @@ export const VenueSettingsForm = ({
                   value: '',
                   label: 'Sélectionnez celui qui correspond à votre lieu',
                 },
-                ...venueTypes,
+                ...venueTypesOptions,
               ]}
               name="venueType"
               label="Activité principale"

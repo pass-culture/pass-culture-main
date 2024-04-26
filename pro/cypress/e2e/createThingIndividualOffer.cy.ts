@@ -1,5 +1,7 @@
+// what is a thing? une chose?
 describe('Create an individual offer (thing)', () => {
   it('should create an individual offer', () => {
+    // toujours d'actu ce flag? où aller voir pour savoir?    
     cy.setFeatureFlags([{ name: 'WIP_ENABLE_PRO_SIDE_NAV', isActive: false }])
 
     // Random 13-digit number because we can't use the same EAN twice
@@ -12,50 +14,49 @@ describe('Create an individual offer (thing)', () => {
     })
 
     // Go to offer creation page
-    cy.contains('Créer une offre').click()
+    cy.findByText('Créer une offre').click()
 
     // Select an offer type
-    cy.contains('Au grand public').click()
-    cy.contains('Un bien physique').click()
+    cy.findByText('Au grand public').click()
+    cy.findByText('Un bien physique').click()
 
     cy.intercept({ method: 'GET', url: '/offers/categories' }).as(
       'getCategories'
     )
-    cy.contains('Étape suivante').click()
+    cy.findByText('Étape suivante').click()
     cy.wait('@getCategories')
 
     // Fill in first step: offer details
-    cy.get('#categoryId').select('Livre')
-    cy.get('#subcategoryId').select('Livre papier')
-    cy.get('#name').type('H2G2 Le Guide du voyageur galactique')
-    cy.get('#description').type(
+    cy.findByLabelText('Catégorie *').select('Livre')
+    cy.findByLabelText('Sous-catégorie *').select('Livre papier')
+    cy.findByLabelText('Titre de l’offre *').type('H2G2 Le Guide du voyageur galactique')
+    cy.findByLabelText('Description').type(
       'Une quête pour obtenir la question ultime sur la vie, l’univers et tout le reste.'
     )
-    cy.get('#author').type('Douglas Adams')
-    cy.get('#ean').type(ean)
-
-    cy.contains('Ajouter une image').click()
+    cy.findByLabelText('Auteur').type('Douglas Adams')
+    cy.findByLabelText('EAN-13 (European Article Numbering)').type(ean)
+    cy.findByText('Ajouter une image').click()
     cy.get('input[type=file]').selectFile('cypress/e2e/offer-image.jpg', {
       force: true,
     })
-    cy.get('#credit').type('Les êtres les plus intelligents de l’univers')
-    cy.contains('Suivant').click()
-    cy.get('[role="dialog"]').contains('Enregistrer').click()
+    cy.findByLabelText('Crédit de l’image').type('Les êtres les plus intelligents de l’univers')
+    cy.findByText('Suivant').click()
+    cy.findByText('Enregistrer').click()
 
-    cy.get('#withdrawalDetails').type(
+    cy.findByLabelText('Informations de retrait').type(
       'Seuls les dauphins et les souris peuvent le lire.'
     )
-    cy.contains('Non accessible').click()
-    cy.contains('Psychique ou cognitif').click()
-    cy.contains('Moteur').click()
-    cy.contains('Auditif').click()
+    cy.findByText('Non accessible').click()
+    cy.findByText('Psychique ou cognitif').click()
+    cy.findByText('Moteur').click()
+    cy.findByText('Auditif').click()
     cy.get('#externalTicketOfficeUrl').type('https://passculture.app/')
 
-    cy.contains('Être notifié par email des réservations').click()
+    cy.findByText('Être notifié par email des réservations').click()
 
     cy.intercept({ method: 'POST', url: '/offers' }).as('postOffer')
     cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
-    cy.contains('Enregistrer et continuer').click()
+    cy.findByText('Enregistrer et continuer').click()
     cy.wait(['@postOffer', '@getOffer'])
 
     // Fill in second step: stocks
@@ -65,18 +66,19 @@ describe('Create an individual offer (thing)', () => {
 
     cy.intercept({ method: 'PATCH', url: '/offers/*' }).as('patchOffer')
     cy.intercept({ method: 'POST', url: '/stocks/bulk' }).as('postStocks')
-    cy.contains('Enregistrer et continuer').click()
+    cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
+    cy.findByText('Enregistrer et continuer').click()
     cy.wait(['@patchOffer', '@postStocks', '@getOffer'])
 
     // Publish offer
-    cy.contains('Livre papier')
+    cy.findByText('Livre papier').should('exist')
     cy.intercept({ method: 'PATCH', url: '/offers/publish' }).as('publishOffer')
-    cy.contains('Publier l’offre').click()
+    cy.findByText('Publier l’offre').click()
     cy.wait(['@publishOffer', '@getOffer'])
 
     // Go to offer list and check that the offer is there
     cy.intercept({ method: 'GET', url: '/offers' }).as('getOffers')
-    cy.contains('Voir la liste des offres').click()
+    cy.findByText('Voir la liste des offres').click()
     cy.wait('@getOffers')
     cy.contains('H2G2 Le Guide du voyageur galactique')
     cy.contains(ean)

@@ -3,30 +3,18 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import { GetOffererResponseModel } from 'apiClient/v1'
+import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { VenueCreation } from '../VenueCreation'
 
-const renderVenueCreation = (offererId: string) => {
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        firstName: 'John',
-        dateCreated: '2022-07-29T12:18:43.087097Z',
-        email: 'john@do.net',
-        id: '1',
-        isAdmin: false,
-        isEmailValidated: true,
-        roles: [],
-      },
-    },
-  }
-
+const renderVenueCreation = () => {
   renderWithProviders(<VenueCreation />, {
-    storeOverrides,
-    initialRouterEntries: [`/structures/${offererId}/lieux/creation`],
+    user: sharedCurrentUserFactory(),
+    initialRouterEntries: [
+      `/structures/${defaultGetOffererResponseModel.id}/lieux/creation`,
+    ],
   })
 }
 
@@ -43,27 +31,23 @@ vi.mock('utils/windowMatchMedia', () => ({
 Element.prototype.scrollIntoView = vi.fn()
 
 describe('route VenueCreation', () => {
-  let offerer: GetOffererResponseModel
-
   beforeEach(() => {
-    offerer = {
-      id: 1,
-    } as GetOffererResponseModel
-
-    vi.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
+    vi.spyOn(api, 'getOfferer').mockResolvedValue(
+      defaultGetOffererResponseModel
+    )
     vi.spyOn(api, 'getVenueTypes').mockResolvedValue([])
     vi.spyOn(api, 'fetchVenueLabels').mockResolvedValue([])
   })
 
   it('should display venue form screen with creation title', async () => {
-    renderVenueCreation(offerer.id.toString())
+    renderVenueCreation()
 
     const venueCreationTitle = await screen.findByText('Création d’un lieu')
     expect(venueCreationTitle).toBeInTheDocument()
   })
 
   it('should display modal when user try to quite venue creation', async () => {
-    renderVenueCreation(offerer.id.toString())
+    renderVenueCreation()
 
     const homeNavBarButton = await screen.findByText('Accueil')
     await userEvent.click(homeNavBarButton)
@@ -78,7 +62,7 @@ describe('route VenueCreation', () => {
   })
 
   it('should display modal when user cancel venue creation', async () => {
-    renderVenueCreation(offerer.id.toString())
+    renderVenueCreation()
 
     const cancelFormButton = await screen.findByText('Annuler et quitter')
     await userEvent.click(cancelFormButton)
@@ -93,7 +77,7 @@ describe('route VenueCreation', () => {
   })
 
   it('should not display modal when user submit venue creation', async () => {
-    renderVenueCreation(offerer.id.toString())
+    renderVenueCreation()
 
     const homeNavBarButton = await screen.findByText(
       'Enregistrer et créer le lieu'

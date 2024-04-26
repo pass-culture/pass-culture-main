@@ -13,7 +13,7 @@ const FeatureFlagsLoader = (): null => {
 const renderFeaturesFlagsLoader = (lastLoaded?: number) => {
   const storeOverrides = {
     features: {
-      features: [],
+      list: [],
       lastLoaded,
     },
   }

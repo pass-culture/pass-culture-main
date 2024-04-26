@@ -5,7 +5,7 @@ import { Formik, Form } from 'formik'
 import { setInitialFormValues } from 'pages/VenueEdition/setInitialFormValues'
 import { VenueEditionFormValues } from 'pages/VenueEdition/types'
 import { getValidationSchema } from 'pages/VenueEdition/validationSchema'
-import { SubmitButton } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { defaultGetVenue } from 'utils/collectiveApiFactories'
 
 import { OpeningHoursForm } from '../OpeningHoursForm'
@@ -23,12 +23,12 @@ const renderOpeningHoursForm = ({
       onSubmit={onSubmit}
       validationSchema={getValidationSchema(false)}
     >
-      {({ handleSubmit }) => (
-        <Form onSubmit={handleSubmit}>
-          <OpeningHoursForm />
-          <SubmitButton isLoading={false}>Submit</SubmitButton>
-        </Form>
-      )}
+      <Form>
+        <OpeningHoursForm />
+        <Button type="submit" isLoading={false}>
+          Submit
+        </Button>
+      </Form>
     </Formik>
   )
 }
@@ -230,5 +230,22 @@ describe('OpeningHoursForm', () => {
       'min',
       '18:00'
     )
+  })
+
+  it('should show all errors', async () => {
+    renderOpeningHoursForm({})
+
+    await userEvent.click(screen.getByLabelText('Mardi'))
+    await userEvent.click(screen.getByLabelText('Mercredi'))
+    await userEvent.click(screen.getByLabelText('Jeudi'))
+
+    await userEvent.click(screen.getByText('Submit'))
+
+    expect(
+      screen.getAllByText('Veuillez renseigner une heure de début')
+    ).toHaveLength(3)
+    expect(
+      screen.getAllByText('Veuillez renseigner une heure de fin')
+    ).toHaveLength(3)
   })
 })

@@ -84,7 +84,7 @@ def _apply_query_filters(
             )
 
     if status:
-        query = query.filter(cls.validationStatus.in_(status))  # type: ignore [attr-defined]
+        query = query.filter(cls.validationStatus.in_(status))
 
     if dms_adage_status:
         query, is_venue_table_joined = _join_venue(query, is_venue_table_joined)

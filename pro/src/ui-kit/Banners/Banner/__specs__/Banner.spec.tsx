@@ -3,7 +3,7 @@ import React from 'react'
 
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import Banner, { BannerProps } from '../Banner'
+import { Banner, BannerProps } from '../Banner'
 
 describe('Banner', () => {
   const props: BannerProps = {

@@ -3,59 +3,60 @@ import { userEvent } from '@testing-library/user-event'
 import { Form, Formik } from 'formik'
 import React from 'react'
 
-import { AccessiblityEnum } from 'core/shared'
+import { AccessibilityEnum } from 'core/shared'
 import { VenueCreationFormValues } from 'pages/VenueCreation/types'
-import { SubmitButton } from 'ui-kit'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import { Button } from 'ui-kit/Button/Button'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'utils/renderWithProviders'
 
-import { Accessibility } from '../Accessibility'
+import { Accessibility, AccessiblityProps } from '../Accessibility'
 
-const renderAccessibility = ({
-  initialValues,
-  isCreatingVenue,
-  onSubmit = vi.fn(),
-}: {
-  initialValues: Partial<VenueCreationFormValues>
-  isCreatingVenue: boolean
-  onSubmit: () => void
-}) => {
+const onSubmit = vi.fn()
+
+const renderAccessibility = (
+  initialValues: Partial<VenueCreationFormValues>,
+  props: Partial<AccessiblityProps> = {},
+  overrides: RenderWithProvidersOptions = {}
+) => {
   return renderWithProviders(
     <Formik initialValues={initialValues} onSubmit={onSubmit}>
       <Form>
-        <Accessibility isCreatingVenue={isCreatingVenue} />
-        <SubmitButton isLoading={false}>Submit</SubmitButton>
+        <Accessibility isCreatingVenue={false} {...props} />
+        <Button type="submit" isLoading={false}>
+          Submit
+        </Button>
       </Form>
-    </Formik>
+    </Formik>,
+    overrides
   )
 }
 
 describe('Accessibility', () => {
   let initialValues: Partial<VenueCreationFormValues>
-  let isCreatingVenue: boolean
-  const onSubmit = vi.fn()
 
   beforeEach(() => {
     initialValues = {
       accessibility: {
-        [AccessiblityEnum.VISUAL]: false,
-        [AccessiblityEnum.MENTAL]: false,
-        [AccessiblityEnum.AUDIO]: false,
-        [AccessiblityEnum.MOTOR]: false,
-        [AccessiblityEnum.NONE]: false,
+        [AccessibilityEnum.VISUAL]: false,
+        [AccessibilityEnum.MENTAL]: false,
+        [AccessibilityEnum.AUDIO]: false,
+        [AccessibilityEnum.MOTOR]: false,
+        [AccessibilityEnum.NONE]: false,
       },
     }
-    isCreatingVenue = true
   })
 
   it('should display initial component', async () => {
-    renderAccessibility({ initialValues, isCreatingVenue, onSubmit })
+    renderAccessibility(initialValues, { isCreatingVenue: true })
 
     expect(
-      await screen.findByRole('heading', { name: 'Critères d’accessibilité' })
+      await screen.findByRole('heading', { name: 'Modalités d’accessibilité' })
     ).toBeInTheDocument()
     expect(
       screen.getByText(
-        'Ce lieu est accessible au public en situation de handicap : *'
+        'Votre établissement est accessible au public en situation de handicap : *'
       )
     ).toBeInTheDocument()
 
@@ -71,7 +72,7 @@ describe('Accessibility', () => {
   })
 
   it('should submit valid form', async () => {
-    renderAccessibility({ initialValues, isCreatingVenue, onSubmit })
+    renderAccessibility(initialValues, { isCreatingVenue: true })
 
     const checkboxVisuel = screen.getByLabelText('Visuel', { exact: false })
     await userEvent.click(checkboxVisuel)
@@ -92,7 +93,7 @@ describe('Accessibility', () => {
   })
 
   it('should check accessibilities on click', async () => {
-    renderAccessibility({ initialValues, isCreatingVenue, onSubmit })
+    renderAccessibility(initialValues, { isCreatingVenue: true })
 
     const checkboxNone = screen.getByLabelText('Non accessible', {
       exact: false,
@@ -133,17 +134,16 @@ describe('Accessibility', () => {
   })
 
   it('should display apply accessibility to all offer when its venue edition and accessibility has changed', async () => {
-    isCreatingVenue = false
     initialValues = {
       accessibility: {
-        [AccessiblityEnum.VISUAL]: false,
-        [AccessiblityEnum.MENTAL]: false,
-        [AccessiblityEnum.AUDIO]: false,
-        [AccessiblityEnum.MOTOR]: false,
-        [AccessiblityEnum.NONE]: true,
+        [AccessibilityEnum.VISUAL]: false,
+        [AccessibilityEnum.MENTAL]: false,
+        [AccessibilityEnum.AUDIO]: false,
+        [AccessibilityEnum.MOTOR]: false,
+        [AccessibilityEnum.NONE]: true,
       },
     }
-    renderAccessibility({ initialValues, isCreatingVenue, onSubmit })
+    renderAccessibility(initialValues, { isCreatingVenue: false })
     const checkboxVisuel = screen.getByLabelText('Visuel', { exact: false })
 
     await userEvent.click(checkboxVisuel)
@@ -152,5 +152,53 @@ describe('Accessibility', () => {
         'Appliquer le changement à toutes les offres existantes'
       )
     ).toBeInTheDocument()
+  })
+
+  it('should display the acces libre callout in edition', () => {
+    renderAccessibility(
+      initialValues,
+      { isCreatingVenue: false, isVenuePermanent: true },
+      {
+        features: ['WIP_ACCESLIBRE'],
+      }
+    )
+
+    expect(
+      screen.getByText(
+        'Renseignez facilement les modalités d’accessibilité de votre établissement sur la plateforme collaborative acceslibre.beta.gouv.fr'
+      )
+    ).toBeInTheDocument()
+  })
+
+  it('should not display the acces libre callout in edition for non permanent venues', () => {
+    renderAccessibility(
+      initialValues,
+      { isCreatingVenue: false, isVenuePermanent: false },
+      {
+        features: ['WIP_ACCESLIBRE'],
+      }
+    )
+
+    expect(
+      screen.queryByText(
+        'Renseignez facilement les modalités d’accessibilité de votre établissement sur la plateforme collaborative acceslibre.beta.gouv.fr'
+      )
+    ).not.toBeInTheDocument()
+  })
+
+  it('should not display the acces libre callout in creation', () => {
+    renderAccessibility(
+      initialValues,
+      { isCreatingVenue: true },
+      {
+        features: ['WIP_ACCESLIBRE'],
+      }
+    )
+
+    expect(
+      screen.queryByText(
+        'Renseignez facilement les modalités d’accessibilité de votre établissement sur la plateforme collaborative acceslibre.beta.gouv.fr'
+      )
+    ).not.toBeInTheDocument()
   })
 })

@@ -4,21 +4,19 @@ import { useState } from 'react'
 import {
   GetOffererResponseModel,
   SharedCurrentUserResponseModel,
+  VenueTypeResponseModel,
 } from 'apiClient/v1'
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import { AddressSelect } from 'components/Address'
 import FormLayout from 'components/FormLayout'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
-import { SelectOption } from 'custom_types/form'
-import {
-  TextInput,
-  InfoBox,
-  Select,
-  Banner,
-  ButtonLink,
-  SubmitButton,
-} from 'ui-kit'
+import { Banner } from 'ui-kit/Banners/Banner/Banner'
+import { Button } from 'ui-kit/Button/Button'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { Select } from 'ui-kit/form/Select/Select'
+import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
 import RouteLeavingGuard, {
   BlockerFunction,
@@ -26,6 +24,7 @@ import RouteLeavingGuard, {
 import useCurrentUser from '../../hooks/useCurrentUser'
 
 import { Accessibility } from './Accessibility/Accessibility'
+import { buildVenueTypesOptions } from './buildVenueTypesOptions'
 import { SiretOrCommentFields } from './SiretOrCommentFields/SiretOrCommentFields'
 import { VenueCreationFormValues } from './types'
 import styles from './VenueCreationForm.module.scss'
@@ -34,7 +33,7 @@ import { venueSubmitRedirectUrl } from './venueSubmitRedirectUrl'
 type VenueFormProps = {
   offerer: GetOffererResponseModel
   updateIsSiretValued: (isSiretValued: boolean) => void
-  venueTypes: SelectOption[]
+  venueTypes: VenueTypeResponseModel[]
 }
 
 type ShouldBlockVenueNavigationProps = {
@@ -67,6 +66,7 @@ export const VenueCreationForm = ({
   const [isFieldNameFrozen, setIsFieldNameFrozen] = useState(false)
   const [isSiretValued, setIsSiretValued] = useState(true)
   const canOffererCreateCollectiveOffer = offerer.allowedOnAdage
+  const venueTypesOptions = buildVenueTypesOptions(venueTypes)
 
   return (
     <div>
@@ -128,7 +128,7 @@ export const VenueCreationForm = ({
                   value: '',
                   label: 'Sélectionnez celui qui correspond à votre lieu',
                 },
-                ...venueTypes,
+                ...venueTypesOptions,
               ]}
               name="venueType"
               label="Activité principale"
@@ -199,9 +199,9 @@ export const VenueCreationForm = ({
           </ButtonLink>
         </ActionsBarSticky.Left>
         <ActionsBarSticky.Right>
-          <SubmitButton isLoading={isSubmitting}>
+          <Button type="submit" isLoading={isSubmitting}>
             Enregistrer et créer le lieu
-          </SubmitButton>
+          </Button>
         </ActionsBarSticky.Right>
       </ActionsBarSticky>
     </div>

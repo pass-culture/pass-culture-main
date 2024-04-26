@@ -2,7 +2,7 @@ import cn from 'classnames'
 import React from 'react'
 
 import fullEditIcon from 'icons/full-edit.svg'
-import { Button } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './BoxRounded.module.scss'
@@ -13,7 +13,7 @@ interface BoxRoundedProps {
   showButtonModify?: boolean
 }
 
-const BoxRounded = ({
+export const BoxRounded = ({
   children,
   onClickModify,
   showButtonModify = true,
@@ -38,5 +38,3 @@ const BoxRounded = ({
     </div>
   )
 }
-
-export default BoxRounded

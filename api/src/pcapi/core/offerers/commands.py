@@ -3,7 +3,6 @@ import logging
 from math import ceil
 
 import click
-import pytz
 import sqlalchemy as sa
 
 import pcapi.connectors.acceslibre as accessibility_provider
@@ -99,112 +98,108 @@ def synchronize_venues_banners_with_google_places(frequency: int = 1) -> None:
 @blueprint.cli.command("synchronize_accessibility_with_acceslibre")
 @click.option("--dry-run", type=bool, default=False)
 @click.option("--force-sync", type=bool, default=False)
-def synchronize_accessibility_with_acceslibre(dry_run: bool = False, force_sync: bool = False) -> None:
+@click.option("--start-from-batch", type=int, default=1, help="Start synchronization from batch number")
+def synchronize_accessibility_with_acceslibre(
+    dry_run: bool = False, force_sync: bool = False, start_from_batch: int = 1
+) -> None:
     """
     For all venues synchronized with acceslibre, we fetch on a weekly basis the
     last_update_at and update their accessibility informations.
 
     If we use the --force_sync flag, it will not check for last_update_at
 
-    If externalAccessibilityId can't be found at acceslibre, we try to find a new match
+    If we use the --start-from-batch option, it will start synchronization from the given batch number
+    Use case: synchronization has failed with message "Could not update batch <n>"
+
+    If externalAccessibilityId can't be found at acceslibre, we try to find a new match, cf. synchronize_accessibility_provider()
     """
-    venues_count = (
-        db.session.query(sa.func.count("*"))
-        .select_from(sa.join(offerers_models.Venue, offerers_models.AccessibilityProvider))
-        .filter(
-            offerers_models.Venue.isPermanent == True,
-            offerers_models.Venue.isVirtual == False,
-            offerers_models.AccessibilityProvider.externalAccessibilityId.isnot(None),
-        )
-        .scalar()
+    venues_count = offerers_api.count_permanent_venues_with_or_without_accessibility_provider(
+        has_accessibility_provider=True
     )
     num_batches = ceil(venues_count / BATCH_SIZE)
-    for i in range(num_batches):
-        venues_list = (
-            offerers_models.Venue.query.join(offerers_models.Venue.accessibilityProvider)
-            .filter(
-                offerers_models.Venue.isPermanent == True,
-                offerers_models.Venue.isVirtual == False,
-                offerers_models.AccessibilityProvider.externalAccessibilityId.isnot(None),
-            )
-            .options(sa.orm.contains_eager(offerers_models.Venue.accessibilityProvider))
-            .order_by(offerers_models.Venue.id.asc())
-            .limit(BATCH_SIZE)
-            .offset(i * BATCH_SIZE)
-            .all()
-        )
-        for venue in venues_list:
-            slug = venue.accessibilityProvider.externalAccessibilityId
-            last_update = accessibility_provider.get_last_update_at_provider(slug=slug)
-            # if last_update is not None: match still exist
-            # Then we update accessibility data if :
-            # 1. accessibility data is None
-            # 2. we have forced the synchronization
-            # 3. accessibility data has been updated on acceslibre side
-            if last_update and (
-                not venue.accessibilityProvider.externalAccessibilityData
-                or force_sync
-                or venue.accessibilityProvider.lastUpdateAtProvider.astimezone(pytz.utc)
-                < last_update.astimezone(pytz.utc)
-            ):
-                venue.accessibilityProvider.lastUpdateAtProvider = last_update
-                accessibility_data = accessibility_provider.get_accessibility_infos(
-                    slug=venue.accessibilityProvider.externalAccessibilityId
-                )
-                venue.accessibilityProvider.externalAccessibilityData = (
-                    accessibility_data.dict() if accessibility_data else None
-                )
-                db.session.add(venue.accessibilityProvider)
+    if start_from_batch > num_batches:
+        click.echo(f"Batch size must be less than {num_batches}")
+        return
 
-            # if last_update is None, the slug has been removed from acceslibre, we try a new match
-            # and save accessibility data to DB
-            elif not last_update:
-                if id_and_url_at_provider := accessibility_provider.get_id_at_accessibility_provider(
-                    name=venue.name,
-                    public_name=venue.publicName,
-                    siret=venue.siret,
-                    ban_id=venue.banId,
-                    city=venue.city,
-                    postal_code=venue.postalCode,
-                    address=venue.address,
-                ):
-                    new_slug = id_and_url_at_provider["slug"]
-                    new_url = id_and_url_at_provider["url"]
-                    if last_update := accessibility_provider.get_last_update_at_provider(slug=new_slug):
-                        accessibility_data = accessibility_provider.get_accessibility_infos(slug=new_slug)
-                        venue.accessibilityProvider.externalAccessibilityId = new_slug
-                        venue.accessibilityProvider.externalAccessibilityUrl = new_url
-                        venue.accessibilityProvider.lastUpdateAtProvider = last_update
-                        venue.accessibilityProvider.externalAccessibilityData = (
-                            accessibility_data.dict() if accessibility_data else None
-                        )
-                        db.session.add(venue.accessibilityProvider)
-                else:
-                    logger.info(
-                        "Slug %s has not been found at acceslibre. Removing AccessibilityProvider %d",
-                        slug,
-                        venue.accessibilityProvider.id,
-                    )
-                db.session.delete(venue.accessibilityProvider)
+    start_batch_index = start_from_batch - 1
+    for i in range(start_batch_index, num_batches):
+        venues_list = offerers_api.get_permanent_venues_with_accessibility_provider(batch_size=BATCH_SIZE, batch_num=i)
+        for venue in venues_list:
+            offerers_api.synchronize_accessibility_provider(venue, force_sync)
+
         if not dry_run:
             try:
                 db.session.commit()
             except sa.exc.SQLAlchemyError:
-                logger.exception("Could not update batch %d", i)
+                logger.exception("Could not update batch %d", i + 1)
                 db.session.rollback()
         else:
             db.session.rollback()
 
 
 @blueprint.cli.command("synchronize_venue_with_acceslibre")
-@click.argument("venue_id", type=int, required=True, default=None)
-def synchronize_venue_with_acceslibre(venue_id: int) -> None:
-    venue = offerers_models.Venue.query.filter_by(id=venue_id).one_or_none()
-    offerers_api.set_accessibility_provider_id(venue)
-    if not venue.accessibilityProvider.externalAccessibilityId:
-        logger.info("No match found at acceslibre for Venue %s ", venue_id)
+@click.argument("venue_ids", type=int, nargs=-1, required=True)
+@click.option("--dry-run", type=bool, default=True)
+def synchronize_venues_with_acceslibre(venue_ids: list[int], dry_run: bool = True) -> None:
+    for venue_id in venue_ids:
+        venue = offerers_models.Venue.query.filter_by(id=venue_id).one_or_none()
+        if venue is None:
+            logger.warning("Venue with id %s not found", venue_id)
+            continue
+
+        offerers_api.set_accessibility_provider_id(venue)
+        if not venue.accessibilityProvider.externalAccessibilityId:
+            logger.info("No match found at acceslibre for Venue %s ", venue_id)
+            continue
+
+        offerers_api.set_accessibility_infos_from_provider_id(venue)
+        db.session.add(venue)
+
+    if not dry_run:
+        try:
+            db.session.commit()
+        except sa.exc.SQLAlchemyError:
+            logger.exception("Could not update venues %s", venue_ids)
+            db.session.rollback()
+    else:
+        db.session.rollback()
+
+
+@blueprint.cli.command("acceslibre_matching")
+@click.option("--dry-run", type=bool, default=False)
+@click.option("--start-from-batch", type=int, default=1, help="Start synchronization from batch number")
+def acceslibre_matching(dry_run: bool = False, force_sync: bool = False, start_from_batch: int = 1) -> None:
+    """
+    For all permanent venues, we are looking for a match at acceslibre
+
+    If we use the --start-from-batch option, it will start synchronization from the given batch number
+    Use case: synchronization has failed with message "Could not update batch <n>"
+    """
+    venues_count = offerers_api.count_permanent_venues_with_or_without_accessibility_provider(
+        has_accessibility_provider=False
+    )
+    num_batches = ceil(venues_count / BATCH_SIZE)
+    if start_from_batch > num_batches:
+        click.echo(f"Batch size must be less than {num_batches}")
         return
-    offerers_api.set_accessibility_last_update_at_provider(venue)
-    offerers_api.set_accessibility_infos_from_provider_id(venue)
-    db.session.add(venue)
-    db.session.commit()
+
+    results_by_activity: dict[str, list[accessibility_provider.AcceslibreResult] | None] = dict()
+
+    for activity in accessibility_provider.AcceslibreActivity:
+        results_by_activity[activity.value] = accessibility_provider.find_new_entries_by_activity(activity)
+
+    start_batch_index = start_from_batch - 1
+    for i in range(start_batch_index, num_batches):
+        venues_list = offerers_api.get_permanent_venues_without_accessibility_provider(
+            batch_size=BATCH_SIZE, batch_num=i
+        )
+        offerers_api.match_venue_with_new_entries(venues_list, results_by_activity)
+
+        if not dry_run:
+            try:
+                db.session.commit()
+            except sa.exc.SQLAlchemyError:
+                logger.exception("Could not update batch %d", i + 1)
+                db.session.rollback()
+        else:
+            db.session.rollback()

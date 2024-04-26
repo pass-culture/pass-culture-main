@@ -5,8 +5,9 @@ import React from 'react'
 import * as yup from 'yup'
 
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
-import { SubmitButton } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import Notifications, { NotificationsProps } from '../Notifications'
 import validationSchema from '../validationSchema'
@@ -22,15 +23,6 @@ const renderNotifications = ({
   onSubmit: () => void
   venueBookingEmail?: string | null
 }) => {
-  const storeOverrides = {
-    user: {
-      currentUser: {
-        email: 'email@example.com',
-      },
-      initialized: true,
-    },
-  }
-
   return renderWithProviders(
     <Formik
       initialValues={initialValues}
@@ -39,10 +31,12 @@ const renderNotifications = ({
     >
       <Form>
         <Notifications {...props} venueBookingEmail={venueBookingEmail} />
-        <SubmitButton isLoading={false}>Submit</SubmitButton>
+        <Button type="submit" isLoading={false}>
+          Submit
+        </Button>
       </Form>
     </Formik>,
-    { storeOverrides }
+    { user: sharedCurrentUserFactory({ email: 'email@example.com' }) }
   )
 }
 

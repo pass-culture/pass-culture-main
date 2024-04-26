@@ -4,10 +4,11 @@ import { useState } from 'react'
 
 import fullLessIcon from 'icons/full-less.svg'
 import fullMoreIcon from 'icons/full-more.svg'
-import { Button, TimePicker } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
+import { mapDayToFrench } from 'utils/date'
 
-import { mapDayToFrench } from '../OpeningHoursReadOnly/utils'
 import { Day, VenueEditionFormValues } from '../types'
 
 import styles from './OpeningHoursForm.module.scss'
@@ -17,7 +18,8 @@ type HourLineProps = {
 }
 
 export function HourLine({ day }: HourLineProps) {
-  const { setFieldValue, values } = useFormikContext<VenueEditionFormValues>()
+  const { setFieldValue, values, setFieldTouched } =
+    useFormikContext<VenueEditionFormValues>()
   const [isFullLineDisplayed, setIsFullLineDisplayed] = useState(
     Boolean(values[day].afternoonStartingHour)
   )
@@ -82,6 +84,8 @@ export function HourLine({ day }: HourLineProps) {
               icon={fullMoreIcon}
               onClick={async () => {
                 await setFieldValue(`${day}.isAfternoonOpen`, true)
+                await setFieldTouched(`${day}.afternoonStartingHour`, false)
+                await setFieldTouched(`${day}.afternoonEndingHour`, false)
                 setIsFullLineDisplayed(true)
               }}
               hasTooltip

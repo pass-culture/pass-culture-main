@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { ButtonLink } from 'ui-kit/Button'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './Hero.module.scss'
@@ -12,7 +12,12 @@ interface HeroProps {
   linkTo: string
 }
 
-const Hero = ({ title, text, linkLabel, linkTo }: HeroProps): JSX.Element => (
+export const Hero = ({
+  title,
+  text,
+  linkLabel,
+  linkTo,
+}: HeroProps): JSX.Element => (
   <section className={styles['hero']}>
     <div className={styles['hero-body']}>
       <h1>{title}</h1>
@@ -26,4 +31,3 @@ const Hero = ({ title, text, linkLabel, linkTo }: HeroProps): JSX.Element => (
     </div>
   </section>
 )
-export default Hero

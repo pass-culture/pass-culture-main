@@ -173,7 +173,7 @@ def test_new_user_offerer_has_validation_status_new(client):
     body = {
         "name": offerer.name,
         "siren": offerer.siren,
-        "address": offerer.address,
+        "street": offerer.street,
         "postalCode": offerer.postalCode,
         "city": offerer.city,
     }

@@ -5,8 +5,8 @@ import React from 'react'
 import * as yup from 'yup'
 
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
-import { AccessiblityEnum } from 'core/shared'
-import { SubmitButton } from 'ui-kit'
+import { AccessibilityEnum } from 'core/shared'
+import { Button } from 'ui-kit/Button/Button'
 
 import { Accessibility, validationSchema } from '..'
 
@@ -25,7 +25,9 @@ const renderAccessibility = ({
     >
       <Form>
         <Accessibility />
-        <SubmitButton isLoading={false}>Submit</SubmitButton>
+        <Button type="submit" isLoading={false}>
+          Submit
+        </Button>
       </Form>
     </Formik>
   )
@@ -42,11 +44,11 @@ describe('Accessibility', () => {
       subcategoryId: '',
       withdrawalDetails: '',
       accessibility: {
-        [AccessiblityEnum.VISUAL]: false,
-        [AccessiblityEnum.MENTAL]: false,
-        [AccessiblityEnum.AUDIO]: false,
-        [AccessiblityEnum.MOTOR]: false,
-        [AccessiblityEnum.NONE]: false,
+        [AccessibilityEnum.VISUAL]: false,
+        [AccessibilityEnum.MENTAL]: false,
+        [AccessibilityEnum.AUDIO]: false,
+        [AccessibilityEnum.MOTOR]: false,
+        [AccessibilityEnum.NONE]: false,
       },
     }
   })
@@ -55,11 +57,11 @@ describe('Accessibility', () => {
     initialValues = {
       ...initialValues,
       accessibility: {
-        [AccessiblityEnum.VISUAL]: false,
-        [AccessiblityEnum.MENTAL]: false,
-        [AccessiblityEnum.AUDIO]: false,
-        [AccessiblityEnum.MOTOR]: false,
-        [AccessiblityEnum.NONE]: false,
+        [AccessibilityEnum.VISUAL]: false,
+        [AccessibilityEnum.MENTAL]: false,
+        [AccessibilityEnum.AUDIO]: false,
+        [AccessibilityEnum.MOTOR]: false,
+        [AccessibilityEnum.NONE]: false,
       },
     }
     renderAccessibility({ initialValues, onSubmit })
@@ -113,11 +115,11 @@ describe('Accessibility', () => {
     initialValues = {
       ...initialValues,
       accessibility: {
-        [AccessiblityEnum.VISUAL]: false,
-        [AccessiblityEnum.MENTAL]: false,
-        [AccessiblityEnum.AUDIO]: false,
-        [AccessiblityEnum.MOTOR]: false,
-        [AccessiblityEnum.NONE]: false,
+        [AccessibilityEnum.VISUAL]: false,
+        [AccessibilityEnum.MENTAL]: false,
+        [AccessibilityEnum.AUDIO]: false,
+        [AccessibilityEnum.MOTOR]: false,
+        [AccessibilityEnum.NONE]: false,
       },
     }
     renderAccessibility({ initialValues, onSubmit })
@@ -165,11 +167,11 @@ describe('Accessibility', () => {
     initialValues = {
       ...initialValues,
       accessibility: {
-        [AccessiblityEnum.VISUAL]: false,
-        [AccessiblityEnum.MENTAL]: false,
-        [AccessiblityEnum.AUDIO]: false,
-        [AccessiblityEnum.MOTOR]: false,
-        [AccessiblityEnum.NONE]: false,
+        [AccessibilityEnum.VISUAL]: false,
+        [AccessibilityEnum.MENTAL]: false,
+        [AccessibilityEnum.AUDIO]: false,
+        [AccessibilityEnum.MOTOR]: false,
+        [AccessibilityEnum.NONE]: false,
       },
     }
     renderAccessibility({ initialValues, onSubmit })

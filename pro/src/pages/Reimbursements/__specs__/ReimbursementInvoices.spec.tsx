@@ -12,6 +12,7 @@ import {
   renderWithProviders,
   RenderWithProvidersOptions,
 } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { ReimbursementsInvoices } from '../ReimbursementsInvoices'
 
@@ -34,17 +35,8 @@ vi.mock('react-router-dom', async () => ({
 }))
 
 const renderReimbursementsInvoices = (options?: RenderWithProvidersOptions) => {
-  const storeOverrides = {
-    user: {
-      currentUser: {
-        isAdmin: false,
-        hasSeenProTutorials: true,
-      },
-      initialized: true,
-    },
-  }
   renderWithProviders(<ReimbursementsInvoices />, {
-    storeOverrides,
+    user: sharedCurrentUserFactory(),
     ...options,
   })
 }
@@ -298,7 +290,7 @@ describe('reimbursementsWithFilters', () => {
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     expect(
       screen.getByText(
-        'Les remboursements s’effectuent tous les 15 jours, rétroactivement suite à la validation d’une contremarque dans le guichet ou à la validation automatique des contremarques d’évènements. Cette page est automatiquement mise à jour à chaque remboursement.'
+        /Nous remboursons en un virement toutes les réservations validées entre le 1ᵉʳ et le 15 du mois/
       )
     ).toBeInTheDocument()
 

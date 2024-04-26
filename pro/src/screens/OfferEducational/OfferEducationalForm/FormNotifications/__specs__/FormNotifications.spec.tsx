@@ -5,7 +5,7 @@ import React from 'react'
 import * as yup from 'yup'
 
 import { OfferEducationalFormValues } from 'core/OfferEducational'
-import { SubmitButton } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 
 import FormNotifications from '../FormNotifications'
 
@@ -35,7 +35,9 @@ const renderFormNotifications = (
       {({ handleSubmit }) => (
         <form onSubmit={handleSubmit}>
           <FormNotifications disableForm={false} />
-          <SubmitButton isLoading={false}>Submit</SubmitButton>
+          <Button type="submit" isLoading={false}>
+            Submit
+          </Button>
         </form>
       )}
     </Formik>

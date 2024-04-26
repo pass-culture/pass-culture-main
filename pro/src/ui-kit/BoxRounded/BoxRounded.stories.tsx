@@ -1,6 +1,6 @@
 import type { StoryObj } from '@storybook/react'
 
-import { BoxRounded } from '.'
+import { BoxRounded } from './BoxRounded'
 
 export default {
   title: 'ui-kit/BoxRounded',

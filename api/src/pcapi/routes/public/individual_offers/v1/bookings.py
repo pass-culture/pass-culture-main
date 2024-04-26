@@ -191,7 +191,7 @@ def validate_booking_by_token(token: str) -> None:
     except exceptions.BookingIsNotConfirmed as exc:
         raise api_errors.ForbiddenError({"booking": str(exc)})
 
-    bookings_api.mark_as_used(booking)
+    bookings_api.mark_as_used(booking, booking_models.BookingValidationAuthorType.OFFERER)
 
 
 @blueprint.v1_bookings_blueprint.route("/keep/token/<token>", methods=["PATCH"])

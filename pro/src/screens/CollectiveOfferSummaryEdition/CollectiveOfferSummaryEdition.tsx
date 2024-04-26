@@ -8,7 +8,7 @@ import OfferEducationalActions from 'components/OfferEducationalActions'
 import { isCollectiveOfferTemplate, Mode } from 'core/OfferEducational'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils'
-import { ButtonLink } from 'ui-kit'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './CollectiveOfferSummaryEdition.module.scss'
@@ -21,7 +21,7 @@ interface CollectiveOfferSummaryEditionProps {
   mode: Mode
 }
 
-const CollectiveOfferSummaryEdition = ({
+export const CollectiveOfferSummaryEditionScreen = ({
   offer,
   reloadCollectiveOffer,
   mode,
@@ -72,5 +72,3 @@ const CollectiveOfferSummaryEdition = ({
     </>
   )
 }
-
-export default CollectiveOfferSummaryEdition

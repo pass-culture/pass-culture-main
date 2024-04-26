@@ -3,8 +3,8 @@ import React, { useRef } from 'react'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import useOnClickOrFocusOutside from 'hooks/useOnClickOrFocusOutside'
-import { Button } from 'ui-kit'
-import { BaseRadio } from 'ui-kit/form/shared'
+import { Button } from 'ui-kit/Button/Button'
+import { BaseRadio } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
 
 import {
   collectiveFilterStatus,

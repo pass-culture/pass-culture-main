@@ -105,7 +105,7 @@ class CollectiveOfferTest:
             "contactPhone": offer.contactPhone,
             "offerVenue": {
                 "addressType": "offererVenue",
-                "address": venue.address,
+                "address": venue.street,
                 "city": venue.city,
                 "distance": None,
                 "name": venue.name,

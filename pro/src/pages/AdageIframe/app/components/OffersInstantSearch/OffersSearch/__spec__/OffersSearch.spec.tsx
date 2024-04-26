@@ -165,7 +165,7 @@ describe('offersSearch component', () => {
   beforeEach(() => {
     props = {
       setGeoRadius: setGeoRadiusMock,
-      setFacetFilters: () => {},
+      setFilters: () => {},
       initialFilters: {},
     }
     window.IntersectionObserver = vi.fn().mockImplementation(() => ({

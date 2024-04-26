@@ -3,6 +3,7 @@ import logging
 from flask import request
 
 from pcapi.core.external.attributes.api import update_external_user
+from pcapi.core.history import api as history_api
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
@@ -25,11 +26,14 @@ def _toggle_marketing_email_subscription(subscribe: bool) -> None:
     if user is None:
         raise ApiErrors({"User": "user not found for email %s" % user_email}, status_code=400)
 
-    user.notificationSubscriptions = (
-        {**user.notificationSubscriptions, "marketing_email": subscribe}
-        if user.notificationSubscriptions is not None
-        else {"marketing_email": subscribe}
-    )
+    history_api.ObjectUpdateSnapshot(user, user).trace_update(
+        {"marketing_email": subscribe},
+        target=user.get_notification_subscriptions(),
+        field_name_template="notificationSubscriptions.{}",
+    ).add_action()
+
+    user.set_marketing_email_subscription(subscribe)
+
     repository.save(user)
 
     # Sendinblue is already up-to-date from originating automation, update marketing preference in Batch

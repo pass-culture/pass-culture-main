@@ -3,8 +3,7 @@ import React, { ReactNode } from 'react'
 
 import fullLinkIcon from 'icons/full-link.svg'
 import shadowTipsHelpIcon from 'icons/shadow-tips-help.svg'
-import { ButtonLink } from 'ui-kit/Button'
-import type { LinkProps } from 'ui-kit/Button/ButtonLink'
+import { ButtonLink, type LinkProps } from 'ui-kit/Button/ButtonLink'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './InfoBox.module.scss'
@@ -19,7 +18,11 @@ interface InfoBoxProps {
   svgAlt?: string
 }
 
-const InfoBox = ({ children, link, svgAlt }: InfoBoxProps): JSX.Element => {
+export const InfoBox = ({
+  children,
+  link,
+  svgAlt,
+}: InfoBoxProps): JSX.Element => {
   return (
     <div className={cn(styles['info-box'])}>
       <div className={styles['info-box-header']}>
@@ -50,5 +53,3 @@ const InfoBox = ({ children, link, svgAlt }: InfoBoxProps): JSX.Element => {
     </div>
   )
 }
-
-export default InfoBox

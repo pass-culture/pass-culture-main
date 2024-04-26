@@ -30,13 +30,14 @@ import {
 } from 'core/Offers/utils/getIndividualOfferUrl'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
 import { Stocks } from 'pages/IndividualOfferWizard/Stocks/Stocks'
-import { ButtonLink } from 'ui-kit'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 import {
   getIndividualOfferFactory,
   getOfferStockFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 vi.mock('utils/date', async () => {
   return {
@@ -94,14 +95,6 @@ const renderStockEventScreen = async (
     },
   ])
 
-  const storeOverrides = {
-    user: {
-      currentUser: {
-        isAdmin: false,
-      },
-    },
-  }
-
   renderWithProviders(
     <>
       <Routes>
@@ -134,7 +127,7 @@ const renderStockEventScreen = async (
       <Notification />
     </>,
     {
-      storeOverrides,
+      user: sharedCurrentUserFactory(),
       initialRouterEntries: [
         getIndividualOfferUrl({
           step: OFFER_WIZARD_STEP_IDS.STOCKS,
@@ -186,7 +179,7 @@ describe('screens:StocksEventEdition', () => {
       externalTicketOfficeUrl: '',
       url: '',
       venue: {
-        address: '1 boulevard Poissonnière',
+        street: '1 boulevard Poissonnière',
         bookingEmail: 'venue29@example.net',
         city: 'Paris',
         departementCode: '75',

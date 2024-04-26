@@ -1,7 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
+import { isErrorAPIError } from 'apiClient/helpers'
 import {
+  CollectiveStockResponseModel,
   GetCollectiveOfferRequestResponseModel,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
@@ -10,8 +13,11 @@ import { AppLayout } from 'app/AppLayout'
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
 import {
+  createPatchStockDataPayload,
+  createStockDataPayload,
   EducationalOfferType,
   extractInitialStockValues,
+  hasStatusCodeAndErrorsCode,
   isCollectiveOffer,
   isCollectiveOfferTemplate,
   Mode,
@@ -19,9 +25,9 @@ import {
 } from 'core/OfferEducational'
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
+import { FORM_ERROR_MESSAGE } from 'core/shared'
 import useNotification from 'hooks/useNotification'
 import getOfferRequestInformationsAdapter from 'pages/CollectiveOfferFromRequest/adapters/getOfferRequestInformationsAdapter'
-import patchCollectiveStockAdapter from 'pages/CollectiveOfferStockEdition/adapters/patchCollectiveStockAdapter'
 import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
 import {
   MandatoryCollectiveOfferFromParamsProps,
@@ -30,7 +36,6 @@ import {
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 
 import postCollectiveOfferTemplateAdapter from './adapters/postCollectiveOfferTemplate'
-import postCollectiveStockAdapter from './adapters/postCollectiveStock'
 
 export const CollectiveOfferStockCreation = ({
   offer,
@@ -96,8 +101,6 @@ export const CollectiveOfferStockCreation = ({
     offer: GetCollectiveOfferResponseModel,
     values: OfferEducationalStockFormValues
   ) => {
-    let isOk: boolean
-    let message: string | null
     let createdOfferTemplateId: number | null = null
     const isTemplate =
       values.educationalOfferType === EducationalOfferType.SHOWCASE
@@ -106,39 +109,61 @@ export const CollectiveOfferStockCreation = ({
         offerId: offer.id,
         values,
       })
-      isOk = response.isOk
-      message = response.message
+      const { isOk, message } = response
+      if (!isOk) {
+        notify.error(message)
+      }
       createdOfferTemplateId = response.payload ? response.payload.id : null
     } else {
-      const response = offer.collectiveStock
-        ? await patchCollectiveStockAdapter({
-            offer,
-            stockId: offer.collectiveStock.id,
+      let response: CollectiveStockResponseModel | null = null
+      try {
+        if (offer.collectiveStock) {
+          const patchPayload = createPatchStockDataPayload(
             values,
-            initialValues,
-          })
-        : await postCollectiveStockAdapter({
-            offer,
+            offer.venue.departementCode ?? '',
+            initialValues
+          )
+          response = await api.editCollectiveStock(
+            offer.collectiveStock.id,
+            patchPayload
+          )
+        } else {
+          const stockPayload = createStockDataPayload(
             values,
-          })
-      isOk = response.isOk
-      message = response.message
-
-      if (response.payload !== null) {
+            offer.venue.departementCode ?? '',
+            offer.id
+          )
+          response = await api.createCollectiveStock(stockPayload)
+        }
+      } catch (error) {
+        if (
+          hasStatusCodeAndErrorsCode(error) &&
+          error.status === 400 &&
+          error.errors.code === 'EDUCATIONAL_STOCK_ALREADY_EXISTS'
+        ) {
+          notify.error(
+            'Une erreur s’est produite. Les informations date et prix existent déjà pour cette offre.'
+          )
+        }
+        if (isErrorAPIError(error) && error.status === 400) {
+          notify.error(FORM_ERROR_MESSAGE)
+        } else {
+          notify.error(
+            'Une erreur est survenue lors de la création de votre stock.'
+          )
+        }
+      }
+      if (response !== null) {
         setOffer({
           ...offer,
           collectiveStock: {
             ...offer.collectiveStock,
-            ...response.payload,
+            ...response,
             isBooked: false,
             isCancellable: offer.isCancellable,
           },
         })
       }
-    }
-
-    if (!isOk) {
-      return notify.error(message)
     }
 
     let url = `/offre/${computeURLCollectiveOfferId(

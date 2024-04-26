@@ -7,8 +7,10 @@ import FormLayout from 'components/FormLayout'
 import getSiretData from 'core/Venue/adapters/getSiretDataAdapter'
 import { humanizeSiret, unhumanizeSiret } from 'core/Venue/utils'
 import { VenueCreationFormValues } from 'pages/VenueCreation/types'
-import { InfoBox, TextArea, TextInput } from 'ui-kit'
-import Toggle from 'ui-kit/Toggle'
+import { TextArea } from 'ui-kit/form/TextArea/TextArea'
+import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
+import { Toggle } from 'ui-kit/Toggle/Toggle'
 
 import { isSiretStartingWithSiren, valideSiretLength } from './validationSchema'
 

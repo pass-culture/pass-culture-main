@@ -1,0 +1,54 @@
+import { screen } from '@testing-library/react'
+import { addDays } from 'date-fns'
+import React from 'react'
+
+import { BOOKING_STATUS } from 'core/Bookings/constants'
+import {
+  collectiveBookingCollectiveStockFactory,
+  collectiveBookingFactory,
+} from 'utils/collectiveApiFactories'
+import { renderWithProviders } from 'utils/renderWithProviders'
+
+import {
+  CollectiveActionButtons,
+  CollectiveActionButtonsProps,
+} from '../CollectiveActionButtons'
+
+const renderCollectiveActionButtons = (props: CollectiveActionButtonsProps) => {
+  renderWithProviders(<CollectiveActionButtons {...props} />)
+}
+
+describe('CollectiveActionButtons', () => {
+  it('should display modify offer button for pending booking', () => {
+    const bookingRecap = collectiveBookingFactory({
+      bookingStatus: BOOKING_STATUS.PENDING,
+    })
+    renderCollectiveActionButtons({
+      bookingRecap,
+      reloadBookings: vi.fn(),
+      isCancellable: false,
+    })
+    const modifyLink = screen.getByRole('link', { name: 'Modifier l’offre' })
+    expect(modifyLink).toBeInTheDocument()
+    expect(modifyLink).toHaveAttribute(
+      'href',
+      '/offre/1/collectif/recapitulatif'
+    )
+  })
+  it('should not display modify offer button for validated booking for more than 2 days', () => {
+    const bookingRecap = collectiveBookingFactory({
+      bookingStatus: BOOKING_STATUS.VALIDATED,
+      stock: collectiveBookingCollectiveStockFactory({
+        eventBeginningDatetime: addDays(new Date(), 3).toISOString(),
+      }),
+    })
+    renderCollectiveActionButtons({
+      bookingRecap,
+      reloadBookings: vi.fn(),
+      isCancellable: false,
+    })
+    expect(
+      screen.queryByRole('link', { name: 'Modifier l’offre' })
+    ).not.toBeInTheDocument()
+  })
+})

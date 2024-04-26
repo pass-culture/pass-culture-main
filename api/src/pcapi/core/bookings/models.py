@@ -75,6 +75,12 @@ class BookingExportType(enum.Enum):
     EXCEL = "excel"
 
 
+class BookingValidationAuthorType(enum.Enum):
+    OFFERER = "OFFERER"
+    BACKOFFICE = "BACKOFFICE"
+    AUTO = "AUTO"
+
+
 class ExternalBooking(PcObject, Base, Model):
     bookingId: int = Column(BigInteger, ForeignKey("booking.id"), index=True, nullable=False)
 
@@ -146,6 +152,8 @@ class Booking(PcObject, Base, Model):
     status: BookingStatus = Column(Enum(BookingStatus), nullable=False, default=BookingStatus.CONFIRMED)
     Index("ix_booking_status", status)
 
+    validationAuthorType: BookingValidationAuthorType = Column(Enum(BookingValidationAuthorType), nullable=True)
+
     reimbursementDate = Column(DateTime, nullable=True, index=True)
 
     depositId = Column(BigInteger, ForeignKey("deposit.id"), index=True, nullable=True)
@@ -154,13 +162,14 @@ class Booking(PcObject, Base, Model):
         "Deposit", foreign_keys=[depositId], back_populates="bookings"
     )
 
-    def mark_as_used(self) -> None:
+    def mark_as_used(self, validation_author_type: BookingValidationAuthorType) -> None:
         if self.is_used_or_reimbursed:
             raise exceptions.BookingHasAlreadyBeenUsed()
         if self.status is BookingStatus.CANCELLED:
             raise exceptions.BookingIsCancelled()
         self.dateUsed = datetime.utcnow()
         self.status = BookingStatus.USED
+        self.validationAuthorType = validation_author_type
 
     def mark_as_unused_set_confirmed(self) -> None:
         self.dateUsed = None

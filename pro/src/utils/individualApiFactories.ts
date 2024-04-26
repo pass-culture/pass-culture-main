@@ -22,6 +22,7 @@ import {
   SubcategoryIdEnum,
   SubcategoryResponseModel,
   VenueListItemResponseModel,
+  VenueProviderResponse,
   VenueTypeCode,
 } from 'apiClient/v1'
 import {
@@ -141,7 +142,7 @@ export const getOfferVenueFactory = (
 
   return {
     id: currentVenueId,
-    address: 'Ma Rue',
+    street: 'Ma Rue',
     city: 'Ma Ville',
     isVirtual: false,
     name: `Le nom du lieu ${currentVenueId}`,
@@ -339,7 +340,6 @@ export function getOffererNameFactory(
 }
 
 export const defaultGetOffererResponseModel: GetOffererResponseModel = {
-  address: 'Fake Address',
   apiKey: {
     maxAllowed: 10,
     prefixes: [],
@@ -360,6 +360,7 @@ export const defaultGetOffererResponseModel: GetOffererResponseModel = {
   name: 'Ma super structure',
   id: 1,
   postalCode: '00000',
+  street: 'Fake Address',
   allowedOnAdage: true,
 }
 
@@ -426,4 +427,22 @@ export const defaultManagedVenues: ManagedVenues = {
   id: 1,
   siret: '123456789',
   hasPricingPoint: true,
+}
+
+export const defaultVenueProvider: VenueProviderResponse = {
+  id: 1,
+  isActive: true,
+  isFromAllocineProvider: false,
+  lastSyncDate: undefined,
+  venueId: 2,
+  venueIdAtOfferProvider: 'cdsdemorc1',
+  provider: {
+    name: 'Ciné Office',
+    id: 12,
+    hasOffererProvider: false,
+    isActive: true,
+  },
+  quantity: 0,
+  isDuo: true,
+  price: 0,
 }

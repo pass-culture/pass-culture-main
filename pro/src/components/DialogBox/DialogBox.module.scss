@@ -34,6 +34,8 @@
   display: inline-flex;
   justify-content: center;
   cursor: pointer;
+  position: relative;
+  z-index: zIndex.$modal-close-z-index;
 
   &-icon {
     width: rem.torem(24px);

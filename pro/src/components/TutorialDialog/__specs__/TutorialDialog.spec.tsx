@@ -9,6 +9,7 @@ import {
   RenderWithProvidersOptions,
   renderWithProviders,
 } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import TutorialDialog from '../TutorialDialog'
 
@@ -33,16 +34,10 @@ describe('tutorial modal', () => {
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
-    const storeOverrides = {
-      user: {
-        currentUser: {
-          id: 'test_id',
-          hasSeenProTutorials: false,
-        },
-      },
-    }
 
-    renderTutorialDialog({ storeOverrides })
+    renderTutorialDialog({
+      user: sharedCurrentUserFactory({ hasSeenProTutorials: false }),
+    })
 
     const closeButton = screen.getByTitle('Fermer la modale')
     await userEvent.click(closeButton)
@@ -54,61 +49,40 @@ describe('tutorial modal', () => {
   })
 
   it('should show tutorial dialog if user has not seen it yet', () => {
-    const storeOverrides = {
-      user: {
-        currentUser: {
-          id: 'test_id',
-          hasSeenProTutorials: false,
-        },
-      },
-    }
-
-    renderTutorialDialog({ storeOverrides })
+    renderTutorialDialog({
+      user: sharedCurrentUserFactory({ hasSeenProTutorials: false }),
+    })
 
     expect(screen.getByText(stepTitles[0])).toBeInTheDocument()
   })
 
   it("shouldn't show tutorial dialog if user has already seen it", () => {
-    const storeOverrides = {
-      user: {
-        currentUser: {
-          id: 'test_id',
-          hasSeenProTutorials: true,
-        },
-      },
-    }
-
-    renderTutorialDialog({ storeOverrides })
+    renderTutorialDialog({
+      user: sharedCurrentUserFactory({ hasSeenProTutorials: true }),
+    })
 
     expect(screen.queryByText(stepTitles[0])).not.toBeInTheDocument()
   })
 
   describe('interacting with navigation buttons', () => {
-    let buttonNext: HTMLElement
-    beforeEach(() => {
-      const storeOverrides = {
-        user: {
-          currentUser: {
-            id: 'test_id',
-            hasSeenProTutorials: false,
-          },
-        },
-      }
-
-      renderTutorialDialog({ storeOverrides })
-      buttonNext = screen.getByText('Suivant')
-    })
-
     describe('from first step', () => {
       it('should disabled "previous" button', () => {
+        renderTutorialDialog({
+          user: sharedCurrentUserFactory({ hasSeenProTutorials: false }),
+        })
+
         const buttonPrevious = screen.getByText('Précédent')
         expect(buttonPrevious).toHaveAttribute('disabled')
       })
 
       it('should show change steps when clicking on "next"', async () => {
+        renderTutorialDialog({
+          user: sharedCurrentUserFactory({ hasSeenProTutorials: false }),
+        })
+
         expect(screen.getByText(stepTitles[0])).toBeInTheDocument()
 
-        await userEvent.click(buttonNext)
+        await userEvent.click(screen.getByText('Suivant'))
         expect(screen.getByText(stepTitles[1])).toBeInTheDocument()
         expect(
           screen.getByText('Renseignez vos informations bancaires')
@@ -120,27 +94,24 @@ describe('tutorial modal', () => {
           )
         ).toBeInTheDocument()
 
-        await userEvent.click(buttonNext)
+        await userEvent.click(screen.getByText('Suivant'))
         expect(screen.getByText(stepTitles[2])).toBeInTheDocument()
 
-        await userEvent.click(buttonNext)
+        await userEvent.click(screen.getByText('Suivant'))
         expect(screen.getByText(stepTitles[3])).toBeInTheDocument()
       })
     })
 
     describe('from last step', () => {
-      let buttonPrevious: HTMLElement
-
-      beforeEach(async () => {
-        await userEvent.click(buttonNext)
-        await userEvent.click(buttonNext)
-        await userEvent.click(buttonNext)
-
-        buttonPrevious = screen.getByText('Précédent')
-      })
-
       describe('when clicking on finish button', () => {
         it('should close tutorial', async () => {
+          renderTutorialDialog({
+            user: sharedCurrentUserFactory({ hasSeenProTutorials: false }),
+          })
+          await userEvent.click(screen.getByText('Suivant'))
+          await userEvent.click(screen.getByText('Suivant'))
+          await userEvent.click(screen.getByText('Suivant'))
+
           const buttonFinish = screen.getByText('Terminer')
           expect(buttonFinish).toBeInTheDocument()
 
@@ -153,6 +124,13 @@ describe('tutorial modal', () => {
         })
 
         it('should call set has seen tutos function', async () => {
+          renderTutorialDialog({
+            user: sharedCurrentUserFactory({ hasSeenProTutorials: false }),
+          })
+          await userEvent.click(screen.getByText('Suivant'))
+          await userEvent.click(screen.getByText('Suivant'))
+          await userEvent.click(screen.getByText('Suivant'))
+
           const buttonFinish = screen.getByText('Terminer')
           expect(buttonFinish).toBeInTheDocument()
 
@@ -163,23 +141,33 @@ describe('tutorial modal', () => {
       })
 
       it('should change step when clicking on "next"', async () => {
+        renderTutorialDialog({
+          user: sharedCurrentUserFactory({ hasSeenProTutorials: false }),
+        })
+        await userEvent.click(screen.getByText('Suivant'))
+        await userEvent.click(screen.getByText('Suivant'))
+        await userEvent.click(screen.getByText('Suivant'))
+
         expect(screen.getByText(stepTitles[3])).toBeInTheDocument()
 
-        await userEvent.click(buttonPrevious)
+        await userEvent.click(screen.getByText('Précédent'))
         expect(screen.getByText(stepTitles[2])).toBeInTheDocument()
 
-        await userEvent.click(buttonPrevious)
+        await userEvent.click(screen.getByText('Précédent'))
         expect(screen.getByText(stepTitles[1])).toBeInTheDocument()
 
-        await userEvent.click(buttonPrevious)
+        await userEvent.click(screen.getByText('Précédent'))
         expect(screen.getByText(stepTitles[0])).toBeInTheDocument()
       })
     })
 
     it('should change step when clicking on "previous"', async () => {
-      await userEvent.click(buttonNext)
-      await userEvent.click(buttonNext)
-      await userEvent.click(buttonNext)
+      renderTutorialDialog({
+        user: sharedCurrentUserFactory({ hasSeenProTutorials: false }),
+      })
+      await userEvent.click(screen.getByText('Suivant'))
+      await userEvent.click(screen.getByText('Suivant'))
+      await userEvent.click(screen.getByText('Suivant'))
 
       const buttonPrevious = screen.getByText('Précédent')
 
@@ -196,6 +184,10 @@ describe('tutorial modal', () => {
     })
 
     it('should go on the right step when clicking on dots', async () => {
+      renderTutorialDialog({
+        user: sharedCurrentUserFactory({ hasSeenProTutorials: false }),
+      })
+
       const navDottes = screen.queryAllByTestId('nav-dot')
 
       expect(screen.getByText(stepTitles[0])).toBeInTheDocument()
@@ -215,17 +207,8 @@ describe('tutorial modal', () => {
   })
 
   it('should display text in create venue step', async () => {
-    const storeOverrides = {
-      user: {
-        currentUser: {
-          id: 'test_id',
-          hasSeenProTutorials: false,
-        },
-      },
-    }
-
     renderTutorialDialog({
-      storeOverrides,
+      user: sharedCurrentUserFactory({ hasSeenProTutorials: false }),
     })
 
     await userEvent.click(screen.getByText('Suivant'))

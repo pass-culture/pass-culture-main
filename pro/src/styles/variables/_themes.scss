@@ -1,4 +1,5 @@
-html[data-theme="pink"] {
+html[data-theme="pink"],
+[data-theme-storybook="pink"] {
   // GENERAL COLORS
   --color-white: #fff;
   --color-grey-light: #f1f1f4;
@@ -87,9 +88,11 @@ html[data-theme="pink"] {
   --color-adage-blue-light: #1fc5e9;
   --color-adage-blue-dark: #0e78b7;
   --color-adage-blue-external: #626fad;
+  --color-adage-salmon-light: #faeaf1;
 }
 
-html[data-theme="blue"] {
+html[data-theme="blue"],
+[data-theme-storybook="blue"] {
   // GENERAL COLORS
   --color-white: #fff;
   --color-grey-light: #f1f1f4;
@@ -178,4 +181,5 @@ html[data-theme="blue"] {
   --color-adage-blue-light: #1fc5e9;
   --color-adage-blue-dark: #0e78b7;
   --color-adage-blue-external: #626fad;
+  --color-adage-salmon-light: #faeaf1;
 }

@@ -2,7 +2,7 @@
 import { PatchOfferBodyModel } from 'apiClient/v1'
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
 import { OfferExtraData } from 'core/Offers/types'
-import { AccessiblityEnum } from 'core/shared'
+import { AccessibilityEnum } from 'core/shared'
 import { getIndividualOfferFactory } from 'utils/individualApiFactories'
 
 import {
@@ -98,11 +98,11 @@ describe('test updateIndividualOffer::serializers', () => {
         withdrawalDelay: undefined,
         withdrawalType: undefined,
         accessibility: {
-          [AccessiblityEnum.AUDIO]: true,
-          [AccessiblityEnum.MENTAL]: true,
-          [AccessiblityEnum.MOTOR]: true,
-          [AccessiblityEnum.VISUAL]: true,
-          [AccessiblityEnum.NONE]: false,
+          [AccessibilityEnum.AUDIO]: true,
+          [AccessibilityEnum.MENTAL]: true,
+          [AccessibilityEnum.MOTOR]: true,
+          [AccessibilityEnum.VISUAL]: true,
+          [AccessibilityEnum.NONE]: false,
         },
         author: 'test author',
         ean: 'test ean',

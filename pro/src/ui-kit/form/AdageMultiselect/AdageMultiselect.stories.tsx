@@ -2,7 +2,7 @@ import type { StoryObj } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
 
-import AdageMultiselect from './AdageMultiselect'
+import { AdageMultiselect } from './AdageMultiselect'
 
 export default {
   title: 'ui-kit/forms/AdageMultiselect',

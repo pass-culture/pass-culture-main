@@ -1,4 +1,4 @@
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useSearchParams } from 'react-router-dom'
 
 import { CollectiveOfferTemplateResponseModel } from 'apiClient/adage'
 import strokeOfferIcon from 'icons/stroke-offer.svg'
@@ -14,13 +14,18 @@ import styles from './OfferCard.module.scss'
 
 export interface CardComponentProps {
   offer: CollectiveOfferTemplateResponseModel
-  handlePlaylistElementTracking: () => void
+  onCardClicked: () => void
+  viewType?: 'grid' | 'list'
 }
 
 const OfferCardComponent = ({
   offer,
-  handlePlaylistElementTracking,
+  onCardClicked,
+  viewType,
 }: CardComponentProps) => {
+  const location = useLocation()
+
+  const currentPathname = location.pathname.split('/')[2]
   const [searchParams] = useSearchParams()
   const adageAuthToken = searchParams.get('token')
   const { adageUser } = useAdageUser()
@@ -30,11 +35,9 @@ const OfferCardComponent = ({
       <Link
         className={styles['offer-link']}
         data-testid="card-offer-link"
-        to={`/adage-iframe/decouverte/offre/${offer.id}?token=${adageAuthToken}`}
+        to={`/adage-iframe/${currentPathname}/offre/${offer.id}?token=${adageAuthToken}`}
         state={{ offer }}
-        onClick={() => {
-          handlePlaylistElementTracking()
-        }}
+        onClick={onCardClicked}
       >
         <div className={styles['offer-image-container']}>
           {offer.imageUrl ? (
@@ -99,6 +102,7 @@ const OfferCardComponent = ({
       <OfferFavoriteButton
         offer={{ ...offer, isTemplate: true }}
         className={styles['offer-favorite-button']}
+        viewType={viewType}
       />
     </div>
   )

@@ -5,6 +5,7 @@ import {
   BannerMetaModel,
   GetOffererResponseModel,
   GetVenueResponseModel,
+  VenueTypeResponseModel,
 } from 'apiClient/v1'
 import { ButtonImageEdit } from 'components/ImageUploader/ButtonImageEdit/ButtonImageEdit'
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
@@ -12,13 +13,12 @@ import { UploadImageValues } from 'components/ImageUploader/ButtonImageEdit/type
 import { ImageUploader } from 'components/ImageUploader/ImageUploader'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { Events } from 'core/FirebaseEvents/constants'
-import { SelectOption } from 'custom_types/form'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import fullPlusIcon from 'icons/full-more.svg'
 import fullParametersIcon from 'icons/full-parameters.svg'
 import { postImageToVenue } from 'repository/pcapi/pcapi'
-import { ButtonLink } from 'ui-kit'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './VenueEditionHeader.module.scss'
@@ -26,7 +26,7 @@ import styles from './VenueEditionHeader.module.scss'
 export interface VenueEditionHeaderProps {
   venue: GetVenueResponseModel
   offerer: GetOffererResponseModel
-  venueTypes: SelectOption[]
+  venueTypes: VenueTypeResponseModel[]
 }
 
 export const buildInitialValues = (
@@ -59,7 +59,7 @@ export const VenueEditionHeader = ({
   const { logEvent } = useAnalytics()
   const notify = useNotification()
   const venueType = venueTypes.find(
-    (venueType) => venueType.value === venue.venueTypeCode
+    (venueType) => venueType.id === venue.venueTypeCode
   )
 
   const initialValues = buildInitialValues(venue.bannerUrl, venue.bannerMeta)
@@ -128,9 +128,9 @@ export const VenueEditionHeader = ({
             : venue.publicName || venue.name}
         </h1>
 
-        {venue.address && (
+        {venue.street && (
           <address className={styles['venue-address']}>
-            {venue.address}, {venue.postalCode} {venue.city}
+            {venue.street}, {venue.postalCode} {venue.city}
           </address>
         )}
 

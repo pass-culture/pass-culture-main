@@ -1,5 +1,4 @@
 export interface VenueSettingsFormValues {
-  address: string
   addressAutocomplete: string
   banId: string
   bookingEmail: string
@@ -13,6 +12,7 @@ export interface VenueSettingsFormValues {
   publicName: string
   'search-addressAutocomplete': string
   siret: string
+  street: string
   venueSiret: number | null
   venueLabel: string | null
   venueType: string

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useLoaderData } from 'react-router-dom'
+import { useSWRConfig } from 'swr'
 
 import {
   GetOffererResponseModel,
@@ -9,12 +10,13 @@ import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/Moda
 import { UploadImageValues } from 'components/ImageUploader/ButtonImageEdit/types'
 import { ImageUploader } from 'components/ImageUploader/ImageUploader'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
+import { GET_OFFERER_QUERY_KEY } from 'config/swrQueryKeys'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { buildInitialValues } from 'pages/VenueEdition/VenueEditionHeader'
 import { postImageToVenue } from 'repository/pcapi/pcapi'
-import { ButtonLink } from 'ui-kit'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { Card } from '../Card'
@@ -28,15 +30,11 @@ import { PartnerPageIndividualSection } from './PartnerPageIndividualSection'
 export interface PartnerPageProps {
   offerer: GetOffererResponseModel
   venue: GetOffererVenueResponseModel
-  setSelectedOfferer: (offerer: GetOffererResponseModel) => void
 }
 
-export const PartnerPage = ({
-  offerer,
-  venue,
-  setSelectedOfferer,
-}: PartnerPageProps) => {
+export const PartnerPage = ({ offerer, venue }: PartnerPageProps) => {
   const { logEvent } = useAnalytics()
+  const { mutate } = useSWRConfig()
   const notify = useNotification()
   const { venueTypes } = useLoaderData() as HomepageLoaderData
   const venueType = venueTypes.find(
@@ -64,20 +62,8 @@ export const PartnerPage = ({
       setImageValues(
         buildInitialValues(editedVenue.bannerUrl, editedVenue.bannerMeta)
       )
-      // we update the offerer state to keep venue with its new image
-      // TODO replace with SWR mutation refresh instead of passing down the setSelectedOfferer function
-      setSelectedOfferer({
-        ...offerer,
-        managedVenues: (offerer.managedVenues ?? []).map((iteratedVenue) =>
-          iteratedVenue.id === venue.id
-            ? {
-                ...venue,
-                bannerUrl: editedVenue.bannerUrl,
-                bannerMeta: editedVenue.bannerMeta,
-              }
-            : iteratedVenue
-        ),
-      })
+
+      await mutate([GET_OFFERER_QUERY_KEY, String(offerer.id)])
 
       notify.success('Vos modifications ont bien été prises en compte')
     } catch {
@@ -114,9 +100,9 @@ export const PartnerPage = ({
             {venue.publicName || venue.name}
           </div>
 
-          {venue.address && (
+          {venue.street && (
             <address className={styles['venue-address']}>
-              {venue.address}, {venue.postalCode} {venue.city}
+              {venue.street}, {venue.postalCode} {venue.city}
             </address>
           )}
 

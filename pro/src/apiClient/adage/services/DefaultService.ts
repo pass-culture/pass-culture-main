@@ -23,6 +23,7 @@ import type { ListFeatureResponseModel } from '../models/ListFeatureResponseMode
 import type { LocalOfferersPlaylist } from '../models/LocalOfferersPlaylist';
 import type { OfferFavoriteBody } from '../models/OfferFavoriteBody';
 import type { OfferIdBody } from '../models/OfferIdBody';
+import type { OfferListSwitch } from '../models/OfferListSwitch';
 import type { PlaylistBody } from '../models/PlaylistBody';
 import type { PostCollectiveRequestBodyModel } from '../models/PostCollectiveRequestBodyModel';
 import type { RedactorPreferences } from '../models/RedactorPreferences';
@@ -483,6 +484,27 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/logs/offer-detail',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        404: `Not Found`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * log_offer_list_view_switch <POST>
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public logOfferListViewSwitch(
+    requestBody?: OfferListSwitch,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/adage-iframe/logs/offer-list-view-switch',
       body: requestBody,
       mediaType: 'application/json',
       errors: {

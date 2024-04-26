@@ -3,7 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export type GetEducationalOffererVenueResponseModel = {
-  address?: string | null;
   audioDisabilityCompliant?: boolean | null;
   city?: string | null;
   collectiveEmail?: string | null;
@@ -17,6 +16,7 @@ export type GetEducationalOffererVenueResponseModel = {
   name: string;
   postalCode?: string | null;
   publicName?: string | null;
+  street?: string | null;
   visualDisabilityCompliant?: boolean | null;
 };
 

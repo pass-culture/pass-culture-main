@@ -1,18 +1,19 @@
 import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import { SaveNewOnboardingDataQueryModel, Target } from 'apiClient/v1'
 import Callout from 'components/Callout/Callout'
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
+import { GET_VENUE_TYPES_QUERY_KEY } from 'config/swrQueryKeys'
 import {
   DEFAULT_ACTIVITY_VALUES,
   useSignupJourneyContext,
 } from 'context/SignupJourneyContext'
 import { Events } from 'core/FirebaseEvents/constants'
-import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useInitReCaptcha from 'hooks/useInitReCaptcha'
@@ -20,7 +21,8 @@ import useNotification from 'hooks/useNotification'
 import fullEditIcon from 'icons/full-edit.svg'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
 import { updateUser } from 'store/user/reducer'
-import { Banner, ButtonLink } from 'ui-kit'
+import { Banner } from 'ui-kit/Banners/Banner/Banner'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { getReCaptchaToken } from 'utils/recaptcha'
@@ -34,12 +36,12 @@ const Validation = (): JSX.Element => {
   const notify = useNotification()
   const navigate = useNavigate()
   const { activity, offerer } = useSignupJourneyContext()
-  const {
-    isLoading: isLoadingVenueTypes,
-    error: errorVenueTypes,
-    data: venueTypes,
-  } = useGetVenueTypes()
   useInitReCaptcha()
+
+  const venueTypesQuery = useSWR([GET_VENUE_TYPES_QUERY_KEY], () =>
+    api.getVenueTypes()
+  )
+  const venueTypes = venueTypesQuery.data
 
   const dispatch = useDispatch()
   const { currentUser } = useCurrentUser()
@@ -52,21 +54,26 @@ const Validation = (): JSX.Element => {
   }[activity?.targetCustomer ?? Target.INDIVIDUAL]
 
   useEffect(() => {
-    if (offerer === null || offerer === DEFAULT_OFFERER_FORM_VALUES) {
-      navigate('/parcours-inscription/identification')
-      return
-    }
-    if (activity === null || activity === DEFAULT_ACTIVITY_VALUES) {
-      navigate('/parcours-inscription/activite')
+    // This is needed because `ReactRouter` is reloaded because of useIsNewInterfaceActive()
+    if (currentUser.hasUserOfferer) {
+      navigate('/accueil')
+    } else {
+      if (offerer === null || offerer === DEFAULT_OFFERER_FORM_VALUES) {
+        navigate('/parcours-inscription/identification')
+        return
+      }
+      if (activity === null || activity === DEFAULT_ACTIVITY_VALUES) {
+        navigate('/parcours-inscription/activite')
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activity, offerer])
 
-  if (isLoadingVenueTypes) {
+  if (venueTypesQuery.isLoading) {
     return <Spinner />
   }
 
-  if (errorVenueTypes) {
+  if (!venueTypes) {
     return <></>
   }
 
@@ -89,12 +96,12 @@ const Validation = (): JSX.Element => {
         /* istanbul ignore next: the form validation already handles this */
         activity.targetCustomer ?? Target.EDUCATIONAL,
       createVenueWithoutSiret: offerer.createVenueWithoutSiret ?? false,
-      address: offerer.address,
       banId: offerer.banId,
       longitude: offerer.longitude ?? 0,
       latitude: offerer.latitude ?? 0,
       city: offerer.city,
       postalCode: offerer.postalCode,
+      street: offerer.street,
       token,
     }
 
@@ -148,7 +155,7 @@ const Validation = (): JSX.Element => {
           </div>
           <div className={styles['data-line']}>{offerer.siret}</div>
           <div className={styles['data-line']}>
-            {offerer.address}, {offerer.postalCode} {offerer.city}
+            {offerer.street}, {offerer.postalCode} {offerer.city}
           </div>
         </Banner>
       </section>
@@ -183,7 +190,7 @@ const Validation = (): JSX.Element => {
           <div className={styles['data-line']}>
             {
               venueTypes.find(
-                (venueType) => venueType.value === activity.venueTypeCode
+                (venueType) => venueType.id === activity.venueTypeCode
               )?.label
             }
           </div>

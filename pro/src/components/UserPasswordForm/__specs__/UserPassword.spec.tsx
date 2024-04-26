@@ -2,39 +2,25 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
+import { api } from 'apiClient/api'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { UserPasswordForm } from '..'
 import { UserPasswordFormProps } from '../UserPasswordForm'
 
-const postPasswordAdapterMock = vi.fn()
-
 const renderUserPasswordForm = (props: UserPasswordFormProps) => {
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        email: 'test@test.test',
-        id: '11',
-        isAdmin: false,
-        firstName: 'John',
-        lastName: 'Do',
-      },
-    },
-  }
-
   return renderWithProviders(<UserPasswordForm {...props} />, {
-    storeOverrides,
+    user: sharedCurrentUserFactory(),
   })
 }
 
 describe('components:UserPasswordForm', () => {
   let props: UserPasswordFormProps
   beforeEach(() => {
-    postPasswordAdapterMock.mockResolvedValue({})
+    vi.spyOn(api, 'postChangePassword').mockResolvedValue()
     props = {
       closeForm: vi.fn(),
-      postPasswordAdapter: postPasswordAdapterMock,
     }
   })
 
@@ -65,7 +51,7 @@ describe('components:UserPasswordForm', () => {
     )
     await userEvent.tab()
     await userEvent.click(screen.getByText('Enregistrer'))
-    expect(postPasswordAdapterMock).toHaveBeenNthCalledWith(1, {
+    expect(api.postChangePassword).toHaveBeenNthCalledWith(1, {
       newConfirmationPassword: 'MyNewSuper1Password,',
       newPassword: 'MyNewSuper1Password,',
       oldPassword: 'MyCurrentSuper1Password,',

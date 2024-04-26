@@ -10,7 +10,7 @@ import {
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import LinkVenuesDialog from '../LinkVenuesDialog'
+import { LinkVenuesDialog } from '../LinkVenuesDialog'
 
 const mockUpdateVenuePricingPoint = vi.fn()
 const renderLinkVenuesDialog = (

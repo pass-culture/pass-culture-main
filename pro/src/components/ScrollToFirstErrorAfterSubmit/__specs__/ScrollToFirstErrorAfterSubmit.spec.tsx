@@ -3,7 +3,8 @@ import { userEvent } from '@testing-library/user-event'
 import { Formik, Form } from 'formik'
 import * as yup from 'yup'
 
-import { SubmitButton, TextInput } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
+import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import { ScrollToFirstErrorAfterSubmit } from '../ScrollToFirstErrorAfterSubmit'
 
@@ -26,7 +27,7 @@ const TestComponent = () => {
     >
       <Form>
         <TextInput name="test" label="test" />
-        <SubmitButton />
+        <Button type="submit">Enregistrer</Button>
 
         <ScrollToFirstErrorAfterSubmit />
       </Form>

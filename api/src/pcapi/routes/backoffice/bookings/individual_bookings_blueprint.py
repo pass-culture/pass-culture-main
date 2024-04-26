@@ -74,6 +74,9 @@ def _get_individual_bookings(
                 offers_models.Offer.isDuo,
                 offers_models.Offer.subcategoryId,
             ),
+            sa.orm.joinedload(bookings_models.Booking.deposit).load_only(
+                finance_models.Deposit.expirationDate,
+            ),
             sa.orm.joinedload(bookings_models.Booking.user).load_only(
                 users_models.User.id, users_models.User.firstName, users_models.User.lastName
             ),
@@ -227,7 +230,7 @@ def mark_booking_as_used(booking_id: int) -> utils.BackofficeResponse:
         return _redirect_after_individual_booking_action()
 
     try:
-        bookings_api.mark_as_used_with_uncancelling(booking)
+        bookings_api.mark_as_used_with_uncancelling(booking, bookings_models.BookingValidationAuthorType.BACKOFFICE)
     except Exception as exc:  # pylint: disable=broad-except
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
     else:
@@ -306,9 +309,9 @@ def batch_validate_individual_bookings() -> utils.BackofficeResponse:
 
     def _booking_callback(booking: bookings_models.Booking) -> None:
         try:
-            bookings_api.mark_as_used(booking)
+            bookings_api.mark_as_used(booking, bookings_models.BookingValidationAuthorType.BACKOFFICE)
         except bookings_exceptions.BookingIsAlreadyCancelled:
-            bookings_api.mark_as_used_with_uncancelling(booking)
+            bookings_api.mark_as_used_with_uncancelling(booking, bookings_models.BookingValidationAuthorType.BACKOFFICE)
 
     return _batch_individual_bookings_action(form, _booking_callback, "Les réservations ont été validées")
 

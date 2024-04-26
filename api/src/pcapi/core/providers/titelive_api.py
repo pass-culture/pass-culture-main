@@ -3,10 +3,12 @@ import datetime
 import functools
 import logging
 import typing
+import uuid
 
 import PIL
 
 from pcapi import repository
+from pcapi import settings
 from pcapi.connectors import thumb_storage
 from pcapi.connectors import titelive
 from pcapi.connectors.serialization.titelive_serializers import TiteliveProductSearchResponse
@@ -61,7 +63,7 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
                 db.session.add_all(updated_products)
 
             with repository.transaction():
-                updated_thumb_products = update_product_thumbnails(updated_products, titelive_page)
+                updated_thumb_products = self.update_product_thumbnails(updated_products, titelive_page)
                 db.session.add_all(updated_thumb_products)
 
         with repository.transaction():
@@ -186,41 +188,80 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
     ) -> dict[str, offers_models.Product]:
         raise NotImplementedError()
 
+    def update_product_thumbnails(
+        self,
+        products: list[offers_models.Product],
+        titelive_page: TiteliveProductSearchResponse[TiteliveSearchResultType],
+    ) -> list[offers_models.Product]:
+        thumbnail_url_by_ean: dict[str, dict[offers_models.TiteliveImageType, str | None]] = {
+            article.gencod: {
+                offers_models.TiteliveImageType.RECTO: article.imagesUrl.recto,
+                offers_models.TiteliveImageType.VERSO: article.imagesUrl.verso,
+            }
+            for result in titelive_page.result
+            for article in result.article
+            if article.image != "0"
+        }
 
-def update_product_thumbnails(
-    products: list[offers_models.Product],
-    titelive_page: TiteliveProductSearchResponse[TiteliveSearchResultType],
-) -> list[offers_models.Product]:
-    titelive_results = titelive_page.result
-    thumbnail_url_by_ean = {
-        article.gencod: article.imagesUrl.recto
-        for result in titelive_results
-        for article in result.article
-        if article.image != "0"
-    }
+        for product in products:
+            assert product.extraData, "product %s initialized without extra data" % product.id
 
-    for product in products:
-        assert product.extraData, "product %s initialized without extra data" % product.id
+            ean = product.extraData.get("ean")
+            assert ean, "product %s initialized without ean" % product.id
 
-        ean = product.extraData.get("ean")
-        assert ean, "product %s initialized without ean" % product.id
+            new_thumbnail_urls = thumbnail_url_by_ean.get(ean)
+            if not new_thumbnail_urls:
+                logger.warning("No thumbnail for product ean %s", ean)
+                continue
+            try:
+                self.remove_product_mediation(product)
+                for image_type in offers_models.TiteliveImageType:
+                    new_thumbnail_url = new_thumbnail_urls.get(image_type)
+                    if new_thumbnail_url is not None:
+                        image_id = str(uuid.uuid4())
+                        mediation = offers_models.ProductMediation(
+                            productId=product.id,
+                            lastProvider=self.provider,
+                            imageType=image_type,
+                            url=f"{settings.OBJECT_STORAGE_URL}/{settings.THUMBS_FOLDER_NAME}/{image_id}",
+                        )
+                        db.session.add(mediation)
 
-        new_thumbnail_url = thumbnail_url_by_ean.get(ean)
-        if not new_thumbnail_url:
-            logger.warning("No thumbnail for product ean %s", ean)
-            continue
+                        image_bytes = titelive.download_titelive_image(new_thumbnail_url)
+                        thumb_storage.create_thumb(
+                            product,
+                            image_bytes,
+                            storage_id_suffix_str="",
+                            keep_ratio=True,
+                            object_id=image_id,
+                        )
+                db.session.commit()
+            except (requests.ExternalAPIException, PIL.UnidentifiedImageError) as e:
+                db.session.rollback()
+                print("Error while downloading Titelive imageÔ")
+                logger.error(
+                    "Error while downloading Titelive image",
+                    extra={
+                        "exception": e,
+                        "url_recto": new_thumbnail_urls.get(offers_models.TiteliveImageType.RECTO),
+                        "url_verso": new_thumbnail_urls.get(offers_models.TiteliveImageType.VERSO),
+                        "request_type": "image",
+                    },
+                )
+                continue
 
-        try:
-            image_bytes = titelive.download_titelive_image(new_thumbnail_url)
-            thumb_storage.create_thumb(product, image_bytes, storage_id_suffix_str="", keep_ratio=True)
-        except (requests.ExternalAPIException, PIL.UnidentifiedImageError) as e:
-            logger.error(
-                "Error while downloading Titelive image",
-                extra={"exception": e, "url": new_thumbnail_url, "request_type": "image"},
-            )
-            continue
+        return products
 
-    return products
+    def remove_product_mediation(self, product: offers_models.Product) -> None:
+        """
+        warning this function does not automatically commit the transaction
+        """
+        product_mediations = offers_models.ProductMediation.query.filter(
+            offers_models.ProductMediation.productId == product.id,
+            offers_models.ProductMediation.lastProvider == self.provider,  # pylint: disable=comparison-with-callable
+        )
+        for product_mediation in product_mediations:
+            db.session.delete(product_mediation)
 
 
 class TiteliveDatabaseNotInitializedException(Exception):

@@ -90,6 +90,7 @@ class EMSSitesConnector(AbstractEMSConnector):
 
 class EMSBookingConnector:
     digest_mode = "sha512"
+    get_ticket_endpoint = "STATUT"
     booking_endpoint = "VENTE"
     shows_availability_endpoint = "SEANCE"
     cancelation_endpoint = "ANNULATION"

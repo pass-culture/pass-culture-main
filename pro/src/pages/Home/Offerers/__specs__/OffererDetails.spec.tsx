@@ -5,6 +5,7 @@ import React from 'react'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { OffererDetails, OffererDetailsProps } from '../OffererDetails'
 
@@ -24,9 +25,16 @@ const renderOffererDetails = (props: Partial<OffererDetailsProps> = {}) => {
           label: defaultGetOffererResponseModel.name,
         },
       ]}
-      selectedOfferer={defaultGetOffererResponseModel}
       {...props}
-    />
+    />,
+    {
+      storeOverrides: {
+        user: {
+          selectedOffererId: defaultGetOffererResponseModel.id,
+          currentUser: sharedCurrentUserFactory(),
+        },
+      },
+    }
   )
 }
 
@@ -40,7 +48,7 @@ describe('OffererDetails', () => {
   })
 
   it('should display offerer select', () => {
-    renderOffererDetails({ selectedOfferer: defaultGetOffererResponseModel })
+    renderOffererDetails()
 
     expect(
       screen.getByText(defaultGetOffererResponseModel.name)

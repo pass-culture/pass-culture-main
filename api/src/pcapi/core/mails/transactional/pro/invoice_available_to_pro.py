@@ -1,5 +1,3 @@
-import datetime
-
 import sqlalchemy as sa
 import sqlalchemy.orm as sqla_orm
 
@@ -10,15 +8,11 @@ import pcapi.core.finance.utils as finance_utils
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.offerers.models as offerers_models
-import pcapi.utils.db as db_utils
 
 
 def send_invoice_available_to_pro_email(invoice: finance_models.Invoice, batch: finance_models.CashflowBatch) -> None:
     period_start, period_end = finance_api.get_invoice_period(batch.cutoff)
-    invoice_timespan = db_utils.make_timerange(
-        start=datetime.datetime.combine(period_start, datetime.datetime.min.time()),
-        end=datetime.datetime.combine(period_end, datetime.datetime.min.time()),
-    )
+
     data = models.TransactionalEmailData(
         template=TransactionalEmail.INVOICE_AVAILABLE_TO_PRO.value,
         params={
@@ -33,7 +27,7 @@ def send_invoice_available_to_pro_email(invoice: finance_models.Invoice, batch: 
             offerers_models.VenueBankAccountLink,
             sa.and_(
                 offerers_models.VenueBankAccountLink.bankAccountId == finance_models.BankAccount.id,
-                offerers_models.VenueBankAccountLink.timespan.overlaps(invoice_timespan),
+                offerers_models.VenueBankAccountLink.timespan.contains(batch.cutoff),
             ),
         )
         .join(offerers_models.Venue, offerers_models.Venue.id == offerers_models.VenueBankAccountLink.venueId)

@@ -111,9 +111,33 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert rows[0]["Date de l'évènement"] == (datetime.date.today() + datetime.timedelta(days=1)).strftime(
             "%d/%m/%Y"
         )
+        assert rows[0]["Tarif"] == "10,10 €"
         assert rows[0]["Formats"] == ", ".join([fmt.value for fmt in collective_offers[0].formats])
         assert rows[0]["Structure"] == collective_offers[0].venue.managingOfferer.name
         assert rows[0]["Lieu"] == collective_offers[0].venue.name
+
+    def test_list_collective_offers_without_fraud_permission(
+        self,
+        client,
+        read_only_bo_user,
+        collective_offers,
+    ):
+        user = offerers_factories.UserOffererFactory().user
+
+        searched_id = str(collective_offers[0].id)
+
+        response = client.with_bo_session_auth(read_only_bo_user).get(
+            url_for(
+                self.endpoint,
+                q=searched_id,
+                user_id=user.id,
+            )
+        )
+        assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert "Tarif" not in rows[0]
+        assert "Règles de conformité" not in rows[0]
 
     def test_list_collective_offers_by_name(self, authenticated_client, collective_offers):
         searched_name = collective_offers[1].name
@@ -132,6 +156,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert rows[0]["Date de l'évènement"] == (datetime.date.today() + datetime.timedelta(days=3)).strftime(
             "%d/%m/%Y"
         )
+        assert rows[0]["Tarif"] == "11,00 €"
         assert rows[0]["Structure"] == collective_offers[1].venue.managingOfferer.name
         assert rows[0]["Lieu"] == collective_offers[1].venue.name
 
@@ -497,8 +522,6 @@ class ListCollectiveOffersTest(GetEndpointHelper):
 
     def test_list_collective_offers_advanced_search_by_price(self, authenticated_client, collective_offers):
 
-        collective_stock = educational_factories.CollectiveStockFactory()
-
         query_args = {
             "search-3-search_field": "PRICE",
             "search-3-operator": "GREATER_THAN_OR_EQUAL_TO",
@@ -511,7 +534,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
-        assert rows[0]["ID"] == str(collective_stock.collectiveOffer.id)
+        assert rows[0]["ID"] == str(collective_offers[2].id)
 
     def test_list_collective_offers_advanced_search_by_price_no_offer_found(
         self, authenticated_client, collective_offers
@@ -520,7 +543,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         query_args = {
             "search-3-search_field": "PRICE",
             "search-3-operator": "GREATER_THAN_OR_EQUAL_TO",
-            "search-3-price": 12.20,
+            "search-3-price": 21.20,
         }
 
         with assert_num_queries(self.expected_num_queries):

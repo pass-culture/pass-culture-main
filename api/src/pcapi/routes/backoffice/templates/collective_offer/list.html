@@ -74,6 +74,7 @@
                 {% endif %}
               </th>
               <th scope="col">Date de l'évènement</th>
+              {% if has_permission("PRO_FRAUD_ACTIONS") %}<th scope="col">Tarif</th>{% endif %}
               <th scope="col">Structure</th>
               <th scope="col">Lieu</th>
               <th scope="col">{# icon #}</th>
@@ -125,6 +126,13 @@
                 <td>{{ links.build_pro_user_name_to_details_link(collective_offer.authorId, collective_offer.author.full_name) }}</td>
                 <td>{{ collective_offer.dateCreated | format_date }}</td>
                 <td>{{ collective_offer.collectiveStock.beginningDatetime | format_date }}</td>
+                {% if has_permission("PRO_FRAUD_ACTIONS") %}
+                  <td>
+                    {% if collective_offer.collectiveStock %}
+                      <span class="text-nowrap">{{ collective_offer.collectiveStock.price | format_amount }}</span>
+                    {% endif %}
+                  </td>
+                {% endif %}
                 <td>{{ links.build_offerer_name_to_details_link(collective_offer.venue.managingOfferer) }}</td>
                 <td>{{ links.build_venue_name_to_details_link(collective_offer.venue) }}</td>
                 <td>{{ links.build_venue_offers_icon_link(".list_collective_offers", "Offres collectives", collective_offer.venue) }}</td>

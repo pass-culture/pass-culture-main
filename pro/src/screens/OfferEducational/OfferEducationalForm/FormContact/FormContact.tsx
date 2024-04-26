@@ -1,6 +1,6 @@
 import FormLayout from 'components/FormLayout'
-import { TextInput } from 'ui-kit'
-import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
+import { PhoneNumberInput } from 'ui-kit/form/PhoneNumberInput/PhoneNumberInput'
+import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import { EMAIL_LABEL } from '../../constants/labels'
 

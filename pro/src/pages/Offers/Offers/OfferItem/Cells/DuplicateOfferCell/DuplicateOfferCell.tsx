@@ -12,7 +12,7 @@ import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import copyIcon from 'icons/full-duplicate.svg'
 import fullPlusIcon from 'icons/full-plus.svg'
-import ListIconButton from 'ui-kit/ListIconButton/ListIconButton'
+import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
 import { localStorageAvailable } from 'utils/localStorageAvailable'
 
 import DuplicateOfferDialog from './DuplicateOfferDialog'

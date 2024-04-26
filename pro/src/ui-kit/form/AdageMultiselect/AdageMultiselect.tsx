@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 
 import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 
-import { BaseInput } from '../shared'
+import { BaseInput } from '../shared/BaseInput/BaseInput'
 
 import styles from './AdageMultiselect.module.scss'
 
@@ -69,7 +69,7 @@ const isIncluded = (
   return fieldValue.includes(value)
 }
 
-const AdageMultiselect = ({
+export const AdageMultiselect = ({
   options,
   placeholder,
   name,
@@ -192,5 +192,3 @@ const AdageMultiselect = ({
     </div>
   )
 }
-
-export default AdageMultiselect

@@ -13,7 +13,7 @@ import strokePassIcon from 'icons/stroke-pass.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import strokeStarIcon from 'icons/stroke-star.svg'
 import strokeVenueIcon from 'icons/stroke-venue.svg'
-import { ButtonLink } from 'ui-kit'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
@@ -41,7 +41,8 @@ export const OfferInfos = () => {
   >(state?.offer)
   const [loading, setLoading] = useState(false)
 
-  const { adageUser } = useAdageUser()
+  const { adageUser, setInstitutionOfferCount, institutionOfferCount } =
+    useAdageUser()
 
   const isNewOfferInfoEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_ADAGE_OFFER_DESIGN'
@@ -73,7 +74,7 @@ export const OfferInfos = () => {
       icon: strokeStarIcon,
     },
     ['mon-etablissement']: {
-      title: 'Mon établissement',
+      title: 'Pour mon établissement',
       link: {
         isExternal: false,
         to: `/adage-iframe/mon-etablissement?token=${adageAuthToken}`,
@@ -132,7 +133,12 @@ export const OfferInfos = () => {
             />
           </div>
           {isNewOfferInfoEnabled ? (
-            <AdageOffer offer={offer} adageUser={adageUser} />
+            <AdageOffer
+              offer={offer}
+              adageUser={adageUser}
+              setInstitutionOfferCount={setInstitutionOfferCount}
+              institutionOfferCount={institutionOfferCount}
+            />
           ) : (
             <div className={styles['offer-container']}>
               <Offer offer={offer} position={0} queryId="" openDetails={true} />

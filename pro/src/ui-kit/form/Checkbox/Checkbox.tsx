@@ -4,9 +4,10 @@ import React from 'react'
 
 import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 
-import { FieldError } from '../shared'
+import { FieldError } from '../shared/FieldError/FieldError'
 
 import styles from './Checkbox.module.scss'
+
 interface CheckboxProps {
   name: string
   value?: string
@@ -19,7 +20,7 @@ interface CheckboxProps {
   withBorder?: boolean
 }
 
-const Checkbox = ({
+export const Checkbox = ({
   name,
   value,
   label,
@@ -51,5 +52,3 @@ const Checkbox = ({
     </div>
   )
 }
-
-export default Checkbox

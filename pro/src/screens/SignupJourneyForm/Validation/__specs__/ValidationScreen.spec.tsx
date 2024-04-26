@@ -19,6 +19,7 @@ import {
 import { Validation } from 'screens/SignupJourneyForm/Validation/index'
 import * as utils from 'utils/recaptcha'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 vi.mock('apiClient/api', () => ({
   api: {
@@ -28,7 +29,7 @@ vi.mock('apiClient/api', () => ({
 }))
 
 const addressInformations: Address = {
-  address: '3 Rue de Valois',
+  street: '3 Rue de Valois',
   city: 'Paris',
   latitude: 1.23,
   longitude: 2.9887,
@@ -37,16 +38,6 @@ const addressInformations: Address = {
 }
 
 const renderValidationScreen = (contextValue: SignupJourneyContextValues) => {
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        isAdmin: false,
-        email: 'email@example.com',
-      },
-    },
-  }
-
   return renderWithProviders(
     <>
       <SignupJourneyContext.Provider value={contextValue}>
@@ -69,7 +60,7 @@ const renderValidationScreen = (contextValue: SignupJourneyContextValues) => {
       <Notification />
     </>,
     {
-      storeOverrides,
+      user: sharedCurrentUserFactory(),
       initialRouterEntries: ['/parcours-inscription/validation'],
     }
   )
@@ -244,7 +235,7 @@ describe('ValidationScreen', () => {
           webPresence: 'url1, url2',
           target: Target.EDUCATIONAL,
           createVenueWithoutSiret: false,
-          address: '3 Rue de Valois',
+          street: '3 Rue de Valois',
           banId: '75118_5995_00043',
           city: 'Paris',
           latitude: 0,

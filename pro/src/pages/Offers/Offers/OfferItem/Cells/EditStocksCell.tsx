@@ -2,7 +2,7 @@ import React from 'react'
 
 import { ListOffersOfferResponseModel } from 'apiClient/v1'
 import fullStockIcon from 'icons/full-stock.svg'
-import ListIconButton from 'ui-kit/ListIconButton/ListIconButton'
+import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
 
 interface EditStocksCellProps {
   editionStockLink: string

@@ -53,7 +53,7 @@ export default function AdageOfferInfoSection({
 
   return (
     <>
-      <div className={styles['offer-section-group-item']}>
+      <div className={styles['offer-section-group-item-description']}>
         <h3 className={styles['offer-section-group-item-subtitle']}>
           Lieu où se déroulera l’offre
         </h3>
@@ -93,7 +93,7 @@ export default function AdageOfferInfoSection({
         )}
 
       {(isOfferBookable || offer.educationalPriceDetail) && (
-        <div className={styles['offer-section-group-item']}>
+        <div className={styles['offer-section-group-item-description']}>
           <h3 className={styles['offer-section-group-item-subtitle']}>
             {isOfferBookable ? 'Prix' : 'Information sur le prix'}
           </h3>

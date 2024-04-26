@@ -1,0 +1,56 @@
+@use "styles/variables/_size.scss" as size;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+
+.banner {
+  max-width: rem.torem(632px);
+
+  &-title {
+    @include fonts.title3;
+
+    font-weight: 800;
+    margin-top: rem.torem(62px);
+  }
+
+  &-description {
+    margin-top: rem.torem(16px);
+  }
+
+  &-image {
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(100% + rem.torem((32px * 2)));
+    width: calc(100% + rem.torem((16px * 2)));
+    margin: rem.torem(-16px);
+    padding: rem.torem(16px);
+    background: linear-gradient(258deg, var(--color-secondary-light) 11.7%, #280078 113.36%), var(--color-white);
+
+    img {
+      max-width: 100%;
+    }
+
+    @media (min-width: size.$mobile) {
+      width: calc(100% + rem.torem((32px * 2)));
+      margin: rem.torem(-32px);
+      padding: rem.torem(32px);
+
+      img {
+        max-width: rem.torem(364.823px);
+      }
+    }
+  }
+
+  &-button {
+    width: 100%;
+    margin-top: rem.torem(32px);
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  &-close {
+    color: var(--color-white);
+    outline-color: var(--color-white);
+  }
+}

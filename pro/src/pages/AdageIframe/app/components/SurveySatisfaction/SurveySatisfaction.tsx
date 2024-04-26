@@ -1,10 +1,12 @@
 import cn from 'classnames'
-import React, { useState } from 'react'
+import { useState } from 'react'
 
 import { apiAdage } from 'apiClient/api'
 import useNotification from 'hooks/useNotification'
+import fullLinkIcon from 'icons/full-link.svg'
 import strokeCloseIcon from 'icons/stroke-close.svg'
-import { Button, ButtonLink } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
@@ -47,30 +49,25 @@ export const SurveySatisfaction = ({
         [styles['survey-satisfaction-closed']]: shouldHideSurveySatisfaction,
       })}
     >
-      <div className={styles['survey-close']}>
-        <button
-          onClick={onCloseSurvey}
-          title="Masquer le bandeau"
-          type="button"
-          className={styles['survey-close-button']}
-        >
-          <SvgIcon
-            src={strokeCloseIcon}
-            alt=""
-            className={styles['survey-close-icon']}
-          />
-        </button>
-      </div>
-
       <div className={styles['survey-satisfaction-infos']}>
-        <div className={styles['survey-title']}>Enquête de satisfaction</div>
+        <div className={styles['survey-satisfaction-infos-head']}>
+          <div className={styles['survey-title']}>Enquête de satisfaction</div>
+          <button
+            onClick={onCloseSurvey}
+            title="Masquer le bandeau"
+            type="button"
+            className={styles['survey-close']}
+          >
+            <SvgIcon src={strokeCloseIcon} alt="" width="24" />
+          </button>
+        </div>
         <div className={styles['survey-description']}>
           Le pass Culture souhaite recueillir votre avis sur cette page web :
           Les offres pass Culture.
           <br /> Cela ne vous prendra que 2 minutes.
         </div>
 
-        <div>
+        <div className={styles['survey-actions']}>
           <Button
             className={styles['survey-button-secondary']}
             onClick={onCloseSurvey}
@@ -85,6 +82,8 @@ export const SurveySatisfaction = ({
               isExternal: true,
               target: '_blank',
             }}
+            icon={fullLinkIcon}
+            svgAlt="Nouvelle fenêtre"
             className={styles['survey-button']}
             onClick={logOpenSatisfactionSurvey}
           >

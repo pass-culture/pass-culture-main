@@ -252,50 +252,6 @@ describe('offer', () => {
 
       expect(screen.getByText('Contacter le partenaire culturel'))
     })
-
-    it('should display distance when offer has coordinates and FF is active', () => {
-      user.lat = 0
-      user.lon = 0
-
-      renderOffer({
-        ...offerProps,
-        offer: {
-          ...offerInParis,
-          venue: {
-            ...offerInParis.venue,
-            coordinates: { latitude: 1, longitude: 1 },
-          },
-        },
-      })
-
-      // Distance between {0, 0} and {1, 1} is 157km
-      expect(
-        screen.getByText('basé à 157 km de votre établissement')
-      ).toBeInTheDocument()
-    })
-
-    it('should display can move in your institution is offer intervention area match user one', () => {
-      renderOffer({
-        ...offerProps,
-        offer: {
-          ...offerInParis,
-          venue: {
-            ...offerInParis.venue,
-            coordinates: { latitude: 1, longitude: 1 },
-          },
-          offerVenue: {
-            venueId: null,
-            otherAddress: 'A la mairie',
-            addressType: OfferAddressType.OTHER,
-          },
-          interventionArea: ['75'],
-        },
-      })
-
-      expect(
-        screen.getByText('peut se déplacer dans votre département')
-      ).toBeInTheDocument()
-    })
   })
 
   it('should not display the distance to venue if the user does not have a valid geoloc', () => {

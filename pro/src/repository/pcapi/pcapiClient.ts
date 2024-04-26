@@ -50,51 +50,6 @@ const fetchWithErrorHandler = async (path: string, options: RequestInit) => {
 }
 
 export const client = {
-  getPlainText: async (path: string, withCredentials = true) => {
-    const options = buildOptions(GET_HTTP_METHOD, withCredentials)
-    options['headers'] = { 'Content-Type': 'text/plain' }
-
-    try {
-      const response = await fetch(buildUrl(path), options)
-      if (response.status !== 200) {
-        throw Error('An error happened.')
-      }
-      return Promise.resolve(await response.text())
-    } catch (e) {
-      return Promise.reject(e)
-    }
-  },
-  getExcelFile: async (path: string, withCredentials = true) => {
-    const options = buildOptions(GET_HTTP_METHOD, withCredentials)
-    options['headers'] = { 'Content-Type': 'application/vnd.ms-excel' }
-
-    try {
-      const response = await fetch(buildUrl(path), options)
-      if (response.status !== 200) {
-        throw Error('An error happened.')
-      }
-      return Promise.resolve(await response.arrayBuffer())
-    } catch (e) {
-      return Promise.reject(e)
-    }
-  },
-  get: async (path: string, withCredentials = true) => {
-    return await fetchWithErrorHandler(
-      path,
-      buildOptions(GET_HTTP_METHOD, withCredentials)
-    )
-  },
-  post: async (
-    path: string,
-    data: Record<string, any>,
-    withCredentials = true
-  ) => {
-    const options = {
-      ...buildOptions('POST', withCredentials),
-      body: JSON.stringify(data),
-    }
-    return await fetchWithErrorHandler(path, options)
-  },
   postWithFormData: async (
     path: string,
     data: FormData,
@@ -107,29 +62,5 @@ export const client = {
       body: data,
     }
     return await fetchWithErrorHandler(path, options)
-  },
-  put: async (
-    path: string,
-    data: Record<string, any>,
-    withCredentials = true
-  ) => {
-    const options = {
-      ...buildOptions('PUT', withCredentials),
-      body: JSON.stringify(data),
-    }
-    return await fetchWithErrorHandler(path, options)
-  },
-  patch: async (path: string, data = {}, withCredentials = true) => {
-    const options = {
-      ...buildOptions('PATCH', withCredentials),
-      body: JSON.stringify(data),
-    }
-    return await fetchWithErrorHandler(path, options)
-  },
-  delete: async (path: string, withCredentials = true) => {
-    return await fetchWithErrorHandler(
-      path,
-      buildOptions(DELETE_HTTP_METHOD, withCredentials)
-    )
   },
 }

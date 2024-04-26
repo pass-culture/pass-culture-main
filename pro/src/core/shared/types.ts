@@ -3,7 +3,7 @@ export enum Audience {
   COLLECTIVE = 'collective',
 }
 
-export enum AccessiblityEnum {
+export enum AccessibilityEnum {
   VISUAL = 'visual',
   MENTAL = 'mental',
   AUDIO = 'audio',
@@ -11,7 +11,7 @@ export enum AccessiblityEnum {
   NONE = 'none',
 }
 
-export interface AccessibiltyFormValues {
+export interface AccessibilityFormValues {
   visual: boolean
   audio: boolean
   motor: boolean

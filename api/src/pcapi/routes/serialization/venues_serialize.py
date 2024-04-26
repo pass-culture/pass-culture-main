@@ -10,6 +10,7 @@ import pydantic.v1 as pydantic_v1
 from pydantic.v1 import root_validator
 from pydantic.v1 import validator
 
+from pcapi.connectors.serialization import acceslibre_serializers
 from pcapi.core.categories import subcategories_v2
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import exceptions
@@ -68,7 +69,7 @@ class DMSApplicationForEAC(BaseModel):
 
 
 class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
-    address: base.VenueAddress
+    street: base.VenueAddress
     banId: base.VenueBanId | None
     bookingEmail: base.VenueBookingEmail
     city: base.VenueCity
@@ -138,7 +139,6 @@ class VenueStatsResponseModel(BaseModel):
 
 
 class GetVenueManagingOffererResponseModel(BaseModel):
-    address: str | None
     city: str
     dateCreated: datetime
     demarchesSimplifieesApplicationId: str | None
@@ -148,6 +148,7 @@ class GetVenueManagingOffererResponseModel(BaseModel):
     postalCode: str
     # FIXME (dbaty, 2020-11-09): optional until we populate the database (PC-5693)
     siren: str | None
+    street: str | None
     allowedOnAdage: bool
 
     class Config:
@@ -307,7 +308,7 @@ class GetCollectiveVenueResponseModel(BaseModel):
 
 class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     name: base.VenueName | None
-    address: base.VenueAddress | None
+    street: base.VenueAddress | None
     banId: base.VenueBanId | None
     siret: base.VenueSiret | None
     latitude: float | str | None
@@ -375,6 +376,7 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
     hasCreatedOffer: bool
     collectiveSubCategoryId: str | None
     venueTypeCode: offerers_models.VenueTypeCode
+    externalAccessibilityData: acceslibre_serializers.ExternalAccessibilityDataModel | None
 
     @classmethod
     def from_orm(
@@ -384,6 +386,10 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
     ) -> "VenueListItemResponseModel":
         venue.offererName = venue.managingOfferer.name
         venue.hasCreatedOffer = venue.id in ids_of_venues_with_offers
+        if venue.accessibilityProvider:
+            venue.externalAccessibilityData = acceslibre_serializers.ExternalAccessibilityDataModel.from_orm(
+                venue.accessibilityProvider.externalAccessibilityData
+            )
         return super().from_orm(venue)
 
     class Config:

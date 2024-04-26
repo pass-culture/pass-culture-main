@@ -66,6 +66,7 @@ def get(user_id: int) -> utils.BackofficeResponse:
         email=user.email,
         phone_number=user.phoneNumber,
         postal_code=user.postalCode,
+        marketing_email_subscription=user.get_notification_subscriptions().marketing_email,
     )
     dst = url_for(".update_pro_user", user_id=user.id)
 
@@ -147,6 +148,7 @@ def update_pro_user(user_id: int) -> utils.BackofficeResponse:
         phone_number=form.phone_number.data,
         postal_code=form.postal_code.data,
         commit=False,
+        marketing_email_subscription=form.marketing_email_subscription.data,
     )
 
     if form.email.data and form.email.data != email_utils.sanitize_email(user.email):

@@ -8,12 +8,18 @@
   background-repeat: no-repeat;
   background-size: cover;
   border-radius: rem.torem(8px);
+  padding: rem.torem(32px) rem.torem(24px);
 
   &-infos {
     display: flex;
     flex-direction: column;
     gap: rem.torem(16px);
-    padding: 0 rem.torem(32px) rem.torem(24px);
+
+    &-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
   }
 }
 
@@ -30,8 +36,6 @@
 .survey-button {
   background-color: var(--color-secondary-light);
   border-color: var(--color-secondary-light);
-  width: rem.torem(196px);
-  margin-left: rem.torem(16px);
 
   &:hover,
   &:focus {
@@ -57,15 +61,22 @@
   }
 }
 
-.survey-close {
-  display: inline-flex;
-  width: 100%;
-  justify-content: flex-end;
-  padding: rem.torem(8px);
+.survey-actions {
+  display: flex;
+  align-items: center;
+  gap: rem.torem(16px);
+  flex-wrap: wrap;
+}
 
-  &-button {
-    background-color: transparent;
-    border: none;
-    width: rem.torem(24px);
+.survey-close {
+  background-color: transparent;
+  border: none;
+  width: rem.torem(24px);
+  height: rem.torem(24px);
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: rem.torem(1px) solid var(--color-input-text-color);
+    outline-offset: rem.torem(2px);
   }
 }

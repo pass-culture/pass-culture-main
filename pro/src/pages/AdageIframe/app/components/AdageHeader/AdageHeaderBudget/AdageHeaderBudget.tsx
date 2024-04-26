@@ -1,6 +1,6 @@
 import { AdageHeaderLink } from 'apiClient/adage'
 import fullLinkIcon from 'icons/full-link.svg'
-import { ButtonLink } from 'ui-kit'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 

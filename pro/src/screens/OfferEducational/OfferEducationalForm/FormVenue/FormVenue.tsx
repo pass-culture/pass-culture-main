@@ -17,11 +17,13 @@ import {
   Mode,
 } from 'core/OfferEducational'
 import { SelectOption } from 'custom_types/form'
-import { Banner, Select } from 'ui-kit'
+import { Banner } from 'ui-kit/Banners/Banner/Banner'
+import { Select } from 'ui-kit/form/Select/Select'
 
 import { OFFERER_LABEL, VENUE_LABEL } from '../../constants/labels'
 
 import styles from './FormVenue.module.scss'
+
 interface FormVenueProps {
   userOfferers: GetEducationalOffererResponseModel[]
   venuesOptions: SelectOption[]

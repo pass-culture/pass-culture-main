@@ -107,11 +107,6 @@ SEARCH_FIELD_TO_PYTHON = {
         "field": "price",
         "column": aliased_stock.price,
         "inner_join": "stock",
-        "custom_filter_all_operators": sa.and_(
-            aliased_stock.isEventExpired.is_(False),
-            aliased_stock.hasBookingLimitDatetimePassed.is_(False),
-            educational_models.CollectiveOffer.isActive.is_(True),
-        ),
     },
 }
 
@@ -244,6 +239,7 @@ def _get_collective_offers(form: forms.InternalSearchForm) -> list[educational_m
             ),
             sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock).load_only(
                 educational_models.CollectiveStock.beginningDatetime,
+                educational_models.CollectiveStock.price,
             ),
             sa.orm.joinedload(educational_models.CollectiveOffer.venue, innerjoin=True).load_only(
                 offerers_models.Venue.managingOffererId,

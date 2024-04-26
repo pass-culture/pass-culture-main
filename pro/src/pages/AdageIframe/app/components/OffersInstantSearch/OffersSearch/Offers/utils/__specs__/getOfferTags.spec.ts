@@ -94,12 +94,12 @@ describe('getOfferTags', () => {
       },
       dates: undefined,
     }
-    const tags = getOfferTags(offer, { ...adageUser, lat: 0, lon: 0 }).map(
+    const tags = getOfferTags(offer, { ...adageUser, lat: 10, lon: 10 }).map(
       (tag) => tag.text
     )
     const tagsReduced = getOfferTags(
       offer,
-      { ...adageUser, lat: 0, lon: 0 },
+      { ...adageUser, lat: 20, lon: 20 },
       false
     ).map((tag) => tag.text)
 
@@ -108,6 +108,7 @@ describe('getOfferTags', () => {
         'Sortie',
         'Lieu à définir',
         'Disponible toute l’année',
+        'Partenaire situé à 900+ km',
       ])
     )
 

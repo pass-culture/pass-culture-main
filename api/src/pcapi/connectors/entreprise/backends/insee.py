@@ -142,6 +142,7 @@ class InseeBackend(BaseBackend):
             address=address,
             active=head_office["etatAdministratifUniteLegale"] == "A",
             diffusible=data["statutDiffusionUniteLegale"] == "O",
+            creation_date=datetime.date.fromisoformat(data["dateCreationUniteLegale"]),
         )
         if raise_if_non_public:
             self._check_non_public_data(info)

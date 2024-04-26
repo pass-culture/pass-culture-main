@@ -7,5 +7,6 @@ export type StockIdBody = {
   isFromNoResult?: boolean | null;
   queryId?: string | null;
   stockId: number;
+  vueType?: string | null;
 };
 

@@ -7,6 +7,7 @@ from pcapi.core.history import models as history_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.users import testing as external_testing
+from pcapi.utils.date import timespan_str_to_numrange
 
 from tests.routes.pro.post_venue_test import venue_malformed_test_data
 
@@ -16,7 +17,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 def populate_missing_data_from_venue(venue_data: dict, venue: offerers_models.Venue) -> dict:
     return {
-        "address": venue.address,
+        "street": venue.street,
         "banId": venue.banId,
         "bookingEmail": venue.bookingEmail,
         "city": venue.city,
@@ -64,7 +65,7 @@ class Returns200Test:
         venue = offerers_models.Venue.query.get(venue_id)
         assert venue.publicName == "Ma librairie"
         assert venue.venueTypeCode == offerers_models.VenueTypeCode.BOOKSTORE
-        assert response.json["address"] == venue.address
+        assert response.json["street"] == venue.street
         assert response.json["banId"] == venue.banId
         assert response.json["city"] == venue.city
         assert response.json["siret"] == venue.siret
@@ -343,9 +344,10 @@ class Returns200Test:
         venue_data = populate_missing_data_from_venue(
             {
                 "openingHours": [
-                    # We are only changing MONDAY opening Hours, TUESDAY is already like following
+                    # We are only changing MONDAY and FRIDAY opening Hours, TUESDAY is already like following
                     {"weekday": "MONDAY", "timespan": [["10:00", "13:00"], ["14:00", "19:30"]]},
                     {"weekday": "TUESDAY", "timespan": [["10:00", "13:00"], ["14:00", "19:30"]]},
+                    {"weekday": "FRIDAY", "timespan": None},
                 ],
                 "contact": None,
             },
@@ -364,8 +366,12 @@ class Returns200Test:
         assert venue.action_history[0].extraData == {
             "modified_info": {
                 "openingHours.MONDAY.timespan": {
-                    "old_info": ["[840, 1170]"],
-                    "new_info": ["[600, 780]", "[840, 1170]"],
+                    "old_info": "14:00-19:30",
+                    "new_info": "10:00-13:00, 14:00-19:30",
+                },
+                "openingHours.FRIDAY.timespan": {
+                    "old_info": "10:00-13:00, 14:00-19:30",
+                    "new_info": None,
                 },
             }
         }
@@ -383,6 +389,40 @@ class Returns200Test:
         response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
         assert response.status_code == 200
         assert len(venue.action_history) == 0
+
+    def test_should_not_update_opening_hours_with_lower_case_weekday(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(
+            user__email="user.pro@test.com",
+        )
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer,
+            contact=None,
+        )
+        offerers_factories.OpeningHoursFactory(
+            venue=venue,
+            weekday=offerers_models.Weekday("TUESDAY"),
+            timespan=timespan_str_to_numrange([("10:00", "13:00")]),
+        )
+        venue_data = populate_missing_data_from_venue(
+            {
+                "contact": {"website": "https://www.venue.com"},
+                # Even if weekday is in lower case, it doesn't modify opening hours and must
+                # not appear in history
+                "weekday": "tuesday",
+                "timespan": [["10:00", "13:00"]],
+            },
+            venue,
+        )
+
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+        assert response.status_code == 200
+
+        assert venue.action_history[0].extraData == {
+            "modified_info": {
+                "contact.website": {"new_info": venue.contact.website, "old_info": None},
+            }
+        }
 
 
 class Returns400Test:

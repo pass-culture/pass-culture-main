@@ -6,7 +6,9 @@ import {
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
+import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import { MandatoryCollectiveOfferFromParamsProps } from 'screens/OfferEducational/useCollectiveOfferFromParams'
+import { defaultAdageUser } from 'utils/adageFactories'
 import {
   defaultGetVenue,
   getCollectiveOfferFactory,
@@ -35,10 +37,15 @@ const renderCollectiveOfferPreviewCreation = (
   props: MandatoryCollectiveOfferFromParamsProps,
   options?: RenderWithProvidersOptions
 ) => {
-  renderWithProviders(<CollectiveOfferPreviewCreation {...props} />, {
-    ...options,
-    initialRouterEntries: [path],
-  })
+  renderWithProviders(
+    <AdageUserContextProvider adageUser={defaultAdageUser}>
+      <CollectiveOfferPreviewCreation {...props} />
+    </AdageUserContextProvider>,
+    {
+      ...options,
+      initialRouterEntries: [path],
+    }
+  )
 }
 
 const defaultProps = {

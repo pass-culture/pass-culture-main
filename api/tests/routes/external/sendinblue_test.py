@@ -2,6 +2,7 @@ import logging
 
 import pytest
 
+from pcapi.core.history import models as history_models
 from pcapi.core.users.factories import UserFactory
 from pcapi.models import db
 
@@ -28,6 +29,20 @@ class SubscribeOrUnsubscribeUserTestHelper:
         assert response.status_code == 204
         db.session.refresh(existing_user)
         assert existing_user.notificationSubscriptions["marketing_email"] is self.expected_marketing_email
+
+        action = history_models.ActionHistory.query.filter(
+            history_models.ActionHistory.actionType == history_models.ActionType.INFO_MODIFIED,
+            history_models.ActionHistory.authorUserId == existing_user.id,
+            history_models.ActionHistory.userId == existing_user.id,
+        ).one()
+        assert action.extraData == {
+            "modified_info": {
+                "notificationSubscriptions.marketing_email": {
+                    "old_info": self.initial_marketing_email,
+                    "new_info": self.expected_marketing_email,
+                }
+            },
+        }
 
     def test_webhook_bad_request(self, client):
         data = {}

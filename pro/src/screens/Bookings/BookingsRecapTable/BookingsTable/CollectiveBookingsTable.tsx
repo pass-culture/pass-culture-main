@@ -14,9 +14,9 @@ import {
   sortByInstitutionName,
   sortByOfferName,
 } from 'screens/Bookings/BookingsRecapTable/utils/sortingFunctions'
-import { Pagination } from 'ui-kit/Pagination'
+import { Pagination } from 'ui-kit/Pagination/Pagination'
 
-import { FilterByBookingStatus } from '../Filters'
+import { FilterByBookingStatus } from '../Filters/FilterByBookingStatus'
 import { NoFilteredBookings } from '../NoFilteredBookings/NoFilteredBookings'
 
 import styles from './BookingsTable.module.scss'

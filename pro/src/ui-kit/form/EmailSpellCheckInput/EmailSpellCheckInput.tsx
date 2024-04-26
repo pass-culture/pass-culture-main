@@ -2,11 +2,12 @@ import { useField, useFormikContext } from 'formik'
 import React, { useState } from 'react'
 
 import fullNextIcon from 'icons/full-next.svg'
-import { Button } from 'ui-kit/Button'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { suggestEmail } from 'ui-kit/form/EmailSpellCheckInput/suggestEmail'
-import { TextInput } from 'ui-kit/form/index'
 import { FieldLayoutBaseProps } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
+
+import { TextInput } from '../TextInput/TextInput'
 
 import styles from './EmailSpellCheckInput.module.scss'
 
@@ -19,7 +20,7 @@ type EmailSpellCheckInputProps<FormType> = FieldLayoutBaseProps & {
   maxLength?: number
 }
 
-const EmailSpellCheckInput = <FormType,>({
+export const EmailSpellCheckInput = <FormType,>({
   name,
   placeholder,
   label,
@@ -90,5 +91,3 @@ const EmailSpellCheckInput = <FormType,>({
     </>
   )
 }
-
-export default EmailSpellCheckInput

@@ -1,3 +1,4 @@
+import sqlalchemy as sa
 from sqlalchemy.orm import joinedload
 
 from pcapi.core.categories import subcategories_v2
@@ -11,6 +12,7 @@ from pcapi.core.offers.models import PriceCategory
 from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Reason
 from pcapi.core.offers.models import Stock
+from pcapi.core.providers.models import Provider
 import pcapi.core.providers.repository as providers_repository
 from pcapi.core.users.models import User
 from pcapi.models.api_errors import ApiErrors
@@ -38,8 +40,11 @@ def get_offer(offer_id: str) -> serializers.OfferResponse:
             .joinedload(Venue.managingOfferer)
             .load_only(Offerer.name, Offerer.validationStatus, Offerer.isActive)
         )
+        .options(joinedload(Offer.venue).joinedload(Venue.googlePlacesInfo))
         .options(joinedload(Offer.mediations))
         .options(joinedload(Offer.product).load_only(Product.id, Product.thumbCount))
+        .outerjoin(Offer.lastProvider)
+        .options(sa.orm.contains_eager(Offer.lastProvider).load_only(Provider.localClass))
         .filter(Offer.id == offer_id, Offer.validation == OfferValidationStatus.APPROVED)
         .first_or_404()
     )
@@ -48,6 +53,22 @@ def get_offer(offer_id: str) -> serializers.OfferResponse:
         api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
 
     return serializers.OfferResponse.from_orm(offer)
+
+
+@blueprint.native_route("/offers/stocks", methods=["POST"])
+@spectree_serialize(response_model=serializers.OffersStocksResponse, api=blueprint.api)
+def get_offers_showtimes(body: serializers.OffersStocksRequest) -> serializers.OffersStocksResponse:
+    offer_ids = body.offer_ids
+    offers = (
+        Offer.query.filter(Offer.id.in_(offer_ids))
+        .options(joinedload(Offer.stocks).joinedload(Stock.priceCategory).joinedload(PriceCategory.priceCategoryLabel))
+        .options(joinedload(Offer.mediations))
+        .options(joinedload(Offer.venue).joinedload(Venue.managingOfferer))
+        .all()
+    )
+    serialized_offers = [serializers.OfferPreviewResponse.from_orm(offer) for offer in offers]
+    offers_response = serializers.OffersStocksResponse(offers=serialized_offers)
+    return offers_response
 
 
 @blueprint.native_route("/offer/<int:offer_id>/report", methods=["POST"])

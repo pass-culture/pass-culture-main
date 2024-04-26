@@ -1,7 +1,7 @@
 import React from 'react'
 
 import penIcon from 'icons/full-edit.svg'
-import ListIconButton from 'ui-kit/ListIconButton/ListIconButton'
+import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
 
 import styles from '../OfferItem.module.scss'
 

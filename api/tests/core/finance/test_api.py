@@ -107,7 +107,6 @@ def individual_stock_factory(**kwargs):
     create_bank_info = False
     if "offer__venue" not in kwargs:
         kwargs.setdefault("offer__venue__pricing_point", "self")
-        kwargs.setdefault("offer__venue__reimbursement_point", "self")
         create_bank_info = True
     stock = offers_factories.ThingStockFactory(**kwargs)
     if create_bank_info:
@@ -119,7 +118,6 @@ def collective_stock_factory(**kwargs):
     create_bank_info = False
     if "offer__venue" not in kwargs:
         kwargs.setdefault("collectiveOffer__venue__pricing_point", "self")
-        kwargs.setdefault("collectiveOffer__venue__reimbursement_point", "self")
         create_bank_info = True
     stock = educational_factories.CollectiveStockFactory(**kwargs)
     if create_bank_info:
@@ -143,7 +141,7 @@ class PriceEventTest:
             booking_kwargs["stock"] = individual_stock_factory(**stock_kwargs)
         booking = bookings_factories.BookingFactory(**booking_kwargs)
         with time_machine.travel(used_date or datetime.datetime.utcnow()):
-            bookings_api.mark_as_used(booking)
+            bookings_api.mark_as_used(booking, bookings_models.BookingValidationAuthorType.AUTO)
         return models.FinanceEvent.query.filter_by(booking=booking).one()
 
     def _make_collective_event(self, price=None, user=None, stock=None, venue=None):
@@ -287,7 +285,9 @@ class PriceEventTest:
         assert created_pricing.lines[0].category == models.PricingLineCategory.OFFERER_REVENUE
 
     def test_price_event_on_cancelled_booking(self):
-        venue = offerers_factories.VenueFactory(pricing_point="self", reimbursement_point="self")
+        venue = offerers_factories.VenueFactory(pricing_point="self")
+        bank_account = factories.BankAccountFactory(offerer=venue.managingOfferer)
+        offerers_factories.VenueBankAccountLinkFactory(bankAccount=bank_account, venue=venue)
         booking = bookings_factories.ReimbursedBookingFactory(stock__offer__venue=venue)
         used_event = factories.UsedBookingFinanceEventFactory(booking=booking)
         original_pricing = api.price_event(used_event)
@@ -296,7 +296,8 @@ class PriceEventTest:
             newTotalAmount=0, incident__venue=venue, booking=booking
         )
 
-        api.validate_finance_incident(total_booking_incident.incident, force_debit_note=False)
+        author = users_factories.UserFactory()
+        api.validate_finance_incident(total_booking_incident.incident, force_debit_note=False, author=author)
 
         assert total_booking_incident.booking.status == bookings_models.BookingStatus.CANCELLED
 
@@ -385,7 +386,7 @@ class PriceEventTest:
         assert event.status == models.FinanceEventStatus.CANCELLED
         assert models.FinanceEvent.query.filter_by(status=models.FinanceEventStatus.READY).count() == 0
 
-        bookings_api.mark_as_used(event.booking)
+        bookings_api.mark_as_used(event.booking, bookings_models.BookingValidationAuthorType.AUTO)
         event = models.FinanceEvent.query.filter_by(status=models.FinanceEventStatus.READY).one()
         api.price_event(event)
         assert models.Pricing.query.count() == 2
@@ -1840,50 +1841,6 @@ class GenerateDebitNotesTest:
 
         invoices = models.Invoice.query.all()
         assert len(invoices) == 0
-
-
-@pytest.fixture(name="invoice_data_legacy")
-def invoice_test_data_legacy():
-    venue_kwargs = {
-        "pricing_point": "self",
-        "reimbursement_point": "self",
-    }
-    offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318459")
-    venue = offerers_factories.VenueFactory(
-        publicName="Coiffeur justificaTIF",
-        name="Coiffeur explicaTIF",
-        siret="85331845900023",
-        bookingEmail="pro@example.com",
-        managingOfferer=offerer,
-        **venue_kwargs,
-    )
-    factories.BankInformationFactory(venue=venue, iban="FR2710010000000000000000064")
-
-    reimbursement_point = venue
-    thing_offer1 = offers_factories.ThingOfferFactory(venue=venue)
-    thing_offer2 = offers_factories.ThingOfferFactory(venue=venue)
-    book_offer1 = offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id)
-    book_offer2 = offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id)
-    digital_offer1 = offers_factories.DigitalOfferFactory(venue=venue)
-    digital_offer2 = offers_factories.DigitalOfferFactory(venue=venue)
-    custom_rule_offer1 = offers_factories.ThingOfferFactory(venue=venue)
-    factories.CustomReimbursementRuleFactory(rate=0.94, offer=custom_rule_offer1)
-    custom_rule_offer2 = offers_factories.ThingOfferFactory(venue=venue)
-    factories.CustomReimbursementRuleFactory(amount=2200, offer=custom_rule_offer2)
-
-    stocks = [
-        offers_factories.StockFactory(offer=thing_offer1, price=30),
-        offers_factories.StockFactory(offer=book_offer1, price=20),
-        offers_factories.StockFactory(offer=thing_offer2, price=19_950),
-        offers_factories.StockFactory(offer=thing_offer2, price=81.3),
-        offers_factories.StockFactory(offer=book_offer2, price=40),
-        offers_factories.StockFactory(offer=digital_offer1, price=27),
-        offers_factories.StockFactory(offer=digital_offer2, price=31),
-        offers_factories.StockFactory(offer=custom_rule_offer1, price=20),
-        offers_factories.StockFactory(offer=custom_rule_offer2, price=23),
-    ]
-
-    return reimbursement_point, stocks, venue
 
 
 @pytest.fixture(name="invoice_data")
@@ -3635,7 +3592,10 @@ class ValidateFinanceIncidentTest:
                 booking.educationalInstitution.id, booking.educationalYearId, Decimal(7800.00), deposit
             )
 
-        api.validate_finance_incident(collective_booking_finance_incident.incident, force_debit_note=False)
+        author = users_factories.UserFactory()
+        api.validate_finance_incident(
+            collective_booking_finance_incident.incident, force_debit_note=False, author=author
+        )
 
         assert booking.status == educational_models.CollectiveBookingStatus.CANCELLED
 

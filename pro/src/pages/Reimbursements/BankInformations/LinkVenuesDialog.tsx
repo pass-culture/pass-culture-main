@@ -14,7 +14,7 @@ import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import fullEditIcon from 'icons/full-edit.svg'
 import strokeWarningIcon from 'icons/stroke-warning.svg'
-import { Button, SubmitButton } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { pluralize, pluralizeString } from 'utils/pluralize'
@@ -22,7 +22,7 @@ import { pluralize, pluralizeString } from 'utils/pluralize'
 import styles from './LinkVenuesDialog.module.scss'
 import PricingPointDialog from './PricingPointDialog/PricingPointDialog'
 
-export interface LinkVenuesDialogProps {
+interface LinkVenuesDialogProps {
   offererId: number
   selectedBankAccount: BankAccountResponseModel
   managedVenues: Array<ManagedVenues>
@@ -30,7 +30,7 @@ export interface LinkVenuesDialogProps {
   updateBankAccountVenuePricingPoint: (venueId: number) => void
 }
 
-const LinkVenuesDialog = ({
+export const LinkVenuesDialog = ({
   offererId,
   selectedBankAccount,
   managedVenues,
@@ -79,6 +79,7 @@ const LinkVenuesDialog = ({
         })
         notification.success('Vos modifications ont bien été prises en compte.')
         closeDialog(true)
+        formik.setSubmitting(false)
       } catch (e) {
         notification.error(
           'Un erreur est survenue. Vos modifications n’ont pas été prises en compte.'
@@ -213,7 +214,9 @@ const LinkVenuesDialog = ({
               <Button variant={ButtonVariant.SECONDARY} onClick={onCancel}>
                 Annuler
               </Button>
-              <SubmitButton>Enregistrer</SubmitButton>
+              <Button type="submit" isLoading={formik.isSubmitting}>
+                Enregistrer
+              </Button>
             </div>
           </form>
         </FormikProvider>
@@ -264,5 +267,3 @@ const LinkVenuesDialog = ({
     </>
   )
 }
-
-export default LinkVenuesDialog

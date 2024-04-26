@@ -9,6 +9,7 @@ import sqlalchemy as sa
 from sqlalchemy.sql.functions import func
 
 import pcapi.core.offerers.models as offerers_models
+from pcapi.models import db
 from pcapi.utils import crypto
 import pcapi.utils.email as email_utils
 
@@ -39,7 +40,7 @@ def check_user_and_credentials(user: models.User | None, password: str, allow_in
             technical_message_id="users.login",
         )
         raise exceptions.InvalidIdentifier()
-    if not user.isValidated or not user.isEmailValidated:
+    if not user.isEmailValidated:
         raise exceptions.UnvalidatedAccount()
 
 
@@ -149,3 +150,13 @@ def get_single_sign_on(sso_provider: str, sso_user_id: str) -> models.SingleSign
 
 def create_single_sign_on(user: models.User, sso_provider: str, sso_user_id: str) -> models.SingleSignOn:
     return models.SingleSignOn(user=user, ssoProvider=sso_provider, ssoUserId=sso_user_id)
+
+
+def user_has_new_nav_activated(user: models.User) -> bool:
+    return db.session.query(
+        sa.select(1)
+        .select_from(models.User)
+        .join(models.User.pro_new_nav_state)
+        .filter(models.UserProNewNavState.newNavDate.is_not(None))
+        .exists()
+    ).scalar()

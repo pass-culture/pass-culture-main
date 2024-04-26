@@ -9,8 +9,11 @@ import { Events } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import fullKeyIcon from 'icons/full-key.svg'
-import { ButtonLink, PasswordInput, SubmitButton, TextInput } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { PasswordInput } from 'ui-kit/form/PasswordInput/PasswordInput'
+import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
 import styles from './Signin.module.scss'
@@ -71,13 +74,14 @@ const SigninForm = (): JSX.Element => {
           >
             Créer un compte
           </ButtonLink>
-          <SubmitButton
+          <Button
+            type="submit"
             className={styles['buttons']}
             isLoading={formik.isSubmitting}
             disabled={!formik.dirty || !formik.isValid}
           >
             Se connecter
-          </SubmitButton>
+          </Button>
         </div>
         <BannerRGS />
       </FormLayout>

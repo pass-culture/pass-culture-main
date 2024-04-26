@@ -4,15 +4,16 @@ import { Form, Formik } from 'formik'
 import React from 'react'
 
 import { api } from 'apiClient/api'
+import { VenueTypeResponseModel } from 'apiClient/v1'
 import {
   DEFAULT_ACTIVITY_VALUES,
   SignupJourneyContext,
   SignupJourneyContextValues,
 } from 'context/SignupJourneyContext'
 import { ActivityContext } from 'context/SignupJourneyContext/SignupJourneyContext'
-import { SelectOption } from 'custom_types/form'
-import { SubmitButton } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import ActivityForm, {
   ActivityFormProps,
@@ -27,9 +28,9 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-const venueTypes: SelectOption[] = [
-  { value: 'ARTISTIC_COURSE', label: 'Cours et pratique artistiques' },
-  { value: 'SCIENTIFIC_CULTURE', label: 'Culture scientifique' },
+const venueTypes: VenueTypeResponseModel[] = [
+  { id: 'ARTISTIC_COURSE', label: 'Cours et pratique artistiques' },
+  { id: 'SCIENTIFIC_CULTURE', label: 'Culture scientifique' },
 ]
 
 const renderActivityForm = ({
@@ -43,16 +44,6 @@ const renderActivityForm = ({
   props: ActivityFormProps
   contextValue: SignupJourneyContextValues
 }) => {
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        isAdmin: false,
-        email: 'email@example.com',
-      },
-    },
-  }
-
   return renderWithProviders(
     <SignupJourneyContext.Provider value={contextValue}>
       <Formik
@@ -62,11 +53,16 @@ const renderActivityForm = ({
       >
         <Form noValidate>
           <ActivityForm {...props} />
-          <SubmitButton isLoading={false}>Submit</SubmitButton>
+          <Button type="submit" isLoading={false}>
+            Submit
+          </Button>
         </Form>
       </Formik>
     </SignupJourneyContext.Provider>,
-    { storeOverrides, initialRouterEntries: ['/parcours-inscription/activite'] }
+    {
+      user: sharedCurrentUserFactory(),
+      initialRouterEntries: ['/parcours-inscription/activite'],
+    }
   )
 }
 

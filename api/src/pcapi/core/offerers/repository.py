@@ -15,6 +15,7 @@ from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.finance import models as finance_models
+from pcapi.core.geography import models as geography_models
 import pcapi.core.offers.models as offers_models
 from pcapi.core.offers.models import Offer
 import pcapi.core.offers.repository as offers_repository
@@ -130,6 +131,7 @@ def get_filtered_venues(
         .options(sqla_orm.joinedload(models.Venue.collectiveDomains))
         .options(sqla_orm.joinedload(models.Venue.reimbursement_point_links))
         .options(sqla_orm.joinedload(models.Venue.bankInformation))
+        .options(sqla_orm.joinedload(models.Venue.accessibilityProvider))
     )
     if not user_is_admin:
         query = query.filter(
@@ -670,7 +672,7 @@ def get_venues_with_non_free_offers_without_bank_accounts(offerer_id: int) -> li
         models.Venue.query.filter(
             models.Venue.managingOffererId == offerer_id,
             models.VenueBankAccountLink.timespan
-            == None,  # Because as we LEFT OUTER JOIN on VenueReimbursementPointLink, timespan column can be NULL
+            == None,  # Because as we LEFT OUTER JOIN on VenueBankAccountLink, timespan column can be NULL
             # i.e. only Venue without any VenueBankAccountLink or only deprecated ones.
             sqla.or_(
                 offers_models.Stock.query.join(
@@ -838,3 +840,15 @@ def get_revenues_per_year(
         }
         for year in years
     }
+
+
+def get_offerer_addresses(offerer_id: int) -> BaseQuery:
+    return (
+        models.OffererAddress.query.filter(models.OffererAddress.offererId == offerer_id)
+        .options(
+            sqla_orm.joinedload(models.OffererAddress.address).load_only(
+                geography_models.Address.street, geography_models.Address.postalCode, geography_models.Address.city
+            )
+        )
+        .order_by(models.OffererAddress.label)
+    )

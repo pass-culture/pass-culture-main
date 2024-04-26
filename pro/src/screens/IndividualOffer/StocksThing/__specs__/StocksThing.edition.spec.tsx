@@ -23,9 +23,9 @@ import {
 } from 'core/Offers/utils/getIndividualOfferUrl'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
 import { Stocks } from 'pages/IndividualOfferWizard/Stocks/Stocks'
-import { RootState } from 'store/rootReducer'
 import { getOfferStockFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 vi.mock('screens/IndividualOffer/Informations/utils', () => {
   return {
@@ -54,7 +54,7 @@ vi.mock('utils/date', async () => {
   }
 })
 
-const renderStockThingScreen = (storeOverrides: Partial<RootState> = {}) =>
+const renderStockThingScreen = () =>
   renderWithProviders(
     <>
       <Routes>
@@ -80,7 +80,7 @@ const renderStockThingScreen = (storeOverrides: Partial<RootState> = {}) =>
       <Notification />
     </>,
     {
-      storeOverrides,
+      user: sharedCurrentUserFactory(),
       initialRouterEntries: [
         getIndividualOfferUrl({
           step: OFFER_WIZARD_STEP_IDS.STOCKS,
@@ -92,7 +92,6 @@ const renderStockThingScreen = (storeOverrides: Partial<RootState> = {}) =>
   )
 
 describe('screens:StocksThing', () => {
-  let storeOverride: Partial<RootState>
   let apiOffer: GetIndividualOfferResponseModel
   const stockToDelete = getOfferStockFactory({
     beginningDatetime: '2022-05-23T08:25:31.009799Z',
@@ -137,7 +136,6 @@ describe('screens:StocksThing', () => {
       externalTicketOfficeUrl: null,
       url: null,
       venue: {
-        address: '1 boulevard Poissonnière',
         bookingEmail: 'venue29@example.net',
         city: 'Paris',
         departementCode: '75',
@@ -151,6 +149,7 @@ describe('screens:StocksThing', () => {
         name: 'Cinéma synchro avec booking provider',
         postalCode: '75000',
         publicName: 'Cinéma synchro avec booking provider',
+        street: '1 boulevard Poissonnière',
         audioDisabilityCompliant: false,
         mentalDisabilityCompliant: false,
         motorDisabilityCompliant: false,
@@ -161,19 +160,6 @@ describe('screens:StocksThing', () => {
       withdrawalType: null,
       withdrawalDelay: null,
       bookingsCount: 0,
-    }
-    storeOverride = {
-      user: {
-        currentUser: {
-          isAdmin: false,
-          dateCreated: '2001-01-01',
-          email: 'test@email.com',
-          id: 12,
-          roles: [],
-          isEmailValidated: true,
-        },
-        selectedOffererId: null,
-      },
     }
 
     vi.spyOn(router, 'useLoaderData').mockReturnValue({ offer: apiOffer })
@@ -218,7 +204,7 @@ describe('screens:StocksThing', () => {
 
   it('should allow user to delete a stock', async () => {
     vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
-    renderStockThingScreen(storeOverride)
+    renderStockThingScreen()
     await screen.findByTestId('stock-thing-form')
 
     // userEvent.dblClick to fix @reach/menu-button update, to delete after refactor
@@ -252,7 +238,7 @@ describe('screens:StocksThing', () => {
       name: 'Provider',
     }
     vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
-    renderStockThingScreen(storeOverride)
+    renderStockThingScreen()
     await screen.findByTestId('stock-thing-form')
 
     await userEvent.click(
@@ -284,7 +270,7 @@ describe('screens:StocksThing', () => {
         ''
       )
     )
-    renderStockThingScreen(storeOverride)
+    renderStockThingScreen()
     await screen.findByTestId('stock-thing-form')
 
     await userEvent.click(screen.getByTestId('stock-form-actions-button-open'))
@@ -302,7 +288,7 @@ describe('screens:StocksThing', () => {
   })
 
   it('should show a success notification if nothing has been touched', async () => {
-    renderStockThingScreen(storeOverride)
+    renderStockThingScreen()
     await screen.findByTestId('stock-thing-form')
 
     await userEvent.click(
@@ -317,7 +303,7 @@ describe('screens:StocksThing', () => {
 
   it('should not display any message when user delete empty stock', async () => {
     vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
-    renderStockThingScreen(storeOverride)
+    renderStockThingScreen()
     await screen.findByTestId('stock-thing-form')
     await userEvent.click(
       (await screen.findAllByTitle('Supprimer le stock'))[1]
@@ -334,7 +320,7 @@ describe('screens:StocksThing', () => {
   })
 
   it('should go back to summary when clicking on "Annuler et quitter"', async () => {
-    renderStockThingScreen(storeOverride)
+    renderStockThingScreen()
     await screen.findByTestId('stock-thing-form')
 
     await userEvent.click(screen.getByText('Annuler et quitter'))

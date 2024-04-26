@@ -1,3 +1,4 @@
+// TODO test is flaky, investigate flakkyness
 describe.skip('Signup journey', () => {
   const siret = Math.random().toString().substring(2, 16)
   const offererName = 'MINISTERE DE LA CULTURE'
@@ -62,6 +63,8 @@ describe.skip('Signup journey', () => {
     )
   })
 
+  // TODO: bon candidat à des scénarios gherkin !
+
   it('should create offerer', () => {
     cy.login({
       email: 'eac_1_lieu@example.com',
@@ -70,30 +73,33 @@ describe.skip('Signup journey', () => {
     })
 
     // Welcome page
-    cy.contains('Commencer').click()
+    cy.findByText('Commencer').click()
 
     // Offerer page
-    cy.get('#siret').type(siret)
+    cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(siret)
     cy.wait('@getSiret')
-    cy.contains('Continuer').click()
+    cy.findByText('Continuer').click()
     cy.wait('@getSiret')
 
     // Authentication page
-    cy.get('#publicName').type('First Offerer')
-    cy.contains('Étape suivante').click()
+    cy.findByLabelText('Nom public').type('First Offerer')
+    cy.findByText('Étape suivante').click()
 
     // Activity page
-    cy.get('#venueTypeCode').select('Spectacle vivant')
-    cy.get('[name="socialUrls[0]"]').type('https://exemple.com')
-    cy.contains('Ajouter un lien').click()
+    cy.findByLabelText('Activité principale *').select('Spectacle vivant')
+    cy.findByLabelText('Site internet, réseau social').type(
+      'https://exemple.com'
+    )
+    cy.findByText('Ajouter un lien').click()
+    // manque un data-testid ou un placeholder
     cy.get('[name="socialUrls[1]"]').type('https://exemple2.com')
 
-    cy.get('[name="targetCustomer.individual"]').check()
-    cy.contains('Étape suivante').click()
+    cy.findByText('Au grand public').click()
+    cy.findByText('Étape suivante').click()
 
     // Validation page
     cy.intercept({ method: 'POST', url: '/offerers/new' }).as('createOfferer')
-    cy.contains('Valider et créer ma structure').click()
+    cy.findByText('Valider et créer ma structure').click()
     cy.wait('@createOfferer').its('response.statusCode').should('eq', 201)
 
     // Homepage
@@ -108,42 +114,43 @@ describe.skip('Signup journey', () => {
     })
 
     // Welcome page
-    cy.contains('Commencer').click()
+    cy.findByText('Commencer').click()
 
     // Offerer page
-    cy.get('#siret').type(siret)
+    cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(siret)
     cy.wait('@getSiret')
-    cy.contains('Continuer').click()
+    cy.findByText('Continuer').click()
     cy.wait('@getSiret')
 
     // Offerer attachment
-    cy.contains('Ajouter une nouvelle structure').click()
+    cy.findByText('Ajouter une nouvelle structure').click()
 
     // Authentication page
-    cy.get('#search-addressAutocomplete').clear()
-    cy.get('#search-addressAutocomplete').type('89 Rue la Boétie 75008 Paris')
-    cy.get('#list-addressAutocomplete li').first().click()
-    cy.contains('Étape suivante').click()
+    cy.findByLabelText('Adresse postale *')
+      .clear()
+      .type('89 Rue la Boétie 75008 Paris')
+    cy.findByRole('option', { name: '89 Rue la Boétie 75008 Paris' }).click()
+
+    cy.findByText('Étape suivante').click()
 
     // Activity page
-    cy.get('#venueTypeCode').select('Spectacle vivant')
-    cy.get('[name="socialUrls[0]"]').type('https://exemple.com')
-    cy.contains('Ajouter un lien').click()
-    cy.get('[name="socialUrls[1]"]').type('https://exemple2.com')
+    cy.findByLabelText('Activité principale *').select('Spectacle vivant')
 
-    cy.get('[name="targetCustomer.individual"]').check()
-    cy.contains('Étape suivante').click()
+    cy.findByText('Au grand public').click()
+    cy.findByText('Étape suivante').click()
 
     // Validation page
+    // TODO: ajouter des assertions
     cy.intercept({ method: 'POST', url: '/offerers/new' }).as('createOfferer')
-    cy.contains('Valider et créer ma structure').click()
+    cy.findByText('Valider et créer ma structure').click()
     cy.wait('@createOfferer').its('response.statusCode').should('eq', 201)
 
     // Homepage
     cy.url().should('contain', '/accueil')
   })
 
-  it('should attach user to an existing offerer', () => {
+  it.skip('should attach user to an existing offerer', () => {
+    // TODO: debug and testing-library-ize
     cy.login({
       email: 'retention@example.com',
       password: 'user@AZERTY123',

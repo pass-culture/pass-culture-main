@@ -5,15 +5,16 @@ import React, { useCallback, useEffect, useState } from 'react'
 import FormLayout from 'components/FormLayout/FormLayout'
 import MultiDownloadButtonsModal from 'components/MultiDownloadButtonsModal/MultiDownloadButtonsModal'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
-import {
-  GetBookingsCSVFileAdapter,
-  GetBookingsXLSFileAdapter,
-  PreFiltersParams,
-} from 'core/Bookings/types'
+import { PreFiltersParams } from 'core/Bookings/types'
+import { Audience, GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import fullRefreshIcon from 'icons/full-refresh.svg'
-import { Button } from 'ui-kit'
+import { downloadIndividualBookingsCSVFile } from 'pages/Bookings/downloadIndividualBookingsCSVFile'
+import { downloadIndividualBookingsXLSFile } from 'pages/Bookings/downloadIndividualBookingsXLSFile'
+import { downloadCollectiveBookingsCSVFile } from 'pages/CollectiveBookings/downloadCollectiveBookingsCSVFile'
+import { downloadCollectiveBookingsXLSFile } from 'pages/CollectiveBookings/downloadCollectiveBookingsXLSFile'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { isDateValid } from 'utils/date'
 
@@ -27,6 +28,7 @@ import styles from './PreFilters.module.scss'
 export interface PreFiltersProps {
   appliedPreFilters: PreFiltersParams
   applyPreFilters: (filters: PreFiltersParams) => void
+  audience: Audience
   hasResult: boolean
   isFiltersDisabled: boolean
   isTableLoading: boolean
@@ -36,13 +38,12 @@ export interface PreFiltersProps {
   urlParams?: PreFiltersParams
   updateUrl?: (selectedPreFilters: PreFiltersParams) => void
   venues: { id: string; displayName: string }[]
-  getBookingsCSVFileAdapter: GetBookingsCSVFileAdapter
-  getBookingsXLSFileAdapter: GetBookingsXLSFileAdapter
 }
 
-const PreFilters = ({
+export const PreFilters = ({
   appliedPreFilters,
   applyPreFilters,
+  audience,
   hasResult,
   isFiltersDisabled,
   isTableLoading,
@@ -51,8 +52,6 @@ const PreFilters = ({
   resetPreFilters,
   venues,
   updateUrl,
-  getBookingsCSVFileAdapter,
-  getBookingsXLSFileAdapter,
 }: PreFiltersProps): JSX.Element => {
   const notify = useNotification()
 
@@ -138,20 +137,28 @@ const PreFilters = ({
     async (filters: PreFiltersParams, type: string) => {
       setIsDownloadingCSV(true)
 
-      /* istanbul ignore next: DEBT to fix */
-      const { isOk, message } =
-        type === 'CSV'
-          ? await getBookingsCSVFileAdapter(filters)
-          : await getBookingsXLSFileAdapter(filters)
-
-      /* istanbul ignore next: DEBT to fix */
-      if (!isOk) {
-        notify.error(message)
+      try {
+        if (audience === Audience.INDIVIDUAL) {
+          /* istanbul ignore next: DEBT to fix */
+          if (type === 'CSV') {
+            await downloadIndividualBookingsCSVFile(filters)
+          } else {
+            await downloadIndividualBookingsXLSFile(filters)
+          }
+        } else {
+          if (type === 'CSV') {
+            await downloadCollectiveBookingsCSVFile(filters)
+          } else {
+            await downloadCollectiveBookingsXLSFile(filters)
+          }
+        }
+      } catch {
+        notify.error(GET_DATA_ERROR_MESSAGE)
       }
 
       setIsDownloadingCSV(false)
     },
-    [notify, getBookingsCSVFileAdapter]
+    [notify, audience]
   )
 
   return (
@@ -244,5 +251,3 @@ const PreFilters = ({
     </>
   )
 }
-
-export default PreFilters

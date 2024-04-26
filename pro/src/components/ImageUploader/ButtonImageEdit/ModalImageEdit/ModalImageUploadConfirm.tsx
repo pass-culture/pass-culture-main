@@ -3,7 +3,7 @@ import React from 'react'
 import { AppPreviewOffer } from 'components/ImageUploader/AppPreviewOffer/AppPreviewOffer'
 import { AppPreviewVenue } from 'components/ImageUploader/AppPreviewVenue/AppPreviewVenue'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
-import { Button, SubmitButton } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import style from './ModalImageUploadConfirm.module.scss'
@@ -50,12 +50,15 @@ export const ModalImageUploadConfirm = ({
         >
           Retour
         </Button>
-        <SubmitButton
+        <Button
+          type="submit"
           className={style['button']}
           disabled={false}
           isLoading={!!isUploading}
           onClick={onUploadImage}
-        />
+        >
+          Enregistrer
+        </Button>
       </div>
     </div>
   )

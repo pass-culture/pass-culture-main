@@ -3,28 +3,23 @@ import { userEvent } from '@testing-library/user-event'
 import { Formik } from 'formik'
 import React from 'react'
 
-import { AuthenticatedResponse, EacFormat } from 'apiClient/adage'
+import { EacFormat } from 'apiClient/adage'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import { defaultAdageUser } from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { LocalisationFilterStates, SearchFormValues } from '../../OffersSearch'
+import { SearchFormValues } from '../../../OffersInstantSearch'
+import { LocalisationFilterStates } from '../../OffersSearch'
 import { OfferFilters } from '../OfferFilters'
 
 const handleSubmit = vi.fn()
 const mockSetLocalisationFilterState = vi.fn()
 
-const renderOfferFilters = ({
-  initialValues,
+const renderOfferFilters = (
+  initialValues: SearchFormValues,
   localisationFilterState = LocalisationFilterStates.NONE,
-  adageUser = defaultAdageUser,
-  storeOverrides = null,
-}: {
-  initialValues: SearchFormValues
-  localisationFilterState?: LocalisationFilterStates
-  adageUser?: AuthenticatedResponse
-  storeOverrides?: unknown
-}) =>
+  adageUser = defaultAdageUser
+) =>
   renderWithProviders(
     <AdageUserContextProvider adageUser={adageUser}>
       <Formik initialValues={initialValues} onSubmit={handleSubmit}>
@@ -39,8 +34,7 @@ const renderOfferFilters = ({
           shouldDisplayMarseilleStudentOptions={true}
         />
       </Formik>
-    </AdageUserContextProvider>,
-    { storeOverrides: storeOverrides }
+    </AdageUserContextProvider>
   )
 
 const initialValues = {
@@ -58,10 +52,8 @@ const initialValues = {
 describe('OfferFilters', () => {
   it('should submit onclick modal search button domain artistic', async () => {
     renderOfferFilters({
-      initialValues: {
-        ...initialValues,
-        domains: [123],
-      },
+      ...initialValues,
+      domains: [123],
     })
 
     await userEvent.click(
@@ -75,10 +67,8 @@ describe('OfferFilters', () => {
 
   it('should submit formats values onclick modal search button', async () => {
     renderOfferFilters({
-      initialValues: {
-        ...initialValues,
-        formats: [EacFormat.CONCERT, EacFormat.REPR_SENTATION],
-      },
+      ...initialValues,
+      formats: [EacFormat.CONCERT, EacFormat.REPR_SENTATION],
     })
 
     await userEvent.click(screen.getByRole('button', { name: 'Format (2)' }))
@@ -96,10 +86,8 @@ describe('OfferFilters', () => {
 
   it('should submit onclick modal search button school level', async () => {
     renderOfferFilters({
-      initialValues: {
-        ...initialValues,
-        students: ['test'],
-      },
+      ...initialValues,
+      students: ['test'],
     })
 
     await userEvent.click(
@@ -113,10 +101,8 @@ describe('OfferFilters', () => {
 
   it('should reset filter onclick modal clear artistic domain', async () => {
     renderOfferFilters({
-      initialValues: {
-        ...initialValues,
-        domains: [123],
-      },
+      ...initialValues,
+      domains: [123],
     })
 
     await userEvent.click(
@@ -132,10 +118,8 @@ describe('OfferFilters', () => {
 
   it('should reset filter onclick modal clear students', async () => {
     renderOfferFilters({
-      initialValues: {
-        ...initialValues,
-        students: ['test'],
-      },
+      ...initialValues,
+      students: ['test'],
     })
 
     await userEvent.click(
@@ -150,9 +134,7 @@ describe('OfferFilters', () => {
   })
 
   it('should return domains options when the api call was successful', async () => {
-    renderOfferFilters({
-      initialValues: initialValues,
-    })
+    renderOfferFilters(initialValues)
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Domaine artistique' })
@@ -164,21 +146,21 @@ describe('OfferFilters', () => {
   })
 
   it('should display departments and academies button in localisation filter modal', () => {
-    renderOfferFilters({
-      initialValues: initialValues,
-      localisationFilterState: LocalisationFilterStates.NONE,
-      adageUser: { ...defaultAdageUser },
-    })
+    renderOfferFilters(
+      initialValues,
+      LocalisationFilterStates.NONE,
+      defaultAdageUser
+    )
 
     expect(screen.getByText('Choisir un département')).toBeInTheDocument()
     expect(screen.getByText('Choisir une académie')).toBeInTheDocument()
   })
 
   it('should display geoloc button in localisation filter modal', () => {
-    renderOfferFilters({
-      initialValues: initialValues,
-      localisationFilterState: LocalisationFilterStates.NONE,
-      adageUser: { ...defaultAdageUser, lat: 10, lon: 10 },
+    renderOfferFilters(initialValues, LocalisationFilterStates.NONE, {
+      ...defaultAdageUser,
+      lat: 10,
+      lon: 10,
     })
 
     expect(
@@ -187,10 +169,10 @@ describe('OfferFilters', () => {
   })
 
   it('should not display geoloc button in localisation filter modal if the user does not have a valid geoloc', () => {
-    renderOfferFilters({
-      initialValues: initialValues,
-      localisationFilterState: LocalisationFilterStates.NONE,
-      adageUser: { ...defaultAdageUser, lat: 10, lon: null },
+    renderOfferFilters(initialValues, LocalisationFilterStates.NONE, {
+      ...defaultAdageUser,
+      lat: 10,
+      lon: null,
     })
 
     expect(
@@ -199,39 +181,27 @@ describe('OfferFilters', () => {
   })
 
   it('should display departments options in localisation filter modal', () => {
-    renderOfferFilters({
-      initialValues: initialValues,
-      localisationFilterState: LocalisationFilterStates.DEPARTMENTS,
-    })
+    renderOfferFilters(initialValues, LocalisationFilterStates.DEPARTMENTS)
 
     expect(
       screen.getByPlaceholderText('Ex: 59 ou Hauts-de-France')
     ).toBeInTheDocument()
   })
   it('should display academies options in localisation filter modal', () => {
-    renderOfferFilters({
-      initialValues: initialValues,
-      localisationFilterState: LocalisationFilterStates.ACADEMIES,
-    })
+    renderOfferFilters(initialValues, LocalisationFilterStates.ACADEMIES)
 
     expect(screen.getByPlaceholderText('Ex: Nantes')).toBeInTheDocument()
   })
 
   it('should display radius range input in localisation filter modal', () => {
-    renderOfferFilters({
-      initialValues: initialValues,
-      localisationFilterState: LocalisationFilterStates.GEOLOCATION,
-    })
+    renderOfferFilters(initialValues, LocalisationFilterStates.GEOLOCATION)
 
     expect(screen.getByText('Dans un rayon de')).toBeInTheDocument()
     expect(screen.getByText('50 km')).toBeInTheDocument()
   })
 
   it('should reset modal state when closing departments filter modal', async () => {
-    renderOfferFilters({
-      initialValues: initialValues,
-      localisationFilterState: LocalisationFilterStates.DEPARTMENTS,
-    })
+    renderOfferFilters(initialValues, LocalisationFilterStates.DEPARTMENTS)
 
     await userEvent.click(
       screen.getByRole('button', {
@@ -249,10 +219,7 @@ describe('OfferFilters', () => {
     )
   })
   it('should reset modal state when closing academies filter modal', async () => {
-    renderOfferFilters({
-      initialValues: initialValues,
-      localisationFilterState: LocalisationFilterStates.ACADEMIES,
-    })
+    renderOfferFilters(initialValues, LocalisationFilterStates.ACADEMIES)
 
     await userEvent.click(
       screen.getByRole('button', {
@@ -271,10 +238,7 @@ describe('OfferFilters', () => {
   })
 
   it('should reset modal state when closing geoloc filter modal', async () => {
-    renderOfferFilters({
-      initialValues: initialValues,
-      localisationFilterState: LocalisationFilterStates.GEOLOCATION,
-    })
+    renderOfferFilters(initialValues, LocalisationFilterStates.GEOLOCATION)
 
     await userEvent.click(
       screen.getByRole('button', {
@@ -293,10 +257,7 @@ describe('OfferFilters', () => {
   })
 
   it('should trigger search when clicking Rechercher while using geoloc', async () => {
-    renderOfferFilters({
-      initialValues: initialValues,
-      localisationFilterState: LocalisationFilterStates.GEOLOCATION,
-    })
+    renderOfferFilters(initialValues, LocalisationFilterStates.GEOLOCATION)
 
     await userEvent.click(
       screen.getByRole('button', {
@@ -310,10 +271,8 @@ describe('OfferFilters', () => {
 
   it('should sort students options with selected first but keep initial order otherwise', async () => {
     renderOfferFilters({
-      initialValues: {
-        ...initialValues,
-        students: ['Collège - 5e'],
-      },
+      ...initialValues,
+      students: ['Collège - 5e'],
     })
 
     await userEvent.click(

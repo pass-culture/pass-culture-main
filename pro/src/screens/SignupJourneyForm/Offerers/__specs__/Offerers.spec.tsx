@@ -14,6 +14,7 @@ import {
 import * as getSirenDataAdapter from 'core/Offerers/adapters/getSirenDataAdapter'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { Offerers } from '..'
 
@@ -25,16 +26,6 @@ vi.mock('apiClient/api', () => ({
 }))
 
 const renderOfferersScreen = (contextValue: SignupJourneyContextValues) => {
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        isAdmin: false,
-        email: 'email@example.com',
-      },
-    },
-  }
-
   return renderWithProviders(
     <SignupJourneyContext.Provider value={contextValue}>
       <Routes>
@@ -54,7 +45,7 @@ const renderOfferersScreen = (contextValue: SignupJourneyContextValues) => {
       </Routes>
     </SignupJourneyContext.Provider>,
     {
-      storeOverrides,
+      user: sharedCurrentUserFactory(),
       initialRouterEntries: ['/parcours-inscription/structures'],
     }
   )

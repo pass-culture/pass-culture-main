@@ -1,6 +1,8 @@
 from flask_login import current_user
 from flask_login import login_required
+from werkzeug.exceptions import NotFound
 
+import pcapi.core.offerers.models as offerers_models
 from pcapi.core.providers import api
 from pcapi.core.providers import exceptions
 from pcapi.core.providers import repository
@@ -14,17 +16,25 @@ from pcapi.routes.serialization.venue_provider_serialize import ListVenueProvide
 from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
 from pcapi.routes.serialization.venue_provider_serialize import VenueProviderResponse
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.validation.routes.users_authorizations import check_user_can_alter_venue
+from pcapi.utils import rest
 from pcapi.workers.venue_provider_job import venue_provider_job
 
 from . import blueprint
 
 
+def _get_venue_or_404(venue_id: int) -> offerers_models.Venue:
+    venue = offerers_models.Venue.query.filter_by(id=venue_id).one_or_none()
+    if not venue:
+        raise NotFound
+    return venue
+
+
 @private_api.route("/venueProviders", methods=["GET"])
 @login_required
-@spectree_serialize(on_success_status=200, response_model=ListVenueProviderResponse, api=blueprint.pro_private_schema)  # type: ignore [arg-type]
+@spectree_serialize(on_success_status=200, response_model=ListVenueProviderResponse, api=blueprint.pro_private_schema)
 def list_venue_providers(query: ListVenueProviderQuery) -> ListVenueProviderResponse:
-    check_user_can_alter_venue(current_user, query.venue_id)
+    venue = _get_venue_or_404(query.venue_id)
+    rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 
     venue_provider_list = repository.get_venue_provider_list(query.venue_id)
     for venue_provider in venue_provider_list:
@@ -37,12 +47,11 @@ def list_venue_providers(query: ListVenueProviderQuery) -> ListVenueProviderResp
 
 @private_api.route("/venueProviders", methods=["POST"])
 @login_required
-@spectree_serialize(on_success_status=201, response_model=VenueProviderResponse, api=blueprint.pro_private_schema)  # type: ignore [arg-type]
+@spectree_serialize(on_success_status=201, response_model=VenueProviderResponse, api=blueprint.pro_private_schema)
 def create_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
     body.venueIdAtOfferProvider = None
-    if body.venueId is None:
-        raise ApiErrors({"venue": ["Lieu introuvable."]}, 404)
-    check_user_can_alter_venue(current_user, body.venueId)
+    venue = _get_venue_or_404(body.venueId)
+    rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 
     try:
         new_venue_provider = api.create_venue_provider(
@@ -108,12 +117,10 @@ def create_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
 
 @private_api.route("/venueProviders", methods=["PUT"])
 @login_required
-@spectree_serialize(on_success_status=200, response_model=VenueProviderResponse, api=blueprint.pro_private_schema)  # type: ignore [arg-type]
+@spectree_serialize(on_success_status=200, response_model=VenueProviderResponse, api=blueprint.pro_private_schema)
 def update_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
-    assert body.venueId is not None, "a not None venue_id is required"
-    assert body.providerId is not None, "a not None provider_id is required"
-
-    check_user_can_alter_venue(current_user, body.venueId)
+    venue = _get_venue_or_404(body.venueId)
+    rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 
     venue_provider = get_venue_provider_by_venue_and_provider_ids(body.venueId, body.providerId)
 
@@ -128,11 +135,10 @@ def update_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
 @login_required
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def delete_venue_provider(venue_provider_id: int) -> None:
-    assert venue_provider_id is not None, "a not None provider_id is required"
-
-    venue_provider = repository.get_venue_provider_by_id(int(venue_provider_id))
-
-    check_user_can_alter_venue(current_user, venue_provider.venueId)
+    venue_provider = repository.get_venue_provider_by_id(venue_provider_id)
+    if not venue_provider:
+        raise NotFound()
+    rest.check_user_has_access_to_offerer(current_user, venue_provider.venue.managingOffererId)
 
     api.delete_venue_provider(venue_provider, author=current_user)
 

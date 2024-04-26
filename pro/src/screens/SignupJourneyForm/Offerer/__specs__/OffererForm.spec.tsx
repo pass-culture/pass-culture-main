@@ -13,8 +13,9 @@ import {
   SignupJourneyContext,
   SignupJourneyContextValues,
 } from 'context/SignupJourneyContext'
-import { SubmitButton } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { DEFAULT_OFFERER_FORM_VALUES } from '../constants'
 import OffererForm, { OffererFormValues } from '../OffererForm'
@@ -60,16 +61,6 @@ const renderOffererForm = ({
   onSubmit?: () => void
   contextValue: SignupJourneyContextValues
 }) => {
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        isAdmin: false,
-        email: 'email@example.com',
-      },
-    },
-  }
-
   return renderWithProviders(
     <SignupJourneyContext.Provider value={contextValue}>
       <Formik
@@ -79,11 +70,16 @@ const renderOffererForm = ({
       >
         <Form>
           <OffererForm />
-          <SubmitButton isLoading={false}>Submit</SubmitButton>
+          <Button type="submit" isLoading={false}>
+            Submit
+          </Button>
         </Form>
       </Formik>
     </SignupJourneyContext.Provider>,
-    { storeOverrides, initialRouterEntries: ['/parcours-inscription/siret'] }
+    {
+      user: sharedCurrentUserFactory(),
+      initialRouterEntries: ['/parcours-inscription/siret'],
+    }
   )
 }
 

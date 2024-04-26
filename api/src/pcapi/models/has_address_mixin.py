@@ -7,7 +7,7 @@ from sqlalchemy.orm import declarative_mixin
 
 @declarative_mixin
 class HasAddressMixin:
-    address = Column(String(200), nullable=True)
+    _address = Column("address", String(200), nullable=True)
 
     postalCode: str = Column(String(6), nullable=False, index=True)
 

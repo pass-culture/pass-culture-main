@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import React from 'react'
 
-import FieldError from '../FieldError'
+import { FieldError } from '../FieldError/FieldError'
 
 import styles from './FieldSetLayout.module.scss'
 
@@ -16,7 +16,7 @@ interface FieldSetLayoutProps {
   isOptional?: boolean
 }
 
-const FieldSetLayout = ({
+export const FieldSetLayout = ({
   children,
   legend,
   className,
@@ -49,5 +49,3 @@ const FieldSetLayout = ({
     </fieldset>
   )
 }
-
-export default FieldSetLayout

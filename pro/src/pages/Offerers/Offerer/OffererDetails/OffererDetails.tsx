@@ -6,7 +6,7 @@ import { GetOffererVenueResponseModel } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import fullBackIcon from 'icons/full-back.svg'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
-import { ButtonLink } from 'ui-kit'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { hasProperty } from 'utils/types'
@@ -124,7 +124,7 @@ export const OffererDetails = () => {
               <div className={styles['op-detail']}>
                 <span>{'Siège social : '}</span>
                 <span>
-                  {`${offerer.address} - ${offerer.postalCode} ${offerer.city}`}
+                  {`${offerer.street} - ${offerer.postalCode} ${offerer.city}`}
                 </span>
               </div>
             </div>

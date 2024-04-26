@@ -18,6 +18,8 @@ from sqlalchemy.orm import Query
 
 from pcapi import settings
 from pcapi.connectors import api_adresse
+from pcapi.connectors.beamer import BeamerException
+from pcapi.connectors.beamer import delete_beamer_user
 from pcapi.core import mails as mails_api
 from pcapi.core import token as token_utils
 import pcapi.core.bookings.models as bookings_models
@@ -47,6 +49,7 @@ from pcapi.domain.password import random_password
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.notifications import push as push_api
 from pcapi.repository import repository
 from pcapi.repository import transaction
@@ -566,6 +569,7 @@ def change_email(
         raise
 
     models.UserSession.query.filter_by(userId=current_user.id).delete(synchronize_session=False)
+    models.SingleSignOn.query.filter_by(userId=current_user.id).delete(synchronize_session=False)
     db.session.commit()
 
     logger.info("User has changed their email", extra={"user": current_user.id})
@@ -591,7 +595,6 @@ def update_password_and_external_user(user: users_models.User, new_password: str
     user.setPassword(new_password)
     if not user.isEmailValidated:
         user.isEmailValidated = True
-        user.validationToken = None
         external_attributes_api.update_external_user(user)
     repository.save(user)
 
@@ -610,6 +613,7 @@ def update_user_info(
     city: str | T_UNCHANGED = UNCHANGED,
     validated_birth_date: datetime.date | T_UNCHANGED = UNCHANGED,
     id_piece_number: str | T_UNCHANGED = UNCHANGED,
+    marketing_email_subscription: bool | T_UNCHANGED = UNCHANGED,
     commit: bool = True,
 ) -> history_api.ObjectUpdateSnapshot:
     old_email = None
@@ -658,6 +662,13 @@ def update_user_info(
         if id_piece_number != user.idPieceNumber:
             snapshot.set("idPieceNumber", old=user.idPieceNumber, new=id_piece_number)
         user.idPieceNumber = id_piece_number
+    if marketing_email_subscription is not UNCHANGED:
+        snapshot.trace_update(
+            {"marketing_email": marketing_email_subscription},
+            target=user.get_notification_subscriptions(),
+            field_name_template="notificationSubscriptions.{}",
+        )
+        user.set_marketing_email_subscription(marketing_email_subscription)
 
     # keep using repository as long as user is validated in pcapi.validation.models.user
     if commit:
@@ -833,21 +844,21 @@ def create_pro_user(pro_user: ProUserCreationBodyV2Model) -> models.User:
         deposit = finance_api.create_deposit(new_pro_user, "integration_signup", models.EligibilityType.AGE18)
         new_pro_user.deposits = [deposit]
 
-    if feature.FeatureToggle.WIP_ENABLE_NEW_NAV_AB_TEST.is_active():
-        db.session.add(new_pro_user)
-        db.session.flush()
-        invitation = offerers_models.OffererInvitation.query.filter_by(email=new_pro_user.email).first()
-        if invitation:
-            inviter_pro_new_nav_state = users_models.UserProNewNavState.query.filter_by(
-                userId=invitation.userId
-            ).one_or_none()
-            if inviter_pro_new_nav_state and inviter_pro_new_nav_state.newNavDate is not None:
-                new_nav_pro = users_models.UserProNewNavState(
-                    userId=new_pro_user.id,
-                    newNavDate=datetime.datetime.utcnow(),
-                )
-                db.session.add(new_nav_pro)
-        elif new_pro_user.id % 2 == 0:
+    db.session.add(new_pro_user)
+    db.session.flush()
+    invitation = offerers_models.OffererInvitation.query.filter_by(email=new_pro_user.email).first()
+    if invitation:
+        inviter_pro_new_nav_state = users_models.UserProNewNavState.query.filter_by(
+            userId=invitation.userId
+        ).one_or_none()
+        if inviter_pro_new_nav_state and inviter_pro_new_nav_state.newNavDate is not None:
+            new_nav_pro = users_models.UserProNewNavState(
+                userId=new_pro_user.id,
+                newNavDate=datetime.datetime.utcnow(),
+            )
+            db.session.add(new_nav_pro)
+    elif feature.FeatureToggle.WIP_ENABLE_NEW_NAV_AB_TEST.is_active():
+        if new_pro_user.id % 2 == 0:
             new_nav_pro = users_models.UserProNewNavState(
                 userId=new_pro_user.id,
                 newNavDate=datetime.datetime.utcnow(),
@@ -937,11 +948,36 @@ def update_notification_subscription(
     if subscriptions is None:
         return
 
+    old_subscriptions = user.get_notification_subscriptions()
+    history_api.ObjectUpdateSnapshot(user, user).trace_update(
+        {"marketing_email": subscriptions.marketing_email, "marketing_push": subscriptions.marketing_push},
+        target=old_subscriptions,
+        field_name_template="notificationSubscriptions.{}",
+    ).add_action()
     user.notificationSubscriptions = {
         "marketing_push": subscriptions.marketing_push,
         "marketing_email": subscriptions.marketing_email,
         "subscribed_themes": subscriptions.subscribed_themes,
     }
+
+    logger.info(
+        "Notification subscription update",
+        extra={
+            "analyticsSource": "app-native",
+            "newlySubscribedTo": {
+                "email": subscriptions.marketing_email and not old_subscriptions.marketing_email,
+                "push": subscriptions.marketing_push and not old_subscriptions.marketing_push,
+                "themes": set(subscriptions.subscribed_themes) - set(old_subscriptions.subscribed_themes),
+            },
+            "newlyUnsubscribedFrom": {
+                "email": not subscriptions.marketing_email and old_subscriptions.marketing_email,
+                "push": not subscriptions.marketing_push and old_subscriptions.marketing_push,
+                "themes": set(old_subscriptions.subscribed_themes) - set(subscriptions.subscribed_themes),
+            },
+            "subscriptions": user.notificationSubscriptions,
+        },
+        technical_message_id="subscription_update",
+    )
 
     repository.save(user)
 
@@ -1192,7 +1228,6 @@ def search_backoffice_accounts(search_query: str) -> BaseQuery:
 
 
 def validate_pro_user_email(user: users_models.User, author_user: users_models.User | None = None) -> None:
-    user.validationToken = None
     user.isEmailValidated = True
 
     if author_user:
@@ -1613,6 +1648,106 @@ def anonymize_beneficiary_users(*, force: bool = False) -> None:
     for user in users:
         anonymize_user(user, force=force)
     db.session.commit()
+
+
+def anonymize_pro_users() -> None:
+    """
+    Anonymize pro accounts which have not connected for at least 3 years and are either:
+    - not validated on an offerer
+    - validated on an offerer but at least one user would remain on this offerer
+    """
+    three_years_ago = datetime.datetime.utcnow() - datetime.timedelta(days=365 * 3)
+
+    exclude_non_pro_filters = [
+        ~users_models.User.roles.contains([users_models.UserRole.ADMIN]),
+        ~users_models.User.roles.contains([users_models.UserRole.ANONYMIZED]),
+        ~users_models.User.roles.contains([users_models.UserRole.BENEFICIARY]),
+        ~users_models.User.roles.contains([users_models.UserRole.UNDERAGE_BENEFICIARY]),
+    ]
+
+    aliased_offerer = sa.orm.aliased(offerers_models.Offerer)
+    aliased_user_offerer = sa.orm.aliased(offerers_models.UserOfferer)
+    aliased_user = sa.orm.aliased(users_models.User)
+
+    offerers = (
+        db.session.query(aliased_offerer.id)
+        .join(aliased_user_offerer, aliased_offerer.UserOfferers)
+        .join(aliased_user, aliased_user_offerer.user)
+        .filter(
+            aliased_user.lastConnectionDate >= three_years_ago,
+            aliased_user_offerer.validationStatus == ValidationStatus.VALIDATED,
+            aliased_offerer.id == offerers_models.Offerer.id,
+        )
+    )
+    validated_users = (
+        db.session.query(users_models.User.id)
+        .join(offerers_models.UserOfferer, users_models.User.UserOfferers)
+        .join(offerers_models.Offerer, offerers_models.UserOfferer.offerer)
+        .filter(
+            offerers_models.UserOfferer.validationStatus == ValidationStatus.VALIDATED,
+            offerers_models.Offerer.isActive,
+            users_models.User.lastConnectionDate < three_years_ago,
+            *exclude_non_pro_filters,
+            offerers.exists(),
+        )
+    )
+
+    non_validated_users = (
+        db.session.query(users_models.User.id)
+        .join(offerers_models.UserOfferer, users_models.User.UserOfferers)
+        .filter(
+            offerers_models.UserOfferer.validationStatus != ValidationStatus.VALIDATED,
+            users_models.User.lastConnectionDate < three_years_ago,
+            users_models.User.roles.contains([users_models.UserRole.PRO]),
+            *exclude_non_pro_filters,
+        )
+    )
+    non_attached_users = db.session.query(users_models.User.id).filter(
+        users_models.User.lastConnectionDate < three_years_ago,
+        users_models.User.roles.contains([users_models.UserRole.NON_ATTACHED_PRO]),
+        *exclude_non_pro_filters,
+    )
+    never_connected_users = db.session.query(users_models.User.id).filter(
+        users_models.User.lastConnectionDate.is_(None),
+        users_models.User.dateCreated < three_years_ago,
+        sa.or_(
+            users_models.User.roles.contains([users_models.UserRole.PRO]),
+            users_models.User.roles.contains([users_models.UserRole.NON_ATTACHED_PRO]),
+        ),
+        *exclude_non_pro_filters,
+    )
+
+    users = users_models.User.query.filter(
+        users_models.User.id.in_(
+            sa.union(validated_users, non_validated_users, non_attached_users, never_connected_users).subquery(),
+        ),
+    )
+    for user in users:
+        gdpr_delete_pro_user(user)
+
+    db.session.commit()
+
+
+def gdpr_delete_pro_user(user: users_models.User) -> None:
+    try:
+        delete_beamer_user(user.id)
+    except BeamerException:
+        pass
+    _remove_external_user(user)
+
+    history_models.ActionHistory.query.filter(
+        history_models.ActionHistory.userId != user.id,
+        history_models.ActionHistory.authorUserId == user.id,
+    ).update(
+        {
+            "authorUserId": None,
+        },
+        synchronize_session=False,
+    )
+    offerers_models.UserOfferer.query.filter(offerers_models.UserOfferer.userId == user.id).delete(
+        synchronize_session=False,
+    )
+    users_models.User.query.filter(users_models.User.id == user.id).delete(synchronize_session=False)
 
 
 def anonymize_user_deposits() -> None:

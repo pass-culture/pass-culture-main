@@ -1,14 +1,16 @@
 import { FormikProvider, useFormik } from 'formik'
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
+import useSWR from 'swr'
 
+import { api } from 'apiClient/api'
 import { Target } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
+import { GET_VENUE_TYPES_QUERY_KEY } from 'config/swrQueryKeys'
 import { useSignupJourneyContext } from 'context/SignupJourneyContext'
 import { ActivityContext } from 'context/SignupJourneyContext/SignupJourneyContext'
 import { FORM_ERROR_MESSAGE } from 'core/shared'
-import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import Spinner from 'ui-kit/Spinner/Spinner'
@@ -20,15 +22,15 @@ import { DEFAULT_ACTIVITY_FORM_VALUES } from './constants'
 import { validationSchema } from './validationSchema'
 
 const Activity = (): JSX.Element => {
-  const {
-    isLoading: isLoadingVenueTypes,
-    error: errorVenueTypes,
-    data: venueTypes,
-  } = useGetVenueTypes()
   const notify = useNotification()
   const navigate = useNavigate()
   const { activity, setActivity, offerer } = useSignupJourneyContext()
   const { logEvent } = useAnalytics()
+
+  const venueTypesQuery = useSWR([GET_VENUE_TYPES_QUERY_KEY], () =>
+    api.getVenueTypes()
+  )
+  const venueTypes = venueTypesQuery.data
 
   const serializeActivityContext = (
     activity: ActivityContext
@@ -95,11 +97,11 @@ const Activity = (): JSX.Element => {
     navigate('/parcours-inscription/identification')
   }
 
-  if (isLoadingVenueTypes) {
+  if (venueTypesQuery.isLoading) {
     return <Spinner />
   }
 
-  if (errorVenueTypes) {
+  if (!venueTypes) {
     return <></>
   }
 

@@ -1,8 +1,11 @@
 import { useField } from 'formik'
 import React, { ForwardedRef } from 'react'
 
-import { BaseInput, FieldLayout } from '../shared'
-import { FieldLayoutBaseProps } from '../shared/FieldLayout/FieldLayout'
+import { BaseInput } from '../shared/BaseInput/BaseInput'
+import {
+  FieldLayout,
+  FieldLayoutBaseProps,
+} from '../shared/FieldLayout/FieldLayout'
 
 import styles from './TextInput.module.scss'
 
@@ -21,7 +24,7 @@ type TextInputProps = React.InputHTMLAttributes<HTMLInputElement> &
     maxLength?: number
   }
 
-const TextInput = ({
+export const TextInput = ({
   name,
   type = 'text',
   className,
@@ -130,5 +133,3 @@ const TextInput = ({
     </FieldLayout>
   )
 }
-
-export default TextInput

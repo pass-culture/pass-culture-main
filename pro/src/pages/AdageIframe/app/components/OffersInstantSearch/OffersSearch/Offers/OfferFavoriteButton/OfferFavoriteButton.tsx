@@ -9,8 +9,10 @@ import useNotification from 'hooks/useNotification'
 import fullStarIcon from 'icons/full-star.svg'
 import strokeStarIcon from 'icons/stroke-star.svg'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
-import ListIconButton from 'ui-kit/ListIconButton'
-import { ListIconButtonVariant } from 'ui-kit/ListIconButton/ListIconButton'
+import {
+  ListIconButton,
+  ListIconButtonVariant,
+} from 'ui-kit/ListIconButton/ListIconButton'
 
 export interface OfferFavoriteButtonProps {
   offer: CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
@@ -18,6 +20,7 @@ export interface OfferFavoriteButtonProps {
   afterFavoriteChange?: (isFavorite: boolean) => void
   isInSuggestions?: boolean
   className?: string
+  viewType?: 'grid' | 'list'
 }
 
 const OfferFavoriteButton = ({
@@ -26,6 +29,7 @@ const OfferFavoriteButton = ({
   afterFavoriteChange,
   isInSuggestions,
   className,
+  viewType,
 }: OfferFavoriteButtonProps): JSX.Element => {
   const [isFavorite, setIsFavorite] = useState(offer.isFavorite)
   const [isLoading, setIsLoading] = useState(false)
@@ -51,6 +55,7 @@ const OfferFavoriteButton = ({
         iframeFrom: location.pathname,
         isFavorite: false,
         isFromNoResult: isInSuggestions,
+        vueType: viewType,
       })
 
       afterFavoriteChange?.(false)
@@ -79,6 +84,7 @@ const OfferFavoriteButton = ({
         iframeFrom: location.pathname,
         isFavorite: true,
         isFromNoResult: isInSuggestions,
+        vueType: viewType,
       })
 
       afterFavoriteChange?.(true)

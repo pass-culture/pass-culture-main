@@ -12,6 +12,7 @@ def install_routes(app: Flask) -> None:
     from . import home
     from . import move_siret
     from . import pro
+    from . import redirect
     from .accounts import blueprint as accounts_blueprint
     from .admin import blueprint as admin_blueprint
     from .admin import bo_users_blueprint

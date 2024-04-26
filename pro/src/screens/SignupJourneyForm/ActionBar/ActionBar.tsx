@@ -8,7 +8,7 @@ import { logEventType } from 'context/analyticsContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import fullLeftIcon from 'icons/full-left.svg'
 import fullRightIcon from 'icons/full-right.svg'
-import { Button, SubmitButton } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 
 export interface ActionBarProps {
@@ -74,7 +74,8 @@ const ActionBar = ({
     }
 
     return (
-      <SubmitButton
+      <Button
+        type="submit"
         icon={withRightIcon ? fullRightIcon : undefined}
         iconPosition={IconPositionEnum.RIGHT}
         disabled={isDisabled}
@@ -84,12 +85,12 @@ const ActionBar = ({
         }}
       >
         {nextStepTitle}
-      </SubmitButton>
+      </Button>
     )
   }
 
   return (
-    <ActionsBarSticky>
+    <ActionsBarSticky hasSideNav={false}>
       <ActionsBarSticky.Left>{Left()}</ActionsBarSticky.Left>
       <ActionsBarSticky.Right>{Right()}</ActionsBarSticky.Right>
     </ActionsBarSticky>

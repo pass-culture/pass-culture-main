@@ -2,7 +2,7 @@
 import React from 'react'
 
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
-import { ButtonLink } from 'ui-kit'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
@@ -12,7 +12,7 @@ interface EmailChangeValidationProps {
   isSuccess: boolean
 }
 
-const EmailChangeValidation = ({
+export const EmailChangeValidationScreen = ({
   isSuccess,
 }: EmailChangeValidationProps): JSX.Element => {
   return (
@@ -61,5 +61,3 @@ const EmailChangeValidation = ({
     </>
   )
 }
-
-export default EmailChangeValidation

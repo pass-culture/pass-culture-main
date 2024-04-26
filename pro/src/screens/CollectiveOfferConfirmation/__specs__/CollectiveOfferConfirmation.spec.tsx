@@ -4,12 +4,12 @@ import React from 'react'
 import { OfferStatus } from 'apiClient/v1'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import CollectiveOfferConfirmation from '../CollectiveOfferConfirmation'
+import { CollectiveOfferConfirmationScreen } from '../CollectiveOfferConfirmation'
 
 describe('CollectiveOfferConfirmation', () => {
   it('should render confirmation page when offer is pending', () => {
     renderWithProviders(
-      <CollectiveOfferConfirmation
+      <CollectiveOfferConfirmationScreen
         offererId={1}
         offerStatus={OfferStatus.PENDING}
         isShowcase={false}
@@ -24,7 +24,7 @@ describe('CollectiveOfferConfirmation', () => {
 
   it('should render confirmation page when offer is active and associated to an institution', () => {
     renderWithProviders(
-      <CollectiveOfferConfirmation
+      <CollectiveOfferConfirmationScreen
         offererId={1}
         offerStatus={OfferStatus.ACTIVE}
         isShowcase={false}
@@ -42,7 +42,7 @@ describe('CollectiveOfferConfirmation', () => {
 
   it('should render confirmation page when offer is active and associated to all institutions', () => {
     renderWithProviders(
-      <CollectiveOfferConfirmation
+      <CollectiveOfferConfirmationScreen
         offererId={1}
         offerStatus={OfferStatus.ACTIVE}
         isShowcase={false}
@@ -65,7 +65,7 @@ describe('CollectiveOfferConfirmation', () => {
 
   it('should render confirmation page when offer is active and template', () => {
     renderWithProviders(
-      <CollectiveOfferConfirmation
+      <CollectiveOfferConfirmationScreen
         offererId={null}
         offerStatus={OfferStatus.ACTIVE}
         isShowcase={true}
@@ -80,7 +80,7 @@ describe('CollectiveOfferConfirmation', () => {
 
   it('should render banner at the bottom of the page', () => {
     renderWithProviders(
-      <CollectiveOfferConfirmation
+      <CollectiveOfferConfirmationScreen
         offererId={null}
         offerStatus={OfferStatus.ACTIVE}
         isShowcase={true}

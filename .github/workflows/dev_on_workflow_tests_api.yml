@@ -20,7 +20,7 @@ jobs:
     name: "Quality checks"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.2
+      - uses: actions/checkout@v4.1.4
       - name: "Authentification to Google"
         uses: "google-github-actions/auth@v2"
         with:
@@ -70,7 +70,7 @@ jobs:
           run: mypy src
       - name: "Slack Notification"
         if: ${{ failure() && github.ref == 'refs/heads/master'  }}
-        uses: slackapi/slack-github-action@v1.25.0
+        uses: slackapi/slack-github-action@v1.26.0
         with:
           # channel #dev
           channel-id: "CPZ7U1CNP"
@@ -98,7 +98,7 @@ jobs:
     name: "Pylint"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.2
+      - uses: actions/checkout@v4.1.4
       - name: Authentification to Google
         uses: "google-github-actions/auth@v2"
         with:
@@ -138,7 +138,7 @@ jobs:
           run: pylint src tests --jobs=15
       - name: "Slack Notification"
         if: ${{ failure() && github.ref == 'refs/heads/master'  }}
-        uses: slackapi/slack-github-action@v1.25.0
+        uses: slackapi/slack-github-action@v1.26.0
         with:
           # channel #dev
           channel-id: "CPZ7U1CNP"
@@ -184,7 +184,7 @@ jobs:
           POSTGRES_PASSWORD: pytest
           POSTGRES_DB: pass_culture
     steps:
-      - uses: actions/checkout@v4.1.2
+      - uses: actions/checkout@v4.1.4
         with:
           # On a feature branch, we must fetch the whole history to
           # find the common ancestor with master (see `git merge-base`
@@ -317,7 +317,7 @@ jobs:
             exit $status_code
       - name: "Slack Notification"
         if: ${{ failure() && github.ref == 'refs/heads/master'  }}
-        uses: slackapi/slack-github-action@v1.25.0
+        uses: slackapi/slack-github-action@v1.26.0
         with:
           # channel #dev
           channel-id: "CPZ7U1CNP"
@@ -383,7 +383,7 @@ jobs:
           POSTGRES_PASSWORD: pytest
           POSTGRES_DB: pass_culture
     steps:
-      - uses: actions/checkout@v4.1.2
+      - uses: actions/checkout@v4.1.4
       - name: "Authentification to Google"
         uses: "google-github-actions/auth@v2"
         with:
@@ -449,7 +449,7 @@ jobs:
           fail_on_failure: true
       - name: "Slack Notification"
         if: ${{ failure() && github.ref == 'refs/heads/master'  }}
-        uses: slackapi/slack-github-action@v1.25.0
+        uses: slackapi/slack-github-action@v1.26.0
         with:
           # channel #dev
           channel-id: "CPZ7U1CNP"

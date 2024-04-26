@@ -1,6 +1,6 @@
+import { api } from 'apiClient/api'
 import useNotification from 'hooks/useNotification'
 
-import postCollectiveOfferImageAdapter from '../adapters/postCollectiveOfferImageAdapter'
 import { OfferEducationalFormValues } from '../types'
 
 interface PostCollectiveOfferImageProps {
@@ -27,12 +27,17 @@ export const postCollectiveOfferImage = async ({
 
     /* istanbul ignore next: DEBT to fix */
     const imageFile = new File([blob], '', { type: contentType ?? '' })
-    await postCollectiveOfferImageAdapter({
-      offerId: payload.id,
-      imageFile: imageFile,
-      /* istanbul ignore next: DEBT to fix */
+
+    await api.attachOfferImage(payload.id, {
+      // TODO This TS error will be removed when spectree is updated to the latest
+      // version (dependant on Flask update) which will include files in the generated schema
+      // @ts-expect-error
+      thumb: imageFile,
       credit: imageCredit ?? '',
-      cropParams: { x: 0, y: 0, width: 1, height: 1 },
+      croppingRectHeight: 1,
+      croppingRectWidth: 1,
+      croppingRectX: 0,
+      croppingRectY: 0,
     })
   }
 }

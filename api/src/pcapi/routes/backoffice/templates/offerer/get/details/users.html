@@ -57,7 +57,7 @@
       <th scope="col"></th>
       <th scope="col">ID</th>
       <th scope="col">Statut</th>
-      {% if is_feature_active('WIP_ENABLE_PRO_SIDE_NAV') %}<th scope="col">Interface</th>{% endif %}
+      <th scope="col">Interface</th>
       <th scope="col">Prénom / Nom</th>
       <th scope="col">Email</th>
       <th scope="col">Invitation</th>
@@ -116,19 +116,18 @@
         <td class="text-muted">
           {% if row.id %}
             {{ build_user_offerer_status_badge(user_offerer) }}
+            {% if not row.isActive %}<span class="badge rounded-pill text-bg-danger align-middle">{{ row.isActive | format_state }}</span>{% endif %}
           {% else %}
             <span class="me-1 pb-1 badge rounded-pill text-bg-light">Invité</span>
           {% endif %}
         </td>
-        {% if is_feature_active('WIP_ENABLE_PRO_SIDE_NAV') %}
-          <td>
-            {% if row.hasNewNav %}
-              {{ build_new_navigation_badge() }}
-            {% else %}
-              {{ build_old_navigation_badge() }}
-            {% endif %}
-          </td>
-        {% endif %}
+        <td>
+          {% if row.hasNewNav %}
+            {{ build_new_navigation_badge() }}
+          {% else %}
+            {{ build_old_navigation_badge() }}
+          {% endif %}
+        </td>
         <td class="fw-bolder text-break">{{ row.full_name | empty_string_if_null }}</td>
         <td class="fw-bolder">
           {{ row.email | empty_string_if_null }}<span class="ms-1">{{ clipboard.copy_to_clipboard(row.email, "Copier l'email du compte") }}</span>

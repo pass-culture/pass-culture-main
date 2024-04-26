@@ -40,7 +40,7 @@ jobs:
     outputs:
       pcapi_helm_secrets_file_base64: ${{ steps.set-secrets-file-output.outputs.secrets_file_base64 }}
     steps:
-      - uses: actions/checkout@v4.1.2
+      - uses: actions/checkout@v4.1.4
       - name: "Authentification to Google"
         uses: 'google-github-actions/auth@v2'
         with:
@@ -87,7 +87,7 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - uses: actions/checkout@v4.1.2
+      - uses: actions/checkout@v4.1.4
       - name: "Authentification to Google"
         uses: 'google-github-actions/auth@v2'
         with:
@@ -101,7 +101,7 @@ jobs:
             PASSCULTURE_SA_ACCESS_TOKEN:passculture-metier-ehp/passculture-main-sa-access-token
             ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
             ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
-      - uses: actions/checkout@v4.1.2
+      - uses: actions/checkout@v4.1.4
         with:
           repository: pass-culture/pass-culture-deployment
           token: ${{ steps.secrets.outputs.PASSCULTURE_SA_ACCESS_TOKEN }}
@@ -120,6 +120,7 @@ jobs:
           version: ${{ inputs.teleport_version }}
       - name: "Teleport Authentication"
         uses: teleport-actions/auth-k8s@v1
+        id: "teleport-auth"
         with:
           proxy: ${{ inputs.teleport_proxy }}
           token: github-token
@@ -129,18 +130,6 @@ jobs:
         uses: mamezou-tech/setup-helmfile@v1.3.0
         with:
           helmfile-version: "v0.147.0"
-      - name: "Install Teleport"
-        uses: teleport-actions/setup@v1
-        with:
-          version: ${{ inputs.teleport_version }}
-      - name: "Teleport Authentication"
-        id: "teleport-auth"
-        uses: teleport-actions/auth-k8s@v1
-        with:
-          proxy: ${{ inputs.teleport_proxy }}
-          token: github-token
-          certificate-ttl: 1h
-          kubernetes-cluster: ${{ inputs.teleport_kubernetes_cluster }}
       - name: "Play pre-migrations"
         run: |
           set -e
@@ -155,13 +144,37 @@ jobs:
           kubectl logs -n ${{ inputs.environment }} -f jobs/pre-upgrade-${DATE} && break
           done
           kubectl wait --for=condition=complete --timeout=10900s -n ${{ inputs.environment }} jobs/pre-upgrade-${DATE}
-      - name: "Deploy pcapi"
+      - name: "Render manifests"
         run: |
           PASSCULTURE_USERNAME="oauth2accesstoken" \
           PASSCULTURE_PASSWORD=${{ steps.openid-auth-infra.outputs.access_token }} \
           PCAPI_VALUES_FILE=./pass-culture-deployment/helm/pcapi/values.${{ inputs.environment }}.yaml \
           PCAPI_SECRETS_FILE=<(echo '${{ needs.generate-pcapi-helm-secrets-file.outputs.pcapi_helm_secrets_file_base64 }}' | base64 -d) \
-          helmfile -e ${{ inputs.environment }} sync --set image.tag=${{ inputs.app_version }}
+          helmfile -e ${{ inputs.environment }} template --set image.tag=${{ inputs.app_version }} --output-dir ./rendered-manifests/ --output-dir-template "{{ .OutputDir }}/{{ .State.BaseName }}-{{ .Release.Name  }}"
+      - name: "Push manifests to rendered-manifests repository"
+        id: push_manifests
+        uses: cpina/github-action-push-to-another-repository@main
+        env:
+          API_TOKEN_GITHUB: ${{ steps.secrets.outputs.PASSCULTURE_SA_ACCESS_TOKEN }}
+        with:
+          source-directory: ./rendered-manifests/helmfile-${{ inputs.environment }}/
+          destination-github-username: 'pass-culture'
+          destination-repository-name: 'rendered-manifests'
+          commit-message: "pcapi(${{ inputs.environment }}) : pushed rendered manifests for app_version=${{ inputs.app_version }}"
+          target-branch: ${{ inputs.environment }}
+          create-target-branch-if-needed: true
+      - name: "Install argocd cli"
+        id: install_argocd_cli
+        run: |
+          curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+          sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+          rm argocd-linux-amd64
+      - name: "Check argocd application status"
+        id: check_status
+        run: |
+          kubectl config set-context --current --namespace=argocd
+          argocd app sync pcapi-${{ inputs.environment }} --core --async
+          argocd app wait pcapi-${{ inputs.environment }} --core --timeout 600
       - name: "Play post-migrations"
         run: |
           set -e

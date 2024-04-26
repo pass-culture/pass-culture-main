@@ -12,6 +12,7 @@ import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { Offerers } from '..'
 
@@ -23,23 +24,11 @@ vi.mock('apiClient/api', () => ({
 }))
 
 const renderOfferersScreen = (contextValue: SignupJourneyContextValues) => {
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        isAdmin: false,
-        email: 'email@example.com',
-      },
-    },
-  }
-
   return renderWithProviders(
     <SignupJourneyContext.Provider value={contextValue}>
       <Offerers />
     </SignupJourneyContext.Provider>,
-    {
-      storeOverrides,
-    }
+    { user: sharedCurrentUserFactory() }
   )
 }
 describe('Offerers trackers', () => {

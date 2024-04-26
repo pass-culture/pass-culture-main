@@ -11,9 +11,9 @@ import { hasSearchFilters, isOfferDisabled } from 'core/Offers/utils'
 import { Audience } from 'core/shared'
 import { getOffersCountToDisplay } from 'pages/Offers/domain/getOffersCountToDisplay'
 import NoResults from 'screens/Offers/NoResults'
-import { Banner } from 'ui-kit'
+import { Banner } from 'ui-kit/Banners/Banner/Banner'
 import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
-import { Pagination } from 'ui-kit/Pagination'
+import { Pagination } from 'ui-kit/Pagination/Pagination'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 import styles from './Offers.module.scss'
@@ -44,7 +44,6 @@ type OffersProps = {
   setSelectedOfferIds: React.Dispatch<React.SetStateAction<string[]>>
   toggleSelectAllCheckboxes: () => void
   urlSearchFilters: SearchFiltersParams
-  refreshOffers: () => void
   isAtLeastOneOfferChecked: boolean
 }
 
@@ -67,7 +66,6 @@ const Offers = ({
   toggleSelectAllCheckboxes,
   urlSearchFilters,
   audience,
-  refreshOffers,
   isAtLeastOneOfferChecked,
 }: OffersProps) => {
   const isAdminForbidden = (searchFilters: Partial<SearchFiltersParams>) => {
@@ -181,7 +179,6 @@ const Offers = ({
                   selectOffer={selectOffer}
                   selectedOfferIds={selectedOfferIds}
                   audience={audience}
-                  refreshOffers={refreshOffers}
                 />
               </table>
             </>

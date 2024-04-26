@@ -4,11 +4,12 @@ import { Route, Routes } from 'react-router-dom'
 import createFetchMock from 'vitest-fetch-mock'
 
 import { api } from 'apiClient/api'
+import { VenueTypeResponseModel } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
-import { SelectOption } from 'custom_types/form'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { VenueCreationFormValues } from './types'
 import { VenueCreationFormScreen } from './VenueCreationFormScreen'
@@ -16,9 +17,9 @@ import { VenueCreationFormScreen } from './VenueCreationFormScreen'
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
 
-const venueTypes: SelectOption[] = [
-  { value: 'ARTISTIC_COURSE', label: 'Cours et pratique artistiques' },
-  { value: 'SCIENTIFIC_CULTURE', label: 'Culture scientifique' },
+const venueTypes: VenueTypeResponseModel[] = [
+  { id: 'ARTISTIC_COURSE', label: 'Cours et pratique artistiques' },
+  { id: 'SCIENTIFIC_CULTURE', label: 'Culture scientifique' },
 ]
 
 const formValues: VenueCreationFormValues = {
@@ -29,7 +30,7 @@ const formValues: VenueCreationFormValues = {
   publicName: 'Melodie Sims',
   siret: '88145723823022',
   venueType: 'GAMES',
-  address: 'PARIS',
+  street: 'PARIS',
   banId: '35288_7283_00001',
   addressAutocomplete: 'Allee Rene Omnes 35400 Saint-Malo',
   'search-addressAutocomplete': 'PARIS',
@@ -48,15 +49,6 @@ const formValues: VenueCreationFormValues = {
 }
 
 const renderForm = () => {
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        isAdmin: false,
-      },
-    },
-  }
-
   renderWithProviders(
     <Routes>
       <Route
@@ -78,7 +70,10 @@ const renderForm = () => {
         element={<div>Lieu créé</div>}
       />
     </Routes>,
-    { storeOverrides, initialRouterEntries: ['/structures/AE/lieux/creation'] }
+    {
+      user: sharedCurrentUserFactory(),
+      initialRouterEntries: ['/structures/AE/lieux/creation'],
+    }
   )
 }
 

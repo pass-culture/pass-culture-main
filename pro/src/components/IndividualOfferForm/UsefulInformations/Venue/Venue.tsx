@@ -8,8 +8,8 @@ import {
 import FormLayout from 'components/FormLayout'
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
 import { IndividualOfferForm } from 'components/IndividualOfferForm/types'
-import { buildAccessibilityFormValues } from 'pages/VenueEdition/setInitialFormValues'
-import { Select } from 'ui-kit'
+import { buildAccessibilityFormValues } from 'components/IndividualOfferForm/utils/setDefaultInitialFormValues'
+import { Select } from 'ui-kit/form/Select/Select'
 
 import { buildOffererOptions, buildVenueOptions } from './utils'
 

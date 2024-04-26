@@ -40,7 +40,6 @@ import zipfile
 from dateutil.relativedelta import relativedelta
 from flask import current_app as app
 from flask import render_template
-from flask_login import current_user
 from flask_sqlalchemy import BaseQuery
 import pytz
 import sqlalchemy as sqla
@@ -2062,6 +2061,7 @@ def get_reimbursements_by_venue(
             models.BookingFinanceIncident.id,
             bookings_models.Booking.id,
         )
+        .order_by(offerers_models.Venue.id, offerers_models.Venue.common_name)
     )
     collective_query = (
         pricing_query.with_entities(
@@ -2093,6 +2093,7 @@ def get_reimbursements_by_venue(
             models.BookingFinanceIncident.id,
             educational_models.CollectiveStock.id,
         )
+        .order_by(offerers_models.Venue.id, offerers_models.Venue.common_name)
     )
 
     reimbursements_by_venue = {}
@@ -2666,7 +2667,7 @@ def update_bank_account_venues_links(
             action_history_bulk_insert_mapping.append(
                 {
                     "actionType": history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED,
-                    "authorUserId": user.id,
+                    "authorUserId": user.real_user.id,
                     "venueId": link.venueId,
                     "bankAccountId": bank_account.id,
                 }
@@ -2699,7 +2700,7 @@ def update_bank_account_venues_links(
             action_history_bulk_insert_mapping.append(
                 {
                     "actionType": history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED,
-                    "authorUserId": user.id,
+                    "authorUserId": user.real_user.id,
                     "venueId": venue_id,
                     "bankAccountId": bank_account.id,
                 }
@@ -2720,9 +2721,10 @@ def update_bank_account_venues_links(
 
 
 def create_overpayment_finance_incident(
-    bookings: list[bookings_models.Booking | educational_models.CollectiveBooking],
-    amount: float | None = None,
-    origin: str | None = None,
+    bookings: list[bookings_models.Booking],
+    author: users_models.User,
+    origin: str,
+    amount: decimal.Decimal | None = None,
 ) -> models.FinanceIncident:
     incident = models.FinanceIncident(
         kind=models.IncidentType.OVERPAYMENT,
@@ -2730,7 +2732,7 @@ def create_overpayment_finance_incident(
         venueId=bookings[0].venueId,
         details={
             "origin": origin,
-            "author": current_user.full_name,
+            "authorId": author.id,
             "createdAt": datetime.datetime.utcnow().isoformat(),
         },
     )
@@ -2738,41 +2740,153 @@ def create_overpayment_finance_incident(
     db.session.flush()
 
     booking_finance_incidents_to_create = []
-    if isinstance(bookings[0], educational_models.CollectiveBooking):
-        collective_booking = bookings[0]
+    if len(bookings) == 1:
+        booking = bookings[0]
+        new_total_amount = decimal.Decimal(0) if amount is None else booking.total_amount - decimal.Decimal(amount)
         booking_finance_incidents_to_create.append(
             models.BookingFinanceIncident(
-                collectiveBookingId=collective_booking.id,
+                bookingId=booking.id,
                 incidentId=incident.id,
-                newTotalAmount=0,
+                beneficiaryId=booking.userId,
+                newTotalAmount=utils.to_eurocents(new_total_amount),
             )
         )
     else:
         for booking in bookings:
-            new_total_amount = decimal.Decimal(0)
-            # Only total overpayment if multiple bookings are selected
-            if amount and len(bookings) == 1:
-                new_total_amount = booking.total_amount - decimal.Decimal(amount)
-
             booking_finance_incidents_to_create.append(
                 models.BookingFinanceIncident(
                     bookingId=booking.id,
                     incidentId=incident.id,
                     beneficiaryId=booking.userId,
-                    newTotalAmount=utils.to_eurocents(new_total_amount),
+                    # Only total overpayment if multiple bookings are selected
+                    newTotalAmount=utils.to_eurocents(decimal.Decimal(0)),
                 )
             )
     db.session.add_all(booking_finance_incidents_to_create)
 
     history_api.add_action(
         history_models.ActionType.FINANCE_INCIDENT_CREATED,
-        author=current_user,
+        author=author,
         finance_incident=incident,
         comment=origin,
     )
 
     db.session.commit()
 
+    return incident
+
+
+def create_overpayment_finance_incident_collective_booking(
+    booking: educational_models.CollectiveBooking,
+    author: users_models.User,
+    origin: str,
+) -> models.FinanceIncident:
+    incident = models.FinanceIncident(
+        kind=models.IncidentType.OVERPAYMENT,
+        status=models.IncidentStatus.CREATED,
+        venueId=booking.venueId,
+        details={
+            "origin": origin,
+            "authorId": author.id,
+            "createdAt": datetime.datetime.utcnow().isoformat(),
+        },
+    )
+    db.session.add(incident)
+    db.session.flush()
+
+    booking_finance_incident = models.BookingFinanceIncident(
+        collectiveBookingId=booking.id,
+        incidentId=incident.id,
+        newTotalAmount=0,
+    )
+    db.session.add(booking_finance_incident)
+
+    history_api.add_action(
+        history_models.ActionType.FINANCE_INCIDENT_CREATED,
+        author=author,
+        finance_incident=incident,
+        comment=origin,
+    )
+
+    db.session.commit()
+
+    return incident
+
+
+def create_finance_commercial_gesture(
+    bookings: list[bookings_models.Booking],
+    amount: decimal.Decimal,
+    author: users_models.User,
+    origin: str,
+) -> models.FinanceIncident:
+    incident = models.FinanceIncident(
+        kind=models.IncidentType.COMMERCIAL_GESTURE,
+        status=models.IncidentStatus.CREATED,
+        venueId=bookings[0].venueId,
+        details={
+            "origin": origin,
+            "authorId": author.id,
+            "createdAt": datetime.datetime.utcnow().isoformat(),
+        },
+    )
+    db.session.add(incident)
+    db.session.flush()
+
+    booking_finance_incidents_to_create = []
+    total_bookings_quantity = sum(booking.quantity for booking in bookings)
+    for booking in bookings:
+        # all bookings in a commercial gesture must be from the same stock → they all have the same amount
+        new_total_amount = (amount / total_bookings_quantity) * booking.quantity
+        booking_finance_incidents_to_create.append(
+            models.BookingFinanceIncident(
+                bookingId=booking.id,
+                incidentId=incident.id,
+                beneficiaryId=booking.userId,
+                newTotalAmount=utils.to_eurocents(new_total_amount),
+            )
+        )
+
+    db.session.add_all(booking_finance_incidents_to_create)
+    history_api.add_action(
+        history_models.ActionType.FINANCE_INCIDENT_CREATED,
+        author=author,
+        finance_incident=incident,
+        comment=origin,
+    )
+    db.session.commit()
+    return incident
+
+
+def create_finance_commercial_gesture_collective_booking(
+    booking: educational_models.CollectiveBooking,
+    author: users_models.User,
+    origin: str,
+) -> models.FinanceIncident:
+    incident = models.FinanceIncident(
+        kind=models.IncidentType.COMMERCIAL_GESTURE,
+        status=models.IncidentStatus.CREATED,
+        venueId=booking.venueId,
+        details={
+            "origin": origin,
+            "authorId": author.id,
+            "createdAt": datetime.datetime.utcnow().isoformat(),
+        },
+    )
+    db.session.add(incident)
+    db.session.flush()
+    booking_finance_incident = models.BookingFinanceIncident(
+        collectiveBookingId=booking.id,
+        incidentId=incident.id,
+        newTotalAmount=0,
+    )
+    db.session.add(booking_finance_incident)
+    history_api.add_action(
+        history_models.ActionType.FINANCE_INCIDENT_CREATED,
+        author=author,
+        finance_incident=incident,
+        comment=origin,
+    )
+    db.session.commit()
     return incident
 
 
@@ -2816,7 +2930,11 @@ def _create_finance_events_from_incident(
     return finance_events
 
 
-def validate_finance_incident(finance_incident: models.FinanceIncident, force_debit_note: bool) -> None:
+def validate_finance_incident(
+    finance_incident: models.FinanceIncident,
+    force_debit_note: bool,
+    author: users_models.User,
+) -> None:
     incident_validation_date = datetime.datetime.utcnow()
     finance_events = []
     for booking_incident in finance_incident.booking_finance_incidents:
@@ -2842,7 +2960,7 @@ def validate_finance_incident(finance_incident: models.FinanceIncident, force_de
         for beneficiary in beneficiaries:
             history_api.add_action(
                 history_models.ActionType.FINANCE_INCIDENT_USER_RECREDIT,
-                author=current_user,
+                author=author,
                 user=beneficiary,
                 linked_incident_id=finance_incident.id,
             )
@@ -2853,7 +2971,7 @@ def validate_finance_incident(finance_incident: models.FinanceIncident, force_de
 
     history_api.add_action(
         history_models.ActionType.FINANCE_INCIDENT_VALIDATED,
-        author=current_user,
+        author=author,
         venue=finance_incident.venue,
         finance_incident=finance_incident,
         comment=(
@@ -2883,7 +3001,11 @@ def validate_finance_incident(finance_incident: models.FinanceIncident, force_de
             send_commercial_gesture_email(finance_incident)
 
 
-def cancel_finance_incident(incident: models.FinanceIncident, comment: str) -> None:
+def cancel_finance_incident(
+    incident: models.FinanceIncident,
+    comment: str,
+    author: users_models.User,
+) -> None:
     if incident.status == models.IncidentStatus.CANCELLED:
         raise exceptions.FinanceIncidentAlreadyCancelled
     if incident.status == models.IncidentStatus.VALIDATED:
@@ -2894,7 +3016,7 @@ def cancel_finance_incident(incident: models.FinanceIncident, comment: str) -> N
 
     history_api.add_action(
         history_models.ActionType.FINANCE_INCIDENT_CANCELLED,
-        author=current_user,
+        author=author,
         finance_incident=incident,
         comment=comment,
     )

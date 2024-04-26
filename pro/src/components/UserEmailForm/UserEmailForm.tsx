@@ -1,19 +1,21 @@
 import { Form, FormikProvider, useFormik } from 'formik'
-import React from 'react'
 
+import { api } from 'apiClient/api'
+import { isErrorAPIError } from 'apiClient/helpers'
+import { UserResetEmailBodyModel } from 'apiClient/v1'
 import { BoxFormLayout } from 'components/BoxFormLayout'
 import FormLayout from 'components/FormLayout'
 import useCurrentUser from 'hooks/useCurrentUser'
-import { PostEmailAdapter } from 'pages/User/adapters/postEmailAdapter'
-import { TextInput, Button, SubmitButton, PasswordInput } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { PasswordInput } from 'ui-kit/form/PasswordInput/PasswordInput'
+import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import styles from './UserEmailForm.module.scss'
 import validationSchema from './validationSchema'
 
 export interface UserEmailFormProps {
   closeForm: () => void
-  postEmailAdapter: PostEmailAdapter
   getPendingEmailRequest: () => void
 }
 
@@ -24,18 +26,21 @@ type UserEmailFormValues = {
 
 const UserEmailForm = ({
   closeForm,
-  postEmailAdapter,
   getPendingEmailRequest,
 }: UserEmailFormProps): JSX.Element => {
   const { currentUser } = useCurrentUser()
-  const onSubmit = async (values: UserEmailFormValues) => {
-    const response = await postEmailAdapter(values)
-    if (response.isOk) {
+
+  const onSubmit = async (values: UserResetEmailBodyModel) => {
+    try {
+      await api.postUserEmail(values)
+
       getPendingEmailRequest()
       closeForm()
-    } else {
-      for (const field in response.payload) {
-        formik.setFieldError(field, response.payload[field])
+    } catch (error) {
+      if (isErrorAPIError(error)) {
+        for (const field in error.body) {
+          formik.setFieldError(field, error.body[field])
+        }
       }
     }
     formik.setSubmitting(false)
@@ -88,9 +93,9 @@ const UserEmailForm = ({
               <Button onClick={onCancel} variant={ButtonVariant.SECONDARY}>
                 Annuler
               </Button>
-              <SubmitButton isLoading={formik.isSubmitting}>
+              <Button type="submit" isLoading={formik.isSubmitting}>
                 Enregistrer
-              </SubmitButton>
+              </Button>
             </div>
           </Form>
         </FormikProvider>

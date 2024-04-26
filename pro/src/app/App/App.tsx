@@ -1,13 +1,17 @@
 import { setUser as setSentryUser } from '@sentry/browser'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
+import { SWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import { findCurrentRoute } from 'app/AppRouter/findCurrentRoute'
 import Notification from 'components/Notification/Notification'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { useConfigureFirebase } from 'hooks/useAnalytics'
+import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
+import useNotification from 'hooks/useNotification'
 import { updateUser } from 'store/user/reducer'
 import { selectCurrentUser } from 'store/user/selectors'
 import { Consents, initCookieConsent } from 'utils/cookieConsentModal'
@@ -26,6 +30,16 @@ const App = (): JSX.Element | null => {
   const [consentedToFirebase, setConsentedToFirebase] = useState(false)
   const [consentedToBeamer, setConsentedToBeamer] = useState(false)
   const dispatch = useDispatch()
+  const notify = useNotification()
+
+  const isNewInterfaceActive = useIsNewInterfaceActive()
+
+  useEffect(() => {
+    document.documentElement.setAttribute(
+      'data-theme',
+      isNewInterfaceActive ? 'blue' : 'pink'
+    )
+  }, [isNewInterfaceActive])
 
   useEffect(() => {
     // Initialize cookie consent modal
@@ -125,7 +139,16 @@ const App = (): JSX.Element | null => {
 
   return (
     <>
-      <Outlet />
+      <SWRConfig
+        value={{
+          onError: () => {
+            notify.error(GET_DATA_ERROR_MESSAGE)
+          },
+          revalidateOnFocus: false,
+        }}
+      >
+        <Outlet />
+      </SWRConfig>
       <Notification />
     </>
   )

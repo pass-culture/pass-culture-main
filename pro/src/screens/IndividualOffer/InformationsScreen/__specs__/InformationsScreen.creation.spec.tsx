@@ -19,7 +19,6 @@ import {
 } from 'context/IndividualOfferContext'
 import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
-import * as pcapi from 'repository/pcapi/pcapi'
 import {
   categoryFactory,
   getOffererNameFactory,
@@ -28,6 +27,7 @@ import {
   venueListItemFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import InformationsScreen, {
   InformationsScreenProps,
@@ -43,8 +43,11 @@ vi.mock('utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn(() => true),
 }))
 
-vi.mock('repository/pcapi/pcapi', () => ({
-  postThumbnail: vi.fn(),
+vi.mock('apiClient/api', () => ({
+  api: {
+    postOffer: vi.fn(),
+    createThumbnail: vi.fn(),
+  },
 }))
 
 const renderInformationsScreen = (
@@ -52,15 +55,6 @@ const renderInformationsScreen = (
   contextOverride: IndividualOfferContextValues,
   searchParam = ''
 ) => {
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        isAdmin: false,
-        email: 'email@example.com',
-      },
-    },
-  }
   const contextValue = individualOfferContextValuesFactory(contextOverride)
 
   return renderWithProviders(
@@ -88,7 +82,7 @@ const renderInformationsScreen = (
       <Notification />
     </>,
     {
-      storeOverrides,
+      user: sharedCurrentUserFactory(),
       initialRouterEntries: [
         getIndividualOfferPath({
           step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
@@ -195,7 +189,7 @@ describe('screens:IndividualOffer::Informations::creation', () => {
     expect(
       await screen.findByText('There is the stock route content')
     ).toBeInTheDocument()
-    expect(pcapi.postThumbnail).not.toHaveBeenCalled()
+    expect(api.createThumbnail).not.toHaveBeenCalled()
   })
 
   it('should display api errors', async () => {
@@ -226,7 +220,7 @@ describe('screens:IndividualOffer::Informations::creation', () => {
     await userEvent.click(screen.getByText('Enregistrer et continuer'))
 
     expect(api.postOffer).toHaveBeenCalledTimes(1)
-    expect(pcapi.postThumbnail).not.toHaveBeenCalled()
+    expect(api.createThumbnail).not.toHaveBeenCalled()
     expect(await screen.findByText('api wrong name')).toBeInTheDocument()
     expect(screen.getByText('api wrong venue')).toBeInTheDocument()
     expect(nextButton).not.toBeDisabled()
@@ -276,7 +270,7 @@ describe('screens:IndividualOffer::Informations::creation', () => {
     expect(
       await screen.findByText('There is the stock route content')
     ).toBeInTheDocument()
-    expect(pcapi.postThumbnail).not.toHaveBeenCalled()
+    expect(api.createThumbnail).not.toHaveBeenCalled()
   })
 
   it('should submit offer when several offerer and offer type set', async () => {

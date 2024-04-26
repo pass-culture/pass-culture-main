@@ -26,7 +26,6 @@ from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.routes.backoffice.pro import forms as pro_forms
 from pcapi.utils import regions as regions_utils
@@ -79,13 +78,16 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
     adage_query = (
         sa.select(
             sa.func.concat(
-                sa.func.sum(sa.case([(offerers_models.Venue.adageId.is_not(None), 1)], else_=0)),
+                sa.func.coalesce(sa.func.sum(sa.case([(offerers_models.Venue.adageId.is_not(None), 1)], else_=0)), 0),
                 "/",
                 sa.func.count(offerers_models.Venue.id),
             )
         )
         .select_from(offerers_models.Venue)
-        .filter(offerers_models.Venue.managingOffererId == offerers_models.Offerer.id)
+        .filter(
+            offerers_models.Venue.managingOffererId == offerers_models.Offerer.id,
+            offerers_models.Venue.isVirtual.is_(False),
+        )
         .correlate(offerers_models.Offerer)
         .scalar_subquery()
     )
@@ -151,14 +153,10 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
             sa.orm.joinedload(offerers_models.Offerer.individualSubscription).load_only(
                 offerers_models.IndividualOffererSubscription.id
             ),
-        )
-    )
-
-    if FeatureToggle.WIP_ENABLE_PRO_SIDE_NAV.is_active():
-        offerer_query = offerer_query.options(
             sa.orm.with_expression(offerers_models.Offerer.hasNewNavUsers, has_new_nav_users_subquery),
             sa.orm.with_expression(offerers_models.Offerer.hasOldNavUsers, has_old_nav_users_subquery),
         )
+    )
 
     row = offerer_query.one_or_none()
     if not row:
@@ -182,13 +180,13 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
         edit_offerer_form = offerer_forms.EditOffererForm(
             name=offerer.name,
             postal_address_autocomplete=(
-                f"{offerer.address}, {offerer.postalCode} {offerer.city}"
-                if offerer.address is not None and offerer.city is not None and offerer.postalCode is not None
+                f"{offerer.street}, {offerer.postalCode} {offerer.city}"
+                if offerer.street is not None and offerer.city is not None and offerer.postalCode is not None
                 else None
             ),
             city=offerer.city,
             postal_code=offerer.postalCode,
-            address=offerer.address,
+            street=offerer.street,
             tags=offerer.tags,
         )
 
@@ -440,7 +438,7 @@ def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
         name=form.name.data,
         city=form.city.data,
         postal_code=form.postal_code.data,
-        address=form.address.data,
+        street=form.street.data,
         tags=form.tags.data,
     )
 
@@ -751,6 +749,41 @@ def get_managed_venues(offerer_id: int) -> utils.BackofficeResponse:
     )
 
 
+@offerer_blueprint.route("/collective-dms-applications", methods=["GET"])
+def get_collective_dms_applications(offerer_id: int) -> utils.BackofficeResponse:
+    collective_dms_applications = (
+        educational_models.CollectiveDmsApplication.query.filter(
+            educational_models.CollectiveDmsApplication.siret.startswith(
+                sa.select(offerers_models.Offerer.siren)
+                .filter(offerers_models.Offerer.id == offerer_id)
+                .scalar_subquery()
+            )
+        )
+        .options(
+            sa.orm.load_only(
+                educational_models.CollectiveDmsApplication.siret,
+                educational_models.CollectiveDmsApplication.state,
+                educational_models.CollectiveDmsApplication.depositDate,
+                educational_models.CollectiveDmsApplication.lastChangeDate,
+                educational_models.CollectiveDmsApplication.application,
+                educational_models.CollectiveDmsApplication.procedure,
+            ),
+            sa.orm.joinedload(educational_models.CollectiveDmsApplication.venue).load_only(
+                offerers_models.Venue.id,
+                offerers_models.Venue.name,
+                offerers_models.Venue.publicName,
+                offerers_models.Venue.siret,
+            ),
+        )
+        .order_by(educational_models.CollectiveDmsApplication.depositDate.desc())
+    )
+
+    return render_template(
+        "offerer/get/details/collective_dms_applications.html",
+        collective_dms_applications=collective_dms_applications,
+    )
+
+
 @offerer_blueprint.route("/bank-accounts", methods=["GET"])
 def get_bank_accounts(offerer_id: int) -> utils.BackofficeResponse:
     bank_accounts = (
@@ -937,7 +970,10 @@ def get_entreprise_info(offerer_id: int) -> utils.BackofficeResponse:
 
     # I don't have a list but corporate taxes do not apply at least to "Entreprise Individuelle" and public structures
     if siren_info and siren_info.legal_category_code:
-        data["show_dgfip_card"] = not entreprise_api.siren_is_individual_or_public(siren_info)
+        data["show_dgfip_card"] = not (
+            entreprise_api.siren_is_individual_or_public(siren_info)
+            or siren_info.creation_date.year >= datetime.date.today().year
+        )
 
     return render_template("offerer/get/details/entreprise_info.html", offerer=offerer, **data)
 

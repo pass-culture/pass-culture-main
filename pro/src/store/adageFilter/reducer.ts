@@ -17,6 +17,7 @@ interface SearchFormValuesWithQuery {
 interface AdageFilterState {
   adageFilter: SearchFormValuesWithQuery
   adageQuery: string | null
+  searchView: 'grid' | 'list'
 }
 
 const initialState: AdageFilterState = {
@@ -24,6 +25,7 @@ const initialState: AdageFilterState = {
     ...ADAGE_FILTERS_DEFAULT_VALUES,
   },
   adageQuery: null,
+  searchView: 'list',
 }
 
 const adageFilterSlice = createSlice({
@@ -36,9 +38,13 @@ const adageFilterSlice = createSlice({
     setAdageQuery(state, action: PayloadAction<string>) {
       state.adageQuery = action.payload
     },
+    setSearchView(state, action: PayloadAction<'grid' | 'list'>) {
+      state.searchView = action.payload
+    },
   },
 })
 
-export const { setAdageFilter, setAdageQuery } = adageFilterSlice.actions
+export const { setAdageFilter, setAdageQuery, setSearchView } =
+  adageFilterSlice.actions
 
 export const adageFilterReducer = adageFilterSlice.reducer

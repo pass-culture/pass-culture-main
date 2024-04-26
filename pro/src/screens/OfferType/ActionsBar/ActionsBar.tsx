@@ -5,7 +5,8 @@ import { Events } from 'core/FirebaseEvents/constants'
 import { computeOffersUrl } from 'core/Offers/utils'
 import useAnalytics from 'hooks/useAnalytics'
 import fullRightIcon from 'icons/full-right.svg'
-import { ButtonLink, SubmitButton } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 
 interface ActionsBarProps {
@@ -29,13 +30,14 @@ const ActionsBar = ({
         </ButtonLink>
       </ActionsBarSticky.Left>
       <ActionsBarSticky.Right>
-        <SubmitButton
+        <Button
+          type="submit"
           icon={fullRightIcon}
           iconPosition={IconPositionEnum.RIGHT}
           disabled={disableNextButton}
         >
           Étape suivante
-        </SubmitButton>
+        </Button>
       </ActionsBarSticky.Right>
     </ActionsBarSticky>
   )

@@ -1,6 +1,8 @@
 import fullLinkIcon from 'icons/full-link.svg'
-import { ButtonLink, RadioButton, TextInput } from 'ui-kit'
-import { FieldSetLayout } from 'ui-kit/form/shared'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { RadioButton } from 'ui-kit/form/RadioButton/RadioButton'
+import { FieldSetLayout } from 'ui-kit/form/shared/FieldSetLayout/FieldSetLayout'
+import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import styles from './FormContactTemplateCustomForm.module.scss'
 

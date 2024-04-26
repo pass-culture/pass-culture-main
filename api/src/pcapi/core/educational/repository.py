@@ -241,7 +241,7 @@ def _get_bookings_for_adage_base_query() -> BaseQuery:
                 offerers_models.Venue.timezone,
                 offerers_models.Venue.publicName,
                 offerers_models.Venue.name,
-                offerers_models.Venue.address,
+                offerers_models.Venue.street,
             )
             .joinedload(offerers_models.Venue.managingOfferer)
             .load_only(offerers_models.Offerer.name),
@@ -988,6 +988,7 @@ def get_collective_offer_templates_for_playlist_query(
             innerjoin=True,
         )
         .selectinload(offerers_models.Venue.googlePlacesInfo),
+        sa.orm.joinedload(educational_models.CollectivePlaylist.venue),
     )
     return query
 

@@ -2,6 +2,7 @@ import pytest
 
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
 import pcapi.core.offerers.factories as offerer_factories
+from pcapi.core.offerers.models import VenueTypeCode
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -51,7 +52,8 @@ class VenuesTest:
             "isVirtual": venue.isVirtual,
             "isPermanent": venue.isPermanent,
             "withdrawalDetails": venue.withdrawalDetails,
-            "address": venue.address,
+            "address": venue.street,
+            "street": venue.street,
             "postalCode": venue.postalCode,
             "venueTypeCode": "OTHER",
             "description": venue.description,
@@ -73,13 +75,17 @@ class VenuesTest:
                     "parking": acceslibre_enum.PARKING_NEARBY.value,
                 },
                 "audioDisability": {
-                    "deafAndHardOfHearing": f"{acceslibre_enum.DEAF_AND_HARD_OF_HEARING_PORTABLE_INDUCTION_LOOP.value}, "
-                    f"{acceslibre_enum.DEAF_AND_HARD_OF_HEARING_SUBTITLE.value}"
+                    "deafAndHardOfHearing": [
+                        acceslibre_enum.DEAF_AND_HARD_OF_HEARING_PORTABLE_INDUCTION_LOOP.value,
+                        acceslibre_enum.DEAF_AND_HARD_OF_HEARING_SUBTITLE.value,
+                    ]
                 },
                 "visualDisability": {
                     "soundBeacon": acceslibre_enum.UNKNOWN.value,
-                    "audioDescription": f"{acceslibre_enum.AUDIODESCRIPTION_NO_DEVICE.value}, "
-                    f"{acceslibre_enum.AUDIODESCRIPTION_OCCASIONAL.value}",
+                    "audioDescription": [
+                        acceslibre_enum.AUDIODESCRIPTION_NO_DEVICE.value,
+                        acceslibre_enum.AUDIODESCRIPTION_OCCASIONAL.value,
+                    ],
                 },
                 "mentalDisability": {"trainedPersonnel": acceslibre_enum.PERSONNEL_UNTRAINED.value},
             },
@@ -106,3 +112,9 @@ class VenuesTest:
     def test_get_non_existing_venue(self, client):
         response = client.get("/native/v1/venue/123456789")
         assert response.status_code == 404
+
+    def test_get_venue_always_has_banner_url(self, client):
+        venue = offerer_factories.VenueFactory(venueTypeCode=VenueTypeCode.BOOKSTORE)
+        response = client.get(f"/native/v1/venue/{venue.id}")
+        assert response.status_code == 200
+        assert response.json["bannerUrl"] is not None

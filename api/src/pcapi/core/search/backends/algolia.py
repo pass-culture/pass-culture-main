@@ -534,7 +534,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "name": offerer.name,
             },
             "venue": {
-                "address": venue.address,
+                "address": venue.street,
                 "city": venue.city,
                 "departmentCode": venue.departementCode,
                 "id": venue.id,
@@ -580,7 +580,7 @@ class AlgoliaBackend(base.SearchBackend):
             "has_at_least_one_bookable_offer": has_at_least_one_bookable_offer,
             "date_created": venue.dateCreated.timestamp(),
             "postalCode": venue.postalCode,
-            "adress": venue.address,
+            "adress": venue.street,
         }
 
     @classmethod

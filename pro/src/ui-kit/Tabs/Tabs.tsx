@@ -2,7 +2,7 @@ import cn from 'classnames'
 import React, { ReactNode } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 
-import { Button } from 'ui-kit/Button'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
@@ -24,7 +24,7 @@ interface FilterTabsProps {
 }
 const NAV_ITEM_ICON_SIZE = '24'
 
-const Tabs = ({
+export const Tabs = ({
   nav,
   selectedKey,
   tabs,
@@ -81,5 +81,3 @@ const Tabs = ({
 
   return nav ? <nav aria-label={nav}>{content}</nav> : content
 }
-
-export default Tabs

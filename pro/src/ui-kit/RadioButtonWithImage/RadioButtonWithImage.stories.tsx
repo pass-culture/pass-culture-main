@@ -3,7 +3,7 @@ import React from 'react'
 
 import strokeProfIcon from 'icons/stroke-prof.svg'
 
-import RadioButtonWithImage from './RadioButtonWithImage'
+import { RadioButtonWithImage } from './RadioButtonWithImage'
 
 export default {
   title: 'ui-kit/RadioButtonWithImage',

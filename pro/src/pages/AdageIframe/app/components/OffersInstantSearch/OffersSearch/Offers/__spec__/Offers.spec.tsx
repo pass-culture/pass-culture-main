@@ -44,8 +44,26 @@ vi.mock('apiClient/api', () => ({
     logSearchButtonClick: vi.fn(),
     logTrackingFilter: vi.fn(),
     logSearchShowMore: vi.fn(),
+    logOfferListViewSwitch: vi.fn(),
+    logOfferTemplateDetailsButtonClick: vi.fn(),
   },
 }))
+
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: () => ({
+    matches: false,
+    addListener: jest.fn(),
+    removeListener: jest.fn(),
+  }),
+})
+
+vi.mock('utils/config', async () => {
+  return {
+    ...(await vi.importActual('utils/config')),
+    LOGS_DATA: true,
+  }
+})
 
 const searchFakeResults = [
   {
@@ -263,7 +281,7 @@ describe('offers', () => {
     expect(listItemsInOffer).toHaveLength(2)
     expect(screen.getByText(offerInParis.name)).toBeInTheDocument()
     expect(screen.getByText(offerInCayenne.name)).toBeInTheDocument()
-    expect(screen.getByText('2 résultats')).toBeInTheDocument()
+    expect(screen.getByText('2 offres au total')).toBeInTheDocument()
   })
 
   it('should display non bookable offers', async () => {
@@ -319,7 +337,7 @@ describe('offers', () => {
     expect(screen.queryByText(offerInParis.name)).not.toBeInTheDocument()
     expect(screen.queryByText(offerInCayenne.name)).not.toBeInTheDocument()
 
-    expect(screen.getByText('1 résultat')).toBeInTheDocument()
+    expect(screen.getByText('1 offre au total')).toBeInTheDocument()
   })
 
   it('should show most recent results and cancel previous request', async () => {
@@ -782,5 +800,158 @@ describe('offers', () => {
     expect(
       screen.getByRole('link', { name: offerInCayenne.name })
     ).toBeInTheDocument()
+  })
+
+  it('should enable grid vue on toggle click', async () => {
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(offerInParis)
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
+      offerInCayenne
+    )
+    renderOffers({ ...offersProps, isBackToTopVisibile: true }, adageUser, {
+      features: ['WIP_ENABLE_ADAGE_VISUALIZATION'],
+    })
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(screen.getByText('Une offre vraiment chouette')).toBeInTheDocument()
+
+    const gridVue = screen.getByTestId('toggle-button')
+
+    await userEvent.click(gridVue)
+
+    expect(
+      screen.queryByText('Une offre vraiment chouette')
+    ).not.toBeInTheDocument()
+  })
+
+  it('should change to grid vue when breakpoint active', async () => {
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: () => ({
+        matches: true,
+        addListener: jest.fn(),
+        removeListener: jest.fn(),
+      }),
+    })
+
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(offerInParis)
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
+      offerInCayenne
+    )
+    renderOffers({ ...offersProps, isBackToTopVisibile: true }, adageUser, {
+      features: ['WIP_ENABLE_ADAGE_VISUALIZATION'],
+    })
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(
+      screen.queryByText('Une offre vraiment chouette')
+    ).not.toBeInTheDocument()
+
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: () => ({
+        matches: false,
+        addListener: jest.fn(),
+        removeListener: jest.fn(),
+      }),
+    })
+  })
+
+  it('should trigger a log event when clicking the offer with the FF WIP_ENABLE_ADAGE_VISUALIZATION is active and the offers are in list mode', async () => {
+    vi.spyOn(apiAdage, 'getCollectiveOfferTemplate').mockResolvedValueOnce({
+      ...offerInCayenne,
+    })
+
+    vi.spyOn(instantSearch, 'useInfiniteHits').mockImplementation(() => ({
+      ...defaultUseInfiniteHitsReturn,
+      hits: [{ ...otherFakeSearchResult, isTemplate: true }],
+    }))
+
+    renderOffers(offersProps, adageUser, {
+      features: ['WIP_ENABLE_ADAGE_VISUALIZATION'],
+    })
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    const link = screen.getByRole('link', {
+      name: 'Coco channel',
+    })
+    await userEvent.click(link)
+
+    expect(apiAdage.logOfferTemplateDetailsButtonClick).toHaveBeenCalled()
+  })
+
+  it('should trigger a log event when clicking the offer with the FF WIP_ENABLE_ADAGE_VISUALIZATION is active and the offers are in grid mode', async () => {
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: () => ({
+        matches: true,
+        addListener: jest.fn(),
+        removeListener: jest.fn(),
+      }),
+    })
+
+    vi.spyOn(apiAdage, 'getCollectiveOfferTemplate').mockResolvedValueOnce({
+      ...offerInCayenne,
+    })
+
+    vi.spyOn(instantSearch, 'useInfiniteHits').mockImplementation(() => ({
+      ...defaultUseInfiniteHitsReturn,
+      hits: [{ ...otherFakeSearchResult, isTemplate: true }],
+    }))
+
+    renderOffers(offersProps, adageUser, {
+      features: ['WIP_ENABLE_ADAGE_VISUALIZATION'],
+    })
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    const link = screen.getByRole('link', {
+      name: 'Sortie Coco channel Le Petit Rintintin 33',
+    })
+    await userEvent.click(link)
+
+    expect(apiAdage.logOfferTemplateDetailsButtonClick).toHaveBeenCalled()
+
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: () => ({
+        matches: false,
+        addListener: jest.fn(),
+        removeListener: jest.fn(),
+      }),
+    })
+  })
+
+  it('should call tracker when clicking on toggle button view', async () => {
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: () => ({
+        matches: true,
+        addListener: jest.fn(),
+        removeListener: jest.fn(),
+      }),
+    })
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(offerInParis)
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
+      offerInCayenne
+    )
+    renderOffers({ ...offersProps, isBackToTopVisibile: true }, adageUser, {
+      features: ['WIP_ENABLE_ADAGE_VISUALIZATION'],
+    })
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    const toggleButtonView = screen.getByTestId('toggle-button')
+
+    await userEvent.click(toggleButtonView)
+
+    expect(apiAdage.logOfferListViewSwitch).toHaveBeenCalledWith(
+      expect.objectContaining({ iframeFrom: '/', source: 'list' })
+    )
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: () => ({
+        matches: false,
+        addListener: jest.fn(),
+        removeListener: jest.fn(),
+      }),
+    })
   })
 })

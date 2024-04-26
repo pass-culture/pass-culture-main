@@ -17,6 +17,7 @@ import {
   getOffererNameFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import OfferType from '../OfferType'
 
@@ -66,7 +67,7 @@ const renderOfferTypes = (structureId?: string, venueId?: string) => {
       />
     </Routes>,
     {
-      storeOverrides: { user: { currentUser: { isAdmin: false } } },
+      user: sharedCurrentUserFactory(),
       initialRouterEntries: [
         `/creation${
           structureId
@@ -372,8 +373,9 @@ describe('OfferType', () => {
 
   it('should display validation banner if structure not validated for collective offer ', async () => {
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
+      ...defaultGetOffererResponseModel,
       isValidated: false,
-    } as GetOffererResponseModel)
+    })
     renderOfferTypes('123')
 
     expect(

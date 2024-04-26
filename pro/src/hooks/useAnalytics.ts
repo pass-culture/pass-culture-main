@@ -5,6 +5,7 @@ import {
   isSupported,
   logEvent as analyticsLogEvent,
   setUserId,
+  setUserProperties,
 } from '@firebase/analytics'
 import * as firebase from '@firebase/app'
 import {
@@ -13,10 +14,12 @@ import {
   getRemoteConfig,
 } from '@firebase/remote-config'
 import { useContext, useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 
 import { firebaseConfig } from 'config/firebase'
 import { AnalyticsContext } from 'context/analyticsContext'
 import useUtmQueryParams from 'hooks/useUtmQueryParams'
+import { selectCurrentOffererId } from 'store/user/selectors'
 
 import useRemoteConfig from './useRemoteConfig'
 
@@ -29,6 +32,7 @@ export const useConfigureFirebase = ({
 }) => {
   const [app, setApp] = useState<firebase.FirebaseApp | undefined>()
   const [isFirebaseSupported, setIsFirebaseSupported] = useState<boolean>(false)
+  const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const { setLogEvent } = useAnalytics()
   const { setRemoteConfig, setRemoteConfigData } = useRemoteConfig()
@@ -94,6 +98,14 @@ export const useConfigureFirebase = ({
       setUserId(getAnalytics(app), currentUserId)
     }
   }, [isCookieEnabled, app, currentUserId])
+
+  useEffect(() => {
+    if (app && isFirebaseSupported && selectedOffererId) {
+      setUserProperties(getAnalytics(app), {
+        offerer_id: selectedOffererId.toString(),
+      })
+    }
+  }, [selectedOffererId, app])
 }
 
 function useAnalytics() {

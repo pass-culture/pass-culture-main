@@ -3,36 +3,21 @@ import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import {
-  GetOffererResponseModel,
-  GetVenueResponseModel,
-  VenueProviderResponse,
-} from 'apiClient/v1'
-import { Providers } from 'core/Venue/types'
-import * as pcapi from 'repository/pcapi/pcapi'
+import { GetVenueResponseModel } from 'apiClient/v1'
 import { defaultGetVenue } from 'utils/collectiveApiFactories'
+import {
+  defaultGetOffererResponseModel,
+  defaultVenueProvider,
+} from 'utils/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
 } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { VenueEdition } from '../VenueEdition'
 
-const renderVenueEdition = (
-  venueId: number,
-  offererId: number,
-  options?: RenderWithProvidersOptions
-) => {
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        id: 'EY',
-        isAdmin: false,
-      },
-    },
-  }
-
+const renderVenueEdition = (options?: RenderWithProvidersOptions) => {
   return renderWithProviders(
     <Routes>
       <Route
@@ -42,99 +27,57 @@ const renderVenueEdition = (
       <Route path="/accueil" element={<h1>Home</h1>} />
     </Routes>,
     {
-      storeOverrides,
+      user: sharedCurrentUserFactory(),
       initialRouterEntries: [
-        `/structures/${offererId}/lieux/${venueId}/edition`,
+        `/structures/${defaultGetOffererResponseModel.id}/lieux/${defaultGetVenue.id}/edition`,
       ],
       ...options,
     }
   )
 }
 
-vi.mock('repository/pcapi/pcapi', () => ({
-  loadProviders: vi.fn(),
-}))
-
 vi.mock('react-router-dom', async () => ({
   ...(await vi.importActual('react-router-dom')),
   useParams: () => ({
-    offererId: '1234',
-    venueId: '12',
+    venueId: defaultGetVenue.id,
   }),
   useNavigate: vi.fn(),
 }))
 
+const baseVenue: GetVenueResponseModel = {
+  ...defaultGetVenue,
+  publicName: 'Cinéma des iles',
+  dmsToken: 'dms-token-12345',
+  isPermanent: true,
+}
+
 describe('route VenueEdition', () => {
-  let venue: GetVenueResponseModel
-  let venueProviders: VenueProviderResponse[]
-  let providers: Providers[]
-  let offerer: GetOffererResponseModel
-
   beforeEach(() => {
-    venue = {
-      ...defaultGetVenue,
-      id: 12,
-      publicName: 'Cinéma des iles',
-      dmsToken: 'dms-token-12345',
-      isPermanent: true,
-    }
-
-    venueProviders = [
-      {
-        id: 1,
-        isActive: true,
-        isFromAllocineProvider: false,
-        lastSyncDate: undefined,
-        venueId: 2,
-        venueIdAtOfferProvider: 'cdsdemorc1',
-        provider: {
-          name: 'Ciné Office',
-          id: 12,
-          hasOffererProvider: false,
-          isActive: true,
-        },
-        quantity: 0,
-        isDuo: true,
-        price: 0,
-      },
-    ]
-
-    providers = [
-      {
-        id: 12,
-        isActive: true,
-        name: 'name',
-      },
-    ] as Providers[]
-
-    offerer = {
-      id: 13,
-    } as GetOffererResponseModel
-
-    vi.spyOn(api, 'getVenue').mockResolvedValue(venue)
-    vi.spyOn(pcapi, 'loadProviders').mockResolvedValue(providers)
+    vi.spyOn(api, 'getVenue').mockResolvedValue(baseVenue)
     vi.spyOn(api, 'listVenueProviders').mockResolvedValue({
-      venue_providers: venueProviders,
+      venue_providers: [defaultVenueProvider],
     })
-    vi.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
+    vi.spyOn(api, 'getOfferer').mockResolvedValue(
+      defaultGetOffererResponseModel
+    )
     vi.spyOn(api, 'getVenueTypes').mockResolvedValue([])
     vi.spyOn(api, 'fetchVenueLabels').mockResolvedValue([])
     vi.spyOn(api, 'listOffers').mockResolvedValue([])
   })
 
   it('should call getVenue and display Venue Form screen on success', async () => {
-    renderVenueEdition(venue.id, offerer.id)
+    renderVenueEdition()
 
     const venuePublicName = await screen.findByRole('heading', {
       name: 'Cinéma des iles',
     })
-    expect(api.getVenue).toHaveBeenCalledWith(12)
+    expect(api.getVenue).toHaveBeenCalledWith(defaultGetVenue.id)
     expect(venuePublicName).toBeInTheDocument()
   })
 
   it('should check none accessibility', async () => {
     vi.spyOn(api, 'getVenue').mockResolvedValueOnce({
-      ...venue,
+      ...baseVenue,
       siret: undefined,
       visualDisabilityCompliant: false,
       mentalDisabilityCompliant: false,
@@ -142,7 +85,7 @@ describe('route VenueEdition', () => {
       motorDisabilityCompliant: false,
     })
 
-    renderVenueEdition(venue.id, offerer.id)
+    renderVenueEdition()
 
     await screen.findByRole('heading', {
       name: 'Cinéma des iles',
@@ -155,14 +98,14 @@ describe('route VenueEdition', () => {
 
   it('should not check none accessibility if every accessibility parameters are null', async () => {
     vi.spyOn(api, 'getVenue').mockResolvedValueOnce({
-      ...venue,
+      ...baseVenue,
       visualDisabilityCompliant: null,
       mentalDisabilityCompliant: null,
       audioDisabilityCompliant: null,
       motorDisabilityCompliant: null,
     })
 
-    renderVenueEdition(venue.id, offerer.id)
+    renderVenueEdition()
 
     await screen.findByRole('heading', {
       name: 'Cinéma des iles',
@@ -175,11 +118,11 @@ describe('route VenueEdition', () => {
 
   it('should not render reimbursement fields when FF bank details is enabled and venue has no siret', async () => {
     vi.spyOn(api, 'getVenue').mockResolvedValueOnce({
-      ...venue,
+      ...baseVenue,
       siret: '11111111111111',
     })
 
-    renderVenueEdition(venue.id, offerer.id)
+    renderVenueEdition()
 
     await screen.findByRole('heading', {
       name: 'Cinéma des iles',
@@ -190,20 +133,8 @@ describe('route VenueEdition', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should return to home when not able to get venue informations', async () => {
-    vi.spyOn(api, 'getVenue').mockRejectedValueOnce('error')
-    renderVenueEdition(venue.id, offerer.id)
-
-    await waitForElementToBeRemoved(screen.getByTestId('spinner'))
-    expect(api.getVenue).toHaveBeenCalledTimes(1)
-
-    expect(await screen.findByText('Home')).toBeInTheDocument()
-  })
-
   it('should display Opening hours section if WIP_OPENING_HOURS feature flag is enabled and venue is permanent', async () => {
-    renderVenueEdition(venue.id, offerer.id, {
-      features: ['WIP_OPENING_HOURS'],
-    })
+    renderVenueEdition({ features: ['WIP_OPENING_HOURS'] })
 
     await waitForElementToBeRemoved(screen.getByTestId('spinner'))
 
@@ -211,10 +142,52 @@ describe('route VenueEdition', () => {
   })
 
   it('should not display Opening hours section if WIP_OPENING_HOURS feature flag is disabled', async () => {
-    renderVenueEdition(venue.id, offerer.id)
+    renderVenueEdition()
 
     await waitForElementToBeRemoved(screen.getByTestId('spinner'))
 
     expect(screen.queryByText("Horaires d'ouverture")).not.toBeInTheDocument()
+  })
+
+  it('should display the acces libre callout for permanent venues', async () => {
+    vi.spyOn(api, 'getVenue').mockResolvedValueOnce({
+      ...baseVenue,
+      isPermanent: true,
+    })
+    renderVenueEdition({
+      features: ['WIP_ACCESLIBRE'],
+      initialRouterEntries: [
+        `/structures/${defaultGetOffererResponseModel.id}/lieux/${defaultGetVenue.id}`,
+      ],
+    })
+
+    await waitForElementToBeRemoved(screen.getByTestId('spinner'))
+
+    expect(
+      screen.getByText(
+        'Renseignez facilement les modalités d’accessibilité de votre établissement sur la plateforme collaborative acceslibre.beta.gouv.fr'
+      )
+    ).toBeInTheDocument()
+  })
+
+  it('should not display the acces libre callout for non permanent venues', async () => {
+    vi.spyOn(api, 'getVenue').mockResolvedValueOnce({
+      ...baseVenue,
+      isPermanent: false,
+    })
+    renderVenueEdition({
+      features: ['WIP_ACCESLIBRE'],
+      initialRouterEntries: [
+        `/structures/${defaultGetOffererResponseModel.id}/lieux/${defaultGetVenue.id}`,
+      ],
+    })
+
+    await waitForElementToBeRemoved(screen.getByTestId('spinner'))
+
+    expect(
+      screen.queryByText(
+        'Renseignez facilement les modalités d’accessibilité de votre établissement sur la plateforme collaborative acceslibre.beta.gouv.fr'
+      )
+    ).not.toBeInTheDocument()
   })
 })

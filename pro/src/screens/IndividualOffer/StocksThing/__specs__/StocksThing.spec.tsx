@@ -24,7 +24,7 @@ import {
   getIndividualOfferPath,
   getIndividualOfferUrl,
 } from 'core/Offers/utils/getIndividualOfferUrl'
-import { ButtonLink } from 'ui-kit'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 import {
   getOfferVenueFactory,

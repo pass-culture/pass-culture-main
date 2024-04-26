@@ -5,7 +5,6 @@
 import type { GetOffererVenueResponseModel } from './GetOffererVenueResponseModel';
 import type { OffererApiKey } from './OffererApiKey';
 export type GetOffererResponseModel = {
-  address?: string | null;
   allowedOnAdage: boolean;
   apiKey: OffererApiKey;
   city: string;
@@ -25,6 +24,7 @@ export type GetOffererResponseModel = {
   name: string;
   postalCode: string;
   siren?: string | null;
+  street?: string | null;
   venuesWithNonFreeOffersWithoutBankAccounts: Array<number>;
 };
 

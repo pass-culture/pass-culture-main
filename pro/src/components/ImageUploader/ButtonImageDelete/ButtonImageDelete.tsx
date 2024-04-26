@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
 import fullTrashIcon from 'icons/full-trash.svg'
-import { Button } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 

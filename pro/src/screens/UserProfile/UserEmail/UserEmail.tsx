@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react'
 
+import { api } from 'apiClient/api'
 import { BannerPendingEmailValidation } from 'components/Banner'
 import { BoxFormLayout } from 'components/BoxFormLayout'
 import { UserEmailForm } from 'components/UserEmailForm'
-import { getPendingEmailValidationAdapter } from 'pages/User/adapters/getPendingEmailValidationAdapter'
-import postEmailAdapter from 'pages/User/adapters/postEmailAdapter'
-import { BoxRounded } from 'ui-kit/BoxRounded'
+import { BoxRounded } from 'ui-kit/BoxRounded/BoxRounded'
 
 import { Forms } from '../constants'
 
@@ -30,8 +29,8 @@ const UserEmail = ({
     useState<string>('')
 
   const getPendingEmailRequest = async () => {
-    const response = await getPendingEmailValidationAdapter()
-    const newEmail = response.payload.newEmail || ''
+    const response = await api.getUserEmailPendingValidation()
+    const newEmail = response.newEmail || ''
     setPendingEmailValidation(newEmail)
   }
 
@@ -46,7 +45,6 @@ const UserEmail = ({
         {showForm ? (
           <UserEmailForm
             closeForm={resetForm}
-            postEmailAdapter={postEmailAdapter}
             getPendingEmailRequest={getPendingEmailRequest}
           />
         ) : (

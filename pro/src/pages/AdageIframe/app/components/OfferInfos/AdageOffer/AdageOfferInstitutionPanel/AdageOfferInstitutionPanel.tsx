@@ -17,12 +17,16 @@ export type AdageOfferInstitutionPanelProps = {
   offer: CollectiveOfferResponseModel
   adageUser?: AuthenticatedResponse
   isPreview?: boolean
+  setInstitutionOfferCount?: (value: number) => void
+  institutionOfferCount?: number
 }
 
 export default function AdageOfferInstitutionPanel({
   offer,
   adageUser,
   isPreview = false,
+  setInstitutionOfferCount,
+  institutionOfferCount,
 }: AdageOfferInstitutionPanelProps) {
   return (
     <div className={styles['institution-panel']}>
@@ -61,6 +65,8 @@ export default function AdageOfferInstitutionPanel({
           stock={offer.stock}
           hideLimitDate={true}
           isPreview={isPreview}
+          setInstitutionOfferCount={setInstitutionOfferCount}
+          institutionOfferCount={institutionOfferCount}
         >
           <SvgIcon
             src={fullDeskIcon}

@@ -4,7 +4,7 @@ import React from 'react'
 import FormLayout from 'components/FormLayout'
 import { OfferEducationalFormValues } from 'core/OfferEducational'
 import useAccessibilityOptions from 'hooks/useAccessibilityOptions'
-import { CheckboxGroup } from 'ui-kit'
+import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'
 
 interface FormAccessibilityProps {
   legend?: string

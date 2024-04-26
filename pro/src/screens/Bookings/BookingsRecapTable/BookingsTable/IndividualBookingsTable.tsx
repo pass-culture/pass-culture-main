@@ -14,19 +14,17 @@ import {
   sortByBookingDate,
   sortByOfferName,
 } from 'screens/Bookings/BookingsRecapTable/utils/sortingFunctions'
-import { Pagination } from 'ui-kit/Pagination'
+import { Pagination } from 'ui-kit/Pagination/Pagination'
 
-import { FilterByBookingStatus } from '../Filters'
+import { FilterByBookingStatus } from '../Filters/FilterByBookingStatus'
 import { NoFilteredBookings } from '../NoFilteredBookings/NoFilteredBookings'
 
 import styles from './BookingsTable.module.scss'
-import {
-  BookingOfferCell,
-  BookingIsDuoCell,
-  BeneficiaryCell,
-  BookingDateCell,
-  BookingTokenCell,
-} from './Cells'
+import { BeneficiaryCell } from './Cells/BeneficiaryCell'
+import { BookingDateCell } from './Cells/BookingDateCell'
+import { BookingIsDuoCell } from './Cells/BookingIsDuoCell'
+import { BookingOfferCell } from './Cells/BookingOfferCell'
+import { BookingTokenCell } from './Cells/BookingTokenCell'
 import { IndividualBookingStatusCell } from './Cells/IndividualBookingStatusCell'
 
 enum IndividualBookingsSortingColumn {

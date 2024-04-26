@@ -37,12 +37,12 @@ class FeatureToggle(enum.Enum):
     DISABLE_CGR_EXTERNAL_BOOKINGS = "Désactiver les réservations externes CGR"
     DISABLE_EMS_EXTERNAL_BOOKINGS = "Désactiver les réservations externes EMS"
     DISPLAY_DMS_REDIRECTION = "Affiche une redirection vers DMS si ID Check est KO"
+    EMS_CANCEL_PENDING_EXTERNAL_BOOKING = "Annuler les réservations externes EMS qui ont échouées"
     ENABLE_AUTO_VALIDATION_FOR_EXTERNAL_BOOKING = (
         "Valide automatiquement après 48h les offres issues de l'api billeterie cinéma"
     )
     ENABLE_BEAMER = "Active Beamer, le système de notifs du portail pro"
     ENABLE_CDS_IMPLEMENTATION = "Permet la réservation de place de cinéma avec l'API CDS"
-    ENABLE_CHARLIE_BOOKINGS_API = "Active la réservation via l'API Charlie"
     ENABLE_CODIR_OFFERERS_REPORT = "Active le rapport sur les structures actives pour le CODIR (tourne la nuit)"
     ENABLE_CRON_TO_UPDATE_OFFERER_STATS = "Active la mise à jour des statistiques des offrers avec un cron"
     ENABLE_CULTURAL_SURVEY = "Activer l'affichage du questionnaire des pratiques initiales pour les bénéficiaires"
@@ -68,6 +68,7 @@ class FeatureToggle(enum.Enum):
 
     ENABLE_UBBLE = "Active la vérification d'identité par Ubble"
     ENABLE_UBBLE_SUBSCRIPTION_LIMITATION = "Active la limitation en fonction de l'âge lors de pic d'inscription"
+    ENABLE_VIRUSTOTAL = "Active la vérification des liens externes par VirusTotal"
     GENERATE_CASHFLOWS_BY_CRON = (
         "Active la génération automatique (via cron) des flux monétaires et fichiers de remboursement"
     )
@@ -96,13 +97,12 @@ class FeatureToggle(enum.Enum):
     ENABLE_SWITCH_ALLOCINE_SYNC_TO_EMS_SYNC = "Activer le passage automatique des synchronisations Allociné à EMS"
     LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC = "Stocker dans Google Drive les cinémas EMS activables"
     # For features under construction, a temporary feature flag must be named with the `WIP_` prefix
-    WIP_ENABLE_OFFER_CREATION_API_V1 = "Active la création d'offres via l'API v1"
+    WIP_ENABLE_DOWNLOAD_BOOKINGS = "Activer le téléchargement des réservations"
     WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY = "Changer le template d'email de confirmation de réservation"
     WIP_ENABLE_TRUSTED_DEVICE = "Active la fonctionnalité d'appareil de confiance"
     WIP_ENABLE_SUSPICIOUS_EMAIL_SEND = "Active l'envoie d'email lors de la détection d'une connexion suspicieuse"
     WIP_MANDATORY_BOOKING_CONTACT = "Rend obligatoire offer.bookingContact pour les offres retirables"
     WIP_ENABLE_BOOST_PREFIXED_EXTERNAL_BOOKING = "Active les réservations externes boost avec préfixe"
-    WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API = "Activer la création d'évènements avec tickets dans l'API publique"
     WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY = "Activer le nouveau parcours de dépôt de coordonnées bancaires"
     WIP_ENABLE_MOCK_UBBLE = "Utiliser le mock Ubble à la place du vrai Ubble"
     WIP_ENABLE_OFFER_PRICE_LIMITATION = "Activer les règles de limitation de modification de prix des offres"
@@ -111,7 +111,6 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_FINANCE_INCIDENT = "Active les incidents de finance"
     WIP_ENABLE_MARSEILLE = "Activer Marseille en grand"
     WIP_GOOGLE_MAPS_VENUE_IMAGES = "Activer l'affichage des images des lieux importées depuis Google Maps"
-    WIP_ENABLE_PRO_SIDE_NAV = "Refonte de la navigation de l'app pro"
     WIP_CONNECT_AS = "Permettre à un admin de se connecter en tant qu'un compte pro sur PC Pro"
     WIP_ENABLE_NEW_ADAGE_OFFER_DESIGN = "Activer le nouveau design des offres sur adage"
     WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API = (
@@ -157,6 +156,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.DISABLE_EMS_EXTERNAL_BOOKINGS,
     FeatureToggle.DISABLE_ENTERPRISE_API,
     FeatureToggle.DISPLAY_DMS_REDIRECTION,
+    FeatureToggle.EMS_CANCEL_PENDING_EXTERNAL_BOOKING,
     FeatureToggle.ENABLE_AUTO_VALIDATION_FOR_EXTERNAL_BOOKING,
     FeatureToggle.ENABLE_BEAMER,
     FeatureToggle.ENABLE_CODIR_OFFERERS_REPORT,  # only for production
@@ -171,6 +171,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ENABLE_SWITCH_ALLOCINE_SYNC_TO_EMS_SYNC,
     FeatureToggle.ENABLE_TITELIVE_MUSIC_TYPES_IN_API_OUTPUT,
     FeatureToggle.ENABLE_UBBLE_SUBSCRIPTION_LIMITATION,
+    FeatureToggle.ENABLE_VIRUSTOTAL,
     FeatureToggle.ENABLE_ZENDESK_SELL_CREATION,
     FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
     FeatureToggle.LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC,
@@ -183,10 +184,10 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_MOCK_UBBLE,
     FeatureToggle.WIP_ENABLE_NEW_NAV_AB_TEST,
     FeatureToggle.WIP_ENABLE_OFFER_PRICE_LIMITATION,
-    FeatureToggle.WIP_ENABLE_PRO_SIDE_NAV,
     FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY,
     FeatureToggle.WIP_OPENING_HOURS,
     FeatureToggle.WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS,
+    FeatureToggle.WIP_ENABLE_DOWNLOAD_BOOKINGS,
     # Please keep alphabetic order
 )
 

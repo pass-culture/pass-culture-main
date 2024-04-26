@@ -2,7 +2,7 @@ import React from 'react'
 
 import { AddressSelect, Address } from 'components/Address'
 import FormLayout from 'components/FormLayout'
-import { TextInput } from 'ui-kit'
+import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import { OffererFormValues } from '../Offerer/OffererForm'
 

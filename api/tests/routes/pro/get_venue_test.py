@@ -81,7 +81,7 @@ class Returns200Test:
             venue=venue,
         )
         expected_serialized_venue = {
-            "address": venue.address,
+            "street": venue.street,
             "banId": venue.banId,
             "audioDisabilityCompliant": venue.audioDisabilityCompliant,
             "bookingEmail": venue.bookingEmail,
@@ -110,19 +110,25 @@ class Returns200Test:
                 "isAccessibleVisualDisability": True,
                 "isAccessibleMentalDisability": False,
                 "motorDisability": {
-                    "facilities": "Sanitaire non adapté",
-                    "exterior": "Chemin rendu accessible (ascenseur)",
-                    "entrance": "Accès à l'entrée par ascenseur",
-                    "parking": "Stationnement adapté à proximité",
+                    "facilities": acceslibre_enum.FACILITIES_UNADAPTED.value,
+                    "exterior": acceslibre_enum.EXTERIOR_ACCESS_ELEVATOR.value,
+                    "entrance": acceslibre_enum.ENTRANCE_ELEVATOR.value,
+                    "parking": acceslibre_enum.PARKING_NEARBY.value,
                 },
                 "audioDisability": {
-                    "deafAndHardOfHearing": "boucle à induction magnétique portative, sous-titrage ou transcription simultanée",
+                    "deafAndHardOfHearing": [
+                        acceslibre_enum.DEAF_AND_HARD_OF_HEARING_PORTABLE_INDUCTION_LOOP.value,
+                        acceslibre_enum.DEAF_AND_HARD_OF_HEARING_SUBTITLE.value,
+                    ],
                 },
                 "visualDisability": {
-                    "soundBeacon": "Non renseigné",
-                    "audioDescription": "avec équipement occasionnel selon la programmation, avec équipement permanent nécessitant le téléchargement d'une application sur smartphone",
+                    "soundBeacon": acceslibre_enum.UNKNOWN.value,
+                    "audioDescription": [
+                        acceslibre_enum.AUDIODESCRIPTION_OCCASIONAL.value,
+                        acceslibre_enum.AUDIODESCRIPTION_PERMANENT_SMARTPHONE.value,
+                    ],
                 },
-                "mentalDisability": {"trainedPersonnel": "Personnel non formé"},
+                "mentalDisability": {"trainedPersonnel": acceslibre_enum.PERSONNEL_UNTRAINED.value},
             },
             "externalAccessibilityId": "accessibility-slug",
             "externalAccessibilityUrl": "https://site-d-accessibilite.com/erps/accessibility-slug/",
@@ -131,7 +137,6 @@ class Returns200Test:
             "latitude": float(venue.latitude),
             "longitude": float(venue.longitude),
             "managingOfferer": {
-                "address": venue.managingOfferer.address,
                 "city": venue.managingOfferer.city,
                 "dateCreated": format_into_utc_date(venue.managingOfferer.dateCreated),
                 "demarchesSimplifieesApplicationId": venue.managingOfferer.demarchesSimplifieesApplicationId,
@@ -140,6 +145,7 @@ class Returns200Test:
                 "name": venue.managingOfferer.name,
                 "postalCode": venue.managingOfferer.postalCode,
                 "siren": venue.managingOfferer.siren,
+                "street": venue.managingOfferer.street,
                 "allowedOnAdage": venue.managingOfferer.allowedOnAdage,
             },
             "mentalDisabilityCompliant": venue.mentalDisabilityCompliant,
@@ -497,19 +503,19 @@ class Returns200Test:
             "isAccessibleVisualDisability": False,
             "isAccessibleMentalDisability": False,
             "motorDisability": {
-                "facilities": "Non renseigné",
-                "exterior": "Non renseigné",
-                "entrance": "Non renseigné",
-                "parking": "Non renseigné",
+                "facilities": acceslibre_enum.UNKNOWN.value,
+                "exterior": acceslibre_enum.UNKNOWN.value,
+                "entrance": acceslibre_enum.UNKNOWN.value,
+                "parking": acceslibre_enum.UNKNOWN.value,
             },
             "audioDisability": {
-                "deafAndHardOfHearing": "Non renseigné",
+                "deafAndHardOfHearing": [acceslibre_enum.UNKNOWN.value],
             },
             "visualDisability": {
-                "soundBeacon": "Non renseigné",
-                "audioDescription": "Non renseigné",
+                "soundBeacon": acceslibre_enum.UNKNOWN.value,
+                "audioDescription": [acceslibre_enum.UNKNOWN.value],
             },
-            "mentalDisability": {"trainedPersonnel": "Non renseigné"},
+            "mentalDisability": {"trainedPersonnel": acceslibre_enum.UNKNOWN.value},
         }
 
     def should_return_accessibility_data_when_venue_has_accessibility_provider(self, client):
@@ -539,19 +545,22 @@ class Returns200Test:
             "isAccessibleVisualDisability": True,
             "isAccessibleMentalDisability": False,
             "motorDisability": {
-                "facilities": "Sanitaire non adapté",
-                "exterior": "Chemin rendu accessible (ascenseur)",
-                "entrance": "Accès à l'entrée par une rampe",
-                "parking": "Pas de stationnement adapté à proximité",
+                "facilities": acceslibre_enum.FACILITIES_UNADAPTED.value,
+                "exterior": acceslibre_enum.EXTERIOR_ACCESS_ELEVATOR.value,
+                "entrance": acceslibre_enum.ENTRANCE_RAMP.value,
+                "parking": acceslibre_enum.PARKING_UNAVAILABLE.value,
             },
             "audioDisability": {
-                "deafAndHardOfHearing": "boucle à induction magnétique portative, sous-titrage ou transcription simultanée",
+                "deafAndHardOfHearing": [
+                    acceslibre_enum.DEAF_AND_HARD_OF_HEARING_PORTABLE_INDUCTION_LOOP.value,
+                    acceslibre_enum.DEAF_AND_HARD_OF_HEARING_SUBTITLE.value,
+                ],
             },
             "visualDisability": {
-                "soundBeacon": "Balise sonore",
-                "audioDescription": "Non renseigné",
+                "soundBeacon": acceslibre_enum.SOUND_BEACON.value,
+                "audioDescription": [acceslibre_enum.UNKNOWN.value],
             },
-            "mentalDisability": {"trainedPersonnel": "Personnel non formé"},
+            "mentalDisability": {"trainedPersonnel": acceslibre_enum.PERSONNEL_UNTRAINED.value},
         }
 
 

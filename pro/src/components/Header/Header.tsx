@@ -16,7 +16,7 @@ import strokeHomeIcon from 'icons/stroke-home.svg'
 import strokeLogoutIcon from 'icons/stroke-logout.svg'
 import strokeOffersIcon from 'icons/stroke-offers.svg'
 import strokePieIcon from 'icons/stroke-pie.svg'
-import { Button } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
@@ -29,6 +29,8 @@ type HeaderProps = {
   isTopMenuVisible?: boolean
   setLateralPanelOpen?: (state: boolean) => void
   focusCloseButton?: () => void
+  disableHomeLink?: boolean
+  isFixed?: boolean
 }
 const Header = forwardRef(
   (
@@ -37,6 +39,8 @@ const Header = forwardRef(
       isTopMenuVisible = false,
       setLateralPanelOpen = () => undefined,
       focusCloseButton = () => undefined,
+      disableHomeLink = false,
+      isFixed = true,
     }: HeaderProps,
     openButtonRef: ForwardedRef<HTMLButtonElement>
   ) => {
@@ -47,7 +51,12 @@ const Header = forwardRef(
 
     if (isNewSideBarNavigation && isTopMenuVisible) {
       return (
-        <header className={styles['top-menu']} id="top-navigation">
+        <header
+          className={cn(styles['top-menu'], {
+            [styles['top-menu-fixed']]: isFixed,
+          })}
+          id="top-navigation"
+        >
           <Button
             ref={openButtonRef}
             aria-expanded={lateralPanelOpen}
@@ -63,20 +72,31 @@ const Header = forwardRef(
             <SvgIcon src={fullBurgerIcon} alt="" width="24" />
           </Button>
           <div className={styles['nav-brand']}>
-            <NavLink
-              className={styles['logo']}
-              to="/accueil"
-              onClick={() => {
-                logEvent?.(Events.CLICKED_PRO, { from: location.pathname })
-              }}
-            >
-              <SvgIcon
-                alt="Pass Culture pro, l’espace des acteurs culturels"
-                src={logoPassCultureProIcon}
-                viewBox="0 0 119 40"
-                width="119"
-              />
-            </NavLink>
+            {disableHomeLink ? (
+              <div className={styles['logo']}>
+                <SvgIcon
+                  alt="Pass Culture pro, l’espace des acteurs culturels"
+                  src={logoPassCultureProIcon}
+                  viewBox="0 0 119 40"
+                  width="119"
+                />
+              </div>
+            ) : (
+              <NavLink
+                className={styles['logo']}
+                to="/accueil"
+                onClick={() => {
+                  logEvent?.(Events.CLICKED_PRO, { from: location.pathname })
+                }}
+              >
+                <SvgIcon
+                  alt="Pass Culture pro, l’espace des acteurs culturels"
+                  src={logoPassCultureProIcon}
+                  viewBox="0 0 119 40"
+                  width="119"
+                />
+              </NavLink>
+            )}
           </div>
 
           {/* These buttons do the same.

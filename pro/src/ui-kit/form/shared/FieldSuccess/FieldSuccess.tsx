@@ -13,7 +13,7 @@ interface FieldSuccessProps {
   iconAlt?: string
 }
 
-const FieldSuccess = ({
+export const FieldSuccess = ({
   children,
   className,
   name,
@@ -30,5 +30,3 @@ const FieldSuccess = ({
     </span>
   </div>
 )
-
-export default FieldSuccess

@@ -1,7 +1,6 @@
-import React from 'react'
-
 import FormLayout from 'components/FormLayout'
-import { InfoBox, TextInput } from 'ui-kit'
+import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
 export interface ExternalLinkProps {
   readOnlyFields?: string[]

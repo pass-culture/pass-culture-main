@@ -1,15 +1,15 @@
 import cn from 'classnames'
 import { useFormikContext } from 'formik'
 
-import { mapDayToFrench } from 'pages/VenueEdition/OpeningHoursReadOnly/utils'
 import { DayCheckbox } from 'screens/IndividualOffer/StocksEventCreation/DayCheckbox'
+import { mapDayToFrench } from 'utils/date'
 
 import { VenueEditionFormValues, Day } from '../types'
 
 import { HourLine } from './HourLine'
 import styles from './OpeningHoursForm.module.scss'
 
-const daysOfWeek: Day[] = [
+export const daysOfWeek: Day[] = [
   'monday',
   'tuesday',
   'wednesday',
@@ -23,6 +23,7 @@ export function OpeningHoursForm() {
   const {
     values: { days },
     setFieldValue,
+    setFieldTouched,
   } = useFormikContext<VenueEditionFormValues>()
 
   return (
@@ -47,6 +48,10 @@ export function OpeningHoursForm() {
                 await setFieldValue(`${day}.morningEndingHour`, '')
                 await setFieldValue(`${day}.afternoonStartingHour`, '')
                 await setFieldValue(`${day}.afternoonEndingHour`, '')
+                await setFieldTouched(`${day}.morningStartingHour`, false)
+                await setFieldTouched(`${day}.morningEndingHour`, false)
+                await setFieldTouched(`${day}.afternoonStartingHour`, false)
+                await setFieldTouched(`${day}.afternoonEndingHour`, false)
               }}
             />
           )

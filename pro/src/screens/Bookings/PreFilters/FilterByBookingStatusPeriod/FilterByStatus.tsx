@@ -3,7 +3,7 @@ import React from 'react'
 import { BookingStatusFilter } from 'apiClient/v1'
 import { BOOKING_STATUS_FILTER_OPTIONS } from 'core/Bookings/constants'
 import { PreFiltersParams } from 'core/Bookings/types'
-import SelectInput from 'ui-kit/form/Select/SelectInput'
+import { SelectInput } from 'ui-kit/form/Select/SelectInput'
 
 import styles from './FilterByBookingStatusPeriod.module.scss'
 

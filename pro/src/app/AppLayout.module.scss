@@ -28,11 +28,20 @@
   }
 
   &-full {
-    overflow-y: scroll;
+    overflow-y: auto;
+
+    @media (min-width: size.$tablet) {
+      width: auto;
+      margin-right: rem.torem(32px);
+    }
   }
 
   &-sticky-actions {
-    padding-bottom: rem.torem(32px);
+    padding-bottom: calc(rem.torem(32px) + size.$action-bar-sticky-height);
+
+    &-new-interface {
+      padding-bottom: rem.torem(32px);
+    }
   }
 }
 
@@ -64,6 +73,10 @@
 }
 
 .lateral-panel {
+  &-logo {
+    width: rem.torem(80px);
+  }
+
   &-wrapper {
     display: none;
     position: fixed;
@@ -78,7 +91,7 @@
       display: block;
       position: fixed;
       inset: 0;
-      background: rgb(var(--color-input-text-color) 0.48);
+      background: rgb(from var(--color-input-text-color) r g b / 48%);
     }
 
     &-open {
@@ -154,7 +167,11 @@
 
 .content-layout {
   &-basic {
-    min-height: calc(100vh - (size.$footer-height + size.$nav-height));
+    min-height: calc(100vh - (size.$footer-height));
+
+    &-with-review-banner {
+      min-height: calc(100vh - (size.$footer-height + size.$nav-height));
+    }
   }
 
   &-funnel {

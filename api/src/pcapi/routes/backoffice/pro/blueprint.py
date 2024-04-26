@@ -205,7 +205,7 @@ def create_offerer() -> utils.BackofficeResponse:
     offerer_creation_info = offerers_serialize.CreateOffererQueryModel(
         siren=form.siret_info.siret[:9],
         name=form.public_name.data,
-        address=address.street,  # [ND]
+        street=address.street,  # [ND]
         postalCode=postal_code,
         city=address.city,
         latitude=city_info.latitude,
@@ -229,7 +229,7 @@ def create_offerer() -> utils.BackofficeResponse:
 
     venue_creation_info = venues_serialize.PostVenueBodyModel(
         siret=form.siret_info.siret,  # type: ignore [arg-type]
-        address=address.street,  # type: ignore [arg-type]
+        street=address.street,  # type: ignore [arg-type]
         banId=city_info.id,  # type: ignore [arg-type]
         bookingEmail=pro_user.email,  # type: ignore [arg-type]
         city=address.city,  # type: ignore [arg-type]

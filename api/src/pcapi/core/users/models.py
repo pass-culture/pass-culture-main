@@ -30,7 +30,6 @@ from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.deactivable_mixin import DeactivableMixin
-from pcapi.models.needs_validation_mixin import NeedsValidationMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import crypto
@@ -145,7 +144,7 @@ class AccountState(enum.Enum):
         return self == AccountState.DELETED
 
 
-class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
+class User(PcObject, Base, Model, DeactivableMixin):
     __tablename__ = "user"
 
     activity = sa.Column(sa.String(128), nullable=True)
@@ -273,6 +272,9 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
 
     def get_notification_subscriptions(self) -> NotificationSubscriptions:
         return NotificationSubscriptions(**self.notificationSubscriptions or {})
+
+    def set_marketing_email_subscription(self, subscribe: bool) -> None:
+        self.notificationSubscriptions = (self.notificationSubscriptions or {}) | {"marketing_email": subscribe}
 
     def has_access(self, offerer_id: int) -> bool:
         # FIXME (dbaty, 2021-11-26): consider moving to a function in `core.users.api`?
@@ -633,6 +635,18 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
             and self.pro_new_nav_state.newNavDate
             and self.pro_new_nav_state.newNavDate <= datetime.utcnow()
         )
+
+    @property
+    def impersonator(self) -> "User | None":
+        return getattr(self, "_impersonator", None)
+
+    @impersonator.setter
+    def impersonator(self, impersonator: "User") -> None:
+        self._impersonator = impersonator
+
+    @property
+    def real_user(self) -> "User":
+        return self.impersonator or self
 
 
 User.trig_ensure_password_or_sso_exists_ddl = sa.DDL(

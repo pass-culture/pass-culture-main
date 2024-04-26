@@ -9,8 +9,6 @@ import {
 import NoData from 'components/NoData'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
 import {
-  GetBookingsCSVFileAdapter,
-  GetBookingsXLSFileAdapter,
   GetFilteredBookingsRecapAdapter,
   GetFilteredCollectiveBookingsRecapAdapter,
   GetUserHasBookingsAdapter,
@@ -29,19 +27,17 @@ import strokeUserIcon from 'icons/stroke-user.svg'
 import ChoosePreFiltersMessage from 'pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
 import NoBookingsForPreFiltersMessage from 'pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
 import Spinner from 'ui-kit/Spinner/Spinner'
-import Tabs from 'ui-kit/Tabs'
+import { Tabs } from 'ui-kit/Tabs/Tabs'
 import Titles from 'ui-kit/Titles/Titles'
 
 import { stringify } from '../../utils/query-string'
 
-import BookingsRecapTable from './BookingsRecapTable'
-import PreFilters from './PreFilters'
+import { BookingsRecapTable } from './BookingsRecapTable/BookingsRecapTable'
+import { PreFilters } from './PreFilters/PreFilters'
 
 interface BookingsProps {
   locationState?: { statuses: string[] }
   audience: Audience
-  getBookingsCSVFileAdapter: GetBookingsCSVFileAdapter
-  getBookingsXLSFileAdapter: GetBookingsXLSFileAdapter
   getFilteredBookingsRecapAdapter:
     | GetFilteredBookingsRecapAdapter
     | GetFilteredCollectiveBookingsRecapAdapter
@@ -56,8 +52,6 @@ const Bookings = <
 >({
   locationState,
   audience,
-  getBookingsCSVFileAdapter,
-  getBookingsXLSFileAdapter,
   getFilteredBookingsRecapAdapter,
   getUserHasBookingsAdapter,
   getVenuesAdapter,
@@ -263,8 +257,7 @@ const Bookings = <
       <PreFilters
         appliedPreFilters={appliedPreFilters}
         applyPreFilters={applyPreFilters}
-        getBookingsCSVFileAdapter={getBookingsCSVFileAdapter}
-        getBookingsXLSFileAdapter={getBookingsXLSFileAdapter}
+        audience={audience}
         hasResult={bookings.length > 0}
         isFiltersDisabled={!hasBooking}
         isLocalLoading={isLocalLoading}

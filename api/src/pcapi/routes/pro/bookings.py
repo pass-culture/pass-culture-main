@@ -1,15 +1,20 @@
+from datetime import date
 import math
 from typing import cast
 
 from flask_login import current_user
 from flask_login import login_required
 
+from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings.models import BookingExportType
 import pcapi.core.bookings.repository as booking_repository
 from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import Stock
 from pcapi.models import api_errors
 from pcapi.routes.serialization.bookings_recap_serialize import BookingsExportQueryModel
 from pcapi.routes.serialization.bookings_recap_serialize import BookingsExportStatusFilter
+from pcapi.routes.serialization.bookings_recap_serialize import EventDateScheduleAndPriceCategoriesCountModel
+from pcapi.routes.serialization.bookings_recap_serialize import EventDatesInfos
 from pcapi.routes.serialization.bookings_recap_serialize import ListBookingsQueryModel
 from pcapi.routes.serialization.bookings_recap_serialize import ListBookingsResponseModel
 from pcapi.routes.serialization.bookings_recap_serialize import UserHasBookingResponse
@@ -137,6 +142,7 @@ def export_bookings_for_offer_as_excel(offer_id: int, query: BookingsExportQuery
         "Content-Type": "text/csv; charset=utf-8;",
         "Content-Disposition": "attachment; filename=reservations_pass_culture.csv",
     },
+    api=blueprint.pro_private_schema,
 )
 def get_bookings_csv(query: ListBookingsQueryModel) -> bytes:
     return _create_booking_export_file(query, BookingExportType.CSV)
@@ -150,9 +156,62 @@ def get_bookings_csv(query: ListBookingsQueryModel) -> bytes:
         "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         "Content-Disposition": "attachment; filename=reservations_pass_culture.xlsx",
     },
+    api=blueprint.pro_private_schema,
 )
 def get_bookings_excel(query: ListBookingsQueryModel) -> bytes:
     return _create_booking_export_file(query, BookingExportType.EXCEL)
+
+
+@blueprint.pro_private_api.route("/bookings/dates/<int:offer_id>", methods=["GET"])
+@login_required
+@spectree_serialize(response_model=EventDatesInfos, api=blueprint.pro_private_schema)
+def get_offer_price_categories_and_schedules_by_dates(offer_id: int) -> EventDatesInfos:
+    user = current_user._get_current_object()
+    offer = Offer.query.get(offer_id)
+
+    if not user.has_access(offer.venue.managingOffererId):
+        raise api_errors.ForbiddenError({"global": "You are not allowed to access this offer"})
+
+    stocks = (
+        Stock.query.join(bookings_models.Booking)
+        .filter(
+            Stock.offerId == offer_id,
+            Stock.isSoftDeleted == False,
+            Stock.beginningDatetime.isnot(None),
+            bookings_models.Booking.status != bookings_models.BookingStatus.CANCELLED,
+        )
+        .order_by(Stock.beginningDatetime)
+        .all()
+    )
+    stocks_by_date: dict[date, dict[str, list]] = {}
+
+    for stock in stocks:
+        if stock.beginningDatetime is None:
+            continue
+        stock_date = stock.beginningDatetime.date()
+        stock_time = stock.beginningDatetime.time()
+        stock_price_category = stock.priceCategoryId
+        if stock_date not in stocks_by_date:
+            stocks_by_date[stock_date] = {
+                "price_categories": [stock.priceCategoryId],
+                "schedules": [stock_time],
+            }
+        else:
+            if stock_price_category not in stocks_by_date[stock_date]["price_categories"]:
+                stocks_by_date[stock_date]["price_categories"].append(stock_price_category)
+            if stock_time not in stocks_by_date[stock_date]["schedules"]:
+                stocks_by_date[stock_date]["schedules"].append(stock_time)
+
+    return EventDatesInfos(
+        __root__=[
+            EventDateScheduleAndPriceCategoriesCountModel(
+                event_date=date,
+                schedule_count=len(schedule_and_price_categories_count["schedules"]),
+                price_categories_count=len(schedule_and_price_categories_count["price_categories"]),
+            )
+            for date, schedule_and_price_categories_count in stocks_by_date.items()
+        ]
+    )
 
 
 def _create_booking_export_file(query: ListBookingsQueryModel, export_type: BookingExportType) -> bytes:

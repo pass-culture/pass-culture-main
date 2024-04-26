@@ -17,7 +17,7 @@ import {
 import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import * as useAnalytics from 'hooks/useAnalytics'
-import { ButtonLink } from 'ui-kit'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import {
   getIndividualOfferFactory,
   categoryFactory,
@@ -27,6 +27,7 @@ import {
   getOffererNameFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import InformationsScreen, {
   InformationsScreenProps,
@@ -55,15 +56,6 @@ const renderInformationsScreen = (
     { offerId: 'AA' }
   )
 ) => {
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        isAdmin: false,
-        email: 'email@example.com',
-      },
-    },
-  }
   const contextValue = individualOfferContextValuesFactory(contextOverride)
 
   return renderWithProviders(
@@ -103,7 +95,7 @@ const renderInformationsScreen = (
       </Routes>
       <Notification />
     </>,
-    { storeOverrides, initialRouterEntries: [url] }
+    { user: sharedCurrentUserFactory(), initialRouterEntries: [url] }
   )
 }
 

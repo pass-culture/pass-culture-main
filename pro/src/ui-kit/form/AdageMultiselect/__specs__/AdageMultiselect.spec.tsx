@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { Formik } from 'formik'
 import React from 'react'
 
-import AdageMultiselect from '../AdageMultiselect'
+import { AdageMultiselect } from '../AdageMultiselect'
 
 const options = [
   { value: 1, label: 'Architecture' },

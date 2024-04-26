@@ -1,6 +1,5 @@
 import * as yup from 'yup'
 
-import { urlRegex } from 'core/shared'
 import { isPhoneValid } from 'core/shared/utils/validation'
 
 import { Day } from './types'
@@ -45,15 +44,8 @@ export const getValidationSchema = (validateAccessibility: boolean) =>
       }),
     webSite: yup
       .string()
-      .nullable()
-      .test({
-        name: 'matchWebsiteUrl',
-        message: 'Veuillez renseigner une URL valide. Ex : https://exemple.com',
-        test: (url?: string | null) => {
-          /* istanbul ignore next: DEBT, TO FIX */
-          return url ? url.match(urlRegex) !== null : true
-        },
-      }),
+      .url('Veuillez renseigner une URL valide. Ex : https://exemple.com')
+      .nullable(),
     monday: yup.object().when('days', {
       is: (days: Day[]) => days.includes('monday'),
       then: (schema) => schema.shape(openingHoursValidationSchema),

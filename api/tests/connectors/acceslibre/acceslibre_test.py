@@ -1,9 +1,14 @@
+from unittest.mock import patch
+
 from dateutil import parser
+import pytest
 
 from pcapi.connectors import acceslibre
+from pcapi.connectors.acceslibre import AcceslibreActivity
 from pcapi.connectors.acceslibre import AcceslibreWidgetData
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
 from pcapi.core.testing import override_settings
+from pcapi.utils import requests
 
 from tests.connectors.acceslibre import fixtures
 
@@ -81,14 +86,16 @@ class AcceslibreTest:
             acceslibre_infos["url"] == "https://acceslibre.beta.gouv.fr/app/59-lille/a/librairie/erp/belette-du-nord/"
         )
 
-    def test_check_last_update(self, requests_mock):
-        slug = "0850bc16-b240-47dc-93b6-efc7d8de2037"
-        requests_mock.get(
-            f"https://acceslibre.beta.gouv.fr/api/erps/{slug}",
-            json=fixtures.ACCESLIBRE_RESULTS_BY_SLUG,
+    @patch("pcapi.connectors.acceslibre.AcceslibreBackend._fetch_request")
+    def test_catch_connection_error(self, requests_mock):
+        slug = "office-du-tourisme-4"
+        requests_mock.side_effect = [requests.exceptions.ConnectionError]
+        with pytest.raises(acceslibre.AccesLibreApiException) as exception:
+            acceslibre.get_accessibility_infos(slug=slug)
+        assert (
+            str(exception.value)
+            == f"Error connecting AccesLibre API for https://acceslibre.beta.gouv.fr/api/erps/{slug}/widget/ and query parameters: None"
         )
-        last_update = acceslibre.get_last_update_at_provider(slug=slug)
-        assert last_update == parser.isoparse("2023-04-13T15:10:25.612731+02:00")
 
     def test_get_accessibility_infos(self):
         accesslibre_data_list = [
@@ -130,23 +137,70 @@ class AcceslibreTest:
         )
 
     def test_get_accessibility_infos_from_widget(self, requests_mock):
-        slug = "mon-super-slug"
+        slug = "mon-slug-acceslibre"
         requests_mock.get(
-            f"https://acceslibre.beta.gouv.fr/api/erps/{slug}/widget",
+            f"https://acceslibre.beta.gouv.fr/api/erps/{slug}/widget/",
             json=fixtures.ACCESLIBRE_WIDGET_RESULT,
         )
-        accessibility_infos = acceslibre.get_accessibility_infos(slug)
+        last_update, accessibility_infos = acceslibre.get_accessibility_infos(slug)
+        assert last_update == parser.isoparse("2022-12-18T16:43:16.100479+01:00")
         assert accessibility_infos.trained_personnel == [acceslibre_enum.PERSONNEL_TRAINED]
         assert accessibility_infos.access_modality == [
             acceslibre_enum.EXTERIOR_ONE_LEVEL,
             acceslibre_enum.ENTRANCE_RAMP,
         ]
         assert accessibility_infos.audio_description == [
-            acceslibre_enum.AUDIODESCRIPTION_NO_DEVICE,
             acceslibre_enum.AUDIODESCRIPTION_PERMANENT_SMARTPHONE,
+            acceslibre_enum.AUDIODESCRIPTION_OCCASIONAL,
         ]
         assert accessibility_infos.deaf_and_hard_of_hearing_amenities == [
-            acceslibre_enum.DEAF_AND_HARD_OF_HEARING_SUBTITLE,
-            acceslibre_enum.DEAF_AND_HARD_OF_HEARING_CUED_SPEECH,
+            acceslibre_enum.DEAF_AND_HARD_OF_HEARING_PORTABLE_INDUCTION_LOOP,
             acceslibre_enum.DEAF_AND_HARD_OF_HEARING_SIGN_LANGUAGE,
         ]
+
+    def test_get_last_entries_by_activity(self, requests_mock):
+        activity = AcceslibreActivity.BIBLIOTHEQUE
+        requests_mock.get(
+            "https://acceslibre.beta.gouv.fr/api/erps/?activite=bibliotheque-mediatheque&created_or_updated_in_last_days=7&page_size=50&page=1",
+            json=fixtures.ACCESLIBRE_ACTIVITY_RESULT,
+        )
+        requests_mock.get(
+            "https://acceslibre.beta.gouv.fr/api/erps/?activite=bibliotheque-mediatheque&created_or_updated_in_last_days=7&page_size=1",
+            json=fixtures.ACCESLIBRE_ACTIVITY_RESULT,
+        )
+
+        activity_results = acceslibre.find_new_entries_by_activity(activity)
+        assert activity_results
+        matching_venue = acceslibre.match_venue_with_acceslibre(
+            acceslibre_results=activity_results,
+            venue_address="2 Place des Thermes",
+            venue_name="Bibliothèque Municipale de Truchan-les-Bains",
+        )
+        assert (
+            matching_venue.web_url
+            == "https://acceslibre.info/app/11-tuchan/a/bibliotheque-mediatheque/erp/bibliotheque-municipale-de-truchan-les-bains/"
+        )
+
+    def test_should_raise_error_when_slug_is_none(self, requests_mock):
+        name = "Le Livre Bateau"
+        public_name = ""
+        ban_id = "59350_5513_abcde"
+        requests_mock.get(
+            f"https://acceslibre.beta.gouv.fr/api/erps/?ban_id={ban_id}",
+            json=fixtures.ACCESLIBRE_BAD_SLUG,
+        )
+        with pytest.raises(acceslibre.AccesLibreApiException) as exception:
+            acceslibre.get_id_at_accessibility_provider(name=name, public_name=public_name, ban_id=ban_id)
+        assert str(exception.value) == "Acceslibre returned None for: slug"
+
+    def test_should_raise_error_when_activity_is_not_a_dict(self, requests_mock):
+        name = "Le Livre Bateau"
+        public_name = ""
+        ban_id = "59350_5513_abcde"
+        requests_mock.get(
+            f"https://acceslibre.beta.gouv.fr/api/erps/?ban_id={ban_id}",
+            json=fixtures.ACCESLIBRE_BAD_ACTIVITY,
+        )
+        with pytest.raises(acceslibre.AccesLibreApiException) as exception:
+            acceslibre.get_id_at_accessibility_provider(name=name, public_name=public_name, ban_id=ban_id)
+        assert str(exception.value) == "Acceslibre activite should be a dict, but received: Chaîne de caracteres"

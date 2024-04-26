@@ -5,6 +5,7 @@ import factory
 
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
 from pcapi.core.factories import BaseFactory
+import pcapi.core.geography.factories as geography_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import crypto
@@ -29,7 +30,7 @@ class OffererFactory(BaseFactory):
         model = models.Offerer
 
     name = factory.Sequence("Le Petit Rintintin Management {}".format)
-    address = "1 boulevard Poissonnière"
+    street = "1 boulevard Poissonnière"
     postalCode = "75000"
     city = "Paris"
     siren = factory.Sequence(lambda n: siren_utils.complete_siren_or_siret(f"{n + 1:08}"))  # ensures valid format
@@ -63,7 +64,7 @@ class VenueFactory(BaseFactory):
     latitude: float | None = 48.87004
     longitude: float | None = 2.37850
     managingOfferer = factory.SubFactory(OffererFactory)
-    address = factory.LazyAttribute(lambda o: None if o.isVirtual else "1 boulevard Poissonnière")
+    street = factory.LazyAttribute(lambda o: None if o.isVirtual else "1 boulevard Poissonnière")
     banId = factory.LazyAttribute(lambda o: None if o.isVirtual else "75102_7560_00001")
     postalCode = factory.LazyAttribute(lambda o: None if o.isVirtual else "75000")
     departementCode = factory.LazyAttribute(lambda o: None if o.isVirtual else _get_department_code(o.postalCode))
@@ -205,7 +206,7 @@ class GooglePlacesInfoFactory(BaseFactory):
 
 class VirtualVenueFactory(VenueFactory):
     isVirtual = True
-    address = None
+    street = None
     departementCode = None
     postalCode = None
     city = None
@@ -440,3 +441,12 @@ class AccessibilityProviderFactory(BaseFactory):
         lambda p: f"https://site-d-accessibilite.com/erps/{p.externalAccessibilityId}/"
     )
     lastUpdateAtProvider = datetime.datetime(2024, 3, 1, 0, 0)
+
+
+class OffererAddressFactory(BaseFactory):
+    label = factory.Sequence("Address label {}".format)
+    address = factory.SubFactory(geography_factories.AddressFactory)
+    offerer = factory.SubFactory(OffererFactory)
+
+    class Meta:
+        model = models.OffererAddress

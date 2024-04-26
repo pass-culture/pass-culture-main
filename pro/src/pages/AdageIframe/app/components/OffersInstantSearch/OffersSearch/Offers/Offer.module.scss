@@ -20,28 +20,37 @@ $offer-image-width: rem.torem(176px);
     gap: rem.torem(16px);
   }
 
-  &-geoloc {
-    @include fonts.body-important;
-
+  &-headband {
     display: flex;
-    align-items: center;
-    gap: rem.torem(8px);
-    padding: rem.torem(8px) rem.torem(16px);
-    background-color: rgb(var(--color-grey-dark) 0.05);
-    height: rem.torem(36px);
-    border-top-right-radius: rem.torem(3px);
-    border-top-left-radius: rem.torem(3px);
+    justify-content: space-between;
+    background-color: var(--color-adage-salmon-light);
+    padding: rem.torem(18px) rem.torem(16px);
+    border-bottom: rem.torem(2px) solid var(--color-grey-light);
 
-    &-icon {
-      color: var(--color-primary);
-      width: rem.torem(16px);
+    &-prebooked {
+      background-color: var(--color-grey-light);
     }
 
-    &-separator {
-      background-color: var(--color-grey-medium);
-      width: rem.torem(2px);
-      height: rem.torem(18px);
+    &-text {
+      display: flex;
+      flex-direction: column
     }
+  
+    .intended-for {
+      @include fonts.caption;
+
+      margin-bottom: rem.torem(8px);
+    }
+
+    .infos {
+      @include fonts.body-important;
+    }
+
+    &-button {
+      display: flex;
+      flex-direction: column;
+    }
+
   }
 
   &-image-container {
@@ -178,10 +187,24 @@ $offer-image-width: rem.torem(176px);
       }
     }
   }
+
+  &-prebooking-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 @media (min-width: size.$tablet) {
   .offer-container {
     flex-wrap: unset;
   }
+}
+
+@media (max-width: size.$mobile) {
+  .offer-headband {
+      display: flex;
+      flex-direction: column;
+      gap: rem.torem(16px);
+    }
 }

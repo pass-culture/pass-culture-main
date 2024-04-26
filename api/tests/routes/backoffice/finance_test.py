@@ -846,13 +846,13 @@ class GetIncidentTest(GetEndpointHelper):
         assert f"Incident créé par : {finance_incident.details['author']}" in content
 
 
-class GetIncidentCreationFormTest(PostEndpointHelper):
-    endpoint = "backoffice_web.finance_incidents.get_incident_creation_form"
+class GetOverpaymentCreationFormTest(PostEndpointHelper):
+    endpoint = "backoffice_web.finance_incidents.get_individual_bookings_overpayment_creation_form"
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
     expected_num_queries = 7
 
-    def test_get_incident_creation_for_one_booking_form(self, authenticated_client, invoiced_pricing):
+    def test_get_overpayment_creation_for_one_booking_form(self, authenticated_client, invoiced_pricing):
         venue = offerers_factories.VenueFactory()
         offer = offers_factories.OfferFactory(venue=venue)
         stock = offers_factories.StockFactory(offer=offer)
@@ -879,7 +879,7 @@ class GetIncidentCreationFormTest(PostEndpointHelper):
         default_amount = html_parser.extract_input_value(response.data, "total_amount")
         assert default_amount == str(booking.total_amount)
 
-    def test_get_incident_creation_for_multiple_bookings_form(self, authenticated_client):
+    def test_get_overpayment_creation_for_multiple_bookings_form(self, authenticated_client):
         venue = offerers_factories.VenueFactory()
         offer = offers_factories.OfferFactory(venue=venue)
         stock = offers_factories.StockFactory(offer=offer)
@@ -941,8 +941,8 @@ class GetIncidentCreationFormTest(PostEndpointHelper):
         )
 
 
-class GetCollectiveBookingIncidentFormTest(PostEndpointHelper):
-    endpoint = "backoffice_web.finance_incidents.get_collective_booking_incident_creation_form"
+class GetCollectiveBookingOverpaymentFormTest(PostEndpointHelper):
+    endpoint = "backoffice_web.finance_incidents.get_collective_booking_overpayment_creation_form"
     endpoint_kwargs = {"collective_booking_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
@@ -978,8 +978,8 @@ class GetCollectiveBookingIncidentFormTest(PostEndpointHelper):
         )
 
 
-class CreateIncidentTest(PostEndpointHelper):
-    endpoint = "backoffice_web.finance_incidents.create_individual_booking_incident"
+class CreateOverpaymentTest(PostEndpointHelper):
+    endpoint = "backoffice_web.finance_incidents.create_individual_booking_overpayment"
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
     def test_create_incident_from_one_booking(self, legit_user, authenticated_client, invoiced_pricing):
@@ -1015,7 +1015,7 @@ class CreateIncidentTest(PostEndpointHelper):
         alerts = soup.find_all("div", class_="alert")
         assert len(alerts) == 1
         alert = alerts[0]
-        assert html_parser._filter_whitespaces(alert.text) == "Un nouvel incident a été créé pour 1 réservation"
+        assert html_parser._filter_whitespaces(alert.text) == "Un nouvel incident a été créé pour 1 réservation."
         url_tags = alert.find_all("a")
         assert len(url_tags) == 1
         url_tag = url_tags[0]
@@ -1096,7 +1096,105 @@ class CreateIncidentTest(PostEndpointHelper):
         assert finance_models.FinanceIncident.query.count() == 0  # didn't create new incident
         assert history_models.ActionHistory.query.count() == 0
 
-    @pytest.mark.skip(reason="Temporarily hide commercial gesture creation from the backoffice")
+
+class GetCommercialGestureCreationFormTest(PostEndpointHelper):
+    endpoint = "backoffice_web.finance_incidents.get_individual_bookings_commercial_gesture_creation_form"
+    needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
+
+    expected_num_queries = 7
+
+    def test_get_commercial_gesture_creation_for_one_booking_form(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(name="Etablissement")
+        offer = offers_factories.OfferFactory(venue=venue, name="Offre ++")
+        stock = offers_factories.StockFactory(offer=offer)
+        invoiced_pricing = finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED, amount=-10_00)
+        booking = bookings_factories.CancelledBookingFactory(
+            stock=stock,
+            pricings=[invoiced_pricing],
+            quantity=4,
+            amount=decimal.Decimal(50),
+            token="TOK3N",
+            user__firstName="John",
+            user__lastName="Doe",
+        )
+        object_ids = str(booking.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = self.post_to_endpoint(authenticated_client, form={"object_ids": object_ids})
+            assert response.status_code == 200
+
+        additional_data_text = html_parser.extract_cards_text(response.data)[0]
+        assert "Lieu : Etablissement" in additional_data_text
+        assert f"ID de la réservation : {booking.id}" in additional_data_text
+        assert "Statut de la réservation : Annulée" in additional_data_text
+        assert "Contremarque : TOK3N" in additional_data_text
+        assert "Nom de l'offre : Offre ++" in additional_data_text
+        assert "Bénéficiaire : John Doe" in additional_data_text
+        assert "Montant de la réservation : 200,00 €" in additional_data_text
+        assert "Montant remboursé à l'acteur : 10,00 €" in additional_data_text
+
+        default_amount = html_parser.extract_input_value(response.data, "total_amount")
+        assert default_amount == str(booking.total_amount)
+
+    def test_get_commercial_gesture_creation_for_multiple_bookings_form(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(name="Etablissement")
+        offer = offers_factories.OfferFactory(venue=venue)
+        stock = offers_factories.StockFactory(offer=offer)
+        booking1 = bookings_factories.CancelledBookingFactory(
+            stock=stock,
+            pricings=[finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED, amount=-3_00)],
+            quantity=4,
+            amount=decimal.Decimal(3),
+        )
+        booking2 = bookings_factories.CancelledBookingFactory(
+            stock=stock,
+            pricings=[finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED, amount=-4_00)],
+            quantity=9,
+            amount=decimal.Decimal(6),
+        )
+        object_ids = f"{booking1.id},{booking2.id}"
+
+        with assert_num_queries(self.expected_num_queries):
+            response = self.post_to_endpoint(authenticated_client, form={"object_ids": object_ids})
+            assert response.status_code == 200
+
+        additional_data_text = html_parser.extract_cards_text(response.data)[0]
+        assert "Lieu : Etablissement" in additional_data_text
+        assert "Nombre de réservations : 2" in additional_data_text
+        assert "Montant des réservations : 66,00 €" in additional_data_text
+        assert "Montant remboursé à l'acteur : 7,00 €" in additional_data_text
+
+    def test_display_error_if_booking_not_cancelled(self, authenticated_client):
+        booking = bookings_factories.UsedBookingFactory()
+        object_ids = str(booking.id)
+
+        with assert_num_queries(
+            self.expected_num_queries - 1
+        ):  # don't query the number of BookingFinanceIncident with FinanceIncident's status in (CREATED, VALIDATED)
+            response = self.post_to_endpoint(authenticated_client, form={"object_ids": object_ids})
+
+        assert (
+            html_parser.content_as_text(response.data)
+            == """Seules les réservations ayant le statut "annulée" peuvent faire l'objet d'un incident."""
+        )
+
+    def test_display_error_if_bookings_from_different_venues_selected(self, authenticated_client):
+        booking1, booking2 = bookings_factories.CancelledBookingFactory.create_batch(2)
+        object_ids = f"{booking1.id},{booking2.id}"
+
+        with assert_num_queries(self.expected_num_queries):
+            response = self.post_to_endpoint(authenticated_client, form={"object_ids": object_ids})
+
+        assert (
+            html_parser.content_as_text(response.data)
+            == "Un geste commercial ne peut concerner que des réservations faites sur un même stock."
+        )
+
+
+class CreateCommercialGestureTest(PostEndpointHelper):
+    endpoint = "backoffice_web.finance_incidents.create_individual_booking_commercial_gesture"
+    needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
+
     def test_create_commercial_gesture_incident_from_one_booking_without_deposit_balance(
         self, legit_user, authenticated_client
     ):
@@ -1112,9 +1210,10 @@ class CreateIncidentTest(PostEndpointHelper):
                 "kind": finance_models.IncidentType.COMMERCIAL_GESTURE.name,
                 "object_ids": object_ids,
             },
+            follow_redirects=True,
         )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
         assert finance_models.FinanceIncident.query.count() == 1
         assert finance_models.BookingFinanceIncident.query.count() == 1
         booking_finance_incident = finance_models.BookingFinanceIncident.query.first()
@@ -1125,7 +1224,6 @@ class CreateIncidentTest(PostEndpointHelper):
         assert action_history.authorUser == legit_user
         assert action_history.comment == "Origine de la demande"
 
-    @pytest.mark.skip(reason="Temporarily hide commercial gesture creation from the backoffice")
     def test_create_commercial_gesture_incident_from_one_booking_with_deposit_balance(
         self, legit_user, authenticated_client
     ):
@@ -1153,7 +1251,6 @@ class CreateIncidentTest(PostEndpointHelper):
             in html_parser.extract_alert(redirected_response.data)
         )
 
-    @pytest.mark.skip(reason="Temporarily hide commercial gesture creation from the backoffice")
     def test_create_commercial_gesture_incident_from_used_booking(self, legit_user, authenticated_client):
         booking = bookings_factories.UsedBookingFactory()
 
@@ -1175,11 +1272,10 @@ class CreateIncidentTest(PostEndpointHelper):
 
         redirected_response = authenticated_client.get(response.location)
         assert (
-            "Au moins une des réservations sélectionnées est dans un état non compatible avec ce type d'incident"
+            'Au moins une des réservations sélectionnées est dans un état différent de "annulée".'
             in html_parser.extract_alert(redirected_response.data)
         )
 
-    @pytest.mark.skip(reason="Temporarily hide commercial gesture creation from the backoffice")
     def test_not_create_commercial_gesture_incident_too_expensive(self, authenticated_client):
         booking = bookings_factories.UsedBookingFactory()
 
@@ -1233,8 +1329,8 @@ class CreateIncidentTest(PostEndpointHelper):
         assert history_models.ActionHistory.query.count() == 0
 
 
-class CreateIncidentOnCollectiveBookingTest(PostEndpointHelper):
-    endpoint = "backoffice_web.finance_incidents.create_collective_booking_incident"
+class CreateCollectiveBookingOverpaymentTest(PostEndpointHelper):
+    endpoint = "backoffice_web.finance_incidents.create_collective_booking_overpayment"
     endpoint_kwargs = {"collective_booking_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
@@ -1305,7 +1401,8 @@ class GetIncidentHistoryTest(GetEndpointHelper):
             actionType=history_models.ActionType.FINANCE_INCIDENT_CREATED,
             actionDate=datetime.datetime.utcnow() + datetime.timedelta(days=-1),
         )
-        api.cancel_finance_incident(finance_incident, comment="Je décide d'annuler l'incident")
+        author = users_factories.UserFactory()
+        api.cancel_finance_incident(finance_incident, comment="Je décide d'annuler l'incident", author=author)
 
         finance_incident_id = finance_incident.id
         with assert_num_queries(self.expected_num_queries):

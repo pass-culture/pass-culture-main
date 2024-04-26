@@ -41,6 +41,7 @@ const OfferSummary = ({
   )
 
   const [offerData, setOfferData] = useState<OfferSectionData>()
+
   useEffect(() => {
     const updateOfferData = () => {
       const data = serializeOfferSectionData(
@@ -52,8 +53,14 @@ const OfferSummary = ({
       )
       setOfferData(data)
     }
-    void updateOfferData()
-  }, [offer])
+    updateOfferData()
+  }, [
+    offer,
+    musicTypes,
+    categories,
+    subCategories,
+    isTiteliveMusicGenreEnabled,
+  ])
 
   const editLink = getIndividualOfferUrl({
     offerId: offerData?.id,

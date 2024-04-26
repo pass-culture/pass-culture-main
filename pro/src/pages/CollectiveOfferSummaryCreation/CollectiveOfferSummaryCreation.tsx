@@ -4,7 +4,7 @@ import { AppLayout } from 'app/AppLayout'
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
 import { isCollectiveOffer } from 'core/OfferEducational'
-import CollectiveOfferSummaryCreationScreen from 'screens/CollectiveOfferSummaryCreation'
+import { CollectiveOfferSummaryCreationScreen } from 'screens/CollectiveOfferSummaryCreation/CollectiveOfferSummaryCreation'
 import {
   MandatoryCollectiveOfferFromParamsProps,
   withCollectiveOfferFromParams,

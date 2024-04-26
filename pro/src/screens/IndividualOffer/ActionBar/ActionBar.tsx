@@ -7,7 +7,8 @@ import useNotification from 'hooks/useNotification'
 import fullLeftIcon from 'icons/full-left.svg'
 import fullRightIcon from 'icons/full-right.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
-import { Button, ButtonLink, SubmitButton } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
@@ -60,9 +61,9 @@ const ActionBar = ({
           Annuler et quitter
         </Button>
 
-        <SubmitButton onClick={onClickNext} disabled={isDisabled}>
+        <Button type="submit" onClick={onClickNext} disabled={isDisabled}>
           Enregistrer les modifications
-        </SubmitButton>
+        </Button>
       </>
     )
   }
@@ -106,14 +107,15 @@ const ActionBar = ({
               </Button>
             </>
           ) : (
-            <SubmitButton
+            <Button
+              type="submit"
               icon={fullRightIcon}
               iconPosition={IconPositionEnum.RIGHT}
               disabled={isDisabled}
               onClick={onClickNext}
             >
               Enregistrer et continuer
-            </SubmitButton>
+            </Button>
           )}
         </>
       )

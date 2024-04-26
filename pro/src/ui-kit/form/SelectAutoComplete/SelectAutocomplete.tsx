@@ -5,14 +5,16 @@ import React, { KeyboardEventHandler, useEffect, useRef, useState } from 'react'
 import { SelectOption } from 'custom_types/form'
 import { getLabelString } from 'utils/getLabelString'
 
-import { BaseInput } from '../shared'
-import FieldLayout from '../shared/FieldLayout'
-import { FieldLayoutBaseProps } from '../shared/FieldLayout/FieldLayout'
+import { BaseInput } from '../shared/BaseInput/BaseInput'
+import {
+  FieldLayout,
+  FieldLayoutBaseProps,
+} from '../shared/FieldLayout/FieldLayout'
 
-import OptionsList from './OptionsList'
+import { OptionsList } from './OptionsList/OptionsList'
 import styles from './SelectAutocomplete.module.scss'
 import { SelectedValuesTags } from './SelectedValuesTags/SelectedValuesTags'
-import Toggle from './Toggle'
+import { Toggle } from './Toggle/Toggle'
 
 export type SelectAutocompleteProps = FieldLayoutBaseProps & {
   disabled?: boolean
@@ -32,7 +34,7 @@ export type SelectAutocompleteProps = FieldLayoutBaseProps & {
   leftIcon?: string
 }
 
-const SelectAutocomplete = ({
+export const SelectAutocomplete = ({
   className,
   disabled = false,
   name,
@@ -137,7 +139,9 @@ const SelectAutocomplete = ({
         break
       case 'ArrowDown':
         if (hoveredOptionIndex === null) {
-          setHoveredOptionIndex(0)
+          if (filteredOptions.length > 0) {
+            setHoveredOptionIndex(0)
+          }
         } else if (hoveredOptionIndex >= filteredOptions.length - 1) {
           setHoveredOptionIndex(filteredOptions.length - 1)
         } else {
@@ -330,5 +334,3 @@ const SelectAutocomplete = ({
     </FieldLayout>
   )
 }
-
-export default SelectAutocomplete

@@ -1,0 +1,50 @@
+@use "styles/mixins/_rem.scss" as rem;
+
+.button-group-button-container {
+  &:first-child {
+    .button-group-button {
+      border-radius: rem.torem(36px) 0 0 rem.torem(36px);
+    }
+  }
+
+  &:last-child {
+    .button-group-button {
+      border-radius: 0 rem.torem(36px) rem.torem(36px) 0;
+      border-left: none;
+    }
+  }
+}
+
+.button-group-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: rem.torem(4px);
+  padding: rem.torem(8px) rem.torem(16px);
+  background-color: var(--color-white);
+  border: 1px solid var(--color-grey-dark);
+  cursor: pointer;
+
+  &-active {
+    color: var(--color-primary);
+  }
+
+  &:hover {
+    background-color: var(--color-grey-light);
+  }
+
+  &:focus-visible {
+    outline: 1px solid var(--color-black);
+    outline-offset: rem.torem(3px);
+  }
+
+  &:active:not(:disabled) {
+    color: var(--color-primary-dark);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    color: var(--color-grey-dark);
+    background-color: var(--color-grey-light);
+  }
+}

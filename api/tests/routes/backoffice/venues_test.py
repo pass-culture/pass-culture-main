@@ -24,11 +24,9 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.backoffice import api as backoffice_api
 from pcapi.models import db
-from pcapi.routes.backoffice.filters import format_dms_status
 from pcapi.routes.backoffice.pro.forms import TypeOptions
 from pcapi.routes.backoffice.venues import blueprint as venues_blueprint
 from pcapi.utils import urls
@@ -279,8 +277,7 @@ class GetVenueTest(GetEndpointHelper):
     # get session (1 query)
     # get user with profile and permissions (1 query)
     # get venue (1 query)
-    # get feature flag: WIP_ENABLE_PRO_SIDE_NAV (1 query)
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     def test_keep_search_parameters_on_top(self, authenticated_client, venue):
         url = url_for(self.endpoint, venue_id=venue.id, q=venue.name, departments=["75", "77"])
@@ -331,8 +328,7 @@ class GetVenueTest(GetEndpointHelper):
         assert f"Code postal : {venue.postalCode} " in response_text
         assert f"Email : {venue.bookingEmail} " in response_text
         assert f"Numéro de téléphone : {venue.contact.phone_number} " in response_text
-        assert "Peut créer une offre EAC : Non" in response_text
-        assert "Statut dossier DMS Adage :" not in response_text
+        assert "Référencé Adage : Non" in response_text
         assert "ID Adage" not in response_text
         assert "Site web : https://www.example.com" in response_text
         assert f"Activité principale : {venue.venueTypeCode.value}" in response_text
@@ -351,7 +347,7 @@ class GetVenueTest(GetEndpointHelper):
             assert response.status_code == 200
 
         response_text = html_parser.content_as_text(response.data)
-        assert "Peut créer une offre EAC : Oui" in response_text
+        assert "Référencé Adage : Oui" in response_text
         assert "ID Adage : 7122022" in response_text
 
     def test_get_venue_with_no_contact(self, authenticated_client):
@@ -364,42 +360,6 @@ class GetVenueTest(GetEndpointHelper):
         response_text = html_parser.content_as_text(response.data)
         assert f"Email : {venue.bookingEmail}" in response_text
         assert "Numéro de téléphone :" not in response_text
-
-    def test_get_venue_with_no_dms_adage_application(self, authenticated_client, random_venue):
-        venue_id = random_venue.id
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
-            assert response.status_code == 200
-
-        content = html_parser.content_as_text(response.data)
-        assert "Pas de dossier DMS Adage" in content
-
-    @pytest.mark.parametrize(
-        "state,dateKey,label",
-        [
-            ("en_construction", "depositDate", "Date de dépôt DMS Adage"),
-            ("accepte", "lastChangeDate", "Date de validation DMS Adage"),
-        ],
-    )
-    def test_get_venue_with_dms_adage_application(self, authenticated_client, random_venue, state, dateKey, label):
-        collectiveDmsApplication = educational_factories.CollectiveDmsApplicationFactory(
-            venue=random_venue, state=state
-        )
-        venue_id = random_venue.id
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
-            assert response.status_code == 200
-
-        content = html_parser.content_as_text(response.data)
-        assert f"Statut du dossier DMS Adage : {format_dms_status(state)}" in content
-        assert f"{label} : " + (getattr(collectiveDmsApplication, dateKey)).strftime("%d/%m/%Y") in content
-        assert f"Numéro de dossier DMS Adage : {collectiveDmsApplication.application}" in content
-        assert (
-            f"https://www.demarches-simplifiees.fr/procedures/{collectiveDmsApplication.procedure}/dossiers/{collectiveDmsApplication.application}"
-            in str(response.data)
-        )
 
     def test_get_venue_with_provider(self, authenticated_client, random_venue):
         venue_provider = providers_factories.AllocineVenueProviderFactory(
@@ -479,8 +439,7 @@ class GetVenueTest(GetEndpointHelper):
         assert f"Venue ID : {venue.id} " in response_text
         assert f"Email : {venue.bookingEmail} " in response_text
         assert f"Numéro de téléphone : {venue.contact.phone_number} " in response_text
-        assert "Peut créer une offre EAC : Non" in response_text
-        assert "Statut dossier DMS Adage :" not in response_text
+        assert "Référencé Adage : Non" in response_text
         assert "ID Adage" not in response_text
         assert "Site web : https://my.website.com" in response_text
 
@@ -489,21 +448,15 @@ class GetVenueTest(GetEndpointHelper):
         assert "Suspendu" not in badges
 
     @pytest.mark.parametrize(
-        "ff_new_nav_activated,has_new_nav,has_old_nav",
+        "has_new_nav,has_old_nav",
         [
-            (True, False, False),
-            (True, True, False),
-            (True, True, True),
-            (True, False, True),
-            (False, False, False),
-            (False, True, False),
-            (False, True, True),
-            (False, False, True),
+            (True, True),
+            (True, False),
+            (False, True),
+            (False, False),
         ],
     )
-    def test_get_venue_with_new_nav_badges(
-        self, authenticated_client, venue, ff_new_nav_activated, has_new_nav, has_old_nav
-    ):
+    def test_get_venue_with_new_nav_badges(self, authenticated_client, venue, has_new_nav, has_old_nav):
         if has_new_nav:
             user_with_new_nav = users_factories.ProFactory()
             offerers_factories.UserOffererFactory(user=user_with_new_nav, offerer=venue.managingOfferer)
@@ -522,10 +475,7 @@ class GetVenueTest(GetEndpointHelper):
         # count.
         db.session.expire(venue)
 
-        with (
-            override_features(WIP_ENABLE_PRO_SIDE_NAV=ff_new_nav_activated),
-            assert_num_queries(self.expected_num_queries),
-        ):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -533,14 +483,10 @@ class GetVenueTest(GetEndpointHelper):
         assert "Lieu" in badges
         assert "Suspendu" not in badges
 
-        if ff_new_nav_activated:
-            if has_new_nav:
-                assert "Nouvelle interface" in badges
-            if has_old_nav:
-                assert "Ancienne interface" in badges
-        else:
-            assert "Nouvelle interface" not in badges
-            assert "Ancienne interface" not in badges
+        if has_new_nav:
+            assert "Nouvelle interface" in badges
+        if has_old_nav:
+            assert "Ancienne interface" in badges
 
 
 class GetVenueStatsDataTest:
@@ -887,12 +833,15 @@ class UpdateVenueTest(PostEndpointHelper):
             "siret": venue.siret or "",
             "city": venue.city or "",
             "postal_code": venue.postalCode or "",
-            "address": venue.address or "",
+            "street": venue.street or "",
             "ban_id": venue.banId or "",
+            "acceslibre_url": venue.external_accessibility_url or "",
+            "acceslibre_id": venue.external_accessibility_id or "",
             "booking_email": venue.bookingEmail or "",
             "phone_number": venue.contact.phone_number or "",
             "longitude": venue.longitude,
             "latitude": venue.latitude,
+            "is_permanent": venue.isPermanent,
             "venue_type_code": venue.venueTypeCode.name,
         }
 
@@ -913,7 +862,7 @@ class UpdateVenueTest(PostEndpointHelper):
             "siret": venue.managingOfferer.siren + "98765",
             "city": "Umeå",
             "postal_code": "90325",
-            "address": "Skolgatan 31A",
+            "street": "Skolgatan 31A",
             "booking_email": venue.bookingEmail + ".update",
             "phone_number": "+33102030456",
             "is_permanent": True,
@@ -934,7 +883,7 @@ class UpdateVenueTest(PostEndpointHelper):
         assert venue.siret == data["siret"]
         assert venue.city == data["city"]
         assert venue.postalCode == data["postal_code"]
-        assert venue.address == data["address"]
+        assert venue.street == data["street"]
         assert venue.bookingEmail == data["booking_email"]
         assert venue.contact.phone_number == data["phone_number"]
         assert venue.isPermanent == data["is_permanent"]
@@ -952,7 +901,7 @@ class UpdateVenueTest(PostEndpointHelper):
         update_snapshot = venue.action_history[0].extraData["modified_info"]
 
         assert update_snapshot["city"]["new_info"] == data["city"]
-        assert update_snapshot["address"]["new_info"] == data["address"]
+        assert update_snapshot["street"]["new_info"] == data["street"]
         assert update_snapshot["bookingEmail"]["new_info"] == data["booking_email"]
         assert update_snapshot["latitude"]["new_info"] == data["latitude"]
         assert update_snapshot["longitude"]["new_info"] == data["longitude"]
@@ -1250,6 +1199,21 @@ class UpdateVenueTest(PostEndpointHelper):
 
         assert response.status_code == 400
 
+    @pytest.mark.parametrize("removed_field", ["street", "postal_code", "city"])
+    def test_update_venue_remove_address_blocked_by_constraint(self, authenticated_client, removed_field):
+        venue = offerers_factories.VenueWithoutSiretFactory()
+
+        data = self._get_current_data(venue)
+        data[removed_field] = ""
+
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+
+        assert response.status_code == 400
+        assert "Les données envoyées comportent des erreurs." in html_parser.extract_alert(response.data)
+        assert venue.street
+        assert venue.postalCode
+        assert venue.city
+
     def test_update_venue_siret_disabled(self, client, roles_with_permissions, offerer):
         bo_user = users_factories.AdminFactory()
         backoffice_api.upsert_roles(bo_user, [perm_models.Roles.SUPPORT_PRO])
@@ -1269,9 +1233,6 @@ class UpdateVenueTest(PostEndpointHelper):
         assert venue.siret == original_siret
 
     def test_update_venue_ban_id(self, authenticated_client):
-        bo_user = users_factories.AdminFactory()
-        backoffice_api.upsert_roles(bo_user, [perm_models.Roles.SUPPORT_PRO])
-
         venue = offerers_factories.VenueFactory()
 
         data = self._get_current_data(venue)
@@ -1284,13 +1245,193 @@ class UpdateVenueTest(PostEndpointHelper):
 
         db.session.refresh(venue)
 
-        assert venue.address == data["address"]
+        assert venue.street == data["street"]
         assert venue.banId == data["ban_id"]
         assert venue.isPermanent == data["is_permanent"]
         assert venue.action_history[0].extraData == {
             "modified_info": {
                 "banId": {"new_info": "15152_0024_00003", "old_info": "75102_7560_00001"},
                 "isPermanent": {"new_info": True, "old_info": False},
+            }
+        }
+
+    def test_update_venue_accessibility_provider_with_url(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.LIBRARY)
+        assert not venue.accessibilityProvider
+        data = self._get_current_data(venue)
+
+        data["acceslibre_url"] = "https://acceslibre.beta.gouv.fr/des/trucs/et/&/enfin/mon-slug/"
+
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+        assert response.status_code == 303
+
+        db.session.refresh(venue)
+        assert venue.external_accessibility_id == "mon-slug"
+        assert venue.external_accessibility_url == data["acceslibre_url"]
+        assert venue.accessibilityProvider
+        assert venue.accessibilityProvider.externalAccessibilityData
+        assert venue.action_history[0].extraData == {
+            "modified_info": {
+                "accessibilityProvider.externalAccessibilityId": {"new_info": "mon-slug", "old_info": None},
+                "accessibilityProvider.externalAccessibilityUrl": {
+                    "new_info": "https://acceslibre.beta.gouv.fr/des/trucs/et/&/enfin/mon-slug/",
+                    "old_info": None,
+                },
+            }
+        }
+
+    def test_update_venue_accessibility_provider_id(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.LIBRARY)
+        offerers_factories.AccessibilityProviderFactory(
+            venue=venue,
+            externalAccessibilityId="old-slug",
+            externalAccessibilityUrl="https://acceslibre.beta.gouv.fr/my/old-slug/",
+        )
+        data = self._get_current_data(venue)
+
+        data["acceslibre_url"] = "https://acceslibre.beta.gouv.fr/my/new-slug/"
+
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+        assert response.status_code == 303
+
+        db.session.refresh(venue)
+        assert venue.external_accessibility_id == "new-slug"
+        assert venue.action_history[0].extraData == {
+            "modified_info": {
+                "accessibilityProvider.externalAccessibilityId": {"new_info": "new-slug", "old_info": "old-slug"},
+                "accessibilityProvider.externalAccessibilityUrl": {
+                    "new_info": "https://acceslibre.beta.gouv.fr/my/new-slug/",
+                    "old_info": "https://acceslibre.beta.gouv.fr/my/old-slug/",
+                },
+            }
+        }
+
+    def test_delete_venue_accessibility_provider(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.LIBRARY)
+        offerers_factories.AccessibilityProviderFactory(
+            venue=venue,
+            externalAccessibilityId="mon-slug",
+            externalAccessibilityUrl="https://acceslibre.beta.gouv.fr/erps/mon-slug/",
+        )
+        data = self._get_current_data(venue)
+
+        data["acceslibre_url"] = None
+
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+        assert response.status_code == 303
+        db.session.refresh(venue)
+        assert not venue.accessibilityProvider
+        assert venue.action_history[0].extraData == {
+            "modified_info": {
+                "accessibilityProvider.externalAccessibilityId": {
+                    "new_info": None,
+                    "old_info": "mon-slug",
+                },
+                "accessibilityProvider.externalAccessibilityUrl": {
+                    "new_info": None,
+                    "old_info": "https://acceslibre.beta.gouv.fr/erps/mon-slug/",
+                },
+            }
+        }
+
+    def test_update_venue_accessibility_provider_id_bad_url(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.LIBRARY)
+        offerers_factories.AccessibilityProviderFactory(venue=venue, externalAccessibilityUrl="https://good.url")
+        data = self._get_current_data(venue)
+
+        data["acceslibre_url"] = "https://bad.url/"
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+        assert response.status_code == 400
+        assert "Les données envoyées comportent des erreurs." in html_parser.extract_alert(response.data)
+        db.session.refresh(venue)
+        assert venue.accessibilityProvider.externalAccessibilityUrl == "https://good.url"
+
+    def test_update_venue_accessibility_provider_id_empty_slug(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.LIBRARY)
+        offerers_factories.AccessibilityProviderFactory(
+            venue=venue, externalAccessibilityUrl="https://acceslibre.beta.gouv.fr/erps/mon-slug/"
+        )
+
+        data = self._get_current_data(venue)
+        data["acceslibre_url"] = "https://acceslibre.beta.gouv.fr/erps//"
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+
+        assert response.status_code == 400
+        assert "Les données envoyées comportent des erreurs." in html_parser.extract_alert(response.data)
+        db.session.refresh(venue)
+        assert venue.accessibilityProvider.externalAccessibilityUrl == "https://acceslibre.beta.gouv.fr/erps/mon-slug/"
+
+    def test_should_update_permanent_venue_accessibility_provider(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.TRAVELING_CINEMA)
+
+        data = self._get_current_data(venue)
+        data["acceslibre_url"] = "https://acceslibre.beta.gouv.fr/erps/mon-slug/"
+        data["is_permanent"] = True
+
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+
+        assert response.status_code == 303
+        db.session.refresh(venue)
+        assert venue.accessibilityProvider
+        assert venue.action_history[0].extraData == {
+            "modified_info": {
+                "accessibilityProvider.externalAccessibilityId": {
+                    "new_info": "mon-slug",
+                    "old_info": None,
+                },
+                "accessibilityProvider.externalAccessibilityUrl": {
+                    "new_info": "https://acceslibre.beta.gouv.fr/erps/mon-slug/",
+                    "old_info": None,
+                },
+                "isPermanent": {
+                    "new_info": True,
+                    "old_info": False,
+                },
+            }
+        }
+
+    def test_should_not_update_non_permanent_venue_accessibility_provider(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.TRAVELING_CINEMA)
+
+        data = self._get_current_data(venue)
+        data["acceslibre_url"] = "https://acceslibre.beta.gouv.fr/erps/mon-slug/"
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+
+        assert response.status_code == 400
+        assert "Les données envoyées comportent des erreurs." in html_parser.extract_alert(response.data)
+        db.session.refresh(venue)
+        assert venue.accessibilityProvider == None
+
+    def test_should_delete_accessibility_provider_when_venue_becomes_non_permanent(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.LIBRARY)
+        offerers_factories.AccessibilityProviderFactory(
+            venue=venue,
+            externalAccessibilityId="mon-slug",
+            externalAccessibilityUrl="https://acceslibre.beta.gouv.fr/erps/mon-slug/",
+        )
+        data = self._get_current_data(venue)
+        data["acceslibre_url"] = "https://acceslibre.beta.gouv.fr/erps/mon-nouveau-slug/"
+        data["is_permanent"] = False
+
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+
+        assert response.status_code == 303
+        db.session.refresh(venue)
+        assert not venue.accessibilityProvider
+        assert venue.action_history[0].extraData == {
+            "modified_info": {
+                "accessibilityProvider.externalAccessibilityId": {
+                    "new_info": None,
+                    "old_info": "mon-slug",
+                },
+                "accessibilityProvider.externalAccessibilityUrl": {
+                    "new_info": None,
+                    "old_info": "https://acceslibre.beta.gouv.fr/erps/mon-slug/",
+                },
+                "isPermanent": {
+                    "new_info": False,
+                    "old_info": True,
+                },
             }
         }
 
@@ -1340,6 +1481,14 @@ class GetVenueHistoryTest(GetEndpointHelper):
                     "withdrawalDetails": {"new_info": "Come here!", "old_info": None},
                     "contact.website": {"new_info": None, "old_info": "https://old.website.com"},
                     "visualDisabilityCompliant": {"new_info": True, "old_info": False},
+                    "openingHours.MONDAY.timespan": {
+                        "old_info": "14:00-19:30",
+                        "new_info": "10:00-13:00, 14:00-19:30",
+                    },
+                    "openingHours.TUESDAY.timespan": {
+                        "old_info": "14:00-19:30",
+                        "new_info": None,
+                    },
                 }
             },
         )
@@ -1366,6 +1515,8 @@ class GetVenueHistoryTest(GetEndpointHelper):
         assert "Site internet de contact : suppression de : https://old.website.com " in rows[0]["Commentaire"]
         assert "Conditions de retrait : ajout de : Come here!" in rows[0]["Commentaire"]
         assert "Accessibilité handicap visuel : Non => Oui" in rows[0]["Commentaire"]
+        assert "Horaires du lundi : 14:00-19:30 => 10:00-13:00, 14:00-19:30" in rows[0]["Commentaire"]
+        assert "Horaires du mardi : suppression de : 14:00-19:30" in rows[0]["Commentaire"]
         assert rows[0]["Auteur"] == legit_user.full_name
         assert rows[1]["Type"] == "Commentaire interne"
         assert rows[1]["Commentaire"] == comment
@@ -1420,6 +1571,75 @@ class CommentVenueTest(PostEndpointHelper):
         assert response.status_code == 303
         redirected_response = authenticated_client.get(response.headers["location"])
         assert "Les données envoyées comportent des erreurs" in redirected_response.data.decode("utf8")
+
+
+class GetVenueCollectiveDmsApplicationsTest(GetEndpointHelper):
+    endpoint = "backoffice_web.venue.get_collective_dms_applications"
+    endpoint_kwargs = {"venue_id": 1}
+    needed_permission = perm_models.Permissions.READ_PRO_ENTITY
+
+    # get session (1 query)
+    # get user with profile and permissions (1 query)
+    # get applications (1 query)
+    expected_num_queries = 3
+
+    def test_venue_with_dms_adage_application(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(siret="1234567891234")
+
+        url = url_for(self.endpoint, venue_id=venue.id)
+
+        # if venue is not removed from the current session, any get
+        # query won't be executed because of this specific testing
+        # environment. this would tamper the real database queries
+        # count.
+        db.session.expire(venue)
+
+        accepted_application = educational_factories.CollectiveDmsApplicationFactory(
+            venue=venue, depositDate=datetime.utcnow() - timedelta(days=10), state="accepte"
+        )
+        expired_application = educational_factories.CollectiveDmsApplicationFactory(
+            venue=venue, depositDate=datetime.utcnow() - timedelta(days=5), state="refuse"
+        )
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 2
+        assert rows[0]["ID"] == str(expired_application.application)
+        assert (
+            f"https://www.demarches-simplifiees.fr/procedures/{expired_application.procedure}/dossiers/{expired_application.application}"
+            in str(response.data)
+        )
+        assert rows[0]["Date de dépôt"] == expired_application.depositDate.strftime("%d/%m/%Y")
+        assert rows[0]["État"] == "Refusé"
+        assert rows[0]["Date de dernière mise à jour"] == expired_application.lastChangeDate.strftime("%d/%m/%Y")
+        assert rows[1]["ID"] == str(accepted_application.application)
+        assert (
+            f"https://www.demarches-simplifiees.fr/procedures/{accepted_application.procedure}/dossiers/{accepted_application.application}"
+            in str(response.data)
+        )
+        assert rows[1]["Date de dépôt"] == accepted_application.depositDate.strftime("%d/%m/%Y")
+        assert rows[1]["État"] == "Accepté"
+        assert rows[1]["Date de dernière mise à jour"] == accepted_application.lastChangeDate.strftime("%d/%m/%Y")
+
+    def test_venue_with_no_dms_adage_application(self, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+
+        url = url_for(self.endpoint, venue_id=venue.id)
+
+        # if venue is not removed from the current session, any get
+        # query won't be executed because of this specific testing
+        # environment. this would tamper the real database queries
+        # count.
+        db.session.expire(venue)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        assert html_parser.count_table_rows(response.data) == 0
 
 
 class GetBatchEditVenuesFormTest(PostEndpointHelper):

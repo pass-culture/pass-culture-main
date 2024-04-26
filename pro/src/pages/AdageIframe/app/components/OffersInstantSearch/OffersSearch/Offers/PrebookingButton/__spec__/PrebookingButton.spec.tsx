@@ -61,18 +61,20 @@ describe('offer item', () => {
       canPrebookOffers: false,
     })
 
-    expect(screen.queryByText('Préréserver')).not.toBeInTheDocument()
+    expect(screen.queryByText('Préréserver l’offre')).not.toBeInTheDocument()
   })
 
   it('should display when prebooking is activated', () => {
     renderPrebookingButton({ ...props })
 
-    expect(screen.getByText('Préréserver')).toBeInTheDocument()
+    expect(screen.getByText('Préréserver l’offre')).toBeInTheDocument()
   })
   it('should display modal on click', async () => {
     renderPrebookingButton({ ...props })
 
-    const preBookButton = screen.getByRole('button', { name: 'Préréserver' })
+    const preBookButton = screen.getByRole('button', {
+      name: 'Préréserver l’offre',
+    })
     await userEvent.click(preBookButton)
 
     expect(
@@ -84,7 +86,9 @@ describe('offer item', () => {
     // Given
     renderPrebookingButton({ ...props })
     // When
-    const preBookButton = screen.getByRole('button', { name: 'Préréserver' })
+    const preBookButton = screen.getByRole('button', {
+      name: 'Préréserver l’offre',
+    })
     await userEvent.click(preBookButton)
 
     // Then
@@ -112,7 +116,9 @@ describe('offer item', () => {
     // Given
     renderPrebookingButton({ ...props })
     // When
-    const preBookButton = screen.getByRole('button', { name: 'Préréserver' })
+    const preBookButton = screen.getByRole('button', {
+      name: 'Préréserver l’offre',
+    })
     await userEvent.click(preBookButton)
 
     // Then
@@ -129,7 +135,9 @@ describe('offer item', () => {
 
   it('should log info when clicking "préréserver" button ', async () => {
     renderPrebookingButton({ ...props, isInSuggestions: false })
-    const preBookButton = screen.getByRole('button', { name: 'Préréserver' })
+    const preBookButton = screen.getByRole('button', {
+      name: 'Préréserver l’offre',
+    })
     await userEvent.click(preBookButton)
 
     expect(apiAdage.logBookingModalButtonClick).toHaveBeenCalledWith({
@@ -143,7 +151,9 @@ describe('offer item', () => {
   it('should log info when clicking "préréserver" button for no result page suggestion', async () => {
     renderPrebookingButton({ ...props, isInSuggestions: true })
 
-    const preBookButton = screen.getByRole('button', { name: 'Préréserver' })
+    const preBookButton = screen.getByRole('button', {
+      name: 'Préréserver l’offre',
+    })
     await userEvent.click(preBookButton)
 
     expect(apiAdage.logBookingModalButtonClick).toHaveBeenCalledWith({

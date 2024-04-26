@@ -10,7 +10,7 @@ describe('Notification', () => {
   const renderNotification = (notification: NotificationType) =>
     renderWithProviders(<Notification />, {
       storeOverrides: {
-        notification: { notification },
+        notification: { notification, isStickyBarOpen: false },
       },
     })
 

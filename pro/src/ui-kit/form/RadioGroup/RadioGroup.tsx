@@ -2,9 +2,9 @@ import cn from 'classnames'
 import { useField } from 'formik'
 import React from 'react'
 
-import { RadioButton } from '..'
-import { FieldSetLayout } from '../shared'
+import { RadioButton } from '../RadioButton/RadioButton'
 import { BaseRadioVariant } from '../shared/BaseRadio/types'
+import { FieldSetLayout } from '../shared/FieldSetLayout/FieldSetLayout'
 
 import styles from './RadioGroup.module.scss'
 
@@ -27,7 +27,7 @@ interface RadioGroupProps {
   variant?: BaseRadioVariant
 }
 
-const RadioGroup = ({
+export const RadioGroup = ({
   direction = Direction.VERTICAL,
   disabled,
   hideFooter = false,
@@ -70,5 +70,3 @@ const RadioGroup = ({
     </FieldSetLayout>
   )
 }
-
-export default RadioGroup

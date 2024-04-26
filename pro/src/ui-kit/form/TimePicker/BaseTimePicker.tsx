@@ -1,8 +1,7 @@
 import cn from 'classnames'
 import React, { useId } from 'react'
 
-import { BaseInput } from '../shared'
-import { BaseInputProps } from '../shared/BaseInput/BaseInput'
+import { BaseInput, BaseInputProps } from '../shared/BaseInput/BaseInput'
 
 import styles from './BaseTimePicker.module.scss'
 

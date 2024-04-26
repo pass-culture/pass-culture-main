@@ -121,6 +121,13 @@ def cancel_unstored_external_bookings() -> None:
     bookings_api.cancel_unstored_external_bookings()
 
 
+@blueprint.cli.command("cancel_ems_external_bookings")
+@log_cron_with_transaction
+@cron_require_feature(FeatureToggle.EMS_CANCEL_PENDING_EXTERNAL_BOOKING)
+def cancel_ems_external_bookings() -> None:
+    bookings_api.cancel_ems_external_bookings()
+
+
 @blueprint.cli.command("archive_already_processed_dms_applications")
 @log_cron_with_transaction
 def archive_already_processed_dms_applications() -> None:

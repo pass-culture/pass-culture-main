@@ -4,7 +4,7 @@ import { Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
-import { EmailSpellCheckInput } from 'ui-kit'
+import { EmailSpellCheckInput } from '../EmailSpellCheckInput'
 
 vi.mock('libphonenumber-js', () => {
   return {

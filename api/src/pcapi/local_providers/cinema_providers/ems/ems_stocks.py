@@ -13,6 +13,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import models as providers_models
 from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 import pcapi.utils.date as utils_date
 from pcapi.validation.models import entity_validator
 
@@ -52,8 +53,20 @@ class EMSStocks:
         for event in self.site.events:
             self.poster_urls_map.update({event.id: event.bill_url})
 
+            product = self.get_movie_product(event)
+            if not product:
+                logger.info(
+                    "Product not found for allocine Id %s",
+                    event.allocine_id,
+                    extra={"allocineId": event.allocine_id, "venueId": self.venue.id},
+                    technical_message_id="allocineId.not_found",
+                )
+                if FeatureToggle.WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS.is_active():
+                    continue
+
             offer = self.get_or_create_offer(event, self.provider.id, self.venue)
-            offer = self.fill_offer_attribut(offer, event)
+            offer.product = product
+            offer = self.fill_offer_attributes(offer, event)
             errors = entity_validator.validate(offer)
             if errors and len(errors.errors) > 0:
                 self.created_objects -= 1
@@ -103,9 +116,7 @@ class EMSStocks:
                 user=None, offer=offer, credit=None, image_as_bytes=thumb, keep_ratio=True, check_image_validity=False
             )
 
-        offer_ids = set()
-        for offer in self.created_offers:
-            offer_ids.add(offer.id)
+        offer_ids = {offer.id for offer in self.created_offers}
         search.async_index_offer_ids(
             offer_ids,
             reason=search.IndexationReason.STOCK_SYNCHRONIZATION,
@@ -119,6 +130,14 @@ class EMSStocks:
             self.updated_objects,
             self.errored_objects,
         )
+
+    def get_movie_product(self, event: ems_serializers.Event) -> offers_models.Product | None:
+        if not event.allocine_id:
+            return None
+
+        return offers_models.Product.query.filter(
+            offers_models.Product.extraData["allocineId"] == str(event.allocine_id)
+        ).one_or_none()
 
     def get_or_create_offer(
         self, event: ems_serializers.Event, provider_id: int, venue: offerers_models.Venue
@@ -138,7 +157,7 @@ class EMSStocks:
         self.created_objects += 1
         return offer
 
-    def fill_offer_attribut(self, offer: offers_models.Offer, event: ems_serializers.Event) -> offers_models.Offer:
+    def fill_offer_attributes(self, offer: offers_models.Offer, event: ems_serializers.Event) -> offers_models.Offer:
         if event.title:
             offer.name = event.title
         if event.synopsis:
@@ -146,6 +165,14 @@ class EMSStocks:
         if event.duration:
             offer.durationMinutes = event.duration
         offer.isDuo = self.is_duo
+
+        if offer.product:
+            offer.name = offer.product.name
+            offer.description = offer.product.description
+            offer.durationMinutes = offer.product.durationMinutes
+            if offer.product.extraData:
+                offer.extraData = offer.extraData or offers_models.OfferExtraData()
+                offer.extraData.update(offer.product.extraData)
 
         return offer
 

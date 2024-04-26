@@ -2,29 +2,29 @@ import { Form, FormikProvider, useFormik } from 'formik'
 import React from 'react'
 import { useDispatch } from 'react-redux'
 
+import { api } from 'apiClient/api'
+import { isErrorAPIError } from 'apiClient/helpers'
 import { UserPhoneBodyModel } from 'apiClient/v1'
 import { BoxFormLayout } from 'components/BoxFormLayout'
 import FormLayout from 'components/FormLayout'
 import { parseAndValidateFrenchPhoneNumber } from 'core/shared/utils/parseAndValidateFrenchPhoneNumber'
 import useCurrentUser from 'hooks/useCurrentUser'
-import { PatchPhoneAdapter } from 'pages/User/adapters/patchPhoneAdapter'
 import { updateUser } from 'store/user/reducer'
-import { TextInput, Button, SubmitButton } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import styles from './UserPhoneForm.module.scss'
 import validationSchema from './validationSchema'
 
 export interface UserPhoneFormProps {
   closeForm: () => void
-  patchPhoneAdapter: PatchPhoneAdapter
   initialValues: UserPhoneBodyModel
 }
 
 const UserPhoneForm = ({
   closeForm,
   initialValues,
-  patchPhoneAdapter,
 }: UserPhoneFormProps): JSX.Element => {
   const { currentUser } = useCurrentUser()
   const dispatch = useDispatch()
@@ -34,18 +34,20 @@ const UserPhoneForm = ({
       values.phoneNumber
     ).number
 
-    const response = await patchPhoneAdapter(values)
-    if (response.isOk) {
+    try {
+      const response = await api.patchUserPhone(values)
       dispatch(
         updateUser({
           ...currentUser,
-          ...response.payload,
+          ...response,
         })
       )
       closeForm()
-    } else {
-      for (const field in response.payload) {
-        formik.setFieldError(field, response.payload[field])
+    } catch (error) {
+      if (isErrorAPIError(error)) {
+        for (const field in error.body) {
+          formik.setFieldError(field, error.body[field])
+        }
       }
     }
     formik.setSubmitting(false)
@@ -81,9 +83,9 @@ const UserPhoneForm = ({
             <Button onClick={onCancel} variant={ButtonVariant.SECONDARY}>
               Annuler
             </Button>
-            <SubmitButton isLoading={formik.isSubmitting}>
+            <Button type="submit" isLoading={formik.isSubmitting}>
               Enregistrer
-            </SubmitButton>
+            </Button>
           </div>
         </Form>
       </FormikProvider>

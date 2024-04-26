@@ -57,7 +57,7 @@ def get_booking_event_reminder_to_beneficiary_email_data(
             "QR_CODE": bookings_api.get_qr_code_data(booking.token),
             "SUBCATEGORY": booking.stock.offer.subcategoryId,
             "USER_FIRST_NAME": booking.user.firstName,
-            "VENUE_ADDRESS": bookings_common.get_venue_address(booking),
+            "VENUE_ADDRESS": bookings_common.get_venue_street(booking),
             "VENUE_CITY": booking.stock.offer.venue.city,
             "VENUE_NAME": (
                 booking.stock.offer.venue.publicName

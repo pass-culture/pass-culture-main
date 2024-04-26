@@ -6,7 +6,7 @@ import strokeLibraryIcon from 'icons/stroke-library.svg'
 import strokeUserIcon from 'icons/stroke-user.svg'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import Tabs from '../Tabs'
+import { Tabs } from '../Tabs'
 
 const renderTabs = (nav?: string) => {
   renderWithProviders(

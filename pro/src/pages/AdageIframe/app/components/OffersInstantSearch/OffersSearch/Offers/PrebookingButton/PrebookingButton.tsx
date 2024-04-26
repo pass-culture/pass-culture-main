@@ -4,14 +4,15 @@ import React, { useCallback, useState } from 'react'
 import { OfferStockResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import useNotification from 'hooks/useNotification'
+import fullStockIcon from 'icons/full-stock.svg'
 import strokeHourglass from 'icons/stroke-hourglass.svg'
-import './PrebookingButton.scss'
 import { logOfferConversion } from 'pages/AdageIframe/libs/initAlgoliaAnalytics'
-import { Button } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { LOGS_DATA } from 'utils/config'
 
 import { postBookingAdapater } from './adapters/postBookingAdapter'
+import styles from './PrebookingButton.module.scss'
 import PrebookingModal from './PrebookingModal'
 
 export interface PrebookingButtonProps {
@@ -26,6 +27,7 @@ export interface PrebookingButtonProps {
   isPreview?: boolean
   setInstitutionOfferCount?: (value: number) => void
   institutionOfferCount?: number
+  setOfferPrebooked?: (value: boolean) => void
 }
 
 const PrebookingButton = ({
@@ -40,6 +42,7 @@ const PrebookingButton = ({
   isPreview = false,
   setInstitutionOfferCount,
   institutionOfferCount,
+  setOfferPrebooked,
 }: PrebookingButtonProps): JSX.Element | null => {
   const [hasPrebookedOffer, setHasPrebookedOffer] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -47,7 +50,7 @@ const PrebookingButton = ({
   const notification = useNotification()
 
   const handleBookingModalButtonClick = (stockId: number) => {
-    if (LOGS_DATA) {
+    if (LOGS_DATA && !isPreview) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       apiAdage.logBookingModalButtonClick({
         iframeFrom: location.pathname,
@@ -79,38 +82,43 @@ const PrebookingButton = ({
       setInstitutionOfferCount?.(
         institutionOfferCount ? institutionOfferCount - 1 : 0
       )
+    setOfferPrebooked && setOfferPrebooked(true)
     closeModal()
     notification.success(message)
   }, [stock.id, offerId, queryId])
 
   return canPrebookOffers ? (
     <>
-      <div className={`prebooking-button-container ${className}`}>
+      <div className={(styles['prebooking-button-container'], className)}>
         {hasPrebookedOffer ? (
-          <div className="prebooking-tag">
+          <div className={styles['prebooking-tag']}>
             <SvgIcon
               className="prebooking-tag-icon"
               src={strokeHourglass}
               alt=""
+              width="16"
             />
             Préréservé
           </div>
         ) : (
-          <>
+          <div className={styles['prebooking-button-container']}>
             <Button
-              className="prebooking-button"
+              icon={fullStockIcon}
+              className={styles['prebooking-button']}
               onClick={() => handleBookingModalButtonClick(stock.id)}
             >
-              {children ?? 'Préréserver'}
+              {children ?? 'Préréserver l’offre'}
             </Button>
 
             {!hideLimitDate && stock.bookingLimitDatetime && (
-              <span className="prebooking-button-booking-limit">
+              <span className={styles['prebooking-button-booking-limit']}>
                 avant le :{' '}
-                {format(new Date(stock.bookingLimitDatetime), 'dd/MM/yyyy')}
+                <span className={styles['prebooking-button-limit-date']}>
+                  {format(new Date(stock.bookingLimitDatetime), 'dd/MM/yyyy')}
+                </span>
               </span>
             )}
-          </>
+          </div>
         )}
       </div>
 

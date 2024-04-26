@@ -4,7 +4,6 @@
 /* eslint-disable */
 import type { VenueContactModel } from './VenueContactModel';
 export type PostVenueBodyModel = {
-  address: string;
   audioDisabilityCompliant?: boolean | null;
   banId?: string | null;
   bookingEmail: string;
@@ -21,6 +20,7 @@ export type PostVenueBodyModel = {
   postalCode: string;
   publicName?: string | null;
   siret?: string | null;
+  street: string;
   venueLabelId?: number | null;
   venueTypeCode: string;
   visualDisabilityCompliant?: boolean | null;

@@ -5,7 +5,11 @@ import * as router from 'react-router-dom'
 import { AuthenticatedResponse, OfferAddressType } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
-import { defaultAdageUser, defaultCollectiveOffer } from 'utils/adageFactories'
+import {
+  defaultAdageUser,
+  defaultCollectiveOffer,
+  defaultCollectiveTemplateOffer,
+} from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OfferCardComponent, { CardComponentProps } from '../OfferCard'
@@ -14,6 +18,11 @@ vi.mock('apiClient/api', () => ({
   apiAdage: {
     logConsultPlaylistElement: vi.fn(),
   },
+}))
+
+vi.mock('react-router-dom', async () => ({
+  ...(await vi.importActual('react-router-dom')),
+  useLocation: vi.fn(),
 }))
 
 const mockOffer = {
@@ -37,19 +46,28 @@ const adageUser: AuthenticatedResponse = {
 
 const renderOfferCardComponent = ({
   offer,
-  handlePlaylistElementTracking,
+  onCardClicked,
 }: CardComponentProps) => {
   renderWithProviders(
     <AdageUserContextProvider adageUser={adageUser}>
-      <OfferCardComponent
-        offer={offer}
-        handlePlaylistElementTracking={handlePlaylistElementTracking}
-      />
+      <OfferCardComponent offer={offer} onCardClicked={onCardClicked} />
     </AdageUserContextProvider>
   )
 }
 
+const defaultUseLocationValue = {
+  state: { offer: defaultCollectiveTemplateOffer },
+  hash: '',
+  key: '',
+  pathname: '/adage-iframe/decouverte/offre/10',
+  search: '',
+}
+
 describe('OfferCard component', () => {
+  beforeEach(() => {
+    vi.spyOn(router, 'useLocation').mockReturnValue(defaultUseLocationValue)
+  })
+
   it('should render school tag when offer will happens in school', () => {
     const offer = {
       ...mockOffer,
@@ -58,7 +76,7 @@ describe('OfferCard component', () => {
         addressType: OfferAddressType.SCHOOL,
       },
     }
-    renderOfferCardComponent({ offer, handlePlaylistElementTracking: vi.fn() })
+    renderOfferCardComponent({ offer, onCardClicked: vi.fn() })
 
     expect(
       screen.getByText(/Dans l’établissement scolaire/)
@@ -73,7 +91,7 @@ describe('OfferCard component', () => {
         addressType: OfferAddressType.OFFERER_VENUE,
       },
     }
-    renderOfferCardComponent({ offer, handlePlaylistElementTracking: vi.fn() })
+    renderOfferCardComponent({ offer, onCardClicked: vi.fn() })
 
     expect(screen.getByText(/Sortie/)).toBeInTheDocument()
     expect(screen.getByText(/À 10 km/)).toBeInTheDocument()
@@ -87,7 +105,7 @@ describe('OfferCard component', () => {
         addressType: OfferAddressType.OTHER,
       },
     }
-    renderOfferCardComponent({ offer, handlePlaylistElementTracking: vi.fn() })
+    renderOfferCardComponent({ offer, onCardClicked: vi.fn() })
 
     expect(screen.getByText(/Sortie/)).toBeInTheDocument()
     expect(screen.getByText(/Lieu à définir/)).toBeInTheDocument()
@@ -108,12 +126,12 @@ describe('OfferCard component', () => {
         },
       },
     }
-    renderOfferCardComponent({ offer, handlePlaylistElementTracking: vi.fn() })
+    renderOfferCardComponent({ offer, onCardClicked: vi.fn() })
 
     expect(screen.getByText('à 1 km - Paris')).toBeInTheDocument()
   })
 
-  it('should redirect on click in offer card', () => {
+  it('should redirect with "découverte" in url on click in offer card', () => {
     vi.spyOn(router, 'useSearchParams').mockReturnValueOnce([
       new URLSearchParams({ token: '123' }),
       vi.fn(),
@@ -121,7 +139,7 @@ describe('OfferCard component', () => {
 
     renderOfferCardComponent({
       offer: mockOffer,
-      handlePlaylistElementTracking: vi.fn(),
+      onCardClicked: vi.fn(),
     })
 
     const offerElement = screen.getByTestId('card-offer-link')
@@ -132,13 +150,36 @@ describe('OfferCard component', () => {
     )
   })
 
+  it('should redirect with "recherche" in url on click in offer card', () => {
+    vi.spyOn(router, 'useSearchParams').mockReturnValueOnce([
+      new URLSearchParams({ token: '123' }),
+      vi.fn(),
+    ])
+    vi.spyOn(router, 'useLocation').mockReturnValueOnce({
+      ...defaultUseLocationValue,
+      pathname: '/adage-iframe/recherche/offre/479',
+    })
+
+    renderOfferCardComponent({
+      offer: mockOffer,
+      onCardClicked: vi.fn(),
+    })
+
+    const offerElement = screen.getByTestId('card-offer-link')
+
+    expect(offerElement).toHaveAttribute(
+      'href',
+      '/adage-iframe/recherche/offre/479?token=123'
+    )
+  })
+
   it('should call tracking route on click in offer card', async () => {
-    const mockhandlePlaylistElementTracking = vi.fn()
+    const mockHandleTracking = vi.fn()
     vi.spyOn(apiAdage, 'logConsultPlaylistElement')
 
     renderOfferCardComponent({
       offer: mockOffer,
-      handlePlaylistElementTracking: mockhandlePlaylistElementTracking,
+      onCardClicked: mockHandleTracking,
     })
 
     const offerElement = screen.getByTestId('card-offer-link')
@@ -147,6 +188,6 @@ describe('OfferCard component', () => {
 
     await userEvent.click(offerElement)
 
-    expect(mockhandlePlaylistElementTracking).toHaveBeenCalledTimes(1)
+    expect(mockHandleTracking).toHaveBeenCalledTimes(1)
   })
 })

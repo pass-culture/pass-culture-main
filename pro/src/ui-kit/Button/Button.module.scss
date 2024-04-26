@@ -70,6 +70,10 @@
       background-color: var(--color-grey-light);
       color: var(--color-grey-dark);
       border-color: var(--color-grey-light);
+
+      .button-icon {
+        color: var(--color-grey-dark);
+      }
     }
 
     .button-icon {

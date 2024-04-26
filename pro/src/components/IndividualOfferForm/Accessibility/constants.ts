@@ -1,11 +1,11 @@
-import { AccessiblityEnum } from 'core/shared'
+import { AccessibilityEnum } from 'core/shared'
 
 export const ACCESSIBILITY_DEFAULT_VALUES = {
   accessibility: {
-    [AccessiblityEnum.VISUAL]: false,
-    [AccessiblityEnum.MENTAL]: false,
-    [AccessiblityEnum.AUDIO]: false,
-    [AccessiblityEnum.MOTOR]: false,
-    [AccessiblityEnum.NONE]: false,
+    [AccessibilityEnum.VISUAL]: false,
+    [AccessibilityEnum.MENTAL]: false,
+    [AccessibilityEnum.AUDIO]: false,
+    [AccessibilityEnum.MOTOR]: false,
+    [AccessibilityEnum.NONE]: false,
   },
 }

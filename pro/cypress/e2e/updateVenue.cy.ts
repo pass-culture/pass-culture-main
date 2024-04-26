@@ -13,36 +13,38 @@ describe('Update a venue', () => {
 
     // goes to the venue page in Individual section and update data
     cy.findByLabelText('Structure').select('Lieu non dit')
-    cy.contains('Vos pages partenaire').should('be.visible')
-    cy.contains('Carnet d’adresses').should('be.visible')
+    cy.findByText('Vos pages partenaire').should('be.visible')
+    cy.findByText('Carnet d’adresses').should('be.visible')
     cy.findByLabelText('Sélectionnez votre page partenaire *').select(
       'Cinéma de la fin Bis'
     )
 
+    cy.pause()
+    // findByText() et findByRole() marchent pas ici
     cy.contains('Gérer ma page').click()
-    cy.contains('Vos informations pour le grand public').should('be.visible')
-    cy.contains('À propos de votre activité').should('be.visible')
-    cy.contains('Modifier').click()
+    cy.findByText('Vos informations pour le grand public').should('be.visible')
+    cy.findByText('À propos de votre activité').should('be.visible')
+    cy.findByText('Modifier').click()
 
-    cy.contains('Cinéma de la fin Bis').should('be.visible')
+    cy.findByText('Cinéma de la fin Bis').should('be.visible')
     cy.findAllByLabelText('Description')
       .clear()
       .type('On peut ajouter des choses, vraiment fantastique !!!')
-    cy.contains('Non accessible').click()
-    cy.contains('Psychique ou cognitif').click()
-    cy.contains('Auditif').click()
+    cy.findByText('Non accessible').click()
+    cy.findByText('Psychique ou cognitif').click()
+    cy.findByText('Auditif').click()
     cy.intercept({ method: 'PATCH', url: '/venues/*' }).as('patchVenue')
-    cy.contains('Enregistrer et quitter').click()
+    cy.findByText('Enregistrer et quitter').click()
     cy.wait('@patchVenue')
 
-    cy.contains('Annuler et quitter').should('not.exist')
-    cy.contains('Vos informations pour le grand public').should('be.visible')
-    cy.contains('On peut ajouter des choses, vraiment fantastique !!!').should(
+    cy.findByText('Annuler et quitter').should('not.exist')
+    cy.findByText('Vos informations pour le grand public').should('be.visible')
+    cy.findByText('On peut ajouter des choses, vraiment fantastique !!!').should(
       'be.visible'
     )
 
     // goes to the venue page in "Paramètre de l'activité" and update data
-    cy.contains('Paramètres de l’activité').click()
+    cy.findByText('Paramètres de l’activité').click()
     cy.findByLabelText(
       'Label du ministère de la Culture ou du Centre national du cinéma et de l’image animée'
     ).select('Musée de France')
@@ -51,7 +53,7 @@ describe('Update a venue', () => {
       .type(
         'En main bien propres, avec un masque et un gel hydroalcoolique, didiou !'
       )
-    cy.contains('Enregistrer et quitter').click()
-    cy.contains('Musée de France').should('be.visible')
+    cy.findByText('Enregistrer et quitter').click()
+    cy.findByText('Musée de France').should('be.visible')
   })
 })

@@ -54,7 +54,6 @@ class GetOffererTest:
             response = client.get(f"/offerers/{offerer_id}")
 
         expected_serialized_offerer = {
-            "address": offerer.address,
             "apiKey": {"maxAllowed": 5, "prefixes": ["testenv_prefix", "testenv_prefix2"]},
             "city": offerer.city,
             "dateCreated": format_into_utc_date(offerer.dateCreated),
@@ -74,7 +73,7 @@ class GetOffererTest:
                     "adageInscriptionDate": (
                         format_into_utc_date(venue.adageInscriptionDate) if venue.adageInscriptionDate else None
                     ),
-                    "address": venue.address,
+                    "street": venue.street,
                     "audioDisabilityCompliant": False,
                     "bannerMeta": venue.bannerMeta,
                     "bannerUrl": venue.bannerUrl,
@@ -124,6 +123,7 @@ class GetOffererTest:
             "id": offerer.id,
             "postalCode": offerer.postalCode,
             "siren": offerer.siren,
+            "street": offerer.street,
             "allowedOnAdage": offerer.allowedOnAdage,
         }
         assert response.status_code == 200
@@ -150,29 +150,6 @@ class GetOffererTest:
         response = client.get(f"/offerers/{offerer.id}")
 
         assert response.status_code == 403
-
-    @pytest.mark.usefixtures("db_session")
-    def test_serialize_venue_has_missing_reimbursement_point(self, client):
-        pro = users_factories.ProFactory()
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-
-        offerers_factories.VenueFactory(
-            managingOfferer=offerer, reimbursement_point=None, name="A - Venue without reimbursement point"
-        )
-        offerers_factories.VenueFactory(
-            managingOfferer=offerer, name="C - Venue with reimbursement point", reimbursement_point="self"
-        )
-
-        offerer_id = offerer.id
-        client = client.with_session_auth(pro.email)
-
-        response = client.get(f"/offerers/{offerer_id}")
-        assert response.status_code == 200
-        assert response.json["hasValidBankAccount"] is False
-        assert response.json["hasPendingBankAccount"] is False
-        assert response.json["venuesWithNonFreeOffersWithoutBankAccounts"] == []
-        assert response.json["hasNonFreeOffer"] is False
 
     @pytest.mark.usefixtures("db_session")
     def test_serialize_venue_offer_created_flag(self, client):

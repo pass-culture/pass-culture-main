@@ -14,12 +14,13 @@ import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import fullDownIcon from 'icons/full-down.svg'
 import fullUpIcon from 'icons/full-up.svg'
-import { Button, SubmitButton } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import EmailSpellCheckInput from 'ui-kit/form/EmailSpellCheckInput/EmailSpellCheckInput'
+import { EmailSpellCheckInput } from 'ui-kit/form/EmailSpellCheckInput/EmailSpellCheckInput'
 
 import styles from './AttachmentInvitations.module.scss'
 import { validationSchema } from './validationSchema'
+
 interface AttachmentInvitationsProps {
   offererId: number
 }
@@ -163,12 +164,13 @@ const AttachmentInvitations = ({ offererId }: AttachmentInvitationsProps) => {
                     className={styles['invitation-email-field']}
                   />
                   <div className={styles['add-member-button-wrapper']}>
-                    <SubmitButton
+                    <Button
+                      type="submit"
                       isLoading={isLoading}
                       className={styles['add-member-button']}
                     >
                       Inviter
-                    </SubmitButton>
+                    </Button>
                   </div>
                 </FormLayout.Row>
               </FormLayout>

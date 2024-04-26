@@ -16,11 +16,12 @@ import { Audience } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
 import fullRefreshIcon from 'icons/full-refresh.svg'
 import strokeCloseIcon from 'icons/stroke-close.svg'
-import { Button, SubmitButton } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import PeriodSelector from 'ui-kit/form/PeriodSelector/PeriodSelector'
-import SelectInput from 'ui-kit/form/Select/SelectInput'
-import { BaseInput, FieldLayout } from 'ui-kit/form/shared'
+import { PeriodSelector } from 'ui-kit/form/PeriodSelector/PeriodSelector'
+import { SelectInput } from 'ui-kit/form/Select/SelectInput'
+import { BaseInput } from 'ui-kit/form/shared/BaseInput/BaseInput'
+import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './SearchFilters.module.scss'
@@ -253,7 +254,9 @@ const SearchFilters = ({
         </div>
         <div className={styles['search-separator']}>
           <div className={styles['separator']} />
-          <SubmitButton disabled={disableAllFilters}>Rechercher</SubmitButton>
+          <Button type="submit" disabled={disableAllFilters}>
+            Rechercher
+          </Button>
           <div className={styles['separator']} />
         </div>
       </form>

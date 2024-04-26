@@ -14,7 +14,7 @@ import {
 } from 'components/IndividualOfferForm'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
-import { SubmitButton } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import {
   getOffererNameFactory,
   subcategoryFactory,
@@ -44,7 +44,9 @@ const renderUsefulInformations = ({
     >
       <Form>
         <UsefulInformations {...props} />
-        <SubmitButton isLoading={false}>Submit</SubmitButton>
+        <Button type="submit" isLoading={false}>
+          Submit
+        </Button>
       </Form>
     </Formik>,
     { features: ['WIP_MANDATORY_BOOKING_CONTACT'] }

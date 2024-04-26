@@ -1,7 +1,6 @@
 import { BoxFormLayout } from 'components/BoxFormLayout'
 import { UserPasswordForm } from 'components/UserPasswordForm'
-import postPasswordAdapter from 'pages/User/adapters/postPasswordAdapter'
-import { BoxRounded } from 'ui-kit/BoxRounded'
+import { BoxRounded } from 'ui-kit/BoxRounded/BoxRounded'
 
 import { Forms } from '../constants'
 
@@ -20,10 +19,7 @@ const UserPassword = ({
     <BoxFormLayout>
       <BoxRounded onClickModify={onClickModify} showButtonModify={!showForm}>
         {showForm ? (
-          <UserPasswordForm
-            closeForm={resetForm}
-            postPasswordAdapter={postPasswordAdapter}
-          />
+          <UserPasswordForm closeForm={resetForm} />
         ) : (
           <BoxFormLayout.Header
             subtitle="***************"

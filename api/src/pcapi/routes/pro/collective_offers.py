@@ -695,7 +695,7 @@ def attach_offer_image(
     return collective_offers_serialize.AttachImageResponseModel.from_orm(offer)
 
 
-@private_api.route("/collective/offers-template/<offer_id>/image", methods=["POST"])
+@private_api.route("/collective/offers-template/<int:offer_id>/image", methods=["POST"])
 @login_required
 @spectree_serialize(
     on_success_status=200,

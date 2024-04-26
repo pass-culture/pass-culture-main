@@ -16,6 +16,7 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Reason
 from pcapi.core.offers.models import ReasonMeta
 from pcapi.core.offers.models import Stock
+from pcapi.core.providers import constants as provider_constants
 from pcapi.core.providers.titelive_gtl import GTLS
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.domain.movie_types import get_movie_label
@@ -103,6 +104,7 @@ class OfferVenueResponse(BaseModel):
     @classmethod
     def from_orm(cls, venue: offerers_models.Venue) -> "OfferVenueResponse":
         venue.coordinates = {"latitude": venue.latitude, "longitude": venue.longitude}
+        venue.address = venue.street
         result = super().from_orm(venue)
         return result
 
@@ -232,6 +234,11 @@ class OfferResponse(BaseModel):
         offer.expense_domains = get_expense_domains(offer)
         offer.isExpired = offer.hasBookingLimitDatetimesPassed
         offer.metadata = offer_metadata.get_metadata_from_offer(offer)
+        offer.isExternalBookingsDisabled = False
+        if offer.lastProvider and offer.lastProvider.localClass in provider_constants.PROVIDER_LOCAL_CLASS_TO_FF:
+            offer.isExternalBookingsDisabled = provider_constants.PROVIDER_LOCAL_CLASS_TO_FF[
+                offer.lastProvider.localClass
+            ].is_active()
 
         result = super().from_orm(offer)
 
@@ -256,6 +263,7 @@ class OfferResponse(BaseModel):
     externalTicketOfficeUrl: str | None
     extraData: OfferExtraData | None
     isExpired: bool
+    isExternalBookingsDisabled: bool
     is_forbidden_to_underage: bool
     isReleased: bool
     isSoldOut: bool
@@ -275,6 +283,40 @@ class OfferResponse(BaseModel):
         alias_generator = to_camel
         allow_population_by_field_name = True
         json_encoders = {datetime: format_into_utc_date}
+
+
+class OfferPreviewResponse(BaseModel):
+    @classmethod
+    def from_orm(cls, offer: Offer) -> "OfferPreviewResponse":
+        offer_preview = super().from_orm(offer)
+        offer_preview.stocks = [OfferStockResponse.from_orm(stock) for stock in offer.activeStocks]
+
+        return offer_preview
+
+    id: int
+    durationMinutes: int | None
+    extraData: OfferExtraData | None
+    image: OfferImageResponse | None
+    # FIXME: (thconte, 24-04-2024): unused for now
+    # Will be used from the merge of the ticket PC-29406
+    last30DaysBookings: int | None
+    name: str
+    stocks: list[OfferStockResponse]
+
+    class Config:
+        orm_mode = True
+        allow_population_by_field_name = True
+
+
+class OffersStocksResponse(BaseModel):
+    offers: list[OfferPreviewResponse]
+
+    class Config:
+        json_encoders = {datetime: format_into_utc_date}
+
+
+class OffersStocksRequest(BaseModel):
+    offer_ids: list[int]
 
 
 class OfferReportRequest(BaseModel):

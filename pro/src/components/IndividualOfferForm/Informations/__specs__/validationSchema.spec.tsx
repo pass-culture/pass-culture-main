@@ -5,7 +5,7 @@ import React from 'react'
 import * as yup from 'yup'
 
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
-import { SubmitButton } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 
 import Informations, { InformationsProps } from '../Informations'
 import { getValidationSchema } from '../validationSchema'
@@ -27,7 +27,9 @@ const renderInformations = ({
     >
       <Form>
         <Informations {...props} />
-        <SubmitButton isLoading={false}>Submit</SubmitButton>
+        <Button type="submit" isLoading={false}>
+          Submit
+        </Button>
       </Form>
     </Formik>
   )

@@ -15,7 +15,7 @@ describe('NewNavReview', () => {
       screen.getByRole('button', { name: 'Je donne mon avis' })
     )
     expect(
-      screen.getByRole('heading', { name: 'Votre avis compte' })
+      screen.getByRole('heading', { name: 'Votre avis compte !' })
     ).toBeInTheDocument()
   })
 })

@@ -23,6 +23,10 @@ $info-box-margin-left: rem.torem(24px);
   &-section {
     margin-bottom: rem.torem(24px);
 
+    &-title {
+      @include fonts.title3;
+    }
+
     &-header {
       margin-bottom: rem.torem(24px);
     }
@@ -45,6 +49,8 @@ $info-box-margin-left: rem.torem(24px);
 
     &-title {
       margin-bottom: rem.torem(24px);
+
+      @include fonts.title4;
     }
   }
 

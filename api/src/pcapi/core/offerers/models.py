@@ -46,6 +46,7 @@ from pcapi.connectors.big_query.queries.offerer_stats import OffererViewsModel
 from pcapi.connectors.big_query.queries.offerer_stats import TopOffersData
 from pcapi.core.educational import models as educational_models
 import pcapi.core.finance.models as finance_models
+from pcapi.core.geography import models as geography_models
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models import db
@@ -258,8 +259,6 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     __tablename__ = "venue"
 
     name: str = Column(String(140), nullable=False)
-    # Keep both indexes until we are sure that first one is no longer used (pg_stat_user_indexes shows few uses)
-    sa.Index("idx_venue_trgm_name", name, postgresql_using="gin")
     sa.Index("ix_venue_trgm_unaccent_name", sa.func.immutable_unaccent("name"), postgresql_using="gin")
 
     siret = Column(String(14), nullable=True, unique=True)
@@ -281,7 +280,9 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     bookingEmail = Column(String(120), nullable=True)
     sa.Index("idx_venue_bookingEmail", bookingEmail)
 
-    address = Column(String(200), nullable=True)
+    _address = Column("address", String(200), nullable=True)
+
+    _street = Column("street", Text(), nullable=True)
 
     postalCode = Column(String(6), nullable=True)
 
@@ -295,8 +296,6 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     timezone = Column(String(50), nullable=False, default=METROPOLE_TIMEZONE, server_default=METROPOLE_TIMEZONE)
 
     publicName = Column(String(255), nullable=True)
-    # Keep both indexes until we are sure that first one is no longer used (pg_stat_user_indexes shows few uses)
-    sa.Index("idx_venue_trgm_public_name", publicName, postgresql_using="gin")
     sa.Index("ix_venue_trgm_unaccent_public_name", sa.func.immutable_unaccent("name"), postgresql_using="gin")
 
     isVisibleInApp = Column(Boolean, nullable=False, default=True, server_default=sa.sql.expression.true())
@@ -442,6 +441,24 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     openingHours: Mapped[list["OpeningHours | None"]] = relationship(
         "OpeningHours", back_populates="venue", passive_deletes=True
     )
+
+    def __init__(self, street: str | None = None, **kwargs: typing.Any) -> None:
+        if street:
+            self.street = street  # type: ignore [method-assign]
+        super().__init__(**kwargs)
+
+    @hybrid_property
+    def street(self) -> str | None:
+        return self._address
+
+    @street.setter  # type: ignore [no-redef]
+    def street(self, value: str | None) -> None:
+        self._address = value
+        self._street = value
+
+    @street.expression  # type: ignore [no-redef]
+    def street(cls):  # pylint: disable=no-self-argument
+        return cls._address
 
     def _get_type_banner_url(self) -> str | None:
         elligible_banners: tuple[str, ...] = VENUE_TYPE_DEFAULT_BANNERS.get(self.venueTypeCode, tuple())
@@ -737,6 +754,18 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
 
         return opening_days
 
+    @property
+    def external_accessibility_id(self) -> str | None:
+        if not self.accessibilityProvider:
+            return None
+        return self.accessibilityProvider.externalAccessibilityId
+
+    @property
+    def external_accessibility_url(self) -> str | None:
+        if not self.accessibilityProvider:
+            return None
+        return self.accessibilityProvider.externalAccessibilityUrl
+
 
 class GooglePlacesInfo(PcObject, Base, Model):
     __tablename__ = "google_places_info"
@@ -965,8 +994,6 @@ class Offerer(
     dateCreated: datetime = Column(DateTime, nullable=False, default=datetime.utcnow)
 
     name: str = Column(String(140), nullable=False)
-    # Keep both because pg_stat_user_indexes reports idx_offerer_trgm_name has been used (but still used?)
-    sa.Index("idx_offerer_trgm_name", name, postgresql_using="gin")
     sa.Index("ix_offerer_trgm_unaccent_name", sa.func.immutable_unaccent("name"), postgresql_using="gin")
 
     sa.Index("ix_offerer_trgm_unaccent_city", sa.func.immutable_unaccent("city"), postgresql_using="gin")
@@ -998,8 +1025,28 @@ class Offerer(
 
     allowedOnAdage: bool = Column(Boolean, nullable=False, default=False, server_default=sa.sql.expression.false())
 
+    _street = Column("street", Text(), nullable=True)
+
     hasNewNavUsers: sa_orm.Mapped["bool | None"] = sa.orm.query_expression()
     hasOldNavUsers: sa_orm.Mapped["bool | None"] = sa.orm.query_expression()
+
+    def __init__(self, street: str | None = None, **kwargs: typing.Any) -> None:
+        if street:
+            self.street = street  # type: ignore [method-assign]
+        super().__init__(**kwargs)
+
+    @hybrid_property
+    def street(self) -> str | None:
+        return self._address
+
+    @street.setter  # type: ignore [no-redef]
+    def street(self, value: str | None) -> None:
+        self._address = value
+        self._street = value
+
+    @street.expression  # type: ignore [no-redef]
+    def street(cls):  # pylint: disable=no-self-argument
+        return cls._address
 
     @property
     def bic(self) -> str | None:
@@ -1212,3 +1259,12 @@ class OffererStats(PcObject, Base, Model):
         server_default="{}",
         nullable=False,
     )
+
+
+class OffererAddress(PcObject, Base, Model):
+    __tablename__ = "offerer_address"
+    label: str = sa.Column(sa.Text(), nullable=False)
+    addressId = sa.Column(sa.BigInteger, sa.ForeignKey("address.id"), index=True)
+    address: sa.orm.Mapped[geography_models.Address] = sa.orm.relationship("Address", foreign_keys=[addressId])
+    offererId = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), index=True)
+    offerer: sa.orm.Mapped["Offerer"] = sa.orm.relationship("Offerer", foreign_keys=[offererId])

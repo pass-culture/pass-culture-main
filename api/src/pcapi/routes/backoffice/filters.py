@@ -79,6 +79,13 @@ def format_deposit_type(deposit_type: finance_models.DepositType) -> str:
             return "Aucune information"
 
 
+def format_active_deposit(deposit: finance_models.Deposit | None) -> str:
+    if deposit:
+        if not deposit.expirationDate or deposit.expirationDate > datetime.datetime.utcnow():
+            return Markup('<span class="visually-hidden">Oui</span><i class="bi bi-check-circle-fill"></i>')
+    return Markup('<span class="visually-hidden">Non</span><i class="bi bi-x-circle-fill"></i>')
+
+
 def empty_string_if_null(data: typing.Any | None) -> str:
     if data is None:
         return ""
@@ -254,6 +261,20 @@ def format_booking_status_long(booking: bookings_models.Booking | educational_mo
     if booking.status == educational_models.CollectiveBookingStatus.PENDING:
         return '<span class="badge text-bg-success">L\'enseignant a posé une option</span>'
     return '<span class="badge text-bg-success">Le jeune a réservé l\'offre</span>'
+
+
+def format_booking_validation_author_type(
+    validationAuthorType: bookings_models.BookingValidationAuthorType | None,
+) -> str:
+    match validationAuthorType:
+        case bookings_models.BookingValidationAuthorType.OFFERER:
+            return "Partenaire culturel"
+        case bookings_models.BookingValidationAuthorType.BACKOFFICE:
+            return "Backoffice"
+        case bookings_models.BookingValidationAuthorType.AUTO:
+            return "Automatique"
+        case _:
+            return ""
 
 
 def format_booking_status(
@@ -590,6 +611,22 @@ def format_show_subtype(show_subtype_id: int | str) -> str:
         return f"Autre[{show_subtype_id}]"
 
 
+def match_opening_hours(info_name: str) -> str | None:
+    day_mapping = {
+        "MONDAY": "lundi",
+        "TUESDAY": "mardi",
+        "WEDNESDAY": "mercredi",
+        "THURSDAY": "jeudi",
+        "FRIDAY": "vendredi",
+        "SATURDAY": "samedi",
+        "SUNDAY": "dimanche",
+    }
+    if match := re.compile(r"^openingHours\.(\w+)\.timespan$").match(info_name):
+        day = match.group(1)
+        return day_mapping.get(day, day)
+    return None
+
+
 def format_modified_info_name(info_name: str) -> str:
     match info_name:
         case "force_debit_note":
@@ -610,7 +647,7 @@ def format_modified_info_name(info_name: str) -> str:
             return "Téléphone"
         case "city":
             return "Ville"
-        case "address":
+        case "street":
             return "Adresse"
         case "banId":
             return "Identifiant Base Adresse Nationale"
@@ -650,8 +687,19 @@ def format_modified_info_name(info_name: str) -> str:
             return "Activité principale"
         case "label":
             return "Intitulé"
-        case _:
-            return info_name.replace("_", " ").capitalize()
+        case "accessibilityProvider.externalAccessibilityId":
+            return "Id chez Acceslibre"
+        case "accessibilityProvider.externalAccessibilityUrl":
+            return "Url chez Acceslibre"
+        case "notificationSubscriptions.marketing_email":
+            return "Abonné aux emails marketing"
+        case "notificationSubscriptions.marketing_push":
+            return "Abonné aux notifications push"
+
+    if day := match_opening_hours(info_name):
+        return f"Horaires du {day}"
+
+    return info_name.replace("_", " ").capitalize()
 
 
 def format_permission_name(permission_name: str) -> str:
@@ -1062,6 +1110,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_booking_cancellation_reason"] = format_booking_cancellation_reason
     app.jinja_env.filters["format_booking_status"] = format_booking_status
     app.jinja_env.filters["format_booking_status_long"] = format_booking_status_long
+    app.jinja_env.filters["format_booking_validation_author_type"] = format_booking_validation_author_type
     app.jinja_env.filters["format_bool"] = format_bool
     app.jinja_env.filters["format_bool_badge"] = format_bool_badge
     app.jinja_env.filters["format_cents"] = format_cents
@@ -1074,6 +1123,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_cutoff_date"] = format_cutoff_date
     app.jinja_env.filters["format_timespan"] = format_timespan
     app.jinja_env.filters["format_deposit_type"] = format_deposit_type
+    app.jinja_env.filters["format_active_deposit"] = format_active_deposit
     app.jinja_env.filters["format_validation_status"] = format_validation_status
     app.jinja_env.filters["format_offer_validation_status"] = format_offer_validation_status
     app.jinja_env.filters["format_offer_status"] = format_offer_status
@@ -1128,7 +1178,6 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["pc_pro_venue_bookings_link"] = urls.build_pc_pro_venue_bookings_link
     app.jinja_env.filters["pc_pro_venue_offers_link"] = urls.build_pc_pro_venue_offers_link
     app.jinja_env.filters["pc_pro_venue_link"] = urls.build_pc_pro_venue_link
-    app.jinja_env.filters["pc_pro_user_email_validation_link"] = urls.build_pc_pro_user_email_validation_link
     app.jinja_env.filters["pc_backoffice_public_account_link"] = urls.build_backoffice_public_account_link
     app.jinja_env.filters["pc_backoffice_public_account_link_in_comment"] = (
         urls.build_backoffice_public_account_link_in_comment

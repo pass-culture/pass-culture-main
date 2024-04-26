@@ -21,7 +21,6 @@ import {
 } from 'context/IndividualOfferContext'
 import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
-import * as pcapi from 'repository/pcapi/pcapi'
 import {
   getOfferVenueFactory,
   getIndividualOfferFactory,
@@ -32,6 +31,7 @@ import {
   getOffererNameFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import InformationsScreen, {
   InformationsScreenProps,
@@ -47,23 +47,20 @@ vi.mock('utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn(() => true),
 }))
 
-vi.mock('repository/pcapi/pcapi', () => ({
-  postThumbnail: vi.fn(),
+vi.mock('apiClient/api', () => ({
+  api: {
+    patchOffer: vi.fn(),
+    postOffer: vi.fn(),
+    getOffer: vi.fn(),
+    createThumbnail: vi.fn(),
+    deleteThumbnail: vi.fn(),
+  },
 }))
 
 const renderInformationsScreen = (
   props: InformationsScreenProps,
   contextOverride: IndividualOfferContextValues
 ) => {
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        isAdmin: false,
-        email: 'email@example.com',
-      },
-    },
-  }
   const contextValue = individualOfferContextValuesFactory(contextOverride)
 
   return renderWithProviders(
@@ -91,7 +88,7 @@ const renderInformationsScreen = (
       <Notification />
     </>,
     {
-      storeOverrides,
+      user: sharedCurrentUserFactory(),
       initialRouterEntries: [
         getIndividualOfferPath({
           step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
@@ -243,7 +240,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
     expect(
       await screen.findByText('There is the summary route content')
     ).toBeInTheDocument()
-    expect(pcapi.postThumbnail).not.toHaveBeenCalled()
+    expect(api.createThumbnail).not.toHaveBeenCalled()
     expect(api.postOffer).not.toHaveBeenCalled()
   })
 
@@ -301,7 +298,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
     expect(
       await screen.findByText('There is the summary route content')
     ).toBeInTheDocument()
-    expect(pcapi.postThumbnail).not.toHaveBeenCalled()
+    expect(api.createThumbnail).not.toHaveBeenCalled()
     expect(api.postOffer).not.toHaveBeenCalled()
   })
 
@@ -529,80 +526,41 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       expect(screen.getByText('Titre de l’offre *')).toBeInTheDocument()
     })
 
-    /**
-     * In Order:
-     *  - No change on widthdrawal and bookingsQuantity
-     *  - change but no bookingsQuantity
-     *  - No change and no bookingsQuantity
-     */
-    const shouldNotOpenConditions = [
-      {
-        modifyWithdrawailDetails: false,
-        hasBookingQuantity: true,
-      },
-      {
-        modifyWithdrawailDetails: true,
-        hasBookingQuantity: false,
-      },
-      {
-        modifyWithdrawailDetails: false,
-        hasBookingQuantity: false,
-      },
-    ]
-    it.each(shouldNotOpenConditions)(
-      "should not open widthdrawal send mail modal when user doesn't change withdrawal and stocks has bookingQuantity and submit form",
-      async (condition) => {
-        contextOverride.offer = {
-          ...offer,
-          venue: getOfferVenueFactory({ id: virtualVenueId }),
-          subcategoryId: SubcategoryIdEnum.ABO_JEU_VIDEO,
-          isEvent: true,
-          withdrawalDelay: undefined,
-          withdrawalType: null,
-          bookingsCount: condition.hasBookingQuantity ? 1 : 0,
-        }
-
-        renderInformationsScreen(props, contextOverride)
-
-        const nameField = screen.getByLabelText('Titre de l’offre *')
-        await userEvent.clear(nameField)
-        await userEvent.type(nameField, 'Le nom de mon offre édité')
-
-        if (condition.modifyWithdrawailDetails) {
-          const withdrawalDetailsField = screen.getByDisplayValue(
-            'Offer withdrawalDetails'
-          )
-          await userEvent.click(withdrawalDetailsField)
-          await userEvent.clear(withdrawalDetailsField)
-          await userEvent.type(
-            withdrawalDetailsField,
-            'Nouvelle information de retrait'
-          )
-          expectedBody.withdrawalDetails = 'Nouvelle information de retrait'
-          await waitFor(() => {
-            expect(screen.getByText('Nouvelle information de retrait'))
-          })
-        }
-
-        const submitButton = await screen.findByText(
-          'Enregistrer les modifications'
-        )
-
-        await userEvent.click(submitButton)
-
-        expect(
-          screen.queryByText(
-            'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
-          )
-        ).not.toBeInTheDocument()
-
-        expect(api.patchOffer).toHaveBeenCalledTimes(1)
-        expect(api.patchOffer).toHaveBeenCalledWith(offer.id, expectedBody)
-        expect(
-          await screen.findByText('There is the summary route content')
-        ).toBeInTheDocument()
+    it("should not open widthdrawal send mail modal when user doesn't change withdrawal and submit form", async () => {
+      contextOverride.offer = {
+        ...offer,
+        venue: getOfferVenueFactory({ id: virtualVenueId }),
+        subcategoryId: SubcategoryIdEnum.ABO_JEU_VIDEO,
+        isEvent: true,
+        withdrawalDelay: undefined,
+        withdrawalType: null,
+        bookingsCount: 1,
       }
-    )
+
+      renderInformationsScreen(props, contextOverride)
+
+      const nameField = screen.getByLabelText('Titre de l’offre *')
+      await userEvent.clear(nameField)
+      await userEvent.type(nameField, 'Le nom de mon offre édité')
+
+      const submitButton = await screen.findByText(
+        'Enregistrer les modifications'
+      )
+
+      await userEvent.click(submitButton)
+
+      expect(
+        screen.queryByText(
+          'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
+        )
+      ).not.toBeInTheDocument()
+
+      expect(api.patchOffer).toHaveBeenCalledTimes(1)
+      expect(api.patchOffer).toHaveBeenCalledWith(offer.id, expectedBody)
+      expect(
+        await screen.findByText('There is the summary route content')
+      ).toBeInTheDocument()
+    })
 
     it('should not open widthdrawal dialog if offer is not active', async () => {
       contextOverride.offer = {

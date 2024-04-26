@@ -13,20 +13,18 @@ interface IndividualActionsCellsProps {
   offer: ListOffersOfferResponseModel
   editionOfferLink: string
   editionStockLink: string
-  refreshOffers: () => void
 }
 
 export const IndividualActionsCells = ({
   offer,
   editionOfferLink,
   editionStockLink,
-  refreshOffers,
 }: IndividualActionsCellsProps) => {
   return (
     <td className={styles['actions-column']}>
       <div className={styles['actions-column-container']}>
         {offer.status === OFFER_STATUS_DRAFT ? (
-          <DeleteDraftCell offer={offer} refreshOffers={refreshOffers} />
+          <DeleteDraftCell offer={offer} />
         ) : (
           <EditStocksCell offer={offer} editionStockLink={editionStockLink} />
         )}

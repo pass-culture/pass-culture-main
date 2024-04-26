@@ -11,7 +11,7 @@ interface ToggleProps {
   toggleField: () => void
 }
 
-const Toggle = ({
+export const Toggle = ({
   disabled,
   isOpen,
   toggleField,
@@ -31,5 +31,3 @@ const Toggle = ({
     </button>
   )
 }
-
-export default Toggle

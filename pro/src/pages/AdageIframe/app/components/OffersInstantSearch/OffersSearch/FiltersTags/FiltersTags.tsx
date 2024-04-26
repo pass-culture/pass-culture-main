@@ -6,12 +6,13 @@ import fullClearIcon from 'icons/full-clear.svg'
 import fullRefreshIcon from 'icons/full-refresh.svg'
 import { departmentOptions } from 'pages/AdageIframe/app/constants/departmentOptions'
 import { Option } from 'pages/AdageIframe/app/types'
-import { Button } from 'ui-kit'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
+import { SearchFormValues } from '../../OffersInstantSearch'
 import { ADAGE_FILTERS_DEFAULT_VALUES } from '../../utils'
-import { LocalisationFilterStates, SearchFormValues } from '../OffersSearch'
+import { LocalisationFilterStates } from '../OffersSearch'
 
 import styles from './FiltersTags.module.scss'
 

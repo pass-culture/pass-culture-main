@@ -3,7 +3,7 @@ import React from 'react'
 
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { EmailChangeValidationScreen } from '../'
+import { EmailChangeValidationScreen } from '../EmailChangeValidation'
 
 describe('screens:EmailChangeValidation', () => {
   it('renders component successfully when success', () => {
