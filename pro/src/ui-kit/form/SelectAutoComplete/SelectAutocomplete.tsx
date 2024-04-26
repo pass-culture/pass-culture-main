@@ -139,7 +139,9 @@ export const SelectAutocomplete = ({
         break
       case 'ArrowDown':
         if (hoveredOptionIndex === null) {
-          setHoveredOptionIndex(0)
+          if (filteredOptions.length > 0) {
+            setHoveredOptionIndex(0)
+          }
         } else if (hoveredOptionIndex >= filteredOptions.length - 1) {
           setHoveredOptionIndex(filteredOptions.length - 1)
         } else {
