@@ -73,7 +73,7 @@ jobs:
         run: |
           PASSCULTURE_USERNAME="oauth2accesstoken" \
           PASSCULTURE_PASSWORD=${{ steps.openid-auth-infra.outputs.access_token }} \
-          helmfile -e testing template --set ${{ steps.get-pcapi-secrets.outputs.PCAPI_SECRETS }} --set image.tag=xxx.xxx --output-dir ./rendered-manifests/ --output-dir-template "{{ .OutputDir }}/{{ .State.BaseName }}-{{ .Release.Name}}"
+          helmfile -e testing template --set "${{ steps.get-pcapi-secrets.outputs.PCAPI_SECRETS }}" --set image.tag=xxx.xxx --output-dir ./rendered-manifests/ --output-dir-template "{{ .OutputDir }}/{{ .State.BaseName }}-{{ .Release.Name}}"
       - name: "Push manifests to rendered-manifests repository"
         id: push_manifests
         uses: cpina/github-action-push-to-another-repository@main
