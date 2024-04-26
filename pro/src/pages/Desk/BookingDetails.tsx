@@ -34,7 +34,7 @@ const formattedBookingDate = (booking: GetBookingResponse): string => {
       )
 }
 
-const BookingDetails = ({ booking }: BookingDetailsProps) => {
+export const BookingDetails = ({ booking }: BookingDetailsProps) => {
   return (
     <div
       aria-live="polite"
@@ -71,5 +71,3 @@ const BookingDetails = ({ booking }: BookingDetailsProps) => {
     </div>
   )
 }
-
-export default BookingDetails

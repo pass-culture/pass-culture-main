@@ -15,7 +15,7 @@ import fullPlusIcon from 'icons/full-plus.svg'
 import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
 import { localStorageAvailable } from 'utils/localStorageAvailable'
 
-import DuplicateOfferDialog from './DuplicateOfferDialog'
+import { DuplicateOfferDialog } from './DuplicateOfferDialog/DuplicateOfferDialog'
 
 export const LOCAL_STORAGE_HAS_SEEN_MODAL_KEY = 'DUPLICATE_OFFER_MODAL_SEEN'
 

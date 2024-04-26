@@ -9,7 +9,7 @@ interface DeleteConfirmDialogProps {
   handleDelete: () => void
 }
 
-const DeleteConfirmDialog = ({
+export const DeleteConfirmDialog = ({
   onCancel,
   nbSelectedOffers,
   handleDelete,
@@ -35,5 +35,3 @@ const DeleteConfirmDialog = ({
     </ConfirmDialog>
   )
 }
-
-export default DeleteConfirmDialog

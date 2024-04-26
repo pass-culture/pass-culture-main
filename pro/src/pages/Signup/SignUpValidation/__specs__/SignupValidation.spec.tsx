@@ -14,7 +14,7 @@ import {
 } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
-import SignUpValidation from '../SignUpValidation'
+import { SignupValidation } from '../SignUpValidation'
 
 vi.mock('repository/pcapi/pcapi')
 vi.mock('hooks/useCurrentUser')
@@ -23,7 +23,7 @@ vi.mock('hooks/useNotification')
 const renderSignupValidation = (options?: RenderWithProvidersOptions) =>
   renderWithProviders(
     <Routes>
-      <Route path="/validation/:token" element={<SignUpValidation />} />
+      <Route path="/validation/:token" element={<SignupValidation />} />
       <Route path="/" element={<div>Accueil</div>} />
       <Route path="/connexion" element={<div>Connexion</div>} />
     </Routes>,

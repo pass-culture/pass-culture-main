@@ -4,7 +4,7 @@ import React from 'react'
 import { CollectiveOfferOfferVenue, OfferAddressType } from 'apiClient/adage'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import OfferVenue from '../OfferVenue'
+import { OfferVenue } from '../OfferVenue'
 
 const renderOfferVenue = (offerVenue: CollectiveOfferOfferVenue) => {
   return renderWithProviders(<OfferVenue offerVenue={offerVenue} />)

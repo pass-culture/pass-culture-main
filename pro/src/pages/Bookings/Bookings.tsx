@@ -6,10 +6,8 @@ import { getVenuesAdapter } from 'core/Bookings/adapters'
 import { Audience } from 'core/shared'
 import BookingsScreen from 'screens/Bookings'
 
-import {
-  getFilteredBookingsRecapAdapter,
-  getUserHasBookingsAdapter,
-} from './adapters'
+import { getFilteredBookingsRecapAdapter } from './adapters/getFilteredBookingsRecapAdapter'
+import { getUserHasBookingsAdapter } from './adapters/getUserHasBookingsAdapter'
 
 export const Bookings = (): JSX.Element => {
   const location = useLocation()

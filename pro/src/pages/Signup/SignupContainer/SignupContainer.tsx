@@ -19,7 +19,7 @@ import styles from './SignupContainer.module.scss'
 import SignupForm from './SignupForm'
 import { validationSchema } from './validationSchema'
 
-const SignupContainer = (): JSX.Element => {
+export const SignupContainer = (): JSX.Element => {
   const navigate = useNavigate()
   const notification = useNotification()
   const { logEvent } = useAnalytics()
@@ -121,5 +121,3 @@ const SignupContainer = (): JSX.Element => {
     </section>
   )
 }
-
-export default SignupContainer

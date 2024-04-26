@@ -5,7 +5,7 @@ import strokeEuroIcon from 'icons/stroke-euro.svg'
 import strokeLocationIcon from 'icons/stroke-location.svg'
 import strokeOfferIcon from 'icons/stroke-offer.svg'
 import strokeUserIcon from 'icons/stroke-user.svg'
-import { isCollectiveOfferBookable } from 'pages/AdageIframe/app/types/offers'
+import { isCollectiveOfferBookable } from 'pages/AdageIframe/app/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import OfferFavoriteButton from '../../../OffersInstantSearch/OffersSearch/Offers/OfferFavoriteButton/OfferFavoriteButton'

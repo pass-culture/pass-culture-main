@@ -12,7 +12,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { getHumanizeRelativeDistance } from 'utils/getDistance'
 
-import ContactButton from '../../../OffersInstantSearch/OffersSearch/Offers/ContactButton'
+import { ContactButton } from '../../../OffersInstantSearch/OffersSearch/Offers/ContactButton/ContactButton'
 
 import styles from './AdageOfferPartnerPanel.module.scss'
 

@@ -11,7 +11,7 @@ import strokeLocationIcon from 'icons/stroke-location.svg'
 import strokeOfferIcon from 'icons/stroke-offer.svg'
 import strokeUserIcon from 'icons/stroke-user.svg'
 import { getFormattedDatesForTemplateOffer } from 'pages/AdageIframe/app/components/OfferInfos/AdageOffer/utils/adageOfferDates'
-import { isCollectiveOfferTemplate } from 'pages/AdageIframe/app/types/offers'
+import { isCollectiveOfferTemplate } from 'pages/AdageIframe/app/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { formatLocalTimeDateString } from 'utils/timezone'
 

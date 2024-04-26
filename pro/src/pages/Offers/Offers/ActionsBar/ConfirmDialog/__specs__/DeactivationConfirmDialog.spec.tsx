@@ -5,7 +5,8 @@ import React from 'react'
 import { Audience } from 'core/shared'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import DeactivationConfirmDialog, {
+import {
+  DeactivationConfirmDialog,
   DeactivationConfirmDialogProps,
 } from '../DeactivationConfirmDialog'
 
