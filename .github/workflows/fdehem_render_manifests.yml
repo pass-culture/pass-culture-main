@@ -72,6 +72,7 @@ jobs:
         run: |
           PASSCULTURE_USERNAME="oauth2accesstoken" \
           PASSCULTURE_PASSWORD=${{ steps.openid-auth-infra.outputs.access_token }} \
+          echo ${{ steps.get-pcapi-secrets.outputs.PCAPI_SECRETS }}
           helmfile -e testing template --set image.tag=xxx.xxx --set ${{ steps.get-pcapi-secrets.outputs.PCAPI_SECRETS }} --output-dir ./rendered-manifests/ --output-dir-template "{{ .OutputDir }}/{{ .State.BaseName }}-{{ .Release.Name}}"
       - name: "Push manifests to rendered-manifests repository"
         id: push_manifests
