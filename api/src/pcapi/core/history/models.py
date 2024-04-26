@@ -114,6 +114,7 @@ class ActionHistory(PcObject, Base, Model):
 
     extraData: sa_orm.Mapped[dict | None] = sa.Column("jsonData", sa_mutable.MutableDict.as_mutable(postgresql.JSONB))
 
+    # ActionHistory.userId.is_(None) is used in a query, keep non-conditional index
     userId: int | None = sa.Column(
         sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=True
     )
@@ -123,6 +124,7 @@ class ActionHistory(PcObject, Base, Model):
         backref=sa.orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
     )
 
+    # ActionHistory.offererId.is_(None) is used in a query, keep non-conditional index
     offererId: int | None = sa.Column(
         sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=True
     )
@@ -132,9 +134,7 @@ class ActionHistory(PcObject, Base, Model):
         backref=sa.orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
     )
 
-    venueId: int | None = sa.Column(
-        sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), index=True, nullable=True
-    )
+    venueId: int | None = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), nullable=True)
     venue: sa.orm.Mapped["offerers_models.Venue | None"] = sa.orm.relationship(
         "Venue",
         foreign_keys=[venueId],
@@ -142,7 +142,7 @@ class ActionHistory(PcObject, Base, Model):
     )
 
     financeIncidentId: int | None = sa.Column(
-        sa.BigInteger, sa.ForeignKey("finance_incident.id", ondelete="CASCADE"), index=True, nullable=True
+        sa.BigInteger, sa.ForeignKey("finance_incident.id", ondelete="CASCADE"), nullable=True
     )
     financeIncident: sa.orm.Mapped["finance_models.FinanceIncident | None"] = sa.orm.relationship(
         "FinanceIncident",
@@ -151,7 +151,7 @@ class ActionHistory(PcObject, Base, Model):
     )
 
     bankAccountId: int | None = sa.Column(
-        sa.BigInteger, sa.ForeignKey("bank_account.id", ondelete="CASCADE"), index=True, nullable=True
+        sa.BigInteger, sa.ForeignKey("bank_account.id", ondelete="CASCADE"), nullable=True
     )
 
     bankAccount: sa.orm.Mapped["finance_models.BankAccount | None"] = sa.orm.relationship(
@@ -161,7 +161,7 @@ class ActionHistory(PcObject, Base, Model):
     )
 
     ruleId: int | None = sa.Column(
-        sa.BigInteger, sa.ForeignKey("offer_validation_rule.id", ondelete="CASCADE"), index=True, nullable=True
+        sa.BigInteger, sa.ForeignKey("offer_validation_rule.id", ondelete="CASCADE"), nullable=True
     )
 
     rule: sa.orm.Mapped["offers_models.OfferValidationRule | None"] = sa.orm.relationship(
@@ -181,4 +181,10 @@ class ActionHistory(PcObject, Base, Model):
             ),
             name="check_action_resource",
         ),
+        sa.Index("ix_action_history_venueId", venueId, postgresql_where=venueId.is_not(None)),
+        sa.Index(
+            "ix_action_history_financeIncidentId", financeIncidentId, postgresql_where=financeIncidentId.is_not(None)
+        ),
+        sa.Index("ix_action_history_bankAccountId", bankAccountId, postgresql_where=bankAccountId.is_not(None)),
+        sa.Index("ix_action_history_ruleId", ruleId, postgresql_where=ruleId.is_not(None)),
     )
