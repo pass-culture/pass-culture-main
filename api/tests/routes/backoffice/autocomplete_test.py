@@ -87,20 +87,31 @@ class AutocompleteInstitutionTest(AutocompleteTestBase):
             ("", set()),
             ("1", set()),
             ("2", set()),
-            ("12", {"Lycée public magique Georges Pompidou - Fougères"}),
+            ("12", {"Lycée public magique Georges Pompidou - Fougères (1470009E)"}),
             ("789", set()),
-            ("Georges", {"Lycée public magique Georges Pompidou - Fougères", "Collège Georges de la Tour - Metz"}),
-            ("Pompidou", {"Lycée public magique Georges Pompidou - Fougères"}),
-            ("magique Pompidou Fou", {"Lycée public magique Georges Pompidou - Fougères"}),
+            (
+                "Georges",
+                {
+                    "Lycée public magique Georges Pompidou - Fougères (1470009E)",
+                    "Collège Georges de la Tour - Metz (1270009E)",
+                },
+            ),
+            ("Pompidou", {"Lycée public magique Georges Pompidou - Fougères (1470009E)"}),
+            ("magique Pompidou Fou", {"Lycée public magique Georges Pompidou - Fougères (1470009E)"}),
             ("Georges Clémenceau", set()),
+            ("1270009E", {"Collège Georges de la Tour - Metz (1270009E)"}),
         ],
     )
     def test_autocomplete_institutions(self, authenticated_client, search_query, expected_texts):
         educational_factories.EducationalInstitutionFactory(
-            id=12, name="Georges Pompidou", institutionType="Lycée public magique", city="Fougères"
+            id=12,
+            name="Georges Pompidou",
+            institutionId="1470009E",
+            institutionType="Lycée public magique",
+            city="Fougères",
         )
         educational_factories.EducationalInstitutionFactory(
-            id=2000, name="Georges de la Tour", institutionType="Collège", city="Metz"
+            id=2000, name="Georges de la Tour", institutionId="1270009E", institutionType="Collège", city="Metz"
         )
 
         self._test_autocomplete(authenticated_client, search_query, expected_texts)

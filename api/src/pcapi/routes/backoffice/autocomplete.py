@@ -1,3 +1,5 @@
+import re
+
 from flask import request
 from flask_login import login_required
 import sqlalchemy as sa
@@ -82,7 +84,9 @@ def autocomplete_offerers() -> AutocompleteResponse:
 
 
 def _get_institution_choice_label(institution: educational_models.EducationalInstitution) -> str:
-    return f"{institution.institutionType} {institution.name.strip()} - {institution.city}"
+    return (
+        f"{institution.institutionType} {institution.name.strip()} - {institution.city} ({institution.institutionId})"
+    )
 
 
 def _get_institutions_base_query() -> sa.orm.Query:
@@ -90,6 +94,7 @@ def _get_institutions_base_query() -> sa.orm.Query:
         sa.orm.load_only(
             educational_models.EducationalInstitution.id,
             educational_models.EducationalInstitution.name,
+            educational_models.EducationalInstitution.institutionId,
             educational_models.EducationalInstitution.institutionType,
             educational_models.EducationalInstitution.city,
         )
@@ -123,6 +128,8 @@ def autocomplete_institutions() -> AutocompleteResponse:
 
     if is_numeric_query:
         filters = educational_models.EducationalInstitution.id == int(query_string)
+    elif re.match(r"^\d{7}\w{1}$", query_string):
+        filters = educational_models.EducationalInstitution.institutionId == query_string
     else:
         searched_name = (
             educational_models.EducationalInstitution.institutionType
