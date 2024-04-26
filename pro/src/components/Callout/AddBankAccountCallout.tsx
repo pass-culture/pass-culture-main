@@ -20,6 +20,7 @@ const AddBankAccountCallout = ({
     offerer &&
     !offerer.hasPendingBankAccount &&
     !offerer.hasValidBankAccount &&
+    !offerer.hasBankAccountWithPendingCorrections &&
     offerer.venuesWithNonFreeOffersWithoutBankAccounts.length > 0
 
   if (!displayBankAccountBanner) {
