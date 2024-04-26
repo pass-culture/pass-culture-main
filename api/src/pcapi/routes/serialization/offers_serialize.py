@@ -122,7 +122,7 @@ def deserialize_extra_data(initial_extra_data: Any) -> Any:
             music_types.MUSIC_SUB_TYPES_BY_SLUG[MUSIC_SLUG_BY_GTL_ID[extra_data["gtl_id"]]].code
         )
     # FIXME (ghaliela, 2024-02-16): If musicType is sent in the extra data, gtl id is not sent
-    if extra_data.get("musicType"):
+    elif extra_data.get("musicType"):
         extra_data["gtl_id"] = GTL_IDS_BY_MUSIC_GENRE_CODE[int(extra_data["musicType"])]
     return extra_data
 
