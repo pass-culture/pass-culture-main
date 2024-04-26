@@ -10,7 +10,7 @@ const FAILING_RESPONSE: AdapterFailure<PayloadFailure> = {
   payload: null,
 }
 
-const deleteCollectiveOfferImageAdapter: DeleteCollectiveOfferImageAdapter =
+export const deleteCollectiveOfferImageAdapter: DeleteCollectiveOfferImageAdapter =
   async (offerId) => {
     try {
       await api.deleteOfferImage(offerId)
@@ -24,5 +24,3 @@ const deleteCollectiveOfferImageAdapter: DeleteCollectiveOfferImageAdapter =
       return FAILING_RESPONSE
     }
   }
-
-export default deleteCollectiveOfferImageAdapter

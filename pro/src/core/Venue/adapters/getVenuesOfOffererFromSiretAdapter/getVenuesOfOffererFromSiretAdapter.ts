@@ -1,7 +1,6 @@
 import { api } from 'apiClient/api'
 import { GetVenuesOfOffererFromSiretResponseModel } from 'apiClient/v1'
-
-import { GET_DATA_ERROR_MESSAGE } from '../../../shared'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 
 type GetVenueOfOffererProvidersAdapter = Adapter<
   string,
@@ -15,7 +14,7 @@ const FAILING_RESPONSE: AdapterFailure<null> = {
   payload: null,
 }
 
-const getVenuesOfOffererFromSiretAdapter: GetVenueOfOffererProvidersAdapter =
+export const getVenuesOfOffererFromSiretAdapter: GetVenueOfOffererProvidersAdapter =
   async (siret) => {
     try {
       const venueOfOffererProvidersResponse =
@@ -30,5 +29,3 @@ const getVenuesOfOffererFromSiretAdapter: GetVenueOfOffererProvidersAdapter =
       return FAILING_RESPONSE
     }
   }
-
-export default getVenuesOfOffererFromSiretAdapter

@@ -4,10 +4,10 @@ import { Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
-import { OfferEducationalFormValues } from 'core/OfferEducational'
+import { OfferEducationalFormValues } from 'core/OfferEducational/types'
 import { Button } from 'ui-kit/Button/Button'
 
-import FormNotifications from '../FormNotifications'
+import { FormNotifications } from '../FormNotifications'
 
 const renderFormNotifications = (
   initialValues: Partial<OfferEducationalFormValues>,

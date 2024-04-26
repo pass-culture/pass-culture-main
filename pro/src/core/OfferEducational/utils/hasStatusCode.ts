@@ -18,6 +18,3 @@ export const hasStatusCodeAndErrorsCode = (
 
 export const hasStatusCode = (error: any): error is { status: number } =>
   typeof error?.status === 'number'
-
-export const hasStatusCodeAndCode = (error: any): error is Error =>
-  typeof error?.status === 'number' && typeof error?.code === 'string'

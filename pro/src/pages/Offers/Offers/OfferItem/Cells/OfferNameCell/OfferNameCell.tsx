@@ -5,12 +5,12 @@ import {
   CollectiveOfferResponseModel,
   ListOffersOfferResponseModel,
 } from 'apiClient/v1'
-import { isOfferEducational } from 'core/OfferEducational'
+import { isOfferEducational } from 'core/OfferEducational/types'
 import {
   OFFER_STATUS_PENDING,
   OFFER_STATUS_SOLD_OUT,
 } from 'core/Offers/constants'
-import { Audience } from 'core/shared'
+import { Audience } from 'core/shared/types'
 import fullErrorIcon from 'icons/full-error.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'

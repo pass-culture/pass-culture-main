@@ -1,5 +1,5 @@
 import { api } from 'apiClient/api'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import { SelectOption } from 'custom_types/form'
 
 type GetNationalProgramsAdapter = Adapter<

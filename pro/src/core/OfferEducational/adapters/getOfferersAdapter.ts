@@ -3,7 +3,7 @@ import {
   GetEducationalOffererResponseModel,
   GetEducationalOfferersResponseModel,
 } from 'apiClient/v1'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 
 type Params = number | null
 
@@ -53,5 +53,3 @@ export const getOfferersAdapter: GetOfferersAdapter = async (
     return FAILING_RESPONSE
   }
 }
-
-export default getOfferersAdapter

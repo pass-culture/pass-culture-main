@@ -6,11 +6,11 @@ import { EMAIL_LABEL } from '../../constants/labels'
 
 import styles from './FormContact.module.scss'
 
-export default function FormContact({
-  disableForm,
-}: {
+interface FormContactProps {
   disableForm: boolean
-}): JSX.Element {
+}
+
+export const FormContact = ({ disableForm }: FormContactProps): JSX.Element => {
   return (
     <FormLayout.Section
       description={`Ces informations sont affichées sur votre offre.\n Elles permettent aux enseignants et aux chefs d’établissement de vous contacter.`}

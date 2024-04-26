@@ -26,7 +26,7 @@ interface ReimbursementsSectionHeaderProps {
   selectableOptions: SelectOption[]
 }
 
-const DetailsFilters = ({
+export const DetailsFilters = ({
   children,
   defaultSelectId,
   initialFilters,
@@ -120,5 +120,3 @@ const DetailsFilters = ({
     </>
   )
 }
-
-export default DetailsFilters

@@ -2,7 +2,7 @@ import { FieldArray, useFormikContext } from 'formik'
 import React from 'react'
 
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { OfferEducationalFormValues } from 'core/OfferEducational'
+import { OfferEducationalFormValues } from 'core/OfferEducational/types'
 import fullMoreIcon from 'icons/full-more.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -14,7 +14,7 @@ interface FormNotificationsProps {
   disableForm: boolean
 }
 
-const FormNotifications = ({
+export const FormNotifications = ({
   disableForm,
 }: FormNotificationsProps): JSX.Element => {
   const { values } = useFormikContext<OfferEducationalFormValues>()
@@ -50,5 +50,3 @@ const FormNotifications = ({
     </FormLayout.Section>
   )
 }
-
-export default FormNotifications

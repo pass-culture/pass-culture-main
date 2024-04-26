@@ -1,7 +1,7 @@
 import { isSameDay } from 'date-fns'
 import * as yup from 'yup'
 
-import { MAX_DETAILS_LENGTH } from 'core/OfferEducational'
+import { MAX_DETAILS_LENGTH } from 'core/OfferEducational/constants'
 
 const todayAtMidnight = () => {
   const today = new Date()

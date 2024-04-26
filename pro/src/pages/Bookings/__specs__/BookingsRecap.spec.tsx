@@ -12,7 +12,7 @@ import { ApiRequestOptions } from 'apiClient/v2/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v2/core/ApiResult'
 import Notification from 'components/Notification/Notification'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import {
   FORMAT_ISO_DATE_ONLY,
   formatBrowserTimezonedDateAsUTC,

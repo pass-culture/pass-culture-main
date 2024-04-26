@@ -36,5 +36,3 @@ export const patchEducationalInstitutionAdapter: PatchEducationalInstitutionAdap
       }
     }
   }
-
-export default patchEducationalInstitutionAdapter

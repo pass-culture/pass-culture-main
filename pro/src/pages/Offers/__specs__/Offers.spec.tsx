@@ -16,8 +16,8 @@ import {
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
 import { SearchFiltersParams } from 'core/Offers/types'
-import { computeOffersUrl } from 'core/Offers/utils'
-import { Audience } from 'core/shared'
+import { computeOffersUrl } from 'core/Offers/utils/computeOffersUrl'
+import { Audience } from 'core/shared/types'
 import {
   defaultGetOffererResponseModel,
   listOffersOfferFactory,

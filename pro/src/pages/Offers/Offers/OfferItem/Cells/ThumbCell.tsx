@@ -5,7 +5,7 @@ import {
   CollectiveOfferResponseModel,
   ListOffersOfferResponseModel,
 } from 'apiClient/v1'
-import { isOfferEducational } from 'core/OfferEducational'
+import { isOfferEducational } from 'core/OfferEducational/types'
 import { Thumb } from 'ui-kit/Thumb/Thumb'
 
 import styles from '../OfferItem.module.scss'

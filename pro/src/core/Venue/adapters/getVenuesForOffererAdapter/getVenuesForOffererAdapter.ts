@@ -1,7 +1,7 @@
 import { api } from 'apiClient/api'
 import { VenueListItemResponseModel } from 'apiClient/v1'
 import { ALL_OFFERERS } from 'core/Offers/constants'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 
 type GetVenuesForOffererAdapter = Adapter<
   { offererId?: string | null; activeOfferersOnly?: boolean },
@@ -9,7 +9,7 @@ type GetVenuesForOffererAdapter = Adapter<
   VenueListItemResponseModel[]
 >
 
-const getVenuesForOffererAdapter: GetVenuesForOffererAdapter = async ({
+export const getVenuesForOffererAdapter: GetVenuesForOffererAdapter = async ({
   offererId = null,
   activeOfferersOnly = false,
 }) => {
@@ -39,5 +39,3 @@ const getVenuesForOffererAdapter: GetVenuesForOffererAdapter = async ({
     }
   }
 }
-
-export default getVenuesForOffererAdapter

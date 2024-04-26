@@ -333,7 +333,7 @@ describe('screens:SignupJourney::Offerers', () => {
     it('should link offerer to user when they confirm', async () => {
       renderOfferersScreen(contextValue)
       vi.spyOn(api, 'createOfferer').mockResolvedValue(expect.anything())
-      vi.spyOn(getSirenDataAdapter, 'default').mockResolvedValue({
+      vi.spyOn(getSirenDataAdapter, 'getSirenDataAdapter').mockResolvedValue({
         isOk: true,
         message: '',
         payload: {

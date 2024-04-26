@@ -11,7 +11,7 @@ import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import {
   isCollectiveOffer,
   isCollectiveOfferTemplate,
-} from 'core/OfferEducational'
+} from 'core/OfferEducational/types'
 
 import styles from './CollectiveOfferSummary.module.scss'
 import { CollectiveOfferAccessibilitySection } from './components/CollectiveOfferAccessibilitySection'

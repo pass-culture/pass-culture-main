@@ -1,5 +1,5 @@
 import { BannerMetaModel } from 'apiClient/v1'
-import { AccessibilityFormValues } from 'core/shared'
+import { AccessibilityFormValues } from 'core/shared/types'
 
 export interface VenueCreationFormValues {
   accessibility: AccessibilityFormValues

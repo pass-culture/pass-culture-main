@@ -2,10 +2,10 @@ import { waitFor, renderHook } from '@testing-library/react'
 
 import { api } from 'apiClient/api'
 import { GetOffererNameResponseModel } from 'apiClient/v1'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import { getOffererNameFactory } from 'utils/individualApiFactories'
 
-import { useGetOffererNames } from '..'
+import useGetOffererNames from '../useOffererNames'
 
 describe('useOffererNames', () => {
   it('should return loading payload then success payload', async () => {

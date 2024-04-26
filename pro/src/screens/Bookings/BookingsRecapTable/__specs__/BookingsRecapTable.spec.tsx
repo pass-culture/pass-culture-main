@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import React, { ComponentProps } from 'react'
 
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
-import { Audience } from 'core/shared'
+import { Audience } from 'core/shared/types'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as bookingDetailsAdapter from 'screens/Bookings/BookingsRecapTable/BookingsTable/getCollectiveBookingAdapter'
 import * as filterBookingsRecap from 'screens/Bookings/BookingsRecapTable/utils/filterBookingsRecap'

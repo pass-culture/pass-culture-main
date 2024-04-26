@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 
 import { api } from 'apiClient/api'
-import { SAVED_OFFERER_ID_KEY } from 'core/shared'
+import { SAVED_OFFERER_ID_KEY } from 'core/shared/constants'
 import { updateFeatures } from 'store/features/reducer'
 import { updateSelectedOffererId, updateUser } from 'store/user/reducer'
 import Spinner from 'ui-kit/Spinner/Spinner'

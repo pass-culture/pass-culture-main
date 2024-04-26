@@ -1,5 +1,5 @@
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
-import { isAllocineProvider } from 'core/Providers'
+import { isAllocineProvider } from 'core/Providers/utils/utils'
 
 export const isOfferSynchronized = (
   offer?: GetIndividualOfferResponseModel | null

@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 
 import { Events, OffererLinkEvents } from 'core/FirebaseEvents/constants'
-import { SAVED_OFFERER_ID_KEY } from 'core/shared'
+import { SAVED_OFFERER_ID_KEY } from 'core/shared/constants'
 import { SelectOption } from 'custom_types/form'
 import useAnalytics from 'hooks/useAnalytics'
 import fullAddUserIcon from 'icons/full-add-user.svg'

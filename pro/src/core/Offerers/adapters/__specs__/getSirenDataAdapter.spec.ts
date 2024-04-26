@@ -2,7 +2,7 @@ import { api } from 'apiClient/api'
 import { ApiError } from 'apiClient/v1'
 import { unhumanizeSiren } from 'core/Offerers/utils'
 
-import getSirenDataAdapter from '../getSirenDataAdapter'
+import { getSirenDataAdapter } from '../getSirenDataAdapter'
 
 describe('getSirenDataAdapter', () => {
   it('should not call API when SIREN is empty', async () => {

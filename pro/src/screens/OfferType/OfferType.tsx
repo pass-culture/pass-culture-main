@@ -22,7 +22,7 @@ import phoneStrokeIcon from 'icons/stroke-phone.svg'
 import strokeProfIcon from 'icons/stroke-prof.svg'
 import { RadioButtonWithImage } from 'ui-kit/RadioButtonWithImage/RadioButtonWithImage'
 
-import ActionsBar from './ActionsBar/ActionsBar'
+import { ActionsBar } from './ActionsBar/ActionsBar'
 import CollectiveOfferType from './CollectiveOfferType/CollectiveOfferType'
 import IndividualOfferType from './IndividualOfferType/IndividualOfferType'
 import styles from './OfferType.module.scss'

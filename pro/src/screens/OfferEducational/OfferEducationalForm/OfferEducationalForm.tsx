@@ -11,11 +11,11 @@ import { BannerPublicApi } from 'components/Banner/BannerPublicApi'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import {
-  Mode,
   OfferEducationalFormValues,
+  Mode,
   isCollectiveOffer,
-} from 'core/OfferEducational'
-import { computeCollectiveOffersUrl } from 'core/Offers/utils'
+} from 'core/OfferEducational/types'
+import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeOffersUrl'
 import { SelectOption } from 'custom_types/form'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
@@ -26,18 +26,20 @@ import { sortByLabel } from 'utils/strings'
 
 import { OfferEducationalProps } from '../OfferEducational'
 
-import FormAccessibility from './FormAccessibility'
-import FormContact from './FormContact/FormContact'
-import FormContactTemplate from './FormContactTemplate/FormContactTemplate'
-import FormDates from './FormDates/FormDates'
-import FormImageUploader from './FormImageUploader'
-import { ImageUploaderOfferProps } from './FormImageUploader/FormImageUploader'
-import FormNotifications from './FormNotifications'
-import FormOfferType from './FormOfferType'
-import FormParticipants from './FormParticipants'
-import FormPracticalInformation from './FormPracticalInformation'
-import FormPriceDetails from './FormPriceDetails/FormPriceDetails'
-import FormVenue from './FormVenue'
+import { FormAccessibility } from './FormAccessibility/FormAccessibility'
+import { FormContact } from './FormContact/FormContact'
+import { FormContactTemplate } from './FormContactTemplate/FormContactTemplate'
+import { FormDates } from './FormDates/FormDates'
+import {
+  FormImageUploader,
+  ImageUploaderOfferProps,
+} from './FormImageUploader/FormImageUploader'
+import { FormNotifications } from './FormNotifications/FormNotifications'
+import { FormOfferType } from './FormOfferType/FormOfferType'
+import { FormParticipants } from './FormParticipants/FormParticipants'
+import { FormPracticalInformation } from './FormPracticalInformation/FormPracticalInformation'
+import { FormPriceDetails } from './FormPriceDetails/FormPriceDetails'
+import { FormVenue } from './FormVenue/FormVenue'
 import styles from './OfferEducationalForm.module.scss'
 
 export type OfferEducationalFormProps = Omit<

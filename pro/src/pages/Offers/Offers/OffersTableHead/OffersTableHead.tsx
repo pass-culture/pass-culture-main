@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { SearchFiltersParams } from 'core/Offers/types'
-import { Audience } from 'core/shared'
+import { Audience } from 'core/shared/types'
 
 import StatusFiltersButton from './StatusFiltersButton'
 
@@ -17,7 +17,7 @@ type OffersTableHeadProps = {
   isAtLeastOneOfferChecked: boolean
 }
 
-const OffersTableHead = ({
+export const OffersTableHead = ({
   filters,
   isAdminForbidden,
   applyFilters,
@@ -45,5 +45,3 @@ const OffersTableHead = ({
     </thead>
   )
 }
-
-export default OffersTableHead

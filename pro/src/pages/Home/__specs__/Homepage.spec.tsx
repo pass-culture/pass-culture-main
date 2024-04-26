@@ -10,7 +10,7 @@ import * as router from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel } from 'apiClient/v1'
 import { RemoteContextProvider } from 'context/remoteConfigContext'
-import { SAVED_OFFERER_ID_KEY } from 'core/shared'
+import { SAVED_OFFERER_ID_KEY } from 'core/shared/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { formatBrowserTimezonedDateAsUTC } from 'utils/date'
 import {

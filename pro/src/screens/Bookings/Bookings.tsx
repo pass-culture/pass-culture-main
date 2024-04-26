@@ -47,7 +47,7 @@ interface BookingsProps {
 
 const MAX_LOADED_PAGES = 5
 
-const Bookings = <
+export const BookingsScreen = <
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
 >({
   locationState,
@@ -295,5 +295,3 @@ const Bookings = <
     </div>
   )
 }
-
-export default Bookings

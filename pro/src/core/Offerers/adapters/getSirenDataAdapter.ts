@@ -19,7 +19,7 @@ type Payload = {
 
 type GetSirenDataAdapter = Adapter<Params, Payload, Payload>
 
-const getSirenDataAdapter: GetSirenDataAdapter = async (humanSiren: string) => {
+const getSirenData: GetSirenDataAdapter = async (humanSiren: string) => {
   const siren = unhumanizeSiren(humanSiren || '')
   if (humanSiren === '') {
     return {
@@ -76,6 +76,4 @@ const getSirenDataAdapter: GetSirenDataAdapter = async (humanSiren: string) => {
   }
 }
 
-const getSirenData = memoize(getSirenDataAdapter)
-
-export default getSirenData
+export const getSirenDataAdapter = memoize(getSirenData)

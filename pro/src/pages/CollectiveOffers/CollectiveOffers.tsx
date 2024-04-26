@@ -8,22 +8,20 @@ import {
   GetOffererResponseModel,
 } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
-import { getOffererAdapter } from 'core/Offers/adapters'
+import { getOffererAdapter } from 'core/Offers/adapters/getOffererAdapter'
 import { DEFAULT_PAGE, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
 import { SearchFiltersParams } from 'core/Offers/types'
-import {
-  hasSearchFilters,
-  computeCollectiveOffersUrl,
-  serializeApiFilters,
-} from 'core/Offers/utils'
+import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeOffersUrl'
+import { hasSearchFilters } from 'core/Offers/utils/hasSearchFilters'
+import { serializeApiFilters } from 'core/Offers/utils/serializer'
 import { Audience } from 'core/shared/types'
-import getVenuesForOffererAdapter from 'core/Venue/adapters/getVenuesForOffererAdapter'
+import { getVenuesForOffererAdapter } from 'core/Venue/adapters/getVenuesForOffererAdapter/getVenuesForOffererAdapter'
 import { SelectOption } from 'custom_types/form'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
 import { formatAndOrderVenues } from 'repository/venuesService'
-import OffersScreen from 'screens/Offers'
+import { Offers } from 'screens/Offers/Offers'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 export const GET_COLLECTIVE_OFFERS_QUERY_KEY = 'getCollectiveOffers'
@@ -138,7 +136,7 @@ export const CollectiveOffers = (): JSX.Element => {
       {!initialSearchFilters || offersQuery.isLoading ? (
         <Spinner />
       ) : (
-        <OffersScreen
+        <Offers
           audience={Audience.COLLECTIVE}
           currentPageNumber={currentPageNumber}
           currentUser={currentUser}

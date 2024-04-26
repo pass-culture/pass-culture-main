@@ -2,10 +2,10 @@ import { useCallback, useState } from 'react'
 
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
-import { createThumbnailAdapter } from 'core/Offers/adapters/createThumbnailAdapter'
-import { deleteThumbnailAdapter } from 'core/Offers/adapters/deleteThumbnailAdapter'
+import { createThumbnailAdapter } from 'core/Offers/adapters/createThumbnailAdapter/createThumbnailAdapter'
+import { deleteThumbnailAdapter } from 'core/Offers/adapters/deleteThumbnailAdapter/deleteThumbnailAdapter'
 import { IndividualOfferImage } from 'core/Offers/types'
-import { SENT_DATA_ERROR_MESSAGE } from 'core/shared'
+import { SENT_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import useNotification from 'hooks/useNotification'
 
 import { imageFileToDataUrl } from '../InformationsScreen/utils/files'

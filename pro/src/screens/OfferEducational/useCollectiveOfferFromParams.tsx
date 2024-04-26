@@ -7,9 +7,9 @@ import {
   GetCollectiveOfferTemplateResponseModel,
   GetOffererResponseModel,
 } from 'apiClient/v1'
-import { extractOfferIdAndOfferTypeFromRouteParams } from 'core/OfferEducational'
-import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
-import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
+import { getCollectiveOfferAdapter } from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
+import { getCollectiveOfferTemplateAdapter } from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
+import { extractOfferIdAndOfferTypeFromRouteParams } from 'core/OfferEducational/utils/extractOfferIdAndOfferTypeFromRouteParams'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 export type MandatoryCollectiveOfferFromParamsProps = {

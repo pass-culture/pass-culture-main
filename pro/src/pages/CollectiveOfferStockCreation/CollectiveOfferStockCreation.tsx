@@ -11,31 +11,31 @@ import {
 } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
-import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
+import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
+import { getCollectiveOfferTemplateAdapter } from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
 import {
-  createPatchStockDataPayload,
-  createStockDataPayload,
-  EducationalOfferType,
-  extractInitialStockValues,
-  hasStatusCodeAndErrorsCode,
   isCollectiveOffer,
   isCollectiveOfferTemplate,
-  Mode,
   OfferEducationalStockFormValues,
-} from 'core/OfferEducational'
-import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
+  EducationalOfferType,
+  Mode,
+} from 'core/OfferEducational/types'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
-import { FORM_ERROR_MESSAGE } from 'core/shared'
+import { createPatchStockDataPayload } from 'core/OfferEducational/utils/createPatchStockDataPayload'
+import { createStockDataPayload } from 'core/OfferEducational/utils/createStockDataPayload'
+import { extractInitialStockValues } from 'core/OfferEducational/utils/extractInitialStockValues'
+import { hasStatusCodeAndErrorsCode } from 'core/OfferEducational/utils/hasStatusCode'
+import { FORM_ERROR_MESSAGE } from 'core/shared/constants'
 import useNotification from 'hooks/useNotification'
-import getOfferRequestInformationsAdapter from 'pages/CollectiveOfferFromRequest/adapters/getOfferRequestInformationsAdapter'
+import { getOfferRequestInformationsAdapter } from 'pages/CollectiveOfferFromRequest/adapters/getOfferRequestInformationsAdapter'
 import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
 import {
   MandatoryCollectiveOfferFromParamsProps,
   withCollectiveOfferFromParams,
 } from 'screens/OfferEducational/useCollectiveOfferFromParams'
-import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
+import { OfferEducationalStock } from 'screens/OfferEducationalStock/OfferEducationalStock'
 
-import postCollectiveOfferTemplateAdapter from './adapters/postCollectiveOfferTemplate'
+import { postCollectiveOfferTemplateAdapter } from './adapters/postCollectiveOfferTemplate'
 
 export const CollectiveOfferStockCreation = ({
   offer,
@@ -190,7 +190,7 @@ export const CollectiveOfferStockCreation = ({
         isCreation={isCreation}
         requestId={requestId}
       >
-        <OfferEducationalStockScreen
+        <OfferEducationalStock
           initialValues={initialValues}
           mode={Mode.CREATION}
           offer={offer}

@@ -15,7 +15,8 @@ import {
 } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import OfferEducationalActions, {
+import {
+  OfferEducationalActions,
   OfferEducationalActionsProps,
 } from '../OfferEducationalActions'
 

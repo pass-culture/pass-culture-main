@@ -5,8 +5,8 @@ import {
   Events,
   OFFER_FROM_TEMPLATE_ENTRIES,
 } from 'core/FirebaseEvents/constants'
-import { createOfferFromTemplate } from 'core/OfferEducational'
 import { createOfferFromBookableOffer } from 'core/OfferEducational/utils/createOfferFromBookableOffer'
+import { createOfferFromTemplate } from 'core/OfferEducational/utils/createOfferFromTemplate'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'

@@ -11,7 +11,7 @@ const offerFormUrlRegex = new RegExp(
   'i'
 )
 
-const validationSchema = {
+export const validationSchema = {
   ...venueValidationSchema,
   ...ticketWithdrawalValidationSchema,
   url: yup.string().when('isVenueVirtual', {
@@ -45,5 +45,3 @@ const validationSchema = {
         }),
   }),
 }
-
-export default validationSchema

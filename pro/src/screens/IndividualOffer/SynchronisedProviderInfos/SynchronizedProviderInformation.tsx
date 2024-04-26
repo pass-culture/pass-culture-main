@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { getProviderInfo } from 'core/Providers'
+import { getProviderInfo } from 'core/Providers/utils/getProviderInfo'
 import { Banner } from 'ui-kit/Banners/Banner/Banner'
 
 import styles from './SynchronizedProviderInformation.module.scss'

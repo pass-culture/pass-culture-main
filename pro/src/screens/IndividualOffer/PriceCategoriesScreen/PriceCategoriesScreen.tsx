@@ -8,8 +8,9 @@ import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/cons
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { isOfferAllocineSynchronized, isOfferDisabled } from 'core/Offers/utils'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
+import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
+import { isOfferAllocineSynchronized } from 'core/Offers/utils/synchronization'
 import { useOfferWizardMode } from 'hooks'
 import useNotification from 'hooks/useNotification'
 

@@ -3,14 +3,14 @@ import {
   GetCollectiveOfferTemplateResponseModel,
   GetEducationalOffererResponseModel,
 } from 'apiClient/v1'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import { SelectOption } from 'custom_types/form'
 
-import { getUserOfferersFromOffer } from '../utils'
+import { getUserOfferersFromOffer } from '../utils/getUserOfferersFromOffer'
 
 import { getEducationalDomainsAdapter } from './getEducationalDomainsAdapter'
 import { getNationalProgramsAdapter } from './getNationalProgramAdapter'
-import getOfferersAdapter from './getOfferersAdapter'
+import { getOfferersAdapter } from './getOfferersAdapter'
 
 type Payload = {
   domains: SelectOption[]
@@ -37,7 +37,7 @@ const ERROR_RESPONSE = {
   },
 }
 
-const getCollectiveOfferFormDataApdater: GetCollectiveOfferFormDataApdater =
+export const getCollectiveOfferFormDataApdater: GetCollectiveOfferFormDataApdater =
   async ({ offererId, offer }) => {
     try {
       const targetOffererId = offer?.venue.managingOfferer.id || offererId
@@ -67,5 +67,3 @@ const getCollectiveOfferFormDataApdater: GetCollectiveOfferFormDataApdater =
       return ERROR_RESPONSE
     }
   }
-
-export default getCollectiveOfferFormDataApdater

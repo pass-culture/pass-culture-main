@@ -14,7 +14,7 @@ const FAILING_RESPONSE: AdapterFailure<PayloadFailure> = {
   payload: null,
 }
 
-const getCollectiveOfferTemplateAdapter: GetCollectiveOfferTemplateAdapter =
+export const getCollectiveOfferTemplateAdapter: GetCollectiveOfferTemplateAdapter =
   async (offerId) => {
     try {
       const offer = await api.getCollectiveOfferTemplate(offerId)
@@ -28,5 +28,3 @@ const getCollectiveOfferTemplateAdapter: GetCollectiveOfferTemplateAdapter =
       return FAILING_RESPONSE
     }
   }
-
-export default getCollectiveOfferTemplateAdapter

@@ -1,11 +1,8 @@
 import { screen } from '@testing-library/react'
 import { Formik } from 'formik'
 
-import {
-  OfferEducationalFormValues,
-  DEFAULT_EAC_FORM_VALUES,
-  Mode,
-} from 'core/OfferEducational'
+import { DEFAULT_EAC_FORM_VALUES } from 'core/OfferEducational/constants'
+import { OfferEducationalFormValues, Mode } from 'core/OfferEducational/types'
 import { userOffererFactory } from 'screens/OfferEducational/__tests-utils__/userOfferersFactory'
 import {
   RenderWithProvidersOptions,

@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import React from 'react'
 
 import { CollectiveBookingStatus } from 'apiClient/v1'
-import { Mode } from 'core/OfferEducational'
+import { Mode } from 'core/OfferEducational/types'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferManagingOffererFactory,
@@ -15,7 +15,7 @@ import {
   managedVenuesFactory,
   userOfferersFactory,
 } from '../__tests-utils__'
-import OfferEducational, { OfferEducationalProps } from '../OfferEducational'
+import { OfferEducational, OfferEducationalProps } from '../OfferEducational'
 
 describe('screens | OfferEducational : edition offerer step', () => {
   let props: OfferEducationalProps
