@@ -68,6 +68,7 @@ const SignupForm = (): JSX.Element => {
         </FormLayout.Row>
         <FormLayout.Row>
           <Checkbox
+            className={styles['checkbox-contact']}
             hideFooter
             label="J’accepte d’être contacté par email pour recevoir les
                       nouveautés du pass Culture et contribuer à son
