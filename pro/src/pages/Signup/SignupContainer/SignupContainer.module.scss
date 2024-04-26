@@ -7,6 +7,10 @@
 .content {
   @include layout.full-content-side;
 
+  @media (min-width: size.$tablet) {
+    margin-top: size.$top-menu-height;
+  }
+
   margin-bottom: size.$footer-height;
 
   .siren-field {
@@ -14,15 +18,19 @@
   }
 
   .sign-up-infos-before-signup {
-    margin-top: rem.torem(40px);
+    margin-top: rem.torem(32px);
+  }
+
+  .checkbox-contact {
+    margin-top: rem.torem(16px);
   }
 
   .buttons-field {
     display: flex;
     flex-direction: column-reverse;
     gap: rem.torem(24px);
-    margin-top: rem.torem(16px);
-    margin-bottom: rem.torem(32px);
+    margin-top: rem.torem(40px);
+    margin-bottom: rem.torem(48px);
 
     @media (min-width: size.$tablet) {
       flex-direction: row;
