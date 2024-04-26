@@ -8,7 +8,7 @@ import { selectCurrentUser } from 'store/user/selectors'
 
 type Params = { token: string }
 
-const SignupValidation = (): JSX.Element | null => {
+export const SignupValidation = (): JSX.Element | null => {
   const { token } = useParams<Params>()
   const currentUser = useSelector(selectCurrentUser)
   const [urlToRedirect, setUrlToRedirect] = useState<string>()
@@ -41,5 +41,3 @@ const SignupValidation = (): JSX.Element | null => {
 
   return urlToRedirect ? <Navigate to={urlToRedirect} replace /> : null
 }
-
-export default SignupValidation

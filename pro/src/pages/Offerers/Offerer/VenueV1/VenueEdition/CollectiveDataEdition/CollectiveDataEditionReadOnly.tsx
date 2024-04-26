@@ -5,7 +5,7 @@ import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescript
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 import { SelectOption } from 'custom_types/form'
-import { getInterventionAreaLabels } from 'pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/OfferDetails/OfferInterventionArea/OfferInterventionArea'
+import { getInterventionAreaLabels } from 'pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/OfferDetails/OfferInterventionArea'
 
 interface CollectiveDataEditionReadOnlyProps {
   venue: GetVenueResponseModel

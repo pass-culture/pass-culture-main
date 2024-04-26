@@ -19,7 +19,7 @@ import InvoicesServerError from './InvoicesServerError'
 import InvoiceTable from './InvoiceTable/InvoiceTable'
 import NoInvoicesYet from './NoInvoicesYet'
 
-const ReimbursementsInvoices = (): JSX.Element => {
+export const ReimbursementsInvoices = (): JSX.Element => {
   const INITIAL_FILTERS = useMemo(() => {
     const today = getToday()
     const oneMonthAgo = subMonths(today, 1)
@@ -164,5 +164,3 @@ const ReimbursementsInvoices = (): JSX.Element => {
     </>
   )
 }
-
-export default ReimbursementsInvoices

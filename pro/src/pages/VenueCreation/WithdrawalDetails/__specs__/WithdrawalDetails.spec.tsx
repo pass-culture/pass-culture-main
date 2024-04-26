@@ -5,10 +5,7 @@ import * as yup from 'yup'
 
 import { VenueSettingsFormValues } from 'pages/VenueSettings/types'
 
-import {
-  validationSchema as withdrawalDetailsValidationSchema,
-  WithdrawalDetails,
-} from '..'
+import { WithdrawalDetails } from '../WithdrawalDetails'
 
 const renderWithdrawalDetails = ({
   initialValues,
@@ -18,12 +15,15 @@ const renderWithdrawalDetails = ({
   initialValues: Partial<VenueSettingsFormValues>
   onSubmit: () => void
 }) => {
-  const validationSchema = yup.object().shape(withdrawalDetailsValidationSchema)
+  const schema = yup.object().shape({
+    withdrawalDetails: yup.string().notRequired(),
+  })
+
   render(
     <Formik
       initialValues={initialValues}
       onSubmit={onSubmit}
-      validationSchema={validationSchema}
+      validationSchema={schema}
     >
       {({ handleSubmit }) => (
         <Form onSubmit={handleSubmit}>
@@ -34,7 +34,7 @@ const renderWithdrawalDetails = ({
   )
 }
 
-describe('components | WithdrawalDetails', () => {
+describe('WithdrawalDetails', () => {
   let initialValues: Partial<VenueSettingsFormValues>
   const onSubmit = vi.fn()
 

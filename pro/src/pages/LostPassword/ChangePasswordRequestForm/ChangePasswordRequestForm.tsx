@@ -9,7 +9,7 @@ import { EmailSpellCheckInput } from 'ui-kit/form/EmailSpellCheckInput/EmailSpel
 
 import styles from './ChangePasswordRequestForm.module.scss'
 
-const ChangePasswordRequestForm = (): JSX.Element => {
+export const ChangePasswordRequestForm = (): JSX.Element => {
   const [field] = useField('email')
 
   return (
@@ -44,5 +44,3 @@ const ChangePasswordRequestForm = (): JSX.Element => {
     </section>
   )
 }
-
-export default ChangePasswordRequestForm

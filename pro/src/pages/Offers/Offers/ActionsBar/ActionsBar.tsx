@@ -22,8 +22,8 @@ import { updateAllCollectiveOffersActiveStatusAdapter } from './adapters/updateA
 import { updateAllOffersActiveStatusAdapter } from './adapters/updateAllOffersActiveStatusAdapter'
 import { updateCollectiveOffersActiveStatusAdapter } from './adapters/updateCollectiveOffersActiveStatusAdapter'
 import { updateOffersActiveStatusAdapter } from './adapters/updateOffersActiveStatusAdapter'
-import DeactivationConfirmDialog from './ConfirmDialog/DeactivationConfirmDialog'
-import DeleteConfirmDialog from './ConfirmDialog/DeleteConfirmDialog'
+import { DeactivationConfirmDialog } from './ConfirmDialog/DeactivationConfirmDialog'
+import { DeleteConfirmDialog } from './ConfirmDialog/DeleteConfirmDialog'
 
 export interface ActionBarProps {
   areAllOffersSelected: boolean

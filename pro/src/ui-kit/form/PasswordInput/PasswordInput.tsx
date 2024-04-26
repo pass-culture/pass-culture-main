@@ -9,7 +9,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { TextInput } from '../TextInput/TextInput'
 
 import styles from './PasswordInput.module.scss'
-import ValidationMessageList from './ValidationMessageList'
+import { ValidationMessageList } from './ValidationMessageList/ValidationMessageList'
 
 interface PasswordInputProps {
   label: string

@@ -9,7 +9,8 @@ import * as useNotification from 'hooks/useNotification'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import NewRequestFormDialog, {
+import {
+  NewRequestFormDialog,
   NewRequestFormDialogProps,
 } from '../NewRequestFormDialog'
 

@@ -23,7 +23,7 @@ export interface PricingPointProps {
   venue: GetVenueResponseModel
 }
 
-const PricingPoint = ({ offerer, venue }: PricingPointProps) => {
+export const PricingPoint = ({ offerer, venue }: PricingPointProps) => {
   const [canSubmit, setCanSubmit] = useState(true)
   const [isInputDisabled, setIsInputDisabled] = useState(false)
   const [isConfirmSiretDialogOpen, setIsConfirmSiretDialogOpen] =
@@ -174,5 +174,3 @@ const PricingPoint = ({ offerer, venue }: PricingPointProps) => {
     </>
   )
 }
-
-export default PricingPoint

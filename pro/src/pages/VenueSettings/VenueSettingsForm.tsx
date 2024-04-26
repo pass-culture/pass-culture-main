@@ -16,7 +16,7 @@ import BankAccountInfos from 'pages/VenueCreation/BankAccountInfos/BankAccountIn
 import { buildVenueTypesOptions } from 'pages/VenueCreation/buildVenueTypesOptions'
 import { SiretOrCommentFields } from 'pages/VenueCreation/SiretOrCommentFields/SiretOrCommentFields'
 import { VenueFormActionBar } from 'pages/VenueCreation/VenueFormActionBar/VenueFormActionBar'
-import { WithdrawalDetails } from 'pages/VenueCreation/WithdrawalDetails'
+import { WithdrawalDetails } from 'pages/VenueCreation/WithdrawalDetails/WithdrawalDetails'
 import { Select } from 'ui-kit/form/Select/Select'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'

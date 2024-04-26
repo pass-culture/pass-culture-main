@@ -3,9 +3,9 @@
 import React from 'react'
 import { Navigate } from 'react-router'
 
-import BankInformations from 'pages/Reimbursements/BankInformations/BankInformations'
+import { BankInformations } from 'pages/Reimbursements/BankInformations/BankInformations'
 import { ReimbursementsDetails } from 'pages/Reimbursements/ReimbursementsDetails/ReimbursementsDetails'
-import { ReimbursementsInvoices } from 'pages/Reimbursements/ReimbursementsInvoices'
+import { ReimbursementsInvoices } from 'pages/Reimbursements/ReimbursementsInvoices/ReimbursementsInvoices'
 
 import type { RouteConfig } from './routesMap'
 

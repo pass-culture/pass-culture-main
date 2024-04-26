@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 
 import { defaultGetBookingResponse } from 'utils/individualApiFactories'
 
-import BookingDetails from '../BookingDetails'
+import { BookingDetails } from '../BookingDetails'
 
 describe('BookingDetails', () => {
   it('should display duo booking when the booking is for two people', () => {

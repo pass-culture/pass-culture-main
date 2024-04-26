@@ -31,7 +31,7 @@ export interface NewRequestFormDialogProps {
   isPreview: boolean
 }
 
-const NewRequestFormDialog = ({
+export const NewRequestFormDialog = ({
   closeModal,
   offerId,
   userEmail,
@@ -290,5 +290,3 @@ const NewRequestFormDialog = ({
     </Dialog>
   )
 }
-
-export default NewRequestFormDialog
