@@ -9,7 +9,7 @@ const FAILING_RESPONSE: AdapterFailure<null> = {
   payload: null,
 }
 
-const deleteThumbnailAdapter: DeleteThumbnailAdapter = async (
+export const deleteThumbnailAdapter: DeleteThumbnailAdapter = async (
   offerId: number
 ) => {
   try {
@@ -23,5 +23,3 @@ const deleteThumbnailAdapter: DeleteThumbnailAdapter = async (
     return FAILING_RESPONSE
   }
 }
-
-export default deleteThumbnailAdapter

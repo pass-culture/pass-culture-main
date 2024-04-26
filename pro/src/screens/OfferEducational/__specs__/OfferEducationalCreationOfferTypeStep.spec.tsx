@@ -3,9 +3,8 @@ import { userEvent } from '@testing-library/user-event'
 
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import OfferEducational from '../'
 import { defaultCreationProps } from '../__tests-utils__'
-import { OfferEducationalProps } from '../OfferEducational'
+import { OfferEducational, OfferEducationalProps } from '../OfferEducational'
 
 describe('screens | OfferEducational : creation offer type step', () => {
   let props: OfferEducationalProps

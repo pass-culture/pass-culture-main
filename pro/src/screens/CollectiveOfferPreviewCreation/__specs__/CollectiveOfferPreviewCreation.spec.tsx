@@ -13,7 +13,8 @@ import {
   renderWithProviders,
 } from 'utils/renderWithProviders'
 
-import CollectiveOfferPreviewCreationScreen, {
+import {
+  CollectiveOfferPreviewCreationScreen,
   CollectiveOfferSummaryCreationProps,
 } from '../CollectiveOfferPreviewCreation'
 

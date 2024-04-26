@@ -2,20 +2,22 @@ import classNames from 'classnames'
 import { useField, useFormikContext } from 'formik'
 
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { OfferEducationalFormValues } from 'core/OfferEducational'
+import { OfferEducationalFormValues } from 'core/OfferEducational/types'
 import { Checkbox } from 'ui-kit/form/Checkbox/Checkbox'
 import { PhoneNumberInput } from 'ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 import { FieldSetLayout } from 'ui-kit/form/shared/FieldSetLayout/FieldSetLayout'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import styles from './FormContactTemplate.module.scss'
-import FormContactCustomForm from './FormContactTemplateCustomForm/FormContactTemplateCustomForm'
+import { FormContactTemplateCustomForm } from './FormContactTemplateCustomForm/FormContactTemplateCustomForm'
 
-export default function FormContactTemplate({
-  disableForm,
-}: {
+interface FormContactTemplateProps {
   disableForm: boolean
-}): JSX.Element {
+}
+
+export const FormContactTemplate = ({
+  disableForm,
+}: FormContactTemplateProps): JSX.Element => {
   const { values } = useFormikContext<OfferEducationalFormValues>()
 
   const [, contactOptionsMeta] = useField({ name: 'contactOptions' })
@@ -94,7 +96,7 @@ export default function FormContactTemplate({
           />
           {values.contactOptions?.form && (
             <div className={styles['contact-checkbox-inner-control']}>
-              <FormContactCustomForm disableForm={disableForm} />
+              <FormContactTemplateCustomForm disableForm={disableForm} />
             </div>
           )}
         </div>

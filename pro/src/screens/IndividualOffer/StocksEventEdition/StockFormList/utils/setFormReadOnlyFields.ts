@@ -6,7 +6,10 @@ import {
   OFFER_STATUS_PENDING,
   OFFER_STATUS_REJECTED,
 } from 'core/Offers/constants'
-import { isAllocineProviderName, isCinemaProviderName } from 'core/Providers'
+import {
+  isAllocineProviderName,
+  isCinemaProviderName,
+} from 'core/Providers/utils/utils'
 import { removeTime } from 'utils/date'
 
 import {

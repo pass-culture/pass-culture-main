@@ -7,12 +7,10 @@ import {
   OfferAddressType,
 } from 'apiClient/v1'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import {
-  DEFAULT_EAC_FORM_VALUES,
-  OfferEducationalFormValues,
-} from 'core/OfferEducational'
-import { handleAllFranceDepartmentOptions } from 'core/shared'
+import { DEFAULT_EAC_FORM_VALUES } from 'core/OfferEducational/constants'
+import { OfferEducationalFormValues } from 'core/OfferEducational/types'
 import { offerInterventionOptions } from 'core/shared/interventionOptions'
+import { handleAllFranceDepartmentOptions } from 'core/shared/utils/handleAllFranceDepartmentOptions'
 import { SelectOption } from 'custom_types/form'
 import { Banner } from 'ui-kit/Banners/Banner/Banner'
 import { MultiSelectAutocomplete } from 'ui-kit/form/MultiSelectAutoComplete/MultiSelectAutocomplete'
@@ -53,7 +51,7 @@ const adressTypeRadios = [
   },
 ]
 
-const FormPracticalInformation = ({
+export const FormPracticalInformation = ({
   venuesOptions,
   currentOfferer,
   disableForm,
@@ -212,5 +210,3 @@ const FormPracticalInformation = ({
     </FormLayout.Section>
   )
 }
-
-export default FormPracticalInformation

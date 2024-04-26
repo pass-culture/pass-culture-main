@@ -1,6 +1,6 @@
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel } from 'apiClient/v1'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 
 type Payload = GetOffererResponseModel
 
@@ -12,7 +12,9 @@ const FAILING_RESPONSE: AdapterFailure<null> = {
   payload: null,
 }
 
-const getOffererAdapter: GetOffererAdapter = async (offererId: string) => {
+export const getOffererAdapter: GetOffererAdapter = async (
+  offererId: string
+) => {
   try {
     const offerer = await api.getOfferer(Number(offererId))
 
@@ -25,5 +27,3 @@ const getOffererAdapter: GetOffererAdapter = async (offererId: string) => {
     return FAILING_RESPONSE
   }
 }
-
-export default getOffererAdapter

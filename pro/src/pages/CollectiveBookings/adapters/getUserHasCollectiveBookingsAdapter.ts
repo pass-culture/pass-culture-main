@@ -1,6 +1,6 @@
 import { api } from 'apiClient/api'
 import { GetUserHasBookingsAdapter } from 'core/Bookings/types'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 
 const FAILING_RESPONSE: AdapterFailure<boolean> = {
   isOk: false,

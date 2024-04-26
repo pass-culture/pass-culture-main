@@ -5,11 +5,8 @@ import React from 'react'
 import * as router from 'react-router-dom'
 
 import { CollectiveBookingStatus } from 'apiClient/v1'
-import {
-  DEFAULT_EAC_STOCK_FORM_VALUES,
-  EducationalOfferType,
-  Mode,
-} from 'core/OfferEducational'
+import { DEFAULT_EAC_STOCK_FORM_VALUES } from 'core/OfferEducational/constants'
+import { Mode, EducationalOfferType } from 'core/OfferEducational/types'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferCollectiveStockFactory,
@@ -17,7 +14,8 @@ import {
 import { FORMAT_HH_mm, FORMAT_ISO_DATE_ONLY } from 'utils/date'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import OfferEducationalStock, {
+import {
+  OfferEducationalStock,
   OfferEducationalStockProps,
 } from '../OfferEducationalStock'
 

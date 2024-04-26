@@ -5,7 +5,7 @@ import {
   ListOffersOfferResponseModel,
 } from 'apiClient/v1'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
-import { Audience } from 'core/shared'
+import { Audience } from 'core/shared/types'
 
 import OfferItem from '../OfferItem/OfferItem'
 
@@ -21,7 +21,7 @@ type OffersTableBodyProps = {
   audience: Audience
 }
 
-const OffersTableBody = ({
+export const OffersTableBody = ({
   areAllOffersSelected,
   offers,
   selectOffer,
@@ -48,5 +48,3 @@ const OffersTableBody = ({
     })}
   </tbody>
 )
-
-export default OffersTableBody

@@ -4,8 +4,8 @@ import { useOutletContext } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { VenueListItemResponseModel } from 'apiClient/v1'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
-import getVenuesForOffererAdapter from 'core/Venue/adapters/getVenuesForOffererAdapter'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
+import { getVenuesForOffererAdapter } from 'core/Venue/adapters/getVenuesForOffererAdapter/getVenuesForOffererAdapter'
 import { SelectOption } from 'custom_types/form'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
@@ -21,7 +21,7 @@ import { FORMAT_ISO_DATE_ONLY, getToday } from 'utils/date'
 import { downloadFile } from 'utils/downloadFile'
 import { sortByLabel } from 'utils/strings'
 
-import DetailsFilters from './DetailsFilters'
+import { DetailsFilters } from './DetailsFilters'
 import styles from './ReimbursementDetails.module.scss'
 
 type CsvQueryParams = {

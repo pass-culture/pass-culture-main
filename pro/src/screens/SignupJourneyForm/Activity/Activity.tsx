@@ -10,7 +10,7 @@ import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constan
 import { GET_VENUE_TYPES_QUERY_KEY } from 'config/swrQueryKeys'
 import { useSignupJourneyContext } from 'context/SignupJourneyContext'
 import { ActivityContext } from 'context/SignupJourneyContext/SignupJourneyContext'
-import { FORM_ERROR_MESSAGE } from 'core/shared'
+import { FORM_ERROR_MESSAGE } from 'core/shared/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import Spinner from 'ui-kit/Spinner/Spinner'

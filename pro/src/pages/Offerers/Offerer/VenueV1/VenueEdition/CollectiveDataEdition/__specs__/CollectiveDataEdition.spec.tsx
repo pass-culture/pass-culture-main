@@ -10,7 +10,7 @@ import { api } from 'apiClient/api'
 import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
-import { SENT_DATA_ERROR_MESSAGE } from 'core/shared'
+import { SENT_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import {
   domtomOptions,
   mainlandInterventionOption,

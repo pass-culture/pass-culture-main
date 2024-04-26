@@ -2,7 +2,7 @@ import cn from 'classnames'
 import React, { useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 
-import DomainNameBanner from 'components/DomainNameBanner'
+import { DomainNameBanner } from 'components/DomainNameBanner/DomainNameBanner'
 import Footer from 'components/Footer/Footer'
 import Header from 'components/Header/Header'
 import NewNavReview from 'components/NewNavReview/NewNavReview'

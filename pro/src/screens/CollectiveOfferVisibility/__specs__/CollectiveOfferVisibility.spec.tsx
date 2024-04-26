@@ -8,9 +8,10 @@ import {
   EducationalInstitutionResponseModel,
   OfferStatus,
 } from 'apiClient/v1'
-import { DEFAULT_VISIBILITY_FORM_VALUES, Mode } from 'core/OfferEducational'
+import { DEFAULT_VISIBILITY_FORM_VALUES } from 'core/OfferEducational/constants'
+import { Mode } from 'core/OfferEducational/types'
 import * as useNotification from 'hooks/useNotification'
-import getOfferRequestInformationsAdapter from 'pages/CollectiveOfferFromRequest/adapters/getOfferRequestInformationsAdapter'
+import { getOfferRequestInformationsAdapter } from 'pages/CollectiveOfferFromRequest/adapters/getOfferRequestInformationsAdapter'
 import { getCollectiveOfferFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 

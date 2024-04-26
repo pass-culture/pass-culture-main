@@ -3,8 +3,8 @@ import {
   OFFER_STATUS_PENDING,
   OFFER_STATUS_REJECTED,
 } from 'core/Offers/constants'
-import { isOfferSynchronized } from 'core/Offers/utils'
-import { isAllocineProvider } from 'core/Providers'
+import { isOfferSynchronized } from 'core/Offers/utils/synchronization'
+import { isAllocineProvider } from 'core/Providers/utils/utils'
 
 import { FORM_DEFAULT_VALUES } from '../constants'
 

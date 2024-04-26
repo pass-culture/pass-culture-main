@@ -1,5 +1,5 @@
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
+import { PATCH_SUCCESS_MESSAGE } from 'core/shared/constants'
 
 export const getSuccessMessage = (mode: OFFER_WIZARD_MODE) => {
   switch (mode) {

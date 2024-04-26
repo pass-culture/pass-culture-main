@@ -5,22 +5,25 @@ import { isErrorAPIError } from 'apiClient/helpers'
 import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
+import { getStockCollectiveOfferAdapter } from 'core/OfferEducational/adapters/getStockCollectiveOfferAdapter'
 import {
-  Mode,
-  OfferEducationalStockFormValues,
-  createPatchStockDataPayload,
-  extractInitialStockValues,
-  getStockCollectiveOfferAdapter,
   isCollectiveOfferTemplate,
-} from 'core/OfferEducational'
+  OfferEducationalStockFormValues,
+  Mode,
+} from 'core/OfferEducational/types'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
-import { FORM_ERROR_MESSAGE, PATCH_SUCCESS_MESSAGE } from 'core/shared'
+import { createPatchStockDataPayload } from 'core/OfferEducational/utils/createPatchStockDataPayload'
+import { extractInitialStockValues } from 'core/OfferEducational/utils/extractInitialStockValues'
+import {
+  FORM_ERROR_MESSAGE,
+  PATCH_SUCCESS_MESSAGE,
+} from 'core/shared/constants'
 import useNotification from 'hooks/useNotification'
 import {
   MandatoryCollectiveOfferFromParamsProps,
   withCollectiveOfferFromParams,
 } from 'screens/OfferEducational/useCollectiveOfferFromParams'
-import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
+import { OfferEducationalStock } from 'screens/OfferEducationalStock/OfferEducationalStock'
 
 const CollectiveOfferStockEdition = ({
   offer,
@@ -79,7 +82,7 @@ const CollectiveOfferStockEdition = ({
   return (
     <AppLayout>
       <CollectiveOfferLayout subTitle={offer.name} isTemplate={isTemplate}>
-        <OfferEducationalStockScreen
+        <OfferEducationalStock
           initialValues={initialValues}
           mode={
             offer.collectiveStock?.isEducationalStockEditable

@@ -1,6 +1,6 @@
 import { api } from 'apiClient/api'
 import { GetOffererNameResponseModel } from 'apiClient/v1'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import { useAdapter } from 'hooks'
 
 type GetOffererNamesAdapter = Adapter<

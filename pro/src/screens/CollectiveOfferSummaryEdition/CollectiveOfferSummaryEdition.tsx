@@ -4,10 +4,10 @@ import {
 } from 'apiClient/v1'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { CollectiveOfferSummary } from 'components/CollectiveOfferSummary/CollectiveOfferSummary'
-import OfferEducationalActions from 'components/OfferEducationalActions'
-import { isCollectiveOfferTemplate, Mode } from 'core/OfferEducational'
+import { OfferEducationalActions } from 'components/OfferEducationalActions/OfferEducationalActions'
+import { Mode, isCollectiveOfferTemplate } from 'core/OfferEducational/types'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
-import { computeCollectiveOffersUrl } from 'core/Offers/utils'
+import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeOffersUrl'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 

@@ -11,8 +11,8 @@ import {
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
 import { SearchFiltersParams } from 'core/Offers/types'
-import { hasSearchFilters } from 'core/Offers/utils'
-import { Audience } from 'core/shared'
+import { hasSearchFilters } from 'core/Offers/utils/hasSearchFilters'
+import { Audience } from 'core/shared/types'
 import { SelectOption } from 'custom_types/form'
 import fullRefreshIcon from 'icons/full-refresh.svg'
 import strokeCloseIcon from 'icons/stroke-close.svg'
@@ -43,7 +43,7 @@ interface SearchFiltersProps {
   audience: Audience
 }
 
-const SearchFilters = ({
+export const SearchFilters = ({
   applyFilters,
   offerer,
   removeOfferer,
@@ -263,5 +263,3 @@ const SearchFilters = ({
     </>
   )
 }
-
-export default SearchFilters

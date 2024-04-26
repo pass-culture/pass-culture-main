@@ -12,7 +12,7 @@ import {
 } from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import AdageOffer from '../AdageOffer'
+import { AdageOffer } from '../AdageOffer'
 
 function renderAdageOffer({
   offer,

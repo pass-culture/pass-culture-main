@@ -1,9 +1,9 @@
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
 import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
-import { OfferEducationalFormValues } from 'core/OfferEducational'
 
 import { createPatchOfferPayload } from '../../../pages/CollectiveOfferEdition/utils/createPatchOfferPayload'
+import { OfferEducationalFormValues } from '../types'
 
 type Params = {
   offerId: number
@@ -29,7 +29,7 @@ const UNKNOWN_FAILING_RESPONSE: AdapterFailure<null> = {
   payload: null,
 }
 
-const patchCollectiveOfferAdapter: PatchCollectiveOfferAdapter = async ({
+export const patchCollectiveOfferAdapter: PatchCollectiveOfferAdapter = async ({
   offerId,
   offer,
   initialValues,
@@ -51,5 +51,3 @@ const patchCollectiveOfferAdapter: PatchCollectiveOfferAdapter = async ({
     return UNKNOWN_FAILING_RESPONSE
   }
 }
-
-export default patchCollectiveOfferAdapter

@@ -16,12 +16,12 @@ import {
 } from 'core/Offers/constants'
 import { SearchFiltersParams } from 'core/Offers/types'
 import {
-  computeCollectiveOffersUrl,
   computeOffersUrl,
-  hasSearchFilters,
-} from 'core/Offers/utils'
-import { Audience } from 'core/shared'
+  computeCollectiveOffersUrl,
+} from 'core/Offers/utils/computeOffersUrl'
+import { hasSearchFilters } from 'core/Offers/utils/hasSearchFilters'
 import getUserValidatedOfferersNamesAdapter from 'core/shared/adapters/getUserValidatedOfferersNamesAdapter'
+import { Audience } from 'core/shared/types'
 import { SelectOption } from 'custom_types/form'
 import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
 import fullPlusIcon from 'icons/full-plus.svg'
@@ -34,7 +34,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { Tabs } from 'ui-kit/Tabs/Tabs'
 import Titles from 'ui-kit/Titles/Titles'
 
-import SearchFilters from './SearchFilters'
+import { SearchFilters } from './SearchFilters/SearchFilters'
 
 export interface OffersProps {
   currentPageNumber: number
@@ -59,7 +59,7 @@ export interface OffersProps {
   categories?: SelectOption[]
 }
 
-const Offers = ({
+export const Offers = ({
   currentPageNumber,
   currentUser,
   isLoading,
@@ -284,5 +284,3 @@ const Offers = ({
     </div>
   )
 }
-
-export default Offers

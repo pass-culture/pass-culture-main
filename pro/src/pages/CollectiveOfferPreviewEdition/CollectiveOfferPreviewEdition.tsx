@@ -1,6 +1,6 @@
 import { AppLayout } from 'app/AppLayout'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
-import AdagePreviewLayout from 'pages/AdageIframe/app/components/OfferInfos/AdagePreviewLayout/AdagePreviewLayout'
+import { AdagePreviewLayout } from 'pages/AdageIframe/app/components/OfferInfos/AdagePreviewLayout/AdagePreviewLayout'
 import {
   MandatoryCollectiveOfferFromParamsProps,
   withCollectiveOfferFromParams,

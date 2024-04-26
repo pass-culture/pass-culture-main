@@ -7,10 +7,8 @@ import {
   GetOffererNameResponseModel,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
-import {
-  IndividualOfferFormValues,
-  setDefaultInitialFormValues,
-} from 'components/IndividualOfferForm'
+import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
+import { setDefaultInitialFormValues } from 'components/IndividualOfferForm/utils/setDefaultInitialFormValues'
 import {
   getOffererNameFactory,
   venueListItemFactory,

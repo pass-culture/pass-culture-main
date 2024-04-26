@@ -10,9 +10,9 @@ type FormContactTemplateCustomFormProps = {
   disableForm: boolean
 }
 
-export default function FormContactTemplateCustomForm({
+export const FormContactTemplateCustomForm = ({
   disableForm,
-}: FormContactTemplateCustomFormProps) {
+}: FormContactTemplateCustomFormProps) => {
   return (
     <FieldSetLayout
       name="contactForm"

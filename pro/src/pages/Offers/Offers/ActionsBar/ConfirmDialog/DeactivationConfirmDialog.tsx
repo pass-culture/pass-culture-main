@@ -3,7 +3,8 @@ import { useLocation } from 'react-router-dom'
 
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import { Events } from 'core/FirebaseEvents/constants'
-import { Audience, NBSP } from 'core/shared'
+import { NBSP } from 'core/shared/constants'
+import { Audience } from 'core/shared/types'
 import useAnalytics from 'hooks/useAnalytics'
 import fullEyeIcon from 'icons/full-hide.svg'
 

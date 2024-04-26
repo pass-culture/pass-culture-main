@@ -2,9 +2,9 @@ import React from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { AppLayout } from 'app/AppLayout'
-import { getVenuesAdapter } from 'core/Bookings/adapters'
-import { Audience } from 'core/shared'
-import BookingsScreen from 'screens/Bookings'
+import getVenuesAdapter from 'core/Bookings/adapters/getVenuesAdapter'
+import { Audience } from 'core/shared/types'
+import { BookingsScreen } from 'screens/Bookings/Bookings'
 
 import { getFilteredCollectiveBookingsRecapAdapter } from './adapters/getFilteredCollectiveBookingsRecapAdapter'
 import { getUserHasCollectiveBookingsAdapter } from './adapters/getUserHasCollectiveBookingsAdapter'

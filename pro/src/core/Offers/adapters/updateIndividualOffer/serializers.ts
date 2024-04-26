@@ -7,7 +7,7 @@ import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
 import { SYNCHRONIZED_OFFER_EDITABLE_FIELDS } from 'core/Offers/constants'
 import { OfferExtraData } from 'core/Offers/types'
 import { isAllocineOffer } from 'core/Providers/utils/localProvider'
-import { AccessibilityEnum } from 'core/shared'
+import { AccessibilityEnum } from 'core/shared/types'
 
 export const serializeExtraData = (
   formValues: Partial<IndividualOfferFormValues>,

@@ -12,7 +12,7 @@ interface NoResultsProps {
   resetFilters: () => void
 }
 
-const NoResults = ({ resetFilters }: NoResultsProps): JSX.Element => (
+export const NoResults = ({ resetFilters }: NoResultsProps): JSX.Element => (
   <div className={styles['search-no-results']}>
     <SvgIcon
       src={strokeSearchIcon}
@@ -35,5 +35,3 @@ const NoResults = ({ resetFilters }: NoResultsProps): JSX.Element => (
     </Button>
   </div>
 )
-
-export default NoResults

@@ -10,7 +10,7 @@ type UpdateIndividualOffer = Adapter<
   FailurePayload
 >
 
-const updateIndividualOffer: UpdateIndividualOffer = async ({
+export const updateIndividualOffer: UpdateIndividualOffer = async ({
   serializedOffer,
   offerId,
 }) => {
@@ -41,5 +41,3 @@ const updateIndividualOffer: UpdateIndividualOffer = async ({
     }
   }
 }
-
-export default updateIndividualOffer

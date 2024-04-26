@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Audience } from 'core/shared'
+import { Audience } from 'core/shared/types'
 import strokeNoBookingIcon from 'icons/stroke-no-booking.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 

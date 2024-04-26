@@ -2,7 +2,7 @@
 import { PostOfferBodyModel } from 'apiClient/v1'
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
 import { OfferExtraData } from 'core/Offers/types'
-import { AccessibilityEnum } from 'core/shared'
+import { AccessibilityEnum } from 'core/shared/types'
 
 /* istanbul ignore next: DEBT, TO FIX */
 const serializeExtraData = (

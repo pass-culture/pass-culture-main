@@ -6,7 +6,7 @@ import {
   OFFER_STATUS_REJECTED,
   OFFER_STATUS_PENDING,
 } from 'core/Offers/constants'
-import { isAllocineProvider } from 'core/Providers'
+import { isAllocineProvider } from 'core/Providers/utils/utils'
 
 import { STOCK_THING_FORM_DEFAULT_VALUES } from '../constants'
 import { StockThingFormValues } from '../types'

@@ -8,7 +8,10 @@ import {
   GetVenueResponseModel,
   ProviderResponse,
 } from 'apiClient/v1'
-import { isAllocineProvider, isCinemaProvider } from 'core/Providers'
+import {
+  isAllocineProvider,
+  isCinemaProvider,
+} from 'core/Providers/utils/utils'
 import useNotification from 'hooks/useNotification'
 
 import { AllocineProviderForm } from './AllocineProviderForm/AllocineProviderForm'

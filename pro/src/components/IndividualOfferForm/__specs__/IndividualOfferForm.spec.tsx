@@ -29,14 +29,11 @@ import {
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
-import {
-  IndividualOfferFormValues,
-  setDefaultInitialFormValues,
-  getValidationSchema,
-} from '..'
+import { IndividualOfferFormValues, getValidationSchema } from '..'
 import IndividualOfferForm, {
   IndividualOfferFormProps,
 } from '../IndividualOfferForm'
+import { setDefaultInitialFormValues } from '../utils/setDefaultInitialFormValues'
 
 const renderIndividualOfferForm = ({
   initialValues,

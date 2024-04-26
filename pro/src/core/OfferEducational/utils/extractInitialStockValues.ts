@@ -5,13 +5,11 @@ import {
   GetCollectiveOfferTemplateResponseModel,
   GetCollectiveOfferRequestResponseModel,
 } from 'apiClient/v1'
-import {
-  DEFAULT_EAC_STOCK_FORM_VALUES,
-  EducationalOfferType,
-  OfferEducationalStockFormValues,
-} from 'core/OfferEducational'
 import { FORMAT_HH_mm, FORMAT_ISO_DATE_ONLY } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
+
+import { DEFAULT_EAC_STOCK_FORM_VALUES } from '../constants'
+import { OfferEducationalStockFormValues, EducationalOfferType } from '../types'
 
 export const extractInitialStockValues = (
   offer: GetCollectiveOfferResponseModel,

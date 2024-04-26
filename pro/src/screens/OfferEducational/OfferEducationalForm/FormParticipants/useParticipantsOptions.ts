@@ -1,5 +1,5 @@
 import { StudentLevels } from 'apiClient/v1'
-import { OfferEducationalFormValues } from 'core/OfferEducational'
+import { OfferEducationalFormValues } from 'core/OfferEducational/types'
 import { buildStudentLevelsMapWithDefaultValue } from 'core/OfferEducational/utils/buildStudentLevelsMapWithDefaultValue'
 
 export const ALL_STUDENTS_LABEL = 'Tout sélectionner'

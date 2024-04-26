@@ -13,7 +13,7 @@ interface FilterByStatusProps {
   selectedStatusId: string
 }
 
-const FilterByStatus = ({
+export const FilterByStatus = ({
   isDisabled = false,
   updateFilters,
   selectedStatusId,
@@ -34,5 +34,3 @@ const FilterByStatus = ({
     />
   </>
 )
-
-export default FilterByStatus

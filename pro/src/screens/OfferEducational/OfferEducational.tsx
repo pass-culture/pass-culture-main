@@ -6,17 +6,17 @@ import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
-import OfferEducationalActions from 'components/OfferEducationalActions'
+import { OfferEducationalActions } from 'components/OfferEducationalActions/OfferEducationalActions'
+import { patchCollectiveOfferAdapter } from 'core/OfferEducational/adapters/patchCollectiveOfferAdapter'
+import { postCollectiveOfferAdapter } from 'core/OfferEducational/adapters/postCollectiveOfferAdapter'
+import { postCollectiveOfferTemplateAdapter } from 'core/OfferEducational/adapters/postCollectiveOfferTemplateAdapter'
 import {
-  OfferEducationalFormValues,
   Mode,
+  OfferEducationalFormValues,
   isCollectiveOffer,
   isCollectiveOfferTemplate,
-  applyVenueDefaultsToFormValues,
-} from 'core/OfferEducational'
-import patchCollectiveOfferAdapter from 'core/OfferEducational/adapters/patchCollectiveOfferAdapter'
-import postCollectiveOfferAdapter from 'core/OfferEducational/adapters/postCollectiveOfferAdapter'
-import postCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/postCollectiveOfferTemplateAdapter'
+} from 'core/OfferEducational/types'
+import { applyVenueDefaultsToFormValues } from 'core/OfferEducational/utils/applyVenueDefaultsToFormValues'
 import { computeInitialValuesFromOffer } from 'core/OfferEducational/utils/computeInitialValuesFromOffer'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { SelectOption } from 'custom_types/form'
@@ -50,7 +50,7 @@ export interface OfferEducationalProps {
   reloadCollectiveOffer?: () => void
 }
 
-const OfferEducational = ({
+export const OfferEducational = ({
   offer,
   setOffer,
   userOfferers,
@@ -197,5 +197,3 @@ const OfferEducational = ({
     </>
   )
 }
-
-export default OfferEducational

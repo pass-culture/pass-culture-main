@@ -1,7 +1,7 @@
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { computeOffersUrl } from 'core/Offers/utils'
+import { computeOffersUrl } from 'core/Offers/utils/computeOffersUrl'
 import { useOfferWizardMode } from 'hooks'
 import useNotification from 'hooks/useNotification'
 import fullLeftIcon from 'icons/full-left.svg'

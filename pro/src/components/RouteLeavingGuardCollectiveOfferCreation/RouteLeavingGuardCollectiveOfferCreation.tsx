@@ -4,7 +4,7 @@ import RouteLeavingGuard from 'components/RouteLeavingGuard/RouteLeavingGuard'
 
 import { shouldBlockNavigation } from './utils'
 
-const RouteLeavingGuardCollectiveOfferCreation = (): JSX.Element => {
+export const RouteLeavingGuardCollectiveOfferCreation = (): JSX.Element => {
   return (
     <RouteLeavingGuard
       shouldBlockNavigation={shouldBlockNavigation}
@@ -17,5 +17,3 @@ const RouteLeavingGuardCollectiveOfferCreation = (): JSX.Element => {
     </RouteLeavingGuard>
   )
 }
-
-export default RouteLeavingGuardCollectiveOfferCreation

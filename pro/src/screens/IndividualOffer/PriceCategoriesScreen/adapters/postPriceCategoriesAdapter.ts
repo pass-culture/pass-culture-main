@@ -13,7 +13,7 @@ type PostPriceCategoriesAdapter = Adapter<
   FailurePayload
 >
 
-const postPriceCategoriesAdapter: PostPriceCategoriesAdapter = async ({
+export const postPriceCategoriesAdapter: PostPriceCategoriesAdapter = async ({
   offerId,
   requestBody,
 }) => {
@@ -40,4 +40,3 @@ const postPriceCategoriesAdapter: PostPriceCategoriesAdapter = async ({
     }
   }
 }
-export default postPriceCategoriesAdapter

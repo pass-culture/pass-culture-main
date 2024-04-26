@@ -6,8 +6,8 @@ import {
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
-import deleteCollectiveOfferImageAdapter from 'core/OfferEducational/adapters/deleteCollectiveOfferImageAdapter'
-import deleteCollectiveOfferTemplateImageAdapter from 'core/OfferEducational/adapters/deleteCollectiveOfferTemplateImageAdapter'
+import { deleteCollectiveOfferImageAdapter } from 'core/OfferEducational/adapters/deleteCollectiveOfferImageAdapter'
+import { deleteCollectiveOfferTemplateImageAdapter } from 'core/OfferEducational/adapters/deleteCollectiveOfferTemplateImageAdapter'
 import { OfferCollectiveImage } from 'core/Offers/types'
 import useNotification from 'hooks/useNotification'
 import { sendSentryCustomError } from 'utils/sendSentryCustomError'

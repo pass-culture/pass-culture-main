@@ -5,7 +5,7 @@ import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
-import getCollectiveOfferFormDataApdater from 'core/OfferEducational/adapters/getCollectiveOfferFormDataAdapter'
+import { getCollectiveOfferFormDataApdater } from 'core/OfferEducational/adapters/getCollectiveOfferFormDataAdapter'
 import { SelectOption } from 'custom_types/form'
 import useNotification from 'hooks/useNotification'
 

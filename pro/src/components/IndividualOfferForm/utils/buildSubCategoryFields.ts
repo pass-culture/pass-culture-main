@@ -1,6 +1,6 @@
 import { SubcategoryResponseModel } from 'apiClient/v1'
 
-const buildSubcategoryFields = (
+export const buildSubcategoryFields = (
   isBookingContactEnabled: boolean,
   subcategory?: SubcategoryResponseModel
 ): {
@@ -28,5 +28,3 @@ const buildSubcategoryFields = (
 
   return { subcategoryFields }
 }
-
-export default buildSubcategoryFields

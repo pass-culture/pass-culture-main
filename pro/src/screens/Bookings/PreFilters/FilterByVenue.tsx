@@ -14,7 +14,7 @@ interface FilterByVenueProps {
   venuesFormattedAndOrdered: { displayName: string; id: string }[]
 }
 
-const FilterByVenue = ({
+export const FilterByVenue = ({
   isDisabled,
   updateFilters,
   selectedVenueId,
@@ -45,5 +45,3 @@ const FilterByVenue = ({
     </FieldLayout>
   )
 }
-
-export default FilterByVenue

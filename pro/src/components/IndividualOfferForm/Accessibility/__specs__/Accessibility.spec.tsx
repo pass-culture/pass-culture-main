@@ -5,7 +5,7 @@ import React from 'react'
 import * as yup from 'yup'
 
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
-import { AccessibilityEnum } from 'core/shared'
+import { AccessibilityEnum } from 'core/shared/types'
 import { Button } from 'ui-kit/Button/Button'
 
 import { Accessibility, validationSchema } from '..'

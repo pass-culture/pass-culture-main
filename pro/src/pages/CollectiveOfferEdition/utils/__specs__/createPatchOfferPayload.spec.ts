@@ -1,6 +1,6 @@
 import { EacFormat, PatchCollectiveOfferBodyModel } from 'apiClient/v1'
 import { OfferAddressType } from 'apiClient/v2'
-import { OfferEducationalFormValues } from 'core/OfferEducational'
+import { OfferEducationalFormValues } from 'core/OfferEducational/types'
 import { buildStudentLevelsMapWithDefaultValue } from 'core/OfferEducational/utils/buildStudentLevelsMapWithDefaultValue'
 
 import {
