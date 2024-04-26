@@ -33,4 +33,3 @@ releases:
     version: {{ .Values.chartVersion }}
     values:
       -  ./pass-culture-deployment/helm/pcapi/values.{{ .Environment.Name }}.yaml
-      - {{ requiredEnv "PCAPI_SECRETS_FILE" }}
