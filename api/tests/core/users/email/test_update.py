@@ -57,8 +57,8 @@ class RequestEmailUpdateTest:
 
         history = reloaded_user.email_history[0]
         assert history.oldEmail == user.email
-        assert history.newUserEmail == None
-        assert history.newDomainEmail == None
+        assert history.newUserEmail is None
+        assert history.newDomainEmail is None
         assert history.eventType == EmailHistoryEventTypeEnum.UPDATE_REQUEST
         assert history.id is not None
 
