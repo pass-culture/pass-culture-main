@@ -41,6 +41,7 @@ class Returns200Test:
             "email": "toto@example.com",
             "externalIds": {},
             "firstName": "Jean",
+            "hasPartnerPage": False,
             "hasSeenProTutorials": True,
             "hasSeenProRgs": False,
             "hasUserOfferer": False,

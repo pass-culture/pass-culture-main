@@ -140,6 +140,7 @@ class SharedLoginUserResponseModel(BaseModel):
     postalCode: str | None
     roles: list[users_models.UserRole]
     navState: NavStateResponseModel | None
+    hasPartnerPage: bool | None
 
     class Config:
         json_encoders = {datetime: format_into_utc_date}
@@ -154,6 +155,7 @@ class SharedLoginUserResponseModel(BaseModel):
         user.isAdmin = user.has_admin_role
         user.hasUserOfferer = user.has_user_offerer
         user.navState = NavStateResponseModel.from_orm(user.pro_new_nav_state)
+        user.hasPartnerPage = user.has_partner_page
         result = super().from_orm(user)
         return result
 
@@ -185,6 +187,7 @@ class SharedCurrentUserResponseModel(BaseModel):
     postalCode: str | None
     roles: list[users_models.UserRole]
     navState: NavStateResponseModel | None
+    hasPartnerPage: bool | None
 
     class Config:
         json_encoders = {datetime: format_into_utc_date}
@@ -196,6 +199,7 @@ class SharedCurrentUserResponseModel(BaseModel):
         user.isAdmin = user.has_admin_role
         user.hasUserOfferer = user.has_user_offerer
         user.navState = NavStateResponseModel.from_orm(user.pro_new_nav_state)
+        user.hasPartnerPage = user.has_partner_page
         result = super().from_orm(user)
         return result
 

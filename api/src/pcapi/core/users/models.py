@@ -647,6 +647,24 @@ class User(PcObject, Base, Model, DeactivableMixin):
     def real_user(self) -> "User":
         return self.impersonator or self
 
+    @property
+    def has_partner_page(self) -> bool:
+        from pcapi.core.offerers.models import UserOfferer
+        from pcapi.core.offerers.models import Venue
+
+        has_partner_page = db.session.query(
+            sa.select(1)
+            .select_from(UserOfferer)
+            .join(Venue, UserOfferer.offererId == Venue.managingOffererId)
+            .where(
+                UserOfferer.userId == self.id,
+                Venue.isPermanent.is_(True),
+                Venue.isVirtual.is_(False),
+            )
+            .exists()
+        ).scalar()
+        return has_partner_page
+
 
 User.trig_ensure_password_or_sso_exists_ddl = sa.DDL(
     """
