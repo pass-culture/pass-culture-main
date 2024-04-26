@@ -61,7 +61,11 @@ def _get_collective_bookings(
                 educational_models.CollectiveOffer.formats,
             ),
             sa.orm.joinedload(educational_models.CollectiveBooking.educationalInstitution).load_only(
-                educational_models.EducationalInstitution.id, educational_models.EducationalInstitution.name
+                educational_models.EducationalInstitution.id,
+                educational_models.EducationalInstitution.name,
+                educational_models.EducationalInstitution.institutionId,
+                educational_models.EducationalInstitution.institutionType,
+                educational_models.EducationalInstitution.city,
             ),
             sa.orm.joinedload(educational_models.CollectiveBooking.educationalRedactor).load_only(
                 educational_models.EducationalRedactor.firstName, educational_models.EducationalRedactor.lastName
@@ -100,10 +104,8 @@ def _get_collective_bookings(
         id_filters=[
             educational_models.CollectiveBooking.id,
             educational_models.CollectiveOffer.id,
-            educational_models.EducationalInstitution.id,
         ],
         name_filters=[
-            educational_models.EducationalInstitution.name,
             educational_models.CollectiveOffer.name,
         ],
     )
@@ -127,6 +129,7 @@ def list_collective_bookings() -> utils.BackofficeResponse:
 
     autocomplete.prefill_offerers_choices(form.offerer)
     autocomplete.prefill_venues_choices(form.venue)
+    autocomplete.prefill_institutions_choices(form.institution)
     autocomplete.prefill_cashflow_batch_choices(form.cashflow_batches)
 
     return render_template(

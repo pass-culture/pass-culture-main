@@ -68,6 +68,9 @@ def get_bookings(
             offer_class.formats.overlap(sa.dialects.postgresql.array((fmt for fmt in form.formats.data)))
         )
 
+    if getattr(offer_class, "institution", None) and hasattr(form, "institution") and form.institution.data:
+        base_query = base_query.filter(booking_class.educationalInstitutionId.in_(form.institution.data))
+
     if form.status.data:
         if booking_class is bookings_models.Booking:
             status_filters = []
