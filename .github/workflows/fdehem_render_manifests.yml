@@ -37,6 +37,14 @@ jobs:
           repository: pass-culture/pass-culture-deployment
           token: ${{ steps.secrets.outputs.PASSCULTURE_SA_ACCESS_TOKEN }}
           path: ./pass-culture-deployment
+      - name: "OpenID Connect Authentication"
+        id: "openid-auth-infra"
+        uses: 'google-github-actions/auth@v2'
+        with:
+          create_credentials_file: false
+          token_format: 'access_token'
+          workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
       - name: "Install Teleport"
         uses: teleport-actions/setup@v1
         with:
@@ -52,12 +60,19 @@ jobs:
         uses: mamezou-tech/setup-helmfile@v1.3.0
         with:
           helmfile-version: "v0.147.0"
+      - name: "Retrieve pcapi secrets list"
+        id: get-pcapi-secrets
+        run: |
+          #Retrieve secrets list from source code
+          PCAPI_SECRETSs=$(cat api/src/pcapi/settings.py | grep "secrets_utils.getlist(" | awk -F'=' '{print $1}')
+          PCAPI_SECRETS+=(cat api/src/pcapi/settings.py | grep "secrets_utils.get(" | grep -oP '(?<=secrets_utils.get\(\").*?(?=\")')
+          #Transform list into helm readable parameter list (pattern: --set value={item1,item2,item3})
+          PCAPI_SECRETS="secrets="{$(echo $pcapi_secrets | sed -r 's/ /,/g')}" >> "$GITHUB_OUTPUT"
       - name: "Render manifests"
         run: |
-          : #PASSCULTURE_USERNAME="oauth2accesstoken" \
-          : #PASSCULTURE_PASSWORD=${{ steps.openid-auth-infra.outputs.access_token }} \
-          PCAPI_SECRETS_FILE=<(echo '${{ needs.generate-pcapi-helm-secrets-file.outputs.pcapi_helm_secrets_file_base64 }}' | base64 -d) \
-          helmfile -e testing template --set image.tag=xxx.xxx --output-dir ./rendered-manifests/ --output-dir-template "{{ .OutputDir }}/{{ .State.BaseName }}-{{ .Release.Name}}"
+          PASSCULTURE_USERNAME="oauth2accesstoken" \
+          PASSCULTURE_PASSWORD=${{ steps.openid-auth-infra.outputs.access_token }} \
+          helmfile -e testing template --set image.tag=xxx.xxx --set ${{ steps.get-pcapi-secrets.outputs.PCAPI_SECRETS }} --output-dir ./rendered-manifests/ --output-dir-template "{{ .OutputDir }}/{{ .State.BaseName }}-{{ .Release.Name}}"
       - name: "Push manifests to rendered-manifests repository"
         id: push_manifests
         uses: cpina/github-action-push-to-another-repository@main
