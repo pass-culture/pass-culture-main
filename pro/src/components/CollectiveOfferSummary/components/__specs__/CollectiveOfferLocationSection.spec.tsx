@@ -4,7 +4,7 @@ import React from 'react'
 import { api } from 'apiClient/api'
 import { OfferAddressType } from 'apiClient/v1'
 import * as useNotification from 'hooks/useNotification'
-import * as getInterventionAreaLabels from 'pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/OfferDetails/OfferInterventionArea/OfferInterventionArea'
+import * as getInterventionAreaLabels from 'pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/OfferDetails/OfferInterventionArea'
 import {
   getCollectiveOfferTemplateFactory,
   defaultGetVenue,

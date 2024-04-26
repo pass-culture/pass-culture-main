@@ -15,7 +15,7 @@ export interface DeactivationConfirmDialogProps {
   audience: Audience
 }
 
-const DeactivationConfirmDialog = ({
+export const DeactivationConfirmDialog = ({
   areAllOffersSelected,
   onCancel,
   nbSelectedOffers,
@@ -66,5 +66,3 @@ const DeactivationConfirmDialog = ({
     </ConfirmDialog>
   )
 }
-
-export default DeactivationConfirmDialog

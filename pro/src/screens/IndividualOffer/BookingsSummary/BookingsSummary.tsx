@@ -14,7 +14,7 @@ import {
 } from 'core/Bookings/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import strokeBookingHold from 'icons/stroke-booking-hold.svg'
-import { getFilteredBookingsRecapAdapter } from 'pages/Bookings/adapters'
+import { getFilteredBookingsRecapAdapter } from 'pages/Bookings/adapters/getFilteredBookingsRecapAdapter'
 import { IndividualBookingsTable } from 'screens/Bookings/BookingsRecapTable/BookingsTable/IndividualBookingsTable'
 import { DEFAULT_OMNISEARCH_CRITERIA } from 'screens/Bookings/BookingsRecapTable/Filters/constants'
 import filterBookingsRecap from 'screens/Bookings/BookingsRecapTable/utils/filterBookingsRecap'

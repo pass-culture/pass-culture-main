@@ -7,7 +7,7 @@ interface ButtonInvalidateTokenProps {
   onConfirm: () => void
 }
 
-const ButtonInvalidateToken = ({
+export const ButtonInvalidateToken = ({
   onConfirm,
 }: ButtonInvalidateTokenProps): JSX.Element => {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -44,5 +44,3 @@ const ButtonInvalidateToken = ({
     </>
   )
 }
-
-export default ButtonInvalidateToken

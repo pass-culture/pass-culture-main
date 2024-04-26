@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { ButtonInvalidateToken } from '..'
+import { ButtonInvalidateToken } from '../ButtonInvalidateToken'
 
 describe('ButtonInvalidateToken', () => {
   it('should open modal on invalidate button click', async () => {

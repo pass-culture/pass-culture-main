@@ -8,7 +8,7 @@ import { GetOffererResponseModel } from 'apiClient/v1'
 import Notification from 'components/Notification/Notification'
 import { BankAccountEvents } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
-import BankInformations from 'pages/Reimbursements/BankInformations/BankInformations'
+import { BankInformations } from 'pages/Reimbursements/BankInformations/BankInformations'
 import {
   defaultBankAccount,
   defaultGetOffererResponseModel,

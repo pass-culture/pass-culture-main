@@ -11,7 +11,7 @@ import { Hero } from 'ui-kit/Hero/Hero'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { getReCaptchaToken } from 'utils/recaptcha'
 
-import ChangePasswordRequestForm from './ChangePasswordRequestForm'
+import { ChangePasswordRequestForm } from './ChangePasswordRequestForm/ChangePasswordRequestForm'
 import styles from './LostPassword.module.scss'
 import { validationSchema } from './validationSchema'
 

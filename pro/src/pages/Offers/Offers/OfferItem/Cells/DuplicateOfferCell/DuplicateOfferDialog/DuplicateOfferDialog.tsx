@@ -5,7 +5,7 @@ import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 
 import styles from './DuplicateOfferDialog.module.scss'
 
-const DuplicateOfferDialog = ({
+export const DuplicateOfferDialog = ({
   onCancel,
   onConfirm,
 }: {
@@ -37,4 +37,3 @@ const DuplicateOfferDialog = ({
     </ConfirmDialog>
   )
 }
-export default DuplicateOfferDialog

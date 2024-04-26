@@ -10,7 +10,7 @@ import {
   ManagedVenues,
 } from 'apiClient/v1'
 import * as useAnalytics from 'hooks/useAnalytics'
-import BankInformations from 'pages/Reimbursements/BankInformations/BankInformations'
+import { BankInformations } from 'pages/Reimbursements/BankInformations/BankInformations'
 import { ReimbursementsContextProps } from 'pages/Reimbursements/Reimbursements'
 import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'

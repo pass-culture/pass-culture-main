@@ -23,7 +23,7 @@ export interface RequestFormDialogProps {
   isPreview: boolean
 }
 
-const RequestFormDialog = ({
+export const RequestFormDialog = ({
   closeModal,
   contactEmail,
   contactPhone,
@@ -103,5 +103,3 @@ const RequestFormDialog = ({
     </Dialog>
   )
 }
-
-export default RequestFormDialog

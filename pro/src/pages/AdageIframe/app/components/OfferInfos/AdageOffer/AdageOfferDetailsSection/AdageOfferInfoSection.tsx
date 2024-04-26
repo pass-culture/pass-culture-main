@@ -3,9 +3,9 @@ import {
   CollectiveOfferTemplateResponseModel,
 } from 'apiClient/adage'
 import { OfferAddressType } from 'apiClient/v1'
-import { isCollectiveOfferBookable } from 'pages/AdageIframe/app/types/offers'
+import { isCollectiveOfferBookable } from 'pages/AdageIframe/app/types'
 
-import { getInterventionAreaLabelsToDisplay } from '../../../OffersInstantSearch/OffersSearch/Offers/OfferDetails/OfferInterventionArea/OfferInterventionArea'
+import { getInterventionAreaLabelsToDisplay } from '../../../OffersInstantSearch/OffersSearch/Offers/OfferDetails/OfferInterventionArea'
 import styles from '../AdageOffer.module.scss'
 import {
   getFormattedDatesForBookableOffer,

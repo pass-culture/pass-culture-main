@@ -12,7 +12,7 @@ import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import {
   isCollectiveOfferBookable,
   isCollectiveOfferTemplate,
-} from 'pages/AdageIframe/app/types/offers'
+} from 'pages/AdageIframe/app/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import OfferFavoriteButton from '../OfferFavoriteButton/OfferFavoriteButton'

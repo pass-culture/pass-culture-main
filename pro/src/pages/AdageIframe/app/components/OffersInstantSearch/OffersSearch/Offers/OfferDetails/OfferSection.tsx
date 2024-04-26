@@ -1,7 +1,7 @@
 import React from 'react'
 import './OfferSection.scss'
 
-const OfferSection = ({
+export const OfferSection = ({
   title,
   children,
 }: {
@@ -15,5 +15,3 @@ const OfferSection = ({
     </section>
   )
 }
-
-export default OfferSection

@@ -6,7 +6,7 @@ interface OfferVenue {
   offerVenue: CollectiveOfferOfferVenue
 }
 
-const OfferVenue = ({ offerVenue }: OfferVenue): JSX.Element => {
+export const OfferVenue = ({ offerVenue }: OfferVenue): JSX.Element => {
   if (offerVenue.addressType === OfferAddressType.OTHER) {
     return <div>{offerVenue.otherAddress}</div>
   }
@@ -23,5 +23,3 @@ const OfferVenue = ({ offerVenue }: OfferVenue): JSX.Element => {
     </div>
   )
 }
-
-export default OfferVenue
