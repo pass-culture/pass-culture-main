@@ -1113,22 +1113,19 @@ def search_public_account(search_query: str) -> BaseQuery:
 
 
 def search_public_account_in_history_email(search_query: str) -> BaseQuery:
-    if not email_utils.is_valid_email_or_email_domain(email_utils.sanitize_email(search_query)):
-        raise ValueError(f"Unsupported email search on invalid email or email domain : {search_query}")
+    sanitized_term = email_utils.sanitize_email(search_query)
+    if not email_utils.is_valid_email(sanitized_term):
+        raise ValueError(f"Unsupported email search on invalid email: {search_query}")
 
     accounts = get_public_account_base_query()
 
     if not search_query:
         return accounts.filter(False)
 
-    # email
-    sanitized_term = email_utils.sanitize_email(search_query)
-
-    if email_utils.is_valid_email(sanitized_term):
-        accounts = accounts.join(models.UserEmailHistory)
-
-        # including old emails: look for validated email updates inside user_email_history
-        accounts = accounts.filter(
+    # including old emails: look for validated email updates inside user_email_history
+    return (
+        accounts.join(models.UserEmailHistory)
+        .filter(
             models.UserEmailHistory.oldEmail == sanitized_term,
             models.UserEmailHistory.eventType.in_(
                 {
@@ -1137,27 +1134,9 @@ def search_public_account_in_history_email(search_query: str) -> BaseQuery:
                     models.EmailHistoryEventTypeEnum.ADMIN_UPDATE,
                 }
             ),
-        ).from_self()
-    elif email_utils.is_valid_email_domain(sanitized_term):
-        accounts = accounts.join(models.UserEmailHistory)
-
-        # including old emails: look for validated email updates inside user_email_history
-        accounts = accounts.filter(
-            sa.or_(
-                models.User.email.like(f"%{sanitized_term}"),
-                sa.and_(
-                    models.UserEmailHistory.oldDomainEmail == sanitized_term[1:],
-                    models.UserEmailHistory.eventType.in_(
-                        {
-                            models.EmailHistoryEventTypeEnum.VALIDATION,
-                            models.EmailHistoryEventTypeEnum.ADMIN_VALIDATION,
-                        }
-                    ),
-                ),
-            )
-        ).from_self()
-
-    return accounts.order_by(models.User.id)
+        )
+        .order_by(models.User.id)
+    )
 
 
 def get_public_account_base_query() -> BaseQuery:

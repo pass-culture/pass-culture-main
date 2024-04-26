@@ -443,28 +443,6 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
             total_items=1,
         )
 
-    def test_can_search_old_domain(self, authenticated_client):
-        event = users_factories.EmailValidationEntryFactory()
-        event.user.email = event.newEmail
-        old_domain_email = event.oldDomainEmail
-
-        db.session.flush()
-
-        search_query = f"@{old_domain_email}"
-        with assert_num_queries(self.expected_num_queries_when_old_email_and_single_result):
-            response = authenticated_client.get(url_for(self.endpoint, q=search_query))
-            assert response.status_code == 303
-
-        # Redirected to single result
-        assert_response_location(
-            response,
-            "backoffice_web.public_accounts.get_public_account",
-            user_id=event.user.id,
-            q=search_query,
-            search_rank=1,
-            total_items=1,
-        )
-
     @pytest.mark.parametrize(
         "search_filter,expected_user",
         [
