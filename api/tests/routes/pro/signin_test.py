@@ -48,6 +48,7 @@ class Returns200Test:
             "departementCode": None,
             "email": "user@example.com",
             "firstName": "Jean",
+            "hasPartnerPage": False,
             "hasSeenProTutorials": True,
             "hasSeenProRgs": False,
             "hasUserOfferer": False,
@@ -136,7 +137,8 @@ class Returns200Test:
         # 3. fetch user for serialization
         # 4. fetch user offerer
         # 5. fetch user pro nav state
-        with assert_num_queries(5):
+        # 6. fetch user has partner page
+        with assert_num_queries(6):
             response = client.post("/users/signin", json=data)
 
         # Then
@@ -151,6 +153,7 @@ class Returns200Test:
             "departementCode": "31",
             "email": user_offerer.user.email,
             "firstName": "René",
+            "hasPartnerPage": False,
             "hasSeenProTutorials": True,
             "hasSeenProRgs": False,
             "hasUserOfferer": True,
