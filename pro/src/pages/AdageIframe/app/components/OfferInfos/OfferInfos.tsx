@@ -1,13 +1,13 @@
-import { useEffect, useState } from 'react'
 import { useLocation, useParams, useSearchParams } from 'react-router-dom'
+import useSWR from 'swr'
 
-import {
-  AdageFrontRoles,
-  CollectiveOfferTemplateResponseModel,
-  CollectiveOfferResponseModel,
-} from 'apiClient/adage'
+import { AdageFrontRoles } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import Breadcrumb, { Crumb } from 'components/Breadcrumb/Breadcrumb'
+import {
+  GET_COLLECTIVE_OFFER_QUERY_KEY,
+  GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
+} from 'config/swrQueryKeys'
 import useActiveFeature from 'hooks/useActiveFeature'
 import strokePassIcon from 'icons/stroke-pass.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
@@ -36,17 +36,30 @@ export const OfferInfos = () => {
   //  Bookable offers ids are prefixed with B- while template offers ids are prefixed with T-, or not prefixed for legacy reasons.
   const offerId = offerIdInParams?.split('-')[1] ?? offerIdInParams
 
-  const [offer, setOffer] = useState<
-    CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel
-  >(state?.offer)
-  const [loading, setLoading] = useState(false)
-
   const { adageUser, setInstitutionOfferCount, institutionOfferCount } =
     useAdageUser()
 
   const isNewOfferInfoEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_ADAGE_OFFER_DESIGN'
   )
+
+  const shouldFetchTemplateOffer = isOfferTemplate && !state?.offer && offerId
+  const { data: templateOffer, isLoading: isTemplateOfferLoading } = useSWR(
+    shouldFetchTemplateOffer
+      ? [GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY, Number(offerId)]
+      : null,
+    ([, offerIdParam]) => apiAdage.getCollectiveOfferTemplate(offerIdParam)
+  )
+
+  const shouldFetchBookableOffer = !isOfferTemplate && !state?.offer && offerId
+  const { data: bookableOffer, isLoading: isBookableOfferLoading } = useSWR(
+    shouldFetchBookableOffer
+      ? [GET_COLLECTIVE_OFFER_QUERY_KEY, Number(offerId)]
+      : null,
+    ([, offerIdParam]) => apiAdage.getCollectiveOffer(offerIdParam)
+  )
+
+  const offer = state?.offer ?? templateOffer ?? bookableOffer
 
   const crumbForCurrentRoute: { [key: string]: Crumb } = {
     recherche: {
@@ -91,26 +104,7 @@ export const OfferInfos = () => {
       ]
     : crumbForCurrentRoute['mon-etablissement']
 
-  useEffect(() => {
-    async function getOffer() {
-      setLoading(true)
-      try {
-        const fetchedOffer = isOfferTemplate
-          ? await apiAdage.getCollectiveOfferTemplate(Number(offerId))
-          : await apiAdage.getCollectiveOffer(Number(offerId))
-        setOffer(fetchedOffer)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    if (!state?.offer && offerId) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      getOffer()
-    }
-  }, [offerId, state?.offer, isOfferTemplate])
-
-  if (loading) {
+  if (isTemplateOfferLoading || isBookableOfferLoading) {
     return <Spinner />
   }
 

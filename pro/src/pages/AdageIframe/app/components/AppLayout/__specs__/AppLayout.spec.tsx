@@ -1,4 +1,4 @@
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import React from 'react'
 
 import { MARSEILLE_EN_GRAND } from 'pages/AdageIframe/app/constants'
@@ -138,10 +138,8 @@ describe('AppLayout', () => {
       programs: [],
     })
 
-    await waitForElementToBeRemoved(() => screen.getByTestId('spinner'))
-
     expect(
-      screen.getByRole('heading', {
+      await screen.findByRole('heading', {
         name: 'Découvrez la part collective du pass Culture',
       })
     ).toBeInTheDocument()

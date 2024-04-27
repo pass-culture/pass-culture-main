@@ -1,14 +1,10 @@
 import classNames from 'classnames'
-import { useEffect, useState } from 'react'
+import useSWR from 'swr'
 
-import {
-  InstitutionRuralLevel,
-  LocalOfferersPlaylistOffer,
-} from 'apiClient/adage'
+import { InstitutionRuralLevel } from 'apiClient/adage'
 import { AdagePlaylistType } from 'apiClient/adage/models/AdagePlaylistType'
 import { apiAdage } from 'apiClient/api'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
-import useNotification from 'hooks/useNotification'
+import { GET_LOCAL_OFFERERS_PLAYLIST_QUERY_KEY } from 'config/swrQueryKeys'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 
 import { TrackerElementArg } from '../../AdageDiscovery'
@@ -49,28 +45,13 @@ export const VenuePlaylist = ({
   onWholePlaylistSeen,
   trackPlaylistElementClicked,
 }: VenuePlaylistProps) => {
-  const [venues, setVenues] = useState<LocalOfferersPlaylistOffer[]>([])
-
   const { adageUser } = useAdageUser()
-  const [loading, setLoading] = useState<boolean>(false)
-  const { error } = useNotification()
 
-  useEffect(() => {
-    const getClassroomPlaylistOffer = async () => {
-      setLoading(true)
-      try {
-        const result = await apiAdage.getLocalOfferersPlaylist()
-        setVenues(result.venues)
-      } catch (e) {
-        return error(GET_DATA_ERROR_MESSAGE)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    getClassroomPlaylistOffer()
-  }, [error])
+  const { data: playlist, isLoading } = useSWR(
+    [GET_LOCAL_OFFERERS_PLAYLIST_QUERY_KEY],
+    () => apiAdage.getLocalOfferersPlaylist(),
+    { fallbackData: { venues: [] } }
+  )
 
   return (
     <Carousel
@@ -84,7 +65,7 @@ export const VenuePlaylist = ({
         </h2>
       }
       className={classNames(styles['playlist-carousel'], {
-        [styles['playlist-carousel-loading']]: loading,
+        [styles['playlist-carousel-loading']]: isLoading,
       })}
       onLastCarouselElementVisible={() =>
         onWholePlaylistSeen({
@@ -92,8 +73,8 @@ export const VenuePlaylist = ({
           playlistType: AdagePlaylistType.VENUE,
         })
       }
-      loading={loading}
-      elements={venues.map((venue, index) => (
+      loading={isLoading}
+      elements={playlist.venues.map((venue, index) => (
         <VenueCard
           key={venue.id}
           handlePlaylistElementTracking={() =>
