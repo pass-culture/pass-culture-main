@@ -1,8 +1,14 @@
 import { setUser as setSentryUser } from '@sentry/browser'
 import { useEffect, useId, useState } from 'react'
+import useSWRMutation from 'swr/mutation'
 
-import { AdageFrontRoles, AuthenticatedResponse } from 'apiClient/adage'
+import {
+  AdageFrontRoles,
+  AuthenticatedResponse,
+  CatalogViewBody,
+} from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
+import { LOG_CATALOG_VIEW_QUERY_KEY } from 'config/swrQueryKeys'
 import useNotification from 'hooks/useNotification'
 import { LOGS_DATA } from 'utils/config'
 
@@ -24,6 +30,16 @@ export const App = (): JSX.Element => {
   const siret = params.get('siret')
   const venueId = Number(params.get('venue'))
 
+  const { trigger: logCatalogView } = useSWRMutation(
+    LOG_CATALOG_VIEW_QUERY_KEY,
+    (
+      _key: string,
+      options: {
+        arg: CatalogViewBody
+      }
+    ) => apiAdage.logCatalogView(options.arg)
+  )
+
   useEffect(() => {
     async function authenticate() {
       setIsLoading(true)
@@ -43,7 +59,7 @@ export const App = (): JSX.Element => {
 
     if (LOGS_DATA) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      apiAdage.logCatalogView({
+      logCatalogView({
         iframeFrom: location.pathname,
         source: siret || venueId ? 'partnersMap' : 'homepage',
       })
