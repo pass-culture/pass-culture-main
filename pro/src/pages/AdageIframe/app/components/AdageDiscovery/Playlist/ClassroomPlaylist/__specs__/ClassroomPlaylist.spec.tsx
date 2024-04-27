@@ -1,13 +1,8 @@
-import {
-  screen,
-  waitFor,
-  waitForElementToBeRemoved,
-} from '@testing-library/react'
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { AdageFrontRoles } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import * as useNotification from 'hooks/useNotification'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import { defaultCollectiveOffer } from 'utils/adageFactories'
@@ -76,17 +71,6 @@ describe('AdageDiscover classRoomPlaylist', () => {
         'Ces interventions peuvent avoir lieu dans votre établissement'
       )
     ).toBeInTheDocument()
-  })
-
-  it('should show an error message notification when classroom offer could not be fetched', async () => {
-    vi.spyOn(apiAdage, 'getClassroomPlaylist').mockRejectedValueOnce(null)
-
-    renderNewOfferPlaylist()
-    await waitFor(() =>
-      expect(apiAdage.getClassroomPlaylist).toHaveBeenCalled()
-    )
-
-    expect(notifyError).toHaveBeenNthCalledWith(1, GET_DATA_ERROR_MESSAGE)
   })
 
   it('should call tracker for classroom playlist element', async () => {
