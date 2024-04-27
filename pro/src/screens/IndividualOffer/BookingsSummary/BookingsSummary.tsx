@@ -7,7 +7,7 @@ import {
   BookingRecapResponseModel,
   GetIndividualOfferResponseModel,
 } from 'apiClient/v1'
-import { GET_EVENT_PRICE_CATEGORIES_AND_SCHEDULES_BY_DAYE_QUERY_KEY } from 'config/swrQueryKeys'
+import { GET_EVENT_PRICE_CATEGORIES_AND_SCHEDULES_BY_DATE_QUERY_KEY } from 'config/swrQueryKeys'
 import {
   DEFAULT_PRE_FILTERS,
   EMPTY_FILTER_VALUE,
@@ -42,7 +42,7 @@ export const BookingsSummaryScreen = ({
   )
 
   const stockSchedulesAndPricesByDateQuery = useSWR(
-    [GET_EVENT_PRICE_CATEGORIES_AND_SCHEDULES_BY_DAYE_QUERY_KEY],
+    [GET_EVENT_PRICE_CATEGORIES_AND_SCHEDULES_BY_DATE_QUERY_KEY],
     () => api.getOfferPriceCategoriesAndSchedulesByDates(offer.id),
     { fallbackData: [] }
   )
