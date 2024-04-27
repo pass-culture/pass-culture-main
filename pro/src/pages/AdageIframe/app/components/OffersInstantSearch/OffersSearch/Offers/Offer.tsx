@@ -1,12 +1,19 @@
 import cn from 'classnames'
 import { useState } from 'react'
+import useSWRMutation from 'swr/mutation'
 
 import {
   AdageFrontRoles,
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
+  OfferIdBody,
+  StockIdBody,
 } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
+import {
+  LOG_OFFER_DETAILS_CLICK_QUERY_KEY,
+  LOG_OFFER_TEMPLATE_DETAILS_CLICK_QUERY_KEY,
+} from 'config/swrQueryKeys'
 import useActiveFeature from 'hooks/useActiveFeature'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullUpIcon from 'icons/full-up.svg'
@@ -54,6 +61,26 @@ const Offer = ({
   const { adageUser, setInstitutionOfferCount, institutionOfferCount } =
     useAdageUser()
 
+  const { trigger: logOfferDetailsButtonClick } = useSWRMutation(
+    LOG_OFFER_DETAILS_CLICK_QUERY_KEY,
+    (
+      _key: string,
+      options: {
+        arg: StockIdBody
+      }
+    ) => apiAdage.logOfferDetailsButtonClick(options.arg)
+  )
+
+  const { trigger: logOfferTemplateDetailsButtonClick } = useSWRMutation(
+    LOG_OFFER_TEMPLATE_DETAILS_CLICK_QUERY_KEY,
+    (
+      _key: string,
+      options: {
+        arg: OfferIdBody
+      }
+    ) => apiAdage.logOfferTemplateDetailsButtonClick(options.arg)
+  )
+
   const isNewOfferInfoEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_ADAGE_OFFER_DESIGN'
   )
@@ -80,15 +107,15 @@ const Offer = ({
 
     if (!isTemplate) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      apiAdage.logOfferDetailsButtonClick({
+      logOfferDetailsButtonClick({
         iframeFrom: location.pathname,
         stockId: offer.stock.id,
-        queryId: queryId,
+        queryId,
         isFromNoResult: isInSuggestions,
       })
     } else {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      apiAdage.logOfferTemplateDetailsButtonClick({
+      logOfferTemplateDetailsButtonClick({
         iframeFrom: location.pathname,
         offerId: offer.id,
         queryId: queryId,
