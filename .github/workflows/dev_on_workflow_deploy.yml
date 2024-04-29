@@ -257,9 +257,9 @@ jobs:
           command: |
             POD_NAME=$(kubectl -n ${{ inputs.environment }} get po -l role=api -o json |jq -r '.items[] | select(.spec.containers[0].image | contains("${{ inputs.app_version }}")) | "\(.metadata.name)"'|head -n 1)
             echo "flask commands runs on ${POD_NAME}"
-            kubectl exec -it -n ${{ inputs.environment }} ${POD_NAME} -- flask set_algolia_settings offers --dry-run=false
-            kubectl exec -it -n ${{ inputs.environment }} ${POD_NAME} -- flask set_algolia_settings collective_offers --dry-run=false
-            kubectl exec -it -n ${{ inputs.environment }} ${POD_NAME} -- flask set_algolia_settings venues --dry-run=false
+            kubectl exec -it -n ${{ inputs.environment }} --field-selector=status.phase==Running ${POD_NAME} -- flask set_algolia_settings offers --dry-run=false
+            kubectl exec -it -n ${{ inputs.environment }} --field-selector=status.phase==Running ${POD_NAME} -- flask set_algolia_settings collective_offers --dry-run=false
+            kubectl exec -it -n ${{ inputs.environment }} --field-selector=status.phase==Running ${POD_NAME} -- flask set_algolia_settings venues --dry-run=false
 
   deploy-image-resizing-ehp:
     name: "Deploy image-resizing EHP"
