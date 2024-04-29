@@ -25,6 +25,7 @@ jobs:
       pro-changed: ${{ steps.check-pro-changes.outputs.any_modified }}
       maintenance-site-changed: ${{ steps.check-maintenance-site-changes.outputs.any_modified }}
       db-migration-changed: ${{ steps.check-db-migration-changes.outputs.any_modified }}
+      dependencies-changed: ${{ steps.check-dependencies-changes.outputs.any_modified }}
     steps:
       - uses: actions/checkout@v4.1.4
         with:
@@ -52,6 +53,14 @@ jobs:
           files: |-
             api/src/pcapi/alembic/versions/**
             api/src/pcapi/alembic/run_migrations.py
+              check-changes-in-dependencies:
+      - name: "Check changes in dependencies (frontend + backend)"
+        id: check-dependencies-changes
+        uses: tj-actions/changed-files@v44
+        with:
+          folder: |
+            api/poetry.lock
+            pro/yarn.lock
 
   build-api:
     name: "Build API (backend) Docker image"
