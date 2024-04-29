@@ -178,7 +178,6 @@ def get_offer_price_categories_and_schedules_by_dates(offer_id: int) -> EventDat
             Stock.offerId == offer_id,
             Stock.isSoftDeleted == False,
             Stock.beginningDatetime.isnot(None),
-            bookings_models.Booking.status != bookings_models.BookingStatus.CANCELLED,
         )
         .order_by(Stock.beginningDatetime)
         .all()
