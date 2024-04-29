@@ -89,7 +89,7 @@ class UnauthenticatedUserError(Exception):
 def has_current_user_permission(permission: perm_models.Permissions | str) -> bool:
     if isinstance(permission, str):
         permission = perm_models.Permissions[permission]
-    return permission in current_user.backoffice_profile.permissions or settings.BACKOFFICE_USERS_ALL_PERMISSIONS
+    return permission in current_user.backoffice_profile.permissions
 
 
 def _check_any_permission_of(permissions: typing.Iterable[perm_models.Permissions]) -> None:
