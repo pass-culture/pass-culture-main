@@ -168,7 +168,7 @@ jobs:
 
   deploy-storybook:
     name: "Deploy Storybook"
-    needs: check-folders-changed
+    needs: check-folders-changes
     if: ${{ github.ref == 'refs/heads/master' && needs.check-folders-changes.outputs.pro-changed == 'true' }}
     uses: ./.github/workflows/dev_on_workflow_deploy_storybook.yml
 
