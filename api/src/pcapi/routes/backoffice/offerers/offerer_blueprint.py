@@ -740,6 +740,7 @@ def get_managed_venues(offerer_id: int) -> utils.BackofficeResponse:
                 offerers_models.VenueRegistration.webPresence,
             ),
         )
+        .order_by(offerers_models.Venue.common_name)
         .all()
     )
 
