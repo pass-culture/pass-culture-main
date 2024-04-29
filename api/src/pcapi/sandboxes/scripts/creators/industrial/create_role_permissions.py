@@ -181,6 +181,9 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT,
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
     ],
+    "gestionnaire_des_droits": [
+        perm_models.Permissions.MANAGE_PERMISSIONS,
+    ],
 }
 
 
