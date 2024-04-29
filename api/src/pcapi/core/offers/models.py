@@ -120,6 +120,19 @@ class OfferExtraData(typing.TypedDict, total=False):
     langueiso: str | None
 
 
+class TiteliveImageType(enum.Enum):
+    RECTO = "recto"
+    VERSO = "verso"
+
+
+class ProductMediation(PcObject, Base, Model, ProvidableMixin):
+    __tablename__ = "product_mediation"
+
+    productId: int = sa.Column(sa.BigInteger, sa.ForeignKey("product.id"), index=True, nullable=False)
+    url: str = sa.Column(sa.String(255), nullable=False, unique=True)
+    imageType = sa.Column(sa.Enum(TiteliveImageType), nullable=False)
+
+
 class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
     description = sa.Column(sa.Text, nullable=True)
     durationMinutes = sa.Column(sa.Integer, nullable=True)
@@ -129,6 +142,7 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
     name: str = sa.Column(sa.String(140), nullable=False)
     subcategoryId: str = sa.Column(sa.Text, nullable=False, index=True)
     thumb_path_component = "products"
+    productMediations: sa_orm.Mapped[ProductMediation] = sa.orm.relationship("ProductMediation", backref="product")
 
     sa.Index("product_ean_idx", extraData["ean"].astext)
     sa.Index("product_allocineId_idx", extraData["allocineId"].cast(sa.Integer))
@@ -143,6 +157,19 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
     def can_be_synchronized(self) -> bool:
         return self.isGcuCompatible & (self.name != UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER)
 
+    @hybrid_property
+    def images(self) -> dict[str, str | None]:
+        if self.productMediations:
+            return {
+                "recto": next(
+                    (pm.url for pm in self.productMediations if pm.imageType == TiteliveImageType.RECTO), None
+                ),
+                "verso": next(
+                    (pm.url for pm in self.productMediations if pm.imageType == TiteliveImageType.VERSO), None
+                ),
+            }
+        return {"recto": self.thumbUrl}
+
 
 class Mediation(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, DeactivableMixin):
     __tablename__ = "mediation"
@@ -154,19 +181,6 @@ class Mediation(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Deactivab
     offer: sa_orm.Mapped["Offer"] = sa.orm.relationship("Offer", backref="mediations")
     offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
     thumb_path_component = "mediations"
-
-
-class TiteliveImageType(enum.Enum):
-    RECTO = "recto"
-    VERSO = "verso"
-
-
-class ProductMediation(PcObject, Base, Model, ProvidableMixin):
-    __tablename__ = "product_mediation"
-
-    productId: int = sa.Column(sa.BigInteger, sa.ForeignKey("product.id"), index=True, nullable=False)
-    url: str = sa.Column(sa.String(255), nullable=False, unique=True)
-    imageType = sa.Column(sa.Enum(TiteliveImageType), nullable=False)
 
 
 class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
@@ -696,23 +710,34 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         return self.subcategory.category.id
 
     @property
-    def image(self) -> OfferImage | None:
+    def images(self) -> dict[str, OfferImage] | None:
         activeMediation = self.activeMediation
         if activeMediation:
             url = activeMediation.thumbUrl
             if url:
-                return OfferImage(url, activeMediation.credit)
+                return {"recto": OfferImage(url, activeMediation.credit)}
 
-        productUrl = self.product.thumbUrl if self.product else None
-        if productUrl:
-            return OfferImage(productUrl, credit=None)
+        product_images = self.product.images if self.product else None
+        if product_images is None:
+            return None
+        images = {}
+        if product_images.get("recto"):
+            images["recto"] = OfferImage(product_images.get("recto"), credit=None)
+        if product_images.get("verso"):
+            images["verso"] = OfferImage(product_images.get("verso"), credit=None)
+        if images:
+            return images
+        return None
 
+    @property
+    def image(self) -> OfferImage | None:
+        if self.images:
+            return self.images.get("recto") if self.images.get("recto") else self.images.get("verso")
         return None
 
     @property
     def thumbUrl(self) -> str | None:
-        image = self.image
-        return image.url if image else None
+        return self.image.url if self.image else None
 
     @property
     def min_price(self) -> float | None:
