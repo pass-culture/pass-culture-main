@@ -133,7 +133,9 @@ def format_amount(amount: float | decimal.Decimal | None) -> str:
     if amount is None:
         amount = 0.0
 
-    return f"{amount:,.2f} €".replace(",", "\u202f").replace(".", ",")
+    return Markup('<span class="text-nowrap">{formatted_amount} €</span>').format(
+        formatted_amount=f"{amount:,.2f}".replace(",", "\u202f").replace(".", ",")
+    )
 
 
 def format_cents(amount_in_cents: int | None) -> str:

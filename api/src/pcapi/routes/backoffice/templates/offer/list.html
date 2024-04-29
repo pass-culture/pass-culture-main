@@ -178,11 +178,11 @@
                     {% if row.prices.min_price is none %}
                       -
                     {% elif row.prices.min_price == row.prices.max_price %}
-                      <span class="text-nowrap">{{ row.prices.min_price | format_amount }}</span>
+                      {{ row.prices.min_price | format_amount }}
                     {% else %}
-                      <span class="text-nowrap">{{ row.prices.min_price | format_amount }}</span>
+                      {{ row.prices.min_price | format_amount }}
                       -
-                      <span class="text-nowrap">{{ row.prices.max_price | format_amount }}</span>
+                      {{ row.prices.max_price | format_amount }}
                     {% endif %}
                   </td>
                 {% endif %}
