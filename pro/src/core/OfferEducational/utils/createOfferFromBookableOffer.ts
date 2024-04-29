@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
 import useNotification from 'hooks/useNotification'
 
-import { getCollectiveOfferAdapter } from '../adapters/getCollectiveOfferAdapter'
 import { getCollectiveOfferFormDataApdater } from '../adapters/getCollectiveOfferFormDataAdapter'
 import { postCollectiveDuplicateOfferAdapter } from '../adapters/postCollectiveDuplicateOfferAdapter'
 
@@ -14,38 +14,42 @@ export const createOfferFromBookableOffer = async (
   notify: ReturnType<typeof useNotification>,
   offerId: number
 ) => {
-  const offerResponse = await getCollectiveOfferAdapter(offerId)
+  try {
+    const offerResponse = await api.getCollectiveOffer(offerId)
+    const offererId = offerResponse.venue.managingOfferer.id
 
-  if (!offerResponse.isOk) {
-    return notify.error(offerResponse.message)
+    const result = await getCollectiveOfferFormDataApdater({
+      offererId: offererId,
+      offer: offerResponse,
+    })
+
+    if (!result.isOk) {
+      return notify.error(result.message)
+    }
+
+    const { offerers } = result.payload
+
+    const initialValues = computeInitialValuesFromOffer(
+      offerers,
+      false,
+      offerResponse
+    )
+
+    const { isOk, message, payload } =
+      await postCollectiveDuplicateOfferAdapter({
+        offerId,
+      })
+
+    if (!isOk) {
+      return notify.error(message)
+    }
+
+    await postCollectiveOfferImage({ initialValues, notify, payload })
+
+    navigate(`/offre/collectif/${payload.id}/creation?structure=${offererId}`)
+  } catch (error) {
+    notify.error(
+      'Une erreur est survenue lors de la récupération de votre offre'
+    )
   }
-  const offererId = offerResponse.payload.venue.managingOfferer.id
-  const result = await getCollectiveOfferFormDataApdater({
-    offererId: offererId,
-    offer: offerResponse.payload,
-  })
-
-  if (!result.isOk) {
-    return notify.error(result.message)
-  }
-
-  const { offerers } = result.payload
-
-  const initialValues = computeInitialValuesFromOffer(
-    offerers,
-    false,
-    offerResponse.payload
-  )
-
-  const { isOk, message, payload } = await postCollectiveDuplicateOfferAdapter({
-    offerId,
-  })
-
-  if (!isOk) {
-    return notify.error(message)
-  }
-
-  await postCollectiveOfferImage({ initialValues, notify, payload })
-
-  navigate(`/offre/collectif/${payload.id}/creation?structure=${offererId}`)
 }
