@@ -8,7 +8,6 @@ from flask import request
 from flask import url_for
 from flask_login import current_user
 from markupsafe import Markup
-from markupsafe import escape
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
@@ -789,12 +788,12 @@ def get_finance_incident_validation_form(finance_incident_id: int) -> utils.Back
         div_id=f"finance-incident-validation-modal-{finance_incident_id}",
         title="Valider l'incident",
         button_text="Confirmer",
-        information=escape(
+        information=Markup(
             "Vous allez valider un incident de {incident_amount} sur le compte bancaire {details}."
-            "Voulez-vous continuer ?".format(
-                incident_amount=filters.format_amount(incident_total_amount_euros),
-                details=bank_account_details_str,
-            )
+            "Voulez-vous continuer ?"
+        ).format(
+            incident_amount=filters.format_amount(incident_total_amount_euros),
+            details=bank_account_details_str,
         ),
     )
 

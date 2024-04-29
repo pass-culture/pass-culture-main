@@ -25,7 +25,6 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
-from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice.filters import format_booking_status
 from pcapi.routes.backoffice.filters import format_date_time
 from pcapi.routes.backoffice.finance import forms as finance_forms
@@ -170,7 +169,7 @@ class ListIncidentsTest(GetEndpointHelper):
         assert rows[0]["Nature"] == "Total"
         assert rows[0]["Type de résa"] == "Individuelle"
         assert rows[0]["Nb. Réservation(s)"] == str(len(incidents[0].booking_finance_incidents))
-        assert rows[0]["Montant total"] == filters.format_cents(incidents[0].due_amount_by_offerer)
+        assert rows[0]["Montant total"] == "11,00 €"
         assert rows[0]["Structure"] == incidents[0].venue.managingOfferer.name
         assert rows[0]["Porteur de l'offre (lieu)"] == incidents[0].venue.name
         assert rows[0]["Origine de la demande"] == incidents[0].details["origin"]
@@ -190,7 +189,7 @@ class ListIncidentsTest(GetEndpointHelper):
         assert rows[0]["Nature"] == "Total"
         assert rows[0]["Type de résa"] == "Individuelle"
         assert rows[0]["Nb. Réservation(s)"] == str(len(incidents[0].booking_finance_incidents))
-        assert rows[0]["Montant total"] == filters.format_cents(incidents[0].due_amount_by_offerer)
+        assert rows[0]["Montant total"] == "11,00 €"
         assert rows[0]["Structure"] == incidents[0].venue.managingOfferer.name
         assert rows[0]["Porteur de l'offre (lieu)"] == incidents[0].venue.name
         assert rows[0]["Origine de la demande"] == incidents[0].details["origin"]
@@ -219,7 +218,7 @@ class ListIncidentsTest(GetEndpointHelper):
         assert rows[0]["Nature"] == "Total"
         assert rows[0]["Type de résa"] == "Collective"
         assert rows[0]["Nb. Réservation(s)"] == str(len(incidents[1].booking_finance_incidents))
-        assert rows[0]["Montant total"] == filters.format_cents(incidents[1].due_amount_by_offerer)
+        assert rows[0]["Montant total"] == "100,00 €"
         assert rows[0]["Structure"] == incidents[1].venue.managingOfferer.name
         assert rows[0]["Porteur de l'offre (lieu)"] == incidents[1].venue.name
         assert rows[0]["Origine de la demande"] == incidents[1].details["origin"]
@@ -248,7 +247,7 @@ class ListIncidentsTest(GetEndpointHelper):
         assert rows[0]["Nature"] == "Total"
         assert rows[0]["Type de résa"] == "Individuelle"
         assert rows[0]["Nb. Réservation(s)"] == str(len(incidents[0].booking_finance_incidents))
-        assert rows[0]["Montant total"] == filters.format_cents(incidents[0].due_amount_by_offerer)
+        assert rows[0]["Montant total"] == "11,00 €"
         assert rows[0]["Structure"] == incidents[0].venue.managingOfferer.name
         assert rows[0]["Porteur de l'offre (lieu)"] == incidents[0].venue.name
         assert rows[0]["Origine de la demande"] == incidents[0].details["origin"]
@@ -279,7 +278,7 @@ class ListIncidentsTest(GetEndpointHelper):
         assert rows[0]["Nature"] == "Total"
         assert rows[0]["Type de résa"] == "Individuelle"
         assert rows[0]["Nb. Réservation(s)"] == str(len(incidents[0].booking_finance_incidents))
-        assert rows[0]["Montant total"] == filters.format_cents(incidents[0].due_amount_by_offerer)
+        assert rows[0]["Montant total"] == "11,00 €"
         assert rows[0]["Structure"] == incidents[0].venue.managingOfferer.name
         assert rows[0]["Porteur de l'offre (lieu)"] == incidents[0].venue.name
         assert rows[0]["Origine de la demande"] == incidents[0].details["origin"]
@@ -341,10 +340,7 @@ class GetIncidentValidationFormTest(GetEndpointHelper):
             assert response.status_code == 200
 
         text_content = html_parser.content_as_text(response.data)
-        assert (
-            f"Vous allez valider un incident de {filters.format_amount(finance_utils.to_euros(booking_incident.incident.due_amount_by_offerer))} "
-            f"sur le compte bancaire du lieu." in text_content
-        )
+        assert "Vous allez valider un incident de 11,00 € sur le compte bancaire du lieu." in text_content
 
     def test_no_script_injection_in_venue_name(self, authenticated_client):
         bank_account = finance_factories.BankAccountFactory()
@@ -357,10 +353,7 @@ class GetIncidentValidationFormTest(GetEndpointHelper):
             assert response.status_code == 200
 
         text_content = html_parser.content_as_text(response.data)
-        assert (
-            f"Vous allez valider un incident de {filters.format_amount(finance_utils.to_euros(booking_incident.incident.due_amount_by_offerer))} "
-            f"sur le compte bancaire {bank_account.label}." in text_content
-        )
+        assert f"Vous allez valider un incident de 11,00 € sur le compte bancaire {bank_account.label}." in text_content
 
 
 class CancelIncidentTest(PostEndpointHelper):
@@ -870,11 +863,8 @@ class GetOverpaymentCreationFormTest(PostEndpointHelper):
         assert f"Contremarque : {booking.token}" in additional_data_text
         assert f"Nom de l'offre : {offer.name}" in additional_data_text
         assert f"Bénéficiaire : {booking.user.full_name}" in additional_data_text
-        assert f"Montant de la réservation : {filters.format_amount(booking.total_amount)}" in additional_data_text
-        assert (
-            f"Montant remboursé à l'acteur : {filters.format_amount(finance_utils.to_euros(-invoiced_pricing.amount))}"
-            in additional_data_text
-        )
+        assert "Montant de la réservation : 10,10 €" in additional_data_text
+        assert "Montant remboursé à l'acteur : 10,00 €" in additional_data_text
 
         default_amount = html_parser.extract_input_value(response.data, "total_amount")
         assert default_amount == str(booking.total_amount)
@@ -900,14 +890,8 @@ class GetOverpaymentCreationFormTest(PostEndpointHelper):
         additional_data_text = html_parser.extract_cards_text(response.data)[0]
         assert f"Lieu : {venue.name}" in additional_data_text
         assert f"Nombre de réservations : {len(selected_bookings)}" in additional_data_text
-        assert (
-            f"Montant des réservations : {filters.format_amount(sum(booking.total_amount for booking in selected_bookings))}"
-            in additional_data_text
-        )
-        assert (
-            f"Montant remboursé à l'acteur : {filters.format_amount(finance_utils.to_euros(-sum(booking.reimbursement_pricing.amount for booking in selected_bookings)))}"
-            in additional_data_text
-        )
+        assert "Montant des réservations : 20,20 €" in additional_data_text
+        assert "Montant remboursé à l'acteur : 20,20 €" in additional_data_text
 
     def test_display_error_if_booking_not_reimbursed(self, authenticated_client):
         booking = bookings_factories.UsedBookingFactory()
@@ -968,14 +952,8 @@ class GetCollectiveBookingOverpaymentFormTest(PostEndpointHelper):
         )
         assert f"Établissement : {collective_booking.educationalInstitution.name}" in additional_data_text
         assert f"Nombre d'élèves : {collective_booking.collectiveStock.numberOfTickets}" in additional_data_text
-        assert (
-            f"Montant de la réservation : {filters.format_amount(collective_booking.total_amount)}"
-            in additional_data_text
-        )
-        assert (
-            f"Montant remboursé à l'acteur : {filters.format_amount(finance_utils.to_euros(-collective_booking.reimbursement_pricing.amount))}"
-            in additional_data_text
-        )
+        assert "Montant de la réservation : 100,00 €" in additional_data_text
+        assert "Montant remboursé à l'acteur : 100,00 €" in additional_data_text
 
 
 class CreateOverpaymentTest(PostEndpointHelper):

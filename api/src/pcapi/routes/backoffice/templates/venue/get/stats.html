@@ -11,7 +11,7 @@
                   data-bs-placement="top"
                   data-bs-title="Il y a trop d'offre pour en afficher la valeur">N/A</span>
           {% else %}
-            {{ stats.total_revenue | format_amount | safe }}
+            {{ stats.total_revenue | format_amount }}
           {% endif %}
         </h6>
         <div class="d-flex flex-row">
