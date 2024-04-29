@@ -98,8 +98,8 @@ jobs:
           kubectl logs -n ${{ inputs.environment }} -f jobs/pre-upgrade-${DATE} && break
           done
           kubectl wait --for=condition=complete --timeout=10900s -n ${{ inputs.environment }} jobs/pre-upgrade-${DATE}
-      - name: "Retrieve pcapi secrets list"
-        id: get-pcapi-secrets
+      - name: "Generate pcapi secrets list"
+        id: generate-pcapi-secrets-list
         run: |
           #Retrieve pcapi secrets list from source code
           PCAPI_SECRETS=$(cat api/src/pcapi/settings.py | grep "secrets_utils.getlist(" | awk -F'=' '{print $1}')
@@ -115,7 +115,7 @@ jobs:
           PASSCULTURE_PASSWORD=${{ steps.openid-auth-infra.outputs.access_token }} \
           helmfile -e ${{ inputs.environment }} template --set ${{ steps.get-pcapi-secrets.outputs.PCAPI_SECRETS }} --set image.tag=${{ inputs.app_version }} --output-dir ./rendered-manifests/ --output-dir-template "{{ .OutputDir }}/{{ .State.BaseName }}-{{ .Release.Name  }}"
       - name: "Push manifests to rendered-manifests repository"
-        id: push_manifests
+        id: push-manifests
         uses: cpina/github-action-push-to-another-repository@main
         env:
           API_TOKEN_GITHUB: ${{ steps.secrets.outputs.PASSCULTURE_SA_ACCESS_TOKEN }}
