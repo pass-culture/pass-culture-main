@@ -3,6 +3,7 @@ import useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'core/FirebaseEvents/constants'
 import fullInfoIcon from 'icons/full-info.svg'
 import fullLinkIcon from 'icons/full-link.svg'
+import fullNextIcon from 'icons/full-next.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
@@ -13,14 +14,18 @@ import styles from './PartnerPage.module.scss'
 export type PartnerPageCollectiveSectionProps = {
   collectiveDmsApplications: DMSApplicationForEAC[]
   venueId: number
+  offererId: number
+  venueName: string
   allowedOnAdage: boolean
   isDisplayedInHomepage?: boolean
 }
 
 export function PartnerPageCollectiveSection({
-  collectiveDmsApplications,
   venueId,
+  offererId,
+  venueName,
   allowedOnAdage,
+  collectiveDmsApplications,
   isDisplayedInHomepage = false,
 }: PartnerPageCollectiveSectionProps) {
   const { logEvent } = useAnalytics()
@@ -65,6 +70,19 @@ export function PartnerPageCollectiveSection({
             à destination des enseignants pour qu’ils vous contactent !
           </p>
         )}
+        {isDisplayedInHomepage && (
+          <ButtonLink
+            variant={ButtonVariant.TERNARY}
+            className={styles['details-link']}
+            link={{
+              to: `/structures/${offererId}/lieux/${venueId}/eac`,
+              'aria-label': `Gérer la page pour les enseignants ${venueName}`,
+            }}
+            icon={fullNextIcon}
+          >
+            Gérer votre page pour les enseignants
+          </ButtonLink>
+        )}
       </section>
     )
   } else if (lastDmsApplication === null) {
@@ -83,6 +101,19 @@ export function PartnerPageCollectiveSection({
           nationale et de la Jeunesse dédiée à l’EAC.
         </p>
 
+        {isDisplayedInHomepage && (
+          <ButtonLink
+            variant={ButtonVariant.TERNARY}
+            className={styles['details-link']}
+            link={{
+              to: `/structures/${offererId}/lieux/${venueId}/eac`,
+              'aria-label': `Gérer la page pour les enseignants ${venueName}`,
+            }}
+            icon={fullNextIcon}
+          >
+            Gérer votre page pour les enseignants
+          </ButtonLink>
+        )}
         <ButtonLink
           variant={ButtonVariant.TERNARY}
           icon={fullLinkIcon}
@@ -132,6 +163,20 @@ export function PartnerPageCollectiveSection({
           référencé dans ADAGE, l’application du ministère de l’Education
           nationale et de la Jeunesse dédiée à l’EAC.
         </p>
+
+        {isDisplayedInHomepage && (
+          <ButtonLink
+            variant={ButtonVariant.TERNARY}
+            className={styles['details-link']}
+            link={{
+              to: `/structures/${offererId}/lieux/${venueId}/eac`,
+              'aria-label': `Gérer la page pour les enseignants ${venueName}`,
+            }}
+            icon={fullNextIcon}
+          >
+            Gérer votre page pour les enseignants
+          </ButtonLink>
+        )}
       </section>
     )
   }
@@ -151,7 +196,19 @@ export function PartnerPageCollectiveSection({
       <p className={styles['details-description']}>
         Votre démarche de référencement est en cours de traitement par ADAGE.
       </p>
-
+      {isDisplayedInHomepage && (
+        <ButtonLink
+          variant={ButtonVariant.TERNARY}
+          className={styles['details-link']}
+          link={{
+            to: `/structures/${offererId}/lieux/${venueId}/eac`,
+            'aria-label': `Gérer la page pour les enseignants ${venueName}`,
+          }}
+          icon={fullNextIcon}
+        >
+          Gérer votre page pour les enseignants
+        </ButtonLink>
+      )}
       <ButtonLink
         variant={ButtonVariant.TERNARY}
         icon={fullInfoIcon}
