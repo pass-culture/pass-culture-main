@@ -58,7 +58,7 @@ jobs:
         id: check-dependencies-changes
         uses: tj-actions/changed-files@v44
         with:
-          folder: |
+          files: |
             api/poetry.lock
             pro/yarn.lock
 
