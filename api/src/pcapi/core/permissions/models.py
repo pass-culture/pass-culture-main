@@ -163,6 +163,7 @@ class Roles(enum.Enum):
     QA = "qa"
     GLOBAL_ACCESS = "global_access"
     DPO = "dpo"
+    PERMISSION_MANAGER = "gestionnaire_des_droits"
 
 
 def sync_db_roles(session: sa.orm.Session) -> None:
