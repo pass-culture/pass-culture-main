@@ -15,7 +15,7 @@ class IrisFrance(PcObject, Base, Model):
 
 class Address(PcObject, Base, Model):
     __tablename__ = "address"
-    banId: str | None = sa.Column(sa.Text(), nullable=True, unique=True)
+    banId: str | None = sa.Column(sa.Text(), nullable=True)
     inseeCode: str | None = sa.Column(sa.Text(), nullable=True)
     street: str | None = sa.Column(sa.Text(), nullable=True)
     postalCode: str = sa.Column(sa.Text(), nullable=False)
@@ -25,7 +25,6 @@ class Address(PcObject, Base, Model):
     longitude: float = sa.Column(sa.Numeric(8, 5), nullable=False)
 
     __table_args__ = (
-        sa.Index("ix_unique_address_per_banid", "banId", unique=True, postgresql_where=banId.isnot(None)),
         sa.Index(
             "ix_partial_unique_address_per_street_and_insee_code",
             "street",
