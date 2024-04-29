@@ -390,7 +390,7 @@ def delete_offerer(offerer_id: int) -> utils.BackofficeResponse:
     try:
         offerers_api.delete_offerer(offerer.id)
     except offerers_exceptions.CannotDeleteOffererWithBookingsException:
-        flash("Impossible d'effacer une structure juridique pour laquelle il existe des réservations", "warning")
+        flash("Impossible de supprimer une structure juridique pour laquelle il existe des réservations", "warning")
         return _self_redirect(offerer.id)
 
     for email in emails:

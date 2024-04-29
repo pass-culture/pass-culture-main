@@ -8,7 +8,7 @@
           {% if stats.total_revenue == stats.placeholder %}
             <span data-bs-toggle="tooltip"
                   data-bs-placement="top"
-                  data-bs-title="Il y a trop d'offre pour en afficher la valeur">N/A</span>
+                  data-bs-title="Il y a trop d'offres pour en afficher la valeur">N/A</span>
           {% else %}
             {{ stats.total_revenue | format_amount | safe }}
           {% endif %}
