@@ -1,23 +1,21 @@
-import { serializeStockEventEdition } from './adapters/serializers'
-import upsertStocksEventAdapter from './adapters/upsertStocksEventAdapter'
-import { StockEventFormValues, StocksEventFormik } from './StockFormList/types'
+import { api } from 'apiClient/api'
+
+import { serializeStockEventEdition } from './serializers'
+import { StockEventFormValues } from './StockFormList/types'
 
 export const submitToApi = async (
   allStockValues: StockEventFormValues[],
   offerId: number,
-  departmentCode: string,
-  setErrors: StocksEventFormik['setErrors']
+  departmentCode: string
 ) => {
-  const {
-    isOk,
-    payload,
-    message: upsertStocksMessage,
-  } = await upsertStocksEventAdapter({
-    offerId,
-    stocks: serializeStockEventEdition(allStockValues, departmentCode),
-  })
-  if (!isOk) {
-    setErrors({ stocks: payload.errors })
-    throw new Error(upsertStocksMessage)
+  try {
+    await api.upsertStocks({
+      offerId,
+      stocks: serializeStockEventEdition(allStockValues, departmentCode),
+    })
+  } catch {
+    throw new Error(
+      'Une erreur est survenue lors de la mise à jour de votre stock'
+    )
   }
 }

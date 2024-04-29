@@ -302,8 +302,7 @@ const StocksEventEdition = ({
       await submitToApi(
         values.stocks,
         offer.id,
-        offer.venue.departementCode ?? '',
-        formik.setErrors
+        offer.venue.departementCode ?? ''
       )
     } catch (error) {
       if (error instanceof Error) {

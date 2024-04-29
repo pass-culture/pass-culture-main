@@ -1,10 +1,10 @@
 import { format } from 'date-fns'
 import sub from 'date-fns/sub'
 
+import { api } from 'apiClient/api'
 import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 import useNotification from 'hooks/useNotification'
-import { serializeBeginningDateTime } from 'screens/IndividualOffer/StocksEventEdition/adapters/serializers'
-import upsertStocksEventAdapter from 'screens/IndividualOffer/StocksEventEdition/adapters/upsertStocksEventAdapter'
+import { serializeBeginningDateTime } from 'screens/IndividualOffer/StocksEventEdition/serializers'
 import {
   FORMAT_ISO_DATE_ONLY,
   isDateValid,
@@ -49,19 +49,19 @@ export const onSubmit = async (
 
   // Upsert stocks if there are stocks to upsert
   if (serializedStocksToAdd.length > 0) {
-    const { isOk, payload } = await upsertStocksEventAdapter({
-      offerId: offerId,
-      stocks: serializedStocksToAdd,
-    })
-    if (isOk) {
+    try {
+      const { stocks_count } = await api.upsertStocks({
+        offerId,
+        stocks: serializedStocksToAdd,
+      })
       notify.success(
-        payload > 1
+        stocks_count > 1
           ? `${new Intl.NumberFormat('fr-FR').format(
-              payload
+              stocks_count
             )} nouvelles dates ont été ajoutées`
-          : `${payload} nouvelle date a été ajoutée`
+          : `${stocks_count} nouvelle date a été ajoutée`
       )
-    } else {
+    } catch {
       notify.error(
         'Une erreur est survenue lors de l’enregistrement de vos stocks.'
       )
