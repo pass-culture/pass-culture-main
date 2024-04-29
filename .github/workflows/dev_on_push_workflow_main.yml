@@ -212,7 +212,7 @@ jobs:
 
   deploy-maintenance-site:
     name: "Deploy maintenance site"
-    needs: check-folders
+    needs: check-folders-changes
     if: |
       always() &&
       github.ref == 'refs/heads/master' &&
