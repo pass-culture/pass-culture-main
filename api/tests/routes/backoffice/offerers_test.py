@@ -1207,8 +1207,10 @@ class GetOffererVenuesTest(GetEndpointHelper):
 
     def test_get_managed_venues(self, authenticated_client, offerer):
         other_offerer = offerers_factories.OffererFactory()
-        venue_1 = offerers_factories.VenueFactory(managingOfferer=offerer, isPermanent=True)
-        venue_2 = offerers_factories.VenueFactory(managingOfferer=offerer)
+        venue_1 = offerers_factories.VenueFactory(
+            name="Deuxième", publicName="Second", managingOfferer=offerer, isPermanent=True
+        )
+        venue_2 = offerers_factories.VenueFactory(name="Premier", publicName=None, managingOfferer=offerer)
         offerers_factories.VenueRegistrationFactory(venue=venue_2)
         educational_factories.CollectiveDmsApplicationFactory(venue=venue_2, application=35)
         offerers_factories.VenueFactory(managingOfferer=other_offerer)
@@ -1222,26 +1224,23 @@ class GetOffererVenuesTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 2
 
-        # Sort before checking rows data to avoid flaky test
-        rows = sorted(rows, key=lambda row: int(row["ID"]))
-
-        assert rows[0]["ID"] == str(venue_1.id)
-        assert rows[0]["SIRET"] == venue_1.siret
-        assert rows[0]["Permanent"] == "Lieu permanent"
-        assert rows[0]["Nom"] == venue_1.name
-        assert rows[0]["Activité principale"] == venue_1.venueTypeCode.value
+        assert rows[0]["ID"] == str(venue_2.id)
+        assert rows[0]["SIRET"] == venue_2.siret
+        assert rows[0]["Permanent"] == ""
+        assert rows[0]["Nom"] == venue_2.name
+        assert rows[0]["Activité principale"] == venue_2.venueTypeCode.value
         assert not rows[0].get("Type de lieu")
-        assert rows[0]["Présence web"] == ""
-        assert rows[0]["Offres cibles"] == ""
+        assert rows[0]["Présence web"] == "https://example.com https://pass.culture.fr"
+        assert rows[0]["Offres cibles"] == "Indiv. et coll."
 
-        assert rows[1]["ID"] == str(venue_2.id)
-        assert rows[1]["SIRET"] == venue_2.siret
-        assert rows[1]["Permanent"] == ""
-        assert rows[1]["Nom"] == venue_2.name
-        assert rows[1]["Activité principale"] == venue_2.venueTypeCode.value
-        assert not rows[1].get("Type de lieu")
-        assert rows[1]["Présence web"] == "https://example.com https://pass.culture.fr"
-        assert rows[1]["Offres cibles"] == "Indiv. et coll."
+        assert rows[1]["ID"] == str(venue_1.id)
+        assert rows[1]["SIRET"] == venue_1.siret
+        assert rows[1]["Permanent"] == "Lieu permanent"
+        assert rows[1]["Nom"] == venue_1.publicName
+        assert rows[1]["Activité principale"] == venue_1.venueTypeCode.value
+        assert not rows[0].get("Type de lieu")
+        assert rows[1]["Présence web"] == ""
+        assert rows[1]["Offres cibles"] == ""
 
 
 class GetOffererCollectiveDmsApplicationsTest(GetEndpointHelper):
