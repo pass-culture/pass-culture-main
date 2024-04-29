@@ -543,7 +543,7 @@ class GetVenueStatsTest(GetEndpointHelper):
         cards_content = html_parser.extract_cards_text(response.data)
         pricing_point = venue_with_no_siret.pricing_point_links[0].pricingPoint
         assert venue_with_no_siret.siret is None
-        assert f"Siret de valorisation : {pricing_point.name}" in cards_content[2]
+        assert f"Point de valorisation : {pricing_point.name}" in cards_content[2]
 
     def test_get_venue_with_no_bank_account(self, authenticated_client):
         venue = offerers_factories.VenueFactory(pricing_point="self")
@@ -770,7 +770,7 @@ class DeleteVenueTest(PostEndpointHelper):
         response = authenticated_client.get(expected_url)
         assert (
             html_parser.extract_alert(response.data)
-            == "Impossible d'effacer un lieu pour lequel il existe des réservations"
+            == "Impossible de supprimer un lieu pour lequel il existe des réservations"
         )
 
     def test_cant_delete_venue_when_pricing_point_for_another_venue(self, legit_user, authenticated_client):
@@ -787,7 +787,7 @@ class DeleteVenueTest(PostEndpointHelper):
         response = authenticated_client.get(expected_url)
         assert (
             html_parser.extract_alert(response.data)
-            == "Impossible d'effacer un lieu utilisé comme point de valorisation d'un autre lieu"
+            == "Impossible de supprimer un lieu utilisé comme point de valorisation d'un autre lieu"
         )
 
     def test_cant_delete_venue_when_reimbursement_point_for_another_venue(self, legit_user, authenticated_client):
@@ -806,7 +806,7 @@ class DeleteVenueTest(PostEndpointHelper):
         response = authenticated_client.get(expected_url)
         assert (
             html_parser.extract_alert(response.data)
-            == "Impossible d'effacer un lieu utilisé comme point de remboursement d'un autre lieu"
+            == "Impossible de supprimer un lieu utilisé comme point de remboursement d'un autre lieu"
         )
 
     def test_no_script_injection_in_venue_name(self, legit_user, authenticated_client):
@@ -2242,7 +2242,7 @@ class PostDeleteVenueProviderTest(PostEndpointHelper):
         )
 
         response = authenticated_client.get(response.location)
-        assert "Le lien entre le lieu et le provider a été effacé." in html_parser.extract_alert(response.data)
+        assert "Le lien entre le lieu et le provider a été supprimé." in html_parser.extract_alert(response.data)
 
     def test_delete_venue_wrong_provider(self, authenticated_client):
         venue_provider = providers_factories.VenueProviderFactory()
@@ -2278,7 +2278,7 @@ class PostDeleteVenueProviderTest(PostEndpointHelper):
         )
 
         response = authenticated_client.get(response.location)
-        assert "Impossible d'effacer le lien entre le lieu et Allociné." in html_parser.extract_alert(response.data)
+        assert "Impossible de supprimer le lien entre le lieu et Allociné." in html_parser.extract_alert(response.data)
 
 
 class GetEntrepriseInfoTest(GetEndpointHelper):

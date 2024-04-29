@@ -106,7 +106,7 @@
       <div class="card-body">
         <ul class="list-unstyled list-group small">
           <li>
-            <span class="fw-bold">Siret de valorisation :</span>
+            <span class="fw-bold">Point de valorisation :</span>
             {% if pricing_point %}
               {% if pricing_point.id != venue.id %}
                 <a href="{{ url_for("backoffice_web.venue.get", venue_id=pricing_point.id) }}"

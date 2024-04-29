@@ -871,7 +871,7 @@ class GetConnectAsProUserTest(GetEndpointHelper):
         [
             (
                 [users_models.UserRole.PRO, users_models.UserRole.ADMIN],
-                "L'utilisation du « connect as » n'est pas disponible pour les comptes admins",
+                "L'utilisation du « connect as » n'est pas disponible pour les comptes ADMIN",
             ),
             (
                 [users_models.UserRole.PRO, users_models.UserRole.ANONYMIZED],
