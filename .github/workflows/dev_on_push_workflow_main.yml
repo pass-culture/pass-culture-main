@@ -96,7 +96,7 @@ jobs:
 
   update-api-client-template:  # for pull requests only
     name: "Update api client template"
-    needs: build-api
+    needs: [check-folders-changes, build-api]
     uses: ./.github/workflows/dev_on_workflow_update_api_client_template.yml
     if: github.base_ref == 'master'
     concurrency:
@@ -113,7 +113,7 @@ jobs:
 
   prepare-cache-master:  # on "master" branch only
     name: "Reset cache on master on dependency update"
-    needs: build-api
+    needs: [check-folders-changes, build-api]
     uses: ./.github/workflows/dev_on_workflow_update_api_client_template.yml
     if: github.ref == 'refs/heads/master'
     with:
