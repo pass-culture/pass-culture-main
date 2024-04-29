@@ -16,8 +16,6 @@ import { Events } from 'core/FirebaseEvents/constants'
 import useNotification from 'hooks/useNotification'
 import { buildInitialValues } from 'pages/VenueEdition/VenueEditionHeader'
 import { postImageToVenue } from 'repository/pcapi/pcapi'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { Card } from '../Card'
 import { HomepageLoaderData } from '../Homepage'
@@ -105,17 +103,6 @@ export const PartnerPage = ({ offerer, venue }: PartnerPageProps) => {
               {venue.street}, {venue.postalCode} {venue.city}
             </address>
           )}
-
-          <ButtonLink
-            variant={ButtonVariant.SECONDARY}
-            className={styles['venue-button']}
-            link={{
-              to: `/structures/${offerer.id}/lieux/${venue.id}`,
-              'aria-label': `Gérer la page ${venue.name}`,
-            }}
-          >
-            Gérer ma page
-          </ButtonLink>
         </div>
       </div>
 
@@ -129,12 +116,16 @@ export const PartnerPage = ({ offerer, venue }: PartnerPageProps) => {
 
       <PartnerPageIndividualSection
         venueId={venue.id}
+        venueName={venue.name}
+        offererId={offerer.id}
         isVisibleInApp={Boolean(venue.isVisibleInApp)}
         isDisplayedInHomepage
       />
       <PartnerPageCollectiveSection
         collectiveDmsApplications={venue.collectiveDmsApplications}
         venueId={venue.id}
+        venueName={venue.name}
+        offererId={offerer.id}
         allowedOnAdage={offerer.allowedOnAdage}
         isDisplayedInHomepage
       />
