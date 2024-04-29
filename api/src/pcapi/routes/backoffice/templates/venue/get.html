@@ -169,10 +169,10 @@
                     {{ region }}
                   </p>
                 {% endif %}
-                {% if venue.city %}
+                {% if venue.street %}
                   <p class="mb-1">
-                    <span class="fw-bold">Ville :</span>
-                    {{ venue.city }}
+                    <span class="fw-bold">Adresse :</span>
+                    {{ venue.street }}
                   </p>
                 {% endif %}
                 {% if venue.postalCode %}
@@ -181,10 +181,10 @@
                     {{ venue.postalCode }}
                   </p>
                 {% endif %}
-                {% if venue.street %}
+                {% if venue.city %}
                   <p class="mb-1">
-                    <span class="fw-bold">Adresse :</span>
-                    {{ venue.street }}
+                    <span class="fw-bold">Ville :</span>
+                    {{ venue.city }}
                   </p>
                 {% endif %}
                 {% if venue.latitude and venue.longitude %}
