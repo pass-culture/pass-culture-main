@@ -100,7 +100,7 @@ describe('ActionsBar', () => {
     await userEvent.click(screen.getByText('Publier'))
 
     expect(api.patchOffersActiveStatus).toHaveBeenLastCalledWith({
-      ids: offerIds,
+      ids: [1, 2],
       isActive: true,
     })
     expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
@@ -178,7 +178,7 @@ describe('ActionsBar', () => {
       }
     )
     expect(api.patchOffersActiveStatus).toHaveBeenLastCalledWith({
-      ids: offerIds,
+      ids: [1, 2],
       isActive: false,
     })
     expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
