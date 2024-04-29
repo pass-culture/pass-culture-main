@@ -8,6 +8,7 @@ import {
   GetOffererResponseModel,
 } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
+import { GET_COLLECTIVE_OFFERS_QUERY_KEY } from 'config/swrQueryKeys'
 import { getOffererAdapter } from 'core/Offers/adapters/getOffererAdapter'
 import { DEFAULT_PAGE, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
@@ -23,8 +24,6 @@ import useNotification from 'hooks/useNotification'
 import { formatAndOrderVenues } from 'repository/venuesService'
 import { Offers } from 'screens/Offers/Offers'
 import Spinner from 'ui-kit/Spinner/Spinner'
-
-export const GET_COLLECTIVE_OFFERS_QUERY_KEY = 'getCollectiveOffers'
 
 export const CollectiveOffers = (): JSX.Element => {
   const urlSearchFilters = useQuerySearchFilters()

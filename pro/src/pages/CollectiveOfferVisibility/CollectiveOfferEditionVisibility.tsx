@@ -1,9 +1,11 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useSWRConfig } from 'swr'
 
 import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
+import { GET_COLLECTIVE_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
 import { isCollectiveOfferTemplate, Mode } from 'core/OfferEducational/types'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
@@ -21,11 +23,11 @@ import { patchEducationalInstitutionAdapter } from './adapters/patchEducationalI
 
 const CollectiveOfferVisibility = ({
   offer,
-  reloadCollectiveOffer,
   isTemplate,
 }: MandatoryCollectiveOfferFromParamsProps) => {
   const notify = useNotification()
   const navigate = useNavigate()
+  const { mutate } = useSWRConfig()
   const {
     error,
     data: institutionsPayload,
@@ -38,15 +40,14 @@ const CollectiveOfferVisibility = ({
     )
   }
 
-  const onSuccess = ({
+  const onSuccess = async ({
     message,
     payload,
   }: {
     message: string
     payload: GetCollectiveOfferResponseModel
   }) => {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    reloadCollectiveOffer()
+    await mutate([GET_COLLECTIVE_OFFER_QUERY_KEY, offer.id])
     navigate(
       `/offre/${computeURLCollectiveOfferId(
         payload.id,
@@ -78,7 +79,6 @@ const CollectiveOfferVisibility = ({
           institutions={institutionsPayload.institutions}
           isLoadingInstitutions={isLoading}
           offer={offer}
-          reloadCollectiveOffer={reloadCollectiveOffer}
         />
       </CollectiveOfferLayout>
     </AppLayout>

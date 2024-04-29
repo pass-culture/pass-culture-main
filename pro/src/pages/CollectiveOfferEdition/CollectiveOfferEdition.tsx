@@ -13,8 +13,6 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 
 const CollectiveOfferEdition = ({
   offer,
-  setOffer,
-  reloadCollectiveOffer,
   isTemplate,
 }: MandatoryCollectiveOfferFromParamsProps): JSX.Element => {
   const { isReady, ...offerEducationalFormData } = useOfferEducationalFormData(
@@ -35,13 +33,11 @@ const CollectiveOfferEdition = ({
             domainsOptions={offerEducationalFormData.domains}
             nationalPrograms={offerEducationalFormData.nationalPrograms}
             offer={offer}
-            setOffer={setOffer}
             isOfferActive={offer.isActive}
             isOfferBooked={
               isOfferTemplate ? false : offer.collectiveStock?.isBooked
             }
             mode={offer.isEditable ? Mode.EDITION : Mode.READ_ONLY}
-            reloadCollectiveOffer={reloadCollectiveOffer}
             isTemplate={isOfferTemplate}
           />
         </CollectiveOfferLayout>

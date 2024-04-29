@@ -56,7 +56,6 @@ export interface CollectiveOfferVisibilityProps {
   institutions: EducationalInstitutionResponseModel[]
   isLoadingInstitutions: boolean
   offer: GetCollectiveOfferResponseModel
-  reloadCollectiveOffer?: () => void
   requestId?: string | null
 }
 interface InstitutionOption extends SelectOptionNormalized {
@@ -82,7 +81,6 @@ export const CollectiveOfferVisibilityScreen = ({
   institutions,
   isLoadingInstitutions,
   offer,
-  reloadCollectiveOffer,
   requestId = '',
 }: CollectiveOfferVisibilityProps) => {
   const notify = useNotification()
@@ -235,7 +233,6 @@ export const CollectiveOfferVisibilityScreen = ({
       <FormLayout.MandatoryInfo />
 
       <OfferEducationalActions
-        reloadCollectiveOffer={reloadCollectiveOffer}
         className={styles.actions}
         isBooked={Boolean(offer.collectiveStock?.isBooked)}
         offer={offer}

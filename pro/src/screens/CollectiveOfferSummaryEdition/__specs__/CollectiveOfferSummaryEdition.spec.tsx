@@ -21,11 +21,7 @@ const renderCollectiveOfferSummaryEdition = (
     | GetCollectiveOfferResponseModel
 ) => {
   renderWithProviders(
-    <CollectiveOfferSummaryEditionScreen
-      offer={offer}
-      reloadCollectiveOffer={vi.fn()}
-      mode={Mode.EDITION}
-    />,
+    <CollectiveOfferSummaryEditionScreen offer={offer} mode={Mode.EDITION} />,
     { user: sharedCurrentUserFactory() }
   )
 }

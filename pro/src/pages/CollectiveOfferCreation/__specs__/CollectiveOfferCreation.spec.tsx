@@ -42,8 +42,6 @@ describe('CollectiveOfferCreation', () => {
     offer: getCollectiveOfferFactory({
       venue: { ...venue, managingOfferer: offerer },
     }),
-    setOffer: vi.fn(),
-    reloadCollectiveOffer: vi.fn(),
     isTemplate: false,
   }
   beforeEach(() => {
