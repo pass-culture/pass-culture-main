@@ -1,6 +1,6 @@
 import { PriceCategoryBody } from 'apiClient/v1'
 
-import { PriceCategoriesFormValues } from '../form/types'
+import { PriceCategoriesFormValues } from './types'
 
 export const serializePriceCategories = (
   values: PriceCategoriesFormValues
