@@ -47,7 +47,7 @@ jobs:
         uses: tj-actions/changed-files@v44
         with:
           files: maintenance-site/**
-      - name: "Check maintenance-site folder changes"
+      - name: "Check db migration folder changes"
         id: check-db-migration-changes
         uses: tj-actions/changed-files@v44
         with:
