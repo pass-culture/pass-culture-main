@@ -172,6 +172,35 @@ def new_template_offers_playlist(
     )
 
 
+@blueprint.adage_iframe.route("/playlists/any_new_template_offers", methods=["GET"])
+@spectree_serialize(
+    response_model=serializers.ListCollectiveOfferTemplateResponseModel,
+    api=blueprint.api,
+    on_error_statuses=[404],
+)
+@adage_jwt_required
+def get_any_new_template_offers_playlist(
+    authenticated_information: AuthenticatedInformation,
+) -> serializers.ListCollectiveOfferTemplateResponseModel:
+    if authenticated_information.uai is None:
+        raise ApiErrors({"message": "institutionId is mandatory"}, status_code=403)
+
+    institution = repository.find_educational_institution_by_uai_code(authenticated_information.uai)
+    if not institution:
+        raise ApiErrors({"message": "institutionId is mandatory"}, status_code=403)
+
+    try:
+        informations = get_redactor_information_from_adage_authentication(authenticated_information)
+    except educational_exceptions.MissingRequiredRedactorInformation:
+        raise ApiErrors(errors={"auth": "unknown redactor"}, status_code=403)
+
+    redactor = repository.find_redactor_by_email(informations.email)
+    if not redactor:
+        raise ApiErrors(errors={"auth": "unknown redactor"}, status_code=403)
+
+    return serializers.ListCollectiveOfferTemplateResponseModel(collectiveOffers=[])
+
+
 @blueprint.adage_iframe.route("/playlists/local-offerers", methods=["GET"])
 @spectree_serialize(response_model=playlists_serializers.LocalOfferersPlaylist, api=blueprint.api)
 @adage_jwt_required
@@ -210,3 +239,19 @@ def get_local_offerers_playlist(
             for item in playlist_items
         ]
     )
+
+
+@blueprint.adage_iframe.route("/playlists/new_offerers", methods=["GET"])
+@spectree_serialize(response_model=playlists_serializers.LocalOfferersPlaylist, api=blueprint.api)
+@adage_jwt_required
+def get_new_offerers_playlist(
+    authenticated_information: AuthenticatedInformation,
+) -> playlists_serializers.LocalOfferersPlaylist:
+    if not authenticated_information.uai:
+        raise ApiErrors({"message": "institutionId is mandatory"}, status_code=403)
+
+    institution = repository.get_educational_institution_public(institution_id=None, uai=authenticated_information.uai)
+    if not institution:
+        raise ApiErrors({"message": "institutionId is mandatory"}, status_code=403)
+
+    return playlists_serializers.LocalOfferersPlaylist(venues=[])

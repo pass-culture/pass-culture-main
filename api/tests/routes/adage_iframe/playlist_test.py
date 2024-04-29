@@ -286,6 +286,28 @@ class GetLocalOfferersPlaylistTest(SharedPlaylistsErrorTests):
         assert playlist_order_1 != playlist_order_2
 
 
+class GetAnyNewTemplateOffersTest(SharedPlaylistsErrorTests):
+    endpoint = "adage_iframe.get_any_new_template_offers_playlist"
+
+    def test_no_offers(self, client):
+        iframe_client = _get_iframe_client(client)
+        response = iframe_client.get(url_for(self.endpoint))
+
+        assert response.status_code == 200
+        assert response.json == {"collectiveOffers": []}
+
+
+class GetNewOfferersPlaylistTest(SharedPlaylistsErrorTests):
+    endpoint = "adage_iframe.get_new_offerers_playlist"
+
+    def test_no_offerers(self, client):
+        iframe_client = _get_iframe_client(client)
+        response = iframe_client.get(url_for(self.endpoint))
+
+        assert response.status_code == 200
+        assert response.json == {"venues": []}
+
+
 def _get_iframe_client(client, email=None, uai=None):
     if uai is None:
         uai = educational_factories.EducationalInstitutionFactory().institutionId
