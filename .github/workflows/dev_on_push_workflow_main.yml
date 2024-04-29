@@ -55,7 +55,7 @@ jobs:
 
   build-api:
     name: "Build API (backend) Docker image"
-    needs: [check-folders]
+    needs: [check-folders-changes]
     if: |
       needs.check-folders-changes.outputs.api-changed == 'true' ||
       needs.check-folders-changes.outputs.pro-changed == 'true' ||
@@ -79,7 +79,7 @@ jobs:
 
   run-mypy-cop:
     name: "MyPy cop"
-    needs: check-folders
+    needs: check-folders-changes
     if: |
       github.event_name == 'pull_request' &&
       needs.check-folders-changes.outputs.api-changed == 'true'
@@ -118,7 +118,7 @@ jobs:
 
   test-api:
     name: "Test api"
-    needs: [check-folders, build-api]
+    needs: [check-folders-changes, build-api]
     if: |
       needs.check-folders-changes.outputs.api-changed == 'true' ||
       github.ref == 'refs/heads/master' ||
@@ -152,7 +152,7 @@ jobs:
 
   test-pro-e2e:
     name: "Tests pro E2E"
-    needs: [check-folders, build-api]
+    needs: [check-folders-changes, build-api]
     if: |
       needs.check-folders-changes.outputs.api-changed == 'true' ||
       needs.check-folders-changes.outputs.pro-changed == 'true' ||
