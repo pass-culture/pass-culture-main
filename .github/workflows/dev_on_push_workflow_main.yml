@@ -55,7 +55,7 @@ jobs:
 
   build-api:
     name: "Build API (backend) Docker image"
-    needs: [check-folders-changes]
+    needs: check-folders-changes
     if: |
       needs.check-folders-changes.outputs.api-changed == 'true' ||
       needs.check-folders-changes.outputs.pro-changed == 'true' ||
@@ -130,7 +130,7 @@ jobs:
 
   test-pro:
     name: "Tests pro"
-    needs: check-pro
+    needs: check-folders-changes
     if: |
       needs.check-folders-changes.outputs.pro-changed == 'true' ||
       github.ref == 'refs/heads/master' ||
@@ -168,13 +168,13 @@ jobs:
 
   deploy-storybook:
     name: "Deploy Storybook"
-    needs: check-pro
+    needs: check-folders
     if: ${{ github.ref == 'refs/heads/master' && needs.check-folders-changes.outputs.pro-changed == 'true' }}
     uses: ./.github/workflows/dev_on_workflow_deploy_storybook.yml
 
   deploy-validation-env:
     name: "[PRO] Deploy PR version for validation"
-    needs: check-pro
+    needs: check-folders-changes
     uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
     if: |
       always() &&
@@ -212,11 +212,11 @@ jobs:
 
   deploy-maintenance-site:
     name: "Deploy maintenance site"
-    needs: check-maintenance-site
+    needs: check-folders
     if: |
       always() &&
       github.ref == 'refs/heads/master' &&
-      needs.check-maintenance-site.outputs.folder_changed == 'true'
+      needs.check-folders-changes.outputs.maintenance-site-changed == 'true'
     uses: ./.github/workflows/dev_on_workflow_deploy_maintenance_site.yml
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -224,11 +224,11 @@ jobs:
 
   ping-data-team-on-slack:
     name: "Ping data team on slack"
-    needs: check-db-migrations
+    needs: check-folders-changes
     if: |
       always() &&
       github.ref == 'refs/heads/master' &&
-      needs.check-db-migrations.outputs.folder_changed == 'true'
+      needs.check-folders-changes.outputs.db-migrations-changed == 'true'
     uses: ./.github/workflows/dev_on_workflow_ping_data_team.yml
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
