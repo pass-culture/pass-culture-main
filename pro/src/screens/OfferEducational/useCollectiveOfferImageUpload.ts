@@ -6,8 +6,6 @@ import {
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
-import { deleteCollectiveOfferImageAdapter } from 'core/OfferEducational/adapters/deleteCollectiveOfferImageAdapter'
-import { deleteCollectiveOfferTemplateImageAdapter } from 'core/OfferEducational/adapters/deleteCollectiveOfferTemplateImageAdapter'
 import { OfferCollectiveImage } from 'core/Offers/types'
 import useNotification from 'hooks/useNotification'
 import { sendSentryCustomError } from 'utils/sendSentryCustomError'
@@ -47,15 +45,15 @@ export const useCollectiveOfferImageUpload = (
           return
         }
 
-        const adapter = isTemplate
-          ? deleteCollectiveOfferTemplateImageAdapter
-          : deleteCollectiveOfferImageAdapter
-
-        const { isOk, message } = await adapter(offerId)
-        if (!isOk) {
-          notify.error(message)
+        try {
+          isTemplate
+            ? await api.deleteOfferTemplateImage(offerId)
+            : await api.deleteOfferImage(offerId)
+        } catch (error) {
+          notify.error(
+            'Une erreur est survenue lors de la suppression de l’image de l’offre'
+          )
         }
-
         return
       }
 
