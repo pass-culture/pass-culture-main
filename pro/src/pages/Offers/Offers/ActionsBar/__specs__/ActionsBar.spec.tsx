@@ -134,11 +134,11 @@ describe('ActionsBar', () => {
     await userEvent.click(screen.getByText('Supprimer ces brouillons'))
 
     expect(api.deleteDraftOffers).toHaveBeenLastCalledWith({
-      ids: offerIds,
+      ids: [1, 2],
     })
     expect(api.deleteDraftOffers).toHaveBeenCalledTimes(1)
     expect(api.deleteDraftOffers).toHaveBeenNthCalledWith(1, {
-      ids: offerIds,
+      ids: [1, 2],
     })
     expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
     expect(
