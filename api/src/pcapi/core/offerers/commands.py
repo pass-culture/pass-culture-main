@@ -146,7 +146,7 @@ def synchronize_venues_with_acceslibre(venue_ids: list[int], dry_run: bool = Tru
             continue
 
         offerers_api.set_accessibility_provider_id(venue)
-        if not venue.accessibilityProvider.externalAccessibilityId:
+        if not venue.accessibilityProvider:
             logger.info("No match found at acceslibre for Venue %s ", venue_id)
             continue
 
