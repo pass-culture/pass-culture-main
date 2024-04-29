@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import { ForwardedRef, forwardRef } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 
@@ -34,23 +35,25 @@ const Header = forwardRef(
     return (
       <header className={styles['top-menu']} id="top-navigation">
         <div className={styles['top-menu-content']}>
-          <Button
-            ref={openButtonRef}
-            aria-expanded={lateralPanelOpen}
-            className={styles['burger-icon']}
-            variant={ButtonVariant.TERNARY}
-            onClick={() => {
-              setLateralPanelOpen(!lateralPanelOpen)
-              focusCloseButton()
-            }}
-            aria-label="Menu"
-            aria-controls="lateral-panel"
-          >
-            <SvgIcon src={fullBurgerIcon} alt="" width="24" />
-          </Button>
+          {!disableHomeLink && (
+            <Button
+              ref={openButtonRef}
+              aria-expanded={lateralPanelOpen}
+              className={styles['burger-icon']}
+              variant={ButtonVariant.TERNARY}
+              onClick={() => {
+                setLateralPanelOpen(!lateralPanelOpen)
+                focusCloseButton()
+              }}
+              aria-label="Menu"
+              aria-controls="lateral-panel"
+            >
+              <SvgIcon src={fullBurgerIcon} alt="" width="24" />
+            </Button>
+          )}
           <div className={styles['nav-brand']}>
             {disableHomeLink ? (
-              <div className={styles['logo']}>
+              <div className={cn(styles['logo'], styles['logo-link-disabled'])}>
                 <SvgIcon
                   alt="Pass Culture pro, l’espace des acteurs culturels"
                   src={logoPassCultureProIcon}
