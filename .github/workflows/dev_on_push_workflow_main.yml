@@ -18,6 +18,7 @@ concurrency:
 
 jobs:
   check-folders-changes:
+    # Perform all changes checks at once to remove the need for multiple checkouts accross jobs
     name: "Check changes in folders"
     runs-on: ubuntu-latest
     outputs:
@@ -53,7 +54,6 @@ jobs:
           files: |-
             api/src/pcapi/alembic/versions/**
             api/src/pcapi/alembic/run_migrations.py
-              check-changes-in-dependencies:
       - name: "Check changes in dependencies (frontend + backend)"
         id: check-dependencies-changes
         uses: tj-actions/changed-files@v44
