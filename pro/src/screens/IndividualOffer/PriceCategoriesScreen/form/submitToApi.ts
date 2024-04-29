@@ -2,9 +2,8 @@ import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { updateIndividualOffer } from 'core/Offers/adapters/updateIndividualOffer/updateIndividualOffer'
 
-import { serializePriceCategories } from '../adapters/serializePriceCategories'
-
 import { computeInitialValues } from './computeInitialValues'
+import { serializePriceCategories } from './serializePriceCategories'
 import { PriceCategoriesFormValues, PriceCategoryFormik } from './types'
 
 export const submitToApi = async (
