@@ -24,3 +24,7 @@ export default function UnauthenticatedError(): JSX.Element {
     </main>
   )
 }
+
+// Lazy-loaded by react-router-dom
+// ts-unused-exports:disable-next-line
+export const Component = UnauthenticatedError

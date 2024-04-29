@@ -45,5 +45,5 @@ class FavoriteOfferTest:
             f"/adage-iframe/collective/offers/{collective_offer.id}/favorites",
         )
 
-        assert response.status_code == 403
-        assert response.json == {"Authorization": "Unrecognized token"}
+        assert response.status_code == 401
+        assert response.json["msg"] == "Unrecognized token"
