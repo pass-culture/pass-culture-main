@@ -2,11 +2,12 @@ import classNames from 'classnames'
 import isEqual from 'lodash.isequal'
 import React, { useCallback, useEffect, useState } from 'react'
 
-import FormLayout from 'components/FormLayout/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import MultiDownloadButtonsModal from 'components/MultiDownloadButtonsModal/MultiDownloadButtonsModal'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
 import { PreFiltersParams } from 'core/Bookings/types'
-import { Audience, GET_DATA_ERROR_MESSAGE } from 'core/shared'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
+import { Audience } from 'core/shared/types'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import fullRefreshIcon from 'icons/full-refresh.svg'
@@ -20,9 +21,9 @@ import { isDateValid } from 'utils/date'
 
 import { Events } from '../../../core/FirebaseEvents/constants'
 
-import FilterByBookingStatusPeriod from './FilterByBookingStatusPeriod'
-import FilterByEventDate from './FilterByEventDate'
-import FilterByVenue from './FilterByVenue'
+import { FilterByBookingStatusPeriod } from './FilterByBookingStatusPeriod/FilterByBookingStatusPeriod'
+import { FilterByEventDate } from './FilterByEventDate'
+import { FilterByVenue } from './FilterByVenue'
 import styles from './PreFilters.module.scss'
 
 export interface PreFiltersProps {

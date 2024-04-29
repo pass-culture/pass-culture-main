@@ -6,13 +6,13 @@ import {
   GetCollectiveOfferResponseModel,
 } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
-import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
-import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
+import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
+import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
 import {
-  isCollectiveOffer,
   isCollectiveOfferTemplate,
+  isCollectiveOffer,
   Mode,
-} from 'core/OfferEducational'
+} from 'core/OfferEducational/types'
 import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
 import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
 import { CollectiveOfferVisibilityScreen } from 'screens/CollectiveOfferVisibility/CollectiveOfferVisibility'
@@ -21,8 +21,8 @@ import {
   withCollectiveOfferFromParams,
 } from 'screens/OfferEducational/useCollectiveOfferFromParams'
 
-import getEducationalInstitutionsAdapter from './adapters/getEducationalInstitutionsAdapter'
-import patchEducationalInstitutionAdapter from './adapters/patchEducationalInstitutionAdapter'
+import { getEducationalInstitutionsAdapter } from './adapters/getEducationalInstitutionsAdapter'
+import { patchEducationalInstitutionAdapter } from './adapters/patchEducationalInstitutionAdapter'
 
 export const CollectiveOfferVisibility = ({
   setOffer,

@@ -10,7 +10,8 @@ import {
   renderWithProviders,
 } from 'utils/renderWithProviders'
 
-import CollectiveOfferSummary, {
+import {
+  CollectiveOfferSummary,
   CollectiveOfferSummaryProps,
 } from '../CollectiveOfferSummary'
 import { DEFAULT_RECAP_VALUE } from '../components/constants'

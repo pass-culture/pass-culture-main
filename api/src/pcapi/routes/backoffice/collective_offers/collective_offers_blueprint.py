@@ -253,6 +253,7 @@ def _get_collective_offers(form: forms.InternalSearchForm) -> list[educational_m
             ),
             sa.orm.joinedload(educational_models.CollectiveOffer.institution).load_only(
                 educational_models.EducationalInstitution.name,
+                educational_models.EducationalInstitution.institutionId,
                 educational_models.EducationalInstitution.institutionType,
                 educational_models.EducationalInstitution.city,
             ),

@@ -6,8 +6,8 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import { logClickOnOffer } from 'pages/AdageIframe/libs/initAlgoliaAnalytics'
 import { Button } from 'ui-kit/Button/Button'
 
-import RequestFormDialog from './RequestFormDialog'
-import NewRequestFormDialog from './RequestFormDialog/NewRequestFormDialog'
+import { NewRequestFormDialog } from './RequestFormDialog/NewRequestFormDialog'
+import { RequestFormDialog } from './RequestFormDialog/RequestFormDialog'
 
 export interface ContactButtonProps {
   className?: string
@@ -25,7 +25,7 @@ export interface ContactButtonProps {
   isPreview?: boolean
 }
 
-const ContactButton = ({
+export const ContactButton = ({
   className,
   contactEmail,
   contactPhone,
@@ -100,5 +100,3 @@ const ContactButton = ({
     </>
   )
 }
-
-export default ContactButton

@@ -1,10 +1,10 @@
 import React, { useCallback } from 'react'
 
 import { GetOffererResponseModel, GetVenueResponseModel } from 'apiClient/v1'
-import FormLayout from 'components/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import { Banner } from 'ui-kit/Banners/Banner/Banner'
 
-import PricingPoint from '../PricingPoint'
+import { PricingPoint } from '../PricingPoint/PricingPoint'
 
 export interface ReimbursementFieldsProps {
   offerer: GetOffererResponseModel

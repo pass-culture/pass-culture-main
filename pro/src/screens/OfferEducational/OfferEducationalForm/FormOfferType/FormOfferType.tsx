@@ -1,11 +1,9 @@
 import { useFormikContext } from 'formik'
 
 import { EacFormat } from 'apiClient/adage'
-import FormLayout from 'components/FormLayout'
-import {
-  OfferEducationalFormValues,
-  MAX_DETAILS_LENGTH,
-} from 'core/OfferEducational'
+import { FormLayout } from 'components/FormLayout/FormLayout'
+import { MAX_DETAILS_LENGTH } from 'core/OfferEducational/constants'
+import { OfferEducationalFormValues } from 'core/OfferEducational/types'
 import { SelectOption } from 'custom_types/form'
 import { getNationalProgramsForDomains } from 'screens/OfferEducational/constants/getNationalProgramsForDomains'
 import { MultiSelectAutocomplete } from 'ui-kit/form/MultiSelectAutoComplete/MultiSelectAutocomplete'
@@ -27,7 +25,7 @@ export interface FormTypeProps {
   disableForm: boolean
 }
 
-const FormOfferType = ({
+export const FormOfferType = ({
   domainsOptions,
   nationalPrograms,
   disableForm,
@@ -129,5 +127,3 @@ const FormOfferType = ({
     </FormLayout.Section>
   )
 }
-
-export default FormOfferType

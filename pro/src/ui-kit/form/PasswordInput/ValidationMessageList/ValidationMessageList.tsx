@@ -14,7 +14,7 @@ interface ValidationMessageListProps {
   name: string
 }
 
-const ValidationMessageList = ({ name }: ValidationMessageListProps) => {
+export const ValidationMessageList = ({ name }: ValidationMessageListProps) => {
   const [field] = useField({ name })
   const [errors, setErrors] = useState<{ [key: string]: boolean }>({})
 
@@ -45,5 +45,3 @@ const ValidationMessageList = ({ name }: ValidationMessageListProps) => {
     </div>
   )
 }
-
-export default ValidationMessageList

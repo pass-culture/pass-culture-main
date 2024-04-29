@@ -1,9 +1,9 @@
 import React from 'react'
 
 import { AppLayout } from 'app/AppLayout'
-import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
-import { Mode, isCollectiveOfferTemplate } from 'core/OfferEducational'
-import OfferEducationalScreen from 'screens/OfferEducational'
+import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
+import { isCollectiveOfferTemplate, Mode } from 'core/OfferEducational/types'
+import { OfferEducational } from 'screens/OfferEducational/OfferEducational'
 import {
   MandatoryCollectiveOfferFromParamsProps,
   withCollectiveOfferFromParams,
@@ -30,7 +30,7 @@ const CollectiveOfferEdition = ({
         <Spinner />
       ) : (
         <CollectiveOfferLayout subTitle={offer.name} isTemplate={isTemplate}>
-          <OfferEducationalScreen
+          <OfferEducational
             userOfferers={offerEducationalFormData.offerers}
             domainsOptions={offerEducationalFormData.domains}
             nationalPrograms={offerEducationalFormData.nationalPrograms}

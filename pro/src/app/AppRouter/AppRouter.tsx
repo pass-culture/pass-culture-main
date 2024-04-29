@@ -2,7 +2,7 @@ import * as Sentry from '@sentry/react'
 import { useSelector } from 'react-redux'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
-import App from 'app/App/App'
+import { App } from 'app/App/App'
 import routes from 'app/AppRouter/routesMap'
 import { selectActiveFeatures } from 'store/features/selectors'
 
@@ -11,7 +11,7 @@ import { ErrorBoundary } from './ErrorBoundary'
 const sentryCreateBrowserRouter =
   Sentry.wrapCreateBrowserRouter(createBrowserRouter)
 
-const AppRouter = (): JSX.Element => {
+export const AppRouter = (): JSX.Element => {
   const activeFeatures = useSelector(selectActiveFeatures)
 
   const activeRoutes = routes.filter(
@@ -36,5 +36,3 @@ const AppRouter = (): JSX.Element => {
 
   return <RouterProvider router={router} />
 }
-
-export default AppRouter

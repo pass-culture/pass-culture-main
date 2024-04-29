@@ -9,7 +9,7 @@ interface Props {
   email: string
 }
 
-const BannerPendingEmailValidation = ({ email }: Props): JSX.Element => (
+export const BannerPendingEmailValidation = ({ email }: Props): JSX.Element => (
   <Callout
     links={[
       {
@@ -26,5 +26,3 @@ const BannerPendingEmailValidation = ({ email }: Props): JSX.Element => (
     <span className={styles['banner-email-adress-email']}> {email}</span>
   </Callout>
 )
-
-export default BannerPendingEmailValidation

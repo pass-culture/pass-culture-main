@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
-import { BannerPendingEmailValidation } from 'components/Banner'
-import { BoxFormLayout } from 'components/BoxFormLayout'
+import { BannerPendingEmailValidation } from 'components/Banner/BannerPendingEmailValidation'
+import { BoxFormLayout } from 'components/BoxFormLayout/BoxFormLayout'
 import { UserEmailForm } from 'components/UserEmailForm'
 import { BoxRounded } from 'ui-kit/BoxRounded/BoxRounded'
 

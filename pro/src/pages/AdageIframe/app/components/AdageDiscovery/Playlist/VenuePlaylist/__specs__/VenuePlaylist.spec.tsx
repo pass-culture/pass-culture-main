@@ -12,7 +12,7 @@ import {
   LocalOfferersPlaylistOffer,
 } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import * as useNotification from 'hooks/useNotification'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import { renderWithProviders } from 'utils/renderWithProviders'

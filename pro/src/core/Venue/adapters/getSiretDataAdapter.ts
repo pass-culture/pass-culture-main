@@ -1,6 +1,6 @@
 import memoize from 'lodash.memoize'
 
-import { apiAdresse } from 'apiClient/adresse'
+import { apiAdresse } from 'apiClient/adresse/apiAdresse'
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
 import { unhumanizeSiret } from 'core/Venue/utils'

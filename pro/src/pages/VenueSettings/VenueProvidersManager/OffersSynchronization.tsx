@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
 import { VenueProviderResponse, GetVenueResponseModel } from 'apiClient/v1'
-import FormLayout from 'components/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 
 import { AddVenueProviderButton } from './AddVenueProviderButton'
 import { VenueProviderList } from './VenueProviderList/VenueProviderList'

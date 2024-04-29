@@ -6,7 +6,7 @@ import { Route, Routes } from 'react-router-dom'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
-import { Welcome } from '..'
+import { Welcome } from '../Welcome'
 
 const renderWelcomeScreen = () => {
   return renderWithProviders(

@@ -2,7 +2,7 @@ import { FieldArray, FormikProvider, useFormik } from 'formik'
 import React from 'react'
 
 import { PriceCategoryResponseModel } from 'apiClient/v1'
-import FormLayout from 'components/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import fullMoreIcon from 'icons/full-more.svg'
 import fullNextIcon from 'icons/full-next.svg'
 import fullTrashIcon from 'icons/full-trash.svg'

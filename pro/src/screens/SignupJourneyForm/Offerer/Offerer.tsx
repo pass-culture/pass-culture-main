@@ -2,20 +2,20 @@ import { FormikProvider, useFormik } from 'formik'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { BannerInvisibleSiren } from 'components/Banner'
+import { BannerInvisibleSiren } from 'components/Banner/BannerInvisibleSiren'
 import Callout from 'components/Callout/Callout'
-import FormLayout from 'components/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
 import { useSignupJourneyContext } from 'context/SignupJourneyContext'
 import { Events } from 'core/FirebaseEvents/constants'
-import { FORM_ERROR_MESSAGE } from 'core/shared'
+import { FORM_ERROR_MESSAGE } from 'core/shared/constants'
 import getSiretData from 'core/Venue/adapters/getSiretDataAdapter'
-import { getVenuesOfOffererFromSiretAdapter } from 'core/Venue/adapters/getVenuesOfOffererFromSiretAdapter'
+import { getVenuesOfOffererFromSiretAdapter } from 'core/Venue/adapters/getVenuesOfOffererFromSiretAdapter/getVenuesOfOffererFromSiretAdapter'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { MAYBE_APP_USER_APE_CODE } from 'pages/Signup/SignupContainer/constants'
-import MaybeAppUserDialog from 'pages/Signup/SignupContainer/MaybeAppUserDialog'
+import { MaybeAppUserDialog } from 'pages/Signup/SignupContainer/MaybeAppUserDialog/MaybeAppUserDialog'
 
 import { ActionBar } from '../ActionBar'
 
@@ -24,7 +24,7 @@ import styles from './Offerer.module.scss'
 import OffererForm, { OffererFormValues } from './OffererForm'
 import { validationSchema } from './validationSchema'
 
-const Offerer = (): JSX.Element => {
+export const Offerer = (): JSX.Element => {
   const { logEvent } = useAnalytics()
   const notify = useNotification()
   const navigate = useNavigate()
@@ -160,5 +160,3 @@ const Offerer = (): JSX.Element => {
     </>
   )
 }
-
-export default Offerer

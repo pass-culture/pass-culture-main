@@ -3,81 +3,27 @@
 @use "styles/variables/_size.scss" as size;
 @use "styles/variables/_z-index.scss" as zIndex;
 
-.menu-v2 {
-  background-image: var(--color-linear-gradient-to-right);
-  min-height: rem.torem(160px);
-
-  .nav {
-    display: grid;
-    grid-template-columns: size.$header-grid-template-columns;
-
-    .nav-brand {
-      display: flex;
-      align-items: center;
-      justify-self: end;
-      margin-right: size.$nav-brand-margin-right;
-    }
-
-    .nav-menu {
-      display: flex;
-      height: rem.torem(72px);
-      justify-content: center;
-
-      .icon-only.nav-item {
-        background: none;
-        border: none;
-      }
-
-      .nav-item {
-        @include fonts.button;
-
-        align-items: center;
-        color: var(--color-white);
-        display: flex;
-        height: 100%;
-        padding: 0 size.$header-nav-item-padding;
-
-        .nav-item-icon {
-          height: rem.torem(24px);
-          margin-right: rem.torem(8px);
-          width: rem.torem(24px);
-          fill: white;
-        }
-
-        &.icon-only {
-          flex-shrink: 0;
-          padding: 0 rem.torem(8px);
-
-          .signout-icon {
-            margin-right: 0;
-          }
-        }
-
-        &:hover,
-        &:focus,
-        &-selected {
-          background-color: var(--color-primary);
-        }
-      }
-
-      & :last-child {
-        display: flex;
-      }
-
-      .separator {
-        align-self: center;
-        background-color: var(--color-white);
-        flex-shrink: 0;
-        height: rem.torem(24px);
-        width: rem.torem(1px);
-      }
-    }
-  }
-}
-
 .top-menu {
   z-index: zIndex.$top-header-z-index;
   border-bottom: rem.torem(1px) solid var(--color-grey-medium);
+  background: var(--color-white);
+  padding: 0 rem.torem(16px) 0 0;
+  min-height: rem.torem(size.$top-menu-height);
+  display: flex;
+  align-items: center;
+
+  &-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    width: 100%;
+
+    @media (min-width: size.$desktop) {
+      max-width: size.$desktop;
+      margin: 0 auto;
+    }
+  }
 
   .burger-icon {
     display: flex;
@@ -99,21 +45,6 @@
     .burger-icon {
       display: none;
     }
-  }
-
-  background: var(--color-white);
-  padding: 0 rem.torem(16px) 0 0;
-  min-height: rem.torem(size.$top-menu-height);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-shrink: 0;
-
-  &-fixed {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
   }
 
   .nav-brand {

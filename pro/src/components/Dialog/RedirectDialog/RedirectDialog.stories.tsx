@@ -1,6 +1,6 @@
 import type { StoryObj } from '@storybook/react'
 
-import RedirectDialog from './RedirectDialog'
+import { RedirectDialog } from './RedirectDialog'
 
 export default {
   title: 'components/RedirectDialog',

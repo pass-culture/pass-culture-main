@@ -4,7 +4,7 @@ import { Form, Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
-import { apiAdresse } from 'apiClient/adresse'
+import { apiAdresse } from 'apiClient/adresse/apiAdresse'
 import { VenueCreationFormValues } from 'pages/VenueCreation/types'
 import { Button } from 'ui-kit/Button/Button'
 
@@ -33,7 +33,7 @@ const mockAdressData = [
 
 vi.mock('apiClient/adresse', async () => {
   return {
-    ...(await vi.importActual('apiClient/adresse')),
+    ...(await vi.importActual('apiClient/adresse/apiAdresse')),
     default: {
       getDataFromAddress: vi.fn(),
     },

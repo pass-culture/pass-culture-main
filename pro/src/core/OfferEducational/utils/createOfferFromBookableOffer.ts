@@ -2,9 +2,9 @@ import { useNavigate } from 'react-router-dom'
 
 import useNotification from 'hooks/useNotification'
 
-import getCollectiveOfferAdapter from '../adapters/getCollectiveOfferAdapter'
-import getCollectiveOfferFormDataApdater from '../adapters/getCollectiveOfferFormDataAdapter'
-import postCollectiveDuplicateOfferAdapter from '../adapters/postCollectiveDuplicateOfferAdapter'
+import { getCollectiveOfferAdapter } from '../adapters/getCollectiveOfferAdapter'
+import { getCollectiveOfferFormDataApdater } from '../adapters/getCollectiveOfferFormDataAdapter'
+import { postCollectiveDuplicateOfferAdapter } from '../adapters/postCollectiveDuplicateOfferAdapter'
 
 import { computeInitialValuesFromOffer } from './computeInitialValuesFromOffer'
 import { postCollectiveOfferImage } from './postCollectiveOfferImage'

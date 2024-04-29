@@ -15,14 +15,14 @@ import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import {
   isCollectiveOfferBookable,
   isCollectiveOfferTemplate,
-} from 'pages/AdageIframe/app/types/offers'
+} from 'pages/AdageIframe/app/types'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 import { LOGS_DATA } from 'utils/config'
 
-import ContactButton from './ContactButton'
+import { ContactButton } from './ContactButton/ContactButton'
 import style from './Offer.module.scss'
 import OfferDetails from './OfferDetails/OfferDetails'
 import OfferFavoriteButton from './OfferFavoriteButton/OfferFavoriteButton'

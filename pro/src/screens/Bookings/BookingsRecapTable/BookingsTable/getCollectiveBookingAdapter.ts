@@ -1,6 +1,6 @@
 import { api } from 'apiClient/api'
 import { CollectiveBookingByIdResponseModel } from 'apiClient/v1/models/CollectiveBookingByIdResponseModel'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 
 type GetCollectiveBookingAdapter = Adapter<
   number,

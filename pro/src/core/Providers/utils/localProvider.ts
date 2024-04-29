@@ -1,5 +1,6 @@
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
-import { isAllocineProvider } from 'core/Providers'
+
+import { isAllocineProvider } from './utils'
 
 export const isAllocineOffer = (
   offer: GetIndividualOfferResponseModel | null | undefined = null

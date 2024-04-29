@@ -1,4 +1,4 @@
-import { Mode } from 'core/OfferEducational'
+import { Mode } from 'core/OfferEducational/types'
 import { getCollectiveOfferFactory } from 'utils/collectiveApiFactories'
 
 import { OfferEducationalProps } from '../OfferEducational'

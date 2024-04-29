@@ -2,7 +2,7 @@ import { CroppedRect } from 'react-avatar-editor'
 
 import { api } from 'apiClient/api'
 
-import createThumbnailAdapter from '../createThumbnailAdapter'
+import { createThumbnailAdapter } from '../createThumbnailAdapter'
 
 describe('test createThumbnailAdapter', () => {
   let offerId: number

@@ -2,13 +2,13 @@ import cn from 'classnames'
 import React, { Fragment, useState } from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
-import { CollectiveOfferStatus } from 'core/OfferEducational'
+import { CollectiveOfferStatus } from 'core/OfferEducational/types'
 import {
   ADMINS_DISABLED_FILTERS_MESSAGE,
   ALL_STATUS,
 } from 'core/Offers/constants'
 import { SearchFiltersParams } from 'core/Offers/types'
-import { Audience } from 'core/shared'
+import { Audience } from 'core/shared/types'
 import fullSortIcon from 'icons/full-sort.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 

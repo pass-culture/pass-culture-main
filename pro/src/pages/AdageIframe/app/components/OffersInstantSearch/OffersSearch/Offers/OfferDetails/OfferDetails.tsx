@@ -5,9 +5,9 @@ import {
   CollectiveOfferTemplateResponseModel,
 } from 'apiClient/adage'
 
-import { getInterventionAreaLabels } from './OfferInterventionArea/OfferInterventionArea'
-import OfferSection from './OfferSection'
-import OfferVenue from './OfferVenue'
+import { getInterventionAreaLabels } from './OfferInterventionArea'
+import { OfferSection } from './OfferSection'
+import { OfferVenue } from './OfferVenue'
 
 export const computeDurationString = (durationMinutes?: number | null) => {
   if (!durationMinutes) {

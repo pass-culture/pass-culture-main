@@ -1,6 +1,6 @@
 import { AppLayout } from 'app/AppLayout'
-import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
-import { Mode } from 'core/OfferEducational'
+import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
+import { Mode } from 'core/OfferEducational/types'
 import { CollectiveOfferSummaryEditionScreen } from 'screens/CollectiveOfferSummaryEdition/CollectiveOfferSummaryEdition'
 import {
   MandatoryCollectiveOfferFromParamsProps,

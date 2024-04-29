@@ -21,7 +21,7 @@ import {
   getIndividualOfferPath,
   getIndividualOfferUrl,
 } from 'core/Offers/utils/getIndividualOfferUrl'
-import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
+import { PATCH_SUCCESS_MESSAGE } from 'core/shared/constants'
 import { Stocks } from 'pages/IndividualOfferWizard/Stocks/Stocks'
 import { getOfferStockFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'

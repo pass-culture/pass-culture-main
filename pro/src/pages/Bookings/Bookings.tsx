@@ -2,14 +2,12 @@ import React from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { AppLayout } from 'app/AppLayout'
-import { getVenuesAdapter } from 'core/Bookings/adapters'
-import { Audience } from 'core/shared'
-import BookingsScreen from 'screens/Bookings'
+import getVenuesAdapter from 'core/Bookings/adapters/getVenuesAdapter'
+import { Audience } from 'core/shared/types'
+import { BookingsScreen } from 'screens/Bookings/Bookings'
 
-import {
-  getFilteredBookingsRecapAdapter,
-  getUserHasBookingsAdapter,
-} from './adapters'
+import { getFilteredBookingsRecapAdapter } from './adapters/getFilteredBookingsRecapAdapter'
+import { getUserHasBookingsAdapter } from './adapters/getUserHasBookingsAdapter'
 
 export const Bookings = (): JSX.Element => {
   const location = useLocation()

@@ -1,11 +1,11 @@
 import { useCallback, useState } from 'react'
 import { useSWRConfig } from 'swr'
 
-import ActionsBarSticky from 'components/ActionsBarSticky'
+import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
 import { SearchFiltersParams } from 'core/Offers/types'
-import { Audience } from 'core/shared'
+import { Audience } from 'core/shared/types'
 import useNotification from 'hooks/useNotification'
 import fullHideIcon from 'icons/full-hide.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
@@ -22,8 +22,8 @@ import { updateAllCollectiveOffersActiveStatusAdapter } from './adapters/updateA
 import { updateAllOffersActiveStatusAdapter } from './adapters/updateAllOffersActiveStatusAdapter'
 import { updateCollectiveOffersActiveStatusAdapter } from './adapters/updateCollectiveOffersActiveStatusAdapter'
 import { updateOffersActiveStatusAdapter } from './adapters/updateOffersActiveStatusAdapter'
-import DeactivationConfirmDialog from './ConfirmDialog/DeactivationConfirmDialog'
-import DeleteConfirmDialog from './ConfirmDialog/DeleteConfirmDialog'
+import { DeactivationConfirmDialog } from './ConfirmDialog/DeactivationConfirmDialog'
+import { DeleteConfirmDialog } from './ConfirmDialog/DeleteConfirmDialog'
 
 export interface ActionBarProps {
   areAllOffersSelected: boolean
@@ -72,7 +72,7 @@ const getUpdateActiveStatusAdapter = (
     updateOffersActiveStatusAdapter({ ids: selectedOfferIds, isActive })
 }
 
-const ActionsBar = ({
+export const ActionsBar = ({
   selectedOfferIds,
   clearSelectedOfferIds,
   toggleSelectAllCheckboxes,
@@ -238,5 +238,3 @@ const ActionsBar = ({
     </>
   )
 }
-
-export default ActionsBar

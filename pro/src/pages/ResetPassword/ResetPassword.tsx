@@ -40,7 +40,7 @@ export const ResetPassword = (): JSX.Element => {
   })
 
   return (
-    <AppLayout pageName="reset-password" layout="without-nav">
+    <AppLayout layout="without-nav">
       <header className={styles['logo-side']}>
         <SvgIcon
           className="logo-unlogged"

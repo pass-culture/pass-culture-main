@@ -1,6 +1,6 @@
 import { api } from 'apiClient/api'
 
-import deleteThumbnailAdapter from '../deleteThumbnailAdapter'
+import { deleteThumbnailAdapter } from '../deleteThumbnailAdapter'
 
 describe('test deleteThumbnailAdapter', () => {
   let offerId: number

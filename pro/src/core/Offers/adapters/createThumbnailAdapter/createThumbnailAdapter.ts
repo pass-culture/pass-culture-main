@@ -14,7 +14,7 @@ const FAILING_RESPONSE: AdapterFailure<null> = {
   payload: null,
 }
 
-const createThumbnailAdapter: CreateThumbnailAdapter = async ({
+export const createThumbnailAdapter: CreateThumbnailAdapter = async ({
   offerId,
   imageFile,
   credit,
@@ -47,5 +47,3 @@ const createThumbnailAdapter: CreateThumbnailAdapter = async ({
     return FAILING_RESPONSE
   }
 }
-
-export default createThumbnailAdapter

@@ -15,7 +15,7 @@ import {
 } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
-import SignupContainer from '../SignupContainer'
+import { SignupContainer } from '../SignupContainer'
 
 const mockLogEvent = vi.fn()
 

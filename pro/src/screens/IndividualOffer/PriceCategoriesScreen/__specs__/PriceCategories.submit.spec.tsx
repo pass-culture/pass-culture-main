@@ -9,7 +9,7 @@ import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/cons
 import Notification from 'components/Notification/Notification'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
-import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
+import { PATCH_SUCCESS_MESSAGE } from 'core/shared/constants'
 import {
   getIndividualOfferFactory,
   priceCategoryFactory,

@@ -7,15 +7,15 @@ import {
   GetCollectiveOfferRequestResponseModel,
   GetCollectiveOfferResponseModel,
 } from 'apiClient/v1'
-import ActionsBarSticky from 'components/ActionsBarSticky'
-import BannerPublicApi from 'components/Banner/BannerPublicApi'
-import FormLayout from 'components/FormLayout'
-import OfferEducationalActions from 'components/OfferEducationalActions'
+import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
+import { BannerPublicApi } from 'components/Banner/BannerPublicApi'
+import { FormLayout } from 'components/FormLayout/FormLayout'
+import { OfferEducationalActions } from 'components/OfferEducationalActions/OfferEducationalActions'
 import {
+  VisibilityFormValues,
   isCollectiveOffer,
   Mode,
-  VisibilityFormValues,
-} from 'core/OfferEducational'
+} from 'core/OfferEducational/types'
 import {
   extractInitialVisibilityValues,
   formatInstitutionDisplayName,
@@ -23,7 +23,7 @@ import {
 import { SelectOption } from 'custom_types/form'
 import useNotification from 'hooks/useNotification'
 import strokeSearch from 'icons/stroke-search.svg'
-import getOfferRequestInformationsAdapter from 'pages/CollectiveOfferFromRequest/adapters/getOfferRequestInformationsAdapter'
+import { getOfferRequestInformationsAdapter } from 'pages/CollectiveOfferFromRequest/adapters/getOfferRequestInformationsAdapter'
 import { PatchEducationalInstitutionAdapter } from 'pages/CollectiveOfferVisibility/adapters/patchEducationalInstitutionAdapter'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
@@ -36,7 +36,7 @@ import {
   SelectOptionNormalized,
 } from 'utils/searchPatternInOptions'
 
-import getEducationalRedactorsAdapter from './adapters/getEducationalRedactorAdapter'
+import { getEducationalRedactorsAdapter } from './adapters/getEducationalRedactorAdapter'
 import styles from './CollectiveOfferVisibility.module.scss'
 import validationSchema from './validationSchema'
 

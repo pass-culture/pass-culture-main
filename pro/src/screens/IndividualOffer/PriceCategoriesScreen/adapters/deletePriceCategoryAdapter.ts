@@ -12,7 +12,7 @@ type DeletePriceCategoryAdapter = Adapter<
   FailurePayload
 >
 
-const deletePriceCategoryAdapter: DeletePriceCategoryAdapter = async ({
+export const deletePriceCategoryAdapter: DeletePriceCategoryAdapter = async ({
   offerId,
   priceCategoryId,
 }) => {
@@ -39,4 +39,3 @@ const deletePriceCategoryAdapter: DeletePriceCategoryAdapter = async ({
     }
   }
 }
-export default deletePriceCategoryAdapter

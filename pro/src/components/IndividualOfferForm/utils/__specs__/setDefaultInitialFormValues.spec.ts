@@ -11,7 +11,7 @@ import {
   venueListItemFactory,
 } from 'utils/individualApiFactories'
 
-import setDefaultInitialFormValues from '../setDefaultInitialFormValues'
+import { setDefaultInitialFormValues } from '../setDefaultInitialFormValues'
 
 describe('setDefaultInitialFormValues', () => {
   let expectedInitialValues: IndividualOfferFormValues

@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { AppLayout } from 'app/AppLayout'
-import { useGetOffererNames } from 'core/Offerers/adapters'
+import useGetOffererNames from 'core/Offerers/adapters/getOffererNamesAdapter/useOffererNames'
 import useNotification from 'hooks/useNotification'
 import { OffererStatsScreen } from 'screens/OffererStats'
 import Spinner from 'ui-kit/Spinner/Spinner'

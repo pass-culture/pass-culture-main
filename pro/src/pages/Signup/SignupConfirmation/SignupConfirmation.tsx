@@ -5,7 +5,7 @@ import fullMailIcon from 'icons/full-mail.svg'
 
 import styles from './SignupConfirmation.module.scss'
 
-const SignupConfirmation = () => (
+export const SignupConfirmation = () => (
   <section className={styles['content']}>
     <div className={styles['hero-body']}>
       <h1>Merci !</h1>
@@ -38,5 +38,3 @@ const SignupConfirmation = () => (
     </div>
   </section>
 )
-
-export default SignupConfirmation

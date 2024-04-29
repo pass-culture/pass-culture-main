@@ -4,7 +4,7 @@ import { useOutletContext } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { InvoiceResponseV2Model } from 'apiClient/v1'
-import { BannerReimbursementsInfo } from 'components/Banner'
+import { BannerReimbursementsInfo } from 'components/Banner/BannerReimbursementsInfo'
 import { SelectOption } from 'custom_types/form'
 import { ReimbursementsContextProps } from 'pages/Reimbursements/Reimbursements'
 import Spinner from 'ui-kit/Spinner/Spinner'
@@ -19,7 +19,7 @@ import InvoicesServerError from './InvoicesServerError'
 import InvoiceTable from './InvoiceTable/InvoiceTable'
 import NoInvoicesYet from './NoInvoicesYet'
 
-const ReimbursementsInvoices = (): JSX.Element => {
+export const ReimbursementsInvoices = (): JSX.Element => {
   const INITIAL_FILTERS = useMemo(() => {
     const today = getToday()
     const oneMonthAgo = subMonths(today, 1)
@@ -164,5 +164,3 @@ const ReimbursementsInvoices = (): JSX.Element => {
     </>
   )
 }
-
-export default ReimbursementsInvoices

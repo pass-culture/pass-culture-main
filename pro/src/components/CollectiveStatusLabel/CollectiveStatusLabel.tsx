@@ -8,7 +8,7 @@ type CollectiveStatusLabelProps = {
   label: string
 }
 
-const CollectiveStatusLabel = ({
+export const CollectiveStatusLabel = ({
   className,
   icon,
   label,
@@ -22,4 +22,3 @@ const CollectiveStatusLabel = ({
     </span>
   )
 }
-export default CollectiveStatusLabel

@@ -14,7 +14,7 @@ import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/c
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
-import { Offerers } from '..'
+import { Offerers } from '../Offerers'
 
 const mockLogEvent = vi.fn()
 vi.mock('apiClient/api', () => ({

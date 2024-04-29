@@ -1,4 +1,4 @@
-import { AccessibilityEnum } from 'core/shared'
+import { AccessibilityEnum } from 'core/shared/types'
 import strokeAccessibilityBrain from 'icons/stroke-accessibility-brain.svg'
 import audioDisabilitySvg from 'icons/stroke-accessibility-ear.svg'
 import strokeAccessibilityEye from 'icons/stroke-accessibility-eye.svg'

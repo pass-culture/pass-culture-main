@@ -1,6 +1,6 @@
 import React from 'react'
 
-import FormLayout from 'components/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { UploadImageValues } from 'components/ImageUploader/ButtonImageEdit/types'
 import { ImageUploader } from 'components/ImageUploader/ImageUploader'
@@ -21,7 +21,7 @@ const buildInitialValues = (
   credit: imageOffer?.credit || '',
 })
 
-const FormImageUploader = ({
+export const FormImageUploader = ({
   onImageUpload,
   onImageDelete,
   imageOffer,
@@ -37,5 +37,3 @@ const FormImageUploader = ({
     </FormLayout.Row>
   </FormLayout.Section>
 )
-
-export default FormImageUploader

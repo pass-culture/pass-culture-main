@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import { BannerCreateOfferAdmin } from 'components/Banner'
+import { BannerCreateOfferAdmin } from 'components/Banner/BannerCreateOfferAdmin'
 import {
   GET_VENUES_QUERY_KEY,
   GET_OFFERER_NAMES_QUERY_KEY,
@@ -14,7 +14,7 @@ import { useOfferWizardMode } from 'hooks'
 import useCurrentUser from 'hooks/useCurrentUser'
 import IndivualOfferLayout from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
 import { getTitle } from 'screens/IndividualOffer/IndivualOfferLayout/utils/getTitle'
-import InformationsScreen from 'screens/IndividualOffer/InformationsScreen/InformationsScreen'
+import { InformationsScreen } from 'screens/IndividualOffer/InformationsScreen/InformationsScreen'
 import { selectCurrentOffererId } from 'store/user/selectors'
 import Spinner from 'ui-kit/Spinner/Spinner'
 

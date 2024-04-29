@@ -6,7 +6,7 @@ import { useSearchParams } from 'react-router-dom'
 
 import { AdageFrontRoles } from 'apiClient/adage'
 import { api, apiAdage } from 'apiClient/api'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useIsElementVisible from 'hooks/useIsElementVisible'
 import useNotification from 'hooks/useNotification'

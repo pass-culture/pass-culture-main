@@ -1,6 +1,6 @@
 import { api } from 'apiClient/api'
 import { SearchFiltersParams } from 'core/Offers/types'
-import { serializeApiFilters } from 'core/Offers/utils'
+import { serializeApiFilters } from 'core/Offers/utils/serializer'
 
 import {
   computeAllActivationSuccessMessage,

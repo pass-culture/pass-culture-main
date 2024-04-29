@@ -8,11 +8,9 @@ import {
   WithdrawalTypeEnum,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
-import {
-  IndividualOfferFormValues,
-  setDefaultInitialFormValues,
-} from 'components/IndividualOfferForm'
-import { REIMBURSEMENT_RULES } from 'core/Finances'
+import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
+import { setDefaultInitialFormValues } from 'components/IndividualOfferForm/utils/setDefaultInitialFormValues'
+import { REIMBURSEMENT_RULES } from 'core/Finances/constants'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
 import { Button } from 'ui-kit/Button/Button'
 import {
@@ -22,10 +20,11 @@ import {
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import UsefulInformations, {
+import {
+  UsefulInformations,
   UsefulInformationsProps,
 } from '../UsefulInformations'
-import validationSchema from '../validationSchema'
+import { validationSchema } from '../validationSchema'
 
 const renderUsefulInformations = ({
   initialValues,

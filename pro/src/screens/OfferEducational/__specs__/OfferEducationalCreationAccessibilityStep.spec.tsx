@@ -4,10 +4,9 @@ import { userEvent } from '@testing-library/user-event'
 import { RootState } from 'store/rootReducer'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import OfferEducational from '../'
 import { defaultCreationProps, managedVenueFactory } from '../__tests-utils__'
 import { userOffererFactory } from '../__tests-utils__/userOfferersFactory'
-import { OfferEducationalProps } from '../OfferEducational'
+import { OfferEducational, OfferEducationalProps } from '../OfferEducational'
 
 describe('screens | OfferEducational : event address step', () => {
   let props: OfferEducationalProps

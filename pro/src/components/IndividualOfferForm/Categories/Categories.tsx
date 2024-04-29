@@ -9,7 +9,7 @@ import {
 } from 'apiClient/v1'
 import Callout from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
-import FormLayout from 'components/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import {
   FORM_DEFAULT_VALUES,
   IndividualOfferFormValues,
@@ -24,7 +24,7 @@ import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
 import styles from '../IndividualOfferForm.module.scss'
 import { onVenueChange } from '../UsefulInformations/Venue/Venue'
-import buildSubcategoryFields from '../utils/buildSubCategoryFields'
+import { buildSubcategoryFields } from '../utils/buildSubCategoryFields'
 import { getFilteredVenueListBySubcategory } from '../utils/getFilteredVenueList'
 
 import { SUBCATEGORIES_FIELDS_DEFAULT_VALUES } from './constants'

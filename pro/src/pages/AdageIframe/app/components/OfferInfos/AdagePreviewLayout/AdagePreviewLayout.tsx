@@ -11,12 +11,12 @@ import {
   GetVenueResponseModel,
   OfferAddressType,
 } from 'apiClient/v1'
-import { isCollectiveOffer } from 'core/OfferEducational'
+import { isCollectiveOffer } from 'core/OfferEducational/types'
 import logoPassCultureIcon from 'icons/logo-pass-culture.svg'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import AdageOffer from '../AdageOffer/AdageOffer'
+import { AdageOffer } from '../AdageOffer/AdageOffer'
 
 import styles from './AdagePreviewLayout.module.scss'
 import adageBurger from './assets/adage-burger.svg'
@@ -28,7 +28,7 @@ type AdagePreviewLayoutProps = {
     | GetCollectiveOfferResponseModel
 }
 
-export default function AdagePreviewLayout({ offer }: AdagePreviewLayoutProps) {
+export const AdagePreviewLayout = ({ offer }: AdagePreviewLayoutProps) => {
   const [venue, setVenue] = useState<GetVenueResponseModel | null>(null)
   const [loadingVenue, setLoadingVenue] = useState(false)
   useState<GetVenueResponseModel | null>(null)

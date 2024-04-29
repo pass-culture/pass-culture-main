@@ -17,38 +17,57 @@ concurrency:
   cancel-in-progress: ${{ github.ref == 'refs/heads/master' && false || true }}
 
 jobs:
-  check-api:
-    name: "Check api folder changes"
-    uses: ./.github/workflows/dev_on_workflow_check_folder_changes.yml
-    with:
-      folder: api/**
-
-  check-pro:
-    name: "Check pro folder changes"
-    uses: ./.github/workflows/dev_on_workflow_check_folder_changes.yml
-    with:
-      folder: pro/**
-
-  check-maintenance-site:
-    name: "Check maintenance-site folder changes"
-    uses: ./.github/workflows/dev_on_workflow_check_folder_changes.yml
-    with:
-      folder: maintenance-site/**
-
-  check-db-migrations:
-    name: "Check db migration folder changes"
-    uses: ./.github/workflows/dev_on_workflow_check_folder_changes.yml
-    with:
-      folder: |-
-        api/src/pcapi/alembic/versions/**
-        api/src/pcapi/alembic/run_migrations.py
+  check-folders-changes:
+    # Perform all changes checks at once to remove the need for multiple checkouts accross jobs
+    name: "Check changes in folders"
+    runs-on: ubuntu-latest
+    outputs:
+      api-changed: ${{ steps.check-api-changes.outputs.any_modified }}
+      pro-changed: ${{ steps.check-pro-changes.outputs.any_modified }}
+      maintenance-site-changed: ${{ steps.check-maintenance-site-changes.outputs.any_modified }}
+      db-migration-changed: ${{ steps.check-db-migration-changes.outputs.any_modified }}
+      dependencies-changed: ${{ steps.check-dependencies-changes.outputs.any_modified }}
+    steps:
+      - uses: actions/checkout@v4.1.4
+        with:
+          fetch-depth: 0
+          fetch-tags: false
+      - name: "Check api folder changes"
+        id: check-api-changes
+        uses: tj-actions/changed-files@v44
+        with:
+          files: api/**
+      - name: "Check pro folder changes"
+        id: check-pro-changes
+        uses: tj-actions/changed-files@v44
+        with:
+          files: pro/**
+      - name: "Check maintenance-site folder changes"
+        id: check-maintenance-site-changes
+        uses: tj-actions/changed-files@v44
+        with:
+          files: maintenance-site/**
+      - name: "Check maintenance-site folder changes"
+        id: check-db-migration-changes
+        uses: tj-actions/changed-files@v44
+        with:
+          files: |-
+            api/src/pcapi/alembic/versions/**
+            api/src/pcapi/alembic/run_migrations.py
+      - name: "Check changes in dependencies (frontend + backend)"
+        id: check-dependencies-changes
+        uses: tj-actions/changed-files@v44
+        with:
+          files: |
+            api/poetry.lock
+            pro/yarn.lock
 
   build-api:
     name: "Build API (backend) Docker image"
-    needs: [check-api, check-pro]
+    needs: check-folders-changes
     if: |
-      needs.check-api.outputs.folder_changed == 'true' ||
-      needs.check-pro.outputs.folder_changed == 'true' ||
+      needs.check-folders-changes.outputs.api-changed == 'true' ||
+      needs.check-folders-changes.outputs.pro-changed == 'true' ||
       github.ref == 'refs/heads/master' ||
       startsWith(github.ref,'refs/heads/maint/v')
     uses: ./.github/workflows/dev_on_workflow_build_and_push_docker_images.yml
@@ -58,26 +77,26 @@ jobs:
       # Needed to run end-to-end tests, i.e. when "api" source code changes.
       # If no changes are made in "pro" source code.
       # we can pull the image from testing env (tag=latest)
-      pcapi: ${{ needs.check-api.outputs.folder_changed == 'true' || github.ref == 'refs/heads/master' || startsWith(github.ref,'refs/heads/maint/v') }}
+      pcapi: ${{ needs.check-folders-changes.outputs.api-changed == 'true' || github.ref == 'refs/heads/master' || startsWith(github.ref,'refs/heads/maint/v') }}
       # Extra when tests are run on master before deployment on testing.
       console: ${{ github.ref == 'refs/heads/master' }}
       # Needed to run backend tests.
-      tests: ${{ needs.check-api.outputs.folder_changed == 'true' || github.ref == 'refs/heads/master' || startsWith(github.ref,'refs/heads/maint/v') }}
+      tests: ${{ needs.check-folders-changes.outputs.api-changed == 'true' || github.ref == 'refs/heads/master' || startsWith(github.ref,'refs/heads/maint/v') }}
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   run-mypy-cop:
     name: "MyPy cop"
-    needs: check-api
+    needs: check-folders-changes
     if: |
       github.event_name == 'pull_request' &&
-      needs.check-api.outputs.folder_changed == 'true'
+      needs.check-folders-changes.outputs.api-changed == 'true'
     uses: ./.github/workflows/dev_on_workflow_mypy_cop.yml
 
   update-api-client-template:  # for pull requests only
     name: "Update api client template"
-    needs: build-api
+    needs: [check-folders-changes, build-api]
     uses: ./.github/workflows/dev_on_workflow_update_api_client_template.yml
     if: github.base_ref == 'master'
     concurrency:
@@ -94,7 +113,7 @@ jobs:
 
   prepare-cache-master:  # on "master" branch only
     name: "Reset cache on master on dependency update"
-    needs: build-api
+    needs: [check-folders-changes, build-api]
     uses: ./.github/workflows/dev_on_workflow_update_api_client_template.yml
     if: github.ref == 'refs/heads/master'
     with:
@@ -108,9 +127,9 @@ jobs:
 
   test-api:
     name: "Test api"
-    needs: [check-api, build-api]
+    needs: [check-folders-changes, build-api]
     if: |
-      needs.check-api.outputs.folder_changed == 'true' ||
+      needs.check-folders-changes.outputs.api-changed == 'true' ||
       github.ref == 'refs/heads/master' ||
       startsWith(github.ref,'refs/heads/maint/v')
     uses: ./.github/workflows/dev_on_workflow_tests_api.yml
@@ -120,9 +139,9 @@ jobs:
 
   test-pro:
     name: "Tests pro"
-    needs: check-pro
+    needs: check-folders-changes
     if: |
-      needs.check-pro.outputs.folder_changed == 'true' ||
+      needs.check-folders-changes.outputs.pro-changed == 'true' ||
       github.ref == 'refs/heads/master' ||
       startsWith(github.ref,'refs/heads/maint/v')
     uses: ./.github/workflows/dev_on_workflow_tests_pro.yml
@@ -142,10 +161,10 @@ jobs:
 
   test-pro-e2e:
     name: "Tests pro E2E"
-    needs: [check-api, check-pro, build-api]
+    needs: [check-folders-changes, build-api]
     if: |
-      needs.check-api.outputs.folder_changed == 'true' ||
-      needs.check-pro.outputs.folder_changed == 'true' ||
+      needs.check-folders-changes.outputs.api-changed == 'true' ||
+      needs.check-folders-changes.outputs.pro-changed == 'true' ||
       github.ref == 'refs/heads/master' ||
       startsWith(github.ref,'refs/heads/maint/v')
     uses: ./.github/workflows/dev_on_workflow_tests_pro_e2e.yml
@@ -153,23 +172,23 @@ jobs:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
     with:
-      TAG: ${{ needs.check-api.outputs.folder_changed == 'true' && (github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha) || 'latest' }}
+      TAG: ${{ needs.check-folders-changes.outputs.api-changed == 'true' && (github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha) || 'latest' }}
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
 
   deploy-storybook:
     name: "Deploy Storybook"
-    needs: check-pro
-    if: ${{ github.ref == 'refs/heads/master' && needs.check-pro.outputs.folder_changed == 'true' }}
+    needs: check-folders-changes
+    if: ${{ github.ref == 'refs/heads/master' && needs.check-folders-changes.outputs.pro-changed == 'true' }}
     uses: ./.github/workflows/dev_on_workflow_deploy_storybook.yml
 
   deploy-validation-env:
     name: "[PRO] Deploy PR version for validation"
-    needs: check-pro
+    needs: check-folders-changes
     uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
     if: |
       always() &&
       github.base_ref == 'master' &&
-      needs.check-pro.outputs.folder_changed == 'true'
+      needs.check-folders-changes.outputs.pro-changed == 'true'
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
@@ -202,11 +221,11 @@ jobs:
 
   deploy-maintenance-site:
     name: "Deploy maintenance site"
-    needs: check-maintenance-site
+    needs: check-folders-changes
     if: |
       always() &&
       github.ref == 'refs/heads/master' &&
-      needs.check-maintenance-site.outputs.folder_changed == 'true'
+      needs.check-folders-changes.outputs.maintenance-site-changed == 'true'
     uses: ./.github/workflows/dev_on_workflow_deploy_maintenance_site.yml
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -214,11 +233,11 @@ jobs:
 
   ping-data-team-on-slack:
     name: "Ping data team on slack"
-    needs: check-db-migrations
+    needs: check-folders-changes
     if: |
       always() &&
       github.ref == 'refs/heads/master' &&
-      needs.check-db-migrations.outputs.folder_changed == 'true'
+      needs.check-folders-changes.outputs.db-migrations-changed == 'true'
     uses: ./.github/workflows/dev_on_workflow_ping_data_team.yml
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}

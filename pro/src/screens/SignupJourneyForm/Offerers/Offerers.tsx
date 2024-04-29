@@ -5,13 +5,13 @@ import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { CreateOffererQueryModel } from 'apiClient/v1'
-import ConfirmDialog from 'components/Dialog/ConfirmDialog'
+import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
 import { Offerer, useSignupJourneyContext } from 'context/SignupJourneyContext'
 import { Events } from 'core/FirebaseEvents/constants'
-import { getSirenDataAdapter } from 'core/Offerers/adapters'
-import { getVenuesOfOffererFromSiretAdapter } from 'core/Venue/adapters/getVenuesOfOffererFromSiretAdapter'
+import { getSirenDataAdapter } from 'core/Offerers/adapters/getSirenDataAdapter'
+import { getVenuesOfOffererFromSiretAdapter } from 'core/Venue/adapters/getVenuesOfOffererFromSiretAdapter/getVenuesOfOffererFromSiretAdapter'
 import { useAdapter } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
@@ -29,7 +29,7 @@ import { ActionBar } from '../ActionBar'
 
 import styles from './Offerers.module.scss'
 
-const Offerers = (): JSX.Element => {
+export const Offerers = (): JSX.Element => {
   const { logEvent } = useAnalytics()
   const notify = useNotification()
   const navigate = useNavigate()
@@ -216,5 +216,3 @@ const Offerers = (): JSX.Element => {
     </div>
   )
 }
-
-export default Offerers

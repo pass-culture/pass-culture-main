@@ -10,9 +10,9 @@ import {
   GetVenueResponseModel,
   VenueTypeResponseModel,
 } from 'apiClient/v1'
-import ConfirmDialog from 'components/Dialog/ConfirmDialog'
+import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import { Events } from 'core/FirebaseEvents/constants'
-import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
+import { PATCH_SUCCESS_MESSAGE } from 'core/shared/constants'
 import { SelectOption } from 'custom_types/form'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'

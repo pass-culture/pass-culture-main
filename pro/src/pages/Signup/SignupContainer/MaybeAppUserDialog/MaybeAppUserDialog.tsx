@@ -2,10 +2,10 @@ import './MaybeAppUserDialog.scss'
 
 import React from 'react'
 
-import RedirectDialog from 'components/Dialog/RedirectDialog'
+import { RedirectDialog } from 'components/Dialog/RedirectDialog/RedirectDialog'
 import strokeFraudIcon from 'icons/stroke-fraud.svg'
 
-const MaybeAppUserDialog = ({ onCancel }: { onCancel: () => void }) => {
+export const MaybeAppUserDialog = ({ onCancel }: { onCancel: () => void }) => {
   return (
     <RedirectDialog
       icon={strokeFraudIcon}
@@ -27,5 +27,3 @@ const MaybeAppUserDialog = ({ onCancel }: { onCancel: () => void }) => {
     </RedirectDialog>
   )
 }
-
-export default MaybeAppUserDialog

@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { ImageUploadBrowserForm } from 'components/ImageUploadBrowserForm'
+import { ImageUploadBrowserForm } from 'components/ImageUploadBrowserForm/ImageUploadBrowserForm'
 import { ImageUploadBrowserFormValues } from 'components/ImageUploadBrowserForm/types'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { PreferredOrientation } from 'components/PreferredOrientation/PreferredOrientation'

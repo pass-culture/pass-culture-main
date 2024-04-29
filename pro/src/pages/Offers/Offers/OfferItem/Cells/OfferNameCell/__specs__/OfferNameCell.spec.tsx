@@ -3,7 +3,7 @@ import { add } from 'date-fns'
 import React from 'react'
 
 import { CollectiveBookingStatus } from 'apiClient/v1'
-import { Audience } from 'core/shared'
+import { Audience } from 'core/shared/types'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 

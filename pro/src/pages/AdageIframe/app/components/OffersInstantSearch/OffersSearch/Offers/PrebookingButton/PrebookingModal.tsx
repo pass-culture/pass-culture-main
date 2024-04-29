@@ -1,6 +1,6 @@
 import React from 'react'
 
-import ConfirmDialog from 'components/Dialog/ConfirmDialog/ConfirmDialog'
+import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import strokePassIcon from 'icons/stroke-pass.svg'
 
 interface PrebookingModal {

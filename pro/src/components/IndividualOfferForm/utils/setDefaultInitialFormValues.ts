@@ -6,9 +6,9 @@ import {
   FORM_DEFAULT_VALUES,
   IndividualOfferFormValues,
 } from 'components/IndividualOfferForm'
-import { AccessibilityEnum } from 'core/shared'
+import { AccessibilityEnum } from 'core/shared/types'
 
-import buildSubcategoryFields from './buildSubCategoryFields'
+import { buildSubcategoryFields } from './buildSubCategoryFields'
 
 export const buildAccessibilityFormValues = (
   venue: VenueListItemResponseModel
@@ -50,7 +50,7 @@ export const buildAccessibilityFormValues = (
   }
 }
 
-const setDefaultInitialFormValues = (
+export const setDefaultInitialFormValues = (
   offererNames: GetOffererNameResponseModel[],
   offererId: string | null,
   venueId: string | null,
@@ -100,5 +100,3 @@ const setDefaultInitialFormValues = (
     isVenueVirtual: initialIsVenueVirtual,
   }
 }
-
-export default setDefaultInitialFormValues

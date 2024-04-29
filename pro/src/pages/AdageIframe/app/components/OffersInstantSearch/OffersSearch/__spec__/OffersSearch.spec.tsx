@@ -5,7 +5,7 @@ import { AdageFrontRoles, AuthenticatedResponse } from 'apiClient/adage'
 import { api } from 'apiClient/api'
 import { StudentLevels } from 'apiClient/v1'
 import Notification from 'components/Notification/Notification'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import {
   defaultUseInfiniteHitsReturn,

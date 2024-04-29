@@ -4,7 +4,7 @@ import {
   SubcategoryResponseModel,
   WithdrawalTypeEnum,
 } from 'apiClient/v1'
-import { AccessibilityEnum } from 'core/shared'
+import { AccessibilityEnum } from 'core/shared/types'
 import {
   getOfferVenueFactory,
   getOfferManagingOffererFactory,
@@ -14,7 +14,7 @@ import {
 } from 'utils/individualApiFactories'
 
 import { buildAccessibilityFormValues } from '../setDefaultInitialFormValues'
-import setInitialFormValues from '../setInitialFormValues'
+import { setInitialFormValues } from '../setInitialFormValues'
 
 describe('buildAccessibilityFormValues', () => {
   it('should return false if venue and access libre values are not defined', () => {

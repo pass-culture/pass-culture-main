@@ -6,17 +6,17 @@ import {
   GetOffererNameResponseModel,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
-import ConfirmDialog from 'components/Dialog/ConfirmDialog'
-import FormLayout from 'components/FormLayout'
+import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import {
   IndividualOfferForm,
   IndividualOfferFormValues,
   getValidationSchema,
-  setDefaultInitialFormValues,
-  setFormReadOnlyFields,
-  setInitialFormValues,
 } from 'components/IndividualOfferForm'
 import { getFilteredVenueListByCategoryStatus } from 'components/IndividualOfferForm/utils/getFilteredVenueList'
+import { setDefaultInitialFormValues } from 'components/IndividualOfferForm/utils/setDefaultInitialFormValues'
+import setFormReadOnlyFields from 'components/IndividualOfferForm/utils/setFormReadOnlyFields'
+import { setInitialFormValues } from 'components/IndividualOfferForm/utils/setInitialFormValues'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
@@ -24,15 +24,13 @@ import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
-import {
-  createIndividualOffer,
-  updateIndividualOffer,
-} from 'core/Offers/adapters'
+import { createIndividualOffer } from 'core/Offers/adapters/createIndividualOffer/createIndividualOffer'
 import { serializePatchOffer } from 'core/Offers/adapters/updateIndividualOffer/serializers'
+import { updateIndividualOffer } from 'core/Offers/adapters/updateIndividualOffer/updateIndividualOffer'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { isOfferDisabled } from 'core/Offers/utils'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
-import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
+import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
+import { PATCH_SUCCESS_MESSAGE } from 'core/shared/constants'
 import { useOfferWizardMode } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
@@ -57,7 +55,7 @@ export interface InformationsScreenProps {
   venueList: VenueListItemResponseModel[]
 }
 
-const InformationsScreen = ({
+export const InformationsScreen = ({
   offererId,
   venueId,
   offererNames,
@@ -301,5 +299,3 @@ const InformationsScreen = ({
     </FormikProvider>
   )
 }
-
-export default InformationsScreen

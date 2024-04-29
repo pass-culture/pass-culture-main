@@ -1,4 +1,4 @@
-import { CollectiveOfferStep } from 'components/CollectiveOfferNavigation'
+import { CollectiveOfferStep } from 'components/CollectiveOfferNavigation/CollectiveOfferNavigation'
 
 import { getActiveStep } from '../getActiveStep'
 

@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 
-import BannerRGS from '../BannerRGS'
+import { BannerRGS } from '../BannerRGS'
 
 describe('src | components | BannerRGS', () => {
   it('should render a link to RGS information', () => {

@@ -9,7 +9,7 @@ interface BoxFormLayoutHeader {
   title: string
 }
 
-const Header = ({
+export const Header = ({
   className,
   subtitle,
   title,
@@ -19,5 +19,3 @@ const Header = ({
     <div className={style['box-form-layout-header-subtitle']}>{subtitle}</div>
   </div>
 )
-
-export default Header

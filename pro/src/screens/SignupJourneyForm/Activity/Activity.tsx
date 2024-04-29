@@ -5,23 +5,23 @@ import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import { Target } from 'apiClient/v1'
-import FormLayout from 'components/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
 import { GET_VENUE_TYPES_QUERY_KEY } from 'config/swrQueryKeys'
 import { useSignupJourneyContext } from 'context/SignupJourneyContext'
 import { ActivityContext } from 'context/SignupJourneyContext/SignupJourneyContext'
-import { FORM_ERROR_MESSAGE } from 'core/shared'
+import { FORM_ERROR_MESSAGE } from 'core/shared/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 import { ActionBar } from '../ActionBar'
 
-import ActivityForm, { ActivityFormValues } from './ActivityForm'
+import { ActivityForm, ActivityFormValues } from './ActivityForm'
 import { DEFAULT_ACTIVITY_FORM_VALUES } from './constants'
 import { validationSchema } from './validationSchema'
 
-const Activity = (): JSX.Element => {
+export const Activity = (): JSX.Element => {
   const notify = useNotification()
   const navigate = useNavigate()
   const { activity, setActivity, offerer } = useSignupJourneyContext()
@@ -125,5 +125,3 @@ const Activity = (): JSX.Element => {
     </FormLayout>
   )
 }
-
-export default Activity

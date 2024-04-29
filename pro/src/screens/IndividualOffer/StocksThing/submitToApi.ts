@@ -5,7 +5,7 @@ import {
   serializeApiErrors,
 } from 'apiClient/helpers'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
-import { updateIndividualOffer } from 'core/Offers/adapters'
+import { updateIndividualOffer } from 'core/Offers/adapters/updateIndividualOffer/updateIndividualOffer'
 
 import { serializeStockThingList } from './adapters/serializers'
 import { StockThingFormValues, StockThingFormik } from './types'

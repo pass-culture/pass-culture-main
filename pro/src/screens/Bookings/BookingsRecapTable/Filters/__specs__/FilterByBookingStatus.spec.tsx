@@ -7,7 +7,7 @@ import {
   BookingRecapStatus,
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
-import { Audience } from 'core/shared'
+import { Audience } from 'core/shared/types'
 import {
   bookingRecapFactory,
   bookingRecapStockFactory,

@@ -14,7 +14,7 @@ export interface FormLayoutProps {
   fullWidthActions?: boolean
 }
 
-const FormLayout = ({
+export const FormLayout = ({
   children,
   className,
   fullWidthActions = false,
@@ -36,5 +36,3 @@ FormLayout.SubSection = SubSection
 FormLayout.Section = Section
 FormLayout.Actions = Actions
 FormLayout.MandatoryInfo = MandatoryInfo
-
-export default FormLayout

@@ -20,7 +20,6 @@ from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.sql import expression
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.elements import BooleanClauseList
-from sqlalchemy.sql.functions import func
 
 from pcapi.core.finance.enum import DepositType
 from pcapi.core.geography.models import IrisFrance
@@ -744,15 +743,17 @@ class UserEmailHistory(PcObject, Base, Model):
         "User", foreign_keys=[userId], backref=orm.backref("email_history", passive_deletes=True)
     )
 
-    oldUserEmail: str = sa.Column(sa.String(120), nullable=False, unique=False, index=True)
-    oldDomainEmail: str = sa.Column(sa.String(120), nullable=False, unique=False, index=True)
+    oldUserEmail: str = sa.Column(sa.String(120), nullable=False, unique=False)
+    oldDomainEmail: str = sa.Column(sa.String(120), nullable=False, unique=False)
 
-    newUserEmail: str | None = sa.Column(sa.String(120), nullable=True, unique=False, index=True)
-    newDomainEmail: str | None = sa.Column(sa.String(120), nullable=True, unique=False, index=True)
+    newUserEmail: str | None = sa.Column(sa.String(120), nullable=True, unique=False)
+    newDomainEmail: str | None = sa.Column(sa.String(120), nullable=True, unique=False)
 
     creationDate: datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
 
     eventType: EmailHistoryEventTypeEnum = sa.Column(sa.Enum(EmailHistoryEventTypeEnum), nullable=False)
+
+    __table_args__ = (sa.Index("ix_user_email_history_oldEmail", oldUserEmail + "@" + oldDomainEmail),)
 
     @classmethod
     def _build(
@@ -808,7 +809,7 @@ class UserEmailHistory(PcObject, Base, Model):
 
     @oldEmail.expression  # type: ignore [no-redef]
     def oldEmail(cls):  # pylint: disable=no-self-argument
-        return func.concat(cls.oldUserEmail, "@", cls.oldDomainEmail)
+        return cls.oldUserEmail + "@" + cls.oldDomainEmail
 
     @hybrid_property
     def newEmail(self) -> str | None:
@@ -821,7 +822,7 @@ class UserEmailHistory(PcObject, Base, Model):
         return sa.case(
             (
                 sa.and_(cls.newUserEmail.is_not(None), cls.newDomainEmail.is_not(None)),
-                func.concat(cls.newUserEmail, "@", cls.newDomainEmail),
+                cls.newUserEmail + "@" + cls.newDomainEmail,
             ),
             else_=None,
         )

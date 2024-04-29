@@ -1,4 +1,4 @@
-import { BoxFormLayout } from 'components/BoxFormLayout'
+import { BoxFormLayout } from 'components/BoxFormLayout/BoxFormLayout'
 import { UserPasswordForm } from 'components/UserPasswordForm'
 import { BoxRounded } from 'ui-kit/BoxRounded/BoxRounded'
 

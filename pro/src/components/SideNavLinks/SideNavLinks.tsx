@@ -3,7 +3,7 @@ import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { NavLink, useLocation } from 'react-router-dom'
 
-import { SAVED_OFFERER_ID_KEY } from 'core/shared'
+import { SAVED_OFFERER_ID_KEY } from 'core/shared/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import fullDownIcon from 'icons/full-down.svg'
 import fullUpIcon from 'icons/full-up.svg'

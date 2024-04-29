@@ -8,8 +8,9 @@ interface BoxFormLayoutBanner {
   banner: React.ReactNode
 }
 
-const Banner = ({ className, banner }: BoxFormLayoutBanner): JSX.Element => (
+export const Banner = ({
+  className,
+  banner,
+}: BoxFormLayoutBanner): JSX.Element => (
   <div className={cn(style['box-form-layout-banner'], className)}>{banner}</div>
 )
-
-export default Banner

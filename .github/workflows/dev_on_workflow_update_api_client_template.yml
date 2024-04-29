@@ -22,21 +22,8 @@ on:
         required: true
 
 jobs:
-  check-changes-in-api:
-    name: "Check changes in API"
-    uses: ./.github/workflows/dev_on_workflow_check_folder_changes.yml
-    with:
-      folder: api/**
-  check-changes-in-dependencies:
-    name: "Check changes in dependencies (frontend + backend)"
-    uses: ./.github/workflows/dev_on_workflow_check_folder_changes.yml
-    with:
-      folder: |
-        api/poetry.lock
-        pro/yarn.lock
   update-api-client:
     name: "Update API Client template"
-    needs: [check-changes-in-api, check-changes-in-dependencies]
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout 🛎️"
@@ -58,7 +45,7 @@ jobs:
       - name: "Should run cache"
         id: "evaluate-variables"
         run: |
-          if ${{ (!inputs.TRIGGER_ONLY_ON_API_CHANGE && !inputs.TRIGGER_ONLY_ON_DEPENDENCY_CHANGE) || (inputs.TRIGGER_ONLY_ON_API_CHANGE && needs.check-changes-in-api.outputs.folder_changed == 'true') || (inputs.TRIGGER_ONLY_ON_DEPENDENCY_CHANGE && needs.check-changes-in-dependencies.outputs.folder_changed == 'true') }}; then
+          if ${{ (!inputs.TRIGGER_ONLY_ON_API_CHANGE && !inputs.TRIGGER_ONLY_ON_DEPENDENCY_CHANGE) || (inputs.TRIGGER_ONLY_ON_API_CHANGE && needs.check-folders-changed.outputs.api-changed == 'true') || (inputs.TRIGGER_ONLY_ON_DEPENDENCY_CHANGE && needs.check-folder-changes.outputs.dependencies-changed == 'true') }}; then
             echo "should-run-cache=true" | tee -a $GITHUB_OUTPUT
           else
             echo "should-run-cache=false" | tee -a $GITHUB_OUTPUT
