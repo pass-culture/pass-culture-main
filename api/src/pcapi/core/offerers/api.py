@@ -2167,7 +2167,7 @@ def set_accessibility_infos_from_provider_id(venue: models.Venue) -> None:
         db.session.add(venue.accessibilityProvider)
 
 
-def count_permanent_venues_with_or_without_accessibility_provider(has_accessibility_provider: bool) -> int:
+def count_permanent_venues_with_accessibility_provider() -> int:
     query = (
         offerers_models.Venue.query.outer(offerers_models.AccessibilityProvider)
         .options(
@@ -2180,14 +2180,9 @@ def count_permanent_venues_with_or_without_accessibility_provider(has_accessibil
         .filter(
             offerers_models.Venue.isPermanent == True,
             offerers_models.Venue.isVirtual == False,
+            offerers_models.AccessibilityProvider.externalAccessibilityId.isnot(None),
         )
     )
-
-    if has_accessibility_provider:
-        query = query.filter(offerers_models.AccessibilityProvider.externalAccessibilityId.isnot(None))
-    else:
-        query = query.filter(offerers_models.AccessibilityProvider.externalAccessibilityId.is_(None))
-
     return query.count()
 
 
@@ -2207,7 +2202,7 @@ def get_permanent_venues_with_accessibility_provider(batch_size: int, batch_num:
     )
 
 
-def get_permanent_venues_without_accessibility_provider(batch_size: int, batch_num: int) -> list[models.Venue]:
+def get_permanent_venues_without_accessibility_provider() -> list[models.Venue]:
     return (
         offerers_models.Venue.query.outerjoin(offerers_models.Venue.accessibilityProvider)
         .filter(
@@ -2225,8 +2220,6 @@ def get_permanent_venues_without_accessibility_provider(batch_size: int, batch_n
             )
         )
         .order_by(offerers_models.Venue.id.asc())
-        .limit(batch_size)
-        .offset(batch_num * batch_size)
         .all()
     )
 
