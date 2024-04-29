@@ -5,7 +5,7 @@ import {
   PostCollectiveOfferBodyModel,
   OfferContactFormEnum,
 } from 'apiClient/v1'
-import { buildDateTime } from 'screens/IndividualOffer/StocksEventEdition/adapters/serializers'
+import { buildDateTime } from 'screens/IndividualOffer/StocksEventEdition/serializers'
 import {
   formatBrowserTimezonedDateAsUTC,
   toISOStringWithoutMilliseconds,
