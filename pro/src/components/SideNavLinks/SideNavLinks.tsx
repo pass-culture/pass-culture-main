@@ -92,6 +92,7 @@ const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
               dispatch(setIsIndividualSectionOpen(!isIndividualSectionOpen))
             }
             className={(styles['nav-links-item'], styles['nav-section-button'])}
+            aria-expanded={isIndividualSectionOpen}
           >
             <SvgIcon src={strokePhoneIcon} alt="" width={NAV_ITEM_ICON_SIZE} />
             <span className={styles['nav-section-title']}>Individuel</span>
@@ -151,6 +152,7 @@ const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
               dispatch(setIsCollectiveSectionOpen(!isCollectiveSectionOpen))
             }
             className={(styles['nav-links-item'], styles['nav-section-button'])}
+            aria-expanded={isCollectiveSectionOpen}
           >
             <SvgIcon
               src={strokeTeacherIcon}
