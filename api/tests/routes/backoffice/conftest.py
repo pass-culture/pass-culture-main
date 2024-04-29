@@ -173,6 +173,9 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_INCIDENTS,
         perm_models.Permissions.MANAGE_INCIDENTS,
     ],
+    "gestionnaire_des_droits": [
+        perm_models.Permissions.MANAGE_PERMISSIONS,
+    ],
 }
 
 
