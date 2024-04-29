@@ -116,7 +116,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           await userEvent.click(deleteButton)
           expect(api.deleteDraftOffers).toHaveBeenCalledTimes(1)
           expect(api.deleteDraftOffers).toHaveBeenCalledWith({
-            ids: [offerId.toString()],
+            ids: [offerId],
           })
           expect(
             screen.getByText('1 brouillon a bien été supprimé')
@@ -148,7 +148,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           )
           expect(api.deleteDraftOffers).toHaveBeenCalledTimes(1)
           expect(api.deleteDraftOffers).toHaveBeenCalledWith({
-            ids: [offerId.toString()],
+            ids: [offerId],
           })
           expect(
             screen.getByText(

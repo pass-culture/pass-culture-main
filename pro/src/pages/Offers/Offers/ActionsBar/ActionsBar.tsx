@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react'
 import { useSWRConfig } from 'swr'
 
+import { api } from 'apiClient/api'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
@@ -16,7 +17,10 @@ import { GET_OFFERS_QUERY_KEY } from 'pages/Offers/OffersRoute'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
-import { deleteDraftOffersAdapter } from '../adapters/deleteDraftOffers'
+import {
+  computeDeletionErrorMessage,
+  computeDeletionSuccessMessage,
+} from '../utils'
 
 import { updateAllCollectiveOffersActiveStatusAdapter } from './adapters/updateAllCollectiveOffersActiveStatusAdapter'
 import { updateAllOffersActiveStatusAdapter } from './adapters/updateAllOffersActiveStatusAdapter'
@@ -147,24 +151,23 @@ export const ActionsBar = ({
     return `${nbSelectedOffers} offre sélectionnée`
   }
 
-  const handleDelete = useCallback(async () => {
+  const handleDelete = async () => {
     if (!canDeleteOffers(selectedOfferIds)) {
       notify.error('Seuls les  brouillons peuvent être supprimés')
       return
     }
-    const { isOk, message } = await deleteDraftOffersAdapter({
-      ids: selectedOfferIds,
-      nbSelectedOffers,
-    })
-    if (!isOk) {
-      notify.error(message)
-    } else {
-      notify.success(message)
+    try {
+      await api.deleteDraftOffers({
+        ids: selectedOfferIds.map((id) => Number(id)),
+      })
+      notify.success(computeDeletionSuccessMessage(nbSelectedOffers))
       await mutate([GET_OFFERS_QUERY_KEY, apiFilters])
       clearSelectedOfferIds()
+    } catch {
+      notify.error(computeDeletionErrorMessage(nbSelectedOffers))
     }
     setIsDeleteDialogOpen(false)
-  }, [selectedOfferIds, nbSelectedOffers])
+  }
 
   const handleOpenDeleteDialog = () => {
     if (!canDeleteOffers(selectedOfferIds)) {
