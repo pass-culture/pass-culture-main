@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useState } from 'react'
 import { mutate, useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
