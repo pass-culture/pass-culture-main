@@ -29,7 +29,7 @@ jobs:
       - uses: actions/checkout@v4.1.4
         with:
           fetch-depth: 0
-          fetch-tags: ${{ inputs.fetch-tags }}
+          fetch-tags: false
       - name: "Check api folder changes"
         id: check-api-changes
         uses: tj-actions/changed-files@v44
