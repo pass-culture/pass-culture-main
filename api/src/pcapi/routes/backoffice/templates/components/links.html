@@ -38,6 +38,11 @@
      class="link-primary"
      target="_top">{{ offer[text_attr] }}</a>
 {% endmacro %}
+{% macro build_collective_offer_name_to_details_link(collective_offer, text_attr="name") %}
+  <a href="{{ url_for('backoffice_web.collective_offer.get_collective_offer_details', collective_offer_id=collective_offer.id) }}"
+     class="link-primary"
+     target="_top">{{ collective_offer[text_attr] }}</a>
+{% endmacro %}
 {% macro build_venue_offers_icon_link(endpoint, hint, venue) %}
   <a href="{{ url_for(endpoint, venue=venue.id) }}"
      class="link-primary"
