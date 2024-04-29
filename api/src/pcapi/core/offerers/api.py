@@ -2168,7 +2168,7 @@ def set_accessibility_infos_from_provider_id(venue: models.Venue) -> None:
 
 
 def count_permanent_venues_with_accessibility_provider() -> int:
-    query = (
+    return (
         offerers_models.Venue.query.outer(offerers_models.AccessibilityProvider)
         .options(
             sa.orm.load_only(
@@ -2182,8 +2182,8 @@ def count_permanent_venues_with_accessibility_provider() -> int:
             offerers_models.Venue.isVirtual == False,
             offerers_models.AccessibilityProvider.externalAccessibilityId.isnot(None),
         )
+        .count()
     )
-    return query.count()
 
 
 def get_permanent_venues_with_accessibility_provider(batch_size: int, batch_num: int) -> list[models.Venue]:
