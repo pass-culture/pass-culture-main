@@ -388,7 +388,7 @@ class DeleteOffererTest(PostEndpointHelper):
         response = authenticated_client.get(expected_url)
         assert (
             html_parser.extract_alert(response.data)
-            == "Impossible d'effacer une structure juridique pour laquelle il existe des réservations"
+            == "Impossible de supprimer une structure juridique pour laquelle il existe des réservations"
         )
 
     def test_no_script_injection_in_offerer_name(self, legit_user, authenticated_client):

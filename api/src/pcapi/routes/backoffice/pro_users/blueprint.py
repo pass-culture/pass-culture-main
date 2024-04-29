@@ -321,7 +321,7 @@ def connect_as(user_id: int) -> utils.BackofficeResponse:
         return redirect(url_for("backoffice_web.pro_user.get", user_id=user_id), code=303)
 
     if user.has_admin_role:
-        flash("L'utilisation du « connect as » n'est pas disponible pour les comptes admins", "warning")
+        flash("L'utilisation du « connect as » n'est pas disponible pour les comptes ADMIN", "warning")
         return redirect(url_for("backoffice_web.pro_user.get", user_id=user_id), code=303)
 
     if user.has_anonymized_role:
@@ -329,7 +329,7 @@ def connect_as(user_id: int) -> utils.BackofficeResponse:
         return redirect(url_for("backoffice_web.pro_user.get", user_id=user_id), code=303)
 
     if not (user.has_non_attached_pro_role or user.has_pro_role):
-        flash("L'utilisation du « connect as » n'est disponible que pour les comptes pro", "warning")
+        flash("L'utilisation du « connect as » n'est disponible que pour les comptes PRO", "warning")
         return redirect(url_for("backoffice_web.pro_user.get", user_id=user_id), code=303)
 
     token = SecureToken(

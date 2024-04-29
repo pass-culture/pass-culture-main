@@ -688,9 +688,9 @@ def format_modified_info_name(info_name: str) -> str:
         case "label":
             return "Intitulé"
         case "accessibilityProvider.externalAccessibilityId":
-            return "Id chez Acceslibre"
+            return "ID chez Acceslibre"
         case "accessibilityProvider.externalAccessibilityUrl":
-            return "Url chez Acceslibre"
+            return "URL chez Acceslibre"
         case "notificationSubscriptions.marketing_email":
             return "Abonné aux emails marketing"
         case "notificationSubscriptions.marketing_push":

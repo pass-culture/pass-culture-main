@@ -424,11 +424,11 @@ def delete_venue_provider(venue_id: int, provider_id: int) -> utils.BackofficeRe
         raise NotFound()
 
     if venue_provider.isFromAllocineProvider:
-        flash("Impossible d'effacer le lien entre le lieu et Allociné.", "warning")
+        flash("Impossible de supprimer le lien entre le lieu et Allociné.", "warning")
         return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
 
     providers_api.delete_venue_provider(venue_provider, author=current_user, send_email=False)
-    flash("Le lien entre le lieu et le provider a été effacé.", "info")
+    flash("Le lien entre le lieu et le provider a été supprimé.", "info")
 
     return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
 
@@ -530,13 +530,13 @@ def delete_venue(venue_id: int) -> utils.BackofficeResponse:
     try:
         offerers_api.delete_venue(venue.id)
     except offerers_exceptions.CannotDeleteVenueWithBookingsException:
-        flash("Impossible d'effacer un lieu pour lequel il existe des réservations", "warning")
+        flash("Impossible de supprimer un lieu pour lequel il existe des réservations", "warning")
         return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
     except offerers_exceptions.CannotDeleteVenueUsedAsPricingPointException:
-        flash("Impossible d'effacer un lieu utilisé comme point de valorisation d'un autre lieu", "warning")
+        flash("Impossible de supprimer un lieu utilisé comme point de valorisation d'un autre lieu", "warning")
         return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
     except offerers_exceptions.CannotDeleteVenueUsedAsReimbursementPointException:
-        flash("Impossible d'effacer un lieu utilisé comme point de remboursement d'un autre lieu", "warning")
+        flash("Impossible de supprimer un lieu utilisé comme point de remboursement d'un autre lieu", "warning")
         return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
 
     for email in emails:
@@ -704,7 +704,7 @@ def comment_venue(venue_id: int) -> utils.BackofficeResponse:
         flash(utils.build_form_error_msg(form), "warning")
     else:
         offerers_api.add_comment_to_venue(venue, current_user, comment=form.comment.data)
-        flash("Commentaire enregistré", "success")
+        flash("Le commentaire a été enregistré", "success")
 
     return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
 
