@@ -15,7 +15,6 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 
 export const CollectiveOfferCreation = ({
   offer,
-  setOffer,
   isTemplate,
 }: OptionalCollectiveOfferFromParamsProps): JSX.Element => {
   const location = useLocation()
@@ -43,7 +42,6 @@ export const CollectiveOfferCreation = ({
             domainsOptions={offerEducationalFormData.domains}
             nationalPrograms={offerEducationalFormData.nationalPrograms}
             offer={offer}
-            setOffer={setOffer}
             mode={Mode.CREATION}
             isTemplate={isTemplate}
           />

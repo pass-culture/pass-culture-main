@@ -45,7 +45,6 @@ export interface OfferEducationalStockProps<
   offer: T
   onSubmit: (offer: T, values: OfferEducationalStockFormValues) => Promise<void>
   mode: Mode
-  reloadCollectiveOffer?: () => void
   requestId?: string | null
 }
 
@@ -58,7 +57,6 @@ export const OfferEducationalStock = <
   offer,
   onSubmit,
   mode,
-  reloadCollectiveOffer,
   requestId = '',
 }: OfferEducationalStockProps<T>): JSX.Element => {
   const offerIsDisabled = isOfferDisabled(offer.status)
@@ -125,7 +123,6 @@ export const OfferEducationalStock = <
             : Boolean(offer.collectiveStock?.isBooked)
         }
         offer={offer}
-        reloadCollectiveOffer={reloadCollectiveOffer}
         mode={mode}
       />
       <FormikProvider value={{ ...formik, resetForm }}>

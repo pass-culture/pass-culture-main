@@ -34,7 +34,6 @@ const renderCollectiveOfferPreviewCreation = (
 const defaultProps = {
   offer: getCollectiveOfferTemplateFactory(),
   setOffer: vi.fn(),
-  reloadCollectiveOffer: vi.fn(),
   isTemplate: true,
   offerer: defaultGetOffererResponseModel,
 }
