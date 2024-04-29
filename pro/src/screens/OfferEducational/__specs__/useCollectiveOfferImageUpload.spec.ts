@@ -2,8 +2,6 @@ import { act, renderHook } from '@testing-library/react'
 
 import { api } from 'apiClient/api'
 import { imageUploadArgsFactory } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/__tests-utils__/imageUploadArgsFactory'
-import * as deleteCollectiveOfferImageAdapter from 'core/OfferEducational/adapters/deleteCollectiveOfferImageAdapter'
-import * as deleteCollectiveOfferTemplateImageAdapter from 'core/OfferEducational/adapters/deleteCollectiveOfferTemplateImageAdapter'
 import * as useNotification from 'hooks/useNotification'
 import {
   getCollectiveOfferFactory,
@@ -13,6 +11,15 @@ import {
 import { useCollectiveOfferImageUpload } from '../useCollectiveOfferImageUpload'
 
 vi.mock('hooks/useNotification')
+
+vi.mock('apiClient/api', () => ({
+  api: {
+    deleteOfferImage: vi.fn(),
+    deleteOfferTemplateImage: vi.fn(),
+    attachOfferImage: vi.fn(),
+    attachOfferTemplateImage: vi.fn(),
+  },
+}))
 
 const mockUseNotification = {
   close: vi.fn(),
@@ -75,15 +82,7 @@ describe('useCollectiveOfferImageUpload', () => {
   })
 
   it('should delete image in case of normal offer', async () => {
-    const offer = getCollectiveOfferTemplateFactory()
-    vi.spyOn(
-      deleteCollectiveOfferImageAdapter,
-      'deleteCollectiveOfferImageAdapter'
-    ).mockResolvedValue({
-      isOk: true,
-      payload: null,
-      message: 'ok',
-    })
+    const offer = getCollectiveOfferFactory()
 
     const { result } = renderHook(() => useCollectiveOfferImageUpload(offer))
     act(() => {
@@ -94,21 +93,11 @@ describe('useCollectiveOfferImageUpload', () => {
       await result.current.handleImageOnSubmit(3)
     })
 
-    expect(
-      deleteCollectiveOfferImageAdapter.deleteCollectiveOfferImageAdapter
-    ).toHaveBeenCalled()
+    expect(api.deleteOfferImage).toHaveBeenCalled()
   })
 
   it('should delete image in case of template offer', async () => {
     const offer = getCollectiveOfferTemplateFactory()
-    vi.spyOn(
-      deleteCollectiveOfferTemplateImageAdapter,
-      'deleteCollectiveOfferTemplateImageAdapter'
-    ).mockResolvedValue({
-      isOk: true,
-      payload: null,
-      message: 'ok',
-    })
 
     const { result } = renderHook(() =>
       useCollectiveOfferImageUpload(offer, true)
@@ -121,21 +110,11 @@ describe('useCollectiveOfferImageUpload', () => {
       await result.current.handleImageOnSubmit(3)
     })
 
-    expect(
-      deleteCollectiveOfferTemplateImageAdapter.deleteCollectiveOfferTemplateImageAdapter
-    ).toHaveBeenCalled()
+    expect(api.deleteOfferTemplateImage).toHaveBeenCalled()
   })
 
   it('should not delete image if offer initially had one and onImageDelete was not called', async () => {
     const offer = getCollectiveOfferTemplateFactory()
-    vi.spyOn(
-      deleteCollectiveOfferTemplateImageAdapter,
-      'deleteCollectiveOfferTemplateImageAdapter'
-    ).mockResolvedValue({
-      isOk: true,
-      payload: null,
-      message: 'ok',
-    })
 
     const { result } = renderHook(() =>
       useCollectiveOfferImageUpload(offer, true)
@@ -145,8 +124,6 @@ describe('useCollectiveOfferImageUpload', () => {
       await result.current.handleImageOnSubmit(3)
     })
 
-    expect(
-      deleteCollectiveOfferTemplateImageAdapter.deleteCollectiveOfferTemplateImageAdapter
-    ).not.toHaveBeenCalled()
+    expect(api.deleteOfferTemplateImage).not.toHaveBeenCalled()
   })
 })
