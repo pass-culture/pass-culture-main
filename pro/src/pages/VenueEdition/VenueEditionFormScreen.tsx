@@ -37,6 +37,8 @@ export const VenueEditionFormScreen = ({
             <Callout title="Les informations que vous renseignez ci-dessous sont affichées dans votre page partenaire, visible sur l’application pass Culture" />
             <PartnerPageIndividualSection
               venueId={venue.id}
+              venueName={venue.name}
+              offererId={venue.managingOfferer.id}
               isVisibleInApp={Boolean(venue.isVisibleInApp)}
             />
           </div>

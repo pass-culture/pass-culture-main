@@ -1,6 +1,5 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -221,7 +220,12 @@ describe('Homepage', () => {
 
     expect(await screen.findByText('Autre lieu')).toBeInTheDocument()
 
-    expect(screen.getByText('Gérer ma page')).toBeInTheDocument()
+    expect(
+      screen.getByText('Gérer votre page pour le grand public')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('Gérer votre page pour les enseignants')
+    ).toBeInTheDocument()
   })
 
   it('should load saved offerer in localStorage if no get parameter', async () => {

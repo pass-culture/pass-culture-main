@@ -55,7 +55,12 @@ describe('PartnerPages', () => {
     ).not.toBeInTheDocument()
 
     expect(screen.getByText('Festival')).toBeInTheDocument()
-    expect(screen.getByText('Gérer ma page')).toBeInTheDocument()
+    expect(
+      screen.getByText('Gérer votre page pour le grand public')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('Gérer votre page pour les enseignants')
+    ).toBeInTheDocument()
   })
 
   it('should display select if multiple venues', () => {

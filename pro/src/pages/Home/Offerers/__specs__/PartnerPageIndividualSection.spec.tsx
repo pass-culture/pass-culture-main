@@ -17,6 +17,8 @@ describe('PartnerPageIndividualSection', () => {
   it('should display right info when visible and title', () => {
     const props = {
       venueId: 7,
+      offererId: 8,
+      venueName: 'Venue name',
       isVisibleInApp: true,
       isDisplayedInHomepage: true,
     }
@@ -36,6 +38,8 @@ describe('PartnerPageIndividualSection', () => {
   it('should display right info when is visible and in homepage', () => {
     const props: PartnerPageIndividualSectionProps = {
       venueId: 7,
+      offererId: 8,
+      venueName: 'Venue name',
       isVisibleInApp: true,
       isDisplayedInHomepage: true,
     }
@@ -43,6 +47,9 @@ describe('PartnerPageIndividualSection', () => {
     renderPartnerPageIndividualSection(props)
 
     expect(screen.getByText('Grand public')).toBeInTheDocument()
+    expect(
+      screen.getByText('Gérer votre page pour le grand public')
+    ).toBeInTheDocument()
     expect(
       screen.queryByText('État de votre page partenaire sur l’application :')
     ).not.toBeInTheDocument()
@@ -57,6 +64,8 @@ describe('PartnerPageIndividualSection', () => {
   it('should display right info when is visible and in venue form', () => {
     const props = {
       venueId: 7,
+      offererId: 8,
+      venueName: 'Venue name',
       isVisibleInApp: true,
       isDisplayedInHomepage: false,
     }
@@ -72,12 +81,17 @@ describe('PartnerPageIndividualSection', () => {
         'Votre page partenaire est visible sur l’application pass Culture.'
       )
     ).not.toBeInTheDocument()
+    expect(
+      screen.queryByText('Gérer votre page pour le grand public')
+    ).not.toBeInTheDocument()
     expect(screen.getByText('Copier le lien de la page')).toBeInTheDocument()
   })
 
   it('should display right info when not visible and not title and in venue form', () => {
     const props = {
       venueId: 7,
+      offererId: 8,
+      venueName: 'Venue name',
       isVisibleInApp: false,
       isDisplayedInHomepage: false,
     }
