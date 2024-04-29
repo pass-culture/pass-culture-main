@@ -1,10 +1,12 @@
 import { useNavigate } from 'react-router-dom'
+import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
 import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
+import { GET_COLLECTIVE_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
 import { getStockCollectiveOfferAdapter } from 'core/OfferEducational/adapters/getStockCollectiveOfferAdapter'
 import {
   isCollectiveOfferTemplate,
@@ -27,11 +29,11 @@ import { OfferEducationalStock } from 'screens/OfferEducationalStock/OfferEducat
 
 const CollectiveOfferStockEdition = ({
   offer,
-  reloadCollectiveOffer,
   isTemplate,
 }: MandatoryCollectiveOfferFromParamsProps): JSX.Element => {
   const notify = useNotification()
   const navigate = useNavigate()
+  const { mutate } = useSWRConfig()
 
   if (isCollectiveOfferTemplate(offer)) {
     throw new Error('Impossible de mettre à jour le stock d’une offre vitrine.')
@@ -69,7 +71,7 @@ const CollectiveOfferStockEdition = ({
       return notify.error(offerResponse.message)
     }
 
-    await reloadCollectiveOffer()
+    await mutate([GET_COLLECTIVE_OFFER_QUERY_KEY, offer.id])
     navigate(
       `/offre/${computeURLCollectiveOfferId(
         offer.id,
@@ -91,7 +93,6 @@ const CollectiveOfferStockEdition = ({
           }
           offer={offer}
           onSubmit={handleSubmitStock}
-          reloadCollectiveOffer={reloadCollectiveOffer}
         />
       </CollectiveOfferLayout>
     </AppLayout>

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useSWRConfig } from 'swr'
 
 import {
   GetCollectiveOfferResponseModel,
@@ -7,6 +8,10 @@ import {
   GetOffererResponseModel,
 } from 'apiClient/v1'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
+import {
+  GET_COLLECTIVE_OFFER_QUERY_KEY,
+  GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
+} from 'config/swrQueryKeys'
 import useNotification from 'hooks/useNotification'
 import { AdagePreviewLayout } from 'pages/AdageIframe/app/components/OfferInfos/AdagePreviewLayout/AdagePreviewLayout'
 import { publishCollectiveOfferAdapter } from 'screens/CollectiveOfferSummaryCreation/adapters/publishCollectiveOfferAdapter'
@@ -20,21 +25,16 @@ export interface CollectiveOfferSummaryCreationProps {
   offer:
     | GetCollectiveOfferTemplateResponseModel
     | GetCollectiveOfferResponseModel
-  setOffer: (
-    offer:
-      | GetCollectiveOfferResponseModel
-      | GetCollectiveOfferTemplateResponseModel
-  ) => void
   offerer: GetOffererResponseModel | undefined
 }
 
 export const CollectiveOfferPreviewCreationScreen = ({
   offer,
-  setOffer,
   offerer,
 }: CollectiveOfferSummaryCreationProps) => {
   const notify = useNotification()
   const navigate = useNavigate()
+  const { mutate } = useSWRConfig()
   const [displayRedirectDialog, setDisplayRedirectDialog] = useState(false)
 
   const backRedirectionUrl = offer.isTemplate
@@ -54,9 +54,14 @@ export const CollectiveOfferPreviewCreationScreen = ({
         return
       }
 
-      setOffer(response.payload)
+      await mutate<GetCollectiveOfferTemplateResponseModel>(
+        [GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY, offer.id],
+        response.payload,
+        {
+          revalidate: false,
+        }
+      )
       navigate(confirmationUrl)
-
       return
     }
 
@@ -64,7 +69,14 @@ export const CollectiveOfferPreviewCreationScreen = ({
     if (!response.isOk) {
       return notify.error(response.message)
     }
-    setOffer(response.payload)
+
+    await mutate<GetCollectiveOfferResponseModel>(
+      [GET_COLLECTIVE_OFFER_QUERY_KEY, offer.id],
+      response.payload,
+      {
+        revalidate: false,
+      }
+    )
     const shouldDisplayRedirectDialog =
       response.payload.isNonFreeOffer &&
       offerer &&

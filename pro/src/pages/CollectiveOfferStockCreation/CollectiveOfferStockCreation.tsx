@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
@@ -12,6 +13,7 @@ import {
 import { AppLayout } from 'app/AppLayout'
 import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
 import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
+import { GET_COLLECTIVE_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
 import { getCollectiveOfferTemplateAdapter } from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
 import {
   isCollectiveOffer,
@@ -39,7 +41,6 @@ import { postCollectiveOfferTemplateAdapter } from './adapters/postCollectiveOff
 
 export const CollectiveOfferStockCreation = ({
   offer,
-  setOffer,
   isTemplate,
 }: MandatoryCollectiveOfferFromParamsProps): JSX.Element | null => {
   const notify = useNotification()
@@ -47,6 +48,8 @@ export const CollectiveOfferStockCreation = ({
   const location = useLocation()
   const isCreation = !location.pathname.includes('edition')
   const { requete: requestId } = queryParamsFromOfferer(location)
+
+  const { mutate } = useSWRConfig()
 
   const [offerTemplate, setOfferTemplate] =
     useState<GetCollectiveOfferTemplateResponseModel>()
@@ -154,15 +157,19 @@ export const CollectiveOfferStockCreation = ({
         }
       }
       if (response !== null) {
-        setOffer({
-          ...offer,
-          collectiveStock: {
-            ...offer.collectiveStock,
-            ...response,
-            isBooked: false,
-            isCancellable: offer.isCancellable,
+        await mutate<GetCollectiveOfferResponseModel>(
+          [GET_COLLECTIVE_OFFER_QUERY_KEY],
+          {
+            ...offer,
+            collectiveStock: {
+              ...offer.collectiveStock,
+              ...response,
+              isBooked: false,
+              isCancellable: offer.isCancellable,
+            },
           },
-        })
+          { revalidate: false }
+        )
       }
     }
 

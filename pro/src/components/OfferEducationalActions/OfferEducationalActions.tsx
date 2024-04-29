@@ -1,5 +1,6 @@
 import cn from 'classnames'
 import React from 'react'
+import { useSWRConfig } from 'swr'
 
 import {
   GetCollectiveOfferResponseModel,
@@ -7,6 +8,10 @@ import {
   CollectiveBookingStatus,
   OfferStatus,
 } from 'apiClient/v1'
+import {
+  GET_COLLECTIVE_OFFER_QUERY_KEY,
+  GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
+} from 'config/swrQueryKeys'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
 import { patchIsCollectiveOfferActiveAdapter } from 'core/OfferEducational/adapters/patchIsCollectiveOfferActiveAdapter'
 import { patchIsTemplateOfferActiveAdapter } from 'core/OfferEducational/adapters/patchIsTemplateOfferActiveAdapter'
@@ -39,7 +44,6 @@ export interface OfferEducationalActionsProps {
     | GetCollectiveOfferResponseModel
     | GetCollectiveOfferTemplateResponseModel
   mode?: Mode
-  reloadCollectiveOffer?: () => void
 }
 
 export const OfferEducationalActions = ({
@@ -47,7 +51,6 @@ export const OfferEducationalActions = ({
   isBooked,
   offer,
   mode,
-  reloadCollectiveOffer,
 }: OfferEducationalActionsProps): JSX.Element => {
   const { logEvent } = useAnalytics()
   const notify = useNotification()
@@ -71,6 +74,8 @@ export const OfferEducationalActions = ({
     return ''
   }
 
+  const { mutate } = useSWRConfig()
+
   const setIsOfferActive = async (isActive: boolean) => {
     const patchAdapter = offer.isTemplate
       ? patchIsTemplateOfferActiveAdapter
@@ -85,7 +90,12 @@ export const OfferEducationalActions = ({
     }
 
     notify.success(message)
-    reloadCollectiveOffer && reloadCollectiveOffer()
+    await mutate([
+      offer.isTemplate
+        ? GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY
+        : GET_COLLECTIVE_OFFER_QUERY_KEY,
+      offer.id,
+    ])
   }
 
   const activateOffer = async () => {

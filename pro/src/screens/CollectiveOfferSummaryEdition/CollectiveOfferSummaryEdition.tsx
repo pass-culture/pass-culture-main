@@ -17,13 +17,11 @@ interface CollectiveOfferSummaryEditionProps {
   offer:
     | GetCollectiveOfferTemplateResponseModel
     | GetCollectiveOfferResponseModel
-  reloadCollectiveOffer: () => void
   mode: Mode
 }
 
 export const CollectiveOfferSummaryEditionScreen = ({
   offer,
-  reloadCollectiveOffer,
   mode,
 }: CollectiveOfferSummaryEditionProps) => {
   const offerEditLink = `/offre/${computeURLCollectiveOfferId(
@@ -48,7 +46,6 @@ export const CollectiveOfferSummaryEditionScreen = ({
             : Boolean(offer.collectiveStock?.isBooked)
         }
         offer={offer}
-        reloadCollectiveOffer={reloadCollectiveOffer}
         mode={mode}
       />
 

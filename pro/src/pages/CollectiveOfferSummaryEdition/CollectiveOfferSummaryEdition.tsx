@@ -9,7 +9,6 @@ import {
 
 const CollectiveOfferSummaryEdition = ({
   offer,
-  reloadCollectiveOffer,
   isTemplate,
 }: MandatoryCollectiveOfferFromParamsProps) => {
   return (
@@ -17,7 +16,6 @@ const CollectiveOfferSummaryEdition = ({
       <CollectiveOfferLayout subTitle={offer.name} isTemplate={isTemplate}>
         <CollectiveOfferSummaryEditionScreen
           offer={offer}
-          reloadCollectiveOffer={reloadCollectiveOffer}
           mode={Mode.EDITION}
         />
       </CollectiveOfferLayout>

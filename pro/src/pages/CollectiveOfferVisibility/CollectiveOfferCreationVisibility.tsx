@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { useSWRConfig } from 'swr'
 
 import {
   EducationalInstitutionResponseModel,
@@ -8,6 +9,7 @@ import {
 import { AppLayout } from 'app/AppLayout'
 import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
 import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
+import { GET_COLLECTIVE_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
 import {
   isCollectiveOfferTemplate,
   isCollectiveOffer,
@@ -25,7 +27,6 @@ import { getEducationalInstitutionsAdapter } from './adapters/getEducationalInst
 import { patchEducationalInstitutionAdapter } from './adapters/patchEducationalInstitutionAdapter'
 
 export const CollectiveOfferVisibility = ({
-  setOffer,
   offer,
   isTemplate,
 }: MandatoryCollectiveOfferFromParamsProps) => {
@@ -38,14 +39,18 @@ export const CollectiveOfferVisibility = ({
     EducationalInstitutionResponseModel[]
   >([])
   const [isLoadingInstitutions, setIsLoadingInstitutions] = useState(true)
-  const onSuccess = ({
+  const { mutate } = useSWRConfig()
+  const onSuccess = async ({
     offerId,
     payload,
   }: {
     offerId: string
     payload: GetCollectiveOfferResponseModel
   }) => {
-    setOffer(payload)
+    await mutate([GET_COLLECTIVE_OFFER_QUERY_KEY], payload, {
+      revalidate: false,
+    })
+
     navigate(`/offre/${offerId}/collectif/creation/recapitulatif`)
   }
 
