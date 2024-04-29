@@ -118,6 +118,24 @@
           <div class="row pt-3">
             <div class="col-4">
               <div class="fs-6">
+                <p class="mb-1">
+                  <span class="fw-bold">Région :</span>
+                  {{ region }}
+                </p>
+                {% if offerer.street %}
+                  <p class="mb-1">
+                    <span class="fw-bold">Adresse :</span>
+                    {{ offerer.street }}
+                  </p>
+                {% endif %}
+                <p class="mb-1">
+                  <span class="fw-bold">Code postal :</span>
+                  {{ offerer.postalCode }}
+                </p>
+                <p class="mb-1">
+                  <span class="fw-bold">Ville :</span>
+                  {{ offerer.city }}
+                </p>
                 {% if offerer.email %}
                   <p class="mb-1">
                     <span class="fw-bold">Email :</span>
@@ -129,24 +147,6 @@
                   <p class="mb-1">
                     <span class="fw-bold">Tél :</span>
                     {{ offerer.phoneNumber | empty_string_if_null }}
-                  </p>
-                {% endif %}
-                <p class="mb-1">
-                  <span class="fw-bold">Région :</span>
-                  {{ region }}
-                </p>
-                <p class="mb-1">
-                  <span class="fw-bold">Ville :</span>
-                  {{ offerer.city }}
-                </p>
-                <p class="mb-1">
-                  <span class="fw-bold">Code postal :</span>
-                  {{ offerer.postalCode }}
-                </p>
-                {% if offerer.street %}
-                  <p class="mb-1">
-                    <span class="fw-bold">Adresse :</span>
-                    {{ offerer.street }}
                   </p>
                 {% endif %}
                 {% if creator_phone_number %}
