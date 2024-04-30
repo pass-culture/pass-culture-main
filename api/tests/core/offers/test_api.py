@@ -1473,12 +1473,10 @@ class AddCriterionToOffersTest:
     def test_add_criteria_from_visa(self, mocked_async_index_offer_ids):
         # Given
         visa = "222100"
-        product1 = factories.ProductFactory(extraData={"visa": visa})
-        offer11 = factories.OfferFactory(product=product1)
-        offer12 = factories.OfferFactory(product=product1)
-        product2 = factories.ProductFactory(extraData={"visa": visa})
-        offer21 = factories.OfferFactory(product=product2)
-        inactive_offer = factories.OfferFactory(product=product1, isActive=False)
+        product = factories.ProductFactory(extraData={"visa": visa})
+        offer1 = factories.OfferFactory(product=product)
+        offer2 = factories.OfferFactory(product=product)
+        inactive_offer = factories.OfferFactory(product=product, isActive=False)
         unmatched_offer = factories.OfferFactory()
         criterion1 = criteria_factories.CriterionFactory(name="Pretty good books")
         criterion2 = criteria_factories.CriterionFactory(name="Other pretty good books")
@@ -1488,13 +1486,12 @@ class AddCriterionToOffersTest:
 
         # Then
         assert is_successful is True
-        assert set(offer11.criteria) == {criterion1, criterion2}
-        assert set(offer12.criteria) == {criterion1, criterion2}
-        assert set(offer21.criteria) == {criterion1, criterion2}
+        assert set(offer1.criteria) == {criterion1, criterion2}
+        assert set(offer2.criteria) == {criterion1, criterion2}
         assert not inactive_offer.criteria
         assert not unmatched_offer.criteria
         mocked_async_index_offer_ids.assert_called_once_with(
-            {offer11.id, offer12.id, offer21.id},
+            {offer1.id, offer2.id},
             reason=search.IndexationReason.CRITERIA_LINK,
             log_extra={"criterion_ids": [criterion1.id, criterion2.id]},
         )
