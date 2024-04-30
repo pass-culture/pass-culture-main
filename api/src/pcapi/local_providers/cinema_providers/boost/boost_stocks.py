@@ -112,7 +112,7 @@ class BoostStocks(LocalProvider):
                 offer.durationMinutes = movie_information.duration
 
         offer.extraData["allocineId"] = offer.extraData.get("allocineId") or movie_information.idFilmAllocine
-        if movie_information.numVisa:
+        if movie_information.numVisa != 0:
             offer.extraData["visa"] = offer.extraData.get("visa") or str(movie_information.numVisa)
 
     def fill_offer_attributes(self, offer: offers_models.Offer) -> None:
@@ -190,9 +190,14 @@ class BoostStocks(LocalProvider):
             stock.priceCategory = price_category
 
     def get_movie_product(self, film: boost_serializers.Film2) -> offers_models.Product | None:
-        return offers_models.Product.query.filter(
-            offers_models.Product.extraData["allocineId"] == str(film.idFilmAllocine)
-        ).one_or_none()
+        product = None
+        if film.idFilmAllocine:
+            product = offers_repository.get_movie_product_by_allocine_id(str(film.idFilmAllocine))
+
+        if not product and film.numVisa:
+            product = offers_repository.get_movie_product_by_visa(str(film.numVisa))
+
+        return product
 
     def get_or_create_price_category(self, price: decimal.Decimal, price_label: str) -> offers_models.PriceCategory:
         if self.last_offer not in self.price_category_lists_by_offer:
