@@ -31,9 +31,9 @@ from pcapi.routes.backoffice.pro_users import forms as pro_users_forms
 from pcapi.routes.backoffice.users import forms as user_forms
 from pcapi.tasks.batch_tasks import DeleteBatchUserAttributesRequest
 from pcapi.tasks.batch_tasks import delete_user_attributes_task
+from pcapi.utils import date as date_utils
 from pcapi.utils import email as email_utils
 from pcapi.utils import urls
-import pcapi.utils.date as date_utils
 
 
 pro_user_blueprint = utils.child_backoffice_blueprint(
