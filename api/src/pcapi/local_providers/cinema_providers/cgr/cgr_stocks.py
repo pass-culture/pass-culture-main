@@ -232,9 +232,14 @@ class CGRStocks(LocalProvider):
         return price_category_label
 
     def get_movie_product(self, film: cgr_serializers.Film) -> offers_models.Product | None:
-        return offers_models.Product.query.filter(
-            offers_models.Product.extraData["allocineId"] == str(film.IDFilmAlloCine)
-        ).one_or_none()
+        product = None
+        if film.IDFilmAlloCine:
+            product = offers_repository.get_movie_product_by_allocine_id(str(film.IDFilmAlloCine))
+
+        if not product and film.NumVisa:
+            product = offers_repository.get_movie_product_by_visa(str(film.NumVisa))
+
+        return product
 
     def get_object_thumb(self) -> bytes:
         if self.film_infos.Affiche:
