@@ -20,7 +20,6 @@ class Address(PcObject, Base, Model):
     street: str | None = sa.Column(sa.Text(), nullable=True)
     postalCode: str = sa.Column(sa.Text(), nullable=False)
     city: str = sa.Column(sa.Text(), nullable=False)
-    country: str = sa.Column(sa.Text(), nullable=False)
     latitude: float = sa.Column(sa.Numeric(8, 5), nullable=False)
     longitude: float = sa.Column(sa.Numeric(8, 5), nullable=False)
 
@@ -35,5 +34,4 @@ class Address(PcObject, Base, Model):
         sa.CheckConstraint('length("postalCode") = 5'),
         sa.CheckConstraint('length("inseeCode") = 5'),
         sa.CheckConstraint('length("city") <= 50'),
-        sa.CheckConstraint('length("country") <= 50'),
     )
