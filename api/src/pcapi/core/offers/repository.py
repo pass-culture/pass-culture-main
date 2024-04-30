@@ -120,10 +120,12 @@ def get_capped_offers_for_filters(
             )
         )
         .options(
-            sa_orm.joinedload(models.Offer.product).load_only(
+            sa_orm.joinedload(models.Offer.product)
+            .load_only(
                 models.Product.id,
                 models.Product.thumbCount,
             )
+            .joinedload(models.Product.productMediations)
         )
         .options(sa_orm.joinedload(models.Offer.lastProvider).load_only(providers_models.Provider.localClass))
         .limit(offers_limit)

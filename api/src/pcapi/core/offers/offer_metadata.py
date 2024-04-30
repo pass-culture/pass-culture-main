@@ -44,8 +44,8 @@ def _get_common_metadata_from_offer(offer: offers_models.Offer) -> Metadata:
     if offer.description:
         metadata["description"] = offer.description
 
-    if offer.image:
-        metadata["image"] = offer.image.url
+    if offer.thumbUrl:
+        metadata["image"] = offer.thumbUrl
 
     if offer.stocks:
         metadata["offers"] = {
