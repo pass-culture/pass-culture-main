@@ -1438,6 +1438,78 @@ class GetOfferBookingsByStatusExcelTest:
         )
         self._validate_excel_row(bookings_excel, 5, headers, beneficiary_4, offer, venue, new_booking, "réservé", "Non")
 
+    def should_return_validated_bookings_for_offer_with_duo_offerer_with_mutiple_users(self):
+        # Given
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
+        )
+        beneficiary_2 = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary2@example.com", firstName="Harry", lastName="Potter", postalCode="97300"
+        )
+        pro = users_factories.ProFactory()
+        pro_2 = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        offerers_factories.UserOffererFactory(user=pro_2, offerer=offerer)
+
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        offerers_factories.VenueFactory(managingOfferer=offerer)
+
+        offer = offers_factories.OfferFactory(venue=venue)
+        offers_factories.OfferFactory(venue=venue)
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=3))
+        validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary, quantity=2)
+        validated_booking_2 = bookings_factories.BookingFactory(
+            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+        )
+        bookings_factories.BookingFactory(stock=stock)
+
+        stock_2 = offers_factories.EventStockFactory(
+            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=5)
+        )
+        bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary)
+        bookings_factories.BookingFactory(
+            stock=stock_2, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+        )
+        bookings_factories.BookingFactory(stock=stock_2)
+
+        # When
+        bookings_excel = booking_repository.export_validated_bookings_by_offer_id(
+            offer_id=offer.id,
+            event_beginning_date=date.today() + timedelta(days=3),
+            export_type=BookingExportType.EXCEL,
+        )
+        headers = [
+            "Lieu",
+            "Nom de l’offre",
+            "Date de l'évènement",
+            "EAN",
+            "Nom et prénom du bénéficiaire",
+            "Email du bénéficiaire",
+            "Téléphone du bénéficiaire",
+            "Date et heure de réservation",
+            "Date et heure de validation",
+            "Contremarque",
+            "Intitulé du tarif",
+            "Prix de la réservation",
+            "Statut de la contremarque",
+            "Date et heure de remboursement",
+            "Type d'offre",
+            "Code postal du bénéficiaire",
+            "Duo",
+        ]
+
+        # Then
+        self._validate_excel_row(
+            bookings_excel, 2, headers, beneficiary, offer, venue, validated_booking, "validé", "DUO 1"
+        )
+        self._validate_excel_row(
+            bookings_excel, 3, headers, beneficiary, offer, venue, validated_booking, "validé", "DUO 2"
+        )
+        self._validate_excel_row(
+            bookings_excel, 4, headers, beneficiary_2, offer, venue, validated_booking_2, "confirmé", "Non"
+        )
+
     def should_return_all_bookings_for_offer_with_duo(self):
         # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory(

@@ -330,6 +330,7 @@ def _create_export_query(offer_id: int, event_beginning_date: date) -> BaseQuery
         .filter(Stock.offerId == offer_id, field_to_venue_timezone(Stock.beginningDatetime) == event_beginning_date)
         .order_by(Booking.id)
         .with_entities(
+            Booking.id.label("id"),
             Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
             Venue.departementCode.label("venueDepartmentCode"),
             Offerer.postalCode.label("offererPostalCode"),
@@ -355,9 +356,9 @@ def _create_export_query(offer_id: int, event_beginning_date: date) -> BaseQuery
             Booking.isConfirmed,
             # `get_batch` function needs a field called exactly `id` to work,
             # the label prevents SA from using a bad (prefixed) label for this field
-            Booking.id.label("id"),
             Booking.userId,
         )
+        .distinct(Booking.id)
     )
 
 
