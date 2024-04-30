@@ -123,6 +123,7 @@ def get_individual_bookings(user: User) -> list[Booking]:
                 Product.id,
                 Product.thumbCount,
             )
+            .joinedload(Product.productMediations)
         )
         .options(
             joinedload(Booking.stock)

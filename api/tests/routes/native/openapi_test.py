@@ -1290,6 +1290,68 @@ def test_public_api(client):
                     "title": "OfferResponse",
                     "type": "object",
                 },
+                "OfferResponseV2": {
+                    "properties": {
+                        "accessibility": {"$ref": "#/components/schemas/OfferAccessibilityResponse"},
+                        "description": {"nullable": True, "title": "Description", "type": "string"},
+                        "expenseDomains": {"items": {"$ref": "#/components/schemas/ExpenseDomain"}, "type": "array"},
+                        "externalTicketOfficeUrl": {
+                            "nullable": True,
+                            "title": "Externalticketofficeurl",
+                            "type": "string",
+                        },
+                        "extraData": {
+                            "anyOf": [{"$ref": "#/components/schemas/OfferExtraData"}],
+                            "nullable": True,
+                            "title": "OfferExtraData",
+                        },
+                        "id": {"title": "Id", "type": "integer"},
+                        "images": {
+                            "additionalProperties": {"$ref": "#/components/schemas/OfferImageResponse"},
+                            "nullable": True,
+                            "title": "Images",
+                            "type": "object",
+                        },
+                        "isDigital": {"title": "Isdigital", "type": "boolean"},
+                        "isDuo": {"title": "Isduo", "type": "boolean"},
+                        "isEducational": {"title": "Iseducational", "type": "boolean"},
+                        "isExpired": {"title": "Isexpired", "type": "boolean"},
+                        "isExternalBookingsDisabled": {"title": "Isexternalbookingsdisabled", "type": "boolean"},
+                        "isForbiddenToUnderage": {"title": "Isforbiddentounderage", "type": "boolean"},
+                        "isReleased": {"title": "Isreleased", "type": "boolean"},
+                        "isSoldOut": {"title": "Issoldout", "type": "boolean"},
+                        "metadata": {"title": "Metadata", "type": "object"},
+                        "name": {"title": "Name", "type": "string"},
+                        "stocks": {
+                            "items": {"$ref": "#/components/schemas/OfferStockResponse"},
+                            "title": "Stocks",
+                            "type": "array",
+                        },
+                        "subcategoryId": {"$ref": "#/components/schemas/SubcategoryIdEnum"},
+                        "venue": {"$ref": "#/components/schemas/OfferVenueResponse"},
+                        "withdrawalDetails": {"nullable": True, "title": "Withdrawaldetails", "type": "string"},
+                    },
+                    "required": [
+                        "id",
+                        "accessibility",
+                        "expenseDomains",
+                        "isExpired",
+                        "isExternalBookingsDisabled",
+                        "isForbiddenToUnderage",
+                        "isReleased",
+                        "isSoldOut",
+                        "isDigital",
+                        "isDuo",
+                        "isEducational",
+                        "metadata",
+                        "name",
+                        "stocks",
+                        "subcategoryId",
+                        "venue",
+                    ],
+                    "title": "OfferResponseV2",
+                    "type": "object",
+                },
                 "OfferStockActivationCodeResponse": {
                     "properties": {
                         "expirationDate": {
@@ -3134,6 +3196,7 @@ def test_public_api(client):
             },
             "/native/v1/offer/{offer_id}": {
                 "get": {
+                    "deprecated": True,
                     "description": "",
                     "operationId": "get__native_v1_offer_{offer_id}",
                     "parameters": [
@@ -3160,6 +3223,39 @@ def test_public_api(client):
                         },
                     },
                     "summary": "get_offer <GET>",
+                    "tags": [],
+                }
+            },
+            "/native/v2/offer/{offer_id}": {
+                "get": {
+                    "description": "",
+                    "operationId": "get__native_v2_offer_{offer_id}",
+                    "parameters": [
+                        {
+                            "description": "",
+                            "in": "path",
+                            "name": "offer_id",
+                            "required": True,
+                            "schema": {"format": "int32", "type": "integer"},
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/OfferResponseV2"}}
+                            },
+                            "description": "OK",
+                        },
+                        "403": {"description": "Forbidden"},
+                        "404": {"description": "Not Found"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "summary": "get_offer_v2 <GET>",
                     "tags": [],
                 }
             },

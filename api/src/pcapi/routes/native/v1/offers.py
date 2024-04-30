@@ -29,6 +29,7 @@ from .serialization import subcategories_v2 as subcategories_v2_serializers
 
 # WebApp v2 proxy expects endpoint to be at "/offer/<int:offer_id>". This path MUST NOT be changed. Its reponse can be changed, though.
 @blueprint.native_route("/offer/<int:offer_id>", methods=["GET"])
+@blueprint.api.validate(deprecated=True)
 @spectree_serialize(response_model=serializers.OfferResponse, api=blueprint.api, on_error_statuses=[404])
 def get_offer(offer_id: str) -> serializers.OfferResponse:
     offer: Offer = (
@@ -42,7 +43,9 @@ def get_offer(offer_id: str) -> serializers.OfferResponse:
         )
         .options(joinedload(Offer.venue).joinedload(Venue.googlePlacesInfo))
         .options(joinedload(Offer.mediations))
-        .options(joinedload(Offer.product).load_only(Product.id, Product.thumbCount))
+        .options(
+            joinedload(Offer.product).load_only(Product.id, Product.thumbCount).joinedload(Product.productMediations)
+        )
         .outerjoin(Offer.lastProvider)
         .options(sa.orm.contains_eager(Offer.lastProvider).load_only(Provider.localClass))
         .filter(Offer.id == offer_id, Offer.validation == OfferValidationStatus.APPROVED)
@@ -53,6 +56,35 @@ def get_offer(offer_id: str) -> serializers.OfferResponse:
         api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
 
     return serializers.OfferResponse.from_orm(offer)
+
+
+@blueprint.native_route("/offer/<int:offer_id>", version="v2", methods=["GET"])
+@spectree_serialize(response_model=serializers.OfferResponseV2, api=blueprint.api, on_error_statuses=[404])
+def get_offer_v2(offer_id: str) -> serializers.OfferResponseV2:
+    offer: Offer = (
+        Offer.query.options(
+            joinedload(Offer.stocks).joinedload(Stock.priceCategory).joinedload(PriceCategory.priceCategoryLabel)
+        )
+        .options(
+            joinedload(Offer.venue)
+            .joinedload(Venue.managingOfferer)
+            .load_only(Offerer.name, Offerer.validationStatus, Offerer.isActive)
+        )
+        .options(joinedload(Offer.venue).joinedload(Venue.googlePlacesInfo))
+        .options(joinedload(Offer.mediations))
+        .options(
+            joinedload(Offer.product).load_only(Product.id, Product.thumbCount).joinedload(Product.productMediations)
+        )
+        .outerjoin(Offer.lastProvider)
+        .options(sa.orm.contains_eager(Offer.lastProvider).load_only(Provider.localClass))
+        .filter(Offer.id == offer_id, Offer.validation == OfferValidationStatus.APPROVED)
+        .first_or_404()
+    )
+
+    if offer.isActive and providers_repository.is_cinema_external_ticket_applicable(offer):
+        api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
+
+    return serializers.OfferResponseV2.from_orm(offer)
 
 
 @blueprint.native_route("/offers/stocks", methods=["POST"])
