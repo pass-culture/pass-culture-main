@@ -874,6 +874,9 @@ describe('offers', () => {
     const link = screen.getByRole('link', {
       name: 'Coco channel',
     })
+    link.addEventListener('click', (e) => {
+      e.preventDefault()
+    })
     await userEvent.click(link)
 
     expect(apiAdage.logOfferTemplateDetailsButtonClick).toHaveBeenCalled()
@@ -905,6 +908,10 @@ describe('offers', () => {
 
     const link = screen.getByRole('link', {
       name: 'Sortie Coco channel Le Petit Rintintin 33',
+    })
+
+    link.addEventListener('click', (e) => {
+      e.preventDefault()
     })
     await userEvent.click(link)
 
