@@ -53,6 +53,10 @@ export function AdageOfferListCard({
   const canAddOfferToFavorites =
     isOfferTemplate && adageUser.role !== AdageFrontRoles.READONLY
 
+  const offerLinkUrl = document.referrer
+    ? `${document.referrer}adage/passculture/offres/offerid/${offer.isTemplate ? '' : 'B-'}${offer.id}`
+    : `/adage-iframe/${currentPathname}/offre/${offer.id}?token=${adageAuthToken}`
+
   return (
     <div
       className={cn(styles['offer-card'], {
@@ -114,7 +118,8 @@ export function AdageOfferListCard({
           <div className={styles['offer-card-content']}>
             <AdageOfferListCardTags offer={offer} adageUser={adageUser} />
             <Link
-              to={`/adage-iframe/${currentPathname}/offre/${offer.id}?token=${adageAuthToken}`}
+              to={offerLinkUrl}
+              target="_parent"
               state={{ offer }}
               className={styles['offer-card-link']}
               onClick={onCardClicked}
