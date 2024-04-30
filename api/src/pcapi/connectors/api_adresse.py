@@ -44,9 +44,12 @@ class AddressInfo(pydantic_v1.BaseModel):
     id: str
     label: str
     postcode: str
+    citycode: str  # inseeCode
     latitude: float
     longitude: float
     score: float
+    city: str
+    street: str | None
 
 
 class ResultColumn(enum.Enum):
@@ -128,9 +131,14 @@ def get_municipality_centroid(city: str, postcode: str | None = None, citycode: 
     return _get_backend().get_municipality_centroid(postcode=postcode, citycode=citycode, city=city)
 
 
-def get_address(address: str, postcode: str | None = None, city: str | None = None) -> AddressInfo:
+def get_address(
+    address: str,
+    postcode: str | None = None,
+    city: str | None = None,
+    citycode: str | None = None,
+) -> AddressInfo:
     """Return information about the requested address."""
-    return _get_backend().get_single_address_result(address=address, postcode=postcode, city=city)
+    return _get_backend().get_single_address_result(address=address, postcode=postcode, citycode=citycode, city=city)
 
 
 def search_csv(
@@ -148,7 +156,13 @@ class BaseBackend:
     ) -> AddressInfo:
         raise NotImplementedError()
 
-    def get_single_address_result(self, address: str, postcode: str | None, city: str | None = None) -> AddressInfo:
+    def get_single_address_result(
+        self,
+        address: str,
+        postcode: str | None,
+        city: str | None = None,
+        citycode: str | None = None,
+    ) -> AddressInfo:
         raise NotImplementedError()
 
     def search_csv(
@@ -169,19 +183,31 @@ class TestingBackend(BaseBackend):
             id="06029",
             label="Cannes",
             postcode="06400",
+            citycode="06029",
             score=0.9549627272727272,
             latitude=43.555468,
             longitude=7.004585,
+            city="Cannes",
+            street=None,
         )
 
-    def get_single_address_result(self, address: str, postcode: str | None, city: str | None = None) -> AddressInfo:
+    def get_single_address_result(
+        self,
+        address: str,
+        postcode: str | None,
+        city: str | None = None,
+        citycode: str | None = None,
+    ) -> AddressInfo:
         return AddressInfo(
             id="75101_9575_00003",
             label="3 Rue de Valois 75001 Paris",
             postcode="75001",
+            citycode="75056",
             score=0.9651727272727272,
             latitude=48.87171,
             longitude=2.308289,
+            city="Paris",
+            street="3 Rue de Valois",
         )
 
     def search_csv(
@@ -259,7 +285,13 @@ class ApiAdresseBackend(BaseBackend):
             raise NoResultException
         return self._format_result(data)
 
-    def get_single_address_result(self, address: str, postcode: str | None, city: str | None = None) -> AddressInfo:
+    def get_single_address_result(
+        self,
+        address: str,
+        postcode: str | None,
+        city: str | None = None,
+        citycode: str | None = None,
+    ) -> AddressInfo:
         """
         No human interaction so we limit to 1 result, and add a filter on the INSEE code (Code Officiel Géographique)
         This will get the highest score result from the query, for a specific INSEE code.
@@ -270,6 +302,7 @@ class ApiAdresseBackend(BaseBackend):
         params = {
             "q": address,
             "postcode": postcode,
+            "citycode": citycode,
             "autocomplete": 0,
             "limit": 1,
         }
@@ -281,7 +314,7 @@ class ApiAdresseBackend(BaseBackend):
                 extra={"queried_address": address, "postcode": postcode},
             )
             if city is not None and postcode is not None:
-                return self.get_municipality_centroid(city=city, postcode=postcode)
+                return self.get_municipality_centroid(city=city, postcode=postcode, citycode=citycode)
             raise NoResultException
 
         result = self._format_result(data)
@@ -309,6 +342,12 @@ class ApiAdresseBackend(BaseBackend):
         # https://datatracker.ietf.org/doc/html/rfc7946#appendix-A.1
         coordinates = data["features"][0]["geometry"]["coordinates"]
         properties = data["features"][0]["properties"]
+        street = None
+        if properties["type"] != "municipality":
+            # If the API return a complete address, not only a municipality centroid
+            # We want the full format of the street (with the housenumber and so on)
+            street = properties["name"]
+
         return AddressInfo(
             id=properties["id"],
             latitude=coordinates[1],
@@ -316,6 +355,9 @@ class ApiAdresseBackend(BaseBackend):
             score=properties["score"],
             label=properties["label"],
             postcode=properties["postcode"],
+            citycode=properties["citycode"],
+            city=properties["city"],
+            street=street,
         )
 
     def search_csv(
