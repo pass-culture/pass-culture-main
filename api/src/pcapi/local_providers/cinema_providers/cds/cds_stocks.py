@@ -303,12 +303,14 @@ class CDSStocks(LocalProvider):
         return shows_with_pass_culture_tariff
 
     def get_movie_product(self, film: Movie) -> offers_models.Product | None:
-        if not film.allocineid:
-            return None
+        product = None
+        if film.allocineid:
+            product = offers_repository.get_movie_product_by_allocine_id(str(film.allocineid))
 
-        return offers_models.Product.query.filter(
-            offers_models.Product.extraData["allocineId"] == film.allocineid
-        ).one_or_none()
+        if not product and film.visa:
+            product = offers_repository.get_movie_product_by_visa(str(film.visa))
+
+        return product
 
 
 def _find_showtimes_by_movie_id(showtimes_information: list[dict], movie_id: int) -> list[dict]:
