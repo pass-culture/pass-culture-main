@@ -10,6 +10,7 @@ from pcapi.core.finance import api as finance_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import models as offers_models
+from pcapi.core.offers import repository as offers_repository
 from pcapi.core.providers import models as providers_models
 from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
 from pcapi.models import db
@@ -135,9 +136,7 @@ class EMSStocks:
         if not event.allocine_id:
             return None
 
-        return offers_models.Product.query.filter(
-            offers_models.Product.extraData["allocineId"] == str(event.allocine_id)
-        ).one_or_none()
+        return offers_repository.get_movie_product_by_allocine_id(str(event.allocine_id))
 
     def get_or_create_offer(
         self, event: ems_serializers.Event, provider_id: int, venue: offerers_models.Venue
