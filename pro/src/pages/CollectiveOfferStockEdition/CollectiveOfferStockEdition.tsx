@@ -80,7 +80,7 @@ const CollectiveOfferStockEdition = ({
   }
 
   return (
-    <AppLayout>
+    <AppLayout layout="sticky-actions">
       <CollectiveOfferLayout subTitle={offer.name} isTemplate={isTemplate}>
         <OfferEducationalStock
           initialValues={initialValues}
