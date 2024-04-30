@@ -977,3 +977,11 @@ def has_active_offer_with_ean(ean: str | None, venue: offerers_models.Venue) -> 
             models.Offer.venue == venue, models.Offer.isActive.is_(True), models.Offer.extraData["ean"].astext == ean
         ).exists()
     ).scalar()
+
+
+def get_movie_product_by_allocine_id(allocine_id: str) -> models.Product | None:
+    return models.Product.query.filter(models.Product.extraData["allocineId"] == allocine_id).one_or_none()
+
+
+def get_movie_product_by_visa(visa: str) -> models.Product | None:
+    return models.Product.query.filter(models.Product.extraData["visa"].astext == visa).one_or_none()
