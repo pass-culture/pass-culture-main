@@ -81,7 +81,9 @@ describe('AdageDiscover classRoomPlaylist', () => {
     )
 
     const classRoomPlaylistElement = screen.getByText('Une chouette à la mer')
-
+    classRoomPlaylistElement.addEventListener('click', (e) => {
+      e.preventDefault()
+    })
     await userEvent.click(classRoomPlaylistElement)
 
     expect(mockTrackPlaylistElementClicked).toHaveBeenCalledTimes(1)

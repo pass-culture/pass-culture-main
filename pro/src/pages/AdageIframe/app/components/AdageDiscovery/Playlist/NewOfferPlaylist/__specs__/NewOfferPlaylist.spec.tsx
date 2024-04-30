@@ -94,7 +94,9 @@ describe('AdageDiscovery', () => {
     )
 
     const newOfferPlaylistElement = await screen.findByText('Mon offre vitrine')
-
+    newOfferPlaylistElement.addEventListener('click', (e) => {
+      e.preventDefault()
+    })
     await userEvent.click(newOfferPlaylistElement)
 
     expect(mockTrackPlaylistElementClicked).toHaveBeenCalledTimes(1)
