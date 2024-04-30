@@ -871,6 +871,39 @@ class CDSStocksTest:
         assert get_cinemas_adapter.call_count == 2
         assert get_voucher_type_adapter.call_count == 2
 
+    @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
+    @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
+    def should_link_offer_with_known_visa_to_product(self, mock_get_venue_movies, mock_get_shows, requests_mock):
+        _cds_details, venue_provider = setup_cinema()
+        requests_mock.get(
+            "https://account_id.fakeurl/cinemas?api_token=token",
+            json=[fixtures.CINEMA_WITH_INTERNET_SALE_GAUGE_ACTIVE_TRUE],
+        )
+        requests_mock.get("https://account_id.fakeurl/mediaoptions?api_token=token", json=fixtures.MEDIA_OPTIONS)
+
+        mocked_movies = [fixtures.MOVIE_1, fixtures.MOVIE_2]
+        mock_get_venue_movies.return_value = mocked_movies
+        mocked_shows = [
+            {"show_information": fixtures.MOVIE_1_SHOW_1, "price": 5, "price_label": "pass Culture"},
+            {"show_information": fixtures.MOVIE_2_SHOW_1, "price": 5, "price_label": "pass Culture"},
+        ]
+        mock_get_shows.return_value = mocked_shows
+        requests_mock.get("https://example.com/coupez.png", content=bytes())
+        requests_mock.get("https://example.com/topgun.png", content=bytes())
+
+        product_1 = offers_factories.ProductFactory(name="Produit 1", extraData={"visa": "123456"})
+        product_2 = offers_factories.ProductFactory(name="Produit 2", extraData={"visa": "333333"})
+
+        cgr_stocks = CDSStocks(venue_provider=venue_provider)
+        cgr_stocks.updateObjects()
+
+        created_offers = Offer.query.order_by(Offer.id).all()
+
+        assert len(created_offers) == 2
+        assert created_offers[0].product == product_1
+        assert created_offers[1].product == product_2
+
 
 @pytest.mark.usefixtures("db_session")
 class CDSStocksQuantityTest:
