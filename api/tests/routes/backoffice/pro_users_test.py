@@ -21,9 +21,9 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.routes.backoffice.filters import format_date
+from pcapi.utils import date as date_utils
 from pcapi.utils import email as email_utils
 from pcapi.utils import urls
-import pcapi.utils.date as date_utils
 
 from .helpers import button as button_helpers
 from .helpers import html_parser

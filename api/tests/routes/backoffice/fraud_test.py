@@ -2,7 +2,7 @@ from flask import url_for
 import pytest
 
 from pcapi.core.bookings import factories as bookings_factories
-import pcapi.core.bookings.models as bookings_models
+from pcapi.core.bookings import models as bookings_models
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.history import factories as history_factories
