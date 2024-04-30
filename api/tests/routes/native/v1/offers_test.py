@@ -1135,7 +1135,7 @@ class SubcategoriesTest:
                     {
                         "children": [
                             {
-                                "label": "Romances",
+                                "label": "Romance",
                                 "gtls": [
                                     {"code": "01020600", "label": "Roman sentimental", "level": 3},
                                     {"code": "92000000", "label": "Romance", "level": 1},

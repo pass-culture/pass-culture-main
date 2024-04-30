@@ -80,7 +80,7 @@ book_types = [
         children=[
             BookSubType(
                 position=1,
-                label="Romances",
+                label="Romance",
                 gtls=[
                     GTL(code="01020600", label="Roman sentimental", level=3),
                     GTL(code="92000000", label="Romance", level=1),
