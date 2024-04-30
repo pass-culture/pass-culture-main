@@ -12,7 +12,6 @@ class AddressModelsTest:
             postalCode="75008",
             inseeCode="75056",
             city="Paris",
-            country="France",
             longitude=2.308289,
             latitude=48.87171,
         )
@@ -22,7 +21,6 @@ class AddressModelsTest:
                 postalCode="75008",
                 inseeCode="75056",
                 city="Paris",
-                country="France",
                 longitude=2.308289,
                 latitude=48.87171,
             )
