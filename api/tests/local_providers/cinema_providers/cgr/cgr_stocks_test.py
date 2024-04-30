@@ -525,3 +525,33 @@ class CGRStocksTest:
             == f"http://localhost/storage/thumbs/mediations/{humanize(created_offer.activeMediation.id)}"
         )
         assert created_offer.activeMediation.thumbCount == 1
+
+    def should_link_offer_with_known_visa_to_product(self, requests_mock):
+        requests_mock.get("https://example.com/149341.jpg", content=bytes())
+        requests_mock.get("https://example.com/82382.jpg", content=bytes())
+        requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
+        requests_mock.post(
+            "https://cgr-cinema-0.example.com/web_service",
+            text=fixtures.cgr_response_template([fixtures.FILM_138473, fixtures.FILM_234099]),
+        )
+
+        cgr_provider = get_provider_by_local_class("CGRStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=cgr_provider, isDuoOffers=True)
+        cinema_provider_pivot = providers_factories.CGRCinemaProviderPivotFactory(
+            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
+        )
+        providers_factories.CGRCinemaDetailsFactory(
+            cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cgr-cinema-0.example.com/web_service"
+        )
+
+        product_1 = offers_factories.ProductFactory(name="Produit 1", extraData={"visa": "149341"})
+        product_2 = offers_factories.ProductFactory(name="Produit 2", extraData={"visa": "82382"})
+
+        cgr_stocks = CGRStocks(venue_provider=venue_provider)
+        cgr_stocks.updateObjects()
+
+        created_offers = offers_models.Offer.query.order_by(offers_models.Offer.id).all()
+
+        assert len(created_offers) == 2
+        assert created_offers[0].product == product_1
+        assert created_offers[1].product == product_2
