@@ -15,7 +15,7 @@ from pcapi.core.categories import subcategories_v2
 from pcapi.core.external_bookings import factories as external_bookings_factories
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
-import pcapi.core.mails.testing as mails_testing
+from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
@@ -32,7 +32,6 @@ from pcapi.routes.backoffice.bookings import forms
 
 from tests.connectors.cgr import soap_definitions
 from tests.local_providers.cinema_providers.cgr import fixtures as cgr_fixtures
-from tests.routes.backoffice.helpers.html_parser import extract_alert
 
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
@@ -870,7 +869,7 @@ class BatchMarkBookingAsUsedTest(PostEndpointHelper):
         redirected_response = authenticated_client.get(response.headers["location"])
         assert (
             f"La réservation {booking1.token} ne peut être validée, car le crédit associé est expiré."
-            in extract_alert(redirected_response.data)
+            in html_parser.extract_alert(redirected_response.data)
         )
 
 
