@@ -166,6 +166,7 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
 
     sa.Index("product_ean_idx", extraData["ean"].astext)
     sa.Index("product_allocineId_idx", extraData["allocineId"].cast(sa.Integer))
+    sa.Index("product_visa_idx", extraData["visa"].astext)
 
     @property
     def subcategory(self) -> subcategories_v2.Subcategory:
