@@ -26,15 +26,12 @@ const OptionsIcons = ({
         <span className={style['text']}>Type</span>
       </div>
 
-      <div
-        className={cn(style['option'], {
-          [style['disabled']]: !(isEvent && isDuo),
-        })}
-      >
-        <SvgIcon src={strokeDuoIcon} alt="" className={style['icon']} />
-        <span className={style['text']}>À deux !</span>
-      </div>
-
+      {isEvent && isDuo && (
+        <div className={style['option']}>
+          <SvgIcon src={strokeDuoIcon} alt="" className={style['icon']} />
+          <span className={style['text']}>À deux !</span>
+        </div>
+      )}
       <div className={style['option']}>
         <SvgIcon src={strokePriceIcon} alt="" className={style['icon']} />
         <span className={style['text']}>- - €</span>
