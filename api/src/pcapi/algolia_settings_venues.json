@@ -16,14 +16,18 @@
     "queryLanguages": [
         "fr"
     ],
-     "replicas": [
+    "replicas": [
         "venues playlist search",
         "venues playlist search newest"
     ],
     "attributesForFaceting": [
+        "filterOnly(audio_disability)",
         "filterOnly(has_at_least_one_bookable_offer)",
+        "filterOnly(mental_disability)",
+        "filterOnly(motor_disability)",
         "filterOnly(tags)",
-        "filterOnly(venue_type)"
+        "filterOnly(venue_type)",
+        "filterOnly(visual_disability)"
     ],
     "attributesToSnippet": null,
     "attributesToHighlight": null,
