@@ -25,7 +25,7 @@ const CollectiveOfferEdition = ({
   const isOfferTemplate = isCollectiveOfferTemplate(offer)
 
   return (
-    <AppLayout>
+    <AppLayout layout="sticky-actions">
       {!isReady ? (
         <Spinner />
       ) : (
