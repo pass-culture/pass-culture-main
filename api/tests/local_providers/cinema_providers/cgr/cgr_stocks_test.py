@@ -12,7 +12,6 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
-from pcapi.core.testing import override_features
 from pcapi.local_providers import CGRStocks
 from pcapi.utils.human_ids import humanize
 
@@ -68,32 +67,6 @@ class CGRStocksTest:
         assert stock_providable_info.id_at_providers == f"138473%{venue_provider.venue.id}%CGR#177182"
         assert stock_providable_info.new_id_at_provider == f"138473%{venue_provider.venue.id}%CGR#177182"
 
-    @override_features(WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS=True)
-    def should_return_empty_providable_info_if_product_doesnt_exist(self, requests_mock):
-        requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
-        requests_mock.post(
-            "https://cgr-cinema-0.example.com/web_service", text=fixtures.cgr_response_template([fixtures.FILM_138473])
-        )
-
-        cgr_provider = get_provider_by_local_class("CGRStocks")
-        venue_provider = providers_factories.VenueProviderFactory(provider=cgr_provider)
-        cinema_provider_pivot = providers_factories.CGRCinemaProviderPivotFactory(
-            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
-        )
-        providers_factories.CGRCinemaDetailsFactory(
-            cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cgr-cinema-0.example.com/web_service"
-        )
-
-        assert offers_models.Product.query.count() == 0
-
-        cgr_stocks = CGRStocks(venue_provider=venue_provider)
-        providable_infos = next(cgr_stocks)
-
-        assert providable_infos == []
-        assert offers_models.Offer.query.count() == 0
-        assert offers_models.Stock.query.count() == 0
-
-    @override_features(WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS=False)
     def should_create_offers_with_allocine_id_and_visa_if_products_dont_exist(self, requests_mock):
         requests_mock.get("https://example.com/149341.jpg", content=bytes())
         requests_mock.get("https://example.com/82382.jpg", content=bytes())

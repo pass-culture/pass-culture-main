@@ -14,7 +14,6 @@ from pcapi.core.offers import repository as offers_repository
 from pcapi.core.providers import models as providers_models
 from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 import pcapi.utils.date as utils_date
 from pcapi.validation.models import entity_validator
 
@@ -62,8 +61,6 @@ class EMSStocks:
                     extra={"allocineId": event.allocine_id, "venueId": self.venue.id},
                     technical_message_id="allocineId.not_found",
                 )
-                if FeatureToggle.WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS.is_active():
-                    continue
 
             offer = self.get_or_create_offer(event, self.provider.id, self.venue)
             offer.product = product

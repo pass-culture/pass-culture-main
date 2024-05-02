@@ -113,9 +113,6 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API = (
         "Activer les nouvelles règles de création et d'édition d'offres collecrives pour l'API publique (collective)"
     )
-    WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS = (
-        "Synchroniser les offres et stocks de cinéma avec les produits allociné"
-    )
     WIP_ENABLE_TITELIVE_API_FOR_BOOKS = "Activer l'utilisation de l'API Titelive pour les synchronisations produits pour les livres(désactive l'utilisation de l'utilisation de FTP pour la synchro)"
     ENABLE_PRO_NEW_NAV_MODIFICATION = "Activer la modification du statut de la navigation du portail pro"
     WIP_ENABLE_NEW_HASHING_ALGORITHM = "Activer le nouveau système de hachage des clés publiques d'API"
@@ -184,7 +181,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_OFFER_ADDRESS,
     FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY,
     FeatureToggle.WIP_ENABLE_TITELIVE_API_FOR_BOOKS,
-    FeatureToggle.WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS,
     FeatureToggle.WIP_FUTURE_OFFER,
     FeatureToggle.WIP_SPLIT_OFFER,
     # Please keep alphabetic order
@@ -193,14 +189,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
 if settings.IS_PROD or settings.IS_STAGING:
     FEATURES_DISABLED_BY_DEFAULT += (FeatureToggle.WIP_ENABLE_FINANCE_INCIDENT,)
     FEATURES_DISABLED_BY_DEFAULT += (FeatureToggle.WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API,)
-
-if settings.IS_TESTING:
-    testing_features_disabled_by_default = set(FEATURES_DISABLED_BY_DEFAULT)
-    features_to_enable = {
-        FeatureToggle.WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS,
-    }
-
-    FEATURES_DISABLED_BY_DEFAULT = tuple(testing_features_disabled_by_default - features_to_enable)
 
 
 def add_feature_to_database(feature: Feature) -> None:
