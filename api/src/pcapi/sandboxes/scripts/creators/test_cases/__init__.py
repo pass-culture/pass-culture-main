@@ -419,6 +419,7 @@ def create_venues_with_gmaps_image() -> None:
     offerers_factories.GooglePlacesInfoFactory(
         bannerUrl="https://storage.googleapis.com/passculture-metier-ehp-testing-assets-fine-grained/assets/Google_Maps_Logo_2020.png",
         venue=venue_with_user_image_and_gmaps_image,
+        bannerMeta={"html_attributions": ['<a href="http://parhumans.wordpress.com">JC mc Crae</a>']},
     )
 
     venue_without_user_image_and_with_gmaps_image = offerers_factories.VenueFactory(
@@ -429,6 +430,7 @@ def create_venues_with_gmaps_image() -> None:
     offerers_factories.GooglePlacesInfoFactory(
         bannerUrl="https://storage.googleapis.com/passculture-metier-ehp-testing-assets-fine-grained/assets/Google_Maps_Logo_2020.png",
         venue=venue_without_user_image_and_with_gmaps_image,
+        bannerMeta={"html_attributions": ['<a href="http://python.com">Average python enjoyer</a>']},
     )
     venue_with_no_images = offerers_factories.VenueFactory(
         name="Lieu sans image",
