@@ -5,7 +5,7 @@ import {
   useStats,
 } from 'react-instantsearch'
 import { useDispatch, useSelector } from 'react-redux'
-import { useLocation, useParams } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 
 import {
   AdageFrontRoles,
@@ -23,8 +23,6 @@ import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { isCollectiveOfferTemplate } from 'pages/AdageIframe/app/types'
 import { setSearchView } from 'store/adageFilter/reducer'
 import { adageSearchViewSelector } from 'store/adageFilter/selectors'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { LOGS_DATA } from 'utils/config'
@@ -32,6 +30,7 @@ import { sendSentryCustomError } from 'utils/sendSentryCustomError'
 
 import OfferCardComponent from '../../../AdageDiscovery/OfferCard/OfferCard'
 import { DiffuseHelp } from '../../../DiffuseHelp/DiffuseHelp'
+import { CustomPagination } from '../../../Pagination/Pagination'
 import { SurveySatisfaction } from '../../../SurveySatisfaction/SurveySatisfaction'
 import ToggleButtonGroup, {
   ToggleButton,
@@ -62,7 +61,6 @@ type OfferMap = Map<string, CollectiveOffer>
 
 export const Offers = ({
   displayStats = true,
-  displayShowMore = true,
   displayNoResult = true,
   logFiltersOnSearch,
   submitCount,
@@ -73,13 +71,9 @@ export const Offers = ({
   const dispatch = useDispatch()
 
   const adageViewType = useSelector(adageSearchViewSelector)
-  const { hits, isLastPage, showMore } = useInfiniteHits()
+  const { currentPageHits: hits } = useInfiniteHits()
   const { nbHits } = useStats()
   const { scopedResults, results: nonScopedResult } = useInstantSearch()
-  const { siret, venueId } = useParams<{
-    siret: string
-    venueId: string
-  }>()
 
   const isMobileScreen = useMediaQuery('(max-width: 46.5rem)')
 
@@ -105,16 +99,6 @@ export const Offers = ({
   const showSurveySatisfaction =
     !adageUser.preferences?.feedback_form_closed &&
     adageUser.role !== AdageFrontRoles.READONLY
-
-  const showMoreAndTrack = async () => {
-    showMore()
-
-    await apiAdage.logSearchShowMore({
-      iframeFrom: location.pathname,
-      source: siret || venueId ? 'partnersMap' : 'homepage',
-      queryId: results?.queryID,
-    })
-  }
 
   useEffect(() => {
     setQueriesAreLoading(true)
@@ -315,30 +299,7 @@ export const Offers = ({
           </li>
         ))}
       </ul>
-      {displayShowMore && (
-        <div className={styles['offers-load-more']}>
-          <div className={styles['offers-load-more-text']}>
-            {!isLastPage
-              ? `Vous avez vu ${offers.length} offre${
-                  offers.length > 1 ? 's' : ''
-                } sur ${nbHits}`
-              : 'Vous avez vu toutes les offres qui correspondent à votre recherche.'}
-          </div>
-          {!isLastPage &&
-            (queriesAreLoading ? (
-              <div className={styles['offers-loader']}>
-                <Spinner />
-              </div>
-            ) : (
-              <Button
-                onClick={showMoreAndTrack}
-                variant={ButtonVariant.SECONDARY}
-              >
-                Voir plus d’offres
-              </Button>
-            ))}
-        </div>
-      )}
+      <CustomPagination queryId={results.queryID} />
       {isBackToTopVisibile && (
         <a href="#root" className={styles['back-to-top-button']}>
           <SvgIcon

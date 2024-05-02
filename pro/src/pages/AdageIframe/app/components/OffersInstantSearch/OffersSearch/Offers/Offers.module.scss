@@ -109,6 +109,12 @@
   }
 }
 
+.offers-pagination {
+  .root {
+    background-color: black;
+  }
+}
+
 
 @media (max-width: size.$mobile) {
   .offer-type-vue {
