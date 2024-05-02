@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { createRef, useEffect, useRef, useState } from 'react'
 
 import { AdagePlaylistType } from 'apiClient/adage'
 import { api, apiAdage } from 'apiClient/api'
@@ -35,8 +35,8 @@ export const AdageDiscovery = () => {
   const params = new URLSearchParams(location.search)
   const [domainsOptions, setDomainsOptions] = useState<Option<number>[]>([])
 
-  const footerSuggestion = useRef<HTMLDivElement | null>(null)
-  const isFooterSuggestionVisible = useIsElementVisible(footerSuggestion)
+  const footerSuggestion = createRef<HTMLDivElement>()
+  const [isFooterSuggestionVisible] = useIsElementVisible(footerSuggestion)
 
   const notification = useNotification()
   const adageAuthToken = params.get('token')
@@ -167,7 +167,7 @@ export const AdageDiscovery = () => {
           />
         </div>
 
-        <div className={styles['discovery-playlist']}>
+        <div className={styles['discovery-playlist']} ref={footerSuggestion}>
           <VenuePlaylist
             onWholePlaylistSeen={onWholePlaylistSeen}
             trackPlaylistElementClicked={trackPlaylistElementClicked}
