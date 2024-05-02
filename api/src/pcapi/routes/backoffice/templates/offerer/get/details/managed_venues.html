@@ -11,6 +11,7 @@
       <th scope="col">Activité principale</th>
       <th scope="col">Présence web</th>
       <th scope="col">Offres cibles</th>
+      <th scope="col">Compte bancaire associé</th>
     </tr>
   </thead>
   <tbody>
@@ -33,6 +34,10 @@
           {% endif %}
         </td>
         <td>{{ venue.target | format_venue_target }}</td>
+        <td>
+          {% set bank_account_link = venue.current_bank_account_link %}
+          {% if bank_account_link %}{{ links.build_bank_account_name_to_details_link(bank_account_link.bankAccount) }}{% endif %}
+        </td>
       </tr>
     {% endfor %}
   </tbody>
