@@ -268,6 +268,7 @@ class Returns401Test:
         assert response.status_code == 401
         assert response.json["identifier"] == ["Ce compte n'est pas validé."]
 
+    @pytest.mark.usefixtures("db_session")
     def test_session_timeout(self, client):
         from dateutil.relativedelta import relativedelta
         import time_machine
