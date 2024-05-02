@@ -23,6 +23,7 @@
     "prettier:js:changed:fix": "./scripts/lint_diff.sh",
     "serve": "vite preview",
     "start": "vite",
+    "test:bdd": "cypress run --e2e --browser chrome --env tags=@P0",
     "test:e2e": "cypress open --e2e --browser chrome",
     "test:unit": "TZ=UTC vitest",
     "test:unit:hook": "TZ=UTC vitest related --run",
@@ -31,6 +32,9 @@
     "storybook": "NODE_PATH=src storybook dev -p 6006",
     "build-storybook": "NODE_PATH=src storybook build -o docs-build"
   },
+  "cypress-cucumber-preprocessor": {
+    "stepDefinitions": "cypress/e2e/step-definitions/**/*.ts"
+  },  
   "dependencies": {
     "@algolia/autocomplete-plugin-query-suggestions": "^1.17.0",
     "@algolia/autocomplete-plugin-recent-searches": "^1.17.1",
@@ -75,6 +79,8 @@
   },
   "devDependencies": {
     "@storybook/addon-a11y": "^8.1.1",
+    "@badeball/cypress-cucumber-preprocessor": "^20.0.3",
+    "@bahmutov/cypress-esbuild-preprocessor": "^2.2.0",
     "@storybook/addon-controls": "^8.1.1",
     "@storybook/preset-scss": "^1.0.3",
     "@storybook/react": "^8.1.1",
