@@ -69,14 +69,19 @@ class BoostStocksTest:
     def _get_product_by_allocine_id(self, allocine_id):
         return Product.query.filter(Product.extraData["allocineId"] == str(allocine_id)).one()
 
-    @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=False)
-    def should_return_providable_info_on_next(self, requests_mock):
+    def _create_cinema_and_pivot(self):
         boost_provider = get_provider_by_local_class("BoostStocks")
-        venue_provider = VenueProviderFactory(provider=boost_provider)
+        venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True, venue__pricing_point="self")
         cinema_provider_pivot = BoostCinemaProviderPivotFactory(
             venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
         )
         BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
+
+        return venue_provider
+
+    @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=False)
+    def should_return_providable_info_on_next(self, requests_mock):
+        venue_provider = self._create_cinema_and_pivot()
 
         get_cinema_attr_adapter = requests_mock.get(
             "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
@@ -121,12 +126,7 @@ class BoostStocksTest:
         assert get_cinema_attr_adapter.call_count == 1
 
     def should_return_providable_info_on_next_with_enabled_filter_ff(self, requests_mock):
-        boost_provider = get_provider_by_local_class("BoostStocks")
-        venue_provider = VenueProviderFactory(provider=boost_provider)
-        cinema_provider_pivot = BoostCinemaProviderPivotFactory(
-            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
-        )
-        BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
+        venue_provider = self._create_cinema_and_pivot()
 
         get_cinema_attr_adapter = requests_mock.get(
             "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
@@ -160,12 +160,7 @@ class BoostStocksTest:
 
     @override_features(WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS=True)
     def should_not_create_offers_and_stocks_if_products_dont_exist(self, requests_mock):
-        boost_provider = get_provider_by_local_class("BoostStocks")
-        venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True)
-        cinema_provider_pivot = BoostCinemaProviderPivotFactory(
-            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
-        )
-        BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
+        venue_provider = self._create_cinema_and_pivot()
 
         requests_mock.get(
             "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
@@ -205,12 +200,7 @@ class BoostStocksTest:
     @override_features(WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS=False)
     @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=False)
     def should_create_offers_with_allocine_id_and_visa_if_products_dont_exist(self, requests_mock):
-        boost_provider = get_provider_by_local_class("BoostStocks")
-        venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True)
-        cinema_provider_pivot = BoostCinemaProviderPivotFactory(
-            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
-        )
-        BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
+        venue_provider = self._create_cinema_and_pivot()
 
         requests_mock.get(
             "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
@@ -268,12 +258,7 @@ class BoostStocksTest:
     @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=False)
     def should_fill_offer_and_and_stock_informations_for_each_movie_based_on_product(self, requests_mock):
         self._create_products()
-        boost_provider = get_provider_by_local_class("BoostStocks")
-        venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True)
-        cinema_provider_pivot = BoostCinemaProviderPivotFactory(
-            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
-        )
-        BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
+        venue_provider = self._create_cinema_and_pivot()
 
         get_cinema_attr_adapter = requests_mock.get(
             "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
@@ -362,12 +347,7 @@ class BoostStocksTest:
         self, requests_mock
     ):
         self._create_products()
-        boost_provider = get_provider_by_local_class("BoostStocks")
-        venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True)
-        cinema_provider_pivot = BoostCinemaProviderPivotFactory(
-            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
-        )
-        BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
+        venue_provider = self._create_cinema_and_pivot()
 
         get_cinema_attr_adapter = requests_mock.get(
             "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
@@ -458,12 +438,7 @@ class BoostStocksTest:
     @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=False)
     def should_fill_offer_and_stocks_and_price_categories_based_on_product(self, requests_mock):
         self._create_products()
-        boost_provider = get_provider_by_local_class("BoostStocks")
-        venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True)
-        cinema_provider_pivot = BoostCinemaProviderPivotFactory(
-            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
-        )
-        BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
+        venue_provider = self._create_cinema_and_pivot()
 
         get_cinema_attr_adapter = requests_mock.get(
             "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
@@ -532,12 +507,7 @@ class BoostStocksTest:
 
     @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=False)
     def should_reuse_price_category(self, requests_mock):
-        boost_provider = get_provider_by_local_class("BoostStocks")
-        venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True)
-        cinema_provider_pivot = BoostCinemaProviderPivotFactory(
-            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
-        )
-        BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
+        venue_provider = self._create_cinema_and_pivot()
 
         get_cinema_attr_adapter = requests_mock.get(
             "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
@@ -563,12 +533,7 @@ class BoostStocksTest:
         assert get_cinema_attr_adapter.call_count == 2
 
     def should_not_create_stock_when_showtime_does_not_have_pass_culture_pricing(self, requests_mock):
-        boost_provider = get_provider_by_local_class("BoostStocks")
-        venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True)
-        cinema_provider_pivot = BoostCinemaProviderPivotFactory(
-            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
-        )
-        BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
+        venue_provider = self._create_cinema_and_pivot()
 
         get_cinema_attr_adapter = requests_mock.get(
             "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
@@ -595,12 +560,7 @@ class BoostStocksTest:
 
     @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=False)
     def should_update_stock_with_the_correct_stock_quantity(self, requests_mock):
-        boost_provider = get_provider_by_local_class("BoostStocks")
-        venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True)
-        cinema_provider_pivot = BoostCinemaProviderPivotFactory(
-            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
-        )
-        BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
+        venue_provider = self._create_cinema_and_pivot()
 
         get_cinema_attr_adapter = requests_mock.get(
             "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
@@ -644,12 +604,7 @@ class BoostStocksTest:
         assert get_cinema_attr_adapter.call_count == 2
 
     def should_update_finance_event_when_stock_beginning_datetime_is_updated(self, requests_mock):
-        boost_provider = get_provider_by_local_class("BoostStocks")
-        venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True, venue__pricing_point="self")
-        cinema_provider_pivot = BoostCinemaProviderPivotFactory(
-            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
-        )
-        BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
+        venue_provider = self._create_cinema_and_pivot()
 
         requests_mock.get(
             "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
@@ -705,12 +660,7 @@ class BoostStocksTest:
 
     @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=False)
     def should_create_offer_with_correct_thumb(self, requests_mock):
-        boost_provider = get_provider_by_local_class("BoostStocks")
-        venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True)
-        cinema_provider_pivot = BoostCinemaProviderPivotFactory(
-            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
-        )
-        BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
+        venue_provider = self._create_cinema_and_pivot()
         get_cinema_attr_adapter = requests_mock.get(
             "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
         )
@@ -746,12 +696,7 @@ class BoostStocksTest:
 
     @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=False)
     def should_not_update_thumbnail_more_then_once_a_day(self, requests_mock):
-        boost_provider = get_provider_by_local_class("BoostStocks")
-        venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True)
-        cinema_provider_pivot = BoostCinemaProviderPivotFactory(
-            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
-        )
-        BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
+        venue_provider = self._create_cinema_and_pivot()
         get_cinema_attr_adapter = requests_mock.get(
             "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
         )
@@ -809,12 +754,7 @@ class BoostStocksTest:
 
     @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=False)
     def should_link_offer_with_known_visa_to_product(self, requests_mock):
-        boost_provider = get_provider_by_local_class("BoostStocks")
-        venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True)
-        cinema_provider_pivot = BoostCinemaProviderPivotFactory(
-            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
-        )
-        BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
+        venue_provider = self._create_cinema_and_pivot()
 
         requests_mock.get(
             "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
