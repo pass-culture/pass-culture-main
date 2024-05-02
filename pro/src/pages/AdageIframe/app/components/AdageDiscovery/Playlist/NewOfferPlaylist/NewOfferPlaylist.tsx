@@ -38,7 +38,7 @@ export const NewOfferPlaylist = ({
     const getNewOfferPlaylist = async () => {
       setLoading(true)
       try {
-        const result = await apiAdage.newTemplateOffersPlaylist()
+        const result = await apiAdage.getAnyNewTemplateOffersPlaylist()
 
         setOffers(result.collectiveOffers)
       } catch (e) {

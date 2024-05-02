@@ -19,6 +19,7 @@ import squares from './DomainsCard/assets/squares.svg'
 import triangles from './DomainsCard/assets/triangles.svg'
 import DomainsCard from './DomainsCard/DomainsCard'
 import { ClassroomPlaylist } from './Playlist/ClassroomPlaylist/ClassroomPlaylist'
+import { NewOffererPlaylist } from './Playlist/NewOffererPlaylist/NewOffererPlaylist'
 import { NewOfferPlaylist } from './Playlist/NewOfferPlaylist/NewOfferPlaylist'
 import { VenuePlaylist } from './Playlist/VenuePlaylist/VenuePlaylist'
 
@@ -152,6 +153,12 @@ export const AdageDiscovery = () => {
               )
             })}
           ></Carousel>
+        </div>
+        <div className={styles['discovery-playlist']}>
+          <NewOffererPlaylist
+            onWholePlaylistSeen={onWholePlaylistSeen}
+            trackPlaylistElementClicked={trackPlaylistElementClicked}
+          />
         </div>
         <div className={styles['discovery-playlist']}>
           <ClassroomPlaylist

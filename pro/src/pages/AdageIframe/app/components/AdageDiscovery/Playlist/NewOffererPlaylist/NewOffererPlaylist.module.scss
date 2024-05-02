@@ -1,0 +1,17 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+
+.playlist-carousel-title {
+  @include fonts.title3;
+
+  margin-bottom: unset;
+}
+
+.playlist-carousel {
+  min-height: 0;
+  transition: min-height 0.1s;
+
+  &.playlist-carousel-loading {
+    min-height: rem.torem(480px);
+  }
+}
