@@ -398,6 +398,7 @@ def log_search_show_more(
             "source": body.source,
             "from": body.iframeFrom,
             "queryId": body.queryId,
+            "type": body.type
         },
         uai=authenticated_information.uai,
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
