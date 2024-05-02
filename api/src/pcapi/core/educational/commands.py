@@ -244,3 +244,9 @@ def synchronise_collective_new_offer_playlist() -> None:
 @log_cron_with_transaction
 def synchronise_collective_local_offerer_playlist() -> None:
     playlists_api.synchronize_collective_playlist(educational_models.PlaylistType.LOCAL_OFFERER)
+
+
+@blueprint.cli.command("synchronise_collective_new_offerers_playlist")
+@log_cron_with_transaction
+def synchronise_collective_new_offerers_playlist() -> None:
+    playlists_api.synchronize_collective_playlist(educational_models.PlaylistType.NEW_OFFERER)

@@ -94,3 +94,22 @@ class InstitutionRuralLevelQuery(BaseQuery):
     """
 
     model = InstitutionRuralLevelModel
+
+
+class NewOffererQuery(BaseQuery):
+    raw_query = f"""
+        SELECT
+            institution_id,
+            venue_id,
+            MIN(distance_in_km) as distance_in_km
+        FROM
+            `{settings.BIG_QUERY_TABLE_BASENAME}.adage_home_playlist_new_venues`
+        WHERE
+            distance_in_km <= 60
+        GROUP BY
+            institution_id, venue_id
+        ORDER BY
+            institution_id, venue_id
+    """
+
+    model = LocalOfferersModel
