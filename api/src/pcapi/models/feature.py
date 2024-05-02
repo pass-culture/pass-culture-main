@@ -122,9 +122,6 @@ class FeatureToggle(enum.Enum):
         "Activer la prévisualisation d'une offre adage lors de la création/édition sur le portail pro"
     )
     WIP_ENABLE_NEW_NAV_AB_TEST = "Activer l'A/B test de la nouvelle navigation du portail pro."
-    WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS = (
-        "Synchroniser les offres et stocks de cinéma avec les produits allociné"
-    )
     WIP_OPENING_HOURS = "Activer les horaires d'ouverture sur la page partenaire"
     WIP_ENABLE_ADAGE_VISUALIZATION = "Activer la nouvelle manière de visualiser les offres dans la recherche d'ADAGE."
     WIP_ENABLE_TITELIVE_API_FOR_BOOKS = "Activer l'utilisation de l'API Titelive pour les synchronisations produits pour les livres(désactive l'utilisation de l'utilisation de FTP pour la synchro)"
@@ -194,7 +191,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY,
     FeatureToggle.WIP_ENABLE_TITELIVE_API_FOR_BOOKS,
     FeatureToggle.WIP_OPENING_HOURS,
-    FeatureToggle.WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS,
     FeatureToggle.WIP_ENABLE_DOWNLOAD_BOOKINGS,
     # Please keep alphabetic order
 )
@@ -202,14 +198,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
 if settings.IS_PROD or settings.IS_STAGING:
     FEATURES_DISABLED_BY_DEFAULT += (FeatureToggle.WIP_ENABLE_FINANCE_INCIDENT,)
     FEATURES_DISABLED_BY_DEFAULT += (FeatureToggle.WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API,)
-
-if settings.IS_TESTING:
-    testing_features_disabled_by_default = set(FEATURES_DISABLED_BY_DEFAULT)
-    features_to_enable = {
-        FeatureToggle.WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS,
-    }
-
-    FEATURES_DISABLED_BY_DEFAULT = tuple(testing_features_disabled_by_default - features_to_enable)
 
 
 def add_feature_to_database(feature: Feature) -> None:
