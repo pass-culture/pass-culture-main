@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { useSWRConfig } from 'swr'
+import useSWR, { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
@@ -8,13 +8,14 @@ import {
   CollectiveStockResponseModel,
   GetCollectiveOfferRequestResponseModel,
   GetCollectiveOfferResponseModel,
-  GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
 import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
-import { GET_COLLECTIVE_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
-import { getCollectiveOfferTemplateAdapter } from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
+import {
+  GET_COLLECTIVE_OFFER_QUERY_KEY,
+  GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
+} from 'config/swrQueryKeys'
 import {
   isCollectiveOffer,
   isCollectiveOfferTemplate,
@@ -51,8 +52,15 @@ export const CollectiveOfferStockCreation = ({
 
   const { mutate } = useSWRConfig()
 
-  const [offerTemplate, setOfferTemplate] =
-    useState<GetCollectiveOfferTemplateResponseModel>()
+  const { data: offerFromTemplate } = useSWR(
+    isCollectiveOffer(offer) && offer.templateId
+      ? [GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY, offer.templateId]
+      : null,
+    ([, offerTemplateIdParam]) => {
+      return api.getCollectiveOfferTemplate(offerTemplateIdParam)
+    }
+  )
+
   const [requestInformations, setRequestInformations] =
     useState<GetCollectiveOfferRequestResponseModel | null>(null)
 
@@ -69,20 +77,6 @@ export const CollectiveOfferStockCreation = ({
   }
 
   useEffect(() => {
-    const fetchOfferTemplateDetails = async () => {
-      if (!(isCollectiveOffer(offer) && offer.templateId)) {
-        return null
-      }
-      const { isOk, payload, message } =
-        await getCollectiveOfferTemplateAdapter(offer.templateId)
-      if (!isOk) {
-        return notify.error(message)
-      }
-      setOfferTemplate(payload)
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    fetchOfferTemplateDetails()
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     getOfferRequestInformation()
   }, [])
@@ -95,7 +89,7 @@ export const CollectiveOfferStockCreation = ({
 
   const initialValues = extractInitialStockValues(
     offer,
-    offerTemplate,
+    offerFromTemplate,
     requestInformations
   )
 

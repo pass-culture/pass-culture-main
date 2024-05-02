@@ -34,7 +34,6 @@ const renderCollectiveOfferSummaryCreation = async (
 
 const defaultProps = {
   offer: getCollectiveOfferFactory(),
-  setOffer: vi.fn(),
   isTemplate: false,
   offerer: undefined,
 }
