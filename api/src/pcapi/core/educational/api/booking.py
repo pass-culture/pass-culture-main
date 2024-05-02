@@ -226,7 +226,7 @@ def get_collective_booking_report(
     status_filter: (
         educational_models.CollectiveBookingStatusFilter | None
     ) = educational_models.CollectiveBookingStatusFilter.BOOKED,
-    event_date: datetime.datetime | None = None,
+    event_date: datetime.date | None = None,
     venue_id: int | None = None,
     export_type: bookings_models.BookingExportType | None = bookings_models.BookingExportType.CSV,
 ) -> str | bytes:

@@ -28,29 +28,30 @@ from . import blueprint
 @login_required
 @spectree_serialize(response_model=ListBookingsResponseModel, api=blueprint.pro_private_schema)
 def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel:
-    page = query.page
-    per_page_limit = 1000
-    venue_id = query.venue_id
-    offer_id = query.offer_id
-    event_date = query.event_date
-    booking_status = query.booking_status_filter
-    booking_period = None
+    user = current_user._get_current_object()  # for tests to succeed, because current_user is actually a LocalProxy
+
     if query.booking_period_beginning_date and query.booking_period_ending_date:
         booking_period = (
             query.booking_period_beginning_date,
             query.booking_period_ending_date,
         )
-    offer_type = query.offer_type
+    else:
+        booking_period = None
+    status_filter = query.booking_status_filter
+    event_date = query.event_date
+    venue_id = query.venue_id
+    offer_id = query.offer_id
+    page = query.page
+    per_page_limit = 1000
 
     bookings_query, total = booking_repository.find_by_pro_user(
-        user=current_user._get_current_object(),  # for tests to succeed, because current_user is actually a LocalProxy
+        user=user,
         booking_period=booking_period,
-        status_filter=booking_status,
+        status_filter=status_filter,
         event_date=event_date,
         venue_id=venue_id,
         offer_id=offer_id,
-        offer_type=offer_type,
-        page=int(page),
+        page=page,
         per_page_limit=per_page_limit,
     )
 
@@ -66,7 +67,7 @@ def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel
 @login_required
 @spectree_serialize(response_model=UserHasBookingResponse, api=blueprint.pro_private_schema)
 def get_user_has_bookings() -> UserHasBookingResponse:
-    user = current_user._get_current_object()
+    user = current_user._get_current_object()  # for tests to succeed, because current_user is actually a LocalProxy
     return UserHasBookingResponse(hasBookings=booking_repository.user_has_bookings(user))
 
 
@@ -80,26 +81,20 @@ def get_user_has_bookings() -> UserHasBookingResponse:
     },
     api=blueprint.pro_private_schema,
 )
-def export_bookings_for_offer_as_csv(offer_id: int, query: BookingsExportQueryModel) -> bytes | api_errors.ApiErrors:
-    user = current_user._get_current_object()
+def export_bookings_for_offer_as_csv(offer_id: int, query: BookingsExportQueryModel) -> bytes:
+    user = current_user._get_current_object()  # for tests to succeed, because current_user is actually a LocalProxy
     offer = Offer.query.get(int(offer_id))
 
     if not user.has_access(offer.venue.managingOffererId):
         raise api_errors.ForbiddenError({"global": "You are not allowed to access this offer"})
 
-    if query.status == BookingsExportStatusFilter.VALIDATED:
-        return cast(
-            str,
-            booking_repository.export_validated_bookings_by_offer_id(
-                offer_id, event_beginning_date=query.event_date, export_type=BookingExportType.CSV
-            ),
-        ).encode("utf-8-sig")
-    return cast(
-        str,
-        booking_repository.export_bookings_by_offer_id(
-            offer_id, event_beginning_date=query.event_date, export_type=BookingExportType.CSV
-        ),
-    ).encode("utf-8-sig")
+    bookings = booking_repository.export_bookings_by_offer_id(
+        offer_id,
+        event_date=query.event_date,
+        export_type=BookingExportType.CSV,
+        validated=bool(query.status == BookingsExportStatusFilter.VALIDATED),
+    )
+    return cast(str, bookings).encode("utf-8-sig")
 
 
 @blueprint.pro_private_api.route("/bookings/offer/<int:offer_id>/excel", methods=["GET"])
@@ -112,26 +107,20 @@ def export_bookings_for_offer_as_csv(offer_id: int, query: BookingsExportQueryMo
     },
     api=blueprint.pro_private_schema,
 )
-def export_bookings_for_offer_as_excel(offer_id: int, query: BookingsExportQueryModel) -> bytes | api_errors.ApiErrors:
-    user = current_user._get_current_object()
+def export_bookings_for_offer_as_excel(offer_id: int, query: BookingsExportQueryModel) -> bytes:
+    user = current_user._get_current_object()  # for tests to succeed, because current_user is actually a LocalProxy
     offer = Offer.query.get(int(offer_id))
 
     if not user.has_access(offer.venue.managingOffererId):
         raise api_errors.ForbiddenError({"global": "You are not allowed to access this offer"})
 
-    if query.status == BookingsExportStatusFilter.VALIDATED:
-        return cast(
-            bytes,
-            booking_repository.export_validated_bookings_by_offer_id(
-                offer_id, event_beginning_date=query.event_date, export_type=BookingExportType.EXCEL
-            ),
-        )
-    return cast(
-        bytes,
-        booking_repository.export_bookings_by_offer_id(
-            offer_id, event_beginning_date=query.event_date, export_type=BookingExportType.EXCEL
-        ),
+    bookings = booking_repository.export_bookings_by_offer_id(
+        offer_id,
+        event_date=query.event_date,
+        export_type=BookingExportType.EXCEL,
+        validated=bool(query.status == BookingsExportStatusFilter.VALIDATED),
     )
+    return cast(bytes, bookings)
 
 
 @blueprint.pro_private_api.route("/bookings/csv", methods=["GET"])
@@ -166,7 +155,7 @@ def get_bookings_excel(query: ListBookingsQueryModel) -> bytes:
 @login_required
 @spectree_serialize(response_model=EventDatesInfos, api=blueprint.pro_private_schema)
 def get_offer_price_categories_and_schedules_by_dates(offer_id: int) -> EventDatesInfos:
-    user = current_user._get_current_object()
+    user = current_user._get_current_object()  # for tests to succeed, because current_user is actually a LocalProxy
     offer = Offer.query.get(offer_id)
 
     if not user.has_access(offer.venue.managingOffererId):
@@ -214,24 +203,25 @@ def get_offer_price_categories_and_schedules_by_dates(offer_id: int) -> EventDat
 
 
 def _create_booking_export_file(query: ListBookingsQueryModel, export_type: BookingExportType) -> bytes:
-    venue_id = query.venue_id
-    event_date = query.event_date
-    booking_period = None
+    user = current_user._get_current_object()  # for tests to succeed, because current_user is actually a LocalProxy
+
     if query.booking_period_beginning_date and query.booking_period_ending_date:
         booking_period = (
             query.booking_period_beginning_date,
             query.booking_period_ending_date,
         )
-    booking_status = query.booking_status_filter
-    offer_type = query.offer_type
+    else:
+        booking_period = None
+    status_filter = query.booking_status_filter
+    event_date = query.event_date
+    venue_id = query.venue_id
 
     export_data = booking_repository.get_export(
-        user=current_user._get_current_object(),  # for tests to succeed, because current_user is actually a LocalProxy
+        user=user,
         booking_period=booking_period,
-        status_filter=booking_status,
+        status_filter=status_filter,
         event_date=event_date,
         venue_id=venue_id,
-        offer_type=offer_type,
         export_type=export_type,
     )
 

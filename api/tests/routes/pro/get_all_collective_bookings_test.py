@@ -499,7 +499,7 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth(pro_user.email)
-        response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}&eventDate=2022-05-15T00:00:00Z")
+        response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}&eventDate=2022-05-15")
 
         # Then
         expected_bookings_recap = [

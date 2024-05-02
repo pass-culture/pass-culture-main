@@ -400,7 +400,6 @@ def get_expired_collective_offers(interval: tuple[datetime, datetime]) -> BaseQu
 
     Inactive or deleted offers are ignored.
     """
-
     # FIXME (cgaunet, 2022-03-08): This query could be optimized by returning offers
     # that do not have bookings because booking a collective offer will unindex it.
     return (
@@ -427,7 +426,6 @@ def get_expired_collective_offers_template() -> BaseQuery:
 
 def find_expiring_collective_bookings_query() -> BaseQuery:
     today_at_midnight = datetime.combine(date.today(), time(0, 0))
-
     return educational_models.CollectiveBooking.query.filter(
         educational_models.CollectiveBooking.status == educational_models.CollectiveBookingStatus.PENDING,
         educational_models.CollectiveBooking.confirmationLimitDate <= today_at_midnight,
@@ -594,16 +592,14 @@ def _get_filtered_collective_bookings_query(
     venue_id: int | None = None,
     extra_joins: typing.Iterable[sa.Column] | None = None,
 ) -> sa.orm.Query:
-    extra_joins = extra_joins or tuple()
-
     collective_bookings_query = (
         educational_models.CollectiveBooking.query.join(educational_models.CollectiveBooking.offerer)
         .join(offerers_models.Offerer.UserOfferers)
         .join(educational_models.CollectiveBooking.collectiveStock)
         .join(educational_models.CollectiveBooking.venue, isouter=True)
     )
-    for join_key in extra_joins:
-        collective_bookings_query = collective_bookings_query.join(join_key, isouter=True)
+    for extra_join in extra_joins or tuple():
+        collective_bookings_query = collective_bookings_query.join(extra_join, isouter=True)
 
     if not pro_user.has_admin_role:
         collective_bookings_query = collective_bookings_query.filter(offerers_models.UserOfferer.user == pro_user)
@@ -611,11 +607,9 @@ def _get_filtered_collective_bookings_query(
     collective_bookings_query = collective_bookings_query.filter(offerers_models.UserOfferer.isValidated)
 
     if period:
-        period_attribute_filter = (
-            BOOKING_DATE_STATUS_MAPPING[status_filter]
-            if status_filter
-            else BOOKING_DATE_STATUS_MAPPING[educational_models.CollectiveBookingStatusFilter.BOOKED]
-        )
+        if not status_filter:
+            status_filter = educational_models.CollectiveBookingStatusFilter.BOOKED
+        period_attribute_filter = BOOKING_DATE_STATUS_MAPPING[status_filter]
 
         if all(period):
             collective_bookings_query = collective_bookings_query.filter(
@@ -696,7 +690,7 @@ def _get_filtered_collective_bookings_pro(
     pro_user: User,
     period: tuple[date, date] | None = None,
     status_filter: educational_models.CollectiveBookingStatusFilter | None = None,
-    event_date: datetime | None = None,
+    event_date: date | None = None,
     venue_id: int | None = None,
 ) -> sa.orm.Query:
     bookings_query = (
@@ -729,7 +723,7 @@ def find_collective_bookings_by_pro_user(
     user: User,
     booking_period: tuple[date, date] | None = None,
     status_filter: educational_models.CollectiveBookingStatusFilter | None = None,
-    event_date: datetime | None = None,
+    event_date: date | None = None,
     venue_id: int | None = None,
     page: int = 1,
     per_page_limit: int = 1000,
@@ -769,7 +763,7 @@ def get_filtered_collective_booking_report(
     pro_user: User,
     period: tuple[date, date] | None,
     status_filter: educational_models.CollectiveBookingStatusFilter | None,
-    event_date: datetime | None = None,
+    event_date: date | None = None,
     venue_id: int | None = None,
 ) -> BaseQuery:
     bookings_query = _get_filtered_collective_bookings_query(
@@ -786,7 +780,7 @@ def get_filtered_collective_booking_report(
     )
     bookings_query = bookings_query.with_entities(
         offerers_models.Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
-        offerers_models.Venue.departementCode.label("venueDepartmentCode"),
+        offerers_models.Venue.timezone.label("venueTimezone"),
         offerers_models.Offerer.postalCode.label("offererPostalCode"),
         educational_models.CollectiveOffer.name.label("offerName"),
         educational_models.CollectiveStock.price,

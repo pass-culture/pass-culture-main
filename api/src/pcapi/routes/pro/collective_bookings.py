@@ -1,9 +1,7 @@
-from datetime import datetime
 import logging
 import math
 from typing import cast
 
-from dateutil import parser
 from flask_login import current_user
 from flask_login import login_required
 
@@ -36,24 +34,28 @@ logger = logging.getLogger(__name__)
 def get_collective_bookings_pro(
     query: collective_bookings_serialize.ListCollectiveBookingsQueryModel,
 ) -> collective_bookings_serialize.ListCollectiveBookingsResponseModel:
-    per_page_limit = 1000
-    page = query.page
-    venue_id = query.venue_id
-    event_date = parser.parse(query.event_date) if query.event_date else None
-    booking_status = query.booking_status_filter
-    booking_period = None
+    user = current_user._get_current_object()  # for tests to succeed, because current_user is actually a LocalProxy
+
     if query.booking_period_beginning_date and query.booking_period_ending_date:
         booking_period = (
-            datetime.fromisoformat(query.booking_period_beginning_date).date(),
-            datetime.fromisoformat(query.booking_period_ending_date).date(),
+            query.booking_period_beginning_date,
+            query.booking_period_ending_date,
         )
+    else:
+        booking_period = None
+    status_filter = query.booking_status_filter
+    event_date = query.event_date
+    venue_id = query.venue_id
+    page = query.page
+    per_page_limit = 1000
+
     total_collective_bookings, collective_bookings_page = collective_repository.find_collective_bookings_by_pro_user(
-        user=current_user._get_current_object(),  # for tests to succeed, because current_user is actually a LocalProxy
+        user=user,
         booking_period=booking_period,
-        status_filter=booking_status,
+        status_filter=status_filter,
         event_date=event_date,
         venue_id=venue_id,
-        page=int(page),
+        page=page,
         per_page_limit=per_page_limit,
     )
 
@@ -90,9 +92,7 @@ def get_collective_booking_by_id(booking_id: int) -> collective_bookings_seriali
     },
     api=blueprint.pro_private_schema,
 )
-def get_collective_bookings_csv(
-    query: collective_bookings_serialize.ListCollectiveBookingsQueryModel,
-) -> str | bytes:
+def get_collective_bookings_csv(query: collective_bookings_serialize.ListCollectiveBookingsQueryModel) -> bytes:
     return _create_collective_bookings_export_file(query, BookingExportType.CSV)
 
 
@@ -106,29 +106,30 @@ def get_collective_bookings_csv(
     },
     api=blueprint.pro_private_schema,
 )
-def get_collective_bookings_excel(
-    query: collective_bookings_serialize.ListCollectiveBookingsQueryModel,
-) -> str | bytes:
+def get_collective_bookings_excel(query: collective_bookings_serialize.ListCollectiveBookingsQueryModel) -> bytes:
     return _create_collective_bookings_export_file(query, BookingExportType.EXCEL)
 
 
 def _create_collective_bookings_export_file(
     query: collective_bookings_serialize.ListCollectiveBookingsQueryModel, export_type: BookingExportType
-) -> str | bytes:
-    venue_id = query.venue_id
-    event_date = parser.parse(query.event_date) if query.event_date else None
-    booking_period = None
+) -> bytes:
+    user = current_user._get_current_object()  # for tests to succeed, because current_user is actually a LocalProxy
+
     if query.booking_period_beginning_date and query.booking_period_ending_date:
         booking_period = (
-            datetime.fromisoformat(query.booking_period_beginning_date).date(),
-            datetime.fromisoformat(query.booking_period_ending_date).date(),
+            query.booking_period_beginning_date,
+            query.booking_period_ending_date,
         )
-    booking_status = query.booking_status_filter
+    else:
+        booking_period = None
+    status_filter = query.booking_status_filter
+    event_date = query.event_date
+    venue_id = query.venue_id
 
     export_data = educational_api_booking.get_collective_booking_report(
-        user=current_user._get_current_object(),  # for tests to succeed, because current_user is actually a LocalProxy
+        user=user,
         booking_period=booking_period,
-        status_filter=booking_status,
+        status_filter=status_filter,
         event_date=event_date,
         venue_id=venue_id,
         export_type=export_type,
@@ -142,7 +143,7 @@ def _create_collective_bookings_export_file(
 @login_required
 @spectree_serialize(response_model=UserHasBookingResponse, api=blueprint.pro_private_schema)
 def get_user_has_collective_bookings() -> UserHasBookingResponse:
-    user = current_user._get_current_object()
+    user = current_user._get_current_object()  # for tests to succeed, because current_user is actually a LocalProxy
     return UserHasBookingResponse(hasBookings=collective_repository.user_has_bookings(user))
 
 
@@ -174,4 +175,5 @@ def cancel_collective_offer_booking(offer_id: int) -> None:
         )
     except collective_exceptions.NoCollectiveBookingToCancel:
         raise ApiErrors({"code": "NO_BOOKING", "message": "This collective offer has no booking to cancel"}, 400)
+
     return
