@@ -5,10 +5,7 @@ import { api, apiAdage } from 'apiClient/api'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import useIsElementVisible from 'hooks/useIsElementVisible'
 import useNotification from 'hooks/useNotification'
-import fullLinkIcon from 'icons/full-link.svg'
 import { Option } from 'pages/AdageIframe/app/types'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './AdageDiscovery.module.scss'
 import AdageDiscoveryBanner from './AdageDiscoveryBanner/AdageDiscoveryBanner'
@@ -169,22 +166,6 @@ export const AdageDiscovery = () => {
             trackPlaylistElementClicked={trackPlaylistElementClicked}
           />
         </div>
-      </div>
-      <div className={styles['discovery-suggestion']}>
-        <h2 className={styles['section-title']}>
-          Une idée de rubrique ? Soumettez-la nous !
-        </h2>
-        <ButtonLink
-          className={styles['discovery-suggestion-link']}
-          variant={ButtonVariant.TERNARYPINK}
-          link={{
-            to: 'https://passculture.qualtrics.com/jfe/form/SV_6GsfVHSIYQZqdM2',
-            isExternal: true,
-          }}
-          icon={fullLinkIcon}
-        >
-          Proposer une idée
-        </ButtonLink>
       </div>
     </div>
   )
