@@ -87,6 +87,36 @@ def create_institutions() -> list[educational_models.EducationalInstitution]:
             educational_factories.EducationalInstitutionFactory(
                 name="LYC METIER FREDERIC ET IRENE JOLIOT CURIE", institutionId="0760100W"
             ),
+            educational_factories.EducationalInstitutionFactory(
+                institutionId="0780032L",
+                institutionType="COLLEGE",
+                name="FLORA TRISTAN",
+                city="CARRIÈRES-SOUS-POISSY",
+                postalCode="78955",
+            ),
+            educational_factories.EducationalInstitutionFactory(
+                institutionId="0780004F",
+                institutionType="LYCÉE AGRICOLE ET HORTICOLE",
+                name="LEGTPA DE ST GERMAIN EN LAYE",
+                city="SAINT-GERMAIN-EN-LAYE",
+                postalCode="78100",
+            ),
+            educational_factories.EducationalInstitutionFactory(
+                institutionId="0130553F",
+                institutionType="ECOLE ÉLÉMENTAIRE",
+                name="CLAIR SOLEIL",
+                city="MARSEILLE",
+                programs=[program],
+                postalCode="13014",
+            ),
+            educational_factories.EducationalInstitutionFactory(
+                institutionId="0131251P",
+                institutionType="ECOLE MATERNELLE",
+                name="PARC DES CHARTREUX",
+                city="Marseille",
+                programs=[program],
+                postalCode="13013",
+            ),
         ]
 
     create_deposits(institutions)
