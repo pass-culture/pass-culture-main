@@ -1,26 +1,6 @@
-describe('Create an individual offer (event)', () => {
-  it('should create an individual offer', () => {
-    // toujours d'actu ce flag? où aller voir pour savoir?
-    cy.setFeatureFlags([{ name: 'WIP_ENABLE_PRO_SIDE_NAV', isActive: false }])
+import { When, Then, Given } from "@badeball/cypress-cucumber-preprocessor";
 
-    cy.login({
-      email: 'pro_adage_eligible@example.com',
-      password: 'user@AZERTY123',
-    })
-
-    // Go to offer creation page
-    cy.findByText('Créer une offre').click()
-
-    // Select an offer type
-    cy.findByText('Un évènement physique daté').click()
-
-    cy.intercept({ method: 'GET', url: '/offers/categories' }).as(
-      'getCategories'
-    )
-    cy.findByText('Étape suivante').click()
-    cy.wait('@getCategories')
-
-    // Fill in first step: offer details
+When("I fill in offer details", () => {
     cy.findByLabelText('Catégorie *').select('Spectacle vivant')
     cy.findByLabelText('Sous-catégorie *').select('Spectacle, représentation')
     cy.findByLabelText('Type de spectacle *').select('Théâtre')
@@ -34,8 +14,9 @@ describe('Create an individual offer (event)', () => {
     cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
     cy.findByText('Enregistrer et continuer').click()
     cy.wait(['@getOffer', '@postOffer'])
+});
 
-    // Fill in second step: prices
+When("I fill in prices", () => {
     cy.findByLabelText('Intitulé du tarif *').should('have.value', 'Tarif unique')
     cy.findByText('Ajouter un tarif').click()
     cy.findByText('Ajouter un tarif').click()
@@ -62,7 +43,7 @@ describe('Create an individual offer (event)', () => {
       // trouve le troisième champ avec le label:      
       cy.findByLabelText('Intitulé du tarif *').type('Fosse Sceptique')
     })
-    // manque un data-testid
+    // manque un data-testid ou un accessibility label
     cy.get('[name="priceCategories[2].free"]').click()
 
     cy.findByText('Accepter les réservations “Duo“').should('exist')
@@ -72,8 +53,9 @@ describe('Create an individual offer (event)', () => {
     cy.findByText('Enregistrer et continuer').click()
     // pourquoi on attend tellement ici?
     cy.wait(['@patchOffer', '@getOffer', '@getStocks'])
+});
 
-    // Fill in third step: recurrence
+When("I fill in recurrence", () => {
     cy.findByText('Ajouter une ou plusieurs dates').click()
 
     cy.findByText('Toutes les semaines').click()
@@ -119,19 +101,21 @@ describe('Create an individual offer (event)', () => {
 
     cy.findByText('Enregistrer et continuer').click()
     cy.contains('Accepter les réservations "Duo" : Oui')
+});
 
-    // Publish offer
+When("I publish my offer", () => {
     cy.intercept({ method: 'PATCH', url: '/offers/publish' }).as('publishOffer')
     cy.findByText('Publier l’offre').click()
     cy.wait(['@publishOffer', '@getOffer'])
+});
 
-    // Go to offer list and check that the offer is there
+When("I go to offers list", () => {
     cy.intercept({ method: 'GET', url: '/offers' }).as('getOffers')
-    cy.findByText('Voir la liste des offres').click()
+    cy.findByText('Voir la liste des offres').click()});
 
+Then("my new offer should be displayed", () => {
     cy.wait('@getOffers')
     cy.url().should('contain', '/offres')
     cy.contains('Le Diner de Devs')
     cy.contains('396 dates')
-  })
-})
+});
