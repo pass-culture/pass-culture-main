@@ -1,5 +1,4 @@
 import { screen } from '@testing-library/react'
-import React from 'react'
 
 import { MARSEILLE_EN_GRAND } from 'pages/AdageIframe/app/constants'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
@@ -93,7 +92,7 @@ vi.mock('apiClient/api', () => ({
 }))
 
 vi.mock('hooks/useIsElementVisible', () => ({
-  default: vi.fn().mockImplementation(() => [false, false]),
+  default: vi.fn(() => [false, false]),
 }))
 
 window.scrollTo = vi.fn().mockImplementation(() => {})

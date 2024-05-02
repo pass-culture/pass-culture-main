@@ -6,7 +6,7 @@ import * as useIsElementVisible from 'hooks/useIsElementVisible'
 import Carousel from '../Carousel'
 
 vi.mock('hooks/useIsElementVisible', () => ({
-  default: vi.fn().mockImplementation(() => [false, false]),
+  default: vi.fn(() => [false, false]),
 }))
 
 const mockCarouselElements = Array(20)

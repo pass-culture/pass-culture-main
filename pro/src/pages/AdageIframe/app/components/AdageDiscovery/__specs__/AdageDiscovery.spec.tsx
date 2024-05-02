@@ -39,7 +39,7 @@ vi.mock('apiClient/api', () => ({
 }))
 
 vi.mock('hooks/useIsElementVisible', () => ({
-  default: vi.fn().mockImplementation(() => [false, false]),
+  default: vi.fn(() => [false, false]),
 }))
 
 const renderAdageDiscovery = (user: AuthenticatedResponse) => {
@@ -112,8 +112,10 @@ describe('AdageDiscovery', () => {
     expect(apiAdage.logHasSeenAllPlaylist).toHaveBeenCalledTimes(0)
   })
 
-  it('should call tracker when footer suggestion is visible', async () => {
-    vi.spyOn(useIsElementVisible, 'default').mockReturnValueOnce([true])
+  it('should call tracker when last playlist is visible', async () => {
+    vi.spyOn(useIsElementVisible, 'default').mockImplementationOnce(() => [
+      true,
+    ])
 
     renderAdageDiscovery(user)
 
@@ -154,8 +156,9 @@ describe('AdageDiscovery', () => {
   it('should trigger a log when the last element of a playlist is seen', async () => {
     renderAdageDiscovery(user)
 
-    //  Once for the footer visibility and twice for each playlist (4*2+1=9)
+    // log for each playlist
     vi.spyOn(useIsElementVisible, 'default')
+      .mockReturnValueOnce([true, true])
       .mockReturnValueOnce([true, true])
       .mockReturnValueOnce([true, true])
       .mockReturnValueOnce([true, true])
