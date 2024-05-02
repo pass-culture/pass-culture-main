@@ -29,7 +29,15 @@ class SharedPlaylistsErrorTests:
         assert "message" in response.json
 
 
-class GetClassroomPlaylistTest(SharedPlaylistsErrorTests):
+class AuthError:
+    def test_unknown_redactor(self, client):
+        iframe_client = _get_iframe_client(client, email="unknown@example.com")
+        response = iframe_client.get(url_for(self.endpoint))
+        assert response.status_code == 403
+        assert "auth" in response.json
+
+
+class GetClassroomPlaylistTest(SharedPlaylistsErrorTests, AuthError):
     endpoint = "adage_iframe.get_classroom_playlist"
 
     def test_get_classroom_playlist(self, client):
@@ -83,12 +91,6 @@ class GetClassroomPlaylistTest(SharedPlaylistsErrorTests):
             assert response.status_code == 200
             assert response.json == {"collectiveOffers": []}
 
-    def test_unknown_redactor(self, client):
-        iframe_client = _get_iframe_client(client, email="unknown@example.com")
-        response = iframe_client.get(url_for(self.endpoint))
-        assert response.status_code == 403
-        assert "auth" in response.json
-
     def test_get_classroom_playlist_random_order(self, client):
         expected_distance = 10.0
         institution = educational_factories.EducationalInstitutionFactory()
@@ -120,7 +122,7 @@ class GetClassroomPlaylistTest(SharedPlaylistsErrorTests):
         assert playlist_order_1 != playlist_order_2
 
 
-class GetNewTemplateOffersPlaylistQueryTest(SharedPlaylistsErrorTests):
+class GetNewTemplateOffersPlaylistQueryTest(SharedPlaylistsErrorTests, AuthError):
     endpoint = "adage_iframe.new_template_offers_playlist"
 
     def test_new_template_offers_playlist(self, client):
@@ -189,10 +191,8 @@ class GetNewTemplateOffersPlaylistQueryTest(SharedPlaylistsErrorTests):
         assert "auth" in response.json
 
 
-class GetLocalOfferersPlaylistTest(SharedPlaylistsErrorTests):
-    endpoint = "adage_iframe.get_local_offerers_playlist"
-
-    def test_get_local_offerers_playlist(self, client):
+class SharedOfferersPlaylistTests:
+    def test_get_playlist_data(self, client):
         IMAGE_URL = "http://localhost/image.png"
 
         institution = educational_factories.EducationalInstitutionFactory(
@@ -203,7 +203,7 @@ class GetLocalOfferersPlaylistTest(SharedPlaylistsErrorTests):
 
         items = educational_factories.PlaylistFactory.create_batch(
             10,
-            type=educational_models.PlaylistType.LOCAL_OFFERER,
+            type=self.playlist_type,
             distanceInKm=expected_distance,
             institution=institution,
             venue___bannerUrl=IMAGE_URL,
@@ -212,8 +212,8 @@ class GetLocalOfferersPlaylistTest(SharedPlaylistsErrorTests):
 
         # This one should not be part of the playlist - outside the distance limit
         educational_factories.PlaylistFactory(
-            type=educational_models.PlaylistType.LOCAL_OFFERER,
-            distanceInKm=50,
+            type=self.playlist_type,
+            distanceInKm=150,
             institution=institution,
         )
 
@@ -237,7 +237,7 @@ class GetLocalOfferersPlaylistTest(SharedPlaylistsErrorTests):
             assert response_venue["distance"] == expected_distance
             assert response_venue["imgUrl"] == IMAGE_URL
 
-    def test_get_local_offerers_playlist_without_enough_items_at_first(self, client):
+    def test_get_playlist_data_without_enough_items_at_first(self, client):
         IMAGE_URL = "http://localhost/image.png"
         playlist_venues = offerers_factories.VenueFactory.create_batch(3, _bannerUrl=IMAGE_URL)
         offerers_factories.VenueFactory()
@@ -250,7 +250,7 @@ class GetLocalOfferersPlaylistTest(SharedPlaylistsErrorTests):
 
         for venue in playlist_venues[:2]:
             educational_models.CollectivePlaylist(
-                type=educational_models.PlaylistType.LOCAL_OFFERER,
+                type=self.playlist_type,
                 distanceInKm=expected_distance,
                 institution=institution,
                 venue=venue,
@@ -260,7 +260,7 @@ class GetLocalOfferersPlaylistTest(SharedPlaylistsErrorTests):
         # items at first and a second query requesting more distant
         # ones should be triggered
         educational_models.CollectivePlaylist(
-            type=educational_models.PlaylistType.LOCAL_OFFERER,
+            type=self.playlist_type,
             distanceInKm=150,
             institution=institution,
             venue=playlist_venues[-1],
@@ -293,17 +293,14 @@ class GetLocalOfferersPlaylistTest(SharedPlaylistsErrorTests):
         assert response_venues[-1]["distance"] == 150
         assert response_venues[-1]["imgUrl"] == IMAGE_URL
 
-    def test_no_rows(self, client):
-        institution = educational_factories.EducationalInstitutionFactory()
-        redactor = educational_factories.EducationalRedactorFactory()
-        iframe_client = _get_iframe_client(client, email=redactor.email, uai=institution.institutionId)
-
+    def test_no_data(self, client):
+        iframe_client = _get_iframe_client(client)
         response = iframe_client.get(url_for(self.endpoint))
 
         assert response.status_code == 200
         assert response.json == {"venues": []}
 
-    def test_get_local_offerers_playlist_random_order(self, client):
+    def test_get_playlist_data_random_order(self, client):
         playlist_venues = offerers_factories.VenueFactory.create_batch(15)
         offerers_factories.VenueFactory()
 
@@ -313,7 +310,7 @@ class GetLocalOfferersPlaylistTest(SharedPlaylistsErrorTests):
 
         for venue in playlist_venues:
             educational_models.CollectivePlaylist(
-                type=educational_models.PlaylistType.LOCAL_OFFERER,
+                type=self.playlist_type,
                 distanceInKm=2.5,
                 institution=institution,
                 venue=venue,
@@ -339,26 +336,14 @@ class GetLocalOfferersPlaylistTest(SharedPlaylistsErrorTests):
         assert playlist_order_1 != playlist_order_2
 
 
-class GetAnyNewTemplateOffersTest(SharedPlaylistsErrorTests):
-    endpoint = "adage_iframe.get_any_new_template_offers_playlist"
-
-    def test_no_offers(self, client):
-        iframe_client = _get_iframe_client(client)
-        response = iframe_client.get(url_for(self.endpoint))
-
-        assert response.status_code == 200
-        assert response.json == {"collectiveOffers": []}
+class GetLocalOfferersPlaylistTest(SharedOfferersPlaylistTests, SharedPlaylistsErrorTests):
+    endpoint = "adage_iframe.get_local_offerers_playlist"
+    playlist_type = educational_models.PlaylistType.LOCAL_OFFERER
 
 
-class GetNewOfferersPlaylistTest(SharedPlaylistsErrorTests):
+class GetNewOfferersPlaylistTest(SharedOfferersPlaylistTests, SharedPlaylistsErrorTests):
     endpoint = "adage_iframe.get_new_offerers_playlist"
-
-    def test_no_offerers(self, client):
-        iframe_client = _get_iframe_client(client)
-        response = iframe_client.get(url_for(self.endpoint))
-
-        assert response.status_code == 200
-        assert response.json == {"venues": []}
+    playlist_type = educational_models.PlaylistType.NEW_OFFERER
 
 
 def _get_iframe_client(client, email=None, uai=None):
