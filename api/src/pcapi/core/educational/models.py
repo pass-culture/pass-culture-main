@@ -149,6 +149,7 @@ class PlaylistType(enum.Enum):
     CLASSROOM = "Dans votre classe"
     LOCAL_OFFERER = "À proximité de l'établissement"
     NEW_OFFER = "Nouvelles offres"
+    NEW_OFFERER = "Nouveaux partenaires culturels"
 
 
 @sa.orm.declarative_mixin

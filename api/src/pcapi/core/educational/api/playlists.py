@@ -40,6 +40,9 @@ QUERY_DESC = {
     educational_models.PlaylistType.LOCAL_OFFERER: QueryCtx(
         query=big_query.LocalOfferersQuery, bq_attr_name="venue_id", local_attr_name="venueId"
     ),
+    educational_models.PlaylistType.NEW_OFFERER: QueryCtx(
+        query=big_query.NewOffererQuery, bq_attr_name="venue_id", local_attr_name="venueId"
+    ),
 }
 
 
