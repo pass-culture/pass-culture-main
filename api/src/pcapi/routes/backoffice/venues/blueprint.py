@@ -570,7 +570,7 @@ def fully_sync_venue(venue_id: int) -> utils.BackofficeResponse:
     return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
 
 
-@venue_blueprint.route("/<int:venue_id>/update", methods=["POST"])
+@venue_blueprint.route("/<int:venue_id>", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def update_venue(venue_id: int) -> utils.BackofficeResponse:
     venue = get_venue(venue_id)
