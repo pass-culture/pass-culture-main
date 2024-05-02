@@ -141,7 +141,7 @@ def get_details(user_id: int) -> utils.BackofficeResponse:
     )
 
 
-@pro_user_blueprint.route("/update", methods=["POST"])
+@pro_user_blueprint.route("", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def update_pro_user(user_id: int) -> utils.BackofficeResponse:
     user = (

@@ -876,7 +876,7 @@ def get_public_account(user_id: int) -> utils.BackofficeResponse:
     return render_public_account_details(user_id)
 
 
-@public_accounts_blueprint.route("/<int:user_id>/update", methods=["POST"])
+@public_accounts_blueprint.route("/<int:user_id>", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def update_public_account(user_id: int) -> utils.BackofficeResponse:
     user = (
