@@ -207,8 +207,7 @@ def cancel_finance_incident(finance_incident_id: int) -> utils.BackofficeRespons
     form = offerer_forms.CommentForm()
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
-        return render_finance_incident(incident)
-
+        return redirect(url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=incident.id), 303)
     try:
         finance_api.cancel_finance_incident(
             incident=incident,
@@ -217,13 +216,12 @@ def cancel_finance_incident(finance_incident_id: int) -> utils.BackofficeRespons
         )
     except finance_exceptions.FinanceIncidentAlreadyCancelled:
         flash("L'incident a déjà été annulé", "warning")
-        return render_finance_incident(incident)
     except finance_exceptions.FinanceIncidentAlreadyValidated:
         flash("Impossible d'annuler un incident déjà validé", "warning")
-        return render_finance_incident(incident)
+    else:
+        flash("L'incident a été annulé", "success")
 
-    flash("L'incident a été annulé", "success")
-    return render_finance_incident(incident)
+    return redirect(url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=incident.id), 303)
 
 
 @finance_incidents_blueprint.route("/<int:finance_incident_id>", methods=["GET"])
@@ -608,7 +606,7 @@ def create_collective_booking_overpayment(collective_booking_id: int) -> utils.B
 
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
-        return redirect(request.referrer, 303)
+        return redirect(redirect_url, 303)
 
     if not (valid := validation.check_incident_collective_booking(collective_booking)):
         for message in valid.messages:
@@ -806,24 +804,19 @@ def validate_finance_incident(finance_incident_id: int) -> utils.BackofficeRespo
 
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
-        return render_finance_incident(finance_incident)
-
-    if finance_incident.status != finance_models.IncidentStatus.CREATED:
+    elif finance_incident.status != finance_models.IncidentStatus.CREATED:
         flash("L'incident ne peut être validé que s'il est au statut 'créé'.", "warning")
-        return redirect(
-            request.referrer
-            or url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=finance_incident.id),
-            303,
+    else:
+        finance_api.validate_finance_incident(
+            finance_incident=finance_incident,
+            force_debit_note=form.compensation_mode.data == forms.IncidentCompensationModes.FORCE_DEBIT_NOTE.name,
+            author=current_user,
         )
+        flash("L'incident a été validé", "success")
 
-    finance_api.validate_finance_incident(
-        finance_incident=finance_incident,
-        force_debit_note=form.compensation_mode.data == forms.IncidentCompensationModes.FORCE_DEBIT_NOTE.name,
-        author=current_user,
+    return redirect(
+        url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=finance_incident.id), 303
     )
-
-    flash("L'incident a été validé", "success")
-    return render_finance_incident(finance_incident)
 
 
 @finance_incidents_blueprint.route("/<int:finance_incident_id>/force-debit-note", methods=["GET"])
@@ -853,9 +846,7 @@ def force_debit_note(finance_incident_id: int) -> utils.BackofficeResponse:
     if finance_incident.status != finance_models.IncidentStatus.VALIDATED or finance_incident.isClosed:
         flash("Cette action ne peut être effectuée que sur un incident validé non terminé.", "warning")
         return redirect(
-            request.referrer
-            or url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=finance_incident.id),
-            303,
+            url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=finance_incident.id), 303
         )
 
     finance_incident.forceDebitNote = True
@@ -873,7 +864,9 @@ def force_debit_note(finance_incident_id: int) -> utils.BackofficeResponse:
     db.session.commit()
 
     flash("Une note de débit sera générée à la prochaine échéance.", "success")
-    return render_finance_incident(finance_incident)
+    return redirect(
+        url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=finance_incident.id), 303
+    )
 
 
 @finance_incidents_blueprint.route("/<int:finance_incident_id>/cancel-debit-note", methods=["GET"])
@@ -903,9 +896,7 @@ def cancel_debit_note(finance_incident_id: int) -> utils.BackofficeResponse:
     if finance_incident.status != finance_models.IncidentStatus.VALIDATED or finance_incident.isClosed:
         flash("Cette action ne peut être effectuée que sur un incident validé non terminé.", "warning")
         return redirect(
-            request.referrer
-            or url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=finance_incident.id),
-            303,
+            url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=finance_incident.id), 303
         )
 
     finance_incident.forceDebitNote = False
@@ -925,7 +916,9 @@ def cancel_debit_note(finance_incident_id: int) -> utils.BackofficeResponse:
     send_finance_incident_emails(finance_incident)
 
     flash("Vous avez fait le choix de récupérer l'argent sur les prochaines réservations de l'acteur.", "success")
-    return render_finance_incident(finance_incident)
+    return redirect(
+        url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=finance_incident.id), 303
+    )
 
 
 def _get_incident(finance_incident_id: int) -> finance_models.FinanceIncident:

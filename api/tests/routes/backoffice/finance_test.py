@@ -367,7 +367,7 @@ class CancelIncidentTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(authenticated_client, finance_incident_id=incident.id, form=self.form_data)
 
-        assert response.status_code == 200
+        assert response.status_code == 303
 
         assert (
             finance_models.FinanceIncident.query.filter(
@@ -376,7 +376,7 @@ class CancelIncidentTest(PostEndpointHelper):
             == 0
         )
 
-        badges = html_parser.extract(response.data, tag="span", class_="badge")
+        badges = html_parser.extract(authenticated_client.get(response.location).data, tag="span", class_="badge")
         assert "Annulé" in badges
 
         action_history = history_models.ActionHistory.query.one()
@@ -390,9 +390,11 @@ class CancelIncidentTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(authenticated_client, finance_incident_id=incident.id, form=self.form_data)
 
-        assert response.status_code == 200
+        assert response.status_code == 303
 
-        assert "L'incident a déjà été annulé" in html_parser.extract_alert(response.data)
+        assert "L'incident a déjà été annulé" in html_parser.extract_alert(
+            authenticated_client.get(response.location).data
+        )
         assert history_models.ActionHistory.query.count() == 0
 
     def test_cancel_already_validated_incident(self, authenticated_client):
@@ -401,9 +403,11 @@ class CancelIncidentTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(authenticated_client, finance_incident_id=incident.id, form=self.form_data)
 
-        assert response.status_code == 200
+        assert response.status_code == 303
 
-        assert "Impossible d'annuler un incident déjà validé" in html_parser.extract_alert(response.data)
+        assert "Impossible d'annuler un incident déjà validé" in html_parser.extract_alert(
+            authenticated_client.get(response.location).data
+        )
         assert history_models.ActionHistory.query.count() == 0
 
 
@@ -442,9 +446,9 @@ class ValidateIncidentTest(PostEndpointHelper):
             },
         )
 
-        assert response.status_code == 200
+        assert response.status_code == 303
 
-        content = html_parser.content_as_text(response.data)
+        content = html_parser.content_as_text(authenticated_client.get(response.location).data)
         assert "L'incident a été validé" in content
 
         updated_incident = finance_models.FinanceIncident.query.filter_by(id=booking_incident.incidentId).one()
@@ -541,9 +545,9 @@ class ValidateIncidentTest(PostEndpointHelper):
             },
         )
 
-        assert response.status_code == 200
+        assert response.status_code == 303
 
-        content = html_parser.content_as_text(response.data)
+        content = html_parser.content_as_text(authenticated_client.get(response.location).data)
         assert "L'incident a été validé" in content
 
         assert incident.status == finance_models.IncidentStatus.VALIDATED
@@ -628,9 +632,9 @@ class ValidateIncidentTest(PostEndpointHelper):
             form={"compensation_mode": finance_forms.IncidentCompensationModes.COMPENSATE_ON_BOOKINGS.name},
         )
 
-        assert response.status_code == 200
+        assert response.status_code == 303
 
-        content = html_parser.content_as_text(response.data)
+        content = html_parser.content_as_text(authenticated_client.get(response.location).data)
         assert "L'incident a été validé" in content
 
         assert incident.status == finance_models.IncidentStatus.VALIDATED
@@ -1573,8 +1577,10 @@ class ForceDebitNoteTest(PostEndpointHelper):
             finance_incident_id=finance_incident.id,
         )
 
-        assert response.status_code == 200
-        assert "Une note de débit sera générée à la prochaine échéance." in html_parser.extract_alert(response.data)
+        assert response.status_code == 303
+        assert "Une note de débit sera générée à la prochaine échéance." in html_parser.extract_alert(
+            authenticated_client.get(response.location).data
+        )
         updated_finance_incident = finance_models.FinanceIncident.query.filter_by(id=finance_incident.id).one()
         assert updated_finance_incident.forceDebitNote is True
 
@@ -1676,10 +1682,10 @@ class CancelDebitNoteTest(PostEndpointHelper):
             finance_incident_id=finance_incident.id,
         )
 
-        assert response.status_code == 200
+        assert response.status_code == 303
         assert (
             "Vous avez fait le choix de récupérer l'argent sur les prochaines réservations de l'acteur."
-            in html_parser.content_as_text(response.data)
+            in html_parser.content_as_text(authenticated_client.get(response.location).data)
         )
 
         assert len(mails_testing.outbox) == 1
