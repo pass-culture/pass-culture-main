@@ -1,6 +1,8 @@
 import cn from 'classnames'
 import React from 'react'
 
+import { Divider } from 'ui-kit/Divider/Divider'
+
 import style from './SummaryLayout.module.scss'
 
 interface SummaryLayoutSubSectionProps {
@@ -17,5 +19,6 @@ export const SummarySubSection = ({
   <div className={cn(style['summary-layout-sub-section'], className)}>
     <h3 className={style['summary-layout-sub-section-title']}>{title}</h3>
     {children}
+    <Divider />
   </div>
 )
