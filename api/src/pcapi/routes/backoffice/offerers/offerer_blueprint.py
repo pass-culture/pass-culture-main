@@ -405,7 +405,7 @@ def delete_offerer(offerer_id: int) -> utils.BackofficeResponse:
     return redirect(url_for("backoffice_web.pro.search_pro"), code=303)
 
 
-@offerer_blueprint.route("/update", methods=["POST"])
+@offerer_blueprint.route("", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
