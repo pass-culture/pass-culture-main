@@ -17,6 +17,7 @@ from pcapi.models import feature as feature_models
 from .helpers import button as button_helpers
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
+from .helpers.get import GetEndpointWithoutPermissionHelper
 from .helpers.post import PostEndpointHelper
 
 
@@ -208,9 +209,8 @@ class GetRolesHistoryTest(GetEndpointHelper):
         assert history_rows[0]["Auteur"] == action.authorUser.full_name
 
 
-class ListFeatureFlagsTest(GetEndpointHelper):
+class ListFeatureFlagsTest(GetEndpointWithoutPermissionHelper):
     endpoint = "backoffice_web.list_feature_flags"
-    needed_permission = perm_models.Permissions.FEATURE_FLIPPING
 
     # user + session + list of feature flags
     expected_num_queries = 3
@@ -240,6 +240,18 @@ class ListFeatureFlagsTest(GetEndpointHelper):
         assert "Vous allez activer" in rows[0]["Activé"]  # "Vous allez activer" is inside the modal
         assert rows[0]["Nom"] == first_feature_flag.name
         assert rows[0]["Description"] == first_feature_flag.description
+
+    def test_read_only_list_feature_flags(self, client, read_only_bo_user):
+        first_feature_flag = feature_models.Feature.query.order_by(feature_models.Feature.name).first()
+        first_feature_flag.isActive = True
+        db.session.flush()
+
+        response = client.with_bo_session_auth(read_only_bo_user).get(url_for(self.endpoint))
+        assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        for row in rows:
+            assert row["Activé"] == ""
 
 
 class EnableFeatureFlagTest(PostEndpointHelper):
@@ -581,7 +593,7 @@ class UpdateBoUserTest(PostEndpointHelper):
         assert history_models.ActionHistory.query.count() == 0
 
 
-class GetSubcategoriesTest:
+class GetSubcategoriesTest(GetEndpointWithoutPermissionHelper):
     endpoint = "backoffice_web.get_subcategories"
 
     def test_get_subcategories(self, authenticated_client):

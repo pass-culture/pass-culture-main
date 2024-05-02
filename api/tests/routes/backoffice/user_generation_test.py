@@ -10,6 +10,7 @@ from pcapi.core.users import models as users_models
 
 from tests.routes.backoffice.helpers import html_parser
 from tests.routes.backoffice.helpers import post as post_endpoint_helper
+from tests.routes.backoffice.helpers.get import GetEndpointWithoutPermissionHelper
 
 
 pytestmark = [
@@ -18,7 +19,7 @@ pytestmark = [
 ]
 
 
-class UserGenerationGetRouteTest:
+class UserGenerationGetRouteTest(GetEndpointWithoutPermissionHelper):
     endpoint = "backoffice_web.get_generated_user"
     needed_permission = None
 
