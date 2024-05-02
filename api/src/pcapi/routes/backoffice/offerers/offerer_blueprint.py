@@ -718,6 +718,13 @@ def add_user_offerer_and_validate(offerer_id: int) -> utils.BackofficeResponse:
 def get_managed_venues(offerer_id: int) -> utils.BackofficeResponse:
     venues = (
         offerers_models.Venue.query.filter_by(managingOffererId=offerer_id)
+        .outerjoin(
+            offerers_models.VenueBankAccountLink,
+            sa.and_(
+                offerers_models.VenueBankAccountLink.venueId == offerers_models.Venue.id,
+                offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.utcnow()),
+            ),
+        )
         .options(
             sa.orm.load_only(
                 offerers_models.Venue.id,
@@ -739,6 +746,9 @@ def get_managed_venues(offerer_id: int) -> utils.BackofficeResponse:
                 offerers_models.VenueRegistration.target,
                 offerers_models.VenueRegistration.webPresence,
             ),
+            sa.orm.contains_eager(offerers_models.Venue.bankAccountLinks)
+            .joinedload(offerers_models.VenueBankAccountLink.bankAccount)
+            .load_only(finance_models.BankAccount.id, finance_models.BankAccount.label),
         )
         .order_by(offerers_models.Venue.common_name)
         .all()
