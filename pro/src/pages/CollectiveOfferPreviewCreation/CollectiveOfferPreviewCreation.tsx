@@ -10,7 +10,6 @@ import {
 
 export const CollectiveOfferPreviewCreation = ({
   offer,
-  setOffer,
   isTemplate,
   offerer,
 }: MandatoryCollectiveOfferFromParamsProps) => {
@@ -22,11 +21,7 @@ export const CollectiveOfferPreviewCreation = ({
         isTemplate={isTemplate}
         isCreation
       >
-        <CollectiveOfferPreviewCreationScreen
-          offer={offer}
-          setOffer={setOffer}
-          offerer={offerer}
-        />
+        <CollectiveOfferPreviewCreationScreen offer={offer} offerer={offerer} />
         <RouteLeavingGuardCollectiveOfferCreation />
       </CollectiveOfferLayout>
     </AppLayout>
