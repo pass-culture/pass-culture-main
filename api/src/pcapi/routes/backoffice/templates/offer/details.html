@@ -70,7 +70,7 @@
                      tabindex="-1"
                      aria-describedby="{{ edit_offer_venue_aria_described_by_id }}"
                      aria-hidden="true">
-                  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                  <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
                       <form action="{{ url_for("backoffice_web.offer.edit_offer_venue", offer_id=offer.id) }}"
                             name="{{ url_for("backoffice_web.offer.edit_offer_venue", offer_id=offer.id) | action_to_name }}"
