@@ -17,7 +17,6 @@ from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
-from pcapi.models.feature import FeatureToggle
 from pcapi.repository.providable_queries import get_last_update_for_provider
 from pcapi.utils import date as utils_date
 
@@ -55,8 +54,6 @@ class CGRStocks(LocalProvider):
                 extra={"allocineId": self.film_infos.IDFilmAlloCine, "venueId": self.venue.id},
                 technical_message_id="allocineId.not_found",
             )
-            if FeatureToggle.WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS.is_active():
-                return []
 
         providable_information_list = []
         provider_offer_unique_id = _build_movie_uuid_for_offer(self.film_infos.IDFilmAlloCine, self.venue)

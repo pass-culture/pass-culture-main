@@ -16,7 +16,6 @@ from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Stock
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.models as providers_models
-from pcapi.core.testing import override_features
 from pcapi.local_providers.cinema_providers.cds.cds_stocks import CDSStocks
 from pcapi.utils.human_ids import humanize
 
@@ -122,37 +121,6 @@ class CDSStocksTest:
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
-    @override_features(WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS=True)
-    def should_return_empty_providable_info_on_next_if_product_doesnt_exist(
-        self, mock_get_venue_movies, mock_get_shows, requests_mock
-    ):
-        # Given
-        cds_details, venue_provider = setup_cinema()
-        mocked_movies = [fixtures.MOVIE_1]
-        mock_get_venue_movies.return_value = mocked_movies
-        mocked_shows = [
-            {"show_information": fixtures.MOVIE_1_SHOW_1, "price": 5},
-            {"show_information": fixtures.MOVIE_2_SHOW_1, "price": 5},
-        ]
-        mock_get_shows.return_value = mocked_shows
-        requests_mock.get(
-            f"https://{cds_details.accountId}.fakeurl/mediaoptions?api_token={cds_details.cinemaApiToken}",
-            json=fixtures.MEDIA_OPTIONS,
-        )
-
-        assert Product.query.count() == 0
-
-        # When
-        cds_stocks = CDSStocks(venue_provider=venue_provider)
-        providable_infos = next(cds_stocks)
-
-        # Then
-        assert len(providable_infos) == 0
-
-    @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
-    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
-    @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
-    @override_features(WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS=False)
     def should_create_offers_with_allocine_id_and_visa_if_products_dont_exist(
         self, mock_get_venue_movies, mock_get_shows, requests_mock
     ):
@@ -557,7 +525,6 @@ class CDSStocksTest:
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
-    @override_features(WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS=False)
     def should_fill_stocks_and_price_categories_for_a_movie(self, mock_get_venue_movies, mock_get_shows, requests_mock):
         # Given
         self._create_products()
