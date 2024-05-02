@@ -1206,10 +1206,22 @@ class GetOffererVenuesTest(GetEndpointHelper):
     expected_num_queries = 3
 
     def test_get_managed_venues(self, authenticated_client, offerer):
+        now = datetime.datetime.utcnow()
         other_offerer = offerers_factories.OffererFactory()
         venue_1 = offerers_factories.VenueFactory(
             name="Deuxième", publicName="Second", managingOfferer=offerer, isPermanent=True
         )
+        old_bank_account = finance_factories.BankAccountFactory(offerer=offerer, label="Ancien compte")
+        bank_account = finance_factories.BankAccountFactory(offerer=offerer, label="Compte actuel")
+        offerers_factories.VenueBankAccountLinkFactory(
+            bankAccount=old_bank_account,
+            venue=venue_1,
+            timespan=[now - datetime.timedelta(days=30), now - datetime.timedelta(days=3)],
+        )
+        offerers_factories.VenueBankAccountLinkFactory(
+            bankAccount=bank_account, venue=venue_1, timespan=[now - datetime.timedelta(days=3), None]
+        )
+
         venue_2 = offerers_factories.VenueFactory(name="Premier", publicName=None, managingOfferer=offerer)
         offerers_factories.VenueRegistrationFactory(venue=venue_2)
         educational_factories.CollectiveDmsApplicationFactory(venue=venue_2, application=35)
@@ -1232,6 +1244,7 @@ class GetOffererVenuesTest(GetEndpointHelper):
         assert not rows[0].get("Type de lieu")
         assert rows[0]["Présence web"] == "https://example.com https://pass.culture.fr"
         assert rows[0]["Offres cibles"] == "Indiv. et coll."
+        assert rows[0]["Compte bancaire associé"] == ""
 
         assert rows[1]["ID"] == str(venue_1.id)
         assert rows[1]["SIRET"] == venue_1.siret
@@ -1241,6 +1254,7 @@ class GetOffererVenuesTest(GetEndpointHelper):
         assert not rows[0].get("Type de lieu")
         assert rows[1]["Présence web"] == ""
         assert rows[1]["Offres cibles"] == ""
+        assert rows[1]["Compte bancaire associé"] == "Compte actuel"
 
 
 class GetOffererCollectiveDmsApplicationsTest(GetEndpointHelper):
