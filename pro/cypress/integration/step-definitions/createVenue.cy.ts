@@ -16,19 +16,19 @@ venueNameWithoutSiret = 'Lieu sans Siret ' + randomSeed // just to distinguish t
 // mettre l'intercept à part?
 cy.intercept('GET', `http://localhost:5001/sirene/siret/${siret}`, (req) =>
     req.reply({
-    statusCode: 200,
-    body: {
-        siret: siret,
-        name: 'Ministère de la Culture',
-        active: true,
-        address: {
-        street: '3 RUE DE VALOIS',
-        postalCode: '75001',
-        city: 'Paris',
+        statusCode: 200,
+        body: {
+            siret: siret,
+            name: 'Ministère de la Culture',
+            active: true,
+            address: {
+            street: '3 RUE DE VALOIS',
+            postalCode: '75001',
+            city: 'Paris',
+            },
+            ape_code: '90.03A',
+            legal_category_code: '1000',
         },
-        ape_code: '90.03A',
-        legal_category_code: '1000',
-    },
     })
 ).as('getSiret')
 cy.intercept({ method: 'GET', url: '/offerers/*' }).as('getOfferer')
