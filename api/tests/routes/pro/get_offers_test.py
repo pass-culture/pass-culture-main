@@ -119,6 +119,7 @@ class Returns200Test:
             period_ending_date=None,
             status=None,
             creation_mode=None,
+            offerer_address_id=None,
         )
 
     @patch("pcapi.routes.pro.offers.offers_repository.get_capped_offers_for_filters")
@@ -145,6 +146,7 @@ class Returns200Test:
             period_ending_date=None,
             status=OfferStatus.ACTIVE,
             creation_mode=None,
+            offerer_address_id=None,
         )
 
     @patch("pcapi.routes.pro.offers.offers_repository.get_capped_offers_for_filters")
@@ -172,6 +174,7 @@ class Returns200Test:
             period_ending_date=None,
             status=None,
             creation_mode=None,
+            offerer_address_id=None,
         )
 
     @patch("pcapi.routes.pro.offers.offers_repository.get_capped_offers_for_filters")
@@ -198,6 +201,7 @@ class Returns200Test:
             period_ending_date=None,
             status=None,
             creation_mode="imported",
+            offerer_address_id=None,
         )
 
     @patch("pcapi.routes.pro.offers.offers_repository.get_capped_offers_for_filters")
@@ -224,6 +228,7 @@ class Returns200Test:
             period_ending_date=None,
             status=None,
             creation_mode=None,
+            offerer_address_id=None,
         )
 
     @patch("pcapi.routes.pro.offers.offers_repository.get_capped_offers_for_filters")
@@ -250,6 +255,7 @@ class Returns200Test:
             period_ending_date=datetime.date(2020, 10, 11),
             status=None,
             creation_mode=None,
+            offerer_address_id=None,
         )
 
     @patch("pcapi.routes.pro.offers.offers_repository.get_capped_offers_for_filters")
@@ -276,6 +282,7 @@ class Returns200Test:
             period_ending_date=None,
             status=None,
             creation_mode=None,
+            offerer_address_id=None,
         )
 
     def should_return_event_correctly_serialized(self, client):
@@ -369,6 +376,95 @@ class Returns200Test:
                 "status": "SOLD_OUT",
                 "isShowcase": False,
             }
+        ]
+
+    def should_return_offers_filtered_by_offerer_address(self, client):
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        offerer_address1 = offerers_factories.OffererAddressFactory(
+            label="Accor Arena",
+            offerer=offerer,
+            address__street="8 Boulevard de Bercy",
+            address__banId="75112_0877_00008",
+        )
+
+        event_offer1 = offers_factories.EventOfferFactory(
+            name="The Weeknd", subcategoryId=subcategories.CONCERT.id, venue=venue, offererAddress=offerer_address1
+        )
+        event_offer2 = offers_factories.EventOfferFactory(
+            name="Taylor Swift", subcategoryId=subcategories.CONCERT.id, venue=venue, offererAddress=offerer_address1
+        )
+
+        offerer_address2 = offerers_factories.OffererAddressFactory(
+            label="La Cigale",
+            offerer=offerer,
+            address__street="120 Boulevard Marguerite de Rochechouart",
+            address__banId="75118_8288_00120",
+        )
+
+        event_offer3 = offers_factories.EventOfferFactory(
+            name="Philippine Lavrey",
+            subcategoryId=subcategories.CONCERT.id,
+            venue=venue,
+            offererAddress=offerer_address2,
+        )
+        offers_factories.EventStockFactory(offer=event_offer3)
+
+        response = client.with_session_auth(email=pro.email).get(f"/offers?offererAddressId={offerer_address1.id}")
+
+        assert response.status_code == 200
+        assert len(response.json) == 2
+        assert response.json == [
+            {
+                "hasBookingLimitDatetimesPassed": False,
+                "id": event_offer2.id,
+                "isActive": True,
+                "isEditable": True,
+                "isEducational": False,
+                "isEvent": True,
+                "isShowcase": False,
+                "isThing": False,
+                "name": event_offer2.name,
+                "productIsbn": None,
+                "status": "SOLD_OUT",
+                "stocks": [],
+                "subcategoryId": "CONCERT",
+                "thumbUrl": None,
+                "venue": {
+                    "id": venue.id,
+                    "isVirtual": False,
+                    "name": venue.name,
+                    "offererName": venue.managingOfferer.name,
+                    "publicName": venue.publicName,
+                    "departementCode": "75",
+                },
+            },
+            {
+                "hasBookingLimitDatetimesPassed": False,
+                "id": event_offer1.id,
+                "isActive": True,
+                "isEditable": True,
+                "isEducational": False,
+                "isEvent": True,
+                "isShowcase": False,
+                "isThing": False,
+                "name": event_offer1.name,
+                "productIsbn": None,
+                "status": "SOLD_OUT",
+                "stocks": [],
+                "subcategoryId": "CONCERT",
+                "thumbUrl": None,
+                "venue": {
+                    "id": venue.id,
+                    "isVirtual": False,
+                    "name": venue.name,
+                    "offererName": venue.managingOfferer.name,
+                    "publicName": venue.publicName,
+                    "departementCode": "75",
+                },
+            },
         ]
 
 
