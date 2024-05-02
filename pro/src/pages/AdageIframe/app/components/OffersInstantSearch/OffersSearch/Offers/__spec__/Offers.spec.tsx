@@ -117,6 +117,8 @@ const otherFakeSearchResult = {
   __position: 0,
 }
 
+const mockRefinePagination = vi.fn()
+
 const renderOffers = (
   props: OffersProps,
   adageUser: AuthenticatedResponse,
@@ -149,7 +151,7 @@ describe('offers', () => {
         }),
         useInfiniteHits: () => ({
           ...defaultUseInfiniteHitsReturn,
-          hits: searchFakeResults,
+          currentPageHits: searchFakeResults,
           results: { queryID: 'queryId' },
         }),
         useInstantSearch: () => ({
@@ -159,6 +161,11 @@ describe('offers', () => {
               results: { ...defaultUseStatsReturn, queryID: 'queryId' },
             },
           ],
+        }),
+        usePagination: () => ({
+          currentRefinement: 1,
+          nbPages: 2,
+          refine: mockRefinePagination,
         }),
       }
     })
@@ -293,7 +300,7 @@ describe('offers', () => {
 
     vi.spyOn(instantSearch, 'useInfiniteHits').mockImplementation(() => ({
       ...defaultUseInfiniteHitsReturn,
-      hits: [{ ...otherFakeSearchResult, isTemplate: true }],
+      currentPageHits: [{ ...otherFakeSearchResult, isTemplate: true }],
     }))
 
     // When
@@ -316,12 +323,12 @@ describe('offers', () => {
 
     vi.spyOn(instantSearch, 'useInfiniteHits').mockImplementationOnce(() => ({
       ...defaultUseInfiniteHitsReturn,
-      hits: searchFakeResults,
+      currentPageHits: searchFakeResults,
     }))
 
     vi.spyOn(instantSearch, 'useInfiniteHits').mockImplementation(() => ({
       ...defaultUseInfiniteHitsReturn,
-      hits: [otherFakeSearchResult],
+      currentPageHits: [otherFakeSearchResult],
     }))
 
     // When
@@ -487,7 +494,7 @@ describe('offers', () => {
 
     vi.spyOn(instantSearch, 'useInfiniteHits').mockImplementation(() => ({
       ...defaultUseInfiniteHitsReturn,
-      hits: defaultUseInfiniteHitsReturn.hits.slice(0, 1),
+      currentPageHits: defaultUseInfiniteHitsReturn.hits.slice(0, 1),
     }))
 
     // When
@@ -523,7 +530,7 @@ describe('offers', () => {
     it('when there are no results', async () => {
       vi.spyOn(instantSearch, 'useInfiniteHits').mockImplementation(() => ({
         ...defaultUseInfiniteHitsReturn,
-        hits: [],
+        currentPageHits: [],
       }))
       // When
       renderOffers({ ...offersProps }, adageUser)
@@ -595,84 +602,6 @@ describe('offers', () => {
   })
 
   describe('load more button', () => {
-    it('should refine next hits when clicking on load more button', async () => {
-      vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
-        offerInParis
-      )
-      vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
-        offerInCayenne
-      )
-
-      const showMoreMock = vi.fn()
-
-      vi.spyOn(instantSearch, 'useInfiniteHits').mockImplementation(() => ({
-        ...defaultUseInfiniteHitsReturn,
-        isLastPage: false,
-        showMore: showMoreMock,
-      }))
-
-      renderOffers(offersProps, adageUser)
-      const loadMoreButton = await screen.findByRole('button', {
-        name: 'Voir plus d’offres',
-      })
-
-      await userEvent.click(loadMoreButton)
-
-      await waitFor(() => expect(showMoreMock).toHaveBeenCalledTimes(1))
-    })
-
-    it('should not fetch again offers that were previously loaded', async () => {
-      vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValue(offerInParis)
-
-      vi.spyOn(instantSearch, 'useInfiniteHits').mockImplementation(
-        () =>
-          ({
-            ...defaultUseInfiniteHitsReturn,
-            isLastPage: false,
-            results: { queryID: 'test' },
-          }) as typeof defaultUseInfiniteHitsReturn
-      )
-
-      renderOffers(offersProps, adageUser)
-
-      vi.spyOn(instantSearch, 'useInfiniteHits').mockImplementation(
-        () =>
-          ({
-            ...defaultUseInfiniteHitsReturn,
-            isLastPage: false,
-            results: { queryID: 'test2' },
-          }) as typeof defaultUseInfiniteHitsReturn
-      )
-
-      const loadMoreButton = await screen.findByRole('button', {
-        name: 'Voir plus d’offres',
-      })
-
-      await userEvent.click(loadMoreButton)
-
-      expect(apiAdage.getCollectiveOffer).toHaveBeenCalledTimes(1)
-    })
-
-    it('should not show button if there is no more result to refine', async () => {
-      vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
-        offerInParis
-      )
-      vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
-        offerInCayenne
-      )
-      renderOffers({ ...offersProps }, adageUser)
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-      const loadMoreButton = screen.queryByRole('button', {
-        name: 'Voir plus d’offres',
-      })
-      expect(loadMoreButton).not.toBeInTheDocument()
-      expect(
-        screen.getByText(
-          'Vous avez vu toutes les offres qui correspondent à votre recherche.'
-        )
-      ).toBeInTheDocument()
-    })
-
     it('should not show diffuse help', async () => {
       vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
         offerInParis
@@ -748,38 +677,6 @@ describe('offers', () => {
       expect(
         screen.getByRole('link', { name: /Retour en haut/ })
       ).toBeInTheDocument()
-    })
-
-    it('should track show more button onclick', async () => {
-      vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
-        offerInParis
-      )
-      vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
-        offerInCayenne
-      )
-
-      const showMoreMock = vi.fn()
-
-      vi.spyOn(instantSearch, 'useInfiniteHits').mockImplementation(() => ({
-        ...defaultUseInfiniteHitsReturn,
-        isLastPage: false,
-        showMore: showMoreMock,
-      }))
-
-      renderOffers(offersProps, adageUser)
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
-      const loadMoreButton = await screen.findByRole('button', {
-        name: 'Voir plus d’offres',
-      })
-
-      await userEvent.click(loadMoreButton)
-
-      expect(apiAdage.logSearchShowMore).toHaveBeenCalledWith({
-        queryId: 'queryId',
-        iframeFrom: '/',
-        source: 'homepage',
-      })
     })
   })
 
@@ -863,7 +760,7 @@ describe('offers', () => {
 
     vi.spyOn(instantSearch, 'useInfiniteHits').mockImplementation(() => ({
       ...defaultUseInfiniteHitsReturn,
-      hits: [{ ...otherFakeSearchResult, isTemplate: true }],
+      currentPageHits: [{ ...otherFakeSearchResult, isTemplate: true }],
     }))
 
     renderOffers(offersProps, adageUser, {
@@ -898,7 +795,7 @@ describe('offers', () => {
 
     vi.spyOn(instantSearch, 'useInfiniteHits').mockImplementation(() => ({
       ...defaultUseInfiniteHitsReturn,
-      hits: [{ ...otherFakeSearchResult, isTemplate: true }],
+      currentPageHits: [{ ...otherFakeSearchResult, isTemplate: true }],
     }))
 
     renderOffers(offersProps, adageUser, {
