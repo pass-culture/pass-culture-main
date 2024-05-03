@@ -27,6 +27,7 @@ jobs:
       maintenance-site-changed: ${{ steps.check-maintenance-site-changes.outputs.any_modified }}
       db-migration-changed: ${{ steps.check-db-migration-changes.outputs.any_modified }}
       dependencies-changed: ${{ steps.check-dependencies-changes.outputs.any_modified }}
+      docker-image-tags: ${{ steps.define-image-tags.outputs.docker-image-tags }}
     steps:
       - uses: actions/checkout@v4.1.4
         with:
@@ -61,27 +62,65 @@ jobs:
           files: |
             api/poetry.lock
             pro/yarn.lock
+      - name: "Define docker image tags."
+        id: define-image-tags
+        run: |
+          DOCKER_REGISTRY="europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry"
+          OUTPUT="docker-image-tags="
+          if [ ${{ github.event_name == 'pull_request' }} ]; then
+            OUTPUT+="$DOCKER_REGISTRY/DOCKER_IMAGE:${{ github.event.pull_request.head.sha }}"
+          else
+            OUTPUT+="$DOCKER_REGISTRY/DOCKER_IMAGE:${{ github.sha }}"
+          fi
+          if [ ${{ github.ref }} == 'refs/heads/master' ]; then
+            OUTPUT+=",$DOCKER_REGISTRY/DOCKER_IMAGE:latest"
+          fi 
+          echo $OUTPUT >> "$GITHUB_OUTPUT"
 
-  build-api:
-    name: "Build API (backend) Docker image"
+  build-pcapi:
+    name: "[pcapi] build and push docker image."
     needs: check-folders-changes
     if: |
       needs.check-folders-changes.outputs.api-changed == 'true' ||
-      needs.check-folders-changes.outputs.pro-changed == 'true' ||
       github.ref == 'refs/heads/master' ||
       startsWith(github.ref,'refs/heads/maint/v')
     uses: ./.github/workflows/dev_on_workflow_build_and_push_docker_images.yml
     with:
       ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
-      tag: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
-      # Needed to run end-to-end tests, i.e. when "api" source code changes.
-      # If no changes are made in "pro" source code.
-      # we can pull the image from testing env (tag=latest)
-      pcapi: ${{ needs.check-folders-changes.outputs.api-changed == 'true' || github.ref == 'refs/heads/master' || startsWith(github.ref,'refs/heads/maint/v') }}
-      # Extra when tests are run on master before deployment on testing.
-      console: ${{ github.ref == 'refs/heads/master' }}
-      # Needed to run backend tests.
-      tests: ${{ needs.check-folders-changes.outputs.api-changed == 'true' || github.ref == 'refs/heads/master' || startsWith(github.ref,'refs/heads/maint/v') }}
+      image: pcapi
+      tags: (${{ needs.check-folders-changes.outputs.docker-image-tags }}
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
+  build-pcapi-console:
+    name: "[pcapi-console] build and push docker image."
+    needs: check-folders-changes
+    if: |
+      needs.check-folders-changes.outputs.api-changed == 'true' ||
+      needs.check-folders-changes.outputs.pro-changed == 'true' ||
+      github.ref == 'refs/heads/master'
+    uses: ./.github/workflows/dev_on_workflow_build_and_push_docker_images.yml
+    with:
+      ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+      image: pcapi-console
+      tags: ${{ needs.check-folders-changes.outputs.docker-image-tags }}
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
+  build-pcapi-tests:
+    name: "[pcapi-tests] build and push docker image."
+    needs: check-folders-changes
+    if: |
+      needs.check-folders-changes.outputs.api-changed == 'true' ||
+      github.ref == 'refs/heads/master' ||
+      startsWith(github.ref,'refs/heads/maint/v')
+    uses: ./.github/workflows/dev_on_workflow_build_and_push_docker_images.yml
+    with:
+      ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+      image: pcapi-tests
+      tags: ${{ needs.check-folders-changes.outputs.docker-image-tags }}
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -96,7 +135,7 @@ jobs:
 
   update-api-client-template:  # for pull requests only
     name: "Update api client template"
-    needs: [check-folders-changes, build-api]
+    needs: [check-folders-changes, build-pcapi]
     uses: ./.github/workflows/dev_on_workflow_update_api_client_template.yml
     if: github.base_ref == 'master'
     concurrency:
@@ -113,7 +152,7 @@ jobs:
 
   prepare-cache-master:  # on "master" branch only
     name: "Reset cache on master on dependency update"
-    needs: [check-folders-changes, build-api]
+    needs: [check-folders-changes, build-pcapi]
     uses: ./.github/workflows/dev_on_workflow_update_api_client_template.yml
     if: github.ref == 'refs/heads/master'
     with:
@@ -127,7 +166,7 @@ jobs:
 
   test-api:
     name: "Test api"
-    needs: [check-folders-changes, build-api]
+    needs: [check-folders-changes, build-pcapi-tests]
     if: |
       needs.check-folders-changes.outputs.api-changed == 'true' ||
       github.ref == 'refs/heads/master' ||
@@ -161,7 +200,7 @@ jobs:
 
   test-pro-e2e:
     name: "Tests pro E2E"
-    needs: [check-folders-changes, build-api]
+    needs: [check-folders-changes, build-pcapi]
     if: |
       needs.check-folders-changes.outputs.api-changed == 'true' ||
       needs.check-folders-changes.outputs.pro-changed == 'true' ||
