@@ -79,5 +79,5 @@ jobs:
         with:
           context: api
           push: true
-          target: pcapi
+          target: ${{ inputs.image }}
           tags: ${{ steps.define-docker-image-tags.outputs.tags-to-push }}
