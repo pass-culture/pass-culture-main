@@ -1,5 +1,6 @@
 import datetime
 import io
+import logging
 
 from dateutil.relativedelta import relativedelta
 import pytest
@@ -26,12 +27,19 @@ Pro,Pierre,pro@example.com,0123456789,06,06000,2000-01-01,PRO,11122233,PierrePro
 @pytest.mark.usefixtures("db_session")
 class ReadFileTest:
     @pytest.mark.parametrize("update_if_exists", [True, False])
-    def test_read_file(self, update_if_exists):
+    def test_read_file(self, update_if_exists, caplog):
         jean = users_factories.BeneficiaryGrant18Factory(email="jean.smisse@example.com", lastName="Old name")
         assert len(jean.deposits) == 1
 
         csv_file = io.StringIO(CSV)
-        users = import_test_users.create_users_from_csv(csv_file, update_if_exists=update_if_exists)
+        with caplog.at_level(logging.INFO):
+            users = import_test_users.create_users_from_csv(csv_file, update_if_exists=update_if_exists)
+
+        assert "jea***@example.com" in caplog.messages[1]
+        if update_if_exists:
+            assert "jea***@example.com" in caplog.messages[2]
+            assert "jeu***@example.com" in caplog.messages[5]
+            assert "p***@example.com" in caplog.messages[10]
 
         if update_if_exists:
             assert len(users) == 4

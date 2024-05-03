@@ -39,3 +39,17 @@ def test_is_valid_email(content, expected_result):
 )
 def test_is_valid_email_domain(content, expected_result):
     assert email_utils.is_valid_email_domain(content) is expected_result
+
+
+@pytest.mark.usefixtures("db_session")
+@pytest.mark.parametrize(
+    "input_email, anonymized_email",
+    [
+        ("anne-onime@me.com", "ann***@me.com"),
+        ("wrong_address.com", "***"),
+        ("yo@lo.com", "y***@lo.com"),
+        ("y@o.com", "***@o.com"),
+    ],
+)
+def test_anonymize(input_email, anonymized_email) -> None:
+    assert email_utils.anonymize_email(input_email) == anonymized_email
