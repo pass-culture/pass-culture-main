@@ -400,6 +400,9 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
         "OpeningHours", back_populates="venue", passive_deletes=True
     )
 
+    offererAddressId: int = Column(BigInteger, ForeignKey("offerer_address.id"), nullable=True, index=True)
+    offererAddress: Mapped["OffererAddress | None"] = relationship("OffererAddress", foreign_keys=[offererAddressId])
+
     def __init__(self, street: str | None = None, **kwargs: typing.Any) -> None:
         if street:
             self.street = street  # type: ignore [method-assign]
