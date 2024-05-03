@@ -1,4 +1,5 @@
 from collections import defaultdict
+import datetime
 import enum
 from functools import wraps
 import logging
@@ -28,6 +29,7 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
+from pcapi.utils import date as date_utils
 from pcapi.utils import string as string_utils
 from pcapi.utils.regions import get_all_regions
 
@@ -50,6 +52,14 @@ OPERATOR_DICT: dict[str, dict[str, typing.Any]] = {
     "GREATER_THAN_OR_EQUAL_TO": {"function": op.ge},
     "LESS_THAN": {"function": op.lt},
     "LESS_THAN_OR_EQUAL_TO": {"function": op.le},
+    "DATE_FROM": {"function": lambda x, y: x >= date_utils.date_to_localized_datetime(y, datetime.time.min)},
+    "DATE_TO": {"function": lambda x, y: x <= date_utils.date_to_localized_datetime(y, datetime.time.max)},
+    "DATE_EQUALS": {
+        "function": lambda x, y: x.between(
+            date_utils.date_to_localized_datetime(y, datetime.time.min),
+            date_utils.date_to_localized_datetime(y, datetime.time.max),
+        )
+    },
     "IN": {"function": lambda x, y: x.in_(y)},
     "NULLABLE": {"function": lambda x, y: x.is_(None) if y else x.is_not(None)},
     "NOT_IN": {"function": lambda x, y: x.not_in(y)},
@@ -72,6 +82,9 @@ class AdvancedSearchOperators(enum.Enum):
     GREATER_THAN_OR_EQUAL_TO = "supérieur ou égal"
     LESS_THAN = "inférieur strict"
     LESS_THAN_OR_EQUAL_TO = "inférieur ou égal"
+    DATE_FROM = "à partir du"
+    DATE_TO = "jusqu'au"
+    DATE_EQUALS = "est exactement le"
     IN = "est parmi"
     NOT_IN = "n'est pas parmi"
     NULLABLE = "est"

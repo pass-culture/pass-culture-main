@@ -1,5 +1,4 @@
 import datetime
-from functools import partial
 from io import BytesIO
 import logging
 import typing
@@ -39,7 +38,6 @@ from pcapi.repository import repository
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
-from pcapi.utils import date as date_utils
 from pcapi.utils import regions as regions_utils
 from pcapi.utils import string as string_utils
 from pcapi.workers import push_notification_job
@@ -67,7 +65,6 @@ SEARCH_FIELD_TO_PYTHON = {
     "CREATION_DATE": {
         "field": "date",
         "column": offers_models.Offer.dateCreated,
-        "special": partial(date_utils.date_to_localized_datetime, time_=datetime.datetime.min.time()),
     },
     "DEPARTMENT": {
         "field": "department",
@@ -88,13 +85,11 @@ SEARCH_FIELD_TO_PYTHON = {
     "EVENT_DATE": {
         "field": "date",
         "column": offers_models.Stock.beginningDatetime,
-        "special": partial(date_utils.date_to_localized_datetime, time_=datetime.datetime.min.time()),
         "subquery_join": "stock",
     },
     "BOOKING_LIMIT_DATE": {
         "field": "date",
         "column": offers_models.Stock.bookingLimitDatetime,
-        "special": partial(date_utils.date_to_localized_datetime, time_=datetime.datetime.min.time()),
         "subquery_join": "stock",
     },
     "ID": {

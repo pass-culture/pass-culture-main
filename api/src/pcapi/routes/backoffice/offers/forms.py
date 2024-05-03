@@ -57,29 +57,14 @@ form_field_configuration = {
     "CATEGORY": {"field": "category", "operator": ["IN", "NOT_IN"]},
     "CREATION_DATE": {
         "field": "date",
-        "operator": [
-            "GREATER_THAN_OR_EQUAL_TO",
-            "LESS_THAN",
-        ],
+        "operator": ["DATE_FROM", "DATE_TO", "DATE_EQUALS"],
     },
     "DEPARTMENT": {"field": "department", "operator": ["IN", "NOT_IN"]},
     "REGION": {"field": "region", "operator": ["IN", "NOT_IN"]},
     "EAN": {"field": "string", "operator": ["CONTAINS", "NO_CONTAINS", "STR_EQUALS", "STR_NOT_EQUALS"]},
-    "EVENT_DATE": {
-        "field": "date",
-        "operator": [
-            "GREATER_THAN_OR_EQUAL_TO",
-            "LESS_THAN",
-        ],
-    },
-    "BOOKING_LIMIT_DATE": {
-        "field": "date",
-        "operator": [
-            "GREATER_THAN_OR_EQUAL_TO",
-            "LESS_THAN",
-        ],
-    },
-    "ID": {"field": "integer", "operator": ["EQUALS", "NOT_EQUALS"]},
+    "EVENT_DATE": {"field": "date", "operator": ["DATE_FROM", "DATE_TO", "DATE_EQUALS"]},
+    "BOOKING_LIMIT_DATE": {"field": "date", "operator": ["DATE_FROM", "DATE_TO", "DATE_EQUALS"]},
+    "ID": {"field": "integer", "operator": ["EQUALS", "NOT_EQUALS"]},  # TODO parmi (IN)
     "NAME": {"field": "string", "operator": ["CONTAINS", "NO_CONTAINS", "NAME_EQUALS", "NAME_NOT_EQUALS"]},
     "OFFERER": {"field": "offerer", "operator": ["IN", "NOT_IN"]},
     "STATUS": {"field": "status", "operator": ["IN", "NOT_IN"]},
