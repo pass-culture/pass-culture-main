@@ -16,8 +16,6 @@ export const CustomPagination = ({ queryId }: CustomPaginationProps) => {
     venueId: string
   }>()
 
-  console.log('lalala ?')
-
   const logPagination = async (type: PaginationType) => {
     await apiAdage.logSearchShowMore({
       iframeFrom: location.pathname,

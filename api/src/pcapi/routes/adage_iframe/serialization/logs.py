@@ -83,9 +83,11 @@ class SuggestionType(enum.Enum):
     OFFER_BY_CATEGORY = "offer category"
     OFFER = "offer"
 
+
 class PaginationType(enum.Enum):
     NEXT = "next"
     PREVIOUS = "previous"
+
 
 class TrackingAutocompleteSuggestionBody(AdageBaseModel):
     suggestionType: SuggestionType

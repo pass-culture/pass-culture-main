@@ -6,6 +6,7 @@ import pytest
 from pcapi.core.educational import utils
 from pcapi.core.educational.utils import get_hashed_user_id
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AdageFrontRoles
+from pcapi.routes.adage_iframe.serialization.logs import PaginationType
 
 
 EMAIL = "test@mail.com"
@@ -448,11 +449,7 @@ class LogsTest:
         with caplog.at_level(logging.INFO):
             response = test_client.post(
                 url_for("adage_iframe.log_search_show_more"),
-                json={
-                    "iframeFrom": "for_my_institution",
-                    "queryId": "1234a",
-                    "source": "partnersMap",
-                },
+                json={"iframeFrom": "for_my_institution", "queryId": "1234a", "source": "partnersMap", "type": "next"},
             )
 
         assert response.status_code == 204
@@ -461,6 +458,7 @@ class LogsTest:
             "analyticsSource": "adage",
             "source": "partnersMap",
             "queryId": "1234a",
+            "type": PaginationType.NEXT,
             "from": "for_my_institution",
             "uai": UAI,
             "user_role": AdageFrontRoles.READONLY,
