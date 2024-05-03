@@ -88,6 +88,10 @@
             </div>
             <div class="col-4">
               <div class="fs-6">
+                <p class="mb-1">
+                  <span class="fw-bold">État du compte bancaire :</span>
+                  {{ bank_account.status.value | format_dms_status }}
+                </p>
                 {% if dms_stats %}
                   <p class="mb-1">
                     <span class="fw-bold">Statut DMS CB :</span>
