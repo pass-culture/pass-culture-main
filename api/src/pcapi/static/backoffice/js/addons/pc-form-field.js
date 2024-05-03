@@ -77,7 +77,7 @@ class PcFormField extends PcAddOn {
     const $subRuleType = $formField.querySelector(`.${subRuleTypeName}`).firstElementChild
     const selectedRuleConfiguration = configuration.display_configuration[$subRuleType.value]
     // display pertinent field and operator options
-    if (selectedRuleConfiguration != undefined) {
+    if (selectedRuleConfiguration !== undefined) {
       const selectedFieldName = `${baseName}-${selectedRuleConfiguration.field}`
       const $selectedField = $formField.querySelector(`.${selectedFieldName}`)
       $selectedField.classList.remove('d-none')
@@ -89,7 +89,7 @@ class PcFormField extends PcAddOn {
       })
       const $operatorFieldSelect = $operatorField.querySelector('select')
       if (!selectedRuleConfiguration.operator.includes($operatorFieldSelect.value)) {
-        $operatorFieldSelect.value = ""
+        $operatorFieldSelect.value = selectedRuleConfiguration.operator[0]
       }
 
 

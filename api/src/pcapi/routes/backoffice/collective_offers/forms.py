@@ -114,9 +114,10 @@ class CollectiveOfferAdvancedSearchSubForm(forms_utils.PCForm):
             wtforms.validators.Optional(""),
         ],
     )
-    operator = fields.PCSelectWithPlaceholderValueField(
+    operator = fields.PCSelectField(
         "Opérateur",
         choices=forms_utils.choices_from_enum(utils.AdvancedSearchOperators),
+        default=utils.AdvancedSearchOperators.EQUALS,  # avoids empty option
         validators=[
             wtforms.validators.Optional(""),
         ],
