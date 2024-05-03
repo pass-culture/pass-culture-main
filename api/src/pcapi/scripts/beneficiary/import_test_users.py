@@ -31,6 +31,7 @@ from pcapi.routes.serialization import base as base_serialize
 from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization import venues_serialize
 from pcapi.routes.serialization.users import ProUserCreationBodyV2Model
+from pcapi.utils.email import anonymize_email
 from pcapi.utils.email import sanitize_email
 from pcapi.utils.siren import complete_siren_or_siret
 
@@ -202,8 +203,13 @@ def _add_or_update_user_from_row(row: dict, update_if_exists: bool) -> User | No
     db.session.add(user)
     db.session.commit()
 
+    anonymized_email = anonymize_email(email=user.email)
+
     logger.info(
-        "Created or updated user=%s <%s> %s from CSV import", user.id, user.email, [role.value for role in user.roles]
+        "Created or updated user=%s <%s> %s from CSV import",
+        user.id,
+        anonymized_email,
+        [role.value for role in user.roles],
     )
 
     return user
