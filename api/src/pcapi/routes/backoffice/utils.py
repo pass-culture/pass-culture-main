@@ -62,19 +62,19 @@ OPERATOR_DICT: dict[str, dict[str, typing.Any]] = {
 
 
 class AdvancedSearchOperators(enum.Enum):
-    NOT_EQUALS = "est différent de"
     EQUALS = "est égal à"
-    NAME_NOT_EQUALS = "est différent de\0\0"
+    NOT_EQUALS = "est différent de"
     NAME_EQUALS = "est égal à\0\0"
-    STR_NOT_EQUALS = "est différent de\0"  # the \0 is here to force wtforms to display NOT_EQUALS and STR_NOT_EQUALS
+    NAME_NOT_EQUALS = "est différent de\0\0"
     STR_EQUALS = "est égal à\0"  # the \0 is here to force wtforms to display EQUALS and STR_EQUALS
+    STR_NOT_EQUALS = "est différent de\0"  # the \0 is here to force wtforms to display NOT_EQUALS and STR_NOT_EQUALS
     GREATER_THAN = "supérieur strict"
     GREATER_THAN_OR_EQUAL_TO = "supérieur ou égal"
     LESS_THAN = "inférieur strict"
     LESS_THAN_OR_EQUAL_TO = "inférieur ou égal"
     IN = "est parmi"
-    NULLABLE = "est"
     NOT_IN = "n'est pas parmi"
+    NULLABLE = "est"
     CONTAINS = "contient"
     NO_CONTAINS = "ne contient pas"
     NOT_EXIST = "n'a aucun"
