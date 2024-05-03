@@ -225,7 +225,7 @@ jobs:
             kubectl exec -it -n ${{ inputs.environment }} ${POD_NAME} -- flask set_algolia_settings venues --dry-run=false
 
   deploy-image-resizing-ehp:
-    name: "Deploy image-resizing EHP"
+    name: "image-resizing"
     permissions:
       contents: 'read'
       id-token: 'write'
@@ -243,7 +243,7 @@ jobs:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
 
   deploy-image-resizing-production:
-    name: "Deploy image-resizing production"
+    name: "image-resizing"
     permissions:
       contents: 'read'
       id-token: 'write'

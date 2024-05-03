@@ -28,31 +28,11 @@ on:
         required: true
 
 jobs:
-  check-image-resizing-deployed-version:
-    runs-on: ubuntu-latest
-    outputs:
-      image_resizing_deployed_version: ${{ steps.curl_version.outputs.version }}
-    steps:
-      - name: "Check image resizing ${{ inputs.environment }} deployed version"
-        id: "curl_version"
-        # add prefix v to version if contains dot (otherwise it is sha)
-        run: echo "version=$(curl -Ss ${{ inputs.image_resizing_url }}/version | sed 's/.*\./v&/')" | tee -a $GITHUB_OUTPUT
-
-  check-image-resizing-folder-changes:
-    name: "Check if folder changed"
-    uses: ./.github/workflows/dev_on_workflow_check_folder_changes.yml
-    needs: check-image-resizing-deployed-version
-    with:
-      base_sha: ${{ needs.check-image-resizing-deployed-version.outputs.image_resizing_deployed_version }}
-      folder: app-engine/image-resizing/**
-      fetch-tags: true
-
   deploy-image-resizing:
-    name: "Deploy image resizing"
-    needs: check-image-resizing-folder-changes
-    if: ${{ needs.check-image-resizing-folder-changes.outputs.folder_changed == 'true' }}
-    environment: ${{ inputs.environment }}
+    name: "deploy image-resizing"
     runs-on: ubuntu-latest
+    if: needs.check-folders-changes.outputs.image-resizing-changed == 'true'
+    environment: ${{ inputs.environment }}
     steps:
       - name: 'Checkout actual repository'
         uses: actions/checkout@v4.1.4
