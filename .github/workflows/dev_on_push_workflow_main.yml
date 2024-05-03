@@ -67,7 +67,7 @@ jobs:
         run: |
           DOCKER_REGISTRY="europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry"
           OUTPUT="docker-image-tags="
-          if [ ${{ github.event_name == 'pull_request' }} ]; then
+          if [ ${{ github.event_name }} == 'pull_request' ]; then
             OUTPUT+="$DOCKER_REGISTRY/DOCKER_IMAGE:${{ github.event.pull_request.head.sha }}"
           else
             OUTPUT+="$DOCKER_REGISTRY/DOCKER_IMAGE:${{ github.sha }}"
