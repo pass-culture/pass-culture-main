@@ -17,7 +17,7 @@ class Address(PcObject, Base, Model):
     __tablename__ = "address"
     banId: str | None = sa.Column(sa.Text(), nullable=True, unique=True)
     inseeCode: str | None = sa.Column(sa.Text(), nullable=False)
-    street: str = sa.Column(sa.Text(), nullable=False)
+    street: str | None = sa.Column(sa.Text(), nullable=True)
     postalCode: str = sa.Column(sa.Text(), nullable=False)
     city: str = sa.Column(sa.Text(), nullable=False)
     country: str = sa.Column(sa.Text(), nullable=False)
