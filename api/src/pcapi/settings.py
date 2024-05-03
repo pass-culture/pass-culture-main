@@ -382,7 +382,7 @@ JWT_ADAGE_PUBLIC_KEY_FILENAME = os.environ.get("JWT_ADAGE_PUBLIC_KEY_FILENAME", 
 ADAGE_BACKEND = os.environ.get("ADAGE_BACKEND", "pcapi.core.educational.adage_backends.adage.AdageHttpClient")
 CAN_COLLECTIVE_OFFERER_IGNORE_ADAGE = bool(int(os.environ.get("CAN_COLLECTIVE_OFFERER_IGNORE_ADAGE", "0")))
 # This flag is to create the data for Adage team - not the EAC one - in the testing sandbox
-CREATE_ADAGE_TESTING_DATA = bool(int(os.environ.get("INSERT_ADAGE_TESTING_DATA", "0")))
+CREATE_ADAGE_TESTING_DATA = bool(int(os.environ.get("CREATE_ADAGE_TESTING_DATA", "0")))
 
 EAC_OFFER_PRICE_LIMIT = int(os.environ.get("EAC_OFFER_PRICE_LIMIT", 60_000))
 EAC_NUMBER_OF_TICKETS_LIMIT = int(os.environ.get("EAC_NUMBER_OF_TICKETS_LIMIT", 3_000))
