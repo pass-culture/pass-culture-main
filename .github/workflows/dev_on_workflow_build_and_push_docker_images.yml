@@ -68,6 +68,7 @@ jobs:
       - name: Replace image name in tags inputs
         id: define-docker-image-tags
         run: |
+          echo "tags-to-push=${{ inputs.tags }}" | sed 's/DOCKER_IMAGE/${{ inputs.image }}/g'
           echo "tags-to-push=${{ inputs.tags }}" | sed 's/DOCKER_IMAGE/${{ inputs.image }}/g' >> "$GITHUB_OUTPUT"
       - name: "Set up Docker Buildx"
         uses: docker/setup-buildx-action@v3

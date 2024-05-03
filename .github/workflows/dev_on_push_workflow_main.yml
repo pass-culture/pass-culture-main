@@ -75,6 +75,7 @@ jobs:
           if [ ${{ github.ref }} == 'refs/heads/master' ]; then
             OUTPUT+=",$DOCKER_REGISTRY/DOCKER_IMAGE:latest"
           fi 
+          echo $OUTPUT
           echo $OUTPUT >> "$GITHUB_OUTPUT"
 
   build-pcapi:
@@ -88,7 +89,7 @@ jobs:
     with:
       ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
       image: pcapi
-      tags: (${{ needs.check-folders-changes.outputs.docker-image-tags }}
+      tags: ${{ needs.check-folders-changes.outputs.docker-image-tags }}
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
