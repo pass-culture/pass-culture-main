@@ -8,22 +8,13 @@ on:
         # Can be a branch name, a tag or a commit.
         required: false
         type: string
-      tag:
-        # The docker image tag
+      tags:
+        # The docker image tag(s)
         required: true
         type: string
-      pcapi:
-        required: false
-        type: boolean
-        default: false
-      console:
-        required: false
-        type: boolean
-        default: false
-      tests:
-        required: false
-        type: boolean
-        default: false
+      image:
+        required: true
+        type: string
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
         required: true
@@ -32,10 +23,7 @@ on:
 
 jobs:
   build-and-push-docker-images:
-    name: 'Build and push Docker images'
     runs-on: ubuntu-latest
-    env:
-      DOCKER_REGISTRY: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry
     steps:
       - uses: actions/checkout@v4.1.4
         with:
@@ -70,46 +58,25 @@ jobs:
       - name: "Add version to api"
         working-directory: api
         run: |
-          echo "${{ inputs.tag }}" > version.txt
+          echo "${{ inputs.ref }}" > version.txt
           git add version.txt
       - name: "Install poetry"
         run: pip install poetry
       - name: "check poetry lock is up to date"
         working-directory: api
         run: poetry check
+      - name: Replace image name in tags inputs
+        id: define-docker-image-tags
+        run: |
+          echo "tags-to-push=${{ inputs.tags }}" | sed 's/DOCKER_IMAGE/${{ inputs.image }}/g' >> "$GITHUB_OUTPUT"
       - name: "Set up Docker Buildx"
         uses: docker/setup-buildx-action@v3
         with:
           driver: docker
-      - name: "Build and push pcapi image"
+      - name: "Build and push ${{ inputs.image }} image"
         uses: docker/build-push-action@v5
-        if: inputs.pcapi == true && github.ref != 'refs/heads/master'
         with:
           context: api
           push: true
           target: pcapi
-          tags: ${{ env.DOCKER_REGISTRY }}/pcapi:${{ inputs.tag }}
-      - name: "Build and push pcapi image and set latest"
-        uses: docker/build-push-action@v5
-        if: inputs.pcapi == true && github.ref == 'refs/heads/master'
-        with:
-          context: api
-          push: true
-          target: pcapi
-          tags: ${{ env.DOCKER_REGISTRY }}/pcapi:${{ inputs.tag }},${{ env.DOCKER_REGISTRY }}/pcapi:latest
-      - name: "Build and push pcapi-console image"
-        uses: docker/build-push-action@v5
-        if: inputs.console == true
-        with:
-          context: api
-          push: true
-          target: pcapi-console
-          tags: ${{ env.DOCKER_REGISTRY }}/pcapi-console:${{ inputs.tag }}
-      - name: "Build and push pcapi-tests image"
-        uses: docker/build-push-action@v5
-        if: inputs.tests == true
-        with:
-          context: api
-          push: true
-          target: pcapi-tests
-          tags: ${{ env.DOCKER_REGISTRY }}/pcapi-tests:${{ inputs.tag }}
+          tags: ${{ steps.define-docker-image-tags.outputs.tags-to-push }}
