@@ -1,5 +1,27 @@
+import logging
+
 import email_validator
 import email_validator.syntax
+
+
+logger = logging.getLogger(__name__)
+
+
+def anonymize_email(email: str) -> str:
+    try:
+        name, domain = email.split("@")
+    except ValueError:
+        logger.exception("User email %s format is wrong", email)
+        return "***"
+
+    if len(name) > 3:
+        hidden_name = name[:3]
+    elif len(name) > 1:
+        hidden_name = name[:1]
+    else:
+        hidden_name = ""
+
+    return f"{hidden_name}***@{domain}"
 
 
 def sanitize_email(email: str) -> str:
