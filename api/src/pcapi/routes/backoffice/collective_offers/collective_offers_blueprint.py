@@ -1,5 +1,4 @@
 import datetime
-from functools import partial
 import typing
 
 from flask import flash
@@ -56,7 +55,6 @@ SEARCH_FIELD_TO_PYTHON = {
     "CREATION_DATE": {
         "field": "date",
         "column": educational_models.CollectiveOffer.dateCreated,
-        "special": partial(date_utils.date_to_localized_datetime, time_=datetime.datetime.min.time()),
     },
     "DEPARTMENT": {
         "field": "department",
@@ -72,13 +70,11 @@ SEARCH_FIELD_TO_PYTHON = {
     "EVENT_DATE": {
         "field": "date",
         "column": aliased_stock.beginningDatetime,
-        "special": partial(date_utils.date_to_localized_datetime, time_=datetime.datetime.min.time()),
         "inner_join": "stock",
     },
     "BOOKING_LIMIT_DATE": {
         "field": "date",
         "column": aliased_stock.bookingLimitDatetime,
-        "special": partial(date_utils.date_to_localized_datetime, time_=datetime.datetime.min.time()),
         "inner_join": "stock",
     },
     "ID": {

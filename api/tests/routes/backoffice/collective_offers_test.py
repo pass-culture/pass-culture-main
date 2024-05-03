@@ -296,10 +296,10 @@ class ListCollectiveOffersTest(GetEndpointHelper):
     def test_list_collective_offers_advanced_search_by_date(self, authenticated_client, collective_offers):
         query_args = {
             "search-0-search_field": "CREATION_DATE",
-            "search-0-operator": "LESS_THAN",
+            "search-0-operator": "DATE_TO",
             "search-0-date": (datetime.date.today() - datetime.timedelta(days=1)).isoformat(),
             "search-2-search_field": "CREATION_DATE",
-            "search-2-operator": "GREATER_THAN_OR_EQUAL_TO",
+            "search-2-operator": "DATE_FROM",
             "search-2-date": (datetime.date.today() - datetime.timedelta(days=3)).isoformat(),
         }
         with assert_num_queries(self.expected_num_queries):
@@ -317,7 +317,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "search-0-operator": "IN",
             "search-0-status": offers_models.OfferStatus.ACTIVE.value,
             "search-2-search_field": "EVENT_DATE",
-            "search-2-operator": "LESS_THAN",
+            "search-2-operator": "DATE_TO",
             "search-2-date": (datetime.date.today() + datetime.timedelta(days=2)).isoformat(),
         }
 
@@ -334,7 +334,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "search-0-operator": "INTERSECTS",
             "search-0-formats": [subcategories.EacFormat.PROJECTION_AUDIOVISUELLE.name],
             "search-2-search_field": "CREATION_DATE",
-            "search-2-operator": "GREATER_THAN_OR_EQUAL_TO",
+            "search-2-operator": "DATE_FROM",
             "search-2-date": "2024-01-20",
             "search-3-search_field": "NAME",
             "search-3-operator": "STR_NOT_EQUALS",
@@ -351,7 +351,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         bubbles = html_parser.extract(response.data, "span", "bubble")
         assert set(bubbles) == {
             "Formats contient PROJECTION_AUDIOVISUELLE",
-            "Date de création supérieur ou égal 2024-01-20",
+            "Date de création à partir du 2024-01-20",
             "ID de l'offre est différent de 5",
             "Nom de l'offre est différent de indiv",
         }
@@ -404,12 +404,12 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         "operator,valid_date,not_valid_date",
         [
             (
-                "GREATER_THAN_OR_EQUAL_TO",
+                "DATE_FROM",
                 datetime.datetime.utcnow() + datetime.timedelta(days=1),
                 datetime.datetime.utcnow() - datetime.timedelta(days=1),
             ),
             (
-                "LESS_THAN",
+                "DATE_TO",
                 datetime.datetime.utcnow() - datetime.timedelta(days=1),
                 datetime.datetime.utcnow() + datetime.timedelta(days=1),
             ),
@@ -448,11 +448,8 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         )
 
         query_args = {
-            "search-0-search_field": "EVENT_DATE",
-            "search-0-operator": "LESS_THAN",
-            "search-0-date": (datetime.date.today() + datetime.timedelta(days=1)).isoformat(),
             "search-2-search_field": "EVENT_DATE",
-            "search-2-operator": "GREATER_THAN_OR_EQUAL_TO",
+            "search-2-operator": "DATE_EQUALS",
             "search-2-date": datetime.date.today().isoformat(),
         }
         with assert_num_queries(self.expected_num_queries):
@@ -469,7 +466,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         query_args = {
             "limit": "100",
             "search-0-search_field": "EVENT_DATE",
-            "search-0-operator": "GREATER_THAN_OR_EQUAL_TO",
+            "search-0-operator": "DATE_FROM",
             "search-0-status": offers_models.OfferStatus.ACTIVE.value,
             "search-0-integer": "",
             "search-0-string": "",
@@ -787,9 +784,9 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "search-0-operator": "INTERSECTS",
             "search-0-formats": [subcategories.EacFormat.PROJECTION_AUDIOVISUELLE.name],
             "search-2-search_field": "CREATION_DATE",
-            "search-2-operator": "GREATER_THAN_OR_EQUAL_TO",
+            "search-2-operator": "DATE_FROM",
             "search-4-search_field": "BOOKING_LIMIT_DATE",
-            "search-4-operator": "LESS_THAN",
+            "search-4-operator": "DATE_TO",
         }
         with assert_num_queries(2):  # only session + current user, before form validation
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
