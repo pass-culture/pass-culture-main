@@ -20,80 +20,355 @@ from pcapi.domain.show_types import show_types
 class Category: ...
 
 
+@dataclass
 class SearchNode:
+    label: str
+    name: str
+    gtls: list[str] | None = None
+    parent: "SearchNode" | list["SearchNode"] | None = None
+    position: int | None = None
+    search_filter: str | None = None
+
     @property
     def id(self) -> str | None:
         return f"{self.__class__.__name__}_{self.name}"
 
     @property
-    def _gtls(self) -> list[str] | None:
-        return None
-
-    @property
-    def _position(self) -> int | None:
-        return None
-
-    @property
-    def search_filter(self) -> str | None:
+    def search_value(self) -> str | None:
         raise NotImplementedError()
+
+
+class SearchGroup(SearchNode):
+    instances: list["SearchGroup"] = []
+    search_filter: str = "SearchGroupv2"
+
+    def __post_init__(self) -> None:
+        self.instances.append(self)
 
     @property
     def search_value(self) -> str | None:
-        raise NotImplementedError()
+        return self.name
+
+
+class NativeCategory(SearchNode):
+    instances: list["NativeCategory"] = []
+    search_filter: str = "nativeCategoryId"
+
+    def __post_init__(self) -> None:
+        self.instances.append(self)
+
+    @property
+    def search_value(self) -> str | None:
+        return self.name
+
+
+SearchGroup_ARTS_LOISIRS_CREATIFS = SearchGroup(
+    name="ARTS_LOISIRS_CREATIFS",
+    label="Arts & loisirs créatifs",
+    position=5,
+)
+SearchGroup_CARTES_JEUNES = SearchGroup(
+    name="CARTES_JEUNES",
+    label="Cartes jeunes",
+    position=11,
+)
+SearchGroup_CD_VINYLE_MUSIQUE_EN_LIGNE = SearchGroup(
+    name="CD_VINYLE_MUSIQUE_EN_LIGNE",
+    label="CD, vinyles, musique en ligne",
+    position=4,
+)
+SearchGroup_CONCERTS_FESTIVALS = SearchGroup(
+    name="CONCERTS_FESTIVALS",
+    label="Concerts & festivals",
+    position=1,
+)
+SearchGroup_EVENEMENTS_EN_LIGNE = SearchGroup(
+    name="EVENEMENTS_EN_LIGNE",
+    label="Évènements en ligne",
+    position=12,
+)
+SearchGroup_FILMS_SERIES_CINEMA = SearchGroup(
+    name="FILMS_SERIES_CINEMA",
+    label="Cinéma, films et séries",
+    position=13,
+)
+SearchGroup_INSTRUMENTS = SearchGroup(
+    name="INSTRUMENTS",
+    label="Instruments de musique",
+    position=2,
+)
+SearchGroup_JEUX_JEUX_VIDEOS = SearchGroup(
+    name="JEUX_JEUX_VIDEOS",
+    label="Jeux & jeux vidéos",
+    position=9,
+)
+SearchGroup_LIVRES = SearchGroup(
+    name="LIVRES",
+    label="Livres",
+    position=8,
+)
+SearchGroup_MEDIA_PRESSE = SearchGroup(
+    name="MEDIA_PRESSE",
+    label="Médias & presse",
+    position=3,
+)
+SearchGroup_MUSEES_VISITES_CULTURELLES = SearchGroup(
+    name="MUSEES_VISITES_CULTURELLES",
+    label="Musées & visites culturelles",
+    position=10,
+)
+SearchGroup_NONE = SearchGroup(
+    name="NONE",
+    label=None,
+    position=None,
+)
+SearchGroup_RENCONTRES_CONFERENCES = SearchGroup(
+    name="RENCONTRES_CONFERENCES",
+    label="Conférences & rencontres",
+    position=7,
+)
+SearchGroup_SPECTACLES = SearchGroup(
+    name="SPECTACLES",
+    label="Spectacles",
+    position=6,
+)
+
+NativeCategory_ABONNEMENTS_MUSEE = NativeCategory(
+    name="ABONNEMENTS_MUSEE",
+    label="Abonnements musée",
+    parent=SearchGroup_MUSEES_VISITES_CULTURELLES,
+)
+NativeCategory_ABONNEMENTS_SPECTACLE = NativeCategory(
+    name="ABONNEMENTS_SPECTACLE",
+    label="Abonnements spectacle",
+    parent=SearchGroup_SPECTACLES,
+)
+NativeCategory_ACHAT_LOCATION_INSTRUMENT = NativeCategory(
+    name="ACHAT_LOCATION_INSTRUMENT",
+    label="Achat & location d'instrument",
+    parent=SearchGroup_INSTRUMENTS,
+)
+NativeCategory_ARTS_VISUELS = NativeCategory(
+    name="ARTS_VISUELS",
+    label="Arts visuels",
+    parent=SearchGroup_ARTS_LOISIRS_CREATIFS,
+)
+NativeCategory_AUTRES_MEDIAS = NativeCategory(
+    name="AUTRES_MEDIAS",
+    label="Autres médias",
+    parent=SearchGroup_MEDIA_PRESSE,
+)
+NativeCategory_BIBLIOTHEQUE_MEDIATHEQUE = NativeCategory(
+    name="BIBLIOTHEQUE_MEDIATHEQUE",
+    label="Abonnements aux médiathèques et bibliothèques",
+    parent=SearchGroup_LIVRES,
+)
+NativeCategory_CARTES_CINEMA = NativeCategory(
+    name="CARTES_CINEMA",
+    label="Cartes cinéma",
+    parent=SearchGroup_FILMS_SERIES_CINEMA,
+)
+NativeCategory_CARTES_JEUNES = NativeCategory(
+    name="CARTES_JEUNES",
+    label="Cartes jeunes",
+    parent=SearchGroup_CARTES_JEUNES,
+)
+NativeCategory_CD = NativeCategory(
+    name="CD",
+    label="CD",
+    parent=SearchGroup_CD_VINYLE_MUSIQUE_EN_LIGNE,
+)
+NativeCategory_CONCERTS_EN_LIGNE = NativeCategory(
+    name="CONCERTS_EN_LIGNE",
+    label="Concerts en ligne",
+    parent=SearchGroup_EVENEMENTS_EN_LIGNE,
+)
+NativeCategory_CONCERTS_EVENEMENTS = NativeCategory(
+    name="CONCERTS_EVENEMENTS",
+    label="Concerts, évènements",
+    parent=SearchGroup_CONCERTS_FESTIVALS,
+)
+NativeCategory_CONCOURS = NativeCategory(
+    name="CONCOURS",
+    label="Concours",
+    parent=SearchGroup_JEUX_JEUX_VIDEOS,
+)
+NativeCategory_CONFERENCES = NativeCategory(
+    name="CONFERENCES",
+    label="Conférences",
+    parent=SearchGroup_RENCONTRES_CONFERENCES,
+)
+NativeCategory_DEPRECIEE = NativeCategory(
+    name="DEPRECIEE",
+    label="Dépréciée",
+    parent=None,
+)
+NativeCategory_DVD_BLU_RAY = NativeCategory(
+    name="DVD_BLU_RAY",
+    label="DVD, Blu-Ray",
+    parent=SearchGroup_FILMS_SERIES_CINEMA,
+)
+NativeCategory_ESCAPE_GAMES = NativeCategory(
+    name="ESCAPE_GAMES",
+    label="Escape games",
+    parent=SearchGroup_JEUX_JEUX_VIDEOS,
+)
+NativeCategory_EVENEMENTS_CINEMA = NativeCategory(
+    name="EVENEMENTS_CINEMA",
+    label="Evènements cinéma",
+    parent=SearchGroup_FILMS_SERIES_CINEMA,
+)
+NativeCategory_EVENEMENTS_PATRIMOINE = NativeCategory(
+    name="EVENEMENTS_PATRIMOINE",
+    label="Evènements patrimoine",
+    parent=SearchGroup_MUSEES_VISITES_CULTURELLES,
+)
+NativeCategory_FESTIVALS = NativeCategory(
+    name="FESTIVALS",
+    label="Festivals",
+    parent=SearchGroup_CONCERTS_FESTIVALS,
+)
+NativeCategory_FESTIVAL_DU_LIVRE = NativeCategory(
+    name="FESTIVAL_DU_LIVRE",
+    label="Évènements autour du livre",
+    parent=SearchGroup_LIVRES,
+)
+NativeCategory_FILMS_SERIES_EN_LIGNE = NativeCategory(
+    name="FILMS_SERIES_EN_LIGNE",
+    label="Films, séries en ligne",
+    parent=SearchGroup_FILMS_SERIES_CINEMA,
+)
+NativeCategory_JEUX_EN_LIGNE = NativeCategory(
+    name="JEUX_EN_LIGNE",
+    label="Jeux en ligne",
+    parent=SearchGroup_JEUX_JEUX_VIDEOS,
+)
+NativeCategory_JEUX_PHYSIQUES = NativeCategory(
+    name="JEUX_PHYSIQUES",
+    label="Jeux physiques",
+    parent=None,
+)
+NativeCategory_LIVRES_AUDIO_PHYSIQUES = NativeCategory(
+    name="LIVRES_AUDIO_PHYSIQUES",
+    label="Livres audio",
+    parent=SearchGroup_LIVRES,
+)
+NativeCategory_LIVRES_NUMERIQUE_ET_AUDIO = NativeCategory(
+    name="LIVRES_NUMERIQUE_ET_AUDIO",
+    label="E-books",
+    parent=SearchGroup_LIVRES,
+)
+NativeCategory_LIVRES_PAPIER = NativeCategory(
+    name="LIVRES_PAPIER",
+    label="Livres papier",
+    parent=SearchGroup_LIVRES,
+)
+NativeCategory_LUDOTHEQUE = NativeCategory(
+    name="LUDOTHEQUE",
+    label="Ludothèque",
+    parent=SearchGroup_JEUX_JEUX_VIDEOS,
+)
+NativeCategory_MATERIELS_CREATIFS = NativeCategory(
+    name="MATERIELS_CREATIFS",
+    label="Matériels créatifs",
+    parent=SearchGroup_ARTS_LOISIRS_CREATIFS,
+)
+NativeCategory_MUSIQUE_EN_LIGNE = NativeCategory(
+    name="MUSIQUE_EN_LIGNE",
+    label="Musique en ligne",
+    parent=SearchGroup_CD_VINYLE_MUSIQUE_EN_LIGNE,
+)
+NativeCategory_PARTITIONS_DE_MUSIQUE = NativeCategory(
+    name="PARTITIONS_DE_MUSIQUE",
+    label="Partitions de musique",
+    parent=SearchGroup_INSTRUMENTS,
+)
+NativeCategory_PODCAST = NativeCategory(
+    name="PODCAST",
+    label="Podcast",
+    parent=SearchGroup_MEDIA_PRESSE,
+)
+NativeCategory_PRATIQUES_ET_ATELIERS_ARTISTIQUES = NativeCategory(
+    name="PRATIQUES_ET_ATELIERS_ARTISTIQUES",
+    label="Pratiques & ateliers artistiques",
+    parent=None,
+)
+NativeCategory_PRATIQUE_ARTISTIQUE_EN_LIGNE = NativeCategory(
+    name="PRATIQUE_ARTISTIQUE_EN_LIGNE",
+    label="Pratique artistique en ligne",
+    parent=[
+        SearchGroup_ARTS_LOISIRS_CREATIFS,
+        SearchGroup_EVENEMENTS_EN_LIGNE,
+    ],
+)
+NativeCategory_PRESSE_EN_LIGNE = NativeCategory(
+    name="PRESSE_EN_LIGNE",
+    label="Presse en ligne",
+    parent=SearchGroup_MEDIA_PRESSE,
+)
+NativeCategory_RENCONTRES = NativeCategory(
+    name="RENCONTRES",
+    label="Rencontres",
+    parent=SearchGroup_RENCONTRES_CONFERENCES,
+)
+NativeCategory_RENCONTRES_EN_LIGNE = NativeCategory(
+    name="RENCONTRES_EN_LIGNE",
+    label="Rencontres en ligne",
+    parent=[
+        SearchGroup_EVENEMENTS_EN_LIGNE,
+        SearchGroup_RENCONTRES_CONFERENCES,
+    ],
+)
+NativeCategory_RENCONTRES_EVENEMENTS = NativeCategory(
+    name="RENCONTRES_EVENEMENTS",
+    label="Rencontres évènements",
+    parent=SearchGroup_JEUX_JEUX_VIDEOS,
+)
+NativeCategory_SALONS_ET_METIERS = NativeCategory(
+    name="SALONS_ET_METIERS",
+    label="Salons & métiers",
+    parent=SearchGroup_RENCONTRES_CONFERENCES,
+)
+NativeCategory_SEANCES_DE_CINEMA = NativeCategory(
+    name="SEANCES_DE_CINEMA",
+    label="Séances de cinéma",
+    parent=SearchGroup_FILMS_SERIES_CINEMA,
+)
+NativeCategory_SPECTACLES_ENREGISTRES = NativeCategory(
+    name="SPECTACLES_ENREGISTRES",
+    label="Spectacles enregistrés",
+    parent=SearchGroup_SPECTACLES,
+)
+NativeCategory_SPECTACLES_REPRESENTATIONS = NativeCategory(
+    name="SPECTACLES_REPRESENTATIONS",
+    label="Spectacles & représentations",
+    parent=SearchGroup_SPECTACLES,
+)
+NativeCategory_VINYLES = NativeCategory(
+    name="VINYLES",
+    label="Vinyles et autres supports",
+    parent=SearchGroup_CD_VINYLE_MUSIQUE_EN_LIGNE,
+)
+NativeCategory_VISITES_CULTURELLES = NativeCategory(
+    name="VISITES_CULTURELLES",
+    label="Visites culturelles",
+    parent=SearchGroup_MUSEES_VISITES_CULTURELLES,
+)
+NativeCategory_VISITES_CULTURELLES_EN_LIGNE = NativeCategory(
+    name="VISITES_CULTURELLES_EN_LIGNE",
+    label="Visites culturelles en ligne",
+    parent=SearchGroup_MUSEES_VISITES_CULTURELLES,
+)
+
+
+SEARCH_GROUPS = SearchGroup.instances
+NATIVE_CATEGORIES = NativeCategory.instances
 
 
 class OnlineOfflinePlatformChoices(Enum):
     OFFLINE = "OFFLINE"
     ONLINE = "ONLINE"
     ONLINE_OR_OFFLINE = "ONLINE_OR_OFFLINE"
-
-
-class SearchGroups(Enum, SearchNode):
-    ARTS_LOISIRS_CREATIFS = "Arts & loisirs créatifs"
-    CARTES_JEUNES = "Cartes jeunes"
-    CD_VINYLE_MUSIQUE_EN_LIGNE = "CD, vinyles, musique en ligne"
-    CONCERTS_FESTIVALS = "Concerts & festivals"
-    EVENEMENTS_EN_LIGNE = "Évènements en ligne"
-    FILMS_SERIES_CINEMA = "Cinéma, films et séries"
-    INSTRUMENTS = "Instruments de musique"
-    JEUX_JEUX_VIDEOS = "Jeux & jeux vidéos"
-    LIVRES = "Livres"
-    MEDIA_PRESSE = "Médias & presse"
-    MUSEES_VISITES_CULTURELLES = "Musées & visites culturelles"
-    NONE = None
-    RENCONTRES_CONFERENCES = "Conférences & rencontres"
-    SPECTACLES = "Spectacles"
-
-    @property
-    def id(self) -> str:
-        f"{self.__class__.__name__}_{self.name}"
-
-    @property
-    def _position(self) -> int | None:
-        return {
-            type(self).ARTS_LOISIRS_CREATIFS.name: 5,
-            type(self).CARTES_JEUNES.name: 11,
-            type(self).CD_VINYLE_MUSIQUE_EN_LIGNE.name: 4,
-            type(self).CONCERTS_FESTIVALS.name: 1,
-            type(self).EVENEMENTS_EN_LIGNE.name: 12,
-            type(self).FILMS_SERIES_CINEMA.name: 13,
-            type(self).INSTRUMENTS.name: 2,
-            type(self).JEUX_JEUX_VIDEOS.name: 9,
-            type(self).LIVRES.name: 8,
-            type(self).MEDIA_PRESSE.name: 3,
-            type(self).MUSEES_VISITES_CULTURELLES.name: 10,
-            type(self).NONE.name: None,
-            type(self).RENCONTRES_CONFERENCES.name: 7,
-            type(self).SPECTACLES.name: 6,
-        }[self.name]
-
-    @property
-    def search_filter(self) -> str | None:
-        return "SearchGroupv2"
-
-    @property
-    def search_value(self) -> str | None:
-        return self.name
 
 
 class HomepageLabels(Enum):
@@ -169,84 +444,18 @@ class GenreType(Enum):
         return sorted(values, key=lambda x: x.value)
 
 
-class NativeCategory(Enum, SearchNode):
-    ABONNEMENTS_MUSEE = "Abonnements musée"
-    ABONNEMENTS_SPECTACLE = "Abonnements spectacle"
-    ACHAT_LOCATION_INSTRUMENT = "Achat & location d'instrument"
-    ARTS_VISUELS = "Arts visuels"
-    AUTRES_MEDIAS = "Autres médias"
-    BIBLIOTHEQUE_MEDIATHEQUE = "Abonnements aux médiathèques et bibliothèques"
-    CARTES_CINEMA = "Cartes cinéma"
-    CARTES_JEUNES = "Cartes jeunes"
-    CD = "CD"
-    CONCERTS_EN_LIGNE = "Concerts en ligne"
-    CONCERTS_EVENEMENTS = "Concerts, évènements"
-    CONCOURS = "Concours"
-    CONFERENCES = "Conférences"
-    DEPRECIEE = "Dépréciée"
-    DVD_BLU_RAY = "DVD, Blu-Ray"
-    ESCAPE_GAMES = "Escape games"
-    EVENEMENTS_CINEMA = "Evènements cinéma"
-    EVENEMENTS_PATRIMOINE = "Evènements patrimoine"
-    FESTIVALS = "Festivals"
-    FESTIVAL_DU_LIVRE = "Évènements autour du livre"
-    FILMS_SERIES_EN_LIGNE = "Films, séries en ligne"
-    JEUX_EN_LIGNE = "Jeux en ligne"
-    JEUX_PHYSIQUES = "Jeux physiques"
-    LIVRES_AUDIO_PHYSIQUES = "Livres audio"
-    LIVRES_NUMERIQUE_ET_AUDIO = "E-books"
-    LIVRES_PAPIER = "Livres papier"
-    LUDOTHEQUE = "Ludothèque"
-    MATERIELS_CREATIFS = "Matériels créatifs"
-    MUSIQUE_EN_LIGNE = "Musique en ligne"
-    PARTITIONS_DE_MUSIQUE = "Partitions de musique"
-    PODCAST = "Podcast"
-    PRATIQUES_ET_ATELIERS_ARTISTIQUES = "Pratiques & ateliers artistiques"
-    PRATIQUE_ARTISTIQUE_EN_LIGNE = "Pratique artistique en ligne"
-    PRESSE_EN_LIGNE = "Presse en ligne"
-    RENCONTRES = "Rencontres"
-    RENCONTRES_EN_LIGNE = "Rencontres en ligne"
-    RENCONTRES_EVENEMENTS = "Rencontres évènements"
-    SALONS_ET_METIERS = "Salons & métiers"
-    SEANCES_DE_CINEMA = "Séances de cinéma"
-    SPECTACLES_ENREGISTRES = "Spectacles enregistrés"
-    SPECTACLES_REPRESENTATIONS = "Spectacles & représentations"
-    VINYLES = "Vinyles et autres supports"
-    VISITES_CULTURELLES = "Visites culturelles"
-    VISITES_CULTURELLES_EN_LIGNE = "Visites culturelles en ligne"
-
-    @property
-    def genre_type(self) -> GenreType | None:
-        try:
-            return NATIVE_CATEGORY_GENRES_TYPES_MAPPING[self]
-        except KeyError:
-            return None
-
-    @property
-    def id(self) -> str:
-        f"{self.__class__.__name__}_{self.name}"
-
-    @property
-    def search_filter(self) -> str | None:
-        return "nativeCategoryId"
-
-    @property
-    def search_value(self) -> str | None:
-        return self.name
-
-
 NATIVE_CATEGORY_GENRES_TYPES_MAPPING = {
-    NativeCategory.LIVRES_PAPIER: GenreType.BOOK,
-    NativeCategory.SEANCES_DE_CINEMA: GenreType.MOVIE,
-    NativeCategory.FESTIVALS: GenreType.MUSIC,
-    NativeCategory.CD: GenreType.MUSIC,
-    NativeCategory.VINYLES: GenreType.MUSIC,
-    NativeCategory.MUSIQUE_EN_LIGNE: GenreType.MUSIC,
-    NativeCategory.CONCERTS_EN_LIGNE: GenreType.MUSIC,
-    NativeCategory.CONCERTS_EVENEMENTS: GenreType.MUSIC,
-    NativeCategory.ABONNEMENTS_SPECTACLE: GenreType.SHOW,
-    NativeCategory.SPECTACLES_ENREGISTRES: GenreType.SHOW,
-    NativeCategory.SPECTACLES_REPRESENTATIONS: GenreType.SHOW,
+    NativeCategory_LIVRES_PAPIER.name: GenreType.BOOK,
+    NativeCategory_SEANCES_DE_CINEMA.name: GenreType.MOVIE,
+    NativeCategory_FESTIVALS.name: GenreType.MUSIC,
+    NativeCategory_CD.name: GenreType.MUSIC,
+    NativeCategory_VINYLES.name: GenreType.MUSIC,
+    NativeCategory_MUSIQUE_EN_LIGNE.name: GenreType.MUSIC,
+    NativeCategory_CONCERTS_EN_LIGNE.name: GenreType.MUSIC,
+    NativeCategory_CONCERTS_EVENEMENTS.name: GenreType.MUSIC,
+    NativeCategory_ABONNEMENTS_SPECTACLE.name: GenreType.SHOW,
+    NativeCategory_SPECTACLES_ENREGISTRES.name: GenreType.SHOW,
+    NativeCategory_SPECTACLES_REPRESENTATIONS.name: GenreType.SHOW,
 }
 
 
@@ -285,7 +494,7 @@ class EacFormat(Enum):
 class Subcategory:
     id: str
     category: categories.Category
-    native_category: NativeCategory
+    native_category: str
     pro_label: str
     app_label: str
     search_group_name: str
@@ -309,7 +518,7 @@ class Subcategory:
     formats: typing.Sequence[EacFormat] = field(default_factory=list)
 
     def __post_init__(self) -> None:
-        if self.search_group_name not in [s.name for s in SearchGroups]:
+        if self.search_group_name not in [s.name for s in SEARCH_GROUPS]:
             raise ValueError("search_group_name can only be one of SearchGroups")
         if self.homepage_label_name not in [h.name for h in HomepageLabels]:
             raise ValueError("homepage_label_name can only be one of HomepageLabels")
@@ -340,10 +549,10 @@ class Subcategory:
 SUPPORT_PHYSIQUE_FILM = Subcategory(
     id="SUPPORT_PHYSIQUE_FILM",
     category=categories.FILM,
-    native_category=NativeCategory.DVD_BLU_RAY,
+    native_category=NativeCategory_DVD_BLU_RAY.name,
     pro_label="Support physique (DVD, Blu-ray...)",
     app_label="Support physique (DVD, Blu-ray...)",
-    search_group_name=SearchGroups.FILMS_SERIES_CINEMA.name,
+    search_group_name=SearchGroup_FILMS_SERIES_CINEMA.name,
     homepage_label_name=HomepageLabels.FILMS.name,
     is_event=False,
     conditional_fields={ExtraDataFieldEnum.EAN.value: FieldCondition(is_required_in_external_form=True)},
@@ -358,10 +567,10 @@ SUPPORT_PHYSIQUE_FILM = Subcategory(
 ABO_MEDIATHEQUE = Subcategory(
     id="ABO_MEDIATHEQUE",
     category=categories.FILM,
-    native_category=NativeCategory.BIBLIOTHEQUE_MEDIATHEQUE,
+    native_category=NativeCategory_BIBLIOTHEQUE_MEDIATHEQUE.name,
     pro_label="Abonnement médiathèque",
     app_label="Abonnement médiathèque",
-    search_group_name=SearchGroups.LIVRES.name,
+    search_group_name=SearchGroup_LIVRES.name,
     homepage_label_name=HomepageLabels.FILMS.name,
     is_event=False,
     conditional_fields={},
@@ -376,10 +585,10 @@ ABO_MEDIATHEQUE = Subcategory(
 VOD = Subcategory(
     id="VOD",
     category=categories.FILM,
-    native_category=NativeCategory.FILMS_SERIES_EN_LIGNE,
+    native_category=NativeCategory_FILMS_SERIES_EN_LIGNE.name,
     pro_label="Vidéo à la demande",
     app_label="Vidéo à la demande",
-    search_group_name=SearchGroups.FILMS_SERIES_CINEMA.name,
+    search_group_name=SearchGroup_FILMS_SERIES_CINEMA.name,
     homepage_label_name=HomepageLabels.FILMS.name,
     is_event=False,
     conditional_fields={},
@@ -395,10 +604,10 @@ VOD = Subcategory(
 ABO_PLATEFORME_VIDEO = Subcategory(
     id="ABO_PLATEFORME_VIDEO",
     category=categories.FILM,
-    native_category=NativeCategory.FILMS_SERIES_EN_LIGNE,
+    native_category=NativeCategory_FILMS_SERIES_EN_LIGNE.name,
     pro_label="Abonnement plateforme streaming",
     app_label="Abonnement plateforme streaming",
-    search_group_name=SearchGroups.FILMS_SERIES_CINEMA.name,
+    search_group_name=SearchGroup_FILMS_SERIES_CINEMA.name,
     homepage_label_name=HomepageLabels.FILMS.name,
     is_event=False,
     conditional_fields={},
@@ -414,10 +623,10 @@ ABO_PLATEFORME_VIDEO = Subcategory(
 AUTRE_SUPPORT_NUMERIQUE = Subcategory(
     id="AUTRE_SUPPORT_NUMERIQUE",
     category=categories.FILM,
-    native_category=NativeCategory.FILMS_SERIES_EN_LIGNE,
+    native_category=NativeCategory_FILMS_SERIES_EN_LIGNE.name,
     pro_label="Autre support numérique",
     app_label="Autre support numérique",
-    search_group_name=SearchGroups.FILMS_SERIES_CINEMA.name,
+    search_group_name=SearchGroup_FILMS_SERIES_CINEMA.name,
     homepage_label_name=HomepageLabels.FILMS.name,
     is_event=False,
     conditional_fields={},
@@ -435,10 +644,10 @@ AUTRE_SUPPORT_NUMERIQUE = Subcategory(
 CARTE_CINE_MULTISEANCES = Subcategory(
     id="CARTE_CINE_MULTISEANCES",
     category=categories.CINEMA,
-    native_category=NativeCategory.CARTES_CINEMA,
+    native_category=NativeCategory_CARTES_CINEMA.name,
     pro_label="Carte cinéma multi-séances",
     app_label="Carte cinéma multi-séances",
-    search_group_name=SearchGroups.FILMS_SERIES_CINEMA.name,
+    search_group_name=SearchGroup_FILMS_SERIES_CINEMA.name,
     homepage_label_name=HomepageLabels.CINEMA.name,
     is_event=False,
     conditional_fields={},
@@ -453,10 +662,10 @@ CARTE_CINE_MULTISEANCES = Subcategory(
 CARTE_CINE_ILLIMITE = Subcategory(
     id="CARTE_CINE_ILLIMITE",
     category=categories.CINEMA,
-    native_category=NativeCategory.CARTES_CINEMA,
+    native_category=NativeCategory_CARTES_CINEMA.name,
     pro_label="Carte cinéma illimité",
     app_label="Carte cinéma illimité",
-    search_group_name=SearchGroups.FILMS_SERIES_CINEMA.name,
+    search_group_name=SearchGroup_FILMS_SERIES_CINEMA.name,
     homepage_label_name=HomepageLabels.CINEMA.name,
     is_event=False,
     conditional_fields={},
@@ -471,10 +680,10 @@ CARTE_CINE_ILLIMITE = Subcategory(
 SEANCE_CINE = Subcategory(
     id="SEANCE_CINE",
     category=categories.CINEMA,
-    native_category=NativeCategory.SEANCES_DE_CINEMA,
+    native_category=NativeCategory_SEANCES_DE_CINEMA.name,
     pro_label="Séance de cinéma",
     app_label="Séance de cinéma",
-    search_group_name=SearchGroups.FILMS_SERIES_CINEMA.name,
+    search_group_name=SearchGroup_FILMS_SERIES_CINEMA.name,
     homepage_label_name=HomepageLabels.CINEMA.name,
     is_event=True,
     conditional_fields={
@@ -494,10 +703,10 @@ SEANCE_CINE = Subcategory(
 EVENEMENT_CINE = Subcategory(
     id="EVENEMENT_CINE",
     category=categories.CINEMA,
-    native_category=NativeCategory.EVENEMENTS_CINEMA,
+    native_category=NativeCategory_EVENEMENTS_CINEMA.name,
     pro_label="Évènement cinématographique",
     app_label="Évènement cinéma",
-    search_group_name=SearchGroups.FILMS_SERIES_CINEMA.name,
+    search_group_name=SearchGroup_FILMS_SERIES_CINEMA.name,
     homepage_label_name=HomepageLabels.CINEMA.name,
     is_event=True,
     conditional_fields={
@@ -517,10 +726,10 @@ EVENEMENT_CINE = Subcategory(
 FESTIVAL_CINE = Subcategory(
     id="FESTIVAL_CINE",
     category=categories.CINEMA,
-    native_category=NativeCategory.EVENEMENTS_CINEMA,
+    native_category=NativeCategory_EVENEMENTS_CINEMA.name,
     pro_label="Festival de cinéma",
     app_label="Festival de cinéma",
-    search_group_name=SearchGroups.FILMS_SERIES_CINEMA.name,
+    search_group_name=SearchGroup_FILMS_SERIES_CINEMA.name,
     homepage_label_name=HomepageLabels.CINEMA.name,
     is_event=True,
     conditional_fields={
@@ -540,10 +749,10 @@ FESTIVAL_CINE = Subcategory(
 CINE_VENTE_DISTANCE = Subcategory(
     id="CINE_VENTE_DISTANCE",
     category=categories.CINEMA,
-    native_category=NativeCategory.SEANCES_DE_CINEMA,
+    native_category=NativeCategory_SEANCES_DE_CINEMA.name,
     pro_label="Cinéma vente à distance",
     app_label="Cinéma",
-    search_group_name=SearchGroups.FILMS_SERIES_CINEMA.name,
+    search_group_name=SearchGroup_FILMS_SERIES_CINEMA.name,
     homepage_label_name=HomepageLabels.CINEMA.name,
     is_event=False,
     conditional_fields={
@@ -564,10 +773,10 @@ CINE_VENTE_DISTANCE = Subcategory(
 CINE_PLEIN_AIR = Subcategory(
     id="CINE_PLEIN_AIR",
     category=categories.CINEMA,
-    native_category=NativeCategory.SEANCES_DE_CINEMA,
+    native_category=NativeCategory_SEANCES_DE_CINEMA.name,
     pro_label="Cinéma plein air",
     app_label="Cinéma plein air",
-    search_group_name=SearchGroups.FILMS_SERIES_CINEMA.name,
+    search_group_name=SearchGroup_FILMS_SERIES_CINEMA.name,
     homepage_label_name=HomepageLabels.CINEMA.name,
     is_event=True,
     conditional_fields={
@@ -591,10 +800,10 @@ CINE_PLEIN_AIR = Subcategory(
 CONFERENCE = Subcategory(
     id="CONFERENCE",
     category=categories.CONFERENCE_RENCONTRE,
-    native_category=NativeCategory.CONFERENCES,
+    native_category=NativeCategory_CONFERENCES.name,
     pro_label="Conférence",
     app_label="Conférence",
-    search_group_name=SearchGroups.RENCONTRES_CONFERENCES.name,
+    search_group_name=SearchGroup_RENCONTRES_CONFERENCES.name,
     homepage_label_name=HomepageLabels.RENCONTRES.name,
     is_event=True,
     conditional_fields={ExtraDataFieldEnum.SPEAKER.value: FieldCondition()},
@@ -610,10 +819,10 @@ CONFERENCE = Subcategory(
 RENCONTRE = Subcategory(
     id="RENCONTRE",
     category=categories.CONFERENCE_RENCONTRE,
-    native_category=NativeCategory.RENCONTRES,
+    native_category=NativeCategory_RENCONTRES.name,
     pro_label="Rencontre",
     app_label="Rencontre",
-    search_group_name=SearchGroups.RENCONTRES_CONFERENCES.name,
+    search_group_name=SearchGroup_RENCONTRES_CONFERENCES.name,
     homepage_label_name=HomepageLabels.RENCONTRES.name,
     is_event=True,
     conditional_fields={ExtraDataFieldEnum.SPEAKER.value: FieldCondition()},
@@ -629,10 +838,10 @@ RENCONTRE = Subcategory(
 DECOUVERTE_METIERS = Subcategory(
     id="DECOUVERTE_METIERS",
     category=categories.CONFERENCE_RENCONTRE,
-    native_category=NativeCategory.SALONS_ET_METIERS,
+    native_category=NativeCategory_SALONS_ET_METIERS.name,
     pro_label="Découverte des métiers",
     app_label="Découverte des métiers",
-    search_group_name=SearchGroups.RENCONTRES_CONFERENCES.name,
+    search_group_name=SearchGroup_RENCONTRES_CONFERENCES.name,
     homepage_label_name=HomepageLabels.RENCONTRES.name,
     is_event=True,
     conditional_fields={ExtraDataFieldEnum.SPEAKER.value: FieldCondition()},
@@ -648,10 +857,10 @@ DECOUVERTE_METIERS = Subcategory(
 SALON = Subcategory(
     id="SALON",
     category=categories.CONFERENCE_RENCONTRE,
-    native_category=NativeCategory.SALONS_ET_METIERS,
+    native_category=NativeCategory_SALONS_ET_METIERS.name,
     pro_label="Salon, Convention",
     app_label="Salon, Convention",
-    search_group_name=SearchGroups.RENCONTRES_CONFERENCES.name,
+    search_group_name=SearchGroup_RENCONTRES_CONFERENCES.name,
     homepage_label_name=HomepageLabels.RENCONTRES.name,
     is_event=True,
     conditional_fields={ExtraDataFieldEnum.SPEAKER.value: FieldCondition()},
@@ -667,10 +876,10 @@ SALON = Subcategory(
 RENCONTRE_EN_LIGNE = Subcategory(
     id="RENCONTRE_EN_LIGNE",
     category=categories.CONFERENCE_RENCONTRE,
-    native_category=NativeCategory.RENCONTRES_EN_LIGNE,
+    native_category=NativeCategory_RENCONTRES_EN_LIGNE.name,
     pro_label="Rencontre en ligne",
     app_label="Rencontre en ligne",
-    search_group_name=SearchGroups.RENCONTRES_CONFERENCES.name,
+    search_group_name=SearchGroup_RENCONTRES_CONFERENCES.name,
     homepage_label_name=HomepageLabels.RENCONTRES.name,
     is_event=True,
     conditional_fields={ExtraDataFieldEnum.SPEAKER.value: FieldCondition()},
@@ -689,10 +898,10 @@ RENCONTRE_EN_LIGNE = Subcategory(
 CONCOURS = Subcategory(
     id="CONCOURS",
     category=categories.JEU,
-    native_category=NativeCategory.CONCOURS,
+    native_category=NativeCategory_CONCOURS.name,
     pro_label="Concours - jeux",
     app_label="Concours - jeux",
-    search_group_name=SearchGroups.JEUX_JEUX_VIDEOS.name,
+    search_group_name=SearchGroup_JEUX_JEUX_VIDEOS.name,
     homepage_label_name=HomepageLabels.JEUX.name,
     is_event=True,
     conditional_fields={},
@@ -708,10 +917,10 @@ CONCOURS = Subcategory(
 RENCONTRE_JEU = Subcategory(
     id="RENCONTRE_JEU",
     category=categories.JEU,
-    native_category=NativeCategory.RENCONTRES_EVENEMENTS,
+    native_category=NativeCategory_RENCONTRES_EVENEMENTS.name,
     pro_label="Rencontres - jeux",
     app_label="Rencontres - jeux",
-    search_group_name=SearchGroups.JEUX_JEUX_VIDEOS.name,
+    search_group_name=SearchGroup_JEUX_JEUX_VIDEOS.name,
     homepage_label_name=HomepageLabels.JEUX.name,
     is_event=True,
     conditional_fields={},
@@ -727,10 +936,10 @@ RENCONTRE_JEU = Subcategory(
 ESCAPE_GAME = Subcategory(
     id="ESCAPE_GAME",
     category=categories.JEU,
-    native_category=NativeCategory.ESCAPE_GAMES,
+    native_category=NativeCategory_ESCAPE_GAMES.name,
     pro_label="Escape game",
     app_label="Escape game",
-    search_group_name=SearchGroups.JEUX_JEUX_VIDEOS.name,
+    search_group_name=SearchGroup_JEUX_JEUX_VIDEOS.name,
     homepage_label_name=HomepageLabels.JEUX.name,
     is_event=False,
     conditional_fields={},
@@ -745,10 +954,10 @@ ESCAPE_GAME = Subcategory(
 EVENEMENT_JEU = Subcategory(
     id="EVENEMENT_JEU",
     category=categories.JEU,
-    native_category=NativeCategory.RENCONTRES_EVENEMENTS,
+    native_category=NativeCategory_RENCONTRES_EVENEMENTS.name,
     pro_label="Évènements - jeux",
     app_label="Évènements - jeux",
-    search_group_name=SearchGroups.JEUX_JEUX_VIDEOS.name,
+    search_group_name=SearchGroup_JEUX_JEUX_VIDEOS.name,
     homepage_label_name=HomepageLabels.JEUX.name,
     is_event=True,
     conditional_fields={},
@@ -764,10 +973,10 @@ EVENEMENT_JEU = Subcategory(
 JEU_EN_LIGNE = Subcategory(
     id="JEU_EN_LIGNE",
     category=categories.JEU,
-    native_category=NativeCategory.JEUX_EN_LIGNE,
+    native_category=NativeCategory_JEUX_EN_LIGNE.name,
     pro_label="Jeux en ligne",
     app_label="Jeux en ligne",
-    search_group_name=SearchGroups.JEUX_JEUX_VIDEOS.name,
+    search_group_name=SearchGroup_JEUX_JEUX_VIDEOS.name,
     homepage_label_name=HomepageLabels.JEUX.name,
     is_event=False,
     conditional_fields={ExtraDataFieldEnum.EAN.value: FieldCondition(is_required_in_external_form=True)},
@@ -784,10 +993,10 @@ JEU_EN_LIGNE = Subcategory(
 ABO_JEU_VIDEO = Subcategory(
     id="ABO_JEU_VIDEO",
     category=categories.JEU,
-    native_category=NativeCategory.JEUX_EN_LIGNE,
+    native_category=NativeCategory_JEUX_EN_LIGNE.name,
     pro_label="Abonnement jeux vidéos",
     app_label="Abonnement jeux vidéos",
-    search_group_name=SearchGroups.JEUX_JEUX_VIDEOS.name,
+    search_group_name=SearchGroup_JEUX_JEUX_VIDEOS.name,
     homepage_label_name=HomepageLabels.JEUX.name,
     is_event=False,
     conditional_fields={},
@@ -804,10 +1013,10 @@ ABO_JEU_VIDEO = Subcategory(
 ABO_LUDOTHEQUE = Subcategory(
     id="ABO_LUDOTHEQUE",
     category=categories.JEU,
-    native_category=NativeCategory.LUDOTHEQUE,
+    native_category=NativeCategory_LUDOTHEQUE.name,
     pro_label="Abonnement ludothèque",
     app_label="Abonnement ludothèque",
-    search_group_name=SearchGroups.JEUX_JEUX_VIDEOS.name,
+    search_group_name=SearchGroup_JEUX_JEUX_VIDEOS.name,
     homepage_label_name=HomepageLabels.JEUX.name,
     is_event=False,
     conditional_fields={},
@@ -828,10 +1037,10 @@ ABO_LUDOTHEQUE = Subcategory(
 LIVRE_PAPIER = Subcategory(
     id="LIVRE_PAPIER",
     category=categories.LIVRE,
-    native_category=NativeCategory.LIVRES_PAPIER,
+    native_category=NativeCategory_LIVRES_PAPIER.name,
     pro_label="Livre papier",
     app_label="Livre",
-    search_group_name=SearchGroups.LIVRES.name,
+    search_group_name=SearchGroup_LIVRES.name,
     homepage_label_name=HomepageLabels.LIVRES.name,
     is_event=False,
     conditional_fields={
@@ -850,10 +1059,10 @@ LIVRE_PAPIER = Subcategory(
 LIVRE_NUMERIQUE = Subcategory(
     id="LIVRE_NUMERIQUE",
     category=categories.LIVRE,
-    native_category=NativeCategory.LIVRES_NUMERIQUE_ET_AUDIO,
+    native_category=NativeCategory_LIVRES_NUMERIQUE_ET_AUDIO.name,
     pro_label="Livre numérique, e-book",
     app_label="Livre numérique, e-book",
-    search_group_name=SearchGroups.LIVRES.name,
+    search_group_name=SearchGroup_LIVRES.name,
     homepage_label_name=HomepageLabels.LIVRES.name,
     is_event=False,
     conditional_fields={
@@ -872,10 +1081,10 @@ LIVRE_NUMERIQUE = Subcategory(
 TELECHARGEMENT_LIVRE_AUDIO = Subcategory(
     id="TELECHARGEMENT_LIVRE_AUDIO",
     category=categories.LIVRE,
-    native_category=NativeCategory.LIVRES_NUMERIQUE_ET_AUDIO,
+    native_category=NativeCategory_LIVRES_NUMERIQUE_ET_AUDIO.name,
     pro_label="Livre audio à télécharger",
     app_label="Livre audio à télécharger",
-    search_group_name=SearchGroups.LIVRES.name,
+    search_group_name=SearchGroup_LIVRES.name,
     homepage_label_name=HomepageLabels.LIVRES.name,
     is_event=False,
     conditional_fields={
@@ -893,10 +1102,10 @@ TELECHARGEMENT_LIVRE_AUDIO = Subcategory(
 LIVRE_AUDIO_PHYSIQUE = Subcategory(
     id="LIVRE_AUDIO_PHYSIQUE",
     category=categories.LIVRE,
-    native_category=NativeCategory.LIVRES_AUDIO_PHYSIQUES,
+    native_category=NativeCategory_LIVRES_AUDIO_PHYSIQUES.name,
     pro_label="Livre audio sur support physique",
     app_label="Livre audio sur support physique",
-    search_group_name=SearchGroups.LIVRES.name,
+    search_group_name=SearchGroup_LIVRES.name,
     homepage_label_name=HomepageLabels.LIVRES.name,
     is_event=False,
     conditional_fields={
@@ -915,10 +1124,10 @@ LIVRE_AUDIO_PHYSIQUE = Subcategory(
 ABO_BIBLIOTHEQUE = Subcategory(
     id="ABO_BIBLIOTHEQUE",
     category=categories.LIVRE,
-    native_category=NativeCategory.BIBLIOTHEQUE_MEDIATHEQUE,
+    native_category=NativeCategory_BIBLIOTHEQUE_MEDIATHEQUE.name,
     pro_label="Abonnement (bibliothèques, médiathèques...)",
     app_label="Abonnement (bibliothèques, médiathèques...)",
-    search_group_name=SearchGroups.LIVRES.name,
+    search_group_name=SearchGroup_LIVRES.name,
     homepage_label_name=HomepageLabels.LIVRES.name,
     is_event=False,
     conditional_fields={},
@@ -933,10 +1142,10 @@ ABO_BIBLIOTHEQUE = Subcategory(
 ABO_LIVRE_NUMERIQUE = Subcategory(
     id="ABO_LIVRE_NUMERIQUE",
     category=categories.LIVRE,
-    native_category=NativeCategory.LIVRES_NUMERIQUE_ET_AUDIO,
+    native_category=NativeCategory_LIVRES_NUMERIQUE_ET_AUDIO.name,
     pro_label="Abonnement livres numériques",
     app_label="Abonnement livres numériques",
-    search_group_name=SearchGroups.LIVRES.name,
+    search_group_name=SearchGroup_LIVRES.name,
     homepage_label_name=HomepageLabels.LIVRES.name,
     is_event=False,
     conditional_fields={},
@@ -952,10 +1161,10 @@ ABO_LIVRE_NUMERIQUE = Subcategory(
 FESTIVAL_LIVRE = Subcategory(
     id="FESTIVAL_LIVRE",
     category=categories.LIVRE,
-    native_category=NativeCategory.FESTIVAL_DU_LIVRE,
+    native_category=NativeCategory_FESTIVAL_DU_LIVRE.name,
     pro_label="Festival et salon du livre",
     app_label="Festival et salon du livre",
-    search_group_name=SearchGroups.LIVRES.name,
+    search_group_name=SearchGroup_LIVRES.name,
     homepage_label_name=HomepageLabels.LIVRES.name,
     is_event=True,
     conditional_fields={},
@@ -970,10 +1179,10 @@ FESTIVAL_LIVRE = Subcategory(
 CARTE_JEUNES = Subcategory(
     id="CARTE_JEUNES",
     category=categories.CARTE_JEUNES,
-    native_category=NativeCategory.CARTES_JEUNES,
+    native_category=NativeCategory_CARTES_JEUNES.name,
     pro_label="Carte jeunes",
     app_label="Carte jeunes",
-    search_group_name=SearchGroups.CARTES_JEUNES.name,
+    search_group_name=SearchGroup_CARTES_JEUNES.name,
     homepage_label_name=HomepageLabels.CARTE_JEUNES.name,
     is_event=False,
     conditional_fields={},
@@ -992,10 +1201,10 @@ CARTE_JEUNES = Subcategory(
 CARTE_MUSEE = Subcategory(
     id="CARTE_MUSEE",
     category=categories.MUSEE,
-    native_category=NativeCategory.ABONNEMENTS_MUSEE,
+    native_category=NativeCategory_ABONNEMENTS_MUSEE.name,
     pro_label="Abonnement musée, carte ou pass",
     app_label="Abonnement musée, carte ou pass",
-    search_group_name=SearchGroups.MUSEES_VISITES_CULTURELLES.name,
+    search_group_name=SearchGroup_MUSEES_VISITES_CULTURELLES.name,
     homepage_label_name=HomepageLabels.MUSEE.name,
     is_event=False,
     conditional_fields={},
@@ -1011,10 +1220,10 @@ CARTE_MUSEE = Subcategory(
 VISITE = Subcategory(
     id="VISITE",
     category=categories.MUSEE,
-    native_category=NativeCategory.VISITES_CULTURELLES,
+    native_category=NativeCategory_VISITES_CULTURELLES.name,
     pro_label="Visite",
     app_label="Visite",
-    search_group_name=SearchGroups.MUSEES_VISITES_CULTURELLES.name,
+    search_group_name=SearchGroup_MUSEES_VISITES_CULTURELLES.name,
     homepage_label_name=HomepageLabels.VISITES.name,
     is_event=True,
     conditional_fields={},
@@ -1030,10 +1239,10 @@ VISITE = Subcategory(
 VISITE_GUIDEE = Subcategory(
     id="VISITE_GUIDEE",
     category=categories.MUSEE,
-    native_category=NativeCategory.VISITES_CULTURELLES,
+    native_category=NativeCategory_VISITES_CULTURELLES.name,
     pro_label="Visite guidée",
     app_label="Visite guidée",
-    search_group_name=SearchGroups.MUSEES_VISITES_CULTURELLES.name,
+    search_group_name=SearchGroup_MUSEES_VISITES_CULTURELLES.name,
     homepage_label_name=HomepageLabels.VISITES.name,
     is_event=True,
     conditional_fields={},
@@ -1049,10 +1258,10 @@ VISITE_GUIDEE = Subcategory(
 EVENEMENT_PATRIMOINE = Subcategory(
     id="EVENEMENT_PATRIMOINE",
     category=categories.MUSEE,
-    native_category=NativeCategory.EVENEMENTS_PATRIMOINE,
+    native_category=NativeCategory_EVENEMENTS_PATRIMOINE.name,
     pro_label="Évènement et atelier patrimoine",
     app_label="Évènement et atelier patrimoine",
-    search_group_name=SearchGroups.MUSEES_VISITES_CULTURELLES.name,
+    search_group_name=SearchGroup_MUSEES_VISITES_CULTURELLES.name,
     homepage_label_name=HomepageLabels.VISITES.name,
     is_event=True,
     conditional_fields={},
@@ -1068,10 +1277,10 @@ EVENEMENT_PATRIMOINE = Subcategory(
 VISITE_VIRTUELLE = Subcategory(
     id="VISITE_VIRTUELLE",
     category=categories.MUSEE,
-    native_category=NativeCategory.VISITES_CULTURELLES_EN_LIGNE,
+    native_category=NativeCategory_VISITES_CULTURELLES_EN_LIGNE.name,
     pro_label="Visite virtuelle",
     app_label="Visite virtuelle",
-    search_group_name=SearchGroups.MUSEES_VISITES_CULTURELLES.name,
+    search_group_name=SearchGroup_MUSEES_VISITES_CULTURELLES.name,
     homepage_label_name=HomepageLabels.VISITES.name,
     is_event=False,
     conditional_fields={},
@@ -1087,10 +1296,10 @@ VISITE_VIRTUELLE = Subcategory(
 MUSEE_VENTE_DISTANCE = Subcategory(
     id="MUSEE_VENTE_DISTANCE",
     category=categories.MUSEE,
-    native_category=NativeCategory.VISITES_CULTURELLES,
+    native_category=NativeCategory_VISITES_CULTURELLES.name,
     pro_label="Musée vente à distance",
     app_label="Musée vente à distance",
-    search_group_name=SearchGroups.MUSEES_VISITES_CULTURELLES.name,
+    search_group_name=SearchGroup_MUSEES_VISITES_CULTURELLES.name,
     homepage_label_name=HomepageLabels.MUSEE.name,
     is_event=False,
     conditional_fields={},
@@ -1106,10 +1315,10 @@ MUSEE_VENTE_DISTANCE = Subcategory(
 FESTIVAL_ART_VISUEL = Subcategory(
     id="FESTIVAL_ART_VISUEL",
     category=categories.MUSEE,
-    native_category=NativeCategory.ARTS_VISUELS,
+    native_category=NativeCategory_ARTS_VISUELS.name,
     pro_label="Festival d'arts visuels / arts numériques",
     app_label="Festival d'arts visuels / arts numériques",
-    search_group_name=SearchGroups.MUSEES_VISITES_CULTURELLES.name,
+    search_group_name=SearchGroup_MUSEES_VISITES_CULTURELLES.name,
     homepage_label_name=HomepageLabels.FESTIVAL.name,
     is_event=True,
     conditional_fields={
@@ -1132,10 +1341,10 @@ FESTIVAL_ART_VISUEL = Subcategory(
 CONCERT = Subcategory(
     id="CONCERT",
     category=categories.MUSIQUE_LIVE,
-    native_category=NativeCategory.CONCERTS_EVENEMENTS,
+    native_category=NativeCategory_CONCERTS_EVENEMENTS.name,
     pro_label="Concert",
     app_label="Concert",
-    search_group_name=SearchGroups.CONCERTS_FESTIVALS.name,
+    search_group_name=SearchGroup_CONCERTS_FESTIVALS.name,
     homepage_label_name=HomepageLabels.CONCERT.name,
     is_event=True,
     conditional_fields={
@@ -1164,10 +1373,10 @@ CONCERT = Subcategory(
 EVENEMENT_MUSIQUE = Subcategory(
     id="EVENEMENT_MUSIQUE",
     category=categories.MUSIQUE_LIVE,
-    native_category=NativeCategory.CONCERTS_EVENEMENTS,
+    native_category=NativeCategory_CONCERTS_EVENEMENTS.name,
     pro_label="Autre type d'évènement musical",
     app_label="Autre type d'évènement musical",
-    search_group_name=SearchGroups.CONCERTS_FESTIVALS.name,
+    search_group_name=SearchGroup_CONCERTS_FESTIVALS.name,
     homepage_label_name=HomepageLabels.CONCERT.name,
     is_event=True,
     conditional_fields={
@@ -1196,10 +1405,10 @@ EVENEMENT_MUSIQUE = Subcategory(
 LIVESTREAM_MUSIQUE = Subcategory(
     id="LIVESTREAM_MUSIQUE",
     category=categories.MUSIQUE_LIVE,
-    native_category=NativeCategory.CONCERTS_EN_LIGNE,
+    native_category=NativeCategory_CONCERTS_EN_LIGNE.name,
     pro_label="Livestream musical",
     app_label="Livestream musical",
-    search_group_name=SearchGroups.EVENEMENTS_EN_LIGNE.name,
+    search_group_name=SearchGroup_EVENEMENTS_EN_LIGNE.name,
     homepage_label_name=HomepageLabels.MUSIQUE.name,
     is_event=True,
     conditional_fields={
@@ -1227,10 +1436,10 @@ LIVESTREAM_MUSIQUE = Subcategory(
 ABO_CONCERT = Subcategory(
     id="ABO_CONCERT",
     category=categories.MUSIQUE_LIVE,
-    native_category=NativeCategory.CONCERTS_EVENEMENTS,
+    native_category=NativeCategory_CONCERTS_EVENEMENTS.name,
     pro_label="Abonnement concert",
     app_label="Abonnement concert",
-    search_group_name=SearchGroups.CONCERTS_FESTIVALS.name,
+    search_group_name=SearchGroup_CONCERTS_FESTIVALS.name,
     homepage_label_name=HomepageLabels.CONCERT.name,
     is_event=False,
     conditional_fields={
@@ -1252,10 +1461,10 @@ ABO_CONCERT = Subcategory(
 FESTIVAL_MUSIQUE = Subcategory(
     id="FESTIVAL_MUSIQUE",
     category=categories.MUSIQUE_LIVE,
-    native_category=NativeCategory.FESTIVALS,
+    native_category=NativeCategory_FESTIVALS.name,
     pro_label="Festival de musique",
     app_label="Festival de musique",
-    search_group_name=SearchGroups.CONCERTS_FESTIVALS.name,
+    search_group_name=SearchGroup_CONCERTS_FESTIVALS.name,
     homepage_label_name=HomepageLabels.FESTIVAL.name,
     is_event=True,
     conditional_fields={
@@ -1286,10 +1495,10 @@ FESTIVAL_MUSIQUE = Subcategory(
 SUPPORT_PHYSIQUE_MUSIQUE_CD = Subcategory(
     id="SUPPORT_PHYSIQUE_MUSIQUE_CD",
     category=categories.MUSIQUE_ENREGISTREE,
-    native_category=NativeCategory.CD,
+    native_category=NativeCategory_CD.name,
     pro_label="CD",
     app_label="CD",
-    search_group_name=SearchGroups.CD_VINYLE_MUSIQUE_EN_LIGNE.name,
+    search_group_name=SearchGroup_CD_VINYLE_MUSIQUE_EN_LIGNE.name,
     homepage_label_name=HomepageLabels.MUSIQUE.name,
     is_event=False,
     conditional_fields={
@@ -1317,10 +1526,10 @@ SUPPORT_PHYSIQUE_MUSIQUE_CD = Subcategory(
 SUPPORT_PHYSIQUE_MUSIQUE_VINYLE = Subcategory(
     id="SUPPORT_PHYSIQUE_MUSIQUE_VINYLE",
     category=categories.MUSIQUE_ENREGISTREE,
-    native_category=NativeCategory.VINYLES,
+    native_category=NativeCategory_VINYLES.name,
     pro_label="Vinyles et autres supports",
     app_label="Vinyles et autres supports",
-    search_group_name=SearchGroups.CD_VINYLE_MUSIQUE_EN_LIGNE.name,
+    search_group_name=SearchGroup_CD_VINYLE_MUSIQUE_EN_LIGNE.name,
     homepage_label_name=HomepageLabels.MUSIQUE.name,
     is_event=False,
     conditional_fields={
@@ -1348,10 +1557,10 @@ SUPPORT_PHYSIQUE_MUSIQUE_VINYLE = Subcategory(
 TELECHARGEMENT_MUSIQUE = Subcategory(
     id="TELECHARGEMENT_MUSIQUE",
     category=categories.MUSIQUE_ENREGISTREE,
-    native_category=NativeCategory.MUSIQUE_EN_LIGNE,
+    native_category=NativeCategory_MUSIQUE_EN_LIGNE.name,
     pro_label="Téléchargement de musique",
     app_label="Téléchargement de musique",
-    search_group_name=SearchGroups.CD_VINYLE_MUSIQUE_EN_LIGNE.name,
+    search_group_name=SearchGroup_CD_VINYLE_MUSIQUE_EN_LIGNE.name,
     homepage_label_name=HomepageLabels.MUSIQUE.name,
     is_event=False,
     conditional_fields={
@@ -1380,10 +1589,10 @@ TELECHARGEMENT_MUSIQUE = Subcategory(
 ABO_PLATEFORME_MUSIQUE = Subcategory(
     id="ABO_PLATEFORME_MUSIQUE",
     category=categories.MUSIQUE_ENREGISTREE,
-    native_category=NativeCategory.MUSIQUE_EN_LIGNE,
+    native_category=NativeCategory_MUSIQUE_EN_LIGNE.name,
     pro_label="Abonnement plateforme musicale",
     app_label="Abonnement plateforme musicale",
-    search_group_name=SearchGroups.CD_VINYLE_MUSIQUE_EN_LIGNE.name,
+    search_group_name=SearchGroup_CD_VINYLE_MUSIQUE_EN_LIGNE.name,
     homepage_label_name=HomepageLabels.MUSIQUE.name,
     is_event=False,
     conditional_fields={},
@@ -1399,10 +1608,10 @@ ABO_PLATEFORME_MUSIQUE = Subcategory(
 CAPTATION_MUSIQUE = Subcategory(
     id="CAPTATION_MUSIQUE",
     category=categories.MUSIQUE_ENREGISTREE,
-    native_category=NativeCategory.PRATIQUES_ET_ATELIERS_ARTISTIQUES,
+    native_category=NativeCategory_PRATIQUES_ET_ATELIERS_ARTISTIQUES.name,
     pro_label="Captation musicale",
     app_label="Captation musicale",
-    search_group_name=SearchGroups.ARTS_LOISIRS_CREATIFS.name,
+    search_group_name=SearchGroup_ARTS_LOISIRS_CREATIFS.name,
     homepage_label_name=HomepageLabels.MUSIQUE.name,
     is_event=False,
     conditional_fields={
@@ -1433,10 +1642,10 @@ CAPTATION_MUSIQUE = Subcategory(
 SEANCE_ESSAI_PRATIQUE_ART = Subcategory(
     id="SEANCE_ESSAI_PRATIQUE_ART",
     category=categories.PRATIQUE_ART,
-    native_category=NativeCategory.PRATIQUES_ET_ATELIERS_ARTISTIQUES,
+    native_category=NativeCategory_PRATIQUES_ET_ATELIERS_ARTISTIQUES.name,
     pro_label="Séance d'essai",
     app_label="Séance d'essai",
-    search_group_name=SearchGroups.ARTS_LOISIRS_CREATIFS.name,
+    search_group_name=SearchGroup_ARTS_LOISIRS_CREATIFS.name,
     homepage_label_name=HomepageLabels.BEAUX_ARTS.name,
     is_event=True,
     conditional_fields={ExtraDataFieldEnum.SPEAKER.value: FieldCondition()},
@@ -1452,10 +1661,10 @@ SEANCE_ESSAI_PRATIQUE_ART = Subcategory(
 ATELIER_PRATIQUE_ART = Subcategory(
     id="ATELIER_PRATIQUE_ART",
     category=categories.PRATIQUE_ART,
-    native_category=NativeCategory.PRATIQUES_ET_ATELIERS_ARTISTIQUES,
+    native_category=NativeCategory_PRATIQUES_ET_ATELIERS_ARTISTIQUES.name,
     pro_label="Atelier, stage de pratique artistique",
     app_label="Atelier, stage de pratique artistique",
-    search_group_name=SearchGroups.ARTS_LOISIRS_CREATIFS.name,
+    search_group_name=SearchGroup_ARTS_LOISIRS_CREATIFS.name,
     homepage_label_name=HomepageLabels.BEAUX_ARTS.name,
     is_event=True,
     conditional_fields={ExtraDataFieldEnum.SPEAKER.value: FieldCondition()},
@@ -1471,10 +1680,10 @@ ATELIER_PRATIQUE_ART = Subcategory(
 ABO_PRATIQUE_ART = Subcategory(
     id="ABO_PRATIQUE_ART",
     category=categories.PRATIQUE_ART,
-    native_category=NativeCategory.PRATIQUES_ET_ATELIERS_ARTISTIQUES,
+    native_category=NativeCategory_PRATIQUES_ET_ATELIERS_ARTISTIQUES.name,
     pro_label="Abonnement pratique artistique",
     app_label="Abonnement pratique artistique",
-    search_group_name=SearchGroups.ARTS_LOISIRS_CREATIFS.name,
+    search_group_name=SearchGroup_ARTS_LOISIRS_CREATIFS.name,
     homepage_label_name=HomepageLabels.BEAUX_ARTS.name,
     is_event=False,
     conditional_fields={},
@@ -1489,10 +1698,10 @@ ABO_PRATIQUE_ART = Subcategory(
 PRATIQUE_ART_VENTE_DISTANCE = Subcategory(
     id="PRATIQUE_ART_VENTE_DISTANCE",
     category=categories.PRATIQUE_ART,
-    native_category=NativeCategory.PRATIQUE_ARTISTIQUE_EN_LIGNE,
+    native_category=NativeCategory_PRATIQUE_ARTISTIQUE_EN_LIGNE.name,
     pro_label="Pratique artistique - vente à distance",
     app_label="Pratique artistique - vente à distance",
-    search_group_name=SearchGroups.ARTS_LOISIRS_CREATIFS.name,
+    search_group_name=SearchGroup_ARTS_LOISIRS_CREATIFS.name,
     homepage_label_name=HomepageLabels.BEAUX_ARTS.name,
     is_event=False,
     conditional_fields={ExtraDataFieldEnum.SPEAKER.value: FieldCondition()},
@@ -1507,10 +1716,10 @@ PRATIQUE_ART_VENTE_DISTANCE = Subcategory(
 PLATEFORME_PRATIQUE_ARTISTIQUE = Subcategory(
     id="PLATEFORME_PRATIQUE_ARTISTIQUE",
     category=categories.PRATIQUE_ART,
-    native_category=NativeCategory.PRATIQUE_ARTISTIQUE_EN_LIGNE,
+    native_category=NativeCategory_PRATIQUE_ARTISTIQUE_EN_LIGNE.name,
     pro_label="Pratique artistique - plateforme en ligne",
     app_label="Plateforme de pratique artistique",
-    search_group_name=SearchGroups.ARTS_LOISIRS_CREATIFS.name,
+    search_group_name=SearchGroup_ARTS_LOISIRS_CREATIFS.name,
     homepage_label_name=HomepageLabels.PLATEFORME.name,
     is_event=False,
     conditional_fields={},
@@ -1526,10 +1735,10 @@ PLATEFORME_PRATIQUE_ARTISTIQUE = Subcategory(
 LIVESTREAM_PRATIQUE_ARTISTIQUE = Subcategory(
     id="LIVESTREAM_PRATIQUE_ARTISTIQUE",
     category=categories.PRATIQUE_ART,
-    native_category=NativeCategory.PRATIQUE_ARTISTIQUE_EN_LIGNE,
+    native_category=NativeCategory_PRATIQUE_ARTISTIQUE_EN_LIGNE.name,
     pro_label="Pratique artistique - livestream",
     app_label="Pratique artistique - livestream",
-    search_group_name=SearchGroups.EVENEMENTS_EN_LIGNE.name,
+    search_group_name=SearchGroup_EVENEMENTS_EN_LIGNE.name,
     homepage_label_name=HomepageLabels.COURS.name,
     is_event=True,
     conditional_fields={},
@@ -1547,10 +1756,10 @@ LIVESTREAM_PRATIQUE_ARTISTIQUE = Subcategory(
 ABO_PRESSE_EN_LIGNE = Subcategory(
     id="ABO_PRESSE_EN_LIGNE",
     category=categories.MEDIA,
-    native_category=NativeCategory.PRESSE_EN_LIGNE,
+    native_category=NativeCategory_PRESSE_EN_LIGNE.name,
     pro_label="Abonnement presse en ligne",
     app_label="Abonnement presse en ligne",
-    search_group_name=SearchGroups.MEDIA_PRESSE.name,
+    search_group_name=SearchGroup_MEDIA_PRESSE.name,
     homepage_label_name=HomepageLabels.MEDIAS.name,
     is_event=False,
     conditional_fields={},
@@ -1566,10 +1775,10 @@ ABO_PRESSE_EN_LIGNE = Subcategory(
 PODCAST = Subcategory(
     id="PODCAST",
     category=categories.MEDIA,
-    native_category=NativeCategory.PODCAST,
+    native_category=NativeCategory_PODCAST.name,
     pro_label="Podcast",
     app_label="Podcast",
-    search_group_name=SearchGroups.MEDIA_PRESSE.name,
+    search_group_name=SearchGroup_MEDIA_PRESSE.name,
     homepage_label_name=HomepageLabels.MEDIAS.name,
     is_event=False,
     conditional_fields={},
@@ -1585,10 +1794,10 @@ PODCAST = Subcategory(
 APP_CULTURELLE = Subcategory(
     id="APP_CULTURELLE",
     category=categories.MEDIA,
-    native_category=NativeCategory.AUTRES_MEDIAS,
+    native_category=NativeCategory_AUTRES_MEDIAS.name,
     pro_label="Application culturelle",
     app_label="Application culturelle",
-    search_group_name=SearchGroups.MEDIA_PRESSE.name,
+    search_group_name=SearchGroup_MEDIA_PRESSE.name,
     homepage_label_name=HomepageLabels.MEDIAS.name,
     is_event=False,
     conditional_fields={},
@@ -1606,10 +1815,10 @@ APP_CULTURELLE = Subcategory(
 SPECTACLE_REPRESENTATION = Subcategory(
     id="SPECTACLE_REPRESENTATION",
     category=categories.SPECTACLE,
-    native_category=NativeCategory.SPECTACLES_REPRESENTATIONS,
+    native_category=NativeCategory_SPECTACLES_REPRESENTATIONS.name,
     pro_label="Spectacle, représentation",
     app_label="Spectacle, représentation",
-    search_group_name=SearchGroups.SPECTACLES.name,
+    search_group_name=SearchGroup_SPECTACLES.name,
     homepage_label_name=HomepageLabels.SPECTACLES.name,
     is_event=True,
     conditional_fields={
@@ -1636,10 +1845,10 @@ SPECTACLE_REPRESENTATION = Subcategory(
 SPECTACLE_ENREGISTRE = Subcategory(
     id="SPECTACLE_ENREGISTRE",
     category=categories.SPECTACLE,
-    native_category=NativeCategory.SPECTACLES_ENREGISTRES,
+    native_category=NativeCategory_SPECTACLES_ENREGISTRES.name,
     pro_label="Spectacle enregistré",
     app_label="Spectacle enregistré",
-    search_group_name=SearchGroups.SPECTACLES.name,
+    search_group_name=SearchGroup_SPECTACLES.name,
     homepage_label_name=HomepageLabels.SPECTACLES.name,
     is_event=False,
     conditional_fields={
@@ -1665,10 +1874,10 @@ SPECTACLE_ENREGISTRE = Subcategory(
 LIVESTREAM_EVENEMENT = Subcategory(
     id="LIVESTREAM_EVENEMENT",
     category=categories.SPECTACLE,
-    native_category=NativeCategory.RENCONTRES_EN_LIGNE,
+    native_category=NativeCategory_RENCONTRES_EN_LIGNE.name,
     pro_label="Livestream d'évènement",
     app_label="Livestream d'évènement",
-    search_group_name=SearchGroups.EVENEMENTS_EN_LIGNE.name,
+    search_group_name=SearchGroup_EVENEMENTS_EN_LIGNE.name,
     homepage_label_name=HomepageLabels.SPECTACLES.name,
     is_event=True,
     conditional_fields={
@@ -1694,10 +1903,10 @@ LIVESTREAM_EVENEMENT = Subcategory(
 FESTIVAL_SPECTACLE = Subcategory(
     id="FESTIVAL_SPECTACLE",
     category=categories.SPECTACLE,
-    native_category=NativeCategory.SPECTACLES_REPRESENTATIONS,
+    native_category=NativeCategory_SPECTACLES_REPRESENTATIONS.name,
     pro_label="Festival de spectacle vivant",
     app_label="Festival de spectacle vivant",
-    search_group_name=SearchGroups.SPECTACLES.name,
+    search_group_name=SearchGroup_SPECTACLES.name,
     homepage_label_name=HomepageLabels.SPECTACLES.name,
     is_event=True,
     conditional_fields={
@@ -1724,10 +1933,10 @@ FESTIVAL_SPECTACLE = Subcategory(
 ABO_SPECTACLE = Subcategory(
     id="ABO_SPECTACLE",
     category=categories.SPECTACLE,
-    native_category=NativeCategory.ABONNEMENTS_SPECTACLE,
+    native_category=NativeCategory_ABONNEMENTS_SPECTACLE.name,
     pro_label="Abonnement spectacle",
     app_label="Abonnement spectacle",
-    search_group_name=SearchGroups.SPECTACLES.name,
+    search_group_name=SearchGroup_SPECTACLES.name,
     homepage_label_name=HomepageLabels.SPECTACLES.name,
     is_event=False,
     conditional_fields={
@@ -1749,10 +1958,10 @@ ABO_SPECTACLE = Subcategory(
 SPECTACLE_VENTE_DISTANCE = Subcategory(
     id="SPECTACLE_VENTE_DISTANCE",
     category=categories.SPECTACLE,
-    native_category=NativeCategory.SPECTACLES_REPRESENTATIONS,
+    native_category=NativeCategory_SPECTACLES_REPRESENTATIONS.name,
     pro_label="Spectacle vivant - vente à distance",
     app_label="Spectacle vivant - vente à distance",
-    search_group_name=SearchGroups.SPECTACLES.name,
+    search_group_name=SearchGroup_SPECTACLES.name,
     homepage_label_name=HomepageLabels.SPECTACLES.name,
     is_event=False,
     conditional_fields={
@@ -1779,10 +1988,10 @@ SPECTACLE_VENTE_DISTANCE = Subcategory(
 ACHAT_INSTRUMENT = Subcategory(
     id="ACHAT_INSTRUMENT",
     category=categories.INSTRUMENT,
-    native_category=NativeCategory.ACHAT_LOCATION_INSTRUMENT,
+    native_category=NativeCategory_ACHAT_LOCATION_INSTRUMENT.name,
     pro_label="Achat instrument",
     app_label="Achat instrument",
-    search_group_name=SearchGroups.INSTRUMENTS.name,
+    search_group_name=SearchGroup_INSTRUMENTS.name,
     homepage_label_name=HomepageLabels.INSTRUMENT.name,
     is_event=False,
     conditional_fields={ExtraDataFieldEnum.EAN.value: FieldCondition(is_required_in_external_form=True)},
@@ -1797,10 +2006,10 @@ ACHAT_INSTRUMENT = Subcategory(
 BON_ACHAT_INSTRUMENT = Subcategory(
     id="BON_ACHAT_INSTRUMENT",
     category=categories.INSTRUMENT,
-    native_category=NativeCategory.ACHAT_LOCATION_INSTRUMENT,
+    native_category=NativeCategory_ACHAT_LOCATION_INSTRUMENT.name,
     pro_label="Bon d'achat instrument",
     app_label="Bon d'achat instrument",
-    search_group_name=SearchGroups.INSTRUMENTS.name,
+    search_group_name=SearchGroup_INSTRUMENTS.name,
     homepage_label_name=HomepageLabels.INSTRUMENT.name,
     is_event=False,
     conditional_fields={},
@@ -1816,10 +2025,10 @@ BON_ACHAT_INSTRUMENT = Subcategory(
 LOCATION_INSTRUMENT = Subcategory(
     id="LOCATION_INSTRUMENT",
     category=categories.INSTRUMENT,
-    native_category=NativeCategory.ACHAT_LOCATION_INSTRUMENT,
+    native_category=NativeCategory_ACHAT_LOCATION_INSTRUMENT.name,
     pro_label="Location instrument",
     app_label="Location instrument",
-    search_group_name=SearchGroups.INSTRUMENTS.name,
+    search_group_name=SearchGroup_INSTRUMENTS.name,
     homepage_label_name=HomepageLabels.INSTRUMENT.name,
     is_event=False,
     conditional_fields={ExtraDataFieldEnum.EAN.value: FieldCondition(is_required_in_external_form=True)},
@@ -1834,10 +2043,10 @@ LOCATION_INSTRUMENT = Subcategory(
 PARTITION = Subcategory(
     id="PARTITION",
     category=categories.INSTRUMENT,
-    native_category=NativeCategory.PARTITIONS_DE_MUSIQUE,
+    native_category=NativeCategory_PARTITIONS_DE_MUSIQUE.name,
     pro_label="Partition",
     app_label="Partition",
-    search_group_name=SearchGroups.INSTRUMENTS.name,
+    search_group_name=SearchGroup_INSTRUMENTS.name,
     homepage_label_name=HomepageLabels.INSTRUMENT.name,
     is_event=False,
     conditional_fields={ExtraDataFieldEnum.EAN.value: FieldCondition(is_required_in_external_form=True)},
@@ -1854,10 +2063,10 @@ PARTITION = Subcategory(
 MATERIEL_ART_CREATIF = Subcategory(
     id="MATERIEL_ART_CREATIF",
     category=categories.BEAUX_ARTS,
-    native_category=NativeCategory.MATERIELS_CREATIFS,
+    native_category=NativeCategory_MATERIELS_CREATIFS.name,
     pro_label="Matériel arts créatifs",
     app_label="Matériel arts créatifs",
-    search_group_name=SearchGroups.ARTS_LOISIRS_CREATIFS.name,
+    search_group_name=SearchGroup_ARTS_LOISIRS_CREATIFS.name,
     homepage_label_name=HomepageLabels.BEAUX_ARTS.name,
     is_event=False,
     conditional_fields={ExtraDataFieldEnum.EAN.value: FieldCondition(is_required_in_external_form=True)},
@@ -1876,7 +2085,7 @@ ACTIVATION_EVENT = Subcategory(
     category=categories.TECHNIQUE,
     pro_label="Catégorie technique d'évènement d'activation ",
     app_label="Catégorie technique d'évènement d'activation ",
-    search_group_name=SearchGroups.NONE.name,
+    search_group_name=SearchGroup_NONE.name,
     homepage_label_name=HomepageLabels.NONE.name,
     is_event=True,
     conditional_fields={},
@@ -1889,14 +2098,14 @@ ACTIVATION_EVENT = Subcategory(
     reimbursement_rule=ReimbursementRuleChoices.NOT_REIMBURSED.value,
     is_selectable=False,
     is_bookable_by_underage_when_not_free=False,
-    native_category=NativeCategory.DEPRECIEE,
+    native_category=NativeCategory_DEPRECIEE.name,
 )
 ACTIVATION_THING = Subcategory(
     id="ACTIVATION_THING",
     category=categories.TECHNIQUE,
     pro_label="Catégorie technique de thing d'activation",
     app_label="Catégorie technique de thing d'activation",
-    search_group_name=SearchGroups.NONE.name,
+    search_group_name=SearchGroup_NONE.name,
     homepage_label_name=HomepageLabels.NONE.name,
     is_event=False,
     conditional_fields={},
@@ -1909,15 +2118,15 @@ ACTIVATION_THING = Subcategory(
     reimbursement_rule=ReimbursementRuleChoices.NOT_REIMBURSED.value,
     is_selectable=False,
     is_bookable_by_underage_when_not_free=False,
-    native_category=NativeCategory.DEPRECIEE,
+    native_category=NativeCategory_DEPRECIEE.name,
 )
 JEU_SUPPORT_PHYSIQUE = Subcategory(
     id="JEU_SUPPORT_PHYSIQUE",
     category=categories.TECHNIQUE,
-    native_category=NativeCategory.JEUX_PHYSIQUES,
+    native_category=NativeCategory_JEUX_PHYSIQUES.name,
     pro_label="Catégorie technique Jeu support physique",
     app_label="Catégorie technique Jeu support physique",
-    search_group_name=SearchGroups.NONE.name,
+    search_group_name=SearchGroup_NONE.name,
     homepage_label_name=HomepageLabels.NONE.name,
     is_event=False,
     conditional_fields={},
@@ -1935,10 +2144,10 @@ JEU_SUPPORT_PHYSIQUE = Subcategory(
 OEUVRE_ART = Subcategory(
     id="OEUVRE_ART",
     category=categories.TECHNIQUE,
-    native_category=NativeCategory.ARTS_VISUELS,
+    native_category=NativeCategory_ARTS_VISUELS.name,
     pro_label="Catégorie technique d'oeuvre d'art",
     app_label="Catégorie technique d'oeuvre d'art",
-    search_group_name=SearchGroups.ARTS_LOISIRS_CREATIFS.name,
+    search_group_name=SearchGroup_ARTS_LOISIRS_CREATIFS.name,
     homepage_label_name=HomepageLabels.NONE.name,
     is_event=False,
     conditional_fields={},
@@ -2065,7 +2274,7 @@ SubcategoryIdEnumv2 = Enum("SubcategoryIdEnumv2", {subcategory.id: subcategory.i
 SubcategoryProLabelEnumv2 = Enum("SubcategoryProLabelEnumv2", {subcategory.id: subcategory.pro_label for subcategory in ALL_SUBCATEGORIES})  # type: ignore [misc]
 SearchGroupNameEnumv2 = Enum(  # type: ignore [misc]
     "SearchGroupNameEnumv2",
-    {search_group_name: search_group_name for search_group_name in [c.name for c in SearchGroups]},
+    {search_group_name: search_group_name for search_group_name in [c.name for c in SEARCH_GROUPS]},
 )
 HomepageLabelNameEnumv2 = Enum(  # type: ignore [misc]
     "(HomepageLabelNameEnumv2",
