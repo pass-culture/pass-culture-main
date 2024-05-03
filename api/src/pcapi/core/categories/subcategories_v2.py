@@ -17,9 +17,6 @@ from pcapi.domain.show_types import ShowType
 from pcapi.domain.show_types import show_types
 
 
-class Category: ...
-
-
 @dataclass
 class SearchNode:
     label: str

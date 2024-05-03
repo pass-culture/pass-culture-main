@@ -50,45 +50,25 @@ class GTL:
 
 
 @dataclass
-class BookSubType(SearchNode):
+class BookSubType:
     label: str
-    _gtls: list[GTL]
-    _position: int
+    gtls: list[GTL]
+    position: int
 
 
 @dataclass
-class BookType(SearchNode):
+class BookType:
     children: list[BookSubType]
     label: str
-    _gtls: list[GTL]
-    _position: int
-
-    @property
-    def id(self) -> str | None:
-        return str(self)
-
-    @property
-    def gtls(self) -> list[str] | None:
-        return None
-
-    @property
-    def position(self) -> int | None:
-        return None
-
-    @property
-    def search_filter(self) -> str | None:
-        raise NotImplementedError()
-
-    @property
-    def search_value(self) -> str | None:
-        raise NotImplementedError()
+    gtls: list[GTL]
+    position: int
 
 
 book_types = [
     BookType(
-        _position=1,
+        position=1,
         label="Romans & littérature",
-        _gtls=[
+        gtls=[
             GTL(code="01010000", label="Romans & Nouvelles", level=2),
             GTL(code="01020000", label="Romans & Nouvelles de genre", level=2),
             GTL(code="01030000", label="Œuvres classiques", level=2),
@@ -101,80 +81,80 @@ book_types = [
         ],
         children=[
             BookSubType(
-                _position=1,
+                position=1,
                 label="Romances",
-                _gtls=[
+                gtls=[
                     GTL(code="01020600", label="Roman sentimental", level=3),
                     GTL(code="92000000", label="Romance", level=1),
                 ],
             ),
             BookSubType(
-                _position=2,
+                position=2,
                 label="Thriller",
-                _gtls=[
+                gtls=[
                     GTL(code="01020500", label="Thriller", level=3),
                     GTL(code="90020000", label="Thriller", level=2),
                 ],
             ),
             BookSubType(
-                _position=3,
+                position=3,
                 label="Fantasy",
-                _gtls=[
+                gtls=[
                     GTL(code="01020900", label="Fantasy", level=3),
                     GTL(code="91030000", label="Fantasy", level=2),
                 ],
             ),
             BookSubType(
-                _position=4,
+                position=4,
                 label="Policier",
-                _gtls=[
+                gtls=[
                     GTL(code="01020400", label="Policier", level=3),
                     GTL(code="90010000", label="Policier", level=2),
                 ],
             ),
             BookSubType(
-                _position=5, label="Œuvres classiques", _gtls=[GTL(code="01030000", label="Œuvres classiques", level=2)]
+                position=5, label="Œuvres classiques", gtls=[GTL(code="01030000", label="Œuvres classiques", level=2)]
             ),
             BookSubType(
-                _position=6,
+                position=6,
                 label="Science-fiction",
-                _gtls=[
+                gtls=[
                     GTL(code="01020700", label="Science-fiction", level=3),
                     GTL(code="91010000", label="Science-fiction", level=2),
                 ],
             ),
             BookSubType(
-                _position=7,
+                position=7,
                 label="Horreur",
-                _gtls=[
+                gtls=[
                     GTL(code="01020802", label="Horreur / Terreur", level=4),
                     GTL(code="91020200", label="Horreur / Terreur", level=3),
                 ],
             ),
             BookSubType(
-                _position=8,
+                position=8,
                 label="Aventure",
-                _gtls=[
+                gtls=[
                     GTL(code="01020200", label="Aventure", level=3),
                     GTL(code="01020300", label="Espionnage", level=3),
                 ],
             ),
             BookSubType(
-                _position=9,
+                position=9,
                 label="Biographie",
-                _gtls=[GTL(code="01060000", label="Biographie / Témoignage littéraire", level=2)],
+                gtls=[GTL(code="01060000", label="Biographie / Témoignage littéraire", level=2)],
             ),
             BookSubType(
-                _position=10,
+                position=10,
                 label="Contes & légendes",
-                _gtls=[GTL(code="01040000", label="Contes / Légendes", level=2)],
+                gtls=[GTL(code="01040000", label="Contes / Légendes", level=2)],
             ),
         ],
     ),
     BookType(
-        _position=2,
+        position=2,
         label="Mangas",
-        _gtls=[
+        gtls=[
             GTL(code="03040300", label="Kodomo", level=3),
             GTL(code="03040400", label="Shôjo", level=3),
             GTL(code="03040500", label="Shonen", level=3),
@@ -184,24 +164,24 @@ book_types = [
             GTL(code="03040900", label="Yuri", level=3),
         ],
         children=[
-            BookSubType(_position=1, label="Shonen", _gtls=[GTL(code="03040500", label="Shonen", level=3)]),
-            BookSubType(_position=2, label="Seinen", _gtls=[GTL(code="03040600", label="Seinen", level=3)]),
-            BookSubType(_position=3, label="Shôjo", _gtls=[GTL(code="03040400", label="Shôjo", level=3)]),
-            BookSubType(_position=4, label="Yaoi", _gtls=[GTL(code="03040800", label="Yaoi", level=3)]),
-            BookSubType(_position=5, label="Kodomo", _gtls=[GTL(code="03040300", label="Kodomo", level=3)]),
-            BookSubType(_position=6, label="Josei", _gtls=[GTL(code="03040700", label="Josei", level=3)]),
-            BookSubType(_position=7, label="Yuri", _gtls=[GTL(code="03040900", label="Yuri", level=3)]),
+            BookSubType(position=1, label="Shonen", gtls=[GTL(code="03040500", label="Shonen", level=3)]),
+            BookSubType(position=2, label="Seinen", gtls=[GTL(code="03040600", label="Seinen", level=3)]),
+            BookSubType(position=3, label="Shôjo", gtls=[GTL(code="03040400", label="Shôjo", level=3)]),
+            BookSubType(position=4, label="Yaoi", gtls=[GTL(code="03040800", label="Yaoi", level=3)]),
+            BookSubType(position=5, label="Kodomo", gtls=[GTL(code="03040300", label="Kodomo", level=3)]),
+            BookSubType(position=6, label="Josei", gtls=[GTL(code="03040700", label="Josei", level=3)]),
+            BookSubType(position=7, label="Yuri", gtls=[GTL(code="03040900", label="Yuri", level=3)]),
         ],
     ),
     BookType(
-        _position=3,
+        position=3,
         label="BD & comics",
-        _gtls=[GTL(code="03020000", label="Bandes dessinées", level=2), GTL(code="03030000", label="Comics", level=2)],
+        gtls=[GTL(code="03020000", label="Bandes dessinées", level=2), GTL(code="03030000", label="Comics", level=2)],
         children=[
             BookSubType(
-                _position=1,
+                position=1,
                 label="Humour",
-                _gtls=[
+                gtls=[
                     GTL(code="03020111", label="Humour", level=4),
                     GTL(code="03020211", label="Humour", level=4),
                     GTL(code="03020310", label="Humour", level=4),
@@ -214,9 +194,9 @@ book_types = [
                 ],
             ),
             BookSubType(
-                _position=2,
+                position=2,
                 label="Action & aventure",
-                _gtls=[
+                gtls=[
                     GTL(code="03020109", label="Action / Aventures", level=4),
                     GTL(code="03020209", label="Action / Aventures", level=4),
                     GTL(code="03020308", label="Action / Aventures", level=4),
@@ -229,9 +209,9 @@ book_types = [
                 ],
             ),
             BookSubType(
-                _position=3,
+                position=3,
                 label="Fantastique & épouvante",
-                _gtls=[
+                gtls=[
                     GTL(code="03020206", label="Fantastique / Epouvante", level=4),
                     GTL(code="03020305", label="Fantastique / Epouvante", level=4),
                     GTL(code="03030205", label="Fantastique / Epouvante", level=4),
@@ -243,9 +223,9 @@ book_types = [
                 ],
             ),
             BookSubType(
-                _position=4,
+                position=4,
                 label="Documentaire & société",
-                _gtls=[
+                gtls=[
                     GTL(code="03020103", label="Documentaire / Société", level=4),
                     GTL(code="03020203", label="Documentaire / Société", level=4),
                     GTL(code="03020302", label="Documentaire / Société", level=4),
@@ -258,9 +238,9 @@ book_types = [
                 ],
             ),
             BookSubType(
-                _position=5,
+                position=5,
                 label="Fantasy",
-                _gtls=[
+                gtls=[
                     GTL(code="03020105", label="Fantasy", level=4),
                     GTL(code="03020205", label="Fantasy", level=4),
                     GTL(code="03020304", label="Fantasy", level=4),
@@ -273,9 +253,9 @@ book_types = [
                 ],
             ),
             BookSubType(
-                _position=6,
+                position=6,
                 label="Histoire",
-                _gtls=[
+                gtls=[
                     GTL(code="03020108", label="Histoire", level=4),
                     GTL(code="03020208", label="Histoire", level=4),
                     GTL(code="03020307", label="Histoire", level=4),
@@ -288,9 +268,9 @@ book_types = [
                 ],
             ),
             BookSubType(
-                _position=7,
+                position=7,
                 label="Policier & thriller",
-                _gtls=[
+                gtls=[
                     GTL(code="03020107", label="Policier / Thriller", level=4),
                     GTL(code="03020207", label="Policier / Thriller", level=4),
                     GTL(code="03020306", label="Policier / Thriller", level=4),
@@ -303,9 +283,9 @@ book_types = [
                 ],
             ),
             BookSubType(
-                _position=8,
+                position=8,
                 label="Science-fiction",
-                _gtls=[
+                gtls=[
                     GTL(code="03020104", label="Science-fiction", level=4),
                     GTL(code="03020204", label="Science-fiction", level=4),
                     GTL(code="03020303", label="Science-fiction", level=4),
@@ -318,9 +298,9 @@ book_types = [
                 ],
             ),
             BookSubType(
-                _position=9,
+                position=9,
                 label="Adaptation",
-                _gtls=[
+                gtls=[
                     GTL(code="03020102", label="Adaptation", level=4),
                     GTL(code="03020202", label="Adaptation", level=4),
                     GTL(code="03020301", label="Adaptation", level=4),
@@ -333,9 +313,9 @@ book_types = [
                 ],
             ),
             BookSubType(
-                _position=10,
+                position=10,
                 label="Western",
-                _gtls=[
+                gtls=[
                     GTL(code="03020110", label="Western", level=4),
                     GTL(code="03020210", label="Western", level=4),
                     GTL(code="03020309", label="Western", level=4),
@@ -347,75 +327,73 @@ book_types = [
                     GTL(code="03030709", label="Western", level=4),
                 ],
             ),
-            BookSubType(_position=11, label="Super héros", _gtls=[GTL(code="03030400", label="Super Héros", level=3)]),
-            BookSubType(_position=12, label="Strip", _gtls=[GTL(code="03030300", label="Strip", level=3)]),
+            BookSubType(position=11, label="Super héros", gtls=[GTL(code="03030400", label="Super Héros", level=3)]),
+            BookSubType(position=12, label="Strip", gtls=[GTL(code="03030300", label="Strip", level=3)]),
         ],
     ),
     BookType(
-        _position=4,
+        position=4,
         label="Loisirs & bien-être",
-        _gtls=[GTL(code="04000000", label="Vie pratique & Loisirs", level=1)],
+        gtls=[GTL(code="04000000", label="Vie pratique & Loisirs", level=1)],
         children=[
             BookSubType(
-                _position=1,
+                position=1,
                 label="Vie quotidienne & bien-être",
-                _gtls=[GTL(code="04060000", label="Vie quotidienne & Bien-être", level=2)],
+                gtls=[GTL(code="04060000", label="Vie quotidienne & Bien-être", level=2)],
             ),
             BookSubType(
-                _position=2,
+                position=2,
                 label="Cuisine",
-                _gtls=[GTL(code="04030000", label="Arts de la table / Gastronomie", level=2)],
+                gtls=[GTL(code="04030000", label="Arts de la table / Gastronomie", level=2)],
             ),
+            BookSubType(position=3, label="Activités manuelles", gtls=[GTL(code="04050000", label="Hobbies", level=2)]),
+            BookSubType(position=4, label="Jeux", gtls=[GTL(code="04050500", label="Jeux", level=3)]),
+            BookSubType(position=5, label="Sports", gtls=[GTL(code="04070000", label="Sports", level=2)]),
+            BookSubType(position=6, label="Animaux", gtls=[GTL(code="04020000", label="Animaux", level=2)]),
             BookSubType(
-                _position=3, label="Activités manuelles", _gtls=[GTL(code="04050000", label="Hobbies", level=2)]
-            ),
-            BookSubType(_position=4, label="Jeux", _gtls=[GTL(code="04050500", label="Jeux", level=3)]),
-            BookSubType(_position=5, label="Sports", _gtls=[GTL(code="04070000", label="Sports", level=2)]),
-            BookSubType(_position=6, label="Animaux", _gtls=[GTL(code="04020000", label="Animaux", level=2)]),
-            BookSubType(
-                _position=7,
+                position=7,
                 label="Nature & plein air",
-                _gtls=[GTL(code="04010000", label="Nature & Plein air", level=2)],
+                gtls=[GTL(code="04010000", label="Nature & Plein air", level=2)],
             ),
             BookSubType(
-                _position=8, label="Habitat & maison", _gtls=[GTL(code="04040000", label="Habitat / Maison", level=2)]
+                position=8, label="Habitat & maison", gtls=[GTL(code="04040000", label="Habitat / Maison", level=2)]
             ),
-            BookSubType(_position=9, label="Transports", _gtls=[GTL(code="04050700", label="Transports", level=3)]),
+            BookSubType(position=9, label="Transports", gtls=[GTL(code="04050700", label="Transports", level=3)]),
         ],
     ),
     BookType(
-        _position=5,
+        position=5,
         label="Société & politique",
-        _gtls=[
+        gtls=[
             GTL(code="09000000", label="Sciences humaines & sociales", level=1),
             GTL(code="01110000", label="Actualités & Reportages", level=2),
         ],
         children=[
-            BookSubType(_position=1, label="Philosophie", _gtls=[GTL(code="09080000", label="Philosophie", level=2)]),
+            BookSubType(position=1, label="Philosophie", gtls=[GTL(code="09080000", label="Philosophie", level=2)]),
             BookSubType(
-                _position=2,
+                position=2,
                 label="Sciences politiques",
-                _gtls=[GTL(code="09110000", label="Sciences politiques & Politique", level=2)],
+                gtls=[GTL(code="09110000", label="Sciences politiques & Politique", level=2)],
             ),
             BookSubType(
-                _position=3,
+                position=3,
                 label="Sciences sociales & société",
-                _gtls=[GTL(code="09120000", label="Sciences sociales  / Société", level=2)],
+                gtls=[GTL(code="09120000", label="Sciences sociales  / Société", level=2)],
             ),
             BookSubType(
-                _position=4,
+                position=4,
                 label="Psychologie & psychanalyse",
-                _gtls=[GTL(code="09090000", label="Psychologie / Psychanalyse", level=2)],
+                gtls=[GTL(code="09090000", label="Psychologie / Psychanalyse", level=2)],
             ),
             BookSubType(
-                _position=5,
+                position=5,
                 label="Actualité & reportage",
-                _gtls=[GTL(code="01110000", label="Actualités & Reportages", level=2)],
+                gtls=[GTL(code="01110000", label="Actualités & Reportages", level=2)],
             ),
             BookSubType(
-                _position=6,
+                position=6,
                 label="Anthropologie & ethnologie",
-                _gtls=[
+                gtls=[
                     GTL(code="09010000", label="Anthropologie", level=2),
                     GTL(code="09020000", label="Ethnologie", level=2),
                 ],
@@ -423,29 +401,29 @@ book_types = [
         ],
     ),
     BookType(
-        _position=6,
+        position=6,
         label="Théâtre, poésie & essais",
-        _gtls=[
+        gtls=[
             GTL(code="01080000", label="Théâtre", level=2),
             GTL(code="01090000", label="Poésie", level=2),
             GTL(code="01070000", label="Littérature argumentative", level=2),
             GTL(code="01050000", label="Récit", level=2),
         ],
         children=[
-            BookSubType(_position=1, label="Théâtre", _gtls=[GTL(code="01080000", label="Théâtre", level=2)]),
-            BookSubType(_position=2, label="Poésie", _gtls=[GTL(code="01090000", label="Poésie", level=2)]),
+            BookSubType(position=1, label="Théâtre", gtls=[GTL(code="01080000", label="Théâtre", level=2)]),
+            BookSubType(position=2, label="Poésie", gtls=[GTL(code="01090000", label="Poésie", level=2)]),
             BookSubType(
-                _position=3,
+                position=3,
                 label="Essais littéraires",
-                _gtls=[GTL(code="01070000", label="Littérature argumentative", level=2)],
+                gtls=[GTL(code="01070000", label="Littérature argumentative", level=2)],
             ),
-            BookSubType(_position=4, label="Récit", _gtls=[GTL(code="01050000", label="Récit", level=2)]),
+            BookSubType(position=4, label="Récit", gtls=[GTL(code="01050000", label="Récit", level=2)]),
         ],
     ),
     BookType(
-        _position=7,
+        position=7,
         label="Compétences générales",
-        _gtls=[
+        gtls=[
             GTL(code="08030000", label="Droit", level=2),
             GTL(code="10080000", label="Médecine", level=2),
             GTL(code="08040000", label="Entreprise, gestion et management", level=2),
@@ -463,75 +441,75 @@ book_types = [
             GTL(code="13020000", label="Encyclopédies", level=2),
         ],
         children=[
-            BookSubType(_position=1, label="Droit", _gtls=[GTL(code="08030000", label="Droit", level=2)]),
-            BookSubType(_position=2, label="Médecine", _gtls=[GTL(code="10080000", label="Médecine", level=2)]),
+            BookSubType(position=1, label="Droit", gtls=[GTL(code="08030000", label="Droit", level=2)]),
+            BookSubType(position=2, label="Médecine", gtls=[GTL(code="10080000", label="Médecine", level=2)]),
             BookSubType(
-                _position=3,
+                position=3,
                 label="Entreprise",
-                _gtls=[GTL(code="08040000", label="Entreprise, gestion et management", level=2)],
+                gtls=[GTL(code="08040000", label="Entreprise, gestion et management", level=2)],
             ),
             BookSubType(
-                _position=4,
+                position=4,
                 label="Sciences économiques",
-                _gtls=[GTL(code="08010000", label="Sciences économiques", level=2)],
+                gtls=[GTL(code="08010000", label="Sciences économiques", level=2)],
             ),
             BookSubType(
-                _position=5,
+                position=5,
                 label="Histoire",
-                _gtls=[
+                gtls=[
                     GTL(code="09050000", label="Histoire", level=2),
                     GTL(code="09060000", label="Histoire du monde", level=2),
                 ],
             ),
             BookSubType(
-                _position=6,
+                position=6,
                 label="Géographie",
-                _gtls=[
+                gtls=[
                     GTL(code="09030000", label="Géographie", level=2),
                     GTL(code="09040000", label="Géographie du monde", level=2),
                 ],
             ),
             BookSubType(
-                _position=7,
+                position=7,
                 label="Sciences de la Terre et de l’Univers",
-                _gtls=[GTL(code="10050000", label="Sciences de la Terre et de l'Univers", level=2)],
+                gtls=[GTL(code="10050000", label="Sciences de la Terre et de l'Univers", level=2)],
             ),
             BookSubType(
-                _position=8,
+                position=8,
                 label="Physiques, mathématiques & informatique",
-                _gtls=[
+                gtls=[
                     GTL(code="10030000", label="Sciences physiques", level=2),
                     GTL(code="10020000", label="Mathématiques", level=2),
                     GTL(code="10070000", label="Informatique", level=2),
                 ],
             ),
             BookSubType(
-                _position=9,
+                position=9,
                 label="Sciences appliquées & industrie",
-                _gtls=[GTL(code="10060000", label="Sciences appliquées et industrie", level=2)],
+                gtls=[GTL(code="10060000", label="Sciences appliquées et industrie", level=2)],
             ),
             BookSubType(
-                _position=10,
+                position=10,
                 label="Dictionnaires",
-                _gtls=[GTL(code="13010000", label="Dictionnaires de français", level=2)],
+                gtls=[GTL(code="13010000", label="Dictionnaires de français", level=2)],
             ),
             BookSubType(
-                _position=11, label="Encyclopédies", _gtls=[GTL(code="13020000", label="Encyclopédies", level=2)]
+                position=11, label="Encyclopédies", gtls=[GTL(code="13020000", label="Encyclopédies", level=2)]
             ),
         ],
     ),
     BookType(
-        _position=8,
+        position=8,
         label="Mode & art",
-        _gtls=[GTL(code="06000000", label="Arts et spectacles", level=1)],
+        gtls=[GTL(code="06000000", label="Arts et spectacles", level=1)],
         children=[
             BookSubType(
-                _position=1, label="Mode", _gtls=[GTL(code="06100200", label="Mode / Parfums / Cosmétiques", level=3)]
+                position=1, label="Mode", gtls=[GTL(code="06100200", label="Mode / Parfums / Cosmétiques", level=3)]
             ),
             BookSubType(
-                _position=2,
+                position=2,
                 label="Peinture, sculpture & arts graphiques",
-                _gtls=[
+                gtls=[
                     GTL(code="06100100", label="Arts appliqués / Arts décoratifs autre", level=3),
                     GTL(code="06100300", label="Décoration d'intérieur", level=3),
                     GTL(code="06100400", label="Métiers d'art", level=3),
@@ -541,63 +519,63 @@ book_types = [
                 ],
             ),
             BookSubType(
-                _position=3, label="Photos & cinéma", _gtls=[GTL(code="06070000", label="Arts de l'image", level=2)]
+                position=3, label="Photos & cinéma", gtls=[GTL(code="06070000", label="Arts de l'image", level=2)]
             ),
             BookSubType(
-                _position=4,
+                position=4,
                 label="Architecture, urbanisme & design",
-                _gtls=[GTL(code="06040000", label="Architecture / Urbanisme", level=2)],
+                gtls=[GTL(code="06040000", label="Architecture / Urbanisme", level=2)],
             ),
-            BookSubType(_position=5, label="Musique", _gtls=[GTL(code="06030000", label="Musique", level=2)]),
+            BookSubType(position=5, label="Musique", gtls=[GTL(code="06030000", label="Musique", level=2)]),
         ],
     ),
     BookType(
-        _position=9,
+        position=9,
         label="Tourisme & voyages",
-        _gtls=[GTL(code="05000000", label="Tourisme & Voyages", level=1)],
+        gtls=[GTL(code="05000000", label="Tourisme & Voyages", level=1)],
         children=[
             BookSubType(
-                _position=1, label="Monde", _gtls=[GTL(code="05030000", label="Tourisme & Voyages Monde", level=2)]
+                position=1, label="Monde", gtls=[GTL(code="05030000", label="Tourisme & Voyages Monde", level=2)]
             ),
             BookSubType(
-                _position=2, label="France", _gtls=[GTL(code="05020000", label="Tourisme & Voyages France", level=2)]
+                position=2, label="France", gtls=[GTL(code="05020000", label="Tourisme & Voyages France", level=2)]
             ),
             BookSubType(
-                _position=3, label="Europe", _gtls=[GTL(code="05040000", label="Tourisme & Voyages Europe", level=2)]
+                position=3, label="Europe", gtls=[GTL(code="05040000", label="Tourisme & Voyages Europe", level=2)]
             ),
             BookSubType(
-                _position=4, label="Asie", _gtls=[GTL(code="05100000", label="Tourisme & Voyages Asie", level=2)]
+                position=4, label="Asie", gtls=[GTL(code="05100000", label="Tourisme & Voyages Asie", level=2)]
             ),
             BookSubType(
-                _position=5,
+                position=5,
                 label="Amérique du Nord",
-                _gtls=[GTL(code="05070000", label="Tourisme & Voyages Amérique du Nord", level=2)],
+                gtls=[GTL(code="05070000", label="Tourisme & Voyages Amérique du Nord", level=2)],
             ),
             BookSubType(
-                _position=6, label="Afrique", _gtls=[GTL(code="05060000", label="Tourisme & Voyages Afrique", level=2)]
+                position=6, label="Afrique", gtls=[GTL(code="05060000", label="Tourisme & Voyages Afrique", level=2)]
             ),
             BookSubType(
-                _position=7, label="Océanie", _gtls=[GTL(code="05110000", label="Tourisme & Voyages Océanie", level=2)]
+                position=7, label="Océanie", gtls=[GTL(code="05110000", label="Tourisme & Voyages Océanie", level=2)]
             ),
             BookSubType(
-                _position=8,
+                position=8,
                 label="Arctique & Antarctique",
-                _gtls=[GTL(code="05120000", label="Tourisme & Voyages Arctique / Antarctique", level=2)],
+                gtls=[GTL(code="05120000", label="Tourisme & Voyages Arctique / Antarctique", level=2)],
             ),
             BookSubType(
-                _position=9,
+                position=9,
                 label="Amérique centrale & Caraïbes",
-                _gtls=[GTL(code="05080000", label="Tourisme & Voyages Amérique centrale et Caraïbes", level=2)],
+                gtls=[GTL(code="05080000", label="Tourisme & Voyages Amérique centrale et Caraïbes", level=2)],
             ),
             BookSubType(
-                _position=10,
+                position=10,
                 label="Amérique du Sud",
-                _gtls=[GTL(code="05090000", label="Tourisme & Voyages Amérique du Sud", level=2)],
+                gtls=[GTL(code="05090000", label="Tourisme & Voyages Amérique du Sud", level=2)],
             ),
             BookSubType(
-                _position=11,
+                position=11,
                 label="Moyen-Orient",
-                _gtls=[GTL(code="05050000", label="Tourisme & Voyages Moyen-Orient", level=2)],
+                gtls=[GTL(code="05050000", label="Tourisme & Voyages Moyen-Orient", level=2)],
             ),
         ],
     ),
