@@ -39,6 +39,7 @@ class IndividualOffersSearchAttributes(enum.Enum):
     VENUE = "Lieu"
     NAME = "Nom de l'offre"
     SYNCHRONIZED = "Offre synchronisée"
+    PRICE = "Prix"
     PROVIDER = "Fournisseur"
     STATUS = "Statut"
     OFFERER = "Structure"
@@ -47,7 +48,6 @@ class IndividualOffersSearchAttributes(enum.Enum):
     MUSIC_SUB_TYPE = "Sous-type de musique"
     SHOW_TYPE = "Type de spectacle"
     SHOW_SUB_TYPE = "Sous-type de spectacle"
-    PRICE = "Prix"
     VISA = "Visa d'exploitation"
 
 
@@ -179,9 +179,10 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
             wtforms.validators.Optional(""),
         ],
     )
-    operator = fields.PCSelectWithPlaceholderValueField(
+    operator = fields.PCSelectField(
         "Opérateur",
         choices=forms_utils.choices_from_enum(utils.AdvancedSearchOperators),
+        default=utils.AdvancedSearchOperators.EQUALS,  # avoids empty option
         validators=[
             wtforms.validators.Optional(""),
         ],
