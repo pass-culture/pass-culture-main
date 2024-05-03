@@ -2,6 +2,8 @@ import classNames from 'classnames'
 import isEqual from 'lodash.isequal'
 import React, { useCallback, useEffect, useState } from 'react'
 
+import Callout from 'components/Callout/Callout'
+import { CalloutVariant } from 'components/Callout/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import MultiDownloadButtonsModal from 'components/MultiDownloadButtonsModal/MultiDownloadButtonsModal'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
@@ -199,7 +201,6 @@ export const PreFilters = ({
             />
           </FormLayout.Row>
         </div>
-
         <div className={styles['reset-filters']}>
           <Button
             icon={fullRefreshIcon}
@@ -210,7 +211,18 @@ export const PreFilters = ({
             Réinitialiser les filtres
           </Button>
         </div>
-
+        {!isFiltersDisabled && selectedPreFilters.offerEventDate !== 'all' && (
+          // FIXME GuillaumeMgz (2024-05-03) : To be removed as soon as the download bug is fixed
+          <Callout
+            variant={CalloutVariant.WARNING}
+            className={styles['download-error-callout']}
+          >
+            Nous investiguons une erreur possible lors du téléchargement des
+            données de réservation. En attendant sa résolution et si une erreur
+            survient, veuillez réessayer en effaçant la date indiquée en date de
+            l’événement.
+          </Callout>
+        )}
         <div className="button-group">
           <div className="button-group-buttons">
             <span className="button-group-separator" />
