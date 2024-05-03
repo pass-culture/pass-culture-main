@@ -100,8 +100,6 @@ export const Offers = ({
     !adageUser.preferences?.feedback_form_closed &&
     adageUser.role !== AdageFrontRoles.READONLY
 
-  console.log('ici', hits)
-
   useEffect(() => {
     setQueriesAreLoading(true)
     if (logFiltersOnSearch) {
@@ -302,7 +300,9 @@ export const Offers = ({
         ))}
       </ul>
       {!isInSuggestions && hits.length > 0 && (
-        <CustomPagination queryId={results.queryID} />
+        <div className={styles['pagination']}>
+          <CustomPagination queryId={results.queryID} />
+        </div>
       )}
       {isBackToTopVisibile && (
         <a href="#root" className={styles['back-to-top-button']}>
