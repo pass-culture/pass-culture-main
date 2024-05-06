@@ -124,12 +124,6 @@ JOIN_DICT: dict[str, list[dict[str, typing.Any]]] = {
     ],
 }
 
-OPERATOR_DICT: dict[str, dict[str, typing.Any]] = {
-    **utils.OPERATOR_DICT,
-    "NAME_EQUALS": {"function": lambda x, y: x.ilike(y)},
-    "NAME_NOT_EQUALS": {"function": lambda x, y: ~x.ilike(y)},
-}
-
 
 def _get_collective_offer_ids_query(form: forms.InternalSearchForm) -> BaseQuery:
     base_query = educational_models.CollectiveOffer.query
@@ -141,7 +135,6 @@ def _get_collective_offer_ids_query(form: forms.InternalSearchForm) -> BaseQuery
             fields_definition=SEARCH_FIELD_TO_PYTHON,
             joins_definition=JOIN_DICT,
             subqueries_definition={},
-            operators_definition=OPERATOR_DICT,
         )
         for warning in warnings:
             flash(escape(warning), "warning")

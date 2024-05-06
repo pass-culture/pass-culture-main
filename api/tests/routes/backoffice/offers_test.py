@@ -360,7 +360,7 @@ class ListOffersTest(GetEndpointHelper):
             "sort": "dateCreated",
             "order": "asc",
             "search-0-search_field": "NAME",
-            "search-0-operator": "STR_EQUALS",
+            "search-0-operator": "NAME_EQUALS",
             "search-0-string": "A Very Specific Name",
         }
 
@@ -370,7 +370,7 @@ class ListOffersTest(GetEndpointHelper):
 
         expected_url = (
             "/pro/offer?sort=dateCreated&amp;order=desc&amp;search-0-search_field=NAME&amp;"
-            "search-0-operator=STR_EQUALS&amp;search-0-boolean=true&amp;search-0-string=A+Very+Specific+Name"
+            "search-0-operator=NAME_EQUALS&amp;search-0-boolean=true&amp;search-0-string=A+Very+Specific+Name"
         )
         assert expected_url in str(response.data)
 
