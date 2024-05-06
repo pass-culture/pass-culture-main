@@ -12,10 +12,10 @@ from pcapi.core.history import models as history_models
 from pcapi.core.permissions import api as perm_api
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
+from pcapi.models import db
 from pcapi.models import feature as feature_models
 from pcapi.notifications.internal.transactional import change_feature_flip as change_feature_flip_internal_message
 from pcapi.repository import atomic
-from pcapi.repository import repository
 
 from . import forms
 from .. import blueprint
@@ -45,6 +45,7 @@ def get_roles() -> utils.BackofficeResponse:
 
 
 @blueprint.backoffice_web.route("/admin/roles-history", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PERMISSIONS)
 def get_roles_history() -> utils.BackofficeResponse:
     actions_history = (
@@ -89,6 +90,7 @@ def update_role(role_id: int) -> utils.BackofficeResponse:
 
 
 @blueprint.backoffice_web.route("/admin/feature-flipping", methods=["GET"])
+@atomic()
 @utils.custom_login_required(redirect_to=".home")
 def list_feature_flags() -> utils.BackofficeResponse:
     feature_flags = feature_models.Feature.query.order_by(feature_models.Feature.name).all()
@@ -99,12 +101,14 @@ def list_feature_flags() -> utils.BackofficeResponse:
 
 
 @blueprint.backoffice_web.route("/admin/feature-flipping/<int:feature_flag_id>/enable", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.FEATURE_FLIPPING)
 def enable_feature_flag(feature_flag_id: int) -> utils.BackofficeResponse:
     return toggle_feature_flag(feature_flag_id, True)
 
 
 @blueprint.backoffice_web.route("/admin/feature-flipping/<int:feature_flag_id>/disable", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.FEATURE_FLIPPING)
 def disable_feature_flag(feature_flag_id: int) -> utils.BackofficeResponse:
     return toggle_feature_flag(feature_flag_id, False)
@@ -123,7 +127,8 @@ def toggle_feature_flag(feature_flag_id: int, set_to_active: bool) -> utils.Back
         return redirect(url_for(".list_feature_flags"), code=303)
 
     feature_flag.isActive = set_to_active
-    repository.save(feature_flag)
+    db.session.add(feature_flag)
+    db.session.flush()
     change_feature_flip_internal_message.send(feature=feature_flag, current_user=current_user)
 
     flash(
@@ -133,6 +138,7 @@ def toggle_feature_flag(feature_flag_id: int, set_to_active: bool) -> utils.Back
 
 
 @blueprint.backoffice_web.route("/admin/subcategories", methods=["GET"])
+@atomic()
 @utils.custom_login_required(redirect_to=".home")
 def get_subcategories() -> utils.BackofficeResponse:
 
