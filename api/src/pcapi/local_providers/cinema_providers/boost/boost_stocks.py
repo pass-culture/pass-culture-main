@@ -42,7 +42,6 @@ class BoostStocks(LocalProvider):
         self.cinema_id = venue_provider.venueIdAtOfferProvider
         self.isDuo = venue_provider.isDuoOffers if venue_provider.isDuoOffers else False
         self.attributs: list[boost_serializers.CinemaAttribut] = self._get_cinema_attributs()
-        self.showtimes_filter_ff_is_active = FeatureToggle.WIP_ENABLE_BOOST_SHOWTIMES_FILTER.is_active()
         self.showtimes: Iterator[boost_serializers.ShowTime4] = iter(self._get_showtimes())
         self.price_category_labels: list[offers_models.PriceCategoryLabel] = (
             offers_models.PriceCategoryLabel.query.filter(offers_models.PriceCategoryLabel.venue == self.venue).all()
@@ -63,10 +62,7 @@ class BoostStocks(LocalProvider):
             if FeatureToggle.WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS.is_active():
                 return []
 
-        if self.showtimes_filter_ff_is_active:
-            self.showtime_details = showtime
-        else:
-            self.showtime_details = self._get_showtime_details(showtime.id)
+        self.showtime_details = showtime
         self.pcu_pricing: boost_serializers.ShowtimePricing | None = get_pcu_pricing_if_exists(
             self.showtime_details.showtimePricing
         )
@@ -243,10 +239,6 @@ class BoostStocks(LocalProvider):
     def _get_showtimes(self) -> list[boost_serializers.ShowTime4]:
         client_boost = BoostClientAPI(self.cinema_id)
         return client_boost.get_showtimes()
-
-    def _get_showtime_details(self, showtime_id: int) -> boost_serializers.ShowTime4:
-        client_boost = BoostClientAPI(self.cinema_id)
-        return client_boost.get_showtime(showtime_id)
 
     def _get_boost_movie_poster(self, image_url: str) -> bytes:
         client_boost = BoostClientAPI(self.cinema_id)
