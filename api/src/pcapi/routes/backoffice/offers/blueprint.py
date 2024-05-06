@@ -264,7 +264,7 @@ def _get_offer_ids_query(form: forms.InternalSearchForm) -> BaseQuery:
                     offers_models.Offer.extraData["ean"].astext == string_utils.format_ean_or_visa(search_query)
                 )
 
-            if utils.is_visa_valid(search_query):
+            if string_utils.is_visa_valid(search_query):
                 or_filters.append(
                     offers_models.Offer.extraData["visa"].astext == string_utils.format_ean_or_visa(search_query)
                 )
