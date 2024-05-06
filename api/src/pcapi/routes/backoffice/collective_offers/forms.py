@@ -1,6 +1,7 @@
 import decimal
 import enum
 import json
+import re
 import typing
 from urllib.parse import urlencode
 
@@ -46,7 +47,7 @@ form_field_configuration = {
     "REGION": {"field": "region", "operator": ["IN", "NOT_IN"]},
     "EVENT_DATE": {"field": "date", "operator": ["DATE_FROM", "DATE_TO", "DATE_EQUALS"]},
     "BOOKING_LIMIT_DATE": {"field": "date", "operator": ["DATE_FROM", "DATE_TO", "DATE_EQUALS"]},
-    "ID": {"field": "integer", "operator": ["EQUALS", "NOT_EQUALS"]},
+    "ID": {"field": "string", "operator": ["IN", "NOT_IN"]},
     "INSTITUTION": {"field": "institution", "operator": ["IN", "NOT_IN"]},
     "NAME": {"field": "string", "operator": ["CONTAINS", "NO_CONTAINS", "NAME_EQUALS", "NAME_NOT_EQUALS"]},
     "OFFERER": {"field": "offerer", "operator": ["IN", "NOT_IN"]},
@@ -152,9 +153,9 @@ class CollectiveOfferAdvancedSearchSubForm(forms_utils.PCForm):
         field_list_compatibility=True,
     )
     string = fields.PCOptStringField(
-        "Text",
+        "Texte",
         validators=[
-            wtforms.validators.Length(max=256, message="Doit contenir moins de %(max)d caractères"),
+            wtforms.validators.Length(max=4096, message="Doit contenir moins de %(max)d caractères"),
         ],
     )
     venue = fields.PCTomSelectField(
@@ -189,6 +190,15 @@ class CollectiveOfferAdvancedSearchSubForm(forms_utils.PCForm):
         search_inline=True,
         field_list_compatibility=True,
     )
+
+    def validate_string(self, string: fields.PCStringField) -> fields.PCStringField:
+        if string.data:
+            search_field = self._fields["search_field"].data
+
+            if search_field == "ID" and not re.match(r"^[\d\s,;]+$", string.data):
+                raise wtforms.validators.ValidationError("La liste d'ID n'est pas valide")
+
+        return string
 
 
 class GetCollectiveOfferAdvancedSearchForm(forms.GetOffersBaseFields):

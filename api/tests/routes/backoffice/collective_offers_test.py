@@ -340,8 +340,8 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "search-3-operator": "NAME_NOT_EQUALS",
             "search-3-string": "indiv",
             "search-4-search_field": "ID",
-            "search-4-operator": "NOT_EQUALS",
-            "search-4-integer": "5",
+            "search-4-operator": "NOT_IN",
+            "search-4-string": "\t5\t7\t",
         }
 
         with assert_num_queries(self.expected_num_queries):
@@ -352,7 +352,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert set(bubbles) == {
             "Formats contient PROJECTION_AUDIOVISUELLE",
             "Date de création à partir du 2024-01-20",
-            "ID de l'offre est différent de 5",
+            "ID de l'offre n'est pas parmi 5 7",
             "Nom de l'offre est différent de indiv",
         }
 
@@ -796,6 +796,16 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             html_parser.extract_alert(response.data)
             == "Le filtre « Date de création » est vide. Le filtre « Date limite de réservation » est vide."
         )
+
+    def test_list_offers_by_invalid_format(self, authenticated_client):
+        query_args = {
+            "search-0-search_field": "ID",
+            "search-0-operator": "EQUALS",
+            "search-0-string": "12, 34, A",
+        }
+        with assert_num_queries(2):  # only session + current user, before form validation
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 400
 
 
 class ValidateCollectiveOfferTest(PostEndpointHelper):

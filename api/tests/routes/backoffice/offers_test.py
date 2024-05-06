@@ -273,6 +273,20 @@ class ListOffersTest(GetEndpointHelper):
 
     # === Advanced search ===
 
+    def test_list_offers_advanced_search_by_ids_list(self, authenticated_client, offers):
+        query_args = {
+            "search-0-search_field": "ID",
+            "search-0-operator": "IN",
+            "search-0-string": f"{offers[0].id}, {offers[2].id}\n",
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 2
+        assert set(int(row["ID"]) for row in rows) == {offers[0].id, offers[2].id}
+
     def test_list_offers_advanced_search_by_date(self, authenticated_client, offers):
         query_args = {
             "search-0-search_field": "CREATION_DATE",
@@ -318,8 +332,8 @@ class ListOffersTest(GetEndpointHelper):
             "search-3-operator": "NOT_EQUALS",
             "search-3-string": "1234567890123",
             "search-4-search_field": "ID",
-            "search-4-operator": "NOT_EQUALS",
-            "search-4-integer": "5",
+            "search-4-operator": "NOT_IN",
+            "search-4-string": " 5,  7",
         }
 
         with assert_num_queries(self.expected_num_queries):
@@ -329,7 +343,7 @@ class ListOffersTest(GetEndpointHelper):
         bubbles = html_parser.extract(response.data, "span", "bubble")
         assert set(bubbles) == {
             "Date de création à partir du 2024-01-20",
-            "ID de l'offre est différent de 5",
+            "ID de l'offre n'est pas parmi 5, 7",
             "EAN-13 est différent de 1234567890123",
             "Catégorie est parmi BEAUX_ARTS",
         }
@@ -1015,6 +1029,7 @@ class ListOffersTest(GetEndpointHelper):
     @pytest.mark.parametrize(
         "search_field,value",
         [
+            ("ID", "12, 34, A"),
             ("EAN", "123"),
             ("EAN", "1234567890ABC"),
             ("VISA", "1234567890123"),
