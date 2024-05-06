@@ -11,6 +11,8 @@ from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
+from pcapi.repository import atomic
+from pcapi.repository import mark_transaction_as_invalid
 
 from . import forms as offerer_forms
 from .. import utils
@@ -30,6 +32,7 @@ def get_offerer_tag_categories() -> list[offerers_models.OffererTagCategory]:
 
 
 @offerer_tag_blueprint.route("", methods=["GET"])
+@atomic()
 def list_offerer_tags() -> utils.BackofficeResponse:
     categories = get_offerer_tag_categories()
     offerer_tags = (
@@ -73,6 +76,7 @@ def list_offerer_tags() -> utils.BackofficeResponse:
 
 
 @offerer_tag_blueprint.route("/create", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERER_TAG)
 def create_offerer_tag() -> utils.BackofficeResponse:
     categories = get_offerer_tag_categories()
@@ -92,17 +96,18 @@ def create_offerer_tag() -> utils.BackofficeResponse:
             categories=new_categories,
         )
         db.session.add(tag)
-        db.session.commit()
+        db.session.flush()
         flash("Le nouveau tag structure a été créé", "success")
 
     except sa.exc.IntegrityError:
-        db.session.rollback()
+        mark_transaction_as_invalid()
         flash("Ce tag existe déjà", "warning")
 
     return redirect(url_for("backoffice_web.offerer_tag.list_offerer_tags"), code=303)
 
 
 @offerer_tag_blueprint.route("/<int:offerer_tag_id>/update", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERER_TAG)
 def update_offerer_tag(offerer_tag_id: int) -> utils.BackofficeResponse:
     offerer_tag_to_update = offerers_models.OffererTag.query.filter_by(id=offerer_tag_id).one_or_none()
@@ -129,13 +134,14 @@ def update_offerer_tag(offerer_tag_id: int) -> utils.BackofficeResponse:
         )
         flash("Les informations ont été mises à jour", "success")
     except sa.exc.IntegrityError:
-        db.session.rollback()
+        mark_transaction_as_invalid()
         flash("Ce nom de tag existe déjà", "warning")
 
     return redirect(url_for("backoffice_web.offerer_tag.list_offerer_tags"), code=303)
 
 
 @offerer_tag_blueprint.route("/<int:offerer_tag_id>/delete", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_TAGS_N2)
 def delete_offerer_tag(offerer_tag_id: int) -> utils.BackofficeResponse:
     offerer_tag_to_delete = offerers_models.OffererTag.query.filter_by(id=offerer_tag_id).one_or_none()
@@ -144,15 +150,16 @@ def delete_offerer_tag(offerer_tag_id: int) -> utils.BackofficeResponse:
 
     try:
         db.session.delete(offerer_tag_to_delete)
-        db.session.commit()
+        db.session.flush()
     except sa.exc.DBAPIError as exception:
-        db.session.rollback()
+        mark_transaction_as_invalid()
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(exception)), "warning")
 
     return redirect(url_for("backoffice_web.offerer_tag.list_offerer_tags"), code=303)
 
 
 @offerer_tag_blueprint.route("/category", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_TAGS_N2)
 def create_offerer_tag_category() -> utils.BackofficeResponse:
     form = offerer_forms.CreateOffererTagCategoryForm()
@@ -163,10 +170,10 @@ def create_offerer_tag_category() -> utils.BackofficeResponse:
 
     try:
         db.session.add(offerers_models.OffererTagCategory(name=form.name.data, label=form.label.data))
-        db.session.commit()
+        db.session.flush()
         flash("La nouvelle catégorie a été créée", "success")
     except sa.exc.IntegrityError:
-        db.session.rollback()
+        mark_transaction_as_invalid()
         flash("Cette catégorie existe déjà", "warning")
 
     return redirect(url_for("backoffice_web.offerer_tag.list_offerer_tags", active_tab="categories"), code=303)

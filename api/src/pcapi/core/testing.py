@@ -109,7 +109,10 @@ def _record_end_of_query(statement: str, parameters: dict, **kwargs: dict) -> No
     # FIXME (dbaty, 2020-10-23): SQLAlchemy issues savepoints. This is
     # probably due to the way we configure it, which should probably
     # be changed.
-    if statement.startswith("SAVEPOINT") or statement.startswith("RELEASE SAVEPOINT"):
+    if statement.startswith("SAVEPOINT"):
+        return
+    # ignore commit and rollback from @atomic()
+    if statement.startswith("RELEASE SAVEPOINT") or statement.startswith("ROLLBACK TO SAVEPOINT"):
         return
     # Do not record the query if we're not within the
     # assert_num_queries context manager.

@@ -22,6 +22,7 @@ import pcapi.core.providers.repository as providers_repository
 from pcapi.core.users import models as users_models
 from pcapi.domain.price_rule import PriceRule
 from pcapi.models import db
+from pcapi.repository import is_managed_transaction
 from pcapi.repository import repository
 from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
 from pcapi.validation.models.entity_validator import validate
@@ -112,7 +113,10 @@ def delete_venue_provider(
         provider_name=venue_provider.provider.name,
     )
     db.session.delete(venue_provider)
-    db.session.commit()
+    if is_managed_transaction():
+        db.session.flush()
+    else:
+        db.session.commit()
     logger.info(
         "Deleted VenueProvider for venue %d",
         venue_id,

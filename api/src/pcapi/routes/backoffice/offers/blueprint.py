@@ -35,6 +35,8 @@ from pcapi.core.providers import models as providers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
+from pcapi.repository import atomic
+from pcapi.repository import on_commit
 from pcapi.repository import repository
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
@@ -440,6 +442,7 @@ def _get_offers(form: forms.InternalSearchForm) -> list[offers_models.Offer]:
 
 
 @list_offers_blueprint.route("", methods=["GET"])
+@atomic()
 def list_offers() -> utils.BackofficeResponse:
     display_form = forms.GetOffersSearchForm(formdata=utils.get_query_params())
     form = forms.InternalSearchForm(formdata=utils.get_query_params())
@@ -474,6 +477,7 @@ def list_offers() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("get-advanced-search-form", methods=["GET"])
+@atomic()
 def get_advanced_search_form() -> utils.BackofficeResponse:
     form = forms.GetOfferAdvancedSearchForm(formdata=utils.get_query_params())
 
@@ -488,6 +492,7 @@ def get_advanced_search_form() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/edit", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
 def get_edit_offer_form(offer_id: int) -> utils.BackofficeResponse:
     offer = (
@@ -518,6 +523,7 @@ def get_edit_offer_form(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/batch/validate", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_batch_validate_offers_form() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
@@ -532,6 +538,7 @@ def get_batch_validate_offers_form() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/batch-validate", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def batch_validate_offers() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
@@ -545,6 +552,7 @@ def batch_validate_offers() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/batch/reject", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_batch_reject_offers_form() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
@@ -572,6 +580,7 @@ def batch_reject_offers() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/batch/edit", methods=["GET", "POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
 def get_batch_edit_offer_form() -> utils.BackofficeResponse:
     form = forms.BatchEditOfferForm()
@@ -605,6 +614,7 @@ def get_batch_edit_offer_form() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/batch-edit", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
 def batch_edit_offer() -> utils.BackofficeResponse:
     form = forms.BatchEditOfferForm()
@@ -637,12 +647,15 @@ def batch_edit_offer() -> utils.BackofficeResponse:
 
         db.session.add(offer)
 
-    # A single commit at the end avoids refreshing other offers in the loop
-    db.session.commit()
+    # A single flush at the end avoids refreshing other offers in the loop
+    db.session.flush()
 
-    search.async_index_offer_ids(
-        form.object_ids_list,
-        reason=search.IndexationReason.OFFER_BATCH_UPDATE,
+    on_commit(
+        partial(
+            search.async_index_offer_ids,
+            offer_ids=form.object_ids_list,
+            reason=search.IndexationReason.OFFER_BATCH_UPDATE,
+        ),
     )
 
     flash("Les offres ont été modifiées", "success")
@@ -650,6 +663,7 @@ def batch_edit_offer() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/edit", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
 def edit_offer(offer_id: int) -> utils.BackofficeResponse:
     offer = offers_models.Offer.query.filter_by(id=offer_id).one_or_none()
@@ -671,13 +685,19 @@ def edit_offer(offer_id: int) -> utils.BackofficeResponse:
     #  Immediately index offer if tags are updated: tags are used by
     #  other tools (eg. building playlists for the home page) and
     #  waiting N minutes for the next indexing cron tasks is painful.
-    search.reindex_offer_ids([offer.id])
+    on_commit(
+        partial(
+            search.reindex_offer_ids,
+            offer_ids=[offer.id],
+        ),
+    )
 
     flash("L'offre a été modifiée", "success")
     return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)
 
 
 @list_offers_blueprint.route("/<int:offer_id>/validate", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_validate_offer_form(offer_id: int) -> utils.BackofficeResponse:
     offer = offers_models.Offer.query.filter_by(id=offer_id).one_or_none()
@@ -698,6 +718,7 @@ def get_validate_offer_form(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/validate", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def validate_offer(offer_id: int) -> utils.BackofficeResponse:
     _batch_validate_offers([offer_id])
@@ -706,6 +727,7 @@ def validate_offer(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/reject", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_reject_offer_form(offer_id: int) -> utils.BackofficeResponse:
     offer = offers_models.Offer.query.filter_by(id=offer_id).one_or_none()
@@ -726,6 +748,7 @@ def get_reject_offer_form(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/reject", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def reject_offer(offer_id: int) -> utils.BackofficeResponse:
     _batch_reject_offers([offer_id])
@@ -782,7 +805,7 @@ def _batch_validate_offers(offer_ids: list[int]) -> None:
             )
 
     # A single commit at the end avoids refreshing other offers in the loop
-    db.session.commit()
+    db.session.flush()
 
     search.async_index_offer_ids(
         offer_ids,
@@ -831,13 +854,17 @@ def _batch_reject_offers(offer_ids: list[int]) -> None:
     if len(offer_ids) > 0:
         favorites = users_models.Favorite.query.filter(users_models.Favorite.offerId.in_(offer_ids)).all()
         repository.delete(*favorites)
-        search.async_index_offer_ids(
-            offer_ids,
-            reason=search.IndexationReason.OFFER_BATCH_VALIDATION,
+        on_commit(
+            partial(
+                search.async_index_offer_ids,
+                offer_ids=offer_ids,
+                reason=search.IndexationReason.OFFER_BATCH_VALIDATION,
+            ),
         )
 
 
 @list_offers_blueprint.route("/<int:offer_id>", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.READ_OFFERS)
 def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
     offer_query = offers_models.Offer.query.filter(offers_models.Offer.id == offer_id).options(
@@ -933,6 +960,7 @@ def _is_stock_editable(offer_id: int, stock_id: int) -> bool:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/stock/<int:stock_id>/edit", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
 def edit_offer_stock(offer_id: int, stock_id: int) -> utils.BackofficeResponse:
     stock = offers_models.Stock.query.filter_by(id=stock_id).one()
@@ -975,6 +1003,7 @@ def edit_offer_stock(offer_id: int, stock_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/stock/<int:stock_id>/edit", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
 def get_offer_stock_edit_form(offer_id: int, stock_id: int) -> utils.BackofficeResponse:
     if finance_api.are_cashflows_being_generated():
@@ -1006,6 +1035,7 @@ def get_offer_stock_edit_form(offer_id: int, stock_id: int) -> utils.BackofficeR
 
 
 @list_offers_blueprint.route("/<int:offer_id>/reindex", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def reindex(offer_id: int) -> utils.BackofficeResponse:
     search.async_index_offer_ids(
@@ -1018,6 +1048,7 @@ def reindex(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/edit-venue", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def edit_offer_venue(offer_id: int) -> utils.BackofficeResponse:
     offer_url = url_for("backoffice_web.offer.get_offer_details", offer_id=offer_id)
@@ -1068,6 +1099,7 @@ def edit_offer_venue(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/bookings.csv", methods=["GET"])
+@atomic()
 def download_bookings_csv(offer_id: int) -> utils.BackofficeResponse:
     export_data = booking_repository.get_export(
         user=current_user,
@@ -1084,6 +1116,7 @@ def download_bookings_csv(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/bookings.xlsx", methods=["GET"])
+@atomic()
 def download_bookings_xlsx(offer_id: int) -> utils.BackofficeResponse:
     export_data = booking_repository.get_export(
         user=current_user,

@@ -51,6 +51,7 @@ from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.notifications import push as push_api
+from pcapi.repository import is_managed_transaction
 from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.routes.serialization.users import ProUserCreationBodyV2Model
@@ -529,7 +530,10 @@ def unsuspend_account(
 
     history_api.add_action(history_models.ActionType.USER_UNSUSPENDED, author=actor, user=user, comment=comment)
 
-    db.session.commit()
+    if is_managed_transaction():
+        db.session.flush()
+    else:
+        db.session.commit()
 
     logger.info(
         "Account has been unsuspended",
@@ -746,7 +750,7 @@ def _update_underage_beneficiary_deposit_expiration_date(user: users_models.User
 
 def add_comment_to_user(user: models.User, author_user: models.User, comment: str) -> None:
     history_api.add_action(history_models.ActionType.COMMENT, author_user, user=user, comment=comment)
-    db.session.commit()
+    db.session.flush()
 
 
 def get_domains_credit(

@@ -53,6 +53,8 @@ from pcapi.core.users.repository import get_and_lock_user
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models.feature import FeatureToggle
+from pcapi.repository import is_managed_transaction
+from pcapi.repository import mark_transaction_as_invalid
 from pcapi.repository import repository
 from pcapi.repository import transaction
 import pcapi.serialization.utils as serialization_utils
@@ -530,7 +532,10 @@ def _execute_cancel_booking(
             ) as e:
                 if raise_if_error:
                     raise
-                db.session.rollback()
+                if is_managed_transaction():
+                    mark_transaction_as_invalid()
+                else:
+                    db.session.rollback()
                 logger.info(
                     "%s: %s",
                     type(e).__name__,
@@ -734,8 +739,7 @@ def mark_as_used_with_uncancelling(booking: Booking, validation_author_type: Boo
         finance_models.FinanceEventMotive.BOOKING_USED_AFTER_CANCELLATION,
         booking=booking,
     )
-
-    db.session.commit()
+    db.session.flush()
     logger.info("Booking was uncancelled and marked as used", extra={"bookingId": booking.id})
 
     update_external_user(booking.user)

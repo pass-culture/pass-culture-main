@@ -4,10 +4,14 @@ from decimal import Decimal
 
 import sqlalchemy as sa
 
+import pcapi.core.history.api as history_api
 import pcapi.core.history.models as history_models
 from pcapi.core.offerers import api as offerers_api
 import pcapi.core.offerers.models as offerers_models
+import pcapi.core.users.models as users_models
 from pcapi.models import db
+from pcapi.repository import is_managed_transaction
+from pcapi.repository import mark_transaction_as_invalid
 import pcapi.utils.db as db_utils
 
 from . import models
@@ -71,7 +75,6 @@ def move_siret(
         override_revenue_check=override_revenue_check,
     )
 
-    db.session.rollback()  # discard any previous transaction to start a fresh new one.
     queries = [
         """
         update finance_event
@@ -114,7 +117,6 @@ def move_siret(
     ]
 
     try:
-        db.session.begin()
         for query in queries:
             db.session.execute(
                 query,
@@ -156,10 +158,10 @@ def move_siret(
             )
         )
     except Exception:
-        db.session.rollback()
+        mark_transaction_as_invalid()
         raise
 
-    db.session.commit()
+    db.session.flush()
 
 
 def has_pending_pricings(pricing_point: offerers_models.Venue) -> bool:
@@ -255,7 +257,6 @@ def remove_siret(
     override_revenue_check: bool = False,
     new_pricing_point_id: int | None = None,
     author_user_id: int | None = None,
-    new_db_session: bool = True,
 ) -> None:
     check_can_remove_siret(venue, comment, override_revenue_check)
     old_siret = venue.siret
@@ -272,10 +273,6 @@ def remove_siret(
         new_siret = new_pricing_point_venue.siret
 
     with db.session.no_autoflush:  # do not flush anything before commit
-        if new_db_session:
-            db.session.rollback()  # discard any previous transaction to start a fresh new one.
-            db.session.begin()
-
         try:
             modified_info_by_venue: dict[int, dict[str, dict]] = defaultdict(dict)
 
@@ -330,10 +327,16 @@ def remove_siret(
             db.session.rollback()
             raise
 
-        if apply_changes:
-            db.session.commit()
+        if is_managed_transaction():
+            if apply_changes:
+                db.session.flush()
+            else:
+                mark_transaction_as_invalid()
         else:
-            db.session.rollback()
+            if apply_changes:
+                db.session.commit()
+            else:
+                db.session.rollback()
 
 
 def check_can_remove_pricing_point(
@@ -360,39 +363,36 @@ def remove_pricing_point_link(
     comment: str,
     apply_changes: bool = False,
     override_revenue_check: bool = False,
-    author_user_id: int | None = None,
+    author_user: users_models.User | None = None,
 ) -> None:
     check_can_remove_pricing_point(venue, override_revenue_check)
 
     now = datetime.datetime.utcnow()
 
-    with db.session.no_autoflush:  # do not flush anything before commit
-        try:
-            # End this pricing point
-            pricing_point_link = venue.current_pricing_point_link
-            assert pricing_point_link
-            pricing_point_link.timespan = db_utils.make_timerange(pricing_point_link.timespan.lower, end=now)
-            db.session.add(pricing_point_link)
-            modified_info = {"pricingPointSiret": {"old_info": pricing_point_link.pricingPoint.siret, "new_info": None}}
+    try:
+        # End this pricing point
+        pricing_point_link = venue.current_pricing_point_link
+        assert pricing_point_link
+        pricing_point_link.timespan = db_utils.make_timerange(pricing_point_link.timespan.lower, end=now)
+        db.session.add(pricing_point_link)
+        modified_info = {"pricingPointSiret": {"old_info": pricing_point_link.pricingPoint.siret, "new_info": None}}
 
-            _delete_ongoing_pricings(venue)
+        _delete_ongoing_pricings(venue)
 
-            db.session.add(
-                history_models.ActionHistory(
-                    actionType=history_models.ActionType.INFO_MODIFIED,
-                    authorUserId=author_user_id,
-                    offererId=venue.managingOffererId,
-                    venueId=venue.id,
-                    comment=comment,
-                    extraData={"modified_info": modified_info},
-                )
-            )
+        history_api.add_action(
+            action_type=history_models.ActionType.INFO_MODIFIED,
+            author=author_user,
+            offerer=venue.managingOfferer,
+            venue=venue,
+            comment=comment,
+            modified_info=modified_info,
+        )
 
-        except Exception:
-            db.session.rollback()
-            raise
+    except Exception:
+        mark_transaction_as_invalid()
+        raise
 
-        if apply_changes:
-            db.session.commit()
-        else:
-            db.session.rollback()
+    if apply_changes:
+        db.session.flush()
+    else:
+        mark_transaction_as_invalid()

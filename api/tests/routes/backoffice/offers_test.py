@@ -1178,7 +1178,7 @@ class EditOfferTest(PostEndpointHelper):
         assert criteria[2].name not in row[0]["Tag"]
 
         # offer should be reindexed
-        mock_reindex_offer_ids.assert_called_once_with([offer_to_edit.id])
+        mock_reindex_offer_ids.assert_called_once_with(offer_ids=[offer_to_edit.id])
         mock_reindex_offer_ids.reset_mock()
 
         # New Update without rankingWeight
@@ -1199,7 +1199,7 @@ class EditOfferTest(PostEndpointHelper):
         assert criteria[3].name not in row[0]["Tag"]
 
         # offer should be reindexed
-        mock_reindex_offer_ids.assert_called_once_with([offer_to_edit.id])
+        mock_reindex_offer_ids.assert_called_once_with(offer_ids=[offer_to_edit.id])
 
 
 class GetEditOfferFormTest(GetEndpointHelper):
@@ -1325,7 +1325,7 @@ class BatchEditOfferTest(PostEndpointHelper):
             assert criteria[2] not in offer.criteria
 
         mock_async_index.assert_called_once_with(
-            [offer.id for offer in offers],
+            offer_ids=[offer.id for offer in offers],
             reason=search.IndexationReason.OFFER_BATCH_UPDATE,
         )
 

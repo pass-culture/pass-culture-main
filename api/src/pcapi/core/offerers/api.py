@@ -1,6 +1,7 @@
 import dataclasses
 from datetime import datetime
 import decimal
+from functools import partial
 import itertools
 import logging
 import re
@@ -51,6 +52,9 @@ from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models import pc_object
 from pcapi.models.validation_status_mixin import ValidationStatus
+from pcapi.repository import is_managed_transaction
+from pcapi.repository import mark_transaction_as_invalid
+from pcapi.repository import on_commit
 from pcapi.repository import repository
 from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization import venues_serialize
@@ -179,18 +183,21 @@ def update_venue(
 
         indexing_modifications_fields = set(modifications.keys()) & set(VENUE_ALGOLIA_INDEXED_FIELDS)
         if indexing_modifications_fields:
-            search.async_index_offers_of_venue_ids(
-                [venue.id],
-                reason=search.IndexationReason.VENUE_UPDATE,
-                log_extra={"changes": set(indexing_modifications_fields)},
+            on_commit(
+                partial(
+                    search.async_index_offers_of_venue_ids,
+                    venue_ids=[venue.id],
+                    reason=search.IndexationReason.VENUE_UPDATE,
+                    log_extra={"changes": set(indexing_modifications_fields)},
+                ),
             )
 
         # Former booking email address shall no longer receive emails about data related to this venue.
         # If booking email was only in this object, this will clear all columns here and it will never be updated later.
-        external_attributes_api.update_external_pro(old_booking_email)
-        external_attributes_api.update_external_pro(venue.bookingEmail)
+        on_commit(partial(external_attributes_api.update_external_pro, old_booking_email))
+        on_commit(partial(external_attributes_api.update_external_pro, venue.bookingEmail))
 
-    zendesk_sell.update_venue(venue)
+    on_commit(partial(zendesk_sell.update_venue, venue))
 
     if contact_data and contact_data.website:
         virustotal.request_url_scan(contact_data.website, skip_if_recent_scan=True)
@@ -391,7 +398,7 @@ def delete_venue(venue_id: int) -> None:
 
     offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id).delete(synchronize_session=False)
 
-    db.session.commit()
+    db.session.flush()
 
     search.unindex_offer_ids(offer_ids_to_delete["individual_offer_ids_to_delete"])
     search.unindex_collective_offer_template_ids(offer_ids_to_delete["collective_offer_template_ids_to_delete"])
@@ -586,8 +593,14 @@ def link_venue_to_pricing_point(
                 "new_link_start": timestamp,
             },
         )
-    if commit:
+
+    if is_managed_transaction():
+        db.session.flush()
+        if not commit:
+            mark_transaction_as_invalid()
+    elif commit:
         db.session.commit()
+
     logger.info(
         "Linked venue to pricing point",
         extra={
@@ -889,8 +902,8 @@ def update_offerer(
             history_models.ActionType.INFO_MODIFIED, author, offerer=offerer, modified_info=modified_info
         )
 
-    # keep commit with repository.save() as long as postal code is validated in pcapi.validation.models.offerer
-    repository.save(offerer)
+    db.session.add(offerer)
+    db.session.flush()
 
     zendesk_sell.update_offerer(offerer)
 
@@ -934,7 +947,7 @@ def validate_offerer_attachment(
         comment=comment,
     )
 
-    db.session.commit()
+    db.session.flush()
 
     external_attributes_api.update_external_pro(user_offerer.user.email)
 
@@ -964,7 +977,7 @@ def set_offerer_attachment_pending(
         offerer=user_offerer.offerer,
         comment=comment,
     )
-    db.session.commit()
+    db.session.flush()
 
 
 def reject_offerer_attachment(
@@ -972,7 +985,6 @@ def reject_offerer_attachment(
     author_user: users_models.User | None,
     comment: str | None = None,
     send_email: bool = True,
-    commit: bool = True,
 ) -> None:
     user_offerer.validationStatus = ValidationStatus.REJECTED
     db.session.add(user_offerer)
@@ -990,8 +1002,7 @@ def reject_offerer_attachment(
 
     remove_pro_role_and_add_non_attached_pro_role([user_offerer.user])
 
-    if commit:
-        db.session.commit()
+    db.session.flush()
 
 
 def delete_offerer_attachment(
@@ -1011,7 +1022,7 @@ def delete_offerer_attachment(
     )
 
     remove_pro_role_and_add_non_attached_pro_role([user_offerer.user])
-    db.session.commit()
+    db.session.flush()
 
 
 def validate_offerer(offerer: models.Offerer, author_user: users_models.User) -> None:
@@ -1035,7 +1046,7 @@ def validate_offerer(offerer: models.Offerer, author_user: users_models.User) ->
         user=applicants[0] if applicants else None,  # before validation we should have only one applicant
     )
 
-    db.session.commit()
+    db.session.flush()
 
     managed_venues = offerer.managedVenues
     search.async_index_offers_of_venue_ids(
@@ -1089,7 +1100,6 @@ def reject_offerer(
             author_user,
             "Compte pro rejeté suite au rejet de la structure",
             send_email=(user_offerer.user not in applicants),  # do not send a second email
-            commit=False,
         )
 
     remove_pro_role_and_add_non_attached_pro_role(applicants)
@@ -1097,7 +1107,7 @@ def reject_offerer(
     # Remove any API key which could have been created when user was waiting for validation
     models.ApiKey.query.filter(models.ApiKey.offererId == offerer.id).delete()
 
-    db.session.commit()
+    db.session.flush()
 
     if was_validated:
         for applicant in applicants:
@@ -1142,17 +1152,17 @@ def set_offerer_pending(
         **extra_data,
     )
 
-    db.session.commit()
+    db.session.flush()
 
 
 def add_comment_to_offerer(offerer: offerers_models.Offerer, author_user: users_models.User, comment: str) -> None:
     history_api.add_action(history_models.ActionType.COMMENT, author_user, offerer=offerer, comment=comment)
-    db.session.commit()
+    db.session.flush()
 
 
 def add_comment_to_venue(venue: offerers_models.Venue, author_user: users_models.User, comment: str) -> None:
     history_api.add_action(history_models.ActionType.COMMENT, author_user, venue=venue, comment=comment)
-    db.session.commit()
+    db.session.flush()
 
 
 def get_timestamp_from_url(image_url: str) -> str:
@@ -1725,7 +1735,7 @@ def update_offerer_tag(
             offerer_tag.categories = categories
 
     db.session.add(offerer_tag)
-    db.session.commit()
+    db.session.flush()
 
 
 def get_metabase_stats_iframe_url(
@@ -1841,7 +1851,7 @@ def suspend_offerer(offerer: models.Offerer, actor: users_models.User, comment: 
     offerer.isActive = False
     db.session.add(offerer)
     history_api.add_action(history_models.ActionType.OFFERER_SUSPENDED, author=actor, offerer=offerer, comment=comment)
-    db.session.commit()
+    db.session.flush()
 
     _update_external_offerer(offerer)
 
@@ -1855,7 +1865,7 @@ def unsuspend_offerer(offerer: models.Offerer, actor: users_models.User, comment
     history_api.add_action(
         history_models.ActionType.OFFERER_UNSUSPENDED, author=actor, offerer=offerer, comment=comment
     )
-    db.session.commit()
+    db.session.flush()
 
     _update_external_offerer(offerer)
 
@@ -1926,7 +1936,7 @@ def delete_offerer(offerer_id: int) -> None:
 
     offerers_models.Offerer.query.filter(offerers_models.Offerer.id == offerer_id).delete(synchronize_session=False)
 
-    db.session.commit()
+    db.session.flush()
 
     search.unindex_offer_ids(offer_ids_to_delete["individual_offer_ids_to_delete"])
     search.unindex_collective_offer_template_ids(offer_ids_to_delete["collective_offer_template_ids_to_delete"])
@@ -2042,9 +2052,24 @@ def accept_offerer_invitation_if_exists(user: users_models.User) -> None:
         )
         offerer_invitation.status = offerers_models.InvitationStatus.ACCEPTED
         db.session.add_all([user_offerer, offerer_invitation])
-        db.session.commit()
-        external_attributes_api.update_external_pro(user.email)
-        zendesk_sell.create_offerer(user_offerer.offerer)
+        if is_managed_transaction():
+            db.session.flush()
+            on_commit(
+                partial(
+                    external_attributes_api.update_external_pro,
+                    user.email,
+                ),
+            )
+            on_commit(
+                partial(
+                    zendesk_sell.create_offerer,
+                    user_offerer.offerer,
+                ),
+            )
+        else:
+            db.session.commit()
+            external_attributes_api.update_external_pro(user.email)
+            zendesk_sell.create_offerer(user_offerer.offerer)
         logger.info(
             "UserOfferer created from invitation",
             extra={"offerer": user_offerer.offerer, "invitedUserId": user.id, "inviterUserId": inviter_user.id},

@@ -459,7 +459,7 @@ class EditVenueTest:
 
         # Then
         mocked_async_index_offers_of_venue_ids.assert_called_once_with(
-            [venue.id],
+            venue_ids=[venue.id],
             reason=search.IndexationReason.VENUE_UPDATE,
             log_extra={"changes": {"publicName"}},
         )
@@ -480,7 +480,7 @@ class EditVenueTest:
 
         # Then
         mocked_async_index_offers_of_venue_ids.assert_called_once_with(
-            [venue.id],
+            venue_ids=[venue.id],
             reason=search.IndexationReason.VENUE_UPDATE,
             log_extra={"changes": {"city"}},
         )

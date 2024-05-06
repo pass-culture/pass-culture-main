@@ -25,6 +25,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.repository import atomic
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice import utils
@@ -136,6 +137,7 @@ def _get_incidents(
 
 
 @finance_incidents_blueprint.route("", methods=["GET"])
+@atomic()
 def list_incidents() -> utils.BackofficeResponse:
     search_form = forms.GetIncidentsSearchForm(formdata=utils.get_query_params())
 
@@ -184,6 +186,7 @@ def render_finance_incident(incident: finance_models.FinanceIncident) -> utils.B
 
 
 @finance_incidents_blueprint.route("/<int:finance_incident_id>/cancel", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def get_finance_incident_cancellation_form(finance_incident_id: int) -> utils.BackofficeResponse:
     form = offerer_forms.CommentForm()
@@ -200,6 +203,7 @@ def get_finance_incident_cancellation_form(finance_incident_id: int) -> utils.Ba
 
 
 @finance_incidents_blueprint.route("/<int:finance_incident_id>/cancel", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def cancel_finance_incident(finance_incident_id: int) -> utils.BackofficeResponse:
     incident: finance_models.FinanceIncident = _get_incident(finance_incident_id)
@@ -225,6 +229,7 @@ def cancel_finance_incident(finance_incident_id: int) -> utils.BackofficeRespons
 
 
 @finance_incidents_blueprint.route("/<int:finance_incident_id>", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.READ_INCIDENTS)
 def get_incident(finance_incident_id: int) -> utils.BackofficeResponse:
     incident = _get_incident(finance_incident_id)
@@ -232,6 +237,7 @@ def get_incident(finance_incident_id: int) -> utils.BackofficeResponse:
 
 
 @finance_incidents_blueprint.route("/<int:finance_incident_id>/history", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.READ_INCIDENTS)
 def get_history(finance_incident_id: int) -> utils.BackofficeResponse:
     actions = (
@@ -257,6 +263,7 @@ def get_history(finance_incident_id: int) -> utils.BackofficeResponse:
 
 
 @finance_incidents_blueprint.route("/individual-bookings/overpayment-creation-form", methods=["GET", "POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def get_individual_bookings_overpayment_creation_form() -> utils.BackofficeResponse:
     form = forms.BookingOverPaymentIncidentForm()
@@ -378,6 +385,7 @@ def get_individual_bookings_commercial_gesture_creation_form() -> utils.Backoffi
 @finance_incidents_blueprint.route(
     "/collective-bookings/<int:collective_booking_id>/overpayment-creation-form", methods=["GET", "POST"]
 )
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def get_collective_booking_overpayment_creation_form(collective_booking_id: int) -> utils.BackofficeResponse:
     collective_booking: educational_models.CollectiveBooking = (
@@ -430,6 +438,7 @@ def get_collective_booking_overpayment_creation_form(collective_booking_id: int)
     "/collective-bookings/<int:collective_booking_id>/commercial-gesture-creation-form",
     methods=["GET", "POST"],
 )
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def get_collective_booking_commercial_gesture_creation_form(collective_booking_id: int) -> utils.BackofficeResponse:
     collective_booking: educational_models.CollectiveBooking = (
@@ -534,6 +543,7 @@ def create_individual_booking_overpayment() -> utils.BackofficeResponse:
 
 
 @finance_incidents_blueprint.route("/individual-bookings/create-commercial-gesture", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def create_individual_booking_commercial_gesture() -> utils.BackofficeResponse:
     form = forms.CommercialGestureCreationForm()
@@ -711,6 +721,7 @@ def _initialize_collective_booking_additional_data(collective_booking: education
 
 
 @finance_incidents_blueprint.route("/<int:finance_incident_id>/comment", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def comment_incident(finance_incident_id: int) -> utils.BackofficeResponse:
     incident = finance_models.FinanceIncident.query.filter_by(id=finance_incident_id).one_or_none()
@@ -728,7 +739,7 @@ def comment_incident(finance_incident_id: int) -> utils.BackofficeResponse:
             finance_incident=incident,
             comment=form.comment.data,
         )
-        db.session.commit()
+        db.session.flush()
         flash("Le commentaire a été enregistré", "success")
 
     return redirect(
@@ -737,6 +748,7 @@ def comment_incident(finance_incident_id: int) -> utils.BackofficeResponse:
 
 
 @finance_incidents_blueprint.route("/<int:finance_incident_id>/validate", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def get_finance_incident_validation_form(finance_incident_id: int) -> utils.BackofficeResponse:
     finance_incident = (
@@ -797,6 +809,7 @@ def get_finance_incident_validation_form(finance_incident_id: int) -> utils.Back
 
 
 @finance_incidents_blueprint.route("/<int:finance_incident_id>/validate", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def validate_finance_incident(finance_incident_id: int) -> utils.BackofficeResponse:
     finance_incident = _get_incident(finance_incident_id)
@@ -820,6 +833,7 @@ def validate_finance_incident(finance_incident_id: int) -> utils.BackofficeRespo
 
 
 @finance_incidents_blueprint.route("/<int:finance_incident_id>/force-debit-note", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def get_finance_incident_force_debit_note_form(finance_incident_id: int) -> utils.BackofficeResponse:
     finance_incident = finance_models.FinanceIncident.query.filter_by(id=finance_incident_id).one_or_none()
@@ -839,6 +853,7 @@ def get_finance_incident_force_debit_note_form(finance_incident_id: int) -> util
 
 
 @finance_incidents_blueprint.route("/<int:finance_incident_id>/force-debit-note", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def force_debit_note(finance_incident_id: int) -> utils.BackofficeResponse:
     finance_incident = _get_incident(finance_incident_id)
@@ -861,7 +876,7 @@ def force_debit_note(finance_incident_id: int) -> utils.BackofficeResponse:
         },
     )
 
-    db.session.commit()
+    db.session.flush()
 
     flash("Une note de débit sera générée à la prochaine échéance.", "success")
     return redirect(
@@ -870,6 +885,7 @@ def force_debit_note(finance_incident_id: int) -> utils.BackofficeResponse:
 
 
 @finance_incidents_blueprint.route("/<int:finance_incident_id>/cancel-debit-note", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def get_finance_incident_cancel_debit_note_form(finance_incident_id: int) -> utils.BackofficeResponse:
     finance_incident = finance_models.FinanceIncident.query.filter_by(id=finance_incident_id).one_or_none()
@@ -889,6 +905,7 @@ def get_finance_incident_cancel_debit_note_form(finance_incident_id: int) -> uti
 
 
 @finance_incidents_blueprint.route("/<int:finance_incident_id>/cancel-debit-note", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def cancel_debit_note(finance_incident_id: int) -> utils.BackofficeResponse:
     finance_incident = _get_incident(finance_incident_id)
@@ -911,7 +928,7 @@ def cancel_debit_note(finance_incident_id: int) -> utils.BackofficeResponse:
         },
     )
 
-    db.session.commit()
+    db.session.flush()
 
     send_finance_incident_emails(finance_incident)
 

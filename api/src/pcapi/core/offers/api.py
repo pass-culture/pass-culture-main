@@ -50,6 +50,8 @@ from pcapi.models import pc_object
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationType
+from pcapi.repository import is_managed_transaction
+from pcapi.repository import mark_transaction_as_invalid
 from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.utils import image_conversion
@@ -875,7 +877,7 @@ def add_criteria_to_offers(
                 )
 
     db.session.bulk_save_objects(offer_criteria)
-    db.session.commit()
+    db.session.flush()
 
     search.async_index_offer_ids(
         offer_ids,
@@ -923,8 +925,13 @@ def reject_inappropriate_products(
         product.isGcuCompatible = False
 
     try:
-        db.session.commit()
+        if is_managed_transaction():
+            db.session.flush()
+        else:
+            db.session.commit()
     except Exception as exception:  # pylint: disable=broad-except
+        if is_managed_transaction():
+            mark_transaction_as_invalid()
         logger.exception(
             "Could not mark product and offers as inappropriate: %s",
             extra={
@@ -1248,7 +1255,7 @@ def whitelist_product(idAtProviders: str) -> models.Product | None:
     product.isGcuCompatible = True
 
     db.session.add(product)
-    db.session.commit()
+    db.session.flush()
     return product
 
 

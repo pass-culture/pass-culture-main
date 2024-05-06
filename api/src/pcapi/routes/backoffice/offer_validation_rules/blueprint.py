@@ -17,6 +17,8 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.repository import atomic
+from pcapi.repository import mark_transaction_as_invalid
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.utils.clean_accents import clean_accents
@@ -91,6 +93,7 @@ def _get_venues_data_for_rules(rules: list[offers_models.OfferValidationRule]) -
 
 
 @offer_validation_rules_blueprint.route("", methods=["GET"])
+@atomic()
 def list_rules() -> utils.BackofficeResponse:
     form = forms.SearchRuleForm(formdata=utils.get_query_params())
 
@@ -212,6 +215,7 @@ class SubRuleHistorySerializer:
 
 
 @offer_validation_rules_blueprint.route("/history", methods=["GET"])
+@atomic()
 def get_rules_history() -> utils.BackofficeResponse:
     actions_history = (
         history_models.ActionHistory.query.filter(history_models.ActionHistory.ruleId.is_not(None))
@@ -301,6 +305,7 @@ def _get_venues_data_for_rule_history(rules_history: list[history_models.ActionH
 
 
 @offer_validation_rules_blueprint.route("/create", methods=["GET"])
+@atomic()
 def get_create_offer_validation_rule_form() -> utils.BackofficeResponse:
     form = forms.CreateOfferValidationRuleForm()
 
@@ -315,6 +320,7 @@ def get_create_offer_validation_rule_form() -> utils.BackofficeResponse:
 
 
 @offer_validation_rules_blueprint.route("/create", methods=["POST"])
+@atomic()
 def create_rule() -> utils.BackofficeResponse:
     form = forms.CreateOfferValidationRuleForm()
 
@@ -354,17 +360,18 @@ def create_rule() -> utils.BackofficeResponse:
             rule=new_rule,
             sub_rules_info=sub_rules_info,
         )
-        db.session.commit()
+        db.session.flush()
         flash("La nouvelle règle a été créée", "success")
 
     except sa.exc.IntegrityError as err:
-        db.session.rollback()
+        mark_transaction_as_invalid()
         flash(Markup("Erreur dans la création de la règle : {message}").format(message=str(err)), "warning")
 
     return redirect(url_for("backoffice_web.offer_validation_rules.list_rules"), code=303)
 
 
 @offer_validation_rules_blueprint.route("/<int:rule_id>/delete", methods=["GET"])
+@atomic()
 def get_delete_offer_validation_rule_form(rule_id: int) -> utils.BackofficeResponse:
     rule_to_delete = offers_models.OfferValidationRule.query.filter_by(id=rule_id).one_or_none()
     if not rule_to_delete:
@@ -385,6 +392,7 @@ def get_delete_offer_validation_rule_form(rule_id: int) -> utils.BackofficeRespo
 
 
 @offer_validation_rules_blueprint.route("/<int:rule_id>/delete", methods=["POST"])
+@atomic()
 def delete_rule(rule_id: int) -> utils.BackofficeResponse:
     rule_to_delete = offers_models.OfferValidationRule.query.filter_by(id=rule_id).one_or_none()
     if not rule_to_delete:
@@ -405,9 +413,9 @@ def delete_rule(rule_id: int) -> utils.BackofficeResponse:
                 rule=rule_to_delete,
                 sub_rules_info=sub_rules_info,
             )
-            db.session.commit()
+            db.session.flush()
         except sa.exc.IntegrityError as exc:
-            db.session.rollback()
+            mark_transaction_as_invalid()
             flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
         else:
             flash(
@@ -419,6 +427,7 @@ def delete_rule(rule_id: int) -> utils.BackofficeResponse:
 
 
 @offer_validation_rules_blueprint.route("/<int:rule_id>/edit", methods=["GET"])
+@atomic()
 def get_edit_offer_validation_rule_form(rule_id: int) -> utils.BackofficeResponse:
     rule_to_update = offers_models.OfferValidationRule.query.filter_by(id=rule_id).one_or_none()
     if not rule_to_update:
@@ -465,6 +474,7 @@ def get_edit_offer_validation_rule_form(rule_id: int) -> utils.BackofficeRespons
 
 
 @offer_validation_rules_blueprint.route("/<int:rule_id>/edit", methods=["POST"])
+@atomic()
 def edit_rule(rule_id: int) -> utils.BackofficeResponse:
     rule_to_update = offers_models.OfferValidationRule.query.filter_by(id=rule_id).one_or_none()
     if not rule_to_update:
@@ -565,10 +575,10 @@ def edit_rule(rule_id: int) -> utils.BackofficeResponse:
                 rule=rule_to_update,
                 sub_rules_info=sub_rules_info,
             )
-        db.session.commit()
+        db.session.flush()
 
     except sa.exc.IntegrityError as exc:
-        db.session.rollback()
+        mark_transaction_as_invalid()
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
     else:
         flash(

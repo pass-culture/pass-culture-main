@@ -34,6 +34,7 @@ from pcapi.core.providers import models as providers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
+from pcapi.repository import atomic
 from pcapi.repository import repository
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import filters
@@ -269,6 +270,7 @@ def render_venue_details(
 
 
 @venue_blueprint.route("", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def list_venues() -> utils.BackofficeResponse:
     form = forms.GetVenuesListForm(formdata=utils.get_query_params())
@@ -292,6 +294,7 @@ def list_venues() -> utils.BackofficeResponse:
 
 
 @venue_blueprint.route("/<int:venue_id>", methods=["GET"])
+@atomic()
 def get(venue_id: int) -> utils.BackofficeResponse:
     venue = get_venue(venue_id)
 
@@ -358,6 +361,7 @@ def get_stats_data(venue_id: int) -> dict:
 
 
 @venue_blueprint.route("/<int:venue_id>/stats", methods=["GET"])
+@atomic()
 def get_stats(venue_id: int) -> utils.BackofficeResponse:
     venue_query = (
         offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id)
@@ -397,6 +401,7 @@ def get_stats(venue_id: int) -> utils.BackofficeResponse:
 
 
 @venue_blueprint.route("/<int:venue_id>/revenue-details", methods=["GET"])
+@atomic()
 def get_revenue_details(venue_id: int) -> utils.BackofficeResponse:
     details = offerers_repository.get_revenues_per_year(venueId=venue_id)
     return render_template(
@@ -406,6 +411,7 @@ def get_revenue_details(venue_id: int) -> utils.BackofficeResponse:
 
 
 @venue_blueprint.route("/<int:venue_id>/provider/<int:provider_id>/delete", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def delete_venue_provider(venue_id: int, provider_id: int) -> utils.BackofficeResponse:
     venue_provider = (
@@ -450,6 +456,7 @@ def get_venue_with_history(venue_id: int) -> offerers_models.Venue:
 
 
 @venue_blueprint.route("/<int:venue_id>/history", methods=["GET"])
+@atomic()
 def get_history(venue_id: int) -> utils.BackofficeResponse:
     venue = get_venue_with_history(venue_id)
     actions = sorted(venue.action_history, key=lambda action: action.actionDate, reverse=True)
@@ -517,6 +524,7 @@ def get_collective_dms_applications(venue_id: int) -> utils.BackofficeResponse:
 
 
 @venue_blueprint.route("/<int:venue_id>/delete", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.DELETE_PRO_ENTITY)
 def delete_venue(venue_id: int) -> utils.BackofficeResponse:
     venue = offerers_models.Venue.query.filter_by(id=venue_id).populate_existing().with_for_update().one_or_none()
@@ -550,6 +558,7 @@ def delete_venue(venue_id: int) -> utils.BackofficeResponse:
 
 
 @venue_blueprint.route("/<int:venue_id>/fully-sync", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def fully_sync_venue(venue_id: int) -> utils.BackofficeResponse:
     venue_exists = db.session.query(
@@ -571,6 +580,7 @@ def fully_sync_venue(venue_id: int) -> utils.BackofficeResponse:
 
 
 @venue_blueprint.route("/<int:venue_id>", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def update_venue(venue_id: int) -> utils.BackofficeResponse:
     venue = get_venue(venue_id)
@@ -693,6 +703,7 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
 
 
 @venue_blueprint.route("/<int:venue_id>/comment", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def comment_venue(venue_id: int) -> utils.BackofficeResponse:
     venue = offerers_models.Venue.query.filter_by(id=venue_id).with_for_update(key_share=True, read=True).one_or_none()
@@ -710,6 +721,7 @@ def comment_venue(venue_id: int) -> utils.BackofficeResponse:
 
 
 @venue_blueprint.route("/batch-edit-form", methods=["GET", "POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def get_batch_edit_venues_form() -> utils.BackofficeResponse:
     form = forms.BatchEditVenuesForm()
@@ -744,6 +756,7 @@ def get_batch_edit_venues_form() -> utils.BackofficeResponse:
 
 
 @venue_blueprint.route("/batch-edit", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def batch_edit_venues() -> utils.BackofficeResponse:
     form = forms.BatchEditVenuesForm()
@@ -873,6 +886,7 @@ def _render_remove_pricing_point_content(
 
 
 @venue_blueprint.route("/<int:venue_id>/remove-pricing-point", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def get_remove_pricing_point_form(venue_id: int) -> utils.BackofficeResponse:
     venue = _load_venue_for_removing_pricing_point(venue_id)
@@ -887,6 +901,7 @@ def get_remove_pricing_point_form(venue_id: int) -> utils.BackofficeResponse:
 
 
 @venue_blueprint.route("/<int:venue_id>/remove-pricing-point", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def remove_pricing_point(venue_id: int) -> utils.BackofficeResponse:
     venue = _load_venue_for_removing_pricing_point(venue_id)
@@ -901,7 +916,7 @@ def remove_pricing_point(venue_id: int) -> utils.BackofficeResponse:
             form.comment.data,
             apply_changes=True,
             override_revenue_check=bool(form.override_revenue_check.data),
-            author_user_id=current_user.id,
+            author_user=current_user,
         )
     except siret_api.CheckError as exc:
         return _render_remove_pricing_point_content(venue, form=form, error=str(exc))
@@ -970,6 +985,7 @@ def _render_remove_siret_content(
 
 
 @venue_blueprint.route("/<int:venue_id>/remove-siret", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MOVE_SIRET)
 def get_remove_siret_form(venue_id: int) -> utils.BackofficeResponse:
     venue = _load_venue_for_removing_siret(venue_id)
@@ -986,6 +1002,7 @@ def get_remove_siret_form(venue_id: int) -> utils.BackofficeResponse:
 
 
 @venue_blueprint.route("/<int:venue_id>/remove-siret", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MOVE_SIRET)
 def remove_siret(venue_id: int) -> utils.BackofficeResponse:
     venue = _load_venue_for_removing_siret(venue_id)
@@ -1002,7 +1019,6 @@ def remove_siret(venue_id: int) -> utils.BackofficeResponse:
             override_revenue_check=bool(form.override_revenue_check.data),
             new_pricing_point_id=form.new_pricing_point.data,
             author_user_id=current_user.id,
-            new_db_session=False,
         )
     except siret_api.CheckError as exc:
         return _render_remove_siret_content(venue, form=form, error=str(exc))
