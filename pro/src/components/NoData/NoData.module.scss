@@ -7,11 +7,10 @@
   align-items: center;
   display: flex;
   flex-direction: column;
-  margin-bottom: rem.torem(32px);
 
   &-icon {
-    margin: rem.torem(40px) 0;
+    margin: 0 0 rem.torem(32px) 0;
     color: var(--color-grey-medium);
-    height: rem.torem(80px);
+    height: rem.torem(100px);
   }
 }
