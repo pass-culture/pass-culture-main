@@ -337,7 +337,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "search-2-operator": "DATE_FROM",
             "search-2-date": "2024-01-20",
             "search-3-search_field": "NAME",
-            "search-3-operator": "STR_NOT_EQUALS",
+            "search-3-operator": "NAME_NOT_EQUALS",
             "search-3-string": "indiv",
             "search-4-search_field": "ID",
             "search-4-operator": "NOT_EQUALS",
@@ -386,7 +386,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "sort": "dateCreated",
             "order": "asc",
             "search-0-search_field": "NAME",
-            "search-0-operator": "STR_EQUALS",
+            "search-0-operator": "NAME_EQUALS",
             "search-0-string": "A Very Specific Name",
         }
 
@@ -396,7 +396,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
 
         expected_url = (
             "/pro/collective-offer?sort=dateCreated&amp;order=desc&amp;search-0-search_field=NAME&amp;"
-            "search-0-operator=STR_EQUALS&amp;search-0-string=A+Very+Specific+Name"
+            "search-0-operator=NAME_EQUALS&amp;search-0-string=A+Very+Specific+Name"
         )
         assert expected_url in str(response.data)
 
