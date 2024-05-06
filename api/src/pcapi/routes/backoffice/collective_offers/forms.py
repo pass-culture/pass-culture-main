@@ -271,14 +271,14 @@ class GetCollectiveOfferAdvancedSearchForm(forms.GetOffersBaseFields):
         return super().validate(extra_validators)
 
 
-class GetCollectiveOffersListForm(forms.GetOffersBaseFields):
+class GetCollectiveOfferTemplatesListForm(forms.GetOffersBaseFields):
     class Meta:
         csrf = False
 
+    q = fields.PCOptSearchField("ID, nom de l'offre")
     from_date = fields.PCDateField("Créées à partir du", validators=(wtforms.validators.Optional(),))
     to_date = fields.PCDateField("Jusqu'au", validators=(wtforms.validators.Optional(),))
     only_validated_offerers = fields.PCSwitchBooleanField("Uniquement les offres des structures validées")
-    q = fields.PCOptSearchField("ID, nom de l'offre")
     formats = fields.PCSelectMultipleField("Formats", choices=forms_utils.choices_from_enum(subcategories.EacFormat))
     offerer = fields.PCTomSelectField(
         "Structures",
@@ -294,17 +294,10 @@ class GetCollectiveOffersListForm(forms.GetOffersBaseFields):
         "États",
         choices=forms_utils.choices_from_enum(OfferValidationStatus, formatter=filters.format_offer_validation_status),
     )
-    limit = fields.PCSelectField(
-        "Nombre maximum",
-        choices=((100, "100"), (500, "500"), (1000, "1000"), (3000, "3000")),
-        default="100",
-        coerce=int,
-        validators=(wtforms.validators.Optional(),),
-    )
 
     def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
         super().__init__(*args, **kwargs)
-        self._fields.move_to_end("q", last=False)
+        self._fields.move_to_end("limit")
 
     def is_empty(self) -> bool:
         # 'only_validated_offerers', 'sort' must be combined with other filters
@@ -320,14 +313,6 @@ class GetCollectiveOffersListForm(forms.GetOffersBaseFields):
             )
         )
         return empty and super().is_empty()
-
-
-class InternalSearchForm(GetCollectiveOffersListForm, GetCollectiveOfferAdvancedSearchForm):
-    """concat of GetOffersSearchForm and GetOfferAdvancedSearchForm. this form is never displayed but it is the one
-    used to display the list of individual offers"""
-
-    class Meta:
-        csrf = False
 
 
 class EditCollectiveOfferPrice(FlaskForm):

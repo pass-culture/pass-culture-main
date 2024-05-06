@@ -36,7 +36,7 @@ list_collective_offer_templates_blueprint = utils.child_backoffice_blueprint(
 
 
 def _get_collective_offer_templates(
-    form: collective_offer_forms.GetCollectiveOffersListForm,
+    form: collective_offer_forms.GetCollectiveOfferTemplatesListForm,
 ) -> list[educational_models.CollectiveOfferTemplate]:
     base_query = educational_models.CollectiveOfferTemplate.query.options(
         sa.orm.load_only(
@@ -116,7 +116,7 @@ def _get_collective_offer_templates(
 
 @list_collective_offer_templates_blueprint.route("", methods=["GET"])
 def list_collective_offer_templates() -> utils.BackofficeResponse:
-    form = collective_offer_forms.GetCollectiveOffersListForm(formdata=utils.get_query_params())
+    form = collective_offer_forms.GetCollectiveOfferTemplatesListForm(formdata=utils.get_query_params())
     if not form.validate():
         return render_template("collective_offer_template/list.html", rows=[], form=form), 400
 
