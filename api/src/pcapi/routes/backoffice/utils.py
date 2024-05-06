@@ -16,7 +16,6 @@ from flask_login import current_user
 from flask_sqlalchemy import BaseQuery
 from flask_wtf import FlaskForm
 from markupsafe import Markup
-from sqlalchemy import func
 from sqlalchemy.dialects import postgresql
 import werkzeug
 from werkzeug.datastructures import ImmutableMultiDict
@@ -45,8 +44,8 @@ OPERATOR_DICT: dict[str, dict[str, typing.Any]] = {
     "EQUALS": {"function": op.eq},
     "IS": {"function": op.eq},
     "NOT_EQUALS": {"function": op.ne},
-    "STR_EQUALS": {"function": lambda x, y: func.lower(x) == y.lower()},
-    "STR_NOT_EQUALS": {"function": lambda x, y: func.lower(x) != y.lower()},
+    "NAME_EQUALS": {"function": lambda x, y: x.ilike(y)},
+    "NAME_NOT_EQUALS": {"function": lambda x, y: ~x.ilike(y)},
     "GREATER_THAN": {"function": op.gt},
     "GREATER_THAN_OR_EQUAL_TO": {"function": op.ge},
     "LESS_THAN": {"function": op.lt},
@@ -73,10 +72,8 @@ OPERATOR_DICT: dict[str, dict[str, typing.Any]] = {
 class AdvancedSearchOperators(enum.Enum):
     EQUALS = "est égal à"
     NOT_EQUALS = "est différent de"
-    NAME_EQUALS = "est égal à\0\0"
-    NAME_NOT_EQUALS = "est différent de\0\0"
-    STR_EQUALS = "est égal à\0"  # the \0 is here to force wtforms to display EQUALS and STR_EQUALS
-    STR_NOT_EQUALS = "est différent de\0"  # the \0 is here to force wtforms to display NOT_EQUALS and STR_NOT_EQUALS
+    NAME_EQUALS = "est égal à\0"  # the \0 is here to force wtforms to display EQUALS and NAME_EQUALS
+    NAME_NOT_EQUALS = "est différent de\0"  # the \0 is here to force wtforms to display NOT_EQUALS and NAME_NOT_EQUALS
     GREATER_THAN = "supérieur strict"
     GREATER_THAN_OR_EQUAL_TO = "supérieur ou égal"
     LESS_THAN = "inférieur strict"
@@ -247,7 +244,6 @@ def generate_search_query(
     fields_definition: dict[str, dict[str, typing.Any]],
     joins_definition: dict[str, list[dict[str, typing.Any]]],
     subqueries_definition: dict[str, dict[str, typing.Any]],
-    operators_definition: dict[str, dict[str, typing.Any]] | None = None,
     _ignore_subquery_joins: bool = False,
 ) -> tuple[BaseQuery, set[str], set[str], set[str]]:
     """
@@ -263,7 +259,6 @@ def generate_search_query(
     operators_definition: a dict mapping str to actual operations
     _ignore_subquery_joins: internal signaling to manage subqueries
     """
-    operators_definition = operators_definition or OPERATOR_DICT
     subquery_joins: dict = defaultdict(list)
     inner_joins: set[tuple] = set()
     outer_joins: set[tuple] = set()
@@ -271,7 +266,7 @@ def generate_search_query(
     warnings: set[str] = set()
     for search_data in search_parameters:
         operator = search_data.get("operator", "")
-        if operator not in operators_definition:
+        if operator not in OPERATOR_DICT:
             continue
 
         search_field = search_data.get("search_field")
@@ -294,7 +289,7 @@ def generate_search_query(
             continue
 
         column = meta_field["column"]
-        if operators_definition[operator].get("outer_join", False):
+        if OPERATOR_DICT[operator].get("outer_join", False):
             if not meta_field.get("outer_join") or not meta_field.get("outer_join_column"):
                 warnings.add(
                     f"La règle de recherche '{search_field}' n'est pas correctement configuré pour "
@@ -305,7 +300,7 @@ def generate_search_query(
             column = meta_field["outer_join_column"]
         elif "inner_join" in meta_field:
             inner_joins.add(meta_field["inner_join"])
-        filters.append(operators_definition[operator]["function"](column, field_value))
+        filters.append(OPERATOR_DICT[operator]["function"](column, field_value))
 
     query, inner_join_log = _manage_joins(query=query, joins=inner_joins, joins_definition=joins_definition)
     query, outer_join_log = _manage_joins(
@@ -316,7 +311,6 @@ def generate_search_query(
             joins=subquery_joins,
             fields_definition=fields_definition,
             subqueries_definition=subqueries_definition,
-            operators_definition=operators_definition,
         )
     )
     if filters:
@@ -349,7 +343,6 @@ def _manage_subquery_joins(
     joins: dict,
     fields_definition: dict[str, dict[str, typing.Any]],
     subqueries_definition: dict[str, dict[str, typing.Any]],
-    operators_definition: dict[str, dict[str, typing.Any]] | None = None,
 ) -> list:
     filters = []
     for join_name, subquery_filters in joins.items():
@@ -360,7 +353,6 @@ def _manage_subquery_joins(
             fields_definition=fields_definition,
             joins_definition={},
             subqueries_definition={},
-            operators_definition=operators_definition,
             _ignore_subquery_joins=True,
         )
         subquery = subquery.filter(subqueries_definition[join_name]["constraint"])
