@@ -16,6 +16,7 @@ from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import api as users_api
+from pcapi.repository import atomic
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.pro import forms as pro_forms
@@ -92,6 +93,7 @@ def render_search_template(form: pro_forms.ProSearchForm | None = None) -> str:
 
 
 @pro_blueprint.route("/search", methods=["GET"])
+@atomic()
 def search_pro() -> utils.BackofficeResponse:
     """
     Renders two search pages: first the one with the search form, then
@@ -170,6 +172,7 @@ def _render_get_create_offerer_form(form: pro_forms.CreateOffererForm) -> str:
 
 
 @pro_blueprint.route("/create", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.CREATE_PRO_ENTITY)
 def get_create_offerer_form() -> utils.BackofficeResponse:
     form = pro_forms.CreateOffererForm()
@@ -177,6 +180,7 @@ def get_create_offerer_form() -> utils.BackofficeResponse:
 
 
 @pro_blueprint.route("/create", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.CREATE_PRO_ENTITY)
 def create_offerer() -> utils.BackofficeResponse:
     form = pro_forms.CreateOffererForm()

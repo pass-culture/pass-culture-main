@@ -335,9 +335,8 @@ class CreatePivotTest(PostEndpointHelper):
         assert created.theaterId == form["theater_id"]
         assert created.internalId == form["internal_id"]
 
-    def test_create_pivot_boost(self, requests_mock, authenticated_client):
-        requests_mock.get("http://example.com/boost1/")
-        requests_mock.post("http://example.com/boost1/")
+    @patch("pcapi.routes.backoffice.pivots.contexts.boost.boost")
+    def test_create_pivot_boost(self, boost_mock, authenticated_client):
         venue_id = offerers_factories.VenueFactory().id
         form = {
             "venue_id": venue_id,
@@ -355,6 +354,7 @@ class CreatePivotTest(PostEndpointHelper):
         assert created.cinemaUrl == form["cinema_url"]
         assert created.username == form["username"]
         assert created.password == form["password"]
+        boost_mock.login.assert_called_once_with(created, ignore_device=True)
 
     def test_create_pivot_cgr(self, requests_mock, authenticated_client):
         requests_mock.get("http://example.com/another_web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
@@ -520,9 +520,8 @@ class UpdatePivotTest(PostEndpointHelper):
         assert updated.theaterId == form["theater_id"]
         assert updated.internalId == form["internal_id"]
 
-    def test_update_pivot_boost(self, authenticated_client, requests_mock):
-        requests_mock.get("http://example.com/boost1/")
-        requests_mock.post("http://example.com/boost1/")
+    @patch("pcapi.routes.backoffice.pivots.contexts.boost.boost")
+    def test_update_pivot_boost(self, boost_mock, authenticated_client):
         boost_pivot = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="http://example.com/boost0/")
 
         form = {
@@ -540,6 +539,7 @@ class UpdatePivotTest(PostEndpointHelper):
         assert updated.cinemaUrl == form["cinema_url"]
         assert updated.password == form["password"]
         assert updated.password == form["password"]
+        boost_mock.login.assert_called_once_with(boost_pivot, ignore_device=True)
 
     def test_update_pivot_cgr(self, authenticated_client, requests_mock):
         requests_mock.get("http://example.com/another_web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)

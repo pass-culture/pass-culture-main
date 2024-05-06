@@ -128,6 +128,7 @@ def create_specific_invoice() -> None:
         incident_events += finance_api._create_finance_events_from_incident(
             booking_finance_incident, incident_validation_date=datetime.utcnow()
         )
+        db.session.flush()
 
     for event in incident_events:
         finance_api.price_event(event)

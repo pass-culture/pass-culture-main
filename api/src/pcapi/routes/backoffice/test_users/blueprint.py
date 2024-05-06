@@ -28,6 +28,7 @@ logger = logging.getLogger(__name__)
 
 
 @blueprint.backoffice_web.route("/admin/user-generator", methods=["GET"])
+@atomic()
 @utils.custom_login_required(redirect_to=".home")
 def get_generated_user() -> utils.BackofficeResponse:
     form = forms.UserGeneratorForm()
@@ -55,6 +56,7 @@ def get_generated_user() -> utils.BackofficeResponse:
 
 
 @blueprint.backoffice_web.route("/admin/user-generator", methods=["POST"])
+@atomic()
 @utils.custom_login_required(redirect_to=".home")
 def generate_user() -> utils.BackofficeResponse:
     form = forms.UserGeneratorForm()
@@ -111,6 +113,7 @@ def _get_user_if_exists(user_id: str | None) -> users_models.User | None:
 
 
 @blueprint.backoffice_web.route("/admin/delete", methods=["GET"])
+@atomic()
 @utils.custom_login_required(redirect_to=".home")
 def get_user_deletion_form() -> str:
     form = forms.UserDeletionForm()

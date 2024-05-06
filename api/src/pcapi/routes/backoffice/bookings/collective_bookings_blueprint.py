@@ -22,6 +22,7 @@ from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.repository import atomic
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.bookings import forms as booking_forms
@@ -112,6 +113,7 @@ def _get_collective_bookings(
 
 
 @collective_bookings_blueprint.route("", methods=["GET"])
+@atomic()
 def list_collective_bookings() -> utils.BackofficeResponse:
     form = booking_forms.GetCollectiveBookingListForm(formdata=utils.get_query_params())
     if not form.validate():
@@ -150,6 +152,7 @@ def _redirect_after_collective_booking_action(code: int = 303) -> utils.Backoffi
 
 
 @collective_bookings_blueprint.route("/download-csv", methods=["GET"])
+@atomic()
 def get_collective_booking_csv_download() -> utils.BackofficeResponse:
     form = booking_forms.GetDownloadBookingsForm(formdata=utils.get_query_params())
     if not form.validate():
@@ -166,6 +169,7 @@ def get_collective_booking_csv_download() -> utils.BackofficeResponse:
 
 
 @collective_bookings_blueprint.route("/download-xlsx", methods=["GET"])
+@atomic()
 def get_collective_booking_xlsx_download() -> utils.BackofficeResponse:
     form = booking_forms.GetDownloadBookingsForm(formdata=utils.get_query_params())
     if not form.validate():
@@ -187,6 +191,7 @@ def get_collective_booking_xlsx_download() -> utils.BackofficeResponse:
 
 
 @collective_bookings_blueprint.route("/<int:collective_booking_id>/mark-as-used", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
 def mark_booking_as_used(collective_booking_id: int) -> utils.BackofficeResponse:
     collective_booking = educational_models.CollectiveBooking.query.filter_by(id=collective_booking_id).one_or_none()
@@ -208,6 +213,7 @@ def mark_booking_as_used(collective_booking_id: int) -> utils.BackofficeResponse
 
 
 @collective_bookings_blueprint.route("/<int:collective_booking_id>/cancel", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
 def mark_booking_as_cancelled(collective_booking_id: int) -> utils.BackofficeResponse:
     collective_booking = educational_models.CollectiveBooking.query.filter_by(id=collective_booking_id).one_or_none()

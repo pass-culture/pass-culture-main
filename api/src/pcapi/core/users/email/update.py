@@ -328,7 +328,7 @@ def request_email_update_from_admin(user: models.User, email: str) -> None:
     api.request_email_confirmation(user)
 
 
-def full_email_update_by_admin(user: models.User, email: str, commit: bool = False) -> None:
+def full_email_update_by_admin(user: models.User, email: str) -> None:
     """
     Runs the whole email update process at once, without sending any
     confirmation email: log update history, update user's email and
@@ -342,9 +342,6 @@ def full_email_update_by_admin(user: models.User, email: str, commit: bool = Fal
     user.email = email
     user.isEmailValidated = True
     db.session.add(user)
-
-    if commit:
-        db.session.commit()
 
 
 def get_active_token_expiration(user: models.User) -> datetime | None:

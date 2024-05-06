@@ -68,6 +68,8 @@ import pcapi.core.users.constants as users_constants
 import pcapi.core.users.models as users_models
 from pcapi.domain import reimbursement
 from pcapi.models import db
+from pcapi.repository import is_managed_transaction
+from pcapi.repository import mark_transaction_as_invalid
 from pcapi.repository import transaction
 from pcapi.tasks import finance_tasks
 from pcapi.utils import human_ids
@@ -661,7 +663,10 @@ def _cancel_event_pricing(
             extra={"event": event.id, "pricing": pricing.id},
         )
     except Exception:
-        db.session.rollback()
+        if is_managed_transaction():
+            mark_transaction_as_invalid()
+        else:
+            db.session.rollback()
         raise
     db.session.flush()
     return pricing
@@ -2376,7 +2381,10 @@ def _create_reimbursement_rule(
     )
     validation.validate_reimbursement_rule(rule)
     db.session.add(rule)
-    db.session.commit()
+    if is_managed_transaction():
+        db.session.flush()
+    else:
+        db.session.commit()
     return rule
 
 
@@ -2407,7 +2415,10 @@ def edit_reimbursement_rule(
         db.session.expire(rule)
         raise
     db.session.add(rule)
-    db.session.commit()
+    if is_managed_transaction():
+        db.session.flush()
+    else:
+        db.session.commit()
     return rule
 
 
@@ -2779,7 +2790,10 @@ def create_overpayment_finance_incident(
         comment=origin,
     )
 
-    db.session.commit()
+    if is_managed_transaction():
+        db.session.flush()
+    else:
+        db.session.commit()
 
     return incident
 
@@ -2990,7 +3004,10 @@ def validate_finance_incident(
         linked_incident_id=finance_incident.id,
     )
 
-    db.session.commit()
+    if is_managed_transaction():
+        db.session.flush()
+    else:
+        db.session.commit()
 
     # send mail to pro
     match finance_incident.kind:
@@ -3029,7 +3046,10 @@ def cancel_finance_incident(
         comment=comment,
     )
 
-    db.session.commit()
+    if is_managed_transaction():
+        db.session.flush()
+    else:
+        db.session.commit()
 
 
 def are_cashflows_being_generated() -> bool:
