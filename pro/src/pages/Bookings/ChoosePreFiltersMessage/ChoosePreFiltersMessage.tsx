@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import React from 'react'
 
-import strokeBookingHold from 'icons/stroke-booking-hold.svg'
+import strokeDesk from 'icons/stroke-desk.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './ChoosePreFiltersMessage.module.scss'
@@ -12,12 +12,12 @@ export const ChoosePreFiltersMessage = () => (
   <div className={cn(styles['no-data'])}>
     <SvgIcon
       className={styles['no-data-icon']}
-      src={strokeBookingHold}
+      src={strokeDesk}
       alt=""
-      viewBox="0 0 200 156"
+      viewBox="0 0 48 48"
     />
-    <p>
-      {`Pour visualiser vos réservations, veuillez sélectionner un ou plusieurs des filtres précédents et cliquer sur «${UNBREAKABLE_SPACE}Afficher${UNBREAKABLE_SPACE}»`}
+    <p className={styles['no-data-text']}>
+      {`Pour visualiser vos réservations, \nveuillez sélectionner un ou plusieurs des filtres précédents et cliquer sur «${UNBREAKABLE_SPACE}Afficher${UNBREAKABLE_SPACE}»`}
     </p>
   </div>
 )
