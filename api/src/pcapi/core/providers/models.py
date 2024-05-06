@@ -339,8 +339,6 @@ class BoostCinemaDetails(PcObject, Base, Model):
         CinemaProviderPivot, foreign_keys=[cinemaProviderPivotId], backref="BoostCinemaDetails", uselist=False
     )
     cinemaUrl: str = sa.Column(sa.Text, nullable=False)  # including http:// or https:// and trailing /
-    username: str = sa.Column(sa.Text, nullable=False)
-    password: str = sa.Column(sa.Text, nullable=False)
     token: str | None = sa.Column(sa.Text, nullable=True)
     tokenExpirationDate: datetime.datetime | None = sa.Column(sa.DateTime, nullable=True)
 

@@ -8,6 +8,7 @@ from pcapi import settings
 from pcapi.connectors import boost
 import pcapi.core.external_bookings.boost.exceptions as boost_exceptions
 import pcapi.core.providers.factories as providers_factories
+from pcapi.core.testing import override_settings
 from pcapi.routes.serialization import BaseModel
 
 
@@ -34,14 +35,15 @@ class BoostLoginTest:
         token = boost.login(cinema_details)
 
         assert requests_mock.last_request.json() == {
-            "password": cinema_details.password,
-            "username": cinema_details.username,
+            "password": "fake_password",
+            "username": "fake_user",
             "stationName": f"pcapi - {settings.ENV}",
         }
         assert requests_mock.last_request.url == "https://cinema.example.com/api/vendors/login?ignore_device=True"
         assert token == cinema_details.token == "new-token"
         assert cinema_details.tokenExpirationDate == datetime.datetime(2022, 10, 13, 17, 9, 25)
 
+    @override_settings(BOOST_API_PASSWORD="wrong_password")
     def test_wrong_credentials(self, requests_mock):
         cinema_details = providers_factories.BoostCinemaDetailsFactory(
             cinemaUrl="https://cinema.example.com/",
@@ -55,8 +57,8 @@ class BoostLoginTest:
             boost.login(cinema_details)
 
         assert requests_mock.last_request.json() == {
-            "password": cinema_details.password,
-            "username": cinema_details.username,
+            "password": "wrong_password",
+            "username": "fake_user",
             "stationName": f"pcapi - {settings.ENV}",
         }
         assert requests_mock.last_request.url == "https://cinema.example.com/api/vendors/login?ignore_device=True"

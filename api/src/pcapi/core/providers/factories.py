@@ -138,8 +138,6 @@ class BoostCinemaDetailsFactory(BaseFactory):
 
     cinemaProviderPivot = factory.SubFactory(BoostCinemaProviderPivotFactory)
     cinemaUrl = factory.Sequence("https://boost-cinema-{}.example.com/".format)
-    username = "pass_culture"
-    password = "a great password"
     token = factory.LazyFunction(secrets.token_urlsafe)
     tokenExpirationDate = factory.LazyAttribute(lambda _: datetime.datetime.utcnow() + datetime.timedelta(hours=24))
 

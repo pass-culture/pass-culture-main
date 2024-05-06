@@ -40,8 +40,6 @@ class EditAllocineForm(EditPivotForm):
 
 class EditBoostForm(EditPivotForm):
     cinema_id = fields.PCStringField("Identifiant Cinéma (Boost)")
-    username = fields.PCStringField("Nom de l'utilisateur (Boost)")
-    password = fields.PCPasswordField("Mot de passe (Boost)")
     cinema_url = fields.PCStringField(
         "URL du cinéma (Boost)",
         validators=(
