@@ -41,8 +41,6 @@ class BoostContext(PivotContext):
             venue_id=[pivot.cinemaProviderPivot.venue.id],
             cinema_id=pivot.cinemaProviderPivot.idAtProvider,
             cinema_url=pivot.cinemaUrl,
-            username=pivot.username,
-            password=pivot.password,
         )
         form.venue_id.readonly = True
         return form
@@ -56,8 +54,6 @@ class BoostContext(PivotContext):
 
         venue_id = form.venue_id.data[0]
         cinema_id = form.cinema_id.data
-        username = form.username.data
-        password = form.password.data
         cinema_url = form.cinema_url.data + "/" if not form.cinema_url.data.endswith("/") else form.cinema_url.data
 
         venue = offerers_models.Venue.query.filter_by(id=venue_id).one_or_none()
@@ -76,7 +72,8 @@ class BoostContext(PivotContext):
             venue=venue, provider=boost_provider, idAtProvider=cinema_id
         )
         boost_cinema_details = providers_models.BoostCinemaDetails(
-            cinemaProviderPivot=cinema_provider_pivot, cinemaUrl=cinema_url, username=username, password=password
+            cinemaProviderPivot=cinema_provider_pivot,
+            cinemaUrl=cinema_url,
         )
 
         db.session.add(cinema_provider_pivot)
@@ -91,8 +88,6 @@ class BoostContext(PivotContext):
             raise NotFound()
         assert pivot.cinemaProviderPivot
         pivot.cinemaProviderPivot.idAtProvider = str(form.cinema_id.data)
-        pivot.username = form.username.data
-        pivot.password = form.password.data
         pivot.cinemaUrl = form.cinema_url.data + "/" if not form.cinema_url.data.endswith("/") else form.cinema_url.data
         # clear token in case an existing wrong one is still non-expired
         pivot.token = None
@@ -111,6 +106,6 @@ class BoostContext(PivotContext):
         except boost_exceptions.BoostAPIException as exc:
             logger.exception(
                 "Network error on checking Boost API information",
-                extra={"exc": exc, "username": pivot.username},
+                extra={"exc": exc, "cinema_url": pivot.cinemaUrl},
             )
         flash("Connexion à l'API KO.", "warning")

@@ -255,6 +255,8 @@ IMPORT_USERS_GOOGLE_DOCUMENT_ID = secrets_utils.get("IMPORT_USERS_GOOGLE_DOCUMEN
 
 # PROVIDERS
 ALLOCINE_API_KEY = secrets_utils.get("ALLOCINE_API_KEY")
+BOOST_API_PASSWORD = secrets_utils.get("BOOST_API_PASSWORD")
+BOOST_API_USERNAME = secrets_utils.get("BOOST_API_USERNAME")
 CDS_API_URL = secrets_utils.get("CDS_API_URL")
 CGR_API_USER = secrets_utils.get("CGR_API_USER")
 EMS_API_URL = secrets_utils.get("EMS_API_URL")
