@@ -150,7 +150,31 @@ class AlgoliaBackend(base.SearchBackend):
         self.algolia_venues_client = client.init_index(settings.ALGOLIA_VENUES_INDEX_NAME)
         self.redis_client = current_app.redis_client
 
+    def _can_enqueue_offer_ids(self, offer_ids: Iterable[int]) -> bool:
+        if settings.ALGOLIA_OFFERS_INDEX_MAX_SIZE < 0:
+            return True
+
+        currently_indexed_offers = self.redis_client.hlen(REDIS_HASHMAP_INDEXED_OFFERS_NAME)
+        offers_in_indexing_queue = self.redis_client.scard(REDIS_OFFER_IDS_NAME)
+        limit = settings.ALGOLIA_OFFERS_INDEX_MAX_SIZE
+        can_enqueue = currently_indexed_offers + offers_in_indexing_queue < limit
+        if not can_enqueue:
+            logger.warning(
+                "Exceeded maximum Algolia offer index size",
+                extra={
+                    "currently_indexed_offers": currently_indexed_offers,
+                    "offers_in_indexing_queue": offers_in_indexing_queue,
+                    "partial_ids": list(offer_ids)[:50],
+                    "count": len(offer_ids),  # type: ignore [arg-type]
+                    "limit": limit,
+                },
+            )
+        return can_enqueue
+
     def enqueue_offer_ids(self, offer_ids: Iterable[int]) -> None:
+        if not self._can_enqueue_offer_ids(offer_ids):
+            return
+
         self._enqueue_ids(offer_ids, REDIS_OFFER_IDS_NAME)
 
     def enqueue_offer_ids_in_error(self, offer_ids: Iterable[int]) -> None:
