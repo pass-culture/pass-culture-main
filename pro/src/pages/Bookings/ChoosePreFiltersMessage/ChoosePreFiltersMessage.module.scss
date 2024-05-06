@@ -1,12 +1,21 @@
 @use "styles/mixins/_rem.scss" as rem;
 
 .no-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
+  gap: rem.torem(32px);
 
   &-icon {
     color: var(--color-grey-medium);
-    width: rem.torem(128px);
-    height: rem.torem(100px);
-    margin-bottom: rem.torem(16px);
+    width: rem.torem(80px);
+    height: rem.torem(80px);
+  }
+
+  &-text {
+    white-space: pre-line;
+    color: var(--color-grey-dark);
+    max-width: rem.torem(445px);
   }
 }
