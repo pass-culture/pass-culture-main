@@ -65,8 +65,8 @@ def login(cinema_details: BoostCinemaDetails, ignore_device: bool = True) -> str
     The token has a duration of 24 hours, and is saved in DB along its expiration date.
     """
     auth_payload = {
-        "username": cinema_details.username,
-        "password": cinema_details.password,
+        "username": settings.BOOST_API_USERNAME,
+        "password": settings.BOOST_API_PASSWORD,
         "stationName": f"pcapi - {settings.ENV}",
     }
     url = cinema_details.cinemaUrl + LOGIN_ENDPOINT
