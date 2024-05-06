@@ -46,8 +46,9 @@ def test_enqueue_functions(enqueue_function_name, queue):
     enqueue = getattr(backend, enqueue_function_name)
     enqueue([1])
     enqueue({2, 3})
+    enqueue({3, 4})
     enqueue([])
-    assert backend.redis_client.smembers(queue) == {"1", "2", "3"}
+    assert backend.redis_client.smembers(queue) == {"1", "2", "3", "4"}
 
 
 @pytest.mark.parametrize(
