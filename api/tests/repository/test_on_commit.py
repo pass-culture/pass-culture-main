@@ -1,7 +1,5 @@
 from unittest.mock import MagicMock
 
-import pytest
-
 from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.repository import on_commit
@@ -9,13 +7,15 @@ from pcapi.repository import on_commit
 
 class AtomicTest:
     def test_on_commit_outside_managed_session(self):
-        with pytest.raises(NotImplementedError):
-            on_commit(func=lambda: 1)
+        mocked_function = MagicMock()
+        on_commit(func=mocked_function)
+        mocked_function.assert_called_once()
 
     def test_on_commit_inside_managed_transaction(self):
-        with pytest.raises(NotImplementedError):
-            with atomic():
-                on_commit(func=lambda: 1)
+        mocked_function = MagicMock()
+        with atomic():
+            on_commit(func=mocked_function)
+        mocked_function.assert_called_once()
 
     def test_invalid_session_do_not_call_callbacks(self):
         mocked_function = MagicMock()
