@@ -23,6 +23,7 @@ from pcapi.routes.backoffice.forms import constants
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import utils as forms_utils
+from pcapi.utils import string as string_utils
 
 
 class IndividualOffersSearchAttributes(enum.Enum):
@@ -58,7 +59,7 @@ form_field_configuration = {
     "CREATION_DATE": {"field": "date", "operator": ["DATE_FROM", "DATE_TO", "DATE_EQUALS"]},
     "DEPARTMENT": {"field": "department", "operator": ["IN", "NOT_IN"]},
     "REGION": {"field": "region", "operator": ["IN", "NOT_IN"]},
-    "EAN": {"field": "string", "operator": ["CONTAINS", "NO_CONTAINS", "STR_EQUALS", "STR_NOT_EQUALS"]},
+    "EAN": {"field": "string", "operator": ["EQUALS", "NOT_EQUALS"]},
     "EVENT_DATE": {"field": "date", "operator": ["DATE_FROM", "DATE_TO", "DATE_EQUALS"]},
     "BOOKING_LIMIT_DATE": {"field": "date", "operator": ["DATE_FROM", "DATE_TO", "DATE_EQUALS"]},
     "ID": {"field": "integer", "operator": ["EQUALS", "NOT_EQUALS"]},
@@ -69,7 +70,7 @@ form_field_configuration = {
     "TAG": {"field": "criteria", "operator": ["IN", "NOT_IN", "NOT_EXIST"]},
     "VENUE": {"field": "venue", "operator": ["IN", "NOT_IN"]},
     "VALIDATION": {"field": "validation", "operator": ["IN", "NOT_IN"]},
-    "VISA": {"field": "string", "operator": ["CONTAINS", "NO_CONTAINS", "STR_EQUALS", "STR_NOT_EQUALS"]},
+    "VISA": {"field": "string", "operator": ["EQUALS", "NOT_EQUALS"]},
     "MUSIC_TYPE": {"field": "music_type", "operator": ["IN", "NOT_IN"]},
     "MUSIC_SUB_TYPE": {"field": "music_sub_type", "operator": ["IN", "NOT_IN"]},
     "SHOW_TYPE": {"field": "show_type", "operator": ["IN", "NOT_IN"]},
@@ -307,6 +308,21 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
         search_inline=True,
         field_list_compatibility=True,
     )
+
+    def validate_string(self, string: fields.PCStringField) -> fields.PCStringField:
+        if string.data:
+            search_field = self._fields["search_field"].data
+
+            if search_field == "EAN":
+                if not string_utils.is_ean_valid(string.data):
+                    raise wtforms.validators.ValidationError("La recherche ne correspond pas au format d'un EAN-13")
+                string.data = string_utils.format_ean_or_visa(string.data)
+            elif search_field == "VISA":
+                if not string_utils.is_visa_valid(string.data):
+                    raise wtforms.validators.ValidationError("La recherche ne correspond pas au format d'un VISA")
+                string.data = string_utils.format_ean_or_visa(string.data)
+
+        return string
 
 
 class GetOfferAdvancedSearchForm(GetOffersBaseFields):
