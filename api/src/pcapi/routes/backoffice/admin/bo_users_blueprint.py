@@ -18,6 +18,7 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as users_models
 from pcapi.core.users.email import update as email_update
+from pcapi.repository import atomic
 from pcapi.repository import repository
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
@@ -47,6 +48,7 @@ def get_admin_account_link(user_id: int, form: forms.BOUserSearchForm | None, **
 
 
 @bo_users_blueprint.route("/search", methods=["GET"])
+@atomic()
 def search_bo_users() -> utils.BackofficeResponse:
     request_args = utils.get_query_params()
     form = forms.BOUserSearchForm(formdata=request_args)
@@ -135,11 +137,13 @@ def render_bo_user_page(user_id: int, edit_form: forms.EditBOUserForm | None = N
 
 
 @bo_users_blueprint.route("/<int:user_id>", methods=["GET"])
+@atomic()
 def get_bo_user(user_id: int) -> utils.BackofficeResponse:
     return render_bo_user_page(user_id)
 
 
 @bo_users_blueprint.route("/<int:user_id>", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS)
 def update_bo_user(user_id: int) -> utils.BackofficeResponse:
     user = _get_bo_user_query(user_id).populate_existing().with_for_update(key_share=True).one_or_none()

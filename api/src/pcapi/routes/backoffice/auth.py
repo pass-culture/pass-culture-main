@@ -19,6 +19,7 @@ from pcapi.core.users import repository as users_repository
 from pcapi.core.users.backoffice import api as backoffice_api
 from pcapi.flask_app import backoffice_oauth
 from pcapi.models import db
+from pcapi.repository import atomic
 
 from . import blueprint
 from . import utils
@@ -28,6 +29,7 @@ logger = logging.getLogger(__name__)
 
 
 @blueprint.backoffice_web.route("/login", methods=["GET"])
+@atomic()
 def login() -> utils.BackofficeResponse:
     use_google_without_credentials = settings.BACKOFFICE_LOGIN_WITHOUT_CREDENTIALS and (
         not settings.GOOGLE_CLIENT_ID or not settings.GOOGLE_CLIENT_SECRET
@@ -45,7 +47,7 @@ def login() -> utils.BackofficeResponse:
         local_admin.lastConnectionDate = datetime.datetime.utcnow()
         local_admin.add_admin_role()
         backoffice_api.upsert_roles(local_admin, list(perm_models.Roles))
-        db.session.commit()
+        db.session.flush()
 
         login_user(local_admin, remember=True)
         login_manager.stamp_session(local_admin)
@@ -56,6 +58,7 @@ def login() -> utils.BackofficeResponse:
 
 
 @blueprint.backoffice_web.route("/authorize", methods=["GET"])
+@atomic()
 def authorize() -> utils.BackofficeResponse:
     from pcapi.utils import login_manager
 
@@ -95,7 +98,7 @@ def authorize() -> utils.BackofficeResponse:
     user.lastConnectionDate = datetime.datetime.utcnow()
     user.add_admin_role()
     backoffice_api.upsert_roles(user, roles)
-    db.session.commit()
+    db.session.flush()
 
     logger.info(
         "Successful authentication attempt",
@@ -109,6 +112,7 @@ def authorize() -> utils.BackofficeResponse:
 
 
 @blueprint.backoffice_web.route("/logout", methods=["POST"])
+@atomic()
 @utils.custom_login_required(redirect_to=".home")
 def logout() -> utils.BackofficeResponse:
     logout_user()
@@ -116,6 +120,7 @@ def logout() -> utils.BackofficeResponse:
 
 
 @blueprint.backoffice_web.route("/user-not-found", methods=["GET"])
+@atomic()
 def user_not_found() -> utils.BackofficeResponse:
     return render_template("auth/user_not_found.html")
 
