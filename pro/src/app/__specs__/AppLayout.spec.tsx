@@ -38,7 +38,7 @@ describe('src | AppLayout', () => {
         }),
       })
 
-      expect(screen.getByText('Se déconnecter')).toBeInTheDocument()
+      expect(screen.getByTitle('Profil')).toBeInTheDocument()
       expect(screen.queryByAltText('Menu')).not.toBeInTheDocument()
     })
 

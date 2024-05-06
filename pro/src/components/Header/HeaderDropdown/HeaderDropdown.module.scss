@@ -1,0 +1,124 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/variables/_size.scss" as size;
+@use "styles/variables/_z-index.scss" as zIndex;
+
+$profil-button-size: rem.torem(34px);
+
+.pop-in {
+  z-index: zIndex.$profil-pop-in-z-index;
+  width: 100dvw;
+  height: 100dvh;
+  margin-top: rem.torem(8px);
+
+  @media (min-width: size.$mobile) {
+    height: auto;
+    width: rem.torem(320px);
+    margin-left: 0;
+    margin-top: 0;
+  }
+}
+
+.close {
+  &-item {
+    width: rem.torem(40px);
+    height: rem.torem(40px);
+    position: absolute;
+    top: rem.torem(8px);
+    right: rem.torem(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:focus-visible {
+      outline: rem.torem(1px) solid var(--color-input-text-color);
+      outline-offset: rem.torem(2px);
+      border-radius: rem.torem(8px);
+    }
+
+    &:hover {
+      outline: none;
+    }
+  }
+
+  &-button {
+    background-color: transparent;
+    border: none;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: rem.torem(8px);
+  padding: rem.torem(32px) rem.torem(16px) rem.torem(8px) rem.torem(16px);
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-white);
+  z-index: 15;
+
+  @media (min-width: size.$mobile) {
+    border-radius: rem.torem(6px);
+    border: solid rem.torem(1px) var(--color-grey-medium);
+  }
+
+  &-title {
+    @include fonts.caption;
+
+    color: var(--color-grey-dark);
+  }
+}
+
+.dropdown-button {
+  color: var(--color-secondary-light);
+  background-color: var(--color-grey-light);
+  outline: none;
+  border: none;
+  border-radius: rem.torem(8px);
+  padding: rem.torem(8px);
+  width: $profil-button-size;
+  height: $profil-button-size;
+
+  &[data-state="open"] {
+    background-color: var(--color-secondary-light);
+    color: var(--color-white);
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  &:focus-visible {
+    outline: rem.torem(1px) solid var(--color-input-text-color);
+    outline-offset: rem.torem(2px);
+  }
+}
+
+.separator {
+  height: rem.torem(1px);
+  width: 100%;
+  background-color: var(--color-grey-medium);
+}
+
+.menu-item {
+  display: flex;
+  height: rem.torem(40px);
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+
+  &:focus-visible {
+    outline: rem.torem(1px) solid var(--color-input-text-color);
+    outline-offset: rem.torem(2px);
+    border-radius: rem.torem(4px);
+  }
+
+  &:hover {
+    outline: none;
+  }
+}
