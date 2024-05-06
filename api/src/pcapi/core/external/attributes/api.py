@@ -1,6 +1,7 @@
 from collections import Counter
 from collections import defaultdict
 from datetime import datetime
+from functools import partial
 
 import sqlalchemy as sa
 from sqlalchemy.orm import contains_eager
@@ -23,6 +24,7 @@ from pcapi.core.users import repository as users_repository
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferStatus
+from pcapi.repository import on_commit
 
 
 # make sure values are in [a-z0-9_] (no uppercase characters, no '-')
@@ -45,10 +47,23 @@ def update_external_user(
         user_attributes = get_user_attributes(user)
 
         if not skip_batch:
-            update_batch_user(user.id, user_attributes, cultural_survey_answers=cultural_survey_answers)
-
+            on_commit(
+                partial(
+                    update_batch_user,
+                    user.id,
+                    user_attributes,
+                    cultural_survey_answers=cultural_survey_answers,
+                ),
+            )
         if not skip_sendinblue:
-            update_sendinblue_user(user.email, user_attributes, cultural_survey_answers=cultural_survey_answers)
+            on_commit(
+                partial(
+                    update_sendinblue_user,
+                    user.email,
+                    user_attributes,
+                    cultural_survey_answers=cultural_survey_answers,
+                ),
+            )
 
 
 def update_external_pro(email: str | None) -> None:
@@ -60,10 +75,18 @@ def update_external_pro(email: str | None) -> None:
 
     if email:
         now = datetime.utcnow()
-        update_sib_pro_attributes_task.delay(UpdateProAttributesRequest(email=email, time_id=f"{now.hour // 12}"))
+        on_commit(
+            partial(
+                update_sib_pro_attributes_task.delay,
+                payload=UpdateProAttributesRequest(email=email, time_id=f"{now.hour // 12}"),
+            ),
+        )
         if FeatureToggle.ENABLE_BEAMER.is_active():
-            update_beamer_pro_attributes_task.delay(
-                UpdateProAttributesRequest(email=email, time_id=f"{now.hour // 12}")
+            on_commit(
+                partial(
+                    update_beamer_pro_attributes_task.delay,
+                    patload=UpdateProAttributesRequest(email=email, time_id=f"{now.hour // 12}"),
+                ),
             )
 
 
