@@ -1,7 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { addYears } from 'date-fns'
-import format from 'date-fns/format'
+import { addYears, format } from 'date-fns'
 import { Formik } from 'formik'
 
 import { DEFAULT_EAC_FORM_VALUES } from 'core/OfferEducational/constants'
