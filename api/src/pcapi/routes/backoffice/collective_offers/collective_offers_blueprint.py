@@ -1,4 +1,5 @@
 import datetime
+import re
 import typing
 
 from flask import flash
@@ -78,8 +79,9 @@ SEARCH_FIELD_TO_PYTHON = {
         "inner_join": "stock",
     },
     "ID": {
-        "field": "integer",
+        "field": "string",
         "column": educational_models.CollectiveOffer.id,
+        "special": lambda q: [int(id_) for id_ in re.findall(r"\d+", q or "")],
     },
     "NAME": {
         "field": "string",
