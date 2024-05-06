@@ -1,17 +1,17 @@
 import cn from 'classnames'
 import { ForwardedRef, forwardRef } from 'react'
-import { Link, NavLink, useLocation } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import fullBurgerIcon from 'icons/full-burger.svg'
-import fullLogoutIcon from 'icons/full-logout.svg'
 import logoPassCultureProIcon from 'icons/logo-pass-culture-pro.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Header.module.scss'
+import HeaderDropdown from './HeaderDropdown/HeaderDropdown'
 
 type HeaderProps = {
   lateralPanelOpen?: boolean
@@ -78,40 +78,7 @@ const Header = forwardRef(
               </NavLink>
             )}
           </div>
-
-          {/* These buttons do the same.
-            The first one is displayed only on tablet and smaller to get rid of the right margin (and has an alt)
-            The second one is displayed on larger screen sizes
-        */}
-          <Link
-            onClick={() =>
-              logEvent?.(Events.CLICKED_LOGOUT, { from: location.pathname })
-            }
-            to={`${location.pathname}?logout}`}
-            className={styles['logout-mobile']}
-          >
-            <SvgIcon
-              className="nav-item-icon"
-              src={fullLogoutIcon}
-              alt="Se déconnecter"
-              width="24"
-            />
-          </Link>
-          <Link
-            onClick={() =>
-              logEvent?.(Events.CLICKED_LOGOUT, { from: location.pathname })
-            }
-            to={`${location.pathname}?logout}`}
-            className={styles['logout']}
-          >
-            <SvgIcon
-              className="nav-item-icon"
-              src={fullLogoutIcon}
-              alt=""
-              width="20"
-            />
-            Se déconnecter
-          </Link>
+          <HeaderDropdown />
         </div>
       </header>
     )
