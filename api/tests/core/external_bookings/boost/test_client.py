@@ -57,20 +57,6 @@ class GetPcuPricingIfExistsTest:
         assert caplog.records[0].message == "There are several pass Culture Pricings for this Showtime, we will use PCU"
 
 
-@pytest.mark.parametrize(
-    "barcode, ff_is_active, expected_barcode",
-    [
-        ("123456", True, "sale-123456"),
-        ("sale-123456", True, "sale-123456"),
-        ("123456", False, "123456"),
-        ("sale-123456", False, "123456"),
-    ],
-)
-def test_get_boost_external_booking_barcode(barcode: str, ff_is_active: bool, expected_barcode: str):
-    with override_features(WIP_ENABLE_BOOST_PREFIXED_EXTERNAL_BOOKING=ff_is_active):
-        assert boost_client.get_boost_external_booking_barcode(barcode) == expected_barcode
-
-
 class GetShowtimesTest:
     @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=False)
     def test_should_return_showtimes(self, requests_mock):
@@ -261,18 +247,9 @@ class BookTicketTest:
 
 
 class CancelBookingTest:
-    @pytest.mark.parametrize(
-        "barcode, ff_is_active, expected_barcode",
-        [
-            ("90577", True, "sale-90577"),
-            ("sale-90577", True, "sale-90577"),
-            ("90577", False, "sale-90577"),
-            ("sale-90577", False, "sale-90577"),
-        ],
-    )
-    def test_should_cancel_booking_with_success(
-        self, barcode: str, ff_is_active: bool, expected_barcode: str, requests_mock
-    ):
+
+    def test_should_cancel_booking_with_success(self, requests_mock):
+        barcode = "sale-90577"
         cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
         cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
         put_adapter = requests_mock.put(
@@ -283,11 +260,10 @@ class CancelBookingTest:
         boost = boost_client.BoostClientAPI(cinema_str_id)
 
         try:
-            with override_features(WIP_ENABLE_BOOST_PREFIXED_EXTERNAL_BOOKING=ff_is_active):
-                boost.cancel_booking(barcodes=[barcode])
+            boost.cancel_booking(barcodes=[barcode])
         except Exception:  # pylint: disable=broad-except
             assert False, "Should not raise exception"
-        assert put_adapter.last_request.json() == {"sales": [{"code": expected_barcode, "refundType": "pcu"}]}
+        assert put_adapter.last_request.json() == {"sales": [{"code": barcode, "refundType": "pcu"}]}
 
     def test_when_boost_return_element_not_found(self, requests_mock):
         cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")

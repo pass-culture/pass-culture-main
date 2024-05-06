@@ -102,7 +102,6 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_TRUSTED_DEVICE = "Active la fonctionnalité d'appareil de confiance"
     WIP_ENABLE_SUSPICIOUS_EMAIL_SEND = "Active l'envoie d'email lors de la détection d'une connexion suspicieuse"
     WIP_MANDATORY_BOOKING_CONTACT = "Rend obligatoire offer.bookingContact pour les offres retirables"
-    WIP_ENABLE_BOOST_PREFIXED_EXTERNAL_BOOKING = "Active les réservations externes boost avec préfixe"
     WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY = "Activer le nouveau parcours de dépôt de coordonnées bancaires"
     WIP_ENABLE_MOCK_UBBLE = "Utiliser le mock Ubble à la place du vrai Ubble"
     WIP_ENABLE_OFFER_PRICE_LIMITATION = "Activer les règles de limitation de modification de prix des offres"
