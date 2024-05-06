@@ -388,7 +388,7 @@ class TestingBackend(BaseBackend):
     ) -> AcceslibreResult | None:
         return AcceslibreResult(
             slug="mon-lieu-chez-acceslibre",
-            web_url="https://une-fausse-url.com",
+            web_url="https://acceslibre.beta.gouv.fr/app/activite/mon-lieu-chez-acceslibre/",
             nom="Un lieu",
             adresse="3 Rue de Valois 75001 Paris",
             code_postal="75001",
@@ -402,7 +402,7 @@ class TestingBackend(BaseBackend):
         return [
             AcceslibreResult(
                 slug="mon-lieu-chez-acceslibre",
-                web_url="https://une-fausse-url.com",
+                web_url="https://acceslibre.beta.gouv.fr/app/activite/mon-lieu-chez-acceslibre/",
                 nom="Un lieu",
                 adresse="3 Rue de Valois 75001 Paris",
                 code_postal="75001",
@@ -423,7 +423,10 @@ class TestingBackend(BaseBackend):
         postal_code: str | None = None,
         address: str | None = None,
     ) -> AcceslibreInfos | None:
-        return AcceslibreInfos(slug="mon-lieu-chez-acceslibre", url="https://une-fausse-url.com")
+        return AcceslibreInfos(
+            slug="mon-lieu-chez-acceslibre",
+            url="https://acceslibre.beta.gouv.fr/app/activite/mon-lieu-chez-acceslibre/",
+        )
 
     def get_accessibility_infos(self, slug: str) -> tuple[datetime | None, AccessibilityInfo | None]:
         accesslibre_data_list = [
