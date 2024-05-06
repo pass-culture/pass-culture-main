@@ -2265,12 +2265,12 @@
     "@storybook/addon-highlight" "8.0.10"
     axe-core "^4.2.0"
 
-"@storybook/addon-controls@^8.0.9":
-  version "8.0.9"
-  resolved "https://registry.yarnpkg.com/@storybook/addon-controls/-/addon-controls-8.0.9.tgz#cc1f8ffde58fdaf9ea2ef7ebf9261c3519f42a39"
-  integrity sha512-wWdmd62UP/sfPm8M7aJjEA+kEXTUIR/QsYi9PoYBhBZcXiikZ4kNan7oD7GfsnzGGKHrBVfwQhO+TqaENGYytA==
+"@storybook/addon-controls@^8.0.10":
+  version "8.0.10"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-controls/-/addon-controls-8.0.10.tgz#49eaa9bc914f9462d56dbefc07ba2f8cf9d5a7a9"
+  integrity sha512-MAUtIJGayNSsfn3VZ6SjQwpRkb4ky+10oVfos+xX9GQ5+7RCs+oYMuE4+aiQvvfXNdV8v0pUGPUPeUzqfJmhOA==
   dependencies:
-    "@storybook/blocks" "8.0.9"
+    "@storybook/blocks" "8.0.10"
     lodash "^4.17.21"
     ts-dedent "^2.0.0"
 
@@ -2281,23 +2281,23 @@
   dependencies:
     "@storybook/global" "^5.0.0"
 
-"@storybook/blocks@8.0.9":
-  version "8.0.9"
-  resolved "https://registry.yarnpkg.com/@storybook/blocks/-/blocks-8.0.9.tgz#6500fef1e72618bc7715286b9dbb5bfaae20f4d4"
-  integrity sha512-F2zSrfSwzTFN7qW3zB80tG+EXtmfmCDC6Ird0F7tolszb6tOqJcAcBOwQbE2O0wI63sLu21qxzXgaKBMkiWvJg==
+"@storybook/blocks@8.0.10":
+  version "8.0.10"
+  resolved "https://registry.yarnpkg.com/@storybook/blocks/-/blocks-8.0.10.tgz#af87b7f4ec5b1f9a9195b1f993feea7b13475786"
+  integrity sha512-LOaxvcO2d4dT4YoWlQ0bq/c8qA3aHoqtyuvBjwbVn+359bjMtgj/91YuP9Y2+ggZZ4p+ttgvk39PcmJlNXlJsw==
   dependencies:
-    "@storybook/channels" "8.0.9"
-    "@storybook/client-logger" "8.0.9"
-    "@storybook/components" "8.0.9"
-    "@storybook/core-events" "8.0.9"
+    "@storybook/channels" "8.0.10"
+    "@storybook/client-logger" "8.0.10"
+    "@storybook/components" "8.0.10"
+    "@storybook/core-events" "8.0.10"
     "@storybook/csf" "^0.1.4"
-    "@storybook/docs-tools" "8.0.9"
+    "@storybook/docs-tools" "8.0.10"
     "@storybook/global" "^5.0.0"
     "@storybook/icons" "^1.2.5"
-    "@storybook/manager-api" "8.0.9"
-    "@storybook/preview-api" "8.0.9"
-    "@storybook/theming" "8.0.9"
-    "@storybook/types" "8.0.9"
+    "@storybook/manager-api" "8.0.10"
+    "@storybook/preview-api" "8.0.10"
+    "@storybook/theming" "8.0.10"
+    "@storybook/types" "8.0.10"
     "@types/lodash" "^4.14.167"
     color-convert "^2.0.1"
     dequal "^2.0.2"
@@ -2453,18 +2453,18 @@
     recast "^0.23.5"
     tiny-invariant "^1.3.1"
 
-"@storybook/components@8.0.9":
-  version "8.0.9"
-  resolved "https://registry.yarnpkg.com/@storybook/components/-/components-8.0.9.tgz#f087e69d8d95ff0e5766042fc4f9481882db73bb"
-  integrity sha512-JcwBGADzIJs0PSzqykrrD2KHzNG9wtexUOKuidt+FSv9szpUhe3qBAXIHpdfBRl7mOJ9TRZ5rt+mukEnfncdzA==
+"@storybook/components@8.0.10":
+  version "8.0.10"
+  resolved "https://registry.yarnpkg.com/@storybook/components/-/components-8.0.10.tgz#74c50658cfce9e2039e0eb5d0a51ebb9b717e9af"
+  integrity sha512-eo+oDDcm35YBB3dtDYDfcjJypNVPmRty85VWpAOBsJXpwp/fgU8csx0DM3KmhrQ4cWLf2WzcFowJwI1w+J88Sw==
   dependencies:
     "@radix-ui/react-slot" "^1.0.2"
-    "@storybook/client-logger" "8.0.9"
+    "@storybook/client-logger" "8.0.10"
     "@storybook/csf" "^0.1.4"
     "@storybook/global" "^5.0.0"
     "@storybook/icons" "^1.2.5"
-    "@storybook/theming" "8.0.9"
-    "@storybook/types" "8.0.9"
+    "@storybook/theming" "8.0.10"
+    "@storybook/types" "8.0.10"
     memoizerific "^1.11.3"
     util-deprecate "^1.0.2"
 
@@ -2649,6 +2649,20 @@
   resolved "https://registry.yarnpkg.com/@storybook/docs-mdx/-/docs-mdx-3.0.0.tgz#5c9b5ce35dcb00ad8aa5dddbabf52ad09fab3974"
   integrity sha512-NmiGXl2HU33zpwTv1XORe9XG9H+dRUC1Jl11u92L4xr062pZtrShLmD4VKIsOQujxhhOrbxpwhNOt+6TdhyIdQ==
 
+"@storybook/docs-tools@8.0.10":
+  version "8.0.10"
+  resolved "https://registry.yarnpkg.com/@storybook/docs-tools/-/docs-tools-8.0.10.tgz#8ab6f9ce2485814288de25a57ca16c842cc214d3"
+  integrity sha512-rg9KS81vEh13VMr4mAgs+7L4kYqoRtG7kVfV1WHxzJxjR3wYcVR0kP9gPTWV4Xha/TA3onHu9sxKxMTWha0urQ==
+  dependencies:
+    "@storybook/core-common" "8.0.10"
+    "@storybook/core-events" "8.0.10"
+    "@storybook/preview-api" "8.0.10"
+    "@storybook/types" "8.0.10"
+    "@types/doctrine" "^0.0.3"
+    assert "^2.1.0"
+    doctrine "^3.0.0"
+    lodash "^4.17.21"
+
 "@storybook/docs-tools@8.0.9":
   version "8.0.9"
   resolved "https://registry.yarnpkg.com/@storybook/docs-tools/-/docs-tools-8.0.9.tgz#4257adede62028a6e1176151a09fa4f4fa146b12"
@@ -2719,6 +2733,11 @@
   version "8.0.10"
   resolved "https://registry.yarnpkg.com/@storybook/manager/-/manager-8.0.10.tgz#c3c6229d7f2cfb47f65dc68572f42cce2661e79f"
   integrity sha512-bojGglUQNry48L4siURc2zQKswavLzMh69rqsfL3ZXx+i+USfRfB7593azTlaZh0q6HO4bUAjB24RfQCyifLLQ==
+
+"@storybook/node-logger@8.0.10":
+  version "8.0.10"
+  resolved "https://registry.yarnpkg.com/@storybook/node-logger/-/node-logger-8.0.10.tgz#dc48f174b26e44a7fbfbbc497797496dd208fcb9"
+  integrity sha512-UMmaUaA3VOX/mKLsSvOnbZre2/1tZ6hazA6H0eAnClKb51jRD1AJrsBYK+uHr/CAp7t710bB5U8apPov7hayDw==
 
 "@storybook/node-logger@8.0.10":
   version "8.0.10"
