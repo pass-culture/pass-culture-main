@@ -210,7 +210,6 @@ export const PreFilters = ({
             Réinitialiser les filtres
           </Button>
         </div>
-
         <div className="button-group">
           <div className="button-group-buttons">
             <span className="button-group-separator" />
