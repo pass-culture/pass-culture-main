@@ -11,7 +11,6 @@ import pcapi.core.bookings.constants as bookings_constants
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.users.models as users_models
-from pcapi.models.feature import FeatureToggle
 from pcapi.utils.queue import add_to_queue
 
 from . import constants
@@ -156,15 +155,11 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             "dateStart": start_date.strftime("%Y-%m-%d"),
             "dateEnd": (start_date + datetime.timedelta(days=interval_days)).strftime("%Y-%m-%d"),
         }
-        params: dict[str, str | int | None] | None = None
-        if FeatureToggle.WIP_ENABLE_BOOST_SHOWTIMES_FILTER.is_active():
-            params = {
-                "paymentMethod": constants.BOOST_PASS_CULTURE_PAYMENT_METHOD,
-                "hideFullReservation": constants.BOOST_HIDE_FULL_RESERVATION,
-                "film": film,
-            }
-        else:
-            params = {"film": film} if film else None
+        params: dict[str, str | int | None] | None = {
+            "paymentMethod": constants.BOOST_PASS_CULTURE_PAYMENT_METHOD,
+            "hideFullReservation": constants.BOOST_HIDE_FULL_RESERVATION,
+            "film": film,
+        }
         return self.get_collection_items(
             resource=boost.ResourceBoost.SHOWTIMES,
             collection_class=boost_serializers.ShowTimeCollection,

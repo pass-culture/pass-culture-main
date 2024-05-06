@@ -10,7 +10,6 @@ from pcapi.core.external_bookings.boost import client as boost_client
 import pcapi.core.external_bookings.boost.exceptions as boost_exceptions
 import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.providers.factories as providers_factories
-from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.utils import date
 
@@ -58,71 +57,7 @@ class GetPcuPricingIfExistsTest:
 
 
 class GetShowtimesTest:
-    @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=False)
     def test_should_return_showtimes(self, requests_mock):
-        cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
-        cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
-        requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/between/2022-10-10/2022-10-20?page=1&per_page=2",
-            json=fixtures.ShowtimesEndpointResponse.PAGE_1_JSON_DATA,
-        )
-        requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/between/2022-10-10/2022-10-20?page=2&per_page=2",
-            json=fixtures.ShowtimesEndpointResponse.PAGE_2_JSON_DATA,
-        )
-        boost = boost_client.BoostClientAPI(cinema_str_id)
-        showtimes = boost.get_showtimes(per_page=2, start_date=date.date(2022, 10, 10), interval_days=10)
-        assert len(showtimes) == 3
-        assert showtimes[0].id == 36683
-        assert showtimes[0].numberSeatsRemaining == 96
-        assert showtimes[0].film.titleCnc == "BLACK PANTHER : WAKANDA FOREVER"
-        assert showtimes[0].version == {"code": "VF", "id": 3, "title": "Film Etranger en Langue Française"}
-        assert showtimes[0].screen
-        assert not showtimes[0].showtimePricing
-        assert showtimes[0].attributs == []
-        assert showtimes[1].id == 36848
-        assert showtimes[1].numberSeatsRemaining == 177
-        assert showtimes[1].film.titleCnc == "CHARLOTTE"
-        assert showtimes[1].version == {"code": "VF", "id": 1, "title": "Film Français"}
-        assert showtimes[1].screen
-        assert not showtimes[1].showtimePricing
-        assert showtimes[1].attributs == []
-        assert showtimes[2].id == 36932
-        assert showtimes[2].numberSeatsRemaining == 122
-        assert showtimes[2].film.titleCnc == "CASSE NOISETTE ROH 2021"
-        assert showtimes[2].version == {"code": "VF", "id": 3, "title": "Film Etranger en Langue Française"}
-        assert showtimes[2].screen
-        assert not showtimes[2].showtimePricing
-        assert showtimes[2].attributs == []
-
-    @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=False)
-    def test_should_return_a_movie_showtimes(self, requests_mock):
-        cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
-        cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
-        requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/between/2022-10-10/2022-10-20?film=207&page=1&per_page=2",
-            json=fixtures.ShowtimesWithFilmIdEndpointResponse.PAGE_1_JSON_DATA,
-        )
-        boost = boost_client.BoostClientAPI(cinema_str_id)
-        showtimes = boost.get_showtimes(per_page=2, start_date=date.date(2022, 10, 10), interval_days=10, film=207)
-
-        assert len(showtimes) == 2
-        assert showtimes[0].id == 36683
-        assert showtimes[0].numberSeatsRemaining == 96
-        assert showtimes[0].film.titleCnc == "BLACK PANTHER : WAKANDA FOREVER"
-        assert showtimes[0].version == {"code": "VF", "id": 3, "title": "Film Etranger en Langue Française"}
-        assert showtimes[0].screen
-        assert not showtimes[0].showtimePricing
-        assert showtimes[0].attributs == []
-        assert showtimes[1].id == 36684
-        assert showtimes[1].numberSeatsRemaining == 0
-        assert showtimes[1].film.titleCnc == "BLACK PANTHER : WAKANDA FOREVER"
-        assert showtimes[1].version == {"code": "VF", "id": 3, "title": "Film Etranger en Langue Française"}
-        assert showtimes[1].screen
-        assert not showtimes[1].showtimePricing
-        assert showtimes[1].attributs == []
-
-    def test_should_return_showtimes_with_enabled_filter_ff(self, requests_mock):
         cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
         cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
         start_date = datetime.date.today()
@@ -172,7 +107,7 @@ class GetShowtimesTest:
         ]
         assert showtimes[2].attributs == [24, 1, 29, 40]
 
-    def test_should_return_a_movie_showtimes_with_enabled_filter_ff(self, requests_mock):
+    def test_should_return_a_movie_showtimes(self, requests_mock):
         cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
         cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
         requests_mock.get(
