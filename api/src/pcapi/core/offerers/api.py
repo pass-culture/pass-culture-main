@@ -62,6 +62,7 @@ from pcapi.utils import image_conversion
 import pcapi.utils.date as date_utils
 import pcapi.utils.db as db_utils
 import pcapi.utils.email as email_utils
+from pcapi.workers.match_acceslibre_job import match_acceslibre_job
 
 from . import exceptions
 from . import models
@@ -103,6 +104,8 @@ def update_venue(
     validation.validate_coordinates(attrs.get("latitude"), attrs.get("longitude"))  # type: ignore [arg-type]
 
     modifications = {field: value for field, value in attrs.items() if venue.field_exists_and_has_changed(field, value)}
+    new_permanent = not venue.isPermanent and attrs.get("isPermanent")
+
     if not admin_update:
         # run validation when the venue update is triggered by a pro
         # user. This can be bypassed when done by and admin/backoffice
@@ -193,6 +196,9 @@ def update_venue(
 
     if contact_data and contact_data.website:
         virustotal.request_url_scan(contact_data.website, skip_if_recent_scan=True)
+
+    if new_permanent and not external_accessibility_url:
+        match_acceslibre_job.delay(venue.id)
 
     return venue
 
