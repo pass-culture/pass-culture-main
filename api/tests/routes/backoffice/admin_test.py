@@ -499,7 +499,9 @@ class GetBoUserTest(GetEndpointHelper):
         user = user_factory()
 
         user_id = user.id
-        with assert_num_queries(self.expected_num_queries):
+        expected_num_queries = self.expected_num_queries
+        expected_num_queries += 1  # rollback after error
+        with assert_num_queries(expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 404
 

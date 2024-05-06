@@ -43,6 +43,7 @@ from pcapi.core.users.models import EligibilityType
 from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
+from pcapi.repository import atomic
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
@@ -130,6 +131,7 @@ def is_beneficiary_anonymizable(user: users_models.User) -> bool:
 
 
 @public_accounts_blueprint.route("<int:user_id>/anonymize", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT)
 def anonymize_public_account(user_id: int) -> utils.BackofficeResponse:
     user = (
@@ -162,6 +164,7 @@ def anonymize_public_account(user_id: int) -> utils.BackofficeResponse:
 
 
 @public_accounts_blueprint.route("/search", methods=["GET"])
+@atomic()
 def search_public_accounts() -> utils.BackofficeResponse:
     """
     Renders two search pages: first the one with the search form, then
@@ -871,12 +874,14 @@ def _get_progress(steps: list[RegistrationStep]) -> float:
 
 
 @public_accounts_blueprint.route("/<int:user_id>", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.READ_PUBLIC_ACCOUNT)
 def get_public_account(user_id: int) -> utils.BackofficeResponse:
     return render_public_account_details(user_id)
 
 
 @public_accounts_blueprint.route("/<int:user_id>", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def update_public_account(user_id: int) -> utils.BackofficeResponse:
     user = (
@@ -920,7 +925,7 @@ def update_public_account(user_id: int) -> utils.BackofficeResponse:
             return render_public_account_details(user_id, form), 400
 
     snapshot.add_action()
-    db.session.commit()
+    db.session.flush()
 
     if email_changed:
         # TODO (prouzet) old email should also be updated, but there is no update_external_user by email
@@ -931,6 +936,7 @@ def update_public_account(user_id: int) -> utils.BackofficeResponse:
 
 
 @public_accounts_blueprint.route("/<int:user_id>/resend-validation-email", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def resend_validation_email(user_id: int) -> utils.BackofficeResponse:
     user = users_models.User.query.filter_by(id=user_id).one_or_none()
@@ -949,6 +955,7 @@ def resend_validation_email(user_id: int) -> utils.BackofficeResponse:
 
 
 @public_accounts_blueprint.route("/<int:user_id>/validate-phone-number", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def manually_validate_phone_number(user_id: int) -> utils.BackofficeResponse:
     user = (
@@ -964,7 +971,7 @@ def manually_validate_phone_number(user_id: int) -> utils.BackofficeResponse:
     user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
     db.session.add(user)
     history_api.add_action(action_type=history_models.ActionType.USER_PHONE_VALIDATED, author=current_user, user=user)
-    db.session.commit()
+    db.session.flush()
 
     subscription_api.activate_beneficiary_if_no_missing_step(user)
     users_api.delete_all_users_phone_validation_tokens(user)
@@ -975,6 +982,7 @@ def manually_validate_phone_number(user_id: int) -> utils.BackofficeResponse:
 
 
 @public_accounts_blueprint.route("/<int:user_id>/send-validation-code", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def send_validation_code(user_id: int) -> utils.BackofficeResponse:
     user = (
@@ -1019,6 +1027,7 @@ def send_validation_code(user_id: int) -> utils.BackofficeResponse:
 
 
 @public_accounts_blueprint.route("/<int:user_id>/review", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS)
 def review_public_account(user_id: int) -> utils.BackofficeResponse:
     user = (
@@ -1066,6 +1075,7 @@ def review_public_account(user_id: int) -> utils.BackofficeResponse:
 
 
 @public_accounts_blueprint.route("/<int:user_id>/comment", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def comment_public_account(user_id: int) -> utils.BackofficeResponse:
     user = (
