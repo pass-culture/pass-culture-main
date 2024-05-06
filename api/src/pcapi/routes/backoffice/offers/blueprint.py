@@ -15,6 +15,7 @@ from flask_sqlalchemy import BaseQuery
 from markupsafe import Markup
 from markupsafe import escape
 import sqlalchemy as sa
+from werkzeug.datastructures import MultiDict
 from werkzeug.exceptions import NotFound
 
 from pcapi.core import search
@@ -383,6 +384,9 @@ def list_offers() -> utils.BackofficeResponse:
         return render_template("offer/list.html", rows=[], form=form), 400
 
     if form.is_empty():
+        form_data = MultiDict(utils.get_query_params())
+        form_data.update({"search-0-search_field": "ID", "search-0-operator": "IN"})
+        form = forms.GetOfferAdvancedSearchForm(formdata=form_data)
         return render_template("offer/list.html", rows=[], form=form)
 
     offers = _get_offers(form)
