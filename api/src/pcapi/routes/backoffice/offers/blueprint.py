@@ -36,7 +36,6 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository import repository
-from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.utils import regions as regions_utils
@@ -213,75 +212,23 @@ SUBQUERY_DICT: dict[str, dict[str, typing.Any]] = {
 }
 
 
-def _get_offer_ids_query(form: forms.InternalSearchForm) -> BaseQuery:
-    query = offers_models.Offer.query
-    if not forms.GetOfferAdvancedSearchForm.is_search_empty(form.search.data):
-        query, inner_joins, _, warnings = utils.generate_search_query(
-            query=query,
-            search_parameters=form.search.data,
-            fields_definition=SEARCH_FIELD_TO_PYTHON,
-            joins_definition=JOIN_DICT,
-            subqueries_definition=SUBQUERY_DICT,
-        )
-        for warning in warnings:
-            flash(escape(warning), "warning")
+def _get_offer_ids_query(form: forms.GetOfferAdvancedSearchForm) -> BaseQuery:
+    query, inner_joins, _, warnings = utils.generate_search_query(
+        query=offers_models.Offer.query,
+        search_parameters=form.search.data,
+        fields_definition=SEARCH_FIELD_TO_PYTHON,
+        joins_definition=JOIN_DICT,
+        subqueries_definition=SUBQUERY_DICT,
+    )
+    for warning in warnings:
+        flash(escape(warning), "warning")
 
-        if form.only_validated_offerers.data:
-            if "venue" not in inner_joins:
-                query = query.join(offerers_models.Venue, offers_models.Offer.venue)
-            if "offerer" not in inner_joins:
-                query = query.join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
-            query = query.filter(offerers_models.Offerer.isValidated)
-    else:
-        if form.category.data:
-            query = query.filter(
-                offers_models.Offer.subcategoryId.in_(
-                    subcategory.id
-                    for subcategory in subcategories_v2.ALL_SUBCATEGORIES
-                    if subcategory.category.id in form.category.data
-                )
-            )
-
-        if form.offerer.data:
-            query = query.join(offers_models.Offer.venue).filter(
-                offerers_models.Venue.managingOffererId.in_(form.offerer.data)
-            )
-
-        if form.status.data:
-            query = query.filter(offers_models.Offer.validation.in_(form.status.data))  # type: ignore [attr-defined]
-
-        if form.q.data:
-            search_query = form.q.data
-            or_filters = []
-
-            if string_utils.is_ean_valid(search_query):
-                or_filters.append(
-                    offers_models.Offer.extraData["ean"].astext == string_utils.format_ean_or_visa(search_query)
-                )
-
-            if string_utils.is_visa_valid(search_query):
-                or_filters.append(
-                    offers_models.Offer.extraData["visa"].astext == string_utils.format_ean_or_visa(search_query)
-                )
-
-            if search_query.isnumeric():
-                or_filters.append(offers_models.Offer.id == int(search_query))
-            else:
-                terms = search_utils.split_terms(search_query)
-                if all(term.isnumeric() for term in terms):
-                    or_filters.append(offers_models.Offer.id.in_([int(term) for term in terms]))
-
-            if not or_filters:
-                name_query = "%{}%".format(search_query)
-                or_filters.append(offers_models.Offer.name.ilike(name_query))
-
-            if or_filters:
-                main_query = query.filter(or_filters[0])
-                if len(or_filters) > 1:
-                    # Same as for bookings, where union has better performance than or_
-                    query = main_query.union(*(query.filter(f) for f in or_filters[1:]))
-                else:
-                    query = main_query
+    if form.only_validated_offerers.data:
+        if "venue" not in inner_joins:
+            query = query.join(offerers_models.Venue, offers_models.Offer.venue)
+        if "offerer" not in inner_joins:
+            query = query.join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
+        query = query.filter(offerers_models.Offerer.isValidated)
 
     # +1 to check if there are more results than requested
     # union() above may cause duplicates, but distinct() affects performance and causes timeout;
@@ -289,7 +236,7 @@ def _get_offer_ids_query(form: forms.InternalSearchForm) -> BaseQuery:
     return query.with_entities(offers_models.Offer.id).limit(form.limit.data + 1)
 
 
-def _get_offers(form: forms.InternalSearchForm) -> list[offers_models.Offer]:
+def _get_offers(form: forms.GetOfferAdvancedSearchForm) -> list[offers_models.Offer]:
     if utils.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
         # Those columns are not shown to fraud pro users
         booked_quantity_subquery: sa.sql.selectable.ScalarSelect | sa.sql.elements.Null = sa.null()
@@ -431,23 +378,12 @@ def _get_offers(form: forms.InternalSearchForm) -> list[offers_models.Offer]:
 
 @list_offers_blueprint.route("", methods=["GET"])
 def list_offers() -> utils.BackofficeResponse:
-    display_form = forms.GetOffersSearchForm(formdata=utils.get_query_params())
-    form = forms.InternalSearchForm(formdata=utils.get_query_params())
+    form = forms.GetOfferAdvancedSearchForm(formdata=utils.get_query_params())
     if not form.validate():
-        return (
-            render_template(
-                "offer/list.html",
-                rows=[],
-                form=display_form,
-                **utils.get_advanced_search_args(
-                    form.search.data, forms.IndividualOffersSearchAttributes, SEARCH_FIELD_TO_PYTHON
-                ),
-            ),
-            400,
-        )
+        return render_template("offer/list.html", rows=[], form=form), 400
 
     if form.is_empty():
-        return render_template("offer/list.html", rows=[], form=display_form)
+        return render_template("offer/list.html", rows=[], form=form)
 
     offers = _get_offers(form)
     offers = utils.limit_rows(offers, form.limit.data)
@@ -455,25 +391,8 @@ def list_offers() -> utils.BackofficeResponse:
     return render_template(
         "offer/list.html",
         rows=offers,
-        form=display_form,
-        date_created_sort_url=form.get_sort_link_with_search_data(".list_offers") if form.sort.data else None,
-        **utils.get_advanced_search_args(
-            form.search.data, forms.IndividualOffersSearchAttributes, SEARCH_FIELD_TO_PYTHON
-        ),
-    )
-
-
-@list_offers_blueprint.route("get-advanced-search-form", methods=["GET"])
-def get_advanced_search_form() -> utils.BackofficeResponse:
-    form = forms.GetOfferAdvancedSearchForm(formdata=utils.get_query_params())
-
-    return render_template(
-        "components/turbo/modal_form.html",
         form=form,
-        dst=url_for("backoffice_web.offer.list_offers"),
-        div_id="advanced-offer-search",  # must be consistent with parameter passed to build_lazy_modal
-        title="Recherche avancée d'offres individuelles",
-        button_text="Appliquer",
+        date_created_sort_url=form.get_sort_link_with_search_data(".list_offers") if form.sort.data else None,
     )
 
 
