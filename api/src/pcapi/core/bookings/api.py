@@ -25,7 +25,6 @@ from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.external.attributes.api import update_external_pro
 from pcapi.core.external.attributes.api import update_external_user
 import pcapi.core.external_bookings.api as external_bookings_api
-from pcapi.core.external_bookings.boost.client import get_boost_external_booking_barcode
 from pcapi.core.external_bookings.ems import constants as ems_constants
 from pcapi.core.external_bookings.ems.client import EMSClientAPI
 import pcapi.core.external_bookings.exceptions as external_bookings_exceptions
@@ -46,7 +45,6 @@ from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Stock
 import pcapi.core.offers.validation as offers_validation
 import pcapi.core.providers.exceptions as providers_exceptions
-from pcapi.core.providers.models import Provider
 import pcapi.core.providers.repository as providers_repository
 from pcapi.core.users.models import User
 from pcapi.core.users.repository import get_and_lock_user
@@ -147,13 +145,6 @@ def get_individual_bookings(user: User) -> list[Booking]:
                 Venue.timezone,
             )
         )
-        .options(
-            joinedload(Booking.stock)
-            .joinedload(Stock.lastProvider)
-            .load_only(
-                Provider.localClass
-            )  # TODO(yacine) to be removed with WIP_ENABLE_BOOST_PREFIXED_EXTERNAL_BOOKING
-        )
         .options(joinedload(Booking.stock).joinedload(Stock.offer).joinedload(Offer.mediations))
         .options(joinedload(Booking.activationCode))
         .options(joinedload(Booking.externalBookings))
@@ -170,12 +161,6 @@ def classify_and_sort_bookings(
     ended_bookings = []
     ongoing_bookings = []
     for booking in individual_bookings:
-        if (
-            booking.externalBookings and booking.stock.offer.lastProvider.localClass == "BoostStocks"
-        ):  # TODO(yacine) to be removed with WIP_ENABLE_BOOST_PREFIXED_EXTERNAL_BOOKING
-            for external_booking in booking.externalBookings:
-                external_booking.barcode = get_boost_external_booking_barcode(external_booking.barcode)
-
         if _is_ended_booking(booking):
             ended_bookings.append(booking)
         else:
