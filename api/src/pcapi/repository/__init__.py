@@ -17,12 +17,16 @@ logger = logging.getLogger(__name__)
 # DEPRECATED in favor of @atomic() because @transaction() is not reentrant
 @contextmanager
 def transaction() -> typing.Iterator[None]:
-    try:
-        yield
-        db.session.commit()
-    except Exception:
-        db.session.rollback()
-        raise
+    if is_managed_transaction():
+        with atomic():
+            yield
+    else:
+        try:
+            yield
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+            raise
 
 
 @dataclass
@@ -91,7 +95,7 @@ class atomic:
         def wrapper(*args, **kwargs):  # type: ignore[no-untyped-def]
             if _is_managed_session():
                 # use the context manager part to make the decorator reeantrant.
-                with type(self):
+                with atomic():
                     return func(*args, **kwargs)
             else:
                 _mark_session_management()
@@ -154,7 +158,7 @@ def _manage_session() -> None:
 def on_commit(func: typing.Callable[[], typing.Any], *, robust: bool = False) -> None:
     """
     Hook to execute code after the transaction has been commit. This code will be called outside any
-    sql transaction.
+    sql transaction. If we are not in a managed session it executes the callback immediately.
 
     func: a function taking no arguments to call. If your function takes argument you can use the
         function `partial` from `functools` to add the arguments.
@@ -176,5 +180,6 @@ def on_commit(func: typing.Callable[[], typing.Any], *, robust: bool = False) ->
     ```
     """
     if not _is_managed_session():
-        raise NotImplementedError("on_commit transaction hook is only supported in managed sessions")
-    g._on_commit_callbacks.append(OnCommitCallback(func=func, robust=robust))
+        func()
+    else:
+        g._on_commit_callbacks.append(OnCommitCallback(func=func, robust=robust))
