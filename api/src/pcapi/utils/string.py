@@ -10,6 +10,11 @@ def is_ean_valid(ean: str) -> bool:
     return ean.isdigit() and len(ean) == 13
 
 
+def is_visa_valid(visa: str) -> bool:
+    visa = format_ean_or_visa(visa)
+    return visa.isdigit() and len(visa) <= 10
+
+
 def format_ean_or_visa(ean: str) -> str:
     return ean.replace("-", "").replace(" ", "")
 

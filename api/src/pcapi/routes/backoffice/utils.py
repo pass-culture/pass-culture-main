@@ -30,7 +30,6 @@ from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
 from pcapi.utils import date as date_utils
-from pcapi.utils import string as string_utils
 from pcapi.utils.regions import get_all_regions
 
 from . import blueprint
@@ -198,11 +197,6 @@ def is_user_offerer_action_type(action: history_models.ActionHistory) -> bool:
 
 def random_hash() -> str:
     return format(random.getrandbits(128), "x")
-
-
-def is_visa_valid(visa: str) -> bool:
-    visa = string_utils.format_ean_or_visa(visa)
-    return visa.isdigit() and len(visa) <= 10
 
 
 def build_form_error_msg(form: FlaskForm) -> str:
