@@ -6,6 +6,7 @@ import fullBackIcon from 'icons/full-back.svg'
 import fullBurgerkIcon from 'icons/full-burger.svg'
 import fullCheckIcon from 'icons/full-check.svg'
 import fullClearIcon from 'icons/full-clear.svg'
+import fullCloseIcon from 'icons/full-close.svg'
 import fullCodeIcon from 'icons/full-code.svg'
 import fullDeskIcon from 'icons/full-desk.svg'
 import fullDisclosureCloseIcon from 'icons/full-disclosure-close.svg'
@@ -35,6 +36,7 @@ import fullParametersIcon from 'icons/full-parameters.svg'
 import fullPauseIcon from 'icons/full-pause.svg'
 import fullPlayIcon from 'icons/full-play.svg'
 import fullPlusIcon from 'icons/full-plus.svg'
+import fullProfilIcon from 'icons/full-profil.svg'
 import fullRefreshIcon from 'icons/full-refresh.svg'
 import fullRightIcon from 'icons/full-right.svg'
 import fullShowIcon from 'icons/full-show.svg'
@@ -179,6 +181,8 @@ export const fullIcons: IconListItem[] = [
   { src: fullCheckIcon },
   { src: fullDisclosureCloseIcon, viewBox: '0 0 16 16' }, // TODO clean viewbox
   { src: fullDisclosureOpenIcon, viewBox: '0 0 16 16' }, // TODO clean viewbox
+  { src: fullProfilIcon },
+  { src: fullCloseIcon },
 ]
 
 export const strokeIcons: IconListItem[] = [
