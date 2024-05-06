@@ -399,59 +399,6 @@ class GetOfferAdvancedSearchForm(GetOffersBaseFields):
         return super().validate(extra_validators)
 
 
-class GetOffersSearchForm(GetOffersBaseFields):
-    class Meta:
-        csrf = False
-
-    q = fields.PCOptSearchField("ID de l'offre ou liste d'ID, nom, EAN-13, visa d'exploitation")
-    category = fields.PCSelectMultipleField(
-        "Catégories",
-        choices=forms_utils.choices_from_enum(categories.CategoryIdLabelEnum),
-        search_inline=True,
-    )
-    offerer = fields.PCTomSelectField(
-        "Structures",
-        multiple=True,
-        choices=[],
-        validate_choice=False,
-        endpoint="backoffice_web.autocomplete_offerers",
-        search_inline=True,
-    )
-    status = fields.PCSelectMultipleField(
-        "États",
-        choices=forms_utils.choices_from_enum(OfferValidationStatus, formatter=filters.format_offer_validation_status),
-        search_inline=True,
-    )
-
-    def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
-        super().__init__(*args, **kwargs)
-        self._fields.move_to_end("q", last=False)
-        self._fields.move_to_end("category")
-        self._fields.move_to_end("offerer")
-        self._fields.move_to_end("status")
-        self._fields.move_to_end("limit")
-        autocomplete.prefill_offerers_choices(self.offerer)
-
-    def is_empty(self) -> bool:
-        empty = not any(
-            (
-                self.q.data,
-                self.category.data,
-                self.offerer.data,
-                self.status.data,
-            )
-        )
-        return empty and super().is_empty()
-
-
-class InternalSearchForm(GetOffersSearchForm, GetOfferAdvancedSearchForm):
-    """concat of GetOffersSearchForm and GetOfferAdvancedSearchForm. this form is never displayed but it is the one
-    used to display the list of individual offers"""
-
-    class Meta:
-        csrf = False
-
-
 class EditOfferForm(FlaskForm):
     criteria = fields.PCTomSelectField(
         "Tags", multiple=True, choices=[], validate_choice=False, endpoint="backoffice_web.autocomplete_criteria"

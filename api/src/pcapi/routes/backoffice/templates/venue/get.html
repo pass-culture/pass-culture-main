@@ -325,11 +325,16 @@
                   <i class="bi bi-box-arrow-up-right"></i>
                 </a>
               </p>
+              {% set search_params = {
+                              "search-0-search_field": "VENUE",
+                              "search-0-operator": "IN",
+                              "search-0-venue": venue.id,
+                            } %}
               <p class="mb-1">
                 <span class="fw-bold">Offres BO :</span>
-                <a href="{{ url_for("backoffice_web.offer.list_offers", **{"search-0-search_field": "VENUE",  "search-0-venue": venue.id, "search-0-operator": "IN"}) }}"
+                <a href="{{ url_for("backoffice_web.offer.list_offers", **search_params) }}"
                    class="link-primary">individuelles</a> |
-                <a href="{{ url_for("backoffice_web.collective_offer.list_collective_offers", venue=venue.id) }}"
+                <a href="{{ url_for("backoffice_web.collective_offer.list_collective_offers", **search_params) }}"
                    class="link-primary">collectives</a> |
                 <a href="{{ url_for("backoffice_web.collective_offer_template.list_collective_offer_templates", venue=venue.id) }}"
                    class="link-primary">vitrine</a>

@@ -360,41 +360,6 @@ def _manage_subquery_joins(
     return filters
 
 
-def get_advanced_search_args(
-    form_search_data: dict,
-    search_attributes: type,  # type[IndividualOffersSearchAttributes] | type[CollectiveOffersSearchAttributes]
-    search_field_to_python_dict: dict[str, dict[str, typing.Any]],
-) -> dict[str, typing.Any]:
-    search_data_tags = set()
-
-    advanced_query = f"?{request.query_string.decode()}"
-
-    for data in form_search_data:
-        if search_operator := data.get("operator"):
-            if search_field := data.get("search_field"):
-                if search_field_attr := getattr(search_attributes, search_field, None):
-                    try:
-                        field_name = search_field_to_python_dict[search_field]["field"]
-                        field_data = data[field_name] if isinstance(data[field_name], list) else [data[field_name]]
-                        field_data = ", ".join(str(e) for e in field_data)
-
-                        field_title = search_field_attr.value
-                        operator_title = AdvancedSearchOperators[search_operator].value
-
-                        search_data_tags.add(" ".join((field_title, operator_title, field_data)))
-                    except KeyError as exc:
-                        # Any non-existing value in dictionaries (probably hand-made parameters in URL)
-                        flash(
-                            Markup("Un élément de l'adresse saisie est invalide : <b>{err}</b>").format(err=exc),
-                            "warning",
-                        )
-
-    return {
-        "advanced_query": advanced_query,
-        "search_data_tags": search_data_tags,
-    }
-
-
 def limit_rows(
     rows: list[typing.Any], limit: int, sort_key: typing.Callable | None = None, sort_reverse: bool = False
 ) -> list[typing.Any]:
