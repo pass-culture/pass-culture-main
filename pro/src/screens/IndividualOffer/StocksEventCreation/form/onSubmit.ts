@@ -1,5 +1,4 @@
-import { format } from 'date-fns'
-import sub from 'date-fns/sub'
+import { format, sub } from 'date-fns'
 
 import { api } from 'apiClient/api'
 import { StocksEvent } from 'components/StocksEventList/StocksEventList'

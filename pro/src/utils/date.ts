@@ -1,4 +1,4 @@
-import isValid from 'date-fns/isValid'
+import { isValid } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { format } from 'date-fns-tz'
 
