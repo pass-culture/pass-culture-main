@@ -1,6 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import format from 'date-fns/format'
+import { format } from 'date-fns'
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 

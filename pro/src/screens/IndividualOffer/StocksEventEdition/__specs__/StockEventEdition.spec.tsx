@@ -4,7 +4,7 @@ import {
   waitForElementToBeRemoved,
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import format from 'date-fns/format'
+import { format } from 'date-fns'
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
 import * as router from 'react-router-dom'

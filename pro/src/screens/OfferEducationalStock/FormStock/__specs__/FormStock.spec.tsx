@@ -1,7 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { addDays } from 'date-fns'
-import format from 'date-fns/format'
+import { addDays, format } from 'date-fns'
 import { Form, Formik } from 'formik'
 import React from 'react'
 
