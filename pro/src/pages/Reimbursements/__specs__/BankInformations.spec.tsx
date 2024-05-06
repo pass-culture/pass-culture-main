@@ -77,7 +77,19 @@ describe('BankInformations', () => {
     ])
   })
 
-  it('should should display the bank account section', async () => {
+  it('should display the bank account section even without context', async () => {
+    vi.spyOn(router, 'useOutletContext').mockReturnValue(undefined)
+
+    renderBankInformations()
+
+    expect(
+      await screen.findByRole('button', {
+        name: /Ajouter un compte bancaire/i,
+      })
+    ).toBeInTheDocument()
+  })
+
+  it('should display the bank account section', async () => {
     renderBankInformations()
 
     expect(
@@ -87,7 +99,7 @@ describe('BankInformations', () => {
     ).toBeInTheDocument()
   })
 
-  it('should should display discard dialog on cancel', async () => {
+  it('should display discard dialog on cancel', async () => {
     renderBankInformations()
 
     await userEvent.click(
@@ -117,7 +129,7 @@ describe('BankInformations', () => {
     ).toBeInTheDocument()
   })
 
-  it('should should display unlink venues dialog', async () => {
+  it('should display unlink venues dialog', async () => {
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))

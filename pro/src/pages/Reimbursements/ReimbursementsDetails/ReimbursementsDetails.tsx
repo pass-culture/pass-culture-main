@@ -73,7 +73,8 @@ export const ReimbursementsDetails = (): JSX.Element => {
   const shouldDisableButtons =
     !isPeriodFilterSelected || requireVenueFilterForAdmin
 
-  const { selectedOfferer }: ReimbursementsContextProps = useOutletContext()
+  const { selectedOfferer }: ReimbursementsContextProps =
+    useOutletContext() ?? { selectedOfferer: null }
 
   const buildAndSortVenueFilterOptions = (
     venues: VenueListItemResponseModel[]

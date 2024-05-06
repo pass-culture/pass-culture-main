@@ -1,5 +1,6 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { BankAccountResponseModel } from 'apiClient/v1'
@@ -317,5 +318,14 @@ describe('reimbursementsWithFilters', () => {
     expect(screen.getByLabelText('Compte bancaire')).toBeEnabled()
     expect(screen.getByLabelText('Début de la période')).toBeEnabled()
     expect(screen.getByLabelText('Fin de la période')).toBeEnabled()
+  })
+
+  it('should render even without context', async () => {
+    vi.spyOn(router, 'useOutletContext').mockReturnValue(undefined)
+    renderReimbursementsInvoices()
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(screen.queryByLabelText('Compte bancaire')).toBeInTheDocument()
   })
 })
