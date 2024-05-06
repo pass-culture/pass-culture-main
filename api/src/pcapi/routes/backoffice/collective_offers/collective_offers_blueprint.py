@@ -11,6 +11,7 @@ from flask_login import current_user
 from flask_sqlalchemy import BaseQuery
 from markupsafe import escape
 import sqlalchemy as sa
+from werkzeug.datastructures import MultiDict
 from werkzeug.exceptions import NotFound
 
 from pcapi.core.educational import adage_backends as adage_client
@@ -225,6 +226,9 @@ def list_collective_offers() -> utils.BackofficeResponse:
         return render_template("collective_offer/list.html", rows=[], form=form), 400
 
     if form.is_empty():
+        form_data = MultiDict(utils.get_query_params())
+        form_data.update({"search-0-search_field": "ID", "search-0-operator": "IN"})
+        form = forms.GetCollectiveOfferAdvancedSearchForm(formdata=form_data)
         return render_template("collective_offer/list.html", rows=[], form=form)
 
     collective_offers = _get_collective_offers(form)
