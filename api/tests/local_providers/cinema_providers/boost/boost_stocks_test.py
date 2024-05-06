@@ -4,13 +4,11 @@ from pathlib import Path
 from unittest import mock
 
 import pytest
-import sqlalchemy as sa
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.external_bookings.boost import constants as boost_constants
 from pcapi.core.offers import models as offers_models
-from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import PriceCategory
@@ -23,7 +21,6 @@ from pcapi.core.providers.factories import VenueProviderFactory
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.testing import override_features
 from pcapi.local_providers import BoostStocks
-from pcapi.repository import transaction
 from pcapi.utils.human_ids import humanize
 
 import tests
@@ -79,54 +76,13 @@ class BoostStocksTest:
 
         return venue_provider
 
-    @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=False)
     def should_return_providable_info_on_next(self, requests_mock):
-        venue_provider = self._create_cinema_and_pivot()
-
-        get_cinema_attr_adapter = requests_mock.get(
-            "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
+        boost_provider = get_provider_by_local_class("BoostStocks")
+        venue_provider = VenueProviderFactory(provider=boost_provider)
+        cinema_provider_pivot = BoostCinemaProviderPivotFactory(
+            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
         )
-
-        requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
-            json=fixtures.ShowtimesEndpointResponse.PAGE_1_JSON_DATA,
-        )
-        requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=2&per_page=30",
-            json=fixtures.ShowtimesEndpointResponse.PAGE_2_JSON_DATA,
-        )
-        requests_mock.get(
-            # TODO(fseguin, 2023-02-06): add  ?filter_payment_method=external:credit:passculture when BB API is updated
-            "https://cinema-0.example.com/api/showtimes/36683",
-            json=fixtures.ShowtimeDetailsEndpointResponse.THREE_PRICINGS_SHOWTIME_36683_DATA,
-        )
-        requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/36848",
-            json=fixtures.ShowtimeDetailsEndpointResponse.ONE_PCU_PRICING_SHOWTIME_36848_DATA,
-        )
-        requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/36932",
-            json=fixtures.ShowtimeDetailsEndpointResponse.SHOWTIME_36932_DATA_NO_PC_PRICING,
-        )
-        boost_stocks = BoostStocks(venue_provider=venue_provider)
-        providable_infos = next(boost_stocks)
-
-        assert len(providable_infos) == 2
-        offer_providable_info = providable_infos[0]
-        stock_providable_info = providable_infos[1]
-
-        assert offer_providable_info.type == Offer
-        assert offer_providable_info.id_at_providers == f"207%{venue_provider.venue.id}%Boost"
-        assert offer_providable_info.new_id_at_provider == f"207%{venue_provider.venue.id}%Boost"
-
-        assert stock_providable_info.type == Stock
-        assert stock_providable_info.id_at_providers == f"207%{venue_provider.venue.id}%Boost#36683"
-        assert stock_providable_info.new_id_at_provider == f"207%{venue_provider.venue.id}%Boost#36683"
-
-        assert get_cinema_attr_adapter.call_count == 1
-
-    def should_return_providable_info_on_next_with_enabled_filter_ff(self, requests_mock):
-        venue_provider = self._create_cinema_and_pivot()
+        BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
 
         get_cinema_attr_adapter = requests_mock.get(
             "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
@@ -173,18 +129,6 @@ class BoostStocksTest:
             f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=2&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.PAGE_2_JSON_DATA,
         )
-        requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/36683",
-            json=fixtures.ShowtimeDetailsEndpointResponse.THREE_PRICINGS_SHOWTIME_36683_DATA,
-        )
-        requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/36848",
-            json=fixtures.ShowtimeDetailsEndpointResponse.ONE_PCU_PRICING_SHOWTIME_36848_DATA,
-        )
-        requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/36932",
-            json=fixtures.ShowtimeDetailsEndpointResponse.SHOWTIME_36932_DATA_NO_PC_PRICING,
-        )
         requests_mock.get("http://example.com/images/158026.jpg", content=bytes())
         requests_mock.get("http://example.com/images/149489.jpg", content=bytes())
 
@@ -198,7 +142,6 @@ class BoostStocksTest:
         assert PriceCategory.query.count() == 0
 
     @override_features(WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS=False)
-    @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=False)
     def should_create_offers_with_allocine_id_and_visa_if_products_dont_exist(self, requests_mock):
         venue_provider = self._create_cinema_and_pivot()
 
@@ -212,18 +155,6 @@ class BoostStocksTest:
         requests_mock.get(
             f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=2&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.PAGE_2_JSON_DATA,
-        )
-        requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/36683",
-            json=fixtures.ShowtimeDetailsEndpointResponse.THREE_PRICINGS_SHOWTIME_36683_DATA,
-        )
-        requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/36848",
-            json=fixtures.ShowtimeDetailsEndpointResponse.ONE_PCU_PRICING_SHOWTIME_36848_DATA,
-        )
-        requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/36932",
-            json=fixtures.ShowtimeDetailsEndpointResponse.SHOWTIME_36932_DATA_NO_PC_PRICING,
         )
         requests_mock.get("http://example.com/images/158026.jpg", content=bytes())
         requests_mock.get("http://example.com/images/149489.jpg", content=bytes())
@@ -256,98 +187,7 @@ class BoostStocksTest:
         assert created_offers[1].subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offers[1].extraData == {"allocineId": 277733, "visa": "149489"}
 
-    @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=False)
-    def should_fill_offer_and_and_stock_informations_for_each_movie_based_on_product(self, requests_mock):
-        self._create_products()
-        venue_provider = self._create_cinema_and_pivot()
-
-        get_cinema_attr_adapter = requests_mock.get(
-            "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
-        )
-        requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
-            json=fixtures.ShowtimesEndpointResponse.PAGE_1_JSON_DATA,
-        )
-        requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=2&per_page=30",
-            json=fixtures.ShowtimesEndpointResponse.PAGE_2_JSON_DATA,
-        )
-        requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/36683",
-            json=fixtures.ShowtimeDetailsEndpointResponse.THREE_PRICINGS_SHOWTIME_36683_DATA,
-        )
-        requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/36848",
-            json=fixtures.ShowtimeDetailsEndpointResponse.ONE_PCU_PRICING_SHOWTIME_36848_DATA,
-        )
-        requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/36932",
-            json=fixtures.ShowtimeDetailsEndpointResponse.SHOWTIME_36932_DATA_NO_PC_PRICING,
-        )
-        requests_mock.get("http://example.com/images/158026.jpg", content=bytes())
-        requests_mock.get("http://example.com/images/149489.jpg", content=bytes())
-        boost_stocks = BoostStocks(venue_provider=venue_provider)
-        boost_stocks.updateObjects()
-
-        created_offers = Offer.query.order_by(Offer.id).all()
-        created_stocks = Stock.query.order_by(Stock.id).all()
-        created_price_categories = PriceCategory.query.order_by(PriceCategory.id).all()
-        created_price_category_label = PriceCategoryLabel.query.one()
-        assert len(created_offers) == 2
-        assert len(created_stocks) == 2
-        assert len(created_price_categories) == 2
-
-        assert created_offers[0].name == "Produit allociné 1"
-        assert created_offers[0].product == self._get_product_by_allocine_id(263242)
-        assert created_offers[0].venue == venue_provider.venue
-        assert created_offers[0].offererAddressId == venue_provider.venue.offererAddressId
-        assert created_offers[0].description == "Description du produit allociné 1"
-        assert created_offers[0].durationMinutes == 111
-        assert created_offers[0].isDuo
-        assert created_offers[0].subcategoryId == subcategories.SEANCE_CINE.id
-        assert created_offers[0].extraData == {"visa": "158026", "allocineId": 263242}
-
-        assert created_stocks[0].quantity == 96
-        assert created_stocks[0].price == decimal.Decimal("6.9")
-        assert created_stocks[0].priceCategory == created_price_categories[0]
-        assert created_stocks[0].dateCreated is not None
-        assert created_stocks[0].offer == created_offers[0]
-        assert created_stocks[0].bookingLimitDatetime == datetime.datetime(2022, 11, 28, 8)
-        assert created_stocks[0].beginningDatetime == datetime.datetime(2022, 11, 28, 8)
-        assert created_stocks[0].features == ["VF", "ICE"]
-
-        assert created_offers[1].name == "Produit allociné 2"
-        assert created_offers[1].product == self._get_product_by_allocine_id(277733)
-        assert created_offers[1].venue == venue_provider.venue
-        assert created_offers[1].description == "Description du produit allociné 2"
-        assert created_offers[1].durationMinutes == 222
-        assert created_offers[1].isDuo
-        assert created_offers[1].subcategoryId == subcategories.SEANCE_CINE.id
-        assert created_offers[1].extraData == {"visa": "149489", "allocineId": 277733}
-
-        assert created_stocks[1].quantity == 177
-        assert created_stocks[1].price == decimal.Decimal("6.9")
-        assert created_stocks[1].priceCategory == created_price_categories[1]
-        assert created_stocks[1].dateCreated is not None
-        assert created_stocks[1].offer == created_offers[1]
-        assert created_stocks[1].bookingLimitDatetime == datetime.datetime(2022, 11, 28, 8)
-        assert created_stocks[1].beginningDatetime == datetime.datetime(2022, 11, 28, 8)
-        assert created_stocks[1].features == ["VO", "3D"]
-
-        assert all((category.price == decimal.Decimal("6.9") for category in created_price_categories))
-        assert all(
-            (category.priceCategoryLabel == created_price_category_label for category in created_price_categories)
-        )
-        assert created_price_category_label.label == "PASS CULTURE"
-
-        assert boost_stocks.erroredObjects == 0
-        assert boost_stocks.erroredThumbs == 0
-
-        assert get_cinema_attr_adapter.call_count == 1
-
-    def should_fill_offer_and_stock_informations_for_each_movie_based_on_product_with_enabled_filter_ff(
-        self, requests_mock
-    ):
+    def should_fill_offer_and_stock_informations_for_each_movie_based_on_product(self, requests_mock):
         self._create_products()
         venue_provider = self._create_cinema_and_pivot()
 
@@ -438,7 +278,6 @@ class BoostStocksTest:
 
         assert get_cinema_attr_adapter.call_count == 1
 
-    @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=False)
     def should_fill_offer_and_stocks_and_price_categories_based_on_product(self, requests_mock):
         self._create_products()
         venue_provider = self._create_cinema_and_pivot()
@@ -451,14 +290,7 @@ class BoostStocksTest:
             f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.SAME_FILM_TWICE_JSON_DATA,
         )
-        requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/36683",
-            json=fixtures.ShowtimeDetailsEndpointResponse.THREE_PRICINGS_SHOWTIME_36683_DATA,
-        )
-        requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/36684",
-            json=fixtures.ShowtimeDetailsEndpointResponse.PC2_AND_FULL_PRICINGS_SHOWTIME_36684_DATA,
-        )
+
         requests_mock.get("http://example.com/images/158026.jpg", content=bytes())
         boost_stocks = BoostStocks(venue_provider=venue_provider)
         boost_stocks.updateObjects()
@@ -487,7 +319,7 @@ class BoostStocksTest:
         assert created_stocks[0].bookingLimitDatetime == datetime.datetime(2022, 11, 28, 8)
         assert created_stocks[0].beginningDatetime == datetime.datetime(2022, 11, 28, 8)
 
-        assert created_stocks[1].quantity == 130
+        assert created_stocks[1].quantity == 0
         assert created_stocks[1].price == 18.0
         assert created_stocks[1].priceCategory == created_price_categories[1]
         assert created_stocks[1].dateCreated is not None
@@ -508,7 +340,6 @@ class BoostStocksTest:
 
         assert get_cinema_attr_adapter.call_count == 1
 
-    @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=False)
     def should_reuse_price_category(self, requests_mock):
         venue_provider = self._create_cinema_and_pivot()
 
@@ -519,10 +350,6 @@ class BoostStocksTest:
         requests_mock.get(
             f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.ONE_FILM_PAGE_1_JSON_DATA,
-        )
-        requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/36683",
-            json=fixtures.ShowtimeDetailsEndpointResponse.THREE_PRICINGS_SHOWTIME_36683_DATA,
         )
         requests_mock.get("http://example.com/images/158026.jpg", content=bytes())
 
@@ -546,10 +373,6 @@ class BoostStocksTest:
             f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.NO_PC_PRICING_JSON_DATA,
         )
-        requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/36932",
-            json=fixtures.ShowtimeDetailsEndpointResponse.SHOWTIME_36932_DATA_NO_PC_PRICING,
-        )
         boost_stocks = BoostStocks(venue_provider=venue_provider)
         boost_stocks.updateObjects()
 
@@ -561,9 +384,13 @@ class BoostStocksTest:
 
         assert get_cinema_attr_adapter.call_count == 1
 
-    @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=False)
     def should_update_stock_with_the_correct_stock_quantity(self, requests_mock):
-        venue_provider = self._create_cinema_and_pivot()
+        boost_provider = get_provider_by_local_class("BoostStocks")
+        venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True)
+        cinema_provider_pivot = BoostCinemaProviderPivotFactory(
+            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
+        )
+        BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
 
         get_cinema_attr_adapter = requests_mock.get(
             "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
@@ -572,10 +399,6 @@ class BoostStocksTest:
         requests_mock.get(
             f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.ONE_FILM_PAGE_1_JSON_DATA,
-        )
-        requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/36683",
-            json=fixtures.ShowtimeDetailsEndpointResponse.THREE_PRICINGS_SHOWTIME_36683_DATA,
         )
         requests_mock.get("http://example.com/images/158026.jpg", content=bytes())
         boost_stocks = BoostStocks(venue_provider=venue_provider)
@@ -591,8 +414,8 @@ class BoostStocksTest:
 
         # synchronize with sold out show
         requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/36683",
-            json=fixtures.ShowtimeDetailsEndpointResponse.SOLD_OUT_SHOWTIME_36683_DATA,
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
+            json=fixtures.ShowtimesEndpointResponse.ONE_FILM_WITH_SOLD_OUT_SHOWTIME_PAGE_1_JSON_DATA,
         )
 
         boost_stocks = BoostStocks(venue_provider=venue_provider)
@@ -629,8 +452,8 @@ class BoostStocksTest:
 
         # synchronize again with same event date
         requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/36683",
-            json=fixtures.ShowtimeDetailsEndpointResponse.THREE_PRICINGS_SHOWTIME_36683_DATA,
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
+            json=fixtures.ShowtimesEndpointResponse.ONE_FILM_PAGE_1_JSON_DATA,
         )
         boost_stocks = BoostStocks(venue_provider=venue_provider)
         with mock.patch("pcapi.core.finance.api.update_finance_event_pricing_date") as mock_update_finance_event:
@@ -639,8 +462,8 @@ class BoostStocksTest:
 
         # synchronize again with new event date
         requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/36683",
-            json=fixtures.ShowtimeDetailsEndpointResponse.THREE_PRICINGS_SHOWTIME_36683_DATA_WITH_NEW_DATE,
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
+            json=fixtures.ShowtimesEndpointResponse.ONE_FILM_PAGE_1_WITH_NEW_DATE_JSON_DATA,
         )
         to_compare = []
         boost_stocks = BoostStocks(venue_provider=venue_provider)
@@ -661,7 +484,6 @@ class BoostStocksTest:
         for last_pricingOrderingDate, event in to_compare:
             assert event.pricingOrderingDate != last_pricingOrderingDate
 
-    @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=False)
     def should_create_offer_with_correct_thumb(self, requests_mock):
         venue_provider = self._create_cinema_and_pivot()
         get_cinema_attr_adapter = requests_mock.get(
@@ -670,10 +492,6 @@ class BoostStocksTest:
         requests_mock.get(
             f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.ONE_FILM_PAGE_1_JSON_DATA,
-        )
-        requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/36683",
-            json=fixtures.ShowtimeDetailsEndpointResponse.THREE_PRICINGS_SHOWTIME_36683_DATA,
         )
         file_path = Path(tests.__path__[0]) / "files" / "mouette_portrait.jpg"
         with open(file_path, "rb") as thumb_file:
@@ -697,7 +515,6 @@ class BoostStocksTest:
 
         assert get_cinema_attr_adapter.call_count == 1
 
-    @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=False)
     def should_not_update_thumbnail_more_then_once_a_day(self, requests_mock):
         venue_provider = self._create_cinema_and_pivot()
         get_cinema_attr_adapter = requests_mock.get(
@@ -707,10 +524,7 @@ class BoostStocksTest:
             f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.ONE_FILM_PAGE_1_JSON_DATA,
         )
-        requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/36683",
-            json=fixtures.ShowtimeDetailsEndpointResponse.THREE_PRICINGS_SHOWTIME_36683_DATA,
-        )
+
         get_poster_adapter = requests_mock.get("http://example.com/images/158026.jpg", content=bytes())
 
         boost_stocks = BoostStocks(venue_provider=venue_provider)
@@ -724,7 +538,6 @@ class BoostStocksTest:
 
         assert get_cinema_attr_adapter.call_count == 1
 
-    @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=False)
     def test_handle_error_on_movie_poster(self, requests_mock):
         boost_provider = get_provider_by_local_class("BoostStocks")
         venue_provider = VenueProviderFactory(provider=boost_provider)
@@ -740,12 +553,8 @@ class BoostStocksTest:
             json=fixtures.CinemasAttributsEndPointResponse.DATA,
         )
         requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=1&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.ONE_FILM_PAGE_1_JSON_DATA,
-        )
-        requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/36683",
-            json=fixtures.ShowtimeDetailsEndpointResponse.THREE_PRICINGS_SHOWTIME_36683_DATA,
         )
         requests_mock.get("http://example.com/images/158026.jpg", status_code=404)
 
@@ -755,7 +564,6 @@ class BoostStocksTest:
         created_offer = Offer.query.one()
         assert created_offer.thumbUrl is None
 
-    @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=False)
     def should_link_offer_with_known_visa_to_product(self, requests_mock):
         venue_provider = self._create_cinema_and_pivot()
 
@@ -769,18 +577,6 @@ class BoostStocksTest:
         requests_mock.get(
             f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=2&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.PAGE_2_JSON_DATA,
-        )
-        requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/36683",
-            json=fixtures.ShowtimeDetailsEndpointResponse.THREE_PRICINGS_SHOWTIME_36683_DATA,
-        )
-        requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/36848",
-            json=fixtures.ShowtimeDetailsEndpointResponse.ONE_PCU_PRICING_SHOWTIME_36848_DATA,
-        )
-        requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/36932",
-            json=fixtures.ShowtimeDetailsEndpointResponse.SHOWTIME_36932_DATA_NO_PC_PRICING,
         )
         requests_mock.get("http://example.com/images/158026.jpg", content=bytes())
         requests_mock.get("http://example.com/images/149489.jpg", content=bytes())
