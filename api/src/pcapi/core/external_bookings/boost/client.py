@@ -45,17 +45,6 @@ def get_pcu_pricing_if_exists(
     return first_pcu_pricing
 
 
-def get_boost_external_booking_barcode(barcode: str) -> str:
-    if FeatureToggle.WIP_ENABLE_BOOST_PREFIXED_EXTERNAL_BOOKING.is_active():
-        return barcode if barcode.startswith(constants.BOOST_SALE_PREFIX) else constants.BOOST_SALE_PREFIX + barcode
-
-    return (
-        barcode
-        if not barcode.startswith(constants.BOOST_SALE_PREFIX)
-        else barcode.replace(constants.BOOST_SALE_PREFIX, "")
-    )
-
-
 class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
     # FIXME: define those later
     def get_shows_remaining_places(self, shows_id: list[int]) -> dict[str, int]:
@@ -72,9 +61,6 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         barcodes = list(set(barcodes))
         sale_cancel_items = []
         for barcode in barcodes:
-            barcode = (
-                barcode if barcode.startswith(constants.BOOST_SALE_PREFIX) else constants.BOOST_SALE_PREFIX + barcode
-            )
             sale_cancel_item = boost_serializers.SaleCancelItem(
                 code=barcode, refundType=constants.BOOST_PASS_CULTURE_REFUND_TYPE
             )
