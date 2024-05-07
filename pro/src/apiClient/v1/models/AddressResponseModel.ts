@@ -6,10 +6,10 @@ export type AddressResponseModel = {
   banId?: string | null;
   city: string;
   id: number;
-  inseeCode: string;
+  inseeCode?: string | null;
   latitude: number;
   longitude: number;
   postalCode: string;
-  street: string;
+  street?: string | null;
 };
 

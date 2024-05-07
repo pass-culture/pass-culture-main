@@ -176,6 +176,7 @@ export const collectiveBookingCollectiveStockFactory = (
 ): CollectiveBookingCollectiveStockResponseModel => ({
   bookingLimitDatetime: new Date().toISOString(),
   eventBeginningDatetime: new Date().toISOString(),
+  eventStartDatetime: new Date().toISOString(),
   numberOfTickets: 1,
   offerId: 1,
   offerIsEducational: true,
