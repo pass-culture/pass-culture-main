@@ -1,5 +1,5 @@
 import { Form, FormikProvider, useFormik } from 'formik'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 
@@ -11,7 +11,6 @@ import { selectCurrentOffererId } from 'store/user/selectors'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { RadioButton } from 'ui-kit/form/RadioButton/RadioButton'
-import { BaseRadioVariant } from 'ui-kit/form/shared/BaseRadio/types'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { sendSentryCustomError } from 'utils/sendSentryCustomError'
@@ -95,7 +94,6 @@ const NewNavReviewDialog = ({
                       value="false"
                       className={styles['radio-button']}
                       withBorder
-                      variant={BaseRadioVariant.SECONDARY}
                     />
                     <RadioButton
                       label={
@@ -107,7 +105,6 @@ const NewNavReviewDialog = ({
                       value="true"
                       className={styles['radio-button']}
                       withBorder
-                      variant={BaseRadioVariant.SECONDARY}
                     />
                   </div>
                 </li>
@@ -124,7 +121,6 @@ const NewNavReviewDialog = ({
                       value="false"
                       className={styles['radio-button']}
                       withBorder
-                      variant={BaseRadioVariant.SECONDARY}
                     />
                     <RadioButton
                       label={
@@ -136,7 +132,6 @@ const NewNavReviewDialog = ({
                       value="true"
                       className={styles['radio-button']}
                       withBorder
-                      variant={BaseRadioVariant.SECONDARY}
                     />
                   </div>
                 </li>
