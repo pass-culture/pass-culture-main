@@ -140,7 +140,11 @@ class CollectiveStockEditionBodyModel(BaseModel):
 
 class CollectiveStockResponseModel(BaseModel):
     id: int
+    # beginningDatetime is deprectated and replaced with
+    # startDatetime and endDatetime
     beginningDatetime: datetime | None
+    startDatetime: datetime | None
+    endDatetime: datetime | None
     bookingLimitDatetime: datetime | None
     price: float
     numberOfTickets: int | None
