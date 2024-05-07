@@ -2794,3 +2794,28 @@ class AccessibilityProviderTest:
         offerers_api.synchronize_accessibility_provider(venue, force_sync=True)
         assert accessibility_provider.externalAccessibilityId == "nouveau-slug"
         assert accessibility_provider.externalAccessibilityUrl == "https://nouvelle.adresse/nouveau-slug"
+
+    def test_count_venues_with_accessibility_provider(self):
+        offerers_factories.VenueFactory.create_batch(3, isPermanent=True, isVirtual=False)
+        venue = offerers_factories.VenueFactory(isPermanent=True, isVirtual=False)
+        offerers_factories.AccessibilityProviderFactory(venue=venue)
+
+        count = offerers_api.count_permanent_venues_with_accessibility_provider()
+        assert count == 1
+
+    def test_get_permanent_venues_with_accessibility_provider(self):
+        offerers_factories.VenueFactory.create_batch(3, isPermanent=True, isVirtual=False)
+        venue = offerers_factories.VenueFactory(isPermanent=True, isVirtual=False)
+        offerers_factories.AccessibilityProviderFactory(venue=venue)
+
+        venues_list = offerers_api.get_permanent_venues_with_accessibility_provider(batch_size=10, batch_num=0)
+        assert len(venues_list) == 1
+        assert venues_list[0] == venue
+
+    def test_get_permanent_venues_without_accessibility_provider(self):
+        offerers_factories.VenueFactory.create_batch(3, isPermanent=True, isVirtual=False)
+        venue = offerers_factories.VenueFactory(isPermanent=True, isVirtual=False)
+        offerers_factories.AccessibilityProviderFactory(venue=venue)
+
+        venues_list = offerers_api.get_permanent_venues_without_accessibility_provider()
+        assert len(venues_list) == 3
