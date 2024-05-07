@@ -125,7 +125,12 @@ def list_collective_bookings() -> utils.BackofficeResponse:
 
     pro_visualisation_link = f"{settings.PRO_URL}/collective/bookings{form.pro_view_args}" if form.pro_view_args else ""
 
-    bookings = utils.limit_rows(bookings, form.limit.data)
+    bookings = utils.limit_rows(
+        bookings,
+        form.limit.data,
+        sort_key=lambda booking: booking.collectiveStock.beginningDatetime,
+        sort_reverse=True,
+    )
 
     autocomplete.prefill_offerers_choices(form.offerer)
     autocomplete.prefill_venues_choices(form.venue)

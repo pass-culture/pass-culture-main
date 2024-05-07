@@ -396,16 +396,24 @@ def get_advanced_search_args(
     }
 
 
-def limit_rows(rows: list[typing.Any], limit: int) -> list[typing.Any]:
+def limit_rows(
+    rows: list[typing.Any], limit: int, sort_key: typing.Callable | None = None, sort_reverse: bool = False
+) -> list[typing.Any]:
     if len(rows) > limit:
+        # Not sorted by database for performance reasons (query may have to sort millions of matching rows),
+        # so there is no reason to sort random rows from database, which may be confusing for users.
         flash(
             Markup(
                 "Il y a plus de {limit} résultats dans la base de données, la liste ci-dessous n'en donne donc "
-                "qu'une partie. Veuillez affiner les filtres de recherche."
-            ).format(limit=limit),
+                "qu'une partie{sort_info}. Veuillez affiner les filtres de recherche."
+            ).format(limit=limit, sort_info=Markup(", <b>non triés</b>") if sort_key else ""),
             "info",
         )
-        rows = rows[:limit]
+        return rows[:limit]
+
+    if sort_key:
+        return sorted(rows, key=sort_key, reverse=sort_reverse)
+
     return rows
 
 

@@ -156,7 +156,15 @@ def list_individual_bookings() -> utils.BackofficeResponse:
 
     pro_visualisation_link = f"{settings.PRO_URL}/reservations{form.pro_view_args}" if form.pro_view_args else ""
 
-    bookings = utils.limit_rows(bookings, form.limit.data)
+    bookings = utils.limit_rows(
+        bookings,
+        form.limit.data,
+        sort_key=lambda booking: (
+            (booking.stock.beginningDatetime or booking.dateUsed or datetime.datetime.max),
+            booking.dateCreated,
+        ),
+        sort_reverse=True,
+    )
 
     autocomplete.prefill_offerers_choices(form.offerer)
     autocomplete.prefill_venues_choices(form.venue)
