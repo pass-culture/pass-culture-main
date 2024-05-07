@@ -456,6 +456,17 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
 
         assert rows[0]["ID résa"] == str(target_booking.id)
 
+    def test_sort_collective_bookings_by_event_date(self, authenticated_client, collective_bookings):
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for(self.endpoint, status=[s.name for s in educational_models.CollectiveBookingStatus])
+            )
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        # beginningDatetime at J+7, J+6, J+5, J+3, J+1
+        assert [row["ID résa"] for row in rows] == [str(collective_bookings[idx].id) for idx in (2, 0, 3, 1, 4)]
+
 
 class MarkCollectiveBookingAsUsedTest(PostEndpointHelper):
     endpoint = "backoffice_web.collective_bookings.mark_booking_as_used"

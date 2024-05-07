@@ -498,6 +498,15 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         assert f"N° de virement : {cashflow.batch.label}" in reimbursement_data
         assert "Taux de remboursement : 100,0 %" in reimbursement_data
 
+    def test_sort_bookings_by_date(self, authenticated_client, bookings):
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, status=[s.name for s in forms.BookingStatus]))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        # booked J not used, booked J-2 not used, event J+12, event J+11, used J
+        assert [row["Contremarque"] for row in rows] == ["ADFTH9", "ELBEIT", "REIMB3", "CNCL02", "WTRL00"]
+
 
 class MarkBookingAsUsedTest(PostEndpointHelper):
     endpoint = "backoffice_web.individual_bookings.mark_booking_as_used"
