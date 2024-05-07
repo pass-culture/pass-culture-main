@@ -1,5 +1,7 @@
 import { When, Then, Given } from "@badeball/cypress-cucumber-preprocessor";
 
+let offerText: string
+
 Given("I go to adage login page with valide token", () => {
     cy.visit('/connexion')
     cy.getFakeAdageToken()
@@ -20,14 +22,74 @@ When("I open adage iframe with search page", () => {
     cy.visit(`/adage-iframe?token=${adageToken}&venue=1`)
 });
 
+When("I select first card domain", () => {
+  cy.findAllByTestId('card-domain-link').first().click()
+});
+
+When("I select first displayed offer", () => {
+  cy.findAllByTestId('card-offer-link').first().click()
+});
+
+When("I select first card venue", () => {
+  cy.findAllByTestId('card-venue-link').first().scrollIntoView()
+
+  cy.findAllByTestId('card-venue-link').first().within(($cardVenuelink) => {
+    cy.findByTestId('venue-infos-name').then($btn => {
+      const buttonLabel = $btn.text()
+      cy.wrap(buttonLabel).as('buttonLabel')
+    })
+  })
+  cy.findAllByTestId('card-venue-link').first().click()
+});
+
+When("I go back to search page", () => {
+  cy.get('@buttonLabel').then(buttonLabel => {
+    cy.get(`button[title="Supprimer Lieu :  ${buttonLabel}"]`)
+  })
+
+  cy.findByRole('link', { name: 'Découvrir' }).click()
+
+  cy.findByRole('link', { name: 'Rechercher' }).click()
+});
+
+When("I add first offer to favorites", () => {
+  cy.findAllByTestId('card-offer')
+  .first()
+  .invoke('text')
+  .then((text: string) => {
+    offerText = text
+
+    cy.findAllByTestId('favorite-inactive').first().click()
+    cy.contains('Ajouté à vos favoris')
+  })
+});
+
+Then("the banner is displayed", () => {
+  cy.get('[class^=_discovery-banner]')
+    .contains('Découvrez la part collective du pass Culture')
+});
+
+Then("the first offer should be added to favorites", () => {
+
+  cy.contains('Mes Favoris').click()
+
+  cy.contains(offerText)
+
+  // à part de là c'est du afterScenario : on désélectionne le favori
+  cy.findByRole('link', { name: 'Découvrir' }).click()
+
+  cy.reload()
+
+  cy.findAllByTestId('favorite-active').first().click()
+});
+
 Then("the iframe should be display correctly", () => {
     cy.url().should('include', '/decouverte')
-    cy.findByRole('link', { name: 'Découvrir' }).should(
+    cy.findAllByRole('link', { name: 'Découvrir' }).first().should(
       'have.attr',
       'aria-current',
       'page'
     )
-    cy.contains('Découvrez la part collective du pass Culture')
 });
 
 Then("the iframe search page should be display correctly", () => {
@@ -37,5 +99,8 @@ Then("the iframe search page should be display correctly", () => {
       'aria-current',
       'page'
     )
-    cy.findByRole('button', { name: /Lieu : Librairie des GTls/ })
+});
+
+Then('the {string} button should be displayed', (button: string) => {
+  cy.get('button').contains(button)
 });
