@@ -189,10 +189,6 @@ $banner-left-padding: rem.torem(16px);
   }
 }
 
-.domain-name-banner {
-  margin: rem.torem(0) 0 rem.torem(32px) 0;
-}
-
 .container {
   @include fonts.bold;
 
