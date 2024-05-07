@@ -18,143 +18,82 @@
     }
   }
 
+  &:hover:not(.is-disabled) {
+    text-decoration: underline;
+  }
+
   &:focus-within {
     outline: rem.torem(1px) solid var(--color-input-text-color);
     outline-offset: rem.torem(4px);
     border-radius: rem.torem(4px);
   }
-}
 
-.base-radio-input {
-  height: rem.torem(20px);
-  width: rem.torem(20px);
-  border: rem.torem(2px) solid var(--color-input-border-color);
-  border-radius: 50%;
-  background-color: var(--color-white);
-  flex: 0 0 auto;
-  font-size: inherit;
-  margin-right: rem.torem(8px);
-  appearance: none;
-  outline: none;
-  transition:
-    border 150ms ease,
-    background 150ms ease,
-    box-shadow 150ms ease;
-}
+  &-input {
+    height: rem.torem(20px);
+    width: rem.torem(20px);
+    border: rem.torem(2px) solid var(--color-grey-dark);
+    border-radius: 50%;
+    background-color: var(--color-white);
+    flex: 0 0 auto;
+    font-size: inherit;
+    margin-right: rem.torem(8px);
+    appearance: none;
+    outline: none;
+    cursor: pointer;
+    transition:
+      border 150ms ease,
+      background 150ms ease,
+      box-shadow 150ms ease;
 
-.base-radio-primary-input {
-  &:hover,
-  &:focus-visible {
-    border-color: var(--color-input-border-color-focus);
-  }
-
-  &:disabled {
-    cursor: default;
-    border-color: var(--color-input-border-color-disabled);
-  }
-
-  &.has-error {
-    border-color: var(--color-input-border-color-error);
-  }
-
-  &:checked {
-    box-shadow: inset 0 0 0 rem.torem(2px) var(--color-white);
-    border-color: var(--color-primary);
-    background: radial-gradient(
-      var(--color-primary) 0%,
-      var(--color-primary) 40%,
-      transparent 50%,
-      transparent
-    );
+    &:hover,
+    &:focus-visible {
+      border-color: var(--color-secondary-light);
+    }
 
     &:disabled {
-      box-shadow: inset 0 0 0 rem.torem(2px) var(--color-white);
+      cursor: default;
       border-color: var(--color-input-border-color-disabled);
-      background: radial-gradient(
-        var(--color-input-border-color-disabled) 0%,
-        var(--color-input-border-color-disabled) 40%,
-        transparent 50%,
-        transparent
-      );
     }
 
     &.has-error {
-      box-shadow: inset 0 0 0 rem.torem(2px) var(--color-white);
       border-color: var(--color-input-border-color-error);
+    }
+
+    &:checked {
+      border-color: var(--color-secondary-light);
       background: radial-gradient(
-        var(--color-input-border-color-error) 0%,
-        var(--color-input-border-color-error) 40%,
+        var(--color-secondary-light) 0%,
+        var(--color-secondary-light) 40%,
         transparent 50%,
         transparent
       );
+
+      &:disabled {
+        box-shadow: inset 0 0 0 rem.torem(2px) var(--color-white);
+        border-color: var(--color-input-border-color-disabled);
+        background: radial-gradient(
+          var(--color-input-border-color-disabled) 0%,
+          var(--color-input-border-color-disabled) 40%,
+          transparent 50%,
+          transparent
+        );
+      }
+
+      &.has-error {
+        box-shadow: inset 0 0 0 rem.torem(2px) var(--color-white);
+        border-color: var(--color-input-border-color-error);
+        background: radial-gradient(
+          var(--color-input-border-color-error) 0%,
+          var(--color-input-border-color-error) 40%,
+          transparent 50%,
+          transparent
+        );
+      }
     }
   }
 }
 
-.base-radio-secondary-input {
-  &:hover,
-  &:focus-visible {
-    border-color: var(--color-input-border-color-focus);
-  }
-
-  &:disabled {
-    cursor: default;
-    border-color: var(--color-input-border-color-disabled);
-  }
-
-  &.has-error {
-    border-color: var(--color-input-border-color-error);
-  }
-
-  &:checked {
-    border-color: var(--color-secondary-light);
-    background: radial-gradient(
-      var(--color-secondary-light) 0%,
-      var(--color-secondary-light) 40%,
-      transparent 50%,
-      transparent
-    );
-
-    &:disabled {
-      box-shadow: inset 0 0 0 rem.torem(2px) var(--color-white);
-      border-color: var(--color-input-border-color-disabled);
-      background: radial-gradient(
-        var(--color-input-border-color-disabled) 0%,
-        var(--color-input-border-color-disabled) 40%,
-        transparent 50%,
-        transparent
-      );
-    }
-
-    &.has-error {
-      box-shadow: inset 0 0 0 rem.torem(2px) var(--color-white);
-      border-color: var(--color-input-border-color-error);
-      background: radial-gradient(
-        var(--color-input-border-color-error) 0%,
-        var(--color-input-border-color-error) 40%,
-        transparent 50%,
-        transparent
-      );
-    }
-  }
-}
-
-.with-border-primary {
-  border: rem.torem(1px) solid var(--color-black);
-  border-radius: rem.torem(8px);
-  padding: 0 0 0 rem.torem(16px);
-
-  .base-radio-label {
-    padding: rem.torem(16px) rem.torem(16px) rem.torem(16px) 0;
-  }
-
-  &-checked {
-    border: rem.torem(1px) solid var(--color-primary);
-    color: var(--color-primary);
-  }
-}
-
-.with-border-secondary {
+.with-border {
   border: rem.torem(1px) solid var(--color-grey-dark);
   border-radius: rem.torem(8px);
   padding: 0 0 0 rem.torem(16px);
@@ -174,7 +113,7 @@
     cursor: pointer;
   }
 
-  &-disabled {
+  .is-disabled {
     border: none;
     background-color: var(--color-grey-light);
     color: var(--color-grey-dark);

@@ -3,7 +3,6 @@ import { useField } from 'formik'
 import React, { useCallback } from 'react'
 
 import { BaseRadio } from '../shared/BaseRadio/BaseRadio'
-import { BaseRadioVariant } from '../shared/BaseRadio/types'
 
 interface RadioButtonProps
   extends Partial<React.InputHTMLAttributes<HTMLInputElement>> {
@@ -12,7 +11,6 @@ interface RadioButtonProps
   value: string
   withBorder?: boolean
   hasError?: boolean
-  variant?: BaseRadioVariant
 }
 
 export const RadioButton = ({
@@ -23,7 +21,6 @@ export const RadioButton = ({
   withBorder,
   className,
   hasError,
-  variant = BaseRadioVariant.PRIMARY,
   onChange,
 }: RadioButtonProps): JSX.Element => {
   const [field] = useField({ name, value, type: 'radio' })
@@ -49,7 +46,6 @@ export const RadioButton = ({
       checked={field.checked}
       hasError={hasError}
       withBorder={withBorder}
-      variant={variant}
       onChange={(e) => onCustomChange(e)}
     />
   )
