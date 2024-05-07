@@ -87,9 +87,10 @@ export const CinemaProviderForm = ({
 
               {isCreatedEntity ? (
                 <Button
-                  type="submit"
+                  type="button"
                   variant={ButtonVariant.PRIMARY}
                   isLoading={formik.isSubmitting}
+                  onClick={() => handleFormSubmit(formik.values)}
                 >
                   Lancer la synchronisation
                 </Button>
