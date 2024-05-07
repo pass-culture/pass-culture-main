@@ -166,7 +166,7 @@ def synchronize_venues_with_acceslibre(venue_ids: list[int], dry_run: bool = Tru
 @blueprint.cli.command("acceslibre_matching")
 @click.option("--dry-run", type=bool, default=False)
 @click.option("--start-from-batch", type=int, default=1, help="Start synchronization from batch number")
-def acceslibre_matching(dry_run: bool = False, force_sync: bool = False, start_from_batch: int = 1) -> None:
+def acceslibre_matching(dry_run: bool = False, start_from_batch: int = 1) -> None:
     """
     For all permanent venues, we are looking for a match at acceslibre
 
@@ -179,16 +179,17 @@ def acceslibre_matching(dry_run: bool = False, force_sync: bool = False, start_f
         click.echo(f"Start from batch must be less than {num_batches}")
         return
 
-    results_by_activity: dict[str, list[accessibility_provider.AcceslibreResult] | None] = dict()
+    results_list = []
 
     for activity in accessibility_provider.AcceslibreActivity:
-        results_by_activity[activity.value] = accessibility_provider.find_new_entries_by_activity(activity)
+        if results_by_activity := accessibility_provider.find_new_entries_by_activity(activity):
+            results_list.extend(results_by_activity)
 
     start_batch_index = start_from_batch - 1
     for i in range(start_batch_index, num_batches):
         batch_start = i * BATCH_SIZE
         batch_end = (i + 1) * BATCH_SIZE
-        offerers_api.match_venue_with_new_entries(venues_list[batch_start:batch_end], results_by_activity)
+        offerers_api.match_venue_with_new_entries(venues_list[batch_start:batch_end], results_list)
 
         if not dry_run:
             try:

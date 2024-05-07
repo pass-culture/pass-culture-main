@@ -2293,24 +2293,23 @@ def synchronize_accessibility_provider(venue: models.Venue, force_sync: bool = F
 
 
 def match_venue_with_new_entries(
-    venues_list: list[models.Venue], results: dict[str, list[accessibility_provider.AcceslibreResult] | None]
+    venues_list: list[models.Venue],
+    results: list[accessibility_provider.AcceslibreResult],
 ) -> None:
-    for activity in accessibility_provider.AcceslibreActivity:
-        if activity_results := results[activity.value]:
-            for venue in venues_list:
-                if matching_venue := accessibility_provider.match_venue_with_acceslibre(
-                    acceslibre_results=activity_results,
-                    venue_name=venue.name,
-                    venue_public_name=venue.publicName,
-                    venue_address=venue.address,
-                    venue_ban_id=venue.banId,
-                    venue_siret=venue.siret,
-                ):
-                    venue.accessibilityProvider = offerers_models.AccessibilityProvider(
-                        externalAccessibilityId=matching_venue.slug,
-                        externalAccessibilityUrl=matching_venue.web_url,
-                    )
-                    db.session.add(venue.accessibilityProvider)
+    for venue in venues_list:
+        if matching_venue := accessibility_provider.match_venue_with_acceslibre(
+            acceslibre_results=results,
+            venue_name=venue.name,
+            venue_public_name=venue.publicName,
+            venue_address=venue.street,
+            venue_ban_id=venue.banId,
+            venue_siret=venue.siret,
+        ):
+            venue.accessibilityProvider = offerers_models.AccessibilityProvider(
+                externalAccessibilityId=matching_venue.slug,
+                externalAccessibilityUrl=matching_venue.web_url,
+            )
+            db.session.add(venue.accessibilityProvider)
 
 
 def update_offerer_address_label(offerer_address_id: int, new_label: str) -> None:
