@@ -60,7 +60,7 @@ requests = "2.31.0"
 rq = "1.16.2"
 schwifty = "2024.4.0"
 semver = "3.0.2"
-sentry-sdk = { version = "2.0.1", extras = ["flask"] }
+sentry-sdk = { version = "2.1.1", extras = ["flask"] }
 sib-api-v3-sdk = "^7.6.0"
 slack-sdk = "3.27.1"
 spectree = "1.2.1"
