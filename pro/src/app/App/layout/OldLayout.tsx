@@ -1,7 +1,6 @@
 import classnames from 'classnames'
 import React from 'react'
 
-import { DomainNameBanner } from 'components/DomainNameBanner/DomainNameBanner'
 import Footer from 'components/Footer/Footer'
 import OldHeader from 'components/Header/OldHeader'
 import SkipLinks from 'components/SkipLinks'
@@ -33,7 +32,6 @@ export const OldLayout = ({ children, layout = 'basic' }: OldLayoutProps) => {
         ) : (
           <div className={styles['page-content']}>
             <div className={styles['after-notification-content']}>
-              <DomainNameBanner />
               {children}
             </div>
           </div>

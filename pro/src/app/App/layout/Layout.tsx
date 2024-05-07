@@ -2,7 +2,6 @@ import cn from 'classnames'
 import React, { useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 
-import { DomainNameBanner } from 'components/DomainNameBanner/DomainNameBanner'
 import Footer from 'components/Footer/Footer'
 import Header from 'components/Header/Header'
 import NewNavReview from 'components/NewNavReview/NewNavReview'
@@ -80,10 +79,7 @@ export const Layout = ({ children, layout = 'basic' }: LayoutProps) => {
                 {layout === 'funnel' || layout === 'without-nav' ? (
                   children
                 ) : (
-                  <div className={styles.content}>
-                    <DomainNameBanner />
-                    {children}
-                  </div>
+                  <div className={styles.content}>{children}</div>
                 )}
               </main>
             </div>
