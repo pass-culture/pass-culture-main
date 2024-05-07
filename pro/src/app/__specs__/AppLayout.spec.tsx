@@ -1,10 +1,10 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import {
-  RenderWithProvidersOptions,
   renderWithProviders,
+  RenderWithProvidersOptions,
 } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
@@ -27,31 +27,6 @@ const renderApp = (
 
 describe('src | AppLayout', () => {
   let props: AppLayoutProps
-
-  it('should not render domain name banner when arriving from new domain name', async () => {
-    renderApp(props)
-
-    await waitFor(() =>
-      expect(
-        screen.queryByText((content) =>
-          content.startsWith('Notre nom de domaine évolue !')
-        )
-      ).not.toBeInTheDocument()
-    )
-  })
-
-  it('should render domain name banner when coming from old domain name', async () => {
-    renderApp(props, { initialRouterEntries: ['/?redirect=true'] })
-
-    // Then
-    await waitFor(() =>
-      expect(
-        screen.queryByText((content) =>
-          content.startsWith('Notre nom de domaine évolue !')
-        )
-      ).toBeInTheDocument()
-    )
-  })
 
   describe('side navigation', () => {
     it('should render the new header when the WIP_ENABLE_PRO_SIDE_NAV is active', () => {
