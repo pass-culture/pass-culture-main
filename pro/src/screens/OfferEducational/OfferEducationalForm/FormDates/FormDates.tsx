@@ -7,7 +7,6 @@ import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OfferEducationalFormValues } from 'core/OfferEducational/types'
 import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
 import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
-import { BaseRadioVariant } from 'ui-kit/form/shared/BaseRadio/types'
 import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
 import { isDateValid } from 'utils/date'
 
@@ -49,7 +48,6 @@ export const FormDates = ({
             value: 'specific_dates',
           },
         ]}
-        variant={BaseRadioVariant.SECONDARY}
         withBorder
         legend="Quand votre offre peut-elle avoir lieu ?"
         name="datesType"

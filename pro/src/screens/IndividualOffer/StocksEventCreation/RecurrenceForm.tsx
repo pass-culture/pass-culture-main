@@ -16,7 +16,6 @@ import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
 import { RadioButton } from 'ui-kit/form/RadioButton/RadioButton'
 import { Select } from 'ui-kit/form/Select/Select'
-import { BaseRadioVariant } from 'ui-kit/form/shared/BaseRadio/types'
 import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
@@ -145,7 +144,6 @@ export const RecurrenceForm = ({
 
             <div className={styles['radio-group']}>
               <RadioButton
-                variant={BaseRadioVariant.SECONDARY}
                 label="Une seule fois"
                 name="recurrenceType"
                 value={RecurrenceType.UNIQUE}
@@ -154,7 +152,6 @@ export const RecurrenceForm = ({
               />
 
               <RadioButton
-                variant={BaseRadioVariant.SECONDARY}
                 label="Tous les jours"
                 name="recurrenceType"
                 value={RecurrenceType.DAILY}
@@ -163,7 +160,6 @@ export const RecurrenceForm = ({
               />
 
               <RadioButton
-                variant={BaseRadioVariant.SECONDARY}
                 label="Toutes les semaines"
                 name="recurrenceType"
                 value={RecurrenceType.WEEKLY}
@@ -172,7 +168,6 @@ export const RecurrenceForm = ({
               />
 
               <RadioButton
-                variant={BaseRadioVariant.SECONDARY}
                 label="Tous les mois"
                 name="recurrenceType"
                 value={RecurrenceType.MONTHLY}
