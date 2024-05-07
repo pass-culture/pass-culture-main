@@ -2171,18 +2171,10 @@ def set_accessibility_infos_from_provider_id(venue: models.Venue) -> None:
 
 def count_permanent_venues_with_accessibility_provider() -> int:
     return (
-        offerers_models.Venue.query.outer(offerers_models.AccessibilityProvider)
-        .options(
-            sa.orm.load_only(
-                offerers_models.Venue.isPermanent,
-                offerers_models.Venue.isVirtual,
-                offerers_models.AccessibilityProvider.externalAccessibilityId,
-            )
-        )
+        offerers_models.Venue.query.join(offerers_models.AccessibilityProvider)
         .filter(
-            offerers_models.Venue.isPermanent == True,
-            offerers_models.Venue.isVirtual == False,
-            offerers_models.AccessibilityProvider.externalAccessibilityId.isnot(None),
+            offerers_models.Venue.isPermanent.is_(True),
+            offerers_models.Venue.isVirtual.is_(False),
         )
         .count()
     )
@@ -2192,9 +2184,8 @@ def get_permanent_venues_with_accessibility_provider(batch_size: int, batch_num:
     return (
         offerers_models.Venue.query.join(offerers_models.Venue.accessibilityProvider)
         .filter(
-            offerers_models.Venue.isPermanent == True,
-            offerers_models.Venue.isVirtual == False,
-            offerers_models.AccessibilityProvider.externalAccessibilityId.isnot(None),
+            offerers_models.Venue.isPermanent.is_(True),
+            offerers_models.Venue.isVirtual.is_(False),
         )
         .options(sa.orm.contains_eager(offerers_models.Venue.accessibilityProvider))
         .order_by(offerers_models.Venue.id.asc())
