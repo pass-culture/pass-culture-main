@@ -128,7 +128,9 @@ class TiteliveImageType(enum.Enum):
 class ProductMediation(PcObject, Base, Model, ProvidableMixin):
     __tablename__ = "product_mediation"
 
-    productId: int = sa.Column(sa.BigInteger, sa.ForeignKey("product.id"), index=True, nullable=False)
+    productId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("product.id", ondelete="CASCADE"), index=True, nullable=False
+    )
     url: str = sa.Column(sa.String(255), nullable=False, unique=True)
     imageType = sa.Column(sa.Enum(TiteliveImageType), nullable=False)
 
@@ -142,7 +144,12 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
     name: str = sa.Column(sa.String(140), nullable=False)
     subcategoryId: str = sa.Column(sa.Text, nullable=False, index=True)
     thumb_path_component = "products"
-    productMediations: sa_orm.Mapped[ProductMediation] = sa.orm.relationship("ProductMediation", backref="product")
+    productMediations: sa_orm.Mapped[ProductMediation] = sa.orm.relationship(
+        "ProductMediation",
+        backref="product",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
 
     sa.Index("product_ean_idx", extraData["ean"].astext)
     sa.Index("product_allocineId_idx", extraData["allocineId"].cast(sa.Integer))
