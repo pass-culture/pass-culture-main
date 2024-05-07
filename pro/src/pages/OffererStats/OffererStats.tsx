@@ -1,7 +1,10 @@
 import React from 'react'
+import useSWR from 'swr'
 
+import { api } from 'apiClient/api'
 import { AppLayout } from 'app/AppLayout'
-import useGetOffererNames from 'core/Offerers/adapters/getOffererNamesAdapter/useOffererNames'
+import { GET_OFFERER_NAMES_QUERY_KEY } from 'config/swrQueryKeys'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import useNotification from 'hooks/useNotification'
 import { OffererStatsScreen } from 'screens/OffererStats'
 import Spinner from 'ui-kit/Spinner/Spinner'
@@ -9,15 +12,26 @@ import { sortByLabel } from 'utils/strings'
 
 export const OffererStats = (): JSX.Element | null => {
   const notify = useNotification()
-  const { isLoading, error, data: offererNames } = useGetOffererNames({})
+  const { data, error, isLoading } = useSWR(
+    [GET_OFFERER_NAMES_QUERY_KEY],
+    () => api.listOfferersNames(),
+    {
+      fallbackData: { offerersNames: [] },
+    }
+  )
 
   if (error) {
     notify.error(error.message)
     return null
   }
 
+  if (data.offerersNames.length === 0) {
+    notify.error(GET_DATA_ERROR_MESSAGE)
+    return null
+  }
+
   const offererOptions = sortByLabel(
-    offererNames?.map((offerer) => ({
+    data.offerersNames.map((offerer) => ({
       value: offerer.id.toString(),
       label: offerer.name,
     })) ?? []
