@@ -5,10 +5,10 @@
 
 .base-checkbox {
   display: flex;
+  cursor: pointer;
 
   &-label-row {
     display: inline-flex;
-    cursor: pointer;
     align-items: flex-start;
   }
 
@@ -17,20 +17,11 @@
 
     margin-left: rem.torem(28px);
     color: var(--color-grey-dark);
-
-    &.disabled {
-      color: var(--color-grey-medium);
-    }
   }
 
   &-label {
     display: flex;
     width: 100%;
-
-    :disabled + & {
-      color: var(--color-input-text-color-disabled);
-      cursor: default;
-    }
   }
 
   &-icon {
@@ -41,17 +32,13 @@
     &-svg {
       width: rem.torem(20px);
       fill: var(--color-input-text-color);
-
-      :disabled + & {
-        fill: var(--color-input-text-color-disabled);
-      }
     }
   }
 
   &-input {
     appearance: none;
     background-color: var(--color-input-bg-color);
-    border: rem.torem(2px) solid var(--color-input-border-color);
+    border: rem.torem(2px) solid var(--color-grey-dark);
     border-radius: rem.torem(3px);
     transition:
       border 150ms ease,
@@ -69,7 +56,8 @@
 
     &:checked,
     &:indeterminate {
-      background-color: var(--color-grey-dark);
+      background-color: var(--color-secondary-light);
+      border-color: var(--color-secondary-light);
 
       &::after {
         background-image: url("./checkbox-check.svg");
@@ -80,20 +68,6 @@
         position: absolute;
         width: 100%;
       }
-
-      &:hover {
-        background-color: var(--color-primary);
-        border-color: var(--color-primary);
-      }
-
-      &:focus-visible {
-        background-color: var(--color-primary-dark);
-        border-color: var(--color-primary-dark);
-      }
-
-      &.has-error {
-        border-color: var(--color-input-border-color-error);
-      }
     }
 
     &:indeterminate {
@@ -102,40 +76,62 @@
       }
     }
 
-    &:disabled,
-    &:disabled:checked,
-    &:disabled:indeterminate {
-      background-color: var(--color-grey-medium);
-      border-color: var(--color-grey-medium);
-      cursor: not-allowed;
-      opacity: 1;
-    }
-
-    &:not(:checked, :indeterminate) {
-      background-color: var(--color-white);
-
-      &:hover {
-        border-color: var(--color-primary);
-      }
-
-      &:focus-visible {
-        border-color: var(--color-primary-dark);
-      }
-
-      &:disabled {
-        border-color: var(--color-grey-medium);
-        opacity: 1;
-      }
-
-      &.has-error {
-        border-color: var(--color-input-border-color-error);
-      }
-    }
-
     &:focus-visible {
       outline: rem.torem(1px) solid var(--color-input-text-color);
       outline-offset: rem.torem(4px);
       border-radius: rem.torem(4px);
+    }
+  }
+
+  &:hover {
+    text-decoration: underline;
+
+    .base-checkbox-input {
+      border-color: var(--color-secondary-light);
+
+      &:checked,
+      &:indeterminate {
+        border-color: var(--color-grey-dark);
+        background-color: var(--color-grey-dark);
+      }
+    }
+  }
+
+  &.has-error {
+    .base-checkbox-input {
+      border-color: var(--color-input-border-color-error);
+
+      &:checked,
+      &:indeterminate {
+        background-color: var(--color-input-border-color-error);
+      }
+    }
+
+    &:hover .base-checkbox-input {
+      border-color: var(--color-grey-dark);
+    }
+  }
+
+  &.is-disabled {
+    cursor: not-allowed;
+    color: var(--color-input-text-color-disabled);
+
+    .base-checkbox-input {
+      border-color: var(--color-grey-medium);
+      cursor: not-allowed;
+
+      &:checked,
+      &:indeterminate {
+        background-color: var(--color-grey-medium);
+      }
+    }
+
+    &:hover {
+      text-decoration: unset;
+
+      .base-checkbox-input {
+        border-color: var(--color-grey-medium);
+      }
     }
   }
 }
