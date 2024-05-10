@@ -35,13 +35,6 @@ cy.intercept({ method: 'GET', url: '/offerers/*' }).as('getOfferer')
 cy.visit('/connexion')
 })
 
-Given("I am logged in", () => {
-    cy.login({
-        email: 'retention_structures@example.com',
-        password: 'user@AZERTY123',
-    })
-});
-
 Given("I want to add a venue", () => {
     cy.findByLabelText('Structure').select('Bar des amis')
     cy.findByText('Ajouter un lieu').click()
