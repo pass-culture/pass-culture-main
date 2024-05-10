@@ -1,5 +1,6 @@
 from datetime import datetime
 
+import flask
 import pydantic.v1 as pydantic_v1
 from pydantic.v1 import EmailStr
 from pydantic.v1.class_validators import validator
@@ -188,6 +189,7 @@ class SharedCurrentUserResponseModel(BaseModel):
     roles: list[users_models.UserRole]
     navState: NavStateResponseModel | None
     hasPartnerPage: bool | None
+    isImpersonated: bool = False
 
     class Config:
         json_encoders = {datetime: format_into_utc_date}
@@ -200,6 +202,7 @@ class SharedCurrentUserResponseModel(BaseModel):
         user.hasUserOfferer = user.has_user_offerer
         user.navState = NavStateResponseModel.from_orm(user.pro_new_nav_state)
         user.hasPartnerPage = user.has_partner_page
+        user.isImpersonated = flask.session.get("internal_admin_email") is not None
         result = super().from_orm(user)
         return result
 
