@@ -2186,17 +2186,6 @@ test = ["pytest (<7.1)", "pytest-asyncio", "testpath"]
 test-extra = ["curio", "matplotlib (!=3.2.0)", "nbformat", "numpy (>=1.21)", "pandas", "pytest (<7.1)", "pytest-asyncio", "testpath", "trio"]
 
 [[package]]
-name = "iso3166"
-version = "2.1.1"
-description = "Self-contained ISO 3166-1 country definitions."
-optional = false
-python-versions = ">=3.6"
-files = [
-    {file = "iso3166-2.1.1-py3-none-any.whl", hash = "sha256:263660b36f8471c42acd1ff673d28a3715edbce7d24b1550d0cf010f6816c47f"},
-    {file = "iso3166-2.1.1.tar.gz", hash = "sha256:fcd551b8dda66b44e9f9e6d6bbbee3a1145a22447c0a556e5d0fb1ad1e491719"},
-]
-
-[[package]]
 name = "isodate"
 version = "0.6.1"
 description = "An ISO 8601 date/time/duration parser and formatter"
@@ -4520,18 +4509,17 @@ crt = ["botocore[crt] (>=1.33.2,<2.0a.0)"]
 
 [[package]]
 name = "schwifty"
-version = "2024.4.0"
+version = "2024.5.2"
 description = ""
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "schwifty-2024.4.0-py3-none-any.whl", hash = "sha256:d05d67fecd18099387ca6d57dd86601b8fc8d7ec0ad05c2b31f8e3b53d13d0ce"},
-    {file = "schwifty-2024.4.0.tar.gz", hash = "sha256:d44576a22d8b05c8f0d94ee72aa7555150e5142cd1f11a97e6d548722c35b6b8"},
+    {file = "schwifty-2024.5.2-py3-none-any.whl", hash = "sha256:fceea304b220c8ad2e4026cce70bb1a785e4aaea2880b4c38a23e213935abb50"},
+    {file = "schwifty-2024.5.2.tar.gz", hash = "sha256:06ed66b6a154aa67d0c0eba9fd56e6cf031ff200d8c7941a93ec969a352b7367"},
 ]
 
 [package.dependencies]
 importlib-resources = {version = ">=5.10", markers = "python_version <= \"3.11\""}
-iso3166 = "*"
 pycountry = "*"
 
 [package.extras]
@@ -5628,4 +5616,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "06ccb913ebf2bac14fe9531b8851442adc331b7fa882e27773b53f686d4f73db"
+content-hash = "2a0d9fbfc4222657232a95faf3773619d7091f0218e36e7c33d60e8e6e22befa"
