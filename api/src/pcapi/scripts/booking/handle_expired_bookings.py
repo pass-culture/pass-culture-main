@@ -5,7 +5,6 @@ from operator import attrgetter
 
 from flask_sqlalchemy import BaseQuery
 
-from pcapi import settings
 from pcapi.core.bookings.api import recompute_dnBookedQuantity
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
@@ -36,22 +35,18 @@ def handle_expired_individual_bookings() -> None:
         cancel_expired_individual_bookings()
     except Exception as e:  # pylint: disable=broad-except
         logger.exception("[handle_expired_individual_bookings] Error in STEP 1 : %s", e)
-    if settings.IS_STAGING:
-        logger.info("[handle_expired_individual_bookings] ENV=STAGING: Skipping Steps 2 and 3")
-    else:
-        try:
-            logger.info("[handle_expired_individual_bookings] STEP 2 : notify_users_of_expired_individual_bookings()")
-            notify_users_of_expired_individual_bookings()
-        except Exception as e:  # pylint: disable=broad-except
-            logger.exception("[handle_expired_individual_bookings] Error in STEP 2 : %s", e)
 
-        try:
-            logger.info(
-                "[handle_expired_individual_bookings] STEP 3 : notify_offerers_of_expired_individual_bookings()"
-            )
-            notify_offerers_of_expired_individual_bookings()
-        except Exception as e:  # pylint: disable=broad-except
-            logger.exception("[handle_expired_individual_bookings] Error in STEP 3 : %s", e)
+    try:
+        logger.info("[handle_expired_individual_bookings] STEP 2 : notify_users_of_expired_individual_bookings()")
+        notify_users_of_expired_individual_bookings()
+    except Exception as e:  # pylint: disable=broad-except
+        logger.exception("[handle_expired_individual_bookings] Error in STEP 2 : %s", e)
+
+    try:
+        logger.info("[handle_expired_individual_bookings] STEP 3 : notify_offerers_of_expired_individual_bookings()")
+        notify_offerers_of_expired_individual_bookings()
+    except Exception as e:  # pylint: disable=broad-except
+        logger.exception("[handle_expired_individual_bookings] Error in STEP 3 : %s", e)
 
     logger.info("[handle_expired_individual_bookings] End")
 
