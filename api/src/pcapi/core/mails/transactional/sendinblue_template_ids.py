@@ -28,7 +28,7 @@ class TransactionalEmail(Enum):
         id_prod=224, id_not_prod=36, tags=["jeunes_offre_reportee_pro"], send_to_ehp=False
     )
     BOOKING_SOON_TO_BE_EXPIRED_TO_BENEFICIARY = models.Template(
-        id_prod=144, id_not_prod=42, tags=["jeunes_reservation_bientot_expiree"]
+        id_prod=144, id_not_prod=42, send_to_ehp=False, tags=["jeunes_reservation_bientot_expiree"]
     )
     COMPLETE_SUBSCRIPTION_AFTER_DMS = models.Template(
         id_prod=679, id_not_prod=84, tags=["jeunes_complete_inscription_apres_dms"]
