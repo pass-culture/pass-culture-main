@@ -1,7 +1,7 @@
 import { Menu, MenuButton, MenuItem, MenuPopover } from '@reach/menu-button'
 import { positionRight } from '@reach/popover'
 import cn from 'classnames'
-import React from 'react'
+import React, { useState } from 'react'
 
 import fullOtherIcon from 'icons/full-other.svg'
 import '@reach/menu-button/styles.css'
@@ -17,10 +17,12 @@ const StockFormActions = ({
   disabled = false,
   actions,
 }: StockFormActionsProps): JSX.Element => {
+  const [isPopoverReady, setPopoverReady] = useState(false)
   return (
     <div className={styles['stock-form-actions']}>
       <Menu>
         <MenuButton
+          onClick={() => setPopoverReady(true)}
           className={styles['menu-button']}
           disabled={disabled}
           title="Opérations sur le stock"
@@ -34,7 +36,12 @@ const StockFormActions = ({
           />
         </MenuButton>
 
-        <MenuPopover position={positionRight} className={styles['menu-list']}>
+        <MenuPopover
+          position={positionRight}
+          className={cn(styles['menu-list'], {
+            [styles['menu-list-visible']]: isPopoverReady,
+          })}
+        >
           {actions.map((action, i) => (
             <MenuItem
               key={`action-${i}`}

@@ -31,6 +31,12 @@
   box-shadow: 0 3px 4px 0 var(--color-medium-shadow);
   padding: rem.torem(16px) 0;
   background: var(--color-white);
+  transition: opacity 0.1s;
+  opacity: 0;
+
+  &-visible {
+    opacity: 1;
+  }
 }
 
 .menu-item[data-reach-menu-item] {
