@@ -54,6 +54,7 @@ from pcapi.models import pc_object
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationType
+from pcapi.repository import atomic
 from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.utils import image_conversion
@@ -303,6 +304,7 @@ def update_collective_offer(
     educational_validation.check_if_offer_is_not_public_api(offer_to_update)
     educational_validation.check_if_offer_not_used_or_reimbursed(offer_to_update)
 
+    new_venue = None
     if "venueId" in new_values and new_values["venueId"] != offer_to_update.venueId:
         offerer = offerers_repository.get_by_collective_offer_id(offer_to_update.id)
         new_venue = offerers_api.get_venue_by_id(new_values["venueId"])
@@ -312,9 +314,18 @@ def update_collective_offer(
             raise educational_exceptions.OffererOfVenueDontMatchOfferer()
 
     nationalProgramId = new_values.pop("nationalProgramId", None)
-    national_program_api.link_or_unlink_offer_to_program(nationalProgramId, offer_to_update)
+    try:
+        national_program_api.link_or_unlink_offer_to_program(nationalProgramId, offer_to_update, commit=False)
+    except Exception:
+        db.session.rollback()
+        raise
 
-    updated_fields = _update_collective_offer(offer=offer_to_update, new_values=new_values)
+    with atomic():
+        updated_fields = _update_collective_offer(offer=offer_to_update, new_values=new_values, commit=False)
+        if new_venue:
+            educational_models.CollectiveBooking.query.filter(
+                educational_models.CollectiveBooking.collectiveStockId == offer_to_update.collectiveStock.id
+            ).update({"venueId": new_venue.id}, synchronize_session="fetch")
 
     educational_api_offer.notify_educational_redactor_on_collective_offer_or_stock_edit(
         offer_to_update.id,
@@ -356,7 +367,9 @@ def update_collective_offer_template(offer_id: int, new_values: dict) -> None:
     )
 
 
-def _update_collective_offer(offer: educational_api_offer.AnyCollectiveOffer, new_values: dict) -> list[str]:
+def _update_collective_offer(
+    offer: educational_api_offer.AnyCollectiveOffer, new_values: dict, commit: bool = True
+) -> list[str]:
     validation.check_validation_status(offer)
     validation.check_contact_request(offer, new_values)
     # This variable is meant for Adage mailing
@@ -377,7 +390,10 @@ def _update_collective_offer(offer: educational_api_offer.AnyCollectiveOffer, ne
         setattr(offer, key, value)
 
     db.session.add(offer)
-    db.session.commit()
+
+    if commit:
+        db.session.commit()
+
     return updated_fields
 
 

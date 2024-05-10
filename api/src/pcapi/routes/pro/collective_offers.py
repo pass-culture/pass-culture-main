@@ -258,6 +258,7 @@ def edit_collective_offer(
 
     try:
         offers_api.update_collective_offer(offer_id=offer_id, new_values=new_values)
+        db.session.commit()
     except offers_exceptions.SubcategoryNotEligibleForEducationalOffer:
         raise ApiErrors({"subcategoryId": "this subcategory is not educational"}, 400)
     except offers_exceptions.OfferUsedOrReimbursedCantBeEdit:
