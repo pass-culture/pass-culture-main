@@ -93,6 +93,13 @@ class BasketItem(BaseModel):
 class SaleRequest(BaseModel):
     codePayment: str
     basketItems: list[BasketItem]
+    idsBeforeSale: str | None
+
+
+# TODO(yacine) Remove this class with WIP_ENABLE_BOOST_TWO_STAGES_BOOKING FF
+class OneStepSaleRequest(BaseModel):
+    codePayment: str
+    basketItems: list[BasketItem]
 
 
 # FIXME(fseguin, 2022-11-08: waiting for the specs)
@@ -121,6 +128,21 @@ class SaleResponse3(BaseModel):
 class SaleConfirmationResponse(BaseModel):
     message: str
     data: SaleResponse3
+
+
+class SalePreparation(BaseModel):
+    id: int
+    idVendor: int
+    idShowtime: int
+    nbPlaceSelected: int
+    placePrice: float
+    pricingTitle: str | None
+    reservation: str
+
+
+class SalePreparationResponse(BaseModel):
+    message: str
+    data: list[SalePreparation]
 
 
 class SaleCancelItem(BaseModel):
