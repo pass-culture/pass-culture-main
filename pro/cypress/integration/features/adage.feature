@@ -47,4 +47,8 @@ Feature: Adage discovery
     And I select "Arts numériques" in "Domaine artistique" filter
     Then I see no offer
     When I go to "Mes Favoris" menu
-    Then stuff happens    
+    And I go to "Rechercher" menu
+    #And I pause
+    And "Atelier de pratique" in "Format (1)" filter is selected
+    And "Arts numériques" in "Domaine artistique (1)" filter is selected
+    Then I see no offer

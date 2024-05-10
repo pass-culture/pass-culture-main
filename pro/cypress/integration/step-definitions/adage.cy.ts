@@ -112,6 +112,12 @@ When("I select {string} in {string} filter", (value: string, filter: string) => 
     cy.wait(500)
 });
 
+Then("{string} in {string} filter is selected", (value: string, filter: string) => {
+  cy.findByRole('button', { name: filter }).click()
+  cy.findByLabelText(value).should('be.checked')  
+  cy.wait(500)
+});
+
 Then('I see no offer', () => {
     cy.findByText('Nous n’avons trouvé aucune offre publiée')
 });
@@ -120,21 +126,6 @@ When('I go to {string} menu', (menu: string) => {
     cy.contains(menu).click()
 });
   
-When("stuff happens", () => {
-    // cy.findByRole('button', { name: 'Format' }).click()
-    // cy.findByLabelText('Atelier de pratique').click()
-    // cy.findAllByRole('button', { name: 'Rechercher' }).eq(1).click()
-    // cy.findByRole('button', { name: 'Domaine artistique' }).click()
-    // cy.findByLabelText('Arts numériques').click()
-    // cy.findAllByRole('button', { name: 'Rechercher' }).eq(1).click()
-    //cy.findByText('Nous n’avons trouvé aucune offre publiée')
-
+When("I pause", () => {
     cy.pause()
-    // cy.contains('Mes Favoris').click()
-    cy.contains('Rechercher').click()
-    cy.findByRole('button', { name: 'Format (1)' }).click()
-    cy.findByLabelText('Atelier de pratique').should('be.checked')
-    cy.findByRole('button', { name: 'Domaine artistique (1)' }).click()
-    cy.findByLabelText('Arts numériques').should('be.checked')
-    cy.findByText('Nous n’avons trouvé aucune offre publiée')
 });
