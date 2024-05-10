@@ -8,9 +8,7 @@ from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.repository import repository
-from pcapi.scripts.booking.notify_soon_to_be_expired_bookings import (
-    notify_users_of_soon_to_be_expired_individual_bookings,
-)
+from pcapi.scripts.booking.notify_soon_to_be_expired_bookings import notify_soon_to_be_expired_individual_bookings
 
 
 @pytest.mark.usefixtures("db_session")
@@ -37,7 +35,7 @@ class NotifyUsersOfSoonToBeExpiredBookingsTest:
         repository.save(dont_expire_in_7_days_cd_individual_booking)
 
         # When
-        notify_users_of_soon_to_be_expired_individual_bookings()
+        notify_soon_to_be_expired_individual_bookings()
 
         # Then
         mocked_email_recap.assert_called_once_with(
