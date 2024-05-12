@@ -1,17 +1,13 @@
 import { When, Then, Given } from "@badeball/cypress-cucumber-preprocessor";
 
-When('I go to {string} page', (page: string) => {
-    cy.findByText(page).click()
-});
-
-When("I want to create an offer", () => {
-    cy.findByText('Un évènement physique daté').click()
-    cy.intercept({ method: 'GET', url: '/offers/categories' }).as(
-        'getCategories'
-      )
-      cy.findByText('Étape suivante').click()
-      cy.wait('@getCategories')    
-});
+// When("I want to create an offer", () => {
+//     cy.findByText('Un évènement physique daté').click()
+//     cy.intercept({ method: 'GET', url: '/offers/categories' }).as(
+//         'getCategories'
+//       )
+//       cy.findByText('Étape suivante').click()
+//       cy.wait('@getCategories')    
+// });
 
 When("I fill in offer details", () => {
     cy.findByLabelText('Catégorie *').select('Spectacle vivant')
