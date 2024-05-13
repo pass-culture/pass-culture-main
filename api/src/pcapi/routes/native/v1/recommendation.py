@@ -1,4 +1,3 @@
-import flask
 import flask_jwt_extended
 
 import pcapi.connectors.recommendation as recommendation_api
@@ -13,12 +12,12 @@ from .serialization import recommendation as serializers
 
 
 @blueprint.native_route("/recommendation/similar_offers/<int:offer_id>", methods=["GET"])
-@spectree_serialize(api=blueprint.api, raw_response=True)
+@spectree_serialize(api=blueprint.api, response_model=serializers.SimilarOffersResponse)
 @flask_jwt_extended.jwt_required(optional=True)
 def similar_offers(
     offer_id: int,
     query: serializers.SimilarOffersRequestQuery,
-) -> flask.Response:
+) -> serializers.SimilarOffersResponse:
     email = flask_jwt_extended.get_jwt_identity()
     user = users_repository.find_user_by_email(email) if email else None
     try:
@@ -29,17 +28,19 @@ def similar_offers(
         )
     except recommendation_api.RecommendationApiException:
         raise ApiErrors({"code": "RECOMMENDATION_API_ERROR"}, status_code=400)
-    return flask.Response(raw_response, mimetype="application/json")
+    if not raw_response:
+        return serializers.SimilarOffersResponse(results=[], params=serializers.RecommendationApiParams())
+    return serializers.SimilarOffersResponse.parse_raw(raw_response, content_type="application/json")
 
 
 @blueprint.native_route("/recommendation/playlist", methods=["POST"])
-@spectree_serialize(api=blueprint.api, raw_response=True)
+@spectree_serialize(api=blueprint.api, response_model=serializers.PlaylistResponse)
 @authenticated_and_active_user_required
 def playlist(
     user: users_models.User,
     query: serializers.PlaylistRequestQuery,
     body: serializers.PlaylistRequestBody,
-) -> flask.Response:
+) -> serializers.PlaylistResponse:
     try:
         raw_response = recommendation_api.get_playlist(
             user,
@@ -48,4 +49,9 @@ def playlist(
         )
     except recommendation_api.RecommendationApiException:
         raise ApiErrors({"code": "RECOMMENDATION_API_ERROR"}, status_code=400)
-    return flask.Response(raw_response, mimetype="application/json")
+
+    if not raw_response:
+        return serializers.PlaylistResponse(
+            playlist_recommended_offers=[], params=serializers.RecommendationApiParams()
+        )
+    return serializers.PlaylistResponse.parse_raw(raw_response, content_type="application/json")
