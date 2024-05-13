@@ -74,7 +74,7 @@ jobs:
           fi
           if [[ ${{ github.ref }} == 'refs/heads/master' ]]; then
             OUTPUT+=",$DOCKER_REGISTRY/DOCKER_IMAGE:latest"
-          fi 
+          fi
           echo $OUTPUT
           echo $OUTPUT >> "$GITHUB_OUTPUT"
 
@@ -250,7 +250,7 @@ jobs:
     with:
       environment: testing
       app_version: ${{ github.sha }}
-      teleport_version: 11.1.1
+      teleport_version: 15.2.5
       teleport_proxy: teleport.ehp.passculture.team:443
       teleport_kubernetes_cluster: passculture-metier-ehp
       deploy_api: ${{ needs.test-api.result == 'success' }}
