@@ -1,9 +1,5 @@
 import { When, Then, Given } from "@badeball/cypress-cucumber-preprocessor";
 
-Given('I open {string} page', (page: string) => {
-    cy.visit('/'+page)
-});
-
 When("I fill required information in create account form", () => {
     cy.findByLabelText('Nom *').type('LEMOINE')
     cy.findByLabelText('Prénom *').type('Jean')

@@ -4,6 +4,23 @@ Feature: Adage discovery
   Background:
     Given I go to adage login page with valide token
 
+  # note: ce scénario passe pas si on le met à la fin
+  Scenario: should put an offer in favorite
+    When I open adage iframe
+    And I add first offer to favorites
+    Then the first offer should be added to favorites
+
+  Scenario: it should save filter when page changing
+    When I open adage iframe with search page
+    And I select "Atelier de pratique" in "Format" filter
+    And I select "Arts numériques" in "Domaine artistique" filter
+    Then I see no offer
+    When I go to "Mes Favoris" menu
+    And I go to "Rechercher" menu
+    And "Atelier de pratique" in "Format (1)" filter is selected
+    And "Arts numériques" in "Domaine artistique (1)" filter is selected
+    Then I see no offer
+
   Scenario: it should redirect to adage discovery
     When I open adage iframe
     Then the iframe should be display correctly
@@ -35,19 +52,3 @@ Feature: Adage discovery
     And I select first card venue
     Then the iframe search page should be display correctly
     When I go back to search page    
-
-  Scenario: should put an offer in favorite
-    When I open adage iframe
-    And I add first offer to favorites
-    Then the first offer should be added to favorites
-
-  Scenario: it should save filter when page changing
-    When I open adage iframe with search page
-    And I select "Atelier de pratique" in "Format" filter
-    And I select "Arts numériques" in "Domaine artistique" filter
-    Then I see no offer
-    When I go to "Mes Favoris" menu
-    And I go to "Rechercher" menu
-    And "Atelier de pratique" in "Format (1)" filter is selected
-    And "Arts numériques" in "Domaine artistique (1)" filter is selected
-    Then I see no offer
