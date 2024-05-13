@@ -60,7 +60,6 @@ describe('CollectiveTableRow', () => {
         stock: collectiveBookingCollectiveStockFactory(),
         bookingStatus: 'booked',
       }),
-      reloadBookings: vi.fn(),
       defaultOpenedBookingId: '',
     }
 
@@ -77,7 +76,6 @@ describe('CollectiveTableRow', () => {
         stock: collectiveBookingCollectiveStockFactory(),
         bookingStatus: 'booked',
       }),
-      reloadBookings: vi.fn(),
       defaultOpenedBookingId: '',
     }
 
@@ -99,7 +97,6 @@ describe('CollectiveTableRow', () => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
     const props: CollectiveTableRowProps = {
       booking: collectiveBookingFactory({ bookingId: '123' }),
-      reloadBookings: vi.fn(),
       defaultOpenedBookingId: '123',
     }
 

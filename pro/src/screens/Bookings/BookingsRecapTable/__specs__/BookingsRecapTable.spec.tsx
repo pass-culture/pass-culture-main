@@ -51,7 +51,6 @@ describe('components | BookingsRecapTable', () => {
   const defaultProps: Props = {
     isLoading: false,
     audience: Audience.INDIVIDUAL,
-    reloadBookings: vi.fn(),
     resetBookings: vi.fn(),
     bookingsRecap: [],
   }
