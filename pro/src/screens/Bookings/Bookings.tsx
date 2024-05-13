@@ -9,13 +9,12 @@ import {
 import NoData from 'components/NoData'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
 import {
-  GetFilteredBookingsRecapAdapter,
-  GetFilteredCollectiveBookingsRecapAdapter,
   GetUserHasBookingsAdapter,
   GetVenuesAdapter,
   PreFiltersParams,
 } from 'core/Bookings/types'
 import { Events } from 'core/FirebaseEvents/constants'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import { Audience } from 'core/shared/types'
 import { SelectOption } from 'custom_types/form'
 import useAnalytics from 'hooks/useAnalytics'
@@ -35,12 +34,16 @@ import { stringify } from '../../utils/query-string'
 import { BookingsRecapTable } from './BookingsRecapTable/BookingsRecapTable'
 import { PreFilters } from './PreFilters/PreFilters'
 
-interface BookingsProps {
+type BookingsProps<T> = {
   locationState?: { statuses: string[] }
   audience: Audience
-  getFilteredBookingsRecapAdapter:
-    | GetFilteredBookingsRecapAdapter
-    | GetFilteredCollectiveBookingsRecapAdapter
+  getFilteredBookingsAdapter: (
+    params: PreFiltersParams & { page?: number }
+  ) => Promise<{
+    bookings: T[]
+    pages: number
+    currentPage: number
+  }>
   getUserHasBookingsAdapter: GetUserHasBookingsAdapter
   getVenuesAdapter: GetVenuesAdapter
 }
@@ -52,10 +55,10 @@ export const BookingsScreen = <
 >({
   locationState,
   audience,
-  getFilteredBookingsRecapAdapter,
+  getFilteredBookingsAdapter,
   getUserHasBookingsAdapter,
   getVenuesAdapter,
-}: BookingsProps): JSX.Element => {
+}: BookingsProps<T>): JSX.Element => {
   const { currentUser: user } = useCurrentUser()
   const notify = useNotification()
   const { logEvent } = useAnalytics()
@@ -97,23 +100,22 @@ export const BookingsScreen = <
     setBookings([])
     setWereBookingsRequested(true)
 
-    const { isOk, message, payload } = await getFilteredBookingsRecapAdapter({
-      ...preFilters,
-    })
-
-    if (!isOk) {
-      notify.error(message)
-    }
-
-    const { bookings, currentPage, pages } = payload
-
-    setBookings(bookings as T[])
-
-    setIsTableLoading(false)
-    if (currentPage === MAX_LOADED_PAGES && currentPage < pages) {
-      notify.information(
-        'L’affichage des réservations a été limité à 5 000 réservations. Vous pouvez modifier les filtres pour affiner votre recherche.'
+    try {
+      const { bookings, currentPage, pages } = await getFilteredBookingsAdapter(
+        {
+          ...preFilters,
+        }
       )
+      setBookings(bookings)
+
+      setIsTableLoading(false)
+      if (currentPage === MAX_LOADED_PAGES && currentPage < pages) {
+        notify.information(
+          'L’affichage des réservations a été limité à 5 000 réservations. Vous pouvez modifier les filtres pour affiner votre recherche.'
+        )
+      }
+    } catch {
+      notify.error(GET_DATA_ERROR_MESSAGE)
     }
   }
 
