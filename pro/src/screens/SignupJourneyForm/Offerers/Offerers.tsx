@@ -2,6 +2,7 @@ import cn from 'classnames'
 import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import { isError } from 'apiClient/helpers'
@@ -10,11 +11,10 @@ import useAnalytics from 'app/App/analytics/firebase'
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
+import { GET_VENUES_OF_OFFERER_FROM_SIRET_QUERY_KEY } from 'config/swrQueryKeys'
 import { Offerer, useSignupJourneyContext } from 'context/SignupJourneyContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import { getSirenData } from 'core/Offerers/getSirenData'
-import { getVenuesOfOffererFromSiretAdapter } from 'core/Venue/adapters/getVenuesOfOffererFromSiretAdapter/getVenuesOfOffererFromSiretAdapter'
-import { useAdapter } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
@@ -50,8 +50,10 @@ export const Offerers = (): JSX.Element => {
     isLoading: isLoadingVenues,
     error: venuesOfOffererError,
     data: venuesOfOfferer,
-  } = useAdapter(() =>
-    getVenuesOfOffererFromSiretAdapter(offerer?.siret.replaceAll(' ', '') ?? '')
+  } = useSWR(
+    [GET_VENUES_OF_OFFERER_FROM_SIRET_QUERY_KEY, offerer?.siret ?? ''],
+    ([, offererSiret]) =>
+      api.getVenuesOfOffererFromSiret(offererSiret.replaceAll(' ', '') ?? '')
   )
 
   const permanentVenues =
