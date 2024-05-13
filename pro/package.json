@@ -33,7 +33,7 @@
     "build-storybook": "NODE_PATH=src storybook build -o docs-build"
   },
   "cypress-cucumber-preprocessor": {
-    "stepDefinitions": "cypress/integration/step-definitions/**/*.ts"
+    "stepDefinitions": "cypress/e2e/step-definitions/**/*.ts"
   },  
   "dependencies": {
     "@algolia/autocomplete-plugin-query-suggestions": "^1.17.0",
