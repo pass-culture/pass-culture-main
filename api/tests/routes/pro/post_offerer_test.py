@@ -240,3 +240,35 @@ def test_with_inactive_siren(requests_mock, client):
 
     assert response.status_code == 400
     assert response.json["siren"] == ["SIREN is no longer active"]
+
+
+@pytest.mark.usefixtures("db_session")
+@override_settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
+def test_saint_martin_offerer_creation_without_postal_code_is_successfull(requests_mock, client):
+    siren = "123456789"
+    requests_mock.get(
+        f"https://api.insee.fr/entreprises/sirene/V3.11/siren/{siren}",
+        json=sirene_test_data.RESPONSE_SIREN_SAINT_MARTIN_COMPANY_WITHOUT_POSTAL_CODE,
+    )
+    requests_mock.get(
+        f"https://api.insee.fr/entreprises/sirene/V3.11/siret/{siren}00011",
+        json=sirene_test_data.RESPONSE_SIRET_SAINT_MARTIN_COMPANY_WITHOUT_POSTAL_CODE,
+    )
+    user = users_factories.ProFactory()
+
+    body = {
+        "address": "RUE DE SAINT MARTIN",
+        "city": "SAINT-MARTIN",
+        "name": "ENTREPRISE SANS CODE POSTAL",
+        "postalCode": "",
+        "siren": siren,
+        "apeCode": "94.99Z",
+    }
+
+    client = client.with_session_auth(user.email)
+    response = client.post("/offerers", json=body)
+
+    assert response.status_code == 201
+
+    offerer = offerers_models.Offerer.query.one()
+    assert offerer.postalCode == "97150"
