@@ -15,7 +15,6 @@ export interface DialogProps {
   icon?: string
   hideIcon?: boolean
   extraClassNames?: string
-  dangerouslyBypassFocusLock?: boolean
 }
 
 export const Dialog = ({
@@ -27,7 +26,6 @@ export const Dialog = ({
   icon,
   hideIcon = false,
   extraClassNames,
-  dangerouslyBypassFocusLock,
 }: DialogProps): JSX.Element => {
   const titleId = useId()
 
@@ -37,7 +35,6 @@ export const Dialog = ({
       hasCloseButton
       labelledBy={titleId}
       onDismiss={onCancel}
-      dangerouslyBypassFocusLock={dangerouslyBypassFocusLock}
     >
       {!hideIcon && (
         <SvgIcon

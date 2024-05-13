@@ -324,8 +324,10 @@ describe('Homepage', () => {
           navState: {
             eligibilityDate: '2020-04-03T12:00:00+04:00',
           },
+          hasSeenProTutorials: true,
         }),
       })
+
       await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
       expect(
         screen.getByText(/Une nouvelle interface sera bientôt disponible/)
