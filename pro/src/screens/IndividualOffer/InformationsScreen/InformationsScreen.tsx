@@ -2,6 +2,8 @@ import { FormikProvider, useFormik } from 'formik'
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
+import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
 import {
   GetOffererNameResponseModel,
   VenueListItemResponseModel,
@@ -24,9 +26,6 @@ import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
-import { createIndividualOffer } from 'core/Offers/adapters/createIndividualOffer/createIndividualOffer'
-import { serializePatchOffer } from 'core/Offers/adapters/updateIndividualOffer/serializers'
-import { updateIndividualOffer } from 'core/Offers/adapters/updateIndividualOffer/updateIndividualOffer'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
@@ -41,6 +40,8 @@ import strokeMailIcon from 'icons/stroke-mail.svg'
 import ActionBar from '../ActionBar/ActionBar'
 import { useIndividualOfferImageUpload } from '../hooks/useIndividualOfferImageUpload'
 
+import { serializePatchOffer } from './serializePatchOffer'
+import { serializePostOffer } from './serializePostOffer'
 import {
   filterCategories,
   getCategoryStatusFromOfferSubtype,
@@ -137,65 +138,70 @@ export const InformationsScreen = ({
     }
 
     // Submit
-    const { isOk, payload } = !offer
-      ? await createIndividualOffer(formValues)
-      : await updateIndividualOffer({
-          serializedOffer: serializePatchOffer({
-            offer,
-            formValues,
-            shouldSendMail: sendWithdrawalMail,
-            isTiteliveMusicGenreEnabled,
-          }),
-          offerId: offer.id,
-        })
+    try {
+      const response = !offer
+        ? await api.postOffer(serializePostOffer(formValues))
+        : await api.patchOffer(
+            offer.id,
+            serializePatchOffer({
+              offer,
+              formValues,
+              shouldSendMail: sendWithdrawalMail,
+              isTiteliveMusicGenreEnabled,
+            })
+          )
 
-    if (!isOk) {
-      formik.setErrors(payload.errors)
+      const receivedOfferId = response.id
+      await handleImageOnSubmit(receivedOfferId)
+
+      // replace url to fix back button
+      navigate(
+        getIndividualOfferUrl({
+          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          offerId: receivedOfferId,
+          mode,
+        }),
+        { replace: true }
+      )
+      const nextStep =
+        mode === OFFER_WIZARD_MODE.EDITION
+          ? OFFER_WIZARD_STEP_IDS.SUMMARY
+          : isEvent
+            ? OFFER_WIZARD_STEP_IDS.TARIFS
+            : OFFER_WIZARD_STEP_IDS.STOCKS
+
+      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+        from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+        to: nextStep,
+        used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+        isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+        isDraft: mode === OFFER_WIZARD_MODE.CREATION,
+        offerId: receivedOfferId,
+        subcategoryId: formik.values.subcategoryId,
+      })
+
+      navigate(
+        getIndividualOfferUrl({
+          offerId: receivedOfferId,
+          step: nextStep,
+          mode:
+            mode === OFFER_WIZARD_MODE.EDITION
+              ? OFFER_WIZARD_MODE.READ_ONLY
+              : mode,
+        })
+      )
+    } catch (error) {
+      if (!isErrorAPIError(error)) {
+        return
+      }
+      formik.setErrors(
+        serializeApiErrors(error.body, {
+          venue: 'venueId',
+        })
+      )
       // This is used from scroll to error
       formik.setStatus('apiError')
-      return
     }
-
-    const receivedOfferId = payload.id
-    await handleImageOnSubmit(receivedOfferId)
-
-    // replace url to fix back button
-    navigate(
-      getIndividualOfferUrl({
-        step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-        offerId: receivedOfferId,
-        mode,
-      }),
-      { replace: true }
-    )
-
-    const nextStep =
-      mode === OFFER_WIZARD_MODE.EDITION
-        ? OFFER_WIZARD_STEP_IDS.SUMMARY
-        : isEvent
-          ? OFFER_WIZARD_STEP_IDS.TARIFS
-          : OFFER_WIZARD_STEP_IDS.STOCKS
-
-    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-      from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-      to: nextStep,
-      used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-      isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-      isDraft: mode === OFFER_WIZARD_MODE.CREATION,
-      offerId: receivedOfferId,
-      subcategoryId: formik.values.subcategoryId,
-    })
-
-    navigate(
-      getIndividualOfferUrl({
-        offerId: receivedOfferId,
-        step: nextStep,
-        mode:
-          mode === OFFER_WIZARD_MODE.EDITION
-            ? OFFER_WIZARD_MODE.READ_ONLY
-            : mode,
-      })
-    )
 
     if (mode === OFFER_WIZARD_MODE.EDITION) {
       notify.success(PATCH_SUCCESS_MESSAGE)
