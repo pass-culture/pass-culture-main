@@ -3,22 +3,24 @@
 @use "styles/variables/_size.scss" as size;
 
 .dialog-box-overlay {
+  background-color: rgb(0 0 0 / 33%);
   display: grid;
   align-items: center;
   justify-content: center;
   z-index: zIndex.$modal-z-index;
-
-  [data-reach-dialog-content] {
-    width: initial;
-    margin: rem.torem(32px) auto;
-    padding: rem.torem(16px);
-  }
+  position: fixed;
+  width: 100vw;
+  inset: 0;
+  overflow: auto;
 }
 
 .dialog-box-content {
+  background-color: var(--color-white);
   border-radius: rem.torem(10px);
   position: relative;
-  width: auto;
+  width: initial;
+  margin: rem.torem(32px) auto;
+  padding: rem.torem(16px);
 }
 
 .dialog-box-close-container {
@@ -49,10 +51,8 @@
 }
 
 @media (min-width: size.$mobile) {
-  .dialog-box-overlay {
-    [data-reach-dialog-content] {
-      padding: size.$dialog-box-padding;
-    }
+  .dialog-box-content {
+    padding: size.$dialog-box-padding;
   }
 
   .dialog-box-close-container {

@@ -280,8 +280,6 @@ export const NewRequestFormDialog = ({
       onCancel={closeRequestFormDialog}
       title=""
       hideIcon
-      //  TODO : remove the focus lock bypass when the adage offer is not opened in a new window anymore
-      dangerouslyBypassFocusLock
     >
       <span className={styles['form-title']}>
         Vous souhaitez contacter ce partenaire ?

@@ -1,6 +1,4 @@
-import '@reach/dialog/styles.css'
-
-import { DialogContent, DialogOverlay } from '@reach/dialog'
+import * as Dialog from '@radix-ui/react-dialog'
 import cn from 'classnames'
 import React, { FunctionComponent } from 'react'
 
@@ -15,7 +13,6 @@ interface DialogProps {
   onDismiss?: () => void
   children?: React.ReactNode
   fullContentWidth?: boolean
-  dangerouslyBypassFocusLock?: boolean
 }
 
 const DialogBox: FunctionComponent<DialogProps> = ({
@@ -26,33 +23,35 @@ const DialogBox: FunctionComponent<DialogProps> = ({
   labelledBy,
   onDismiss,
   fullContentWidth,
-  dangerouslyBypassFocusLock = false,
 }) => (
-  <DialogOverlay
-    className={styles['dialog-box-overlay']}
-    onDismiss={onDismiss}
-    //  The focus lock can be bypassed here to avoid a bug on firefox with the react-focus-lock library used by reach/dialog
-    //  https://github.com/reach/reach-ui/issues/615 https://github.com/reach/reach-ui/issues/536
-    //  When a new page is opened within an iframe on firefox and the focus is not reset, the focus lock prevents any
-    //  input within the dialog to be focused with a mouse click
-    dangerouslyBypassFocusLock={dangerouslyBypassFocusLock}
+  <Dialog.Root
+    defaultOpen
+    onOpenChange={(open) => {
+      if (!open && onDismiss) {
+        onDismiss()
+      }
+    }}
   >
-    <DialogContent
-      aria-labelledby={labelledBy}
-      className={cn(styles['dialog-box-content'], {
-        [styles['dialog-box-full-content-width']]: fullContentWidth,
-      })}
-    >
-      {hasCloseButton && (
-        <div className={styles['dialog-box-close-container']}>
-          <CloseButton
-            onCloseClick={onDismiss}
-            className={closeButtonClassName}
-          />
-        </div>
-      )}
-      <section className={extraClassNames}>{children}</section>
-    </DialogContent>
-  </DialogOverlay>
+    <Dialog.Portal>
+      <Dialog.Overlay className={styles['dialog-box-overlay']}>
+        <Dialog.Content
+          aria-labelledby={labelledBy}
+          className={cn(styles['dialog-box-content'], {
+            [styles['dialog-box-full-content-width']]: fullContentWidth,
+          })}
+        >
+          {hasCloseButton && (
+            <div className={styles['dialog-box-close-container']}>
+              <CloseButton
+                onCloseClick={onDismiss}
+                className={closeButtonClassName}
+              />
+            </div>
+          )}
+          <section className={extraClassNames}>{children}</section>
+        </Dialog.Content>
+      </Dialog.Overlay>
+    </Dialog.Portal>
+  </Dialog.Root>
 )
 export default DialogBox
