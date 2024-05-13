@@ -6,7 +6,7 @@ import getVenuesAdapter from 'core/Bookings/adapters/getVenuesAdapter'
 import { Audience } from 'core/shared/types'
 import { BookingsScreen } from 'screens/Bookings/Bookings'
 
-import { getFilteredCollectiveBookingsRecapAdapter } from './adapters/getFilteredCollectiveBookingsRecapAdapter'
+import { getFilteredCollectiveBookingsAdapter } from './adapters/getFilteredCollectiveBookingsAdapter'
 import { getUserHasCollectiveBookingsAdapter } from './adapters/getUserHasCollectiveBookingsAdapter'
 
 const CollectiveBookings = (): JSX.Element => {
@@ -16,9 +16,7 @@ const CollectiveBookings = (): JSX.Element => {
     <AppLayout>
       <BookingsScreen
         audience={Audience.COLLECTIVE}
-        getFilteredBookingsRecapAdapter={
-          getFilteredCollectiveBookingsRecapAdapter
-        }
+        getFilteredBookingsAdapter={getFilteredCollectiveBookingsAdapter}
         getUserHasBookingsAdapter={getUserHasCollectiveBookingsAdapter}
         getVenuesAdapter={getVenuesAdapter}
         locationState={location.state}
