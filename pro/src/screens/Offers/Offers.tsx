@@ -45,7 +45,6 @@ export interface OffersProps {
   isLoading: boolean
   offerer: GetOffererResponseModel | null
   offers: CollectiveOfferResponseModel[] | ListOffersOfferResponseModel[]
-  setOfferer: (offerer: GetOffererResponseModel | null) => void
   initialSearchFilters: SearchFiltersParams
   audience: Audience
   redirectWithUrlFilters: (
@@ -65,7 +64,6 @@ export const Offers = ({
   isLoading,
   offerer,
   offers,
-  setOfferer,
   initialSearchFilters,
   audience,
   redirectWithUrlFilters,
@@ -134,7 +132,6 @@ export const Offers = ({
   }, [])
 
   const resetFilters = () => {
-    setOfferer(null)
     setSearchFilters(DEFAULT_SEARCH_FILTERS)
     applyUrlFiltersAndRedirect({
       ...DEFAULT_SEARCH_FILTERS,
@@ -155,7 +152,6 @@ export const Offers = ({
   }
 
   const removeOfferer = () => {
-    setOfferer(null)
     const updatedFilters = {
       ...searchFilters,
       offererId: DEFAULT_SEARCH_FILTERS.offererId,

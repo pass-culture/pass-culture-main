@@ -3,9 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import { GetOffererResponseModel } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
-import { getOffererAdapter } from 'core/Offers/adapters/getOffererAdapter'
+import { GET_OFFERER_QUERY_KEY } from 'config/swrQueryKeys'
 import { DEFAULT_PAGE, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
 import { SearchFiltersParams } from 'core/Offers/types'
@@ -31,32 +30,20 @@ export const OffersRoute = (): JSX.Element => {
   const navigate = useNavigate()
   const { currentUser } = useCurrentUser()
 
-  const [offerer, setOfferer] = useState<GetOffererResponseModel | null>(null)
   const [initialSearchFilters, setInitialSearchFilters] =
     useState<SearchFiltersParams | null>(null)
   const [venues, setVenues] = useState<SelectOption[]>([])
   const [categories, setCategories] = useState<SelectOption[]>([])
 
-  useEffect(() => {
-    const loadOfferer = async () => {
-      if (
-        urlSearchFilters.offererId &&
-        urlSearchFilters.offererId !== DEFAULT_SEARCH_FILTERS.offererId
-      ) {
-        const { isOk, message, payload } = await getOffererAdapter(
-          urlSearchFilters.offererId
-        )
-
-        if (!isOk) {
-          return notify.error(message)
-        }
-
-        setOfferer(payload)
-      }
-    }
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    loadOfferer()
-  }, [urlSearchFilters.offererId, notify])
+  const offererQuery = useSWR(
+    [GET_OFFERER_QUERY_KEY, urlSearchFilters.offererId],
+    ([, offererIdParam]) =>
+      urlSearchFilters.offererId === DEFAULT_SEARCH_FILTERS.offererId
+        ? null
+        : api.getOfferer(Number(offererIdParam)),
+    { fallbackData: null }
+  )
+  const offerer = offererQuery.data
 
   useEffect(() => {
     const loadCategories = async () => {
@@ -147,7 +134,9 @@ export const OffersRoute = (): JSX.Element => {
 
   return (
     <AppLayout>
-      {!initialSearchFilters || offersQuery.isLoading ? (
+      {!initialSearchFilters ||
+      offersQuery.isLoading ||
+      offererQuery.isLoading ? (
         <Spinner />
       ) : (
         <Offers
@@ -160,7 +149,6 @@ export const OffersRoute = (): JSX.Element => {
           offerer={offerer}
           offers={offersQuery.data}
           redirectWithUrlFilters={redirectWithUrlFilters}
-          setOfferer={setOfferer}
           urlSearchFilters={urlSearchFilters}
           venues={venues}
         />
