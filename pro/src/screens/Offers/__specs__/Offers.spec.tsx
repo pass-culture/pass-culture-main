@@ -108,7 +108,6 @@ describe('screen Offers', () => {
       isLoading: false,
       offerer: { ...defaultGetOffererResponseModel },
       offers: offersRecap,
-      setOfferer: vi.fn(),
       urlSearchFilters: DEFAULT_SEARCH_FILTERS,
       initialSearchFilters: DEFAULT_SEARCH_FILTERS,
       audience: Audience.INDIVIDUAL,
