@@ -1,8 +1,9 @@
 import { useFormikContext } from 'formik'
 import React, { useEffect, useState } from 'react'
 
-import { getAdressDataAdapter } from 'components/Address/adapter'
+import { apiAdresse } from 'apiClient/adresse/apiAdresse'
 import { handleAddressSelect } from 'components/Address/Address'
+import { serializeAdressData } from 'components/Address/serializer'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import getSiretData from 'core/Venue/adapters/getSiretDataAdapter'
 import { humanizeSiret, unhumanizeSiret } from 'core/Venue/utils'
@@ -84,17 +85,18 @@ export const SiretOrCommentFields = ({
       )
     await setFieldValue('name', response.payload.values?.name)
     // getSuggestions pour récupérer les adresses
-    const responseAdressDataAdapter = await getAdressDataAdapter({
-      search: address,
-    })
-    /* istanbul ignore next: DEBT, TO FIX */
-    if (!responseAdressDataAdapter.isOk) {
+    try {
+      const adressSuggestions = await apiAdresse.getDataFromAddress(address)
+      await setFieldValue('search-addressAutocomplete', address)
+      await setFieldValue('addressAutocomplete', address)
+
+      handleAddressSelect(
+        setFieldValue,
+        serializeAdressData(adressSuggestions)[0]
+      )
+    } catch {
       return
     }
-    await setFieldValue('search-addressAutocomplete', address)
-    await setFieldValue('addressAutocomplete', address)
-
-    handleAddressSelect(setFieldValue, responseAdressDataAdapter.payload[0])
   }
   const [sideComponent, setSideComponent] = useState(<></>)
   useEffect(() => {
