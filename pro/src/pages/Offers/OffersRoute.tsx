@@ -4,7 +4,10 @@ import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import { AppLayout } from 'app/AppLayout'
-import { GET_OFFERER_QUERY_KEY } from 'config/swrQueryKeys'
+import {
+  GET_CATEGORIES_QUERY_KEY,
+  GET_OFFERER_QUERY_KEY,
+} from 'config/swrQueryKeys'
 import { DEFAULT_PAGE, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
 import { SearchFiltersParams } from 'core/Offers/types'
@@ -33,7 +36,6 @@ export const OffersRoute = (): JSX.Element => {
   const [initialSearchFilters, setInitialSearchFilters] =
     useState<SearchFiltersParams | null>(null)
   const [venues, setVenues] = useState<SelectOption[]>([])
-  const [categories, setCategories] = useState<SelectOption[]>([])
 
   const offererQuery = useSWR(
     [GET_OFFERER_QUERY_KEY, urlSearchFilters.offererId],
@@ -45,22 +47,22 @@ export const OffersRoute = (): JSX.Element => {
   )
   const offerer = offererQuery.data
 
-  useEffect(() => {
-    const loadCategories = async () => {
-      const categoriesAndSubcategories = await api.getCategories()
-      const categoriesOptions = categoriesAndSubcategories.categories
-        .filter((category) => category.isSelectable)
-        .map((category) => ({
-          value: category.id,
-          label: category.proLabel,
-        }))
-
-      setCategories(sortByLabel(categoriesOptions))
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    loadCategories()
-  }, [])
+  const categoriesQuery = useSWR(
+    [GET_CATEGORIES_QUERY_KEY],
+    async () => {
+      const response = await api.getCategories()
+      return response.categories
+    },
+    { fallbackData: [] }
+  )
+  const categoriesOptions = sortByLabel(
+    categoriesQuery.data
+      .filter((category) => category.isSelectable)
+      .map((category) => ({
+        value: category.id,
+        label: category.proLabel,
+      }))
+  )
 
   const redirectWithUrlFilters = (
     filters: SearchFiltersParams & { audience?: Audience }
@@ -141,7 +143,7 @@ export const OffersRoute = (): JSX.Element => {
       ) : (
         <Offers
           audience={Audience.INDIVIDUAL}
-          categories={categories}
+          categories={categoriesOptions}
           currentPageNumber={currentPageNumber}
           currentUser={currentUser}
           initialSearchFilters={initialSearchFilters}
