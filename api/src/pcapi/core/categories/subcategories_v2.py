@@ -83,6 +83,79 @@ class ShowGenre(SearchNode):
         return self.label
 
 
+def book_nodes() -> list[BookGenre]:
+    nodes = []
+    for book_type in book_types:
+        parent = BookGenre(
+            label=book_type.label,
+            name=book_type.label,
+            gtls=book_type.gtls,
+            parent=NativeCategory_LIVRES_PAPIER,
+            position=book_type.position,
+        )
+        nodes.append(parent)
+        for book_subtype in book_type.children:
+            child = BookGenre(
+                label=book_subtype.label,
+                gtls=book_subtype.gtls,
+                parent=parent,
+                position=book_subtype.position,
+            )
+            nodes.append(child)
+
+    return nodes
+
+
+def movie_nodes() -> list[MovieGenre]:
+    return [
+        MovieGenre(
+            label=movie_type.label,
+            name=movie_type.name,
+            parent=NativeCategory_SEANCES_DE_CINEMA,
+        )
+        for movie_type in movie_types
+    ]
+
+
+def music_nodes() -> list[MovieGenre]:
+    nodes = []
+    for music_type in music_types:
+        parent = MusicGenre(
+            label=music_type.label,
+            parent=[
+                NativeCategory_CD,
+                NativeCategory_CONCERTS_EN_LIGNE,
+                NativeCategory_CONCERTS_EVENEMENTS,
+                NativeCategory_FESTIVALS,
+                NativeCategory_MUSIQUE_EN_LIGNE,
+                NativeCategory_VINYLES,
+            ],
+        )
+        nodes.append(parent)
+        for music_subtype in music_type.children:
+            child = MusicGenre(
+                label=music_subtype.label,
+                parent=parent,
+            )
+            nodes.append(child)
+
+    return nodes
+
+
+def show_nodes() -> list[ShowGenre]:
+    return [
+        ShowGenre(
+            label=show_type.label,
+            parent=[
+                NativeCategory_ABONNEMENTS_SPECTACLE,
+                NativeCategory_SPECTACLES_ENREGISTRES,
+                NativeCategory_SPECTACLES_REPRESENTATIONS,
+            ],
+        )
+        for show_type in show_types
+    ]
+
+
 SearchGroup_ARTS_LOISIRS_CREATIFS = SearchGroup(
     name="ARTS_LOISIRS_CREATIFS",
     label="Arts & loisirs créatifs",
@@ -381,9 +454,12 @@ NativeCategory_VISITES_CULTURELLES_EN_LIGNE = NativeCategory(
     parent=SearchGroup_MUSEES_VISITES_CULTURELLES,
 )
 
-
 SEARCH_GROUPS = SearchGroup.instances
 NATIVE_CATEGORIES = NativeCategory.instances
+BOOK_GENRES = book_nodes()
+MOVIE_GENRES = movie_nodes()
+MUSIC_GENRES = music_nodes()
+SHOW_GENRES = show_nodes()
 
 
 class OnlineOfflinePlatformChoices(Enum):
@@ -450,75 +526,6 @@ class GenreType(Enum):
         }[
             self.name
         ]  # type: ignore [return-value]
-
-    def book_nodes(self) -> list[BookGenre]:
-        nodes = []
-        for book_type in book_types:
-            parent = BookGenre(
-                label=book_type.label,
-                name=book_type.label,
-                gtls=book_type.gtls,
-                parent=NativeCategory_LIVRES_PAPIER,
-                position=book_type.position,
-            )
-            nodes.append(parent)
-            for book_subtype in book_type.children:
-                child = BookGenre(
-                    label=book_subtype.label,
-                    gtls=book_subtype.gtls,
-                    parent=parent,
-                    position=book_subtype.position,
-                )
-                nodes.append(child)
-
-        return nodes
-
-    def movie_nodes(self) -> list[MovieGenre]:
-        return [
-            MovieGenre(
-                label=movie_type.label,
-                name=movie_type.name,
-                parent=NativeCategory_SEANCES_DE_CINEMA,
-            )
-            for movie_type in movie_types
-        ]
-
-    def music_nodes(self) -> list[MovieGenre]:
-        nodes = []
-        for music_type in music_types:
-            parent = MusicGenre(
-                label=music_type.label,
-                parent=[
-                    NativeCategory_CD,
-                    NativeCategory_CONCERTS_EN_LIGNE,
-                    NativeCategory_CONCERTS_EVENEMENTS,
-                    NativeCategory_FESTIVALS,
-                    NativeCategory_MUSIQUE_EN_LIGNE,
-                    NativeCategory_VINYLES,
-                ],
-            )
-            nodes.append(parent)
-            for music_subtype in music_type.children:
-                child = MusicGenre(
-                    label=music_subtype.label,
-                    parent=parent,
-                )
-                nodes.append(child)
-
-        return nodes
-
-    def show_nodes(self) -> list[ShowGenre]:
-        return [
-            ShowGenre(
-                label=show_type.label,
-                parent=[
-                    NativeCategory_ABONNEMENTS_SPECTACLE,
-                    NativeCategory_SPECTACLES_ENREGISTRES,
-                    NativeCategory_SPECTACLES_REPRESENTATIONS,
-                ],
-            )
-            for show_type in show_types
-        ]
 
     def book_values(self) -> list[GenreTypeContent]:
         return [GenreTypeContent(name=value, value=value) for value in sorted(BOOK_MACRO_SECTIONS)]
