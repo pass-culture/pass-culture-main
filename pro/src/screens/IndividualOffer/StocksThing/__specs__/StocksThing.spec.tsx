@@ -301,16 +301,12 @@ describe('screens:StocksThing', () => {
       }
       await renderStockThingScreen([], props, contextValue)
 
-      await userEvent.type(screen.getByLabelText('Prix *'), '20')
-
       await userEvent.click(
         screen.getByTestId('stock-form-actions-button-open')
       )
 
-      // userEvent.dblClick to fix @reach/menu-button update, to delete after refactor
-      await userEvent.dblClick(
-        screen.getByText("Ajouter des codes d'activation")
-      )
+      await userEvent.click(screen.getByTitle("Ajouter des codes d'activation"))
+
       const uploadButton = screen.getByText(
         'Importer un fichier .csv depuis l’ordinateur'
       )
