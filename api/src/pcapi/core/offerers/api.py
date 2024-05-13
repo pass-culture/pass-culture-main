@@ -93,7 +93,7 @@ def create_digital_venue(offerer: models.Offerer) -> models.Venue:
 def update_venue(
     venue: models.Venue,
     author: users_models.User,
-    opening_days: list[serialize_base.OpeningHoursModel] | None = None,
+    opening_hours: list[serialize_base.OpeningHoursModel] | None = None,
     contact_data: serialize_base.VenueContactModel | None = None,
     criteria: list[criteria_models.Criterion] | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
     external_accessibility_url: str | None | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
@@ -117,21 +117,20 @@ def update_venue(
         venue_snapshot.trace_update(contact_data.dict(), target=target, field_name_template="contact.{}")
         upsert_venue_contact(venue, contact_data)
 
-    if opening_days:
-        for opening_hours_data in opening_days:
-            weekday = models.Weekday(opening_hours_data.weekday)
-            target = get_venue_opening_hours_by_weekday(venue, weekday)
-            target.timespan = date_utils.numranges_to_readble_str(target.timespan)
-            opening_hours_readable = {
-                "weekday": opening_hours_data.weekday,
-                "timespan": date_utils.numranges_to_readble_str(opening_hours_data.timespan),
-            }
-            venue_snapshot.trace_update(
-                opening_hours_readable,
-                target=target,
-                field_name_template=f"openingHours.{opening_hours_data.weekday}.{{}}",
-            )
-            upsert_venue_opening_hours(venue, opening_hours_data)
+    for daily_opening_hours in opening_hours or []:
+        weekday = models.Weekday(daily_opening_hours.weekday)
+        target = get_venue_opening_hours_by_weekday(venue, weekday)
+        target.timespan = date_utils.numranges_to_readble_str(target.timespan)
+        opening_hours_readable = {
+            "weekday": daily_opening_hours.weekday,
+            "timespan": date_utils.numranges_to_readble_str(daily_opening_hours.timespan),
+        }
+        venue_snapshot.trace_update(
+            opening_hours_readable,
+            target=target,
+            field_name_template=f"openingHours.{daily_opening_hours.weekday}.{{}}",
+        )
+        upsert_venue_opening_hours(venue, daily_opening_hours)
 
     if external_accessibility_url is not offerers_constants.UNCHANGED:
         external_accessibility_id = external_accessibility_url.split("/")[-2] if external_accessibility_url else None
@@ -258,25 +257,23 @@ def upsert_venue_contact(venue: models.Venue, contact_data: serialize_base.Venue
     return venue
 
 
-def upsert_venue_opening_hours(
-    venue: models.Venue, opening_hours_data: serialize_base.OpeningHoursModel
-) -> models.Venue:
+def upsert_venue_opening_hours(venue: models.Venue, opening_hours: serialize_base.OpeningHoursModel) -> models.Venue:
     """
     Create and attach OpeningHours for a given weekday to a Venue if it has none.
     Update (replace) an existing OpeningHours list otherwise.
     """
-    weekday = models.Weekday(opening_hours_data.weekday)
+    weekday = models.Weekday(opening_hours.weekday)
     venue_opening_hours = get_venue_opening_hours_by_weekday(venue, weekday)
 
     modifications = {
         field: value
-        for field, value in opening_hours_data.dict().items()
+        for field, value in opening_hours.dict().items()
         if venue_opening_hours.field_exists_and_has_changed(field, value)
     }
     if not modifications:
         return venue
     venue_opening_hours.venue = venue
-    venue_opening_hours.timespan = opening_hours_data.timespan
+    venue_opening_hours.timespan = opening_hours.timespan
     repository.save(venue_opening_hours)
     return venue
 

@@ -731,20 +731,20 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
         return self.registration.target if self.registration else None
 
     @property
-    def opening_days(self) -> dict | None:
+    def opening_hours(self) -> dict | None:
         if not self.openingHours:
             return None
 
-        opening_days = {}
-        for opening_hours in self.openingHours:
-            if not opening_hours.timespan:
+        opening_hours = {}
+        for daily_opening_hours in self.openingHours:
+            if not daily_opening_hours.timespan:
                 timespan_list = None
             else:
-                timespan_str = numranges_to_timespan_str(sorted(opening_hours.timespan, key=lambda x: x.lower))
+                timespan_str = numranges_to_timespan_str(sorted(daily_opening_hours.timespan, key=lambda x: x.lower))
                 timespan_list = [{"open": start, "close": end} for start, end in timespan_str]
-            opening_days[opening_hours.weekday.value] = timespan_list
+            opening_hours[daily_opening_hours.weekday.value] = timespan_list
 
-        return opening_days
+        return opening_hours
 
     @property
     def external_accessibility_id(self) -> str | None:

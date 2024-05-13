@@ -116,7 +116,7 @@ class VenueWithdrawalDetails(pydantic_v1.ConstrainedStr):
 class VenueResponseGetterDict(pydantic_v1.utils.GetterDict):
     def get(self, key: str, default: typing.Any = None) -> typing.Any:
         if key == "openingHours":
-            return self._obj.opening_days
+            return self._obj.opening_hours
         if key == "externalAccessibilityData":
             if not self._obj.accessibilityProvider:
                 return None
