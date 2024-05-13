@@ -17,6 +17,7 @@ export const GET_EDUCATIONAL_INSTITUTION_BUDGET_QUERY_KEY =
 export const GET_EVENT_PRICE_CATEGORIES_AND_SCHEDULES_BY_DATE_QUERY_KEY =
   'getPriceCategoriesAndSchedulesByDate'
 export const GET_FEATURES_QUERY_KEY = 'getFeatures'
+export const GET_HAS_BOOKINGS_QUERY_KEY = 'getHasBookings'
 export const GET_LOCAL_OFFERERS_PLAYLIST_QUERY_KEY = 'getLocalOfferersPlaylist'
 export const GET_MUSIC_TYPES_QUERY_KEY = 'getMusicTypes'
 export const GET_OFFERER_QUERY_KEY = 'getOfferer'

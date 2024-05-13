@@ -8,7 +8,10 @@ import {
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
 import NoData from 'components/NoData'
-import { GET_BOOKINGS_QUERY_KEY } from 'config/swrQueryKeys'
+import {
+  GET_BOOKINGS_QUERY_KEY,
+  GET_HAS_BOOKINGS_QUERY_KEY,
+} from 'config/swrQueryKeys'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
 import { GetVenuesAdapter, PreFiltersParams } from 'core/Bookings/types'
 import { Events } from 'core/FirebaseEvents/constants'
@@ -63,7 +66,6 @@ export const BookingsScreen = <
   const [appliedPreFilters, setAppliedPreFilters] =
     useState<PreFiltersParams>(DEFAULT_PRE_FILTERS)
   const [wereBookingsRequested, setWereBookingsRequested] = useState(false)
-  const [hasBooking, setHasBooking] = useState(true)
   const [isLocalLoading, setIsLocalLoading] = useState(false)
   const [venues, setVenues] = useState<SelectOption[]>([])
   const [urlParams, setUrlParams] =
@@ -92,6 +94,12 @@ export const BookingsScreen = <
     { fallbackData: [] }
   )
 
+  const hasBookingsQuery = useSWR(
+    user.isAdmin ? null : [GET_HAS_BOOKINGS_QUERY_KEY],
+    () => getUserHasBookingsAdapter(),
+    { fallbackData: true }
+  )
+
   const resetPreFilters = () => {
     setWereBookingsRequested(false)
     setAppliedPreFilters(DEFAULT_PRE_FILTERS)
@@ -108,18 +116,6 @@ export const BookingsScreen = <
   const applyPreFilters = (filters: PreFiltersParams) => {
     setAppliedPreFilters(filters)
   }
-
-  useEffect(() => {
-    const loadHasBookings = async () => {
-      if (!user.isAdmin) {
-        const hasBookings = await getUserHasBookingsAdapter()
-        setHasBooking(hasBookings)
-      }
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    loadHasBookings()
-  }, [user.isAdmin, setHasBooking, getUserHasBookingsAdapter])
 
   const location = useLocation()
   const navigate = useNavigate()
@@ -242,7 +238,7 @@ export const BookingsScreen = <
         applyPreFilters={applyPreFilters}
         audience={audience}
         hasResult={bookingsQuery.data.length > 0}
-        isFiltersDisabled={!hasBooking}
+        isFiltersDisabled={!hasBookingsQuery.data}
         isLocalLoading={isLocalLoading}
         isTableLoading={bookingsQuery.isLoading}
         resetPreFilters={resetPreFilters}
@@ -269,7 +265,7 @@ export const BookingsScreen = <
         ) : (
           <NoBookingsForPreFiltersMessage resetPreFilters={resetPreFilters} />
         )
-      ) : hasBooking ? (
+      ) : hasBookingsQuery.data ? (
         <ChoosePreFiltersMessage />
       ) : (
         <NoData audience={audience} page="bookings" />
