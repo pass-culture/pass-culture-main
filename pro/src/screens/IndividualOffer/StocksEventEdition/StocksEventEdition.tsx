@@ -814,10 +814,7 @@ const StocksEventEdition = ({
 
                             {actions.length > 0 && (
                               <td className={styles['stock-actions']}>
-                                <StockFormActions
-                                  actions={actions}
-                                  disabled={false}
-                                />
+                                <StockFormActions actions={actions} />
                               </td>
                             )}
                           </tr>

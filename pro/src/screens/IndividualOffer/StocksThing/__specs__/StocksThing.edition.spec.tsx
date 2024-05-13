@@ -206,9 +206,8 @@ describe('screens:StocksThing', () => {
     vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
     renderStockThingScreen()
     await screen.findByTestId('stock-thing-form')
-
-    // userEvent.dblClick to fix @reach/menu-button update, to delete after refactor
-    await userEvent.dblClick(await screen.findByText('Supprimer le stock'))
+    await userEvent.click(screen.getByTestId('stock-form-actions-button-open'))
+    await userEvent.click(await screen.findByText('Supprimer le stock'))
     expect(
       screen.getByText('Voulez-vous supprimer ce stock ?')
     ).toBeInTheDocument()
@@ -303,11 +302,15 @@ describe('screens:StocksThing', () => {
 
   it('should not display any message when user delete empty stock', async () => {
     vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
+    vi.spyOn(api, 'getStocks').mockResolvedValue({
+      stocks: [],
+      hasStocks: false,
+      stockCount: 0,
+    })
     renderStockThingScreen()
     await screen.findByTestId('stock-thing-form')
-    await userEvent.click(
-      (await screen.findAllByTitle('Supprimer le stock'))[1]
-    )
+    await userEvent.click(screen.getByTestId('stock-form-actions-button-open'))
+    await userEvent.click(await screen.findByTitle('Supprimer le stock'))
     expect(
       screen.queryByText('Voulez-vous supprimer ce stock ?')
     ).not.toBeInTheDocument()
