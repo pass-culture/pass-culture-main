@@ -24,7 +24,7 @@ import { Offerer } from '../Offerer'
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
 
-vi.spyOn(sirenApiValidate, 'default').mockResolvedValue(undefined)
+vi.spyOn(sirenApiValidate, 'default').mockResolvedValue(null)
 
 // Mock l’appel à https://api-adresse.data.gouv.fr/search/?limit=${limit}&q=${address}
 // Appel fait dans apiAdresse.getDataFromAddress

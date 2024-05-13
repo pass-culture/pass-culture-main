@@ -4,13 +4,14 @@ import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
+import { isError } from 'apiClient/helpers'
 import { CreateOffererQueryModel } from 'apiClient/v1'
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
 import { Offerer, useSignupJourneyContext } from 'context/SignupJourneyContext'
 import { Events } from 'core/FirebaseEvents/constants'
-import { getSirenDataAdapter } from 'core/Offerers/adapters/getSirenDataAdapter'
+import { getSirenData } from 'core/Offerers/getSirenData'
 import { getVenuesOfOffererFromSiretAdapter } from 'core/Venue/adapters/getVenuesOfOffererFromSiretAdapter/getVenuesOfOffererFromSiretAdapter'
 import { useAdapter } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -92,20 +93,22 @@ export const Offerers = (): JSX.Element => {
     /* istanbul ignore next: venuesOfOfferer will always be defined here or else,
      the user would have been redirected */
     try {
-      const response = await getSirenDataAdapter(
-        venuesOfOfferer?.offererSiren ?? ''
-      )
+      const response = await getSirenData(venuesOfOfferer?.offererSiren ?? '')
       const request: CreateOffererQueryModel = {
-        city: response.payload.values?.city ?? '',
+        city: response.values?.city ?? '',
         name: venuesOfOfferer?.offererName ?? '',
-        postalCode: response.payload.values?.postalCode ?? '',
+        postalCode: response.values?.postalCode ?? '',
         siren: venuesOfOfferer?.offererSiren ?? '',
       }
       await api.createOfferer(request)
       dispatch(updateUser({ ...currentUser, hasUserOfferer: true }))
       navigate('/parcours-inscription/structure/rattachement/confirmation')
     } catch (e) {
-      notify.error('Impossible de lier votre compte à cette structure.')
+      notify.error(
+        isError(e)
+          ? e.message
+          : 'Impossible de lier votre compte à cette structure.'
+      )
     }
   }
 

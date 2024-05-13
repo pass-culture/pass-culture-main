@@ -7,7 +7,7 @@ import { isErrorAPIError } from 'apiClient/helpers'
 import { CreateOffererQueryModel } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { getSirenDataAdapter } from 'core/Offerers/adapters/getSirenDataAdapter'
+import { getSirenData } from 'core/Offerers/getSirenData'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import fullBackIcon from 'icons/full-back.svg'
@@ -36,38 +36,43 @@ export const OffererCreation = (): JSX.Element => {
   const handleSubmit = async (formValues: OffererCreationFormValues) => {
     setIsSubmitting(true)
     try {
-      const response = await getSirenDataAdapter(formValues.siren)
+      const response = await getSirenData(formValues.siren)
 
-      if (!response.payload.values?.address) {
-        notification.error('Impossible de vérifier le SIREN saisi.')
+      if (!response.values?.address) {
         setIsSubmitting(false)
       } else {
-        const createdOfferer = await api.createOfferer({
-          ...response.payload.values,
-          siren: formValues.siren.replace(/\s/g, ''),
-        })
-        navigate(`/accueil?structure=${createdOfferer.id}`, { replace: true })
-      }
-    } catch (error) {
-      if (isErrorAPIError(error) && error.status === 400) {
-        if (error.body.siren) {
-          notification.error('Le code SIREN saisi n’est pas valide.')
-        } else if (error.body.user_offerer) {
-          notification.error('Vous êtes déjà rattaché à cette structure.')
+        try {
+          const createdOfferer = await api.createOfferer({
+            ...response.values,
+            siren: formValues.siren.replace(/\s/g, ''),
+          })
+          navigate(`/accueil?structure=${createdOfferer.id}`, { replace: true })
+        } catch (error) {
+          if (isErrorAPIError(error) && error.status === 400) {
+            if (error.body.siren) {
+              notification.error('Le code SIREN saisi n’est pas valide.')
+            } else if (error.body.user_offerer) {
+              notification.error('Vous êtes déjà rattaché à cette structure.')
+            }
+          } else {
+            notification.error(
+              'Une erreur est survenue. Merci de réessayer plus tard.'
+            )
+          }
+          setIsSubmitting(false)
         }
-      } else {
-        notification.error(
-          'Une erreur est survenue. Merci de réessayer plus tard.'
-        )
       }
-      setIsSubmitting(false)
+    } catch {
+      notification.error('Impossible de vérifier le SIREN saisi.')
     }
   }
 
   const getSirenAPIData = async (siren: string) => {
-    const response = await getSirenDataAdapter(siren)
-    if (response.isOk) {
-      setOfferer(response.payload.values)
+    try {
+      const response = await getSirenData(siren)
+      setOfferer(response.values)
+    } catch {
+      // Do nothing
     }
   }
 
