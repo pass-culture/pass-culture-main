@@ -2,6 +2,7 @@ import { FormikProvider, useFormik } from 'formik'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { isError } from 'apiClient/helpers'
 import { BannerInvisibleSiren } from 'components/Banner/BannerInvisibleSiren'
 import Callout from 'components/Callout/Callout'
 import { FormLayout } from 'components/FormLayout/FormLayout'
@@ -9,9 +10,12 @@ import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayo
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
 import { useSignupJourneyContext } from 'context/SignupJourneyContext'
 import { Events } from 'core/FirebaseEvents/constants'
-import { FORM_ERROR_MESSAGE } from 'core/shared/constants'
-import getSiretData from 'core/Venue/adapters/getSiretDataAdapter'
+import {
+  FORM_ERROR_MESSAGE,
+  GET_DATA_ERROR_MESSAGE,
+} from 'core/shared/constants'
 import { getVenuesOfOffererFromSiretAdapter } from 'core/Venue/adapters/getVenuesOfOffererFromSiretAdapter/getVenuesOfOffererFromSiretAdapter'
+import getSiretData from 'core/Venue/getSiretData'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { MAYBE_APP_USER_APE_CODE } from 'pages/Signup/SignupContainer/constants'
@@ -47,45 +51,50 @@ export const Offerer = (): JSX.Element => {
     formValues: OffererFormValues
   ): Promise<void> => {
     const formattedSiret = formValues.siret.replaceAll(' ', '')
-    const response = await getSiretData(formattedSiret)
 
-    if (
-      !showIsAppUserDialog &&
-      response.isOk &&
-      response.payload.values?.apeCode &&
-      MAYBE_APP_USER_APE_CODE.includes(response.payload.values.apeCode)
-    ) {
-      setShowIsAppUserDialog(true)
+    try {
+      const response = await getSiretData(formattedSiret)
+
+      if (
+        !showIsAppUserDialog &&
+        response.values?.apeCode &&
+        MAYBE_APP_USER_APE_CODE.includes(response.values.apeCode)
+      ) {
+        setShowIsAppUserDialog(true)
+        return
+      }
+
+      if (showIsAppUserDialog) {
+        setShowIsAppUserDialog(false)
+      }
+
+      const siretResponse =
+        await getVenuesOfOffererFromSiretAdapter(formattedSiret)
+
+      if (!siretResponse.isOk || !response.values) {
+        notify.error('Une erreur est survenue')
+        return
+      }
+
+      setOfferer({
+        ...formValues,
+        name: response.values.name,
+        street: response.values.address,
+        city: response.values.city,
+        latitude: response.values.latitude,
+        longitude: response.values.longitude,
+        postalCode: response.values.postalCode,
+        hasVenueWithSiret:
+          siretResponse.payload.venues.find(
+            (venue) => venue.siret === formattedSiret
+          ) !== undefined,
+        legalCategoryCode: response.values.legalCategoryCode,
+        banId: response.values.banId,
+      })
+    } catch (error) {
+      notify.error(isError(error) ? error.message : GET_DATA_ERROR_MESSAGE)
       return
     }
-
-    if (showIsAppUserDialog) {
-      setShowIsAppUserDialog(false)
-    }
-
-    const siretResponse =
-      await getVenuesOfOffererFromSiretAdapter(formattedSiret)
-
-    if (!siretResponse.isOk || !response.payload.values) {
-      notify.error('Une erreur est survenue')
-      return
-    }
-
-    setOfferer({
-      ...formValues,
-      name: response.payload.values.name,
-      street: response.payload.values.address,
-      city: response.payload.values.city,
-      latitude: response.payload.values.latitude,
-      longitude: response.payload.values.longitude,
-      postalCode: response.payload.values.postalCode,
-      hasVenueWithSiret:
-        siretResponse.payload.venues.find(
-          (venue) => venue.siret === formattedSiret
-        ) !== undefined,
-      legalCategoryCode: response.payload.values.legalCategoryCode,
-      banId: response.payload.values.banId,
-    })
   }
 
   // Need to wait for offerer to be updated in the context to redirect user
