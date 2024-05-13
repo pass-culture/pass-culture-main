@@ -20,13 +20,11 @@ import getCollectiveBookingAdapter from './getCollectiveBookingAdapter'
 
 export interface CollectiveTableRowProps {
   booking: CollectiveBookingResponseModel
-  reloadBookings: () => void
   defaultOpenedBookingId: string
 }
 
 export const CollectiveTableRow = ({
   booking,
-  reloadBookings,
   defaultOpenedBookingId,
 }: CollectiveTableRowProps) => {
   const [bookingDetails, setBookingDetails] =
@@ -124,7 +122,6 @@ export const CollectiveTableRow = ({
               <CollectiveBookingDetails
                 bookingDetails={bookingDetails}
                 bookingRecap={booking}
-                reloadBookings={reloadBookings}
               />
             </td>
           )}
