@@ -19,12 +19,17 @@ from pcapi.domain.show_types import show_types
 
 @dataclass
 class SearchNode:
+    instances: list["SearchNode"] = []
+
     label: str
-    name: str
+    name: str | None = None
     gtls: list[str] | None = None
     parent: "SearchNode" | list["SearchNode"] | None = None
     position: int | None = None
     search_filter: str | None = None
+
+    def __post_init__(self) -> None:
+        self.instances.append(self)
 
     @property
     def id(self) -> str | None:
@@ -36,11 +41,7 @@ class SearchNode:
 
 
 class SearchGroup(SearchNode):
-    instances: list["SearchGroup"] = []
     search_filter: str = "SearchGroupv2"
-
-    def __post_init__(self) -> None:
-        self.instances.append(self)
 
     @property
     def search_value(self) -> str | None:
@@ -48,15 +49,38 @@ class SearchGroup(SearchNode):
 
 
 class NativeCategory(SearchNode):
-    instances: list["NativeCategory"] = []
     search_filter: str = "nativeCategoryId"
-
-    def __post_init__(self) -> None:
-        self.instances.append(self)
 
     @property
     def search_value(self) -> str | None:
         return self.name
+
+
+class BookGenre(SearchNode): ...
+
+
+class MovieGenre(SearchNode):
+    search_filter: str = "movieGenres"
+
+    @property
+    def search_value(self) -> str | None:
+        return self.name
+
+
+class MusicGenre(SearchNode):
+    search_filter: str = "musicType"
+
+    @property
+    def search_value(self) -> str | None:
+        return self.label
+
+
+class ShowGenre(SearchNode):
+    search_filter: str = "showType"
+
+    @property
+    def search_value(self) -> str | None:
+        return self.label
 
 
 SearchGroup_ARTS_LOISIRS_CREATIFS = SearchGroup(
@@ -426,6 +450,75 @@ class GenreType(Enum):
         }[
             self.name
         ]  # type: ignore [return-value]
+
+    def book_nodes(self) -> list[BookGenre]:
+        nodes = []
+        for book_type in book_types:
+            parent = BookGenre(
+                label=book_type.label,
+                name=book_type.label,
+                gtls=book_type.gtls,
+                parent=NativeCategory_LIVRES_PAPIER,
+                position=book_type.position,
+            )
+            nodes.append(parent)
+            for book_subtype in book_type.children:
+                child = BookGenre(
+                    label=book_subtype.label,
+                    gtls=book_subtype.gtls,
+                    parent=parent,
+                    position=book_subtype.position,
+                )
+                nodes.append(child)
+
+        return nodes
+
+    def movie_nodes(self) -> list[MovieGenre]:
+        return [
+            MovieGenre(
+                label=movie_type.label,
+                name=movie_type.name,
+                parent=NativeCategory_SEANCES_DE_CINEMA,
+            )
+            for movie_type in movie_types
+        ]
+
+    def music_nodes(self) -> list[MovieGenre]:
+        nodes = []
+        for music_type in music_types:
+            parent = MusicGenre(
+                label=music_type.label,
+                parent=[
+                    NativeCategory_CD,
+                    NativeCategory_CONCERTS_EN_LIGNE,
+                    NativeCategory_CONCERTS_EVENEMENTS,
+                    NativeCategory_FESTIVALS,
+                    NativeCategory_MUSIQUE_EN_LIGNE,
+                    NativeCategory_VINYLES,
+                ],
+            )
+            nodes.append(parent)
+            for music_subtype in music_type.children:
+                child = MusicGenre(
+                    label=music_subtype.label,
+                    parent=parent,
+                )
+                nodes.append(child)
+
+        return nodes
+
+    def show_nodes(self) -> list[ShowGenre]:
+        return [
+            ShowGenre(
+                label=show_type.label,
+                parent=[
+                    NativeCategory_ABONNEMENTS_SPECTACLE,
+                    NativeCategory_SPECTACLES_ENREGISTRES,
+                    NativeCategory_SPECTACLES_REPRESENTATIONS,
+                ],
+            )
+            for show_type in show_types
+        ]
 
     def book_values(self) -> list[GenreTypeContent]:
         return [GenreTypeContent(name=value, value=value) for value in sorted(BOOK_MACRO_SECTIONS)]
