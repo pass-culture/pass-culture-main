@@ -1,9 +1,8 @@
 import { useCallback, useState } from 'react'
 
+import { api } from 'apiClient/api'
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
-import { createThumbnailAdapter } from 'core/Offers/adapters/createThumbnailAdapter/createThumbnailAdapter'
-import { deleteThumbnailAdapter } from 'core/Offers/adapters/deleteThumbnailAdapter/deleteThumbnailAdapter'
 import { IndividualOfferImage } from 'core/Offers/types'
 import { SENT_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import useNotification from 'hooks/useNotification'
@@ -35,21 +34,23 @@ export const useIndividualOfferImageUpload = () => {
       }
       const { imageFile, credit, cropParams } = creationArgs
 
-      const response = await createThumbnailAdapter({
+      const response = await api.createThumbnail({
+        // TODO This TS error will be removed when spectree is updated to the latest
+        // version (dependant on Flask update) which will include files in the generated schema
+        // @ts-expect-error
+        thumb: imageFile,
+        credit: credit ?? '',
+        croppingRectHeight: cropParams?.height,
+        croppingRectWidth: cropParams?.width,
+        croppingRectX: cropParams?.x,
+        croppingRectY: cropParams?.y,
         offerId: imageOfferId,
-        credit,
-        imageFile,
-        cropParams,
       })
 
-      if (!response.isOk) {
-        return Promise.reject()
-      }
-
       setImageOffer({
-        originalUrl: response.payload.url,
-        url: response.payload.url,
-        credit: response.payload.credit,
+        originalUrl: response.url,
+        url: response.url,
+        credit: response.credit ?? null,
       })
 
       return Promise.resolve()
@@ -102,11 +103,13 @@ export const useIndividualOfferImageUpload = () => {
       /* istanbul ignore next: DEBT, TO FIX */
       setImageOfferCreationArgs(undefined)
     } else {
-      const response = await deleteThumbnailAdapter(offerId)
-      if (response.isOk) {
+      try {
+        await api.deleteThumbnail(offerId)
         setImageOffer(undefined)
-      } else {
-        notify.error(response.message)
+      } catch {
+        notify.error(
+          'Une erreur est survenue lors de la suppression de votre image. Merci de réessayer plus tard.'
+        )
       }
     }
   }
