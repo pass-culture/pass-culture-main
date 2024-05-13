@@ -9,7 +9,7 @@ import {
   serializeDurationMinutes,
   serializeExtraData,
   serializePatchOffer,
-} from '../serializers'
+} from '../serializePatchOffer'
 
 describe('test updateIndividualOffer::serializers', () => {
   it('test serializeDurationMinutes', () => {
