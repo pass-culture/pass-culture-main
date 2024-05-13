@@ -1,7 +1,5 @@
 from dataclasses import dataclass
 
-from pcapi.core.categories.subcategories_v2 import SearchNode
-
 
 BOOK_MACRO_SECTIONS = {
     "Géographie, cartographie",

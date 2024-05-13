@@ -135,3 +135,11 @@ def get_subcategories_v2() -> subcategories_v2_serializers.SubcategoriesResponse
             for genre_type in subcategories_v2.GenreType
         ],
     )
+
+
+@blueprint.native_route("/category_tree", methods=["GET"])
+@spectree_serialize(api=blueprint.api, response_model=subcategories_v2_serializers.CategoryTree)
+def get_subcategories_v2() -> subcategories_v2_serializers.CategoryTree:
+    return subcategories_v2_serializers.CategoryTree(
+        categoryNodes=[subcategories_v2_serializers.CategoryNode(node) for node in subcategories_v2.SEARCH_NODES]
+    )

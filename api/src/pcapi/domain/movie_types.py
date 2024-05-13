@@ -1,10 +1,8 @@
 from dataclasses import dataclass
 
-from pcapi.core.categories.subcategories_v2 import SearchNode
-
 
 @dataclass
-class MovieType(SearchNode):
+class MovieType:
     label: str
     name: str
 

@@ -84,46 +84,19 @@ class SubcategoriesResponseModelv2(BaseModel):
 
 
 class CategoryNode(BaseModel):
-    children: list["CategoryNode"]
+    id: str
     label: str
-    parent: list["CategoryNode"]
-    position: int
-    type: str  # ou Enum
+    name: str | None = None
+    gtls: list[str] | None = None
+    parent: str | list[str] | None = None
+    position: int | None = None
+    search_filter: str | None = None
 
     class Config:
         alias_generator = to_camel
-        allow_population_by_field_name = True
-        orm_mode = True
-
-
-# class CategoryTree(BaseModel):
-#     def from_orm(cls, obj) -> "CategoryNode":
-#         result = cls()
-#         all_subcategories = subcategories_v2.ALL_SUBCATEGORIES
-#         cn = CategoryNode()
-#         for sg in subcategories_v2.SearchGroups.values():
-#             for sc in all_subcategories:
-#                 if sc.search_group_name == sg.name:
-#                     cn.children.append()
-#         result.categoryNodes.append()
-#         return result
 
 
 class CategoryTree(BaseModel):
-    def from_orm(cls, obj) -> "CategoryNode":
-        result = cls()
-        result.categoryNodes = []
-        result.categoryNodes.append(
-            CategoryNode(
-                children=[],
-                label="Cinéma, films et séries",
-                name="FILMS_SERIES_CINEMA",
-                parent=[],
-                position=1,
-                type="SearchGroup",
-            )
-        )
-
     categoryNodes: list[CategoryNode]
 
     class Config:

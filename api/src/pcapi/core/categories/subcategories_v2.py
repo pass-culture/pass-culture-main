@@ -17,30 +17,36 @@ from pcapi.domain.show_types import ShowType
 from pcapi.domain.show_types import show_types
 
 
+class InstanceAware(object):
+    def __new__(cls, *args, **kwargs):
+        obj = object.__new__(cls, *args, **kwargs)
+        breakpoint()
+        if "instances" not in cls.__dict__:
+            cls.instances = []
+
+        cls.instances.append(obj)
+        return obj
+
+
 @dataclass
 class SearchNode:
-    instances: list["SearchNode"] = []
-
     label: str
     name: str | None = None
     gtls: list[str] | None = None
-    parent: "SearchNode" | list["SearchNode"] | None = None
+    parent: str | list[str] | None = None
     position: int | None = None
     search_filter: str | None = None
 
-    def __post_init__(self) -> None:
-        self.instances.append(self)
-
     @property
-    def id(self) -> str | None:
+    def id(self) -> str:
         return f"{self.__class__.__name__}_{self.name}"
 
     @property
     def search_value(self) -> str | None:
-        raise NotImplementedError()
+        return None
 
 
-class SearchGroup(SearchNode):
+class SearchGroup(SearchNode, InstanceAware):
     search_filter: str = "SearchGroupv2"
 
     @property
@@ -90,7 +96,7 @@ def book_nodes() -> list[BookGenre]:
             label=book_type.label,
             name=book_type.label,
             gtls=book_type.gtls,
-            parent=NativeCategory_LIVRES_PAPIER,
+            parent=NativeCategory_LIVRES_PAPIER.id,
             position=book_type.position,
         )
         nodes.append(parent)
@@ -98,7 +104,7 @@ def book_nodes() -> list[BookGenre]:
             child = BookGenre(
                 label=book_subtype.label,
                 gtls=book_subtype.gtls,
-                parent=parent,
+                parent=parent.id,
                 position=book_subtype.position,
             )
             nodes.append(child)
@@ -111,7 +117,7 @@ def movie_nodes() -> list[MovieGenre]:
         MovieGenre(
             label=movie_type.label,
             name=movie_type.name,
-            parent=NativeCategory_SEANCES_DE_CINEMA,
+            parent=NativeCategory_SEANCES_DE_CINEMA.id,
         )
         for movie_type in movie_types
     ]
@@ -123,19 +129,19 @@ def music_nodes() -> list[MovieGenre]:
         parent = MusicGenre(
             label=music_type.label,
             parent=[
-                NativeCategory_CD,
-                NativeCategory_CONCERTS_EN_LIGNE,
-                NativeCategory_CONCERTS_EVENEMENTS,
-                NativeCategory_FESTIVALS,
-                NativeCategory_MUSIQUE_EN_LIGNE,
-                NativeCategory_VINYLES,
+                NativeCategory_CD.id,
+                NativeCategory_CONCERTS_EN_LIGNE.id,
+                NativeCategory_CONCERTS_EVENEMENTS.id,
+                NativeCategory_FESTIVALS.id,
+                NativeCategory_MUSIQUE_EN_LIGNE.id,
+                NativeCategory_VINYLES.id,
             ],
         )
         nodes.append(parent)
         for music_subtype in music_type.children:
             child = MusicGenre(
                 label=music_subtype.label,
-                parent=parent,
+                parent=parent.id,
             )
             nodes.append(child)
 
@@ -147,9 +153,9 @@ def show_nodes() -> list[ShowGenre]:
         ShowGenre(
             label=show_type.label,
             parent=[
-                NativeCategory_ABONNEMENTS_SPECTACLE,
-                NativeCategory_SPECTACLES_ENREGISTRES,
-                NativeCategory_SPECTACLES_REPRESENTATIONS,
+                NativeCategory_ABONNEMENTS_SPECTACLE.id,
+                NativeCategory_SPECTACLES_ENREGISTRES.id,
+                NativeCategory_SPECTACLES_REPRESENTATIONS.id,
             ],
         )
         for show_type in show_types
@@ -230,67 +236,67 @@ SearchGroup_SPECTACLES = SearchGroup(
 NativeCategory_ABONNEMENTS_MUSEE = NativeCategory(
     name="ABONNEMENTS_MUSEE",
     label="Abonnements musée",
-    parent=SearchGroup_MUSEES_VISITES_CULTURELLES,
+    parent=SearchGroup_MUSEES_VISITES_CULTURELLES.id,
 )
 NativeCategory_ABONNEMENTS_SPECTACLE = NativeCategory(
     name="ABONNEMENTS_SPECTACLE",
     label="Abonnements spectacle",
-    parent=SearchGroup_SPECTACLES,
+    parent=SearchGroup_SPECTACLES.id,
 )
 NativeCategory_ACHAT_LOCATION_INSTRUMENT = NativeCategory(
     name="ACHAT_LOCATION_INSTRUMENT",
     label="Achat & location d'instrument",
-    parent=SearchGroup_INSTRUMENTS,
+    parent=SearchGroup_INSTRUMENTS.id,
 )
 NativeCategory_ARTS_VISUELS = NativeCategory(
     name="ARTS_VISUELS",
     label="Arts visuels",
-    parent=SearchGroup_ARTS_LOISIRS_CREATIFS,
+    parent=SearchGroup_ARTS_LOISIRS_CREATIFS.id,
 )
 NativeCategory_AUTRES_MEDIAS = NativeCategory(
     name="AUTRES_MEDIAS",
     label="Autres médias",
-    parent=SearchGroup_MEDIA_PRESSE,
+    parent=SearchGroup_MEDIA_PRESSE.id,
 )
 NativeCategory_BIBLIOTHEQUE_MEDIATHEQUE = NativeCategory(
     name="BIBLIOTHEQUE_MEDIATHEQUE",
     label="Abonnements aux médiathèques et bibliothèques",
-    parent=SearchGroup_LIVRES,
+    parent=SearchGroup_LIVRES.id,
 )
 NativeCategory_CARTES_CINEMA = NativeCategory(
     name="CARTES_CINEMA",
     label="Cartes cinéma",
-    parent=SearchGroup_FILMS_SERIES_CINEMA,
+    parent=SearchGroup_FILMS_SERIES_CINEMA.id,
 )
 NativeCategory_CARTES_JEUNES = NativeCategory(
     name="CARTES_JEUNES",
     label="Cartes jeunes",
-    parent=SearchGroup_CARTES_JEUNES,
+    parent=SearchGroup_CARTES_JEUNES.id,
 )
 NativeCategory_CD = NativeCategory(
     name="CD",
     label="CD",
-    parent=SearchGroup_CD_VINYLE_MUSIQUE_EN_LIGNE,
+    parent=SearchGroup_CD_VINYLE_MUSIQUE_EN_LIGNE.id,
 )
 NativeCategory_CONCERTS_EN_LIGNE = NativeCategory(
     name="CONCERTS_EN_LIGNE",
     label="Concerts en ligne",
-    parent=SearchGroup_EVENEMENTS_EN_LIGNE,
+    parent=SearchGroup_EVENEMENTS_EN_LIGNE.id,
 )
 NativeCategory_CONCERTS_EVENEMENTS = NativeCategory(
     name="CONCERTS_EVENEMENTS",
     label="Concerts, évènements",
-    parent=SearchGroup_CONCERTS_FESTIVALS,
+    parent=SearchGroup_CONCERTS_FESTIVALS.id,
 )
 NativeCategory_CONCOURS = NativeCategory(
     name="CONCOURS",
     label="Concours",
-    parent=SearchGroup_JEUX_JEUX_VIDEOS,
+    parent=SearchGroup_JEUX_JEUX_VIDEOS.id,
 )
 NativeCategory_CONFERENCES = NativeCategory(
     name="CONFERENCES",
     label="Conférences",
-    parent=SearchGroup_RENCONTRES_CONFERENCES,
+    parent=SearchGroup_RENCONTRES_CONFERENCES.id,
 )
 NativeCategory_DEPRECIEE = NativeCategory(
     name="DEPRECIEE",
@@ -300,42 +306,42 @@ NativeCategory_DEPRECIEE = NativeCategory(
 NativeCategory_DVD_BLU_RAY = NativeCategory(
     name="DVD_BLU_RAY",
     label="DVD, Blu-Ray",
-    parent=SearchGroup_FILMS_SERIES_CINEMA,
+    parent=SearchGroup_FILMS_SERIES_CINEMA.id,
 )
 NativeCategory_ESCAPE_GAMES = NativeCategory(
     name="ESCAPE_GAMES",
     label="Escape games",
-    parent=SearchGroup_JEUX_JEUX_VIDEOS,
+    parent=SearchGroup_JEUX_JEUX_VIDEOS.id,
 )
 NativeCategory_EVENEMENTS_CINEMA = NativeCategory(
     name="EVENEMENTS_CINEMA",
     label="Evènements cinéma",
-    parent=SearchGroup_FILMS_SERIES_CINEMA,
+    parent=SearchGroup_FILMS_SERIES_CINEMA.id,
 )
 NativeCategory_EVENEMENTS_PATRIMOINE = NativeCategory(
     name="EVENEMENTS_PATRIMOINE",
     label="Evènements patrimoine",
-    parent=SearchGroup_MUSEES_VISITES_CULTURELLES,
+    parent=SearchGroup_MUSEES_VISITES_CULTURELLES.id,
 )
 NativeCategory_FESTIVALS = NativeCategory(
     name="FESTIVALS",
     label="Festivals",
-    parent=SearchGroup_CONCERTS_FESTIVALS,
+    parent=SearchGroup_CONCERTS_FESTIVALS.id,
 )
 NativeCategory_FESTIVAL_DU_LIVRE = NativeCategory(
     name="FESTIVAL_DU_LIVRE",
     label="Évènements autour du livre",
-    parent=SearchGroup_LIVRES,
+    parent=SearchGroup_LIVRES.id,
 )
 NativeCategory_FILMS_SERIES_EN_LIGNE = NativeCategory(
     name="FILMS_SERIES_EN_LIGNE",
     label="Films, séries en ligne",
-    parent=SearchGroup_FILMS_SERIES_CINEMA,
+    parent=SearchGroup_FILMS_SERIES_CINEMA.id,
 )
 NativeCategory_JEUX_EN_LIGNE = NativeCategory(
     name="JEUX_EN_LIGNE",
     label="Jeux en ligne",
-    parent=SearchGroup_JEUX_JEUX_VIDEOS,
+    parent=SearchGroup_JEUX_JEUX_VIDEOS.id,
 )
 NativeCategory_JEUX_PHYSIQUES = NativeCategory(
     name="JEUX_PHYSIQUES",
@@ -345,42 +351,42 @@ NativeCategory_JEUX_PHYSIQUES = NativeCategory(
 NativeCategory_LIVRES_AUDIO_PHYSIQUES = NativeCategory(
     name="LIVRES_AUDIO_PHYSIQUES",
     label="Livres audio",
-    parent=SearchGroup_LIVRES,
+    parent=SearchGroup_LIVRES.id,
 )
 NativeCategory_LIVRES_NUMERIQUE_ET_AUDIO = NativeCategory(
     name="LIVRES_NUMERIQUE_ET_AUDIO",
     label="E-books",
-    parent=SearchGroup_LIVRES,
+    parent=SearchGroup_LIVRES.id,
 )
 NativeCategory_LIVRES_PAPIER = NativeCategory(
     name="LIVRES_PAPIER",
     label="Livres papier",
-    parent=SearchGroup_LIVRES,
+    parent=SearchGroup_LIVRES.id,
 )
 NativeCategory_LUDOTHEQUE = NativeCategory(
     name="LUDOTHEQUE",
     label="Ludothèque",
-    parent=SearchGroup_JEUX_JEUX_VIDEOS,
+    parent=SearchGroup_JEUX_JEUX_VIDEOS.id,
 )
 NativeCategory_MATERIELS_CREATIFS = NativeCategory(
     name="MATERIELS_CREATIFS",
     label="Matériels créatifs",
-    parent=SearchGroup_ARTS_LOISIRS_CREATIFS,
+    parent=SearchGroup_ARTS_LOISIRS_CREATIFS.id,
 )
 NativeCategory_MUSIQUE_EN_LIGNE = NativeCategory(
     name="MUSIQUE_EN_LIGNE",
     label="Musique en ligne",
-    parent=SearchGroup_CD_VINYLE_MUSIQUE_EN_LIGNE,
+    parent=SearchGroup_CD_VINYLE_MUSIQUE_EN_LIGNE.id,
 )
 NativeCategory_PARTITIONS_DE_MUSIQUE = NativeCategory(
     name="PARTITIONS_DE_MUSIQUE",
     label="Partitions de musique",
-    parent=SearchGroup_INSTRUMENTS,
+    parent=SearchGroup_INSTRUMENTS.id,
 )
 NativeCategory_PODCAST = NativeCategory(
     name="PODCAST",
     label="Podcast",
-    parent=SearchGroup_MEDIA_PRESSE,
+    parent=SearchGroup_MEDIA_PRESSE.id,
 )
 NativeCategory_PRATIQUES_ET_ATELIERS_ARTISTIQUES = NativeCategory(
     name="PRATIQUES_ET_ATELIERS_ARTISTIQUES",
@@ -391,75 +397,80 @@ NativeCategory_PRATIQUE_ARTISTIQUE_EN_LIGNE = NativeCategory(
     name="PRATIQUE_ARTISTIQUE_EN_LIGNE",
     label="Pratique artistique en ligne",
     parent=[
-        SearchGroup_ARTS_LOISIRS_CREATIFS,
-        SearchGroup_EVENEMENTS_EN_LIGNE,
+        SearchGroup_ARTS_LOISIRS_CREATIFS.id,
+        SearchGroup_EVENEMENTS_EN_LIGNE.id,
     ],
 )
 NativeCategory_PRESSE_EN_LIGNE = NativeCategory(
     name="PRESSE_EN_LIGNE",
     label="Presse en ligne",
-    parent=SearchGroup_MEDIA_PRESSE,
+    parent=SearchGroup_MEDIA_PRESSE.id,
 )
 NativeCategory_RENCONTRES = NativeCategory(
     name="RENCONTRES",
     label="Rencontres",
-    parent=SearchGroup_RENCONTRES_CONFERENCES,
+    parent=SearchGroup_RENCONTRES_CONFERENCES.id,
 )
 NativeCategory_RENCONTRES_EN_LIGNE = NativeCategory(
     name="RENCONTRES_EN_LIGNE",
     label="Rencontres en ligne",
     parent=[
-        SearchGroup_EVENEMENTS_EN_LIGNE,
-        SearchGroup_RENCONTRES_CONFERENCES,
+        SearchGroup_EVENEMENTS_EN_LIGNE.id,
+        SearchGroup_RENCONTRES_CONFERENCES.id,
     ],
 )
 NativeCategory_RENCONTRES_EVENEMENTS = NativeCategory(
     name="RENCONTRES_EVENEMENTS",
     label="Rencontres évènements",
-    parent=SearchGroup_JEUX_JEUX_VIDEOS,
+    parent=SearchGroup_JEUX_JEUX_VIDEOS.id,
 )
 NativeCategory_SALONS_ET_METIERS = NativeCategory(
     name="SALONS_ET_METIERS",
     label="Salons & métiers",
-    parent=SearchGroup_RENCONTRES_CONFERENCES,
+    parent=SearchGroup_RENCONTRES_CONFERENCES.id,
 )
 NativeCategory_SEANCES_DE_CINEMA = NativeCategory(
     name="SEANCES_DE_CINEMA",
     label="Séances de cinéma",
-    parent=SearchGroup_FILMS_SERIES_CINEMA,
+    parent=SearchGroup_FILMS_SERIES_CINEMA.id,
 )
 NativeCategory_SPECTACLES_ENREGISTRES = NativeCategory(
     name="SPECTACLES_ENREGISTRES",
     label="Spectacles enregistrés",
-    parent=SearchGroup_SPECTACLES,
+    parent=SearchGroup_SPECTACLES.id,
 )
 NativeCategory_SPECTACLES_REPRESENTATIONS = NativeCategory(
     name="SPECTACLES_REPRESENTATIONS",
     label="Spectacles & représentations",
-    parent=SearchGroup_SPECTACLES,
+    parent=SearchGroup_SPECTACLES.id,
 )
 NativeCategory_VINYLES = NativeCategory(
     name="VINYLES",
     label="Vinyles et autres supports",
-    parent=SearchGroup_CD_VINYLE_MUSIQUE_EN_LIGNE,
+    parent=SearchGroup_CD_VINYLE_MUSIQUE_EN_LIGNE.id,
 )
 NativeCategory_VISITES_CULTURELLES = NativeCategory(
     name="VISITES_CULTURELLES",
     label="Visites culturelles",
-    parent=SearchGroup_MUSEES_VISITES_CULTURELLES,
+    parent=SearchGroup_MUSEES_VISITES_CULTURELLES.id,
 )
 NativeCategory_VISITES_CULTURELLES_EN_LIGNE = NativeCategory(
     name="VISITES_CULTURELLES_EN_LIGNE",
     label="Visites culturelles en ligne",
-    parent=SearchGroup_MUSEES_VISITES_CULTURELLES,
+    parent=SearchGroup_MUSEES_VISITES_CULTURELLES.id,
 )
 
-SEARCH_GROUPS = SearchGroup.instances
-NATIVE_CATEGORIES = NativeCategory.instances
+breakpoint()
+SEARCH_GROUPS = list(SearchGroup.instances)
+NATIVE_CATEGORIES = list(NativeCategory.instances)
 BOOK_GENRES = book_nodes()
 MOVIE_GENRES = movie_nodes()
 MUSIC_GENRES = music_nodes()
 SHOW_GENRES = show_nodes()
+
+SEARCH_NODES: list[SearchNode] = (
+    SEARCH_GROUPS + NATIVE_CATEGORIES + BOOK_GENRES + MOVIE_GENRES + MUSIC_GENRES + SHOW_GENRES
+)
 
 
 class OnlineOfflinePlatformChoices(Enum):
