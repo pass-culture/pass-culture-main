@@ -32,7 +32,6 @@ describe('CollectiveActionButtons', () => {
     })
     renderCollectiveActionButtons({
       bookingRecap,
-      reloadBookings: vi.fn(),
       isCancellable: false,
     })
     const modifyLink = screen.getByRole('link', { name: 'Modifier l’offre' })
@@ -51,7 +50,6 @@ describe('CollectiveActionButtons', () => {
     })
     renderCollectiveActionButtons({
       bookingRecap,
-      reloadBookings: vi.fn(),
       isCancellable: false,
     })
     expect(
@@ -85,7 +83,6 @@ describe('collectiveActionButton api call', () => {
 
     renderCollectiveActionButtons({
       bookingRecap,
-      reloadBookings: vi.fn(),
       isCancellable: true,
     })
 
@@ -118,7 +115,6 @@ describe('collectiveActionButton api call', () => {
 
     renderCollectiveActionButtons({
       bookingRecap,
-      reloadBookings: vi.fn(),
       isCancellable: true,
     })
 
@@ -144,7 +140,6 @@ describe('collectiveActionButton api call', () => {
 
     renderCollectiveActionButtons({
       bookingRecap,
-      reloadBookings: vi.fn(),
       isCancellable: true,
     })
 
@@ -171,7 +166,6 @@ describe('collectiveActionButton api call', () => {
 
     renderCollectiveActionButtons({
       bookingRecap,
-      reloadBookings: vi.fn(),
       isCancellable: true,
     })
 
