@@ -1,18 +1,17 @@
 import { api } from 'apiClient/api'
+import { isError } from 'apiClient/helpers'
 import { ApiError } from 'apiClient/v1'
-import { unhumanizeSiren } from 'core/Offerers/utils'
+import { getSirenData } from 'core/Offerers/getSirenData'
 
-import { getSirenDataAdapter } from '../getSirenDataAdapter'
-
-describe('getSirenDataAdapter', () => {
+describe('getSirenData', () => {
   it('should not call API when SIREN is empty', async () => {
     const siren = ''
     vi.spyOn(api, 'getSirenInfo')
 
-    const response = await getSirenDataAdapter(siren)
+    const response = await getSirenData(siren)
 
     expect(api.getSirenInfo).not.toHaveBeenCalled()
-    expect(response.payload).toStrictEqual({
+    expect(response).toStrictEqual({
       values: {
         address: '',
         city: '',
@@ -42,14 +41,16 @@ describe('getSirenDataAdapter', () => {
       )
     )
 
-    const response = await getSirenDataAdapter(siren)
-
-    expect(api.getSirenInfo).toHaveBeenCalledTimes(1)
-    expect(response.isOk).toBeFalsy()
-    expect(response.message).toBe(
-      'Le format de ce SIREN ou SIRET est incorrect.'
-    )
-    expect(response.payload).toStrictEqual({})
+    try {
+      await getSirenData(siren)
+    } catch (error) {
+      expect(isError(error)).toBeTruthy()
+      if (isError(error)) {
+        expect(error.message).toBe(
+          'Le format de ce SIREN ou SIRET est incorrect.'
+        )
+      }
+    }
   })
 
   it('should return location values when the SIREN exists', async () => {
@@ -65,17 +66,11 @@ describe('getSirenDataAdapter', () => {
       },
     })
 
-    const response = await getSirenDataAdapter(siren)
+    const response = await getSirenData(siren)
 
     expect(api.getSirenInfo).toHaveBeenCalledTimes(1)
     expect(api.getSirenInfo).toHaveBeenCalledWith(siren)
-    expect(response.isOk).toBeTruthy()
-    expect(response.message).toBe(
-      `Informations récupéré avec success pour le SIREN: ${unhumanizeSiren(
-        siren
-      )}`
-    )
-    expect(response.payload).toStrictEqual({
+    expect(response).toStrictEqual({
       values: {
         address: '3 rue de la gare',
         city: 'paris',
