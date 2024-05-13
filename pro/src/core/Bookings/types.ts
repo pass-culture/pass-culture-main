@@ -21,7 +21,5 @@ export type APIFilters = {
   page: number
 }
 
-export type GetUserHasBookingsAdapter = Adapter<void, boolean, boolean>
-
 export type VenuesPayload = { venues: { value: string; label: string }[] }
 export type GetVenuesAdapter = Adapter<void, VenuesPayload, VenuesPayload>
