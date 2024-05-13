@@ -8,11 +8,7 @@ import {
 } from 'apiClient/v1'
 import NoData from 'components/NoData'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
-import {
-  GetUserHasBookingsAdapter,
-  GetVenuesAdapter,
-  PreFiltersParams,
-} from 'core/Bookings/types'
+import { GetVenuesAdapter, PreFiltersParams } from 'core/Bookings/types'
 import { Events } from 'core/FirebaseEvents/constants'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import { Audience } from 'core/shared/types'
@@ -44,7 +40,7 @@ type BookingsProps<T> = {
     pages: number
     currentPage: number
   }>
-  getUserHasBookingsAdapter: GetUserHasBookingsAdapter
+  getUserHasBookingsAdapter: () => Promise<boolean>
   getVenuesAdapter: GetVenuesAdapter
 }
 
@@ -126,8 +122,8 @@ export const BookingsScreen = <
   useEffect(() => {
     const loadHasBookings = async () => {
       if (!user.isAdmin) {
-        const { payload } = await getUserHasBookingsAdapter()
-        setHasBooking(payload)
+        const hasBookings = await getUserHasBookingsAdapter()
+        setHasBooking(hasBookings)
       }
     }
 

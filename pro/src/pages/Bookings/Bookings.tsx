@@ -7,7 +7,7 @@ import { Audience } from 'core/shared/types'
 import { BookingsScreen } from 'screens/Bookings/Bookings'
 
 import { getFilteredIndividualBookingsAdapter } from './adapters/getFilteredIndividualBookingsAdapter'
-import { getUserHasBookingsAdapter } from './adapters/getUserHasBookingsAdapter'
+import { getUserHasIndividualBookingsAdapter } from './adapters/getUserHasIndividualBookingsAdapter'
 
 export const Bookings = (): JSX.Element => {
   const location = useLocation()
@@ -17,7 +17,7 @@ export const Bookings = (): JSX.Element => {
       <BookingsScreen
         audience={Audience.INDIVIDUAL}
         getFilteredBookingsAdapter={getFilteredIndividualBookingsAdapter}
-        getUserHasBookingsAdapter={getUserHasBookingsAdapter}
+        getUserHasBookingsAdapter={getUserHasIndividualBookingsAdapter}
         getVenuesAdapter={getVenuesAdapter}
         locationState={location.state}
       />
