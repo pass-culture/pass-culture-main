@@ -1304,7 +1304,7 @@ class UpdateVenueTest(PostEndpointHelper):
             }
         }
 
-    def test_delete_venue_accessibility_provider(self, authenticated_client):
+    def test_update_venue_delete_accessibility_provider(self, authenticated_client):
         venue = offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.LIBRARY)
         offerers_factories.AccessibilityProviderFactory(
             venue=venue,
@@ -1359,7 +1359,9 @@ class UpdateVenueTest(PostEndpointHelper):
         db.session.refresh(venue)
         assert venue.accessibilityProvider.externalAccessibilityUrl == "https://acceslibre.beta.gouv.fr/erps/mon-slug/"
 
-    def test_should_update_permanent_venue_accessibility_provider(self, authenticated_client):
+    def test_update_venue_accessibility_provider_from_acceslibre_url_when_becoming_permanent(
+        self, authenticated_client
+    ):
         venue = offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.TRAVELING_CINEMA)
 
         data = self._get_current_data(venue)
@@ -1388,7 +1390,7 @@ class UpdateVenueTest(PostEndpointHelper):
             }
         }
 
-    def test_should_not_update_non_permanent_venue_accessibility_provider(self, authenticated_client):
+    def test_update_venue_should_not_add_accessibility_provider_if_not_permanent(self, authenticated_client):
         venue = offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.TRAVELING_CINEMA)
 
         data = self._get_current_data(venue)
@@ -1400,7 +1402,7 @@ class UpdateVenueTest(PostEndpointHelper):
         db.session.refresh(venue)
         assert venue.accessibilityProvider == None
 
-    def test_should_delete_accessibility_provider_when_venue_becomes_non_permanent(self, authenticated_client):
+    def test_update_venue_remove_accesslibre_url_when_becoming_non_permanent(self, authenticated_client):
         venue = offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.LIBRARY)
         offerers_factories.AccessibilityProviderFactory(
             venue=venue,
