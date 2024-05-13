@@ -228,7 +228,7 @@ describe('route CollectiveOffers', () => {
 
       await userEvent.click(screen.getByTestId('remove-offerer-filter'))
 
-      expect(screen.queryByText('La structure')).not.toBeInTheDocument()
+      expect(mockNavigate).toHaveBeenCalledWith('/offres/collectives')
     })
   })
 
