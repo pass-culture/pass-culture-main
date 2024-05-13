@@ -160,6 +160,8 @@ def create_offerer(body: offerers_serialize.CreateOffererQueryModel) -> offerers
     if not siren_info.active:
         raise ApiErrors(errors={"siren": ["SIREN is no longer active"]})
     body.name = siren_info.name
+    assert siren_info.address  # helps mypy
+    body.postalCode = siren_info.address.postal_code
     if api.is_user_offerer_already_exist(current_user, body.siren):
         # As this endpoint does not only allow to create an offerer, but also handles
         # a large part of `user_offerer` buisness logic (see `api.create_offerer` below)
