@@ -8,7 +8,7 @@ import styles from './ChoosePreFiltersMessage.module.scss'
 
 const UNBREAKABLE_SPACE = '\u00A0'
 
-const ChoosePreFiltersMessage = () => (
+export const ChoosePreFiltersMessage = () => (
   <div className={cn(styles['no-data'])}>
     <SvgIcon
       className={styles['no-data-icon']}
@@ -21,5 +21,3 @@ const ChoosePreFiltersMessage = () => (
     </p>
   </div>
 )
-
-export default ChoosePreFiltersMessage

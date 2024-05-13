@@ -1,5 +1,6 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import useSWR from 'swr'
 
 import {
   BookingRecapResponseModel,
@@ -7,10 +8,10 @@ import {
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
 import NoData from 'components/NoData'
+import { GET_BOOKINGS_QUERY_KEY } from 'config/swrQueryKeys'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
 import { GetVenuesAdapter, PreFiltersParams } from 'core/Bookings/types'
 import { Events } from 'core/FirebaseEvents/constants'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import { Audience } from 'core/shared/types'
 import { SelectOption } from 'custom_types/form'
 import useAnalytics from 'hooks/useAnalytics'
@@ -19,7 +20,7 @@ import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
 import useNotification from 'hooks/useNotification'
 import strokeLibraryIcon from 'icons/stroke-library.svg'
 import strokeUserIcon from 'icons/stroke-user.svg'
-import ChoosePreFiltersMessage from 'pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
+import { ChoosePreFiltersMessage } from 'pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
 import NoBookingsForPreFiltersMessage from 'pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { Tabs } from 'ui-kit/Tabs/Tabs'
@@ -59,11 +60,8 @@ export const BookingsScreen = <
   const notify = useNotification()
   const { logEvent } = useAnalytics()
 
-  const [appliedPreFilters, setAppliedPreFilters] = useState<PreFiltersParams>({
-    ...DEFAULT_PRE_FILTERS,
-  })
-  const [isTableLoading, setIsTableLoading] = useState(false)
-  const [bookings, setBookings] = useState<T[]>([])
+  const [appliedPreFilters, setAppliedPreFilters] =
+    useState<PreFiltersParams>(DEFAULT_PRE_FILTERS)
   const [wereBookingsRequested, setWereBookingsRequested] = useState(false)
   const [hasBooking, setHasBooking] = useState(true)
   const [isLocalLoading, setIsLocalLoading] = useState(false)
@@ -73,50 +71,42 @@ export const BookingsScreen = <
 
   const isNewSideNavActive = useIsNewInterfaceActive()
 
-  const resetPreFilters = useCallback(() => {
-    setWereBookingsRequested(false)
-    setAppliedPreFilters({ ...DEFAULT_PRE_FILTERS })
-    logEvent?.(Events.CLICKED_RESET_FILTERS, {
-      from: location.pathname,
-    })
-  }, [setWereBookingsRequested])
-
-  const resetAndApplyPreFilters = useCallback(() => {
-    resetPreFilters()
-    updateUrl({ ...DEFAULT_PRE_FILTERS })
-  }, [resetPreFilters])
-
-  const applyPreFilters = async (filters: PreFiltersParams) => {
-    setAppliedPreFilters(filters)
-    await loadBookingsRecap(filters)
-  }
-
-  const loadBookingsRecap = async (preFilters: PreFiltersParams) => {
-    setIsTableLoading(true)
-    setBookings([])
-    setWereBookingsRequested(true)
-
-    try {
-      const { bookings, currentPage, pages } = await getFilteredBookingsAdapter(
-        {
-          ...preFilters,
-        }
+  const bookingsQuery = useSWR(
+    appliedPreFilters !== DEFAULT_PRE_FILTERS
+      ? [GET_BOOKINGS_QUERY_KEY, appliedPreFilters]
+      : null,
+    async ([, filterParams]) => {
+      setWereBookingsRequested(true)
+      const { bookings, pages, currentPage } = await getFilteredBookingsAdapter(
+        { ...filterParams }
       )
-      setBookings(bookings)
 
-      setIsTableLoading(false)
       if (currentPage === MAX_LOADED_PAGES && currentPage < pages) {
         notify.information(
           'L’affichage des réservations a été limité à 5 000 réservations. Vous pouvez modifier les filtres pour affiner votre recherche.'
         )
       }
-    } catch {
-      notify.error(GET_DATA_ERROR_MESSAGE)
-    }
+
+      return bookings
+    },
+    { fallbackData: [] }
+  )
+
+  const resetPreFilters = () => {
+    setWereBookingsRequested(false)
+    setAppliedPreFilters(DEFAULT_PRE_FILTERS)
+    logEvent?.(Events.CLICKED_RESET_FILTERS, {
+      from: location.pathname,
+    })
   }
 
-  const reloadBookings = async () => {
-    await loadBookingsRecap(appliedPreFilters)
+  const resetAndApplyPreFilters = () => {
+    resetPreFilters()
+    updateUrl({ ...DEFAULT_PRE_FILTERS })
+  }
+
+  const applyPreFilters = (filters: PreFiltersParams) => {
+    setAppliedPreFilters(filters)
   }
 
   useEffect(() => {
@@ -135,46 +125,40 @@ export const BookingsScreen = <
   const navigate = useNavigate()
 
   useEffect(() => {
-    const applyFilters = async () => {
-      const params = new URLSearchParams(location.search)
+    const params = new URLSearchParams(location.search)
 
-      if (
-        params.has('offerVenueId') ||
-        params.has('bookingStatusFilter') ||
-        params.has('bookingBeginningDate') ||
-        params.has('bookingEndingDate') ||
-        params.has('offerType') ||
-        params.has('offerEventDate')
-      ) {
-        const filterToLoad: PreFiltersParams = {
-          offerVenueId:
-            params.get('offerVenueId') ?? DEFAULT_PRE_FILTERS.offerVenueId,
-          // TODO typeguard this to remove the `as`
-          bookingStatusFilter:
-            (params.get('bookingStatusFilter') as BookingStatusFilter | null) ??
-            DEFAULT_PRE_FILTERS.bookingStatusFilter,
-          bookingBeginningDate:
-            params.get('bookingBeginningDate') ??
-            (params.has('offerEventDate')
-              ? ''
-              : DEFAULT_PRE_FILTERS.bookingBeginningDate),
-          bookingEndingDate:
-            params.get('bookingEndingDate') ??
-            (params.has('offerEventDate')
-              ? ''
-              : DEFAULT_PRE_FILTERS.bookingEndingDate),
-          offerType: params.get('offerType') ?? DEFAULT_PRE_FILTERS.offerType,
-          offerEventDate:
-            params.get('offerEventDate') ?? DEFAULT_PRE_FILTERS.offerEventDate,
-        }
-
-        await loadBookingsRecap(filterToLoad)
-        setAppliedPreFilters(filterToLoad)
+    if (
+      params.has('offerVenueId') ||
+      params.has('bookingStatusFilter') ||
+      params.has('bookingBeginningDate') ||
+      params.has('bookingEndingDate') ||
+      params.has('offerType') ||
+      params.has('offerEventDate')
+    ) {
+      const filterToLoad: PreFiltersParams = {
+        offerVenueId:
+          params.get('offerVenueId') ?? DEFAULT_PRE_FILTERS.offerVenueId,
+        // TODO typeguard this to remove the `as`
+        bookingStatusFilter:
+          (params.get('bookingStatusFilter') as BookingStatusFilter | null) ??
+          DEFAULT_PRE_FILTERS.bookingStatusFilter,
+        bookingBeginningDate:
+          params.get('bookingBeginningDate') ??
+          (params.has('offerEventDate')
+            ? ''
+            : DEFAULT_PRE_FILTERS.bookingBeginningDate),
+        bookingEndingDate:
+          params.get('bookingEndingDate') ??
+          (params.has('offerEventDate')
+            ? ''
+            : DEFAULT_PRE_FILTERS.bookingEndingDate),
+        offerType: params.get('offerType') ?? DEFAULT_PRE_FILTERS.offerType,
+        offerEventDate:
+          params.get('offerEventDate') ?? DEFAULT_PRE_FILTERS.offerEventDate,
       }
-    }
 
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    applyFilters()
+      setAppliedPreFilters(filterToLoad)
+    }
   }, [location])
 
   const updateUrl = (filter: PreFiltersParams) => {
@@ -205,6 +189,7 @@ export const BookingsScreen = <
       }?page=1&${stringify(partialUrlInfo)}`
     )
   }
+
   useEffect(() => {
     async function fetchVenues() {
       setIsLocalLoading(true)
@@ -256,10 +241,10 @@ export const BookingsScreen = <
         appliedPreFilters={appliedPreFilters}
         applyPreFilters={applyPreFilters}
         audience={audience}
-        hasResult={bookings.length > 0}
+        hasResult={bookingsQuery.data.length > 0}
         isFiltersDisabled={!hasBooking}
         isLocalLoading={isLocalLoading}
-        isTableLoading={isTableLoading}
+        isTableLoading={bookingsQuery.isLoading}
         resetPreFilters={resetPreFilters}
         venues={venues.map((venue) => ({
           id: String(venue.value),
@@ -271,16 +256,15 @@ export const BookingsScreen = <
       />
 
       {wereBookingsRequested ? (
-        bookings.length > 0 ? (
+        bookingsQuery.data.length > 0 ? (
           <BookingsRecapTable
-            bookingsRecap={bookings}
-            isLoading={isTableLoading}
+            bookingsRecap={bookingsQuery.data}
+            isLoading={bookingsQuery.isLoading}
             locationState={locationState}
             audience={audience}
-            reloadBookings={reloadBookings}
             resetBookings={resetAndApplyPreFilters}
           />
-        ) : isTableLoading ? (
+        ) : bookingsQuery.isLoading ? (
           <Spinner />
         ) : (
           <NoBookingsForPreFiltersMessage resetPreFilters={resetPreFilters} />

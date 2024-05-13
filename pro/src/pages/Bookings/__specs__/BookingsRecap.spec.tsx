@@ -199,9 +199,9 @@ describe('components | BookingsRecap | Pro user', () => {
     )
     await submitFilters()
 
-    const resetButton = screen.getByText('Afficher toutes les réservations', {
-      selector: '.button-ternary-pink',
-    })
+    const resetButton = await screen.findByText(
+      'Afficher toutes les réservations'
+    )
     await userEvent.click(resetButton)
 
     expect(screen.getByLabelText('Lieu')).toHaveValue(
@@ -282,7 +282,7 @@ describe('components | BookingsRecap | Pro user', () => {
     expect(
       screen.getByRole('button', { name: 'Réinitialiser les filtres' })
     ).toBeDisabled()
-    const choosePreFiltersMessage = screen.getByText(
+    const choosePreFiltersMessage = await screen.findByText(
       'Pour visualiser vos réservations, veuillez sélectionner un ou plusieurs des filtres précédents et cliquer sur « Afficher »'
     )
     expect(choosePreFiltersMessage).toBeInTheDocument()
@@ -368,7 +368,9 @@ describe('components | BookingsRecap | Pro user', () => {
     )
     await submitFilters()
 
-    expect(screen.getByText(bookings2.stock.offerName)).toBeInTheDocument()
+    expect(
+      await screen.findByText(bookings2.stock.offerName)
+    ).toBeInTheDocument()
 
     expect(screen.getByText(bookings1.stock.offerName)).toBeInTheDocument()
 
@@ -538,6 +540,7 @@ describe('components | BookingsRecap | Pro user', () => {
       screen.getByLabelText('Lieu'),
       otherVenue.id.toString()
     )
+
     await submitFilters()
 
     await userEvent.selectOptions(
@@ -546,26 +549,20 @@ describe('components | BookingsRecap | Pro user', () => {
     )
     await submitFilters()
 
-    expect(screen.getByText(booking.stock.offerName)).toBeInTheDocument()
+    expect(await screen.findByText(booking.stock.offerName)).toBeInTheDocument()
     expect(
       screen.queryByText(otherVenueBooking.stock.offerName)
     ).not.toBeInTheDocument()
   })
 
   it('should show notification with information message when there are more than 5 pages', async () => {
-    const bookingsRecap = { pages: 6, bookingsRecap: [] }
+    const bookingsRecap = { pages: 6, bookingsRecap: [], total: 6 }
     vi.spyOn(api, 'getBookingsPro')
-      // @ts-expect-error FIX ME
       .mockResolvedValueOnce({ ...bookingsRecap, page: 1 })
-      // @ts-expect-error FIX ME
       .mockResolvedValueOnce({ ...bookingsRecap, page: 2 })
-      // @ts-expect-error FIX ME
       .mockResolvedValueOnce({ ...bookingsRecap, page: 3 })
-      // @ts-expect-error FIX ME
       .mockResolvedValueOnce({ ...bookingsRecap, page: 4 })
-      // @ts-expect-error FIX ME
       .mockResolvedValueOnce({ ...bookingsRecap, page: 5 })
-      // @ts-expect-error FIX ME
       .mockResolvedValueOnce({ ...bookingsRecap, page: 6 })
     await renderBookingsRecap(store)
 
@@ -583,17 +580,12 @@ describe('components | BookingsRecap | Pro user', () => {
   })
 
   it('should not show notification with information message when there are 5 pages or less', async () => {
-    const bookingsRecap = { pages: 5, bookingsRecap: [] }
+    const bookingsRecap = { pages: 5, bookingsRecap: [], total: 5 }
     vi.spyOn(api, 'getBookingsPro')
-      // @ts-expect-error FIX ME
       .mockResolvedValueOnce({ ...bookingsRecap, page: 1 })
-      // @ts-expect-error FIX ME
       .mockResolvedValueOnce({ ...bookingsRecap, page: 2 })
-      // @ts-expect-error FIX ME
       .mockResolvedValueOnce({ ...bookingsRecap, page: 3 })
-      // @ts-expect-error FIX ME
       .mockResolvedValueOnce({ ...bookingsRecap, page: 4 })
-      // @ts-expect-error FIX ME
       .mockResolvedValueOnce({ ...bookingsRecap, page: 5 })
     await renderBookingsRecap(store)
 
@@ -603,7 +595,7 @@ describe('components | BookingsRecap | Pro user', () => {
     )
     await userEvent.click(screen.getByText('Afficher', { selector: 'button' }))
 
-    expect(api.getBookingsPro).toHaveBeenCalledTimes(5)
+    await waitFor(() => expect(api.getBookingsPro).toHaveBeenCalledTimes(5))
     const informationalMessage = screen.queryByText(
       'L’affichage des réservations a été limité à 5 000 réservations. Vous pouvez modifier les filtres pour affiner votre recherche.'
     )

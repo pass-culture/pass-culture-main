@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
+import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import { getErrorCode, isErrorAPIError } from 'apiClient/helpers'
 import { CollectiveBookingResponseModel } from 'apiClient/v1'
 import { CancelCollectiveBookingModal } from 'components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
+import { GET_BOOKINGS_QUERY_KEY } from 'config/swrQueryKeys'
 import { BOOKING_STATUS } from 'core/Bookings/constants'
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'core/Notification/constants'
 import useNotification from 'hooks/useNotification'
@@ -16,15 +18,14 @@ import styles from './CollectiveActionButtons.module.scss'
 
 export interface CollectiveActionButtonsProps {
   bookingRecap: CollectiveBookingResponseModel
-  reloadBookings: () => void
   isCancellable: boolean
 }
 
 export const CollectiveActionButtons = ({
   bookingRecap,
-  reloadBookings,
   isCancellable,
 }: CollectiveActionButtonsProps) => {
+  const { mutate } = useSWRConfig()
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const notify = useNotification()
@@ -39,13 +40,15 @@ export const CollectiveActionButtons = ({
     }
     try {
       await api.cancelCollectiveOfferBooking(offerId)
+      await mutate(
+        (key) => Array.isArray(key) && key.includes(GET_BOOKINGS_QUERY_KEY)
+      )
       notify.success(
         'La réservation sur cette offre a été annulée avec succès, votre offre sera à nouveau visible sur ADAGE.',
         {
           duration: NOTIFICATION_LONG_SHOW_DURATION,
         }
       )
-      reloadBookings()
     } catch (error) {
       if (isErrorAPIError(error) && getErrorCode(error) === 'NO_BOOKING') {
         notify.error(

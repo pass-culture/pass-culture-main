@@ -40,7 +40,6 @@ interface BookingsRecapTableProps<
     statuses: string[]
   }
   audience: Audience
-  reloadBookings: () => void
   resetBookings: () => void
 }
 
@@ -51,7 +50,6 @@ export const BookingsRecapTable = <
   isLoading,
   locationState,
   audience,
-  reloadBookings,
   resetBookings,
 }: BookingsRecapTableProps<T>) => {
   const [filteredBookings, setFilteredBookings] = useState(bookingsRecap)
@@ -174,7 +172,6 @@ export const BookingsRecapTable = <
             bookings={filteredBookings}
             bookingStatuses={filters.bookingStatus}
             updateGlobalFilters={updateGlobalFilters}
-            reloadBookings={reloadBookings}
             defaultOpenedBookingId={defaultBookingId}
             resetFilters={resetAllFilters}
           />
