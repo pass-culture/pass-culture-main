@@ -1162,13 +1162,13 @@ python-dateutil = ">=2.4"
 
 [[package]]
 name = "fakeredis"
-version = "2.22.0"
+version = "2.23.1"
 description = "Python implementation of redis API, can be used for testing purposes."
 optional = false
 python-versions = "<4.0,>=3.7"
 files = [
-    {file = "fakeredis-2.22.0-py3-none-any.whl", hash = "sha256:13ac8bd57c852d8b3c0684fa6755fac4abb4feab6483a52212b932d11c795bf3"},
-    {file = "fakeredis-2.22.0.tar.gz", hash = "sha256:d063085fe962d16637cfe21044f277cfc54d6fb456d12a7c87514990c3fac98e"},
+    {file = "fakeredis-2.23.1-py3-none-any.whl", hash = "sha256:07012df037488e5c95e7301f93f2a39a5351bd6c0f2f6e261dc20122329194a5"},
+    {file = "fakeredis-2.23.1.tar.gz", hash = "sha256:b45f419e4564ebaaf4a0a8a28d890f5b5797abe14f439969e290f3d57e862c3e"},
 ]
 
 [package.dependencies]
@@ -1179,7 +1179,7 @@ sortedcontainers = ">=2,<3"
 bf = ["pyprobables (>=0.6,<0.7)"]
 cf = ["pyprobables (>=0.6,<0.7)"]
 json = ["jsonpath-ng (>=1.6,<2.0)"]
-lua = ["lupa (>=1.14,<3.0)"]
+lua = ["lupa (>=2.1,<3.0)"]
 probabilistic = ["pyprobables (>=0.6,<0.7)"]
 
 [[package]]
@@ -5643,4 +5643,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "f4ca53a472adbae63e963f0ce8a49d762719c312ec4f534ac70c2c8fb6cb0421"
+content-hash = "8b1387fb9ceeb5cf64cf2d894370d6887a6e011ade9312624523177da2a602db"
