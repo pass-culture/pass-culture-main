@@ -61,6 +61,21 @@ jobs:
           files: |
             api/poetry.lock
             pro/yarn.lock
+      - name: "Define docker image tags."
+        id: define-image-tags
+        run: |
+          DOCKER_REGISTRY="europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry"
+          OUTPUT="docker-image-tags="
+          if [[ ${{ github.event_name }} == 'pull_request' ]]; then
+            OUTPUT+="$DOCKER_REGISTRY/DOCKER_IMAGE:${{ github.event.pull_request.head.sha }}"
+          else
+            OUTPUT+="$DOCKER_REGISTRY/DOCKER_IMAGE:${{ github.sha }}"
+          fi
+          if [[ ${{ github.ref }} == 'refs/heads/master' ]]; then
+            OUTPUT+=",$DOCKER_REGISTRY/DOCKER_IMAGE:latest"
+          fi
+          echo $OUTPUT
+          echo $OUTPUT >> "$GITHUB_OUTPUT"
 
   build-api:
     name: "Build API (backend) Docker image"
@@ -210,7 +225,7 @@ jobs:
     with:
       environment: testing
       app_version: ${{ github.sha }}
-      teleport_version: 11.1.1
+      teleport_version: 15.2.5
       teleport_proxy: teleport.ehp.passculture.team:443
       teleport_kubernetes_cluster: passculture-metier-ehp
       deploy_api: ${{ needs.test-api.result == 'success' }}
