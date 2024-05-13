@@ -19,7 +19,6 @@ describe('Update a venue', () => {
       'Cinéma de la fin Bis'
     )
 
-    cy.pause()
     // findByText() et findByRole() marchent pas ici
     cy.contains('Gérer ma page').click()
     cy.findByText('Vos informations pour le grand public').should('be.visible')
