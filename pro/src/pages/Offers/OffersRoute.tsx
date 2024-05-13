@@ -17,7 +17,6 @@ import { hasSearchFilters } from 'core/Offers/utils/hasSearchFilters'
 import { serializeApiFilters } from 'core/Offers/utils/serializer'
 import { Audience } from 'core/shared/types'
 import useCurrentUser from 'hooks/useCurrentUser'
-import useNotification from 'hooks/useNotification'
 import { formatAndOrderVenues } from 'repository/venuesService'
 import { Offers } from 'screens/Offers/Offers'
 import Spinner from 'ui-kit/Spinner/Spinner'
@@ -28,7 +27,6 @@ export const GET_OFFERS_QUERY_KEY = 'listOffers'
 export const OffersRoute = (): JSX.Element => {
   const urlSearchFilters = useQuerySearchFilters()
   const currentPageNumber = urlSearchFilters.page ?? DEFAULT_PAGE
-  const notify = useNotification()
   const navigate = useNavigate()
   const { currentUser } = useCurrentUser()
 
