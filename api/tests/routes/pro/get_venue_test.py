@@ -151,7 +151,7 @@ class Returns200Test:
             "mentalDisabilityCompliant": venue.mentalDisabilityCompliant,
             "motorDisabilityCompliant": venue.motorDisabilityCompliant,
             "name": venue.name,
-            "openingHours": venue.opening_days,
+            "openingHours": venue.opening_hours,
             "postalCode": venue.postalCode,
             "publicName": venue.publicName,
             "siret": venue.siret,

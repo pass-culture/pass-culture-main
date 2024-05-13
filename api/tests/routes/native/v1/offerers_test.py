@@ -101,7 +101,7 @@ class VenuesTest:
             "bannerMeta": {
                 "image_credit": venue.bannerMeta["image_credit"],
             },
-            "openingHours": venue.opening_days,
+            "openingHours": venue.opening_hours,
         }
 
     def test_get_venue_google_banner_meta(self, client):
