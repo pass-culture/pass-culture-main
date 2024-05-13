@@ -112,6 +112,14 @@ class InseeBackend(BaseBackend):
         # for foreign addresses, which we don't support.
         # The API includes the arrondissement (e.g. "PARIS 1"), remove it.
         city = re.sub(r" \d+ *$", "", block["libelleCommuneEtablissement"] or "")
+
+        # Until Sirene API return postalCode of Saint-Martin
+        # we need to do this hacky thing, otherwise Saint-Martin
+        # users wont be able to create offerers.
+        postal_code = block["codePostalEtablissement"] or ""
+        if not postal_code and block["codeCommuneEtablissement"] == "97801":
+            postal_code = "97150"
+
         return models.SireneAddress(
             street=" ".join(
                 (
@@ -120,7 +128,7 @@ class InseeBackend(BaseBackend):
                     block["libelleVoieEtablissement"] or "",
                 )
             ).strip(),
-            postal_code=block["codePostalEtablissement"] or "",
+            postal_code=postal_code,
             city=city,
             insee_code=block["codeCommuneEtablissement"] or "",
         )
