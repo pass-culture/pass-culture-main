@@ -1,12 +1,12 @@
 import { format, subMonths } from 'date-fns'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useOutletContext } from 'react-router-dom'
+import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import { VenueListItemResponseModel } from 'apiClient/v1'
+import { GET_VENUES_QUERY_KEY } from 'config/swrQueryKeys'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
-import { getVenuesForOffererAdapter } from 'core/Venue/adapters/getVenuesForOffererAdapter/getVenuesForOffererAdapter'
-import { SelectOption } from 'custom_types/form'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
 import fullLinkIcon from 'icons/full-link.svg'
@@ -64,8 +64,6 @@ export const ReimbursementsDetails = (): JSX.Element => {
 
   const [filters, setFilters] = useState(INITIAL_FILTERS)
   const { venue, periodStart, periodEnd } = filters
-  const [venuesOptions, setVenuesOptions] = useState<SelectOption[]>([])
-  const [isLoading, setIsLoading] = useState(true)
 
   const isPeriodFilterSelected = periodStart && periodEnd
   const requireVenueFilterForAdmin =
@@ -89,20 +87,12 @@ export const ReimbursementsDetails = (): JSX.Element => {
       }))
     )
 
-  useEffect(() => {
-    const loadVenues = async () => {
-      const venuesResponse = await getVenuesForOffererAdapter({
-        offererId: selectedOfferer?.id.toString(),
-        activeOfferersOnly: true,
-      })
-      const selectOptions = buildAndSortVenueFilterOptions(
-        venuesResponse.payload
-      )
-      setVenuesOptions(selectOptions)
-      setIsLoading(false)
-    }
-    void loadVenues()
-  }, [selectedOfferer])
+  const { data, isLoading } = useSWR(
+    [GET_VENUES_QUERY_KEY, selectedOfferer?.id],
+    ([, offererIdParam]) => api.getVenues(null, true, offererIdParam),
+    { fallbackData: { venues: [] } }
+  )
+  const venuesOptions = buildAndSortVenueFilterOptions(data.venues)
 
   if (isLoading) {
     return (
