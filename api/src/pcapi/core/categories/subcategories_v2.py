@@ -534,21 +534,6 @@ class GenreType(Enum):
         return sorted(values, key=lambda x: x.value)
 
 
-NATIVE_CATEGORY_GENRES_TYPES_MAPPING = {
-    NativeCategory_LIVRES_PAPIER.name: GenreType.BOOK,
-    NativeCategory_SEANCES_DE_CINEMA.name: GenreType.MOVIE,
-    NativeCategory_FESTIVALS.name: GenreType.MUSIC,
-    NativeCategory_CD.name: GenreType.MUSIC,
-    NativeCategory_VINYLES.name: GenreType.MUSIC,
-    NativeCategory_MUSIQUE_EN_LIGNE.name: GenreType.MUSIC,
-    NativeCategory_CONCERTS_EN_LIGNE.name: GenreType.MUSIC,
-    NativeCategory_CONCERTS_EVENEMENTS.name: GenreType.MUSIC,
-    NativeCategory_ABONNEMENTS_SPECTACLE.name: GenreType.SHOW,
-    NativeCategory_SPECTACLES_ENREGISTRES.name: GenreType.SHOW,
-    NativeCategory_SPECTACLES_REPRESENTATIONS.name: GenreType.SHOW,
-}
-
-
 class ExtraDataFieldEnum(Enum):
     AUTHOR = "author"
     EAN = "ean"
