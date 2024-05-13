@@ -37,19 +37,20 @@ export const useCollectiveOfferFromParams = (
   const location = useLocation()
   const pathNameIncludesTemplate = location.pathname.includes('vitrine')
 
-  const { offerId, isTemplateId } = extractOfferIdAndOfferTypeFromRouteParams(
-    offerIdFromParams || ''
-  )
+  const { offerId, isTemplateId } =
+    extractOfferIdAndOfferTypeFromRouteParams(offerIdFromParams)
 
   const isTemplate = isTemplateId || pathNameIncludesTemplate
 
   const { data: offer } = useSWR(
-    [
-      isTemplate
-        ? GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY
-        : GET_COLLECTIVE_OFFER_QUERY_KEY,
-      offerId,
-    ],
+    offerId !== undefined
+      ? [
+          isTemplate
+            ? GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY
+            : GET_COLLECTIVE_OFFER_QUERY_KEY,
+          offerId,
+        ]
+      : null,
     ([, offerIdParams]) =>
       isTemplate
         ? api.getCollectiveOfferTemplate(offerIdParams)
