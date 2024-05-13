@@ -1,4 +1,3 @@
-import cn from 'classnames'
 import { FormikProvider, useFormik } from 'formik'
 import React, { useEffect, useState } from 'react'
 import { useFetcher, useNavigate } from 'react-router-dom'
@@ -383,12 +382,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                 />
               </div>
               {mode === OFFER_WIZARD_MODE.EDITION && stocks.length > 0 && (
-                <div
-                  className={cn(
-                    styles['stock-form-info'],
-                    styles['stock-form-info']
-                  )}
-                >
+                <div className={styles['stock-form-info']}>
                   <TextInput
                     name="availableStock"
                     value={

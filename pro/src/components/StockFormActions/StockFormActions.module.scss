@@ -8,6 +8,7 @@
   background-color: transparent;
   border: none;
   display: flex;
+  cursor: pointer;
 
   &-icon {
     width: rem.torem(20px);
@@ -33,17 +34,23 @@
   background: var(--color-white);
 }
 
-.menu-item[data-reach-menu-item] {
+.menu-item {
   @include fonts.button;
 
   display: flex;
+  padding: 8px 16px;
   color: var(--color-black);
-  padding: rem.torem(8px);
 
-  &[data-selected] {
+  &[data-highlighted] {
+    outline: none;
     background: var(--color-grey-medium);
     color: var(--color-black);
     cursor: pointer;
+  }
+
+  &-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 }
 

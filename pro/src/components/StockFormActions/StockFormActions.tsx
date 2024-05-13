@@ -1,42 +1,34 @@
-import { Menu, MenuButton, MenuItem, MenuPopover } from '@reach/menu-button'
-import { positionRight } from '@reach/popover'
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import cn from 'classnames'
 import React from 'react'
 
 import fullOtherIcon from 'icons/full-other.svg'
-import '@reach/menu-button/styles.css'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './StockFormActions.module.scss'
 import { StockFormRowAction } from './types'
+
 export interface StockFormActionsProps {
-  disabled?: boolean
   actions: StockFormRowAction[]
 }
-const StockFormActions = ({
-  disabled = false,
-  actions,
-}: StockFormActionsProps): JSX.Element => {
+const StockFormActions = ({ actions }: StockFormActionsProps): JSX.Element => {
   return (
-    <div className={styles['stock-form-actions']}>
-      <Menu>
-        <MenuButton
-          className={styles['menu-button']}
-          disabled={disabled}
-          title="Opérations sur le stock"
-          type="button"
-          data-testid="stock-form-actions-button-open"
-        >
-          <SvgIcon
-            src={fullOtherIcon}
-            alt="Opérations sur le stock"
-            className={styles['menu-button-icon']}
-          />
-        </MenuButton>
-
-        <MenuPopover position={positionRight} className={styles['menu-list']}>
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger
+        className={styles['menu-button']}
+        title="Opérations sur le stock"
+        data-testid="stock-form-actions-button-open"
+      >
+        <SvgIcon
+          src={fullOtherIcon}
+          alt="Opérations sur le stock"
+          className={styles['menu-button-icon']}
+        />
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content className={styles['menu-list']} align="end">
           {actions.map((action, i) => (
-            <MenuItem
+            <DropdownMenu.Item
               key={`action-${i}`}
               className={cn(styles['menu-item'], {
                 [styles['menu-item-disabled']]: action.disabled,
@@ -53,11 +45,11 @@ const StockFormActions = ({
                 />
               )}
               <span>{action.label}</span>
-            </MenuItem>
+            </DropdownMenu.Item>
           ))}
-        </MenuPopover>
-      </Menu>
-    </div>
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
   )
 }
 

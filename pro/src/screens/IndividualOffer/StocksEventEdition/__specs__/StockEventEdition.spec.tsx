@@ -235,8 +235,7 @@ describe('screens:StocksEventEdition', () => {
     await userEvent.click(
       screen.getAllByTestId('stock-form-actions-button-open')[0]
     )
-    // userEvent.dblClick to fix @reach/menu-button update, to delete after refactor
-    await userEvent.dblClick(screen.getAllByText('Supprimer le stock')[0])
+    await userEvent.click(screen.getByTitle('Supprimer le stock'))
 
     expect(
       await screen.findByText('Le stock a été supprimé.')
@@ -263,8 +262,7 @@ describe('screens:StocksEventEdition', () => {
     await userEvent.click(
       screen.getAllByTestId('stock-form-actions-button-open')[0]
     )
-    // userEvent.dblClick to fix @reach/menu-button update, to delete after refactor
-    await userEvent.dblClick(screen.getAllByText('Supprimer le stock')[0])
+    await userEvent.click(screen.getByTitle('Supprimer le stock'))
 
     await waitFor(() => {
       expect(api.deleteStock).toHaveBeenCalled()
@@ -292,8 +290,7 @@ describe('screens:StocksEventEdition', () => {
     await userEvent.click(
       screen.getAllByTestId('stock-form-actions-button-open')[0]
     )
-    // userEvent.dblClick to fix @reach/menu-button update, to delete after refactor
-    await userEvent.dblClick(screen.getAllByText('Supprimer le stock')[0])
+    await userEvent.click(screen.getByTitle('Supprimer le stock'))
 
     await waitFor(() => {
       expect(api.deleteStock).toHaveBeenCalled()
@@ -313,12 +310,10 @@ describe('screens:StocksEventEdition', () => {
     await renderStockEventScreen(apiOffer, [
       { ...apiStocks[0], isEventDeletable: false },
     ])
-    vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
 
-    await userEvent.click(
-      screen.getAllByTestId('stock-form-actions-button-open')[1]
-    )
-    const deleteButton = screen.getAllByTitle('Supprimer le stock')[0]
+    vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
+    await userEvent.click(screen.getByTestId('stock-form-actions-button-open'))
+    const deleteButton = screen.getByTitle('Supprimer le stock')
     expect(deleteButton).toHaveAttribute('aria-disabled', 'true')
     await userEvent.click(deleteButton)
     expect(api.deleteStock).not.toHaveBeenCalled()
@@ -333,13 +328,8 @@ describe('screens:StocksEventEdition', () => {
     await renderStockEventScreen(apiOffer, apiStocks)
     vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
 
-    await userEvent.click(
-      screen.getAllByTestId('stock-form-actions-button-open')[1]
-    )
-    await userEvent.click(
-      screen.getAllByTestId('stock-form-actions-button-open')[0]
-    )
-    await userEvent.dblClick(screen.getAllByText('Supprimer le stock')[0])
+    await userEvent.click(screen.getByTestId('stock-form-actions-button-open'))
+    await userEvent.click(screen.getByTitle('Supprimer le stock'))
     expect(
       screen.getByText('Voulez-vous supprimer cette date ?')
     ).toBeInTheDocument()
@@ -377,7 +367,7 @@ describe('screens:StocksEventEdition', () => {
     await userEvent.click(
       screen.getAllByTestId('stock-form-actions-button-open')[0]
     )
-    await userEvent.dblClick(screen.getAllByText('Supprimer le stock')[0])
+    await userEvent.click(screen.getByTitle('Supprimer le stock'))
     expect(
       screen.getByText('Voulez-vous supprimer cette date ?')
     ).toBeInTheDocument()
@@ -460,7 +450,7 @@ describe('screens:StocksEventEdition', () => {
     await renderStockEventScreen(apiOffer, apiStocks)
 
     await userEvent.click(screen.getByTestId('stock-form-actions-button-open'))
-    await userEvent.dblClick(await screen.findByText('Supprimer le stock'))
+    await userEvent.click(await screen.findByText('Supprimer le stock'))
 
     await userEvent.click(
       await screen.findByText('Confirmer la suppression', {
@@ -538,9 +528,8 @@ describe('screens:StocksEventEdition', () => {
     vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
     await renderStockEventScreen(apiOffer, apiStocks)
 
-    await userEvent.click(
-      (await screen.findAllByTitle('Supprimer le stock'))[1]
-    )
+    await userEvent.click(screen.getByTestId('stock-form-actions-button-open'))
+    await userEvent.click(screen.getByTitle('Supprimer le stock'))
     expect(
       screen.queryByText('Voulez-vous supprimer ce stock ?')
     ).not.toBeInTheDocument()

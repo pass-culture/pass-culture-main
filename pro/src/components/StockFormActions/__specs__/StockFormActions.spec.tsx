@@ -32,7 +32,7 @@ describe('StockFormActions', () => {
     expect(
       screen.getByTestId('stock-form-actions-button-open')
     ).toBeInTheDocument()
-    expect(screen.getByText('Action label')).not.toBeVisible()
+    expect(screen.queryByText('Action label')).not.toBeInTheDocument()
   })
 
   it('render actions list', async () => {
