@@ -227,18 +227,6 @@ def generate_reimbursement_details_csv(reimbursement_details: Iterable[Reimburse
     return output.getvalue()
 
 
-def find_all_offerer_reimbursement_details(
-    offerer_id: int,
-    reimbursements_period: tuple[datetime.date | None, datetime.date | None],
-    venue_id: int | None = None,
-) -> list[ReimbursementDetails]:
-    return find_all_offerers_reimbursement_details(
-        [offerer_id],
-        reimbursements_period,
-        venue_id=venue_id,
-    )
-
-
 def find_all_offerers_reimbursement_details(
     offerer_ids: list[int],
     reimbursements_period: tuple[datetime.date | None, datetime.date | None],

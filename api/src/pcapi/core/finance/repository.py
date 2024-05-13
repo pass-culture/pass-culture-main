@@ -78,18 +78,6 @@ def has_active_or_future_custom_reimbursement_rule(offer: offers_models.Offer) -
     return db.session.query(query).scalar()
 
 
-def find_all_offerer_payments(
-    offerer_id: int,
-    reimbursement_period: tuple[datetime.date, datetime.date],
-    venue_id: int | None = None,
-) -> list[tuple]:
-    return find_all_offerers_payments(
-        offerer_ids=[offerer_id],
-        reimbursement_period=reimbursement_period,
-        venue_id=venue_id,
-    )
-
-
 def find_all_offerers_payments(
     offerer_ids: list[int],
     reimbursement_period: tuple[datetime.date, datetime.date],
