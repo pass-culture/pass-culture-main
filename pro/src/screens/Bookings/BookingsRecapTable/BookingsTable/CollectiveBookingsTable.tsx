@@ -57,7 +57,6 @@ interface CollectiveBookingsTableProps {
   bookings: CollectiveBookingResponseModel[]
   bookingStatuses: string[]
   updateGlobalFilters: (updatedFilters: Partial<BookingsFilters>) => void
-  reloadBookings: () => void
   defaultOpenedBookingId: string
   resetFilters: () => void
 }
@@ -66,7 +65,6 @@ export const CollectiveBookingsTable = ({
   bookings,
   bookingStatuses,
   updateGlobalFilters,
-  reloadBookings,
   defaultOpenedBookingId,
   resetFilters,
 }: CollectiveBookingsTableProps): JSX.Element => {
@@ -188,7 +186,6 @@ export const CollectiveBookingsTable = ({
             <CollectiveTableRow
               booking={booking}
               key={booking.bookingId}
-              reloadBookings={reloadBookings}
               defaultOpenedBookingId={defaultOpenedBookingId}
             />
           ))}
