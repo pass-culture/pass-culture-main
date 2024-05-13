@@ -81,4 +81,12 @@ describe('useCollectiveOfferFromParams', () => {
 
     expect(result.current.offer).toEqual(undefined)
   })
+
+  it('should return undefined when the offerId in the params is an invalid number', () => {
+    const { result } = renderHook(() =>
+      useCollectiveOfferFromParams(false, 'abcd')
+    )
+
+    expect(result.current.offer).toEqual(undefined)
+  })
 })
