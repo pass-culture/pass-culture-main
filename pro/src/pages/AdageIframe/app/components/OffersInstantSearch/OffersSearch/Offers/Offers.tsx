@@ -23,7 +23,6 @@ import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { isCollectiveOfferTemplate } from 'pages/AdageIframe/app/types'
 import { setSearchView } from 'store/adageFilter/reducer'
 import { adageSearchViewSelector } from 'store/adageFilter/selectors'
-import Spinner from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { LOGS_DATA } from 'utils/config'
 import { sendSentryCustomError } from 'utils/sendSentryCustomError'
@@ -31,6 +30,7 @@ import { sendSentryCustomError } from 'utils/sendSentryCustomError'
 import OfferCardComponent from '../../../AdageDiscovery/OfferCard/OfferCard'
 import { DiffuseHelp } from '../../../DiffuseHelp/DiffuseHelp'
 import { CustomPagination } from '../../../Pagination/Pagination'
+import AdageSkeleton from '../../../Skeleton/AdageSkeleton'
 import { SurveySatisfaction } from '../../../SurveySatisfaction/SurveySatisfaction'
 import ToggleButtonGroup, {
   ToggleButton,
@@ -178,7 +178,9 @@ export const Offers = ({
   if (queriesAreLoading && offers.length === 0) {
     return (
       <div className={styles['offers-loader']}>
-        <Spinner message="Recherche en cours" />
+        <AdageSkeleton />
+        <AdageSkeleton />
+        <AdageSkeleton />
       </div>
     )
   }

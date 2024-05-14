@@ -76,9 +76,7 @@ describe('AdageDiscover classRoomPlaylist', () => {
   it('should call tracker for classroom playlist element', async () => {
     renderNewOfferPlaylist()
 
-    await waitForElementToBeRemoved(() =>
-      screen.queryAllByText(/Chargement en cours/)
-    )
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     const classRoomPlaylistElement = screen.getByText('Une chouette à la mer')
     classRoomPlaylistElement.addEventListener('click', (e) => {
