@@ -1,6 +1,6 @@
 import pcapi.core.finance.conf as finance_conf
-from pcapi.routes.native.utils import convert_to_cent
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.shared.price import convert_to_cent
 from pcapi.serialization.utils import to_camel
 
 
