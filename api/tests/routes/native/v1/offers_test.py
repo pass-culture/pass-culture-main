@@ -1339,10 +1339,11 @@ class OffersStocksTest:
             response = client.post("/native/v1/offers/stocks", json=payload)
 
         # For the test to be deterministic
-        response.json["offers"][0]["stocks"].sort(key=lambda stock: stock["id"])
+        response_offer = response.json["offers"][0]
+        response_offer["stocks"].sort(key=lambda stock: stock["id"])
 
         assert response.status_code == 200
-        assert response.json["offers"][0] == {
+        assert response_offer == {
             "durationMinutes": 33,
             "extraData": {
                 "allocineId": 12345,
