@@ -8,6 +8,7 @@ import {
   GetIndividualOfferResponseModel,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
+import * as useAnalytics from 'app/App/analytics/firebase'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import Notification from 'components/Notification/Notification'
 import {
@@ -16,7 +17,6 @@ import {
 } from 'context/IndividualOfferContext'
 import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
-import * as useAnalytics from 'hooks/useAnalytics'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import {
   getIndividualOfferFactory,

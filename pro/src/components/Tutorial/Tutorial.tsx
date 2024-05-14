@@ -1,6 +1,7 @@
 import cn from 'classnames'
 import React, { useCallback, useEffect, useState } from 'react'
 
+import useAnalytics from 'app/App/analytics/firebase'
 import {
   CreateOffer,
   CreateVenue,
@@ -8,7 +9,6 @@ import {
   Welcome,
 } from 'components/Tutorial/Step'
 import { Events } from 'core/FirebaseEvents/constants'
-import useAnalytics from 'hooks/useAnalytics'
 import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'

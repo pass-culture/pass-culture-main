@@ -1,11 +1,11 @@
 import React from 'react'
 import { useLocation } from 'react-router-dom'
 
+import useAnalytics from 'app/App/analytics/firebase'
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import { Events } from 'core/FirebaseEvents/constants'
 import { NBSP } from 'core/shared/constants'
 import { Audience } from 'core/shared/types'
-import useAnalytics from 'hooks/useAnalytics'
 import fullEyeIcon from 'icons/full-hide.svg'
 
 export interface DeactivationConfirmDialogProps {

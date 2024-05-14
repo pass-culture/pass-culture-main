@@ -9,7 +9,7 @@ import {
   BankAccountResponseModel,
   ManagedVenues,
 } from 'apiClient/v1'
-import * as useAnalytics from 'hooks/useAnalytics'
+import * as useAnalytics from 'app/App/analytics/firebase'
 import { BankInformations } from 'pages/Reimbursements/BankInformations/BankInformations'
 import { ReimbursementsContextProps } from 'pages/Reimbursements/Reimbursements'
 import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'

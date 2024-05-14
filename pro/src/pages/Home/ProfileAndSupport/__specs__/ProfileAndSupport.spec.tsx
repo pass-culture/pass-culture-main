@@ -3,8 +3,8 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
 
+import * as useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'core/FirebaseEvents/constants'
-import * as useAnalytics from 'hooks/useAnalytics'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 

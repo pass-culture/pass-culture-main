@@ -2,6 +2,7 @@ import { FormikProvider, useFormik } from 'formik'
 import React, { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
+import useAnalytics from 'app/App/analytics/firebase'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import {
@@ -16,7 +17,6 @@ import {
   COLLECTIVE_OFFER_SUBTYPE_DUPLICATE,
 } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
-import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
 import strokeProfIcon from 'icons/stroke-prof.svg'

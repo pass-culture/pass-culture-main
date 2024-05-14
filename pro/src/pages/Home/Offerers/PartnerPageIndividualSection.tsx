@@ -1,5 +1,5 @@
+import useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'core/FirebaseEvents/constants'
-import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import fullDuplicateIcon from 'icons/full-duplicate.svg'
 import fullLinkIcon from 'icons/full-link.svg'

@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
-import * as useAnalytics from 'hooks/useAnalytics'
+import * as useAnalytics from 'app/App/analytics/firebase'
 import {
   RedirectToBankAccountDialog,
   RedirectToBankAccountDialogProps,

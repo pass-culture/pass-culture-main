@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import useAnalytics from 'app/App/analytics/firebase'
 import {
   Events,
   OFFER_FROM_TEMPLATE_ENTRIES,
@@ -8,7 +9,6 @@ import {
 import { createOfferFromBookableOffer } from 'core/OfferEducational/utils/createOfferFromBookableOffer'
 import { createOfferFromTemplate } from 'core/OfferEducational/utils/createOfferFromTemplate'
 import useActiveFeature from 'hooks/useActiveFeature'
-import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import copyIcon from 'icons/full-duplicate.svg'
 import fullPlusIcon from 'icons/full-plus.svg'

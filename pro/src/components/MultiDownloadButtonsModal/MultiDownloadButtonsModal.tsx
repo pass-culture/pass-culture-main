@@ -1,8 +1,8 @@
 import React, { useRef, useState } from 'react'
 
+import useAnalytics from 'app/App/analytics/firebase'
 import { PreFiltersParams } from 'core/Bookings/types'
 import { Events } from 'core/FirebaseEvents/constants'
-import useAnalytics from 'hooks/useAnalytics'
 import useOnClickOrFocusOutside from 'hooks/useOnClickOrFocusOutside'
 import fullDownIcon from 'icons/full-down.svg'
 import fullDownloadIcon from 'icons/full-download.svg'

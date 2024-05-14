@@ -2,9 +2,9 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React, { ComponentProps } from 'react'
 
+import * as useAnalytics from 'app/App/analytics/firebase'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
 import { Audience } from 'core/shared/types'
-import * as useAnalytics from 'hooks/useAnalytics'
 import * as bookingDetailsAdapter from 'screens/Bookings/BookingsRecapTable/BookingsTable/getCollectiveBookingAdapter'
 import * as filterBookingsRecap from 'screens/Bookings/BookingsRecapTable/utils/filterBookingsRecap'
 import {
@@ -277,7 +277,7 @@ describe('components | BookingsRecapTable', () => {
 
     const mockLogEvent = vi.fn()
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
-      ...vi.importActual('hooks/useAnalytics'),
+      ...vi.importActual('app/App/analytics/firebase'),
       logEvent: mockLogEvent,
     }))
 

@@ -19,17 +19,13 @@ import { useSelector } from 'react-redux'
 import { firebaseConfig } from 'config/firebase'
 import { AnalyticsContext } from 'context/analyticsContext'
 import useUtmQueryParams from 'hooks/useUtmQueryParams'
-import { selectCurrentOffererId } from 'store/user/selectors'
+import { selectCurrentOffererId, selectCurrentUser } from 'store/user/selectors'
 
-import useRemoteConfig from './useRemoteConfig'
+import useRemoteConfig from '../../../hooks/useRemoteConfig'
 
-export const useConfigureFirebase = ({
-  currentUserId,
-  isCookieEnabled,
-}: {
-  currentUserId: string | undefined
-  isCookieEnabled: boolean
-}) => {
+export const useFirebase = (consentedToFirebase: boolean) => {
+  const currentUser = useSelector(selectCurrentUser)
+
   const [app, setApp] = useState<firebase.FirebaseApp | undefined>()
   const [isFirebaseSupported, setIsFirebaseSupported] = useState<boolean>(false)
   const selectedOffererId = useSelector(selectCurrentOffererId)
@@ -42,11 +38,11 @@ export const useConfigureFirebase = ({
     async function initializeIfNeeded() {
       setIsFirebaseSupported(await isSupported())
     }
-    if (isCookieEnabled) {
+    if (consentedToFirebase) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       initializeIfNeeded()
     }
-  }, [isCookieEnabled])
+  }, [consentedToFirebase])
 
   useEffect(() => {
     const loadAnalytics = async () => {
@@ -87,17 +83,17 @@ export const useConfigureFirebase = ({
         )
     }
 
-    if (isCookieEnabled && !app && isFirebaseSupported) {
+    if (consentedToFirebase && !app && isFirebaseSupported) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       loadAnalytics()
     }
-  }, [isCookieEnabled, app, isFirebaseSupported])
+  }, [consentedToFirebase, app, isFirebaseSupported])
 
   useEffect(() => {
-    if (isCookieEnabled && app && currentUserId && isFirebaseSupported) {
-      setUserId(getAnalytics(app), currentUserId)
+    if (consentedToFirebase && app && currentUser && isFirebaseSupported) {
+      setUserId(getAnalytics(app), currentUser.id.toString())
     }
-  }, [isCookieEnabled, app, currentUserId])
+  }, [consentedToFirebase, app, currentUser])
 
   useEffect(() => {
     if (app && isFirebaseSupported && selectedOffererId) {

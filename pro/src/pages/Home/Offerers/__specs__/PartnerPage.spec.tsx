@@ -3,9 +3,9 @@ import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router-dom'
 
 import { VenueTypeCode } from 'apiClient/v1'
+import * as useAnalytics from 'app/App/analytics/firebase'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { Events } from 'core/FirebaseEvents/constants'
-import * as useAnalytics from 'hooks/useAnalytics'
 import {
   defaultGetOffererVenueResponseModel,
   defaultGetOffererResponseModel,

@@ -1,6 +1,7 @@
 import cn from 'classnames'
 import { useLocation, useNavigate } from 'react-router-dom'
 
+import useAnalytics from 'app/App/analytics/firebase'
 import Stepper from 'components/Stepper'
 import { Step } from 'components/Stepper/Stepper'
 import {
@@ -10,7 +11,6 @@ import {
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { createOfferFromTemplate } from 'core/OfferEducational/utils/createOfferFromTemplate'
 import useActiveFeature from 'hooks/useActiveFeature'
-import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { useOfferStockEditionURL } from 'hooks/useOfferEditionURL'
 import fullEditIcon from 'icons/full-edit.svg'

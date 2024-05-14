@@ -11,8 +11,8 @@ import {
   renderWithProviders,
 } from 'utils/renderWithProviders'
 
+import * as useAnalytics from '../../../../app/App/analytics/firebase'
 import { Events, VenueEvents } from '../../../../core/FirebaseEvents/constants'
-import * as useAnalytics from '../../../../hooks/useAnalytics'
 import * as venueUtils from '../../venueUtils'
 import { VenueOfferSteps, VenueOfferStepsProps } from '../VenueOfferSteps'
 

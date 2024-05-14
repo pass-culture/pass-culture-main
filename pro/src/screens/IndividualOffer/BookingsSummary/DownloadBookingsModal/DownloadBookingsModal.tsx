@@ -7,9 +7,9 @@ import {
   BookingsExportStatusFilter,
   EventDatesInfos,
 } from 'apiClient/v1'
+import useAnalytics from 'app/App/analytics/firebase'
 import DialogBox from 'components/DialogBox'
 import { Events } from 'core/FirebaseEvents/constants'
-import useAnalytics from 'hooks/useAnalytics'
 import strokeDeskIcon from 'icons/stroke-desk.svg'
 import { daysOfWeek } from 'pages/VenueEdition/OpeningHoursForm/OpeningHoursForm'
 import { Button } from 'ui-kit/Button/Button'

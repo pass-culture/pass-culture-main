@@ -7,9 +7,9 @@ import {
   GetOffererBankAccountsResponseModel,
   ManagedVenues,
 } from 'apiClient/v1'
+import useAnalytics from 'app/App/analytics/firebase'
 import ReimbursementBankAccount from 'components/ReimbursementBankAccount/ReimbursementBankAccount'
 import { BankAccountEvents } from 'core/FirebaseEvents/constants'
-import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullMoreIcon from 'icons/full-more.svg'
