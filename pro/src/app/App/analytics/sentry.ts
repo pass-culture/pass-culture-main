@@ -15,7 +15,7 @@ import {
   SENTRY_SERVER_URL,
 } from 'utils/config'
 
-import config from '../package.json'
+import config from '../../../../package.json'
 
 export const initializeSentry = () => {
   SentryInit({
