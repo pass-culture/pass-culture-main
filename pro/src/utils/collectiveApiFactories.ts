@@ -96,6 +96,7 @@ const sharedCollectiveOfferData = {
     id: 1,
     name: 'Collège au cinéma',
   },
+  provider: null,
   formats: [EacFormat.ATELIER_DE_PRATIQUE],
 }
 
