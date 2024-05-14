@@ -615,14 +615,21 @@ def _cancel_external_booking(booking: Booking, stock: Stock) -> None:
     external_bookings_api.cancel_booking(stock.offer.venueId, barcodes)
 
 
-def _cancel_bookings_from_stock(stock: offers_models.Stock, reason: BookingCancellationReasons) -> list[Booking]:
+def _cancel_bookings_from_stock(
+    stock: offers_models.Stock, reason: BookingCancellationReasons, one_side_cancellation: bool = False
+) -> list[Booking]:
     """
     Cancel multiple bookings and update the users' credit information on Batch.
     Note that this will not reindex the stock.offer in Algolia
     """
     deleted_bookings: list[Booking] = []
     for booking in stock.bookings:
-        if _cancel_booking(booking, reason, cancel_even_if_used=typing.cast(bool, stock.offer.isEvent)):
+        if _cancel_booking(
+            booking,
+            reason,
+            cancel_even_if_used=typing.cast(bool, stock.offer.isEvent),
+            one_side_cancellation=one_side_cancellation,
+        ):
             deleted_bookings.append(booking)
 
     return deleted_bookings
@@ -644,7 +651,7 @@ def cancel_booking_by_offerer(booking: Booking) -> None:
 
 
 def cancel_bookings_from_stock_by_offerer(stock: offers_models.Stock) -> list[Booking]:
-    return _cancel_bookings_from_stock(stock, BookingCancellationReasons.OFFERER)
+    return _cancel_bookings_from_stock(stock, BookingCancellationReasons.OFFERER, one_side_cancellation=True)
 
 
 def cancel_bookings_from_rejected_offer(offer: offers_models.Offer) -> list[Booking]:
