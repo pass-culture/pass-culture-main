@@ -2,8 +2,8 @@ import './styles/index.scss'
 import React from 'react'
 import { createRoot } from 'react-dom/client'
 
+import { initializeSentry } from 'app/App/analytics/sentry'
 import Root from 'Root'
-import { initializeSentry } from 'sentry'
 import { SENTRY_SERVER_URL } from 'utils/config'
 
 import { unregister } from './registerServiceWorker'
