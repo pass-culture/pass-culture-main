@@ -361,6 +361,13 @@ class GetCollectiveOfferRequestResponseModel(BaseModel):
         allow_population_by_field_name = True
 
 
+class GetCollectiveOfferProviderResponseModel(BaseModel):
+    name: str
+
+    class Config:
+        orm_mode = True
+
+
 class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
     isBookable: bool
     collectiveStock: GetCollectiveOfferCollectiveStockResponseModel | None
@@ -371,6 +378,7 @@ class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
     lastBookingId: int | None
     teacher: EducationalRedactorResponseModel | None
     isPublicApi: bool
+    provider: GetCollectiveOfferProviderResponseModel | None
     formats: typing.Sequence[subcategories.EacFormat] | None
     isTemplate: bool = False
 
