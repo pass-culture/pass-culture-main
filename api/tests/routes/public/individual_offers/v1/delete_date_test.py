@@ -1,6 +1,7 @@
+import datetime
+
 import pytest
 
-from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers.models import WithdrawalTypeEnum
@@ -43,15 +44,15 @@ class DeleteDateTest:
         assert response.json is None
         assert stock_to_delete.isSoftDeleted is True
 
-    def test_400_if_delete_date_with_booked_stock_from_charlie_api(self, client):
+    def test_400_if_event_stock_beginning_date_was_more_than_two_days_ago(self, client):
         venue, api_key = utils.create_offerer_provider_linked_to_venue(with_charlie=True)
         event_offer = offers_factories.EventOfferFactory(
             venue=venue,
             lastProvider=api_key.provider,
             withdrawalType=WithdrawalTypeEnum.IN_APP,
         )
-        stock_to_delete = offers_factories.EventStockFactory(offer=event_offer)
-        bookings_factories.BookingFactory(quantity=1, stock=stock_to_delete)
+        too_long_ago = datetime.datetime.utcnow() - datetime.timedelta(days=3)
+        stock_to_delete = offers_factories.EventStockFactory(offer=event_offer, beginningDatetime=too_long_ago)
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).delete(
             f"/public/offers/v1/events/{event_offer.id}/dates/{stock_to_delete.id}",
@@ -59,8 +60,7 @@ class DeleteDateTest:
 
         assert response.status_code == 400
         assert response.json == {
-            "code": "STOCK_FROM_CHARLIE_API_CANNOT_BE_DELETED",
-            "global": ["You can't delete a stock where bookings have tickets"],
+            "global": ["L'évènement s'est terminé il y a plus de deux jours, la suppression est impossible."],
         }
         assert stock_to_delete.isSoftDeleted is False
 

@@ -266,19 +266,8 @@ def check_event_expiration(stock: educational_models.CollectiveStock | models.St
 
 def check_stock_is_deletable(stock: models.Stock) -> None:
     check_validation_status(stock.offer)
-    check_stock_is_not_from_charlie_api(stock)
     if not stock.isEventDeletable:
         raise exceptions.TooLateToDeleteStock()
-
-
-def check_stock_is_not_from_charlie_api(stock: models.Stock) -> None:
-    if (
-        stock.dnBookedQuantity
-        and stock.offer.lastProvider
-        and stock.offer.lastProvider.hasProviderEnableCharlie
-        and stock.offer.withdrawalType == models.WithdrawalTypeEnum.IN_APP
-    ):
-        raise exceptions.StockFromCharlieApiCannotBeDeleted()
 
 
 def check_update_only_allowed_stock_fields_for_allocine_offer(updated_fields: set) -> None:
