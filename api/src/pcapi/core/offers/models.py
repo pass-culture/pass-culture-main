@@ -35,6 +35,7 @@ from pcapi.models.offer_mixin import ValidationMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.providable_mixin import ProvidableMixin
 from pcapi.models.soft_deletable_mixin import SoftDeletableMixin
+from pcapi.utils.db import MagicEnum
 
 
 logger = logging.getLogger(__name__)
@@ -135,11 +136,23 @@ class ProductMediation(PcObject, Base, Model, ProvidableMixin):
     imageType = sa.Column(sa.Enum(TiteliveImageType), nullable=False)
 
 
+class GcuCompatibilityType(enum.Enum):
+    COMPATIBLE = "COMPATIBLE"
+    PROVIDER_INCOMPATIBLE = "PROVIDER_INCOMPATIBLE"
+    FRAUD_INCOMPATIBLE = "FRAUD_INCOMPATIBLE"
+
+
 class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
     description = sa.Column(sa.Text, nullable=True)
     durationMinutes = sa.Column(sa.Integer, nullable=True)
     extraData: OfferExtraData | None = sa.Column("jsonData", sa_mutable.MutableDict.as_mutable(postgresql.JSONB))
     isGcuCompatible: bool = sa.Column(sa.Boolean, default=True, server_default=sa.true(), nullable=False)
+    gcuCompatibilityType = sa.Column(
+        MagicEnum(GcuCompatibilityType),
+        nullable=False,
+        default=GcuCompatibilityType.COMPATIBLE,
+        server_default=GcuCompatibilityType.COMPATIBLE.value,
+    )
     last_30_days_booking = sa.Column(sa.Integer, nullable=True)
     name: str = sa.Column(sa.String(140), nullable=False)
     subcategoryId: str = sa.Column(sa.Text, nullable=False, index=True)
@@ -159,6 +172,10 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
         if self.subcategoryId not in subcategories_v2.ALL_SUBCATEGORIES_DICT:
             raise ValueError(f"Unexpected subcategoryId '{self.subcategoryId}' for product {self.id}")
         return subcategories_v2.ALL_SUBCATEGORIES_DICT[self.subcategoryId]
+
+    @property
+    def isGcuCompatibleTemp(self) -> bool:
+        return self.gcuCompatibilityType == GcuCompatibilityType.COMPATIBLE
 
     @hybrid_property
     def can_be_synchronized(self) -> bool:
