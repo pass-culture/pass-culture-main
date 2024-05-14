@@ -50,7 +50,7 @@ export const LostPassword = (): JSX.Element => {
       <div className={styles['content']}>
         {mailSent ? (
           <Hero
-            linkLabel="Revenir à l’accueil"
+            linkLabel="Retourner sur la page de connexion"
             linkTo="/"
             text="Vous allez recevoir par email les instructions pour définir un nouveau mot de passe."
             title="Merci !"
