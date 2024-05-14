@@ -889,11 +889,14 @@ def add_criteria_to_offers(
 def reject_inappropriate_products(
     eans: list[str],
     author: users_models.User | None,
-    is_gcu_incompatible: bool = False,
+    rejected_by_gcu_incompatibility: bool = False,
     send_booking_cancellation_emails: bool = True,
 ) -> bool:
     products = models.Product.query.filter(
-        models.Product.extraData["ean"].astext.in_(eans), models.Product.idAtProviders.is_not(None)
+        models.Product.extraData["ean"].astext.in_(eans),
+        models.Product.idAtProviders.is_not(None),
+        # TODO: add filter in next PR
+        # models.Product.gcuCompatibilityType != models.GcuCompatibilityType.FRAUD_INCOMPATIBLE,
     )
 
     if not products:
@@ -921,6 +924,11 @@ def reject_inappropriate_products(
 
     for product in products:
         product.isGcuCompatible = False
+        product.gcuCompatibilityType = (
+            models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
+            if rejected_by_gcu_incompatibility
+            else models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE
+        )
 
     try:
         db.session.commit()
@@ -944,7 +952,9 @@ def reject_inappropriate_products(
         if send_booking_cancellation_emails:
             for booking in bookings:
                 transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(
-                    booking, reason=BookingCancellationReasons.FRAUD, is_gcu_incompatible=is_gcu_incompatible
+                    booking,
+                    reason=BookingCancellationReasons.FRAUD,
+                    rejected_by_gcu_incompatibility=rejected_by_gcu_incompatibility,
                 )
 
     logger.info(
@@ -1246,6 +1256,7 @@ def whitelist_product(idAtProviders: str) -> models.Product | None:
     product = fetch_or_update_product_with_titelive_data(titelive_product)
 
     product.isGcuCompatible = True
+    product.gcuCompatibilityType = models.GcuCompatibilityType.COMPATIBLE
 
     db.session.add(product)
     db.session.commit()
@@ -1355,7 +1366,8 @@ def delete_price_category(offer: models.Offer, price_category: models.PriceCateg
 
 def approves_provider_product_and_rejected_offers(ean: str) -> None:
     product = models.Product.query.filter(
-        models.Product.isGcuCompatible.is_(False),
+        # TODO: add filter in next PR
+        # models.Product.gcuCompatibilityType == models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE,
         models.Product.extraData["ean"].astext == ean,
         models.Product.idAtProviders.is_not(None),
     ).one_or_none()
@@ -1367,6 +1379,7 @@ def approves_provider_product_and_rejected_offers(ean: str) -> None:
     try:
         with transaction():
             product.isGcuCompatible = True
+            product.gcuCompatibilityType = models.GcuCompatibilityType.COMPATIBLE
             db.session.add(product)
 
             offers_query = models.Offer.query.filter(
