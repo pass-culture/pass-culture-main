@@ -4,7 +4,6 @@ import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
-import { BannerPublicApi } from 'components/Banner/BannerPublicApi'
 import { SummaryContent } from 'components/SummaryLayout/SummaryContent'
 import { SummaryLayout } from 'components/SummaryLayout/SummaryLayout'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
@@ -12,8 +11,8 @@ import {
   isCollectiveOffer,
   isCollectiveOfferTemplate,
 } from 'core/OfferEducational/types'
+import SynchronizedProviderInformation from 'screens/IndividualOffer/SynchronisedProviderInfos/SynchronizedProviderInformation'
 
-import styles from './CollectiveOfferSummary.module.scss'
 import { CollectiveOfferAccessibilitySection } from './components/CollectiveOfferAccessibilitySection'
 import { CollectiveOfferContactSection } from './components/CollectiveOfferContactSection'
 import { CollectiveOfferDateSection } from './components/CollectiveOfferDateSection'
@@ -49,11 +48,10 @@ export const CollectiveOfferSummary = ({
     <>
       <SummaryLayout>
         <SummaryContent fullWidth>
-          {isCollectiveOffer(offer) && offer.isPublicApi && (
-            <BannerPublicApi className={styles['banner-space']}>
-              Offre créée par votre outil de billetterie via l’API offres
-              collectives
-            </BannerPublicApi>
+          {isCollectiveOffer(offer) && offer.provider?.name && (
+            <SynchronizedProviderInformation
+              providerName={offer.provider.name}
+            />
           )}
           <SummarySection
             title="Détails de l’offre"
