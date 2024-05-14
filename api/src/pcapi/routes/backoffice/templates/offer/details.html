@@ -193,6 +193,20 @@
                   <span class="fw-bold">Lieu :</span> {{ links.build_venue_name_to_details_link(offer.venue) }}
                 </p>
               </div>
+              {% if offer.offererAddress %}
+                <div class="fs-6">
+                  <p class="mb-1">
+                    <span class="fw-bold">Adresse :</span>
+                    <span class="fst-italic">{{ offer.offererAddress.label }}</span>
+                    <br />
+                    {{ offer.offererAddress.address.street }}
+                    <br />
+                    {{ offer.offererAddress.address.postalCode }} {{ offer.offererAddress.address.city }}
+                    <br />
+                    {{ links.build_external_address_link(offer.offererAddress.address) }}
+                  </p>
+                </div>
+              {% endif %}
             </div>
           </div>
         </div>
