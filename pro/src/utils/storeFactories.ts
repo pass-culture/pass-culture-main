@@ -10,5 +10,6 @@ export const sharedCurrentUserFactory = (
   isAdmin: false,
   isEmailValidated: true,
   roles: [],
+  isImpersonated: false,
   ...customSharedCurrentUser,
 })

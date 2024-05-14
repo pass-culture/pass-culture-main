@@ -189,7 +189,7 @@ class SharedCurrentUserResponseModel(BaseModel):
     roles: list[users_models.UserRole]
     navState: NavStateResponseModel | None
     hasPartnerPage: bool | None
-    isImpersonated: bool = False
+    isImpersonated: bool
 
     class Config:
         json_encoders = {datetime: format_into_utc_date}
