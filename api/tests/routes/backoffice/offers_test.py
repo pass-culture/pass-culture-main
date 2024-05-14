@@ -19,6 +19,7 @@ from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.finance import conf as finance_conf
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
+from pcapi.core.geography import factories as geography_factories
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
@@ -1612,6 +1613,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert "État : Validée" in card_text
         assert "Structure : Le Petit Rintintin Management" in card_text
         assert "Lieu : Le Petit Rintintin" in card_text
+        assert "Adresse :" not in card_text  # no offererAddress
         assert "Utilisateur de la dernière validation" not in card_text
         assert "Date de dernière validation" not in card_text
         assert "Resynchroniser l'offre dans Algolia" in card_text
@@ -1848,6 +1850,29 @@ class GetOfferDetailsTest(GetEndpointHelper):
         cards_text = html_parser.extract_cards_text(response.data)
         assert len(cards_text) == 1
         assert "Modifier le lieu" in cards_text[0]
+
+    def test_get_offer_details_with_offerer_address(self, authenticated_client):
+        address = geography_factories.AddressFactory(
+            street="1v Place Jacques Rueff",
+            postalCode="75007",
+            city="Paris",
+            latitude=48.85605,
+            longitude=2.298,
+            inseeCode="75107",
+            banId="75107_4803_00001_v",
+        )
+        offerer_adress = offerers_factories.OffererAddressFactory(label="Champ de Mars", address=address)
+        offer = offers_factories.OfferFactory(
+            offererAddressId=offerer_adress.id, venue__managingOfferer=offerer_adress.offerer
+        )
+
+        url = url_for(self.endpoint, offer_id=offer.id)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        text = html_parser.extract_cards_text(response.data)[0]
+        assert "Adresse : Champ de Mars 1v Place Jacques Rueff 75007 Paris 48.85605, 2.29800" in text
 
 
 class IndexOfferButtonTest(button_helpers.ButtonHelper):

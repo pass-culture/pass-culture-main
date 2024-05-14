@@ -2,6 +2,7 @@ import logging
 
 from pcapi.core.geography import factories as geography_factories
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offers import factories as offers_factories
 
 
 logger = logging.getLogger(__name__)
@@ -19,7 +20,6 @@ def create_industrial_offerer_addresses() -> None:
         inseeCode="75112",
         banId="75112_0877_00008",
     )
-    offerers_factories.OffererAddressFactory(label="Accor Arena", address=bercy_address, offerer=offerer_with_addresses)
     grevin_address = geography_factories.AddressFactory(
         street="10 Boulevard Montmartre",
         postalCode="75009",
@@ -28,9 +28,6 @@ def create_industrial_offerer_addresses() -> None:
         longitude=2.342,
         inseeCode="75109",
         banId="75109_6510_00010",
-    )
-    offerers_factories.OffererAddressFactory(
-        label="Musée Grévin", address=grevin_address, offerer=offerer_with_addresses
     )
     lacigale_address = geography_factories.AddressFactory(
         street="120 Boulevard Marguerite de Rochechouart",
@@ -41,11 +38,34 @@ def create_industrial_offerer_addresses() -> None:
         inseeCode="75118",
         banId="75118_8288_00120",
     )
-    offerers_factories.OffererAddressFactory(
-        label="La cigale", address=lacigale_address, offerer=offerer_with_addresses
+    offerer_adresses = [
+        offerers_factories.OffererAddressFactory(
+            label="Accor Arena", address=bercy_address, offerer=offerer_with_addresses
+        ),
+        offerers_factories.OffererAddressFactory(
+            label="Musée Grévin", address=grevin_address, offerer=offerer_with_addresses
+        ),
+        offerers_factories.OffererAddressFactory(
+            label="La cigale", address=lacigale_address, offerer=offerer_with_addresses
+        ),
+    ]
+    venue_with_addresses = offerers_factories.VenueFactory(
+        managingOfferer=offerer_with_addresses, name="Lieu de la structure avec plusieurs adresses"
     )
+    for offerer_address in offerer_adresses:
+        offers_factories.OfferFactory(
+            venue=venue_with_addresses,
+            name=f"Offre localisée à {offerer_address.label}",
+            offererAddress=offerer_address,
+        )
 
     offerer_with_one_address = offerers_factories.OffererFactory(name="2 - Structure avec une adresse")
-    offerers_factories.OffererAddressFactory(
+    offerer_address_one = offerers_factories.OffererAddressFactory(
         label="Bercy Accor Arena", address=bercy_address, offerer=offerer_with_one_address
+    )
+    venue_with_one_address = offerers_factories.VenueFactory(
+        managingOfferer=offerer_with_one_address, name="Lieu de la structure avec une adresse"
+    )
+    offers_factories.OfferFactory(
+        venue=venue_with_one_address, name="Offre avec une adresse", offererAddress=offerer_address_one
     )
