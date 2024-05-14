@@ -148,7 +148,9 @@ describe('BookingsSummary', () => {
 
     await userEvent.click(downloadButton)
 
-    expect(screen.getByText('Télécharger vos réservations')).toBeInTheDocument()
+    expect(
+      screen.getByText('Téléchargement de vos réservations')
+    ).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Annuler' })).toBeInTheDocument()
     expect(
       screen.getByRole('button', { name: 'Télécharger au format CSV' })
