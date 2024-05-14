@@ -79,7 +79,7 @@ const NewNavReviewDialog = ({
             <h1 className={styles['dialog-title']}>Votre avis compte !</h1>
             <fieldset>
               <legend className={styles['radio-legend']}>
-                Selon vous, cette nouvelle interface est ... ? *
+                Selon vous, cette nouvelle interface est… ?
               </legend>
               <ol>
                 <li className={styles['form-row']}>
