@@ -3,8 +3,8 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { DMSApplicationForEAC, DMSApplicationstatus } from 'apiClient/v1'
+import * as useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'core/FirebaseEvents/constants'
-import * as useAnalytics from 'hooks/useAnalytics'
 import { defaultDMSApplicationForEAC } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -98,7 +98,7 @@ describe('CollectiveDmsTimeline', () => {
   ]
   beforeEach(() => {
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
-      ...vi.importActual('hooks/useAnalytics'),
+      ...vi.importActual('app/App/analytics/firebase'),
       logEvent: mockLogEvent,
     }))
   })

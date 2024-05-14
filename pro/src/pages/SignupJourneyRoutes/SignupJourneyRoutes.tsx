@@ -1,12 +1,12 @@
 import { useEffect } from 'react'
 import { Link, Outlet, useLocation } from 'react-router-dom'
 
+import useAnalytics from 'app/App/analytics/firebase'
 import { AppLayout } from 'app/AppLayout'
 import Header from 'components/Header/Header'
 import { SignupJourneyFormLayout } from 'components/SignupJourneyFormLayout'
 import { SignupJourneyContextProvider } from 'context/SignupJourneyContext'
 import { Events } from 'core/FirebaseEvents/constants'
-import useAnalytics from 'hooks/useAnalytics'
 import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
 import fullLogoutIcon from 'icons/full-logout.svg'
 import logoPassCultureProIcon from 'icons/logo-pass-culture-pro.svg'

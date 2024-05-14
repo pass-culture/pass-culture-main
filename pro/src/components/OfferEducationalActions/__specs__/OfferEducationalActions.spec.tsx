@@ -4,10 +4,10 @@ import React from 'react'
 
 import { api } from 'apiClient/api'
 import { CollectiveBookingStatus, OfferStatus } from 'apiClient/v1'
+import * as useAnalytics from 'app/App/analytics/firebase'
 import { GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY } from 'config/swrQueryKeys'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
 import { Mode } from 'core/OfferEducational/types'
-import * as useAnalytics from 'hooks/useAnalytics'
 import * as useNotification from 'hooks/useNotification'
 import {
   getCollectiveOfferFactory,
@@ -167,7 +167,7 @@ describe('OfferEducationalActions', () => {
   it('should log event when clicked on booking link', async () => {
     const mockLogEvent = vi.fn()
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
-      ...vi.importActual('hooks/useAnalytics'),
+      ...vi.importActual('app/App/analytics/firebase'),
       logEvent: mockLogEvent,
     }))
     renderOfferEducationalActions({

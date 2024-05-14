@@ -3,6 +3,7 @@ import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import { ListOffersOfferResponseModel } from 'apiClient/v1'
+import useAnalytics from 'app/App/analytics/firebase'
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import {
   Events,
@@ -11,7 +12,6 @@ import {
 } from 'core/FirebaseEvents/constants'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
-import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import fullTrashIcon from 'icons/full-trash.svg'
 import strokeTrashIcon from 'icons/stroke-trash.svg'

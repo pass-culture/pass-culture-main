@@ -1,8 +1,8 @@
 import React from 'react'
 
 import { CollectiveBookingStatus } from 'apiClient/v1'
+import useAnalytics from 'app/App/analytics/firebase'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
-import useAnalytics from 'hooks/useAnalytics'
 import arrowIcon from 'icons/full-arrow-right.svg'
 import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
 import {

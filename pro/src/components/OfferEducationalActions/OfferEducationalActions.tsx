@@ -8,6 +8,7 @@ import {
   CollectiveBookingStatus,
   OfferStatus,
 } from 'apiClient/v1'
+import useAnalytics from 'app/App/analytics/firebase'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
@@ -20,7 +21,6 @@ import {
   isCollectiveOfferTemplate,
   Mode,
 } from 'core/OfferEducational/types'
-import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import fullHideIcon from 'icons/full-hide.svg'
 import fullNextIcon from 'icons/full-next.svg'

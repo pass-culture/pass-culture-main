@@ -5,6 +5,7 @@ import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import { SaveNewOnboardingDataQueryModel, Target } from 'apiClient/v1'
+import useAnalytics from 'app/App/analytics/firebase'
 import Callout from 'components/Callout/Callout'
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
@@ -14,7 +15,6 @@ import {
   useSignupJourneyContext,
 } from 'context/SignupJourneyContext'
 import { Events } from 'core/FirebaseEvents/constants'
-import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useInitReCaptcha from 'hooks/useInitReCaptcha'
 import useNotification from 'hooks/useNotification'
