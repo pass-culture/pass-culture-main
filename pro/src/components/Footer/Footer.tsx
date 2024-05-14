@@ -1,13 +1,13 @@
 import classNames from 'classnames'
 import { useSelector } from 'react-redux'
 
+import { orejime } from 'app/App/analytics/orejime'
 import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
 import fullLinkIcon from 'icons/full-link.svg'
 import { selectCurrentUser } from 'store/user/selectors'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { initCookieConsent } from 'utils/cookieConsentModal'
 
 import styles from './Footer.module.scss'
 
@@ -77,7 +77,7 @@ export default function Footer({ layout }: FooterProps) {
           <Button
             variant={ButtonVariant.QUATERNARY}
             className={styles['cookies-footer-link']}
-            onClick={() => initCookieConsent().show()}
+            onClick={() => orejime.show()}
           >
             Gestion des cookies
           </Button>
