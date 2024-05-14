@@ -7,8 +7,8 @@ from pcapi.core.categories.subcategories_v2 import SubcategoryIdEnum
 from pcapi.core.offers.api import get_expense_domains
 from pcapi.core.offers.models import Offer
 from pcapi.core.users.models import ExpenseDomain
-from pcapi.routes.native.utils import convert_to_cent
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.shared.price import convert_to_cent
 from pcapi.utils.date import format_into_utc_date
 
 
