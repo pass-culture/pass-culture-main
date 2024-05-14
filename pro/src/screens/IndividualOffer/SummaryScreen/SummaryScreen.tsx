@@ -153,7 +153,7 @@ const SummaryScreen = () => {
               alt=""
               className={styles['icon-info-phone']}
             />
-            <span>Aperçu dans l’app</span>
+            <h2>Aperçu dans l’app</h2>
           </div>
 
           <OfferAppPreview offer={offer} />

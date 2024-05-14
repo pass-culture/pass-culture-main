@@ -38,9 +38,9 @@ const OfferAppPreview = ({ offer }: OfferAppPreviewProps): JSX.Element => {
 
       <div className={style['offer-data-container']}>
         {offer.name && (
-          <h2 className={style['offer-title']}>
+          <div className={style['offer-title']}>
             {cropPreviewText(offer.name, 90)}
-          </h2>
+          </div>
         )}
 
         <OptionsIcons
