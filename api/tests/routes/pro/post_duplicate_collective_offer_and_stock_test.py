@@ -155,6 +155,7 @@ class Returns200Test:
             "lastBookingId": None,
             "teacher": None,
             "nationalProgram": {"id": national_program.id, "name": national_program.name},
+            "provider": None,
             "formats": [fmt.value for fmt in subcategories.SEANCE_CINE.formats],
             "isTemplate": False,
         }
