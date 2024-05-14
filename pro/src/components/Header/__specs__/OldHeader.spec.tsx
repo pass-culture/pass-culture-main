@@ -2,8 +2,8 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
+import * as useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'core/FirebaseEvents/constants'
-import * as useAnalytics from 'hooks/useAnalytics'
 import { getOffererNameFactory } from 'utils/individualApiFactories'
 import {
   RenderWithProvidersOptions,

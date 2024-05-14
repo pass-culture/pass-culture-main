@@ -1,9 +1,9 @@
 import React from 'react'
 import { useLocation } from 'react-router-dom'
 
+import useAnalytics from 'app/App/analytics/firebase'
 import { orejime } from 'app/App/analytics/orejime'
 import { Events } from 'core/FirebaseEvents/constants'
-import useAnalytics from 'hooks/useAnalytics'
 import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullMailIcon from 'icons/full-mail.svg'

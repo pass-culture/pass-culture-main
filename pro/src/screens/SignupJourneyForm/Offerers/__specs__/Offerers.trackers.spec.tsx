@@ -3,13 +3,13 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { api } from 'apiClient/api'
+import * as useAnalytics from 'app/App/analytics/firebase'
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
 import {
   SignupJourneyContext,
   SignupJourneyContextValues,
 } from 'context/SignupJourneyContext'
 import { Events } from 'core/FirebaseEvents/constants'
-import * as useAnalytics from 'hooks/useAnalytics'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'

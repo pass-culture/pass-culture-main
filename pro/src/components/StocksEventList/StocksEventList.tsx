@@ -9,9 +9,9 @@ import {
   PriceCategoryResponseModel,
   StocksOrderedBy,
 } from 'apiClient/v1'
+import useAnalytics from 'app/App/analytics/firebase'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { Events } from 'core/FirebaseEvents/constants'
-import useAnalytics from 'hooks/useAnalytics'
 import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'
 import useNotification from 'hooks/useNotification'
 import { usePaginationWithSearchParams } from 'hooks/usePagination'

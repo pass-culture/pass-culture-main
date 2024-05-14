@@ -2,10 +2,10 @@ import { FormikProvider, useFormik } from 'formik'
 import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import useAnalytics from 'app/App/analytics/firebase'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
 import { useSignupJourneyContext } from 'context/SignupJourneyContext'
-import useAnalytics from 'hooks/useAnalytics'
 
 import { ActionBar } from '../ActionBar'
 import { DEFAULT_OFFERER_FORM_VALUES } from '../Offerer/constants'

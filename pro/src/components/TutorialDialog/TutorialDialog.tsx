@@ -2,10 +2,10 @@ import React, { useCallback, useState } from 'react'
 import { useDispatch } from 'react-redux'
 
 import { api } from 'apiClient/api'
+import useAnalytics from 'app/App/analytics/firebase'
 import DialogBox from 'components/DialogBox/DialogBox'
 import { TUTO_DIALOG_LABEL_ID, Tutorial } from 'components/Tutorial'
 import { Events } from 'core/FirebaseEvents/constants'
-import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import { updateUser } from 'store/user/reducer'
 

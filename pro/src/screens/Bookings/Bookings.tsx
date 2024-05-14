@@ -7,6 +7,7 @@ import {
   BookingStatusFilter,
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
+import useAnalytics from 'app/App/analytics/firebase'
 import NoData from 'components/NoData'
 import {
   GET_BOOKINGS_QUERY_KEY,
@@ -17,7 +18,6 @@ import { GetVenuesAdapter, PreFiltersParams } from 'core/Bookings/types'
 import { Events } from 'core/FirebaseEvents/constants'
 import { Audience } from 'core/shared/types'
 import { SelectOption } from 'custom_types/form'
-import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
 import useNotification from 'hooks/useNotification'

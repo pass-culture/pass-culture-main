@@ -1,7 +1,7 @@
 import React from 'react'
 
+import useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'core/FirebaseEvents/constants'
-import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import fullEditIcon from 'icons/full-edit.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'

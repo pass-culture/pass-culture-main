@@ -7,8 +7,9 @@ import { expect, vi } from 'vitest'
 
 import { firebaseConfig } from 'config/firebase'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
-import { useConfigureFirebase } from '../useAnalytics'
+import { useFirebase } from '../firebase'
 
 vi.mock('@firebase/analytics', () => ({
   getAnalytics: vi.fn(),
@@ -33,13 +34,16 @@ const FakeApp = ({
 }: {
   isCookieEnabled: boolean
 }): JSX.Element => {
-  useConfigureFirebase({ currentUserId: 'userId', isCookieEnabled })
+  useFirebase(isCookieEnabled)
 
   return <h1>Fake App</h1>
 }
 
+const user = sharedCurrentUserFactory()
 const renderFakeApp = ({ isCookieEnabled }: { isCookieEnabled: boolean }) => {
-  return renderWithProviders(<FakeApp isCookieEnabled={isCookieEnabled} />)
+  return renderWithProviders(<FakeApp isCookieEnabled={isCookieEnabled} />, {
+    user,
+  })
 }
 
 describe('useAnalytics', () => {
@@ -97,7 +101,7 @@ describe('useAnalytics', () => {
     expect(firebaseAnalytics.setUserId).toHaveBeenNthCalledWith(
       1,
       'getAnalyticsReturn',
-      'userId'
+      user.id.toString()
     )
   })
 

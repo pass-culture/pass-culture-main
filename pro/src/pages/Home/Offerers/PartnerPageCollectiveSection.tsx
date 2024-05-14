@@ -1,6 +1,6 @@
 import { DMSApplicationForEAC, DMSApplicationstatus } from 'apiClient/v1'
+import useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'core/FirebaseEvents/constants'
-import useAnalytics from 'hooks/useAnalytics'
 import fullInfoIcon from 'icons/full-info.svg'
 import fullLinkIcon from 'icons/full-link.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'

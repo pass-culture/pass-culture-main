@@ -7,13 +7,13 @@ import { api } from 'apiClient/api'
 import { findCurrentRoute } from 'app/AppRouter/findCurrentRoute'
 import Notification from 'components/Notification/Notification'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
-import { useConfigureFirebase } from 'hooks/useAnalytics'
 import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
 import useNotification from 'hooks/useNotification'
 import { updateUser } from 'store/user/reducer'
 import { selectCurrentUser } from 'store/user/selectors'
 
 import { useBeamer } from './analytics/beamer'
+import { useFirebase } from './analytics/firebase'
 import { useOrejime } from './analytics/orejime'
 import { useSentry } from './analytics/sentry'
 import useFocus from './hook/useFocus'
@@ -29,9 +29,17 @@ export const App = (): JSX.Element | null => {
   const dispatch = useDispatch()
   const notify = useNotification()
 
+  // Main hooks
+  useLoadFeatureFlags()
+  usePageTitle()
+  useFocus()
+
+  // Analytics
   const { consentedToBeamer, consentedToFirebase } = useOrejime()
   useSentry()
   useBeamer(consentedToBeamer)
+  useFirebase(consentedToFirebase)
+  useLogNavigation()
 
   const isNewInterfaceActive = useIsNewInterfaceActive()
 
@@ -41,15 +49,6 @@ export const App = (): JSX.Element | null => {
       isNewInterfaceActive ? 'blue' : 'pink'
     )
   }, [isNewInterfaceActive])
-
-  useConfigureFirebase({
-    currentUserId: currentUser?.id.toString(),
-    isCookieEnabled: consentedToFirebase,
-  })
-  usePageTitle()
-  useLogNavigation()
-  useFocus()
-  useLoadFeatureFlags()
 
   useEffect(() => {
     if (location.search.includes('logout')) {
