@@ -7,12 +7,12 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import strokeMyInstitution from 'icons/stroke-my-institution.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import Spinner from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { AnalyticsContextProvider } from '../../providers/AnalyticsContextProvider'
 import { AdageOfferListCard } from '../OffersInstantSearch/OffersSearch/Offers/AdageOfferListCard/AdageOfferListCard'
 import Offer from '../OffersInstantSearch/OffersSearch/Offers/Offer'
+import AdageSkeleton from '../Skeleton/AdageSkeleton'
 
 import styles from './OffersForMyInstitution.module.scss'
 
@@ -31,7 +31,13 @@ export const OffersForMyInstitution = () => {
   )
 
   if (isLoading) {
-    return <Spinner message="Chargement en cours" />
+    return (
+      <>
+        <AdageSkeleton />
+        <AdageSkeleton />
+        <AdageSkeleton />
+      </>
+    )
   }
 
   return (

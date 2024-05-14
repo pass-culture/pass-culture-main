@@ -89,9 +89,7 @@ describe('AdageDiscovery', () => {
   it('should call tracker for new offer playlist element', async () => {
     renderNewOfferPlaylist(user)
 
-    await waitForElementToBeRemoved(() =>
-      screen.queryAllByText(/Chargement en cours/)
-    )
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     const newOfferPlaylistElement = await screen.findByText('Mon offre vitrine')
     newOfferPlaylistElement.addEventListener('click', (e) => {
