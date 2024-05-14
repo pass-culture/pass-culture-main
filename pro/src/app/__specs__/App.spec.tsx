@@ -3,8 +3,8 @@ import { screen } from '@testing-library/react'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
+import * as orejime from 'app/App/analytics/orejime'
 import * as useAnalytics from 'hooks/useAnalytics'
-import * as cookieConsentModal from 'utils/cookieConsentModal'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
@@ -92,16 +92,11 @@ describe('App', () => {
   })
 
   it('should not initialize firebase on the adage iframe', async () => {
-    vi.spyOn(cookieConsentModal, 'initCookieConsent').mockImplementation(
-      () => ({
-        internals: {
-          manager: {
-            consents: [cookieConsentModal.Consents.FIREBASE],
-            watch: () => {},
-          },
-        },
-      })
-    )
+    vi.spyOn(orejime, 'useOrejime').mockImplementation(() => ({
+      consentedToBeamer: false,
+      consentedToFirebase: false,
+    }))
+
     const useAnalyticsSpy = vi
       .spyOn(useAnalytics, 'useConfigureFirebase')
       .mockImplementation(() => {})

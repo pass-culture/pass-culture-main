@@ -1,6 +1,7 @@
 import React from 'react'
 import { useLocation } from 'react-router-dom'
 
+import { orejime } from 'app/App/analytics/orejime'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
@@ -10,7 +11,6 @@ import fullParametersIcon from 'icons/full-parameters.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { initCookieConsent } from 'utils/cookieConsentModal'
 
 import { Card } from '../Card'
 
@@ -109,7 +109,7 @@ export const Support: () => JSX.Element | null = () => {
                   icon={fullParametersIcon}
                   onClick={() => {
                     /* istanbul ignore next : library should be tested */
-                    initCookieConsent().show()
+                    orejime.show()
                   }}
                 >
                   Gestion des cookies
