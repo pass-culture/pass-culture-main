@@ -7,13 +7,13 @@ import { api } from 'apiClient/api'
 import { findCurrentRoute } from 'app/AppRouter/findCurrentRoute'
 import Notification from 'components/Notification/Notification'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
-import useActiveFeature from 'hooks/useActiveFeature'
 import { useConfigureFirebase } from 'hooks/useAnalytics'
 import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
 import useNotification from 'hooks/useNotification'
 import { updateUser } from 'store/user/reducer'
 import { selectCurrentUser } from 'store/user/selectors'
 
+import { useBeamer } from './analytics/beamer'
 import { useOrejime } from './analytics/orejime'
 import { useSentry } from './analytics/sentry'
 import useFocus from './hook/useFocus'
@@ -24,7 +24,6 @@ import usePageTitle from './hook/usePageTitle'
 window.beamer_config = { product_id: 'vjbiYuMS52566', lazy: true }
 
 export const App = (): JSX.Element | null => {
-  const isBeamerEnabled = useActiveFeature('ENABLE_BEAMER')
   const location = useLocation()
   const currentUser = useSelector(selectCurrentUser)
   const dispatch = useDispatch()
@@ -32,6 +31,7 @@ export const App = (): JSX.Element | null => {
 
   const { consentedToBeamer, consentedToFirebase } = useOrejime()
   useSentry()
+  useBeamer(consentedToBeamer)
 
   const isNewInterfaceActive = useIsNewInterfaceActive()
 
@@ -50,24 +50,6 @@ export const App = (): JSX.Element | null => {
   useLogNavigation()
   useFocus()
   useLoadFeatureFlags()
-
-  useEffect(() => {
-    if (consentedToBeamer && currentUser !== null) {
-      // We use setTimeout because Beamer might not be loaded yet
-      setTimeout(() => {
-        if (
-          window.Beamer !== undefined &&
-          location.pathname.indexOf('/parcours-inscription') === -1 &&
-          isBeamerEnabled
-        ) {
-          window.Beamer.update({ user_id: currentUser.id.toString() })
-          window.Beamer.init()
-        }
-      }, 1000)
-    } else {
-      window.Beamer?.destroy()
-    }
-  }, [currentUser, consentedToBeamer])
 
   useEffect(() => {
     if (location.search.includes('logout')) {
