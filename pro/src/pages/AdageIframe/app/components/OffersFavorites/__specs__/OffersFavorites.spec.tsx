@@ -50,8 +50,9 @@ describe('OffersFavorites', () => {
   it('should render favorites title', async () => {
     renderAdageFavoritesOffers(user)
 
-    const loadingMessage = screen.queryByText(/Chargement en cours/)
-    await waitFor(() => expect(loadingMessage).not.toBeInTheDocument())
+    await waitFor(() =>
+      expect(screen.queryAllByTestId('spinner')).toHaveLength(0)
+    )
 
     expect(
       screen.getByRole('heading', { name: 'Mes Favoris' })
@@ -61,8 +62,9 @@ describe('OffersFavorites', () => {
   it('should display no results message whenever favorites list is empty', async () => {
     renderAdageFavoritesOffers(user)
 
-    const loadingMessage = screen.queryByText(/Chargement en cours/)
-    await waitFor(() => expect(loadingMessage).not.toBeInTheDocument())
+    await waitFor(() =>
+      expect(screen.queryAllByTestId('spinner')).toHaveLength(0)
+    )
 
     expect(
       screen.getByText(

@@ -404,8 +404,8 @@ describe('offers', () => {
     renderOffers(offersProps, adageUser)
 
     // Then
-    const loader = await screen.findByText('Recherche en cours')
-    expect(loader).toBeInTheDocument()
+    expect(screen.getAllByTestId('spinner').length).toBeGreaterThanOrEqual(1)
+
     const offerInParisName = await screen.findByText(offerInParis.name)
     expect(offerInParisName).toBeInTheDocument()
   })

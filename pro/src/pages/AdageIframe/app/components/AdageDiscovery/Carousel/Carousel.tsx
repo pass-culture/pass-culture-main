@@ -6,8 +6,9 @@ import arrowLeftIcon from 'icons/full-arrow-left.svg'
 import arrowRightIcon from 'icons/full-arrow-right.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import Spinner from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+
+import AdageSkeleton from '../../Skeleton/AdageSkeleton'
 
 import styles from './Carousel.module.scss'
 
@@ -97,7 +98,13 @@ export default function Carousel({
 
       {loading ? (
         <div className={styles['carousel-loading']}>
-          <Spinner message="Chargement en cours" />
+          <AdageSkeleton isGrid />
+          <AdageSkeleton isGrid />
+          <AdageSkeleton isGrid />
+          <AdageSkeleton isGrid />
+          <AdageSkeleton isGrid />
+          <AdageSkeleton isGrid />
+          <AdageSkeleton isGrid />
         </div>
       ) : (
         <ul className={styles['carousel-list']} ref={listRef}>

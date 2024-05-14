@@ -88,9 +88,7 @@ describe('AdageDiscover classRoomPlaylist', () => {
   it('should call tracker for venue playlist element', async () => {
     renderNewOfferPlaylist(user)
 
-    await waitForElementToBeRemoved(() =>
-      screen.queryAllByText(/Chargement en cours/)
-    )
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     const venuePlaylistElement = await screen.findByText(
       'Venue playlist offer 1'
