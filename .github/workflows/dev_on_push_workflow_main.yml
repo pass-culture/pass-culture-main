@@ -199,6 +199,18 @@ jobs:
       github.actor == 'dependabot[bot]'
     uses: ./.github/workflows/dev_on_workflow_dependabot_auto_merge.yml
 
+  test-pro-e2e-latest:
+    name: "Tests pro E2E (pcapi:latest)"
+    needs: [check-folders-changes]
+    if: ${{ needs.check-folders-changes.outputs.pro-changed == 'true' && needs.check-folders-changes.outputs.api-changed == 'false' && github.event_name == 'pull_request'}}
+    uses: ./.github/workflows/dev_on_workflow_tests_pro_e2e.yml
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+    with:
+      TAG: 'latest'
+      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
+
   test-pro-e2e:
     name: "Tests pro E2E"
     needs: [check-folders-changes, build-pcapi]
