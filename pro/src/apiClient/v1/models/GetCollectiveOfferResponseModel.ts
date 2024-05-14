@@ -8,6 +8,7 @@ import type { EacFormat } from './EacFormat';
 import type { EducationalInstitutionResponseModel } from './EducationalInstitutionResponseModel';
 import type { EducationalRedactorResponseModel } from './EducationalRedactorResponseModel';
 import type { GetCollectiveOfferCollectiveStockResponseModel } from './GetCollectiveOfferCollectiveStockResponseModel';
+import type { GetCollectiveOfferProviderResponseModel } from './GetCollectiveOfferProviderResponseModel';
 import type { GetCollectiveOfferVenueResponseModel } from './GetCollectiveOfferVenueResponseModel';
 import type { NationalProgramModel } from './NationalProgramModel';
 import type { OfferDomain } from './OfferDomain';
@@ -47,6 +48,7 @@ export type GetCollectiveOfferResponseModel = {
   nationalProgram?: NationalProgramModel | null;
   offerId?: number | null;
   offerVenue: CollectiveOfferOfferVenueResponseModel;
+  provider?: GetCollectiveOfferProviderResponseModel | null;
   status: OfferStatus;
   students: Array<StudentLevels>;
   subcategoryId?: SubcategoryIdEnum | null;

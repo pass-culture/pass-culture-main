@@ -40,7 +40,10 @@ describe('CollectiveOfferSummary', () => {
     }
   })
   it('should show banner if generate from publicApi', async () => {
-    const offer = getCollectiveOfferFactory({ isPublicApi: true })
+    const offer = getCollectiveOfferFactory({
+      isPublicApi: true,
+      provider: { name: 'Mollat' },
+    })
 
     renderCollectiveOfferSummary({
       ...props,
@@ -48,9 +51,7 @@ describe('CollectiveOfferSummary', () => {
     })
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     expect(
-      screen.getByText(
-        'Offre créée par votre outil de billetterie via l’API offres collectives'
-      )
+      screen.getByText('Offre synchronisée avec Mollat')
     ).toBeInTheDocument()
   })
 
