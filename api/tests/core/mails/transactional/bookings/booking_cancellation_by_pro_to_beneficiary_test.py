@@ -67,7 +67,9 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
         )
 
         # When
-        email_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(booking, is_gcu_incompatible=False)
+        email_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(
+            booking, rejected_by_gcu_incompatibility=False
+        )
 
         # Then
         assert email_data.params == {
@@ -97,7 +99,9 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
         )
 
         # When
-        email_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(booking, is_gcu_incompatible=False)
+        email_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(
+            booking, rejected_by_gcu_incompatibility=False
+        )
 
         # Then
         assert email_data.template == models.Template(
@@ -130,7 +134,9 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
         )
 
         # When
-        email_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(booking, is_gcu_incompatible=False)
+        email_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(
+            booking, rejected_by_gcu_incompatibility=False
+        )
 
         # Then
         assert email_data.params == {
@@ -158,7 +164,9 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
         )
 
         # When
-        sendiblue_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(booking, is_gcu_incompatible=False)
+        sendiblue_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(
+            booking, rejected_by_gcu_incompatibility=False
+        )
 
         # Then
         assert sendiblue_data.params["IS_FREE_OFFER"] is True
@@ -173,7 +181,9 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
         )
 
         # When
-        sendiblue_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(booking, is_gcu_incompatible=False)
+        sendiblue_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(
+            booking, rejected_by_gcu_incompatibility=False
+        )
 
         # Then
         assert sendiblue_data.params["IS_FREE_OFFER"] is False
