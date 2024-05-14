@@ -25,9 +25,9 @@ from pcapi.domain.music_types import MUSIC_SUB_TYPES_LABEL_BY_CODE
 from pcapi.domain.music_types import MUSIC_TYPES_LABEL_BY_CODE
 from pcapi.domain.show_types import SHOW_SUB_TYPES_LABEL_BY_CODE
 from pcapi.domain.show_types import SHOW_TYPES_LABEL_BY_CODE
-from pcapi.routes.native.utils import convert_to_cent
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.shared.price import convert_to_cent
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 

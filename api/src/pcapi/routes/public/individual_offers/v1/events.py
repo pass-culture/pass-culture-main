@@ -322,24 +322,11 @@ def patch_event_price_categories(
     """
     Patch price categories.
     """
-    event_offer = (
-        utils.retrieve_offer_query(event_id)
-        .filter(offers_models.Offer.isEvent)
-        .outerjoin(offers_models.Offer.stocks.and_(sqla.not_(offers_models.Stock.isEventExpired)))
-        .options(sqla.orm.contains_eager(offers_models.Offer.stocks))
-        .options(
-            sqla.orm.joinedload(offers_models.Offer.priceCategories).joinedload(
-                offers_models.PriceCategory.priceCategoryLabel
-            )
-        )
-        .one_or_none()
-    )
+    event_offer = utils.get_event_with_details(event_id)
     if not event_offer:
         raise api_errors.ApiErrors({"event_id": ["The event could not be found"]}, status_code=404)
 
-    price_category_to_edit = next(
-        (price_category for price_category in event_offer.priceCategories if price_category.id == price_category_id)
-    )
+    price_category_to_edit = utils.get_price_category_from_event(event_offer, price_category_id)
     if not price_category_to_edit:
         raise api_errors.ApiErrors({"price_category_id": ["No price category could be found"]}, status_code=404)
 
