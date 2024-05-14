@@ -25,6 +25,7 @@ export type SharedCurrentUserResponseModel = {
   idPieceNumber?: string | null;
   isAdmin: boolean;
   isEmailValidated: boolean;
+  isImpersonated?: boolean;
   lastConnectionDate?: string | null;
   lastName?: string | null;
   navState?: NavStateResponseModel | null;
