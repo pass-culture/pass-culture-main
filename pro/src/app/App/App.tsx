@@ -1,4 +1,3 @@
-import { setUser as setSentryUser } from '@sentry/browser'
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
@@ -16,6 +15,7 @@ import { updateUser } from 'store/user/reducer'
 import { selectCurrentUser } from 'store/user/selectors'
 
 import { useOrejime } from './analytics/orejime'
+import { useSentry } from './analytics/sentry'
 import useFocus from './hook/useFocus'
 import { useLoadFeatureFlags } from './hook/useLoadFeatureFlags'
 import useLogNavigation from './hook/useLogNavigation'
@@ -29,7 +29,9 @@ export const App = (): JSX.Element | null => {
   const currentUser = useSelector(selectCurrentUser)
   const dispatch = useDispatch()
   const notify = useNotification()
+
   const { consentedToBeamer, consentedToFirebase } = useOrejime()
+  useSentry()
 
   const isNewInterfaceActive = useIsNewInterfaceActive()
 
@@ -66,12 +68,6 @@ export const App = (): JSX.Element | null => {
       window.Beamer?.destroy()
     }
   }, [currentUser, consentedToBeamer])
-
-  useEffect(() => {
-    if (currentUser !== null) {
-      setSentryUser({ id: currentUser.id.toString() })
-    }
-  }, [currentUser])
 
   useEffect(() => {
     if (location.search.includes('logout')) {
