@@ -119,6 +119,13 @@
      title="Rechercher dans l'Annuaire des Entreprises"
      class="link-primary">{{ terms }} <i class="bi bi-box-arrow-up-right"></i></a>
 {% endmacro %}
+{% macro build_external_address_link(address) %}
+  {% set ban_path = address.banId or '#18/' + address.latitude|string + '/' + address.longitude|string %}
+  <a href="https://adresse.data.gouv.fr/base-adresse-nationale/{{ ban_path }}"
+     target="_blank"
+     title="Localiser sur le site national de l'adresse"
+     class="link-primary">{{ address.latitude }}, {{ address.longitude }} <i class="bi bi-box-arrow-up-right"></i></a>
+{% endmacro %}
 {% macro build_dms_adage_application_external_link(collective_dms_application) %}
   <a href="https://www.demarches-simplifiees.fr/procedures/{{ collective_dms_application.procedure }}/dossiers/{{ collective_dms_application.application }}"
      target="_blank"
