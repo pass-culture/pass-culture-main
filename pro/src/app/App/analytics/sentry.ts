@@ -1,7 +1,8 @@
-import { init as SentryInit } from '@sentry/browser'
-import * as Sentry from '@sentry/react'
+import { setUser, init } from '@sentry/browser'
+import { reactRouterV6Instrumentation } from '@sentry/react'
 import { Integrations as TracingIntegrations } from '@sentry/tracing'
-import React from 'react'
+import React, { useEffect } from 'react'
+import { useSelector } from 'react-redux'
 import {
   createRoutesFromChildren,
   matchRoutes,
@@ -9,6 +10,7 @@ import {
   useNavigationType,
 } from 'react-router-dom'
 
+import { selectCurrentUser } from 'store/user/selectors'
 import {
   ENVIRONMENT_NAME,
   SENTRY_SAMPLE_RATE,
@@ -18,13 +20,13 @@ import {
 import config from '../../../../package.json'
 
 export const initializeSentry = () => {
-  SentryInit({
+  init({
     dsn: SENTRY_SERVER_URL,
     environment: ENVIRONMENT_NAME,
     release: config.version,
     integrations: [
       new TracingIntegrations.BrowserTracing({
-        routingInstrumentation: Sentry.reactRouterV6Instrumentation(
+        routingInstrumentation: reactRouterV6Instrumentation(
           React.useEffect,
           useLocation,
           useNavigationType,
@@ -98,4 +100,14 @@ export const initializeSentry = () => {
       /metrics\.itunes\.apple\.com\.edgesuite\.net\//i,
     ],
   })
+}
+
+export const useSentry = () => {
+  const currentUser = useSelector(selectCurrentUser)
+
+  useEffect(() => {
+    if (currentUser !== null) {
+      setUser({ id: currentUser.id.toString() })
+    }
+  }, [currentUser])
 }
