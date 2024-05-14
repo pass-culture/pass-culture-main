@@ -10,17 +10,21 @@
 }
 
 .offer-creation-preview-title {
-  @include fonts.title4;
-
-  font-weight: 500;
   line-height: rem.torem(22px);
   margin-bottom: rem.torem(16px);
+  display: flex;
 
   & .icon-info-phone {
     vertical-align: middle;
     color: var(--color-black);
     margin-right: rem.torem(8px);
     width: rem.torem(24px);
+  }
+
+  h2 {
+    @include fonts.title4;
+
+    font-weight: 500;
   }
 }
 
