@@ -45,7 +45,9 @@ describe('DownloadBookingModal', () => {
       },
     ])
 
-    expect(screen.getByText('Télécharger vos réservations')).toBeInTheDocument()
+    expect(
+      screen.getByText('Téléchargement de vos réservations')
+    ).toBeInTheDocument()
 
     // 3 lines = 9 cells
     const tableCells = screen.getAllByRole('cell')
@@ -83,7 +85,9 @@ describe('DownloadBookingModal', () => {
       },
     ])
 
-    expect(screen.getByText('Télécharger vos réservations')).toBeInTheDocument()
+    expect(
+      screen.getByText('Téléchargement de vos réservations')
+    ).toBeInTheDocument()
 
     expect(screen.queryByRole('cell')).not.toBeInTheDocument()
 
@@ -123,7 +127,9 @@ describe('DownloadBookingModal', () => {
       },
     ])
 
-    expect(screen.getByText('Télécharger vos réservations')).toBeInTheDocument()
+    expect(
+      screen.getByText('Téléchargement de vos réservations')
+    ).toBeInTheDocument()
 
     // 3 lines = 9 cells
     const tableCells = screen.getAllByRole('cell')
@@ -178,7 +184,9 @@ describe('DownloadBookingModal', () => {
       },
     ])
 
-    expect(screen.getByText('Télécharger vos réservations')).toBeInTheDocument()
+    expect(
+      screen.getByText('Téléchargement de vos réservations')
+    ).toBeInTheDocument()
 
     // 3 lines = 9 cells
     const tableCells = screen.getAllByRole('cell')

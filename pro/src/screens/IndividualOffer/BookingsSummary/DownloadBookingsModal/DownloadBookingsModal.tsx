@@ -119,7 +119,7 @@ export const DownloadBookingsModal = ({
       <form onSubmit={handleSubmit}>
         <div className={style['container']}>
           <h1 id="download-bookings-modal" className={style['header']}>
-            Télécharger vos réservations
+            Téléchargement de vos réservations
           </h1>
           <fieldset className={style['date-select-section']}>
             {priceCategoryAndScheduleCountByDate.length === 1 ? (
@@ -133,7 +133,7 @@ export const DownloadBookingsModal = ({
             ) : (
               <>
                 <legend>
-                  <div>Sélectionner la date :</div>
+                  <div>Sélectionnez la date :</div>
                 </legend>
                 <div className={style['bookings-date-count']}>
                   {pluralize(
