@@ -22,6 +22,7 @@ runs:
   using: 'composite'
   steps:
     - name: "Render manifests"
+      shell: bash
       run: |
         PASSCULTURE_USERNAME="oauth2accesstoken" \
         PASSCULTURE_PASSWORD=${{ inputs.access_token }} \
