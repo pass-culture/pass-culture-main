@@ -220,20 +220,20 @@ def serialize_collective_booking_stock(
         eventBeginningDatetime=typing.cast(
             datetime,
             convert_real_booking_dates_utc_to_venue_timezone(
-                collective_booking.collectiveStock.beginningDatetime, collective_booking
+                collective_booking.collectiveStock.startDatetime, collective_booking
             ),
         ).isoformat(),
         # TODO(xordoquy): bind those time to the correct model field when added
         eventStartDatetime=typing.cast(
             datetime,
             convert_real_booking_dates_utc_to_venue_timezone(
-                collective_booking.collectiveStock.beginningDatetime, collective_booking
+                collective_booking.collectiveStock.startDatetime, collective_booking
             ),
         ).isoformat(),
         eventEndDatetime=typing.cast(
             datetime,
             convert_real_booking_dates_utc_to_venue_timezone(
-                collective_booking.collectiveStock.beginningDatetime, collective_booking
+                collective_booking.collectiveStock.startDatetime, collective_booking
             ),
         ).isoformat(),
         offerIsEducational=True,
@@ -478,7 +478,7 @@ class CollectiveBookingByIdResponseModel(BaseModel):
         return cls(
             id=booking.id,
             offerVenue=booking.collectiveStock.collectiveOffer.offerVenue,  # type: ignore [arg-type]
-            beginningDatetime=booking.collectiveStock.beginningDatetime,
+            beginningDatetime=booking.collectiveStock.startDatetime,
             students=booking.collectiveStock.collectiveOffer.students,
             price=booking.collectiveStock.price,
             educationalInstitution=booking.educationalInstitution,

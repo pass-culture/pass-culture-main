@@ -42,12 +42,18 @@ def get_bookings(
             base_query = base_query.filter(booking_class.dateCreated <= to_datetime)
 
     event_from_datetime = date_utils.date_to_localized_datetime(form.event_from_date.data, datetime.datetime.min.time())
-    if event_from_datetime and stock_class.beginningDatetime:
-        base_query = base_query.filter(stock_class.beginningDatetime >= event_from_datetime)
+    if event_from_datetime:
+        if hasattr(stock_class, "beginningDatetime") and stock_class.beginningDatetime:
+            base_query = base_query.filter(stock_class.beginningDatetime >= event_from_datetime)
+        if hasattr(stock_class, "startDatetime") and stock_class.startDatetime:
+            base_query = base_query.filter(stock_class.startDatetime >= event_from_datetime)
 
     event_to_datetime = date_utils.date_to_localized_datetime(form.event_to_date.data, datetime.datetime.max.time())
-    if event_to_datetime and stock_class.beginningDatetime:
-        base_query = base_query.filter(stock_class.beginningDatetime <= event_to_datetime)
+    if event_to_datetime:
+        if hasattr(stock_class, "beginningDatetime") and stock_class.beginningDatetime:
+            base_query = base_query.filter(stock_class.beginningDatetime <= event_to_datetime)
+        if hasattr(stock_class, "startDatetime") and stock_class.startDatetime:
+            base_query = base_query.filter(stock_class.startDatetime <= event_to_datetime)
 
     if form.offerer.data:
         base_query = base_query.filter(booking_class.offererId.in_(form.offerer.data))

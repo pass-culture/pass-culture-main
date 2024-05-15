@@ -192,7 +192,7 @@
                   </td>
                 {% endif %}
                 <td>{{ collective_booking.dateCreated | format_date_time }}</td>
-                <td>{{ collective_booking.collectiveStock.beginningDatetime | format_date_time }}</td>
+                <td>{{ collective_booking.collectiveStock.startDatetime | format_date_time }}</td>
                 <td>{{ links.build_offerer_name_to_details_link(collective_booking.offerer) }}</td>
                 <td>{{ links.build_venue_name_to_details_link(collective_booking.venue) }}</td>
               </tr>

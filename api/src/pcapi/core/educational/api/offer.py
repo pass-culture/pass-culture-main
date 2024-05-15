@@ -487,7 +487,9 @@ def create_collective_offer_public(
 
     collective_stock = educational_models.CollectiveStock(
         collectiveOffer=collective_offer,
-        beginningDatetime=body.beginning_datetime,
+        # beginningDatetime=body.beginning_datetime,
+        startDatetime=body.start_datetime,
+        endDatetime=body.end_datetime,
         bookingLimitDatetime=body.booking_limit_datetime,
         price=body.total_price,
         numberOfTickets=body.number_of_tickets,
@@ -702,7 +704,9 @@ def duplicate_offer_and_stock(
         formats=original_offer.formats,
     )
     educational_models.CollectiveStock(
-        beginningDatetime=original_offer.collectiveStock.beginningDatetime,
+        # beginningDatetime=original_offer.collectiveStock.beginningDatetime,
+        startDatetime=original_offer.collectiveStock.startDatetime,
+        endDatetime=original_offer.collectiveStock.endDatetime,
         collectiveOffer=offer,
         price=original_offer.collectiveStock.price,
         bookingLimitDatetime=original_offer.collectiveStock.bookingLimitDatetime,

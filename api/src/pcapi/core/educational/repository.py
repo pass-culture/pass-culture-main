@@ -55,8 +55,9 @@ def find_bookings_starting_in_interval(start: datetime, end: datetime) -> list[e
     query = educational_models.CollectiveBooking.query.join(
         educational_models.CollectiveStock, educational_models.CollectiveBooking.collectiveStock
     )
+    # TODO: start or end datetime ?
     query = query.filter(
-        educational_models.CollectiveStock.beginningDatetime.between(start, end),
+        educational_models.CollectiveStock.startDatetime.between(start, end),
         educational_models.CollectiveBooking.status != educational_models.CollectiveBookingStatus.CANCELLED,
     )
     query = query.options(sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True))
@@ -201,7 +202,8 @@ def _get_bookings_for_adage_base_query() -> BaseQuery:
     query = query.options(
         sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True)
         .load_only(
-            educational_models.CollectiveStock.beginningDatetime,
+            educational_models.CollectiveStock.startDatetime,
+            educational_models.CollectiveStock.endDatetime,
             educational_models.CollectiveStock.numberOfTickets,
             educational_models.CollectiveStock.priceDetail,
             educational_models.CollectiveStock.price,
@@ -352,7 +354,8 @@ def get_paginated_collective_bookings_for_educational_year(
         # fetch a collective booking's stock...
         sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True)
         .load_only(
-            educational_models.CollectiveStock.beginningDatetime,
+            educational_models.CollectiveStock.startDatetime,
+            educational_models.CollectiveStock.endDatetime,
             educational_models.CollectiveStock.collectiveOfferId,
             educational_models.CollectiveStock.price,
         )
@@ -448,7 +451,8 @@ def find_expired_collective_bookings() -> list[educational_models.CollectiveBook
         .options(
             sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True)
             .load_only(
-                educational_models.CollectiveStock.beginningDatetime,
+                educational_models.CollectiveStock.startDatetime,
+                educational_models.CollectiveStock.endDatetime,
                 educational_models.CollectiveStock.collectiveOfferId,
             )
             .joinedload(educational_models.CollectiveStock.collectiveOffer, innerjoin=True)
@@ -637,7 +641,7 @@ def _get_filtered_collective_bookings_query(
 
     if event_date:
         collective_bookings_query = collective_bookings_query.filter(
-            field_to_venue_timezone(educational_models.CollectiveStock.beginningDatetime) == event_date
+            field_to_venue_timezone(educational_models.CollectiveStock.startDatetime) == event_date
         )
 
     return collective_bookings_query
@@ -665,15 +669,16 @@ def list_public_collective_offers(
     if venue_id:
         filters.append(educational_models.CollectiveOffer.venueId == venue_id)
     if period_beginning_date:
-        filters.append(educational_models.CollectiveStock.beginningDatetime >= period_beginning_date)
+        filters.append(educational_models.CollectiveStock.startDatetime >= period_beginning_date)
     if period_ending_date:
-        filters.append(educational_models.CollectiveStock.beginningDatetime <= period_ending_date)
+        filters.append(educational_models.CollectiveStock.endDatetime <= period_ending_date)
     query = query.filter(*filters)
     query = query.options(
         sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock)
         .load_only(
             educational_models.CollectiveStock.bookingLimitDatetime,
-            educational_models.CollectiveStock.beginningDatetime,
+            educational_models.CollectiveStock.startDatetime,
+            educational_models.CollectiveStock.endDatetime,
         )
         .joinedload(educational_models.CollectiveStock.collectiveBookings)
         .load_only(
@@ -790,8 +795,8 @@ def get_filtered_collective_booking_report(
         offerers_models.Offerer.postalCode.label("offererPostalCode"),
         educational_models.CollectiveOffer.name.label("offerName"),
         educational_models.CollectiveStock.price,
-        educational_models.CollectiveStock.beginningDatetime.label("stockBeginningDatetime"),
-        educational_models.CollectiveStock.beginningDatetime.label("stockBookingLimitDatetime"),
+        educational_models.CollectiveStock.startDatetime.label("stockBeginningDatetime"),
+        educational_models.CollectiveStock.startDatetime.label("stockBookingLimitDatetime"),
         educational_models.EducationalRedactor.firstName,
         educational_models.EducationalRedactor.lastName,
         educational_models.EducationalRedactor.email,

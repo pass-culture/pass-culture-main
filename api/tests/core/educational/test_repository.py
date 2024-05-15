@@ -311,7 +311,8 @@ class FindByProUserTest:
         booking_to_be_found = educational_factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
             collectiveStock__price=5000,
-            collectiveStock__beginningDatetime=event_date,
+            collectiveStock__startDatetime=event_date,
+            collectiveStock__endDatetime=event_date,
             dateCreated=booking_date,
         )
 
@@ -342,7 +343,9 @@ class FindByProUserTest:
         )
         cayenne_event_datetime = datetime(2022, 4, 22, 2, 0)
         stock_in_cayenne = educational_factories.CollectiveStockFactory(
-            collectiveOffer=collective_offer_in_cayenne, beginningDatetime=cayenne_event_datetime
+            collectiveOffer=collective_offer_in_cayenne,
+            startDatetime=cayenne_event_datetime,
+            endDatetime=cayenne_event_datetime,
         )
         cayenne_collective_booking = educational_factories.CollectiveBookingFactory(collectiveStock=stock_in_cayenne)
 
@@ -351,7 +354,9 @@ class FindByProUserTest:
         )
         mayotte_event_datetime = datetime(2022, 4, 20, 22, 0)
         stock_in_mayotte = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer_in_mayotte, beginningDatetime=mayotte_event_datetime
+            collectiveOffer=offer_in_mayotte,
+            startDatetime=mayotte_event_datetime,
+            endDatetime=mayotte_event_datetime,
         )
         mayotte_collective_booking = educational_factories.CollectiveBookingFactory(collectiveStock=stock_in_mayotte)
 

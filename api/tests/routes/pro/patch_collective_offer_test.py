@@ -43,7 +43,9 @@ class Returns200Test:
             interventionArea=["01", "07", "08"],
         )
         booking = CollectiveBookingFactory(
-            collectiveStock__collectiveOffer=offer, collectiveStock__beginningDatetime=datetime(2020, 1, 1)
+            collectiveStock__collectiveOffer=offer,
+            collectiveStock__startDatetime=datetime(2020, 1, 1),
+            collectiveStock__endDatetime=datetime(2020, 1, 1),
         )
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",

@@ -27,7 +27,8 @@ class Returns200Test:
             status=CollectiveBookingStatus.CONFIRMED,
             cancellationLimitDate=datetime(2001, 10, 10),
             collectiveStock__bookingLimitDatetime=datetime(2001, 10, 10),
-            collectiveStock__beginningDatetime=datetime(2001, 10, 10),
+            collectiveStock__startDatetime=datetime(2001, 10, 10),
+            collectiveStock__endDatetime=datetime(2001, 10, 10),
         )
         # active booking since status is pending but bookinglimitdatetime has not passed + sold out offer
         # bookingLimitDatetime is in 2222 because sql now() function can't be mocked
@@ -36,7 +37,8 @@ class Returns200Test:
             collectiveStock__collectiveOffer__validation=OfferValidationStatus.APPROVED,
             status=CollectiveBookingStatus.PENDING,
             collectiveStock__bookingLimitDatetime=datetime(2222, 10, 10),
-            collectiveStock__beginningDatetime=datetime(2222, 10, 10),
+            collectiveStock__startDatetime=datetime(2222, 10, 10),
+            collectiveStock__endDatetime=datetime(2222, 10, 10),
         )
         # inactive booking since status is pending but bookinglimitdatetime has passed + expired offer
         CollectiveBookingFactory(
@@ -44,7 +46,8 @@ class Returns200Test:
             collectiveStock__collectiveOffer__validation=OfferValidationStatus.APPROVED,
             status=CollectiveBookingStatus.PENDING,
             collectiveStock__bookingLimitDatetime=datetime(2001, 10, 10),
-            collectiveStock__beginningDatetime=datetime(2001, 10, 10),
+            collectiveStock__startDatetime=datetime(2001, 10, 10),
+            collectiveStock__endDatetime=datetime(2001, 10, 10),
         )
         # active offer
         CollectiveOfferTemplateFactory(venue=venue)

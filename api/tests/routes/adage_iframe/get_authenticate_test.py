@@ -87,7 +87,8 @@ class AuthenticateTest:
             collectiveOffer__institution=institution,
         )
         CollectiveStockFactory(
-            beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=5),
+            startDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=5),
+            endDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=5),
             collectiveOffer__institution=institution,
         )
 

@@ -35,7 +35,9 @@ class OfferManagingOffererResponse(BaseModel):
 
 class OfferStockResponse(BaseModel):
     id: int
-    beginningDatetime: datetime | None
+    # beginningDatetime: datetime | None
+    startDatetime: datetime | None
+    endDatetime: datetime | None
     bookingLimitDatetime: datetime | None
     isBookable: bool
     price: int

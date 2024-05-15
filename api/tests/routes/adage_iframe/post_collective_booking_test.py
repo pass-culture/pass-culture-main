@@ -24,7 +24,7 @@ class CollectiveBookingTest:
     @time_machine.travel("2020-11-17 15:00:00")
     def test_post_educational_booking(self, client, caplog):
         # Given
-        stock = educational_factories.CollectiveStockFactory(beginningDatetime=stock_date)
+        stock = educational_factories.CollectiveStockFactory(startDatetime=stock_date, endDatetime=stock_date)
         educational_institution = educational_factories.EducationalInstitutionFactory()
         educational_year = educational_factories.EducationalYearFactory(
             beginningDate=educational_year_dates["start"], expirationDate=educational_year_dates["end"]
@@ -63,7 +63,7 @@ class CollectiveBookingTest:
     @time_machine.travel("2020-11-17 15:00:00")
     def test_post_educational_booking_with_less_redactor_information(self, client):
         # Given
-        stock = educational_factories.CollectiveStockFactory(beginningDatetime=stock_date)
+        stock = educational_factories.CollectiveStockFactory(startDatetime=stock_date, endDatetime=stock_date)
         educational_institution = educational_factories.EducationalInstitutionFactory()
         educational_year = educational_factories.EducationalYearFactory(
             beginningDate=educational_year_dates["start"], expirationDate=educational_year_dates["end"]
@@ -103,7 +103,7 @@ class CollectiveBookingTest:
 
     @pytest.fixture()
     def test_data(self):
-        stock = educational_factories.CollectiveStockFactory(beginningDatetime=stock_date)
+        stock = educational_factories.CollectiveStockFactory(startDatetime=stock_date, endDatetime=stock_date)
         educational_institution = educational_factories.EducationalInstitutionFactory()
         educational_factories.EducationalYearFactory(
             beginningDate=educational_year_dates["start"], expirationDate=educational_year_dates["end"]
@@ -135,7 +135,9 @@ class CollectiveBookingTest:
         # Given
         _, educational_institution, educational_redactor = test_data
         stock = educational_factories.CollectiveStockFactory(
-            beginningDatetime=stock_date, collectiveOffer__validation=OfferValidationStatus.REJECTED
+            startDatetime=stock_date,
+            endDatetime=stock_date,
+            collectiveOffer__validation=OfferValidationStatus.REJECTED,
         )
         adage_jwt_fake_valid_token = create_adage_valid_token_with_email(
             email=educational_redactor.email, uai=educational_institution.institutionId
@@ -180,7 +182,9 @@ class CollectiveBookingTest:
         educational_institution = educational_factories.EducationalInstitutionFactory()
         educational_institution2 = educational_factories.EducationalInstitutionFactory()
         stock = educational_factories.CollectiveStockFactory(
-            beginningDatetime=stock_date, collectiveOffer__institution=educational_institution
+            startDatetime=stock_date,
+            endDatetime=stock_date,
+            collectiveOffer__institution=educational_institution,
         )
         educational_redactor = educational_factories.EducationalRedactorFactory(email="professeur@example.com")
         educational_factories.EducationalYearFactory(

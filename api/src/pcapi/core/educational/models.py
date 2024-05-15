@@ -921,10 +921,9 @@ class CollectiveStock(PcObject, Base, Model):
 
     dateModified: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    beginningDatetime: datetime = sa.Column(sa.DateTime, index=True, nullable=False)
-
-    startDatetime: datetime = sa.Column(sa.DateTime, nullable=True)
-    endDatetime: datetime = sa.Column(sa.DateTime, nullable=True)
+    # beginningDatetime: datetime = sa.Column(sa.DateTime, index=True, nullable=False)
+    startDatetime: datetime = sa.Column(sa.DateTime, index=True, nullable=True)
+    endDatetime: datetime = sa.Column(sa.DateTime, index=True, nullable=True)
 
     collectiveOfferId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("collective_offer.id"), index=True, nullable=False, unique=True
@@ -973,21 +972,22 @@ class CollectiveStock(PcObject, Base, Model):
     def hasBookingLimitDatetimePassed(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.bookingLimitDatetime <= sa.func.now()
 
+    # TODO(EAC): rename hasBeginningDatetimePassed
     @hybrid_property
     def hasBeginningDatetimePassed(self) -> bool:
-        return self.beginningDatetime <= datetime.utcnow()
+        return self.startDatetime <= datetime.utcnow()
 
     @hasBeginningDatetimePassed.expression  # type: ignore[no-redef]
     def hasBeginningDatetimePassed(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
-        return cls.beginningDatetime <= sa.func.now()
+        return cls.startDatetime <= sa.func.now()
 
     @hybrid_property
     def isEventExpired(self) -> bool:  # todo rewrite
-        return self.beginningDatetime <= datetime.utcnow()
+        return self.startDatetime <= datetime.utcnow()
 
     @isEventExpired.expression  # type: ignore[no-redef]
     def isEventExpired(cls):  # pylint: disable=no-self-argument
-        return cls.beginningDatetime <= sa.func.now()
+        return cls.startDatetime <= sa.func.now()
 
     @property
     def isExpired(self) -> bool:
@@ -995,7 +995,7 @@ class CollectiveStock(PcObject, Base, Model):
 
     @property
     def isEventDeletable(self) -> bool:
-        return self.beginningDatetime >= datetime.utcnow()
+        return self.startDatetime >= datetime.utcnow()
 
     @property
     def isSoldOut(self) -> bool:
@@ -1260,7 +1260,7 @@ class CollectiveBooking(PcObject, Base, Model):
         self.cancellationDate = None
         self.cancellationReason = None
         if self.confirmationDate:
-            if self.collectiveStock.beginningDatetime < datetime.utcnow():
+            if self.collectiveStock.startDatetime < datetime.utcnow():
                 self.status = CollectiveBookingStatus.USED
                 self.dateUsed = datetime.utcnow()
             else:

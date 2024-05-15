@@ -601,12 +601,13 @@ def link_venue_to_pricing_point(
         pricingPointId=pricing_point_id, venueId=venue.id, timespan=(timestamp, None)
     )
     db.session.add(new_link)
-    for from_tables, where_clauses in (
+    for from_tables, where_clauses, stock_datetime in (
         (
             "booking, stock",
             'finance_event."bookingId" is not null '
             'and booking.id = finance_event."bookingId" '
             'and stock.id = booking."stockId"',
+            "beginningDatetime",
         ),
         (
             # use aliases to have the same `set` clause
@@ -614,6 +615,7 @@ def link_venue_to_pricing_point(
             'finance_event."collectiveBookingId" is not null '
             'and booking.id = finance_event."collectiveBookingId" '
             'and stock.id = booking."collectiveStockId"',
+            "endDatetime",
         ),
     ):
         ppoint_update_result = db.session.execute(
@@ -624,7 +626,7 @@ def link_venue_to_pricing_point(
                 status = :finance_event_status_ready,
                 "pricingOrderingDate" = greatest(
                   booking."dateUsed",
-                  stock."beginningDatetime",
+                  stock."{stock_datetime}",
                   :new_link_start
                 )
               from {from_tables}

@@ -110,7 +110,7 @@
                 <td>{{ collective_offer.validation | format_offer_validation_status }}</td>
                 <td>{{ links.build_pro_user_name_to_details_link(collective_offer.authorId, collective_offer.author.full_name) }}</td>
                 <td>{{ collective_offer.dateCreated | format_date }}</td>
-                <td>{{ collective_offer.collectiveStock.beginningDatetime | format_date }}</td>
+                <td>{{ collective_offer.collectiveStock.startDatetime | format_date }}</td>
                 {% if has_permission("PRO_FRAUD_ACTIONS") %}
                   <td>
                     {% if collective_offer.collectiveStock %}{{ collective_offer.collectiveStock.price | format_amount }}{% endif %}

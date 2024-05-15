@@ -954,7 +954,7 @@ def auto_mark_as_used_after_event() -> None:
         .where(
             CollectiveBooking.status == CollectiveBookingStatus.CONFIRMED,
             CollectiveBooking.collectiveStockId == CollectiveStock.id,
-            CollectiveStock.beginningDatetime < threshold,
+            CollectiveStock.endDatetime < threshold,
         )
         .values(dateUsed=now, status=CollectiveBookingStatus.USED),
         execution_options={"synchronize_session": False},

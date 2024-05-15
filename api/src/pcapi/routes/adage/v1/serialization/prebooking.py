@@ -51,7 +51,9 @@ class Contact(AdageBaseResponseModel):
 class EducationalBookingBaseResponse(AdageBaseResponseModel):
     accessibility: str = Field(description="Accessibility of the offer")
     address: str = Field(description="Adresse of event")
-    beginningDatetime: datetime = Field(description="Beginnning date of event")
+    # beginningDatetime: datetime = Field(description="Beginnning date of event")
+    startDatetime: datetime = Field(description="Start date of event")
+    endDatetime: datetime = Field(description="End date of event")
     cancellationDate: datetime | None = Field(description="Date of cancellation if prebooking is cancelled")
     cancellationLimitDate: datetime | None = Field(description="Limit date to cancel the prebooking")
     city: str | None
@@ -138,7 +140,7 @@ def get_collective_bookings_per_year_response(
             status=get_collective_booking_status(booking),  # type: ignore [arg-type]
             confirmationLimitDate=booking.confirmationLimitDate,
             totalAmount=booking.collectiveStock.price,
-            beginningDatetime=booking.collectiveStock.beginningDatetime,
+            beginningDatetime=booking.collectiveStock.startDatetime,
             venueTimezone=booking.collectiveStock.collectiveOffer.venue.timezone,
             name=booking.collectiveStock.collectiveOffer.name,
             redactorEmail=booking.educationalRedactor.email,
@@ -183,7 +185,9 @@ def serialize_collective_booking(collective_booking: CollectiveBooking) -> Educa
     return EducationalBookingResponse(
         accessibility=_get_educational_offer_accessibility(offer),
         address=_get_collective_offer_address(offer),
-        beginningDatetime=stock.beginningDatetime,
+        # beginningDatetime=stock.beginningDatetime,
+        startDatetime=stock.startDatetime,
+        endDatetime=stock.endDatetime,
         cancellationDate=collective_booking.cancellationDate,
         cancellationLimitDate=collective_booking.cancellationLimitDate,
         city=venue.city,
@@ -308,7 +312,9 @@ def serialize_reimbursement_notification(
     return AdageReimbursementNotification(
         accessibility=_get_educational_offer_accessibility(offer),
         address=_get_collective_offer_address(offer),
-        beginningDatetime=stock.beginningDatetime,
+        # beginningDatetime=stock.startDatetime,  # TODO: start or end datetime ?
+        startDatetime=stock.startDatetime,
+        endDatetime=stock.endDatetime,
         cancellationDate=collective_booking.cancellationDate,
         cancellationLimitDate=collective_booking.cancellationLimitDate,
         city=venue.city,

@@ -26,7 +26,9 @@ class AdageRedactor(AdageBaseResponseModel):
 class AdageCollectiveOffer(AdageBaseResponseModel):
     UAICode: str
     address: str
-    beginningDatetime: datetime
+    # beginningDatetime: datetime
+    startDatetime: datetime
+    endDatetime: datetime
     city: str
     contact: AdageCollectiveOfferContact
     coordinates: Coordinates
@@ -60,7 +62,9 @@ def serialize_collective_offer(collective_offer: models.CollectiveOffer) -> Adag
     return AdageCollectiveOffer(
         UAICode=institution.institutionId,
         address=_get_collective_offer_address(collective_offer),
-        beginningDatetime=stock.beginningDatetime,
+        # beginningDatetime=stock.beginningDatetime,
+        startDatetime=stock.startDatetime,
+        endDatetime=stock.endDatetime,
         city=venue.city,
         contact=AdageCollectiveOfferContact(phone=collective_offer.contactPhone, email=collective_offer.contactEmail),
         coordinates=Coordinates(latitude=venue.latitude, longitude=venue.longitude),

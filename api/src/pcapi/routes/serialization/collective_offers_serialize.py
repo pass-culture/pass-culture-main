@@ -196,13 +196,15 @@ def _serialize_stock(stock: CollectiveStock | None = None) -> dict:
             "id": stock.id,
             "hasBookingLimitDatetimePassed": stock.hasBookingLimitDatetimePassed,
             "remainingQuantity": 0 if stock.isSoldOut else 1,
-            "beginningDatetime": stock.beginningDatetime,
+            "startDatetime": stock.startDatetime,
+            "endDatetime": stock.endDatetime,
             "bookingLimitDatetime": stock.bookingLimitDatetime,
         }
     return {
         "hasBookingLimitDatetimePassed": False,
         "remainingQuantity": 1,
-        "beginningDatetime": datetime(year=2030, month=1, day=1),
+        "startDatetime": datetime(year=2030, month=1, day=1),
+        "endDatetime": datetime(year=2030, month=1, day=1),
         "bookingLimitDatetime": datetime(year=2030, month=1, day=1),
     }
 
@@ -286,7 +288,7 @@ class GetCollectiveOfferCollectiveStockResponseModel(BaseModel):
     is_cancellable_from_offerer: bool = Field(alias="isCancellable")
     # beginningDatetime is deprectated and replaced with
     # startDatetime and endDatetime
-    beginningDatetime: datetime | None
+    # beginningDatetime: datetime | None
     startDatetime: datetime | None
     endDatetime: datetime | None
     bookingLimitDatetime: datetime | None

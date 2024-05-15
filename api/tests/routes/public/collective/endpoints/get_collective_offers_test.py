@@ -41,14 +41,14 @@ class CollectiveOffersPublicGetOfferTest:
             {
                 "id": offer1.id,
                 "venueId": offer1.venueId,
-                "beginningDatetime": stock1.beginningDatetime.isoformat(timespec="seconds"),
+                "beginningDatetime": stock1.startDatetime.isoformat(timespec="seconds"),
                 "status": offer1.status.name,
                 "bookings": [],
             },
             {
                 "id": offer2.id,
                 "venueId": offer2.venueId,
-                "beginningDatetime": offer2.collectiveStock.beginningDatetime.isoformat(timespec="seconds"),
+                "beginningDatetime": offer2.collectiveStock.startDatetime.isoformat(timespec="seconds"),
                 "status": offer2.status.name,
                 "bookings": [
                     {
@@ -78,12 +78,14 @@ class CollectiveOffersPublicGetOfferTest:
 
         stock1 = educational_factories.CollectiveStockFactory(
             collectiveOffer__provider=venue_provider.provider,
-            beginningDatetime=datetime(2043, 5, 2, 15),
+            startDatetime=datetime(2043, 5, 2, 15),
+            endDatetime=datetime(2043, 5, 2, 15),
         )
         offer1 = stock1.collectiveOffer
         stock2 = educational_factories.CollectiveStockFactory(
             collectiveOffer__provider=venue_provider.provider,
-            beginningDatetime=datetime(2043, 5, 2, 15),
+            startDatetime=datetime(2043, 5, 2, 15),
+            endDatetime=datetime(2043, 5, 2, 15),
         )
         offer2 = stock2.collectiveOffer
 
@@ -142,7 +144,7 @@ class CollectiveOffersPublicGetOfferTest:
             {
                 "id": offer.id,
                 "venueId": offer.venueId,
-                "beginningDatetime": stock.beginningDatetime.isoformat(timespec="seconds"),
+                "beginningDatetime": stock.startDatetime.isoformat(timespec="seconds"),
                 "status": offer.status.name,
                 "bookings": [],
             },
@@ -169,7 +171,7 @@ class CollectiveOffersPublicGetOfferTest:
             {
                 "id": offer1.id,
                 "venueId": offer1.venueId,
-                "beginningDatetime": stock1.beginningDatetime.isoformat(timespec="seconds"),
+                "beginningDatetime": stock1.startDatetime.isoformat(timespec="seconds"),
                 "status": offer1.status.name,
                 "bookings": [],
             },
@@ -197,7 +199,7 @@ class CollectiveOffersPublicGetOfferTest:
             {
                 "id": offer1.id,
                 "venueId": offer1.venueId,
-                "beginningDatetime": stock1.beginningDatetime.isoformat(timespec="seconds"),
+                "beginningDatetime": stock1.startDatetime.isoformat(timespec="seconds"),
                 "status": offer1.status.name,
                 "bookings": [],
             },

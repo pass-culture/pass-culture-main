@@ -69,7 +69,8 @@ SEARCH_FIELD_TO_PYTHON = {
     },
     "EVENT_DATE": {
         "field": "date",
-        "column": aliased_stock.beginningDatetime,
+        # TODO: what about endDate ?
+        "column": aliased_stock.startDatetime,
         "inner_join": "stock",
     },
     "BOOKING_LIMIT_DATE": {
@@ -185,7 +186,8 @@ def _get_collective_offers(
                 educational_models.CollectiveOffer.authorId,
             ),
             sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock).load_only(
-                educational_models.CollectiveStock.beginningDatetime,
+                educational_models.CollectiveStock.startDatetime,
+                educational_models.CollectiveStock.endDatetime,
                 educational_models.CollectiveStock.price,
             ),
             sa.orm.joinedload(educational_models.CollectiveOffer.venue, innerjoin=True).load_only(
