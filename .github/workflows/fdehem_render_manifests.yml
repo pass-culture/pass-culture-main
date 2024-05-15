@@ -71,6 +71,7 @@ jobs:
           #Transform list into helm readable parameter list (pattern: --set value={item1,item2,item3})
           PCAPI_SECRETS=secrets={$(echo $PCAPI_SECRETS | sed -r 's/ /,/g')}
           echo "PCAPI_SECRETS=\"$PCAPI_SECRETS\"" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v4
       - uses: ./.github/workflows/composite_render_push_manifests.yml
         with:
           environment: ${{ inputs.environment }}
