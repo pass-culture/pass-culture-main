@@ -22,6 +22,7 @@ class Address(PcObject, Base, Model):
     city: str = sa.Column(sa.Text(), nullable=False)
     latitude: float = sa.Column(sa.Numeric(8, 5), nullable=False)
     longitude: float = sa.Column(sa.Numeric(8, 5), nullable=False)
+    departmentCode = sa.Column(sa.Text(), nullable=True, index=True)
 
     __table_args__ = (
         sa.Index(
@@ -34,4 +35,5 @@ class Address(PcObject, Base, Model):
         sa.CheckConstraint('length("postalCode") = 5'),
         sa.CheckConstraint('length("inseeCode") = 5'),
         sa.CheckConstraint('length("city") <= 50'),
+        sa.CheckConstraint('length("departmentCode") = 2 OR length("departmentCode") = 3'),
     )
