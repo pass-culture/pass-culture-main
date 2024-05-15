@@ -114,7 +114,7 @@ const routes: RouteConfig[] = [
   {
     lazy: () => import('pages/VenueEdition/VenueEdition'),
     path: '/structures/:offererId/lieux/:venueId/*',
-    title: 'Modifier ma page partenaire',
+    title: 'Gérer ma page sur l’application',
   },
   {
     lazy: () => import('pages/VenueSettings/VenueSettings'),

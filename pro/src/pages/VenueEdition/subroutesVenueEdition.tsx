@@ -6,10 +6,14 @@ import { RouteConfig } from 'app/AppRouter/routesMap'
 export const routesVenueEdition: RouteConfig[] = [
   {
     path: '/structures/:offererId/lieux/:venueId',
-    title: 'Modifier ma page partenaire',
+    title: 'Gérer ma page sur l’application',
+  },
+  {
+    path: '/structures/:offererId/lieux/:venueId/edition',
+    title: 'Gérer ma page sur l’application',
   },
   {
     path: '/structures/:offererId/lieux/:venueId/collectif',
-    title: 'Modifier ma page partenaire',
+    title: 'Gérer ma page sur Adage',
   },
 ]
