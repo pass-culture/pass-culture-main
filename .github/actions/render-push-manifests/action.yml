@@ -24,14 +24,14 @@ runs:
     - name: "Render manifests"
       shell: bash
       run: |
-        PASSCULTURE_USERNAME="oauth2accesstoken" \
-        PASSCULTURE_PASSWORD=${{ inputs.access_token }} \
-        if [ -z ${ADDITIONAL_ARGS+x} ] \
-        then \
-          helmfile -e $ENVIRONMENT template --set $ADDITIONAL_ARGS --set image.tag=$APP_VERSION --output-dir ./rendered-manifests/ --output-dir-template "{{ .OutputDir }}/{{ .State.BaseName }}-{{ .Release.Name  }}" \
-        else \
-          helmfile -e $ENVIRONMENT template --set image.tag=$APP_VERSION --output-dir ./rendered-manifests/ --output-dir-template "{{ .OutputDir }}/{{ .State.BaseName }}-{{ .Release.Name  }}" \
-        fi \
+        PASSCULTURE_USERNAME="oauth2accesstoken"
+        PASSCULTURE_PASSWORD=${{ inputs.access_token }}
+        if [ -z ${ADDITIONAL_ARGS+x} ]
+        then
+          helmfile -e $ENVIRONMENT template --set $ADDITIONAL_ARGS --set image.tag=$APP_VERSION --output-dir ./rendered-manifests/ --output-dir-template "{{ .OutputDir }}/{{ .State.BaseName }}-{{ .Release.Name  }}"
+        else
+          helmfile -e $ENVIRONMENT template --set image.tag=$APP_VERSION --output-dir ./rendered-manifests/ --output-dir-template "{{ .OutputDir }}/{{ .State.BaseName }}-{{ .Release.Name  }}"
+        fi
       env:
         ENVIRONMENT: ${{ inputs.environment }}
         APP_NAME: ${{ inputs.app_name }}
