@@ -269,8 +269,12 @@
           {% if offerer.siren and has_permission("READ_PRO_ENTREPRISE_INFO") %}
             {{ build_details_tab("entreprise", "Données Entreprise", active_tab == 'entreprise') }}
           {% endif %}
-          {{ build_details_tab("pro-users", "Compte(s) pro rattaché(s)", active_tab == 'users') }}
-          {{ build_details_tab("managed-venues", "Lieux associés", active_tab == 'managed_venues') }}
+          {{ build_details_tab("pro-users", "Comptes pro", active_tab == 'users') }}
+          {{ build_details_tab("managed-venues", "Lieux", active_tab == 'managed_venues') }}
+          {% if has_offerer_address %}
+            {# tab is hidden when there is no address in database; so it does not need a FF until migration #}
+            {{ build_details_tab("addresses", "Adresses", active_tab == 'addresses') }}
+          {% endif %}
           {{ build_details_tab("dms-adage", "Dossiers DMS Adage", active_tab == 'dms_adage') }}
           {{ build_details_tab("bank-accounts", "Comptes bancaires", active_tab == 'bank_accounts') }}
         {% endcall %}
@@ -304,6 +308,13 @@
             {{ build_loading_spinner() }}
             </turbo-frame>
           {% endcall %}
+          {% if has_offerer_address %}
+            {% call build_details_tab_content("addresses", active_tab == 'addresses') %}
+              <turbo-frame data-turbo="false" id="offerer_addresses_frame" loading="lazy" src="{{ url_for("backoffice_web.offerer.get_offerer_addresses", offerer_id=offerer.id) }}">
+              {{ build_loading_spinner() }}
+              </turbo-frame>
+            {% endcall %}
+          {% endif %}
           {% call build_details_tab_content("dms-adage", active_tab == 'dms_adage') %}
             <turbo-frame data-turbo="false" id="offerer_collective_dms_applications_frame" loading="lazy" src="{{ url_for("backoffice_web.offerer.get_collective_dms_applications", offerer_id=offerer.id) }}">
             {{ build_loading_spinner() }}
