@@ -12,7 +12,7 @@ class IrisFranceFactory(factory.Factory):
 
 
 class AddressFactory(BaseFactory):
-    street = "1 boulevard Poissonnière"
+    street = factory.Sequence("1{} boulevard Poissonnière".format)  # sequence avoids UniqueViolation (street+inseeCode)
     postalCode = "75002"
     city = "Paris"
     latitude: float | None = 48.87055

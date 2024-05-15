@@ -4,9 +4,11 @@ from flask import request
 from flask_login import login_required
 import sqlalchemy as sa
 
+from pcapi.connectors import api_adresse
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import models as finance_models
+from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import models as providers_models
 from pcapi.core.users import models as users_models
@@ -387,3 +389,54 @@ def autocomplete_bo_users() -> AutocompleteResponse:
     users = _get_bo_users_base_query().filter(query_filter).limit(NUM_RESULTS)
 
     return AutocompleteResponse(items=[AutocompleteItem(id=user.id, text=user.full_name) for user in users])
+
+
+def _get_address_choice_label(address: geography_models.Address) -> str:
+    return f"{address.street} {address.postalCode} {address.city}"
+
+
+def _get_addresses_base_query() -> sa.orm.Query:
+    return geography_models.Address.query.options(
+        sa.orm.load_only(
+            geography_models.Address.id,
+            geography_models.Address.street,
+            geography_models.Address.postalCode,
+            geography_models.Address.city,
+        )
+    )
+
+
+def prefill_addresses_choices(autocomplete_field: fields.PCTomSelectField) -> None:
+    if autocomplete_field.data:
+        addresses = (
+            _get_addresses_base_query()
+            .filter(geography_models.Address.id.in_(autocomplete_field.data))
+            .order_by(geography_models.Address.id)
+        )
+        autocomplete_field.choices = [(address.id, _get_address_choice_label(address)) for address in addresses]
+
+
+@blueprint.backoffice_web.route("/autocomplete/addresses", methods=["GET"])
+@login_required
+@spectree_serialize(response_model=AutocompleteResponse, api=blueprint.backoffice_web_schema)
+def autocomplete_addresses() -> AutocompleteResponse:
+    query_string = request.args.get("q", "").strip()
+
+    if len(query_string) < 3:
+        return AutocompleteResponse(items=[])
+
+    # Searching for free text in address.street + postalCode + city may be slow when we have many addresses in database,
+    # so another way is "experimented" here:
+    # First search using API Adresse, which is optimized for any address lookup
+    try:
+        addresses_info = api_adresse.search_address(address=query_string, limit=NUM_RESULTS)
+    except api_adresse.NoResultException:
+        return AutocompleteResponse(items=[])
+
+    # Then check results from their banId, which is indexed, so should return very quickly
+    ban_ids = [address_info.id for address_info in addresses_info]
+    addresses = _get_addresses_base_query().filter(geography_models.Address.banId.in_(ban_ids)).limit(NUM_RESULTS)
+
+    return AutocompleteResponse(
+        items=[AutocompleteItem(id=address.id, text=_get_address_choice_label(address)) for address in addresses]
+    )

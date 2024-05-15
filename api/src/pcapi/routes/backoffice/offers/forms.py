@@ -39,6 +39,7 @@ class IndividualOffersSearchAttributes(enum.Enum):
     VALIDATION = "État"
     ID = "ID de l'offre"
     VENUE = "Lieu"
+    ADDRESS = "Adresse de l'offre"
     NAME = "Nom de l'offre"
     SYNCHRONIZED = "Offre synchronisée"
     PRICE = "Prix"
@@ -56,6 +57,7 @@ class IndividualOffersSearchAttributes(enum.Enum):
 operator_no_require_value = ["NOT_EXIST"]
 
 form_field_configuration = {
+    "ADDRESS": {"field": "address", "operator": ["IN", "NOT_IN"]},
     "CATEGORY": {"field": "category", "operator": ["IN", "NOT_IN"]},
     "CREATION_DATE": {"field": "date", "operator": ["DATE_FROM", "DATE_TO", "DATE_EQUALS"]},
     "DEPARTMENT": {"field": "department", "operator": ["IN", "NOT_IN"]},
@@ -124,6 +126,7 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
         {
             "display_configuration": form_field_configuration,
             "all_available_fields": [
+                "address",
                 "category",
                 "criteria",
                 "date",
@@ -154,6 +157,7 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
         autocomplete.prefill_criteria_choices(self.criteria)
         autocomplete.prefill_offerers_choices(self.offerer)
         autocomplete.prefill_venues_choices(self.venue)
+        autocomplete.prefill_addresses_choices(self.address)
         autocomplete.prefill_providers_choices(self.provider)
 
     search_field = fields.PCSelectWithPlaceholderValueField(
@@ -248,6 +252,15 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
         choices=[],
         validate_choice=False,
         endpoint="backoffice_web.autocomplete_venues",
+        search_inline=True,
+        field_list_compatibility=True,
+    )
+    address = fields.PCTomSelectField(
+        "Adresses (autocomplétion expérimentale)",
+        multiple=True,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice_web.autocomplete_addresses",
         search_inline=True,
         field_list_compatibility=True,
     )

@@ -116,6 +116,39 @@ def test_error_handling_on_non_json_response(requests_mock):
 
 
 @override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+def test_search_address(requests_mock):
+    address = "2 place du carrousel paris"
+    requests_mock.get(
+        "https://api-adresse.data.gouv.fr/search",
+        json=fixtures.SEARCH_ADDRESS_RESPONSE,
+    )
+    addresses_info = api_adresse.search_address(address)
+    assert len(addresses_info) == 6
+    assert addresses_info[0] == api_adresse.AddressInfo(
+        id="75101_1578_00002",
+        label="2 Place du Carrousel 75001 Paris",
+        postcode="75001",
+        citycode="75101",
+        latitude=48.860255,
+        longitude=2.333691,
+        score=0.9641372727272727,
+        street="2 Place du Carrousel",
+        city="Paris",
+    )
+    assert addresses_info[1] == api_adresse.AddressInfo(
+        id="75101_ulje0j",
+        label="7S1 Place du Carrousel 75001 Paris",
+        postcode="75001",
+        citycode="75101",
+        latitude=48.861974,
+        longitude=2.334394,
+        score=0.821388961038961,
+        street="7S1 Place du Carrousel",
+        city="Paris",
+    )
+
+
+@override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
 def test_search_csv(requests_mock):
     text = api_adresse.format_payload(fixtures.SEARCH_CSV_HEADERS, fixtures.SEARCH_CSV_RESULTS)
     requests_mock.post("https://api-adresse.data.gouv.fr/search/csv", text=text)

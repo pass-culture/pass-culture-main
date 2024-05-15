@@ -141,6 +141,11 @@ def get_address(
     return _get_backend().get_single_address_result(address=address, postcode=postcode, citycode=citycode, city=city)
 
 
+def search_address(address: str, limit: int = 10) -> list[AddressInfo]:
+    """Search for addresses."""
+    return _get_backend().search_address(address, limit)
+
+
 def search_csv(
     payload: str,
     columns: list[str] | None = None,
@@ -163,6 +168,9 @@ class BaseBackend:
         city: str | None = None,
         citycode: str | None = None,
     ) -> AddressInfo:
+        raise NotImplementedError()
+
+    def search_address(self, address: str, limit: int) -> list[AddressInfo]:
         raise NotImplementedError()
 
     def search_csv(
@@ -209,6 +217,9 @@ class TestingBackend(BaseBackend):
             city="Paris",
             street="3 Rue de Valois",
         )
+
+    def search_address(self, address: str, limit: int) -> list[AddressInfo]:
+        return [self.get_single_address_result(address, postcode=None)]
 
     def search_csv(
         self,
@@ -283,7 +294,7 @@ class ApiAdresseBackend(BaseBackend):
                 extra={"postcode": postcode, "city": city},
             )
             raise NoResultException
-        return self._format_result(data)
+        return self._format_result(data["features"][0])
 
     def get_single_address_result(
         self,
@@ -317,7 +328,7 @@ class ApiAdresseBackend(BaseBackend):
                 return self.get_municipality_centroid(city=city, postcode=postcode, citycode=citycode)
             raise NoResultException
 
-        result = self._format_result(data)
+        result = self._format_result(data["features"][0])
 
         extra = {
             "id": result.id,
@@ -340,8 +351,8 @@ class ApiAdresseBackend(BaseBackend):
     def _format_result(self, data: dict) -> AddressInfo:
         # GeoJSON defines Point as [longitude, latitude]
         # https://datatracker.ietf.org/doc/html/rfc7946#appendix-A.1
-        coordinates = data["features"][0]["geometry"]["coordinates"]
-        properties = data["features"][0]["properties"]
+        coordinates = data["geometry"]["coordinates"]
+        properties = data["properties"]
         street = None
         if properties["type"] != "municipality":
             # If the API return a complete address, not only a municipality centroid
@@ -359,6 +370,19 @@ class ApiAdresseBackend(BaseBackend):
             city=properties["city"],
             street=street,
         )
+
+    def search_address(self, address: str, limit: int) -> list[AddressInfo]:
+        params = {
+            "q": address,
+            "autocomplete": 0,
+            "limit": limit,
+        }
+
+        data = self._search(params=params)
+        if self._is_result_empty(data):
+            raise NoResultException
+
+        return [self._format_result(result) for result in data["features"]]
 
     def search_csv(
         self,
