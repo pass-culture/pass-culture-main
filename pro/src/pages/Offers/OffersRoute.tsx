@@ -49,14 +49,12 @@ export const OffersRoute = (): JSX.Element => {
 
   const categoriesQuery = useSWR(
     [GET_CATEGORIES_QUERY_KEY],
-    async () => {
-      const response = await api.getCategories()
-      return response.categories
-    },
-    { fallbackData: [] }
+    () => api.getCategories(),
+    { fallbackData: { categories: [], subcategories: [] } }
   )
+
   const categoriesOptions = sortByLabel(
-    categoriesQuery.data
+    categoriesQuery.data.categories
       .filter((category) => category.isSelectable)
       .map((category) => ({
         value: category.id,
