@@ -556,6 +556,27 @@ class EditStockTest:
         # Then
         assert existing_stock.price == decimal.Decimal(str(new_price))
 
+    @override_features(WIP_ENABLE_OFFER_PRICE_LIMITATION=True)
+    @pytest.mark.parametrize("new_price", [49, 151])
+    def test_allow_price_edition_if_offer_has_ean(self, new_price):
+        # Given
+        factories.OfferPriceLimitationRuleFactory(
+            subcategoryId=subcategories.LIVRE_PAPIER.id, rate=decimal.Decimal("0.5")
+        )
+        existing_stock = factories.ThingStockFactory(
+            price=110,
+            offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
+            offer__lastValidationPrice=decimal.Decimal("100"),
+            offer__extraData={"ean": "1234567890123"},
+        )
+
+        # When
+        api.edit_stock(stock=existing_stock, price=new_price, quantity=existing_stock.quantity)
+
+        # Then
+        edited_stock = models.Stock.query.filter_by(id=existing_stock.id).first()
+        assert edited_stock.price == decimal.Decimal(str(new_price))
+
     def test_does_not_allow_beginning_datetime_for_thing_offers(self):
         # Given
         offer = factories.ThingOfferFactory()
