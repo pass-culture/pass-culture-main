@@ -34,8 +34,8 @@ def _get_reimbursements_csv_filter(user: User, query: ReimbursementCsvQueryModel
     offerers = Offerer.query.with_entities(Offerer.id)
     if not user.has_admin_role:
         offerers = offerers_repository.filter_query_where_user_is_user_offerer_and_is_validated(offerers, user)
-    elif not query.venueId:
-        raise ApiErrors({"venueId": ["Le filtre par lieu est obligatoire pour les administrateurs"]})
+    elif not query.bankAccountId:
+        raise ApiErrors({"bankAccountId": ["Le filtre par compte bancaire est obligatoire pour les administrateurs"]})
 
     all_offerer_ids = [row[0] for row in offerers.all()]
 
@@ -43,12 +43,12 @@ def _get_reimbursements_csv_filter(user: User, query: ReimbursementCsvQueryModel
     reimbursement_period_beginning_date, reimbursement_period_ending_date = validate_reimbursement_period(
         reimbursement_period_field_names, query.dict().get
     )
-    venue_id = query.venueId
+    bank_account_id = query.bankAccountId
 
     reimbursement_details = find_all_offerers_reimbursement_details(
         all_offerer_ids,
         (reimbursement_period_beginning_date, reimbursement_period_ending_date),
-        venue_id,
+        bank_account_id,
     )
     reimbursement_details_csv = generate_reimbursement_details_csv(reimbursement_details)
 
