@@ -634,6 +634,25 @@ class ListOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {offers[1].id}
 
+    def test_list_offers_by_address(self, authenticated_client, offers):
+        for offer in offers[:3]:
+            offer.offererAddress = offerers_factories.OffererAddressFactory(offerer=offer.venue.managingOfferer)
+            db.session.add(offer)
+        db.session.flush()
+
+        address_id = offers[2].offererAddress.addressId
+        query_args = {
+            "search-0-search_field": "ADDRESS",
+            "search-0-operator": "IN",
+            "search-0-address": address_id,
+        }
+        with assert_num_queries(self.expected_num_queries + 1):  # +1 because of reloading selected address in the form
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert set(int(row["ID"]) for row in rows) == {offers[2].id}
+
     def test_list_offers_by_status(self, authenticated_client, offers):
         offer = offers_factories.OfferFactory(isActive=False)
 

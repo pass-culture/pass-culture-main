@@ -1,11 +1,14 @@
 import datetime
 import re
+from unittest import mock
 
 from flask import url_for
 import pytest
 
+from pcapi.connectors import api_adresse
 from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.educational import factories as educational_factories
+from pcapi.core.geography import factories as geography_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
@@ -269,3 +272,96 @@ class AutocompleteProvidersTest(AutocompleteTestBase):
         self._test_autocomplete(
             authenticated_client, search_query, expected_texts, expected_num_queries=expected_queries
         )
+
+
+class AutocompleteAddressesTest(AutocompleteTestBase):
+    endpoint = "backoffice_web.autocomplete_addresses"
+
+    @pytest.mark.parametrize(
+        "search_query, search_address_response, expected_texts",
+        [
+            ("", [], set()),
+            (
+                "2 rue de la culture là bas",
+                [
+                    api_adresse.AddressInfo(
+                        id="01234_56789_00002",
+                        label="unused",
+                        postcode="unused",
+                        citycode="unused",
+                        latitude=0.0,
+                        longitude=0.0,
+                        score=0.5,
+                        city="unused",
+                    )
+                ],
+                {"2 rue de la Culture 01002 Là-Bas"},
+            ),
+            (
+                "2 rue de la culture là",
+                [
+                    api_adresse.AddressInfo(
+                        id="01234_56789_00002",
+                        label="unused",
+                        postcode="unused",
+                        citycode="unused",
+                        latitude=0.0,
+                        longitude=0.0,
+                        score=0.5,
+                        city="unused",
+                    ),
+                    api_adresse.AddressInfo(
+                        id="01234_56789_00003",
+                        label="unused",
+                        postcode="unused",
+                        citycode="unused",
+                        latitude=0.0,
+                        longitude=0.0,
+                        score=0.5,
+                        city="unused",
+                    ),
+                ],
+                {"2 rue de la Culture 01002 Là-Bas", "2 rue de la Culture 01003 Là-Haut"},
+            ),
+            (
+                "4 rue de la Culture Ailleurs",
+                [
+                    api_adresse.AddressInfo(
+                        id="01234_56789_00004",
+                        label="unused",
+                        postcode="unused",
+                        citycode="unused",
+                        latitude=0.0,
+                        longitude=0.0,
+                        score=0.5,
+                        city="unused",
+                    )
+                ],
+                set(),
+            ),
+        ],
+    )
+    def test_autocomplete_addresses(self, authenticated_client, search_query, search_address_response, expected_texts):
+        geography_factories.AddressFactory(
+            banId="01234_56789_00001", street="1 rue de la Culture", postalCode="01001", inseeCode="01201", city="Ici"
+        )
+        geography_factories.AddressFactory(
+            banId="01234_56789_00002",
+            street="2 rue de la Culture",
+            postalCode="01002",
+            inseeCode="01202",
+            city="Là-Bas",
+        )
+        geography_factories.AddressFactory(
+            banId="01234_56789_00003",
+            street="2 rue de la Culture",
+            postalCode="01003",
+            inseeCode="01203",
+            city="Là-Haut",
+        )
+        geography_factories.AddressFactory(
+            banId=None, street="4 rue de la Culture", postalCode="01004", inseeCode="01204", city="Ailleurs"
+        )
+
+        with mock.patch("pcapi.connectors.api_adresse.search_address", return_value=search_address_response):
+            self._test_autocomplete(authenticated_client, search_query, expected_texts)
