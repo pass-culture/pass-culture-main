@@ -5,6 +5,7 @@ from pcapi.core.geography.constants import WGS_SPATIAL_REFERENCE_IDENTIFIER
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
+from pcapi.utils.date import METROPOLE_TIMEZONE
 
 
 class IrisFrance(PcObject, Base, Model):
@@ -23,6 +24,7 @@ class Address(PcObject, Base, Model):
     latitude: float = sa.Column(sa.Numeric(8, 5), nullable=False)
     longitude: float = sa.Column(sa.Numeric(8, 5), nullable=False)
     departmentCode = sa.Column(sa.Text(), nullable=True, index=True)
+    timezone = sa.Column(sa.Text(), nullable=False, default=METROPOLE_TIMEZONE, server_default=METROPOLE_TIMEZONE)
 
     __table_args__ = (
         sa.Index(
@@ -36,4 +38,5 @@ class Address(PcObject, Base, Model):
         sa.CheckConstraint('length("inseeCode") = 5'),
         sa.CheckConstraint('length("city") <= 50'),
         sa.CheckConstraint('length("departmentCode") = 2 OR length("departmentCode") = 3'),
+        sa.CheckConstraint('length("timezone") <= 50'),
     )
