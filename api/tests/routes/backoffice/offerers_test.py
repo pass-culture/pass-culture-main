@@ -1257,6 +1257,42 @@ class GetOffererVenuesTest(GetEndpointHelper):
         assert rows[1]["Compte bancaire associé"] == "Compte actuel"
 
 
+class GetOffererAddressesTest(GetEndpointHelper):
+    endpoint = "backoffice_web.offerer.get_offerer_addresses"
+    endpoint_kwargs = {"offerer_id": 1}
+    needed_permission = perm_models.Permissions.READ_PRO_ENTITY
+
+    # - session + authenticated user (2 queries)
+    # - addresses (1 query)
+    expected_num_queries = 3
+
+    def test_get_offerer_addresses(self, authenticated_client, offerer):
+        offerers_factories.OffererAddressFactory(
+            offerer=offerer, label="Première adresse", address__street="3 Bd Poissonnière"
+        )
+        offerers_factories.OffererAddressFactory(
+            offerer=offerer, label="Deuxième adresse", address__street="5 Bd Poissonnière"
+        )
+        offerers_factories.OffererAddressFactory()  # other offerer
+
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 2
+
+        assert rows[0]["Intitulé"] == "Deuxième adresse"
+        assert rows[0]["Adresse"] == "5 Bd Poissonnière 75002 Paris"
+        assert rows[0]["Localisation"] == "48.87055, 2.34765"
+
+        assert rows[1]["Intitulé"] == "Première adresse"
+        assert rows[1]["Adresse"] == "3 Bd Poissonnière 75002 Paris"
+        assert rows[1]["Localisation"] == "48.87055, 2.34765"
+
+
 class GetOffererCollectiveDmsApplicationsTest(GetEndpointHelper):
     endpoint = "backoffice_web.offerer.get_collective_dms_applications"
     endpoint_kwargs = {"offerer_id": 1}
