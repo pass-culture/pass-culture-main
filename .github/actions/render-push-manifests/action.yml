@@ -37,13 +37,12 @@ runs:
     - name: "Render manifests"
       shell: bash
       run: |
-        PASSCULTURE_USERNAME="oauth2accesstoken"
-        PASSCULTURE_PASSWORD=$REGISTRY_ACCESS_TOKEN
         echo "ADDITIONAL_ARGS=$ADDITIONAL_ARGS"
         echo "ENVIRONMENT=$ENVIRONMENT"
         echo "APP_NAME=$APP_NAME"
         echo "APP_VERSION=$APP_VERSION"
-        echo "REGISTRY_ACCESS_TOKEN=$REGISTRY_ACCESS_TOKEN"
+        echo "PASSCULTURE_USERNAME=$PASSCULTURE_USERNAME"
+        echo "PASSCULTURE_PASSWORD=$PASSCULTURE_PASSWORD"
         if [ -z "${ADDITIONAL_ARGS}" ]; then
           helmfile -e $ENVIRONMENT template --set image.tag=$APP_VERSION --output-dir ./rendered-manifests/ --output-dir-template "{{ .OutputDir }}/{{ .State.BaseName }}-{{ .Release.Name  }}"
         else
@@ -54,7 +53,8 @@ runs:
         APP_NAME: ${{ inputs.app_name }}
         APP_VERSION: ${{ inputs.app_version }}
         ADDITIONAL_ARGS: ${{ inputs.additional_args }}
-        REGISTRY_ACCESS_TOKEN: ${{ steps.connect-registry.outputs.access_token }}
+        PASSCULTURE_USERNAME: "oauth2accesstoken"
+        PASSCULTURE_PASSWORD: ${{ steps.connect-registry.outputs.access_token }}
     - name: "Push manifests to rendered-manifests repository"
       id: push-manifests
       uses: cpina/github-action-push-to-another-repository@main
