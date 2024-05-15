@@ -172,7 +172,7 @@ export const VenueOfferSteps = ({
                 variant={ButtonVariant.BOX}
                 icon={fullNextIcon}
                 link={{
-                  to: `/structures/${offerer.id}/lieux/${venue.id}/eac`,
+                  to: `/structures/${offerer.id}/lieux/${venue.id}/collectif`,
                 }}
               >
                 Renseigner mes informations à destination des enseignants

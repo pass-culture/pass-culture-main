@@ -418,7 +418,9 @@ describe('CollectiveDataEdition', () => {
     })
     await userEvent.click(submitButton)
 
-    expect(mockedUsedNavigate).toHaveBeenCalledWith('/structures/1/lieux/1/eac')
+    expect(mockedUsedNavigate).toHaveBeenCalledWith(
+      '/structures/1/lieux/1/collectif'
+    )
   })
 
   describe('prefill', () => {
