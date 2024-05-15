@@ -3,3 +3,17 @@
 .tabs {
   flex-direction: row;
 }
+
+.select-partner-page {
+  margin-top: rem.torem(32px);
+  max-width: rem.torem(405px);
+}
+
+.separator {
+  width: 100%;
+  height: 2px;
+  background: var(--color-grey-medium);
+  border: none;
+  margin-top: rem.torem(32px);
+  margin-bottom: rem.torem(32px);
+}
