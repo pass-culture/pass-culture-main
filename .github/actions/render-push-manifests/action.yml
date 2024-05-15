@@ -26,6 +26,12 @@ runs:
       run: |
         PASSCULTURE_USERNAME="oauth2accesstoken"
         PASSCULTURE_PASSWORD=${{ inputs.access_token }}
+        echo "ADDITIONAL_ARGS=$ADDITIONAL_ARGS-"
+        echo "ENVIRONMENT=$ENVIRONMENT-"
+        ehco "APP_NAME=$APP_NAME-"
+        echo "APP_VERSION=$APP_VERSION-"
+        echo "PASSCULTURE_SA_ACCESS_TOKEN=$PASSCULTURE_SA_ACCESS_TOKEN-"
+        echo "access_token=$access_token-"
         if [ -z "${ADDITIONAL_ARGS}" ]; then
           helmfile -e $ENVIRONMENT template --set image.tag=$APP_VERSION --output-dir ./rendered-manifests/ --output-dir-template "{{ .OutputDir }}/{{ .State.BaseName }}-{{ .Release.Name  }}"
         else
