@@ -32,7 +32,7 @@ const ImageUploaderOffer = ({
   const { logEvent } = useAnalytics()
 
   const logButtonAddClick = () => {
-    logEvent?.(Events.CLICKED_ADD_IMAGE, {
+    logEvent(Events.CLICKED_ADD_IMAGE, {
       offerId: offer?.id,
       imageType: UploaderModeEnum.OFFER,
       isEdition: mode === OFFER_WIZARD_MODE.EDITION,

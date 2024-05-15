@@ -26,7 +26,7 @@ const LegalInfos = ({ title, className }: LegalInfoProps): JSX.Element => {
       <ButtonLink
         className={styles['quaternary-link']}
         onClick={() =>
-          logEvent?.(Events.CLICKED_CONSULT_CGU, { from: location.pathname })
+          logEvent(Events.CLICKED_CONSULT_CGU, { from: location.pathname })
         }
         link={{
           to: 'https://pass.culture.fr/cgu-professionnels/',
@@ -47,7 +47,7 @@ const LegalInfos = ({ title, className }: LegalInfoProps): JSX.Element => {
       <ButtonLink
         className={styles['quaternary-link']}
         onClick={() =>
-          logEvent?.(Events.CLICKED_PERSONAL_DATA, { from: location.pathname })
+          logEvent(Events.CLICKED_PERSONAL_DATA, { from: location.pathname })
         }
         link={{
           to: 'https://pass.culture.fr/donnees-personnelles/',
@@ -73,7 +73,7 @@ const LegalInfos = ({ title, className }: LegalInfoProps): JSX.Element => {
         className={styles['quaternary-link']}
         variant={ButtonVariant.QUATERNARY}
         onClick={() =>
-          logEvent?.(Events.CLICKED_CONSULT_SUPPORT, {
+          logEvent(Events.CLICKED_CONSULT_SUPPORT, {
             from: location.pathname,
           })
         }

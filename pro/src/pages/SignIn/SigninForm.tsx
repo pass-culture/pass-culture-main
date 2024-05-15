@@ -51,7 +51,7 @@ const SigninForm = (): JSX.Element => {
             isExternal: false,
           }}
           onClick={() =>
-            logEvent?.(Events.CLICKED_FORGOTTEN_PASSWORD, {
+            logEvent(Events.CLICKED_FORGOTTEN_PASSWORD, {
               from: location.pathname,
             })
           }
@@ -67,7 +67,7 @@ const SigninForm = (): JSX.Element => {
               isExternal: false,
             }}
             onClick={() =>
-              logEvent?.(Events.CLICKED_CREATE_ACCOUNT, {
+              logEvent(Events.CLICKED_CREATE_ACCOUNT, {
                 from: location.pathname,
               })
             }

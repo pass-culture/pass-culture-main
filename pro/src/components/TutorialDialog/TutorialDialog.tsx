@@ -20,7 +20,7 @@ const TutorialDialog = (): JSX.Element => {
   const { logEvent } = useAnalytics()
 
   const saveHasSeenProTutorials = useCallback(() => {
-    logEvent?.(Events.FIRST_LOGIN)
+    logEvent(Events.FIRST_LOGIN)
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     api
       .patchUserTutoSeen()

@@ -2,7 +2,6 @@ import { FormikProvider, useFormik } from 'formik'
 import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import useAnalytics from 'app/App/analytics/firebase'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
 import { useSignupJourneyContext } from 'context/SignupJourneyContext'
@@ -17,7 +16,6 @@ import OffererAuthenticationForm, {
 import { validationSchema } from './validationSchema'
 
 export const OffererAuthentication = (): JSX.Element => {
-  const { logEvent } = useAnalytics()
   const navigate = useNavigate()
 
   const { offerer, setOfferer } = useSignupJourneyContext()
@@ -74,7 +72,6 @@ export const OffererAuthentication = (): JSX.Element => {
             nextTo={SIGNUP_JOURNEY_STEP_IDS.ACTIVITY}
             previousStepTitle="Retour"
             isDisabled={formik.isSubmitting}
-            logEvent={logEvent}
             legalCategoryCode={offerer?.legalCategoryCode}
           />
         </form>

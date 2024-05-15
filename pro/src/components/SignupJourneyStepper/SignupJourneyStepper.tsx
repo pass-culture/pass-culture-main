@@ -34,7 +34,7 @@ const SignupJourneyStepper = () => {
 
   const logBreadcrumbClick = (to: SIGNUP_JOURNEY_STEP_IDS, stepUrl: string) => {
     if (stepUrl.indexOf(activeStep) === -1) {
-      logEvent?.(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+      logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
         from: location.pathname,
         to,
         used: OnboardingFormNavigationAction.Breadcrumb,

@@ -1,8 +1,9 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { Audience } from 'core/shared/types'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
   FilterByOmniSearch,
@@ -22,12 +23,10 @@ describe('components | FilterByOmniSearch', () => {
   })
 
   it('should display a select input with the individual options', () => {
-    // When
-    render(<FilterByOmniSearch {...props} />)
+    renderWithProviders(<FilterByOmniSearch {...props} />)
 
     const options = screen.getAllByRole('option')
 
-    // Then
     expect(screen.getByRole('combobox')).toBeInTheDocument()
     expect(options).toHaveLength(4)
     expect(options[0]).toHaveTextContent('Offre')
@@ -41,12 +40,12 @@ describe('components | FilterByOmniSearch', () => {
   })
 
   it('should display a select input with the collective options', () => {
-    // When
-    render(<FilterByOmniSearch {...props} audience={Audience.COLLECTIVE} />)
+    renderWithProviders(
+      <FilterByOmniSearch {...props} audience={Audience.COLLECTIVE} />
+    )
 
     const options = screen.getAllByRole('option')
 
-    // Then
     expect(screen.getByRole('combobox')).toBeInTheDocument()
     expect(options).toHaveLength(3)
     expect(options[0]).toHaveTextContent('Offre')
@@ -58,25 +57,20 @@ describe('components | FilterByOmniSearch', () => {
   })
 
   it('should display the correct placeholder for current option selected', () => {
-    // When
-    render(<FilterByOmniSearch {...props} />)
+    renderWithProviders(<FilterByOmniSearch {...props} />)
 
-    // Then
     expect(
       screen.getByPlaceholderText('Rechercher par nom d’offre')
     ).toBeInTheDocument()
   })
 
   it('should apply bookingBeneficiary filter when typing keywords for beneficiary name or email', async () => {
-    // Given
     props.selectedOmniSearchCriteria = 'bénéficiaire'
-    render(<FilterByOmniSearch {...props} />)
+    renderWithProviders(<FilterByOmniSearch {...props} />)
     screen.getByPlaceholderText('Rechercher par nom ou email').focus()
 
-    // When
     await userEvent.paste('Firost')
 
-    // Then
     expect(props.updateFilters).toHaveBeenCalledWith(
       {
         bookingBeneficiary: 'Firost',
@@ -91,15 +85,12 @@ describe('components | FilterByOmniSearch', () => {
   })
 
   it('should update the selected omniSearch criteria when selecting an omniSearchCriteria', async () => {
-    // Given
     props.keywords = '12548'
-    render(<FilterByOmniSearch {...props} />)
+    renderWithProviders(<FilterByOmniSearch {...props} />)
     const omniSearchSelect = screen.getByRole('combobox')
 
-    // When
     await userEvent.selectOptions(omniSearchSelect, 'ean')
 
-    // Then
     expect(props.updateFilters).toHaveBeenCalledWith(
       {
         bookingBeneficiary: '',

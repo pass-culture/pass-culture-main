@@ -15,7 +15,7 @@ export const ConfirmedAttachment = (): JSX.Element => {
   const { offerer } = useSignupJourneyContext()
 
   const logNavigation = () => {
-    logEvent?.(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+    logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
       from: location.pathname,
       to: SIGNUP_JOURNEY_STEP_IDS.COMPLETED,
       used: OnboardingFormNavigationAction.WaitingLinkButton,

@@ -93,7 +93,7 @@ const ReimbursementBankAccount = ({
               target: '_blank',
             }}
             onClick={() => {
-              logEvent?.(
+              logEvent(
                 BankAccountEvents.CLICKED_BANK_DETAILS_RECORD_FOLLOW_UP,
                 {
                   from: location.pathname,
@@ -149,7 +149,7 @@ const ReimbursementBankAccount = ({
                     variant={ButtonVariant.SECONDARY}
                     onClick={() => {
                       onUpdateButtonClick?.(bankAccount.id)
-                      logEvent?.(
+                      logEvent(
                         BankAccountEvents.CLICKED_CHANGE_VENUE_TO_BANK_ACCOUNT,
                         {
                           from: location.pathname,
@@ -165,7 +165,7 @@ const ReimbursementBankAccount = ({
               {!hasLinkedVenues && venuesNotLinkedToBankAccount > 0 && (
                 <Button
                   onClick={() => {
-                    logEvent?.(
+                    logEvent(
                       BankAccountEvents.CLICKED_ADD_VENUE_TO_BANK_ACCOUNT,
                       {
                         from: location.pathname,

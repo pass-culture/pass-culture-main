@@ -30,13 +30,13 @@ export function PartnerPageCollectiveSection({
   )
 
   const logCollectiveHelpLinkClick = () => {
-    logEvent?.(Events.CLICKED_PARTNER_BLOCK_COLLECTIVE_HELP_LINK, {
+    logEvent(Events.CLICKED_PARTNER_BLOCK_COLLECTIVE_HELP_LINK, {
       venueId: venueId,
     })
   }
 
   const logDMSApplicationLinkClick = () => {
-    logEvent?.(Events.CLICKED_PARTNER_BLOCK_DMS_APPLICATION_LINK, {
+    logEvent(Events.CLICKED_PARTNER_BLOCK_DMS_APPLICATION_LINK, {
       venueId: venueId,
     })
   }

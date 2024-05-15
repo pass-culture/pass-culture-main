@@ -279,13 +279,13 @@ export const IndividualBookingsTable = ({
         pageCount={pageCount}
         onPreviousPageClick={() => {
           previousPage()
-          logEvent?.(Events.CLICKED_PAGINATION_PREVIOUS_PAGE, {
+          logEvent(Events.CLICKED_PAGINATION_PREVIOUS_PAGE, {
             from: location.pathname,
           })
         }}
         onNextPageClick={() => {
           nextPage()
-          logEvent?.(Events.CLICKED_PAGINATION_NEXT_PAGE, {
+          logEvent(Events.CLICKED_PAGINATION_NEXT_PAGE, {
             from: location.pathname,
           })
         }}

@@ -64,7 +64,7 @@ export const FilterByBookingStatus = <
 
   const showTooltip = () => {
     setIsToolTipVisible(true)
-    logEvent?.(Events.CLICKED_SHOW_STATUS_FILTER, {
+    logEvent(Events.CLICKED_SHOW_STATUS_FILTER, {
       from: location.pathname,
     })
   }

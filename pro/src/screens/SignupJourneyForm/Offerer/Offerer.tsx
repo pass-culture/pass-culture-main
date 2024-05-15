@@ -111,7 +111,7 @@ export const Offerer = (): JSX.Element => {
         to = SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION
         navigate('/parcours-inscription/identification')
       }
-      logEvent?.(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+      logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
         from: location.pathname,
         to,
         used: OnboardingFormNavigationAction.ActionBar,
@@ -164,7 +164,6 @@ export const Offerer = (): JSX.Element => {
               onClickNext={handleNextStep}
               isDisabled={formik.isSubmitting}
               nextStepTitle="Continuer"
-              logEvent={logEvent}
             />
           </form>
         </FormikProvider>

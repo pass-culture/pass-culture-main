@@ -98,7 +98,7 @@ export const VenueOfferSteps = ({
                     to: venueCreationUrl,
                   }}
                   onClick={() => {
-                    logEvent?.(Events.CLICKED_CREATE_VENUE, {
+                    logEvent(Events.CLICKED_CREATE_VENUE, {
                       from: location.pathname,
                       is_first_venue: true,
                     })
@@ -120,7 +120,7 @@ export const VenueOfferSteps = ({
                   }}
                   icon={fullInfoIcon}
                   onClick={() => {
-                    logEvent?.(Events.CLICKED_NO_VENUE, {
+                    logEvent(Events.CLICKED_NO_VENUE, {
                       from: location.pathname,
                     })
                   }}
@@ -156,7 +156,7 @@ export const VenueOfferSteps = ({
                   to: `remboursements/informations-bancaires?structure=${offerer.id}`,
                 }}
                 onClick={() => {
-                  logEvent?.(VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON, {
+                  logEvent(VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON, {
                     venue_id: venue?.id ?? '',
                     from: OFFER_FORM_NAVIGATION_IN.HOME,
                   })
@@ -195,7 +195,7 @@ export const VenueOfferSteps = ({
                 to: `/structures/${offerer.id}/lieux/${venue.id}#venue-collective-data`,
               }}
               onClick={() => {
-                logEvent?.(Events.CLICKED_EAC_DMS_TIMELINE, {
+                logEvent(Events.CLICKED_EAC_DMS_TIMELINE, {
                   from: location.pathname,
                 })
               }}

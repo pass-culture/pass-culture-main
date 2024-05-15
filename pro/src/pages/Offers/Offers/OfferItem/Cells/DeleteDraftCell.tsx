@@ -51,7 +51,7 @@ export const DeleteDraftCell = ({ offer }: DeleteDraftOffersProps) => {
         ids: [offer.id],
       })
       notification.success(computeDeletionSuccessMessage(1))
-      logEvent?.(Events.DELETE_DRAFT_OFFER, {
+      logEvent(Events.DELETE_DRAFT_OFFER, {
         from: OFFER_FORM_NAVIGATION_IN.OFFERS,
         used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_TRASH_ICON,
         offerId: offer.id,

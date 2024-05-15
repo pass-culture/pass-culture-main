@@ -49,7 +49,7 @@ const AttachmentInvitations = ({ offererId }: AttachmentInvitationsProps) => {
         status: OffererMemberStatus.PENDING,
       })
       formik.resetForm()
-      logEvent?.(OffererLinkEvents.CLICKED_SEND_INVITATION, {
+      logEvent(OffererLinkEvents.CLICKED_SEND_INVITATION, {
         offererId: offererId,
       })
       notify.success(SUCCESS_MESSAGE)
@@ -137,7 +137,7 @@ const AttachmentInvitations = ({ offererId }: AttachmentInvitationsProps) => {
         <Button
           variant={ButtonVariant.SECONDARY}
           onClick={() => {
-            logEvent?.(OffererLinkEvents.CLICKED_ADD_COLLABORATOR, {
+            logEvent(OffererLinkEvents.CLICKED_ADD_COLLABORATOR, {
               offererId: offererId,
             })
             setShowInvitationForm(true)

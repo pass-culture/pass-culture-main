@@ -91,7 +91,7 @@ export const CollectiveTimeLine = ({
   const { logEvent } = useAnalytics()
 
   const logModifyBookingLimitDateClick = () => {
-    logEvent?.(CollectiveBookingsEvents.CLICKED_MODIFY_BOOKING_LIMIT_DATE, {
+    logEvent(CollectiveBookingsEvents.CLICKED_MODIFY_BOOKING_LIMIT_DATE, {
       from: location.pathname,
     })
   }

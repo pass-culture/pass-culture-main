@@ -26,7 +26,7 @@ export const RedirectToBankAccountDialog = ({
     <RedirectDialog
       icon={strokePartyIcon}
       onCancel={() => {
-        logEvent?.(Events.CLICKED_SEE_LATER_FROM_SUCCESS_OFFER_CREATION_MODAL, {
+        logEvent(Events.CLICKED_SEE_LATER_FROM_SUCCESS_OFFER_CREATION_MODAL, {
           from: OFFER_WIZARD_STEP_IDS.SUMMARY,
         })
         navigate(cancelRedirectUrl)
@@ -38,7 +38,7 @@ export const RedirectToBankAccountDialog = ({
         isExternal: false,
       }}
       onRedirect={() =>
-        logEvent?.(VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON, {
+        logEvent(VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON, {
           venue_id: venueId,
           from: OFFER_WIZARD_STEP_IDS.SUMMARY,
         })

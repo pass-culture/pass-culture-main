@@ -74,7 +74,7 @@ const IndividualOfferConfirmationScreen = ({
           svgAlt="Nouvelle fenêtre"
           icon={fullLinkIcon}
           onClick={() => {
-            logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+            logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
               from: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
               to: OFFER_FORM_NAVIGATION_OUT.PREVIEW,
               used: OFFER_FORM_NAVIGATION_MEDIUM.CONFIRMATION_PREVIEW,

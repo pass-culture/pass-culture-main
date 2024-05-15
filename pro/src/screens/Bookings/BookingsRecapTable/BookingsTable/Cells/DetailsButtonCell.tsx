@@ -20,7 +20,7 @@ export const DetailsButtonCell = ({ isExpanded }: DetailsButtonCellProps) => {
   return (
     <Button
       onClick={() =>
-        logEvent?.(CollectiveBookingsEvents.CLICKED_DETAILS_BUTTON_CELL, {
+        logEvent(CollectiveBookingsEvents.CLICKED_DETAILS_BUTTON_CELL, {
           from: location.pathname,
         })
       }

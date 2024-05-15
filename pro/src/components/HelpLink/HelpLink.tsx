@@ -13,7 +13,7 @@ export const HelpLink = (): JSX.Element => {
   return (
     <a
       onClick={() =>
-        logEvent?.(Events.CLICKED_HELP_LINK, { from: location.pathname })
+        logEvent(Events.CLICKED_HELP_LINK, { from: location.pathname })
       }
       className={styles['help-link']}
       href="https://aide.passculture.app/hc/fr/articles/4411991940369--Acteurs-culturels-Comment-poster-une-offre-%C3%A0-destination-d-un-groupe-scolaire-"

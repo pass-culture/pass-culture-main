@@ -5,7 +5,6 @@ import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import { Target } from 'apiClient/v1'
-import useAnalytics from 'app/App/analytics/firebase'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
 import { GET_VENUE_TYPES_QUERY_KEY } from 'config/swrQueryKeys'
@@ -25,7 +24,6 @@ export const Activity = (): JSX.Element => {
   const notify = useNotification()
   const navigate = useNavigate()
   const { activity, setActivity, offerer } = useSignupJourneyContext()
-  const { logEvent } = useAnalytics()
 
   const venueTypesQuery = useSWR([GET_VENUE_TYPES_QUERY_KEY], () =>
     api.getVenueTypes()
@@ -117,7 +115,6 @@ export const Activity = (): JSX.Element => {
             isDisabled={formik.isSubmitting}
             previousTo={SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION}
             nextTo={SIGNUP_JOURNEY_STEP_IDS.VALIDATION}
-            logEvent={logEvent}
             legalCategoryCode={offerer?.legalCategoryCode}
           />
         </form>

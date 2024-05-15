@@ -63,7 +63,7 @@ const HeaderDropdown = () => {
                 icon={fullLogoutIcon}
                 link={{ to: `${location.pathname}?logout}` }}
                 onClick={() =>
-                  logEvent?.(Events.CLICKED_LOGOUT, {
+                  logEvent(Events.CLICKED_LOGOUT, {
                     from: location.pathname,
                   })
                 }

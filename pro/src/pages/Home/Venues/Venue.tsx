@@ -67,7 +67,7 @@ export const Venue = ({ offerer, venue, isFirstVenue }: VenueProps) => {
               type="button"
               onClick={() => {
                 setIsToggleOpen((prev) => !prev)
-                logEvent?.(
+                logEvent(
                   VenueEvents.CLICKED_VENUE_ACCORDION_BUTTON,
                   venueIdTrackParam
                 )
@@ -95,7 +95,7 @@ export const Venue = ({ offerer, venue, isFirstVenue }: VenueProps) => {
               hasTooltip
               onClick={() => {
                 setIsToggleOpen((prev) => !prev)
-                logEvent?.(
+                logEvent(
                   VenueEvents.CLICKED_VENUE_ACCORDION_BUTTON,
                   venueIdTrackParam
                 )
@@ -125,7 +125,7 @@ export const Venue = ({ offerer, venue, isFirstVenue }: VenueProps) => {
               'aria-label': `Gérer la page de ${venueDisplayName}`,
             }}
             onClick={() =>
-              logEvent?.(
+              logEvent(
                 VenueEvents.CLICKED_VENUE_PUBLISHED_OFFERS_LINK,
                 venueIdTrackParam
               )
