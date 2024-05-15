@@ -1,8 +1,4 @@
-import {
-  screen,
-  waitFor,
-  waitForElementToBeRemoved,
-} from '@testing-library/react'
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 import * as router from 'react-router-dom'
@@ -10,7 +6,6 @@ import * as router from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
-import { RemoteContextProvider } from 'context/remoteConfigContext'
 import { SAVED_OFFERER_ID_KEY } from 'core/shared/constants'
 import { formatBrowserTimezonedDateAsUTC } from 'utils/date'
 import {
@@ -27,11 +22,6 @@ import { Homepage } from '../Homepage'
 
 vi.mock('@firebase/remote-config', () => ({
   getValue: () => ({ asString: () => 'GE' }),
-}))
-
-vi.mock('hooks/useRemoteConfig', () => ({
-  __esModule: true,
-  default: () => ({ remoteConfig: {}, remoteConfigData: { toto: 'tata' } }),
 }))
 
 vi.mock('utils/windowMatchMedia', () => ({
@@ -53,12 +43,10 @@ Object.defineProperty(window, 'location', {
 })
 
 const renderHomePage = (options?: RenderWithProvidersOptions) => {
-  renderWithProviders(
-    <RemoteContextProvider>
-      <Homepage />
-    </RemoteContextProvider>,
-    { user: sharedCurrentUserFactory(), ...options }
-  )
+  renderWithProviders(<Homepage />, {
+    user: sharedCurrentUserFactory(),
+    ...options,
+  })
 }
 
 const mockLogEvent = vi.fn()
@@ -110,7 +98,6 @@ describe('Homepage', () => {
       offererNames: baseOfferersNames,
     })
     vi.spyOn(api, 'getOfferer').mockResolvedValue(baseOfferers[0])
-    vi.spyOn(api, 'postProFlags').mockResolvedValue()
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
@@ -123,17 +110,6 @@ describe('Homepage', () => {
       syncDate: null,
       offererId: 1,
     })
-  })
-
-  it('pro flags should be sent on page load', async () => {
-    renderHomePage()
-
-    await waitFor(() => {
-      expect(api.postProFlags).toHaveBeenCalledWith({
-        firebase: { toto: 'tata' },
-      })
-    })
-    expect(api.postProFlags).toHaveBeenCalledTimes(1)
   })
 
   it('the user should see the home offer steps if they do not have any venues', async () => {

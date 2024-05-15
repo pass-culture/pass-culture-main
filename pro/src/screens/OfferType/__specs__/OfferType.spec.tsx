@@ -23,13 +23,6 @@ import OfferType from '../OfferType'
 
 const mockLogEvent = vi.fn()
 
-vi.mock('hooks/useRemoteConfig', () => ({
-  __esModule: true,
-  default: () => ({
-    remoteConfig: {},
-  }),
-}))
-
 vi.mock('@firebase/remote-config', () => ({
   getValue: () => ({ asBoolean: () => true }),
 }))

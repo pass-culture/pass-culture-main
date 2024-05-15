@@ -14,13 +14,6 @@ import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import OfferType from '../OfferType'
 
-vi.mock('hooks/useRemoteConfig', () => ({
-  __esModule: true,
-  default: () => ({
-    remoteConfig: {},
-  }),
-}))
-
 vi.mock('@firebase/remote-config', () => ({
   getValue: () => ({ asBoolean: () => true }),
 }))

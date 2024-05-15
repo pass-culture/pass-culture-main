@@ -17,12 +17,11 @@ import {
 import { useContext, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 
+import { api } from 'apiClient/api'
 import { firebaseConfig } from 'config/firebase'
 import { AnalyticsContext } from 'context/analyticsContext'
 import useUtmQueryParams from 'hooks/useUtmQueryParams'
 import { selectCurrentOffererId, selectCurrentUser } from 'store/user/selectors'
-
-import useRemoteConfig from '../../../hooks/useRemoteConfig'
 
 let firebaseApp: firebase.FirebaseApp | undefined
 let firebaseRemoteConfig: RemoteConfig | undefined
@@ -48,7 +47,6 @@ export const useFirebase = (consentedToFirebase: boolean) => {
     useState<boolean>(false)
 
   const { setLogEvent } = useAnalytics()
-  const { setRemoteConfigData } = useRemoteConfig()
   const utmParameters = useUtmQueryParams()
 
   useEffect(() => {
@@ -65,6 +63,11 @@ export const useFirebase = (consentedToFirebase: boolean) => {
       firebaseRemoteConfig = getRemoteConfig(firebaseApp)
       await fetchAndActivate(firebaseRemoteConfig)
 
+      const remoteConfigParams = getRemoteConfigParams()
+      await api.postProFlags({
+        firebase: { ...remoteConfigParams, REMOTE_CONFIG_LOADED: 'true' },
+      })
+
       setLogEvent &&
         setLogEvent(
           () =>
@@ -78,11 +81,6 @@ export const useFirebase = (consentedToFirebase: boolean) => {
                 return
               }
               const remoteConfigParams = getRemoteConfigParams()
-              setRemoteConfigData &&
-                setRemoteConfigData({
-                  ...remoteConfigParams,
-                  REMOTE_CONFIG_LOADED: 'true',
-                })
               analyticsLogEvent(getAnalytics(firebaseApp), event, {
                 ...params,
                 ...utmParameters,
