@@ -1,4 +1,5 @@
 from decimal import Decimal
+import random
 
 import flask
 import semver
@@ -26,3 +27,7 @@ def check_client_version() -> None:
 
     if client_version < settings.NATIVE_APP_MINIMAL_CLIENT_VERSION:
         raise ForbiddenError(errors={"code": "UPGRADE_REQUIRED"})
+
+
+def random_hash() -> str:
+    return format(random.getrandbits(128), "x")

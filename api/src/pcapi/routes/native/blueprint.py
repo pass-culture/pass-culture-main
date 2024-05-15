@@ -6,11 +6,12 @@ from spectree import SecurityScheme
 
 from pcapi import settings
 from pcapi.routes.native import utils
+from pcapi.routes.native.forms import empty as empty_forms
 from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.serialization.utils import before_handler
 
 
-native_blueprint = Blueprint("native", __name__)
+native_blueprint = Blueprint("native", __name__, template_folder="templates")
 native_blueprint.before_request(utils.check_client_version)
 CORS(
     native_blueprint,
@@ -41,3 +42,15 @@ def get_native_blueprint(version: str = "v1") -> Blueprint:
 def native_route(rule: str, version: str = "v1", **kwargs: typing.Any) -> typing.Callable:
     blueprint = get_native_blueprint(version)
     return blueprint.route(rule, **kwargs)
+
+
+@native_blueprint.context_processor
+def extra_funcs() -> dict:
+    return {
+        #         "csrf_token": empty_forms.EmptyForm().csrf_token,
+        #         # "has_permission": utils.has_current_user_permission,
+        #         # "is_feature_active": utils.is_feature_active,
+        #         # "is_user_offerer_action_type": utils.is_user_offerer_action_type,
+        "random_hash": utils.random_hash,
+        #         # "get_setting": utils.get_setting,
+    }
