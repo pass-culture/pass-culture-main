@@ -15,12 +15,26 @@ inputs:
     required: false
   PASSCULTURE_SA_ACCESS_TOKEN:
     required: true
-  access_token:
-    required: true
 
 runs:
   using: 'composite'
   steps:
+    - uses: 'actions/checkout@v4'
+    - name: "Get registry secret"
+      id: 'get-registry-secrets'
+      uses: 'google-github-actions/get-secretmanager-secrets@v2'
+      with:
+        secrets: |-
+          ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
+          ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
+    - name: "OpenID Connect Authentication"
+        id: "connect-infra"
+        uses: 'google-github-actions/auth@v2'
+        with:
+          create_credentials_file: false
+          token_format: 'access_token'
+          workload_identity_provider: ${{ steps.get-registry-secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ steps.get-registry-secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
     - name: "Render manifests"
       shell: bash
       run: |
@@ -31,7 +45,6 @@ runs:
         echo "APP_NAME=$APP_NAME"
         echo "APP_VERSION=$APP_VERSION"
         echo "PASSCULTURE_SA_ACCESS_TOKEN=$PASSCULTURE_SA_ACCESS_TOKEN"
-        echo "ACCESS_TOKEN=$ACCESS_TOKEN"
         if [ -z "${ADDITIONAL_ARGS}" ]; then
           helmfile -e $ENVIRONMENT template --set image.tag=$APP_VERSION --output-dir ./rendered-manifests/ --output-dir-template "{{ .OutputDir }}/{{ .State.BaseName }}-{{ .Release.Name  }}"
         else
@@ -43,7 +56,7 @@ runs:
         APP_VERSION: ${{ inputs.app_version }}
         ADDITIONAL_ARGS: ${{ inputs.additional_args }}
         PASSCULTURE_SA_ACCESS_TOKEN: ${{ inputs.PASSCULTURE_SA_ACCESS_TOKEN }}
-        ACCESS_TOKEN: ${{ inputs.access_token }}
+        ACCESS_TOKEN: ${{ steps.connect.outputs.access_token }}
     - name: "Push manifests to rendered-manifests repository"
       id: push-manifests
       uses: cpina/github-action-push-to-another-repository@main
