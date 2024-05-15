@@ -44,14 +44,14 @@
               </p>
               <p>
                 <b>Compatible avec les CGU :</b>
-                {% if product_compatibility %}
+                {% if product_compatibility == "COMPATIBLE" %}
                   <span class="mx-2 pb-1 badge rounded-pill text-bg-success">
                     <i class="bi bi-check-circle"></i> Oui
                   </span>
                 {% else %}
                   <span class="mx-2 pb-1 badge rounded-pill text-bg-dark">
                     <i class="bi bi-x-circle"></i> Non
-                  </span>
+                  </span> {{ "(sur décision de l'équipe Fraude & Conformité)" if product_compatibility=="FRAUD_INCOMPATIBLE" else "(d'après le provider)" }}
                 {% endif %}
               </p>
               <p>

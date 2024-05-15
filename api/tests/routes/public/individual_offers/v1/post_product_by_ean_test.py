@@ -353,9 +353,18 @@ class PostProductByEanTest:
         assert offers_models.Offer.query.count() == 1
         assert offers_models.Stock.query.count() == 1
 
-    def test_does_not_create_an_offer_of_non_compatible_product(self, client):
+    @pytest.mark.parametrize(
+        "gcu_compatibility_type",
+        [
+            offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE,
+            offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE,
+        ],
+    )
+    def test_does_not_create_an_offer_of_non_compatible_product(self, client, gcu_compatibility_type):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
-        product = offers_factories.ProductFactory(extraData={"ean": "1234567890123"}, isGcuCompatible=False)
+        product = offers_factories.ProductFactory(
+            extraData={"ean": "1234567890123"}, gcuCompatibilityType=gcu_compatibility_type
+        )
 
         client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products/ean",

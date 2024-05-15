@@ -218,7 +218,9 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
         raise NotImplementedError()
 
     def activate_newly_eligible_product_and_offers(self, product: offers_models.Product) -> None:
-        is_product_newly_eligible = not product.isGcuCompatible
+        is_product_newly_eligible = (
+            product.gcuCompatibilityType == offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE
+        )
         ean = product.extraData.get("ean") if product.extraData else None
         if ean is None:
             return

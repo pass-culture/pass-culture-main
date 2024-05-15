@@ -154,7 +154,7 @@ class SynchronizeStocksTest:
         offer = create_offer(spec[1]["ref"], venue)
         product = create_product(spec[2]["ref"])
         create_product(spec[4]["ref"])
-        create_product(spec[6]["ref"], isGcuCompatible=False)
+        create_product(spec[6]["ref"], gcuCompatibilityType=offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE)
         create_product(spec[7]["ref"], name=offers_models.UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER)
 
         stock_with_booking = create_stock(spec[5]["ref"], siret, venue, quantity=20)

@@ -28,11 +28,18 @@ class ProductModelTest:
         product = models.Product(thumbCount=0)
         assert product.thumbUrl is None
 
-    @pytest.mark.parametrize("gcu_compatible, product_count", [(True, 1), (False, 0)])
-    def test_cgu_compatible(self, gcu_compatible, product_count):
-        product = factories.ProductFactory(isGcuCompatible=gcu_compatible)
+    @pytest.mark.parametrize(
+        "gcu_compatible, can_be_synchronized, product_count",
+        [
+            (models.GcuCompatibilityType.COMPATIBLE, True, 1),
+            (models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE, False, 0),
+            (models.GcuCompatibilityType.FRAUD_INCOMPATIBLE, False, 0),
+        ],
+    )
+    def test_gcu_compatible(self, gcu_compatible, can_be_synchronized, product_count):
+        product = factories.ProductFactory(gcuCompatibilityType=gcu_compatible)
 
-        assert product.can_be_synchronized == gcu_compatible
+        assert product.can_be_synchronized == can_be_synchronized
         assert models.Product.query.filter(models.Product.can_be_synchronized).count() == product_count
         models.Product.query.delete()
 

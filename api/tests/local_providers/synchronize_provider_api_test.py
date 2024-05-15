@@ -12,6 +12,7 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import factories
+from pcapi.core.offers.models import GcuCompatibilityType
 from pcapi.core.offers.models import Offer
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.models import StockDetail
@@ -101,7 +102,11 @@ class ProviderAPICronTest:
         offer = create_offer(EANs[1], venue, product_price="5.02")
         product = create_product(EANs[2], product_price="8.01")
         create_product(EANs[4], product_price="10.02")
-        create_product(EANs[6], isGcuCompatible=False, product_price="10.04")
+        create_product(
+            EANs[6],
+            gcuCompatibilityType=GcuCompatibilityType.PROVIDER_INCOMPATIBLE,
+            product_price="10.04",
+        )
 
         stock_with_booking = create_stock(EANs[5], siret, venue, quantity=20, product_price="18.01")
         BookingFactory(stock=stock_with_booking, user__deposit__expirationDate=datetime(year=2031, month=12, day=31))
