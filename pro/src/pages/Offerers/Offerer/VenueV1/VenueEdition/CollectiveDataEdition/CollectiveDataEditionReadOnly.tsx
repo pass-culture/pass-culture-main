@@ -19,7 +19,7 @@ export const CollectiveDataEditionReadOnly = ({
   return (
     <SummarySection
       title="Vos informations pour les enseignants"
-      editLink={`/structures/${venue.managingOfferer.id}/lieux/${venue.id}/eac/edition`}
+      editLink={`/structures/${venue.managingOfferer.id}/lieux/${venue.id}/collectif/edition`}
     >
       <SummarySubSection title="Présentation pour les enseignants">
         <SummaryDescriptionList

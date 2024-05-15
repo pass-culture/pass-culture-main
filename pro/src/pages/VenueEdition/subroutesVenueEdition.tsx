@@ -9,7 +9,7 @@ export const routesVenueEdition: RouteConfig[] = [
     title: 'Modifier ma page partenaire',
   },
   {
-    path: '/structures/:offererId/lieux/:venueId/eac',
+    path: '/structures/:offererId/lieux/:venueId/collectif',
     title: 'Modifier ma page partenaire',
   },
 ]
