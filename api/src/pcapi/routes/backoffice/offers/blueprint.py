@@ -56,6 +56,11 @@ list_offers_blueprint = utils.child_backoffice_blueprint(
 logger = logging.getLogger(__name__)
 
 SEARCH_FIELD_TO_PYTHON = {
+    "ADDRESS": {
+        "field": "address",
+        "column": offerers_models.OffererAddress.addressId,
+        "inner_join": "offerer_address",
+    },
     "CATEGORY": {
         "field": "category",
         "column": offers_models.Offer.subcategoryId,
@@ -191,6 +196,12 @@ JOIN_DICT: dict[str, list[dict[str, typing.Any]]] = {
         {
             "name": "offer_criterion",
             "args": (criteria_models.OfferCriterion, offers_models.Offer.id == criteria_models.OfferCriterion.offerId),
+        }
+    ],
+    "offerer_address": [
+        {
+            "name": "offerer_address",
+            "args": (offerers_models.OffererAddress, offers_models.Offer.offererAddress),
         }
     ],
     "venue": [
