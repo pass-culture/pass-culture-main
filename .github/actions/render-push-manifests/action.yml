@@ -13,6 +13,7 @@ inputs:
   additional_args:
     type: string
     required: false
+    default: ""
   PASSCULTURE_SA_ACCESS_TOKEN:
     required: true
   access_token:
