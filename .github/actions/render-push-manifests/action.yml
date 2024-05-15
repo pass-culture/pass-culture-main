@@ -74,7 +74,7 @@ runs:
       id: push-manifests
       uses: cpina/github-action-push-to-another-repository@main
       env:
-        API_TOKEN_GITHUB: ${{ inputs.api_token_github }}
+        API_TOKEN_GITHUB: ${{ secrets.get-registry-secrets.outputs.API_TOKEN_GITHUB }}
       with:
         source-directory: ./rendered-manifests/helmfile-${{ inputs.environment }}/
         destination-github-username: 'pass-culture'
