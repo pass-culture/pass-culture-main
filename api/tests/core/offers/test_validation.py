@@ -74,7 +74,6 @@ class CheckPricesForStockTest:
             validation.check_stock_price(-1.5, offer)
         assert error.value.errors["price"] == ["Le prix doit être positif"]
 
-    @override_features(WIP_ENABLE_OFFER_PRICE_LIMITATION=True)
     def test_price_limitation_rule(self):
         offers_factories.OfferPriceLimitationRuleFactory(
             subcategoryId=subcategories.ACHAT_INSTRUMENT.id, rate=Decimal("0.5")
@@ -99,7 +98,6 @@ class CheckPricesForStockTest:
             "Le prix indiqué est invalide, veuillez créer une nouvelle offre"
         ]
 
-    @override_features(WIP_ENABLE_OFFER_PRICE_LIMITATION=True)
     def test_price_limitation_rule_ok_with_draft_offer(self):
         offers_factories.OfferPriceLimitationRuleFactory(
             subcategoryId=subcategories.ACHAT_INSTRUMENT.id, rate=Decimal("0.5")
@@ -113,7 +111,6 @@ class CheckPricesForStockTest:
         validation.check_stock_price(90, offer)
         validation.check_stock_price(15, offer)
 
-    @override_features(WIP_ENABLE_OFFER_PRICE_LIMITATION=True)
     def test_price_limitation_rule_with_no_last_validation_price(self):
         offers_factories.OfferPriceLimitationRuleFactory(
             subcategoryId=subcategories.ACHAT_INSTRUMENT.id, rate=Decimal("0.5")

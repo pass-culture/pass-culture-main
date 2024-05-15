@@ -18,7 +18,6 @@ from pcapi.core.offers import models as offers_models
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import Stock
-from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.date import format_into_utc_date
 
@@ -1116,7 +1115,6 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["price300"] == ["Le prix d’une offre ne peut excéder 300 euros."]
 
-    @override_features(WIP_ENABLE_OFFER_PRICE_LIMITATION=True)
     def test_cannot_update_stock_with_price_outside_of_price_limitation_rule(self, client):
         offers_factories.OfferPriceLimitationRuleFactory(
             subcategoryId=subcategories_v2.ACHAT_INSTRUMENT.id, rate=Decimal("0.5")
