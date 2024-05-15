@@ -13,7 +13,13 @@ inputs:
   additional_args:
     type: string
     required: false
-  API_TOKEN_GITHUB:
+  api_token_github:
+    required: true
+  registry_workload_identity_secret_name:
+    type: string
+    required: true
+  registry_service_account_secret_name:
+    type: string
     required: true
 
 runs:
@@ -24,8 +30,8 @@ runs:
       uses: 'google-github-actions/get-secretmanager-secrets@v2'
       with:
         secrets: |-
-          ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
-          ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
+          ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:${{ inputs.registry_workload_identity_secret_name }}
+          ARTIFACT_REGISTRY_SERVICE_ACCOUNT:${{ inputs.registry_service_account_secret_name }}
     - name: "Connect to docker registry"
       id: "connect-registry"
       uses: 'google-github-actions/auth@v2'
@@ -37,12 +43,6 @@ runs:
     - name: "Render manifests"
       shell: bash
       run: |
-        echo "ADDITIONAL_ARGS=$ADDITIONAL_ARGS"
-        echo "ENVIRONMENT=$ENVIRONMENT"
-        echo "APP_NAME=$APP_NAME"
-        echo "APP_VERSION=$APP_VERSION"
-        echo "PASSCULTURE_USERNAME=$PASSCULTURE_USERNAME"
-        echo "PASSCULTURE_PASSWORD=$PASSCULTURE_PASSWORD"
         if [ -z "${ADDITIONAL_ARGS}" ]; then
           helmfile -e $ENVIRONMENT template --set image.tag=$APP_VERSION --output-dir ./rendered-manifests/ --output-dir-template "{{ .OutputDir }}/{{ .State.BaseName }}-{{ .Release.Name  }}"
         else
@@ -59,7 +59,7 @@ runs:
       id: push-manifests
       uses: cpina/github-action-push-to-another-repository@main
       env:
-        API_TOKEN_GITHUB: ${{ inputs.API_TOKEN_GITHUB }}
+        API_TOKEN_GITHUB: ${{ inputs.api_token_github }}
       with:
         source-directory: ./rendered-manifests/helmfile-${{ inputs.environment }}/
         destination-github-username: 'pass-culture'
@@ -67,4 +67,3 @@ runs:
         commit-message: "${{ inputs.app_name }}(${{ inputs.environment }}) : pushed rendered manifests for app_version=${{ inputs.app_version }}"
         target-branch: fdehem
         create-target-branch-if-needed: true
-
