@@ -3,6 +3,7 @@ import cn from 'classnames'
 import { useSelector } from 'react-redux'
 
 import useAnalytics from 'app/App/analytics/firebase'
+import HelpDropdownMenu from 'components/Header/HeaderHelpDropdown/HelpDropdownMenu'
 import { Events } from 'core/FirebaseEvents/constants'
 import fullCloseIcon from 'icons/full-close.svg'
 import fullLogoutIcon from 'icons/full-logout.svg'
@@ -45,6 +46,17 @@ const HeaderDropdown = () => {
                 Voir mon profil
               </ButtonLink>
             </DropdownMenu.Item>
+            <DropdownMenu.Separator
+              className={cn(styles['separator'], styles['tablet-only'])}
+            />
+            <DropdownMenu.Label
+              className={cn(styles['menu-title'], styles['tablet-only'])}
+            >
+              Centre d’aide
+            </DropdownMenu.Label>
+            <div className={styles['tablet-only']}>
+              <HelpDropdownMenu />
+            </div>
             <DropdownMenu.Separator className={styles['separator']} />
             <DropdownMenu.Item className={styles['menu-item']} asChild>
               <ButtonLink

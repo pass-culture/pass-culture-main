@@ -250,7 +250,7 @@ export const Homepage = (): JSX.Element => {
         )}
 
       <section className={styles['section']} ref={profileRef}>
-        <ProfileAndSupport />
+        {!hasNewSideBarNavigation && <ProfileAndSupport />}
 
         <div className={styles['newsletter']}>
           <Newsletter />
