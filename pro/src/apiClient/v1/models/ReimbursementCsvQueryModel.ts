@@ -3,8 +3,8 @@
 /* tslint:disable */
 /* eslint-disable */
 export type ReimbursementCsvQueryModel = {
+  bankAccountId?: number;
   reimbursementPeriodBeginningDate?: string;
   reimbursementPeriodEndingDate?: string;
-  venueId?: number;
 };
 

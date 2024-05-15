@@ -37,44 +37,7 @@ def test_without_reimbursement_period(client):
 
 
 @pytest.mark.usefixtures("db_session")
-def test_admin_can_access_reimbursements_data_with_venue_filter(client):
-    # Given
-    period = datetime.date(2021, 1, 1), datetime.date(2021, 1, 15)
-    admin = users_factories.AdminFactory()
-    user_offerer = offerers_factories.UserOffererFactory()
-    offerer = user_offerer.offerer
-    status = finance_factories.PaymentStatusFactory(
-        payment__booking__stock__offer__venue__managingOfferer=offerer,
-        payment__booking__stock__offer__venue__pricing_point="self",
-        status=finance_models.TransactionStatus.SENT,
-        payment__transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 06-21",
-        date=datetime.datetime(2021, 1, 1),
-    )
-    venue = status.payment.booking.venue
-
-    # When
-    client = client.with_session_auth(admin.email)
-    response = client.get(
-        "/reimbursements/csv?"
-        + urllib.parse.urlencode(
-            {
-                "reimbursementPeriodBeginningDate": period[0].isoformat(),
-                "reimbursementPeriodEndingDate": period[1].isoformat(),
-                "venueId": venue.id,
-            }
-        )
-    )
-
-    # Then
-    assert response.status_code == 200
-    assert response.headers["Content-type"] == "text/csv; charset=utf-8;"
-    assert response.headers["Content-Disposition"] == "attachment; filename=remboursements_pass_culture.csv"
-    rows = response.data.decode("utf-8").splitlines()
-    assert len(rows) == 2  # header + payments
-
-
-@pytest.mark.usefixtures("db_session")
-def test_admin_cannot_access_reimbursements_data_without_venue_filter(client):
+def test_admin_cannot_access_reimbursements_data_without_bank_account_filter(client):
     # Given
     period = datetime.date(2021, 1, 1), datetime.date(2021, 1, 15)
     admin = users_factories.AdminFactory()
@@ -131,14 +94,14 @@ def test_with_venue_filter_with_pricings(client, cutoff, fortnight):
 
     # When
     client = client.with_session_auth(pro.email)
-    venue1_id = venue1.id  # avoid extra SQL query below
+    bank_account_id = bank_account_1.id  # avoid extra SQL query below
     queries = AUTHENTICATION_QUERIES
     queries += 1  # select offerer
     queries += 1  # select booking and related items
     queries += 1  # select educational redactor
     with assert_num_queries(queries):
         response = client.get(
-            f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&venueId={venue1_id}"
+            f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&bankAccountId={bank_account_id}"
         )
         assert response.status_code == 200
 
@@ -240,14 +203,14 @@ def test_with_reimbursement_period_filter_with_pricings(client, cutoff, fortnigh
 
     # When
     client = client.with_session_auth(pro.email)
-    venue_id = venue.id  # avoid extra SQL query below
+    bank_account_id = bank_account.id  # avoid extra SQL query below
     queries = AUTHENTICATION_QUERIES
     queries += 1  # select offerer
     queries += 1  # select booking and related items
     queries += 1  # select educational redactor
     with assert_num_queries(queries):
         response = client.get(
-            f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&venueId={venue_id}"
+            f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&bankAccountId={bank_account_id}"
         )
         assert response.status_code == 200
 
@@ -301,7 +264,7 @@ def test_with_reimbursement_period_filter_with_pricings(client, cutoff, fortnigh
     "cutoff,fortnight",
     [(datetime.date(year=2023, month=1, day=16), "1ère"), (datetime.date(year=2023, month=1, day=1), "2nde")],
 )
-def test_with_venue_filter_with_pricings_collective_use_case(client, cutoff, fortnight):
+def test_with_bank_account_filter_with_pricings_collective_use_case(client, cutoff, fortnight):
     beginning_date_iso_format = (cutoff - datetime.timedelta(days=2)).isoformat()
     ending_date_iso_format = (cutoff + datetime.timedelta(days=2)).isoformat()
     offerer = offerers_factories.OffererFactory()
@@ -334,14 +297,14 @@ def test_with_venue_filter_with_pricings_collective_use_case(client, cutoff, for
 
     # When
     client = client.with_session_auth(pro.email)
-    venue1_id = venue1.id  # avoid extra SQL query below
+    bank_account_id = bank_account_1.id  # avoid extra SQL query below
     queries = AUTHENTICATION_QUERIES
     queries += 1  # select offerer
     queries += 1  # select booking and related items
     queries += 1  # select educational redactor
     with assert_num_queries(queries):
         response = client.get(
-            f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&venueId={venue1_id}"
+            f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&bankAccountId={bank_account_id}"
         )
         assert response.status_code == 200
 
@@ -453,14 +416,14 @@ def test_with_reimbursement_period_filter_with_pricings_collective_use_case(clie
 
     # When
     client = client.with_session_auth(pro.email)
-    venue_id = venue.id  # avoid extra SQL query below
+    bank_account_id = bank_account.id  # avoid extra SQL query below
     queries = AUTHENTICATION_QUERIES
     queries += 1  # select offerer
     queries += 1  # select booking and related items
     queries += 1  # select educational redactor
     with assert_num_queries(queries):
         response = client.get(
-            f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&venueId={venue_id}"
+            f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&bankAccountId={bank_account_id}"
         )
         assert response.status_code == 200
 
