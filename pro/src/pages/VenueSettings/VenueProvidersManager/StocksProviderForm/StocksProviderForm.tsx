@@ -39,7 +39,7 @@ export const StocksProviderForm = ({
   ) => {
     event.preventDefault()
     event.stopPropagation()
-    logEvent?.(SynchronizationEvents.CLICKED_IMPORT, {
+    logEvent(SynchronizationEvents.CLICKED_IMPORT, {
       offererId: offererId,
       venueId: venueId,
       providerId: providerId,
@@ -62,7 +62,7 @@ export const StocksProviderForm = ({
     }
 
     const isSuccess = await saveVenueProvider(payload)
-    logEvent?.(SynchronizationEvents.CLICKED_VALIDATE_IMPORT, {
+    logEvent(SynchronizationEvents.CLICKED_VALIDATE_IMPORT, {
       offererId: offererId,
       venueId: venueId,
       providerId: providerId,

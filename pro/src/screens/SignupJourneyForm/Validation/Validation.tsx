@@ -131,7 +131,7 @@ export const Validation = (): JSX.Element => {
               isExternal: false,
             }}
             onClick={() => {
-              logEvent?.(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+              logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
                 from: location.pathname,
                 to: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
                 used: OnboardingFormNavigationAction.UpdateFromValidation,
@@ -168,7 +168,7 @@ export const Validation = (): JSX.Element => {
               isExternal: false,
             }}
             onClick={() => {
-              logEvent?.(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+              logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
                 from: location.pathname,
                 to: SIGNUP_JOURNEY_STEP_IDS.ACTIVITY,
                 used: OnboardingFormNavigationAction.UpdateFromValidation,
@@ -214,7 +214,6 @@ export const Validation = (): JSX.Element => {
         isDisabled={false}
         withRightIcon={false}
         nextStepTitle="Valider et créer ma structure"
-        logEvent={logEvent}
         legalCategoryCode={offerer.legalCategoryCode}
       />
     </div>

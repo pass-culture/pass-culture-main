@@ -34,7 +34,7 @@ const Venues = ({ venues, offererId }: VenuesProps) => {
             isExternal: false,
           }}
           onClick={() => {
-            logEvent?.(Events.CLICKED_ADD_VENUE_IN_OFFERER, {
+            logEvent(Events.CLICKED_ADD_VENUE_IN_OFFERER, {
               from: location.pathname,
             })
           }}

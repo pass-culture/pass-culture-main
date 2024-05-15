@@ -47,7 +47,7 @@ export const SignupJourneyRoutes = () => {
               />
               <Link
                 onClick={() =>
-                  logEvent?.(Events.CLICKED_LOGOUT, { from: location.pathname })
+                  logEvent(Events.CLICKED_LOGOUT, { from: location.pathname })
                 }
                 to={`${location.pathname}?logout}`}
                 className={styles['logout-link']}

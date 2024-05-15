@@ -39,7 +39,7 @@ export const DuplicateOfferCell = ({
   const isMarseilleActive = useActiveFeature('WIP_ENABLE_MARSEILLE')
 
   const onDialogConfirm = async (shouldNotDisplayModalAgain: boolean) => {
-    logEvent?.(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
+    logEvent(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
       from: OFFER_FROM_TEMPLATE_ENTRIES.OFFERS_MODAL,
     })
     if (shouldNotDisplayModalAgain && isLocalStorageAvailable) {
@@ -57,7 +57,7 @@ export const DuplicateOfferCell = ({
   const handleCreateOfferClick = async () => {
     if (isShowcase) {
       if (!shouldDisplayModal) {
-        logEvent?.(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
+        logEvent(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
           from: OFFER_FROM_TEMPLATE_ENTRIES.OFFERS,
         })
         await createOfferFromTemplate(

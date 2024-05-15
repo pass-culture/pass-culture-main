@@ -1,10 +1,10 @@
 import React from 'react'
 import { useLocation } from 'react-router-dom'
 
+import useAnalytics from 'app/App/analytics/firebase'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
-import { logEventType } from 'context/analyticsContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import fullLeftIcon from 'icons/full-left.svg'
 import fullRightIcon from 'icons/full-right.svg'
@@ -21,7 +21,6 @@ export interface ActionBarProps {
   previousTo?: SIGNUP_JOURNEY_STEP_IDS
   hideRightButton?: boolean
   withRightIcon?: boolean
-  logEvent?: logEventType
   legalCategoryCode?: string
 }
 
@@ -35,13 +34,13 @@ const ActionBar = ({
   previousStepTitle = 'Étape précédente',
   previousTo,
   withRightIcon = true,
-  logEvent,
   legalCategoryCode,
 }: ActionBarProps) => {
   const location = useLocation()
+  const { logEvent } = useAnalytics()
 
   const logActionBarNavigation = (to: SIGNUP_JOURNEY_STEP_IDS) => {
-    logEvent?.(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+    logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
       from: location.pathname,
       to,
       used: OnboardingFormNavigationAction.ActionBar,

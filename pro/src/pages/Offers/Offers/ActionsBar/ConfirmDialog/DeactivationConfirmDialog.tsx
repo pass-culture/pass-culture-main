@@ -36,14 +36,14 @@ export const DeactivationConfirmDialog = ({
       cancelText={'Annuler'}
       confirmText={'Désactiver'}
       onCancel={() => {
-        logEvent?.(Events.CLICKED_CANCELED_SELECTED_OFFERS, {
+        logEvent(Events.CLICKED_CANCELED_SELECTED_OFFERS, {
           from: location.pathname,
           has_selected_all_offers: areAllOffersSelected,
         })
         onCancel(false)
       }}
       onConfirm={() => {
-        logEvent?.(Events.CLICKED_DISABLED_SELECTED_OFFERS, {
+        logEvent(Events.CLICKED_DISABLED_SELECTED_OFFERS, {
           from: location.pathname,
           has_selected_all_offers: areAllOffersSelected,
         })

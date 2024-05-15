@@ -48,7 +48,7 @@ export const VenueCreationLinks = ({ offerer }: VenueCreationLinksProps) => {
             isExternal: false,
           }}
           onClick={() => {
-            logEvent?.(Events.CLICKED_CREATE_VENUE, {
+            logEvent(Events.CLICKED_CREATE_VENUE, {
               from: location.pathname,
               is_first_venue: !hasVirtualOffers,
             })

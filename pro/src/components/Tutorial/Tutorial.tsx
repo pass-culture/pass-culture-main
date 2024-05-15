@@ -65,7 +65,7 @@ const Tutorial = ({ onFinish }: TutorialProps): JSX.Element => {
     stepsToShow[0]
 
   useEffect(() => {
-    logEvent?.(Events.TUTO_PAGE_VIEW, {
+    logEvent(Events.TUTO_PAGE_VIEW, {
       page_number: activeStep.position.toString(),
     })
   }, [logEvent, activeStep])

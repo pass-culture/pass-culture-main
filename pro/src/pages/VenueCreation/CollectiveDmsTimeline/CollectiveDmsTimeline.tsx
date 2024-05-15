@@ -42,7 +42,7 @@ export const CollectiveDmsTimeline = ({
     adageInscriptionDate && getDateToFrenchText(adageInscriptionDate)
   const { logEvent } = useAnalytics()
   const logClickOnDmsLink = (status: DMSApplicationstatus) => {
-    logEvent?.(Events.CLICKED_EAC_DMS_LINK, {
+    logEvent(Events.CLICKED_EAC_DMS_LINK, {
       from: location.pathname,
       dmsApplicationStatus: status,
     })

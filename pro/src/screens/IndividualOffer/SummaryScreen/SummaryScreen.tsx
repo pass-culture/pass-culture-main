@@ -164,7 +164,7 @@ const SummaryScreen = () => {
                 id={offer.id}
                 variant={ButtonVariant.SECONDARY}
                 onClick={() =>
-                  logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+                  logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
                     from: OFFER_WIZARD_STEP_IDS.SUMMARY,
                     to: OFFER_FORM_NAVIGATION_OUT.PREVIEW,
                     used: OFFER_FORM_NAVIGATION_MEDIUM.SUMMARY_PREVIEW,

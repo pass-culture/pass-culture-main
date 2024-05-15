@@ -54,9 +54,7 @@ export const CollectiveTableRow = ({
   }, [isExpanded])
 
   const onRowClick = () => {
-    logEvent?.(
-      CollectiveBookingsEvents.CLICKED_EXPAND_COLLECTIVE_BOOKING_DETAILS
-    )
+    logEvent(CollectiveBookingsEvents.CLICKED_EXPAND_COLLECTIVE_BOOKING_DETAILS)
     setIsExpanded((previousState) => !previousState)
   }
 

@@ -19,7 +19,7 @@ export const OperatingProcedures = (): JSX.Element => {
           label: 'Consulter notre centre d’aide',
           isExternal: true,
           onClick: () =>
-            logEvent?.(Events.CLICKED_HELP_CENTER, { from: location.pathname }),
+            logEvent(Events.CLICKED_HELP_CENTER, { from: location.pathname }),
         },
       ]}
       className={styles['desk-callout']}

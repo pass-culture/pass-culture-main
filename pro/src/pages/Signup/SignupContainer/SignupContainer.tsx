@@ -41,7 +41,7 @@ export const SignupContainer = (): JSX.Element => {
   }
 
   const onHandleSuccess = () => {
-    logEvent?.(Events.SIGNUP_FORM_SUCCESS, {})
+    logEvent(Events.SIGNUP_FORM_SUCCESS, {})
     navigate('/inscription/confirmation', { replace: true })
   }
 
@@ -86,7 +86,7 @@ export const SignupContainer = (): JSX.Element => {
         )
       )
     )
-    return logEvent?.(Events.SIGNUP_FORM_ABORT, {
+    return logEvent(Events.SIGNUP_FORM_ABORT, {
       filled: filledFields,
       filledWithErrors: filledWithErrors,
     })

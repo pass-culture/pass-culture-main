@@ -103,7 +103,7 @@ export const BookingsScreen = <
   const resetPreFilters = () => {
     setWereBookingsRequested(false)
     setAppliedPreFilters(DEFAULT_PRE_FILTERS)
-    logEvent?.(Events.CLICKED_RESET_FILTERS, {
+    logEvent(Events.CLICKED_RESET_FILTERS, {
       from: location.pathname,
     })
   }

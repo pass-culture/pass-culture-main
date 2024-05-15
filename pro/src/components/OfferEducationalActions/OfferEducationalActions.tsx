@@ -158,7 +158,7 @@ export const OfferEducationalActions = ({
               icon={fullNextIcon}
               iconPosition={IconPositionEnum.LEFT}
               onClick={() =>
-                logEvent?.(
+                logEvent(
                   CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING,
                   {
                     from: '/offre/collectif/recapitulatif',

@@ -51,7 +51,7 @@ export const VenueCreationFormScreen = ({
         notify.success(PATCH_SUCCESS_MESSAGE)
       }
 
-      logEvent?.(Events.CLICKED_SAVE_VENUE, {
+      logEvent(Events.CLICKED_SAVE_VENUE, {
         from: location.pathname,
         saved: true,
         isEdition: false,
@@ -80,7 +80,7 @@ export const VenueCreationFormScreen = ({
         formik.setStatus('apiError')
       }
 
-      logEvent?.(Events.CLICKED_SAVE_VENUE, {
+      logEvent(Events.CLICKED_SAVE_VENUE, {
         from: location.pathname,
         saved: false,
         isEdition: false,

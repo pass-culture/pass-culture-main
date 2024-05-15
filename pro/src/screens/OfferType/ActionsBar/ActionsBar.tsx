@@ -24,7 +24,7 @@ export const ActionsBar = ({
         <ButtonLink
           link={{ to: computeOffersUrl({}), isExternal: false }}
           variant={ButtonVariant.SECONDARY}
-          onClick={() => logEvent?.(Events.CLICKED_CANCEL_OFFER_CREATION)}
+          onClick={() => logEvent(Events.CLICKED_CANCEL_OFFER_CREATION)}
         >
           Annuler et quitter
         </ButtonLink>

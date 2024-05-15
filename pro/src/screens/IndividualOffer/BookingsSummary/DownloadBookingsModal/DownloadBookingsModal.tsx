@@ -65,7 +65,7 @@ export const DownloadBookingsModal = ({
         `reservations-${bookingsType}-${selectedDate}.xlsx`
       )
     }
-    logEvent?.(Events.CLICKED_DOWNLOAD_OFFER_BOOKINGS, {
+    logEvent(Events.CLICKED_DOWNLOAD_OFFER_BOOKINGS, {
       format: fileFormat,
       bookingStatus: bookingsType,
       offerId,

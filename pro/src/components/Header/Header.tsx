@@ -66,7 +66,7 @@ const Header = forwardRef(
                 className={styles['logo']}
                 to="/accueil"
                 onClick={() => {
-                  logEvent?.(Events.CLICKED_PRO, { from: location.pathname })
+                  logEvent(Events.CLICKED_PRO, { from: location.pathname })
                 }}
               >
                 <SvgIcon

@@ -32,7 +32,7 @@ const BankAccountHasPendingCorrectionCallout = ({
             '/remboursements/informations-bancaires?structure=' + offerer.id,
           label: 'Voir les corrections attendues',
           onClick: () => {
-            logEvent?.(
+            logEvent(
               BankAccountEvents.CLICKED__BANK_ACCOUNT_HAS_PENDING_CORRECTIONS,
               {
                 from: location.pathname,

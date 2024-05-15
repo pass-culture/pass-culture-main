@@ -14,12 +14,11 @@ import {
   getAll,
   getRemoteConfig,
 } from '@firebase/remote-config'
-import { useContext, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import { api } from 'apiClient/api'
 import { firebaseConfig } from 'config/firebase'
-import { AnalyticsContext } from 'context/analyticsContext'
 import useUtmQueryParams from 'hooks/useUtmQueryParams'
 import { selectCurrentOffererId, selectCurrentUser } from 'store/user/selectors'
 
@@ -54,9 +53,6 @@ export const useFirebase = (consentedToFirebase: boolean) => {
   const [isFirebaseInitialized, setIsFirebaseInitialized] =
     useState<boolean>(false)
 
-  const { setLogEvent } = useAnalytics()
-  const utmParameters = useUtmQueryParams()
-
   useEffect(() => {
     const loadAnalytics = async () => {
       const isFirebaseSupported = await isSupported()
@@ -75,27 +71,6 @@ export const useFirebase = (consentedToFirebase: boolean) => {
       await api.postProFlags({
         firebase: { ...remoteConfigParams, REMOTE_CONFIG_LOADED: 'true' },
       })
-
-      setLogEvent &&
-        setLogEvent(
-          () =>
-            (
-              event: string,
-              params:
-                | { [key: string]: string | boolean | string[] | undefined }
-                | Record<string, never> = {}
-            ) => {
-              if (!firebaseRemoteConfig) {
-                return
-              }
-              const remoteConfigParams = getRemoteConfigParams()
-              analyticsLogEvent(getAnalytics(firebaseApp), event, {
-                ...params,
-                ...utmParameters,
-                ...remoteConfigParams,
-              })
-            }
-        )
     }
 
     if (consentedToFirebase) {
@@ -127,8 +102,31 @@ export const useFirebase = (consentedToFirebase: boolean) => {
   }, [selectedOffererId, isFirebaseInitialized])
 }
 
-function useAnalytics() {
-  return useContext(AnalyticsContext)
+const useAnalytics = () => {
+  const utmParameters = useUtmQueryParams()
+
+  const logEvent = useCallback(
+    (
+      event: string,
+      params?: {
+        [key: string]: string | string[] | number | boolean | undefined
+      }
+    ) => {
+      if (!firebaseApp || !firebaseRemoteConfig) {
+        return
+      }
+
+      const remoteConfigParams = getRemoteConfigParams()
+      analyticsLogEvent(getAnalytics(firebaseApp), event, {
+        ...params,
+        ...utmParameters,
+        ...remoteConfigParams,
+      })
+    },
+    [utmParameters]
+  )
+
+  return { logEvent }
 }
 
 export default useAnalytics

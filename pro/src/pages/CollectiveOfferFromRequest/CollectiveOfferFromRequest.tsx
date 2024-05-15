@@ -43,7 +43,7 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
   )
 
   const handleButtonClick = () => {
-    logEvent?.(Events.CLICKED_CREATE_OFFER_FROM_REQUEST, {
+    logEvent(Events.CLICKED_CREATE_OFFER_FROM_REQUEST, {
       from: location.pathname,
       requestId,
       templateOfferId: offerId,

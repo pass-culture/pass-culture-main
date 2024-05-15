@@ -65,7 +65,7 @@ export const Profile = () => {
           variant={ButtonVariant.TERNARY}
           link={{ to: '/profil', isExternal: false }}
           icon={fullEditIcon}
-          onClick={() => logEvent?.(Events.CLICKED_EDIT_PROFILE)}
+          onClick={() => logEvent(Events.CLICKED_EDIT_PROFILE)}
         >
           Modifier
         </ButtonLink>

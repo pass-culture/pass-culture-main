@@ -201,7 +201,7 @@ export const CollectiveOfferNavigation = ({
             variant={ButtonVariant.TERNARY}
             icon={fullMoreIcon}
             onClick={() => {
-              logEvent?.(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
+              logEvent(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
                 from: OFFER_FROM_TEMPLATE_ENTRIES.OFFER_TEMPLATE_RECAP,
               })
               // eslint-disable-next-line @typescript-eslint/no-floating-promises
