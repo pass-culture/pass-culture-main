@@ -107,18 +107,19 @@ export const useFirebase = (consentedToFirebase: boolean) => {
       if (firebaseApp) {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         destroyFirebase()
+        setIsFirebaseInitialized(false)
       }
     }
   }, [consentedToFirebase])
 
   useEffect(() => {
-    if (firebaseApp && currentUser) {
+    if (isFirebaseInitialized && currentUser) {
       setUserId(getAnalytics(firebaseApp), currentUser.id.toString())
     }
   }, [currentUser, isFirebaseInitialized])
 
   useEffect(() => {
-    if (firebaseApp && selectedOffererId) {
+    if (isFirebaseInitialized && selectedOffererId) {
       setUserProperties(getAnalytics(firebaseApp), {
         offerer_id: selectedOffererId.toString(),
       })
