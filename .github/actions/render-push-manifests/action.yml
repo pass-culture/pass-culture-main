@@ -26,8 +26,8 @@ runs:
         secrets: |-
           ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
           ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
-    - name: "OpenID Connect Authentication"
-      id: "connect-infra"
+    - name: "Connect to docker registry"
+      id: "connect-registry"
       uses: 'google-github-actions/auth@v2'
       with:
         create_credentials_file: false
@@ -38,7 +38,7 @@ runs:
       shell: bash
       run: |
         PASSCULTURE_USERNAME="oauth2accesstoken"
-        PASSCULTURE_PASSWORD=$ACCESS_TOKEN
+        PASSCULTURE_PASSWORD=$REGISTRY_ACCESS_TOKEN
         echo "ADDITIONAL_ARGS=$ADDITIONAL_ARGS"
         echo "ENVIRONMENT=$ENVIRONMENT"
         echo "APP_NAME=$APP_NAME"
@@ -55,7 +55,7 @@ runs:
         APP_VERSION: ${{ inputs.app_version }}
         ADDITIONAL_ARGS: ${{ inputs.additional_args }}
         PASSCULTURE_SA_ACCESS_TOKEN: ${{ inputs.PASSCULTURE_SA_ACCESS_TOKEN }}
-        ACCESS_TOKEN: ${{ steps.connect-infra.outputs.access_token }}
+        REGISTRY_ACCESS_TOKEN: ${{ steps.connect-registry.outputs.access_token }}
     - name: "Push manifests to rendered-manifests repository"
       id: push-manifests
       uses: cpina/github-action-push-to-another-repository@main
