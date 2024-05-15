@@ -6,8 +6,6 @@ import { AnalyticsContextProvider } from 'context/analyticsContext'
 import createStore from 'store/store'
 import StoreProvider from 'store/StoreProvider/StoreProvider'
 
-import { RemoteContextProvider } from './context/remoteConfigContext'
-
 interface RootProps {
   isAdageIframe: boolean
 }
@@ -18,11 +16,9 @@ const Root = ({ isAdageIframe }: RootProps): JSX.Element => {
   return (
     <Provider store={store}>
       <AnalyticsContextProvider>
-        <RemoteContextProvider>
-          <StoreProvider isAdageIframe={isAdageIframe}>
-            <AppRouter />
-          </StoreProvider>
-        </RemoteContextProvider>
+        <StoreProvider isAdageIframe={isAdageIframe}>
+          <AppRouter />
+        </StoreProvider>
       </AnalyticsContextProvider>
     </Provider>
   )
