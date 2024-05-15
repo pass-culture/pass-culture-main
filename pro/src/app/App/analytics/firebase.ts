@@ -23,11 +23,14 @@ import { selectCurrentOffererId, selectCurrentUser } from 'store/user/selectors'
 
 import useRemoteConfig from '../../../hooks/useRemoteConfig'
 
+let firebaseApp: firebase.FirebaseApp | undefined
+
 export const useFirebase = (consentedToFirebase: boolean) => {
   const currentUser = useSelector(selectCurrentUser)
 
-  const [app, setApp] = useState<firebase.FirebaseApp | undefined>()
   const [isFirebaseSupported, setIsFirebaseSupported] = useState<boolean>(false)
+  const [isFirebaseInitialized, setIsFirebaseInitialized] =
+    useState<boolean>(false)
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const { setLogEvent } = useAnalytics()
@@ -46,13 +49,13 @@ export const useFirebase = (consentedToFirebase: boolean) => {
 
   useEffect(() => {
     const loadAnalytics = async () => {
-      const initializeApp = firebase.initializeApp(firebaseConfig)
+      firebaseApp = firebase.initializeApp(firebaseConfig)
+      setIsFirebaseInitialized(true)
 
-      setApp(initializeApp)
-      initializeAnalytics(initializeApp, {
+      initializeAnalytics(firebaseApp, {
         config: { send_page_view: false },
       })
-      const remoteConfig = getRemoteConfig(initializeApp)
+      const remoteConfig = getRemoteConfig(firebaseApp)
       await fetchAndActivate(remoteConfig)
       setRemoteConfig && setRemoteConfig(remoteConfig)
       setLogEvent &&
@@ -74,7 +77,7 @@ export const useFirebase = (consentedToFirebase: boolean) => {
                   ...remoteConfigParams,
                   REMOTE_CONFIG_LOADED: 'true',
                 })
-              analyticsLogEvent(getAnalytics(app), event, {
+              analyticsLogEvent(getAnalytics(firebaseApp), event, {
                 ...params,
                 ...utmParameters,
                 ...remoteConfigParams,
@@ -83,25 +86,30 @@ export const useFirebase = (consentedToFirebase: boolean) => {
         )
     }
 
-    if (consentedToFirebase && !app && isFirebaseSupported) {
+    if (consentedToFirebase && !firebaseApp && isFirebaseSupported) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       loadAnalytics()
     }
-  }, [consentedToFirebase, app, isFirebaseSupported])
+  }, [consentedToFirebase, isFirebaseSupported])
 
   useEffect(() => {
-    if (consentedToFirebase && app && currentUser && isFirebaseSupported) {
-      setUserId(getAnalytics(app), currentUser.id.toString())
+    if (
+      consentedToFirebase &&
+      firebaseApp &&
+      currentUser &&
+      isFirebaseSupported
+    ) {
+      setUserId(getAnalytics(firebaseApp), currentUser.id.toString())
     }
-  }, [consentedToFirebase, app, currentUser])
+  }, [consentedToFirebase, currentUser, isFirebaseInitialized])
 
   useEffect(() => {
-    if (app && isFirebaseSupported && selectedOffererId) {
-      setUserProperties(getAnalytics(app), {
+    if (firebaseApp && isFirebaseSupported && selectedOffererId) {
+      setUserProperties(getAnalytics(firebaseApp), {
         offerer_id: selectedOffererId.toString(),
       })
     }
-  }, [selectedOffererId, app])
+  }, [selectedOffererId, isFirebaseInitialized])
 }
 
 function useAnalytics() {
