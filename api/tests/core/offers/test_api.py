@@ -124,7 +124,6 @@ class CreateStockTest:
         # Then
         assert error.value.errors == {"price300": ["Le prix d’une offre ne peut excéder 300 euros."]}
 
-    @override_features(WIP_ENABLE_OFFER_PRICE_LIMITATION=True)
     @pytest.mark.parametrize("new_price", [49, 151])
     def test_does_not_allow_price_outside_of_price_limitation(self, new_price, caplog):
         # Given
@@ -159,7 +158,6 @@ class CreateStockTest:
             "stock_price": new_price,
         }
 
-    @override_features(WIP_ENABLE_OFFER_PRICE_LIMITATION=True)
     @pytest.mark.parametrize("new_price", [49, 151])
     def test_does_not_allow_price_while_no_last_validation_price(self, new_price, caplog):
         # Given
@@ -190,7 +188,6 @@ class CreateStockTest:
             "stock_price": new_price,
         }
 
-    @override_features(WIP_ENABLE_OFFER_PRICE_LIMITATION=True)
     @pytest.mark.parametrize("new_price", [49, 151])
     def test_allow_price_edition_while_unrelated_price_limitation_rule(self, new_price):
         # Given
@@ -473,7 +470,6 @@ class EditStockTest:
             api.edit_stock(stock=stock, price=9, quantity=None)
         assert error.value.errors["price"][0].startswith("Vous ne pouvez pas modifier le prix")
 
-    @override_features(WIP_ENABLE_OFFER_PRICE_LIMITATION=True)
     @pytest.mark.parametrize("new_price", [49, 151])
     def test_does_not_allow_price_outside_of_price_limitation(self, new_price, caplog):
         # Given
@@ -506,7 +502,6 @@ class EditStockTest:
             "stock_price": new_price,
         }
 
-    @override_features(WIP_ENABLE_OFFER_PRICE_LIMITATION=True)
     @pytest.mark.parametrize("new_price", [49, 151])
     def test_does_not_allow_price_while_no_last_validation_price(self, new_price, caplog):
         # Given
@@ -537,7 +532,6 @@ class EditStockTest:
             "stock_price": new_price,
         }
 
-    @override_features(WIP_ENABLE_OFFER_PRICE_LIMITATION=True)
     @pytest.mark.parametrize("new_price", [49, 151])
     def test_allow_price_edition_while_unrelated_price_limitation_rule(self, new_price):
         # Given
@@ -554,9 +548,9 @@ class EditStockTest:
         api.edit_stock(stock=existing_stock, price=new_price, quantity=existing_stock.quantity)
 
         # Then
-        assert existing_stock.price == decimal.Decimal(str(new_price))
+        edited_stock = models.Stock.query.filter_by(id=existing_stock.id).first()
+        assert edited_stock.price == decimal.Decimal(str(new_price))
 
-    @override_features(WIP_ENABLE_OFFER_PRICE_LIMITATION=True)
     @pytest.mark.parametrize("new_price", [49, 151])
     def test_allow_price_edition_if_offer_has_ean(self, new_price):
         # Given
