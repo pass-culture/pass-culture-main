@@ -1,0 +1,18 @@
+<div>
+    Login to discord
+    {{ form.error }}
+    <form action="{{ url_for("native.native_v1.signin_discord") }}" name="{{ url_for("native.native_v1.signin_discord") }}" method="post" data-turbo="false">
+        {{ csrf_token }}
+        {{ form.redirect_url }}
+        <div class="col-8 row">
+            <div class="col-8">
+            {{ form.email }}
+            </div>
+            <div class="col-8">
+            {{ form.password }}
+            <div class="col-4">
+                <button type="submit" class="btn btn-primary">Se connecter</button>
+            </div>
+        </div>
+    </form>
+</div>

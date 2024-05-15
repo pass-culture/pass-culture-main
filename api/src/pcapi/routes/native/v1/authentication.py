@@ -23,6 +23,11 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.repository import atomic
 from pcapi.repository import repository
 from pcapi.repository import transaction
+from pcapi.routes.backoffice.forms.fields import PCHiddenField
+from pcapi.routes.native.forms.fields import PCEmailField
+from pcapi.routes.native.forms.fields import PCPasswordField
+from pcapi.routes.native.forms.fields import PCStringField
+from pcapi.routes.native.forms.utils import PCForm
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.v1.serialization.authentication import ChangePasswordRequest
 from pcapi.routes.native.v1.serialization.authentication import RequestPasswordResetRequest
@@ -76,6 +81,19 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
         account_state=user.account_state,
     )
 
+class SigninForm(PCForm):
+    email = PCEmailField("Email")
+    password = PCPasswordField("Password")
+    device_info = None
+    token = None
+    redirect_url = PCHiddenField("Redirect_URL")
+    error = None
+
+@blueprint.native_route("/discord/signin", methods=["GET"])
+def signinform() -> str:
+    form = SigninForm()
+    form.redirect_url.data = request.args.get("redirect_url")
+    return render_template("discord/login.html", form=form)
 
 @blueprint.native_route("/refresh_access_token", methods=["POST"])
 @jwt_required(refresh=True)
