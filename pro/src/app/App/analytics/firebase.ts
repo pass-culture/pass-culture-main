@@ -9,6 +9,7 @@ import {
 } from '@firebase/analytics'
 import * as firebase from '@firebase/app'
 import {
+  RemoteConfig,
   fetchAndActivate,
   getAll,
   getRemoteConfig,
@@ -24,6 +25,7 @@ import { selectCurrentOffererId, selectCurrentUser } from 'store/user/selectors'
 import useRemoteConfig from '../../../hooks/useRemoteConfig'
 
 let firebaseApp: firebase.FirebaseApp | undefined
+let firebaseRemoteConfig: RemoteConfig | undefined
 
 export const useFirebase = (consentedToFirebase: boolean) => {
   const currentUser = useSelector(selectCurrentUser)
@@ -33,7 +35,7 @@ export const useFirebase = (consentedToFirebase: boolean) => {
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const { setLogEvent } = useAnalytics()
-  const { setRemoteConfig, setRemoteConfigData } = useRemoteConfig()
+  const { setRemoteConfigData } = useRemoteConfig()
   const utmParameters = useUtmQueryParams()
 
   useEffect(() => {
@@ -46,12 +48,10 @@ export const useFirebase = (consentedToFirebase: boolean) => {
       firebaseApp = firebase.initializeApp(firebaseConfig)
       setIsFirebaseInitialized(true)
 
-      initializeAnalytics(firebaseApp, {
-        config: { send_page_view: false },
-      })
-      const remoteConfig = getRemoteConfig(firebaseApp)
-      await fetchAndActivate(remoteConfig)
-      setRemoteConfig && setRemoteConfig(remoteConfig)
+      initializeAnalytics(firebaseApp, { config: { send_page_view: false } })
+      firebaseRemoteConfig = getRemoteConfig(firebaseApp)
+      await fetchAndActivate(firebaseRemoteConfig)
+
       setLogEvent &&
         setLogEvent(
           () =>
@@ -61,7 +61,10 @@ export const useFirebase = (consentedToFirebase: boolean) => {
                 | { [key: string]: string | boolean | string[] | undefined }
                 | Record<string, never> = {}
             ) => {
-              const remoteConfigValues = getAll(remoteConfig)
+              if (!firebaseRemoteConfig) {
+                return
+              }
+              const remoteConfigValues = getAll(firebaseRemoteConfig)
               const remoteConfigParams: Record<string, string> = {}
               Object.keys(remoteConfigValues).forEach((k) => {
                 remoteConfigParams[k] = remoteConfigValues[k].asString()
