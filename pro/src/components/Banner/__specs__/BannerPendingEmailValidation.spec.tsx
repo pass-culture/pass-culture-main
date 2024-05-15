@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 
-import BannerPendingEmailValidation from '../BannerPendingEmailValidation'
+import { BannerPendingEmailValidation } from '../BannerPendingEmailValidation'
 
 describe('BannerPendingEmailValidation component', () => {
   it('should render a link to BannerPendingEmailValidation information when email is empty', () => {

@@ -85,6 +85,13 @@ class ListCollectiveOffersTest(GetEndpointHelper):
     # - fetch collective offers with joinedload including extra data (1 query)
     expected_num_queries = 3
 
+    def _get_query_args_by_id(self, id_: int) -> dict[str, str]:
+        return {
+            "search-0-search_field": "ID",
+            "search-0-operator": "IN",
+            "search-0-string": str(id_),
+        }
+
     def test_list_collective_offers_without_filter(self, authenticated_client, collective_offers):
         with assert_num_queries(self.expected_num_queries - 1):
             response = authenticated_client.get(url_for(self.endpoint))
@@ -92,17 +99,15 @@ class ListCollectiveOffersTest(GetEndpointHelper):
 
         assert html_parser.count_table_rows(response.data) == 0
 
-    # === Basic search ===
-
     def test_list_collective_offers_by_id(self, authenticated_client, collective_offers):
-        searched_id = str(collective_offers[0].id)
+        query_args = self._get_query_args_by_id(collective_offers[0].id)
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q=searched_id))
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
-        assert rows[0]["ID"] == searched_id
+        assert rows[0]["ID"] == str(collective_offers[0].id)
         assert rows[0]["Nom de l'offre"] == collective_offers[0].name
         assert rows[0]["Créateur de l'offre"] == collective_offers[0].author.full_name
         assert rows[0]["Formats"] == ", ".join([fmt.value for fmt in collective_offers[0].formats])
@@ -124,14 +129,8 @@ class ListCollectiveOffersTest(GetEndpointHelper):
     ):
         user = offerers_factories.UserOffererFactory().user
 
-        searched_id = str(collective_offers[0].id)
-
         response = client.with_bo_session_auth(read_only_bo_user).get(
-            url_for(
-                self.endpoint,
-                q=searched_id,
-                user_id=user.id,
-            )
+            url_for(self.endpoint, user_id=user.id, **self._get_query_args_by_id(collective_offers[0].id))
         )
         assert response.status_code == 200
 
@@ -140,9 +139,13 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert "Règles de conformité" not in rows[0]
 
     def test_list_collective_offers_by_name(self, authenticated_client, collective_offers):
-        searched_name = collective_offers[1].name
+        query_args = {
+            "search-0-search_field": "NAME",
+            "search-0-operator": "CONTAINS",
+            "search-0-string": collective_offers[1].name,
+        }
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q=searched_name))
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
@@ -160,146 +163,35 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert rows[0]["Structure"] == collective_offers[1].venue.managingOfferer.name
         assert rows[0]["Lieu"] == collective_offers[1].venue.name
 
-    def test_list_collective_offers_by_date(self, authenticated_client, collective_offers):
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(
-                url_for(
-                    self.endpoint,
-                    from_date=(datetime.date.today() - datetime.timedelta(days=3)).isoformat(),
-                    to_date=(datetime.date.today() - datetime.timedelta(days=1)).isoformat(),
-                )
-            )
-            assert response.status_code == 200
-
-        rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {collective_offers[2].id}
-
-    def test_list_collective_offers_by_venue(self, authenticated_client, collective_offers):
-        venue_id = collective_offers[1].venueId
-        with assert_num_queries(self.expected_num_queries + 1):  # +1 because of reloading selected venue in the form
-            response = authenticated_client.get(url_for(self.endpoint, venue=[venue_id]))
-            assert response.status_code == 200
-
-        rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {collective_offers[1].id}
-
-    def test_list_collective_offers_by_offerer(self, authenticated_client, collective_offers):
-        offerer_id = collective_offers[1].venue.managingOffererId
-        with assert_num_queries(self.expected_num_queries + 1):  # +1 because of reloading selected offerer in the form
-            response = authenticated_client.get(url_for(self.endpoint, offerer=[offerer_id]))
-            assert response.status_code == 200
-
-        rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {collective_offers[1].id}
-
-    def test_list_collective_offers_by_status(self, authenticated_client, collective_offers):
-        status = collective_offers[2].validation
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, status=[status.value]))
-            assert response.status_code == 200
-
-        rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {collective_offers[2].id}
-        assert rows[0]["État"] == "Rejetée"
-
-    def test_list_collective_offers_by_all_filters(self, authenticated_client, collective_offers):
+    def test_list_collective_offers_by_several_filters(self, authenticated_client, collective_offers):
         collective_offer = collective_offers[2]
-        venue_id = collective_offer.venueId
+
+        query_args = {
+            "search-0-search_field": "NAME",
+            "search-0-operator": "CONTAINS",
+            "search-0-string": "specific name",
+            "search-1-search_field": "FORMATS",
+            "search-1-operator": "INTERSECTS",
+            "search-1-formats": collective_offer.formats[0].name,
+            "search-2-search_field": "VENUE",
+            "search-2-operator": "IN",
+            "search-2-venue": collective_offer.venueId,
+        }
 
         with assert_num_queries(self.expected_num_queries + 1):  # +1 because of reloading selected venue
-            response = authenticated_client.get(
-                url_for(
-                    self.endpoint,
-                    q="specific name",
-                    formats=str(collective_offer.formats[0].name),
-                    venue=[venue_id],
-                )
-            )
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {collective_offers[2].id}
 
-    @pytest.mark.parametrize(
-        "order,expected_list",
-        [
-            ("", ["Offre 4", "Offre 3", "Offre 2", "Offre 1"]),
-            ("asc", ["Offre 4", "Offre 3", "Offre 2", "Offre 1"]),
-            ("desc", ["Offre 1", "Offre 2", "Offre 3", "Offre 4"]),
-        ],
-    )
-    def test_list_collective_offers_pending_from_validated_offerers_sorted_by_date(
-        self, authenticated_client, order, expected_list
-    ):
-        # test results when clicking on pending collective offers link (home page)
-        educational_factories.CollectiveOfferFactory(
-            validation=offers_models.OfferValidationStatus.PENDING,
-            venue__managingOfferer=offerers_factories.NotValidatedOffererFactory(),
-        )
-
-        validated_venue = offerers_factories.VenueFactory()
-        for days_ago in (2, 4, 1, 3):
-            educational_factories.CollectiveOfferFactory(
-                name=f"Offre {days_ago}",
-                dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=days_ago),
-                validation=offers_models.OfferValidationStatus.PENDING,
-                venue=validated_venue,
-            )
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(
-                url_for(
-                    self.endpoint,
-                    status=[offers_models.OfferValidationStatus.PENDING.value],
-                    only_validated_offerers="on",
-                    sort="dateCreated",
-                    order=order,
-                )
-            )
-            assert response.status_code == 200
-
-        # must be sorted, older first
-        rows = html_parser.extract_table_rows(response.data)
-        assert [row["Nom de l'offre"] for row in rows] == expected_list
-
-    def test_list_collective_offers_with_flagging_rules(self, authenticated_client):
-        rule_1 = offers_factories.OfferValidationRuleFactory(name="Règle magique")
-        rule_2 = offers_factories.OfferValidationRuleFactory(name="Règle moldue")
-        collective_offer = educational_factories.CollectiveStockFactory(
-            collectiveOffer__flaggingValidationRules=[rule_1, rule_2],
-        ).collectiveOffer
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q=str(collective_offer.id)))
-            assert response.status_code == 200
-
-        rows = html_parser.extract_table_rows(response.data)
-        assert rows[0]["Règles de conformité"] == ", ".join([rule_1.name, rule_2.name])
-
-    def test_list_collective_offers_by_format(self, authenticated_client):
-        target_format = subcategories.EacFormat.CONCERT
-
-        target_offer = educational_factories.CollectiveOfferFactory(formats=[target_format])
-        educational_factories.CollectiveOfferFactory(formats=[subcategories.EacFormat.ATELIER_DE_PRATIQUE])
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, formats=str(target_format.name)))
-            assert response.status_code == 200
-
-        rows = html_parser.extract_table_rows(response.data)
-        assert len(rows) == 1
-
-        assert rows[0]["ID"] == str(target_offer.id)
-
-    # === Advanced search ===
-
-    def test_list_collective_offers_advanced_search_by_date(self, authenticated_client, collective_offers):
+    def test_list_collective_offers_by_creation_date(self, authenticated_client, collective_offers):
         query_args = {
             "search-0-search_field": "CREATION_DATE",
-            "search-0-operator": "LESS_THAN",
+            "search-0-operator": "DATE_TO",
             "search-0-date": (datetime.date.today() - datetime.timedelta(days=1)).isoformat(),
             "search-2-search_field": "CREATION_DATE",
-            "search-2-operator": "GREATER_THAN_OR_EQUAL_TO",
+            "search-2-operator": "DATE_FROM",
             "search-2-date": (datetime.date.today() - datetime.timedelta(days=3)).isoformat(),
         }
         with assert_num_queries(self.expected_num_queries):
@@ -309,15 +201,13 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {collective_offers[2].id}
 
-    def test_list_collective_offers_advanced_search_by_status_and_event_date(
-        self, authenticated_client, collective_offers
-    ):
+    def test_list_collective_offers_by_status_and_event_date(self, authenticated_client, collective_offers):
         query_args = {
             "search-0-search_field": "STATUS",
             "search-0-operator": "IN",
             "search-0-status": offers_models.OfferStatus.ACTIVE.value,
             "search-2-search_field": "EVENT_DATE",
-            "search-2-operator": "LESS_THAN",
+            "search-2-operator": "DATE_TO",
             "search-2-date": (datetime.date.today() + datetime.timedelta(days=2)).isoformat(),
         }
 
@@ -328,65 +218,39 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {collective_offers[0].id}
 
-    def test_list_offers_display_advanced_filters_bubbles(self, authenticated_client):
-        query_args = {
-            "search-0-search_field": "FORMATS",
-            "search-0-operator": "INTERSECTS",
-            "search-0-formats": [subcategories.EacFormat.PROJECTION_AUDIOVISUELLE.name],
-            "search-2-search_field": "CREATION_DATE",
-            "search-2-operator": "GREATER_THAN_OR_EQUAL_TO",
-            "search-2-date": "2024-01-20",
-            "search-3-search_field": "NAME",
-            "search-3-operator": "STR_NOT_EQUALS",
-            "search-3-string": "indiv",
-            "search-4-search_field": "ID",
-            "search-4-operator": "NOT_EQUALS",
-            "search-4-integer": "5",
-        }
-
+    def test_list_collective_offers_without_sort_should_not_have_created_date_sort_link(
+        self, authenticated_client, collective_offers
+    ):
+        query_args = self._get_query_args_by_id(collective_offers[0].id)
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
-        bubbles = html_parser.extract(response.data, "span", "bubble")
-        assert set(bubbles) == {
-            "Formats contient PROJECTION_AUDIOVISUELLE",
-            "Date de création supérieur ou égal 2024-01-20",
-            "ID de l'offre est différent de 5",
-            "Nom de l'offre est différent de indiv",
-        }
-
-    def test_list_collective_offers_without_sort_should_not_have_created_date_sort_link(
-        self, authenticated_client, collective_offers
-    ):
-        searched_id = str(collective_offers[0].id)
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q=searched_id))
-            assert response.status_code == 200
-
-        expected_url = "/pro/offer?sort=dateCreated&amp;order=desc"
-        assert expected_url not in str(response.data)
+        assert "sort=dateCreated&amp;order=desc" not in str(response.data)
 
     def test_list_collective_offers_with_sort_should_have_created_date_sort_link(
         self, authenticated_client, collective_offers
     ):
-        query_args = {"sort": "dateCreated", "order": "asc", "q": "e"}
+        query_args = self._get_query_args_by_id(collective_offers[0].id) | {
+            "sort": "dateCreated",
+            "order": "asc",
+            "q": "e",
+        }
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
-        expected_url = "/pro/collective-offer?q=e&amp;sort=dateCreated&amp;order=desc"
-        assert expected_url in str(response.data)
+        assert "sort=dateCreated&amp;order=desc" in str(response.data)
 
-    def test_list_collective_offers_with_advanced_search_and_sort_should_have_created_date_sort_link(
+    def test_list_collective_offers_with_and_sort_should_have_created_date_sort_link(
         self, authenticated_client, collective_offers
     ):
         query_args = {
             "sort": "dateCreated",
             "order": "asc",
             "search-0-search_field": "NAME",
-            "search-0-operator": "STR_EQUALS",
+            "search-0-operator": "NAME_EQUALS",
             "search-0-string": "A Very Specific Name",
         }
 
@@ -396,7 +260,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
 
         expected_url = (
             "/pro/collective-offer?sort=dateCreated&amp;order=desc&amp;search-0-search_field=NAME&amp;"
-            "search-0-operator=STR_EQUALS&amp;search-0-string=A+Very+Specific+Name"
+            "search-0-operator=NAME_EQUALS&amp;search-0-string=A+Very+Specific+Name"
         )
         assert expected_url in str(response.data)
 
@@ -404,18 +268,18 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         "operator,valid_date,not_valid_date",
         [
             (
-                "GREATER_THAN_OR_EQUAL_TO",
+                "DATE_FROM",
                 datetime.datetime.utcnow() + datetime.timedelta(days=1),
                 datetime.datetime.utcnow() - datetime.timedelta(days=1),
             ),
             (
-                "LESS_THAN",
+                "DATE_TO",
                 datetime.datetime.utcnow() - datetime.timedelta(days=1),
                 datetime.datetime.utcnow() + datetime.timedelta(days=1),
             ),
         ],
     )
-    def test_list_collective_offers_advanced_search_with_booking_limit_date_filter(
+    def test_list_collective_offers_with_booking_limit_date_filter(
         self, authenticated_client, operator, valid_date, not_valid_date
     ):
         should_be_displayed_offer = educational_factories.CollectiveStockFactory(
@@ -438,7 +302,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert len(rows) == 1
         assert rows[0]["ID"] == str(should_be_displayed_offer.id)
 
-    def test_list_collective_offers_advanced_search_by_event_date(self, authenticated_client):
+    def test_list_collective_offers_by_event_date(self, authenticated_client):
         educational_factories.CollectiveStockFactory(
             beginningDatetime=datetime.date.today() + datetime.timedelta(days=1)
         )
@@ -448,11 +312,8 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         )
 
         query_args = {
-            "search-0-search_field": "EVENT_DATE",
-            "search-0-operator": "LESS_THAN",
-            "search-0-date": (datetime.date.today() + datetime.timedelta(days=1)).isoformat(),
             "search-2-search_field": "EVENT_DATE",
-            "search-2-operator": "GREATER_THAN_OR_EQUAL_TO",
+            "search-2-operator": "DATE_EQUALS",
             "search-2-date": datetime.date.today().isoformat(),
         }
         with assert_num_queries(self.expected_num_queries):
@@ -462,14 +323,12 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {stock.collectiveOffer.id}
 
-    def test_list_collective_offers_advanced_search_by_event_date_gte_only(
-        self, authenticated_client, collective_offers
-    ):
+    def test_list_collective_offers_by_event_date_gte_only(self, authenticated_client, collective_offers):
         # Query investigated for performance issue in PC-23801
         query_args = {
             "limit": "100",
             "search-0-search_field": "EVENT_DATE",
-            "search-0-operator": "GREATER_THAN_OR_EQUAL_TO",
+            "search-0-operator": "DATE_FROM",
             "search-0-status": offers_models.OfferStatus.ACTIVE.value,
             "search-0-integer": "",
             "search-0-string": "",
@@ -505,7 +364,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             ),
         ],
     )
-    def test_list_collective_offers_advanced_search_by_formats(
+    def test_list_collective_offers_by_formats(
         self, authenticated_client, collective_offers, operator, formats, expected_offer_indexes
     ):
         query_args = {
@@ -520,7 +379,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {collective_offers[index].id for index in expected_offer_indexes}
 
-    def test_list_collective_offers_advanced_search_by_price(self, authenticated_client, collective_offers):
+    def test_list_collective_offers_by_price(self, authenticated_client, collective_offers):
 
         query_args = {
             "search-3-search_field": "PRICE",
@@ -536,9 +395,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert len(rows) == 1
         assert rows[0]["ID"] == str(collective_offers[2].id)
 
-    def test_list_collective_offers_advanced_search_by_price_no_offer_found(
-        self, authenticated_client, collective_offers
-    ):
+    def test_list_collective_offers_by_price_no_offer_found(self, authenticated_client, collective_offers):
 
         query_args = {
             "search-3-search_field": "PRICE",
@@ -553,7 +410,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 0
 
-    def test_list_offers_advanced_search_by_in_and_not_in_formats(self, authenticated_client, collective_offers):
+    def test_list_offers_by_in_and_not_in_formats(self, authenticated_client, collective_offers):
         query_args = {
             "search-0-search_field": "FORMATS",
             "search-0-operator": "INTERSECTS",
@@ -569,7 +426,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {collective_offers[1].id}
 
-    def test_list_offers_advanced_search_by_institution(self, authenticated_client, collective_offers):
+    def test_list_offers_by_institution(self, authenticated_client, collective_offers):
         institution_id = collective_offers[0].institutionId
         query_args = {
             "search-3-search_field": "INSTITUTION",
@@ -585,7 +442,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {collective_offers[0].id, collective_offers[1].id}
 
-    def test_list_collective_offers_advanced_search_by_department(self, authenticated_client, collective_offers):
+    def test_list_collective_offers_by_department(self, authenticated_client, collective_offers):
         query_args = {
             "search-3-search_field": "DEPARTMENT",
             "search-3-operator": "IN",
@@ -599,7 +456,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {collective_offers[0].id, collective_offers[2].id}
 
-    def test_list_collective_offers_advanced_search_by_region(self, authenticated_client, collective_offers):
+    def test_list_collective_offers_by_region(self, authenticated_client, collective_offers):
         query_args = {
             "search-0-search_field": "REGION",
             "search-0-operator": "IN",
@@ -612,7 +469,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert {int(row["ID"]) for row in rows} == {collective_offers[1].id, collective_offers[2].id}
 
-    def test_list_collective_offers_advanced_search_by_venue(self, authenticated_client, collective_offers):
+    def test_list_collective_offers_by_venue(self, authenticated_client, collective_offers):
         venue_id = collective_offers[1].venueId
         query_args = {
             "search-3-search_field": "VENUE",
@@ -626,7 +483,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {collective_offers[1].id}
 
-    def test_list_collective_offers_advanced_search_by_status(self, authenticated_client, collective_offers):
+    def test_list_collective_offers_by_status(self, authenticated_client, collective_offers):
         offer = educational_factories.CollectiveOfferFactory(isActive=False)
 
         query_args = {
@@ -640,8 +497,9 @@ class ListCollectiveOffersTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {offer.id}
+        assert rows[0]["État"] == "Validée"
 
-    def test_list_collective_offers_advanced_search_by_offerer(self, authenticated_client, collective_offers):
+    def test_list_collective_offers_by_offerer(self, authenticated_client, collective_offers):
         offerer_id = collective_offers[1].venue.managingOffererId
         query_args = {
             "search-3-search_field": "OFFERER",
@@ -655,7 +513,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {collective_offers[1].id}
 
-    def test_list_collective_offers_advanced_search_by_validation(self, authenticated_client, collective_offers):
+    def test_list_collective_offers_by_validation(self, authenticated_client, collective_offers):
         status = collective_offers[2].validation
         query_args = {
             "search-3-search_field": "VALIDATION",
@@ -670,7 +528,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert set(int(row["ID"]) for row in rows) == {collective_offers[2].id}
         assert rows[0]["État"] == "Rejetée"
 
-    def test_list_collective_offers_advanced_search_by_all_filters(self, authenticated_client, collective_offers):
+    def test_list_collective_offers_by_four_filters(self, authenticated_client, collective_offers):
         venue_id = collective_offers[2].venueId
 
         query_args = {
@@ -702,7 +560,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             ("desc", ["Offre collective 1", "Offre collective 2", "Offre collective 3", "Offre collective 4"]),
         ],
     )
-    def test_list_collective_offers_advanced_search_pending_from_validated_offerers_sorted_by_date(
+    def test_list_collective_offers_pending_from_validated_offerers_sorted_by_date(
         self, authenticated_client, order, expected_list
     ):
         # test results when clicking on pending offers link (home page)
@@ -730,19 +588,14 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         }
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(
-                url_for(
-                    self.endpoint,
-                    **query_args,
-                )
-            )
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
         # must be sorted, older first
         rows = html_parser.extract_table_rows(response.data)
         assert [row["Nom de l'offre"] for row in rows] == expected_list
 
-    def test_list_collective_offers_advanced_search_with_flagging_rules(self, authenticated_client):
+    def test_list_collective_offers_with_flagging_rules(self, authenticated_client):
         rule_1 = offers_factories.OfferValidationRuleFactory(name="Règle magique")
         rule_2 = offers_factories.OfferValidationRuleFactory(name="Règle moldue")
         educational_factories.CollectiveOfferFactory(
@@ -767,9 +620,9 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert rows[0]["Règles de conformité"] == ", ".join([rule_1.name, rule_2.name])
 
-    # === Advanced search: error cases ===
+    # === Error cases ===
 
-    def test_list_offers_advanced_search_by_invalid_field(self, authenticated_client, collective_offers):
+    def test_list_offers_by_invalid_field(self, authenticated_client, collective_offers):
         query_args = {
             "search-0-search_field": "FARMOTS",
             "search-0-operator": "INTERSECTS",
@@ -781,15 +634,15 @@ class ListCollectiveOffersTest(GetEndpointHelper):
 
         assert html_parser.extract_alert(response.data) == "Le filtre FARMOTS est invalide."
 
-    def test_list_offers_advanced_search_by_formats_and_missing_date(self, authenticated_client, collective_offers):
+    def test_list_offers_by_formats_and_missing_date(self, authenticated_client, collective_offers):
         query_args = {
             "search-0-search_field": "FORMATS",
             "search-0-operator": "INTERSECTS",
             "search-0-formats": [subcategories.EacFormat.PROJECTION_AUDIOVISUELLE.name],
             "search-2-search_field": "CREATION_DATE",
-            "search-2-operator": "GREATER_THAN_OR_EQUAL_TO",
+            "search-2-operator": "DATE_FROM",
             "search-4-search_field": "BOOKING_LIMIT_DATE",
-            "search-4-operator": "LESS_THAN",
+            "search-4-operator": "DATE_TO",
         }
         with assert_num_queries(2):  # only session + current user, before form validation
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
@@ -799,6 +652,16 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             html_parser.extract_alert(response.data)
             == "Le filtre « Date de création » est vide. Le filtre « Date limite de réservation » est vide."
         )
+
+    def test_list_offers_by_invalid_format(self, authenticated_client):
+        query_args = {
+            "search-0-search_field": "ID",
+            "search-0-operator": "EQUALS",
+            "search-0-string": "12, 34, A",
+        }
+        with assert_num_queries(2):  # only session + current user, before form validation
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 400
 
 
 class ValidateCollectiveOfferTest(PostEndpointHelper):
@@ -823,13 +686,10 @@ class ValidateCollectiveOfferTest(PostEndpointHelper):
             _external=True,
         )
         response = authenticated_client.get(collective_offer_list_url)
-
         assert response.status_code == 200
-        row = html_parser.extract_table_rows(response.data)
-        assert len(row) == 1
-        assert row[0]["État"] == "Validée"
 
         assert collective_offer_to_validate.isActive is True
+        assert collective_offer_to_validate.validation == OfferValidationStatus.APPROVED
         assert collective_offer_to_validate.lastValidationType == OfferValidationType.MANUAL
 
     def test_cant_validate_non_pending_offer(self, legit_user, authenticated_client):
@@ -851,10 +711,11 @@ class ValidateCollectiveOfferTest(PostEndpointHelper):
         response = authenticated_client.get(collective_offer_list_url)
 
         assert response.status_code == 200
-        assert "Seules les offres collectives en attente peuvent être validées" in response.data.decode("utf-8")
-        row = html_parser.extract_table_rows(response.data)
-        assert len(row) == 1
-        assert row[0]["État"] == "Rejetée"
+        assert (
+            html_parser.extract_alert(response.data) == "Seules les offres collectives en attente peuvent être validées"
+        )
+        db.session.refresh(collective_offer_to_validate)
+        assert collective_offer_to_validate.validation == OfferValidationStatus.REJECTED
 
 
 class ValidateCollectiveOfferFormTest(GetEndpointHelper):
@@ -894,11 +755,9 @@ class RejectCollectiveOfferTest(PostEndpointHelper):
         response = authenticated_client.get(collective_offer_list_url)
 
         assert response.status_code == 200
-        row = html_parser.extract_table_rows(response.data)
-        assert len(row) == 1
-        assert row[0]["État"] == "Rejetée"
 
         assert collective_offer_to_reject.isActive is False
+        assert collective_offer_to_reject.validation == OfferValidationStatus.REJECTED
         assert collective_offer_to_reject.lastValidationType == OfferValidationType.MANUAL
 
     def test_cant_reject_non_pending_offer(self, legit_user, authenticated_client):
@@ -918,10 +777,11 @@ class RejectCollectiveOfferTest(PostEndpointHelper):
         response = authenticated_client.get(collective_offer_list_url)
 
         assert response.status_code == 200
-        assert "Seules les offres collectives en attente peuvent être rejetées" in response.data.decode("utf-8")
-        row = html_parser.extract_table_rows(response.data)
-        assert len(row) == 1
-        assert row[0]["État"] == "Validée"
+        assert (
+            html_parser.extract_alert(response.data) == "Seules les offres collectives en attente peuvent être rejetées"
+        )
+        db.session.refresh(collective_offer_to_reject)
+        assert collective_offer_to_reject.validation == OfferValidationStatus.APPROVED
 
 
 class RejectCollectiveOfferFormTest(GetEndpointHelper):

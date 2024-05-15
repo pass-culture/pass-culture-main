@@ -20,6 +20,7 @@ import sqlalchemy.orm as sa_orm
 from pcapi import settings
 from pcapi.connectors import virustotal
 import pcapi.connectors.acceslibre as accessibility_provider
+from pcapi.connectors.api_adresse import AddressInfo
 from pcapi.connectors.entreprise import exceptions as sirene_exceptions
 from pcapi.connectors.entreprise import models as sirene_models
 from pcapi.connectors.entreprise import sirene
@@ -35,6 +36,7 @@ import pcapi.core.educational.api.address as educational_address_api
 from pcapi.core.external import zendesk_sell
 from pcapi.core.external.attributes import api as external_attributes_api
 import pcapi.core.finance.models as finance_models
+from pcapi.core.geography import models as geography_models
 import pcapi.core.history.api as history_api
 import pcapi.core.history.models as history_models
 import pcapi.core.mails.transactional as transactional_mails
@@ -91,7 +93,7 @@ def create_digital_venue(offerer: models.Offerer) -> models.Venue:
 def update_venue(
     venue: models.Venue,
     author: users_models.User,
-    opening_days: list[serialize_base.OpeningHoursModel] | None = None,
+    opening_hours: list[serialize_base.OpeningHoursModel] | None = None,
     contact_data: serialize_base.VenueContactModel | None = None,
     criteria: list[criteria_models.Criterion] | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
     external_accessibility_url: str | None | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
@@ -115,21 +117,20 @@ def update_venue(
         venue_snapshot.trace_update(contact_data.dict(), target=target, field_name_template="contact.{}")
         upsert_venue_contact(venue, contact_data)
 
-    if opening_days:
-        for opening_hours_data in opening_days:
-            weekday = models.Weekday(opening_hours_data.weekday)
-            target = get_venue_opening_hours_by_weekday(venue, weekday)
-            target.timespan = date_utils.numranges_to_readble_str(target.timespan)
-            opening_hours_readable = {
-                "weekday": opening_hours_data.weekday,
-                "timespan": date_utils.numranges_to_readble_str(opening_hours_data.timespan),
-            }
-            venue_snapshot.trace_update(
-                opening_hours_readable,
-                target=target,
-                field_name_template=f"openingHours.{opening_hours_data.weekday}.{{}}",
-            )
-            upsert_venue_opening_hours(venue, opening_hours_data)
+    for daily_opening_hours in opening_hours or []:
+        weekday = models.Weekday(daily_opening_hours.weekday)
+        target = get_venue_opening_hours_by_weekday(venue, weekday)
+        target.timespan = date_utils.numranges_to_readble_str(target.timespan)
+        opening_hours_readable = {
+            "weekday": daily_opening_hours.weekday,
+            "timespan": date_utils.numranges_to_readble_str(daily_opening_hours.timespan),
+        }
+        venue_snapshot.trace_update(
+            opening_hours_readable,
+            target=target,
+            field_name_template=f"openingHours.{daily_opening_hours.weekday}.{{}}",
+        )
+        upsert_venue_opening_hours(venue, daily_opening_hours)
 
     if external_accessibility_url is not offerers_constants.UNCHANGED:
         external_accessibility_id = external_accessibility_url.split("/")[-2] if external_accessibility_url else None
@@ -256,25 +257,23 @@ def upsert_venue_contact(venue: models.Venue, contact_data: serialize_base.Venue
     return venue
 
 
-def upsert_venue_opening_hours(
-    venue: models.Venue, opening_hours_data: serialize_base.OpeningHoursModel
-) -> models.Venue:
+def upsert_venue_opening_hours(venue: models.Venue, opening_hours: serialize_base.OpeningHoursModel) -> models.Venue:
     """
     Create and attach OpeningHours for a given weekday to a Venue if it has none.
     Update (replace) an existing OpeningHours list otherwise.
     """
-    weekday = models.Weekday(opening_hours_data.weekday)
+    weekday = models.Weekday(opening_hours.weekday)
     venue_opening_hours = get_venue_opening_hours_by_weekday(venue, weekday)
 
     modifications = {
         field: value
-        for field, value in opening_hours_data.dict().items()
+        for field, value in opening_hours.dict().items()
         if venue_opening_hours.field_exists_and_has_changed(field, value)
     }
     if not modifications:
         return venue
     venue_opening_hours.venue = venue
-    venue_opening_hours.timespan = opening_hours_data.timespan
+    venue_opening_hours.timespan = opening_hours.timespan
     repository.save(venue_opening_hours)
     return venue
 
@@ -612,7 +611,10 @@ def generate_and_save_api_key(offerer_id: int) -> str:
 def generate_offerer_api_key(offerer_id: int) -> tuple[models.ApiKey, str]:
     clear_secret = secrets.token_hex(32)
     prefix = _generate_api_key_prefix()
-    key = models.ApiKey(offererId=offerer_id, prefix=prefix, secret=crypto.hash_password(clear_secret))
+    if feature.FeatureToggle.WIP_ENABLE_NEW_HASHING_ALGORITHM.is_active():
+        key = models.ApiKey(offererId=offerer_id, prefix=prefix, secret=crypto.hash_public_api_key(clear_secret))
+    else:
+        key = models.ApiKey(offererId=offerer_id, prefix=prefix, secret=crypto.hash_password(clear_secret))
 
     return key, f"{prefix}{API_KEY_SEPARATOR}{clear_secret}"
 
@@ -624,7 +626,14 @@ def generate_provider_api_key(provider: providers_models.Provider) -> tuple[mode
 
     clear_secret = secrets.token_hex(32)
     prefix = _generate_api_key_prefix()
-    key = models.ApiKey(offerer=offerer, provider=provider, prefix=prefix, secret=crypto.hash_password(clear_secret))
+    if feature.FeatureToggle.WIP_ENABLE_NEW_HASHING_ALGORITHM.is_active():
+        key = models.ApiKey(
+            offerer=offerer, provider=provider, prefix=prefix, secret=crypto.hash_public_api_key(clear_secret)
+        )
+    else:
+        key = models.ApiKey(
+            offerer=offerer, provider=provider, prefix=prefix, secret=crypto.hash_password(clear_secret)
+        )
 
     return key, f"{prefix}{API_KEY_SEPARATOR}{clear_secret}"
 
@@ -1173,7 +1182,7 @@ def rm_previous_venue_thumbs(venue: models.Venue) -> None:
         storage.remove_thumb(venue, storage_id_suffix=original_image_timestamp)
 
     venue.bannerUrl = None  # type: ignore [method-assign]
-    venue.bannerMeta = None
+    venue.bannerMeta = None  # type: ignore [method-assign]
     venue.thumbCount = 1
 
 
@@ -1212,7 +1221,7 @@ def save_venue_banner(
     )
 
     venue.bannerUrl = f"{venue.thumbUrl}_{banner_timestamp}"  # type: ignore [method-assign]
-    venue.bannerMeta = {
+    venue.bannerMeta = {  # type: ignore [method-assign]
         "image_credit": image_credit,
         "author_id": user.id,
         "original_image_url": f"{venue.thumbUrl}_{original_image_timestamp}",
@@ -2167,37 +2176,23 @@ def set_accessibility_infos_from_provider_id(venue: models.Venue) -> None:
         db.session.add(venue.accessibilityProvider)
 
 
-def count_permanent_venues_with_or_without_accessibility_provider(has_accessibility_provider: bool) -> int:
-    query = (
-        offerers_models.Venue.query.outer(offerers_models.AccessibilityProvider)
-        .options(
-            sa.orm.load_only(
-                offerers_models.Venue.isPermanent,
-                offerers_models.Venue.isVirtual,
-                offerers_models.AccessibilityProvider.externalAccessibilityId,
-            )
-        )
+def count_permanent_venues_with_accessibility_provider() -> int:
+    return (
+        offerers_models.Venue.query.join(offerers_models.AccessibilityProvider)
         .filter(
-            offerers_models.Venue.isPermanent == True,
-            offerers_models.Venue.isVirtual == False,
+            offerers_models.Venue.isPermanent.is_(True),
+            offerers_models.Venue.isVirtual.is_(False),
         )
+        .count()
     )
-
-    if has_accessibility_provider:
-        query = query.filter(offerers_models.AccessibilityProvider.externalAccessibilityId.isnot(None))
-    else:
-        query = query.filter(offerers_models.AccessibilityProvider.externalAccessibilityId.is_(None))
-
-    return query.count()
 
 
 def get_permanent_venues_with_accessibility_provider(batch_size: int, batch_num: int) -> list[models.Venue]:
     return (
         offerers_models.Venue.query.join(offerers_models.Venue.accessibilityProvider)
         .filter(
-            offerers_models.Venue.isPermanent == True,
-            offerers_models.Venue.isVirtual == False,
-            offerers_models.AccessibilityProvider.externalAccessibilityId.isnot(None),
+            offerers_models.Venue.isPermanent.is_(True),
+            offerers_models.Venue.isVirtual.is_(False),
         )
         .options(sa.orm.contains_eager(offerers_models.Venue.accessibilityProvider))
         .order_by(offerers_models.Venue.id.asc())
@@ -2207,7 +2202,7 @@ def get_permanent_venues_with_accessibility_provider(batch_size: int, batch_num:
     )
 
 
-def get_permanent_venues_without_accessibility_provider(batch_size: int, batch_num: int) -> list[models.Venue]:
+def get_permanent_venues_without_accessibility_provider() -> list[models.Venue]:
     return (
         offerers_models.Venue.query.outerjoin(offerers_models.Venue.accessibilityProvider)
         .filter(
@@ -2225,8 +2220,6 @@ def get_permanent_venues_without_accessibility_provider(batch_size: int, batch_n
             )
         )
         .order_by(offerers_models.Venue.id.asc())
-        .limit(batch_size)
-        .offset(batch_num * batch_size)
         .all()
     )
 
@@ -2307,21 +2300,77 @@ def synchronize_accessibility_provider(venue: models.Venue, force_sync: bool = F
 
 
 def match_venue_with_new_entries(
-    venues_list: list[models.Venue], results: dict[str, list[accessibility_provider.AcceslibreResult] | None]
+    venues_list: list[models.Venue],
+    results: list[accessibility_provider.AcceslibreResult],
 ) -> None:
-    for activity in accessibility_provider.AcceslibreActivity:
-        if activity_results := results[activity.value]:
-            for venue in venues_list:
-                if matching_venue := accessibility_provider.match_venue_with_acceslibre(
-                    acceslibre_results=activity_results,
-                    venue_name=venue.name,
-                    venue_public_name=venue.publicName,
-                    venue_address=venue.address,
-                    venue_ban_id=venue.banId,
-                    venue_siret=venue.siret,
-                ):
-                    venue.accessibilityProvider = offerers_models.AccessibilityProvider(
-                        externalAccessibilityId=matching_venue.slug,
-                        externalAccessibilityUrl=matching_venue.web_url,
-                    )
-                    db.session.add(venue.accessibilityProvider)
+    for venue in venues_list:
+        if matching_venue := accessibility_provider.match_venue_with_acceslibre(
+            acceslibre_results=results,
+            venue_name=venue.name,
+            venue_public_name=venue.publicName,
+            venue_address=venue.street,
+            venue_ban_id=venue.banId,
+            venue_siret=venue.siret,
+        ):
+            venue.accessibilityProvider = offerers_models.AccessibilityProvider(
+                externalAccessibilityId=matching_venue.slug,
+                externalAccessibilityUrl=matching_venue.web_url,
+            )
+            db.session.add(venue.accessibilityProvider)
+
+
+def update_offerer_address_label(offerer_address_id: int, new_label: str) -> None:
+    try:
+        models.OffererAddress.query.filter_by(id=offerer_address_id).update({"label": new_label})
+        db.session.flush()
+    except sa.exc.IntegrityError:
+        raise exceptions.OffererAddressLabelAlreadyUsed()
+
+
+def get_or_create_address(address_info: AddressInfo) -> geography_models.Address:
+    try:
+        address = geography_models.Address(
+            banId=address_info.id,
+            inseeCode=address_info.citycode,
+            street=address_info.street,
+            postalCode=address_info.postcode,
+            city=address_info.city,
+            latitude=address_info.latitude,
+            longitude=address_info.longitude,
+        )
+        db.session.add(address)
+        db.session.flush()
+    except sa.exc.IntegrityError:
+        db.session.rollback()
+        address = geography_models.Address.query.filter(
+            geography_models.Address.street == address_info.street,
+            geography_models.Address.inseeCode == address_info.citycode,
+        ).one()
+        if (address.latitude, address.longitude) != (round(address_info.latitude, 5), round(address_info.longitude, 5)):
+            logger.error(
+                "Unique constraint over street and inseeCode matched different coordinates",
+                extra={"address_id": address.id, "address_info_banId": address_info.id},
+            )
+
+    return address
+
+
+def get_or_create_offerer_address(offerer_id: int, label: str, address_id: int) -> models.OffererAddress:
+    try:
+        offerer_address = models.OffererAddress(offererId=offerer_id, label=label, addressId=address_id)
+        db.session.add(offerer_address)
+        db.session.flush()
+    except sa.exc.IntegrityError:
+        db.session.rollback()
+
+    offerer_address = (
+        models.OffererAddress.query.filter(
+            models.OffererAddress.offererId == offerer_id,
+            models.OffererAddress.label == label,
+            models.OffererAddress.addressId == address_id,
+        )
+        .options(sa_orm.joinedload(models.OffererAddress.address))
+        .one()
+    )
+
+    return offerer_address

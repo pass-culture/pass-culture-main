@@ -1,7 +1,7 @@
 import { Form, useField } from 'formik'
 import React from 'react'
 
-import FormLayout from 'components/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -9,7 +9,7 @@ import { EmailSpellCheckInput } from 'ui-kit/form/EmailSpellCheckInput/EmailSpel
 
 import styles from './ChangePasswordRequestForm.module.scss'
 
-const ChangePasswordRequestForm = (): JSX.Element => {
+export const ChangePasswordRequestForm = (): JSX.Element => {
   const [field] = useField('email')
 
   return (
@@ -44,5 +44,3 @@ const ChangePasswordRequestForm = (): JSX.Element => {
     </section>
   )
 }
-
-export default ChangePasswordRequestForm

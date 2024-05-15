@@ -5,7 +5,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './Welcome.module.scss'
 
-const Welcome = (): JSX.Element => {
+export const Welcome = (): JSX.Element => {
   return (
     <div className={styles['welcome-layout']}>
       <div className={styles['title']}>Finalisez votre inscription</div>
@@ -26,4 +26,3 @@ const Welcome = (): JSX.Element => {
     </div>
   )
 }
-export default Welcome

@@ -9,13 +9,13 @@ import {
 } from 'apiClient/v1'
 import Callout from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
-import FormLayout from 'components/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import {
-  applyVenueDefaultsToFormValues,
-  OfferEducationalFormValues,
   isCollectiveOffer,
   Mode,
-} from 'core/OfferEducational'
+  OfferEducationalFormValues,
+} from 'core/OfferEducational/types'
+import { applyVenueDefaultsToFormValues } from 'core/OfferEducational/utils/applyVenueDefaultsToFormValues'
 import { SelectOption } from 'custom_types/form'
 import { Banner } from 'ui-kit/Banners/Banner/Banner'
 import { Select } from 'ui-kit/form/Select/Select'
@@ -37,7 +37,7 @@ interface FormVenueProps {
   onChangeOfferer: (event: string) => void
 }
 
-const FormVenue = ({
+export const FormVenue = ({
   userOfferers,
   venuesOptions,
   isEligible,
@@ -159,5 +159,3 @@ const FormVenue = ({
     </FormLayout.Section>
   )
 }
-
-export default FormVenue

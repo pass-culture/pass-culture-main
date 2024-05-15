@@ -379,5 +379,46 @@ class GetOffererAddressResponseModel(BaseModel):
         orm_mode = True
 
 
+class OffererAddressRequestModel(BaseModel):
+    label: str
+    inseeCode: str
+    street: str
+
+
+class AddressResponseModel(BaseModel):
+    id: int
+    banId: str | None
+    inseeCode: str | None
+    postalCode: str
+    street: str | None
+    city: str
+    latitude: float
+    longitude: float
+
+    class Config:
+        orm_mode = True
+
+    @pydantic_v1.validator("latitude", "longitude")
+    def round(cls, value: float) -> float:
+        """Rounding to five digits to keep consistency
+        with the model definition.
+        """
+        return round(value, 5)
+
+
 class GetOffererAddressesResponseModel(BaseModel):
     __root__: list[GetOffererAddressResponseModel]
+
+
+class PatchOffererAddressRequest(BaseModel):
+    label: str
+
+
+class OffererAddressResponseModel(BaseModel):
+    id: int
+    label: str
+    offererId: int
+    address: AddressResponseModel
+
+    class Config:
+        orm_mode = True

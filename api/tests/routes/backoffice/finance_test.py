@@ -8,6 +8,7 @@ import pytest
 import sqlalchemy as sa
 
 from pcapi.core import testing
+from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import factories as educational_factories
@@ -25,7 +26,6 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
-from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice.filters import format_booking_status
 from pcapi.routes.backoffice.filters import format_date_time
 from pcapi.routes.backoffice.finance import forms as finance_forms
@@ -170,7 +170,7 @@ class ListIncidentsTest(GetEndpointHelper):
         assert rows[0]["Nature"] == "Total"
         assert rows[0]["Type de résa"] == "Individuelle"
         assert rows[0]["Nb. Réservation(s)"] == str(len(incidents[0].booking_finance_incidents))
-        assert rows[0]["Montant total"] == filters.format_cents(incidents[0].due_amount_by_offerer)
+        assert rows[0]["Montant total"] == "11,00 €"
         assert rows[0]["Structure"] == incidents[0].venue.managingOfferer.name
         assert rows[0]["Porteur de l'offre (lieu)"] == incidents[0].venue.name
         assert rows[0]["Origine de la demande"] == incidents[0].details["origin"]
@@ -190,7 +190,7 @@ class ListIncidentsTest(GetEndpointHelper):
         assert rows[0]["Nature"] == "Total"
         assert rows[0]["Type de résa"] == "Individuelle"
         assert rows[0]["Nb. Réservation(s)"] == str(len(incidents[0].booking_finance_incidents))
-        assert rows[0]["Montant total"] == filters.format_cents(incidents[0].due_amount_by_offerer)
+        assert rows[0]["Montant total"] == "11,00 €"
         assert rows[0]["Structure"] == incidents[0].venue.managingOfferer.name
         assert rows[0]["Porteur de l'offre (lieu)"] == incidents[0].venue.name
         assert rows[0]["Origine de la demande"] == incidents[0].details["origin"]
@@ -219,7 +219,7 @@ class ListIncidentsTest(GetEndpointHelper):
         assert rows[0]["Nature"] == "Total"
         assert rows[0]["Type de résa"] == "Collective"
         assert rows[0]["Nb. Réservation(s)"] == str(len(incidents[1].booking_finance_incidents))
-        assert rows[0]["Montant total"] == filters.format_cents(incidents[1].due_amount_by_offerer)
+        assert rows[0]["Montant total"] == "100,00 €"
         assert rows[0]["Structure"] == incidents[1].venue.managingOfferer.name
         assert rows[0]["Porteur de l'offre (lieu)"] == incidents[1].venue.name
         assert rows[0]["Origine de la demande"] == incidents[1].details["origin"]
@@ -248,7 +248,7 @@ class ListIncidentsTest(GetEndpointHelper):
         assert rows[0]["Nature"] == "Total"
         assert rows[0]["Type de résa"] == "Individuelle"
         assert rows[0]["Nb. Réservation(s)"] == str(len(incidents[0].booking_finance_incidents))
-        assert rows[0]["Montant total"] == filters.format_cents(incidents[0].due_amount_by_offerer)
+        assert rows[0]["Montant total"] == "11,00 €"
         assert rows[0]["Structure"] == incidents[0].venue.managingOfferer.name
         assert rows[0]["Porteur de l'offre (lieu)"] == incidents[0].venue.name
         assert rows[0]["Origine de la demande"] == incidents[0].details["origin"]
@@ -279,7 +279,7 @@ class ListIncidentsTest(GetEndpointHelper):
         assert rows[0]["Nature"] == "Total"
         assert rows[0]["Type de résa"] == "Individuelle"
         assert rows[0]["Nb. Réservation(s)"] == str(len(incidents[0].booking_finance_incidents))
-        assert rows[0]["Montant total"] == filters.format_cents(incidents[0].due_amount_by_offerer)
+        assert rows[0]["Montant total"] == "11,00 €"
         assert rows[0]["Structure"] == incidents[0].venue.managingOfferer.name
         assert rows[0]["Porteur de l'offre (lieu)"] == incidents[0].venue.name
         assert rows[0]["Origine de la demande"] == incidents[0].details["origin"]
@@ -341,10 +341,7 @@ class GetIncidentValidationFormTest(GetEndpointHelper):
             assert response.status_code == 200
 
         text_content = html_parser.content_as_text(response.data)
-        assert (
-            f"Vous allez valider un incident de {filters.format_amount(finance_utils.to_euros(booking_incident.incident.due_amount_by_offerer))} "
-            f"sur le compte bancaire du lieu." in text_content
-        )
+        assert "Vous allez valider un incident de 11,00 € sur le compte bancaire du lieu." in text_content
 
     def test_no_script_injection_in_venue_name(self, authenticated_client):
         bank_account = finance_factories.BankAccountFactory()
@@ -357,10 +354,7 @@ class GetIncidentValidationFormTest(GetEndpointHelper):
             assert response.status_code == 200
 
         text_content = html_parser.content_as_text(response.data)
-        assert (
-            f"Vous allez valider un incident de {filters.format_amount(finance_utils.to_euros(booking_incident.incident.due_amount_by_offerer))} "
-            f"sur le compte bancaire {bank_account.label}." in text_content
-        )
+        assert f"Vous allez valider un incident de 11,00 € sur le compte bancaire {bank_account.label}." in text_content
 
 
 class CancelIncidentTest(PostEndpointHelper):
@@ -372,7 +366,9 @@ class CancelIncidentTest(PostEndpointHelper):
         incident = finance_factories.FinanceIncidentFactory()
         self.form_data = {"comment": "L'incident n'est pas conforme"}
 
-        response = self.post_to_endpoint(authenticated_client, finance_incident_id=incident.id, form=self.form_data)
+        response = self.post_to_endpoint(
+            authenticated_client, finance_incident_id=incident.id, form=self.form_data, follow_redirects=True
+        )
 
         assert response.status_code == 200
 
@@ -395,7 +391,9 @@ class CancelIncidentTest(PostEndpointHelper):
         incident = finance_factories.FinanceIncidentFactory(status=finance_models.IncidentStatus.CANCELLED)
         self.form_data = {"comment": "L'incident n'est pas conforme"}
 
-        response = self.post_to_endpoint(authenticated_client, finance_incident_id=incident.id, form=self.form_data)
+        response = self.post_to_endpoint(
+            authenticated_client, finance_incident_id=incident.id, form=self.form_data, follow_redirects=True
+        )
 
         assert response.status_code == 200
 
@@ -406,7 +404,9 @@ class CancelIncidentTest(PostEndpointHelper):
         incident = finance_factories.FinanceIncidentFactory(status=finance_models.IncidentStatus.VALIDATED)
         self.form_data = {"comment": "L'incident n'est pas conforme"}
 
-        response = self.post_to_endpoint(authenticated_client, finance_incident_id=incident.id, form=self.form_data)
+        response = self.post_to_endpoint(
+            authenticated_client, finance_incident_id=incident.id, form=self.form_data, follow_redirects=True
+        )
 
         assert response.status_code == 200
 
@@ -414,8 +414,8 @@ class CancelIncidentTest(PostEndpointHelper):
         assert history_models.ActionHistory.query.count() == 0
 
 
-class ValidateIncidentTest(PostEndpointHelper):
-    endpoint = "backoffice_web.finance_incidents.validate_finance_incident"
+class ValidateFinanceOverpaymentIncidentTest(PostEndpointHelper):
+    endpoint = "backoffice_web.finance_incidents.validate_finance_overpayment_incident"
     endpoint_kwargs = {"finance_incident_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
@@ -447,12 +447,13 @@ class ValidateIncidentTest(PostEndpointHelper):
                     else finance_forms.IncidentCompensationModes.COMPENSATE_ON_BOOKINGS.name
                 )
             },
+            follow_redirects=True,
         )
 
         assert response.status_code == 200
 
         content = html_parser.content_as_text(response.data)
-        assert "L'incident a été validé" in content
+        assert "L'incident a été validé." in content
 
         updated_incident = finance_models.FinanceIncident.query.filter_by(id=booking_incident.incidentId).one()
         assert updated_incident.status == finance_models.IncidentStatus.VALIDATED
@@ -548,9 +549,9 @@ class ValidateIncidentTest(PostEndpointHelper):
             },
         )
 
-        assert response.status_code == 200
+        assert response.status_code == 303
 
-        content = html_parser.content_as_text(response.data)
+        content = html_parser.content_as_text(authenticated_client.get(response.location).data)
         assert "L'incident a été validé" in content
 
         assert incident.status == finance_models.IncidentStatus.VALIDATED
@@ -590,84 +591,6 @@ class ValidateIncidentTest(PostEndpointHelper):
         )
         assert partial_incident_events[1].motive == finance_models.FinanceEventMotive.INCIDENT_NEW_PRICE
 
-    def test_validate_commercial_gesture_incident(self, authenticated_client):
-        venue = offerers_factories.VenueBankAccountLinkFactory().venue
-        offer_1 = offers_factories.OfferFactory(venue=venue)
-        stock_1 = offers_factories.StockFactory(offer=offer_1)
-        offer_2 = offers_factories.OfferFactory(venue=venue)
-        stock_2 = offers_factories.StockFactory(offer=offer_2)
-        deposit = users_factories.DepositGrantFactory()
-        incident = finance_factories.FinanceIncidentFactory(
-            venue=venue, kind=finance_models.IncidentType.COMMERCIAL_GESTURE
-        )
-
-        assert incident.status == finance_models.IncidentStatus.CREATED
-
-        booking_reimbursed = bookings_factories.ReimbursedBookingFactory(
-            deposit=deposit,
-            amount=30,
-            user=deposit.user,
-            stock=stock_1,
-            pricings=[finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED, amount=-3000)],
-        )
-        booking_reimbursed_2 = bookings_factories.ReimbursedBookingFactory(
-            deposit=deposit,
-            amount=40,
-            user=deposit.user,
-            stock=stock_2,
-            pricings=[finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED, amount=-4000)],
-        )
-        bookings_factories.BookingFactory(deposit=deposit, amount=20, user=deposit.user)
-
-        commercial_gesture_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
-            booking=booking_reimbursed,
-            incident=incident,
-            newTotalAmount=3000,
-        )
-
-        commercial_gesture_incident_2 = finance_factories.IndividualBookingFinanceIncidentFactory(
-            booking=booking_reimbursed_2, incident=incident, newTotalAmount=4000
-        )
-
-        response = self.post_to_endpoint(
-            authenticated_client,
-            finance_incident_id=incident.id,
-            form={"compensation_mode": finance_forms.IncidentCompensationModes.COMPENSATE_ON_BOOKINGS.name},
-        )
-
-        assert response.status_code == 200
-
-        content = html_parser.content_as_text(response.data)
-        assert "L'incident a été validé" in content
-
-        assert incident.status == finance_models.IncidentStatus.VALIDATED
-
-        commercial_gesture_events = finance_models.FinanceEvent.query.filter(
-            finance_models.FinanceEvent.bookingFinanceIncidentId == commercial_gesture_incident.id
-        ).all()
-        assert len(commercial_gesture_events) == 1
-
-        commercial_gesture_2_events = finance_models.FinanceEvent.query.filter(
-            finance_models.FinanceEvent.bookingFinanceIncidentId == commercial_gesture_incident_2.id
-        ).all()
-        assert len(commercial_gesture_2_events) == 1
-
-        # TODO: complete test when commercial gesture validation is done
-
-        assert len(mails_testing.outbox) == 2
-        assert mails_testing.outbox[0]["To"] == venue.bookingEmail
-        assert mails_testing.outbox[0]["template"] == TransactionalEmail.COMMERCIAL_GESTURE_REIMBURSEMENT.value.__dict__
-        params_1 = mails_testing.outbox[0]["params"]
-        assert params_1["OFFER_NAME"] == offer_1.name
-        assert params_1["VENUE_NAME"] == venue.publicName
-        assert params_1["MONTANT_REMBOURSEMENT"] == 30
-        assert compare_digest(params_1["TOKEN_LIST"], booking_reimbursed.token)
-        params_2 = mails_testing.outbox[1]["params"]
-        assert params_2["OFFER_NAME"] == offer_2.name
-        assert params_2["VENUE_NAME"] == venue.publicName
-        assert params_2["MONTANT_REMBOURSEMENT"] == 40
-        assert compare_digest(params_2["TOKEN_LIST"], booking_reimbursed_2.token)
-
     @pytest.mark.parametrize(
         "initial_status", [finance_models.IncidentStatus.CANCELLED, finance_models.IncidentStatus.VALIDATED]
     )
@@ -684,6 +607,396 @@ class ValidateIncidentTest(PostEndpointHelper):
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
             == "L'incident ne peut être validé que s'il est au statut 'créé'."
+        )
+        finance_incident = finance_models.FinanceIncident.query.filter_by(id=finance_incident.id).one()
+        assert finance_incident.status == initial_status
+        assert finance_models.FinanceEvent.query.count() == 0
+        assert len(mails_testing.outbox) == 0
+
+
+class ValidateFinanceCommercialGestureTest(PostEndpointHelper):
+    endpoint = "backoffice_web.finance_incidents.validate_finance_commercial_gesture"
+    endpoint_kwargs = {"finance_incident_id": 1}
+    needed_permission = perm_models.Permissions.VALIDATE_COMMERCIAL_GESTURE
+
+    def test_validate_commercial_gesture(self, authenticated_client):
+        venue = offerers_factories.VenueBankAccountLinkFactory().venue
+
+        used_booking_finance_event = finance_factories.UsedBookingFinanceEventFactory(
+            booking__stock__price=decimal.Decimal("10.10")
+        )
+        booking = used_booking_finance_event.booking
+
+        bookings_api._cancel_booking(booking, bookings_models.BookingCancellationReasons.OFFERER)
+
+        booking_incident = finance_factories.IndividualBookingFinanceCommercialGestureFactory(
+            incident__venue=venue,
+            booking=booking,
+            newTotalAmount=5_00,
+        )
+        used_finance_event = finance_models.FinanceEvent.query.one()
+
+        assert booking_incident.incident.venue.current_bank_account_link
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            finance_incident_id=booking_incident.incident.id,
+            form={
+                "compensation_mode": finance_forms.IncidentCompensationModes.COMPENSATE_ON_BOOKINGS.name,
+            },
+            follow_redirects=True,
+        )
+
+        assert response.status_code == 200
+
+        content = html_parser.content_as_text(response.data)
+        assert "Le geste commercial a été validé." in content
+
+        updated_incident = finance_models.FinanceIncident.query.filter_by(id=booking_incident.incidentId).one()
+        assert updated_incident.status == finance_models.IncidentStatus.VALIDATED
+        assert updated_incident.forceDebitNote is False
+
+        beneficiary_action = history_models.ActionHistory.query.filter(
+            history_models.ActionHistory.user == booking_incident.beneficiary
+        ).first()
+        validation_action = history_models.ActionHistory.query.filter(
+            history_models.ActionHistory.financeIncident == updated_incident
+        ).first()
+
+        assert validation_action
+        assert validation_action.actionType == history_models.ActionType.FINANCE_INCIDENT_VALIDATED
+        assert validation_action.comment == "Récupération sur les prochaines réservations."
+
+        assert (
+            beneficiary_action
+            and beneficiary_action.actionType == history_models.ActionType.FINANCE_INCIDENT_USER_RECREDIT
+        )
+
+        last_finance_event = finance_models.FinanceEvent.query.filter(
+            finance_models.FinanceEvent.id != used_finance_event.id
+        ).one()
+        assert last_finance_event.motive == finance_models.FinanceEventMotive.INCIDENT_COMMERCIAL_GESTURE
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["To"] == venue.bookingEmail
+        assert mails_testing.outbox[0]["template"] == TransactionalEmail.COMMERCIAL_GESTURE_REIMBURSEMENT.value.__dict__
+        assert mails_testing.outbox[0]["params"] == {
+            "OFFER_NAME": booking_incident.booking.stock.offer.name,
+            "VENUE_NAME": venue.publicName,
+            "MONTANT_REMBOURSEMENT": decimal.Decimal("5.10"),
+            "TOKEN_LIST": booking_incident.booking.token,
+        }
+
+    def test_validate_commercial_gesture_with_debit_note(self, authenticated_client):
+        venue = offerers_factories.VenueBankAccountLinkFactory().venue
+        used_booking_finance_event = finance_factories.UsedBookingFinanceEventFactory(
+            booking__stock__price=decimal.Decimal("10.10")
+        )
+        booking = used_booking_finance_event.booking
+
+        bookings_api._cancel_booking(booking, bookings_models.BookingCancellationReasons.OFFERER)
+        booking_incident = finance_factories.IndividualBookingFinanceCommercialGestureFactory(
+            booking=booking,
+            incident__venue=venue,
+            newTotalAmount=5_00,
+        )
+        used_finance_event = finance_models.FinanceEvent.query.one()
+
+        assert booking_incident.incident.venue.current_bank_account_link
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            finance_incident_id=booking_incident.incident.id,
+            form={
+                "compensation_mode": finance_forms.IncidentCompensationModes.FORCE_DEBIT_NOTE.name,
+            },
+            follow_redirects=True,
+        )
+
+        assert response.status_code == 200
+
+        content = html_parser.content_as_text(response.data)
+        assert "Le geste commercial a été validé" in content
+
+        updated_incident = finance_models.FinanceIncident.query.filter_by(id=booking_incident.incidentId).one()
+        assert updated_incident.status == finance_models.IncidentStatus.VALIDATED
+        assert updated_incident.forceDebitNote is True
+
+        beneficiary_action = history_models.ActionHistory.query.filter(
+            history_models.ActionHistory.user == booking_incident.beneficiary
+        ).first()
+        validation_action = history_models.ActionHistory.query.filter(
+            history_models.ActionHistory.financeIncident == updated_incident
+        ).first()
+
+        assert validation_action
+        assert validation_action.actionType == history_models.ActionType.FINANCE_INCIDENT_VALIDATED
+        assert validation_action.comment == "Génération d'une note de débit à la prochaine échéance."
+
+        assert (
+            beneficiary_action
+            and beneficiary_action.actionType == history_models.ActionType.FINANCE_INCIDENT_USER_RECREDIT
+        )
+
+        last_finance_event = finance_models.FinanceEvent.query.filter(
+            finance_models.FinanceEvent.id != used_finance_event.id
+        ).one()
+        assert last_finance_event.motive == finance_models.FinanceEventMotive.INCIDENT_COMMERCIAL_GESTURE
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["To"] == venue.bookingEmail
+        assert mails_testing.outbox[0]["template"] == TransactionalEmail.COMMERCIAL_GESTURE_REIMBURSEMENT.value.__dict__
+        assert mails_testing.outbox[0]["params"] == {
+            "OFFER_NAME": booking_incident.booking.stock.offer.name,
+            "TOKEN_LIST": booking_incident.booking.token,
+            "VENUE_NAME": venue.publicName,
+            "MONTANT_REMBOURSEMENT": decimal.Decimal("5.10"),
+        }
+
+    def test_commercial_gesture_validation_with_several_bookings(self, authenticated_client):
+        deposit = users_factories.DepositGrantFactory()
+        incident = finance_factories.FinanceCommercialGestureFactory()
+        # make the participant poor because commercial gesture is not meant to be taken from the user's balance
+        bookings_factories.UsedBookingFactory(stock__price=decimal.Decimal("299.9"), user=deposit.user)
+
+        assert incident.status == finance_models.IncidentStatus.CREATED
+
+        cancelled_booking1 = bookings_factories.CancelledBookingFactory(
+            deposit=deposit,
+            amount=30,
+            user=deposit.user,
+            pricings=[
+                finance_factories.PricingFactory(status=finance_models.PricingStatus.CANCELLED, amount=-3000),
+            ],
+        )
+        cancelled_booking2 = bookings_factories.CancelledBookingFactory(
+            deposit=deposit,
+            amount=40,
+            user=deposit.user,
+            pricings=[finance_factories.PricingFactory(status=finance_models.PricingStatus.CANCELLED, amount=-4000)],
+        )
+
+        total_booking_commercial_gesture = finance_factories.IndividualBookingFinanceCommercialGestureFactory(
+            booking=cancelled_booking1,
+            incident=incident,
+            newTotalAmount=finance_utils.to_eurocents(cancelled_booking1.pricings[0].amount),
+        )  # total commercial gesture
+
+        partial_booking_commercial_gesture = finance_factories.IndividualBookingFinanceCommercialGestureFactory(
+            booking=cancelled_booking2, incident=incident, newTotalAmount=3000
+        )  # partial commercial gesture : instead of 40, 10 go back to the deposit
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            finance_incident_id=incident.id,
+            form={
+                "compensation_mode": finance_forms.IncidentCompensationModes.COMPENSATE_ON_BOOKINGS.name,
+            },
+            follow_redirects=True,
+        )
+
+        assert response.status_code == 200
+
+        content = html_parser.content_as_text(response.data)
+        assert "Le geste commercial a été validé." in content
+
+        assert incident.status == finance_models.IncidentStatus.VALIDATED
+        assert incident.forceDebitNote is False
+
+        validation_action = history_models.ActionHistory.query.filter(
+            history_models.ActionHistory.financeIncident == incident
+        ).first()
+
+        assert validation_action
+        assert validation_action.actionType == history_models.ActionType.FINANCE_INCIDENT_VALIDATED
+        assert validation_action.comment == "Récupération sur les prochaines réservations."
+        assert db.session.query(sa.func.get_deposit_balance(deposit.id, False)).first()[0] == decimal.Decimal("0.10")
+        assert db.session.query(sa.func.get_deposit_balance(deposit.id, True)).first()[0] == decimal.Decimal("0.10")
+
+        assert cancelled_booking1.status == bookings_models.BookingStatus.CANCELLED
+        assert cancelled_booking2.status == bookings_models.BookingStatus.CANCELLED
+
+        # total finance incident
+        total_incident_events = finance_models.FinanceEvent.query.filter(
+            finance_models.FinanceEvent.bookingFinanceIncidentId == total_booking_commercial_gesture.id
+        ).all()
+        assert len(total_incident_events) == 1
+        assert total_incident_events[0].motive == finance_models.FinanceEventMotive.INCIDENT_COMMERCIAL_GESTURE
+
+        # partial finaance incident
+        partial_incident_events = finance_models.FinanceEvent.query.filter(
+            finance_models.FinanceEvent.bookingFinanceIncidentId == partial_booking_commercial_gesture.id
+        ).all()
+        assert len(partial_incident_events) == 1
+        assert partial_incident_events[0].motive == finance_models.FinanceEventMotive.INCIDENT_COMMERCIAL_GESTURE
+
+    def test_commercial_gesture_validation_with_several_bookings_and_debit_note(self, authenticated_client):
+        deposit = users_factories.DepositGrantFactory()
+        incident = finance_factories.FinanceCommercialGestureFactory()
+        # make the participant poor because commercial gesture is not meant to be taken from the user's balance
+        bookings_factories.UsedBookingFactory(deposit=deposit, amount=decimal.Decimal("299.90"), user=deposit.user)
+
+        assert incident.status == finance_models.IncidentStatus.CREATED
+
+        cancelled_booking1 = bookings_factories.CancelledBookingFactory(
+            deposit=deposit,
+            amount=30,
+            user=deposit.user,
+            pricings=[finance_factories.PricingFactory(status=finance_models.PricingStatus.CANCELLED, amount=-3000)],
+        )
+        cancelled_booking2 = bookings_factories.CancelledBookingFactory(
+            deposit=deposit,
+            amount=40,
+            user=deposit.user,
+            pricings=[finance_factories.PricingFactory(status=finance_models.PricingStatus.CANCELLED, amount=-4000)],
+        )
+
+        total_booking_commercial_gesture = finance_factories.IndividualBookingFinanceCommercialGestureFactory(
+            booking=cancelled_booking1,
+            incident=incident,
+            newTotalAmount=finance_utils.to_eurocents(cancelled_booking1.pricings[0].amount),
+        )  # total incident
+
+        partial_booking_commercial_gesture = finance_factories.IndividualBookingFinanceCommercialGestureFactory(
+            booking=cancelled_booking2, incident=incident, newTotalAmount=3000
+        )  # partial incident : instead of 40, 10 go back to the deposit
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            finance_incident_id=incident.id,
+            form={
+                "compensation_mode": finance_forms.IncidentCompensationModes.FORCE_DEBIT_NOTE.name,
+            },
+            follow_redirects=True,
+        )
+
+        assert response.status_code == 200
+
+        content = html_parser.content_as_text(response.data)
+        assert "Le geste commercial a été validé." in content
+
+        assert incident.status == finance_models.IncidentStatus.VALIDATED
+        assert incident.forceDebitNote is True
+
+        validation_action = history_models.ActionHistory.query.filter(
+            history_models.ActionHistory.financeIncident == incident
+        ).first()
+
+        assert validation_action
+        assert validation_action.actionType == history_models.ActionType.FINANCE_INCIDENT_VALIDATED
+        assert validation_action.comment == "Génération d'une note de débit à la prochaine échéance."
+        assert db.session.query(sa.func.get_deposit_balance(deposit.id, False)).first()[0] == decimal.Decimal("0.10")
+        assert db.session.query(sa.func.get_deposit_balance(deposit.id, True)).first()[0] == decimal.Decimal("0.10")
+
+        assert cancelled_booking1.status == bookings_models.BookingStatus.CANCELLED
+        assert cancelled_booking2.status == bookings_models.BookingStatus.CANCELLED
+
+        # total finance incident
+        total_incident_events = finance_models.FinanceEvent.query.filter(
+            finance_models.FinanceEvent.bookingFinanceIncidentId == total_booking_commercial_gesture.id
+        ).all()
+        assert len(total_incident_events) == 1
+        assert total_incident_events[0].motive == finance_models.FinanceEventMotive.INCIDENT_COMMERCIAL_GESTURE
+
+        # partial finaance incident
+        partial_incident_events = finance_models.FinanceEvent.query.filter(
+            finance_models.FinanceEvent.bookingFinanceIncidentId == partial_booking_commercial_gesture.id
+        ).all()
+        assert len(partial_incident_events) == 1
+        assert partial_incident_events[0].motive == finance_models.FinanceEventMotive.INCIDENT_COMMERCIAL_GESTURE
+
+    def test_validate_commercial_gesture_incident(self, client, codir_admin):
+        venue = offerers_factories.VenueBankAccountLinkFactory().venue
+        offer_1 = offers_factories.OfferFactory(venue=venue)
+        stock_1 = offers_factories.StockFactory(offer=offer_1)
+        offer_2 = offers_factories.OfferFactory(venue=venue)
+        stock_2 = offers_factories.StockFactory(offer=offer_2)
+        deposit = users_factories.DepositGrantFactory()
+        incident = finance_factories.FinanceCommercialGestureFactory(venue=venue)
+
+        assert incident.status == finance_models.IncidentStatus.CREATED
+
+        cancelled_booking1 = bookings_factories.CancelledBookingFactory(
+            deposit=deposit,
+            amount=decimal.Decimal("30.0"),
+            user=deposit.user,
+            stock=stock_1,
+            pricings=[finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED, amount=-3000)],
+        )
+        cancelled_booking2 = bookings_factories.CancelledBookingFactory(
+            deposit=deposit,
+            amount=decimal.Decimal("40.0"),
+            user=deposit.user,
+            stock=stock_2,
+            pricings=[finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED, amount=-4000)],
+        )
+
+        commercial_gesture_incident1 = finance_factories.IndividualBookingFinanceCommercialGestureFactory(
+            booking=cancelled_booking1,
+            incident=incident,
+            newTotalAmount=20_00,
+        )
+
+        commercial_gesture_incident2 = finance_factories.IndividualBookingFinanceCommercialGestureFactory(
+            booking=cancelled_booking2,
+            incident=incident,
+            newTotalAmount=10_00,
+        )
+
+        response = self.post_to_endpoint(
+            client.with_bo_session_auth(codir_admin),
+            finance_incident_id=incident.id,
+            form={"compensation_mode": finance_forms.IncidentCompensationModes.COMPENSATE_ON_BOOKINGS.name},
+            follow_redirects=True,
+        )
+
+        assert response.status_code == 200
+
+        content = html_parser.content_as_text(response.data)
+        assert "Le geste commercial a été validé" in content
+
+        assert incident.status == finance_models.IncidentStatus.VALIDATED
+
+        commercial_gesture1_events = finance_models.FinanceEvent.query.filter(
+            finance_models.FinanceEvent.bookingFinanceIncidentId == commercial_gesture_incident1.id
+        ).all()
+        assert len(commercial_gesture1_events) == 1
+
+        commercial_gesture2_events = finance_models.FinanceEvent.query.filter(
+            finance_models.FinanceEvent.bookingFinanceIncidentId == commercial_gesture_incident2.id
+        ).all()
+        assert len(commercial_gesture2_events) == 1
+
+        assert len(mails_testing.outbox) == 2
+        assert mails_testing.outbox[0]["To"] == venue.bookingEmail
+        assert mails_testing.outbox[0]["template"] == TransactionalEmail.COMMERCIAL_GESTURE_REIMBURSEMENT.value.__dict__
+        params_1 = mails_testing.outbox[0]["params"]
+        assert params_1["OFFER_NAME"] == offer_1.name
+        assert params_1["VENUE_NAME"] == venue.publicName
+        assert params_1["MONTANT_REMBOURSEMENT"] == decimal.Decimal("10")
+        assert compare_digest(params_1["TOKEN_LIST"], cancelled_booking1.token)
+        params_2 = mails_testing.outbox[1]["params"]
+        assert params_2["OFFER_NAME"] == offer_2.name
+        assert params_2["VENUE_NAME"] == venue.publicName
+        assert params_2["MONTANT_REMBOURSEMENT"] == decimal.Decimal("30")
+        assert compare_digest(params_2["TOKEN_LIST"], cancelled_booking2.token)
+
+    @pytest.mark.parametrize(
+        "initial_status", [finance_models.IncidentStatus.CANCELLED, finance_models.IncidentStatus.VALIDATED]
+    )
+    def test_validate_invalid_commercial_gesture_status(self, authenticated_client, initial_status):
+        finance_incident = finance_factories.FinanceCommercialGestureFactory(status=initial_status)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            finance_incident_id=finance_incident.id,
+            form={"compensation_mode": finance_forms.IncidentCompensationModes.COMPENSATE_ON_BOOKINGS.name},
+        )
+
+        assert response.status_code == 303
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == "Le geste commercial ne peut être validé que s'il est au statut 'créé'."
         )
         finance_incident = finance_models.FinanceIncident.query.filter_by(id=finance_incident.id).one()
         assert finance_incident.status == initial_status
@@ -781,11 +1094,10 @@ class CreateIncidentFinanceEventTest:
         assert finance_events[1].valueDate == validation_date
 
     def test_create_commercial_gesture_event_on_booking(self):
-        booking_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
+        booking_incident = finance_factories.IndividualBookingFinanceCommercialGestureFactory(
             booking__pricings=[
                 finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED, amount=-1000)
             ],
-            incident__kind=finance_models.IncidentType.COMMERCIAL_GESTURE,
             newTotalAmount=800,
         )
         validation_date = datetime.datetime.utcnow()
@@ -870,11 +1182,8 @@ class GetOverpaymentCreationFormTest(PostEndpointHelper):
         assert f"Contremarque : {booking.token}" in additional_data_text
         assert f"Nom de l'offre : {offer.name}" in additional_data_text
         assert f"Bénéficiaire : {booking.user.full_name}" in additional_data_text
-        assert f"Montant de la réservation : {filters.format_amount(booking.total_amount)}" in additional_data_text
-        assert (
-            f"Montant remboursé à l'acteur : {filters.format_amount(finance_utils.to_euros(-invoiced_pricing.amount))}"
-            in additional_data_text
-        )
+        assert "Montant de la réservation : 10,10 €" in additional_data_text
+        assert "Montant remboursé à l'acteur : 10,00 €" in additional_data_text
 
         default_amount = html_parser.extract_input_value(response.data, "total_amount")
         assert default_amount == str(booking.total_amount)
@@ -900,14 +1209,8 @@ class GetOverpaymentCreationFormTest(PostEndpointHelper):
         additional_data_text = html_parser.extract_cards_text(response.data)[0]
         assert f"Lieu : {venue.name}" in additional_data_text
         assert f"Nombre de réservations : {len(selected_bookings)}" in additional_data_text
-        assert (
-            f"Montant des réservations : {filters.format_amount(sum(booking.total_amount for booking in selected_bookings))}"
-            in additional_data_text
-        )
-        assert (
-            f"Montant remboursé à l'acteur : {filters.format_amount(finance_utils.to_euros(-sum(booking.reimbursement_pricing.amount for booking in selected_bookings)))}"
-            in additional_data_text
-        )
+        assert "Montant des réservations : 20,20 €" in additional_data_text
+        assert "Montant remboursé à l'acteur : 20,20 €" in additional_data_text
 
     def test_display_error_if_booking_not_reimbursed(self, authenticated_client):
         booking = bookings_factories.UsedBookingFactory()
@@ -968,14 +1271,8 @@ class GetCollectiveBookingOverpaymentFormTest(PostEndpointHelper):
         )
         assert f"Établissement : {collective_booking.educationalInstitution.name}" in additional_data_text
         assert f"Nombre d'élèves : {collective_booking.collectiveStock.numberOfTickets}" in additional_data_text
-        assert (
-            f"Montant de la réservation : {filters.format_amount(collective_booking.total_amount)}"
-            in additional_data_text
-        )
-        assert (
-            f"Montant remboursé à l'acteur : {filters.format_amount(finance_utils.to_euros(-collective_booking.reimbursement_pricing.amount))}"
-            in additional_data_text
-        )
+        assert "Montant de la réservation : 100,00 €" in additional_data_text
+        assert "Montant remboursé à l'acteur : 100,00 €" in additional_data_text
 
 
 class CreateOverpaymentTest(PostEndpointHelper):
@@ -1595,8 +1892,10 @@ class ForceDebitNoteTest(PostEndpointHelper):
             finance_incident_id=finance_incident.id,
         )
 
-        assert response.status_code == 200
-        assert "Une note de débit sera générée à la prochaine échéance." in html_parser.extract_alert(response.data)
+        assert response.status_code == 303
+        assert "Une note de débit sera générée à la prochaine échéance." in html_parser.extract_alert(
+            authenticated_client.get(response.location).data
+        )
         updated_finance_incident = finance_models.FinanceIncident.query.filter_by(id=finance_incident.id).one()
         assert updated_finance_incident.forceDebitNote is True
 
@@ -1698,10 +1997,10 @@ class CancelDebitNoteTest(PostEndpointHelper):
             finance_incident_id=finance_incident.id,
         )
 
-        assert response.status_code == 200
+        assert response.status_code == 303
         assert (
             "Vous avez fait le choix de récupérer l'argent sur les prochaines réservations de l'acteur."
-            in html_parser.content_as_text(response.data)
+            in html_parser.content_as_text(authenticated_client.get(response.location).data)
         )
 
         assert len(mails_testing.outbox) == 1

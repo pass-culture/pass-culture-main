@@ -19,7 +19,13 @@ pytestmark = [
 ]
 
 
-class UnauthorizedHelperBase(base.BaseHelper, metaclass=abc.ABCMeta):
+class AuthenticatedHelperBase(base.BaseHelper, metaclass=abc.ABCMeta):
+    @abc.abstractmethod
+    def test_not_logged_in(self, client):
+        pass
+
+
+class UnauthorizedHelperBase(AuthenticatedHelperBase):
     @property
     @abc.abstractmethod
     def needed_permission(self) -> perm_models.Permissions | typing.Iterable[perm_models.Permissions]:
@@ -31,10 +37,6 @@ class UnauthorizedHelperBase(base.BaseHelper, metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def test_no_backoffice_profile(self, client):
-        pass
-
-    @abc.abstractmethod
-    def test_not_logged_in(self, client):
         pass
 
     def setup_user(self) -> users_models.User:

@@ -614,6 +614,8 @@ def update_user_info(
     validated_birth_date: datetime.date | T_UNCHANGED = UNCHANGED,
     id_piece_number: str | T_UNCHANGED = UNCHANGED,
     marketing_email_subscription: bool | T_UNCHANGED = UNCHANGED,
+    new_nav_pro_date: datetime.datetime | None | T_UNCHANGED = UNCHANGED,
+    new_nav_pro_eligibility_date: datetime.datetime | None | T_UNCHANGED = UNCHANGED,
     commit: bool = True,
 ) -> history_api.ObjectUpdateSnapshot:
     old_email = None
@@ -669,6 +671,24 @@ def update_user_info(
             field_name_template="notificationSubscriptions.{}",
         )
         user.set_marketing_email_subscription(marketing_email_subscription)
+    if (
+        new_nav_pro_date is not UNCHANGED or new_nav_pro_eligibility_date is not UNCHANGED
+    ) and feature.FeatureToggle.ENABLE_PRO_NEW_NAV_MODIFICATION.is_active():
+        pro_new_nav_state = user.pro_new_nav_state
+        if not pro_new_nav_state:
+            pro_new_nav_state = models.UserProNewNavState(userId=user.id)
+            user.pro_new_nav_state = pro_new_nav_state
+        if new_nav_pro_date is not UNCHANGED:
+            snapshot.set("pro_new_nav_state.newNavDate", old=pro_new_nav_state.newNavDate, new=new_nav_pro_date)
+            pro_new_nav_state.newNavDate = new_nav_pro_date
+        if new_nav_pro_eligibility_date is not UNCHANGED:
+            snapshot.set(
+                "pro_new_nav_state.eligibilityDate",
+                old=pro_new_nav_state.eligibilityDate,
+                new=new_nav_pro_eligibility_date,
+            )
+            pro_new_nav_state.eligibilityDate = new_nav_pro_eligibility_date
+        db.session.add(pro_new_nav_state)
 
     # keep using repository as long as user is validated in pcapi.validation.models.user
     if commit:
@@ -836,7 +856,7 @@ def create_pro_user(pro_user: ProUserCreationBodyV2Model) -> models.User:
     if hasattr(pro_user, "postal_code") and pro_user.postal_code:
         new_pro_user.departementCode = postal_code_utils.PostalCode(pro_user.postal_code).get_departement_code()
 
-    if settings.IS_INTEGRATION:
+    if settings.MAKE_PROS_BENEFICIARIES_IN_APP:
         new_pro_user.add_beneficiary_role()
         eighteen_years_ago = datetime.datetime.utcnow() - datetime.timedelta(days=366 * 18)
         new_pro_user.dateOfBirth = eighteen_years_ago
@@ -1113,22 +1133,19 @@ def search_public_account(search_query: str) -> BaseQuery:
 
 
 def search_public_account_in_history_email(search_query: str) -> BaseQuery:
-    if not email_utils.is_valid_email_or_email_domain(email_utils.sanitize_email(search_query)):
-        raise ValueError(f"Unsupported email search on invalid email or email domain : {search_query}")
+    sanitized_term = email_utils.sanitize_email(search_query)
+    if not email_utils.is_valid_email(sanitized_term):
+        raise ValueError(f"Unsupported email search on invalid email: {search_query}")
 
     accounts = get_public_account_base_query()
 
     if not search_query:
         return accounts.filter(False)
 
-    # email
-    sanitized_term = email_utils.sanitize_email(search_query)
-
-    if email_utils.is_valid_email(sanitized_term):
-        accounts = accounts.join(models.UserEmailHistory)
-
-        # including old emails: look for validated email updates inside user_email_history
-        accounts = accounts.filter(
+    # including old emails: look for validated email updates inside user_email_history
+    return (
+        accounts.join(models.UserEmailHistory)
+        .filter(
             models.UserEmailHistory.oldEmail == sanitized_term,
             models.UserEmailHistory.eventType.in_(
                 {
@@ -1137,27 +1154,9 @@ def search_public_account_in_history_email(search_query: str) -> BaseQuery:
                     models.EmailHistoryEventTypeEnum.ADMIN_UPDATE,
                 }
             ),
-        ).from_self()
-    elif email_utils.is_valid_email_domain(sanitized_term):
-        accounts = accounts.join(models.UserEmailHistory)
-
-        # including old emails: look for validated email updates inside user_email_history
-        accounts = accounts.filter(
-            sa.or_(
-                models.User.email.like(f"%{sanitized_term}"),
-                sa.and_(
-                    models.UserEmailHistory.oldDomainEmail == sanitized_term[1:],
-                    models.UserEmailHistory.eventType.in_(
-                        {
-                            models.EmailHistoryEventTypeEnum.VALIDATION,
-                            models.EmailHistoryEventTypeEnum.ADMIN_VALIDATION,
-                        }
-                    ),
-                ),
-            )
-        ).from_self()
-
-    return accounts.order_by(models.User.id)
+        )
+        .order_by(models.User.id)
+    )
 
 
 def get_public_account_base_query() -> BaseQuery:

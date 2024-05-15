@@ -260,41 +260,6 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
 
         assert html_parser.extract_pagination_info(response.data) == (1, 1, len(rows))
 
-    def test_list_bookings_by_institution_id(self, authenticated_client, collective_bookings):
-        search_query = str(collective_bookings[1].educationalInstitution.id)
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q=search_query))
-            assert response.status_code == 200
-
-        rows = html_parser.extract_table_rows(response.data)
-        # Warning: test may return more than 1 row when an offer id is the same as expected institution id
-        assert len(rows) >= 1
-        assert str(collective_bookings[1].id) in set(row["ID résa"] for row in rows)
-
-    @pytest.mark.parametrize(
-        "search_query, expected_idx",
-        [
-            ("Collège", (0, 1, 2)),
-            ("Bref", (1,)),
-            (
-                "lycée charlemagne",
-                (
-                    3,
-                    4,
-                ),
-            ),
-        ],
-    )
-    def test_list_bookings_by_institution_name(
-        self, authenticated_client, collective_bookings, search_query, expected_idx
-    ):
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, q=search_query))
-            assert response.status_code == 200
-
-        rows = html_parser.extract_table_rows(response.data)
-        assert set(row["ID résa"] for row in rows) == {str(collective_bookings[idx].id) for idx in expected_idx}
-
     def test_list_bookings_by_cashflow_batch(self, authenticated_client):
         cashflows = finance_factories.CashflowFactory.create_batch(
             3,
@@ -423,6 +388,16 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID résa"]) for row in rows) == {collective_bookings[0].id, collective_bookings[2].id}
 
+    def test_list_bookings_by_educational_institution(self, authenticated_client, collective_bookings):
+        institution_id = collective_bookings[1].educationalInstitution.id
+
+        with assert_num_queries(self.expected_num_queries + 1):
+            response = authenticated_client.get(url_for(self.endpoint, institution=institution_id))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert set(int(row["ID résa"]) for row in rows) == {collective_bookings[1].id}
+
     def test_list_bookings_more_than_max(self, authenticated_client):
         educational_factories.CollectiveBookingFactory.create_batch(
             25, status=educational_models.CollectiveBookingStatus.CONFIRMED
@@ -480,6 +455,17 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
         assert len(rows) == 1
 
         assert rows[0]["ID résa"] == str(target_booking.id)
+
+    def test_sort_collective_bookings_by_event_date(self, authenticated_client, collective_bookings):
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for(self.endpoint, status=[s.name for s in educational_models.CollectiveBookingStatus])
+            )
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        # beginningDatetime at J+7, J+6, J+5, J+3, J+1
+        assert [row["ID résa"] for row in rows] == [str(collective_bookings[idx].id) for idx in (2, 0, 3, 1, 4)]
 
 
 class MarkCollectiveBookingAsUsedTest(PostEndpointHelper):

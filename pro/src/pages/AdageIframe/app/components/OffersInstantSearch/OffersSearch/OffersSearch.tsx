@@ -3,10 +3,12 @@ import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
 import { useInstantSearch } from 'react-instantsearch'
 import { useDispatch, useSelector } from 'react-redux'
 import { useSearchParams } from 'react-router-dom'
+import useSWRMutation from 'swr/mutation'
 
-import { AdageFrontRoles } from 'apiClient/adage'
+import { AdageFrontRoles, TrackingFilterBody } from 'apiClient/adage'
 import { api, apiAdage } from 'apiClient/api'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+import { LOG_TRACKING_FILTER_QUERY_KEY } from 'config/swrQueryKeys'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useIsElementVisible from 'hooks/useIsElementVisible'
 import useNotification from 'hooks/useNotification'
@@ -78,6 +80,16 @@ export const OffersSearch = ({
     onSubmit: handleSubmit,
   })
 
+  const { trigger: logTrackingFilter } = useSWRMutation(
+    LOG_TRACKING_FILTER_QUERY_KEY,
+    (
+      _key: string,
+      options: {
+        arg: TrackingFilterBody
+      }
+    ) => apiAdage.logTrackingFilter(options.arg)
+  )
+
   useEffect(() => {
     const getAllDomains = async () => {
       try {
@@ -129,7 +141,7 @@ export const OffersSearch = ({
   const logFiltersOnSearch = async (nbHits: number, queryId?: string) => {
     /* istanbul ignore next: TO FIX the current structure make it hard to test, we probably should not mock Offers in OfferSearch tests */
     if (formik.submitCount > 0 || adageQueryFromSelector !== null) {
-      await apiAdage.logTrackingFilter({
+      await logTrackingFilter({
         iframeFrom: location.pathname,
         resultNumber: nbHits,
         queryId: queryId ?? null,

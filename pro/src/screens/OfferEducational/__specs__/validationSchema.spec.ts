@@ -1,5 +1,5 @@
 import { EacFormat, OfferAddressType, StudentLevels } from 'apiClient/v1'
-import { OfferEducationalFormValues } from 'core/OfferEducational'
+import { OfferEducationalFormValues } from 'core/OfferEducational/types'
 import { getYupValidationSchemaErrors } from 'utils/yupValidationTestHelpers'
 
 import { getOfferEducationalValidationSchema } from '../validationSchema'

@@ -16,7 +16,7 @@ import { AdageDiscovery } from '../AdageDiscovery/AdageDiscovery'
 import { AdageHeader } from '../AdageHeader/AdageHeader'
 import { OfferInfos } from '../OfferInfos/OfferInfos'
 import { OffersFavorites } from '../OffersFavorites/OffersFavorites'
-import OffersForMyInstitution from '../OffersForInstitution/OffersForMyInstitution'
+import { OffersForMyInstitution } from '../OffersForInstitution/OffersForMyInstitution'
 import { OffersInstantSearch } from '../OffersInstantSearch/OffersInstantSearch'
 
 import styles from './AppLayout.module.scss'

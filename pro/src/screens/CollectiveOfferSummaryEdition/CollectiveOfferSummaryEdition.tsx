@@ -2,12 +2,12 @@ import {
   GetCollectiveOfferTemplateResponseModel,
   GetCollectiveOfferResponseModel,
 } from 'apiClient/v1'
-import ActionsBarSticky from 'components/ActionsBarSticky'
-import CollectiveOfferSummary from 'components/CollectiveOfferSummary'
-import OfferEducationalActions from 'components/OfferEducationalActions'
-import { isCollectiveOfferTemplate, Mode } from 'core/OfferEducational'
+import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
+import { CollectiveOfferSummary } from 'components/CollectiveOfferSummary/CollectiveOfferSummary'
+import { OfferEducationalActions } from 'components/OfferEducationalActions/OfferEducationalActions'
+import { Mode, isCollectiveOfferTemplate } from 'core/OfferEducational/types'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
-import { computeCollectiveOffersUrl } from 'core/Offers/utils'
+import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeOffersUrl'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -17,13 +17,11 @@ interface CollectiveOfferSummaryEditionProps {
   offer:
     | GetCollectiveOfferTemplateResponseModel
     | GetCollectiveOfferResponseModel
-  reloadCollectiveOffer: () => void
   mode: Mode
 }
 
 export const CollectiveOfferSummaryEditionScreen = ({
   offer,
-  reloadCollectiveOffer,
   mode,
 }: CollectiveOfferSummaryEditionProps) => {
   const offerEditLink = `/offre/${computeURLCollectiveOfferId(
@@ -48,7 +46,6 @@ export const CollectiveOfferSummaryEditionScreen = ({
             : Boolean(offer.collectiveStock?.isBooked)
         }
         offer={offer}
-        reloadCollectiveOffer={reloadCollectiveOffer}
         mode={mode}
       />
 

@@ -61,7 +61,7 @@ jobs:
         with:
           helmfile-version: "v0.147.0"
       - name: "Retrieve pcapi secrets list"
-        id: get-pcapi-secrets
+        id: generate-pcapi-secrets-list
         run: |
           #Retrieve secrets list from source code
           PCAPI_SECRETS=$(cat api/src/pcapi/settings.py | grep "secrets_utils.getlist(" | awk -F'=' '{print $1}')
@@ -71,31 +71,17 @@ jobs:
           #Transform list into helm readable parameter list (pattern: --set value={item1,item2,item3})
           PCAPI_SECRETS=secrets={$(echo $PCAPI_SECRETS | sed -r 's/ /,/g')}
           echo "PCAPI_SECRETS=\"$PCAPI_SECRETS\"" >> "$GITHUB_OUTPUT"
-      - name: "Render manifests"
-        run: |
-          PASSCULTURE_USERNAME="oauth2accesstoken" \
-          PASSCULTURE_PASSWORD=${{ steps.openid-auth-infra.outputs.access_token }} \
-          helmfile -e testing template --set ${{ steps.get-pcapi-secrets.outputs.PCAPI_SECRETS }} --set image.tag=xxx.xxx --output-dir ./rendered-manifests/ --output-dir-template "{{ .OutputDir }}/{{ .State.BaseName }}-{{ .Release.Name}}"
-      - name: "Push manifests to rendered-manifests repository"
-        id: push_manifests
-        uses: cpina/github-action-push-to-another-repository@main
-        env:
-          API_TOKEN_GITHUB: ${{ steps.secrets.outputs.PASSCULTURE_SA_ACCESS_TOKEN }}
+      - uses: ./.github/workflows/composite_render_push_manifests.yml
         with:
-          source-directory: ./rendered-manifests/helmfile-testing/
-          destination-github-username: 'pass-culture'
-          destination-repository-name: 'rendered-manifests'
-          commit-message: pushed from $GITHUB_REF
-          target-branch: fdehem
-          create-target-branch-if-needed: true
+          environment: ${{ inputs.environment }}
+          app_name: 'pcapi'
+          app_version: ${{ inputs.app_version }}
+          additional_args:  ${{ steps.generate-pcapi-secrets-list.outputs.PCAPI_SECRETS }}
+          PASSCULTURE_SA_ACCESS_TOKEN: ${{ steps.secrets.outputs.PASSCULTURE_SA_ACCESS_TOKEN }}
+          access_token: ${{ steps.openid-auth-infra.outputs.access_token }}
       - name: "Install argocd cli"
         id: install_argocd_cli
         run: |
           curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
           sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
           rm argocd-linux-amd64
-      - name: "Check argocd application status"
-        id: check_status
-        run: |
-          kubectl config set-context --current --namespace=argocd
-          argocd app wait pcapi-testing --core --timeout 300

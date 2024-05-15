@@ -6,7 +6,7 @@ import {
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
-import { Audience } from 'core/shared'
+import { Audience } from 'core/shared/types'
 import useAnalytics from 'hooks/useAnalytics'
 import useOnClickOrFocusOutside from 'hooks/useOnClickOrFocusOutside'
 import fullSortIcon from 'icons/full-sort.svg'

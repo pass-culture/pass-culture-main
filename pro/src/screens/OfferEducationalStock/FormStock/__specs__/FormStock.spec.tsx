@@ -1,20 +1,19 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { addDays } from 'date-fns'
-import format from 'date-fns/format'
+import { addDays, format } from 'date-fns'
 import { Form, Formik } from 'formik'
 import React from 'react'
 
 import {
-  EducationalOfferType,
-  Mode,
   OfferEducationalStockFormValues,
-} from 'core/OfferEducational'
+  Mode,
+  EducationalOfferType,
+} from 'core/OfferEducational/types'
 import { generateValidationSchema } from 'screens/OfferEducationalStock/validationSchema'
 import { Button } from 'ui-kit/Button/Button'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 
-import FormStock, { FormStockProps } from '../FormStock'
+import { FormStock, FormStockProps } from '../FormStock'
 
 const renderFormStock = ({
   initialValues,

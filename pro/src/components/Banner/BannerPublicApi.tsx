@@ -12,7 +12,10 @@ interface Props {
   className?: string
 }
 
-const BannerPublicApi = ({ children, className }: Props): JSX.Element => (
+export const BannerPublicApi = ({
+  children,
+  className,
+}: Props): JSX.Element => (
   <Banner showTitle={false} type="notification-info" className={cn(className)}>
     <div className={styles['banner-container']}>
       <SvgIcon
@@ -25,5 +28,3 @@ const BannerPublicApi = ({ children, className }: Props): JSX.Element => (
     </div>
   </Banner>
 )
-
-export default BannerPublicApi

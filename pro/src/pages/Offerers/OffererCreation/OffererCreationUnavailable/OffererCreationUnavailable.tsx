@@ -5,7 +5,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './OffererCreationUnavailable.module.scss'
 
-const OffererCreationUnavailable: FunctionComponent = () => {
+export const OffererCreationUnavailable: FunctionComponent = () => {
   return (
     <div className={styles['unavailable-offerer-creation']}>
       <SvgIcon
@@ -21,5 +21,3 @@ const OffererCreationUnavailable: FunctionComponent = () => {
     </div>
   )
 }
-
-export default OffererCreationUnavailable

@@ -58,10 +58,9 @@ class GetClassroomPlaylistTest(SharedPlaylistsErrorTests):
 
         # fetch institution (1 query)
         # fetch redactor (1 query)
-        # fetch redactor's favorites (1 query)
         # fetch playlist data (1 query)
-        # fetch images data (1 query)
-        with assert_num_queries(5):
+        # fetch redactor's favorites (1 query)
+        with assert_num_queries(4):
             response = iframe_client.get(url_for(self.endpoint))
 
             assert response.status_code == 200
@@ -153,10 +152,9 @@ class GetNewTemplateOffersPlaylistQueryTest(SharedPlaylistsErrorTests):
 
         # fetch institution (1 query)
         # fetch redactor (1 query)
-        # fetch redactor's favorites (1 query)
         # fetch playlist data (1 query)
-        # fetch images data (1 query)
-        with assert_num_queries(5):
+        # fetch redactor's favorites (1 query)
+        with assert_num_queries(4):
             response = iframe_client.get(url_for(self.endpoint))
 
             assert response.status_code == 200
@@ -196,6 +194,51 @@ class GetLocalOfferersPlaylistTest(SharedPlaylistsErrorTests):
 
     def test_get_local_offerers_playlist(self, client):
         IMAGE_URL = "http://localhost/image.png"
+
+        institution = educational_factories.EducationalInstitutionFactory(
+            ruralLevel=educational_models.InstitutionRuralLevel.URBAIN_DENSE
+        )
+
+        expected_distance = 2.5
+
+        items = educational_factories.PlaylistFactory.create_batch(
+            10,
+            type=educational_models.PlaylistType.LOCAL_OFFERER,
+            distanceInKm=expected_distance,
+            institution=institution,
+            venue___bannerUrl=IMAGE_URL,
+        )
+        playlist_venues = [item.venue for item in items]
+
+        # This one should not be part of the playlist - outside the distance limit
+        educational_factories.PlaylistFactory(
+            type=educational_models.PlaylistType.LOCAL_OFFERER,
+            distanceInKm=50,
+            institution=institution,
+        )
+
+        redactor = educational_factories.EducationalRedactorFactory()
+
+        iframe_client = _get_iframe_client(client, email=redactor.email, uai=institution.institutionId)
+
+        # fetch the institution (1 query)
+        # fetch playlist items (1 query)
+        with assert_num_queries(2):
+            response = iframe_client.get(url_for(self.endpoint))
+
+        assert response.status_code == 200
+        assert len(response.json["venues"]) == len(playlist_venues)
+
+        response_venues = sorted(response.json["venues"], key=lambda resp: resp["id"])
+        venues = sorted(playlist_venues, key=lambda venue: venue.id)
+
+        for idx, response_venue in enumerate(response_venues):
+            assert response_venue["id"] == venues[idx].id
+            assert response_venue["distance"] == expected_distance
+            assert response_venue["imgUrl"] == IMAGE_URL
+
+    def test_get_local_offerers_playlist_without_enough_items_at_first(self, client):
+        IMAGE_URL = "http://localhost/image.png"
         playlist_venues = offerers_factories.VenueFactory.create_batch(3, _bannerUrl=IMAGE_URL)
         offerers_factories.VenueFactory()
 
@@ -212,10 +255,13 @@ class GetLocalOfferersPlaylistTest(SharedPlaylistsErrorTests):
                 institution=institution,
                 venue=venue,
             )
-        # This one should not be part of the playlist - outside the distance limit
+
+        # This one should be part of the playlist: there is not enough
+        # items at first and a second query requesting more distant
+        # ones should be triggered
         educational_models.CollectivePlaylist(
             type=educational_models.PlaylistType.LOCAL_OFFERER,
-            distanceInKm=50,
+            distanceInKm=150,
             institution=institution,
             venue=playlist_venues[-1],
         )
@@ -226,19 +272,26 @@ class GetLocalOfferersPlaylistTest(SharedPlaylistsErrorTests):
 
         # fetch the institution (1 query)
         # fetch playlist items (1 query)
-        with assert_num_queries(2):
+        # fetch other playlist items because first request did not fetched enough (1 query)
+        with assert_num_queries(3):
             response = iframe_client.get(url_for(self.endpoint))
 
         assert response.status_code == 200
-        assert len(response.json["venues"]) == 2
+        assert len(response.json["venues"]) == 3
 
         response_venues = sorted(response.json["venues"], key=lambda resp: resp["id"])
         venues = sorted(playlist_venues, key=lambda venue: venue.id)
 
-        for idx, response_venue in enumerate(response_venues):
+        # items within the standard distance
+        for idx, response_venue in enumerate(response_venues[:-1]):
             assert response_venue["id"] == venues[idx].id
             assert response_venue["distance"] == expected_distance
             assert response_venue["imgUrl"] == IMAGE_URL
+
+        # item above
+        assert response_venues[-1]["id"] == venues[-1].id
+        assert response_venues[-1]["distance"] == 150
+        assert response_venues[-1]["imgUrl"] == IMAGE_URL
 
     def test_no_rows(self, client):
         institution = educational_factories.EducationalInstitutionFactory()
@@ -284,6 +337,28 @@ class GetLocalOfferersPlaylistTest(SharedPlaylistsErrorTests):
                 return
             max_try -= 1
         assert playlist_order_1 != playlist_order_2
+
+
+class GetAnyNewTemplateOffersTest(SharedPlaylistsErrorTests):
+    endpoint = "adage_iframe.get_any_new_template_offers_playlist"
+
+    def test_no_offers(self, client):
+        iframe_client = _get_iframe_client(client)
+        response = iframe_client.get(url_for(self.endpoint))
+
+        assert response.status_code == 200
+        assert response.json == {"collectiveOffers": []}
+
+
+class GetNewOfferersPlaylistTest(SharedPlaylistsErrorTests):
+    endpoint = "adage_iframe.get_new_offerers_playlist"
+
+    def test_no_offerers(self, client):
+        iframe_client = _get_iframe_client(client)
+        response = iframe_client.get(url_for(self.endpoint))
+
+        assert response.status_code == 200
+        assert response.json == {"venues": []}
 
 
 def _get_iframe_client(client, email=None, uai=None):

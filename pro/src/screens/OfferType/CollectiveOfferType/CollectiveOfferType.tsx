@@ -6,7 +6,7 @@ import { api } from 'apiClient/api'
 import { DMSApplicationForEAC } from 'apiClient/v1'
 import Callout from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
-import FormLayout from 'components/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import {
   COLLECTIVE_OFFER_SUBTYPE,
   OFFER_TYPES,
@@ -18,7 +18,7 @@ import strokeBookedIcon from 'icons/stroke-booked.svg'
 import duplicateOfferIcon from 'icons/stroke-duplicate-offer.svg'
 import strokeNewOfferIcon from 'icons/stroke-new-offer.svg'
 import strokeTemplateOfferIcon from 'icons/stroke-template-offer.svg'
-import { getFilteredCollectiveOffersAdapter } from 'pages/CollectiveOffers/adapters'
+import { getFilteredCollectiveOffersAdapter } from 'pages/CollectiveOffers/adapters/getFilteredCollectiveOffersAdapter'
 import { Banner } from 'ui-kit/Banners/Banner/Banner'
 import { RadioButtonWithImage } from 'ui-kit/RadioButtonWithImage/RadioButtonWithImage'
 import Spinner from 'ui-kit/Spinner/Spinner'

@@ -1,7 +1,7 @@
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
-import { OfferEducationalFormValues } from 'core/OfferEducational'
 
+import { OfferEducationalFormValues } from '../types'
 import { createCollectiveOfferPayload } from '../utils/createOfferPayload'
 
 type Params = {
@@ -30,7 +30,7 @@ const UNKNOWN_FAILING_RESPONSE: AdapterFailure<PayloadFailure> = {
   },
 }
 
-const postCollectiveOfferAdapter: PostOfferAdapter = async ({
+export const postCollectiveOfferAdapter: PostOfferAdapter = async ({
   offer,
   offerTemplateId,
 }) => {
@@ -54,5 +54,3 @@ const postCollectiveOfferAdapter: PostOfferAdapter = async ({
     return UNKNOWN_FAILING_RESPONSE
   }
 }
-
-export default postCollectiveOfferAdapter

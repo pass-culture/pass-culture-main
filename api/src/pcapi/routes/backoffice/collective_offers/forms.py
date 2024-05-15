@@ -1,6 +1,7 @@
 import decimal
 import enum
 import json
+import re
 import typing
 from urllib.parse import urlencode
 
@@ -40,31 +41,13 @@ class CollectiveOffersSearchAttributes(enum.Enum):
 operator_no_require_value = ["NOT_EXIST"]
 
 form_field_configuration = {
-    "CREATION_DATE": {
-        "field": "date",
-        "operator": [
-            "GREATER_THAN_OR_EQUAL_TO",
-            "LESS_THAN",
-        ],
-    },
+    "CREATION_DATE": {"field": "date", "operator": ["DATE_FROM", "DATE_TO", "DATE_EQUALS"]},
     "DEPARTMENT": {"field": "department", "operator": ["IN", "NOT_IN"]},
     "FORMATS": {"field": "formats", "operator": ["INTERSECTS", "NOT_INTERSECTS"]},
     "REGION": {"field": "region", "operator": ["IN", "NOT_IN"]},
-    "EVENT_DATE": {
-        "field": "date",
-        "operator": [
-            "GREATER_THAN_OR_EQUAL_TO",
-            "LESS_THAN",
-        ],
-    },
-    "BOOKING_LIMIT_DATE": {
-        "field": "date",
-        "operator": [
-            "GREATER_THAN_OR_EQUAL_TO",
-            "LESS_THAN",
-        ],
-    },
-    "ID": {"field": "integer", "operator": ["EQUALS", "NOT_EQUALS"]},
+    "EVENT_DATE": {"field": "date", "operator": ["DATE_FROM", "DATE_TO", "DATE_EQUALS"]},
+    "BOOKING_LIMIT_DATE": {"field": "date", "operator": ["DATE_FROM", "DATE_TO", "DATE_EQUALS"]},
+    "ID": {"field": "string", "operator": ["IN", "NOT_IN"]},
     "INSTITUTION": {"field": "institution", "operator": ["IN", "NOT_IN"]},
     "NAME": {"field": "string", "operator": ["CONTAINS", "NO_CONTAINS", "NAME_EQUALS", "NAME_NOT_EQUALS"]},
     "OFFERER": {"field": "offerer", "operator": ["IN", "NOT_IN"]},
@@ -114,9 +97,10 @@ class CollectiveOfferAdvancedSearchSubForm(forms_utils.PCForm):
             wtforms.validators.Optional(""),
         ],
     )
-    operator = fields.PCSelectWithPlaceholderValueField(
+    operator = fields.PCSelectField(
         "Opérateur",
         choices=forms_utils.choices_from_enum(utils.AdvancedSearchOperators),
+        default=utils.AdvancedSearchOperators.EQUALS,  # avoids empty option
         validators=[
             wtforms.validators.Optional(""),
         ],
@@ -169,9 +153,9 @@ class CollectiveOfferAdvancedSearchSubForm(forms_utils.PCForm):
         field_list_compatibility=True,
     )
     string = fields.PCOptStringField(
-        "Text",
+        "Texte",
         validators=[
-            wtforms.validators.Length(max=256, message="Doit contenir moins de %(max)d caractères"),
+            wtforms.validators.Length(max=4096, message="Doit contenir moins de %(max)d caractères"),
         ],
     )
     venue = fields.PCTomSelectField(
@@ -206,6 +190,15 @@ class CollectiveOfferAdvancedSearchSubForm(forms_utils.PCForm):
         search_inline=True,
         field_list_compatibility=True,
     )
+
+    def validate_string(self, string: fields.PCStringField) -> fields.PCStringField:
+        if string.data:
+            search_field = self._fields["search_field"].data
+
+            if search_field == "ID" and not re.match(r"^[\d\s,;]+$", string.data):
+                raise wtforms.validators.ValidationError("La liste d'ID n'est pas valide")
+
+        return string
 
 
 class GetCollectiveOfferAdvancedSearchForm(forms.GetOffersBaseFields):
@@ -278,14 +271,14 @@ class GetCollectiveOfferAdvancedSearchForm(forms.GetOffersBaseFields):
         return super().validate(extra_validators)
 
 
-class GetCollectiveOffersListForm(forms.GetOffersBaseFields):
+class GetCollectiveOfferTemplatesListForm(forms.GetOffersBaseFields):
     class Meta:
         csrf = False
 
+    q = fields.PCOptSearchField("ID, nom de l'offre")
     from_date = fields.PCDateField("Créées à partir du", validators=(wtforms.validators.Optional(),))
     to_date = fields.PCDateField("Jusqu'au", validators=(wtforms.validators.Optional(),))
     only_validated_offerers = fields.PCSwitchBooleanField("Uniquement les offres des structures validées")
-    q = fields.PCOptSearchField("ID, nom de l'offre")
     formats = fields.PCSelectMultipleField("Formats", choices=forms_utils.choices_from_enum(subcategories.EacFormat))
     offerer = fields.PCTomSelectField(
         "Structures",
@@ -301,17 +294,10 @@ class GetCollectiveOffersListForm(forms.GetOffersBaseFields):
         "États",
         choices=forms_utils.choices_from_enum(OfferValidationStatus, formatter=filters.format_offer_validation_status),
     )
-    limit = fields.PCSelectField(
-        "Nombre maximum",
-        choices=((100, "100"), (500, "500"), (1000, "1000"), (3000, "3000")),
-        default="100",
-        coerce=int,
-        validators=(wtforms.validators.Optional(),),
-    )
 
     def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
         super().__init__(*args, **kwargs)
-        self._fields.move_to_end("q", last=False)
+        self._fields.move_to_end("limit")
 
     def is_empty(self) -> bool:
         # 'only_validated_offerers', 'sort' must be combined with other filters
@@ -327,14 +313,6 @@ class GetCollectiveOffersListForm(forms.GetOffersBaseFields):
             )
         )
         return empty and super().is_empty()
-
-
-class InternalSearchForm(GetCollectiveOffersListForm, GetCollectiveOfferAdvancedSearchForm):
-    """concat of GetOffersSearchForm and GetOfferAdvancedSearchForm. this form is never displayed but it is the one
-    used to display the list of individual offers"""
-
-    class Meta:
-        csrf = False
 
 
 class EditCollectiveOfferPrice(FlaskForm):

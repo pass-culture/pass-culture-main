@@ -22,7 +22,7 @@ class EditProviderForm(FlaskForm):
         ),
     )
     booking_external_url = fields.PCOptStringField(
-        "URL de la route de validation de reservation",
+        "URL de la route de validation de réservation",
         validators=(
             wtforms.validators.Optional(""),
             wtforms.validators.URL("Doit être une URL valide"),
@@ -30,7 +30,7 @@ class EditProviderForm(FlaskForm):
         ),
     )
     cancel_external_url = fields.PCOptStringField(
-        "URL de la route d'annulation de reservation",
+        "URL de la route d'annulation de réservation",
         validators=(
             wtforms.validators.Optional(""),
             wtforms.validators.URL("Doit être une URL valide"),

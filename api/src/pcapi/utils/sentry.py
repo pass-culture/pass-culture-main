@@ -26,14 +26,14 @@ def before_send(event: "Event", _hint: dict[str, typing.Any]) -> "Event | None":
 
 
 def init_sentry_sdk() -> None:
-    if settings.IS_DEV:
+    if not settings.ENABLE_SENTRY:
         return
     sentry_sdk.init(
         dsn=settings.SENTRY_DSN,
         integrations=[FlaskIntegration(), RedisIntegration(), RqIntegration(), SqlalchemyIntegration()],
         release=read_version_from_file(),
         environment=settings.ENV,
-        traces_sample_rate=settings.SENTRY_SAMPLE_RATE,
+        traces_sample_rate=settings.SENTRY_TRACES_SAMPLE_RATE,
         before_send=before_send,
         max_value_length=8192,
     )

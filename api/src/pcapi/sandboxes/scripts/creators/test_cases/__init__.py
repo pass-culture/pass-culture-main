@@ -11,6 +11,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.offers.models import TiteliveImageType
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers.titelive_gtl import GTLS
 from pcapi.core.users import factories as users_factories
@@ -53,6 +54,7 @@ def save_test_cases_sandbox() -> None:
     create_app_beneficiary()
     create_venues_with_practical_info_graphical_edge_cases()
     create_institutional_website_offer_playlist()
+    create_product_with_multiple_images()
 
 
 def create_offers_with_gtls() -> None:
@@ -419,6 +421,7 @@ def create_venues_with_gmaps_image() -> None:
     offerers_factories.GooglePlacesInfoFactory(
         bannerUrl="https://storage.googleapis.com/passculture-metier-ehp-testing-assets-fine-grained/assets/Google_Maps_Logo_2020.png",
         venue=venue_with_user_image_and_gmaps_image,
+        bannerMeta={"html_attributions": ['<a href="http://parhumans.wordpress.com">JC mc Crae</a>']},
     )
 
     venue_without_user_image_and_with_gmaps_image = offerers_factories.VenueFactory(
@@ -429,6 +432,7 @@ def create_venues_with_gmaps_image() -> None:
     offerers_factories.GooglePlacesInfoFactory(
         bannerUrl="https://storage.googleapis.com/passculture-metier-ehp-testing-assets-fine-grained/assets/Google_Maps_Logo_2020.png",
         venue=venue_without_user_image_and_with_gmaps_image,
+        bannerMeta={"html_attributions": ['<a href="http://python.com">Average python enjoyer</a>']},
     )
     venue_with_no_images = offerers_factories.VenueFactory(
         name="Lieu sans image",
@@ -587,3 +591,19 @@ def create_institutional_website_offer_playlist() -> None:
             credit=f"Photographe {i}",
             image_as_bytes=image_path.read_bytes(),
         )
+
+
+def create_product_with_multiple_images() -> None:
+    product = offers_factories.ProductFactory(name="multiple thumbs", subcategoryId=subcategories_v2.LIVRE_PAPIER.id)
+    offer = offers_factories.OfferFactory(product=product, name=product.name, subcategoryId=product.subcategoryId)
+    offers_factories.StockFactory(offer=offer)
+    offers_factories.ProductMediationFactory(
+        product=product,
+        url="https://storage.googleapis.com/passculture-metier-ehp-testing-assets-fine-grained/thumbs/products/222A",
+        imageType=TiteliveImageType.RECTO,
+    )
+    offers_factories.ProductMediationFactory(
+        product=product,
+        url="https://storage.googleapis.com/passculture-metier-ehp-testing-assets-fine-grained/thumbs/products/222A_1",
+        imageType=TiteliveImageType.VERSO,
+    )

@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import React from 'react'
 
-import { Mode } from 'core/OfferEducational'
+import { Mode } from 'core/OfferEducational/types'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferVenueFactory,
@@ -22,7 +22,7 @@ import {
   TITLE_LABEL,
   VENUE_LABEL,
 } from '../constants/labels'
-import OfferEducational, { OfferEducationalProps } from '../OfferEducational'
+import { OfferEducational, OfferEducationalProps } from '../OfferEducational'
 
 describe('screens | OfferEducational', () => {
   let props: OfferEducationalProps

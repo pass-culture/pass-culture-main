@@ -12,6 +12,7 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import OfferReport
+from pcapi.core.offers.models import TiteliveImageType
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.testing import assert_no_duplicated_queries
@@ -113,6 +114,8 @@ class OffersTest:
             response = client.get(f"/native/v1/offer/{offer_id}")
 
         assert response.status_code == 200
+
+        print(response.json)
 
         assert response.json["id"] == offer.id
         assert response.json["accessibility"] == {
@@ -550,6 +553,702 @@ class OffersTest:
         assert len(response.json["stocks"]) == 1
         assert len(offer.stocks) == 2
 
+    def test_get_offer_with_product_mediation_and_thumb(self, client):
+        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.CARTE_MUSEE.id)
+        offers_factories.ProductMediationFactory(
+            product=product, url="https://url.com", imageType=TiteliveImageType.RECTO
+        )
+        offer = offers_factories.OfferFactory(
+            product=product, venue__isPermanent=True, subcategoryId=subcategories.CARTE_MUSEE.id
+        )
+        offers_factories.ThingStockFactory(offer=offer, price=12.34)
+
+        offer_id = offer.id
+        with assert_no_duplicated_queries():
+            response = client.get(f"/native/v1/offer/{offer_id}")
+
+        assert response.status_code == 200
+        assert response.json["image"] == {
+            "url": "https://url.com",
+            "credit": None,
+        }
+
+    def test_get_offer_with_two_product_mediation(self, client):
+        product = offers_factories.ProductFactory(thumbCount=0, subcategoryId=subcategories.CARTE_MUSEE.id)
+        offers_factories.ProductMediationFactory(
+            product=product, url="https://url.com/recto", imageType=TiteliveImageType.RECTO
+        )
+        offers_factories.ProductMediationFactory(
+            product=product, url="https://url.com/verso", imageType=TiteliveImageType.VERSO
+        )
+        offer = offers_factories.OfferFactory(
+            product=product, venue__isPermanent=True, subcategoryId=subcategories.CARTE_MUSEE.id
+        )
+        offers_factories.ThingStockFactory(offer=offer, price=12.34)
+
+        offer_id = offer.id
+        with assert_no_duplicated_queries():
+            response = client.get(f"/native/v1/offer/{offer_id}")
+
+        assert response.status_code == 200
+        assert response.json["image"] == {
+            "url": "https://url.com/recto",
+            "credit": None,
+        }
+
+    def test_get_offer_with_thumb_only(self, client):
+        product = offers_factories.ProductFactory(id=111, thumbCount=1, subcategoryId=subcategories.CARTE_MUSEE.id)
+        offer = offers_factories.OfferFactory(
+            product=product, venue__isPermanent=True, subcategoryId=subcategories.CARTE_MUSEE.id
+        )
+        offers_factories.ThingStockFactory(offer=offer, price=12.34)
+
+        offer_id = offer.id
+        with assert_no_duplicated_queries():
+            response = client.get(f"/native/v1/offer/{offer_id}")
+
+        assert response.status_code == 200
+        assert response.json["image"] == {
+            "url": "http://localhost/storage/thumbs/products/N4",
+            "credit": None,
+        }
+
+    def test_get_offer_with_mediation_and_product_mediation(self, client):
+        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.CARTE_MUSEE.id)
+        offers_factories.ProductMediationFactory(
+            product=product, url="https://url.com", imageType=TiteliveImageType.RECTO
+        )
+        offer = offers_factories.OfferFactory(
+            product=product, venue__isPermanent=True, subcategoryId=subcategories.CARTE_MUSEE.id
+        )
+        offers_factories.ThingStockFactory(offer=offer, price=12.34)
+        offers_factories.MediationFactory(id=111, offer=offer, thumbCount=2, credit="street credit")
+
+        offer_id = offer.id
+        with assert_no_duplicated_queries():
+            response = client.get(f"/native/v1/offer/{offer_id}")
+
+        assert response.status_code == 200
+        assert response.json["image"] == {
+            "url": "http://localhost/storage/thumbs/mediations/N4_1",
+            "credit": "street credit",
+        }
+
+
+class OffersV2Test:
+    @time_machine.travel("2020-01-01", tick=False)
+    def test_get_event_offer(self, client):
+        extra_data = {
+            "allocineId": 12345,
+            "author": "mandibule",
+            "ean": "3838",
+            "musicSubType": "502",
+            "musicType": "501",
+            "performer": "interprète",
+            "showSubType": "101",
+            "showType": "100",
+            "stageDirector": "metteur en scène",
+            "speaker": "intervenant",
+            "visa": "vasi",
+            "genres": ["ACTION", "DRAMA"],
+            "cast": ["cast1", "cast2"],
+            "editeur": "editeur",
+            "gtl_id": "01030000",
+            "releaseDate": "2020-01-01",
+        }
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            isDuo=True,
+            description="desk cryption",
+            name="l'offre du siècle",
+            withdrawalDetails="modalité de retrait",
+            extraData=extra_data,
+            durationMinutes=33,
+            visualDisabilityCompliant=True,
+            externalTicketOfficeUrl="https://url.com",
+            venue__name="il est venu le temps des names",
+        )
+        offers_factories.MediationFactory(id=111, offer=offer, thumbCount=1, credit="street credit")
+
+        bookable_stock = offers_factories.EventStockFactory(
+            offer=offer,
+            price=12.34,
+            quantity=2,
+            priceCategory__priceCategoryLabel__label="bookable",
+            features=[
+                cinema_providers_constants.ShowtimeFeatures.VF.value,
+                cinema_providers_constants.ShowtimeFeatures.THREE_D.value,
+                cinema_providers_constants.ShowtimeFeatures.ICE.value,
+            ],
+        )
+        another_bookable_stock = offers_factories.EventStockFactory(
+            offer=offer,
+            price=12.34,
+            quantity=3,
+            priceCategory=bookable_stock.priceCategory,
+            features=[
+                cinema_providers_constants.ShowtimeFeatures.VO.value,
+                cinema_providers_constants.ShowtimeFeatures.THREE_D.value,
+            ],
+        )
+        expired_stock = offers_factories.EventStockFactory(
+            offer=offer,
+            price=45.67,
+            beginningDatetime=datetime.utcnow() - timedelta(days=1),
+            priceCategory__priceCategoryLabel__label="expired",
+            features=[
+                cinema_providers_constants.ShowtimeFeatures.VF.value,
+                cinema_providers_constants.ShowtimeFeatures.ICE.value,
+            ],
+        )
+        exhausted_stock = offers_factories.EventStockFactory(
+            offer=offer,
+            price=89.00,
+            quantity=1,
+            priceCategory__priceCategoryLabel__label="exhausted",
+            features=[cinema_providers_constants.ShowtimeFeatures.VO.value],
+        )
+
+        BookingFactory(stock=bookable_stock, user__deposit__expirationDate=datetime(year=2031, month=12, day=31))
+        BookingFactory(stock=exhausted_stock, user__deposit__expirationDate=datetime(year=2031, month=12, day=31))
+
+        offer_id = offer.id
+        with assert_no_duplicated_queries():
+            response = client.get(f"/native/v2/offer/{offer_id}")
+
+        assert response.status_code == 200
+
+        assert response.json["id"] == offer.id
+        assert response.json["accessibility"] == {
+            "audioDisability": False,
+            "mentalDisability": False,
+            "motorDisability": False,
+            "visualDisability": True,
+        }
+        assert sorted(response.json["stocks"], key=lambda stock: stock["id"]) == sorted(
+            [
+                {
+                    "id": bookable_stock.id,
+                    "price": 1234,
+                    "beginningDatetime": "2020-01-31T00:00:00Z",
+                    "bookingLimitDatetime": "2020-01-30T23:00:00Z",
+                    "cancellationLimitDatetime": "2020-01-03T00:00:00Z",
+                    "features": ["VF", "3D", "ICE"],
+                    "isBookable": True,
+                    "isForbiddenToUnderage": False,
+                    "isSoldOut": False,
+                    "isExpired": False,
+                    "activationCode": None,
+                    "priceCategoryLabel": "bookable",
+                    "remainingQuantity": 1,
+                },
+                {
+                    "id": another_bookable_stock.id,
+                    "price": 1234,
+                    "beginningDatetime": "2020-01-31T00:00:00Z",
+                    "bookingLimitDatetime": "2020-01-30T23:00:00Z",
+                    "cancellationLimitDatetime": "2020-01-03T00:00:00Z",
+                    "features": ["VO", "3D"],
+                    "isBookable": True,
+                    "isForbiddenToUnderage": False,
+                    "isSoldOut": False,
+                    "isExpired": False,
+                    "activationCode": None,
+                    "priceCategoryLabel": "bookable",
+                    "remainingQuantity": 3,
+                },
+                {
+                    "id": expired_stock.id,
+                    "price": 4567,
+                    "beginningDatetime": "2019-12-31T00:00:00Z",
+                    "bookingLimitDatetime": "2019-12-30T23:00:00Z",
+                    "cancellationLimitDatetime": "2020-01-01T00:00:00Z",
+                    "features": ["VF", "ICE"],
+                    "isBookable": False,
+                    "isForbiddenToUnderage": False,
+                    "isSoldOut": True,
+                    "isExpired": True,
+                    "activationCode": None,
+                    "priceCategoryLabel": "expired",
+                    "remainingQuantity": 1000,
+                },
+                {
+                    "id": exhausted_stock.id,
+                    "price": 8900,
+                    "beginningDatetime": "2020-01-31T00:00:00Z",
+                    "bookingLimitDatetime": "2020-01-30T23:00:00Z",
+                    "cancellationLimitDatetime": "2020-01-03T00:00:00Z",
+                    "features": ["VO"],
+                    "isBookable": False,
+                    "isForbiddenToUnderage": False,
+                    "isSoldOut": True,
+                    "isExpired": False,
+                    "activationCode": None,
+                    "priceCategoryLabel": "exhausted",
+                    "remainingQuantity": 0,
+                },
+            ],
+            key=lambda stock: stock["id"],
+        )
+        assert response.json["description"] == "desk cryption"
+        assert response.json["externalTicketOfficeUrl"] == "https://url.com"
+        assert response.json["expenseDomains"] == ["all"]
+        assert response.json["extraData"] == {
+            "allocineId": 12345,
+            "author": "mandibule",
+            "ean": "3838",
+            "durationMinutes": 33,
+            "musicSubType": "Acid Jazz",
+            "musicType": "Jazz",
+            "performer": "interprète",
+            "showSubType": "Carnaval",
+            "showType": "Arts de la rue",
+            "speaker": "intervenant",
+            "stageDirector": "metteur en scène",
+            "visa": "vasi",
+            "genres": ["Action", "Drame"],
+            "cast": ["cast1", "cast2"],
+            "editeur": "editeur",
+            "gtlLabels": {
+                "label": "Œuvres classiques",
+                "level01Label": "Littérature",
+                "level02Label": "Œuvres classiques",
+                "level03Label": None,
+                "level04Label": None,
+            },
+            "releaseDate": "2020-01-01",
+        }
+        assert response.json["images"] == {
+            "recto": {
+                "url": "http://localhost/storage/thumbs/mediations/N4",
+                "credit": "street credit",
+            }
+        }
+        assert response.json["isExpired"] is False
+        assert response.json["isForbiddenToUnderage"] is False
+        assert response.json["isSoldOut"] is False
+        assert response.json["isDuo"] is True
+        assert response.json["isEducational"] is False
+        assert response.json["isDigital"] is False
+        assert response.json["isReleased"] is True
+        assert response.json["name"] == "l'offre du siècle"
+        assert response.json["subcategoryId"] == subcategories.SEANCE_CINE.id
+        assert response.json["venue"] == {
+            "id": offer.venue.id,
+            "address": "1 boulevard Poissonnière",
+            "city": "Paris",
+            "coordinates": {
+                "latitude": 48.87004,
+                "longitude": 2.3785,
+            },
+            "name": "il est venu le temps des names",
+            "offerer": {"name": offer.venue.managingOfferer.name},
+            "postalCode": "75000",
+            "publicName": "il est venu le temps des names",
+            "isPermanent": False,
+            "timezone": "Europe/Paris",
+            "bannerUrl": offer.venue.bannerUrl,
+        }
+        assert response.json["withdrawalDetails"] == "modalité de retrait"
+
+    def test_get_offer_with_unlimited_stock(self, client):
+        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.CARTE_MUSEE.id)
+        offer = offers_factories.OfferFactory(product=product, venue__isPermanent=True)
+        offers_factories.ThingStockFactory(offer=offer, price=12.34, quantity=None)
+
+        with assert_no_duplicated_queries():
+            response = client.get(f"/native/v2/offer/{offer.id}")
+
+        assert response.status_code == 200
+        assert response.json["stocks"][0]["remainingQuantity"] is None
+
+    def test_get_thing_offer(self, client):
+        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.CARTE_MUSEE.id)
+        offer = offers_factories.OfferFactory(
+            product=product, venue__isPermanent=True, subcategoryId=subcategories.CARTE_MUSEE.id
+        )
+        offers_factories.ThingStockFactory(offer=offer, price=12.34)
+
+        offer_id = offer.id
+        with assert_no_duplicated_queries():
+            response = client.get(f"/native/v2/offer/{offer_id}")
+
+        assert response.status_code == 200
+        assert not response.json["stocks"][0]["beginningDatetime"]
+        assert response.json["stocks"][0]["price"] == 1234
+        assert response.json["stocks"][0]["priceCategoryLabel"] is None
+        assert response.json["stocks"][0]["remainingQuantity"] == 1000
+        assert response.json["subcategoryId"] == "CARTE_MUSEE"
+        assert response.json["isEducational"] is False
+        assert not response.json["isExpired"]
+        assert response.json["venue"]["isPermanent"]
+        assert response.json["stocks"][0]["features"] == []
+
+    @pytest.mark.parametrize(
+        "provider_class,ff_name,ff_value,booking_disabled",
+        [
+            ("EMSStocks", "DISABLE_EMS_EXTERNAL_BOOKINGS", True, True),
+            ("EMSStocks", "DISABLE_EMS_EXTERNAL_BOOKINGS", False, False),
+            ("CGRStocks", "DISABLE_CGR_EXTERNAL_BOOKINGS", True, True),
+            ("CGRStocks", "DISABLE_CGR_EXTERNAL_BOOKINGS", False, False),
+            ("CDSStocks", "DISABLE_CDS_EXTERNAL_BOOKINGS", True, True),
+            ("CDSStocks", "DISABLE_CDS_EXTERNAL_BOOKINGS", False, False),
+            ("BoostStocks", "DISABLE_BOOST_EXTERNAL_BOOKINGS", True, True),
+            ("BoostStocks", "DISABLE_BOOST_EXTERNAL_BOOKINGS", False, False),
+            ("BoostStocks", "DISABLE_EMS_EXTERNAL_BOOKINGS", True, False),
+        ],
+    )
+    def test_offer_external_booking_is_disabled_by_ff(
+        self, client, provider_class, ff_name, ff_value, booking_disabled
+    ):
+        provider = get_provider_by_local_class(provider_class)
+        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.SEANCE_CINE.id)
+        offer = offers_factories.OfferFactory(
+            product=product,
+            venue__isPermanent=True,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            lastProvider=provider,
+        )
+        providers_factories.VenueProviderFactory(venue=offer.venue, provider=provider)
+
+        offer_id = offer.id
+        with override_features(**{ff_name: ff_value}):
+            with assert_no_duplicated_queries():
+                response = client.get(f"/native/v2/offer/{offer_id}")
+
+        assert response.status_code == 200
+        assert response.json["isExternalBookingsDisabled"] is booking_disabled
+
+    def test_get_digital_offer_with_available_activation_and_no_expiration_date(self, client):
+        # given
+        stock = offers_factories.StockWithActivationCodesFactory()
+        offer_id = stock.offer.id
+
+        # when
+        with assert_no_duplicated_queries():
+            response = client.get(f"/native/v2/offer/{offer_id}")
+
+        # then
+        assert response.status_code == 200
+        assert response.json["stocks"][0]["activationCode"] == {"expirationDate": None}
+
+    def test_get_digital_offer_with_available_activation_code_and_expiration_date(self, client):
+        # given
+        stock = offers_factories.StockWithActivationCodesFactory(activationCodes__expirationDate=datetime(2050, 1, 1))
+        offer_id = stock.offer.id
+
+        # when
+        with assert_no_duplicated_queries():
+            response = client.get(f"/native/v2/offer/{offer_id}")
+
+        # then
+        assert response.status_code == 200
+        assert response.json["stocks"][0]["activationCode"] == {"expirationDate": "2050-01-01T00:00:00Z"}
+
+    def test_get_digital_offer_without_available_activation_code(self, client):
+        # given
+        stock = offers_factories.StockWithActivationCodesFactory(activationCodes__expirationDate=datetime(2000, 1, 1))
+        offer_id = stock.offer.id
+
+        # when
+        with assert_no_duplicated_queries():
+            response = client.get(f"/native/v2/offer/{offer_id}")
+
+        # then
+        assert response.status_code == 200
+        assert response.json["stocks"][0]["activationCode"] is None
+
+    @time_machine.travel("2020-01-01")
+    def test_get_expired_offer(self, client):
+        stock = offers_factories.EventStockFactory(beginningDatetime=datetime.utcnow() - timedelta(days=1))
+
+        offer_id = stock.offer.id
+        with assert_no_duplicated_queries():
+            response = client.get(f"/native/v2/offer/{offer_id}")
+
+        assert response.json["isExpired"]
+
+    def test_get_offer_not_found(self, client):
+        response = client.get("/native/v2/offer/1")
+
+        assert response.status_code == 404
+
+    @pytest.mark.parametrize(
+        "validation", [OfferValidationStatus.DRAFT, OfferValidationStatus.PENDING, OfferValidationStatus.REJECTED]
+    )
+    def test_get_non_approved_offer(self, client, validation):
+        offer = offers_factories.OfferFactory(validation=validation)
+
+        with assert_no_duplicated_queries():
+            response = client.get(f"/native/v2/offer/{offer.id}")
+            assert response.status_code == 404
+
+    @override_features(ENABLE_CDS_IMPLEMENTATION=True)
+    @patch("pcapi.core.offers.api.external_bookings_api.get_shows_stock")
+    def test_get_cds_sync_offer_updates_stock(self, mocked_get_shows_stock, client):
+        movie_id = 54
+        show_id = 5008
+
+        mocked_get_shows_stock.return_value = {5008: 0}
+        cds_provider = get_provider_by_local_class("CDSStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider)
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            idAtProvider=venue_provider.venueIdAtOfferProvider,
+        )
+        providers_factories.CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
+
+        offer_id_at_provider = f"{movie_id}%{venue_provider.venue.siret}"
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            idAtProvider=offer_id_at_provider,
+            lastProviderId=venue_provider.providerId,
+            venue=venue_provider.venue,
+        )
+        stock = offers_factories.EventStockFactory(
+            offer=offer,
+            idAtProviders=f"{offer_id_at_provider}#{show_id}/2022-12-03",
+        )
+
+        response = client.get(f"/native/v2/offer/{offer.id}")
+
+        assert stock.remainingQuantity == 0
+        assert response.json["stocks"][0]["isSoldOut"]
+
+    @time_machine.travel("2023-01-01")
+    @override_features(ENABLE_BOOST_API_INTEGRATION=True)
+    @patch("pcapi.connectors.boost.requests.get")
+    def test_get_boost_sync_offer_updates_stock(self, request_get, client):
+        movie_id = 207
+        first_show_id = 36683
+        will_be_sold_out_show = 36684
+
+        response_return_value = mock.MagicMock(status_code=200, text="", headers={"Content-Type": "application/json"})
+        response_return_value.json = mock.MagicMock(
+            return_value=boost_fixtures.ShowtimesWithFilmIdEndpointResponse.PAGE_1_JSON_DATA_3_SHOWTIMES
+        )
+        request_get.return_value = response_return_value
+
+        boost_provider = get_provider_by_local_class("BoostStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=boost_provider)
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            idAtProvider=venue_provider.venueIdAtOfferProvider,
+        )
+        providers_factories.BoostCinemaDetailsFactory(
+            cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/"
+        )
+        offer_id_at_provider = f"{movie_id}%{venue_provider.venueId}%Boost"
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            idAtProvider=offer_id_at_provider,
+            lastProviderId=venue_provider.providerId,
+            venue=venue_provider.venue,
+        )
+        first_show_stock = offers_factories.EventStockFactory(
+            offer=offer, idAtProviders=f"{offer_id_at_provider}#{first_show_id}", quantity=96
+        )
+        will_be_sold_out_show_stock = offers_factories.EventStockFactory(
+            offer=offer, idAtProviders=f"{offer_id_at_provider}#{will_be_sold_out_show}", quantity=96
+        )
+
+        response = client.get(f"/native/v2/offer/{offer.id}")
+        assert response.status_code == 200
+        assert first_show_stock.remainingQuantity == 96
+        assert will_be_sold_out_show_stock.remainingQuantity == 0
+
+    @override_features(ENABLE_CGR_INTEGRATION=True)
+    def test_get_cgr_sync_offer_updates_stock(self, requests_mock, client):
+        allocine_movie_id = 234099
+        still_scheduled_show = 182021
+        descheduled_show = 182022
+        requests_mock.get(
+            "https://cgr-cinema-0.example.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION
+        )
+        requests_mock.post(
+            "https://cgr-cinema-0.example.com/web_service",
+            text=cgr_fixtures.cgr_response_template([cgr_fixtures.FILM_234099_WITH_THREE_SEANCES]),
+        )
+
+        cgr_provider = get_provider_by_local_class("CGRStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=cgr_provider)
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            idAtProvider=venue_provider.venueIdAtOfferProvider,
+        )
+        providers_factories.CGRCinemaDetailsFactory(
+            cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cgr-cinema-0.example.com/web_service"
+        )
+        offer_id_at_provider = f"{allocine_movie_id}%{venue_provider.venueId}%CGR"
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            idAtProvider=offer_id_at_provider,
+            lastProviderId=venue_provider.providerId,
+            venue=venue_provider.venue,
+        )
+        still_scheduled_show_stock = offers_factories.EventStockFactory(
+            offer=offer, idAtProviders=f"{offer_id_at_provider}#{still_scheduled_show}", quantity=95
+        )
+        descheduled_show_stock = offers_factories.EventStockFactory(
+            offer=offer, idAtProviders=f"{offer_id_at_provider}#{descheduled_show}", quantity=95
+        )
+
+        response = client.get(f"/native/v2/offer/{offer.id}")
+
+        assert response.status_code == 200
+        assert still_scheduled_show_stock.remainingQuantity == 95
+        assert descheduled_show_stock.remainingQuantity == 0
+
+    @override_features(ENABLE_CDS_IMPLEMENTATION=True)
+    def test_get_inactive_cinema_provider_offer(self, client):
+        cds_provider = get_provider_by_local_class("CDSStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider, isActive=False)
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            idAtProvider=venue_provider.venueIdAtOfferProvider,
+        )
+        providers_factories.CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            idAtProvider="toto",
+            lastProviderId=venue_provider.providerId,
+            venue=venue_provider.venue,
+        )
+        offers_factories.EventStockFactory(offer=offer, idAtProviders="toto")
+
+        response = client.get(f"/native/v2/offer/{offer.id}")
+
+        assert response.json["isReleased"] is False
+        assert offer.isActive is False
+
+    def should_have_metadata_describing_the_offer(self, client):
+        offer = offers_factories.ThingOfferFactory()
+
+        response = client.get(f"/native/v2/offer/{offer.id}")
+
+        assert isinstance(response.json["metadata"], dict)
+        assert response.json["metadata"]["@type"] == "Product"
+
+    def should_not_return_soft_deleted_offer(self, client):
+        offer = offers_factories.OfferFactory()
+        offers_factories.StockFactory(offer=offer, quantity=1, isSoftDeleted=True)
+        non_deleted_stock = offers_factories.StockFactory(offer=offer, quantity=1)
+
+        with assert_no_duplicated_queries():
+            response = client.get(f"/native/v2/offer/{offer.id}")
+
+        assert response.status_code == 200
+        assert len(response.json["stocks"]) == 1
+        assert response.json["stocks"][0]["id"] == non_deleted_stock.id
+
+    def should_not_update_offer_stocks_when_getting_offer(self, client):
+        offer = offers_factories.OfferFactory()
+        offers_factories.StockFactory(offer=offer, quantity=1, isSoftDeleted=True)
+        offers_factories.StockFactory(offer=offer, quantity=1)
+
+        response = client.get(f"/native/v2/offer/{offer.id}")
+
+        assert response.status_code == 200
+        assert len(response.json["stocks"]) == 1
+        assert len(offer.stocks) == 2
+
+    def test_get_offer_with_product_mediation_and_thumb(self, client):
+        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.CARTE_MUSEE.id)
+        offers_factories.ProductMediationFactory(
+            product=product, url="https://url.com", imageType=TiteliveImageType.RECTO
+        )
+        offer = offers_factories.OfferFactory(
+            product=product, venue__isPermanent=True, subcategoryId=subcategories.CARTE_MUSEE.id
+        )
+        offers_factories.ThingStockFactory(offer=offer, price=12.34)
+
+        offer_id = offer.id
+        with assert_no_duplicated_queries():
+            response = client.get(f"/native/v2/offer/{offer_id}")
+
+        assert response.status_code == 200
+        assert response.json["images"] == {
+            "recto": {
+                "url": "https://url.com",
+                "credit": None,
+            }
+        }
+
+    def test_get_offer_with_two_product_mediation(self, client):
+        product = offers_factories.ProductFactory(thumbCount=0, subcategoryId=subcategories.CARTE_MUSEE.id)
+        offers_factories.ProductMediationFactory(
+            product=product, url="https://url.com/recto", imageType=TiteliveImageType.RECTO
+        )
+        offers_factories.ProductMediationFactory(
+            product=product, url="https://url.com/verso", imageType=TiteliveImageType.VERSO
+        )
+        offer = offers_factories.OfferFactory(
+            product=product, venue__isPermanent=True, subcategoryId=subcategories.CARTE_MUSEE.id
+        )
+        offers_factories.ThingStockFactory(offer=offer, price=12.34)
+
+        offer_id = offer.id
+        with assert_no_duplicated_queries():
+            response = client.get(f"/native/v2/offer/{offer_id}")
+
+        assert response.status_code == 200
+        assert response.json["images"] == {
+            "recto": {
+                "url": "https://url.com/recto",
+                "credit": None,
+            },
+            "verso": {
+                "url": "https://url.com/verso",
+                "credit": None,
+            },
+        }
+
+    def test_get_offer_with_thumb_only(self, client):
+        product = offers_factories.ProductFactory(id=111, thumbCount=1, subcategoryId=subcategories.CARTE_MUSEE.id)
+        offer = offers_factories.OfferFactory(
+            product=product, venue__isPermanent=True, subcategoryId=subcategories.CARTE_MUSEE.id
+        )
+        offers_factories.ThingStockFactory(offer=offer, price=12.34)
+
+        offer_id = offer.id
+        with assert_no_duplicated_queries():
+            response = client.get(f"/native/v2/offer/{offer_id}")
+
+        assert response.status_code == 200
+        assert response.json["images"] == {
+            "recto": {
+                "url": "http://localhost/storage/thumbs/products/N4",
+                "credit": None,
+            }
+        }
+
+    def test_get_offer_with_mediation_and_product_mediation(self, client):
+        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.CARTE_MUSEE.id)
+        offers_factories.ProductMediationFactory(
+            product=product, url="https://url.com", imageType=TiteliveImageType.RECTO
+        )
+        offer = offers_factories.OfferFactory(
+            product=product, venue__isPermanent=True, subcategoryId=subcategories.CARTE_MUSEE.id
+        )
+        offers_factories.ThingStockFactory(offer=offer, price=12.34)
+        offers_factories.MediationFactory(id=111, offer=offer, thumbCount=2, credit="street credit")
+
+        offer_id = offer.id
+        with assert_no_duplicated_queries():
+            response = client.get(f"/native/v2/offer/{offer_id}")
+
+        assert response.status_code == 200
+        assert response.json["images"] == {
+            "recto": {
+                "url": "http://localhost/storage/thumbs/mediations/N4_1",
+                "credit": "street credit",
+            }
+        }
+
 
 class OffersStocksTest:
     def test_return_empty_on_empty_request(self, client):
@@ -640,10 +1339,11 @@ class OffersStocksTest:
             response = client.post("/native/v1/offers/stocks", json=payload)
 
         # For the test to be deterministic
-        response.json["offers"][0]["stocks"].sort(key=lambda stock: stock["id"])
+        response_offer = response.json["offers"][0]
+        response_offer["stocks"].sort(key=lambda stock: stock["id"])
 
         assert response.status_code == 200
-        assert response.json["offers"][0] == {
+        assert response_offer == {
             "durationMinutes": 33,
             "extraData": {
                 "allocineId": 12345,
@@ -1135,7 +1835,7 @@ class SubcategoriesTest:
                     {
                         "children": [
                             {
-                                "label": "Romances",
+                                "label": "Romance",
                                 "gtls": [
                                     {"code": "01020600", "label": "Roman sentimental", "level": 3},
                                     {"code": "92000000", "label": "Romance", "level": 1},

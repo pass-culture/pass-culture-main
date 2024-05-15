@@ -1,34 +1,39 @@
 import { useNavigate } from 'react-router-dom'
+import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
 import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
-import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
+import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
+import { GET_COLLECTIVE_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
+import { getStockCollectiveOfferAdapter } from 'core/OfferEducational/adapters/getStockCollectiveOfferAdapter'
 import {
-  Mode,
-  OfferEducationalStockFormValues,
-  createPatchStockDataPayload,
-  extractInitialStockValues,
-  getStockCollectiveOfferAdapter,
   isCollectiveOfferTemplate,
-} from 'core/OfferEducational'
+  OfferEducationalStockFormValues,
+  Mode,
+} from 'core/OfferEducational/types'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
-import { FORM_ERROR_MESSAGE, PATCH_SUCCESS_MESSAGE } from 'core/shared'
+import { createPatchStockDataPayload } from 'core/OfferEducational/utils/createPatchStockDataPayload'
+import { extractInitialStockValues } from 'core/OfferEducational/utils/extractInitialStockValues'
+import {
+  FORM_ERROR_MESSAGE,
+  PATCH_SUCCESS_MESSAGE,
+} from 'core/shared/constants'
 import useNotification from 'hooks/useNotification'
 import {
   MandatoryCollectiveOfferFromParamsProps,
   withCollectiveOfferFromParams,
 } from 'screens/OfferEducational/useCollectiveOfferFromParams'
-import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
+import { OfferEducationalStock } from 'screens/OfferEducationalStock/OfferEducationalStock'
 
 const CollectiveOfferStockEdition = ({
   offer,
-  reloadCollectiveOffer,
   isTemplate,
 }: MandatoryCollectiveOfferFromParamsProps): JSX.Element => {
   const notify = useNotification()
   const navigate = useNavigate()
+  const { mutate } = useSWRConfig()
 
   if (isCollectiveOfferTemplate(offer)) {
     throw new Error('Impossible de mettre à jour le stock d’une offre vitrine.')
@@ -66,7 +71,7 @@ const CollectiveOfferStockEdition = ({
       return notify.error(offerResponse.message)
     }
 
-    await reloadCollectiveOffer()
+    await mutate([GET_COLLECTIVE_OFFER_QUERY_KEY, offer.id])
     navigate(
       `/offre/${computeURLCollectiveOfferId(
         offer.id,
@@ -77,9 +82,9 @@ const CollectiveOfferStockEdition = ({
   }
 
   return (
-    <AppLayout>
+    <AppLayout layout="sticky-actions">
       <CollectiveOfferLayout subTitle={offer.name} isTemplate={isTemplate}>
-        <OfferEducationalStockScreen
+        <OfferEducationalStock
           initialValues={initialValues}
           mode={
             offer.collectiveStock?.isEducationalStockEditable
@@ -88,7 +93,6 @@ const CollectiveOfferStockEdition = ({
           }
           offer={offer}
           onSubmit={handleSubmitStock}
-          reloadCollectiveOffer={reloadCollectiveOffer}
         />
       </CollectiveOfferLayout>
     </AppLayout>

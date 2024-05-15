@@ -1,6 +1,6 @@
 import { api } from 'apiClient/api'
 
-import { GetStockOfferSuccessPayload } from '../'
+import { GetStockOfferSuccessPayload } from '../types'
 
 type PayloadFailure = null
 type GetStockCollectiveOfferAdapter = Adapter<

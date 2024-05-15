@@ -45,6 +45,39 @@
     </div>
   </form>
 {% endmacro %}
+{% macro build_advanced_filters_form(form, action) %}
+  <form action="{{ action }}"
+        name="{{ action | action_to_name }}"
+        method="get"
+        class="mb-4 mt-3">
+    <div class="row">
+      <div class="col-8">
+        {% set right_fields = [] %}
+        <div class="input-group mb-3 px-1 w-100">
+          {% for form_field in form %}
+            {% if form_field.type in ("HiddenField", "PCFieldListField") %}
+              {{ form_field }}
+            {% else %}
+              {% set _ = right_fields.append(form_field) %}
+            {% endif %}
+          {% endfor %}
+        </div>
+        <div class="px-1 py-1 text-center">
+          <button type="submit"
+                  class="btn btn-primary">Appliquer</button>
+        </div>
+      </div>
+      <div class="col-4 py-2">
+        {% for form_field in right_fields %}<div class="input-group mb-3 px-1">{{ form_field }}</div>{% endfor %}
+      </div>
+    </div>
+    <div class="w-100 my-4">
+      {% for form_field in form %}
+        {% for error in form_field.errors %}<p class="text-warning lead">{{ error }}</p>{% endfor %}
+      {% endfor %}
+    </div>
+  </form>
+{% endmacro %}
 {% macro build_form_fields_group(form) %}
   <div class="form-group">
     {% for form_field in form %}

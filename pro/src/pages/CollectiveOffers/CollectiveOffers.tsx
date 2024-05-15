@@ -3,64 +3,45 @@ import { useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import {
-  CollectiveOfferDisplayedStatus,
-  GetOffererResponseModel,
-} from 'apiClient/v1'
+import { CollectiveOfferDisplayedStatus } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
-import { getOffererAdapter } from 'core/Offers/adapters'
+import {
+  GET_COLLECTIVE_OFFERS_QUERY_KEY,
+  GET_OFFERER_QUERY_KEY,
+} from 'config/swrQueryKeys'
 import { DEFAULT_PAGE, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
 import { SearchFiltersParams } from 'core/Offers/types'
-import {
-  hasSearchFilters,
-  computeCollectiveOffersUrl,
-  serializeApiFilters,
-} from 'core/Offers/utils'
+import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeOffersUrl'
+import { hasSearchFilters } from 'core/Offers/utils/hasSearchFilters'
+import { serializeApiFilters } from 'core/Offers/utils/serializer'
 import { Audience } from 'core/shared/types'
-import getVenuesForOffererAdapter from 'core/Venue/adapters/getVenuesForOffererAdapter'
+import { getVenuesForOffererAdapter } from 'core/Venue/adapters/getVenuesForOffererAdapter/getVenuesForOffererAdapter'
 import { SelectOption } from 'custom_types/form'
 import useCurrentUser from 'hooks/useCurrentUser'
-import useNotification from 'hooks/useNotification'
 import { formatAndOrderVenues } from 'repository/venuesService'
-import OffersScreen from 'screens/Offers'
+import { Offers } from 'screens/Offers/Offers'
 import Spinner from 'ui-kit/Spinner/Spinner'
-
-export const GET_COLLECTIVE_OFFERS_QUERY_KEY = 'getCollectiveOffers'
 
 export const CollectiveOffers = (): JSX.Element => {
   const urlSearchFilters = useQuerySearchFilters()
   const currentPageNumber = urlSearchFilters.page ?? DEFAULT_PAGE
-  const notify = useNotification()
   const navigate = useNavigate()
   const { currentUser } = useCurrentUser()
 
-  const [offerer, setOfferer] = useState<GetOffererResponseModel | null>(null)
   const [initialSearchFilters, setInitialSearchFilters] =
     useState<SearchFiltersParams | null>(null)
   const [venues, setVenues] = useState<SelectOption[]>([])
 
-  useEffect(() => {
-    const loadOfferer = async () => {
-      if (
-        urlSearchFilters.offererId &&
-        urlSearchFilters.offererId !== DEFAULT_SEARCH_FILTERS.offererId
-      ) {
-        const { isOk, message, payload } = await getOffererAdapter(
-          urlSearchFilters.offererId
-        )
-
-        if (!isOk) {
-          return notify.error(message)
-        }
-
-        setOfferer(payload)
-      }
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    loadOfferer()
-  }, [urlSearchFilters.offererId, notify])
+  const offererQuery = useSWR(
+    [GET_OFFERER_QUERY_KEY, urlSearchFilters.offererId],
+    ([, offererIdParam]) =>
+      urlSearchFilters.offererId === DEFAULT_SEARCH_FILTERS.offererId
+        ? null
+        : api.getOfferer(Number(offererIdParam)),
+    { fallbackData: null }
+  )
+  const offerer = offererQuery.data
 
   useEffect(() => {
     const loadAllVenuesByProUser = async () => {
@@ -138,7 +119,7 @@ export const CollectiveOffers = (): JSX.Element => {
       {!initialSearchFilters || offersQuery.isLoading ? (
         <Spinner />
       ) : (
-        <OffersScreen
+        <Offers
           audience={Audience.COLLECTIVE}
           currentPageNumber={currentPageNumber}
           currentUser={currentUser}
@@ -147,7 +128,6 @@ export const CollectiveOffers = (): JSX.Element => {
           offerer={offerer}
           offers={offersQuery.data}
           redirectWithUrlFilters={redirectWithUrlFilters}
-          setOfferer={setOfferer}
           urlSearchFilters={urlSearchFilters}
           venues={venues}
         />

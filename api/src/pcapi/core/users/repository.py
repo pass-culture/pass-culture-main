@@ -155,8 +155,7 @@ def create_single_sign_on(user: models.User, sso_provider: str, sso_user_id: str
 def user_has_new_nav_activated(user: models.User) -> bool:
     return db.session.query(
         sa.select(1)
-        .select_from(models.User)
-        .join(models.User.pro_new_nav_state)
-        .filter(models.UserProNewNavState.newNavDate.is_not(None))
+        .select_from(models.UserProNewNavState)
+        .where(models.UserProNewNavState.userId == user.id, models.UserProNewNavState.newNavDate.is_not(None))
         .exists()
     ).scalar()

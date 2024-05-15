@@ -156,7 +156,15 @@ def list_individual_bookings() -> utils.BackofficeResponse:
 
     pro_visualisation_link = f"{settings.PRO_URL}/reservations{form.pro_view_args}" if form.pro_view_args else ""
 
-    bookings = utils.limit_rows(bookings, form.limit.data)
+    bookings = utils.limit_rows(
+        bookings,
+        form.limit.data,
+        sort_key=lambda booking: (
+            (booking.stock.beginningDatetime or booking.dateUsed or datetime.datetime.max),
+            booking.dateCreated,
+        ),
+        sort_reverse=True,
+    )
 
     autocomplete.prefill_offerers_choices(form.offerer)
     autocomplete.prefill_venues_choices(form.venue)
@@ -231,6 +239,11 @@ def mark_booking_as_used(booking_id: int) -> utils.BackofficeResponse:
 
     try:
         bookings_api.mark_as_used_with_uncancelling(booking, bookings_models.BookingValidationAuthorType.BACKOFFICE)
+    except bookings_exceptions.BookingDepositCreditExpired:
+        flash(
+            f"La réservation <b>{booking.token}</b> ne peut être validée, car le crédit associé est expiré.",
+            "warning",
+        )
     except Exception as exc:  # pylint: disable=broad-except
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
     else:
@@ -351,10 +364,12 @@ def _batch_individual_bookings_action(
     form: empty_forms.BatchForm, booking_callback: typing.Callable, success_message: str
 ) -> utils.BackofficeResponse:
     bookings = bookings_models.Booking.query.filter(bookings_models.Booking.id.in_(form.object_ids_list)).all()
+    one_or_more_booking_passed = False
 
     for booking in bookings:
         try:
             booking_callback(booking)
+            one_or_more_booking_passed = True
         except bookings_exceptions.BookingIsAlreadyCancelled:
             flash("Au moins une des réservations a déjà été annulée", "warning")
             return _redirect_after_individual_booking_action()
@@ -364,7 +379,15 @@ def _batch_individual_bookings_action(
         except bookings_exceptions.BookingIsAlreadyRefunded:
             flash("Au moins une des réservations a déjà été remboursée", "warning")
             return _redirect_after_individual_booking_action()
+        except bookings_exceptions.BookingDepositCreditExpired:
+            flash(
+                f"La réservation <b>{booking.token}</b> ne peut être validée, car le crédit associé est expiré.",
+                "warning",
+            )
+            if not one_or_more_booking_passed:
+                return _redirect_after_individual_booking_action()
 
-    flash(success_message, "success")
+    if one_or_more_booking_passed:
+        flash(success_message, "success")
 
     return _redirect_after_individual_booking_action()

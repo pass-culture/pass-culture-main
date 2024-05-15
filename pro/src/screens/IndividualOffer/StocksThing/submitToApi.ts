@@ -5,7 +5,6 @@ import {
   serializeApiErrors,
 } from 'apiClient/helpers'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
-import { updateIndividualOffer } from 'core/Offers/adapters'
 
 import { serializeStockThingList } from './adapters/serializers'
 import { StockThingFormValues, StockThingFormik } from './types'
@@ -17,13 +16,12 @@ export const submitToApi = async (
   resetForm: StockThingFormik['resetForm'],
   setErrors: StockThingFormik['setErrors']
 ) => {
-  const { isOk: isOfferOk, message: offerMessage } =
-    await updateIndividualOffer({
-      offerId: offer.id,
-      serializedOffer: { isDuo: values.isDuo },
-    })
-  if (!isOfferOk) {
-    throw new Error(offerMessage)
+  try {
+    await api.patchOffer(offer.id, { isDuo: values.isDuo })
+  } catch {
+    throw new Error(
+      'Une erreur est survenue lors de la création de votre offre'
+    )
   }
 
   try {

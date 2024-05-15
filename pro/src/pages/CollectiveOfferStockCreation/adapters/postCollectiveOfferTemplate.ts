@@ -1,9 +1,7 @@
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
-import {
-  OfferEducationalStockFormValues,
-  hasStatusCodeAndErrorsCode,
-} from 'core/OfferEducational'
+import { OfferEducationalStockFormValues } from 'core/OfferEducational/types'
+import { hasStatusCodeAndErrorsCode } from 'core/OfferEducational/utils/hasStatusCode'
 
 type Params = {
   offerId: number
@@ -31,7 +29,7 @@ const UNKNOWN_FAILING_RESPONSE: AdapterFailure<null> = {
   payload: null,
 }
 
-const postCollectiveOfferTemplateAdapter: PostCollectiveOfferTemplateAdapter =
+export const postCollectiveOfferTemplateAdapter: PostCollectiveOfferTemplateAdapter =
   async ({ offerId, values }: Params) => {
     const collectiveOfferTemplatePayload = {
       educationalPriceDetail: values.priceDetail,
@@ -62,5 +60,3 @@ const postCollectiveOfferTemplateAdapter: PostCollectiveOfferTemplateAdapter =
       }
     }
   }
-
-export default postCollectiveOfferTemplateAdapter

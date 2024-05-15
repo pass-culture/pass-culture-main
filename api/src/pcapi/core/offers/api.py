@@ -886,21 +886,24 @@ def add_criteria_to_offers(
     return True
 
 
-def reject_inappropriate_product(
-    ean: str,
+def reject_inappropriate_products(
+    eans: list[str],
     author: users_models.User | None,
     is_gcu_incompatible: bool = False,
     send_booking_cancellation_emails: bool = True,
 ) -> bool:
-    product = models.Product.query.filter(
-        models.Product.extraData["ean"].astext == ean, models.Product.idAtProviders.is_not(None)
-    ).one_or_none()
+    products = models.Product.query.filter(
+        models.Product.extraData["ean"].astext.in_(eans), models.Product.idAtProviders.is_not(None)
+    )
 
-    if not product:
+    if not products:
         return False
-
+    product_ids = [product.id for product in products]
     offers_query = models.Offer.query.filter(
-        sa.or_(models.Offer.productId == product.id, models.Offer.extraData["ean"].astext == ean),
+        sa.or_(
+            models.Offer.productId.in_(product_ids),
+            models.Offer.extraData["ean"].astext.in_(eans),
+        ),
         models.Offer.validation != models.OfferValidationStatus.REJECTED,
     )
 
@@ -916,15 +919,20 @@ def reject_inappropriate_product(
         synchronize_session=False,
     )
 
-    product.isGcuCompatible = False
-    db.session.add(product)
+    for product in products:
+        product.isGcuCompatible = False
 
     try:
         db.session.commit()
     except Exception as exception:  # pylint: disable=broad-except
         logger.exception(
             "Could not mark product and offers as inappropriate: %s",
-            extra={"ean": ean, "product": product.id, "exc": str(exception)},
+            extra={
+                "eans": eans,
+                "products_lenght": len(product_ids),
+                "partial_products": product_ids[:30],
+                "exc": str(exception),
+            },
         )
         return False
 
@@ -941,7 +949,13 @@ def reject_inappropriate_product(
 
     logger.info(
         "Rejected inappropriate products",
-        extra={"ean": ean, "product": product.id, "offers": offer_ids, "offer_updated_counts": offer_updated_counts},
+        extra={
+            "eans": eans,
+            "products_lenght": len(product_ids),
+            "partial_products": product_ids[:30],
+            "offers": offer_ids,
+            "offer_updated_counts": offer_updated_counts,
+        },
     )
 
     if offer_ids:
@@ -951,7 +965,7 @@ def reject_inappropriate_product(
         search.async_index_offer_ids(
             offer_ids,
             reason=search.IndexationReason.PRODUCT_REJECTION,
-            log_extra={"ean": ean},
+            log_extra={"eans": eans},
         )
 
     return True

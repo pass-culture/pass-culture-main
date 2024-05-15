@@ -10,7 +10,7 @@ import {
 } from '../__tests-utils__'
 import { userOffererFactory } from '../__tests-utils__/userOfferersFactory'
 import { INTERVENTION_AREA_LABEL } from '../constants/labels'
-import OfferEducational, { OfferEducationalProps } from '../OfferEducational'
+import { OfferEducational, OfferEducationalProps } from '../OfferEducational'
 
 describe('screens | OfferEducational : event address step', () => {
   let props: OfferEducationalProps

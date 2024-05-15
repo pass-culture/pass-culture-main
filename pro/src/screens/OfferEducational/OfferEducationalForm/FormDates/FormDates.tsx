@@ -3,8 +3,8 @@ import { ChangeEvent } from 'react'
 
 import Callout from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
-import FormLayout from 'components/FormLayout'
-import { OfferEducationalFormValues } from 'core/OfferEducational'
+import { FormLayout } from 'components/FormLayout/FormLayout'
+import { OfferEducationalFormValues } from 'core/OfferEducational/types'
 import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
 import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 import { BaseRadioVariant } from 'ui-kit/form/shared/BaseRadio/types'
@@ -18,7 +18,7 @@ export interface FormDatesProps {
   dateCreated: string | undefined
 }
 
-const FormDates = ({
+export const FormDates = ({
   disableForm,
   dateCreated,
 }: FormDatesProps): JSX.Element => {
@@ -89,5 +89,3 @@ const FormDates = ({
     </FormLayout.Section>
   )
 }
-
-export default FormDates

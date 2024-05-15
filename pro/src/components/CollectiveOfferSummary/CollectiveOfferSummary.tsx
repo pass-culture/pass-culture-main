@@ -4,28 +4,28 @@ import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
-import BannerPublicApi from 'components/Banner/BannerPublicApi'
+import { BannerPublicApi } from 'components/Banner/BannerPublicApi'
 import { SummaryContent } from 'components/SummaryLayout/SummaryContent'
 import { SummaryLayout } from 'components/SummaryLayout/SummaryLayout'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import {
   isCollectiveOffer,
   isCollectiveOfferTemplate,
-} from 'core/OfferEducational'
+} from 'core/OfferEducational/types'
 
 import styles from './CollectiveOfferSummary.module.scss'
-import CollectiveOfferAccessibilitySection from './components/CollectiveOfferAccessibilitySection'
-import CollectiveOfferContactSection from './components/CollectiveOfferContactSection'
-import CollectiveOfferDateSection from './components/CollectiveOfferDateSection/CollectiveOfferDateSection'
-import CollectiveOfferImagePreview from './components/CollectiveOfferImagePreview'
-import CollectiveOfferLocationSection from './components/CollectiveOfferLocationSection/CollectiveOfferLocationSection'
-import CollectiveOfferNotificationSection from './components/CollectiveOfferNotificationSection'
-import CollectiveOfferParticipantSection from './components/CollectiveOfferParticipantSection'
-import CollectiveOfferPriceSection from './components/CollectiveOfferPriceSection/CollectiveOfferPriceSection'
-import CollectiveOfferStockSection from './components/CollectiveOfferStockSection'
-import CollectiveOfferTypeSection from './components/CollectiveOfferTypeSection/CollectiveOfferTypeSection'
-import CollectiveOfferVenueSection from './components/CollectiveOfferVenueSection'
-import CollectiveOfferVisibilitySection from './components/CollectiveOfferVisibilitySection'
+import { CollectiveOfferAccessibilitySection } from './components/CollectiveOfferAccessibilitySection'
+import { CollectiveOfferContactSection } from './components/CollectiveOfferContactSection'
+import { CollectiveOfferDateSection } from './components/CollectiveOfferDateSection'
+import { CollectiveOfferImagePreview } from './components/CollectiveOfferImagePreview'
+import { CollectiveOfferLocationSection } from './components/CollectiveOfferLocationSection'
+import { CollectiveOfferNotificationSection } from './components/CollectiveOfferNotificationSection'
+import { CollectiveOfferParticipantSection } from './components/CollectiveOfferParticipantSection'
+import { CollectiveOfferPriceSection } from './components/CollectiveOfferPriceSection'
+import { CollectiveOfferStockSection } from './components/CollectiveOfferStockSection'
+import { CollectiveOfferTypeSection } from './components/CollectiveOfferTypeSection'
+import { CollectiveOfferVenueSection } from './components/CollectiveOfferVenueSection'
+import { CollectiveOfferVisibilitySection } from './components/CollectiveOfferVisibilitySection'
 
 export interface CollectiveOfferSummaryProps {
   offer:
@@ -36,7 +36,7 @@ export interface CollectiveOfferSummaryProps {
   visibilityEditLink?: string
 }
 
-const CollectiveOfferSummary = ({
+export const CollectiveOfferSummary = ({
   offer,
   offerEditLink,
   stockEditLink,
@@ -111,5 +111,3 @@ const CollectiveOfferSummary = ({
     </>
   )
 }
-
-export default CollectiveOfferSummary

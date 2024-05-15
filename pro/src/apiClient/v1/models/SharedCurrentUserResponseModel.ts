@@ -17,6 +17,7 @@ export type SharedCurrentUserResponseModel = {
   email: string;
   externalIds?: Record<string, any> | null;
   firstName?: string | null;
+  hasPartnerPage?: boolean | null;
   hasSeenProRgs?: boolean | null;
   hasSeenProTutorials?: boolean | null;
   hasUserOfferer?: boolean | null;
@@ -24,6 +25,7 @@ export type SharedCurrentUserResponseModel = {
   idPieceNumber?: string | null;
   isAdmin: boolean;
   isEmailValidated: boolean;
+  isImpersonated?: boolean;
   lastConnectionDate?: string | null;
   lastName?: string | null;
   navState?: NavStateResponseModel | null;

@@ -67,6 +67,7 @@ class PostUserNewProNavTest:
         assert caplog.records[0].technical_message_id == "new_nav_review"
 
     def test_user_without_new_nav_activated_cant_submit_review(self, client, caplog):
+        users_factories.UserProNewNavStateFactory(newNavDate=datetime.datetime.utcnow())
         pro_new_nav_state = users_factories.UserProNewNavStateFactory(newNavDate=None)
         user = pro_new_nav_state.user
         offerer = offerers_factories.OffererFactory()

@@ -113,12 +113,10 @@ def synchronize_accessibility_with_acceslibre(
 
     If externalAccessibilityId can't be found at acceslibre, we try to find a new match, cf. synchronize_accessibility_provider()
     """
-    venues_count = offerers_api.count_permanent_venues_with_or_without_accessibility_provider(
-        has_accessibility_provider=True
-    )
+    venues_count = offerers_api.count_permanent_venues_with_accessibility_provider()
     num_batches = ceil(venues_count / BATCH_SIZE)
     if start_from_batch > num_batches:
-        click.echo(f"Batch size must be less than {num_batches}")
+        click.echo(f"Start from batch must be less than {num_batches}")
         return
 
     start_batch_index = start_from_batch - 1
@@ -137,7 +135,7 @@ def synchronize_accessibility_with_acceslibre(
             db.session.rollback()
 
 
-@blueprint.cli.command("synchronize_venue_with_acceslibre")
+@blueprint.cli.command("synchronize_venues_with_acceslibre")
 @click.argument("venue_ids", type=int, nargs=-1, required=True)
 @click.option("--dry-run", type=bool, default=True)
 def synchronize_venues_with_acceslibre(venue_ids: list[int], dry_run: bool = True) -> None:
@@ -148,7 +146,7 @@ def synchronize_venues_with_acceslibre(venue_ids: list[int], dry_run: bool = Tru
             continue
 
         offerers_api.set_accessibility_provider_id(venue)
-        if not venue.accessibilityProvider.externalAccessibilityId:
+        if not venue.accessibilityProvider:
             logger.info("No match found at acceslibre for Venue %s ", venue_id)
             continue
 
@@ -168,32 +166,30 @@ def synchronize_venues_with_acceslibre(venue_ids: list[int], dry_run: bool = Tru
 @blueprint.cli.command("acceslibre_matching")
 @click.option("--dry-run", type=bool, default=False)
 @click.option("--start-from-batch", type=int, default=1, help="Start synchronization from batch number")
-def acceslibre_matching(dry_run: bool = False, force_sync: bool = False, start_from_batch: int = 1) -> None:
+def acceslibre_matching(dry_run: bool = False, start_from_batch: int = 1) -> None:
     """
     For all permanent venues, we are looking for a match at acceslibre
 
     If we use the --start-from-batch option, it will start synchronization from the given batch number
     Use case: synchronization has failed with message "Could not update batch <n>"
     """
-    venues_count = offerers_api.count_permanent_venues_with_or_without_accessibility_provider(
-        has_accessibility_provider=False
-    )
-    num_batches = ceil(venues_count / BATCH_SIZE)
+    venues_list = offerers_api.get_permanent_venues_without_accessibility_provider()
+    num_batches = ceil(len(venues_list) / BATCH_SIZE)
     if start_from_batch > num_batches:
-        click.echo(f"Batch size must be less than {num_batches}")
+        click.echo(f"Start from batch must be less than {num_batches}")
         return
 
-    results_by_activity: dict[str, list[accessibility_provider.AcceslibreResult] | None] = dict()
+    results_list = []
 
     for activity in accessibility_provider.AcceslibreActivity:
-        results_by_activity[activity.value] = accessibility_provider.find_new_entries_by_activity(activity)
+        if results_by_activity := accessibility_provider.find_new_entries_by_activity(activity):
+            results_list.extend(results_by_activity)
 
     start_batch_index = start_from_batch - 1
     for i in range(start_batch_index, num_batches):
-        venues_list = offerers_api.get_permanent_venues_without_accessibility_provider(
-            batch_size=BATCH_SIZE, batch_num=i
-        )
-        offerers_api.match_venue_with_new_entries(venues_list, results_by_activity)
+        batch_start = i * BATCH_SIZE
+        batch_end = (i + 1) * BATCH_SIZE
+        offerers_api.match_venue_with_new_entries(venues_list[batch_start:batch_end], results_list)
 
         if not dry_run:
             try:

@@ -4,7 +4,7 @@ import { userEvent } from '@testing-library/user-event'
 import { api } from 'apiClient/api'
 import { UserRole } from 'apiClient/v1'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
-import { Audience } from 'core/shared'
+import { Audience } from 'core/shared/types'
 import {
   defaultGetOffererResponseModel,
   getOfferManagingOffererFactory,
@@ -12,7 +12,7 @@ import {
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import Offers, { OffersProps } from '../Offers'
+import { Offers, OffersProps } from '../Offers'
 
 const renderOffers = (props: OffersProps) =>
   renderWithProviders(<Offers {...props} />)

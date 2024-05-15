@@ -102,7 +102,6 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_TRUSTED_DEVICE = "Active la fonctionnalité d'appareil de confiance"
     WIP_ENABLE_SUSPICIOUS_EMAIL_SEND = "Active l'envoie d'email lors de la détection d'une connexion suspicieuse"
     WIP_MANDATORY_BOOKING_CONTACT = "Rend obligatoire offer.bookingContact pour les offres retirables"
-    WIP_ENABLE_BOOST_PREFIXED_EXTERNAL_BOOKING = "Active les réservations externes boost avec préfixe"
     WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY = "Activer le nouveau parcours de dépôt de coordonnées bancaires"
     WIP_ENABLE_MOCK_UBBLE = "Utiliser le mock Ubble à la place du vrai Ubble"
     WIP_ENABLE_OFFER_PRICE_LIMITATION = "Activer les règles de limitation de modification de prix des offres"
@@ -127,6 +126,10 @@ class FeatureToggle(enum.Enum):
     WIP_OPENING_HOURS = "Activer les horaires d'ouverture sur la page partenaire"
     WIP_ENABLE_ADAGE_VISUALIZATION = "Activer la nouvelle manière de visualiser les offres dans la recherche d'ADAGE."
     WIP_ACCESLIBRE = "Activer l'affichage des données Accès Libre sur les pages partenaires"
+    WIP_ENABLE_TITELIVE_API_FOR_BOOKS = "Activer l'utilisation de l'API Titelive pour les synchronisations produits pour les livres(désactive l'utilisation de l'utilisation de FTP pour la synchro)"
+    ENABLE_PRO_NEW_NAV_MODIFICATION = "Activer la modification du statut de la navigation du portail pro"
+    WIP_ENABLE_NEW_HASHING_ALGORITHM = "Activer le nouveau système de hachage des clés publiques d'API"
+    WIP_ENABLE_BOOST_TWO_STAGES_BOOKING = "Activer la réservation Boost en 2 étapes."
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -167,7 +170,9 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ENABLE_EAC_FINANCIAL_PROTECTION,
     FeatureToggle.ENABLE_EMS_INTEGRATION,
     FeatureToggle.ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION,
+    FeatureToggle.WIP_ENABLE_NEW_HASHING_ALGORITHM,
     FeatureToggle.ENABLE_PRO_BOOKINGS_V2,
+    FeatureToggle.ENABLE_PRO_NEW_NAV_MODIFICATION,
     FeatureToggle.ENABLE_SWITCH_ALLOCINE_SYNC_TO_EMS_SYNC,
     FeatureToggle.ENABLE_TITELIVE_MUSIC_TYPES_IN_API_OUTPUT,
     FeatureToggle.ENABLE_UBBLE_SUBSCRIPTION_LIMITATION,
@@ -180,11 +185,12 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_CONNECT_AS,
     FeatureToggle.WIP_ENABLE_ADAGE_PREVIEW_OFFER_IN_PRO,
     FeatureToggle.WIP_ENABLE_ADAGE_VISUALIZATION,
-    FeatureToggle.WIP_ENABLE_GOOGLE_SSO,
+    FeatureToggle.WIP_ENABLE_BOOST_TWO_STAGES_BOOKING,
     FeatureToggle.WIP_ENABLE_MOCK_UBBLE,
     FeatureToggle.WIP_ENABLE_NEW_NAV_AB_TEST,
     FeatureToggle.WIP_ENABLE_OFFER_PRICE_LIMITATION,
     FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY,
+    FeatureToggle.WIP_ENABLE_TITELIVE_API_FOR_BOOKS,
     FeatureToggle.WIP_OPENING_HOURS,
     FeatureToggle.WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS,
     FeatureToggle.WIP_ENABLE_DOWNLOAD_BOOKINGS,

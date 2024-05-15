@@ -13,6 +13,7 @@ from pcapi.core.offers.api import deactivate_permanently_unavailable_products
 from pcapi.core.offers.exceptions import NotUpdateProductOrOffers
 from pcapi.core.offers.exceptions import ProductNotFound
 import pcapi.core.offers.models as offers_models
+from pcapi.core.providers import constants as providers_constants
 import pcapi.core.providers.models as providers_models
 import pcapi.core.providers.repository as providers_repository
 from pcapi.domain.titelive import get_date_from_filename
@@ -118,41 +119,41 @@ COLUMN_INDICES = {
 }
 
 INFO_KEYS = {
-    "EAN13": "ean13",
-    "TITRE": "titre",
+    "AUTEURS": "auteurs",
+    "CLASSEMENT_TOP": "classement_top",
+    "CODE_CLIL": "code_clil",
     "CODE_CSR": "code_csr",
-    "GTL_ID": "gtl_id",
     "CODE_DISPO": "code_dispo",
-    "COLLECTION": "collection",
-    "NUM_IN_COLLECTION": "num_in_collection",
-    "PRIX": "prix",
-    "EDITEUR": "editeur",
-    "DISTRIBUTEUR": "distributeur",
-    "DATE_PARUTION": "date_parution",
+    "CODE_EDI_FOURNISSEUR": "code_edi_fournisseur",
+    "CODE_REGROUPEMENT": "code_regroupement",
     "CODE_SUPPORT": "code_support",
     "CODE_TVA": "code_tva",
-    "N_PAGES": "n_pages",
-    "LONGUEUR": "longueur",
-    "LARGEUR": "largeur",
-    "EPAISSEUR": "epaisseur",
-    "POIDS": "poids",
-    "IS_UPDATE": "is_update",
-    "AUTEURS": "auteurs",
-    "DATETIME_CREATED": "datetime_created",
-    "DATE_UPDATED": "date_updated",
-    "TAUX_TVA": "taux_tva",
-    "TRADUCTEUR": "traducteur",
-    "LANGUE_ORIG": "langue_orig",
+    "COLLECTION": "collection",
     "COMMENTAIRE": "commentaire",
-    "CLASSEMENT_TOP": "classement_top",
+    "DATE_PARUTION": "date_parution",
+    "DATE_UPDATED": "date_updated",
+    "DATETIME_CREATED": "datetime_created",
+    "DISTRIBUTEUR": "distributeur",
+    "EAN13": "ean13",
+    "EDITEUR": "editeur",
+    "EPAISSEUR": "epaisseur",
+    "GTL_ID": "gtl_id",
     "HAS_IMAGE": "has_image",
-    "CODE_EDI_FOURNISSEUR": "code_edi_fournisseur",
-    "IS_SCOLAIRE": "is_scolaire",
-    "N_EXTRAITS_MP3": "n_extraits_mp3",
     "INDICE_DEWEY": "indice_dewey",
-    "CODE_REGROUPEMENT": "code_regroupement",
-    "CODE_CLIL": "code_clil",
+    "IS_SCOLAIRE": "is_scolaire",
+    "IS_UPDATE": "is_update",
+    "LANGUE_ORIG": "langue_orig",
+    "LARGEUR": "largeur",
     "LECTORAT_ID": "id_lectorat",
+    "LONGUEUR": "longueur",
+    "N_EXTRAITS_MP3": "n_extraits_mp3",
+    "N_PAGES": "n_pages",
+    "NUM_IN_COLLECTION": "num_in_collection",
+    "POIDS": "poids",
+    "PRIX": "prix",
+    "TAUX_TVA": "taux_tva",
+    "TITRE": "titre",
+    "TRADUCTEUR": "traducteur",
 }
 
 OLD_FILTER_SCHOOL_RELATED_CSR_CODE = [
@@ -269,7 +270,7 @@ class TiteLiveThings(LocalProvider):
                     ineligibility_reason,
                 )
             else:
-                offers_api.reject_inappropriate_product(book_unique_identifier, None)
+                offers_api.reject_inappropriate_products([book_unique_identifier], None)
                 logger.info(
                     "Rejecting ineligible ean=%s because reason=%s", book_unique_identifier, ineligibility_reason
                 )
@@ -448,9 +449,9 @@ def get_subcategory_and_extra_data_from_titelive_type(titelive_type: str) -> tup
     if titelive_type in ("A", "I", "LA"):  # obsolete codes
         return None, None
     if titelive_type == "BD":  # bande dessinée
-        return subcategories.LIVRE_PAPIER.id, offers_models.BookFormat.BANDE_DESSINEE.value
+        return subcategories.LIVRE_PAPIER.id, providers_constants.BookFormat.BANDE_DESSINEE.value
     if titelive_type == "BL":  # beaux livres
-        return subcategories.LIVRE_PAPIER.id, offers_models.BookFormat.BEAUX_LIVRES.value
+        return subcategories.LIVRE_PAPIER.id, providers_constants.BookFormat.BEAUX_LIVRES.value
     if titelive_type == "C":  # carte et plan
         return None, None
     if titelive_type == "CA":  # CD audio
@@ -470,9 +471,9 @@ def get_subcategory_and_extra_data_from_titelive_type(titelive_type: str) -> tup
     if titelive_type == "LA":  # obsolete code
         return None, None
     if titelive_type == "LC":  # livre + cassette
-        return subcategories.LIVRE_PAPIER.id, offers_models.BookFormat.LIVRE_CASSETTE.value  # TODO: verify
+        return subcategories.LIVRE_PAPIER.id, providers_constants.BookFormat.LIVRE_CASSETTE.value  # TODO: verify
     if titelive_type == "LD":  # livre + CD audio
-        return subcategories.LIVRE_PAPIER.id, offers_models.BookFormat.LIVRE_AUDIO.value  # TODO: verify
+        return subcategories.LIVRE_PAPIER.id, providers_constants.BookFormat.LIVRE_AUDIO.value  # TODO: verify
     if titelive_type == "LE":  # livre numérique
         return None, None
     if titelive_type == "LR":  # livre + CD-ROM
@@ -482,17 +483,17 @@ def get_subcategory_and_extra_data_from_titelive_type(titelive_type: str) -> tup
     if titelive_type == "LV":  # livre + DVD
         return None, None
     if titelive_type == "M":  # moyen format
-        return subcategories.LIVRE_PAPIER.id, offers_models.BookFormat.MOYEN_FORMAT.value
+        return subcategories.LIVRE_PAPIER.id, providers_constants.BookFormat.MOYEN_FORMAT.value
     if titelive_type == OBJECT_SUPPORT_CODE:  # objet
         return None, None
     if titelive_type == "P":  # poche
-        return subcategories.LIVRE_PAPIER.id, offers_models.BookFormat.POCHE.value
+        return subcategories.LIVRE_PAPIER.id, providers_constants.BookFormat.POCHE.value
     if titelive_type == PAPER_CONSUMABLE_SUPPORT_CODE:  # papeterie / consommable
         return None, None
     if titelive_type == POSTER_SUPPORT_CODE:  # poster
         return None, None
     if titelive_type == PAPER_PRESS_SUPPORT_CODE:  # revue
-        return subcategories.LIVRE_PAPIER.id, offers_models.BookFormat.REVUE.value  # TODO: verify
+        return subcategories.LIVRE_PAPIER.id, providers_constants.BookFormat.REVUE.value  # TODO: verify
     if titelive_type in ("T", "TL"):  # livre papier (hors spécificité)
         return subcategories.LIVRE_PAPIER.id, None
     if titelive_type == "TR":  # transparents

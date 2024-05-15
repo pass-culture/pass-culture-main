@@ -50,8 +50,6 @@ const renderCollectiveOfferPreviewCreation = (
 
 const defaultProps = {
   offer: getCollectiveOfferTemplateFactory(),
-  setOffer: vi.fn(),
-  reloadCollectiveOffer: vi.fn(),
   isTemplate: false,
   offerer: undefined,
 }

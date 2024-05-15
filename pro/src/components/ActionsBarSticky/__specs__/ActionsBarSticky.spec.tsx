@@ -3,7 +3,7 @@ import React from 'react'
 
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import ActionsBarSticky from '../ActionsBarSticky'
+import { ActionsBarSticky } from '../ActionsBarSticky'
 
 const renderActionsBar = () =>
   renderWithProviders(

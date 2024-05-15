@@ -1,5 +1,6 @@
 import cn from 'classnames'
 import React from 'react'
+import { useSWRConfig } from 'swr'
 
 import {
   GetCollectiveOfferResponseModel,
@@ -7,14 +8,18 @@ import {
   CollectiveBookingStatus,
   OfferStatus,
 } from 'apiClient/v1'
+import {
+  GET_COLLECTIVE_OFFER_QUERY_KEY,
+  GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
+} from 'config/swrQueryKeys'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
+import { patchIsCollectiveOfferActiveAdapter } from 'core/OfferEducational/adapters/patchIsCollectiveOfferActiveAdapter'
+import { patchIsTemplateOfferActiveAdapter } from 'core/OfferEducational/adapters/patchIsTemplateOfferActiveAdapter'
 import {
   isCollectiveOffer,
   isCollectiveOfferTemplate,
   Mode,
-  patchIsCollectiveOfferActiveAdapter,
-  patchIsTemplateOfferActiveAdapter,
-} from 'core/OfferEducational'
+} from 'core/OfferEducational/types'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import fullHideIcon from 'icons/full-hide.svg'
@@ -39,15 +44,13 @@ export interface OfferEducationalActionsProps {
     | GetCollectiveOfferResponseModel
     | GetCollectiveOfferTemplateResponseModel
   mode?: Mode
-  reloadCollectiveOffer?: () => void
 }
 
-const OfferEducationalActions = ({
+export const OfferEducationalActions = ({
   className,
   isBooked,
   offer,
   mode,
-  reloadCollectiveOffer,
 }: OfferEducationalActionsProps): JSX.Element => {
   const { logEvent } = useAnalytics()
   const notify = useNotification()
@@ -71,6 +74,8 @@ const OfferEducationalActions = ({
     return ''
   }
 
+  const { mutate } = useSWRConfig()
+
   const setIsOfferActive = async (isActive: boolean) => {
     const patchAdapter = offer.isTemplate
       ? patchIsTemplateOfferActiveAdapter
@@ -85,7 +90,12 @@ const OfferEducationalActions = ({
     }
 
     notify.success(message)
-    reloadCollectiveOffer && reloadCollectiveOffer()
+    await mutate([
+      offer.isTemplate
+        ? GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY
+        : GET_COLLECTIVE_OFFER_QUERY_KEY,
+      offer.id,
+    ])
   }
 
   const activateOffer = async () => {
@@ -173,5 +183,3 @@ const OfferEducationalActions = ({
     </>
   )
 }
-
-export default OfferEducationalActions

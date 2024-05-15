@@ -3,7 +3,7 @@ import { Formik } from 'formik'
 import React from 'react'
 
 import { OfferAddressType } from 'apiClient/v1'
-import { OfferEducationalFormValues } from 'core/OfferEducational'
+import { OfferEducationalFormValues } from 'core/OfferEducational/types'
 import {
   EVENT_ADDRESS_OTHER_ADDRESS_LABEL,
   INTERVENTION_AREA_LABEL,
@@ -13,7 +13,8 @@ import {
   getOfferVenueFactory,
 } from 'utils/individualApiFactories'
 
-import FormPracticalInformation, {
+import {
+  FormPracticalInformation,
   FormPracticalInformationProps,
 } from '../FormPracticalInformation'
 

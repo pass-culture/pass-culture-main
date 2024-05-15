@@ -121,6 +121,9 @@ def upgrade() -> None:
 
 Note : le `select 1` permet d'éviter une requête vide, ce que SQLAlchemy n'apprécie pas du tout.
 
+Attention : Ne pas ajouter de lignes vides à la fin du fichier alembic_version_conflict_detection.txt. L'ajout entraînera l'échec de l'étape de lint dans la CI sur la branche master une fois la pull request mergée.
+Si une ligne vide est ajoutée par erreur, il est nécessaire de merger une correction sur master, même si la CI échoue pour la pull request concernée.
+
 # Squasher les migrations
 
 ## Objectif

@@ -79,6 +79,7 @@ def test_return_price_categories_and_schedule_count_by_date(client):
 
     assert response.status_code == 200
     assert response.json == [
+        {"eventDate": "2024-02-02", "scheduleCount": 1, "priceCategoriesCount": 1},
         {"eventDate": "2024-09-09", "scheduleCount": 1, "priceCategoriesCount": 1},
         {"eventDate": "2024-10-10", "scheduleCount": 1, "priceCategoriesCount": 4},
         {"eventDate": "2024-11-11", "scheduleCount": 2, "priceCategoriesCount": 1},

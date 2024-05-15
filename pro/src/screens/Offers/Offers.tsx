@@ -16,25 +16,25 @@ import {
 } from 'core/Offers/constants'
 import { SearchFiltersParams } from 'core/Offers/types'
 import {
-  computeCollectiveOffersUrl,
   computeOffersUrl,
-  hasSearchFilters,
-} from 'core/Offers/utils'
-import { Audience } from 'core/shared'
+  computeCollectiveOffersUrl,
+} from 'core/Offers/utils/computeOffersUrl'
+import { hasSearchFilters } from 'core/Offers/utils/hasSearchFilters'
 import getUserValidatedOfferersNamesAdapter from 'core/shared/adapters/getUserValidatedOfferersNamesAdapter'
+import { Audience } from 'core/shared/types'
 import { SelectOption } from 'custom_types/form'
 import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
 import fullPlusIcon from 'icons/full-plus.svg'
 import strokeLibraryIcon from 'icons/stroke-library.svg'
 import strokeUserIcon from 'icons/stroke-user.svg'
-import ActionsBar from 'pages/Offers/Offers/ActionsBar'
+import { ActionsBar } from 'pages/Offers/Offers/ActionsBar/ActionsBar'
 import OffersContainer from 'pages/Offers/Offers/Offers'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Tabs } from 'ui-kit/Tabs/Tabs'
 import Titles from 'ui-kit/Titles/Titles'
 
-import SearchFilters from './SearchFilters'
+import { SearchFilters } from './SearchFilters/SearchFilters'
 
 export interface OffersProps {
   currentPageNumber: number
@@ -45,7 +45,6 @@ export interface OffersProps {
   isLoading: boolean
   offerer: GetOffererResponseModel | null
   offers: CollectiveOfferResponseModel[] | ListOffersOfferResponseModel[]
-  setOfferer: (offerer: GetOffererResponseModel | null) => void
   initialSearchFilters: SearchFiltersParams
   audience: Audience
   redirectWithUrlFilters: (
@@ -59,13 +58,12 @@ export interface OffersProps {
   categories?: SelectOption[]
 }
 
-const Offers = ({
+export const Offers = ({
   currentPageNumber,
   currentUser,
   isLoading,
   offerer,
   offers,
-  setOfferer,
   initialSearchFilters,
   audience,
   redirectWithUrlFilters,
@@ -134,7 +132,6 @@ const Offers = ({
   }, [])
 
   const resetFilters = () => {
-    setOfferer(null)
     setSearchFilters(DEFAULT_SEARCH_FILTERS)
     applyUrlFiltersAndRedirect({
       ...DEFAULT_SEARCH_FILTERS,
@@ -155,7 +152,6 @@ const Offers = ({
   }
 
   const removeOfferer = () => {
-    setOfferer(null)
     const updatedFilters = {
       ...searchFilters,
       offererId: DEFAULT_SEARCH_FILTERS.offererId,
@@ -284,5 +280,3 @@ const Offers = ({
     </div>
   )
 }
-
-export default Offers

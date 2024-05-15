@@ -9,7 +9,7 @@ import {
   PriceCategoryResponseModel,
   StocksOrderedBy,
 } from 'apiClient/v1'
-import ActionsBarSticky from 'components/ActionsBarSticky'
+import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'

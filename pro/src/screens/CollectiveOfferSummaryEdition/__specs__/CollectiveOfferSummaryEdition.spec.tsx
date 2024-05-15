@@ -5,7 +5,7 @@ import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
-import { Mode } from 'core/OfferEducational'
+import { Mode } from 'core/OfferEducational/types'
 import { getCollectiveOfferTemplateFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
@@ -21,11 +21,7 @@ const renderCollectiveOfferSummaryEdition = (
     | GetCollectiveOfferResponseModel
 ) => {
   renderWithProviders(
-    <CollectiveOfferSummaryEditionScreen
-      offer={offer}
-      reloadCollectiveOffer={vi.fn()}
-      mode={Mode.EDITION}
-    />,
+    <CollectiveOfferSummaryEditionScreen offer={offer} mode={Mode.EDITION} />,
     { user: sharedCurrentUserFactory() }
   )
 }

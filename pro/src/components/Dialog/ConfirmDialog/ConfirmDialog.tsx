@@ -4,7 +4,7 @@ import strokeErrorIcon from 'icons/stroke-error.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
-import Dialog, { DialogProps } from '../Dialog'
+import { Dialog, DialogProps } from '../Dialog/Dialog'
 
 import styles from './ConfirmDialog.module.scss'
 
@@ -17,7 +17,7 @@ type ConfirmDialogProps = DialogProps & {
   confirmButtonDisabled?: boolean
 }
 
-const ConfirmDialog = ({
+export const ConfirmDialog = ({
   onConfirm,
   onCancel,
   isLoading,
@@ -62,5 +62,3 @@ const ConfirmDialog = ({
     </Dialog>
   )
 }
-
-export default ConfirmDialog

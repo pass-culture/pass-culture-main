@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import useSWR, { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
@@ -7,39 +8,40 @@ import {
   CollectiveStockResponseModel,
   GetCollectiveOfferRequestResponseModel,
   GetCollectiveOfferResponseModel,
-  GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
-import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
-import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
+import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
+import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
 import {
-  createPatchStockDataPayload,
-  createStockDataPayload,
-  EducationalOfferType,
-  extractInitialStockValues,
-  hasStatusCodeAndErrorsCode,
+  GET_COLLECTIVE_OFFER_QUERY_KEY,
+  GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
+} from 'config/swrQueryKeys'
+import {
   isCollectiveOffer,
   isCollectiveOfferTemplate,
-  Mode,
   OfferEducationalStockFormValues,
-} from 'core/OfferEducational'
-import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
+  EducationalOfferType,
+  Mode,
+} from 'core/OfferEducational/types'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
-import { FORM_ERROR_MESSAGE } from 'core/shared'
+import { createPatchStockDataPayload } from 'core/OfferEducational/utils/createPatchStockDataPayload'
+import { createStockDataPayload } from 'core/OfferEducational/utils/createStockDataPayload'
+import { extractInitialStockValues } from 'core/OfferEducational/utils/extractInitialStockValues'
+import { hasStatusCodeAndErrorsCode } from 'core/OfferEducational/utils/hasStatusCode'
+import { FORM_ERROR_MESSAGE } from 'core/shared/constants'
 import useNotification from 'hooks/useNotification'
-import getOfferRequestInformationsAdapter from 'pages/CollectiveOfferFromRequest/adapters/getOfferRequestInformationsAdapter'
+import { getOfferRequestInformationsAdapter } from 'pages/CollectiveOfferFromRequest/adapters/getOfferRequestInformationsAdapter'
 import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
 import {
   MandatoryCollectiveOfferFromParamsProps,
   withCollectiveOfferFromParams,
 } from 'screens/OfferEducational/useCollectiveOfferFromParams'
-import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
+import { OfferEducationalStock } from 'screens/OfferEducationalStock/OfferEducationalStock'
 
-import postCollectiveOfferTemplateAdapter from './adapters/postCollectiveOfferTemplate'
+import { postCollectiveOfferTemplateAdapter } from './adapters/postCollectiveOfferTemplate'
 
 export const CollectiveOfferStockCreation = ({
   offer,
-  setOffer,
   isTemplate,
 }: MandatoryCollectiveOfferFromParamsProps): JSX.Element | null => {
   const notify = useNotification()
@@ -48,8 +50,17 @@ export const CollectiveOfferStockCreation = ({
   const isCreation = !location.pathname.includes('edition')
   const { requete: requestId } = queryParamsFromOfferer(location)
 
-  const [offerTemplate, setOfferTemplate] =
-    useState<GetCollectiveOfferTemplateResponseModel>()
+  const { mutate } = useSWRConfig()
+
+  const { data: offerFromTemplate } = useSWR(
+    isCollectiveOffer(offer) && offer.templateId
+      ? [GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY, offer.templateId]
+      : null,
+    ([, offerTemplateIdParam]) => {
+      return api.getCollectiveOfferTemplate(offerTemplateIdParam)
+    }
+  )
+
   const [requestInformations, setRequestInformations] =
     useState<GetCollectiveOfferRequestResponseModel | null>(null)
 
@@ -66,20 +77,6 @@ export const CollectiveOfferStockCreation = ({
   }
 
   useEffect(() => {
-    const fetchOfferTemplateDetails = async () => {
-      if (!(isCollectiveOffer(offer) && offer.templateId)) {
-        return null
-      }
-      const { isOk, payload, message } =
-        await getCollectiveOfferTemplateAdapter(offer.templateId)
-      if (!isOk) {
-        return notify.error(message)
-      }
-      setOfferTemplate(payload)
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    fetchOfferTemplateDetails()
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     getOfferRequestInformation()
   }, [])
@@ -92,7 +89,7 @@ export const CollectiveOfferStockCreation = ({
 
   const initialValues = extractInitialStockValues(
     offer,
-    offerTemplate,
+    offerFromTemplate,
     requestInformations
   )
 
@@ -154,15 +151,19 @@ export const CollectiveOfferStockCreation = ({
         }
       }
       if (response !== null) {
-        setOffer({
-          ...offer,
-          collectiveStock: {
-            ...offer.collectiveStock,
-            ...response,
-            isBooked: false,
-            isCancellable: offer.isCancellable,
+        await mutate<GetCollectiveOfferResponseModel>(
+          [GET_COLLECTIVE_OFFER_QUERY_KEY],
+          {
+            ...offer,
+            collectiveStock: {
+              ...offer.collectiveStock,
+              ...response,
+              isBooked: false,
+              isCancellable: offer.isCancellable,
+            },
           },
-        })
+          { revalidate: false }
+        )
       }
     }
 
@@ -190,7 +191,7 @@ export const CollectiveOfferStockCreation = ({
         isCreation={isCreation}
         requestId={requestId}
       >
-        <OfferEducationalStockScreen
+        <OfferEducationalStock
           initialValues={initialValues}
           mode={Mode.CREATION}
           offer={offer}

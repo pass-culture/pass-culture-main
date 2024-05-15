@@ -11,6 +11,7 @@ from sqlalchemy.orm import joinedload
 from pcapi.analytics.amplitude import events as amplitude_events
 from pcapi.connectors.ems import EMSAPIException
 from pcapi.core import search
+from pcapi.core.bookings import exceptions as bookings_exceptions
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
@@ -24,7 +25,6 @@ from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.external.attributes.api import update_external_pro
 from pcapi.core.external.attributes.api import update_external_user
 import pcapi.core.external_bookings.api as external_bookings_api
-from pcapi.core.external_bookings.boost.client import get_boost_external_booking_barcode
 from pcapi.core.external_bookings.ems import constants as ems_constants
 from pcapi.core.external_bookings.ems.client import EMSClientAPI
 import pcapi.core.external_bookings.exceptions as external_bookings_exceptions
@@ -45,7 +45,6 @@ from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Stock
 import pcapi.core.offers.validation as offers_validation
 import pcapi.core.providers.exceptions as providers_exceptions
-from pcapi.core.providers.models import Provider
 import pcapi.core.providers.repository as providers_repository
 from pcapi.core.users.models import User
 from pcapi.core.users.repository import get_and_lock_user
@@ -123,6 +122,7 @@ def get_individual_bookings(user: User) -> list[Booking]:
                 Product.id,
                 Product.thumbCount,
             )
+            .joinedload(Product.productMediations)
         )
         .options(
             joinedload(Booking.stock)
@@ -145,13 +145,6 @@ def get_individual_bookings(user: User) -> list[Booking]:
                 Venue.timezone,
             )
         )
-        .options(
-            joinedload(Booking.stock)
-            .joinedload(Stock.lastProvider)
-            .load_only(
-                Provider.localClass
-            )  # TODO(yacine) to be removed with WIP_ENABLE_BOOST_PREFIXED_EXTERNAL_BOOKING
-        )
         .options(joinedload(Booking.stock).joinedload(Stock.offer).joinedload(Offer.mediations))
         .options(joinedload(Booking.activationCode))
         .options(joinedload(Booking.externalBookings))
@@ -168,12 +161,6 @@ def classify_and_sort_bookings(
     ended_bookings = []
     ongoing_bookings = []
     for booking in individual_bookings:
-        if (
-            booking.externalBookings and booking.stock.offer.lastProvider.localClass == "BoostStocks"
-        ):  # TODO(yacine) to be removed with WIP_ENABLE_BOOST_PREFIXED_EXTERNAL_BOOKING
-            for external_booking in booking.externalBookings:
-                external_booking.barcode = get_boost_external_booking_barcode(external_booking.barcode)
-
         if _is_ended_booking(booking):
             ended_bookings.append(booking)
         else:
@@ -714,6 +701,12 @@ def mark_as_used_with_uncancelling(booking: Booking, validation_author_type: Boo
     # a rollback if we raise a validation exception.
     # Since I lock the stock, I really want to make sure the lock is
     # removed ASAP.
+    if (
+        booking.deposit
+        and booking.deposit.expirationDate
+        and booking.deposit.expirationDate < datetime.datetime.utcnow()
+    ):
+        raise bookings_exceptions.BookingDepositCreditExpired()
     with transaction():
         if booking.status == BookingStatus.CANCELLED:
             booking.uncancel_booking_set_used()

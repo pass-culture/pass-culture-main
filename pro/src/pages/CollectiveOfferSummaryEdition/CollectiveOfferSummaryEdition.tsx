@@ -1,6 +1,6 @@
 import { AppLayout } from 'app/AppLayout'
-import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
-import { Mode } from 'core/OfferEducational'
+import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
+import { Mode } from 'core/OfferEducational/types'
 import { CollectiveOfferSummaryEditionScreen } from 'screens/CollectiveOfferSummaryEdition/CollectiveOfferSummaryEdition'
 import {
   MandatoryCollectiveOfferFromParamsProps,
@@ -9,7 +9,6 @@ import {
 
 const CollectiveOfferSummaryEdition = ({
   offer,
-  reloadCollectiveOffer,
   isTemplate,
 }: MandatoryCollectiveOfferFromParamsProps) => {
   return (
@@ -17,7 +16,6 @@ const CollectiveOfferSummaryEdition = ({
       <CollectiveOfferLayout subTitle={offer.name} isTemplate={isTemplate}>
         <CollectiveOfferSummaryEditionScreen
           offer={offer}
-          reloadCollectiveOffer={reloadCollectiveOffer}
           mode={Mode.EDITION}
         />
       </CollectiveOfferLayout>

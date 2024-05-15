@@ -1,6 +1,7 @@
 import enum
 from functools import partial
 import json
+import re
 import typing
 from urllib.parse import urlencode
 
@@ -23,6 +24,7 @@ from pcapi.routes.backoffice.forms import constants
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import utils as forms_utils
+from pcapi.utils import string as string_utils
 
 
 class IndividualOffersSearchAttributes(enum.Enum):
@@ -39,6 +41,7 @@ class IndividualOffersSearchAttributes(enum.Enum):
     VENUE = "Lieu"
     NAME = "Nom de l'offre"
     SYNCHRONIZED = "Offre synchronisée"
+    PRICE = "Prix"
     PROVIDER = "Fournisseur"
     STATUS = "Statut"
     OFFERER = "Structure"
@@ -47,7 +50,6 @@ class IndividualOffersSearchAttributes(enum.Enum):
     MUSIC_SUB_TYPE = "Sous-type de musique"
     SHOW_TYPE = "Type de spectacle"
     SHOW_SUB_TYPE = "Sous-type de spectacle"
-    PRICE = "Prix"
     VISA = "Visa d'exploitation"
 
 
@@ -55,31 +57,13 @@ operator_no_require_value = ["NOT_EXIST"]
 
 form_field_configuration = {
     "CATEGORY": {"field": "category", "operator": ["IN", "NOT_IN"]},
-    "CREATION_DATE": {
-        "field": "date",
-        "operator": [
-            "GREATER_THAN_OR_EQUAL_TO",
-            "LESS_THAN",
-        ],
-    },
+    "CREATION_DATE": {"field": "date", "operator": ["DATE_FROM", "DATE_TO", "DATE_EQUALS"]},
     "DEPARTMENT": {"field": "department", "operator": ["IN", "NOT_IN"]},
     "REGION": {"field": "region", "operator": ["IN", "NOT_IN"]},
-    "EAN": {"field": "string", "operator": ["CONTAINS", "NO_CONTAINS", "STR_EQUALS", "STR_NOT_EQUALS"]},
-    "EVENT_DATE": {
-        "field": "date",
-        "operator": [
-            "GREATER_THAN_OR_EQUAL_TO",
-            "LESS_THAN",
-        ],
-    },
-    "BOOKING_LIMIT_DATE": {
-        "field": "date",
-        "operator": [
-            "GREATER_THAN_OR_EQUAL_TO",
-            "LESS_THAN",
-        ],
-    },
-    "ID": {"field": "integer", "operator": ["EQUALS", "NOT_EQUALS"]},
+    "EAN": {"field": "string", "operator": ["EQUALS", "NOT_EQUALS"]},
+    "EVENT_DATE": {"field": "date", "operator": ["DATE_FROM", "DATE_TO", "DATE_EQUALS"]},
+    "BOOKING_LIMIT_DATE": {"field": "date", "operator": ["DATE_FROM", "DATE_TO", "DATE_EQUALS"]},
+    "ID": {"field": "string", "operator": ["IN", "NOT_IN"]},
     "NAME": {"field": "string", "operator": ["CONTAINS", "NO_CONTAINS", "NAME_EQUALS", "NAME_NOT_EQUALS"]},
     "OFFERER": {"field": "offerer", "operator": ["IN", "NOT_IN"]},
     "STATUS": {"field": "status", "operator": ["IN", "NOT_IN"]},
@@ -87,7 +71,7 @@ form_field_configuration = {
     "TAG": {"field": "criteria", "operator": ["IN", "NOT_IN", "NOT_EXIST"]},
     "VENUE": {"field": "venue", "operator": ["IN", "NOT_IN"]},
     "VALIDATION": {"field": "validation", "operator": ["IN", "NOT_IN"]},
-    "VISA": {"field": "string", "operator": ["CONTAINS", "NO_CONTAINS", "STR_EQUALS", "STR_NOT_EQUALS"]},
+    "VISA": {"field": "string", "operator": ["EQUALS", "NOT_EQUALS"]},
     "MUSIC_TYPE": {"field": "music_type", "operator": ["IN", "NOT_IN"]},
     "MUSIC_SUB_TYPE": {"field": "music_sub_type", "operator": ["IN", "NOT_IN"]},
     "SHOW_TYPE": {"field": "show_type", "operator": ["IN", "NOT_IN"]},
@@ -179,9 +163,10 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
             wtforms.validators.Optional(""),
         ],
     )
-    operator = fields.PCSelectWithPlaceholderValueField(
+    operator = fields.PCSelectField(
         "Opérateur",
         choices=forms_utils.choices_from_enum(utils.AdvancedSearchOperators),
+        default=utils.AdvancedSearchOperators.EQUALS,  # avoids empty option
         validators=[
             wtforms.validators.Optional(""),
         ],
@@ -252,9 +237,9 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
         field_list_compatibility=True,
     )
     string = fields.PCOptStringField(
-        "Text",
+        "Texte",
         validators=[
-            wtforms.validators.Length(max=256, message="Doit contenir moins de %(max)d caractères"),
+            wtforms.validators.Length(max=4096, message="Doit contenir moins de %(max)d caractères"),
         ],
     )
     venue = fields.PCTomSelectField(
@@ -324,6 +309,23 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
         search_inline=True,
         field_list_compatibility=True,
     )
+
+    def validate_string(self, string: fields.PCStringField) -> fields.PCStringField:
+        if string.data:
+            search_field = self._fields["search_field"].data
+
+            if search_field == "ID" and not re.match(r"^[\d\s,;]+$", string.data):
+                raise wtforms.validators.ValidationError("La liste d'ID n'est pas valide")
+            if search_field == "EAN":
+                if not string_utils.is_ean_valid(string.data):
+                    raise wtforms.validators.ValidationError("La recherche ne correspond pas au format d'un EAN-13")
+                string.data = string_utils.format_ean_or_visa(string.data)
+            elif search_field == "VISA":
+                if not string_utils.is_visa_valid(string.data):
+                    raise wtforms.validators.ValidationError("La recherche ne correspond pas au format d'un VISA")
+                string.data = string_utils.format_ean_or_visa(string.data)
+
+        return string
 
 
 class GetOfferAdvancedSearchForm(GetOffersBaseFields):
@@ -395,59 +397,6 @@ class GetOfferAdvancedSearchForm(GetOffersBaseFields):
             return False
 
         return super().validate(extra_validators)
-
-
-class GetOffersSearchForm(GetOffersBaseFields):
-    class Meta:
-        csrf = False
-
-    q = fields.PCOptSearchField("ID de l'offre ou liste d'ID, nom, EAN-13, visa d'exploitation")
-    category = fields.PCSelectMultipleField(
-        "Catégories",
-        choices=forms_utils.choices_from_enum(categories.CategoryIdLabelEnum),
-        search_inline=True,
-    )
-    offerer = fields.PCTomSelectField(
-        "Structures",
-        multiple=True,
-        choices=[],
-        validate_choice=False,
-        endpoint="backoffice_web.autocomplete_offerers",
-        search_inline=True,
-    )
-    status = fields.PCSelectMultipleField(
-        "États",
-        choices=forms_utils.choices_from_enum(OfferValidationStatus, formatter=filters.format_offer_validation_status),
-        search_inline=True,
-    )
-
-    def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
-        super().__init__(*args, **kwargs)
-        self._fields.move_to_end("q", last=False)
-        self._fields.move_to_end("category")
-        self._fields.move_to_end("offerer")
-        self._fields.move_to_end("status")
-        self._fields.move_to_end("limit")
-        autocomplete.prefill_offerers_choices(self.offerer)
-
-    def is_empty(self) -> bool:
-        empty = not any(
-            (
-                self.q.data,
-                self.category.data,
-                self.offerer.data,
-                self.status.data,
-            )
-        )
-        return empty and super().is_empty()
-
-
-class InternalSearchForm(GetOffersSearchForm, GetOfferAdvancedSearchForm):
-    """concat of GetOffersSearchForm and GetOfferAdvancedSearchForm. this form is never displayed but it is the one
-    used to display the list of individual offers"""
-
-    class Meta:
-        csrf = False
 
 
 class EditOfferForm(FlaskForm):

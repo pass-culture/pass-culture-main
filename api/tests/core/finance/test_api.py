@@ -18,9 +18,6 @@ import pcapi.core.bookings.models as bookings_models
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import exceptions as educational_exceptions
 import pcapi.core.educational.factories as educational_factories
-from pcapi.core.educational.factories import EducationalDepositFactory
-from pcapi.core.educational.factories import EducationalInstitutionFactory
-from pcapi.core.educational.factories import EducationalYearFactory
 import pcapi.core.educational.models as educational_models
 from pcapi.core.educational.models import Ministry
 from pcapi.core.educational.validation import check_institution_fund
@@ -297,7 +294,9 @@ class PriceEventTest:
         )
 
         author = users_factories.UserFactory()
-        api.validate_finance_incident(total_booking_incident.incident, force_debit_note=False, author=author)
+        api.validate_finance_overpayment_incident(
+            total_booking_incident.incident, force_debit_note=False, author=author
+        )
 
         assert total_booking_incident.booking.status == bookings_models.BookingStatus.CANCELLED
 
@@ -1383,21 +1382,29 @@ def test_generate_payments_file():
     )
 
     # Pricings for educational booking
-    year1 = EducationalYearFactory()
-    year2 = EducationalYearFactory()
-    year3 = EducationalYearFactory()
-    educational_institution = EducationalInstitutionFactory()
-    EducationalDepositFactory(
+    year1 = educational_factories.EducationalYearFactory()
+    year2 = educational_factories.EducationalYearFactory()
+    year3 = educational_factories.EducationalYearFactory()
+    educational_institution = educational_factories.EducationalInstitutionFactory()
+    educational_factories.EducationalDepositFactory(
         educationalInstitution=educational_institution, educationalYear=year1, ministry=Ministry.AGRICULTURE.name
     )
-    deposit_menjs = EducationalDepositFactory(
+    deposit_menjs = educational_factories.EducationalDepositFactory(
         educationalInstitution=educational_institution,
         educationalYear=year2,
         ministry=Ministry.EDUCATION_NATIONALE.name,
     )
-    deposit_ma = EducationalDepositFactory(
+    deposit_ma = educational_factories.EducationalDepositFactory(
         educationalInstitution=educational_institution, educationalYear=year3, ministry=Ministry.ARMEES.name
     )
+    meg_program = educational_factories.EducationalInstitutionProgramFactory(name="MeG")
+    meg_educational_institution = educational_factories.EducationalInstitutionFactory(programs=[meg_program])
+    deposit_meg = educational_factories.EducationalDepositFactory(
+        educationalInstitution=meg_educational_institution,
+        educationalYear=year2,
+        ministry=Ministry.EDUCATION_NATIONALE.name,
+    )
+
     # The first and second pricings should be merged together in the csv file
     factories.CollectivePricingFactory(
         amount=-300,  # rate = 100 %
@@ -1431,6 +1438,17 @@ def test_generate_payments_file():
         collectiveBooking__collectiveStock__collectiveOffer__venue=venue1,
         collectiveBooking__educationalInstitution=deposit_ma.educationalInstitution,
         collectiveBooking__educationalYear=deposit_ma.educationalYear,
+    )
+    factories.CollectivePricingFactory(
+        amount=-500,  # rate = 100 %
+        collectiveBooking__collectiveStock__price=5,
+        collectiveBooking__dateUsed=used_date,
+        collectiveBooking__collectiveStock__beginningDatetime=used_date,
+        collectiveBooking__collectiveStock__collectiveOffer__name="Une histoire militaire plutôt marseillaise",
+        collectiveBooking__collectiveStock__collectiveOffer__subcategoryId=subcategories.CINE_PLEIN_AIR.id,
+        collectiveBooking__collectiveStock__collectiveOffer__venue=venue1,
+        collectiveBooking__educationalInstitution=deposit_meg.educationalInstitution,
+        collectiveBooking__educationalYear=deposit_meg.educationalYear,
     )
 
     venue2 = offerers_factories.VenueFactory(
@@ -1537,7 +1555,7 @@ def test_generate_payments_file():
         reader = csv.DictReader(fp, quoting=csv.QUOTE_NONNUMERIC)
         rows = list(reader)
 
-    assert len(rows) == 6
+    assert len(rows) == 7
     assert {
         "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "SIREN de la structure": bank_account_1.offerer.siren,
@@ -1561,6 +1579,14 @@ def test_generate_payments_file():
         "Type de réservation": "EACC",
         "Ministère": "ARMEES",
         "Montant net offreur": 3,
+    } in rows
+    assert {
+        "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
+        "SIREN de la structure": bank_account_1.offerer.siren,
+        "Nom de la structure - Libellé des coordonnées bancaires": f"{bank_account_1.offerer.name} - {bank_account_1.label}",
+        "Type de réservation": "EACC",
+        "Ministère": "MeG",
+        "Montant net offreur": 5,
     } in rows
     assert {
         "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_3.id),
@@ -1635,9 +1661,9 @@ def test_generate_invoice_file():
     )
 
     # eac pricing
-    year1 = EducationalYearFactory()
-    educational_institution = EducationalInstitutionFactory()
-    deposit = EducationalDepositFactory(
+    year1 = educational_factories.EducationalYearFactory()
+    educational_institution = educational_factories.EducationalInstitutionFactory()
+    deposit = educational_factories.EducationalDepositFactory(
         educationalInstitution=educational_institution, educationalYear=year1, ministry=Ministry.AGRICULTURE.name
     )
     pricing3 = factories.CollectivePricingFactory(
@@ -1657,8 +1683,10 @@ def test_generate_invoice_file():
 
     # eac related to a program
     educational_program = educational_factories.EducationalInstitutionProgramFactory(label="Marseille en grand")
-    educational_institution_with_program = EducationalInstitutionFactory(programs=[educational_program])
-    deposit_with_program = EducationalDepositFactory(
+    educational_institution_with_program = educational_factories.EducationalInstitutionFactory(
+        programs=[educational_program]
+    )
+    deposit_with_program = educational_factories.EducationalDepositFactory(
         educationalInstitution=educational_institution_with_program,
         educationalYear=year1,
         ministry=Ministry.AGRICULTURE.name,
@@ -3593,7 +3621,7 @@ class ValidateFinanceIncidentTest:
             )
 
         author = users_factories.UserFactory()
-        api.validate_finance_incident(
+        api.validate_finance_overpayment_incident(
             collective_booking_finance_incident.incident, force_debit_note=False, author=author
         )
 

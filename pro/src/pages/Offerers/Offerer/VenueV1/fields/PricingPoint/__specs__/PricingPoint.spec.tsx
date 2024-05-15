@@ -11,7 +11,7 @@ import {
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import PricingPoint, { PricingPointProps } from '../PricingPoint'
+import { PricingPoint, PricingPointProps } from '../PricingPoint'
 
 vi.mock('apiClient/api', () => ({
   api: {

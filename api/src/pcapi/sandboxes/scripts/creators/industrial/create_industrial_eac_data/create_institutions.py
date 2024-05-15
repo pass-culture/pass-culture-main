@@ -1,3 +1,4 @@
+from pcapi import settings
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 
@@ -51,7 +52,7 @@ def create_institutions() -> list[educational_models.EducationalInstitution]:
             programs=[program],
             postalCode="13014",
         ),
-        # keep one school without the expected program to enable some
+        # keep one school without the expected program to allow some
         # tests
         educational_factories.EducationalInstitutionFactory(
             institutionId="0131251P",
@@ -61,6 +62,53 @@ def create_institutions() -> list[educational_models.EducationalInstitution]:
             postalCode="13013",
         ),
     ]
+    if settings.CREATE_ADAGE_TESTING_DATA:
+        # Those are used by Adage for testing purposes
+        institutions += [
+            educational_factories.EducationalInstitutionFactory(institutionId="0921545E"),
+            educational_factories.EducationalInstitutionFactory(institutionId="0752525M"),
+            educational_factories.EducationalInstitutionFactory(institutionId="0752902X"),
+            educational_factories.EducationalInstitutionFactory(institutionId="0781537X"),
+            educational_factories.EducationalInstitutionFactory(institutionId="0922256C"),
+            educational_factories.EducationalInstitutionFactory(institutionId="0761337R"),
+            educational_factories.EducationalInstitutionFactory(institutionId="0781845G"),
+            educational_factories.EducationalInstitutionFactory(institutionId="0920150N"),
+            educational_factories.EducationalInstitutionFactory(institutionId="0750652B"),
+            educational_factories.EducationalInstitutionFactory(institutionId="0760142S"),
+            educational_factories.EducationalInstitutionFactory(institutionId="0762735K"),
+            educational_factories.EducationalInstitutionFactory(institutionId="0780015T"),
+            educational_factories.EducationalInstitutionFactory(institutionId="0783283V"),
+            educational_factories.EducationalInstitutionFactory(institutionId="0920889S"),
+            educational_factories.EducationalInstitutionFactory(institutionId="0753820V"),
+            educational_factories.EducationalInstitutionFactory(institutionId="0761341V"),
+            educational_factories.EducationalInstitutionFactory(institutionId="0762634A"),
+            educational_factories.EducationalInstitutionFactory(
+                name="LYC METIER FREDERIC ET IRENE JOLIOT CURIE", institutionId="0760100W"
+            ),
+            educational_factories.EducationalInstitutionFactory(
+                institutionId="0780032L",
+                institutionType="COLLEGE",
+                name="FLORA TRISTAN",
+                city="CARRIÈRES-SOUS-POISSY",
+                postalCode="78955",
+            ),
+            educational_factories.EducationalInstitutionFactory(
+                institutionId="0780004F",
+                institutionType="LYCÉE AGRICOLE ET HORTICOLE",
+                name="LEGTPA DE ST GERMAIN EN LAYE",
+                city="SAINT-GERMAIN-EN-LAYE",
+                postalCode="78100",
+            ),
+            educational_factories.EducationalInstitutionFactory(
+                institutionId="0130553F",
+                institutionType="ECOLE ÉLÉMENTAIRE",
+                name="CLAIR SOLEIL",
+                city="MARSEILLE",
+                programs=[program],
+                postalCode="13014",
+            ),
+        ]
+
     create_deposits(institutions)
     return institutions
 

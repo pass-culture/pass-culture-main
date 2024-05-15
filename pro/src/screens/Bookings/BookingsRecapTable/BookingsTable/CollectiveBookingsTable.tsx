@@ -4,7 +4,7 @@ import React, { useEffect } from 'react'
 import { CollectiveBookingResponseModel } from 'apiClient/v1'
 import { SortArrow } from 'components/StocksEventList/SortArrow'
 import { Events } from 'core/FirebaseEvents/constants'
-import { Audience } from 'core/shared'
+import { Audience } from 'core/shared/types'
 import useAnalytics from 'hooks/useAnalytics'
 import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'
 import { usePagination } from 'hooks/usePagination'
@@ -57,7 +57,6 @@ interface CollectiveBookingsTableProps {
   bookings: CollectiveBookingResponseModel[]
   bookingStatuses: string[]
   updateGlobalFilters: (updatedFilters: Partial<BookingsFilters>) => void
-  reloadBookings: () => void
   defaultOpenedBookingId: string
   resetFilters: () => void
 }
@@ -66,7 +65,6 @@ export const CollectiveBookingsTable = ({
   bookings,
   bookingStatuses,
   updateGlobalFilters,
-  reloadBookings,
   defaultOpenedBookingId,
   resetFilters,
 }: CollectiveBookingsTableProps): JSX.Element => {
@@ -188,7 +186,6 @@ export const CollectiveBookingsTable = ({
             <CollectiveTableRow
               booking={booking}
               key={booking.bookingId}
-              reloadBookings={reloadBookings}
               defaultOpenedBookingId={defaultOpenedBookingId}
             />
           ))}

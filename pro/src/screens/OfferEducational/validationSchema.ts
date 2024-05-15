@@ -3,11 +3,11 @@ import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import * as yup from 'yup'
 
 import { OfferAddressType } from 'apiClient/v1'
+import { MAX_DETAILS_LENGTH } from 'core/OfferEducational/constants'
 import {
-  MAX_DETAILS_LENGTH,
-  OfferDatesType,
   OfferEducationalFormValues,
-} from 'core/OfferEducational'
+  OfferDatesType,
+} from 'core/OfferEducational/types'
 import { toDateStrippedOfTimezone } from 'utils/date'
 
 const threeYearsFromNow = addYears(new Date(), 3)

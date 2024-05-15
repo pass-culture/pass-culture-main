@@ -1,7 +1,7 @@
 import React, { FormEvent } from 'react'
 
 import { EacFormat, GetOffererResponseModel } from 'apiClient/v1'
-import FormLayout from 'components/FormLayout/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import {
   ALL_CATEGORIES_OPTION,
   ALL_FORMATS_OPTION,
@@ -11,8 +11,8 @@ import {
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
 import { SearchFiltersParams } from 'core/Offers/types'
-import { hasSearchFilters } from 'core/Offers/utils'
-import { Audience } from 'core/shared'
+import { hasSearchFilters } from 'core/Offers/utils/hasSearchFilters'
+import { Audience } from 'core/shared/types'
 import { SelectOption } from 'custom_types/form'
 import fullRefreshIcon from 'icons/full-refresh.svg'
 import strokeCloseIcon from 'icons/stroke-close.svg'
@@ -43,7 +43,7 @@ interface SearchFiltersProps {
   audience: Audience
 }
 
-const SearchFilters = ({
+export const SearchFilters = ({
   applyFilters,
   offerer,
   removeOfferer,
@@ -263,5 +263,3 @@ const SearchFilters = ({
     </>
   )
 }
-
-export default SearchFilters

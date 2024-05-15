@@ -20,7 +20,7 @@ import fullGoTop from 'icons/full-go-top.svg'
 import fullGrid from 'icons/full-grid.svg'
 import fullList from 'icons/full-list.svg'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
-import { isCollectiveOfferTemplate } from 'pages/AdageIframe/app/types/offers'
+import { isCollectiveOfferTemplate } from 'pages/AdageIframe/app/types'
 import { setSearchView } from 'store/adageFilter/reducer'
 import { adageSearchViewSelector } from 'store/adageFilter/selectors'
 import { Button } from 'ui-kit/Button/Button'
@@ -41,7 +41,8 @@ import { AdageOfferListCard } from './AdageOfferListCard/AdageOfferListCard'
 import { NoResultsPage } from './NoResultsPage/NoResultsPage'
 import Offer from './Offer'
 import styles from './Offers.module.scss'
-import { extractOfferIdFromObjectId, offerIsBookable } from './utils'
+import { extractOfferIdFromObjectId } from './utils/extractOfferIdFromObjectId'
+import { offerIsBookable } from './utils/offerIsBookable'
 
 export interface OffersProps {
   displayStats?: boolean

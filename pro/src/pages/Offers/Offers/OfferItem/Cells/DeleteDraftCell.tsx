@@ -1,8 +1,9 @@
-import React, { useCallback, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useSWRConfig } from 'swr'
 
+import { api } from 'apiClient/api'
 import { ListOffersOfferResponseModel } from 'apiClient/v1'
-import ConfirmDialog from 'components/Dialog/ConfirmDialog'
+import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import {
   Events,
   OFFER_FORM_NAVIGATION_IN,
@@ -17,7 +18,10 @@ import strokeTrashIcon from 'icons/stroke-trash.svg'
 import { GET_OFFERS_QUERY_KEY } from 'pages/Offers/OffersRoute'
 import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
 
-import { deleteDraftOffersAdapter } from '../../adapters/deleteDraftOffers'
+import {
+  computeDeletionSuccessMessage,
+  computeDeletionErrorMessage,
+} from '../../utils'
 import styles from '../OfferItem.module.scss'
 
 interface DeleteDraftOffersProps {
@@ -42,14 +46,11 @@ export const DeleteDraftCell = ({ offer }: DeleteDraftOffersProps) => {
   delete apiFilters.page
 
   const onConfirmDeleteDraftOffer = async () => {
-    const { isOk, message } = await deleteDraftOffersAdapter({
-      ids: [offer.id.toString()],
-    })
-
-    if (!isOk) {
-      notification.error(message)
-    } else {
-      notification.success(message)
+    try {
+      await api.deleteDraftOffers({
+        ids: [offer.id],
+      })
+      notification.success(computeDeletionSuccessMessage(1))
       logEvent?.(Events.DELETE_DRAFT_OFFER, {
         from: OFFER_FORM_NAVIGATION_IN.OFFERS,
         used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_TRASH_ICON,
@@ -57,6 +58,8 @@ export const DeleteDraftCell = ({ offer }: DeleteDraftOffersProps) => {
         isDraft: true,
       })
       await mutate([GET_OFFERS_QUERY_KEY, apiFilters])
+    } catch {
+      notification.error(computeDeletionErrorMessage(1))
     }
 
     setIsConfirmDialogOpen(false)

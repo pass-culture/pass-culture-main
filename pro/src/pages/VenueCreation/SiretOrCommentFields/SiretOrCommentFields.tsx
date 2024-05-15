@@ -1,10 +1,11 @@
 import { useFormikContext } from 'formik'
 import React, { useEffect, useState } from 'react'
 
-import { getAdressDataAdapter } from 'components/Address/adapter'
+import { apiAdresse } from 'apiClient/adresse/apiAdresse'
 import { handleAddressSelect } from 'components/Address/Address'
-import FormLayout from 'components/FormLayout'
-import getSiretData from 'core/Venue/adapters/getSiretDataAdapter'
+import { serializeAdressData } from 'components/Address/serializer'
+import { FormLayout } from 'components/FormLayout/FormLayout'
+import getSiretData from 'core/Venue/getSiretData'
 import { humanizeSiret, unhumanizeSiret } from 'core/Venue/utils'
 import { VenueCreationFormValues } from 'pages/VenueCreation/types'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
@@ -70,31 +71,28 @@ export const SiretOrCommentFields = ({
       return
     }
 
-    const response = await getSiretData(siret)
+    try {
+      const response = await getSiretData(siret)
 
-    /* istanbul ignore next: DEBT, TO FIX */
-    if (!response.isOk) {
-      return
-    }
-    const address = `${response.payload.values?.address} ${response.payload.values?.postalCode} ${response.payload.values?.city}`
-    setIsFieldNameFrozen &&
-      setIsFieldNameFrozen(
-        response.payload.values !== undefined &&
-          response.payload.values.siret.length > 0
+      /* istanbul ignore next: DEBT, TO FIX */
+      const address = `${response.values?.address} ${response.values?.postalCode} ${response.values?.city}`
+      setIsFieldNameFrozen &&
+        setIsFieldNameFrozen(
+          response.values !== undefined && response.values.siret.length > 0
+        )
+      await setFieldValue('name', response.values?.name)
+      // getSuggestions pour récupérer les adresses
+      const adressSuggestions = await apiAdresse.getDataFromAddress(address)
+      await setFieldValue('search-addressAutocomplete', address)
+      await setFieldValue('addressAutocomplete', address)
+
+      handleAddressSelect(
+        setFieldValue,
+        serializeAdressData(adressSuggestions)[0]
       )
-    await setFieldValue('name', response.payload.values?.name)
-    // getSuggestions pour récupérer les adresses
-    const responseAdressDataAdapter = await getAdressDataAdapter({
-      search: address,
-    })
-    /* istanbul ignore next: DEBT, TO FIX */
-    if (!responseAdressDataAdapter.isOk) {
+    } catch {
       return
     }
-    await setFieldValue('search-addressAutocomplete', address)
-    await setFieldValue('addressAutocomplete', address)
-
-    handleAddressSelect(setFieldValue, responseAdressDataAdapter.payload[0])
   }
   const [sideComponent, setSideComponent] = useState(<></>)
   useEffect(() => {

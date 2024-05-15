@@ -133,7 +133,9 @@ def format_amount(amount: float | decimal.Decimal | None) -> str:
     if amount is None:
         amount = 0.0
 
-    return f"{amount:,.2f} €".replace(",", "\u202f").replace(".", ",")
+    return Markup('<span class="text-nowrap">{formatted_amount} €</span>').format(
+        formatted_amount=f"{amount:,.2f}".replace(",", "\u202f").replace(".", ",")
+    )
 
 
 def format_cents(amount_in_cents: int | None) -> str:
@@ -688,13 +690,17 @@ def format_modified_info_name(info_name: str) -> str:
         case "label":
             return "Intitulé"
         case "accessibilityProvider.externalAccessibilityId":
-            return "Id chez Acceslibre"
+            return "ID chez Acceslibre"
         case "accessibilityProvider.externalAccessibilityUrl":
-            return "Url chez Acceslibre"
+            return "URL chez Acceslibre"
         case "notificationSubscriptions.marketing_email":
             return "Abonné aux emails marketing"
         case "notificationSubscriptions.marketing_push":
             return "Abonné aux notifications push"
+        case "pro_new_nav_state.newNavDate":
+            return "Date de passage sur la nouvelle interface Pro"
+        case "pro_new_nav_state.eligibilityDate":
+            return "Date d'éligibilité à la nouvelle interface Pro"
 
     if day := match_opening_hours(info_name):
         return f"Horaires du {day}"

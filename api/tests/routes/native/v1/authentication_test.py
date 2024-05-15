@@ -264,7 +264,6 @@ class SSOSigninTest:
     )
 
     @patch("pcapi.connectors.google_oauth.get_google_user")
-    @override_features(WIP_ENABLE_GOOGLE_SSO=True)
     def test_account_is_active(self, mocked_google_oauth, client, caplog):
         users_factories.SingleSignOnFactory(
             ssoUserId=self.valid_google_user.sub, user__email=self.valid_google_user.email, user__isActive=True
@@ -285,7 +284,6 @@ class SSOSigninTest:
         assert "Successful authentication attempt" in caplog.messages
 
     @patch("pcapi.connectors.google_oauth.get_google_user")
-    @override_features(WIP_ENABLE_GOOGLE_SSO=True)
     def test_account_is_deleted(self, mocked_google_oauth, client):
         user = users_factories.UserFactory(email=self.valid_google_user.email, isActive=False)
         users_factories.SingleSignOnFactory(user=user, ssoUserId=self.valid_google_user.sub)
@@ -304,7 +302,6 @@ class SSOSigninTest:
         assert response.json["code"] == "SSO_ACCOUNT_DELETED"
 
     @patch("pcapi.connectors.google_oauth.get_google_user")
-    @override_features(WIP_ENABLE_GOOGLE_SSO=True)
     def test_account_is_anonymized(self, mocked_google_oauth, client):
         user = users_factories.AnonymizedUserFactory(email=self.valid_google_user.email)
         users_factories.SingleSignOnFactory(user=user, ssoUserId=self.valid_google_user.sub)
@@ -322,7 +319,6 @@ class SSOSigninTest:
         assert response.json["code"] == "SSO_ACCOUNT_ANONYMIZED"
 
     @patch("pcapi.connectors.google_oauth.get_google_user")
-    @override_features(WIP_ENABLE_GOOGLE_SSO=True)
     def test_account_creation_token_if_account_does_not_exist(self, mocked_google_oauth, client, caplog):
         oauth_state_token = token_utils.UUIDToken.create(
             token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
@@ -350,7 +346,6 @@ class SSOSigninTest:
         )
 
     @patch("pcapi.connectors.google_oauth.get_google_user")
-    @override_features(WIP_ENABLE_GOOGLE_SSO=True)
     def test_single_sign_on_ignores_email_if_found(self, mocked_google_oauth, client):
         user = users_factories.UserFactory(email="another@email.com", isActive=True)
         users_factories.SingleSignOnFactory(user=user, ssoUserId=self.valid_google_user.sub)
@@ -367,7 +362,6 @@ class SSOSigninTest:
         assert response.status_code == 200
 
     @patch("pcapi.connectors.google_oauth.get_google_user")
-    @override_features(WIP_ENABLE_GOOGLE_SSO=True)
     def test_single_sign_on_inserts_sso_method_if_email_found(self, mocked_google_oauth, client):
         user = users_factories.UserFactory(email=self.valid_google_user.email, isActive=True)
         oauth_state_token = token_utils.UUIDToken.create(
@@ -386,7 +380,6 @@ class SSOSigninTest:
         assert created_sso.ssoUserId == self.valid_google_user.sub
 
     @patch("pcapi.connectors.google_oauth.get_google_user")
-    @override_features(WIP_ENABLE_GOOGLE_SSO=True)
     def test_single_sign_on_raises_if_email_not_validated(self, mocked_google_oauth, client):
         users_factories.UserFactory(email=self.valid_google_user.email, isActive=True)
         oauth_state_token = token_utils.UUIDToken.create(
@@ -404,7 +397,6 @@ class SSOSigninTest:
         assert response.status_code == 400
 
     @patch("pcapi.connectors.google_oauth.get_google_user")
-    @override_features(WIP_ENABLE_GOOGLE_SSO=True)
     def test_single_sign_on_validates_email_and_deletes_password(self, mocked_google_oauth, client, caplog):
         user = users_factories.UserFactory(email=self.valid_google_user.email, isEmailValidated=False)
         oauth_state_token = token_utils.UUIDToken.create(
@@ -422,7 +414,6 @@ class SSOSigninTest:
         assert user.password is None
 
     @patch("pcapi.connectors.google_oauth.get_google_user")
-    @override_features(WIP_ENABLE_GOOGLE_SSO=True)
     def test_single_sign_on_does_not_duplicate_ssos(self, mocked_google_oauth, client):
         single_sign_on = users_factories.SingleSignOnFactory(ssoUserId=self.valid_google_user.sub)
         oauth_state_token = token_utils.UUIDToken.create(
@@ -439,7 +430,6 @@ class SSOSigninTest:
         assert SingleSignOn.query.filter(SingleSignOn.user == single_sign_on.user).count() == 1
 
     @patch("pcapi.connectors.google_oauth.get_google_user")
-    @override_features(WIP_ENABLE_GOOGLE_SSO=True)
     def test_single_sign_on_raises_if_another_sso_is_already_configured(self, mocked_google_oauth, client):
         oauth_state_token = token_utils.UUIDToken.create(
             token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
@@ -455,7 +445,6 @@ class SSOSigninTest:
         assert response.status_code == 400
         assert SingleSignOn.query.filter(SingleSignOn.ssoUserId == self.valid_google_user.sub).count() == 0
 
-    @override_features(WIP_ENABLE_GOOGLE_SSO=True)
     def test_oauth_state_token_past_expiration_date(self, client):
         with time_machine.travel("2022-01-01"):
             oauth_state_token = token_utils.UUIDToken.create(
@@ -470,7 +459,6 @@ class SSOSigninTest:
         assert response.status_code == 400, response.json
         assert response.json["code"] == "SSO_LOGIN_TIMEOUT"
 
-    @override_features(WIP_ENABLE_GOOGLE_SSO=True)
     def test_oauth_state_token_expired(self, client):
         oauth_state_token = token_utils.UUIDToken.create(
             token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
@@ -486,7 +474,6 @@ class SSOSigninTest:
         assert response.json["code"] == "SSO_LOGIN_TIMEOUT"
 
     @patch("pcapi.connectors.google_oauth.get_google_user")
-    @override_features(WIP_ENABLE_GOOGLE_SSO=True)
     def test_authorization_expires_oauth_state_token(self, mocked_google_oauth, client):
         users_factories.SingleSignOnFactory(
             ssoUserId=self.valid_google_user.sub, user__email=self.valid_google_user.email, user__isActive=True
@@ -504,7 +491,6 @@ class SSOSigninTest:
         assert response.status_code == 200, response.json
         assert not token_utils.UUIDToken.token_exists(token_utils.TokenType.OAUTH_STATE, oauth_state_token.key_suffix)
 
-    @override_features(WIP_ENABLE_GOOGLE_SSO=True)
     def test_oauth_state_token_creation(self, client):
         response = client.get("/native/v1/oauth/state")
 
@@ -514,7 +500,6 @@ class SSOSigninTest:
         assert uuid.UUID(oauth_state_token.key_suffix)
         assert not oauth_state_token.check(token_utils.TokenType.OAUTH_STATE, oauth_state_token.key_suffix)
 
-    @override_features(WIP_ENABLE_GOOGLE_SSO=True)
     @patch("pcapi.connectors.google_oauth.get_google_user")
     def test_oauth_state_token_roundtrip(self, mocked_google_oauth, client):
         users_factories.SingleSignOnFactory(
@@ -533,6 +518,7 @@ class SSOSigninTest:
 
         assert authorization_response.status_code == 200, authorization_response.json
 
+    @override_features(WIP_ENABLE_GOOGLE_SSO=False)
     def test_sso_is_feature_flagged(self, client):
         response = client.post("/native/v1/oauth/google/authorize", json={"code": "4/google_code"})
 
@@ -587,7 +573,6 @@ class TrustedDeviceFeatureTest:
 
         @patch("pcapi.core.token.UUIDToken.load_and_check")
         @patch("pcapi.connectors.google_oauth.get_google_user")
-        @override_features(WIP_ENABLE_GOOGLE_SSO=True)
         def test_save_login_device_history_on_signin(
             self,
             mocked_google_oauth,
@@ -611,7 +596,6 @@ class TrustedDeviceFeatureTest:
 
         @patch("pcapi.core.token.UUIDToken.load_and_check")
         @patch("pcapi.connectors.google_oauth.get_google_user")
-        @override_features(WIP_ENABLE_GOOGLE_SSO=True)
         def should_not_save_login_device_history_on_signin_when_no_device_info(
             self, mocked_google_oauth, mocked_load_and_check_oauth_token, client, signin_route, data
         ):
@@ -639,7 +623,6 @@ class TrustedDeviceFeatureTest:
 
         @patch("pcapi.core.token.UUIDToken.load_and_check")
         @patch("pcapi.connectors.google_oauth.get_google_user")
-        @override_features(WIP_ENABLE_GOOGLE_SSO=True)
         def test_save_login_device_as_trusted_device_on_second_signin_with_same_device(
             self, mocked_google_oauth, mocked_load_and_check_oauth_token, client, signin_route, data
         ):
@@ -675,7 +658,6 @@ class TrustedDeviceFeatureTest:
 
         @patch("pcapi.core.token.UUIDToken.load_and_check")
         @patch("pcapi.connectors.google_oauth.get_google_user")
-        @override_features(WIP_ENABLE_GOOGLE_SSO=True)
         def should_not_save_login_device_as_trusted_device_on_second_signin_when_using_different_devices(
             self, mocked_google_oauth, mocked_load_and_check_oauth_token, client, signin_route, data
         ):
@@ -703,7 +685,6 @@ class TrustedDeviceFeatureTest:
 
         @patch("pcapi.core.token.UUIDToken.load_and_check")
         @patch("pcapi.connectors.google_oauth.get_google_user")
-        @override_features(WIP_ENABLE_GOOGLE_SSO=True)
         def should_send_email_when_login_is_suspicious(
             self, mocked_google_oauth, mocked_load_and_check_oauth_token, client, signin_route, data
         ):
@@ -724,7 +705,6 @@ class TrustedDeviceFeatureTest:
 
         @patch("pcapi.core.token.UUIDToken.load_and_check")
         @patch("pcapi.connectors.google_oauth.get_google_user")
-        @override_features(WIP_ENABLE_GOOGLE_SSO=True)
         def should_send_limited_number_of_emails_when_login_is_suspicious(
             self, mocked_google_oauth, mocked_load_and_check_oauth_token, client, signin_route, data
         ):
@@ -740,7 +720,6 @@ class TrustedDeviceFeatureTest:
 
         @patch("pcapi.core.token.UUIDToken.load_and_check")
         @patch("pcapi.connectors.google_oauth.get_google_user")
-        @override_features(WIP_ENABLE_GOOGLE_SSO=True)
         def should_send_suspicious_login_email_to_user_suspended_upon_request(
             self, mocked_google_oauth, mocked_load_and_check_oauth_token, client, signin_route, data
         ):
@@ -758,7 +737,6 @@ class TrustedDeviceFeatureTest:
 
         @patch("pcapi.core.token.UUIDToken.load_and_check")
         @patch("pcapi.connectors.google_oauth.get_google_user")
-        @override_features(WIP_ENABLE_GOOGLE_SSO=True)
         @pytest.mark.parametrize(
             "reason",
             [
@@ -784,7 +762,6 @@ class TrustedDeviceFeatureTest:
 
         @patch("pcapi.core.token.UUIDToken.load_and_check")
         @patch("pcapi.connectors.google_oauth.get_google_user")
-        @override_features(WIP_ENABLE_GOOGLE_SSO=True)
         def should_extend_refresh_token_lifetime_when_logging_in_with_a_trusted_device(
             self, mocked_google_oauth, mocked_load_and_check_oauth_token, client, signin_route, data
         ):
@@ -806,7 +783,6 @@ class TrustedDeviceFeatureTest:
 
         @patch("pcapi.core.token.UUIDToken.load_and_check")
         @patch("pcapi.connectors.google_oauth.get_google_user")
-        @override_features(WIP_ENABLE_GOOGLE_SSO=True)
         def should_not_extend_refresh_token_lifetime_when_logging_in_from_unknown_device(
             self, mocked_google_oauth, mocked_load_and_check_oauth_token, client, signin_route, data
         ):

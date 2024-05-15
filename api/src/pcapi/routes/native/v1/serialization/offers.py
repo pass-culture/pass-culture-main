@@ -2,6 +2,7 @@ from datetime import date
 from datetime import datetime
 import logging
 from typing import Callable
+from typing import TypeVar
 
 from pydantic.v1.class_validators import validator
 from pydantic.v1.fields import Field
@@ -222,9 +223,12 @@ def get_gtl_labels(gtl_id: str) -> GtlLabels | None:
     return None
 
 
-class OfferResponse(BaseModel):
+BaseOfferResponseType = TypeVar("BaseOfferResponseType", bound="BaseOfferResponse")
+
+
+class BaseOfferResponse(BaseModel):
     @classmethod
-    def from_orm(cls, offer: Offer) -> "OfferResponse":
+    def from_orm(cls: type[BaseOfferResponseType], offer: Offer) -> BaseOfferResponseType:
         offer.accessibility = {
             "audioDisability": offer.audioDisabilityCompliant,
             "mentalDisability": offer.mentalDisabilityCompliant,
@@ -274,7 +278,6 @@ class OfferResponse(BaseModel):
     name: str
     stocks: list[OfferStockResponse]
     subcategoryId: subcategories.SubcategoryIdEnum
-    image: OfferImageResponse | None
     venue: OfferVenueResponse
     withdrawalDetails: str | None
 
@@ -283,6 +286,14 @@ class OfferResponse(BaseModel):
         alias_generator = to_camel
         allow_population_by_field_name = True
         json_encoders = {datetime: format_into_utc_date}
+
+
+class OfferResponse(BaseOfferResponse):
+    image: OfferImageResponse | None
+
+
+class OfferResponseV2(BaseOfferResponse):
+    images: dict[str, OfferImageResponse] | None
 
 
 class OfferPreviewResponse(BaseModel):

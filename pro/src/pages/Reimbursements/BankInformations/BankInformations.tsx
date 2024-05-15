@@ -23,7 +23,7 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 import AddBankInformationsDialog from './AddBankInformationsDialog'
 import styles from './BankInformations.module.scss'
 
-const BankInformations = (): JSX.Element => {
+export const BankInformations = (): JSX.Element => {
   const notify = useNotification()
   const { logEvent } = useAnalytics()
   const location = useLocation()
@@ -31,7 +31,10 @@ const BankInformations = (): JSX.Element => {
   const [showAddBankInformationsDialog, setShowAddBankInformationsDialog] =
     useState(false)
   const { selectedOfferer, setSelectedOfferer }: ReimbursementsContextProps =
-    useOutletContext()
+    useOutletContext() ?? {
+      selectedOfferer: null,
+      setSelectedOfferer: () => null,
+    }
 
   const [isOffererBankAccountsLoading, setIsOffererBankAccountsLoading] =
     useState<boolean>(false)
@@ -195,5 +198,3 @@ const BankInformations = (): JSX.Element => {
     </>
   )
 }
-
-export default BankInformations

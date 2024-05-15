@@ -102,7 +102,6 @@ class ListPivotsTest(GetEndpointHelper):
         assert boost_rows[0]["Id du Lieu"] == str(boost_pivot.cinemaProviderPivot.venue.id)
         assert boost_rows[0]["Lieu"] == boost_pivot.cinemaProviderPivot.venue.name
         assert boost_rows[0]["Identifiant cinéma (Boost)"] == boost_pivot.cinemaProviderPivot.idAtProvider
-        assert boost_rows[0]["Nom de l'utilisateur (Boost)"] == boost_pivot.username
         assert boost_rows[0]["URL du cinéma (Boost)"] == boost_pivot.cinemaUrl
 
     @pytest.mark.parametrize(
@@ -343,8 +342,6 @@ class CreatePivotTest(PostEndpointHelper):
             "venue_id": venue_id,
             "cinema_id": "boost cinema 1",
             "cinema_url": "http://example.com/boost1/",
-            "username": "boost super user",
-            "password": "azerty!123",
         }
 
         self.post_to_endpoint(authenticated_client, name="boost", form=form)
@@ -353,8 +350,6 @@ class CreatePivotTest(PostEndpointHelper):
         assert created.cinemaProviderPivot.venueId == venue_id
         assert created.cinemaProviderPivot.idAtProvider == form["cinema_id"]
         assert created.cinemaUrl == form["cinema_url"]
-        assert created.username == form["username"]
-        assert created.password == form["password"]
 
     def test_create_pivot_cgr(self, requests_mock, authenticated_client):
         requests_mock.get("http://example.com/another_web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
@@ -529,8 +524,6 @@ class UpdatePivotTest(PostEndpointHelper):
             "venue_id": str(boost_pivot.cinemaProviderPivot.venue.id),
             "cinema_id": "boost 1",
             "cinema_url": "http://example.com/boost1/",
-            "username": "super user de boost 1",
-            "password": "Azerty!123",
         }
 
         self.post_to_endpoint(authenticated_client, name="boost", pivot_id=boost_pivot.id, form=form)
@@ -538,8 +531,6 @@ class UpdatePivotTest(PostEndpointHelper):
         updated = providers_models.BoostCinemaDetails.query.one()
         assert updated.cinemaProviderPivot.idAtProvider == form["cinema_id"]
         assert updated.cinemaUrl == form["cinema_url"]
-        assert updated.password == form["password"]
-        assert updated.password == form["password"]
 
     def test_update_pivot_cgr(self, authenticated_client, requests_mock):
         requests_mock.get("http://example.com/another_web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)

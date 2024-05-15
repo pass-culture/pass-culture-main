@@ -5,8 +5,8 @@ import { useState } from 'react'
 
 import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
-import ConfirmDialog from 'components/Dialog/ConfirmDialog'
-import FormLayout from 'components/FormLayout'
+import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import useNotification from 'hooks/useNotification'
 import fullMoreIcon from 'icons/full-more.svg'
@@ -19,8 +19,6 @@ import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
-import deletePriceCategoryAdapter from './adapters/deletePriceCategoryAdapter'
-import postPriceCategoriesAdapter from './adapters/postPriceCategoriesAdapter'
 import { computeInitialValues } from './form/computeInitialValues'
 import {
   INITIAL_PRICE_CATEGORY,
@@ -69,15 +67,14 @@ export const PriceCategoriesForm = ({
       } else {
         setCurrentDeletionIndex(null)
       }
-      const { isOk, message } = await deletePriceCategoryAdapter({
-        offerId: offer.id,
-        priceCategoryId: priceCategoryId,
-      })
-      if (isOk) {
+      try {
+        await api.deletePriceCategory(offer.id, priceCategoryId)
         arrayHelpers.remove(index)
-        notify.success(message)
-      } else {
-        notify.error(message)
+        notify.success('Le tarif a été supprimé.')
+      } catch {
+        notify.error(
+          'Une erreur est survenue lors de la suppression de votre tarif'
+        )
       }
     } else {
       arrayHelpers.remove(index)
@@ -98,10 +95,13 @@ export const PriceCategoriesForm = ({
             },
           ],
         }
-        await postPriceCategoriesAdapter({
-          offerId: offer.id,
-          requestBody: requestBody,
-        })
+        try {
+          await api.postPriceCategories(offer.id, requestBody)
+        } catch (error) {
+          notify.error(
+            'Une erreur est survenue lors de la mise à jour de votre tarif'
+          )
+        }
       }
       const updatedOffer = await api.getOffer(offer.id)
       await setValues({

@@ -1,18 +1,15 @@
 import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { addYears } from 'date-fns'
-import format from 'date-fns/format'
+import { addYears, format } from 'date-fns'
 import { Formik } from 'formik'
 
-import {
-  DEFAULT_EAC_FORM_VALUES,
-  OfferEducationalFormValues,
-} from 'core/OfferEducational'
+import { DEFAULT_EAC_FORM_VALUES } from 'core/OfferEducational/constants'
+import { OfferEducationalFormValues } from 'core/OfferEducational/types'
 import { getOfferEducationalValidationSchema } from 'screens/OfferEducational/validationSchema'
 import { Button } from 'ui-kit/Button/Button'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 
-import FormDates, { FormDatesProps } from '../FormDates'
+import { FormDates, FormDatesProps } from '../FormDates'
 
 const renderFormDates = (
   props: FormDatesProps,

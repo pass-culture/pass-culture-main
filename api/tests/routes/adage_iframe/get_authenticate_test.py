@@ -162,8 +162,8 @@ class AuthenticateTest:
         response = client.with_explicit_token(corrupted_token).get("/adage-iframe/authenticate")
 
         # Then
-        assert response.status_code == 403
-        assert "Unrecognized token" in response.json["Authorization"]
+        assert response.status_code == 401
+        assert "Unrecognized token" in response.json["msg"]
 
     def test_should_return_error_response_when_jwt_expired(self, client, valid_user):
         # Given
@@ -176,7 +176,7 @@ class AuthenticateTest:
         response = client.with_explicit_token(expired_token).get("/adage-iframe/authenticate")
 
         # Then
-        assert response.status_code == 422
+        assert response.status_code == 401
         assert "Token expired" in response.json["msg"]
 
     def test_should_return_error_response_when_no_expiration_date_in_token(self, client, valid_user):
@@ -187,7 +187,7 @@ class AuthenticateTest:
         response = client.with_explicit_token(no_expiration_date_token).get("/adage-iframe/authenticate")
 
         # Then
-        assert response.status_code == 422
+        assert response.status_code == 401
         assert "No expiration date provided" in response.json["msg"]
 
     def _create_adage_valid_token(self, valid_user, uai_code: str | None) -> bytes:

@@ -129,22 +129,30 @@ class GetDownloadBookingsForm(FlaskForm):
 class GetCollectiveBookingListForm(BaseBookingListForm):
     def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
         super().__init__(*args, **kwargs)
-        self.q.label.text = "ID réservation collective, ID offre, Nom ou ID de l'établissement"
+        self.q.label.text = "ID réservation collective ou ID offre"
         self.status.choices = utils.choices_from_enum(CollectiveBookingStatus)
 
         self._fields.move_to_end("offerer")
         self._fields.move_to_end("venue")
+        self._fields.move_to_end("institution")
         self._fields.move_to_end("formats")
         self._fields.move_to_end("status")
         self._fields.move_to_end("cashflow_batches")
 
     def is_empty(self) -> bool:
-        return super().is_empty() and not self.formats.data
+        return super().is_empty() and not self.institution.data and not self.formats.data
 
     @property
     def is_single_venue_with_optional_dates(self) -> bool:
         return super().is_single_venue_with_optional_dates and not self.formats.data
 
+    institution = fields.PCTomSelectField(
+        "Établissement",
+        multiple=True,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice_web.autocomplete_institutions",
+    )
     formats = fields.PCSelectMultipleField(
         "Formats", choices=utils.choices_from_enum(subcategories.EacFormat), field_list_compatibility=True
     )

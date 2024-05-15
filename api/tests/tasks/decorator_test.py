@@ -79,7 +79,7 @@ class CloudTaskDecoratorTest:
         )
 
     @mock.patch("pcapi.tasks.cloud_task.AUTHORIZATION_HEADER_VALUE", "Bearer secret-token")
-    @override_settings(IS_RUNNING_TESTS=False, IS_DEV=False)
+    @override_settings(IS_RUNNING_TESTS=False, CLOUD_TASK_CALL_INTERNAL_API_ENDPOINT=False)
     def test_calling_function_calls_google_cloud_tasks(self, cloud_task_client):
         # When running in production, the decorated function is not
         # directly executed. Instead, we call Google Cloud Tasks and

@@ -5,6 +5,7 @@ from unittest.mock import patch
 from flask import url_for
 import pytest
 
+from pcapi import settings
 from pcapi.core import search
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.factories import ProductWhitelistFactory
@@ -233,11 +234,11 @@ class AddProductWhitelistTest(PostEndpointHelper):
         mock_get_by_ean13.return_value = BOOK_BY_EAN_FIXTURE
         mock_whitelist_product.return_value = thing_product
         requests_mock.post(
-            "https://login.epagine.fr/v1/login/test@example.com/token",
+            f"{settings.TITELIVE_EPAGINE_API_AUTH_URL}/login/test@example.com/token",
             json={"token": "XYZ"},
         )
         requests_mock.get(
-            f"https://catsearch.epagine.fr/v1/ean/{self.endpoint_kwargs['ean']}",
+            f"{settings.TITELIVE_EPAGINE_API_URL}/ean/{self.endpoint_kwargs['ean']}",
             json=fixtures.BOOK_BY_EAN_FIXTURE,
         )
         assert not fraud_models.ProductWhitelist.query.filter(
@@ -260,11 +261,11 @@ class AddProductWhitelistTest(PostEndpointHelper):
     @override_settings(TITELIVE_EPAGINE_API_PASSWORD="qwerty123")
     def test_fail_add_product_whitelist_not_existing(self, requests_mock, authenticated_client):
         requests_mock.post(
-            "https://login.epagine.fr/v1/login/test@example.com/token",
+            f"{settings.TITELIVE_EPAGINE_API_AUTH_URL}/login/test@example.com/token",
             json={"token": "XYZ"},
         )
         requests_mock.get(
-            f"https://catsearch.epagine.fr/v1/ean/{fixtures.NO_RESULT_BY_EAN_FIXTURE['ean']}",
+            f"{settings.TITELIVE_EPAGINE_API_URL}/ean/{fixtures.NO_RESULT_BY_EAN_FIXTURE['ean']}",
             json=fixtures.NO_RESULT_BY_EAN_FIXTURE,
             status_code=404,
         )
@@ -284,11 +285,11 @@ class AddProductWhitelistTest(PostEndpointHelper):
     @override_settings(TITELIVE_EPAGINE_API_PASSWORD="qwerty123")
     def test_fail_no_gtl_id(self, requests_mock, authenticated_client):
         requests_mock.post(
-            "https://login.epagine.fr/v1/login/test@example.com/token",
+            f"{settings.TITELIVE_EPAGINE_API_AUTH_URL}/login/test@example.com/token",
             json={"token": "XYZ"},
         )
         requests_mock.get(
-            f"https://catsearch.epagine.fr/v1/ean/{fixtures.NO_GTL_IN_RESULT_FIXTURE['ean']}",
+            f"{settings.TITELIVE_EPAGINE_API_URL}/ean/{fixtures.NO_GTL_IN_RESULT_FIXTURE['ean']}",
             json=fixtures.NO_GTL_IN_RESULT_FIXTURE,
             status_code=200,
         )

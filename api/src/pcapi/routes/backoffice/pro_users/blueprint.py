@@ -31,6 +31,7 @@ from pcapi.routes.backoffice.pro_users import forms as pro_users_forms
 from pcapi.routes.backoffice.users import forms as user_forms
 from pcapi.tasks.batch_tasks import DeleteBatchUserAttributesRequest
 from pcapi.tasks.batch_tasks import delete_user_attributes_task
+from pcapi.utils import date as date_utils
 from pcapi.utils import email as email_utils
 from pcapi.utils import urls
 
@@ -50,23 +51,38 @@ def get(user_id: int) -> utils.BackofficeResponse:
         users_api.get_pro_account_base_query(user_id)
         .options(
             sa.orm.joinedload(users_models.User.UserOfferers).load_only(offerers_models.UserOfferer.validationStatus),
-            sa.orm.joinedload(users_models.User.pro_new_nav_state).load_only(
-                users_models.UserProNewNavState.newNavDate
-            ),
+            sa.orm.joinedload(users_models.User.pro_new_nav_state),
         )
         .one_or_none()
     )
     if not user:
         flash("Cet utilisateur n'a pas de compte pro ou n'existe pas", "warning")
         return redirect(url_for("backoffice_web.pro.search_pro"), code=303)
-
-    form = pro_users_forms.EditProUserForm(
+    if FeatureToggle.ENABLE_PRO_NEW_NAV_MODIFICATION.is_active():
+        form_class = pro_users_forms.EditProUserFormWithNewProNav
+    else:
+        form_class = pro_users_forms.EditProUserForm
+    form = form_class(
         first_name=user.firstName,
         last_name=user.lastName,
         email=user.email,
         phone_number=user.phoneNumber,
         postal_code=user.postalCode,
         marketing_email_subscription=user.get_notification_subscriptions().marketing_email,
+        new_nav_date=(
+            date_utils.default_timezone_to_local_datetime(
+                user.pro_new_nav_state.newNavDate, date_utils.METROPOLE_TIMEZONE
+            ).strftime(date_utils.DATETIME_FIELD_FORMAT)
+            if (user.pro_new_nav_state and user.pro_new_nav_state.newNavDate)
+            else None
+        ),
+        eligibility_date=(
+            date_utils.default_timezone_to_local_datetime(
+                user.pro_new_nav_state.eligibilityDate, date_utils.METROPOLE_TIMEZONE
+            ).strftime(date_utils.DATETIME_FIELD_FORMAT)
+            if (user.pro_new_nav_state and user.pro_new_nav_state.eligibilityDate)
+            else None
+        ),
     )
     dst = url_for(".update_pro_user", user_id=user.id)
 
@@ -125,7 +141,7 @@ def get_details(user_id: int) -> utils.BackofficeResponse:
     )
 
 
-@pro_user_blueprint.route("/update", methods=["POST"])
+@pro_user_blueprint.route("", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def update_pro_user(user_id: int) -> utils.BackofficeResponse:
     user = (
@@ -134,12 +150,29 @@ def update_pro_user(user_id: int) -> utils.BackofficeResponse:
     if not user:
         raise NotFound()
 
-    form = pro_users_forms.EditProUserForm()
+    if FeatureToggle.ENABLE_PRO_NEW_NAV_MODIFICATION.is_active():
+        form = pro_users_forms.EditProUserFormWithNewProNav()
+    else:
+        form = pro_users_forms.EditProUserForm()
     if not form.validate():
         dst = url_for(".update_pro_user", user_id=user_id)
         flash("Le formulaire n'est pas valide", "warning")
         return render_template("pro_user/get.html", form=form, dst=dst, user=user), 400
 
+    new_nav_pro_date = (
+        date_utils.local_datetime_to_default_timezone(form.new_nav_date.data, date_utils.METROPOLE_TIMEZONE).replace(
+            tzinfo=None
+        )
+        if hasattr(form, "new_nav_date") and form.new_nav_date.data
+        else None
+    )
+    new_nav_pro_eligibility_date = (
+        date_utils.local_datetime_to_default_timezone(
+            form.eligibility_date.data, date_utils.METROPOLE_TIMEZONE
+        ).replace(tzinfo=None)
+        if hasattr(form, "eligibility_date") and form.eligibility_date.data
+        else None
+    )
     snapshot = users_api.update_user_info(
         user,
         author=current_user,
@@ -147,8 +180,10 @@ def update_pro_user(user_id: int) -> utils.BackofficeResponse:
         last_name=form.last_name.data,
         phone_number=form.phone_number.data,
         postal_code=form.postal_code.data,
-        commit=False,
         marketing_email_subscription=form.marketing_email_subscription.data,
+        new_nav_pro_date=new_nav_pro_date,
+        new_nav_pro_eligibility_date=new_nav_pro_eligibility_date,
+        commit=False,
     )
 
     if form.email.data and form.email.data != email_utils.sanitize_email(user.email):
@@ -286,7 +321,7 @@ def connect_as(user_id: int) -> utils.BackofficeResponse:
         return redirect(url_for("backoffice_web.pro_user.get", user_id=user_id), code=303)
 
     if user.has_admin_role:
-        flash("L'utilisation du « connect as » n'est pas disponible pour les comptes admins", "warning")
+        flash("L'utilisation du « connect as » n'est pas disponible pour les comptes ADMIN", "warning")
         return redirect(url_for("backoffice_web.pro_user.get", user_id=user_id), code=303)
 
     if user.has_anonymized_role:
@@ -294,7 +329,7 @@ def connect_as(user_id: int) -> utils.BackofficeResponse:
         return redirect(url_for("backoffice_web.pro_user.get", user_id=user_id), code=303)
 
     if not (user.has_non_attached_pro_role or user.has_pro_role):
-        flash("L'utilisation du « connect as » n'est disponible que pour les comptes pro", "warning")
+        flash("L'utilisation du « connect as » n'est disponible que pour les comptes PRO", "warning")
         return redirect(url_for("backoffice_web.pro_user.get", user_id=user_id), code=303)
 
     token = SecureToken(

@@ -11,7 +11,7 @@
                   data-bs-placement="top"
                   data-bs-title="Il y a trop d'offre pour en afficher la valeur">N/A</span>
           {% else %}
-            {{ stats.total_revenue | format_amount | safe }}
+            {{ stats.total_revenue | format_amount }}
           {% endif %}
         </h6>
         <div class="d-flex flex-row">
@@ -106,7 +106,7 @@
       <div class="card-body">
         <ul class="list-unstyled list-group small">
           <li>
-            <span class="fw-bold">Siret de valorisation :</span>
+            <span class="fw-bold">Point de valorisation :</span>
             {% if pricing_point %}
               {% if pricing_point.id != venue.id %}
                 <a href="{{ url_for("backoffice_web.venue.get", venue_id=pricing_point.id) }}"

@@ -85,7 +85,7 @@ def create_data_offerers_with_pro_users() -> tuple[dict[str, Offerer], dict[str,
         offerer_name = f"{incremented_siren} lat:{location.latitude} lon:{location.longitude}"
 
         offerer = offerers_factories.OffererFactory(
-            address=location.address.upper(),
+            street=location.address.upper(),
             city=location.city,
             name=MOCK_NAMES[mock_index],
             postalCode=location.postalCode,

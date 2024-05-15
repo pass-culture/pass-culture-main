@@ -4,7 +4,7 @@ import {
   CollectiveOfferResponseModel,
   ListOffersVenueResponseModel,
 } from 'apiClient/v1'
-import { Audience } from 'core/shared'
+import { Audience } from 'core/shared/types'
 
 import { CheckboxCell } from './Cells/CheckboxCell'
 import { CollectiveActionsCells } from './Cells/CollectiveActionsCells'

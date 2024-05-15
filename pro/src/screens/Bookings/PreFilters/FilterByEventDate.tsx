@@ -14,7 +14,7 @@ export interface FilterByEventDateProps {
   updateFilters: (filters: Partial<PreFiltersParams>) => void
 }
 
-const FilterByEventDate = ({
+export const FilterByEventDate = ({
   isDisabled = false,
   updateFilters,
   selectedOfferDate,
@@ -40,5 +40,3 @@ const FilterByEventDate = ({
     />
   </FieldLayout>
 )
-
-export default FilterByEventDate

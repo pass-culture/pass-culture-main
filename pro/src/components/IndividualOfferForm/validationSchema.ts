@@ -5,7 +5,7 @@ import { getValidationSchema as categoriesSchema } from './Categories'
 import { validationSchema as externalLinkSchema } from './ExternalLink'
 import { getValidationSchema as informationsSchema } from './Informations'
 import { validationSchema as notificationsSchema } from './Notifications'
-import { validationSchema as usefulInformationsSchema } from './UsefulInformations'
+import { validationSchema as usefulInformationsSchema } from './UsefulInformations/validationSchema'
 
 export const getValidationSchema = (
   isTiteliveMusicGenreFeatureEnabled: boolean,

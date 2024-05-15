@@ -388,7 +388,7 @@ class DeleteOffererTest(PostEndpointHelper):
         response = authenticated_client.get(expected_url)
         assert (
             html_parser.extract_alert(response.data)
-            == "Impossible d'effacer une structure juridique pour laquelle il existe des réservations"
+            == "Impossible de supprimer une structure juridique pour laquelle il existe des réservations"
         )
 
     def test_no_script_injection_in_offerer_name(self, legit_user, authenticated_client):
@@ -1206,9 +1206,23 @@ class GetOffererVenuesTest(GetEndpointHelper):
     expected_num_queries = 3
 
     def test_get_managed_venues(self, authenticated_client, offerer):
+        now = datetime.datetime.utcnow()
         other_offerer = offerers_factories.OffererFactory()
-        venue_1 = offerers_factories.VenueFactory(managingOfferer=offerer, isPermanent=True)
-        venue_2 = offerers_factories.VenueFactory(managingOfferer=offerer)
+        venue_1 = offerers_factories.VenueFactory(
+            name="Deuxième", publicName="Second", managingOfferer=offerer, isPermanent=True
+        )
+        old_bank_account = finance_factories.BankAccountFactory(offerer=offerer, label="Ancien compte")
+        bank_account = finance_factories.BankAccountFactory(offerer=offerer, label="Compte actuel")
+        offerers_factories.VenueBankAccountLinkFactory(
+            bankAccount=old_bank_account,
+            venue=venue_1,
+            timespan=[now - datetime.timedelta(days=30), now - datetime.timedelta(days=3)],
+        )
+        offerers_factories.VenueBankAccountLinkFactory(
+            bankAccount=bank_account, venue=venue_1, timespan=[now - datetime.timedelta(days=3), None]
+        )
+
+        venue_2 = offerers_factories.VenueFactory(name="Premier", publicName=None, managingOfferer=offerer)
         offerers_factories.VenueRegistrationFactory(venue=venue_2)
         educational_factories.CollectiveDmsApplicationFactory(venue=venue_2, application=35)
         offerers_factories.VenueFactory(managingOfferer=other_offerer)
@@ -1222,26 +1236,25 @@ class GetOffererVenuesTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 2
 
-        # Sort before checking rows data to avoid flaky test
-        rows = sorted(rows, key=lambda row: int(row["ID"]))
-
-        assert rows[0]["ID"] == str(venue_1.id)
-        assert rows[0]["SIRET"] == venue_1.siret
-        assert rows[0]["Permanent"] == "Lieu permanent"
-        assert rows[0]["Nom"] == venue_1.name
-        assert rows[0]["Activité principale"] == venue_1.venueTypeCode.value
+        assert rows[0]["ID"] == str(venue_2.id)
+        assert rows[0]["SIRET"] == venue_2.siret
+        assert rows[0]["Permanent"] == ""
+        assert rows[0]["Nom"] == venue_2.name
+        assert rows[0]["Activité principale"] == venue_2.venueTypeCode.value
         assert not rows[0].get("Type de lieu")
-        assert rows[0]["Présence web"] == ""
-        assert rows[0]["Offres cibles"] == ""
+        assert rows[0]["Présence web"] == "https://example.com https://pass.culture.fr"
+        assert rows[0]["Offres cibles"] == "Indiv. et coll."
+        assert rows[0]["Compte bancaire associé"] == ""
 
-        assert rows[1]["ID"] == str(venue_2.id)
-        assert rows[1]["SIRET"] == venue_2.siret
-        assert rows[1]["Permanent"] == ""
-        assert rows[1]["Nom"] == venue_2.name
-        assert rows[1]["Activité principale"] == venue_2.venueTypeCode.value
-        assert not rows[1].get("Type de lieu")
-        assert rows[1]["Présence web"] == "https://example.com https://pass.culture.fr"
-        assert rows[1]["Offres cibles"] == "Indiv. et coll."
+        assert rows[1]["ID"] == str(venue_1.id)
+        assert rows[1]["SIRET"] == venue_1.siret
+        assert rows[1]["Permanent"] == "Lieu permanent"
+        assert rows[1]["Nom"] == venue_1.publicName
+        assert rows[1]["Activité principale"] == venue_1.venueTypeCode.value
+        assert not rows[0].get("Type de lieu")
+        assert rows[1]["Présence web"] == ""
+        assert rows[1]["Offres cibles"] == ""
+        assert rows[1]["Compte bancaire associé"] == "Compte actuel"
 
 
 class GetOffererCollectiveDmsApplicationsTest(GetEndpointHelper):

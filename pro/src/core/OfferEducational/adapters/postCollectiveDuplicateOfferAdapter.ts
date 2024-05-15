@@ -22,7 +22,7 @@ const UNKNOWN_FAILING_RESPONSE: AdapterFailure<PayloadFailure> = {
   payload: null,
 }
 
-const postCollectiveDuplicateOfferAdapter: PostOfferAdapter = async ({
+export const postCollectiveDuplicateOfferAdapter: PostOfferAdapter = async ({
   offerId,
 }) => {
   try {
@@ -43,5 +43,3 @@ const postCollectiveDuplicateOfferAdapter: PostOfferAdapter = async ({
     return UNKNOWN_FAILING_RESPONSE
   }
 }
-
-export default postCollectiveDuplicateOfferAdapter

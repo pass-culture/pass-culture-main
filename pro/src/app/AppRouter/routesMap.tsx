@@ -38,6 +38,15 @@ const routes: RouteConfig[] = [
     title: 'ADAGE',
   },
   {
+    lazy: () =>
+      import(
+        'pages/AdageIframe/app/components/UnauthenticatedError/UnauthenticatedError'
+      ),
+    path: '/adage-iframe/erreur',
+    meta: { public: true },
+    title: 'ADAGE',
+  },
+  {
     lazy: () => import('pages/Signup/Signup'),
     path: '/inscription',
     title: 'Créer un compte',

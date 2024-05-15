@@ -4,11 +4,11 @@ import { userEvent } from '@testing-library/user-event'
 import { api } from 'apiClient/api'
 import Notification from 'components/Notification/Notification'
 import { Events } from 'core/FirebaseEvents/constants'
-import { Audience } from 'core/shared'
+import { Audience } from 'core/shared/types'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import ActionsBar, { ActionBarProps } from '../ActionsBar'
+import { ActionsBar, ActionBarProps } from '../ActionsBar'
 
 const renderActionsBar = (props: ActionBarProps) => {
   renderWithProviders(
@@ -100,7 +100,7 @@ describe('ActionsBar', () => {
     await userEvent.click(screen.getByText('Publier'))
 
     expect(api.patchOffersActiveStatus).toHaveBeenLastCalledWith({
-      ids: offerIds,
+      ids: [1, 2],
       isActive: true,
     })
     expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
@@ -134,11 +134,11 @@ describe('ActionsBar', () => {
     await userEvent.click(screen.getByText('Supprimer ces brouillons'))
 
     expect(api.deleteDraftOffers).toHaveBeenLastCalledWith({
-      ids: offerIds,
+      ids: [1, 2],
     })
     expect(api.deleteDraftOffers).toHaveBeenCalledTimes(1)
     expect(api.deleteDraftOffers).toHaveBeenNthCalledWith(1, {
-      ids: offerIds,
+      ids: [1, 2],
     })
     expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
     expect(
@@ -178,7 +178,7 @@ describe('ActionsBar', () => {
       }
     )
     expect(api.patchOffersActiveStatus).toHaveBeenLastCalledWith({
-      ids: offerIds,
+      ids: [1, 2],
       isActive: false,
     })
     expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)

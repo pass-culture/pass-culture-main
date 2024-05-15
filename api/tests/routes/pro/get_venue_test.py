@@ -151,7 +151,7 @@ class Returns200Test:
             "mentalDisabilityCompliant": venue.mentalDisabilityCompliant,
             "motorDisabilityCompliant": venue.motorDisabilityCompliant,
             "name": venue.name,
-            "openingHours": venue.opening_days,
+            "openingHours": venue.opening_hours,
             "postalCode": venue.postalCode,
             "publicName": venue.publicName,
             "siret": venue.siret,
@@ -344,6 +344,7 @@ class Returns200Test:
                     "width_crop_percent": 0.42,
                 },
                 "image_credit": "test 2",
+                "image_credit_url": "test 2",
             },
         )
 

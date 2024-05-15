@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useLocation, useSearchParams } from 'react-router-dom'
 
 import { GetOffererResponseModel } from 'apiClient/v1'
-import RedirectDialog from 'components/Dialog/RedirectDialog'
+import { RedirectDialog } from 'components/Dialog/RedirectDialog/RedirectDialog'
 import SoftDeletedOffererWarning from 'components/SoftDeletedOffererWarning'
 import { Events } from 'core/FirebaseEvents/constants'
 import { SelectOption } from 'custom_types/form'

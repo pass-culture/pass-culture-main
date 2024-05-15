@@ -9,7 +9,7 @@ interface BoxFormLayoutFormHeaderProps {
   textSecondary: string
 }
 
-const FormHeader = ({
+export const FormHeader = ({
   className,
   textPrimary,
   textSecondary,
@@ -22,5 +22,3 @@ const FormHeader = ({
     <span>{textPrimary}</span>
   </div>
 )
-
-export default FormHeader

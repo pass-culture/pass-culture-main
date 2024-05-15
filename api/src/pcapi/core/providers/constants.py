@@ -1,6 +1,17 @@
+import enum
 import typing
 
 from pcapi.models.feature import FeatureToggle
+
+
+class BookFormat(enum.Enum):
+    BANDE_DESSINEE = "BANDE DESSINEE "  # TODO: remove trailing whitespace
+    BEAUX_LIVRES = "BEAUX LIVRES"
+    LIVRE_AUDIO = "LIVRE + CD AUDIO"
+    LIVRE_CASSETTE = "LIVRE + CASSETTE"
+    MOYEN_FORMAT = "MOYEN FORMAT"
+    POCHE = "POCHE"
+    REVUE = "REVUE"
 
 
 CINEMA_PROVIDER_NAMES = [
@@ -400,13 +411,13 @@ MUSIC_SLUG_TO_GTL_ID = {
 }
 
 
-class TiteliveMusicSupport(typing.TypedDict):
+class TiteliveSupport(typing.TypedDict):
     codesupport: str
     libelle: str
     is_allowed: bool
 
 
-TITELIVE_MUSIC_SUPPORTS: list[TiteliveMusicSupport] = [
+TITELIVE_MUSIC_SUPPORTS: list[TiteliveSupport] = [
     {"codesupport": "0", "libelle": "REFERENCE INTERNE", "is_allowed": False},
     {"codesupport": "1", "libelle": "MULTI SUPPORT", "is_allowed": False},
     {"codesupport": "2", "libelle": "45 TOURS", "is_allowed": True},
@@ -512,3 +523,87 @@ TITELIVE_MUSIC_SUPPORTS: list[TiteliveMusicSupport] = [
 ]
 TITELIVE_MUSIC_SUPPORTS_BY_CODE = {support["codesupport"]: support for support in TITELIVE_MUSIC_SUPPORTS}
 NOT_CD_LIBELLES = ["TOURS", "VINYL", "K7"]
+
+PAPER_PRESS_VAT = "2.10"
+BASE_VAT = "20.00"
+
+GTL_LEVEL_01_SCHOOL = "11"
+GTL_LEVEL_01_EXTRACURRICULAR = "12"
+GTL_LEVEL_01_YOUNG = "02"
+GTL_LEVEL_02_BEFORE_3 = "02"
+GTL_LEVEL_02_AFTER_3_AND_BEFORE_6 = "03"
+
+LECTORAT_EIGHTEEN_ID = "45"
+
+TOEIC_TEXT = "toeic"
+TOEFL_TEXT = "toefl"
+
+PAPER_PRESS_SUPPORT_CODE = "R"
+BOX_SUPPORT_CODE = "CB"
+OBJECT_SUPPORT_CODE = "O"
+CALENDAR_SUPPORT_CODE = "CL"
+PAPER_CONSUMABLE_SUPPORT_CODE = "PC"
+POSTER_SUPPORT_CODE = "PS"
+
+
+class TiteliveBookSupport(TiteliveSupport):
+    book_format: BookFormat | None
+
+
+TITELIVE_BOOK_SUPPORTS: list[TiteliveBookSupport] = [
+    {"codesupport": "A", "libelle": "Code obsolète", "is_allowed": False, "book_format": None},
+    {"codesupport": "I", "libelle": "Code obsolète", "is_allowed": False, "book_format": None},
+    {"codesupport": "LA", "libelle": "Code obsolète", "is_allowed": False, "book_format": None},
+    {
+        "codesupport": "BD",
+        "libelle": "Bande dessinée",
+        "is_allowed": True,
+        "book_format": BookFormat.BANDE_DESSINEE,
+    },
+    {"codesupport": "C", "libelle": "Carte et plan", "is_allowed": False, "book_format": None},
+    {"codesupport": "CA", "libelle": "CD audio", "is_allowed": False, "book_format": None},
+    {"codesupport": "CB", "libelle": "Coffret et boîte", "is_allowed": False, "book_format": None},
+    {"codesupport": "CD", "libelle": "CD-ROM", "is_allowed": False, "book_format": None},
+    {"codesupport": "CL", "libelle": "Calendrier", "is_allowed": False, "book_format": None},
+    {"codesupport": "DV", "libelle": "DVD", "is_allowed": False, "book_format": None},
+    {
+        "codesupport": "EB",
+        "libelle": "Contenu numérique (hors livre électronique)",
+        "is_allowed": False,
+        "book_format": None,
+    },
+    {"codesupport": "K7", "libelle": "Cassette audio et vidéo", "is_allowed": False, "book_format": None},
+    {
+        "codesupport": "LC",
+        "libelle": "Livre + cassette",
+        "is_allowed": True,
+        "book_format": BookFormat.LIVRE_CASSETTE,
+    },
+    {
+        "codesupport": "LD",
+        "libelle": "livre + CD audio",
+        "is_allowed": True,
+        "book_format": BookFormat.LIVRE_AUDIO,
+    },
+    {"codesupport": "LE", "libelle": "livre numérique", "is_allowed": False, "book_format": None},
+    {"codesupport": "LR", "libelle": "livre + CD-ROM", "is_allowed": False, "book_format": None},
+    {"codesupport": "LT", "libelle": "liseuses et tablettes", "is_allowed": False, "book_format": None},
+    {"codesupport": "LV", "libelle": "livre + DVD", "is_allowed": False, "book_format": None},
+    {
+        "codesupport": "M",
+        "libelle": " moyen format",
+        "is_allowed": True,
+        "book_format": BookFormat.MOYEN_FORMAT,
+    },
+    {"codesupport": "O", "libelle": "objet", "is_allowed": False, "book_format": None},
+    {"codesupport": "P", "libelle": "poche", "is_allowed": True, "book_format": BookFormat.POCHE},
+    {"codesupport": "PC", "libelle": "papeterie / consommable", "is_allowed": False, "book_format": None},
+    {"codesupport": "PS", "libelle": "poster", "is_allowed": False, "book_format": None},
+    {"codesupport": "R", "libelle": "revue", "is_allowed": True, "book_format": BookFormat.REVUE},
+    {"codesupport": "T", "libelle": "livre papier (hors spécificité)", "is_allowed": True, "book_format": None},
+    {"codesupport": "TL", "libelle": "livre papier (hors spécificité)", "is_allowed": True, "book_format": None},
+    {"codesupport": "TR", "libelle": "transparents", "is_allowed": False, "book_format": None},
+    {"codesupport": "BL", "libelle": "Beau livre", "is_allowed": True, "book_format": BookFormat.BEAUX_LIVRES},
+]
+
+TITELIVE_BOOK_SUPPORTS_BY_CODE = {support["codesupport"]: support for support in TITELIVE_BOOK_SUPPORTS}

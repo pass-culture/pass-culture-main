@@ -5,6 +5,7 @@ from flask_login import login_required
 import sqlalchemy.orm as sqla_orm
 
 from pcapi import settings
+from pcapi.connectors import api_adresse
 from pcapi.connectors.api_recaptcha import ReCaptchaException
 from pcapi.connectors.api_recaptcha import check_web_recaptcha_token
 from pcapi.connectors.big_query.queries.offerer_stats import DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
@@ -17,6 +18,7 @@ from pcapi.core.offerers import api
 from pcapi.core.offerers import repository
 import pcapi.core.offerers.exceptions as offerers_exceptions
 import pcapi.core.offerers.models as offerers_models
+from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.repository import transaction
@@ -158,6 +160,8 @@ def create_offerer(body: offerers_serialize.CreateOffererQueryModel) -> offerers
     if not siren_info.active:
         raise ApiErrors(errors={"siren": ["SIREN is no longer active"]})
     body.name = siren_info.name
+    assert siren_info.address  # helps mypy
+    body.postalCode = siren_info.address.postal_code
     if api.is_user_offerer_already_exist(current_user, body.siren):
         # As this endpoint does not only allow to create an offerer, but also handles
         # a large part of `user_offerer` buisness logic (see `api.create_offerer` below)
@@ -307,3 +311,43 @@ def get_offerer_addresses(offerer_id: int) -> offerers_serialize.GetOffererAddre
             for offerer_address in offerer_addresses
         ]
     )
+
+
+@private_api.route("/offerers/<int:offerer_id>/address/<int:offerer_address_id>", methods=["PATCH"])
+@login_required
+@spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
+def patch_offerer_address(
+    offerer_id: int, offerer_address_id: int, body: offerers_serialize.PatchOffererAddressRequest
+) -> None:
+    with transaction():
+        with db.session.no_autoflush:
+            check_user_has_access_to_offerer(current_user, offerer_id)
+            if not repository.offerer_address_exists(offerer_id, offerer_address_id):
+                raise ResourceNotFoundError()
+            try:
+                api.update_offerer_address_label(offerer_address_id, body.label)
+            except offerers_exceptions.OffererAddressLabelAlreadyUsed:
+                raise ApiErrors({"label": "Une adresse identique utilise déjà ce libellé"}, status_code=400)
+
+
+@private_api.route("/offerers/<int:offerer_id>/addresses", methods=["POST"])
+@login_required
+@spectree_serialize(
+    on_success_status=201,
+    api=blueprint.pro_private_schema,
+    response_model=offerers_serialize.OffererAddressResponseModel,
+)
+def create_offerer_address(
+    offerer_id: int, body: offerers_serialize.OffererAddressRequestModel
+) -> offerers_serialize.OffererAddressResponseModel:
+    check_user_has_access_to_offerer(current_user, offerer_id)
+    try:
+        address_info = api_adresse.get_address(address=body.street, citycode=body.inseeCode)
+    except api_adresse.NoResultException:
+        raise ApiErrors({"address": "Cette adresse n'existe pas"})
+
+    with transaction():
+        with db.session.no_autoflush:
+            address = api.get_or_create_address(address_info)
+            offerer_address = api.get_or_create_offerer_address(offerer_id, body.label, address.id)
+            return offerers_serialize.OffererAddressResponseModel.from_orm(offerer_address)

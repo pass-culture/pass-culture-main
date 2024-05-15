@@ -3,6 +3,7 @@ import logging
 
 import pytest
 
+from pcapi.core.educational import factories as educational_factories
 from pcapi.core.offerers import factories as offerer_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_settings
@@ -48,6 +49,7 @@ class Returns200Test:
             "departementCode": None,
             "email": "user@example.com",
             "firstName": "Jean",
+            "hasPartnerPage": False,
             "hasSeenProTutorials": True,
             "hasSeenProRgs": False,
             "hasUserOfferer": False,
@@ -63,6 +65,24 @@ class Returns200Test:
             "navState": {"eligibilityDate": None, "newNavDate": None},
         }
         assert "Failed authentication attempt" not in caplog.messages
+
+    @pytest.mark.usefixtures("db_session")
+    def when_previous_account_still_logged_and_new_user_is_known(self, client, caplog):
+        # given
+        user1 = users_factories.ProFactory()
+        user2 = users_factories.BeneficiaryGrant18Factory()
+
+        data = {"identifier": user2.email, "password": user2.clearTextPassword, "captchaToken": "token"}
+
+        client.with_session_auth(email=user1.email)
+        assert users_models.UserSession.query.filter_by(userId=user1.id).count() == 1
+
+        # when
+        response = client.post("/users/signin", json=data)
+
+        # then
+        assert response.status_code == 200
+        assert users_models.UserSession.query.filter_by(userId=user1.id).count() == 0
 
     @pytest.mark.usefixtures("db_session")
     def when_user_has_no_departement_code(self, client):
@@ -136,7 +156,11 @@ class Returns200Test:
         # 3. fetch user for serialization
         # 4. fetch user offerer
         # 5. fetch user pro nav state
-        with assert_num_queries(5):
+        # 6. fetch user offerer for discard_session
+        # 7 fetch user_session for discard_session
+        # 8 fetch user has partner page
+
+        with assert_num_queries(8):
             response = client.post("/users/signin", json=data)
 
         # Then
@@ -151,6 +175,7 @@ class Returns200Test:
             "departementCode": "31",
             "email": user_offerer.user.email,
             "firstName": "René",
+            "hasPartnerPage": False,
             "hasSeenProTutorials": True,
             "hasSeenProRgs": False,
             "hasUserOfferer": True,
@@ -242,3 +267,21 @@ class Returns401Test:
         # Then
         assert response.status_code == 401
         assert response.json["identifier"] == ["Ce compte n'est pas validé."]
+
+    @pytest.mark.usefixtures("db_session")
+    def test_session_timeout(self, client):
+        from dateutil.relativedelta import relativedelta
+        import time_machine
+
+        educational_factories.EducationalInstitutionFactory()
+
+        with time_machine.travel(datetime.datetime.today() - relativedelta(years=2)):
+            user = users_factories.BeneficiaryGrant18Factory()
+            data = {"identifier": user.email, "password": user.clearTextPassword, "captchaToken": "token"}
+            response = client.post("/users/signin", json=data)
+            assert response.status_code == 200
+            response = client.get("/educational_institutions")
+            assert response.status_code == 200
+
+        response = client.get("/educational_institutions")
+        assert response.status_code == 401

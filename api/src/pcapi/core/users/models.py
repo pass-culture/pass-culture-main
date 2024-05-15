@@ -20,7 +20,6 @@ from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.sql import expression
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.elements import BooleanClauseList
-from sqlalchemy.sql.functions import func
 
 from pcapi.core.finance.enum import DepositType
 from pcapi.core.geography.models import IrisFrance
@@ -169,7 +168,7 @@ class User(PcObject, Base, Model, DeactivableMixin):
     hasSeenProRgs: bool = sa.Column(sa.Boolean, nullable=False, server_default=expression.false())
     idPieceNumber = sa.Column(sa.String, nullable=True, unique=True)
     ineHash = sa.Column(sa.Text(), nullable=True, unique=True)
-    irisFranceId = sa.Column(sa.BigInteger, sa.ForeignKey("iris_france.id"), index=True, nullable=True)
+    irisFranceId = sa.Column(sa.BigInteger, sa.ForeignKey("iris_france.id"), nullable=True)
     irisFrance: sa.orm.Mapped[IrisFrance] = orm.relationship(IrisFrance, foreign_keys=[irisFranceId])
     isEmailValidated = sa.Column(sa.Boolean, nullable=True, server_default=expression.false())
     lastConnectionDate = sa.Column(sa.DateTime, nullable=True)
@@ -648,6 +647,24 @@ class User(PcObject, Base, Model, DeactivableMixin):
     def real_user(self) -> "User":
         return self.impersonator or self
 
+    @property
+    def has_partner_page(self) -> bool:
+        from pcapi.core.offerers.models import UserOfferer
+        from pcapi.core.offerers.models import Venue
+
+        has_partner_page = db.session.query(
+            sa.select(1)
+            .select_from(UserOfferer)
+            .join(Venue, UserOfferer.offererId == Venue.managingOffererId)
+            .where(
+                UserOfferer.userId == self.id,
+                Venue.isPermanent.is_(True),
+                Venue.isVirtual.is_(False),
+            )
+            .exists()
+        ).scalar()
+        return has_partner_page
+
 
 User.trig_ensure_password_or_sso_exists_ddl = sa.DDL(
     """
@@ -744,15 +761,17 @@ class UserEmailHistory(PcObject, Base, Model):
         "User", foreign_keys=[userId], backref=orm.backref("email_history", passive_deletes=True)
     )
 
-    oldUserEmail: str = sa.Column(sa.String(120), nullable=False, unique=False, index=True)
-    oldDomainEmail: str = sa.Column(sa.String(120), nullable=False, unique=False, index=True)
+    oldUserEmail: str = sa.Column(sa.String(120), nullable=False, unique=False)
+    oldDomainEmail: str = sa.Column(sa.String(120), nullable=False, unique=False)
 
-    newUserEmail: str | None = sa.Column(sa.String(120), nullable=True, unique=False, index=True)
-    newDomainEmail: str | None = sa.Column(sa.String(120), nullable=True, unique=False, index=True)
+    newUserEmail: str | None = sa.Column(sa.String(120), nullable=True, unique=False)
+    newDomainEmail: str | None = sa.Column(sa.String(120), nullable=True, unique=False)
 
     creationDate: datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
 
     eventType: EmailHistoryEventTypeEnum = sa.Column(sa.Enum(EmailHistoryEventTypeEnum), nullable=False)
+
+    __table_args__ = (sa.Index("ix_user_email_history_oldEmail", oldUserEmail + "@" + oldDomainEmail),)
 
     @classmethod
     def _build(
@@ -808,7 +827,7 @@ class UserEmailHistory(PcObject, Base, Model):
 
     @oldEmail.expression  # type: ignore [no-redef]
     def oldEmail(cls):  # pylint: disable=no-self-argument
-        return func.concat(cls.oldUserEmail, "@", cls.oldDomainEmail)
+        return cls.oldUserEmail + "@" + cls.oldDomainEmail
 
     @hybrid_property
     def newEmail(self) -> str | None:
@@ -821,7 +840,7 @@ class UserEmailHistory(PcObject, Base, Model):
         return sa.case(
             (
                 sa.and_(cls.newUserEmail.is_not(None), cls.newDomainEmail.is_not(None)),
-                func.concat(cls.newUserEmail, "@", cls.newDomainEmail),
+                cls.newUserEmail + "@" + cls.newDomainEmail,
             ),
             else_=None,
         )

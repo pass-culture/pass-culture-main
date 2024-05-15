@@ -1,22 +1,27 @@
 import { FormikProvider, useFormik } from 'formik'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { useSWRConfig } from 'swr'
 
 import {
   GetEducationalOffererResponseModel,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
-import OfferEducationalActions from 'components/OfferEducationalActions'
+import { OfferEducationalActions } from 'components/OfferEducationalActions/OfferEducationalActions'
 import {
-  OfferEducationalFormValues,
+  GET_COLLECTIVE_OFFER_QUERY_KEY,
+  GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
+} from 'config/swrQueryKeys'
+import { patchCollectiveOfferAdapter } from 'core/OfferEducational/adapters/patchCollectiveOfferAdapter'
+import { postCollectiveOfferAdapter } from 'core/OfferEducational/adapters/postCollectiveOfferAdapter'
+import { postCollectiveOfferTemplateAdapter } from 'core/OfferEducational/adapters/postCollectiveOfferTemplateAdapter'
+import {
   Mode,
+  OfferEducationalFormValues,
   isCollectiveOffer,
   isCollectiveOfferTemplate,
-  applyVenueDefaultsToFormValues,
-} from 'core/OfferEducational'
-import patchCollectiveOfferAdapter from 'core/OfferEducational/adapters/patchCollectiveOfferAdapter'
-import postCollectiveOfferAdapter from 'core/OfferEducational/adapters/postCollectiveOfferAdapter'
-import postCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/postCollectiveOfferTemplateAdapter'
+} from 'core/OfferEducational/types'
+import { applyVenueDefaultsToFormValues } from 'core/OfferEducational/utils/applyVenueDefaultsToFormValues'
 import { computeInitialValuesFromOffer } from 'core/OfferEducational/utils/computeInitialValuesFromOffer'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { SelectOption } from 'custom_types/form'
@@ -34,11 +39,7 @@ export interface OfferEducationalProps {
   offer?:
     | GetCollectiveOfferResponseModel
     | GetCollectiveOfferTemplateResponseModel
-  setOffer: (
-    offer:
-      | GetCollectiveOfferResponseModel
-      | GetCollectiveOfferTemplateResponseModel
-  ) => void
+
   userOfferers: GetEducationalOffererResponseModel[]
   mode: Mode
   isOfferBooked?: boolean
@@ -47,19 +48,16 @@ export interface OfferEducationalProps {
   nationalPrograms: SelectOption<number>[]
   isTemplate: boolean
   isOfferCreated?: boolean
-  reloadCollectiveOffer?: () => void
 }
 
-const OfferEducational = ({
+export const OfferEducational = ({
   offer,
-  setOffer,
   userOfferers,
   domainsOptions,
   nationalPrograms,
   mode,
   isOfferBooked = false,
   isTemplate,
-  reloadCollectiveOffer,
 }: OfferEducationalProps): JSX.Element => {
   const notify = useNotification()
   const navigate = useNavigate()
@@ -71,6 +69,7 @@ const OfferEducational = ({
   const isCustomContactActive = useActiveFeature(
     'WIP_ENABLE_COLLECTIVE_CUSTOM_CONTACT'
   )
+  const { mutate } = useSWRConfig()
 
   const {
     structure: offererId,
@@ -137,11 +136,17 @@ const OfferEducational = ({
       offer &&
       (isCollectiveOffer(payload) || isCollectiveOfferTemplate(payload))
     ) {
-      setOffer({
-        ...payload,
-        imageUrl: imageOffer?.url,
-        imageCredit: imageOffer?.credit,
-      })
+      await mutate(
+        offer.isTemplate
+          ? GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY
+          : GET_COLLECTIVE_OFFER_QUERY_KEY,
+        {
+          ...payload,
+          imageUrl: imageOffer?.url,
+          imageCredit: imageOffer?.credit,
+        },
+        { revalidate: false }
+      )
     }
     if (mode === Mode.EDITION && offer !== undefined) {
       return navigate(
@@ -174,7 +179,6 @@ const OfferEducational = ({
           className={styles.actions}
           isBooked={isOfferBooked}
           offer={offer}
-          reloadCollectiveOffer={reloadCollectiveOffer}
           mode={mode}
         />
       )}
@@ -197,5 +201,3 @@ const OfferEducational = ({
     </>
   )
 }
-
-export default OfferEducational

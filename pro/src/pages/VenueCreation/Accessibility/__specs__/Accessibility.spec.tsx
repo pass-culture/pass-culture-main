@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { Form, Formik } from 'formik'
 import React from 'react'
 
-import { AccessibilityEnum } from 'core/shared'
+import { AccessibilityEnum } from 'core/shared/types'
 import { VenueCreationFormValues } from 'pages/VenueCreation/types'
 import { Button } from 'ui-kit/Button/Button'
 import {

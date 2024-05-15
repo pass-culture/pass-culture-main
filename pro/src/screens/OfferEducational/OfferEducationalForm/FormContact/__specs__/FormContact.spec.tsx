@@ -1,13 +1,11 @@
 import { screen } from '@testing-library/react'
 import { Formik } from 'formik'
 
-import {
-  DEFAULT_EAC_FORM_VALUES,
-  OfferEducationalFormValues,
-} from 'core/OfferEducational'
+import { DEFAULT_EAC_FORM_VALUES } from 'core/OfferEducational/constants'
+import { OfferEducationalFormValues } from 'core/OfferEducational/types'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import FormContact from '../FormContact'
+import { FormContact } from '../FormContact'
 
 function renderFormContact(
   initialValues: Partial<OfferEducationalFormValues> = DEFAULT_EAC_FORM_VALUES

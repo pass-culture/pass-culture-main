@@ -4,7 +4,7 @@ import React, { useMemo } from 'react'
 
 import Callout from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
-import FormLayout from 'components/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import { useAccessibilityOptions } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { VenueEditionFormValues } from 'pages/VenueEdition/types'

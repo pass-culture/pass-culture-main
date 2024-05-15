@@ -31,7 +31,7 @@
                      tabindex="-1"
                      aria-describedby="{{ edit_bank_account_aria_described_by_id }}"
                      aria-hidden="true">
-                  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                  <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
                       <form action="{{ url_for("backoffice_web.bank_account.update_bank_account", bank_account_id=bank_account.id) }}"
                             name="{{ url_for("backoffice_web.bank_account.update_bank_account", bank_account_id=bank_account.id) | action_to_name }}"
@@ -88,6 +88,10 @@
             </div>
             <div class="col-4">
               <div class="fs-6">
+                <p class="mb-1">
+                  <span class="fw-bold">État du compte bancaire :</span>
+                  {{ bank_account.status.value | format_dms_status }}
+                </p>
                 {% if dms_stats %}
                   <p class="mb-1">
                     <span class="fw-bold">Statut DMS CB :</span>

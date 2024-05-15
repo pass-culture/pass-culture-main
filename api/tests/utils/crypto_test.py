@@ -12,6 +12,11 @@ class DevEnvironmentPasswordHasherTest:
         assert not crypto.check_password("wrong", hashed)
         assert crypto.check_password("secret", hashed)
 
+    def test_check_public_api_key(self):
+        hashed = crypto.hash_public_api_key("secret")
+        assert not crypto.check_public_api_key("wrong", hashed)
+        assert crypto.check_public_api_key("secret", hashed)
+
 
 @override_settings(USE_FAST_AND_INSECURE_PASSWORD_HASHING_ALGORITHM=False)
 class ProdEnvironmentPasswordHasherTest:
@@ -20,10 +25,20 @@ class ProdEnvironmentPasswordHasherTest:
         assert hashed != "secret"
         assert hashed.startswith(b"$2b$")  # bcrypt prefix
 
+    def test_hash_public_api_key_uses_sha3_512(self):
+        hashed = crypto.hash_public_api_key("secret")
+        assert hashed != "secret"
+        assert hashed.startswith(b"$sha3_512$")
+
     def test_check_password(self):
         hashed = crypto.hash_password("secret")
         assert not crypto.check_password("wrong", hashed)
         assert crypto.check_password("secret", hashed)
+
+    def test_check_public_api_key(self):
+        hashed = crypto.hash_public_api_key("secret")
+        assert not crypto.check_public_api_key("wrong", hashed)
+        assert crypto.check_public_api_key("secret", hashed)
 
 
 class EncryptDataTest:

@@ -2,7 +2,7 @@ import React, { ReactNode } from 'react'
 
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
-import { AccessibilityEnum } from 'core/shared'
+import { AccessibilityEnum } from 'core/shared/types'
 import { AccessibilityLabel } from 'ui-kit/AccessibilityLabel/AccessibilityLabel'
 
 import styles from './AccessibilitySummarySection.module.scss'
@@ -37,33 +37,30 @@ export const AccessibilitySummarySection = ({
     ) : (
       <SummaryDescriptionList descriptions={[{ text: accessibleWording }]} />
     )}
+    <ul className={styles['accessibility-list']}>
+      {accessibleItem.visualDisabilityCompliant && (
+        <li>
+          <AccessibilityLabel name={AccessibilityEnum.VISUAL} />
+        </li>
+      )}
 
-    {accessibleItem.visualDisabilityCompliant && (
-      <AccessibilityLabel
-        className={styles['accessibility-row']}
-        name={AccessibilityEnum.VISUAL}
-      />
-    )}
+      {accessibleItem.mentalDisabilityCompliant && (
+        <li>
+          <AccessibilityLabel name={AccessibilityEnum.MENTAL} />
+        </li>
+      )}
 
-    {accessibleItem.mentalDisabilityCompliant && (
-      <AccessibilityLabel
-        className={styles['accessibility-row']}
-        name={AccessibilityEnum.MENTAL}
-      />
-    )}
+      {accessibleItem.motorDisabilityCompliant && (
+        <li>
+          <AccessibilityLabel name={AccessibilityEnum.MOTOR} />
+        </li>
+      )}
 
-    {accessibleItem.motorDisabilityCompliant && (
-      <AccessibilityLabel
-        className={styles['accessibility-row']}
-        name={AccessibilityEnum.MOTOR}
-      />
-    )}
-
-    {accessibleItem.audioDisabilityCompliant && (
-      <AccessibilityLabel
-        className={styles['accessibility-row']}
-        name={AccessibilityEnum.AUDIO}
-      />
-    )}
+      {accessibleItem.audioDisabilityCompliant && (
+        <li>
+          <AccessibilityLabel name={AccessibilityEnum.AUDIO} />
+        </li>
+      )}
+    </ul>
   </SummarySubSection>
 )

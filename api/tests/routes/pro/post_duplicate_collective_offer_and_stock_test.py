@@ -132,6 +132,8 @@ class Returns200Test:
                 "isBooked": False,
                 "isCancellable": False,
                 "beginningDatetime": format_into_utc_date(offer.collectiveStock.beginningDatetime),
+                "endDatetime": None,
+                "startDatetime": None,
                 "bookingLimitDatetime": format_into_utc_date(offer.collectiveStock.bookingLimitDatetime),
                 "price": 100.0,
                 "numberOfTickets": 25,

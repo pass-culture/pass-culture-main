@@ -1,7 +1,7 @@
 import { useFormikContext } from 'formik'
 import React from 'react'
 
-import FormLayout from 'components/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import { DurationInput } from 'ui-kit/form/DurationInput/DurationInput'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'

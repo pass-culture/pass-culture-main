@@ -15,6 +15,13 @@ class EditProUserForm(utils.PCForm):
     marketing_email_subscription = fields.PCSwitchBooleanField("Abonné aux emails marketing", full_row=True)
 
 
+class EditProUserFormWithNewProNav(EditProUserForm):
+    eligibility_date = fields.PCOptDateTimeField(
+        "Date d'éligibilité au bêta-test (heure de Paris)", format="%Y-%m-%dT%H:%M"
+    )
+    new_nav_date = fields.PCOptDateTimeField("Date d'activation du NPP (heure de Paris)", format="%Y-%m-%dT%H:%M")
+
+
 class DeleteProUser(utils.PCForm):
     email = fields.PCEmailField("Email")
 

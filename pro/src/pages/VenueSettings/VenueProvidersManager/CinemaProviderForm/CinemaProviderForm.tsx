@@ -2,7 +2,7 @@ import { Form, FormikProvider, useFormik } from 'formik'
 import React, { useState } from 'react'
 
 import { PostVenueProviderBody } from 'apiClient/v1'
-import FormLayout from 'components/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import { Button } from 'ui-kit/Button/Button'
@@ -87,9 +87,10 @@ export const CinemaProviderForm = ({
 
               {isCreatedEntity ? (
                 <Button
-                  type="submit"
+                  type="button"
                   variant={ButtonVariant.PRIMARY}
                   isLoading={formik.isSubmitting}
+                  onClick={() => handleFormSubmit(formik.values)}
                 >
                   Lancer la synchronisation
                 </Button>

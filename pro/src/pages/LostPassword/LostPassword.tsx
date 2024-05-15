@@ -11,7 +11,7 @@ import { Hero } from 'ui-kit/Hero/Hero'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { getReCaptchaToken } from 'utils/recaptcha'
 
-import ChangePasswordRequestForm from './ChangePasswordRequestForm'
+import { ChangePasswordRequestForm } from './ChangePasswordRequestForm/ChangePasswordRequestForm'
 import styles from './LostPassword.module.scss'
 import { validationSchema } from './validationSchema'
 
@@ -37,7 +37,7 @@ export const LostPassword = (): JSX.Element => {
   }
 
   return (
-    <AppLayout pageName="lost-password" layout="without-nav">
+    <AppLayout layout="without-nav">
       <header className={styles['logo-side']}>
         <SvgIcon
           className="logo-unlogged"
@@ -50,7 +50,7 @@ export const LostPassword = (): JSX.Element => {
       <div className={styles['content']}>
         {mailSent ? (
           <Hero
-            linkLabel="Revenir à l’accueil"
+            linkLabel="Retourner sur la page de connexion"
             linkTo="/"
             text="Vous allez recevoir par email les instructions pour définir un nouveau mot de passe."
             title="Merci !"

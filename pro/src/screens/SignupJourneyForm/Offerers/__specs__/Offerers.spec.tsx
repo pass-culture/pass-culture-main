@@ -11,12 +11,12 @@ import {
   SignupJourneyContext,
   SignupJourneyContextValues,
 } from 'context/SignupJourneyContext'
-import * as getSirenDataAdapter from 'core/Offerers/adapters/getSirenDataAdapter'
+import * as getSirenData from 'core/Offerers/getSirenData'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
-import { Offerers } from '..'
+import { Offerers } from '../Offerers'
 
 vi.mock('apiClient/api', () => ({
   api: {
@@ -333,18 +333,14 @@ describe('screens:SignupJourney::Offerers', () => {
     it('should link offerer to user when they confirm', async () => {
       renderOfferersScreen(contextValue)
       vi.spyOn(api, 'createOfferer').mockResolvedValue(expect.anything())
-      vi.spyOn(getSirenDataAdapter, 'default').mockResolvedValue({
-        isOk: true,
-        message: '',
-        payload: {
-          values: {
-            address: '',
-            city: 'lille',
-            name: '',
-            postalCode: '59000',
-            siren: '',
-            apeCode: '',
-          },
+      vi.spyOn(getSirenData, 'getSirenData').mockResolvedValue({
+        values: {
+          address: '',
+          city: 'lille',
+          name: '',
+          postalCode: '59000',
+          siren: '',
+          apeCode: '',
         },
       })
 

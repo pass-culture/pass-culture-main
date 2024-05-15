@@ -13,7 +13,7 @@ import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { CollectiveBookingStatus } from 'apiClient/v2'
 import Notification from 'components/Notification/Notification'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
-import { Audience } from 'core/shared'
+import { Audience } from 'core/shared/types'
 import * as useAnalytics from 'hooks/useAnalytics'
 import {
   listOffersVenueFactory,
@@ -116,7 +116,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           await userEvent.click(deleteButton)
           expect(api.deleteDraftOffers).toHaveBeenCalledTimes(1)
           expect(api.deleteDraftOffers).toHaveBeenCalledWith({
-            ids: [offerId.toString()],
+            ids: [offerId],
           })
           expect(
             screen.getByText('1 brouillon a bien été supprimé')
@@ -148,7 +148,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           )
           expect(api.deleteDraftOffers).toHaveBeenCalledTimes(1)
           expect(api.deleteDraftOffers).toHaveBeenCalledWith({
-            ids: [offerId.toString()],
+            ids: [offerId],
           })
           expect(
             screen.getByText(

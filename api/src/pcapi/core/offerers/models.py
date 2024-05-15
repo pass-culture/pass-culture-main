@@ -4,6 +4,7 @@ import decimal
 import enum
 import logging
 import os
+import re
 import typing
 
 import psycopg2.extras
@@ -57,6 +58,8 @@ from pcapi.models.has_address_mixin import HasAddressMixin
 from pcapi.models.has_thumb_mixin import HasThumbMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.validation_status_mixin import ValidationStatusMixin
+from pcapi.routes.native.v1.serialization.offerers import BannerMetaModel
+from pcapi.routes.native.v1.serialization.offerers import VenueTypeCode
 from pcapi.utils import crypto
 from pcapi.utils.date import METROPOLE_TIMEZONE
 from pcapi.utils.date import get_department_timezone
@@ -101,46 +104,6 @@ CONSTRAINT_CHECK_HAS_SIRET_XOR_HAS_COMMENT_XOR_IS_VIRTUAL = """
     OR (siret IS NULL AND comment IS NOT NULL AND "isVirtual" IS FALSE)
     OR (siret IS NOT NULL AND "isVirtual" IS FALSE)
 """
-
-
-class VenueTypeCode(enum.Enum):
-    ADMINISTRATIVE = "Lieu administratif"
-    ARTISTIC_COURSE = "Cours et pratique artistiques"
-    BOOKSTORE = "Librairie"
-    CONCERT_HALL = "Musique - Salle de concerts"
-    CREATIVE_ARTS_STORE = "Magasin arts créatifs"
-    CULTURAL_CENTRE = "Centre culturel"
-    DIGITAL = "Offre numérique"
-    DISTRIBUTION_STORE = "Magasin de distribution de produits culturels"
-    FESTIVAL = "Festival"
-    GAMES = "Jeux / Jeux vidéos"
-    LIBRARY = "Bibliothèque ou médiathèque"
-    MOVIE = "Cinéma - Salle de projections"
-    MUSEUM = "Musée"
-    MUSICAL_INSTRUMENT_STORE = "Musique - Magasin d’instruments"
-    OTHER = "Autre"
-    PATRIMONY_TOURISM = "Patrimoine et tourisme"
-    PERFORMING_ARTS = "Spectacle vivant"
-    RECORD_STORE = "Musique - Disquaire"
-    SCIENTIFIC_CULTURE = "Culture scientifique"
-    TRAVELING_CINEMA = "Cinéma itinérant"
-    VISUAL_ARTS = "Arts visuels, arts plastiques et galeries"
-
-    # These methods are used by pydantic in order to return the enum name and validate the value
-    # instead of returning the enum directly.
-    @classmethod
-    def __get_validators__(cls) -> typing.Iterator[typing.Callable]:
-        yield cls.validate
-
-    @classmethod
-    def validate(cls, value: str | enum.Enum) -> str:
-        if isinstance(value, enum.Enum):
-            value = value.name
-
-        if not hasattr(cls, value):
-            raise ValueError(f"{value}: invalide")
-
-        return value
 
 
 PERMENANT_VENUE_TYPES = [
@@ -227,11 +190,6 @@ VENUE_TYPE_DEFAULT_BANNERS: dict[VenueTypeCode, tuple[str, ...]] = {
         "darya-tryfanava-UCNaGWn4EfU-unsplash.jpg",
     ),
 }
-
-VenueTypeCodeKey = enum.Enum(  # type: ignore [misc]
-    "VenueTypeCodeKey",
-    {code.name: code.name for code in VenueTypeCode},
-)
 
 
 class Target(enum.Enum):
@@ -348,7 +306,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
         "GooglePlacesInfo", back_populates="venue", uselist=False
     )
 
-    bannerMeta: dict | None = Column(MutableDict.as_mutable(JSONB), nullable=True)
+    _bannerMeta: dict | None = Column(MutableDict.as_mutable(JSONB), nullable=True, name="bannerMeta")
 
     adageId = Column(Text, nullable=True)
     adageInscriptionDate = Column(DateTime, nullable=True)
@@ -442,6 +400,9 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
         "OpeningHours", back_populates="venue", passive_deletes=True
     )
 
+    offererAddressId: int = Column(BigInteger, ForeignKey("offerer_address.id"), nullable=True, index=True)
+    offererAddress: Mapped["OffererAddress | None"] = relationship("OffererAddress", foreign_keys=[offererAddressId])
+
     def __init__(self, street: str | None = None, **kwargs: typing.Any) -> None:
         if street:
             self.street = street  # type: ignore [method-assign]
@@ -487,6 +448,37 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     @bannerUrl.expression  # type: ignore [no-redef]
     def bannerUrl(cls):  # pylint: disable=no-self-argument
         return cls._bannerUrl
+
+    @hybrid_property
+    def bannerMeta(self) -> str | None:
+        if self._bannerMeta is not None:
+            return self._bannerMeta
+        if (
+            self.googlePlacesInfo
+            and self.googlePlacesInfo.bannerMeta
+            and FeatureToggle.WIP_GOOGLE_MAPS_VENUE_IMAGES.is_active()
+        ):
+            # Google Places API returns a list of HTML attributions, formatted like this:
+            # <a href="https://url-of-contributor">John D.</a>
+            # Regex to extract URL and text
+            regex = r'<a href="(.*?)">(.*?)</a>'
+
+            # TODO: (lixxday 2024-04-25) handle multiple attributions
+            first_attribution = self.googlePlacesInfo.bannerMeta.get("html_attributions")[0]
+            match = re.search(regex, first_attribution)
+            if match:
+                url, credit = match.groups()
+
+                return BannerMetaModel(image_credit=credit, image_credit_url=url, is_from_google=True)
+        return None
+
+    @bannerMeta.setter  # type: ignore [no-redef]
+    def bannerMeta(self, value: str | None) -> None:
+        self._bannerMeta = value
+
+    @bannerMeta.expression  # type: ignore [no-redef]
+    def bannerMeta(cls):  # pylint: disable=no-self-argument
+        return cls._bannerMeta
 
     @property
     def is_eligible_for_search(self) -> bool:
@@ -739,20 +731,20 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
         return self.registration.target if self.registration else None
 
     @property
-    def opening_days(self) -> dict | None:
+    def opening_hours(self) -> dict | None:
         if not self.openingHours:
             return None
 
-        opening_days = {}
-        for opening_hours in self.openingHours:
-            if not opening_hours.timespan:
+        opening_hours = {}
+        for daily_opening_hours in self.openingHours:
+            if not daily_opening_hours.timespan:
                 timespan_list = None
             else:
-                timespan_str = numranges_to_timespan_str(sorted(opening_hours.timespan, key=lambda x: x.lower))
+                timespan_str = numranges_to_timespan_str(sorted(daily_opening_hours.timespan, key=lambda x: x.lower))
                 timespan_list = [{"open": start, "close": end} for start, end in timespan_str]
-            opening_days[opening_hours.weekday.value] = timespan_list
+            opening_hours[daily_opening_hours.weekday.value] = timespan_list
 
-        return opening_days
+        return opening_hours
 
     @property
     def external_accessibility_id(self) -> str | None:
@@ -1118,7 +1110,15 @@ class ApiKey(PcObject, Base, Model):
     secret: bytes = Column(LargeBinary, nullable=True)
 
     def check_secret(self, clear_text: str) -> bool:
-        return crypto.check_password(clear_text, self.secret)
+        if self.secret.decode("utf-8").startswith("$sha3_512$"):
+            return crypto.check_public_api_key(clear_text, self.secret)
+        if crypto.check_password(clear_text, self.secret):
+            if FeatureToggle.WIP_ENABLE_NEW_HASHING_ALGORITHM.is_active():
+                self.secret = crypto.hash_public_api_key(clear_text)
+                db.session.flush()  # it may not be commited but the hash recompute cost is low
+                logger.info("Switched hash of API key from bcrypt to SHA3-512", extra={"key_id": self.id})
+            return True
+        return False
 
 
 class OffererTag(PcObject, Base, Model):
@@ -1268,3 +1268,5 @@ class OffererAddress(PcObject, Base, Model):
     address: sa.orm.Mapped[geography_models.Address] = sa.orm.relationship("Address", foreign_keys=[addressId])
     offererId = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), index=True)
     offerer: sa.orm.Mapped["Offerer"] = sa.orm.relationship("Offerer", foreign_keys=[offererId])
+
+    __table_args__ = (sa.Index("ix_unique_offerer_address_per_label", "offererId", "addressId", "label", unique=True),)

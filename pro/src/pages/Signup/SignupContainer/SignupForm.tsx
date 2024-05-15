@@ -3,12 +3,12 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { ProUserCreationBodyV2Model } from 'apiClient/v1'
-import { BannerRGS } from 'components/Banner'
-import FormLayout from 'components/FormLayout'
+import { BannerRGS } from 'components/Banner/BannerRGS'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import LegalInfos from 'components/LegalInfos/LegalInfos'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import CookiesFooter from 'pages/CookiesFooter/CookiesFooter'
-import MaybeAppUserDialog from 'pages/Signup/SignupContainer/MaybeAppUserDialog'
+import { MaybeAppUserDialog } from 'pages/Signup/SignupContainer/MaybeAppUserDialog/MaybeAppUserDialog'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Checkbox } from 'ui-kit/form/Checkbox/Checkbox'
@@ -68,6 +68,7 @@ const SignupForm = (): JSX.Element => {
         </FormLayout.Row>
         <FormLayout.Row>
           <Checkbox
+            className={styles['checkbox-contact']}
             hideFooter
             label="J’accepte d’être contacté par email pour recevoir les
                       nouveautés du pass Culture et contribuer à son

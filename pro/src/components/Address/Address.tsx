@@ -1,11 +1,11 @@
 import { useField, useFormikContext } from 'formik'
 import React, { useEffect, useState } from 'react'
 
+import { apiAdresse } from 'apiClient/adresse/apiAdresse'
+import { serializeAdressData } from 'components/Address/serializer'
 import { SelectOption } from 'custom_types/form'
 import { SelectAutocomplete } from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
 import { AutocompleteItemProps } from 'ui-kit/form/shared/AutocompleteList/type'
-
-import { getAdressDataAdapter } from './adapter'
 
 interface AddressProps {
   description?: string
@@ -67,9 +67,14 @@ const AddressSelect = ({ description, suggestionLimit }: AddressProps) => {
   /* istanbul ignore next: DEBT, TO FIX */
   const getSuggestions = async (search: string) => {
     if (search) {
-      const response = await getAdressDataAdapter({ search, suggestionLimit })
-      if (response.isOk) {
-        return response.payload
+      try {
+        const adressSuggestions = await apiAdresse.getDataFromAddress(
+          search,
+          suggestionLimit
+        )
+        return serializeAdressData(adressSuggestions)
+      } catch {
+        return []
       }
     }
     return []

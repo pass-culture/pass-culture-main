@@ -6,8 +6,8 @@ import React, { useEffect, useState } from 'react'
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel, GetVenueResponseModel } from 'apiClient/v1'
 import Callout from 'components/Callout/Callout'
-import ConfirmDialog from 'components/Dialog/ConfirmDialog'
-import { SENT_DATA_ERROR_MESSAGE } from 'core/shared'
+import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
+import { SENT_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import useNotification from 'hooks/useNotification'
 import fullLinkIcon from 'icons/full-link.svg'
 import strokeValidIcon from 'icons/stroke-valid.svg'
@@ -23,7 +23,7 @@ export interface PricingPointProps {
   venue: GetVenueResponseModel
 }
 
-const PricingPoint = ({ offerer, venue }: PricingPointProps) => {
+export const PricingPoint = ({ offerer, venue }: PricingPointProps) => {
   const [canSubmit, setCanSubmit] = useState(true)
   const [isInputDisabled, setIsInputDisabled] = useState(false)
   const [isConfirmSiretDialogOpen, setIsConfirmSiretDialogOpen] =
@@ -174,5 +174,3 @@ const PricingPoint = ({ offerer, venue }: PricingPointProps) => {
     </>
   )
 }
-
-export default PricingPoint

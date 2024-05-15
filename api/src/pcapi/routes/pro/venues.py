@@ -34,9 +34,11 @@ def get_venue(venue_id: int) -> venues_serialize.GetVenueResponseModel:
         .options(sqla_orm.joinedload(models.Venue.bankInformation))
         .options(sqla_orm.joinedload(models.Venue.managingOfferer).joinedload(models.Offerer.bankInformation))
         .options(
-            sqla_orm.joinedload(models.Venue.pricing_point_links).joinedload(models.VenuePricingPointLink.pricingPoint)
+            sqla_orm.selectinload(models.Venue.pricing_point_links).joinedload(
+                models.VenuePricingPointLink.pricingPoint
+            )
         )
-        .options(sqla_orm.joinedload(models.Venue.reimbursement_point_links))
+        .options(sqla_orm.selectinload(models.Venue.reimbursement_point_links))
         .options(sqla_orm.joinedload(models.Venue.collectiveDomains))
         .options(sqla_orm.joinedload(models.Venue.collectiveDmsApplications))
         .options(sqla_orm.joinedload(models.Venue.bankAccountLinks).joinedload(models.VenueBankAccountLink.bankAccount))
@@ -122,7 +124,7 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
     )
     have_withdrawal_details_changes = body.withdrawalDetails != venue.withdrawalDetails
     venue = offerers_api.update_venue(
-        venue, author=current_user, contact_data=body.contact, opening_days=body.openingHours, **update_venue_attrs
+        venue, author=current_user, contact_data=body.contact, opening_hours=body.openingHours, **update_venue_attrs
     )
 
     if have_accessibility_changes and body.isAccessibilityAppliedOnAllOffers:

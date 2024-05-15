@@ -7,7 +7,7 @@ import strokeArticleIcon from 'icons/stroke-article.svg'
 import strokeInfoIcon from 'icons/stroke-info.svg'
 import strokeInstitutionIcon from 'icons/stroke-institution.svg'
 import strokeUserIcon from 'icons/stroke-user.svg'
-import { isCollectiveOfferBookable } from 'pages/AdageIframe/app/types/offers'
+import { isCollectiveOfferBookable } from 'pages/AdageIframe/app/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './AdageOffer.module.scss'
@@ -27,13 +27,13 @@ export type AdageOfferProps = {
   institutionOfferCount?: number
 }
 
-export default function AdageOffer({
+export const AdageOffer = ({
   offer,
   adageUser,
   isPreview = false,
   setInstitutionOfferCount,
   institutionOfferCount,
-}: AdageOfferProps) {
+}: AdageOfferProps) => {
   const isOfferBookable = isCollectiveOfferBookable(offer)
 
   return (

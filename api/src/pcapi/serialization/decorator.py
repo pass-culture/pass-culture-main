@@ -77,6 +77,7 @@ def spectree_serialize(
     response_headers: dict[str, str] | None = None,
     resp: SpectreeResponse | None = None,
     deprecated: bool = False,
+    flatten: bool = False,
 ) -> Callable[[Any], Any]:
     """A decorator that serialize/deserialize and validate input/output
 
@@ -165,7 +166,8 @@ def spectree_serialize(
                         400,
                     )
             if query_in_kwargs:
-                kwargs["query"] = query_in_kwargs(**query_params)
+                content = request.args.to_dict(flat=False) if flatten else query_params
+                kwargs["query"] = query_in_kwargs(**content)
             if form_in_kwargs:
                 kwargs["form"] = form_in_kwargs(**form)
 

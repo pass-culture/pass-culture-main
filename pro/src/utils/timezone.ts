@@ -2,8 +2,8 @@ import { fr } from 'date-fns/locale'
 import {
   format,
   formatInTimeZone,
-  utcToZonedTime,
-  zonedTimeToUtc,
+  fromZonedTime,
+  toZonedTime,
 } from 'date-fns-tz'
 
 import { getToday } from './date'
@@ -29,7 +29,7 @@ type GetLocalDepartementDateTimeFromUtc = (
 ) => Date
 export const getLocalDepartementDateTimeFromUtc: GetLocalDepartementDateTimeFromUtc =
   (date, departementCode) =>
-    utcToZonedTime(date, getDepartmentTimezone(departementCode))
+    toZonedTime(date, getDepartmentTimezone(departementCode))
 
 type GetUtcDateTimeFromLocalDepartement = (
   zonedDate: Date,
@@ -37,7 +37,7 @@ type GetUtcDateTimeFromLocalDepartement = (
 ) => Date
 export const getUtcDateTimeFromLocalDepartement: GetUtcDateTimeFromLocalDepartement =
   (zonedDate, departementCode) =>
-    zonedTimeToUtc(zonedDate, getDepartmentTimezone(departementCode))
+    fromZonedTime(zonedDate, getDepartmentTimezone(departementCode))
 
 // Cayenne              UTC          Paris                St Denis
 //    | ---------------- | ----------- | --------------------|
@@ -94,7 +94,7 @@ export function convertTimeFromVenueTimezoneToUtc(
   // get venue time zone : ex: 'Pacific/Pitcairn'
   const venueTimeZone = getDepartmentTimezone(departmentCode)
   // convert time from venue time zone to UTC
-  const utcDate = zonedTimeToUtc(userDate, venueTimeZone)
+  const utcDate = fromZonedTime(userDate, venueTimeZone)
 
   // get hours and minutes, now in UTC from the fake date
   return formatInTimeZone(utcDate, 'Etc/UTC', 'HH:mm')

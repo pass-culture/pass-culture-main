@@ -43,5 +43,3 @@ export const getEducationalInstitutionsAdapter: GetEducationalInstitutionsAdapte
       }
     }
   }
-
-export default getEducationalInstitutionsAdapter

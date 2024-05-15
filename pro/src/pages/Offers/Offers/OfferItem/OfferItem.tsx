@@ -5,10 +5,10 @@ import {
   CollectiveOfferResponseModel,
   ListOffersOfferResponseModel,
 } from 'apiClient/v1'
-import { isOfferEducational } from 'core/OfferEducational'
+import { isOfferEducational } from 'core/OfferEducational/types'
 import { OFFER_STATUS_DRAFT } from 'core/Offers/constants'
-import { isOfferDisabled } from 'core/Offers/utils'
-import { Audience } from 'core/shared'
+import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
+import { Audience } from 'core/shared/types'
 import {
   useOfferEditionURL,
   useOfferStockEditionURL,

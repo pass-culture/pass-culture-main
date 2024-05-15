@@ -14,10 +14,13 @@ from pcapi.connectors import titelive
 from pcapi.connectors.serialization.titelive_serializers import TiteliveProductSearchResponse
 from pcapi.connectors.serialization.titelive_serializers import TiteliveSearchResultType
 from pcapi.core.offers import models as offers_models
+import pcapi.core.offers.api as offers_api
+from pcapi.core.offers.exceptions import NotUpdateProductOrOffers
 import pcapi.core.providers.constants as providers_constants
 import pcapi.core.providers.models as providers_models
 import pcapi.core.providers.repository as providers_repository
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.utils import requests
 
 
@@ -101,15 +104,27 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
         page_index = from_page
         has_next_page = True
         while has_next_page:
-            titelive_json_response = titelive.search_products(self.titelive_base, from_date, page_index)
-            titelive_product_page = self.deserialize_titelive_search_json(titelive_json_response)
-            titlive_recent_product_page = self.filter_recent_products(titelive_product_page, from_date)
-            allowed_product_page = self.filter_allowed_products(titlive_recent_product_page)
+            json_response = titelive.search_products(self.titelive_base, from_date, page_index)
+            product_page = self.deserialize_titelive_search_json(json_response)
+            recent_product_page = self.filter_recent_products(product_page, from_date)
+            allowed_product_page, not_allowed_eans = self.partition_allowed_products(recent_product_page)
             allowed_product_page.result = [oeuvre for oeuvre in allowed_product_page.result if oeuvre.article]
+            offers_api.reject_inappropriate_products(not_allowed_eans, author=None)
+
             yield allowed_product_page
+
             # sometimes titelive returns a partially filled page while having a next page in store for us
-            has_next_page = bool(titelive_product_page.result)
+            has_next_page = bool(product_page.result)
             page_index += 1
+
+    @abc.abstractmethod
+    def partition_allowed_products(
+        self, titelive_product_page: TiteliveProductSearchResponse[TiteliveSearchResultType]
+    ) -> tuple[
+        TiteliveProductSearchResponse[TiteliveSearchResultType],
+        list[str],
+    ]:
+        raise NotImplementedError()
 
     @abc.abstractmethod
     def deserialize_titelive_search_json(
@@ -124,13 +139,11 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
     ) -> TiteliveProductSearchResponse[TiteliveSearchResultType]:
         """Filters out articles that were not updated since from_date."""
         for oeuvre in titelive_product_page.result:
-            oeuvre.article = [article for article in oeuvre.article if article.datemodification >= from_date]
-        return titelive_product_page
-
-    def filter_allowed_products(
-        self,
-        titelive_product_page: TiteliveProductSearchResponse[TiteliveSearchResultType],
-    ) -> TiteliveProductSearchResponse[TiteliveSearchResultType]:
+            oeuvre.article = [
+                article
+                for article in oeuvre.article
+                if article.datemodification is None or article.datemodification >= from_date
+            ]
         return titelive_product_page
 
     def upsert_titelive_page(
@@ -144,7 +157,8 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
             offers_models.Product.lastProviderId.is_not(None),
         ).all()
 
-        titelive_page, products = self.dodge_sync_collision(titelive_page, products)
+        if not FeatureToggle.WIP_ENABLE_TITELIVE_API_FOR_BOOKS.is_active():
+            titelive_page, products = self.dodge_sync_collision(titelive_page, products)
 
         products_by_ean: dict[str, offers_models.Product] = {p.extraData["ean"]: p for p in products}
         for titelive_search_result in titelive_page.result:
@@ -157,8 +171,11 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
         titelive_page: TiteliveProductSearchResponse[TiteliveSearchResultType],
         existing_products: list[offers_models.Product],
     ) -> tuple[TiteliveProductSearchResponse[TiteliveSearchResultType], list[offers_models.Product]]:
-        """Returns the titelive search page and product list without products that were already imported
-        by another provider, and logs as error the removed products EAN and their provider."""
+        """
+        Returns the titelive search page and product list without products that were already imported
+        by another provider, and logs as error the removed products EAN and their provider.
+        """
+        # TODO: Remove when FeatureToggle.WIP_ENABLE_TITELIVE_API_FOR_BOOKS is removed
         products_from_other_provider = [p for p in existing_products if p.lastProvider != self.provider]
         if not products_from_other_provider:
             return titelive_page, existing_products
@@ -188,6 +205,17 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
     ) -> dict[str, offers_models.Product]:
         raise NotImplementedError()
 
+    def activate_newly_eligible_product_and_offers(self, product: offers_models.Product) -> None:
+        is_product_newly_eligible = not product.isGcuCompatible
+        ean = product.extraData.get("ean") if product.extraData else None
+        if ean is None:
+            return
+        if is_product_newly_eligible:
+            try:
+                offers_api.approves_provider_product_and_rejected_offers(ean)
+            except NotUpdateProductOrOffers as exception:
+                logger.error("Product with ean cannot be approved", extra={"ean": ean, "exc": str(exception)})
+
     def update_product_thumbnails(
         self,
         products: list[offers_models.Product],
@@ -200,9 +228,8 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
             }
             for result in titelive_page.result
             for article in result.article
-            if article.image != "0"
+            if article.has_image
         }
-
         for product in products:
             assert product.extraData, "product %s initialized without extra data" % product.id
 

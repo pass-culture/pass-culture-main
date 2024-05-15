@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 import { UserPhoneBodyModel } from 'apiClient/v1'
-import { BannerRGS } from 'components/Banner'
+import { BannerRGS } from 'components/Banner/BannerRGS'
 import { UserIdentityFormValues } from 'components/UserIdentityForm/types'
 
 import { Forms } from './constants'

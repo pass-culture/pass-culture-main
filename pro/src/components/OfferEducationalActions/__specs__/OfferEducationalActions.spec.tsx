@@ -4,6 +4,7 @@ import React from 'react'
 
 import { api } from 'apiClient/api'
 import { CollectiveBookingStatus, OfferStatus } from 'apiClient/v1'
+import { GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY } from 'config/swrQueryKeys'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
 import { Mode } from 'core/OfferEducational/types'
 import * as useAnalytics from 'hooks/useAnalytics'
@@ -15,7 +16,8 @@ import {
 } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import OfferEducationalActions, {
+import {
+  OfferEducationalActions,
   OfferEducationalActionsProps,
 } from '../OfferEducationalActions'
 
@@ -23,7 +25,16 @@ vi.mock('apiClient/api', () => ({
   api: {
     patchCollectiveOffersActiveStatus: vi.fn(),
     patchCollectiveOffersTemplateActiveStatus: vi.fn(),
+    getCollectiveOfferTemplate: vi.fn(),
   },
+}))
+
+const mockMutate = vi.fn()
+vi.mock('swr', async () => ({
+  ...(await vi.importActual('swr')),
+  useSWRConfig: vi.fn(() => ({
+    mutate: mockMutate,
+  })),
 }))
 
 const renderOfferEducationalActions = (props: OfferEducationalActionsProps) => {
@@ -35,17 +46,17 @@ describe('OfferEducationalActions', () => {
     className: 'string',
     isBooked: false,
     offer: getCollectiveOfferFactory(),
-    reloadCollectiveOffer: vi.fn(),
     mode: Mode.EDITION,
   }
 
   it('should update active status value for template offer', async () => {
+    const offer = getCollectiveOfferTemplateFactory({
+      isActive: false,
+      isTemplate: true,
+    })
     renderOfferEducationalActions({
       ...defaultValues,
-      offer: getCollectiveOfferTemplateFactory({
-        isActive: false,
-        isTemplate: true,
-      }),
+      offer: offer,
     })
     const activateOffer = screen.getByRole('button', {
       name: 'Publier sur Adage',
@@ -56,7 +67,10 @@ describe('OfferEducationalActions', () => {
     expect(api.patchCollectiveOffersTemplateActiveStatus).toHaveBeenCalledTimes(
       1
     )
-    expect(defaultValues.reloadCollectiveOffer).toHaveBeenCalledTimes(1)
+    expect(mockMutate).toHaveBeenNthCalledWith(1, [
+      GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
+      offer.id,
+    ])
   })
 
   it('should failed active status value', async () => {

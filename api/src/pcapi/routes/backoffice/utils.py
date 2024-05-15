@@ -1,4 +1,5 @@
 from collections import defaultdict
+import datetime
 import enum
 from functools import wraps
 import logging
@@ -15,7 +16,6 @@ from flask_login import current_user
 from flask_sqlalchemy import BaseQuery
 from flask_wtf import FlaskForm
 from markupsafe import Markup
-from sqlalchemy import func
 from sqlalchemy.dialects import postgresql
 import werkzeug
 from werkzeug.datastructures import ImmutableMultiDict
@@ -28,7 +28,7 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
-from pcapi.utils import string as string_utils
+from pcapi.utils import date as date_utils
 from pcapi.utils.regions import get_all_regions
 
 from . import blueprint
@@ -44,12 +44,20 @@ OPERATOR_DICT: dict[str, dict[str, typing.Any]] = {
     "EQUALS": {"function": op.eq},
     "IS": {"function": op.eq},
     "NOT_EQUALS": {"function": op.ne},
-    "STR_EQUALS": {"function": lambda x, y: func.lower(x) == y.lower()},
-    "STR_NOT_EQUALS": {"function": lambda x, y: func.lower(x) != y.lower()},
+    "NAME_EQUALS": {"function": lambda x, y: x.ilike(y)},
+    "NAME_NOT_EQUALS": {"function": lambda x, y: ~x.ilike(y)},
     "GREATER_THAN": {"function": op.gt},
     "GREATER_THAN_OR_EQUAL_TO": {"function": op.ge},
     "LESS_THAN": {"function": op.lt},
     "LESS_THAN_OR_EQUAL_TO": {"function": op.le},
+    "DATE_FROM": {"function": lambda x, y: x >= date_utils.date_to_localized_datetime(y, datetime.time.min)},
+    "DATE_TO": {"function": lambda x, y: x <= date_utils.date_to_localized_datetime(y, datetime.time.max)},
+    "DATE_EQUALS": {
+        "function": lambda x, y: x.between(
+            date_utils.date_to_localized_datetime(y, datetime.time.min),
+            date_utils.date_to_localized_datetime(y, datetime.time.max),
+        )
+    },
     "IN": {"function": lambda x, y: x.in_(y)},
     "NULLABLE": {"function": lambda x, y: x.is_(None) if y else x.is_not(None)},
     "NOT_IN": {"function": lambda x, y: x.not_in(y)},
@@ -62,19 +70,20 @@ OPERATOR_DICT: dict[str, dict[str, typing.Any]] = {
 
 
 class AdvancedSearchOperators(enum.Enum):
-    NOT_EQUALS = "est différent de"
     EQUALS = "est égal à"
-    NAME_NOT_EQUALS = "est différent de\0\0"
-    NAME_EQUALS = "est égal à\0\0"
-    STR_NOT_EQUALS = "est différent de\0"  # the \0 is here to force wtforms to display NOT_EQUALS and STR_NOT_EQUALS
-    STR_EQUALS = "est égal à\0"  # the \0 is here to force wtforms to display EQUALS and STR_EQUALS
+    NOT_EQUALS = "est différent de"
+    NAME_EQUALS = "est égal à\0"  # the \0 is here to force wtforms to display EQUALS and NAME_EQUALS
+    NAME_NOT_EQUALS = "est différent de\0"  # the \0 is here to force wtforms to display NOT_EQUALS and NAME_NOT_EQUALS
     GREATER_THAN = "supérieur strict"
     GREATER_THAN_OR_EQUAL_TO = "supérieur ou égal"
     LESS_THAN = "inférieur strict"
     LESS_THAN_OR_EQUAL_TO = "inférieur ou égal"
+    DATE_FROM = "à partir du"
+    DATE_TO = "jusqu'au"
+    DATE_EQUALS = "est exactement le"
     IN = "est parmi"
-    NULLABLE = "est"
     NOT_IN = "n'est pas parmi"
+    NULLABLE = "est"
     CONTAINS = "contient"
     NO_CONTAINS = "ne contient pas"
     NOT_EXIST = "n'a aucun"
@@ -89,7 +98,7 @@ class UnauthenticatedUserError(Exception):
 def has_current_user_permission(permission: perm_models.Permissions | str) -> bool:
     if isinstance(permission, str):
         permission = perm_models.Permissions[permission]
-    return permission in current_user.backoffice_profile.permissions or settings.IS_TESTING
+    return permission in current_user.backoffice_profile.permissions
 
 
 def _check_any_permission_of(permissions: typing.Iterable[perm_models.Permissions]) -> None:
@@ -187,11 +196,6 @@ def random_hash() -> str:
     return format(random.getrandbits(128), "x")
 
 
-def is_visa_valid(visa: str) -> bool:
-    visa = string_utils.format_ean_or_visa(visa)
-    return visa.isdigit() and len(visa) <= 10
-
-
 def build_form_error_msg(form: FlaskForm) -> str:
     error_msg = Markup("Les données envoyées comportent des erreurs.")
     for field in form:
@@ -240,7 +244,6 @@ def generate_search_query(
     fields_definition: dict[str, dict[str, typing.Any]],
     joins_definition: dict[str, list[dict[str, typing.Any]]],
     subqueries_definition: dict[str, dict[str, typing.Any]],
-    operators_definition: dict[str, dict[str, typing.Any]] | None = None,
     _ignore_subquery_joins: bool = False,
 ) -> tuple[BaseQuery, set[str], set[str], set[str]]:
     """
@@ -256,7 +259,6 @@ def generate_search_query(
     operators_definition: a dict mapping str to actual operations
     _ignore_subquery_joins: internal signaling to manage subqueries
     """
-    operators_definition = operators_definition or OPERATOR_DICT
     subquery_joins: dict = defaultdict(list)
     inner_joins: set[tuple] = set()
     outer_joins: set[tuple] = set()
@@ -264,7 +266,7 @@ def generate_search_query(
     warnings: set[str] = set()
     for search_data in search_parameters:
         operator = search_data.get("operator", "")
-        if operator not in operators_definition:
+        if operator not in OPERATOR_DICT:
             continue
 
         search_field = search_data.get("search_field")
@@ -287,7 +289,7 @@ def generate_search_query(
             continue
 
         column = meta_field["column"]
-        if operators_definition[operator].get("outer_join", False):
+        if OPERATOR_DICT[operator].get("outer_join", False):
             if not meta_field.get("outer_join") or not meta_field.get("outer_join_column"):
                 warnings.add(
                     f"La règle de recherche '{search_field}' n'est pas correctement configuré pour "
@@ -298,7 +300,7 @@ def generate_search_query(
             column = meta_field["outer_join_column"]
         elif "inner_join" in meta_field:
             inner_joins.add(meta_field["inner_join"])
-        filters.append(operators_definition[operator]["function"](column, field_value))
+        filters.append(OPERATOR_DICT[operator]["function"](column, field_value))
 
     query, inner_join_log = _manage_joins(query=query, joins=inner_joins, joins_definition=joins_definition)
     query, outer_join_log = _manage_joins(
@@ -309,7 +311,6 @@ def generate_search_query(
             joins=subquery_joins,
             fields_definition=fields_definition,
             subqueries_definition=subqueries_definition,
-            operators_definition=operators_definition,
         )
     )
     if filters:
@@ -342,7 +343,6 @@ def _manage_subquery_joins(
     joins: dict,
     fields_definition: dict[str, dict[str, typing.Any]],
     subqueries_definition: dict[str, dict[str, typing.Any]],
-    operators_definition: dict[str, dict[str, typing.Any]] | None = None,
 ) -> list:
     filters = []
     for join_name, subquery_filters in joins.items():
@@ -353,7 +353,6 @@ def _manage_subquery_joins(
             fields_definition=fields_definition,
             joins_definition={},
             subqueries_definition={},
-            operators_definition=operators_definition,
             _ignore_subquery_joins=True,
         )
         subquery = subquery.filter(subqueries_definition[join_name]["constraint"])
@@ -361,46 +360,24 @@ def _manage_subquery_joins(
     return filters
 
 
-def get_advanced_search_args(
-    form_search_data: dict,
-    search_attributes: type,  # type[IndividualOffersSearchAttributes] | type[CollectiveOffersSearchAttributes]
-    search_field_to_python_dict: dict[str, dict[str, typing.Any]],
-) -> dict[str, typing.Any]:
-    advanced_query = ""
-    search_data_tags = set()
-
-    if form_search_data:
-        advanced_query = f"?{request.query_string.decode()}"
-
-        for data in form_search_data:
-            if search_operator := data.get("operator"):
-                if search_field := data.get("search_field"):
-                    if search_field_attr := getattr(search_attributes, search_field, None):
-                        field_name = search_field_to_python_dict[search_field]["field"]
-                        field_data = data[field_name] if isinstance(data[field_name], list) else [data[field_name]]
-                        field_data = ", ".join(str(e) for e in field_data)
-
-                        field_title = search_field_attr.value
-                        operator_title = AdvancedSearchOperators[search_operator].value
-
-                        search_data_tags.add(" ".join((field_title, operator_title, field_data)))
-
-    return {
-        "advanced_query": advanced_query,
-        "search_data_tags": search_data_tags,
-    }
-
-
-def limit_rows(rows: list[typing.Any], limit: int) -> list[typing.Any]:
+def limit_rows(
+    rows: list[typing.Any], limit: int, sort_key: typing.Callable | None = None, sort_reverse: bool = False
+) -> list[typing.Any]:
     if len(rows) > limit:
+        # Not sorted by database for performance reasons (query may have to sort millions of matching rows),
+        # so there is no reason to sort random rows from database, which may be confusing for users.
         flash(
             Markup(
                 "Il y a plus de {limit} résultats dans la base de données, la liste ci-dessous n'en donne donc "
-                "qu'une partie. Veuillez affiner les filtres de recherche."
-            ).format(limit=limit),
+                "qu'une partie{sort_info}. Veuillez affiner les filtres de recherche."
+            ).format(limit=limit, sort_info=Markup(", <b>non triés</b>") if sort_key else ""),
             "info",
         )
-        rows = rows[:limit]
+        return rows[:limit]
+
+    if sort_key:
+        return sorted(rows, key=sort_key, reverse=sort_reverse)
+
     return rows
 
 

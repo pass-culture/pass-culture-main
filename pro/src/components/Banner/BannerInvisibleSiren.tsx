@@ -9,7 +9,7 @@ interface BannerInvisibleSirenProps {
   isNewOnboarding?: boolean
 }
 
-const BannerInvisibleSiren = ({
+export const BannerInvisibleSiren = ({
   isNewOnboarding = false,
 }: BannerInvisibleSirenProps): JSX.Element => (
   <Callout
@@ -30,5 +30,3 @@ const BannerInvisibleSiren = ({
     de l’INSEE.
   </Callout>
 )
-
-export default BannerInvisibleSiren

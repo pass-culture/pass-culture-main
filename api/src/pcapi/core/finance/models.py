@@ -1084,6 +1084,13 @@ class BookingFinanceIncident(Base, Model):
     )
 
     @property
+    def commercial_gesture_amount(self) -> int | None:  # in cents
+        # Evaluates to None if the incident is not a commercial gesture
+        if self.incident.kind == IncidentType.COMMERCIAL_GESTURE:
+            return ((self.booking or self.collectiveBooking).total_amount * 100) - self.newTotalAmount
+        return None
+
+    @property
     def is_partial(self) -> bool:
         """
         Returns True if the booking new amount is not 0. That means the incident is not total.

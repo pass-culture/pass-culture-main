@@ -234,7 +234,7 @@ def install_logging() -> None:
 
     monkey_patch_logger_makeRecord()
     monkey_patch_logger_log()
-    if settings.IS_DEV and not settings.IS_RUNNING_TESTS:
+    if settings.LOG_PLAIN_TEXT:
         # JSON is hard to read, keep the default plain text logger.
         logging.basicConfig(level=settings.LOG_LEVEL)
         _silence_noisy_loggers()
@@ -253,7 +253,7 @@ def install_logging() -> None:
     # this. If so, we log twice: on the standard output of the Python
     # process (so that the developer sees logs), and on the standard
     # output of the master process (for log gathering).
-    if any((settings.IS_TESTING, settings.IS_STAGING, settings.IS_PROD)) and sys.stdout.isatty():
+    if settings.RUNS_ON_KUBERNETES and sys.stdout.isatty():
         # pylint: disable=consider-using-with
         handler2 = logging.StreamHandler(stream=open("/proc/1/fd/1", "w", encoding="utf-8"))
         handler2.setFormatter(JsonFormatter())

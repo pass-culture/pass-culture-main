@@ -1,7 +1,7 @@
 import { useFormikContext } from 'formik'
 import React from 'react'
 
-import FormLayout from 'components/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import { humanizeSiret, unhumanizeSiret } from 'core/Venue/utils'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 

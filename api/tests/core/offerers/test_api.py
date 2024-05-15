@@ -9,9 +9,7 @@ import jwt
 import pytest
 import time_machine
 
-from pcapi.connectors.acceslibre import AcceslibreInfos
-from pcapi.connectors.acceslibre import AccessibilityInfo
-from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
+from pcapi.connectors import acceslibre as acceslibre_connector
 from pcapi.connectors.entreprise import models as sirene_models
 from pcapi.core import search
 from pcapi.core.bookings import factories as bookings_factories
@@ -2730,8 +2728,8 @@ class AccessibilityProviderTest:
         offerers_factories.AccessibilityProviderFactory(venue=venue)
         offerers_api.set_accessibility_infos_from_provider_id(venue)
         assert venue.accessibilityProvider.externalAccessibilityData["access_modality"] == [
-            acceslibre_enum.EXTERIOR_ONE_LEVEL,
-            acceslibre_enum.ENTRANCE_ONE_LEVEL,
+            acceslibre_connector.ExpectedFieldsEnum.EXTERIOR_ONE_LEVEL,
+            acceslibre_connector.ExpectedFieldsEnum.ENTRANCE_ONE_LEVEL,
         ]
 
     def test_synchronize_accessibility_provider_no_data(self):
@@ -2757,13 +2755,13 @@ class AccessibilityProviderTest:
         )
         # TestingBackend for acceslibre get_id_at_accessibility_provider returns datetime(2024, 3, 1, 0, 0)
         accessibility_provider.externalAccessibilityData["audio_description"] = (
-            acceslibre_enum.AUDIODESCRIPTION_NO_DEVICE
+            acceslibre_connector.ExpectedFieldsEnum.AUDIODESCRIPTION_NO_DEVICE
         )
 
         # Synchronize should happen as provider last update is more recent than accessibility_provider.lastUpdateAtProvider
         offerers_api.synchronize_accessibility_provider(venue)
         assert accessibility_provider.externalAccessibilityData["audio_description"] == [
-            acceslibre_enum.AUDIODESCRIPTION_OCCASIONAL
+            acceslibre_connector.ExpectedFieldsEnum.AUDIODESCRIPTION_OCCASIONAL
         ]
 
     @patch("pcapi.connectors.acceslibre.get_accessibility_infos")
@@ -2777,7 +2775,7 @@ class AccessibilityProviderTest:
             city="Paris",
         )
         mock_get_id_at_accessibility_provider.side_effect = [
-            AcceslibreInfos(slug="nouveau-slug", url="https://nouvelle.adresse/nouveau-slug")
+            acceslibre_connector.AcceslibreInfos(slug="nouveau-slug", url="https://nouvelle.adresse/nouveau-slug")
         ]
         # While trying to synchronize venue with acceslibre, we receive None when fetching widget data
         # This means the entry with this slug (ie. externalAccessibilityId) has been removed
@@ -2785,7 +2783,7 @@ class AccessibilityProviderTest:
         # In that case, we try a new match and look for the new slug
         mock_get_accessibility_infos.side_effect = [
             (None, None),
-            (datetime.datetime(2024, 3, 1, 0, 0), AccessibilityInfo()),
+            (datetime.datetime(2024, 3, 1, 0, 0), acceslibre_connector.AccessibilityInfo()),
         ]
 
         accessibility_provider = offerers_factories.AccessibilityProviderFactory(
@@ -2794,3 +2792,77 @@ class AccessibilityProviderTest:
         offerers_api.synchronize_accessibility_provider(venue, force_sync=True)
         assert accessibility_provider.externalAccessibilityId == "nouveau-slug"
         assert accessibility_provider.externalAccessibilityUrl == "https://nouvelle.adresse/nouveau-slug"
+
+    def test_count_venues_with_accessibility_provider(self):
+        offerers_factories.VenueFactory.create_batch(3, isPermanent=True, isVirtual=False)
+        venue = offerers_factories.VenueFactory(isPermanent=True, isVirtual=False)
+        offerers_factories.AccessibilityProviderFactory(venue=venue)
+
+        count = offerers_api.count_permanent_venues_with_accessibility_provider()
+        assert count == 1
+
+    def test_get_permanent_venues_with_accessibility_provider(self):
+        offerers_factories.VenueFactory.create_batch(3, isPermanent=True, isVirtual=False)
+        venue = offerers_factories.VenueFactory(isPermanent=True, isVirtual=False)
+        offerers_factories.AccessibilityProviderFactory(venue=venue)
+
+        venues_list = offerers_api.get_permanent_venues_with_accessibility_provider(batch_size=10, batch_num=0)
+        assert len(venues_list) == 1
+        assert venues_list[0] == venue
+
+    def test_get_permanent_venues_without_accessibility_provider(self):
+        offerers_factories.VenueFactory.create_batch(3, isPermanent=True, isVirtual=False)
+        venue = offerers_factories.VenueFactory(isPermanent=True, isVirtual=False)
+        offerers_factories.AccessibilityProviderFactory(venue=venue)
+
+        venues_list = offerers_api.get_permanent_venues_without_accessibility_provider()
+        assert len(venues_list) == 3
+
+    @patch("pcapi.connectors.acceslibre.find_new_entries_by_activity")
+    def test_match_venue_with_new_entries(self, mock_find_new_entries_by_activity):
+        # returns mock results from acceslibre TestingBackend connector
+        mock_find_new_entries_by_activity.side_effect = [
+            [
+                acceslibre_connector.AcceslibreResult(
+                    slug="mon-lieu-chez-acceslibre",
+                    web_url="https://une-fausse-url.com",
+                    nom="Un lieu",
+                    adresse="3 Rue de Valois 75001 Paris",
+                    code_postal="75001",
+                    commune="Paris",
+                    ban_id="75001_1234_abcde",
+                    activite={"nom": "Bibliothèque Médiathèque", "slug": "bibliotheque-mediatheque"},
+                    siret="",
+                ),
+                acceslibre_connector.AcceslibreResult(
+                    slug="mon-autre-lieu-chez-acceslibre",
+                    web_url="https://une-autre-fausse-url.com",
+                    nom="Un autre lieu",
+                    adresse="5 rue ailleurs 75013 Paris",
+                    code_postal="75001",
+                    commune="Paris",
+                    ban_id="75001_1234_abcdf",
+                    activite={"nom": "Bibliothèque Médiathèque", "slug": "bibliotheque-mediatheque"},
+                    siret="",
+                ),
+            ],
+        ]
+
+        results_by_activity = acceslibre_connector.find_new_entries_by_activity(
+            activity=acceslibre_connector.AcceslibreActivity.BIBLIOTHEQUE
+        )
+
+        venues_list = [offerers_factories.VenueFactory(isPermanent=True, isVirtual=False)]
+        venue = offerers_factories.VenueFactory(
+            isPermanent=True,
+            isVirtual=False,
+            name="Un lieu",
+            postalCode="75001",
+            city="Paris",
+            street="3 Rue de Valois",
+        )
+        venues_list.append(venue)
+
+        offerers_api.match_venue_with_new_entries(venues_list, results_by_activity)
+        assert venue.external_accessibility_url == "https://une-fausse-url.com"
+        assert venue.external_accessibility_id == "mon-lieu-chez-acceslibre"

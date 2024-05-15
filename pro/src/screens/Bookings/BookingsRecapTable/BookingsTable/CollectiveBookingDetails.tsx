@@ -15,13 +15,11 @@ import { CollectiveTimeLine } from './CollectiveTimeLine'
 interface CollectiveBookingDetailsProps {
   bookingDetails: CollectiveBookingByIdResponseModel
   bookingRecap: CollectiveBookingResponseModel
-  reloadBookings: () => void
 }
 
 export const CollectiveBookingDetails = ({
   bookingDetails,
   bookingRecap,
-  reloadBookings,
 }: CollectiveBookingDetailsProps) => {
   const { educationalInstitution, educationalRedactor } = bookingDetails
 
@@ -103,7 +101,6 @@ export const CollectiveBookingDetails = ({
 
       <CollectiveActionButtons
         bookingRecap={bookingRecap}
-        reloadBookings={reloadBookings}
         isCancellable={bookingDetails.isCancellable}
       />
     </>

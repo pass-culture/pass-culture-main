@@ -1,0 +1,45 @@
+name: 'Render and push manifests'
+description: 'This composite action executes helm template and push results to the render-manifests repository'
+inputs:
+  environment:
+    type: string
+    required: true
+  app_name:
+    type: string
+    required: true
+  app_version:
+    type: string
+    required: true
+  additional_args:
+    type: string
+    required: false
+  PASSCULTURE_SA_ACCESS_TOKEN:
+    required: true
+  access_token:
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: "Render manifests"
+      run: |
+        PASSCULTURE_USERNAME="oauth2accesstoken" \
+        PASSCULTURE_PASSWORD=${{ inputs.access_token }} \
+        if [[ ${{ inputs.additional_args }} ]]; then
+          helmfile -e ${{ inputs.environment }} template --set ${{ inputs.additional_args }} --set image.tag=${{ inputs.app_version }} --output-dir ./rendered-manifests/ --output-dir-template "{{ .OutputDir }}/{{ .State.BaseName }}-{{ .Release.Name  }}"
+        else
+          helmfile -e ${{ inputs.environment }} template --set image.tag=${{ inputs.app_version }} --output-dir ./rendered-manifests/ --output-dir-template "{{ .OutputDir }}/{{ .State.BaseName }}-{{ .Release.Name  }}"
+        fi
+    - name: "Push manifests to rendered-manifests repository"
+      id: push-manifests
+      uses: cpina/github-action-push-to-another-repository@main
+      env:
+        API_TOKEN_GITHUB: ${{ inputs.PASSCULTURE_SA_ACCESS_TOKEN }}
+      with:
+        source-directory: ./rendered-manifests/helmfile-${{ inputs.environment }}/
+        destination-github-username: 'pass-culture'
+        destination-repository-name: 'rendered-manifests'
+        commit-message: "${{ inputs.app_name }}(${{ inputs.environment }}) : pushed rendered manifests for app_version=${{ inputs.app_version }}"
+        target-branch: fdehem
+        create-target-branch-if-needed: true
+

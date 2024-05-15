@@ -15,7 +15,8 @@ import { Button } from 'ui-kit/Button/Button'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
-import ActivityForm, {
+import {
+  ActivityForm,
   ActivityFormProps,
   ActivityFormValues,
 } from '../ActivityForm'

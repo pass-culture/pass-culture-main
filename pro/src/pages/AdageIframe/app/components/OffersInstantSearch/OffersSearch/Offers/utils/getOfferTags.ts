@@ -5,7 +5,7 @@ import {
 } from 'apiClient/adage'
 import { OfferAddressType } from 'apiClient/v1'
 import { getFormattedDatesForTemplateOffer } from 'pages/AdageIframe/app/components/OfferInfos/AdageOffer/utils/adageOfferDates'
-import { isCollectiveOfferTemplate } from 'pages/AdageIframe/app/types/offers'
+import { isCollectiveOfferTemplate } from 'pages/AdageIframe/app/types'
 import {
   getHumanizeRelativeDistance,
   humanizeDistance,

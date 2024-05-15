@@ -390,7 +390,7 @@ def delete_offerer(offerer_id: int) -> utils.BackofficeResponse:
     try:
         offerers_api.delete_offerer(offerer.id)
     except offerers_exceptions.CannotDeleteOffererWithBookingsException:
-        flash("Impossible d'effacer une structure juridique pour laquelle il existe des réservations", "warning")
+        flash("Impossible de supprimer une structure juridique pour laquelle il existe des réservations", "warning")
         return _self_redirect(offerer.id)
 
     for email in emails:
@@ -405,7 +405,7 @@ def delete_offerer(offerer_id: int) -> utils.BackofficeResponse:
     return redirect(url_for("backoffice_web.pro.search_pro"), code=303)
 
 
-@offerer_blueprint.route("/update", methods=["POST"])
+@offerer_blueprint.route("", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
@@ -718,6 +718,13 @@ def add_user_offerer_and_validate(offerer_id: int) -> utils.BackofficeResponse:
 def get_managed_venues(offerer_id: int) -> utils.BackofficeResponse:
     venues = (
         offerers_models.Venue.query.filter_by(managingOffererId=offerer_id)
+        .outerjoin(
+            offerers_models.VenueBankAccountLink,
+            sa.and_(
+                offerers_models.VenueBankAccountLink.venueId == offerers_models.Venue.id,
+                offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.utcnow()),
+            ),
+        )
         .options(
             sa.orm.load_only(
                 offerers_models.Venue.id,
@@ -739,7 +746,11 @@ def get_managed_venues(offerer_id: int) -> utils.BackofficeResponse:
                 offerers_models.VenueRegistration.target,
                 offerers_models.VenueRegistration.webPresence,
             ),
+            sa.orm.contains_eager(offerers_models.Venue.bankAccountLinks)
+            .joinedload(offerers_models.VenueBankAccountLink.bankAccount)
+            .load_only(finance_models.BankAccount.id, finance_models.BankAccount.label),
         )
+        .order_by(offerers_models.Venue.common_name)
         .all()
     )
 

@@ -2,15 +2,13 @@ import type { StoryObj } from '@storybook/react'
 import { Form, FormikProvider, useFormik } from 'formik'
 import React, { useState } from 'react'
 
-import FormLayout from 'components/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import { BoxRounded } from 'ui-kit/BoxRounded/BoxRounded'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
-import { BoxFormLayoutProps } from './BoxFormLayout'
-
-import { BoxFormLayout } from '.'
+import { BoxFormLayout, BoxFormLayoutProps } from './BoxFormLayout'
 
 export default {
   title: 'components/BoxFormLayout',

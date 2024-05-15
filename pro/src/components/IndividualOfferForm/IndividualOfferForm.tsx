@@ -7,7 +7,7 @@ import {
   SubcategoryResponseModel,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
-import FormLayout from 'components/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
@@ -24,7 +24,7 @@ import { ExternalLink } from './ExternalLink'
 import { ImageUploaderOffer } from './ImageUploaderOffer'
 import { Informations } from './Informations'
 import { Notifications } from './Notifications'
-import { UsefulInformations } from './UsefulInformations'
+import { UsefulInformations } from './UsefulInformations/UsefulInformations'
 import { getFilteredVenueListBySubcategory } from './utils/getFilteredVenueList'
 
 export interface IndividualOfferFormProps {

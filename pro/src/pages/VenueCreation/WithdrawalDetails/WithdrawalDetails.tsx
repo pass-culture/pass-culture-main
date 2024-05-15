@@ -1,11 +1,11 @@
 import React from 'react'
 
-import FormLayout from 'components/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import { Checkbox } from 'ui-kit/form/Checkbox/Checkbox'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
-const WithdrawalDetails = () => {
+export const WithdrawalDetails = () => {
   return (
     <FormLayout.Section title="Informations de retrait de vos offres">
       <FormLayout.Row
@@ -43,4 +43,3 @@ const WithdrawalDetails = () => {
     </FormLayout.Section>
   )
 }
-export default WithdrawalDetails

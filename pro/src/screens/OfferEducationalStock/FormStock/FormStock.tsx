@@ -1,8 +1,11 @@
 import { useFormikContext } from 'formik'
 import React from 'react'
 
-import FormLayout from 'components/FormLayout'
-import { Mode, OfferEducationalStockFormValues } from 'core/OfferEducational'
+import { FormLayout } from 'components/FormLayout/FormLayout'
+import {
+  OfferEducationalStockFormValues,
+  Mode,
+} from 'core/OfferEducational/types'
 import strokeEuroIcon from 'icons/stroke-euro.svg'
 import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
@@ -26,7 +29,7 @@ export interface FormStockProps {
   offerDateCreated: string
 }
 
-const FormStock = ({
+export const FormStock = ({
   mode,
   disablePriceAndParticipantInputs,
   offerDateCreated,
@@ -91,5 +94,3 @@ const FormStock = ({
     </FormLayout.Row>
   )
 }
-
-export default FormStock

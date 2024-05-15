@@ -1,6 +1,6 @@
 import { api } from 'apiClient/api'
 import { GetCollectiveOfferRequestResponseModel } from 'apiClient/v1/models/GetCollectiveOfferRequestResponseModel'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 
 type OfferRequestAdapter = Adapter<
   number,
@@ -14,7 +14,7 @@ const FAILING_RESPONSE: AdapterFailure<null> = {
   payload: null,
 }
 
-const getOfferRequestInformationsAdapter: OfferRequestAdapter = async (
+export const getOfferRequestInformationsAdapter: OfferRequestAdapter = async (
   requestId: number
 ) => {
   try {
@@ -29,5 +29,3 @@ const getOfferRequestInformationsAdapter: OfferRequestAdapter = async (
     return FAILING_RESPONSE
   }
 }
-
-export default getOfferRequestInformationsAdapter

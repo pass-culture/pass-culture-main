@@ -1,8 +1,4 @@
-import {
-  screen,
-  waitFor,
-  waitForElementToBeRemoved,
-} from '@testing-library/react'
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import {
@@ -12,7 +8,6 @@ import {
   LocalOfferersPlaylistOffer,
 } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import * as useNotification from 'hooks/useNotification'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -88,17 +83,6 @@ describe('AdageDiscover classRoomPlaylist', () => {
         'Partenaires culturels à moins de 30 minutes à pied de votre établissement'
       )
     ).toBeInTheDocument()
-  })
-
-  it('should show an error message notification when venue could not be fetched', async () => {
-    vi.spyOn(apiAdage, 'getLocalOfferersPlaylist').mockRejectedValueOnce(null)
-
-    renderNewOfferPlaylist(user)
-    await waitFor(() =>
-      expect(apiAdage.getLocalOfferersPlaylist).toHaveBeenCalled()
-    )
-
-    expect(notifyError).toHaveBeenNthCalledWith(1, GET_DATA_ERROR_MESSAGE)
   })
 
   it('should call tracker for venue playlist element', async () => {

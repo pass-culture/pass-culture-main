@@ -12,7 +12,7 @@ import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import {
   isCollectiveOfferBookable,
   isCollectiveOfferTemplate,
-} from 'pages/AdageIframe/app/types/offers'
+} from 'pages/AdageIframe/app/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import OfferFavoriteButton from '../OfferFavoriteButton/OfferFavoriteButton'
@@ -52,6 +52,10 @@ export function AdageOfferListCard({
   const isOfferTemplate = isCollectiveOfferTemplate(offer)
   const canAddOfferToFavorites =
     isOfferTemplate && adageUser.role !== AdageFrontRoles.READONLY
+
+  const offerLinkUrl = document.referrer
+    ? `${document.referrer}adage/passculture/offres/offerid/${offer.isTemplate ? '' : 'B-'}${offer.id}`
+    : `/adage-iframe/${currentPathname}/offre/${offer.id}?token=${adageAuthToken}`
 
   return (
     <div
@@ -114,7 +118,8 @@ export function AdageOfferListCard({
           <div className={styles['offer-card-content']}>
             <AdageOfferListCardTags offer={offer} adageUser={adageUser} />
             <Link
-              to={`/adage-iframe/${currentPathname}/offre/${offer.id}?token=${adageAuthToken}`}
+              to={offerLinkUrl}
+              target="_parent"
               state={{ offer }}
               className={styles['offer-card-link']}
               onClick={onCardClicked}

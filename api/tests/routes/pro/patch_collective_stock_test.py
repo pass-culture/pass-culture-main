@@ -59,6 +59,8 @@ class Return200Test:
 
         assert response.json == {
             "beginningDatetime": "2022-01-17T22:00:00Z",
+            "startDatetime": None,
+            "endDatetime": None,
             "bookingLimitDatetime": "2021-12-31T20:00:00Z",
             "id": stock.id,
             "price": 1500.0,
@@ -98,6 +100,8 @@ class Return200Test:
 
         assert response.json == {
             "beginningDatetime": "2021-12-18T00:00:00Z",
+            "startDatetime": None,
+            "endDatetime": None,
             "bookingLimitDatetime": "2021-12-18T00:00:00Z",
             "id": stock.id,
             "price": 1200.0,

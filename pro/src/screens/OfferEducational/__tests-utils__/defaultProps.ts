@@ -1,4 +1,4 @@
-import { Mode } from 'core/OfferEducational'
+import { Mode } from 'core/OfferEducational/types'
 import { getCollectiveOfferFactory } from 'utils/collectiveApiFactories'
 
 import { OfferEducationalProps } from '../OfferEducational'
@@ -13,7 +13,6 @@ export const defaultCreationProps: OfferEducationalProps = {
   domainsOptions: [{ value: 1, label: 'domain1' }],
   nationalPrograms: [{ value: 1, label: 'nationalProgram1' }],
   isTemplate: false,
-  setOffer: vi.fn(),
 }
 
 export const defaultEditionProps: OfferEducationalProps = {
@@ -23,5 +22,4 @@ export const defaultEditionProps: OfferEducationalProps = {
   domainsOptions: [{ value: 1, label: 'domain1' }],
   nationalPrograms: [{ value: 1, label: 'nationalProgram1' }],
   isTemplate: false,
-  setOffer: vi.fn(),
 }

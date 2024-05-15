@@ -12,7 +12,7 @@ import {
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
 import { SearchFiltersParams } from 'core/Offers/types'
-import { computeCollectiveOffersUrl } from 'core/Offers/utils'
+import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeOffersUrl'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
 import { venueListItemFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'

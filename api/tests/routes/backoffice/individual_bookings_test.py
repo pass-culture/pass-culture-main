@@ -15,7 +15,7 @@ from pcapi.core.categories import subcategories_v2
 from pcapi.core.external_bookings import factories as external_bookings_factories
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
-import pcapi.core.mails.testing as mails_testing
+from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
@@ -498,6 +498,15 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         assert f"N° de virement : {cashflow.batch.label}" in reimbursement_data
         assert "Taux de remboursement : 100,0 %" in reimbursement_data
 
+    def test_sort_bookings_by_date(self, authenticated_client, bookings):
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, status=[s.name for s in forms.BookingStatus]))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        # booked J not used, booked J-2 not used, event J+12, event J+11, used J
+        assert [row["Contremarque"] for row in rows] == ["ADFTH9", "ELBEIT", "REIMB3", "CNCL02", "WTRL00"]
+
 
 class MarkBookingAsUsedTest(PostEndpointHelper):
     endpoint = "backoffice_web.individual_bookings.mark_booking_as_used"
@@ -853,6 +862,24 @@ class BatchMarkBookingAsUsedTest(PostEndpointHelper):
             db.session.refresh(booking)
             assert booking.status is bookings_models.BookingStatus.USED
             assert booking.validationAuthorType == bookings_models.BookingValidationAuthorType.BACKOFFICE
+
+    def test_batch_mark_as_used_bookings_with_expired_deposit(self, legit_user, authenticated_client):
+        booking1 = bookings_factories.BookingFactory(
+            status=bookings_models.BookingStatus.CANCELLED,
+            deposit=users_factories.DepositGrantFactory(
+                expirationDate=datetime.datetime.utcnow() - datetime.timedelta(days=1)
+            ),
+        )
+        booking2 = bookings_factories.BookingFactory()
+        parameter_ids = str(booking1.id) + "," + str(booking2.id)
+
+        response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids})
+
+        redirected_response = authenticated_client.get(response.headers["location"])
+        assert (
+            f"La réservation {booking1.token} ne peut être validée, car le crédit associé est expiré."
+            in html_parser.extract_alert(redirected_response.data)
+        )
 
 
 class GetBatchCancelIndividualBookingsFormTest(GetEndpointHelper):

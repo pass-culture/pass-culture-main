@@ -777,7 +777,7 @@ class CreateProUserTest:
         assert not pro_user.has_beneficiary_role
         assert not pro_user.deposits
 
-    @override_settings(IS_INTEGRATION=True)
+    @override_settings(MAKE_PROS_BENEFICIARIES_IN_APP=True)
     def test_create_pro_user_in_integration(self):
         pro_user_creation_body = ProUserCreationBodyV2Model(**self.data)
 
@@ -1087,16 +1087,6 @@ class SearchPublicAccountTest:
 
         assert len(users) == 1
         assert users[0].id == event.user.id
-
-    def test_old_domain(self):
-        user = users_factories.BeneficiaryGrant18Factory(email="current@domain.com")
-        event = users_factories.EmailValidationEntryFactory(user=user)
-
-        query = users_api.search_public_account_in_history_email(f"@{event.oldDomainEmail}")
-        users = query.all()
-
-        assert len(users) == 1
-        assert users[0].id == user.id
 
     def test_old_email_but_not_validated(self):
         user = users_factories.BeneficiaryGrant18Factory(email="current@domain.com")

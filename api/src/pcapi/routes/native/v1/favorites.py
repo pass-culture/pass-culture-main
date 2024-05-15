@@ -130,7 +130,12 @@ def get_favorites_for(user: User, favorite_id: int | None = None) -> list[Favori
             .joinedload(Offer.mediations)
             .load_only(Mediation.dateCreated, Mediation.isActive, Mediation.thumbCount, Mediation.credit)
         )
-        .options(joinedload(Favorite.offer).joinedload(Offer.product).load_only(Product.id, Product.thumbCount))
+        .options(
+            joinedload(Favorite.offer)
+            .joinedload(Offer.product)
+            .load_only(Product.id, Product.thumbCount)
+            .joinedload(Product.productMediations)
+        )
         .options(joinedload(Favorite.offer).joinedload(Offer.stocks))
         .order_by(Favorite.id.desc())
     )

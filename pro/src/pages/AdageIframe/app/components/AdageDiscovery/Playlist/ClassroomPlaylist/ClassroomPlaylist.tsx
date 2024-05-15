@@ -1,11 +1,9 @@
 import classNames from 'classnames'
-import { useEffect, useState } from 'react'
+import useSWR from 'swr'
 
-import { CollectiveOfferTemplateResponseModel } from 'apiClient/adage'
 import { AdagePlaylistType } from 'apiClient/adage/models/AdagePlaylistType'
 import { apiAdage } from 'apiClient/api'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
-import useNotification from 'hooks/useNotification'
+import { GET_CLASSROOM_PLAYLIST_QUERY_KEY } from 'config/swrQueryKeys'
 
 import { TrackerElementArg } from '../../AdageDiscovery'
 import Carousel from '../../Carousel/Carousel'
@@ -28,34 +26,16 @@ export const ClassroomPlaylist = ({
   onWholePlaylistSeen,
   trackPlaylistElementClicked,
 }: ClassroomPlaylistProps) => {
-  const [offers, setOffers] = useState<CollectiveOfferTemplateResponseModel[]>(
-    []
+  const { data: classRoomPlaylist, isLoading } = useSWR(
+    [GET_CLASSROOM_PLAYLIST_QUERY_KEY],
+    () => apiAdage.getClassroomPlaylist(),
+    { fallbackData: { collectiveOffers: [] } }
   )
-  const [loading, setLoading] = useState<boolean>(false)
-  const { error } = useNotification()
-
-  useEffect(() => {
-    const getClassroomPlaylistOffer = async () => {
-      setLoading(true)
-      try {
-        const result = await apiAdage.getClassroomPlaylist()
-
-        setOffers(result.collectiveOffers)
-      } catch (e) {
-        error(GET_DATA_ERROR_MESSAGE)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    getClassroomPlaylistOffer()
-  }, [error])
 
   return (
     <Carousel
       className={classNames(styles['playlist-carousel'], {
-        [styles['playlist-carousel-loading']]: loading,
+        [styles['playlist-carousel-loading']]: isLoading,
       })}
       title={
         <h2 className={styles['playlist-carousel-title']}>
@@ -68,21 +48,23 @@ export const ClassroomPlaylist = ({
           playlistType: AdagePlaylistType.OFFER,
         })
       }
-      loading={loading}
-      elements={offers.map((offerElement, index) => (
-        <OfferCardComponent
-          onCardClicked={() =>
-            trackPlaylistElementClicked({
-              playlistId: CLASSROOM_PLAYLIST,
-              playlistType: AdagePlaylistType.OFFER,
-              index,
-              elementId: offerElement.id,
-            })
-          }
-          key={`card-offer-class-${offerElement.id}`}
-          offer={offerElement}
-        />
-      ))}
+      loading={isLoading}
+      elements={classRoomPlaylist.collectiveOffers.map(
+        (offerElement, index) => (
+          <OfferCardComponent
+            onCardClicked={() =>
+              trackPlaylistElementClicked({
+                playlistId: CLASSROOM_PLAYLIST,
+                playlistType: AdagePlaylistType.OFFER,
+                index,
+                elementId: offerElement.id,
+              })
+            }
+            key={`card-offer-class-${offerElement.id}`}
+            offer={offerElement}
+          />
+        )
+      )}
     />
   )
 }

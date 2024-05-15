@@ -14,7 +14,6 @@ class AddressFactory(BaseFactory):
     street = "1 boulevard Poissonnière"
     postalCode = "75002"
     city = "Paris"
-    country = "France"
     latitude: float | None = 48.87055
     longitude: float | None = 2.3476515
     inseeCode = "75102"

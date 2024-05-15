@@ -67,6 +67,7 @@ class Permissions(enum.Enum):
 
     READ_INCIDENTS = "visualiser les incidents"
     MANAGE_INCIDENTS = "gérer les incidents"
+    VALIDATE_COMMERCIAL_GESTURE = "valider les gestes commerciaux"
 
     GENERATE_INVOICES = "générer les justificatifs de remboursement"
 
@@ -163,6 +164,7 @@ class Roles(enum.Enum):
     QA = "qa"
     GLOBAL_ACCESS = "global_access"
     DPO = "dpo"
+    PERMISSION_MANAGER = "gestionnaire_des_droits"
 
 
 def sync_db_roles(session: sa.orm.Session) -> None:

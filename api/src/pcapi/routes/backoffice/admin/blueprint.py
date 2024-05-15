@@ -89,7 +89,7 @@ def update_role(role_id: int) -> utils.BackofficeResponse:
 
 
 @blueprint.backoffice_web.route("/admin/feature-flipping", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.FEATURE_FLIPPING)
+@utils.custom_login_required(redirect_to=".home")
 def list_feature_flags() -> utils.BackofficeResponse:
     feature_flags = feature_models.Feature.query.order_by(feature_models.Feature.name).all()
     form = empty_forms.EmptyForm()

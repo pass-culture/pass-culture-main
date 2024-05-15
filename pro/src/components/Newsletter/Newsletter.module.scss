@@ -36,5 +36,9 @@
     // We use "em" here because em is based on element font-size
     // and we want line-height to grow together with font-size
     line-height: 1.25em;
+
+    @media (min-width: size.$tablet) {
+      padding-right: 20%;
+    }
   }
 }

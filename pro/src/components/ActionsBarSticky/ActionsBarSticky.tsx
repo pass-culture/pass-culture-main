@@ -15,7 +15,7 @@ interface ActionsBarStickyProps {
   hasSideNav?: boolean
 }
 
-const ActionsBarSticky = ({
+export const ActionsBarSticky = ({
   children,
   className,
   hasSideNav = true,
@@ -56,5 +56,3 @@ const ActionsBarSticky = ({
 
 ActionsBarSticky.Left = Left
 ActionsBarSticky.Right = Right
-
-export default ActionsBarSticky

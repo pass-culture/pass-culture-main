@@ -2,9 +2,8 @@ import { screen, waitFor } from '@testing-library/react'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
 import * as useNotification from 'hooks/useNotification'
-import getOfferRequestInformationsAdapter from 'pages/CollectiveOfferFromRequest/adapters/getOfferRequestInformationsAdapter'
+import { getOfferRequestInformationsAdapter } from 'pages/CollectiveOfferFromRequest/adapters/getOfferRequestInformationsAdapter'
 import { MandatoryCollectiveOfferFromParamsProps } from 'screens/OfferEducational/useCollectiveOfferFromParams'
 import {
   getCollectiveOfferFactory,
@@ -33,8 +32,6 @@ const renderCollectiveStockCreation = (
 
 const defaultProps = {
   offer: getCollectiveOfferFactory(),
-  setOffer: vi.fn(),
-  reloadCollectiveOffer: vi.fn(),
   isTemplate: false,
   offerer: undefined,
 }
@@ -67,42 +64,6 @@ describe('CollectiveOfferStockCreation', () => {
     renderCollectiveStockCreation('/offre/A1/collectif/stocks', props)
     await waitFor(() => {
       expect(api.getCollectiveOfferTemplate).toHaveBeenCalledTimes(1)
-    })
-  })
-
-  it('should failed render collective offer stock form from template', async () => {
-    const props = {
-      ...defaultProps,
-      offer: { ...defaultProps.offer, templateId: 12 },
-    }
-    vi.spyOn(api, 'getCollectiveOfferTemplate').mockRejectedValue({
-      isOk: false,
-      message: 'Une erreur est survenue lors de la récupération de votre offre',
-      payload: null,
-    })
-    const notifyError = vi.fn()
-
-    const notifsImport = (await vi.importActual(
-      'hooks/useNotification'
-    )) as ReturnType<typeof useNotification.default>
-    vi.spyOn(useNotification, 'default').mockImplementation(() => ({
-      ...notifsImport,
-      error: notifyError,
-    }))
-
-    renderCollectiveStockCreation('/offre/A1/collectif/stocks', props)
-    expect(
-      await screen.findByRole('heading', {
-        name: /Créer une offre pour un établissement scolaire/,
-      })
-    ).toBeInTheDocument()
-
-    const response = await getCollectiveOfferTemplateAdapter(
-      props.offer.templateId
-    )
-    expect(response.isOk).toBeFalsy()
-    await waitFor(() => {
-      expect(notifyError).toHaveBeenCalledTimes(1)
     })
   })
 

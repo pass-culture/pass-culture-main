@@ -1,7 +1,6 @@
+import dataclasses
 from datetime import datetime
 import enum
-
-import attrs
 
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.users import models
@@ -21,33 +20,38 @@ class SubscriptionStatus(enum.Enum):
     HAS_SUBSCRIPTION_ISSUES = "has_subscription_issues"
 
 
-@attrs.frozen
+@dataclasses.dataclass(frozen=True)
 class YoungStatus:
-    status_type: YoungStatusType
+    # All subclasses have a the following attribute:
+    #   status_type: YoungStatusType
+    # We cannot define it here, otherwise the definition of `Eligible`
+    # fails with:
+    #     TypeError: non-default argument 'subscription_status' follows default argument
+    pass
 
 
-@attrs.frozen
+@dataclasses.dataclass(frozen=True)
 class Eligible(YoungStatus):
     subscription_status: SubscriptionStatus
     status_type: YoungStatusType = YoungStatusType.ELIGIBLE
 
 
-@attrs.frozen
+@dataclasses.dataclass(frozen=True)
 class NonEligible(YoungStatus):
     status_type: YoungStatusType = YoungStatusType.NON_ELIGIBLE
 
 
-@attrs.frozen
+@dataclasses.dataclass(frozen=True)
 class Beneficiary(YoungStatus):
     status_type: YoungStatusType = YoungStatusType.BENEFICIARY
 
 
-@attrs.frozen
+@dataclasses.dataclass(frozen=True)
 class ExBeneficiary(YoungStatus):
     status_type: YoungStatusType = YoungStatusType.EX_BENEFICIARY
 
 
-@attrs.frozen
+@dataclasses.dataclass(frozen=True)
 class Suspended(YoungStatus):
     status_type: YoungStatusType = YoungStatusType.SUSPENDED
 

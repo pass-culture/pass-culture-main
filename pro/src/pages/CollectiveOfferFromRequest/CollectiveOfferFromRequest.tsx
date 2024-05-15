@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import useSWR from 'swr'
 
-import {
-  GetCollectiveOfferRequestResponseModel,
-  GetCollectiveOfferTemplateResponseModel,
-} from 'apiClient/v1'
+import { api } from 'apiClient/api'
+import { GetCollectiveOfferRequestResponseModel } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
-import ActionsBarSticky from 'components/ActionsBarSticky'
+import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
+import { GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY } from 'config/swrQueryKeys'
 import { Events } from 'core/FirebaseEvents/constants'
-import { createOfferFromTemplate } from 'core/OfferEducational'
-import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
+import { createOfferFromTemplate } from 'core/OfferEducational/utils/createOfferFromTemplate'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
@@ -19,7 +18,7 @@ import { Button } from 'ui-kit/Button/Button'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { getDateToFrenchText } from 'utils/date'
 
-import getOfferRequestInformationsAdapter from './adapters/getOfferRequestInformationsAdapter'
+import { getOfferRequestInformationsAdapter } from './adapters/getOfferRequestInformationsAdapter'
 import styles from './CollectiveOfferFromRequest.module.scss'
 
 export const CollectiveOfferFromRequest = (): JSX.Element => {
@@ -29,8 +28,6 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
 
   const [informations, setInformations] =
     useState<GetCollectiveOfferRequestResponseModel | null>(null)
-  const [offerTemplate, setOfferTemplate] =
-    useState<GetCollectiveOfferTemplateResponseModel>()
   const [isLoading, setIsLoading] = useState(true)
 
   const isMarseilleActive = useActiveFeature('WIP_ENABLE_MARSEILLE')
@@ -39,6 +36,11 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
     offerId: string
     requestId: string
   }>()
+
+  const { data: offerTemplate } = useSWR(
+    [GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY, offerId],
+    ([, offerIdParams]) => api.getCollectiveOfferTemplate(Number(offerIdParams))
+  )
 
   const handleButtonClick = () => {
     logEvent?.(Events.CLICKED_CREATE_OFFER_FROM_REQUEST, {
@@ -56,21 +58,6 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
     )
   }
 
-  const fetchOfferTemplateDetails = async () => {
-    if (offerId) {
-      const { isOk, payload, message } =
-        await getCollectiveOfferTemplateAdapter(Number(offerId))
-      if (!isOk) {
-        return notify.error(message)
-      }
-      setOfferTemplate(payload)
-    } else {
-      return notify.error(
-        'Une erreur est survenue lors de la récupération de votre offre'
-      )
-    }
-  }
-
   const getOfferRequestInformation = async () => {
     const { isOk, message, payload } = await getOfferRequestInformationsAdapter(
       Number(requestId)
@@ -84,14 +71,9 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
   }
 
   useEffect(() => {
-    const fetchData = async () => {
-      await fetchOfferTemplateDetails()
-      requestId && (await getOfferRequestInformation())
-    }
-
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    fetchData()
-  }, [])
+    requestId && getOfferRequestInformation()
+  }, [requestId])
 
   return (
     <AppLayout>

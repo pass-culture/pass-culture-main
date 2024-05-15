@@ -216,6 +216,7 @@ def signin(body: users_serializers.LoginUserBodyModel) -> users_serializers.Shar
         errors.add_error("identifier", "Ce compte n'est pas validé.")
         raise errors from exc
 
+    discard_session()
     login_user(user)
     stamp_session(user)
 

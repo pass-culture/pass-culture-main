@@ -120,16 +120,8 @@ describe('CollectiveOfferFromRequest', () => {
   })
 
   it('should call api and get error', async () => {
-    vi.spyOn(api, 'getCollectiveOfferTemplate').mockRejectedValueOnce({
-      isOk: false,
-      message: 'Une erreur est survenue lors de la récupération de votre offre',
-      payload: null,
-    })
-    vi.spyOn(api, 'getCollectiveOfferRequest').mockRejectedValueOnce({
-      isOk: false,
-      message: 'Une erreur est survenue lors de la récupération de votre offre',
-      payload: null,
-    })
+    vi.spyOn(api, 'getCollectiveOfferTemplate').mockRejectedValueOnce({})
+    vi.spyOn(api, 'getCollectiveOfferRequest').mockRejectedValueOnce({})
 
     renderWithProviders(<CollectiveOfferFromRequest />)
 
@@ -137,10 +129,6 @@ describe('CollectiveOfferFromRequest', () => {
 
     expect(mockNotifyError).toHaveBeenNthCalledWith(
       1,
-      'Une erreur est survenue lors de la récupération de votre offre'
-    )
-    expect(mockNotifyError).toHaveBeenNthCalledWith(
-      2,
       'Nous avons rencontré un problème lors de la récupération des données.'
     )
   })

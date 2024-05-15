@@ -4,6 +4,8 @@ import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
 import { PreFiltersParams } from 'core/Bookings/types'
 import { downloadFile } from 'utils/downloadFile'
 
+import { isDateValid } from './../../utils/date'
+
 export const downloadIndividualBookingsXLSFile = async (
   filters: PreFiltersParams & { page?: number }
 ) => {
@@ -13,12 +15,15 @@ export const downloadIndividualBookingsXLSFile = async (
       ? Number(filters.offerVenueId)
       : null,
     null,
-    filters.offerEventDate !== DEFAULT_PRE_FILTERS.offerEventDate
+    filters.offerEventDate !== DEFAULT_PRE_FILTERS.offerEventDate &&
+      isDateValid(filters.offerEventDate)
       ? filters.offerEventDate
       : null,
     filters.bookingStatusFilter,
-    filters.bookingBeginningDate,
-    filters.bookingEndingDate,
+    isDateValid(filters.bookingBeginningDate)
+      ? filters.bookingBeginningDate
+      : null,
+    isDateValid(filters.bookingEndingDate) ? filters.bookingEndingDate : null,
     // TODO fix PreFiltersParams type to use OfferType instead of string
     filters.offerType !== DEFAULT_PRE_FILTERS.offerType
       ? (filters.offerType as OfferType)

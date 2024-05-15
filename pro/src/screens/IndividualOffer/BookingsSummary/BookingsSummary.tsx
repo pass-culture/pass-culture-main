@@ -1,4 +1,4 @@
-import format from 'date-fns/format'
+import { format } from 'date-fns'
 import React, { useEffect, useState } from 'react'
 import useSWR from 'swr'
 
@@ -7,14 +7,14 @@ import {
   BookingRecapResponseModel,
   GetIndividualOfferResponseModel,
 } from 'apiClient/v1'
-import { GET_EVENT_PRICE_CATEGORIES_AND_SCHEDULES_BY_DAYE_QUERY_KEY } from 'config/swrQueryKeys'
+import { GET_EVENT_PRICE_CATEGORIES_AND_SCHEDULES_BY_DATE_QUERY_KEY } from 'config/swrQueryKeys'
 import {
   DEFAULT_PRE_FILTERS,
   EMPTY_FILTER_VALUE,
 } from 'core/Bookings/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import strokeBookingHold from 'icons/stroke-booking-hold.svg'
-import { getFilteredBookingsRecapAdapter } from 'pages/Bookings/adapters'
+import { getFilteredIndividualBookingsAdapter } from 'pages/Bookings/adapters/getFilteredIndividualBookingsAdapter'
 import { IndividualBookingsTable } from 'screens/Bookings/BookingsRecapTable/BookingsTable/IndividualBookingsTable'
 import { DEFAULT_OMNISEARCH_CRITERIA } from 'screens/Bookings/BookingsRecapTable/Filters/constants'
 import filterBookingsRecap from 'screens/Bookings/BookingsRecapTable/utils/filterBookingsRecap'
@@ -42,7 +42,7 @@ export const BookingsSummaryScreen = ({
   )
 
   const stockSchedulesAndPricesByDateQuery = useSWR(
-    [GET_EVENT_PRICE_CATEGORIES_AND_SCHEDULES_BY_DAYE_QUERY_KEY],
+    [GET_EVENT_PRICE_CATEGORIES_AND_SCHEDULES_BY_DATE_QUERY_KEY],
     () => api.getOfferPriceCategoriesAndSchedulesByDates(offer.id),
     { fallbackData: [] }
   )
@@ -55,16 +55,14 @@ export const BookingsSummaryScreen = ({
 
   useEffect(() => {
     const loadBookings = async () => {
-      const response = await getFilteredBookingsRecapAdapter({
+      const response = await getFilteredIndividualBookingsAdapter({
         ...DEFAULT_PRE_FILTERS,
         offerId: String(offer.id),
         bookingBeginningDate: '2015-01-01',
         bookingEndingDate: format(new Date(), FORMAT_ISO_DATE_ONLY),
       })
 
-      if (response.isOk) {
-        setBookings(response.payload.bookings)
-      }
+      setBookings(response.bookings)
     }
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     loadBookings()

@@ -19,7 +19,7 @@ interface ImageUploadBrowserFormProps {
   children?: never
 }
 
-const ImageUploadBrowserForm = ({
+export const ImageUploadBrowserForm = ({
   onSubmit,
   mode,
 }: ImageUploadBrowserFormProps): JSX.Element => {
@@ -69,5 +69,3 @@ const ImageUploadBrowserForm = ({
     </form>
   )
 }
-
-export default ImageUploadBrowserForm

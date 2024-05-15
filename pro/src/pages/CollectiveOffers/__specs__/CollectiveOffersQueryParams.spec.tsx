@@ -7,7 +7,7 @@ import { api } from 'apiClient/api'
 import { CollectiveOfferResponseModel, OfferStatus } from 'apiClient/v1'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { SearchFiltersParams } from 'core/Offers/types'
-import { computeCollectiveOffersUrl } from 'core/Offers/utils'
+import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeOffersUrl'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
 import {
   defaultGetOffererResponseModel,
@@ -228,7 +228,7 @@ describe('route CollectiveOffers', () => {
 
       await userEvent.click(screen.getByTestId('remove-offerer-filter'))
 
-      expect(screen.queryByText('La structure')).not.toBeInTheDocument()
+      expect(mockNavigate).toHaveBeenCalledWith('/offres/collectives')
     })
   })
 

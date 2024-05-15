@@ -97,6 +97,7 @@ class GetProductTest:
 
         num_query = 1  # retrieve API key
         num_query += 1  # retrieve offer
+        num_query += 1  # retrieve feature_flags for api key validation
 
         with testing.assert_num_queries(num_query):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(

@@ -1,8 +1,8 @@
 import React from 'react'
 
-import ActionsBarSticky from 'components/ActionsBarSticky'
+import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { Events } from 'core/FirebaseEvents/constants'
-import { computeOffersUrl } from 'core/Offers/utils'
+import { computeOffersUrl } from 'core/Offers/utils/computeOffersUrl'
 import useAnalytics from 'hooks/useAnalytics'
 import fullRightIcon from 'icons/full-right.svg'
 import { Button } from 'ui-kit/Button/Button'
@@ -13,7 +13,7 @@ interface ActionsBarProps {
   disableNextButton?: boolean
 }
 
-const ActionsBar = ({
+export const ActionsBar = ({
   disableNextButton = false,
 }: ActionsBarProps): JSX.Element => {
   const { logEvent } = useAnalytics()
@@ -42,5 +42,3 @@ const ActionsBar = ({
     </ActionsBarSticky>
   )
 }
-
-export default ActionsBar

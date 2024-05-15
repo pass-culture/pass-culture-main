@@ -22,6 +22,7 @@ describe('bookings offer cell', () => {
           offerName: 'La Guitare pour les nuls',
           offerIsEducational: false,
           eventBeginningDatetime: new Date().toISOString(),
+          eventStartDatetime: new Date().toISOString(),
           numberOfTickets: 1,
         },
       }),
@@ -44,6 +45,7 @@ describe('bookings offer cell', () => {
           offerName: 'Guitare acoustique',
           offerIsEducational: false,
           eventBeginningDatetime: new Date().toISOString(),
+          eventStartDatetime: new Date().toISOString(),
           numberOfTickets: 1,
         },
       }),
@@ -61,6 +63,7 @@ describe('bookings offer cell', () => {
       booking: collectiveBookingFactory({
         stock: {
           eventBeginningDatetime: '2020-05-12T11:03:28.564687+04:00',
+          eventStartDatetime: new Date().toISOString(),
           offerId: offerId,
           offerName: 'La danse des poireaux',
           offerIsEducational: false,
@@ -86,6 +89,7 @@ describe('bookings offer cell', () => {
       stock: {
         bookingLimitDatetime: tomorrowFns.toISOString(),
         eventBeginningDatetime: new Date().toISOString(),
+        eventStartDatetime: new Date().toISOString(),
         numberOfTickets: 1,
         offerId: offerId,
         offerIsEducational: true,
@@ -110,6 +114,7 @@ describe('bookings offer cell', () => {
       stock: {
         bookingLimitDatetime: eightDaysFns.toISOString(),
         eventBeginningDatetime: new Date().toISOString(),
+        eventStartDatetime: new Date().toISOString(),
         numberOfTickets: 1,
         offerId: offerId,
         offerIsEducational: false,

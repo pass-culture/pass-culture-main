@@ -2,6 +2,7 @@ import { api } from 'apiClient/api'
 import { CollectiveBookingStatusFilter } from 'apiClient/v1'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
 import { PreFiltersParams } from 'core/Bookings/types'
+import { isDateValid } from 'utils/date'
 import { downloadFile } from 'utils/downloadFile'
 
 export const downloadCollectiveBookingsCSVFile = async (
@@ -12,14 +13,17 @@ export const downloadCollectiveBookingsCSVFile = async (
     filters.offerVenueId !== DEFAULT_PRE_FILTERS.offerVenueId
       ? Number(filters.offerVenueId)
       : null,
-    filters.offerEventDate !== DEFAULT_PRE_FILTERS.offerEventDate
+    filters.offerEventDate !== DEFAULT_PRE_FILTERS.offerEventDate &&
+      isDateValid(filters.offerEventDate)
       ? filters.offerEventDate
       : null,
     // TODO fix PreFiltersParams type to use CollectiveBookingStatusFilter type
     // @ts-expect-error
     filters.bookingStatusFilter as CollectiveBookingStatusFilter,
-    filters.bookingBeginningDate,
-    filters.bookingEndingDate
+    isDateValid(filters.bookingBeginningDate)
+      ? filters.bookingBeginningDate
+      : null,
+    isDateValid(filters.bookingEndingDate) ? filters.bookingEndingDate : null
   )
 
   const date = new Date().toISOString()

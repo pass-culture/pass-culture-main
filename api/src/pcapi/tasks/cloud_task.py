@@ -99,7 +99,7 @@ def enqueue_internal_task(
 ) -> str | None:
     url = settings.API_URL + CLOUD_TASK_SUBPATH + path
 
-    if settings.IS_DEV:
+    if settings.CLOUD_TASK_CALL_INTERNAL_API_ENDPOINT:
         _call_internal_api_endpoint(queue, url, payload)
         return None
 
@@ -133,7 +133,7 @@ def _call_internal_api_endpoint(queue: str, url: str, payload: typing.Any) -> No
 
 
 def list_tasks(queue: str) -> list[tasks_v2.Task]:
-    if settings.IS_DEV:
+    if settings.CLOUD_TASK_CALL_INTERNAL_API_ENDPOINT:
         return []
 
     client = get_client()

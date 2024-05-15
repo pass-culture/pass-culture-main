@@ -5,7 +5,7 @@ import {
   BookingRecapResponseModel,
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
-import { Audience } from 'core/shared'
+import { Audience } from 'core/shared/types'
 
 import { isCollectiveBooking } from './BookingsTable/Cells/BookingOfferCell'
 import { CollectiveBookingsTable } from './BookingsTable/CollectiveBookingsTable'
@@ -40,7 +40,6 @@ interface BookingsRecapTableProps<
     statuses: string[]
   }
   audience: Audience
-  reloadBookings: () => void
   resetBookings: () => void
 }
 
@@ -51,7 +50,6 @@ export const BookingsRecapTable = <
   isLoading,
   locationState,
   audience,
-  reloadBookings,
   resetBookings,
 }: BookingsRecapTableProps<T>) => {
   const [filteredBookings, setFilteredBookings] = useState(bookingsRecap)
@@ -174,7 +172,6 @@ export const BookingsRecapTable = <
             bookings={filteredBookings}
             bookingStatuses={filters.bookingStatus}
             updateGlobalFilters={updateGlobalFilters}
-            reloadBookings={reloadBookings}
             defaultOpenedBookingId={defaultBookingId}
             resetFilters={resetAllFilters}
           />

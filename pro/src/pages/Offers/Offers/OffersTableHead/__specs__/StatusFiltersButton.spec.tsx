@@ -1,9 +1,9 @@
 import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { CollectiveOfferStatus } from 'core/OfferEducational'
+import { CollectiveOfferStatus } from 'core/OfferEducational/types'
 import { ADMINS_DISABLED_FILTERS_MESSAGE } from 'core/Offers/constants'
-import { Audience } from 'core/shared'
+import { Audience } from 'core/shared/types'
 
 import StatusFiltersButton, {
   StatusFiltersButtonProps,

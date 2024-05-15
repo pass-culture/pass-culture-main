@@ -1,6 +1,7 @@
 import datetime
 
 from dateutil.relativedelta import relativedelta
+import flask
 import pytest
 
 from pcapi.core.users import factories as users_factories
@@ -8,8 +9,28 @@ from pcapi.core.users import models as users_models
 from pcapi.utils.date import format_into_utc_date
 
 
+pytestmark = pytest.mark.usefixtures("db_session")
+
+
 class Returns200Test:
-    @pytest.mark.usefixtures("db_session")
+    def test_is_impersonated(self, client):
+        user = users_factories.BaseUserFactory(
+            isEmailValidated=True,
+            roles=[users_models.UserRole.PRO],
+            hasSeenProTutorials=True,
+        )
+
+        url = flask.url_for("pro_private_api.get_profile")
+        client = client.with_session_auth(email=user.email)
+
+        with client.client.session_transaction() as session:
+            session["internal_admin_email"] = user.email
+
+        response = client.get(url)
+
+        assert response.status_code == 200
+        assert response.json["isImpersonated"]
+
     def when_user_is_logged_in_and_has_no_deposit(self, client):
         user = users_factories.BeneficiaryGrant18Factory(
             civility=users_models.GenderEnum.M.value,
@@ -41,6 +62,7 @@ class Returns200Test:
             "email": "toto@example.com",
             "externalIds": {},
             "firstName": "Jean",
+            "hasPartnerPage": False,
             "hasSeenProTutorials": True,
             "hasSeenProRgs": False,
             "hasUserOfferer": False,
@@ -57,11 +79,11 @@ class Returns200Test:
             "postalCode": None,
             "roles": ["BENEFICIARY"],
             "navState": {"eligibilityDate": None, "newNavDate": None},
+            "isImpersonated": False,
         }
 
 
 class Returns401Test:
-    @pytest.mark.usefixtures("db_session")
     def when_user_is_not_logged_in(self, client):
         # When
         response = client.get("/users/current")

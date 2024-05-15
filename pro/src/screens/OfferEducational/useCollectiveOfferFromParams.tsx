@@ -1,5 +1,6 @@
-import { ComponentType, useCallback, useEffect, useState } from 'react'
+import { ComponentType } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
+import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import {
@@ -7,21 +8,18 @@ import {
   GetCollectiveOfferTemplateResponseModel,
   GetOffererResponseModel,
 } from 'apiClient/v1'
-import { extractOfferIdAndOfferTypeFromRouteParams } from 'core/OfferEducational'
-import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
-import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
+import {
+  GET_COLLECTIVE_OFFER_QUERY_KEY,
+  GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
+  GET_OFFERER_QUERY_KEY,
+} from 'config/swrQueryKeys'
+import { extractOfferIdAndOfferTypeFromRouteParams } from 'core/OfferEducational/utils/extractOfferIdAndOfferTypeFromRouteParams'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 export type MandatoryCollectiveOfferFromParamsProps = {
   offer:
     | GetCollectiveOfferResponseModel
     | GetCollectiveOfferTemplateResponseModel
-  setOffer: (
-    offer:
-      | GetCollectiveOfferResponseModel
-      | GetCollectiveOfferTemplateResponseModel
-  ) => void
-  reloadCollectiveOffer: () => Promise<void>
   isTemplate: boolean
   offerer: GetOffererResponseModel | undefined
 }
@@ -32,46 +30,38 @@ export type OptionalCollectiveOfferFromParamsProps = Omit<
 > &
   Partial<Pick<MandatoryCollectiveOfferFromParamsProps, 'offer' | 'offerer'>>
 
-const useCollectiveOfferFromParams = (
+export const useCollectiveOfferFromParams = (
   isOfferMandatory: boolean,
   offerIdFromParams?: string
 ) => {
   const location = useLocation()
   const pathNameIncludesTemplate = location.pathname.includes('vitrine')
 
-  const [offer, setOffer] = useState<
-    GetCollectiveOfferResponseModel | GetCollectiveOfferTemplateResponseModel
-  >()
-
-  const [offerer, setOfferer] = useState<GetOffererResponseModel>()
-
-  const { offerId, isTemplateId } = extractOfferIdAndOfferTypeFromRouteParams(
-    offerIdFromParams || ''
-  )
+  const { offerId, isTemplateId } =
+    extractOfferIdAndOfferTypeFromRouteParams(offerIdFromParams)
 
   const isTemplate = isTemplateId || pathNameIncludesTemplate
 
-  const loadCollectiveOffer = useCallback(async () => {
-    const adapter = isTemplate
-      ? getCollectiveOfferTemplateAdapter
-      : getCollectiveOfferAdapter
-    const response = await adapter(offerId)
-    if (response.isOk) {
-      setOffer(response.payload)
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      loadOfferer(response.payload.venue.managingOfferer.id)
-    }
-  }, [offerId, isTemplate])
+  const { data: offer } = useSWR(
+    offerId !== undefined
+      ? [
+          isTemplate
+            ? GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY
+            : GET_COLLECTIVE_OFFER_QUERY_KEY,
+          offerId,
+        ]
+      : null,
+    ([, offerIdParams]) =>
+      isTemplate
+        ? api.getCollectiveOfferTemplate(offerIdParams)
+        : api.getCollectiveOffer(offerIdParams)
+  )
 
-  async function loadOfferer(id: number) {
-    const offererResponseModel = await api.getOfferer(id)
-    setOfferer(offererResponseModel)
-  }
-
-  useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    loadCollectiveOffer()
-  }, [])
+  const offererId = offer?.venue.managingOfferer.id
+  const { data: offerer } = useSWR(
+    offererId ? [GET_OFFERER_QUERY_KEY, offererId] : null,
+    ([, offererIdParam]) => api.getOfferer(offererIdParam)
+  )
 
   if (offerIdFromParams === undefined) {
     if (isOfferMandatory) {
@@ -79,8 +69,6 @@ const useCollectiveOfferFromParams = (
     } else {
       return {
         offer: undefined,
-        setOffer: () => {},
-        reloadCollectiveOffer: () => Promise.resolve(),
         isTemplate: pathNameIncludesTemplate,
         offerer: undefined,
       }
@@ -89,8 +77,6 @@ const useCollectiveOfferFromParams = (
 
   return {
     offer,
-    setOffer,
-    reloadCollectiveOffer: loadCollectiveOffer,
     isTemplate,
     offerer,
   }

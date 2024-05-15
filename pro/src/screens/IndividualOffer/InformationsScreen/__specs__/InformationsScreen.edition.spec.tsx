@@ -33,7 +33,8 @@ import {
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
-import InformationsScreen, {
+import {
+  InformationsScreen,
   InformationsScreenProps,
 } from '../InformationsScreen'
 

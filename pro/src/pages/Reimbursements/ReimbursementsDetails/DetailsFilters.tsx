@@ -1,6 +1,6 @@
 import React, { Dispatch, SetStateAction, useState } from 'react'
 
-import FormLayout from 'components/FormLayout/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import { SelectOption } from 'custom_types/form'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -26,7 +26,7 @@ interface ReimbursementsSectionHeaderProps {
   selectableOptions: SelectOption[]
 }
 
-const DetailsFilters = ({
+export const DetailsFilters = ({
   children,
   defaultSelectId,
   initialFilters,
@@ -120,5 +120,3 @@ const DetailsFilters = ({
     </>
   )
 }
-
-export default DetailsFilters

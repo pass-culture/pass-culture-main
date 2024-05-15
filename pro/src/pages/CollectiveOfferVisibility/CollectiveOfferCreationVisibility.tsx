@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { useSWRConfig } from 'swr'
 
 import {
   EducationalInstitutionResponseModel,
   GetCollectiveOfferResponseModel,
 } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
-import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
-import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
+import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
+import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
+import { GET_COLLECTIVE_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
 import {
-  isCollectiveOffer,
   isCollectiveOfferTemplate,
+  isCollectiveOffer,
   Mode,
-} from 'core/OfferEducational'
+} from 'core/OfferEducational/types'
 import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
 import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
 import { CollectiveOfferVisibilityScreen } from 'screens/CollectiveOfferVisibility/CollectiveOfferVisibility'
@@ -21,11 +23,10 @@ import {
   withCollectiveOfferFromParams,
 } from 'screens/OfferEducational/useCollectiveOfferFromParams'
 
-import getEducationalInstitutionsAdapter from './adapters/getEducationalInstitutionsAdapter'
-import patchEducationalInstitutionAdapter from './adapters/patchEducationalInstitutionAdapter'
+import { getEducationalInstitutionsAdapter } from './adapters/getEducationalInstitutionsAdapter'
+import { patchEducationalInstitutionAdapter } from './adapters/patchEducationalInstitutionAdapter'
 
 export const CollectiveOfferVisibility = ({
-  setOffer,
   offer,
   isTemplate,
 }: MandatoryCollectiveOfferFromParamsProps) => {
@@ -38,14 +39,18 @@ export const CollectiveOfferVisibility = ({
     EducationalInstitutionResponseModel[]
   >([])
   const [isLoadingInstitutions, setIsLoadingInstitutions] = useState(true)
-  const onSuccess = ({
+  const { mutate } = useSWRConfig()
+  const onSuccess = async ({
     offerId,
     payload,
   }: {
     offerId: string
     payload: GetCollectiveOfferResponseModel
   }) => {
-    setOffer(payload)
+    await mutate([GET_COLLECTIVE_OFFER_QUERY_KEY], payload, {
+      revalidate: false,
+    })
+
     navigate(`/offre/${offerId}/collectif/creation/recapitulatif`)
   }
 

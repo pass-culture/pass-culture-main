@@ -1,5 +1,3 @@
-import { useFormik } from 'formik'
-
 export interface StockEventFormHiddenValues {
   stockId: number
   isDeletable: boolean
@@ -18,7 +16,3 @@ export interface StockEventFormValues extends StockEventFormHiddenValues {
 export interface StocksEventFormValues {
   stocks: StockEventFormValues[]
 }
-
-export type StocksEventFormik = ReturnType<
-  typeof useFormik<StocksEventFormValues>
->

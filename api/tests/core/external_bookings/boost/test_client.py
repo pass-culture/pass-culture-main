@@ -57,20 +57,6 @@ class GetPcuPricingIfExistsTest:
         assert caplog.records[0].message == "There are several pass Culture Pricings for this Showtime, we will use PCU"
 
 
-@pytest.mark.parametrize(
-    "barcode, ff_is_active, expected_barcode",
-    [
-        ("123456", True, "sale-123456"),
-        ("sale-123456", True, "sale-123456"),
-        ("123456", False, "123456"),
-        ("sale-123456", False, "123456"),
-    ],
-)
-def test_get_boost_external_booking_barcode(barcode: str, ff_is_active: bool, expected_barcode: str):
-    with override_features(WIP_ENABLE_BOOST_PREFIXED_EXTERNAL_BOOKING=ff_is_active):
-        assert boost_client.get_boost_external_booking_barcode(barcode) == expected_barcode
-
-
 class GetShowtimesTest:
     @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=False)
     def test_should_return_showtimes(self, requests_mock):
@@ -222,7 +208,59 @@ class GetShowtimesTest:
 
 
 class BookTicketTest:
+    @override_features(WIP_ENABLE_BOOST_TWO_STAGES_BOOKING=True)
     def test_should_book_duo_tickets(self, requests_mock, app):
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        booking = bookings_factories.BookingFactory(user=beneficiary, quantity=2)
+        cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
+        cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
+        requests_mock.get(
+            "https://cinema-0.example.com/api/showtimes/36684",
+            json=fixtures.ShowtimeDetailsEndpointResponse.PC2_AND_FULL_PRICINGS_SHOWTIME_36684_DATA,
+        )
+        pre_sale_post_adapter = requests_mock.post(
+            "https://cinema-0.example.com/api/sale/complete",
+            json=fixtures.CompleteSaleEndpointResponse.PRE_SALE_CONFIRMATION,
+            headers={"Content-Type": "application/json"},
+            additional_matcher=lambda request: not request.json().get("idsBeforeSale"),
+        )
+        confirmation_sale_post_adapter = requests_mock.post(
+            "https://cinema-0.example.com/api/sale/complete",
+            json=fixtures.CompleteSaleEndpointResponse.SALE_CONFIRMATION,
+            headers={"Content-Type": "application/json"},
+            additional_matcher=lambda request: bool(request.json().get("idsBeforeSale")),
+        )
+        boost = boost_client.BoostClientAPI(cinema_str_id)
+        tickets = boost.book_ticket(show_id=36684, booking=booking, beneficiary=beneficiary)
+        assert pre_sale_post_adapter.last_request.json() == {
+            "basketItems": [{"idShowtimePricing": 1114163, "quantity": 2}],
+            "codePayment": "PCU",
+            "idsBeforeSale": None,
+        }
+        assert confirmation_sale_post_adapter.last_request.json() == {
+            "basketItems": [
+                {
+                    "idShowtimePricing": 1114163,
+                    "quantity": 2,
+                },
+            ],
+            "codePayment": "PCU",
+            "idsBeforeSale": "3",
+        }
+        assert len(tickets) == 2
+        assert tickets == [
+            external_bookings_models.Ticket(barcode="sale-133401", seat_number=None),
+            external_bookings_models.Ticket(barcode="sale-133401", seat_number=None),
+        ]
+        redis_external_bookings = app.redis_client.lrange("api:external_bookings:barcodes", 0, -1)
+        assert len(redis_external_bookings) == 1
+        external_bookings_infos = json.loads(redis_external_bookings[0])
+        assert external_bookings_infos["barcode"] == "sale-133401"
+        assert external_bookings_infos["timestamp"]
+        assert external_bookings_infos["venue_id"] == booking.venueId
+
+    @override_features(WIP_ENABLE_BOOST_TWO_STAGES_BOOKING=False)
+    def test_should_book_duo_tickets_legacy(self, requests_mock, app):
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         booking = bookings_factories.BookingFactory(user=beneficiary, quantity=2)
         venue_id = booking.venueId
@@ -261,18 +299,9 @@ class BookTicketTest:
 
 
 class CancelBookingTest:
-    @pytest.mark.parametrize(
-        "barcode, ff_is_active, expected_barcode",
-        [
-            ("90577", True, "sale-90577"),
-            ("sale-90577", True, "sale-90577"),
-            ("90577", False, "sale-90577"),
-            ("sale-90577", False, "sale-90577"),
-        ],
-    )
-    def test_should_cancel_booking_with_success(
-        self, barcode: str, ff_is_active: bool, expected_barcode: str, requests_mock
-    ):
+
+    def test_should_cancel_booking_with_success(self, requests_mock):
+        barcode = "sale-90577"
         cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
         cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
         put_adapter = requests_mock.put(
@@ -283,11 +312,10 @@ class CancelBookingTest:
         boost = boost_client.BoostClientAPI(cinema_str_id)
 
         try:
-            with override_features(WIP_ENABLE_BOOST_PREFIXED_EXTERNAL_BOOKING=ff_is_active):
-                boost.cancel_booking(barcodes=[barcode])
+            boost.cancel_booking(barcodes=[barcode])
         except Exception:  # pylint: disable=broad-except
             assert False, "Should not raise exception"
-        assert put_adapter.last_request.json() == {"sales": [{"code": expected_barcode, "refundType": "pcu"}]}
+        assert put_adapter.last_request.json() == {"sales": [{"code": barcode, "refundType": "pcu"}]}
 
     def test_when_boost_return_element_not_found(self, requests_mock):
         cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")

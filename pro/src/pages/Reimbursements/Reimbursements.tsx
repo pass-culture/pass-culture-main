@@ -6,7 +6,7 @@ import { api } from 'apiClient/api'
 import { GetOffererResponseModel } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import { ReimbursementsTabs } from 'components/ReimbursementsTabs'
-import { SAVED_OFFERER_ID_KEY } from 'core/shared'
+import { SAVED_OFFERER_ID_KEY } from 'core/shared/constants'
 import useCurrentUser from 'hooks/useCurrentUser'
 import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
 import { updateSelectedOffererId } from 'store/user/reducer'
@@ -60,7 +60,7 @@ export const Reimbursements = (): JSX.Element => {
   }
 
   return (
-    <AppLayout pageName="reimbursements">
+    <AppLayout>
       <div className={styles['reimbursements-container']}>
         <h1 className={styles['title']}>Gestion financière</h1>
         <div>

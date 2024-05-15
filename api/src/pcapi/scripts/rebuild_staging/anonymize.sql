@@ -116,7 +116,6 @@ WHERE "hmacKey" IS NOT NULL;
 
 UPDATE boost_cinema_details
 SET
-  password = '',
   token = NULL,
   "tokenExpirationDate" = NULL
 ;

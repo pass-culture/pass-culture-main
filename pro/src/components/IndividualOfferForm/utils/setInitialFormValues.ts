@@ -6,9 +6,9 @@ import {
   FORM_DEFAULT_VALUES,
   IndividualOfferFormValues,
 } from 'components/IndividualOfferForm'
-import { AccessibilityEnum } from 'core/shared'
+import { AccessibilityEnum } from 'core/shared/types'
 
-import buildSubcategoryFields from './buildSubCategoryFields'
+import { buildSubcategoryFields } from './buildSubCategoryFields'
 
 const serializeDurationHour = (durationMinute: number): string => {
   const hours = Math.floor(durationMinute / 60)
@@ -16,7 +16,7 @@ const serializeDurationHour = (durationMinute: number): string => {
   return `${hours}:${minutes}`
 }
 
-const setInitialFormValues = (
+export const setInitialFormValues = (
   offer: GetIndividualOfferResponseModel,
   subCategoryList: SubcategoryResponseModel[],
   isBookingContactEnabled: boolean
@@ -88,5 +88,3 @@ const setInitialFormValues = (
       FORM_DEFAULT_VALUES['externalTicketOfficeUrl'],
   }
 }
-
-export default setInitialFormValues

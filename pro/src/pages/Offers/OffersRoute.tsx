@@ -3,24 +3,24 @@ import { useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import { GetOffererResponseModel } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
-import { getOffererAdapter } from 'core/Offers/adapters'
+import {
+  GET_CATEGORIES_QUERY_KEY,
+  GET_OFFERER_QUERY_KEY,
+} from 'config/swrQueryKeys'
 import { DEFAULT_PAGE, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
 import { SearchFiltersParams } from 'core/Offers/types'
-import {
-  hasSearchFilters,
-  computeOffersUrl,
-  serializeApiFilters,
-} from 'core/Offers/utils'
-import { Audience } from 'core/shared'
-import getVenuesForOffererAdapter from 'core/Venue/adapters/getVenuesForOffererAdapter'
+import { computeOffersUrl } from 'core/Offers/utils/computeOffersUrl'
+import { hasSearchFilters } from 'core/Offers/utils/hasSearchFilters'
+import { serializeApiFilters } from 'core/Offers/utils/serializer'
+import { Audience } from 'core/shared/types'
+import { getVenuesForOffererAdapter } from 'core/Venue/adapters/getVenuesForOffererAdapter/getVenuesForOffererAdapter'
 import { SelectOption } from 'custom_types/form'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
 import { formatAndOrderVenues } from 'repository/venuesService'
-import OffersScreen from 'screens/Offers'
+import { Offers } from 'screens/Offers/Offers'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { sortByLabel } from 'utils/strings'
 
@@ -33,49 +33,36 @@ export const OffersRoute = (): JSX.Element => {
   const navigate = useNavigate()
   const { currentUser } = useCurrentUser()
 
-  const [offerer, setOfferer] = useState<GetOffererResponseModel | null>(null)
   const [initialSearchFilters, setInitialSearchFilters] =
     useState<SearchFiltersParams | null>(null)
   const [venues, setVenues] = useState<SelectOption[]>([])
-  const [categories, setCategories] = useState<SelectOption[]>([])
 
-  useEffect(() => {
-    const loadOfferer = async () => {
-      if (
-        urlSearchFilters.offererId &&
-        urlSearchFilters.offererId !== DEFAULT_SEARCH_FILTERS.offererId
-      ) {
-        const { isOk, message, payload } = await getOffererAdapter(
-          urlSearchFilters.offererId
-        )
+  const offererQuery = useSWR(
+    [GET_OFFERER_QUERY_KEY, urlSearchFilters.offererId],
+    ([, offererIdParam]) =>
+      urlSearchFilters.offererId === DEFAULT_SEARCH_FILTERS.offererId
+        ? null
+        : api.getOfferer(Number(offererIdParam)),
+    { fallbackData: null }
+  )
+  const offerer = offererQuery.data
 
-        if (!isOk) {
-          return notify.error(message)
-        }
-
-        setOfferer(payload)
-      }
-    }
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    loadOfferer()
-  }, [urlSearchFilters.offererId, notify])
-
-  useEffect(() => {
-    const loadCategories = async () => {
-      const categoriesAndSubcategories = await api.getCategories()
-      const categoriesOptions = categoriesAndSubcategories.categories
-        .filter((category) => category.isSelectable)
-        .map((category) => ({
-          value: category.id,
-          label: category.proLabel,
-        }))
-
-      setCategories(sortByLabel(categoriesOptions))
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    loadCategories()
-  }, [])
+  const categoriesQuery = useSWR(
+    [GET_CATEGORIES_QUERY_KEY],
+    async () => {
+      const response = await api.getCategories()
+      return response.categories
+    },
+    { fallbackData: [] }
+  )
+  const categoriesOptions = sortByLabel(
+    categoriesQuery.data
+      .filter((category) => category.isSelectable)
+      .map((category) => ({
+        value: category.id,
+        label: category.proLabel,
+      }))
+  )
 
   const redirectWithUrlFilters = (
     filters: SearchFiltersParams & { audience?: Audience }
@@ -149,12 +136,14 @@ export const OffersRoute = (): JSX.Element => {
 
   return (
     <AppLayout>
-      {!initialSearchFilters || offersQuery.isLoading ? (
+      {!initialSearchFilters ||
+      offersQuery.isLoading ||
+      offererQuery.isLoading ? (
         <Spinner />
       ) : (
-        <OffersScreen
+        <Offers
           audience={Audience.INDIVIDUAL}
-          categories={categories}
+          categories={categoriesOptions}
           currentPageNumber={currentPageNumber}
           currentUser={currentUser}
           initialSearchFilters={initialSearchFilters}
@@ -162,7 +151,6 @@ export const OffersRoute = (): JSX.Element => {
           offerer={offerer}
           offers={offersQuery.data}
           redirectWithUrlFilters={redirectWithUrlFilters}
-          setOfferer={setOfferer}
           urlSearchFilters={urlSearchFilters}
           venues={venues}
         />

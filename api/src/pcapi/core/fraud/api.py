@@ -22,6 +22,7 @@ from pcapi.models.feature import DisabledFeatureError
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.repository.user_queries import matching
+from pcapi.utils.email import anonymize_email
 
 from . import models
 from .common import models as common_models
@@ -780,23 +781,6 @@ def invalidate_fraud_check_for_duplicate_user(
     repository.save(fraud_check)
 
 
-def _anonymize_email(email: str) -> str:
-    try:
-        name, domain = email.split("@")
-    except ValueError:
-        logger.exception("User email %s format is wrong", email)
-        return "***"
-
-    if len(name) > 3:
-        hidden_name = name[:3]
-    elif len(name) > 1:
-        hidden_name = name[:1]
-    else:
-        hidden_name = ""
-
-    return f"{hidden_name}***@{domain}"
-
-
 def get_duplicate_beneficiary_anonymized_email(
     rejected_user: users_models.User,
     identity_content: common_models.IdentityCheckContent,
@@ -831,4 +815,4 @@ def get_duplicate_beneficiary_anonymized_email(
         )
         return None
 
-    return _anonymize_email(duplicate_beneficiary.email)
+    return anonymize_email(duplicate_beneficiary.email)

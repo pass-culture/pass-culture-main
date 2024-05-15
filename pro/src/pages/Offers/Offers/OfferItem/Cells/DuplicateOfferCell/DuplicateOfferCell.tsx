@@ -5,8 +5,8 @@ import {
   Events,
   OFFER_FROM_TEMPLATE_ENTRIES,
 } from 'core/FirebaseEvents/constants'
-import { createOfferFromTemplate } from 'core/OfferEducational'
 import { createOfferFromBookableOffer } from 'core/OfferEducational/utils/createOfferFromBookableOffer'
+import { createOfferFromTemplate } from 'core/OfferEducational/utils/createOfferFromTemplate'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
@@ -15,7 +15,7 @@ import fullPlusIcon from 'icons/full-plus.svg'
 import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
 import { localStorageAvailable } from 'utils/localStorageAvailable'
 
-import DuplicateOfferDialog from './DuplicateOfferDialog'
+import { DuplicateOfferDialog } from './DuplicateOfferDialog/DuplicateOfferDialog'
 
 export const LOCAL_STORAGE_HAS_SEEN_MODAL_KEY = 'DUPLICATE_OFFER_MODAL_SEEN'
 

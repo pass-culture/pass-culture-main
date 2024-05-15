@@ -7,7 +7,7 @@ import {
   IndividualOfferContext,
   IndividualOfferContextValues,
 } from 'context/IndividualOfferContext'
-import { REIMBURSEMENT_RULES } from 'core/Finances'
+import { REIMBURSEMENT_RULES } from 'core/Finances/constants'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
 import * as filterCategories from 'screens/IndividualOffer/InformationsScreen/utils/filterCategories/filterCategories'
 import {
@@ -19,7 +19,8 @@ import {
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
-import InformationsScreen, {
+import {
+  InformationsScreen,
   InformationsScreenProps,
 } from '../InformationsScreen'
 

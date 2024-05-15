@@ -141,6 +141,28 @@ export class DefaultService {
     });
   }
   /**
+   * get_collective_offer_templates <GET>
+   * @param ids
+   * @returns ListCollectiveOfferTemplateResponseModel OK
+   * @throws ApiError
+   */
+  public getCollectiveOfferTemplates(
+    ids: Array<number>,
+  ): CancelablePromise<ListCollectiveOfferTemplateResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/adage-iframe/collective/offers-template/',
+      query: {
+        'ids': ids,
+      },
+      errors: {
+        403: `Forbidden`,
+        404: `Not Found`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
    * get_collective_offer_template <GET>
    * @param offerId
    * @returns CollectiveOfferTemplateResponseModel OK
@@ -755,6 +777,22 @@ export class DefaultService {
     });
   }
   /**
+   * get_any_new_template_offers_playlist <GET>
+   * @returns ListCollectiveOfferTemplateResponseModel OK
+   * @throws ApiError
+   */
+  public getAnyNewTemplateOffersPlaylist(): CancelablePromise<ListCollectiveOfferTemplateResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/adage-iframe/playlists/any_new_template_offers',
+      errors: {
+        403: `Forbidden`,
+        404: `Not Found`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
    * get_classroom_playlist <GET>
    * @returns ListCollectiveOfferTemplateResponseModel OK
    * @throws ApiError
@@ -778,6 +816,21 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'GET',
       url: '/adage-iframe/playlists/local-offerers',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * get_new_offerers_playlist <GET>
+   * @returns LocalOfferersPlaylist OK
+   * @throws ApiError
+   */
+  public getNewOfferersPlaylist(): CancelablePromise<LocalOfferersPlaylist> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/adage-iframe/playlists/new_offerers',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,

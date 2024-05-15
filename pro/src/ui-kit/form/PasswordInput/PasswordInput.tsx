@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import { useField } from 'formik'
 import React, { useState } from 'react'
 
@@ -9,7 +10,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { TextInput } from '../TextInput/TextInput'
 
 import styles from './PasswordInput.module.scss'
-import ValidationMessageList from './ValidationMessageList'
+import { ValidationMessageList } from './ValidationMessageList/ValidationMessageList'
 
 interface PasswordInputProps {
   label: string
@@ -28,8 +29,9 @@ export const PasswordInput = ({
   ...props
 }: PasswordInputProps): JSX.Element => {
   const [isPasswordHidden, setPasswordHidden] = useState(true)
-  const [field] = useField({ name })
+  const [field, meta] = useField({ name })
   const displayLocalErrors = withErrorPreview && field.value.length > 0
+  const errorShown = (meta.touched && !!meta.error) || displayLocalErrors
 
   const handleToggleHidden = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault()
@@ -37,7 +39,11 @@ export const PasswordInput = ({
   }
 
   return (
-    <div className={styles['password-input-wrapper']}>
+    <div
+      className={cn([styles['password-input-wrapper']], {
+        [styles['password-input-wrapper-error']]: errorShown,
+      })}
+    >
       <TextInput
         className={styles['password-input']}
         label={label}

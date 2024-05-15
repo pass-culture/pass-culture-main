@@ -4,7 +4,7 @@ import { PreFiltersParams } from 'core/Bookings/types'
 import { PeriodSelector } from 'ui-kit/form/PeriodSelector/PeriodSelector'
 
 import styles from './FilterByBookingStatusPeriod.module.scss'
-import FilterByStatus from './FilterByStatus'
+import { FilterByStatus } from './FilterByStatus'
 
 interface FilterByBookingStatusPeriodProps {
   isDisabled: boolean
@@ -14,7 +14,7 @@ interface FilterByBookingStatusPeriodProps {
   updateFilters: (filters: Partial<PreFiltersParams>) => void
 }
 
-const FilterByBookingStatusPeriod = ({
+export const FilterByBookingStatusPeriod = ({
   isDisabled = false,
   selectedBookingBeginningDate,
   selectedBookingEndingDate,
@@ -50,5 +50,3 @@ const FilterByBookingStatusPeriod = ({
     </fieldset>
   )
 }
-
-export default FilterByBookingStatusPeriod

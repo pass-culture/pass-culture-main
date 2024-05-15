@@ -1,6 +1,6 @@
 import { FormikContextType, FormikProvider } from 'formik'
 
-import FormLayout from 'components/FormLayout'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import fullMailIcon from 'icons/full-mail.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'

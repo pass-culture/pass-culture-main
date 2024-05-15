@@ -52,6 +52,15 @@ class ProductFactory(BaseFactory):
         return super()._create(model_class, *args, **kwargs)
 
 
+class ProductMediationFactory(BaseFactory):
+    class Meta:
+        model = models.ProductMediation
+
+    product = factory.SubFactory(ProductFactory)
+    url = factory.Sequence("http://example.com/product/{}".format)
+    imageType = offers_models.TiteliveImageType.RECTO
+
+
 class EventProductFactory(ProductFactory):
     subcategoryId = subcategories.SEANCE_CINE.id
 

@@ -12,7 +12,7 @@ import {
   ALL_VENUES_OPTION,
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
-import { Audience } from 'core/shared'
+import { Audience } from 'core/shared/types'
 import * as useNotification from 'hooks/useNotification'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
 import {
@@ -26,7 +26,7 @@ import {
 } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
-import Offers, { OffersProps } from '../Offers'
+import { Offers, OffersProps } from '../Offers'
 
 const renderOffers = (
   props: OffersProps,
@@ -108,7 +108,6 @@ describe('screen Offers', () => {
       isLoading: false,
       offerer: { ...defaultGetOffererResponseModel },
       offers: offersRecap,
-      setOfferer: vi.fn(),
       urlSearchFilters: DEFAULT_SEARCH_FILTERS,
       initialSearchFilters: DEFAULT_SEARCH_FILTERS,
       audience: Audience.INDIVIDUAL,

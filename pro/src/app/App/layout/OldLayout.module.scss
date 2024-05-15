@@ -1,0 +1,39 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/variables/_size.scss" as size;
+@use "styles/variables/_z-index.scss" as zIndex;
+
+.container {
+  position: relative;
+  padding-bottom: rem.torem(32px);
+  width: 100%;
+
+  &-without-nav {
+    display: flex;
+    flex-direction: column;
+
+    @media (min-width: size.$tablet) {
+      flex-direction: row;
+      width: 100%;
+      margin: 0 auto;
+    }
+  }
+
+  &-sticky-actions {
+    padding-bottom: calc(rem.torem(32px) + size.$action-bar-sticky-height);
+  }
+}
+
+.page-content {
+  background: var(--color-white);
+  border-radius: rem.torem(10px);
+  max-width: rem.torem(size.$main-content-width);
+  margin: rem.torem(-88px) auto 0 auto;
+  box-shadow: 0 0 rem.torem(60px) var(--color-large-shadow);
+  border: none;
+
+  .after-notification-content {
+    padding: size.$main-content-padding;
+    position: relative;
+  }
+}

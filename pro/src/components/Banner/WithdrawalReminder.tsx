@@ -3,7 +3,7 @@ import React from 'react'
 import Callout from 'components/Callout/Callout'
 import { CGU_URL } from 'utils/config'
 
-const WithdrawalReminder = () => {
+export const WithdrawalReminder = () => {
   return (
     <Callout
       links={[
@@ -19,5 +19,3 @@ const WithdrawalReminder = () => {
     </Callout>
   )
 }
-
-export default WithdrawalReminder

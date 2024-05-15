@@ -17,6 +17,7 @@ import pcapi.core.finance.models as finance_models
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as user_models
 from pcapi.core.users.exceptions import InvalidUserRoleException
@@ -333,6 +334,26 @@ class UserTest:
         offerers_factories.UserOffererFactory(user=user, validationStatus=ValidationStatus.PENDING)
         assert user.proValidationStatus == ValidationStatus.VALIDATED
 
+    def test_has_partner_page(self):
+        user = users_factories.UserFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
+
+        # Non-permanent & Non-virtual --> has not a partner page:
+        venue_type_code = offerers_models.VenueTypeCode.CULTURAL_CENTRE
+        offerers_factories.VenueFactory(managingOfferer=offerer, venueTypeCode=venue_type_code, isVirtual=False)
+        assert user.has_partner_page is False
+
+        # Permanent & Virtual --> has not a partner page:
+        venue_type_code = offerers_models.VenueTypeCode.LIBRARY
+        offerers_factories.VirtualVenueFactory(managingOfferer=offerer, venueTypeCode=venue_type_code)
+        assert user.has_partner_page is False
+
+        # Permanent & Non-virtual --> has a partner page:
+        venue_type_code = offerers_models.VenueTypeCode.LIBRARY
+        offerers_factories.VenueFactory(managingOfferer=offerer, venueTypeCode=venue_type_code, isVirtual=False)
+        assert user.has_partner_page is True
+
 
 @pytest.mark.usefixtures("db_session")
 class HasAccessTest:
@@ -519,7 +540,7 @@ class SQLFunctionsTest:
         )  # +10 on user's wallet
 
         author = users_factories.UserFactory()
-        finance_api.validate_finance_incident(incident, force_debit_note=False, author=author)
+        finance_api.validate_finance_overpayment_incident(incident, force_debit_note=False, author=author)
 
         assert incident.status == finance_models.IncidentStatus.VALIDATED
 
@@ -545,7 +566,7 @@ class SQLFunctionsTest:
 
         # When
         author = users_factories.UserFactory()
-        finance_api.validate_finance_incident(incident, force_debit_note=False, author=author)
+        finance_api.validate_finance_overpayment_incident(incident, force_debit_note=False, author=author)
 
         # Then
         assert incident.status == finance_models.IncidentStatus.VALIDATED

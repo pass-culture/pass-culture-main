@@ -13,7 +13,8 @@ import {
   renderWithProviders,
 } from 'utils/renderWithProviders'
 
-import CollectiveOfferPreviewCreationScreen, {
+import {
+  CollectiveOfferPreviewCreationScreen,
   CollectiveOfferSummaryCreationProps,
 } from '../CollectiveOfferPreviewCreation'
 
@@ -32,8 +33,6 @@ const renderCollectiveOfferPreviewCreation = (
 
 const defaultProps = {
   offer: getCollectiveOfferTemplateFactory(),
-  setOffer: vi.fn(),
-  reloadCollectiveOffer: vi.fn(),
   isTemplate: true,
   offerer: defaultGetOffererResponseModel,
 }

@@ -1,5 +1,5 @@
 import { DEFAULT_ADDRESS_FORM_VALUES } from 'components/Address/constants'
-import { AccessibilityEnum } from 'core/shared'
+import { AccessibilityEnum } from 'core/shared/types'
 
 import { VenueCreationFormValues } from './types'
 

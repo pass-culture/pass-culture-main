@@ -2,14 +2,12 @@ import React from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { AppLayout } from 'app/AppLayout'
-import { getVenuesAdapter } from 'core/Bookings/adapters'
-import { Audience } from 'core/shared'
-import BookingsScreen from 'screens/Bookings'
+import getVenuesAdapter from 'core/Bookings/adapters/getVenuesAdapter'
+import { Audience } from 'core/shared/types'
+import { BookingsScreen } from 'screens/Bookings/Bookings'
 
-import {
-  getFilteredCollectiveBookingsRecapAdapter,
-  getUserHasCollectiveBookingsAdapter,
-} from './adapters'
+import { getFilteredCollectiveBookingsAdapter } from './adapters/getFilteredCollectiveBookingsAdapter'
+import { getUserHasCollectiveBookingsAdapter } from './adapters/getUserHasCollectiveBookingsAdapter'
 
 const CollectiveBookings = (): JSX.Element => {
   const location = useLocation()
@@ -18,9 +16,7 @@ const CollectiveBookings = (): JSX.Element => {
     <AppLayout>
       <BookingsScreen
         audience={Audience.COLLECTIVE}
-        getFilteredBookingsRecapAdapter={
-          getFilteredCollectiveBookingsRecapAdapter
-        }
+        getFilteredBookingsAdapter={getFilteredCollectiveBookingsAdapter}
         getUserHasBookingsAdapter={getUserHasCollectiveBookingsAdapter}
         getVenuesAdapter={getVenuesAdapter}
         locationState={location.state}

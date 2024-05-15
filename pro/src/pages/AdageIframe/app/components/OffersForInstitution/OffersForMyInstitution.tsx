@@ -1,15 +1,14 @@
-import { useEffect, useState } from 'react'
+import useSWR from 'swr'
 
-import { CollectiveOfferResponseModel } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import Callout from 'components/Callout/Callout'
+import { GET_COLLECTIVE_OFFERS_FOR_INSTITUTION_QUERY_KEY } from 'config/swrQueryKeys'
 import useActiveFeature from 'hooks/useActiveFeature'
 import strokeMyInstitution from 'icons/stroke-my-institution.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { sendSentryCustomError } from 'utils/sendSentryCustomError'
 
 import { AnalyticsContextProvider } from '../../providers/AnalyticsContextProvider'
 import { AdageOfferListCard } from '../OffersInstantSearch/OffersSearch/Offers/AdageOfferListCard/AdageOfferListCard'
@@ -17,42 +16,21 @@ import Offer from '../OffersInstantSearch/OffersSearch/Offers/Offer'
 
 import styles from './OffersForMyInstitution.module.scss'
 
-const OffersForMyInstitution = (): JSX.Element => {
+export const OffersForMyInstitution = () => {
   const params = new URLSearchParams(location.search)
   const adageAuthToken = params.get('token')
-  const [myInstitutionOffers, setMyInstitutionOffers] = useState<
-    CollectiveOfferResponseModel[]
-  >([])
-  const [loadingOffers, setLoadingOffers] = useState<boolean>(false)
 
   const isNewOfferCardEnabled = useActiveFeature(
     'WIP_ENABLE_ADAGE_VISUALIZATION'
   )
 
-  useEffect(() => {
-    async function getMyInstitutionOffers() {
-      setLoadingOffers(true)
-      try {
-        const offers = await apiAdage.getCollectiveOffersForMyInstitution()
+  const { data: offers, isLoading } = useSWR(
+    [GET_COLLECTIVE_OFFERS_FOR_INSTITUTION_QUERY_KEY],
+    () => apiAdage.getCollectiveOffersForMyInstitution(),
+    { fallbackData: { collectiveOffers: [] } }
+  )
 
-        setMyInstitutionOffers(
-          offers.collectiveOffers.map((offer) => ({
-            ...offer,
-            isTemplate: false,
-          }))
-        )
-      } catch (e) {
-        sendSentryCustomError(e)
-      } finally {
-        setLoadingOffers(false)
-      }
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    getMyInstitutionOffers()
-  }, [])
-
-  if (loadingOffers) {
+  if (isLoading) {
     return <Spinner message="Chargement en cours" />
   }
 
@@ -87,7 +65,7 @@ const OffersForMyInstitution = (): JSX.Element => {
           “Suivi pass Culture”.
         </p>
       </Callout>
-      {myInstitutionOffers.length === 0 ? (
+      {offers.collectiveOffers.length === 0 ? (
         <div className={styles['no-results']}>
           <SvgIcon
             src={strokeMyInstitution}
@@ -113,7 +91,7 @@ const OffersForMyInstitution = (): JSX.Element => {
         </div>
       ) : (
         <ul className={styles['offers-list']}>
-          {myInstitutionOffers.map((offer, i) => {
+          {offers.collectiveOffers.map((offer, i) => {
             return (
               <li key={offer.id} data-testid="offer-listitem">
                 {isNewOfferCardEnabled ? (
@@ -129,5 +107,3 @@ const OffersForMyInstitution = (): JSX.Element => {
     </AnalyticsContextProvider>
   )
 }
-
-export default OffersForMyInstitution

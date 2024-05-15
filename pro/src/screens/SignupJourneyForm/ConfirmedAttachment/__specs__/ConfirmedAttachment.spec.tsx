@@ -6,7 +6,7 @@ import { Route, Routes } from 'react-router-dom'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
-import { ConfirmedAttachment } from '..'
+import { ConfirmedAttachment } from '../ConfirmedAttachment'
 
 const renderConfirmedAttachmentScreen = () => {
   return renderWithProviders(
