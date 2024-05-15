@@ -19,7 +19,6 @@ import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
-import { computeInitialValues } from './form/computeInitialValues'
 import {
   INITIAL_PRICE_CATEGORY,
   PRICE_CATEGORY_LABEL_MAX_LENGTH,
@@ -43,7 +42,7 @@ export const PriceCategoriesForm = ({
   isDisabled,
   canBeDuo,
 }: PriceCategoriesFormProps): JSX.Element => {
-  const { setFieldValue, setValues, values } =
+  const { setFieldValue, values } =
     useFormikContext<PriceCategoriesFormValues>()
 
   const notify = useNotification()
@@ -103,11 +102,6 @@ export const PriceCategoriesForm = ({
           )
         }
       }
-      const updatedOffer = await api.getOffer(offer.id)
-      await setValues({
-        ...values,
-        priceCategories: computeInitialValues(updatedOffer).priceCategories,
-      })
     }
   }
 
