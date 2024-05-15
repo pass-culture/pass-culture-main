@@ -146,7 +146,6 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
     description = sa.Column(sa.Text, nullable=True)
     durationMinutes = sa.Column(sa.Integer, nullable=True)
     extraData: OfferExtraData | None = sa.Column("jsonData", sa_mutable.MutableDict.as_mutable(postgresql.JSONB))
-    isGcuCompatible: bool = sa.Column(sa.Boolean, default=True, server_default=sa.true(), nullable=False)
     gcuCompatibilityType = sa.Column(
         MagicEnum(GcuCompatibilityType),
         nullable=False,
@@ -175,12 +174,14 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
         return subcategories_v2.ALL_SUBCATEGORIES_DICT[self.subcategoryId]
 
     @property
-    def isGcuCompatibleTemp(self) -> bool:
+    def isGcuCompatible(self) -> bool:
         return self.gcuCompatibilityType == GcuCompatibilityType.COMPATIBLE
 
     @hybrid_property
     def can_be_synchronized(self) -> bool:
-        return self.isGcuCompatible & (self.name != UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER)
+        return (self.gcuCompatibilityType == GcuCompatibilityType.COMPATIBLE) & (
+            self.name != UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER
+        )
 
     @hybrid_property
     def images(self) -> dict[str, str | None]:
