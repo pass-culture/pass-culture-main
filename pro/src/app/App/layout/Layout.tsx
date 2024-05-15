@@ -6,7 +6,9 @@ import Footer from 'components/Footer/Footer'
 import Header from 'components/Header/Header'
 import NewNavReview from 'components/NewNavReview/NewNavReview'
 import SkipLinks from 'components/SkipLinks'
+import fullInfoIcon from 'icons/full-info.svg'
 import { selectCurrentUser } from 'store/user/selectors'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import LateralPanel from './LateralPanel/LateralPanel'
 import styles from './Layout.module.scss'
@@ -42,6 +44,22 @@ export const Layout = ({ children, layout = 'basic' }: LayoutProps) => {
         }}
       >
         <SkipLinks />
+        {currentUser?.isImpersonated && (
+          <aside className={styles['connect-as']}>
+            <SvgIcon
+              src={fullInfoIcon}
+              alt="Information"
+              width="20"
+              className={styles['connect-as-icon']}
+            />
+            <div className={styles['connect-as-text']}>
+              Vous êtes connecté en tant que :&nbsp;
+              <strong>
+                {currentUser.firstName} {currentUser.lastName}
+              </strong>
+            </div>
+          </aside>
+        )}
         {(layout === 'basic' || layout === 'sticky-actions') && (
           <Header
             lateralPanelOpen={lateralPanelOpen}

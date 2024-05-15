@@ -1,9 +1,13 @@
 import classnames from 'classnames'
 import React from 'react'
+import { useSelector } from 'react-redux'
 
 import Footer from 'components/Footer/Footer'
 import OldHeader from 'components/Header/OldHeader'
 import SkipLinks from 'components/SkipLinks'
+import fullInfoIcon from 'icons/full-info.svg'
+import { selectCurrentUser } from 'store/user/selectors'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './OldLayout.module.scss'
 
@@ -13,9 +17,27 @@ interface OldLayoutProps {
 }
 
 export const OldLayout = ({ children, layout = 'basic' }: OldLayoutProps) => {
+  const currentUser = useSelector(selectCurrentUser)
+
   return (
     <>
       <SkipLinks />
+      {currentUser?.isImpersonated && (
+        <aside className={styles['connect-as']}>
+          <SvgIcon
+            src={fullInfoIcon}
+            alt="Information"
+            width="20"
+            className={styles['connect-as-icon']}
+          />
+          <div className={styles['connect-as-text']}>
+            Vous êtes connecté en tant que :&nbsp;
+            <strong>
+              {currentUser.firstName} {currentUser.lastName}
+            </strong>
+          </div>
+        </aside>
+      )}
       {(layout === 'basic' || layout === 'sticky-actions') && <OldHeader />}
 
       <main

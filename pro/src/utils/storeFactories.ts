@@ -9,6 +9,7 @@ export const sharedCurrentUserFactory = (
   email: 'john@do.net',
   isAdmin: false,
   isEmailValidated: true,
+  isImpersonated: false,
   roles: [],
   ...customSharedCurrentUser,
 })
