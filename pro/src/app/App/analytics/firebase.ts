@@ -97,10 +97,10 @@ export const useFirebase = (consentedToFirebase: boolean) => {
   }, [consentedToFirebase])
 
   useEffect(() => {
-    if (consentedToFirebase && firebaseApp && currentUser) {
+    if (firebaseApp && currentUser) {
       setUserId(getAnalytics(firebaseApp), currentUser.id.toString())
     }
-  }, [consentedToFirebase, currentUser, isFirebaseInitialized])
+  }, [currentUser, isFirebaseInitialized])
 
   useEffect(() => {
     if (firebaseApp && selectedOffererId) {
