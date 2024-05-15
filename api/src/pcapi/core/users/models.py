@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from dataclasses import field
 from datetime import date
 from datetime import datetime
+from datetime import timedelta
 from decimal import Decimal
 import enum
 from operator import attrgetter
@@ -203,6 +204,10 @@ class User(PcObject, Base, Model, DeactivableMixin):
     sa.Index("ix_user_validatedBirthDate", validatedBirthDate)
     pro_flags: UserProFlags = orm.relationship("UserProFlags", back_populates="user", uselist=False)
     pro_new_nav_state: UserProNewNavState = orm.relationship("UserProNewNavState", back_populates="user", uselist=False)
+
+    gdprUserDataExtract: orm.Mapped["GdprUserDataExtract"] = orm.relationship(
+        "GdprUserDataExtract", back_populates="user", foreign_keys="GdprUserDataExtract.userId"
+    )
 
     # unaccent is not immutable, so it can't be used for an index.
     # Searching by sa.func.unaccent(something) does not use the index and causes a sequential scan.
@@ -930,3 +935,21 @@ class UserProNewNavState(PcObject, Base, Model):
     eligibilityDate: datetime = sa.Column(sa.DateTime, nullable=True)
     # If set, it means that the user has switched to the new nav at that date. Otherwise, it means that they are still on the old nav
     newNavDate: datetime = sa.Column(sa.DateTime, nullable=True)
+
+
+class GdprUserDataExtract(PcObject, Base):
+    __tablename__ = "gdpr_user_data_extract"
+
+    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+
+    dateProcessed: datetime = sa.Column(sa.DateTime, nullable=True)
+
+    userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=False)
+    user: orm.Mapped[User] = orm.relationship(User, foreign_keys=[userId])
+
+    authorUserId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=False)
+    authorUser: orm.Mapped[User] = orm.relationship(User, foreign_keys=[authorUserId])
+
+    @property
+    def expirationDate(self) -> datetime:
+        return self.dateCreated + timedelta(days=7)
