@@ -53,3 +53,21 @@
   margin: rem.torem(32px);
   border: rem.torem(1px) solid var(--color-grey-medium);
 }
+
+.connect-as {
+  background-color: var(--color-grey-light);
+  display: flex;
+  padding: 16px;
+  min-width: 100%;
+
+  &-icon {
+    color: var(--color-grey-dark);
+  }
+
+  &-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+}
