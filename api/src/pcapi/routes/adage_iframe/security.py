@@ -27,7 +27,9 @@ def adage_jwt_required(route_function: typing.Callable) -> typing.Callable:
         if authorization_header and mandatory_authorization_type in authorization_header:
             adage_jwt = authorization_header.replace(mandatory_authorization_type, "")
             try:
-                adage_jwt_decoded = user_utils.decode_jwt_token_rs256(adage_jwt)
+                with open(user_utils.JWT_ADAGE_PUBLIC_KEY_PATH, "rb") as reader:
+                    public_key = reader.read()
+                    adage_jwt_decoded = user_utils.decode_jwt_token_rs256(adage_jwt, public_key)
             except InvalidSignatureError as invalid_signature_error:
                 logger.error("Signature of adage jwt cannot be verified", extra={"error": invalid_signature_error})
                 raise UnauthorizedError(errors={"msg": "Unrecognized token"})

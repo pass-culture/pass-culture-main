@@ -201,6 +201,8 @@ RECAPTCHA_WHITELIST = secrets_utils.getlist("RECAPTCHA_WHITELIST")
 
 # JWT
 JWT_SECRET_KEY = secrets_utils.get("JWT_SECRET_KEY")
+JWT_PRIVATE_KEY = secrets_utils.get("JWT_PRIVATE_KEY")  # TODO store secrets in GCP??
+JWT_PUBLIC_KEY = secrets_utils.get("JWT_PUBLIC_KEY")  # TODO store secrets in GCP??
 # default is 15 minutes
 # https://flask-jwt-extended.readthedocs.io/en/stable/options/#JWT_ACCESS_TOKEN_EXPIRES
 JWT_ACCESS_TOKEN_EXPIRES = int(os.environ.get("JWT_ACCESS_TOKEN_EXPIRES", 60 * 15))

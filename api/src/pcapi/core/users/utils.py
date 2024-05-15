@@ -20,7 +20,6 @@ def encode_jwt_payload(token_payload: dict, expiration_date: datetime | None = N
     if expiration_date:
         # do not fill exp key if expiration_date is None or jwt.decode would fail
         token_payload["exp"] = int(expiration_date.timestamp())
-
     return jwt.encode(
         token_payload,
         settings.JWT_SECRET_KEY,
@@ -32,10 +31,19 @@ def decode_jwt_token(jwt_token: str) -> dict:
     return jwt.decode(jwt_token, settings.JWT_SECRET_KEY, algorithms=[ALGORITHM_HS_256])
 
 
-def decode_jwt_token_rs256(jwt_token: str) -> dict:
-    with open(JWT_ADAGE_PUBLIC_KEY_PATH, "rb") as reader:
-        payload = jwt.decode(jwt_token, key=reader.read(), algorithms=[ALGORITHM_RS_256])
-    return payload
+def encode_jwt_payload_rs256(
+    token_payload: dict,
+    private_key: str,
+    expiration_date: datetime | None = None,
+) -> dict:
+    if expiration_date:
+        # do not fill exp key if expiration_date is None or jwt.decode would fail
+        token_payload["exp"] = int(expiration_date.timestamp())
+    return jwt.encode(token_payload, key=private_key, algorithm=ALGORITHM_RS_256)
+
+
+def decode_jwt_token_rs256(jwt_token: str, public_key: str) -> dict:
+    return jwt.decode(jwt_token, key=public_key, algorithms=[ALGORITHM_RS_256])
 
 
 def get_age_at_date(birth_date: date, specified_datetime: datetime) -> int:
