@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useMemo, useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { RouteObject, useLoaderData, useSearchParams } from 'react-router-dom'
 import useSWR from 'swr'
@@ -21,7 +21,6 @@ import { SelectOption } from 'custom_types/form'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
 import useNotification from 'hooks/useNotification'
-import useRemoteConfig from 'hooks/useRemoteConfig'
 import strokeCloseIcon from 'icons/stroke-close.svg'
 import { WelcomeToTheNewBetaBanner } from 'pages/Home/WelcomeToTheNewBetaBanner/WelcomeToTheNewBetaBanner'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
@@ -88,7 +87,6 @@ export const Homepage = (): JSX.Element => {
 
   const [isNewNavEnabled, setIsNewNavEnabled] = useState(false)
 
-  const { remoteConfigData } = useRemoteConfig()
   const dispatch = useDispatch()
 
   async function showNewNav() {
@@ -160,20 +158,6 @@ export const Homepage = (): JSX.Element => {
 
     return physicalVenues.length === 0 && !virtualVenue
   }, [selectedOfferer])
-
-  useEffect(() => {
-    async function logProFlags() {
-      if (remoteConfigData !== null) {
-        await api.postProFlags({
-          firebase: remoteConfigData,
-        })
-      }
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    logProFlags()
-    // FIX ME: fixing this broke a test...
-  }, [remoteConfigData?.REMOTE_CONFIG_LOADED])
 
   return (
     <AppLayout>

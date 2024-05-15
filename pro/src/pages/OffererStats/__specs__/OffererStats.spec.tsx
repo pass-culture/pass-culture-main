@@ -26,11 +26,6 @@ vi.mock('@firebase/remote-config', () => ({
   getValue: () => ({ asString: () => 'A1' }),
 }))
 
-vi.mock('hooks/useRemoteConfig', () => ({
-  __esModule: true,
-  default: () => ({ remoteConfig: {} }),
-}))
-
 const renderOffererStats = () => {
   renderWithProviders(<OffererStats />, { user: sharedCurrentUserFactory() })
 }

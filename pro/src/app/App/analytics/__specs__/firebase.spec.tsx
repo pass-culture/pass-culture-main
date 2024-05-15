@@ -5,6 +5,7 @@ import { waitFor } from '@testing-library/react'
 import React from 'react'
 import { expect, vi } from 'vitest'
 
+import { api } from 'apiClient/api'
 import { firebaseConfig } from 'config/firebase'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
@@ -46,7 +47,11 @@ const renderFakeApp = ({ isCookieEnabled }: { isCookieEnabled: boolean }) => {
   })
 }
 
-describe('useAnalytics', () => {
+describe('useFirebase', () => {
+  beforeEach(() => {
+    vi.spyOn(api, 'postProFlags').mockResolvedValue()
+  })
+
   it('should set logEvent and userId if cookie is set', async () => {
     vi.spyOn(firebaseAnalytics, 'isSupported').mockResolvedValue(true)
     vi.spyOn(firebase, 'initializeApp').mockReturnValue({
@@ -103,6 +108,13 @@ describe('useAnalytics', () => {
       'getAnalyticsReturn',
       user.id.toString()
     )
+
+    await waitFor(() => {
+      expect(api.postProFlags).toHaveBeenCalledWith({
+        firebase: { REMOTE_CONFIG_LOADED: 'true' },
+      })
+    })
+    expect(api.postProFlags).toHaveBeenCalledTimes(1)
   })
 
   it('should not load if cookie is disabled', async () => {
@@ -114,6 +126,7 @@ describe('useAnalytics', () => {
       expect(firebaseAnalytics.getAnalytics).not.toHaveBeenCalled()
       expect(firebase.initializeApp).not.toHaveBeenCalled()
       expect(firebaseAnalytics.setUserId).not.toHaveBeenCalled()
+      expect(api.postProFlags).not.toHaveBeenCalled()
     })
   })
 })
