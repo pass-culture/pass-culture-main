@@ -16,8 +16,9 @@ from sqlalchemy import Column
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
-from sqlalchemy import Numeric
 from sqlalchemy import String
+
+# from sqlalchemy import Numeric
 from sqlalchemy import TEXT
 from sqlalchemy import Text
 from sqlalchemy import UniqueConstraint
@@ -223,9 +224,9 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
 
     departementCode = Column(String(3), nullable=True, index=True)
 
-    latitude = Column(Numeric(8, 5), nullable=True)
+    # latitude = Column(Numeric(8, 5), nullable=True)
 
-    longitude = Column(Numeric(8, 5), nullable=True)
+    # longitude = Column(Numeric(8, 5), nullable=True)
 
     venueProviders: list["providers_models.VenueProvider"] = relationship("VenueProvider", back_populates="venue")
 
