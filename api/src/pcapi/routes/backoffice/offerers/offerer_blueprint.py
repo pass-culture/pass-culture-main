@@ -106,6 +106,15 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
         .where(offerers_models.Venue.managingOffererId == offerers_models.Offerer.id)
         .where(~offerers_models.Venue.isVirtual)
     )
+
+    has_offerer_address_query = (
+        sa.select(1)
+        .select_from(offerers_models.OffererAddress)
+        .where(offerers_models.OffererAddress.offererId == offerers_models.Offerer.id)
+        .correlate(offerers_models.Offerer)
+        .exists()
+    )
+
     has_new_nav_users_subquery = (
         sa.select(1)
         .select_from(offerers_models.UserOfferer)
@@ -143,6 +152,7 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
             offerers_models.Offerer,
             bank_information_query.scalar_subquery().label("bank_information"),
             has_non_virtual_venues_query.label("has_non_virtual_venues"),
+            has_offerer_address_query.label("has_offerer_address"),
             adage_query.label("adage_information"),
             users_models.User.phoneNumber.label("creator_phone_number"),  # type: ignore[attr-defined]
         )
@@ -225,6 +235,7 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
         suspension_form=offerer_forms.SuspendOffererForm(),
         delete_offerer_form=empty_forms.EmptyForm(),
         show_subscription_tab=show_subscription_tab,
+        has_offerer_address=row.has_offerer_address,
         active_tab=request.args.get("active_tab", "history"),
         zendesk_sell_synchronisation_form=(
             empty_forms.EmptyForm()
@@ -757,6 +768,25 @@ def get_managed_venues(offerer_id: int) -> utils.BackofficeResponse:
     return render_template(
         "offerer/get/details/managed_venues.html",
         venues=venues,
+    )
+
+
+@offerer_blueprint.route("/addresses", methods=["GET"])
+def get_offerer_addresses(offerer_id: int) -> utils.BackofficeResponse:
+    offerer_addresses = (
+        offerers_models.OffererAddress.query.filter_by(offererId=offerer_id)
+        .options(
+            sa.orm.load_only(offerers_models.OffererAddress.label),
+            sa.orm.joinedload(offerers_models.OffererAddress.address),
+        )
+        .order_by(offerers_models.OffererAddress.label)
+        .all()
+    )
+
+    return render_template(
+        "offerer/get/details/addresses.html",
+        offerer_id=offerer_id,
+        offerer_addresses=offerer_addresses,
     )
 
 

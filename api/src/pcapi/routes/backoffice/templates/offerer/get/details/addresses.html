@@ -1,0 +1,36 @@
+{% import "components/links.html" as links %}
+<turbo-frame id="offerer_addresses_frame">
+<table class="table table-hover my-4">
+  <thead>
+    <tr>
+      <th scope="col"></th>
+      <th scope="col">Intitulé</th>
+      <th scope="col">Adresse</th>
+      <th scope="col">Localisation</th>
+      <th scope="col">Offres</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for offerer_address in offerer_addresses %}
+      <tr>
+        <th scope="row"></th>
+        <td>{{ offerer_address.label }}</td>
+        <td>{{ offerer_address.address.street }} {{ offerer_address.address.postalCode }} {{ offerer_address.address.city }}</td>
+        <td>{{ links.build_external_address_link(offerer_address.address) }}</td>
+        <td>
+          {% set search_params = {
+                      "search-0-search_field": "OFFERER",
+                      "search-0-operator": "IN",
+                      "search-0-offerer": offerer_id,
+                      "search-1-search_field": "ADDRESS",
+                      "search-1-operator": "IN",
+                      "search-1-address": offerer_address.address.id,
+                    } %}
+          <a href="{{ url_for("backoffice_web.offer.list_offers", **search_params) }}"
+             class="link-primary">individuelles</a>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</turbo-frame>
