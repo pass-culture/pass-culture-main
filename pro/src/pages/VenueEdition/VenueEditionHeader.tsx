@@ -125,11 +125,19 @@ export const VenueEditionHeader = ({
 
       <div className={styles['venue-details']}>
         <div className={styles['venue-type']}>{venueType?.label}</div>
-        <h1 className={styles['venue-name']}>
-          {venue.isVirtual
-            ? `${offerer.name} (Offre numérique)`
-            : venue.publicName || venue.name}
-        </h1>
+        {isNewSideBarNavigation ? (
+          <h2 className={styles['venue-name']}>
+            {venue.isVirtual
+              ? `${offerer.name} (Offre numérique)`
+              : venue.publicName || venue.name}
+          </h2>
+        ) : (
+          <h1 className={styles['venue-name']}>
+            {venue.isVirtual
+              ? `${offerer.name} (Offre numérique)`
+              : venue.publicName || venue.name}
+          </h1>
+        )}
 
         {venue.street && (
           <address className={styles['venue-address']}>
