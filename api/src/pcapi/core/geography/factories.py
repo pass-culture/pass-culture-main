@@ -1,6 +1,7 @@
 import factory.fuzzy
 
 from pcapi.core.factories import BaseFactory
+from pcapi.utils.date import METROPOLE_TIMEZONE
 
 from . import models
 
@@ -18,6 +19,7 @@ class AddressFactory(BaseFactory):
     longitude: float | None = 2.3476515
     inseeCode = "75102"
     banId = "75102_7560_00001"
+    timezone = METROPOLE_TIMEZONE
 
     class Meta:
         model = models.Address

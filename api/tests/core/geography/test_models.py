@@ -55,6 +55,7 @@ class AddressModelsTest:
             longitude=-63.068137,
             latitude=18.082207,
             departmentCode="978",
+            timezone="America/Guadeloupe",
         )
 
         # 1 digit, should fail
