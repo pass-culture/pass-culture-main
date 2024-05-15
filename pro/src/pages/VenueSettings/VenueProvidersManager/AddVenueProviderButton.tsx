@@ -54,7 +54,7 @@ export const AddVenueProviderButton = ({
   )
 
   const setCreationMode = () => {
-    logEvent?.(SynchronizationEvents.CLICKED_SYNCHRONIZE_OFFER, {
+    logEvent(SynchronizationEvents.CLICKED_SYNCHRONIZE_OFFER, {
       offererId: venue.managingOfferer.id,
       venueId: venue.id,
     })

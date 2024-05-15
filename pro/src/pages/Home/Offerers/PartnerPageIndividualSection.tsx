@@ -28,7 +28,7 @@ export function PartnerPageIndividualSection({
 
   const venuePreviewLink = `${WEBAPP_URL}/lieu/${venueId}`
   const logVenueLinkClick = () => {
-    logEvent?.(Events.CLICKED_PARTNER_BLOCK_PREVIEW_VENUE_LINK, {
+    logEvent(Events.CLICKED_PARTNER_BLOCK_PREVIEW_VENUE_LINK, {
       venueId: venueId,
     })
   }
@@ -36,7 +36,7 @@ export function PartnerPageIndividualSection({
   const copyVenueLink = async () => {
     await copyTextToClipboard(venuePreviewLink)
     notify.success('Lien copié !')
-    logEvent?.(Events.CLICKED_PARTNER_BLOCK_COPY_VENUE_LINK, {
+    logEvent(Events.CLICKED_PARTNER_BLOCK_COPY_VENUE_LINK, {
       venueId: venueId,
     })
   }

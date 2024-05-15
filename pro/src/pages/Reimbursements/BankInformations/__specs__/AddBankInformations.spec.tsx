@@ -1,9 +1,10 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { BankAccountEvents } from 'core/FirebaseEvents/constants'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import AddBankInformationsDialog from '../AddBankInformationsDialog'
 
@@ -11,7 +12,9 @@ const mockLogEvent = vi.fn()
 
 describe('AddBankInformations', () => {
   it('should render dialog', () => {
-    render(<AddBankInformationsDialog closeDialog={vi.fn()} offererId={0} />)
+    renderWithProviders(
+      <AddBankInformationsDialog closeDialog={vi.fn()} offererId={0} />
+    )
 
     expect(
       screen.getByText(
@@ -33,7 +36,9 @@ describe('AddBankInformations', () => {
       logEvent: mockLogEvent,
     }))
 
-    render(<AddBankInformationsDialog closeDialog={vi.fn()} offererId={0} />)
+    renderWithProviders(
+      <AddBankInformationsDialog closeDialog={vi.fn()} offererId={0} />
+    )
 
     await userEvent.click(
       screen.getByText('Continuer sur demarches-simplifiees.fr')

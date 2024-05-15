@@ -227,7 +227,7 @@ export const PreFilters = ({
               variant={ButtonVariant.SECONDARY}
               onClick={() => {
                 updateUrl && updateUrl(selectedPreFilters)
-                logEvent?.(Events.CLICKED_SHOW_BOOKINGS, {
+                logEvent(Events.CLICKED_SHOW_BOOKINGS, {
                   from: location.pathname,
                 })
               }}

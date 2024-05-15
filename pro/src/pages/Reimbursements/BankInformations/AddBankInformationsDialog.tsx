@@ -39,7 +39,7 @@ const AddBankInformationsDialog = ({
         variant={ButtonVariant.PRIMARY}
         svgAlt="Nouvelle fenêtre"
         onClick={() => {
-          logEvent?.(BankAccountEvents.CLICKED_CONTINUE_TO_DS, {
+          logEvent(BankAccountEvents.CLICKED_CONTINUE_TO_DS, {
             offererId,
           })
         }}

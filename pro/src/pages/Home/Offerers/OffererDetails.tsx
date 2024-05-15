@@ -81,7 +81,7 @@ export const OffererDetails = ({
             icon={fullAddUserIcon}
             isDisabled={!isUserOffererValidated}
             onClick={() => {
-              logEvent?.(OffererLinkEvents.CLICKED_INVITE_COLLABORATOR, {
+              logEvent(OffererLinkEvents.CLICKED_INVITE_COLLABORATOR, {
                 offererId: selectedOffererId ?? undefined,
               })
             }}
@@ -100,7 +100,7 @@ export const OffererDetails = ({
             icon={fullEditIcon}
             isDisabled={!isUserOffererValidated}
             onClick={() =>
-              logEvent?.(Events.CLICKED_MODIFY_OFFERER, {
+              logEvent(Events.CLICKED_MODIFY_OFFERER, {
                 offerer_id: selectedOffererId ?? undefined,
               })
             }

@@ -46,7 +46,7 @@ const MultiDownloadButtonsModal = ({
           variant={ButtonVariant.PRIMARY}
           disabled={isDownloading || isLocalLoading || isFiltersDisabled}
           onClick={() => {
-            logEvent?.(Events.CLICKED_DOWNLOAD_BOOKINGS, {
+            logEvent(Events.CLICKED_DOWNLOAD_BOOKINGS, {
               from: location.pathname,
             })
             setIsDownloadModalOptionOpen(!isDownloadModalOptionOpen)
@@ -71,7 +71,7 @@ const MultiDownloadButtonsModal = ({
             className={style['inside-modal-button']}
             onClick={async () => {
               await downloadFunction(filters, 'XLS')
-              logEvent?.(Events.CLICKED_DOWNLOAD_BOOKINGS_XLS, {
+              logEvent(Events.CLICKED_DOWNLOAD_BOOKINGS_XLS, {
                 from: location.pathname,
               })
               setIsDownloadModalOptionOpen(!isDownloadModalOptionOpen)
@@ -86,7 +86,7 @@ const MultiDownloadButtonsModal = ({
             className={style['inside-modal-button']}
             onClick={async () => {
               await downloadFunction(filters, 'CSV')
-              logEvent?.(Events.CLICKED_DOWNLOAD_BOOKINGS_CSV, {
+              logEvent(Events.CLICKED_DOWNLOAD_BOOKINGS_CSV, {
                 from: location.pathname,
               })
               setIsDownloadModalOptionOpen(!isDownloadModalOptionOpen)

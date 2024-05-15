@@ -36,7 +36,7 @@ export const Support: () => JSX.Element | null = () => {
               }}
               icon={fullLinkIcon}
               onClick={() =>
-                logEvent?.(Events.CLICKED_HELP_CENTER, {
+                logEvent(Events.CLICKED_HELP_CENTER, {
                   from: location.pathname,
                 })
               }
@@ -55,7 +55,7 @@ export const Support: () => JSX.Element | null = () => {
               }}
               icon={fullLinkIcon}
               onClick={() =>
-                logEvent?.(Events.CLICKED_BEST_PRACTICES_STUDIES, {
+                logEvent(Events.CLICKED_BEST_PRACTICES_STUDIES, {
                   from: location.pathname,
                 })
               }
@@ -74,7 +74,7 @@ export const Support: () => JSX.Element | null = () => {
               }}
               icon={fullMailIcon}
               onClick={() =>
-                logEvent?.(Events.CLICKED_CONSULT_SUPPORT, {
+                logEvent(Events.CLICKED_CONSULT_SUPPORT, {
                   from: location.pathname,
                 })
               }
@@ -94,7 +94,7 @@ export const Support: () => JSX.Element | null = () => {
                   }}
                   icon={fullLinkIcon}
                   onClick={() =>
-                    logEvent?.(Events.CLICKED_CONSULT_CGU, {
+                    logEvent(Events.CLICKED_CONSULT_CGU, {
                       from: location.pathname,
                     })
                   }

@@ -236,7 +236,7 @@ const StocksEventList = ({
 
   const onDeleteStock = async (selectIndex: number, stockId: number) => {
     await api.deleteStock(stockId)
-    logEvent?.(Events.CLICKED_DELETE_STOCK, {
+    logEvent(Events.CLICKED_DELETE_STOCK, {
       offerId: offer.id,
       stockId: stockId,
     })
@@ -314,7 +314,7 @@ const StocksEventList = ({
     setCheckedStocks(stocks.map(() => false))
     setAllStocksChecked(PartialCheck.UNCHECKED)
     setIsDeleteAllLoading(false)
-    logEvent?.(Events.CLICKED_BULK_DELETE_STOCK, {
+    logEvent(Events.CLICKED_BULK_DELETE_STOCK, {
       offerId: offer.id,
       deletionCount: deletionCount,
     })

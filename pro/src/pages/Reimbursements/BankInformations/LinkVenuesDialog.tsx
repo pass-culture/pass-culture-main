@@ -73,7 +73,7 @@ export const LinkVenuesDialog = ({
         await api.linkVenueToBankAccount(offererId, selectedBankAccount.id, {
           venues_ids: selectedVenuesIds,
         })
-        logEvent?.(BankAccountEvents.CLICKED_SAVE_VENUE_TO_BANK_ACCOUNT, {
+        logEvent(BankAccountEvents.CLICKED_SAVE_VENUE_TO_BANK_ACCOUNT, {
           id: offererId,
           HasUncheckedVenue: hasUncheckedVenue,
         })

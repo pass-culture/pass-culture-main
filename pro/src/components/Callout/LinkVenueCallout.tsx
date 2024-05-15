@@ -35,7 +35,7 @@ const LinkVenueCallout = ({
             '/remboursements/informations-bancaires?structure=' + offerer.id,
           label: 'Gérer le rattachement de mes lieux',
           onClick: () => {
-            logEvent?.(BankAccountEvents.CLICKED_ADD_VENUE_TO_BANK_ACCOUNT, {
+            logEvent(BankAccountEvents.CLICKED_ADD_VENUE_TO_BANK_ACCOUNT, {
               from: location.pathname,
               offererId: offerer.id,
             })

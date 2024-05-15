@@ -34,7 +34,7 @@ const AddBankAccountCallout = ({
           href: '/remboursements/informations-bancaires',
           label: 'Ajouter un compte bancaire',
           onClick: () => {
-            logEvent?.(BankAccountEvents.CLICKED_ADD_BANK_ACCOUNT, {
+            logEvent(BankAccountEvents.CLICKED_ADD_BANK_ACCOUNT, {
               from: location.pathname,
               offererId: offerer.id,
             })

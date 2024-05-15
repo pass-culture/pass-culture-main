@@ -31,7 +31,7 @@ const OldHeader = forwardRef(() => {
             className={cn('logo', 'nav-item')}
             to="/accueil"
             onClick={() => {
-              logEvent?.(Events.CLICKED_PRO, { from: location.pathname })
+              logEvent(Events.CLICKED_PRO, { from: location.pathname })
             }}
           >
             <SvgIcon
@@ -52,7 +52,7 @@ const OldHeader = forwardRef(() => {
                 })
               }
               onClick={() => {
-                logEvent?.(Events.CLICKED_HOME, { from: location.pathname })
+                logEvent(Events.CLICKED_HOME, { from: location.pathname })
               }}
               to={'/accueil'}
             >
@@ -73,7 +73,7 @@ const OldHeader = forwardRef(() => {
                 })
               }
               onClick={() => {
-                logEvent?.(Events.CLICKED_TICKET, { from: location.pathname })
+                logEvent(Events.CLICKED_TICKET, { from: location.pathname })
               }}
               to="/guichet"
             >
@@ -94,7 +94,7 @@ const OldHeader = forwardRef(() => {
                 })
               }
               onClick={() => {
-                logEvent?.(Events.CLICKED_OFFER, { from: location.pathname })
+                logEvent(Events.CLICKED_OFFER, { from: location.pathname })
               }}
               to="/offres"
             >
@@ -115,7 +115,7 @@ const OldHeader = forwardRef(() => {
                 })
               }
               onClick={() => {
-                logEvent?.(Events.CLICKED_BOOKING, {
+                logEvent(Events.CLICKED_BOOKING, {
                   from: location.pathname,
                 })
               }}
@@ -138,7 +138,7 @@ const OldHeader = forwardRef(() => {
                 })
               }
               onClick={() => {
-                logEvent?.(Events.CLICKED_REIMBURSEMENT, {
+                logEvent(Events.CLICKED_REIMBURSEMENT, {
                   from: location.pathname,
                 })
               }}
@@ -162,7 +162,7 @@ const OldHeader = forwardRef(() => {
                   })
                 }
                 onClick={() => {
-                  logEvent?.(Events.CLICKED_STATS, {
+                  logEvent(Events.CLICKED_STATS, {
                     from: location.pathname,
                   })
                 }}
@@ -184,7 +184,7 @@ const OldHeader = forwardRef(() => {
             <Link
               className={cn(styles['nav-item'], styles['icon-only'])}
               onClick={() =>
-                logEvent?.(Events.CLICKED_LOGOUT, { from: location.pathname })
+                logEvent(Events.CLICKED_LOGOUT, { from: location.pathname })
               }
               to={`${location.pathname}?logout`}
               data-testid="logout-link"

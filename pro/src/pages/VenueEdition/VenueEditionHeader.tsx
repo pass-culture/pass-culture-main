@@ -101,7 +101,7 @@ export const VenueEditionHeader = ({
   }
 
   const logButtonAddClick = () => {
-    logEvent?.(Events.CLICKED_ADD_IMAGE, {
+    logEvent(Events.CLICKED_ADD_IMAGE, {
       venueId: venue.id,
       imageType: UploaderModeEnum.VENUE,
       isEdition: true,

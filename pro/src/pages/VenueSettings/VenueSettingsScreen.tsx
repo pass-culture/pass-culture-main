@@ -104,7 +104,7 @@ export const VenueSettingsFormScreen = ({
         notify.success(PATCH_SUCCESS_MESSAGE)
       }
 
-      logEvent?.(Events.CLICKED_SAVE_VENUE, {
+      logEvent(Events.CLICKED_SAVE_VENUE, {
         from: location.pathname,
         saved: true,
         isEdition: true,
@@ -138,7 +138,7 @@ export const VenueSettingsFormScreen = ({
         formik.setStatus('apiError')
       }
 
-      logEvent?.(Events.CLICKED_SAVE_VENUE, {
+      logEvent(Events.CLICKED_SAVE_VENUE, {
         from: location.pathname,
         saved: false,
         isEdition: true,

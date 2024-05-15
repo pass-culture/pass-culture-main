@@ -47,7 +47,7 @@ const OfferType = (): JSX.Element => {
 
   const onSubmit = (values: OfferTypeFormValues) => {
     if (values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO) {
-      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+      logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
         offerType: values.individualOfferSubtype,
         to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
         from: OFFER_FORM_HOMEPAGE,

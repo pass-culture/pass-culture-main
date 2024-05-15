@@ -75,7 +75,7 @@ export const Offerers = (): JSX.Element => {
       ...offerer,
       createVenueWithoutSiret: true,
     }
-    logEvent?.(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+    logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
       from: location.pathname,
       to: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
       used: OnboardingFormNavigationAction.NewOfferer,
@@ -86,7 +86,7 @@ export const Offerers = (): JSX.Element => {
   }
 
   const doLinkAccount = async () => {
-    logEvent?.(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+    logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
       from: location.pathname,
       to: '/parcours-inscription/structure/rattachement/confirmation',
       used: OnboardingFormNavigationAction.JoinModal,
@@ -115,7 +115,7 @@ export const Offerers = (): JSX.Element => {
   }
 
   const doLinkUserToOfferer = () => {
-    logEvent?.(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+    logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
       from: location.pathname,
       to: 'LinkModal',
       used: OnboardingFormNavigationAction.LinkModalActionButton,
@@ -125,7 +125,7 @@ export const Offerers = (): JSX.Element => {
   }
 
   const cancelLinkUserToOfferer = () => {
-    logEvent?.(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
+    logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
       from: 'LinkModal',
       to: location.pathname,
       used: OnboardingFormNavigationAction.LinkModalActionButton,
@@ -199,7 +199,6 @@ export const Offerers = (): JSX.Element => {
         }}
         previousTo={SIGNUP_JOURNEY_STEP_IDS.OFFERER}
         isDisabled={false}
-        logEvent={logEvent}
         legalCategoryCode={offerer.legalCategoryCode}
       />
       {showLinkDialog && (

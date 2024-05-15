@@ -47,7 +47,7 @@ export const CinemaProviderForm = ({
     setIsLoading(true)
 
     const isSuccess = await saveVenueProvider(payload)
-    logEvent?.(SynchronizationEvents.CLICKED_IMPORT, {
+    logEvent(SynchronizationEvents.CLICKED_IMPORT, {
       offererId: offererId,
       venueId: venueId,
       providerId: providerId,

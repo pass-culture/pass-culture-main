@@ -168,7 +168,7 @@ export const BankInformations = (): JSX.Element => {
         }
         onClick={() => {
           setShowAddBankInformationsDialog(true)
-          logEvent?.(BankAccountEvents.CLICKED_ADD_BANK_ACCOUNT, {
+          logEvent(BankAccountEvents.CLICKED_ADD_BANK_ACCOUNT, {
             from: location.pathname,
             offererId: selectedOfferer?.id,
           })

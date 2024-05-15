@@ -40,7 +40,7 @@ export const BookingLinkCell = ({
       isExternal={false}
       icon={arrowIcon}
       onClick={() =>
-        logEvent?.(CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING, {
+        logEvent(CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING, {
           from: location.pathname,
         })
       }

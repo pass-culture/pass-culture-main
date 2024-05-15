@@ -131,7 +131,7 @@ export const OfferStats = ({ offerer, className }: OfferStatsProps) => {
                 icon={fullLinkIcon}
                 svgAlt="Nouvelle fenêtre"
                 onClick={() =>
-                  logEvent?.(Events.CLICKED_HOME_STATS_PENDING_OFFERS_FAQ)
+                  logEvent(Events.CLICKED_HOME_STATS_PENDING_OFFERS_FAQ)
                 }
               >
                 En savoir plus sur les règles de conformité.

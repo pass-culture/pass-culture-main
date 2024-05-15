@@ -170,7 +170,7 @@ export const InformationsScreen = ({
             ? OFFER_WIZARD_STEP_IDS.TARIFS
             : OFFER_WIZARD_STEP_IDS.STOCKS
 
-      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+      logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
         from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
         to: nextStep,
         used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,

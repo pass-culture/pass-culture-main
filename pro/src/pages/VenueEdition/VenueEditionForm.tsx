@@ -61,7 +61,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
         notify.success(PATCH_SUCCESS_MESSAGE)
       }
 
-      logEvent?.(Events.CLICKED_SAVE_VENUE, {
+      logEvent(Events.CLICKED_SAVE_VENUE, {
         from: location.pathname,
         saved: true,
         isEdition: true,
@@ -92,7 +92,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
         formikHelpers.setStatus('apiError')
       }
 
-      logEvent?.(Events.CLICKED_SAVE_VENUE, {
+      logEvent(Events.CLICKED_SAVE_VENUE, {
         from: location.pathname,
         saved: false,
         isEdition: true,
