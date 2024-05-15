@@ -81,7 +81,7 @@ def has_active_or_future_custom_reimbursement_rule(offer: offers_models.Offer) -
 def find_all_offerers_payments(
     offerer_ids: list[int],
     reimbursement_period: tuple[datetime.date, datetime.date],
-    venue_id: int | None = None,
+    bank_account_id: int | None = None,
 ) -> list[tuple]:
     results = []
 
@@ -89,14 +89,14 @@ def find_all_offerers_payments(
         _get_sent_pricings_for_individual_bookings(
             offerer_ids,
             reimbursement_period,
-            venue_id,
+            bank_account_id,
         )
     )
     results.extend(
         _get_sent_pricings_for_collective_bookings(
             offerer_ids,
             reimbursement_period,
-            venue_id,
+            bank_account_id,
         )
     )
 
@@ -121,7 +121,7 @@ def _truncate_milliseconds(
 def _get_sent_pricings_for_collective_bookings(
     offerer_ids: list[int],
     reimbursement_period: tuple[datetime.date, datetime.date],
-    venue_id: int | None = None,
+    bank_account_id: int | None = None,
 ) -> list[tuple]:
     query = (
         models.Pricing.query.join(educational_models.CollectiveBooking, models.Pricing.collectiveBooking)
@@ -182,7 +182,7 @@ def _get_sent_pricings_for_collective_bookings(
                 symmetric=True,
             ),
             educational_models.CollectiveBooking.offererId.in_(offerer_ids),
-            (offerers_models.Venue.id == venue_id) if venue_id else sqla.true(),
+            (models.Cashflow.bankAccountId == bank_account_id) if bank_account_id else sqla.true(),
             # Complementary invoices (that end with ".2") are linked
             # to the same bookings as the original invoices they
             # complement. We don't want these bookings to be listed
@@ -208,7 +208,7 @@ def _get_sent_pricings_for_collective_bookings(
 def _get_sent_pricings_for_individual_bookings(
     offerer_ids: list[int],
     reimbursement_period: tuple[datetime.date, datetime.date],
-    venue_id: int | None = None,
+    bank_account_id: int | None = None,
 ) -> list[tuple]:
     query = (
         models.Pricing.query.join(models.Pricing.booking)
@@ -262,7 +262,7 @@ def _get_sent_pricings_for_individual_bookings(
                 symmetric=True,
             ),
             bookings_models.Booking.offererId.in_(offerer_ids),
-            (bookings_models.Booking.venueId == venue_id) if venue_id else sqla.true(),
+            (models.Cashflow.bankAccountId == bank_account_id) if bank_account_id else sqla.true(),
             # Complementary invoices (that end with ".2") are linked
             # to the same bookings as the original invoices they
             # complement. We don't want these bookings to be listed

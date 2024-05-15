@@ -1974,14 +1974,14 @@ export class DefaultService {
   }
   /**
    * get_reimbursements_csv <GET>
-   * @param venueId
+   * @param bankAccountId
    * @param reimbursementPeriodBeginningDate
    * @param reimbursementPeriodEndingDate
    * @returns any OK
    * @throws ApiError
    */
   public getReimbursementsCsv(
-    venueId?: number,
+    bankAccountId?: number,
     reimbursementPeriodBeginningDate?: string,
     reimbursementPeriodEndingDate?: string,
   ): CancelablePromise<any> {
@@ -1989,7 +1989,7 @@ export class DefaultService {
       method: 'GET',
       url: '/reimbursements/csv',
       query: {
-        'venueId': venueId,
+        'bankAccountId': bankAccountId,
         'reimbursementPeriodBeginningDate': reimbursementPeriodBeginningDate,
         'reimbursementPeriodEndingDate': reimbursementPeriodEndingDate,
       },
