@@ -13,12 +13,21 @@ inputs:
   additional_args:
     type: string
     required: false
-  api_token_github:
+  api_token_github_secret_name:
+    type: string
     required: true
   registry_workload_identity_secret_name:
     type: string
     required: true
   registry_service_account_secret_name:
+    type: string
+    required: true
+  chart_values_repository:
+    description: "Repository containing helm chart values"
+    type: string
+    required: true
+  chart_value_path:
+    description: "Path where repository will be cloned"
     type: string
     required: true
 
@@ -32,6 +41,7 @@ runs:
         secrets: |-
           ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:${{ inputs.registry_workload_identity_secret_name }}
           ARTIFACT_REGISTRY_SERVICE_ACCOUNT:${{ inputs.registry_service_account_secret_name }}
+          API_TOKEN_GITHUB:${{ inputs.api_token_github_secret_name }}
     - name: "Connect to docker registry"
       id: "connect-registry"
       uses: 'google-github-actions/auth@v2'
@@ -40,6 +50,11 @@ runs:
         token_format: 'access_token'
         workload_identity_provider: ${{ steps.get-registry-secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER }}
         service_account: ${{ steps.get-registry-secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
+    - uses: actions/checkout@v4.1.5
+      with:
+        repository: ${{ inputs.chart_values_repository }}
+        token: ${{ steps.get-registry-secrets.outputs.API_TOKEN_GITHUB }}
+        path: ${{ inputs.chart_value_path }}
     - name: "Render manifests"
       shell: bash
       run: |
