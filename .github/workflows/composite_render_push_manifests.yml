@@ -21,7 +21,6 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - uses: actions/checkout@v4
     - name: "Render manifests"
       run: |
         PASSCULTURE_USERNAME="oauth2accesstoken" \
