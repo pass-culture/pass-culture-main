@@ -1,7 +1,16 @@
+import datetime
 import logging
+from urllib import parse as urlparse
+from urllib.parse import urlencode
 
+from flask import redirect
+from flask import render_template
+from flask import request
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
+from flask_wtf import FlaskForm
+from wtforms import EmailField
+from wtforms import PasswordField
 
 from pcapi.connectors import api_recaptcha
 from pcapi.connectors import google_oauth
@@ -81,6 +90,7 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
         account_state=user.account_state,
     )
 
+
 class SigninForm(PCForm):
     email = PCEmailField("Email")
     password = PCPasswordField("Password")
@@ -89,11 +99,69 @@ class SigninForm(PCForm):
     redirect_url = PCHiddenField("Redirect_URL")
     error = None
 
+
+def process_redirect_url(redirect_url, authorization_code):
+    # Prepare the redirect URL
+    url_parts = list(urlparse.urlparse(redirect_url))
+    queries = dict(urlparse.parse_qsl(url_parts[4]))
+    queries.update({"authorization_code": authorization_code})
+    url_parts[4] = urlencode(queries)
+    url = urlparse.urlunparse(url_parts)
+    return url
+
+
 @blueprint.native_route("/discord/signin", methods=["GET"])
 def signinform() -> str:
     form = SigninForm()
     form.redirect_url.data = request.args.get("redirect_url")
     return render_template("discord/login.html", form=form)
+
+
+@blueprint.native_route("/discord/signin", methods=["POST"])
+@atomic()
+def signin_discord() -> str | None:  # TODO
+    form = SigninForm()
+    if not form.validate():
+        form.error = "Identifiant ou Mot de passe incorrect"
+        return render_template("discord/login.html", form=form), 400
+    email = form.email.data
+    password = form.password.data
+    url_redirection = form.redirect_url.data
+    # if FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA.is_active():
+    #     try:
+    #         api_recaptcha.check_native_app_recaptcha_token(body.token)
+    #     except (api_recaptcha.ReCaptchaException, api_recaptcha.InvalidRecaptchaTokenException):
+    #         raise api_errors.ApiErrors({"token": "Le token est invalide"}, 401)
+    try:
+        user = users_repo.get_user_with_credentials(email, password, allow_inactive=True)
+    except users_exceptions.UnvalidatedAccount as exc:
+        form.error = "L'email n'a pas été validé"
+        return render_template("discord/login.html", form=form), 400
+
+    except users_exceptions.CredentialsException as exc:
+        form.error = "Identifiant ou Mot de passe incorrect"
+        return render_template("discord/login.html", form=form), 400
+
+    if user.account_state.is_deleted:
+        form.error = "Le compte a été supprimé"
+        return render_template("discord/login.html", form=form), 400
+
+    if user.account_state == user_models.AccountState.ANONYMIZED:
+        form.error = "Le compte a été anonymisé"
+        return render_template("discord/login.html", form=form), 400
+
+    # if FeatureToggle.WIP_ENABLE_TRUSTED_DEVICE.is_active():
+    #     users_api.save_device_info_and_notify_user(user, body.device_info)
+
+    # users_api.update_last_connection_date(user)
+    discord_token = token_utils.AsymetricToken.create(
+        token_utils.TokenType.DISCORD_OAUTH,
+        ttl=datetime.timedelta(minutes=15),
+        data={"discord_id": "1234567890"},  # TODO
+    )
+    url = process_redirect_url(url_redirection, discord_token.encoded_token)
+    return redirect(url, code=303)
+
 
 @blueprint.native_route("/refresh_access_token", methods=["POST"])
 @jwt_required(refresh=True)
