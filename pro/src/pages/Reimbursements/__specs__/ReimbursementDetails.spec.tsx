@@ -4,14 +4,12 @@ import React from 'react'
 
 import { api } from 'apiClient/api'
 import {
+  BankAccountApplicationStatus,
+  BankAccountResponseModel,
   InvoiceResponseV2Model,
-  VenueListItemResponseModel,
 } from 'apiClient/v1'
 import { ReimbursementsContextProps } from 'pages/Reimbursements/Reimbursements'
-import {
-  defaultGetOffererResponseModel,
-  venueListItemFactory,
-} from 'utils/individualApiFactories'
+import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
@@ -34,18 +32,28 @@ vi.mock('react-router-dom', async () => ({
   useOutletContext: () => contextData,
 }))
 
-const venueId = 12
-const BASE_VENUES: VenueListItemResponseModel[] = [
-  venueListItemFactory({
-    isVirtual: true,
-    offererName: 'Offerer name venue 2',
-    id: 2,
-  }),
-  venueListItemFactory({
-    isVirtual: false,
-    publicName: 'Public Name venue 1',
-    id: venueId,
-  }),
+const bankAccountId = 12
+const BANK_ACCOUNTS: BankAccountResponseModel[] = [
+  {
+    id: bankAccountId,
+    label: 'Bank account 1',
+    bic: '',
+    dateCreated: '',
+    isActive: false,
+    linkedVenues: [],
+    obfuscatedIban: '',
+    status: BankAccountApplicationStatus.ACCEPTE,
+  },
+  {
+    id: 13,
+    label: 'Bank account 2',
+    bic: '',
+    dateCreated: '',
+    isActive: false,
+    linkedVenues: [],
+    obfuscatedIban: '',
+    status: BankAccountApplicationStatus.ACCEPTE,
+  },
 ]
 
 const BASE_INVOICES: InvoiceResponseV2Model[] = [
@@ -74,7 +82,11 @@ const renderReimbursementsDetails = (options?: RenderWithProvidersOptions) => {
 
 describe('reimbursementsWithFilters', () => {
   beforeEach(() => {
-    vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: BASE_VENUES })
+    vi.spyOn(api, 'getOffererBankAccountsAndAttachedVenues').mockResolvedValue({
+      bankAccounts: BANK_ACCOUNTS,
+      id: defaultGetOffererResponseModel.id,
+      managedVenues: [],
+    })
     vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
   })
 
@@ -89,7 +101,7 @@ describe('reimbursementsWithFilters', () => {
     expect(screen.getByRole('link', { name: 'Afficher' })).toBeInTheDocument()
   })
 
-  it('should disable buttons if user is admin and no venue filter is selected', async () => {
+  it('should disable buttons if user is admin and no bank account filter is selected', async () => {
     renderReimbursementsDetails({
       user: sharedCurrentUserFactory({ isAdmin: true }),
     })
@@ -104,14 +116,14 @@ describe('reimbursementsWithFilters', () => {
     ).toBeInTheDocument()
   })
 
-  it('should enable buttons when admin user selects a venue', async () => {
+  it('should enable buttons when admin user selects a bank account', async () => {
     renderReimbursementsDetails({
       user: sharedCurrentUserFactory({ isAdmin: true }),
     })
 
     await userEvent.selectOptions(
-      await screen.findByLabelText('Lieu'),
-      'Public Name venue 1'
+      await screen.findByLabelText('Compte bancaire'),
+      'Bank account 1'
     )
 
     expect(
@@ -121,7 +133,7 @@ describe('reimbursementsWithFilters', () => {
     ).toBeEnabled()
     expect(screen.getByRole('link', { name: /Afficher/ })).toHaveAttribute(
       'href',
-      `/remboursements-details?reimbursementPeriodBeginningDate=2020-11-15&reimbursementPeriodEndingDate=2020-12-15&venueId=${venueId}`
+      `/remboursements-details?reimbursementPeriodBeginningDate=2020-11-15&reimbursementPeriodEndingDate=2020-12-15&bankAccountId=${bankAccountId}`
     )
   })
 
@@ -134,8 +146,8 @@ describe('reimbursementsWithFilters', () => {
     await userEvent.type(startFilter, '1998-11-12')
     await userEvent.type(endFilter, '1999-12-12')
     await userEvent.selectOptions(
-      await screen.findByLabelText('Lieu'),
-      'Public Name venue 1'
+      await screen.findByLabelText('Compte bancaire'),
+      'Bank account 1'
     )
 
     await userEvent.click(
@@ -144,47 +156,34 @@ describe('reimbursementsWithFilters', () => {
       })
     )
 
-    expect(screen.getByLabelText('Lieu')).toHaveValue('allVenues')
+    expect(screen.getByLabelText('Compte bancaire')).toHaveValue(
+      'allBankAccounts'
+    )
     expect(screen.getByLabelText('Début de la période')).toHaveValue(
       '2020-11-15'
     )
     expect(screen.getByLabelText('Fin de la période')).toHaveValue('2020-12-15')
   })
 
-  it('should order venue option by alphabetical order', async () => {
+  it('should order bank accounts option by alphabetical order', async () => {
     renderReimbursementsDetails()
 
     const options = await within(
-      await screen.findByLabelText('Lieu')
+      await screen.findByLabelText('Compte bancaire')
     ).findAllByRole('option')
 
-    expect(options[0].textContent).toBe('Tous les lieux')
-    expect(options[1].textContent).toStrictEqual(
-      'Offerer name venue 2 - Offre numérique'
-    )
-    expect(options[2].textContent).toStrictEqual('Public Name venue 1')
-    expect(api.getVenues).toHaveBeenCalledTimes(1)
-  })
-
-  it('should prefix with managingOfferer name when venue is digital', async () => {
-    renderReimbursementsDetails()
-
-    const options = await within(
-      await screen.findByLabelText('Lieu')
-    ).findAllByRole('option')
-
-    expect(options[0].textContent).toBe('Tous les lieux')
-    expect(options[1].textContent).toStrictEqual(
-      'Offerer name venue 2 - Offre numérique'
-    )
+    expect(options[0].textContent).toBe('Tous les comptes bancaires')
+    expect(options[1].textContent).toStrictEqual('Bank account 1')
+    expect(options[2].textContent).toStrictEqual('Bank account 2')
+    expect(api.getOffererBankAccountsAndAttachedVenues).toHaveBeenCalledTimes(1)
   })
 
   it('should update display button url when changing any filter', async () => {
     renderReimbursementsDetails()
 
     await userEvent.selectOptions(
-      await screen.findByLabelText('Lieu'),
-      'Public Name venue 1'
+      await screen.findByLabelText('Compte bancaire'),
+      'Bank account 1'
     )
 
     const startInput = screen.getByLabelText('Début de la période')
@@ -196,12 +195,15 @@ describe('reimbursementsWithFilters', () => {
 
     expect(screen.getByText(/Afficher/)).toHaveAttribute(
       'href',
-      `/remboursements-details?reimbursementPeriodBeginningDate=1998-11-12&reimbursementPeriodEndingDate=1999-12-12&venueId=${venueId}`
+      `/remboursements-details?reimbursementPeriodBeginningDate=1998-11-12&reimbursementPeriodEndingDate=1999-12-12&bankAccountId=${bankAccountId}`
     )
   })
 
-  it('should display no refunds message when user has no associated venues', async () => {
-    vi.spyOn(api, 'getVenues').mockResolvedValueOnce({ venues: [] })
+  it('should display no refunds message when user has no associated bank accounts', async () => {
+    vi.spyOn(
+      api,
+      'getOffererBankAccountsAndAttachedVenues'
+    ).mockResolvedValueOnce({ bankAccounts: [], id: 1, managedVenues: [] })
     renderReimbursementsDetails()
 
     expect(

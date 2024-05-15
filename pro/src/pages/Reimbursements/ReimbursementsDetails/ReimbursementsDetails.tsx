@@ -4,8 +4,7 @@ import { useOutletContext } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import { VenueListItemResponseModel } from 'apiClient/v1'
-import { GET_VENUES_QUERY_KEY } from 'config/swrQueryKeys'
+import { GET_OFFERER_BANK_ACCOUNTS_QUERY_KEY } from 'config/swrQueryKeys'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
@@ -25,15 +24,15 @@ import { DetailsFilters } from './DetailsFilters'
 import styles from './ReimbursementDetails.module.scss'
 
 type CsvQueryParams = {
-  venueId?: string
+  bankAccountId?: string
   reimbursementPeriodBeginningDate?: string
   reimbursementPeriodEndingDate?: string
 }
 
-const ALL_VENUES_OPTION_ID = 'allVenues'
+const ALL_BANK_ACCOUNTS_OPTION_ID = 'allBankAccounts'
 
 const getCsvQueryParams = (
-  venue: string,
+  bankAccount: string,
   periodStart?: string,
   periodEnd?: string
 ) => {
@@ -44,8 +43,8 @@ const getCsvQueryParams = (
   if (periodEnd) {
     params.reimbursementPeriodEndingDate = periodEnd
   }
-  if (venue && venue !== ALL_VENUES_OPTION_ID) {
-    params.venueId = venue
+  if (bankAccount && bankAccount !== ALL_BANK_ACCOUNTS_OPTION_ID) {
+    params.bankAccountId = bankAccount
   }
   return new URLSearchParams(params).toString()
 }
@@ -57,44 +56,32 @@ export const ReimbursementsDetails = (): JSX.Element => {
   const today = getToday()
   const oneMonthAGo = subMonths(today, 1)
   const INITIAL_FILTERS = {
-    venue: ALL_VENUES_OPTION_ID,
+    bankAccount: ALL_BANK_ACCOUNTS_OPTION_ID,
     periodStart: format(oneMonthAGo, FORMAT_ISO_DATE_ONLY),
     periodEnd: format(today, FORMAT_ISO_DATE_ONLY),
   }
 
   const [filters, setFilters] = useState(INITIAL_FILTERS)
-  const { venue, periodStart, periodEnd } = filters
+  const { bankAccount, periodStart, periodEnd } = filters
 
   const isPeriodFilterSelected = periodStart && periodEnd
-  const requireVenueFilterForAdmin =
-    currentUser.isAdmin && venue === ALL_VENUES_OPTION_ID
+  const requireBankAccountFilterForAdmin =
+    currentUser.isAdmin && bankAccount === ALL_BANK_ACCOUNTS_OPTION_ID
   const shouldDisableButtons =
-    !isPeriodFilterSelected || requireVenueFilterForAdmin
+    !isPeriodFilterSelected || requireBankAccountFilterForAdmin
 
   const { selectedOfferer }: ReimbursementsContextProps =
     useOutletContext() ?? { selectedOfferer: null }
 
-  const buildAndSortVenueFilterOptions = (
-    venues: VenueListItemResponseModel[]
-  ) =>
-    sortByLabel(
-      venues.map((venue) => ({
-        value: venue.id.toString(),
-        label: venue.isVirtual
-          ? `${venue.offererName} - Offre numérique`
-          : /* istanbul ignore next: TO FIX */
-            venue.publicName || venue.name,
-      }))
-    )
-
-  const { data, isLoading } = useSWR(
-    [GET_VENUES_QUERY_KEY, selectedOfferer?.id],
-    ([, offererIdParam]) => api.getVenues(null, true, offererIdParam),
-    { fallbackData: { venues: [] } }
+  const bankAccountQuery = useSWR(
+    selectedOfferer
+      ? [GET_OFFERER_BANK_ACCOUNTS_QUERY_KEY, selectedOfferer.id]
+      : null,
+    ([, selectedOffererId]) =>
+      api.getOffererBankAccountsAndAttachedVenues(selectedOffererId)
   )
-  const venuesOptions = buildAndSortVenueFilterOptions(data.venues)
 
-  if (isLoading) {
+  if (bankAccountQuery.isLoading) {
     return (
       <div className="spinner">
         <Spinner />
@@ -102,7 +89,14 @@ export const ReimbursementsDetails = (): JSX.Element => {
     )
   }
 
-  if (venuesOptions.length === 0) {
+  const bankAccountsOptions = sortByLabel(
+    (bankAccountQuery.data?.bankAccounts || []).map((bankAccount) => ({
+      value: bankAccount.id.toString(),
+      label: bankAccount.label,
+    }))
+  )
+
+  if (bankAccountsOptions.length === 0) {
     return (
       <div className={styles['no-refunds']}>
         <SvgIcon
@@ -121,7 +115,9 @@ export const ReimbursementsDetails = (): JSX.Element => {
     try {
       downloadFile(
         await api.getReimbursementsCsv(
-          venue !== ALL_VENUES_OPTION_ID ? Number(venue) : undefined,
+          bankAccount !== ALL_BANK_ACCOUNTS_OPTION_ID
+            ? Number(bankAccount)
+            : undefined,
           periodStart,
           periodEnd
         ),
@@ -135,10 +131,10 @@ export const ReimbursementsDetails = (): JSX.Element => {
   return (
     <>
       <DetailsFilters
-        defaultSelectId={ALL_VENUES_OPTION_ID}
+        defaultSelectId={ALL_BANK_ACCOUNTS_OPTION_ID}
         filters={filters}
         initialFilters={INITIAL_FILTERS}
-        selectableOptions={venuesOptions}
+        selectableOptions={bankAccountsOptions}
         setFilters={setFilters}
       >
         <Button onClick={downloadCSVFile} disabled={shouldDisableButtons}>
@@ -148,7 +144,7 @@ export const ReimbursementsDetails = (): JSX.Element => {
         <ButtonLink
           isDisabled={shouldDisableButtons}
           link={{
-            to: `/remboursements-details?${getCsvQueryParams(venue, periodStart, periodEnd)}`,
+            to: `/remboursements-details?${getCsvQueryParams(bankAccount, periodStart, periodEnd)}`,
             target: '_blank',
             isExternal: false,
           }}

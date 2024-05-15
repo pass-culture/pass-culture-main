@@ -12,7 +12,7 @@ import { getToday } from 'utils/date'
 import styles from './DetailsFilters.module.scss'
 
 type FiltersType = {
-  venue: string
+  bankAccount: string
   periodStart: string
   periodEnd: string
 }
@@ -35,7 +35,7 @@ export const DetailsFilters = ({
   setFilters,
 }: ReimbursementsSectionHeaderProps): JSX.Element => {
   const {
-    venue: selectedVenue,
+    bankAccount: selectedBankAccount,
     periodStart: selectedPeriodStart,
     periodEnd: selectedPeriodEnd,
   } = filters
@@ -47,11 +47,13 @@ export const DetailsFilters = ({
     setFilters(initialFilters)
   }
 
-  const setVenueFilter = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const venueId = event.target.value
+  const setBankAccountFilter = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const bankAccountId = event.target.value
     setFilters((prevFilters: FiltersType) => ({
       ...prevFilters,
-      venue: venueId,
+      bankAccount: bankAccountId,
     }))
     setAreFiltersDefault(false)
   }
@@ -87,16 +89,16 @@ export const DetailsFilters = ({
       </div>
 
       <FormLayout.Row inline>
-        <FieldLayout label="Lieu" name="lieu" isOptional>
+        <FieldLayout label="Compte bancaire" name="compte-bancaire" isOptional>
           <SelectInput
             defaultOption={{
-              label: 'Tous les lieux',
+              label: 'Tous les comptes bancaires',
               value: defaultSelectId,
             }}
-            onChange={setVenueFilter}
-            name="lieu"
+            onChange={setBankAccountFilter}
+            name="compte-bancaire"
             options={selectableOptions}
-            value={selectedVenue}
+            value={selectedBankAccount}
           />
         </FieldLayout>
 
