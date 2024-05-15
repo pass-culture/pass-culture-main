@@ -10,7 +10,7 @@ import { firebaseConfig } from 'config/firebase'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
-import { useFirebase } from '../firebase'
+import { destroyFirebase, useFirebase } from '../firebase'
 
 vi.mock('@firebase/analytics', () => ({
   getAnalytics: vi.fn(),
@@ -22,6 +22,7 @@ vi.mock('@firebase/analytics', () => ({
 
 vi.mock('@firebase/app', () => ({
   initializeApp: vi.fn(),
+  deleteApp: vi.fn(),
 }))
 
 vi.mock('@firebase/remote-config', () => ({
@@ -48,8 +49,11 @@ const renderFakeApp = ({ isCookieEnabled }: { isCookieEnabled: boolean }) => {
 }
 
 describe('useFirebase', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
+    vi.spyOn(firebase, 'deleteApp').mockResolvedValue()
     vi.spyOn(api, 'postProFlags').mockResolvedValue()
+    vi.spyOn(firebaseAnalytics, 'isSupported').mockResolvedValue(true)
+    await destroyFirebase()
   })
 
   it('should set logEvent and userId if cookie is set', async () => {
@@ -127,6 +131,26 @@ describe('useFirebase', () => {
       expect(firebase.initializeApp).not.toHaveBeenCalled()
       expect(firebaseAnalytics.setUserId).not.toHaveBeenCalled()
       expect(api.postProFlags).not.toHaveBeenCalled()
+    })
+  })
+
+  it('should destroy firebase when consent is taken back', async () => {
+    vi.spyOn(firebase, 'initializeApp').mockReturnValue({
+      name: '',
+      options: {},
+      automaticDataCollectionEnabled: true,
+    })
+
+    const { rerender } = renderFakeApp({ isCookieEnabled: true })
+
+    await waitFor(() => {
+      expect(firebaseAnalytics.initializeAnalytics).toHaveBeenCalledTimes(1)
+    })
+
+    rerender(<FakeApp isCookieEnabled={false} />)
+
+    await waitFor(() => {
+      expect(firebase.deleteApp).toHaveBeenCalled()
     })
   })
 })
