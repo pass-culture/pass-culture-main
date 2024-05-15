@@ -23,7 +23,7 @@ import {
   selectIsCollectiveSectionOpen,
   selectIsIndividualSectionOpen,
 } from 'store/nav/selector'
-import { selectCurrentOffererId } from 'store/user/selectors'
+import { selectCurrentOffererId, selectCurrentUser } from 'store/user/selectors'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -42,6 +42,8 @@ const COLLECTIVE_LINKS = ['/offres/collectives']
 
 export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   const isOffererStatsActive = useActiveFeature('ENABLE_OFFERER_STATS')
+  const currentUser = useSelector(selectCurrentUser)
+
   const location = useLocation()
   const dispatch = useDispatch()
   const isIndividualSectionOpen = useSelector(selectIsIndividualSectionOpen)
@@ -165,20 +167,21 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                   Guichet
                 </span>
               </NavLink>
-              {/* TODO: display only if it has partner page */}
-              <NavLink
-                to={`/structures/${offererId}/lieux/${venueId}`}
-                className={({ isActive }) =>
-                  classnames(styles['nav-links-item'], {
-                    [styles['nav-links-item-active']]: isActive,
-                  })
-                }
-                end
-              >
-                <span className={styles['nav-links-item-without-icon']}>
-                  Page sur l’application
-                </span>
-              </NavLink>
+              {currentUser?.hasPartnerPage && (
+                <NavLink
+                  to={`/structures/${offererId}/lieux/${venueId}`}
+                  className={({ isActive }) =>
+                    classnames(styles['nav-links-item'], {
+                      [styles['nav-links-item-active']]: isActive,
+                    })
+                  }
+                  end
+                >
+                  <span className={styles['nav-links-item-without-icon']}>
+                    Page sur l’application
+                  </span>
+                </NavLink>
+              )}
             </>
           )}
         </li>
@@ -230,7 +233,6 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                   Réservations
                 </span>
               </NavLink>
-              {/* TODO: display only if it has partner page */}
               <NavLink
                 to={`/structures/${offererId}/lieux/${venueId}/eac`}
                 className={({ isActive }) =>
