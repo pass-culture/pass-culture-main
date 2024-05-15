@@ -74,9 +74,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/render-push-manifests
         with:
-          environment: ${{ inputs.environment }}
+          environment: 'testing'
           app_name: 'pcapi'
-          app_version: ${{ inputs.app_version }}
+          app_version: 'xxx.xx'
           additional_args:  ${{ steps.generate-pcapi-secrets-list.outputs.PCAPI_SECRETS }}
           PASSCULTURE_SA_ACCESS_TOKEN: ${{ steps.secrets.outputs.PASSCULTURE_SA_ACCESS_TOKEN }}
           access_token: ${{ steps.openid-auth-infra.outputs.access_token }}
