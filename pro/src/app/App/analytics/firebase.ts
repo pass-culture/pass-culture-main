@@ -40,6 +40,14 @@ const getRemoteConfigParams = (): Record<string, string> => {
   return remoteConfigParams
 }
 
+export const destroyFirebase = async () => {
+  if (firebaseApp) {
+    await firebase.deleteApp(firebaseApp)
+    firebaseApp = undefined
+    firebaseRemoteConfig = undefined
+  }
+}
+
 export const useFirebase = (consentedToFirebase: boolean) => {
   const currentUser = useSelector(selectCurrentUser)
   const selectedOffererId = useSelector(selectCurrentOffererId)
@@ -90,9 +98,16 @@ export const useFirebase = (consentedToFirebase: boolean) => {
         )
     }
 
-    if (consentedToFirebase && !firebaseApp) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      loadAnalytics()
+    if (consentedToFirebase) {
+      if (!firebaseApp) {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        loadAnalytics()
+      }
+    } else {
+      if (firebaseApp) {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        destroyFirebase()
+      }
     }
   }, [consentedToFirebase])
 
