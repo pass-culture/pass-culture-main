@@ -27,12 +27,25 @@ import useRemoteConfig from '../../../hooks/useRemoteConfig'
 let firebaseApp: firebase.FirebaseApp | undefined
 let firebaseRemoteConfig: RemoteConfig | undefined
 
+const getRemoteConfigParams = (): Record<string, string> => {
+  if (!firebaseRemoteConfig) {
+    return {}
+  }
+
+  const remoteConfigValues = getAll(firebaseRemoteConfig)
+  const remoteConfigParams: Record<string, string> = {}
+  Object.keys(remoteConfigValues).forEach((k) => {
+    remoteConfigParams[k] = remoteConfigValues[k].asString()
+  })
+
+  return remoteConfigParams
+}
+
 export const useFirebase = (consentedToFirebase: boolean) => {
   const currentUser = useSelector(selectCurrentUser)
-
+  const selectedOffererId = useSelector(selectCurrentOffererId)
   const [isFirebaseInitialized, setIsFirebaseInitialized] =
     useState<boolean>(false)
-  const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const { setLogEvent } = useAnalytics()
   const { setRemoteConfigData } = useRemoteConfig()
@@ -64,11 +77,7 @@ export const useFirebase = (consentedToFirebase: boolean) => {
               if (!firebaseRemoteConfig) {
                 return
               }
-              const remoteConfigValues = getAll(firebaseRemoteConfig)
-              const remoteConfigParams: Record<string, string> = {}
-              Object.keys(remoteConfigValues).forEach((k) => {
-                remoteConfigParams[k] = remoteConfigValues[k].asString()
-              })
+              const remoteConfigParams = getRemoteConfigParams()
               setRemoteConfigData &&
                 setRemoteConfigData({
                   ...remoteConfigParams,
