@@ -72,7 +72,7 @@ jobs:
           PCAPI_SECRETS=secrets={$(echo $PCAPI_SECRETS | sed -r 's/ /,/g')}
           echo "PCAPI_SECRETS=\"$PCAPI_SECRETS\"" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v4
-      - uses: ./.github/workflows/composite_render_push_manifests.yml
+      - uses: ./.github/actions/render-push-manifests
         with:
           environment: ${{ inputs.environment }}
           app_name: 'pcapi'
