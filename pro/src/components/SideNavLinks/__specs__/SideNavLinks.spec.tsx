@@ -1,13 +1,19 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { SideNavLinks } from '../SideNavLinks'
 
-const renderSideNavLinks = (initialRoute = '/') => {
+const renderSideNavLinks = (options: RenderWithProvidersOptions = {}) => {
   renderWithProviders(<SideNavLinks isLateralPanelOpen={true} />, {
-    initialRouterEntries: [initialRoute],
+    initialRouterEntries: ['/'],
+    user: sharedCurrentUserFactory({ hasPartnerPage: true }),
+    ...options,
   })
 }
 
@@ -30,5 +36,13 @@ describe('SideNavLinks', () => {
     expect(screen.getAllByRole('link', { name: 'Offres' })).toHaveLength(1)
     await userEvent.click(screen.getByRole('button', { name: 'Collectif' }))
     expect(screen.getAllByRole('link', { name: 'Offres' })).toHaveLength(2)
+  })
+
+  it('should not display partner link if user as no parnter page', () => {
+    renderSideNavLinks({
+      user: sharedCurrentUserFactory({ hasPartnerPage: false }),
+    })
+
+    expect(screen.queryByText('Page sur l’application')).not.toBeInTheDocument()
   })
 })

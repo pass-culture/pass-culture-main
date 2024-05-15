@@ -1,6 +1,5 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 
 import {
   renderWithProviders,
@@ -79,6 +78,7 @@ describe('src | AppLayout', () => {
             navState: {
               newNavDate: '2021-01-01',
             },
+            hasPartnerPage: true,
           }),
         })
 
