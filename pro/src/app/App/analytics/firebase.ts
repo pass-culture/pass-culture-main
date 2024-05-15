@@ -28,7 +28,6 @@ let firebaseApp: firebase.FirebaseApp | undefined
 export const useFirebase = (consentedToFirebase: boolean) => {
   const currentUser = useSelector(selectCurrentUser)
 
-  const [isFirebaseSupported, setIsFirebaseSupported] = useState<boolean>(false)
   const [isFirebaseInitialized, setIsFirebaseInitialized] =
     useState<boolean>(false)
   const selectedOffererId = useSelector(selectCurrentOffererId)
@@ -38,17 +37,12 @@ export const useFirebase = (consentedToFirebase: boolean) => {
   const utmParameters = useUtmQueryParams()
 
   useEffect(() => {
-    async function initializeIfNeeded() {
-      setIsFirebaseSupported(await isSupported())
-    }
-    if (consentedToFirebase) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      initializeIfNeeded()
-    }
-  }, [consentedToFirebase])
-
-  useEffect(() => {
     const loadAnalytics = async () => {
+      const isFirebaseSupported = await isSupported()
+      if (!isFirebaseSupported) {
+        return
+      }
+
       firebaseApp = firebase.initializeApp(firebaseConfig)
       setIsFirebaseInitialized(true)
 
@@ -86,25 +80,20 @@ export const useFirebase = (consentedToFirebase: boolean) => {
         )
     }
 
-    if (consentedToFirebase && !firebaseApp && isFirebaseSupported) {
+    if (consentedToFirebase && !firebaseApp) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       loadAnalytics()
     }
-  }, [consentedToFirebase, isFirebaseSupported])
+  }, [consentedToFirebase])
 
   useEffect(() => {
-    if (
-      consentedToFirebase &&
-      firebaseApp &&
-      currentUser &&
-      isFirebaseSupported
-    ) {
+    if (consentedToFirebase && firebaseApp && currentUser) {
       setUserId(getAnalytics(firebaseApp), currentUser.id.toString())
     }
   }, [consentedToFirebase, currentUser, isFirebaseInitialized])
 
   useEffect(() => {
-    if (firebaseApp && isFirebaseSupported && selectedOffererId) {
+    if (firebaseApp && selectedOffererId) {
       setUserProperties(getAnalytics(firebaseApp), {
         offerer_id: selectedOffererId.toString(),
       })
