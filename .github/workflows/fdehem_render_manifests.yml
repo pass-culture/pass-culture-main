@@ -30,8 +30,6 @@ jobs:
         with:
           secrets: |-
             PASSCULTURE_SA_ACCESS_TOKEN:passculture-metier-ehp/passculture-main-sa-access-token
-            ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
-            ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
       - uses: actions/checkout@v4.1.2
         with:
           repository: pass-culture/pass-culture-deployment
@@ -79,7 +77,6 @@ jobs:
           app_version: 'xxx.xx'
           additional_args:  ${{ steps.generate-pcapi-secrets-list.outputs.PCAPI_SECRETS }}
           PASSCULTURE_SA_ACCESS_TOKEN: ${{ steps.secrets.outputs.PASSCULTURE_SA_ACCESS_TOKEN }}
-          access_token: ${{ steps.openid-auth-infra.outputs.access_token }}
       - name: "Install argocd cli"
         id: install_argocd_cli
         run: |
