@@ -29,11 +29,11 @@ jobs:
         uses: 'google-github-actions/get-secretmanager-secrets@v2'
         with:
           secrets: |-
-            PASSCULTURE_SA_ACCESS_TOKEN:passculture-metier-ehp/passculture-main-sa-access-token
+            API_TOKEN_GITHUB:passculture-metier-ehp/passculture-main-sa-access-token
       - uses: actions/checkout@v4.1.5
         with:
           repository: pass-culture/pass-culture-deployment
-          token: ${{ steps.secrets.outputs.PASSCULTURE_SA_ACCESS_TOKEN }}
+          token: ${{ steps.secrets.outputs.API_TOKEN_GITHUB}}
           path: ./pass-culture-deployment
       - name: "Install Teleport"
         uses: teleport-actions/setup@v1
@@ -66,8 +66,8 @@ jobs:
           environment: 'testing'
           app_name: 'pcapi'
           app_version: 'xxx.xx'
-          additional_args:  ${{ steps.generate-pcapi-secrets-list.outputs.PCAPI_SECRETS }}
-          PASSCULTURE_SA_ACCESS_TOKEN: ${{ steps.secrets.outputs.PASSCULTURE_SA_ACCESS_TOKEN }}
+          additional_args: ""
+          API_TOKEN_GITHUB: ${{ steps.secrets.outputs.API_TOKEN_GITHUB }}
       - name: "Install argocd cli"
         id: install_argocd_cli
         run: |

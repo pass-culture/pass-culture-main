@@ -13,7 +13,7 @@ inputs:
   additional_args:
     type: string
     required: false
-  PASSCULTURE_SA_ACCESS_TOKEN:
+  API_TOKEN_GITHUB:
     required: true
 
 runs:
@@ -59,7 +59,7 @@ runs:
       id: push-manifests
       uses: cpina/github-action-push-to-another-repository@main
       env:
-        API_TOKEN_GITHUB: ${{ inputs.PASSCULTURE_SA_ACCESS_TOKEN }}
+        API_TOKEN_GITHUB: ${{ inputs.API_TOKEN_GITHUB }}
       with:
         source-directory: ./rendered-manifests/helmfile-${{ inputs.environment }}/
         destination-github-username: 'pass-culture'
