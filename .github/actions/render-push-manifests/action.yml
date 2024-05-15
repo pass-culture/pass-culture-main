@@ -22,16 +22,23 @@ runs:
   using: 'composite'
   steps:
     - name: "Render manifests"
-      shell: sh
+      shell: bash
       run: |
         PASSCULTURE_USERNAME="oauth2accesstoken" \
         PASSCULTURE_PASSWORD=${{ inputs.access_token }} \
-        if [ -n ${{ inputs.additional_args }} ]
+        if [ -z ${ADDITIONAL_ARGS+x} ]
         then
-          helmfile -e ${{ inputs.environment }} template --set ${{ inputs.additional_args }} --set image.tag=${{ inputs.app_version }} --output-dir ./rendered-manifests/ --output-dir-template "{{ .OutputDir }}/{{ .State.BaseName }}-{{ .Release.Name  }}"
+          helmfile -e $ENVIRONMENT template --set $ADDITIONAL_ARGS --set image.tag=$APP_VERSION --output-dir ./rendered-manifests/ --output-dir-template "{{ .OutputDir }}/{{ .State.BaseName }}-{{ .Release.Name  }}"
         else
-          helmfile -e ${{ inputs.environment }} template --set image.tag=${{ inputs.app_version }} --output-dir ./rendered-manifests/ --output-dir-template "{{ .OutputDir }}/{{ .State.BaseName }}-{{ .Release.Name  }}"
+          helmfile -e $ENVIRONMENT template --set image.tag=$APP_VERSION --output-dir ./rendered-manifests/ --output-dir-template "{{ .OutputDir }}/{{ .State.BaseName }}-{{ .Release.Name  }}"
         fi
+      env:
+        ENVIRONMENT: ${{ inputs.environment }}
+        APP_NAME: ${{ inputs.app_name }}
+        APP_VERSION: ${{ inputs.app_version }}
+        ADDITIONAL_ARGS: ${{ inputs.additional_args }}
+        PASSCULTURE_SA_ACCESS_TOKEN: ${{ inputs.PASSCULTURE_SA_ACCESS_TOKEN }}
+        ACCESS_TOKEN: ${{ inputs.access_token }}
     - name: "Push manifests to rendered-manifests repository"
       id: push-manifests
       uses: cpina/github-action-push-to-another-repository@main
