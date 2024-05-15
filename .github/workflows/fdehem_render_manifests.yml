@@ -24,17 +24,6 @@ jobs:
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      - name: "Get Secret"
-        id: 'secrets'
-        uses: 'google-github-actions/get-secretmanager-secrets@v2'
-        with:
-          secrets: |-
-            API_TOKEN_GITHUB:passculture-metier-ehp/passculture-main-sa-access-token
-      - uses: actions/checkout@v4.1.5
-        with:
-          repository: pass-culture/pass-culture-deployment
-          token: ${{ steps.secrets.outputs.API_TOKEN_GITHUB }}
-          path: ./pass-culture-deployment
       - name: "Install Teleport"
         uses: teleport-actions/setup@v1
         with:
@@ -70,6 +59,9 @@ jobs:
           api_token_github: ${{ steps.secrets.outputs.API_TOKEN_GITHUB }}
           registry_workload_identity_secret_name: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
           registry_service_account_secret_name: passculture-metier-ehp/passculture-main-artifact-registry-service-account
+          api_token_github_secret_name: passculture-metier-ehp/passculture-main-sa-access-token
+          chart_values_repository: pass-culture/pass-culture-deployment
+          chart_value_path: ./pass-culture-deployment
       - name: "Install argocd cli"
         id: install_argocd_cli
         run: |
