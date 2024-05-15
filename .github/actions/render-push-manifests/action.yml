@@ -22,11 +22,11 @@ runs:
   using: 'composite'
   steps:
     - name: "Render manifests"
-      shell: bash
+      shell: sh
       run: |
         PASSCULTURE_USERNAME="oauth2accesstoken" \
         PASSCULTURE_PASSWORD=${{ inputs.access_token }} \
-        if [ -z ${{ inputs.additional_args }} ]
+        if [ -n ${{ inputs.additional_args }} ]
         then
           helmfile -e ${{ inputs.environment }} template --set ${{ inputs.additional_args }} --set image.tag=${{ inputs.app_version }} --output-dir ./rendered-manifests/ --output-dir-template "{{ .OutputDir }}/{{ .State.BaseName }}-{{ .Release.Name  }}"
         else
