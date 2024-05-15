@@ -1,11 +1,7 @@
 environments:
   testing:
     values:
-<<<<<<< HEAD
       - chartVersion: 0.26.3
-=======
-      - chartVersion: 0.26.2
->>>>>>> cf2182102f (Test get pcapi secrets from source code)
   staging:
     values:
       - chartVersion: 0.26.3
