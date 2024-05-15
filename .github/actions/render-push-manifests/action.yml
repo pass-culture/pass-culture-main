@@ -43,7 +43,7 @@ runs:
         echo "ENVIRONMENT=$ENVIRONMENT"
         echo "APP_NAME=$APP_NAME"
         echo "APP_VERSION=$APP_VERSION"
-        echo "PASSCULTURE_SA_ACCESS_TOKEN=$PASSCULTURE_SA_ACCESS_TOKEN"
+        echo "REGISTRY_ACCESS_TOKEN=$REGISTRY_ACCESS_TOKEN"
         if [ -z "${ADDITIONAL_ARGS}" ]; then
           helmfile -e $ENVIRONMENT template --set image.tag=$APP_VERSION --output-dir ./rendered-manifests/ --output-dir-template "{{ .OutputDir }}/{{ .State.BaseName }}-{{ .Release.Name  }}"
         else
@@ -54,7 +54,6 @@ runs:
         APP_NAME: ${{ inputs.app_name }}
         APP_VERSION: ${{ inputs.app_version }}
         ADDITIONAL_ARGS: ${{ inputs.additional_args }}
-        PASSCULTURE_SA_ACCESS_TOKEN: ${{ inputs.PASSCULTURE_SA_ACCESS_TOKEN }}
         REGISTRY_ACCESS_TOKEN: ${{ steps.connect-registry.outputs.access_token }}
     - name: "Push manifests to rendered-manifests repository"
       id: push-manifests
