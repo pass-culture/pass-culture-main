@@ -1544,7 +1544,7 @@ class RejectInappropriateProductTest:
         bookings = bookings_models.Booking.query.all()
 
         product1 = models.Product.query.filter(models.Product.extraData["ean"].astext == "ean-de-test").one()
-        assert not product1.isGcuCompatible
+        assert product1.gcuCompatibilityType == models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE
 
         product2 = models.Product.query.filter(models.Product.extraData["ean"].astext == "ean-de-test-2").one()
         assert product2.isGcuCompatible
@@ -1597,6 +1597,31 @@ class RejectInappropriateProductTest:
 
         # Then
         mocked_send_booking_cancellation_emails_to_user_and_offerer.assert_called()
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    @mock.patch("pcapi.core.mails.transactional.send_booking_cancellation_emails_to_user_and_offerer")
+    def test_update_should_not_override_fraud_incompatibility(
+        self, mocked_send_booking_cancellation_emails_to_user_and_offerer, mocked_async_index_offer_ids
+    ):
+        # Given
+        provider = providers_factories.APIProviderFactory()
+        factories.ThingProductFactory(
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            extraData={"ean": "ean-de-test"},
+            lastProvider=provider,
+            gcuCompatibilityType=models.GcuCompatibilityType.FRAUD_INCOMPATIBLE,
+        )
+        user = users_factories.UserFactory()
+
+        # When
+        api.reject_inappropriate_products(["ean-de-test"], user, send_booking_cancellation_emails=False)
+
+        # Then
+
+        product = models.Product.query.filter(models.Product.extraData["ean"].astext == "ean-de-test").one()
+        assert product.gcuCompatibilityType == models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
+
+        mocked_send_booking_cancellation_emails_to_user_and_offerer.assert_not_called()
 
 
 @pytest.mark.usefixtures("db_session")
@@ -2196,7 +2221,7 @@ class UnindexExpiredOffersTest:
 class WhitelistExistingProductTest:
     @override_settings(TITELIVE_EPAGINE_API_USERNAME="test@example.com")
     @override_settings(TITELIVE_EPAGINE_API_PASSWORD="qwerty123")
-    def test_modify_product_if_existing_and_not_cgu_compatible(self, requests_mock):
+    def test_modify_product_if_existing_and_not_gcu_compatible(self, requests_mock):
         ean = "9782070455379"
         requests_mock.post(
             f"{settings.TITELIVE_EPAGINE_API_AUTH_URL}/login/test@example.com/token",
@@ -2227,7 +2252,7 @@ class WhitelistExistingProductTest:
                 "code_clil": "code_clil",
                 "rayon": "test",
             },
-            isGcuCompatible=False,
+            gcuCompatibilityType=models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE,
         )
 
         api.whitelist_product(ean)
@@ -3009,7 +3034,7 @@ class ApproveProductAndRejectedOffersTest:
             extraData={"ean": ean},
             lastProvider=provider,
             idAtProviders=ean,
-            isGcuCompatible=False,
+            gcuCompatibilityType=models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE,
         )
 
         # When
@@ -3031,7 +3056,7 @@ class ApproveProductAndRejectedOffersTest:
             extraData={"ean": ean},
             lastProvider=provider,
             idAtProviders=ean,
-            isGcuCompatible=False,
+            gcuCompatibilityType=models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE,
         )
 
         factories.OfferFactory(product=product)
@@ -3049,7 +3074,7 @@ class ApproveProductAndRejectedOffersTest:
         mocked_async_index_offer_ids.assert_not_called()
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
-    def test_should_approve_product_and_offers_with_one_rejected_offer_for_cgu_inappropriate(
+    def test_should_approve_product_and_offers_with_one_rejected_offer_for_gcu_inappropriate(
         self, mocked_async_index_offer_ids
     ):
         # Given
@@ -3060,7 +3085,7 @@ class ApproveProductAndRejectedOffersTest:
             extraData={"ean": ean},
             lastProvider=provider,
             idAtProviders=ean,
-            isGcuCompatible=False,
+            gcuCompatibilityType=models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE,
         )
 
         offert_to_approve = factories.OfferFactory(
@@ -3098,7 +3123,7 @@ class ApproveProductAndRejectedOffersTest:
             extraData={"ean": ean},
             lastProvider=provider,
             idAtProviders=ean,
-            isGcuCompatible=False,
+            gcuCompatibilityType=models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE,
         )
 
         factories.OfferFactory(
@@ -3125,7 +3150,7 @@ class ApproveProductAndRejectedOffersTest:
             extraData={"ean": ean},
             lastProvider=provider,
             idAtProviders=ean,
-            isGcuCompatible=False,
+            gcuCompatibilityType=models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE,
         )
 
         factories.OfferFactory(
@@ -3151,7 +3176,7 @@ class ApproveProductAndRejectedOffersTest:
             extraData={"ean": ean},
             lastProvider=provider,
             idAtProviders=ean,
-            isGcuCompatible=False,
+            gcuCompatibilityType=models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE,
         )
 
         factories.OfferFactory(

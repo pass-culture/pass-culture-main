@@ -375,7 +375,7 @@ class TiteliveBookSearchTest:
         )
 
     def build_previously_synced_book_product(
-        self, ean=None, name=None, extra_data=None, isGcuCompatible=True
+        self, ean=None, name=None, extra_data=None, gcuCompatibilityType=offers_models.GcuCompatibilityType.COMPATIBLE
     ) -> offers_models.Product:
         titelive_provider = providers_repository.get_provider_by_name(
             providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME
@@ -389,7 +389,7 @@ class TiteliveBookSearchTest:
         product = offers_factories.ProductFactory(
             extraData=extra_data,
             idAtProviders=ean,
-            isGcuCompatible=isGcuCompatible,
+            gcuCompatibilityType=gcuCompatibilityType,
             lastProviderId=titelive_provider.id,
             name=name if name else "The Book",
             subcategoryId=subcategories.LIVRE_PAPIER.id,
@@ -644,7 +644,7 @@ class TiteliveBookSearchTest:
         # Then
         product = offers_models.Product.query.one()
         offer = offers_models.Offer.query.one()
-        assert product.isGcuCompatible is False
+        assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE
         assert Favorite.query.count() == 0
         assert offer.validation == offers_models.OfferValidationStatus.REJECTED
         assert offer.lastValidationType == OfferValidationType.CGU_INCOMPATIBLE_PRODUCT
@@ -670,7 +670,7 @@ class TiteliveBookSearchTest:
         # Then
         product = offers_models.Product.query.one()
         offer = offers_models.Offer.query.one()
-        assert product.isGcuCompatible is False
+        assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE
         assert Favorite.query.count() == 0
         assert offer.validation == offers_models.OfferValidationStatus.REJECTED
         assert offer.lastValidationType == OfferValidationType.CGU_INCOMPATIBLE_PRODUCT
@@ -689,7 +689,7 @@ class TiteliveBookSearchTest:
 
         # Then
         product = offers_models.Product.query.one()
-        assert product.isGcuCompatible is False
+        assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE
 
     def test_should_reject_product_when_it_changes_to_paper_press_product(self, requests_mock):
         product = self.build_previously_synced_book_product()
@@ -705,7 +705,7 @@ class TiteliveBookSearchTest:
 
         # Then
         product = offers_models.Product.query.one()
-        assert product.isGcuCompatible is False
+        assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE
 
     def test_should_not_reject_product_and_deactivate_associated_offer_when_it_changes_to_paper_press_product(
         self, requests_mock
@@ -731,7 +731,22 @@ class TiteliveBookSearchTest:
         assert stock.bookings[0].status == BookingStatus.CANCELLED
 
         product = offers_models.Product.query.one()
-        assert product.isGcuCompatible is False
+        assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE
+
+    def test_update_should_not_override_fraud_incompatibility(self, requests_mock):
+        product = self.build_previously_synced_book_product(
+            gcuCompatibilityType=offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
+        )
+        self.setup_api_response_fixture(
+            requests_mock, fixtures.build_titelive_one_book_response(id_lectorat=ttl_constants.LECTORAT_EIGHTEEN_ID)
+        )
+
+        # When
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+
+        # Then
+        product = offers_models.Product.query.one()
+        assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
 
     def test_update_offers_extra_data_from_thing(self, requests_mock):
         product = self.build_previously_synced_book_product()
@@ -755,7 +770,9 @@ class TiteliveBookSearchTest:
 
     # APPROVAL
     def test_approve_product_from_inappropriate_thing(self, requests_mock):
-        product = self.build_previously_synced_book_product(isGcuCompatible=False)
+        product = self.build_previously_synced_book_product(
+            gcuCompatibilityType=offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE
+        )
         self.setup_api_response_fixture(
             requests_mock,
             fixtures.build_titelive_one_book_response(ean=self.EAN_TEST),
@@ -766,10 +783,12 @@ class TiteliveBookSearchTest:
 
         # Then
         product = offers_models.Product.query.one()
-        assert product.isGcuCompatible is True
+        assert product.isGcuCompatible
 
     def test_approve_product_and_offers_from_inappropriate_thing(self, requests_mock):
-        product = self.build_previously_synced_book_product(isGcuCompatible=False)
+        product = self.build_previously_synced_book_product(
+            gcuCompatibilityType=offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE
+        )
         offer = offers_factories.ThingOfferFactory(
             product=product,
             validation=OfferValidationStatus.REJECTED,
@@ -786,7 +805,7 @@ class TiteliveBookSearchTest:
 
         # Then
         product = offers_models.Product.query.one()
-        assert product.isGcuCompatible is True
+        assert product.isGcuCompatible
 
         offers = offers_models.Offer.query.all()
         assert all(offer.validation == OfferValidationStatus.APPROVED for offer in offers)
@@ -815,3 +834,19 @@ class TiteliveBookSearchTest:
         # Then
         product = offers_models.Product.query.one()
         assert product.extraData.get("author") == expected_author
+
+    def test_approval_should_not_override_fraud_incompatibility(self, requests_mock):
+        product = self.build_previously_synced_book_product(
+            gcuCompatibilityType=offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
+        )
+        self.setup_api_response_fixture(
+            requests_mock,
+            fixtures.build_titelive_one_book_response(ean=self.EAN_TEST),
+        )
+
+        # When
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+
+        # Then
+        product = offers_models.Product.query.one()
+        assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE

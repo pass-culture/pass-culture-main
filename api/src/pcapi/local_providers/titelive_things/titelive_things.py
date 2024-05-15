@@ -377,7 +377,10 @@ class TiteLiveThings(LocalProvider):
         extra_data = self.product_extra_data | get_extra_data_from_infos(self.product_infos)
         product.extraData = extra_data
 
-        if product.isGcuCompatible is False and product.extraData:
+        if (
+            product.gcuCompatibilityType == offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE
+            and product.extraData
+        ):
             self.product_approved_eans.append(product.extraData.get("ean"))
 
         if product.extraData and product.id is not None:

@@ -897,8 +897,7 @@ def reject_inappropriate_products(
     products = models.Product.query.filter(
         models.Product.extraData["ean"].astext.in_(eans),
         models.Product.idAtProviders.is_not(None),
-        # TODO: add filter in next PR
-        # models.Product.gcuCompatibilityType != models.GcuCompatibilityType.FRAUD_INCOMPATIBLE,
+        models.Product.gcuCompatibilityType != models.GcuCompatibilityType.FRAUD_INCOMPATIBLE,
     )
 
     if not products:
@@ -925,7 +924,6 @@ def reject_inappropriate_products(
     )
 
     for product in products:
-        product.isGcuCompatible = False
         product.gcuCompatibilityType = (
             models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
             if rejected_by_fraud_action
@@ -1267,7 +1265,6 @@ def whitelist_product(idAtProviders: str) -> models.Product | None:
 
     product = fetch_or_update_product_with_titelive_data(titelive_product)
 
-    product.isGcuCompatible = True
     product.gcuCompatibilityType = models.GcuCompatibilityType.COMPATIBLE
 
     db.session.add(product)
@@ -1378,8 +1375,7 @@ def delete_price_category(offer: models.Offer, price_category: models.PriceCateg
 
 def approves_provider_product_and_rejected_offers(ean: str) -> None:
     product = models.Product.query.filter(
-        # TODO: add filter in next PR
-        # models.Product.gcuCompatibilityType == models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE,
+        models.Product.gcuCompatibilityType == models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE,
         models.Product.extraData["ean"].astext == ean,
         models.Product.idAtProviders.is_not(None),
     ).one_or_none()
@@ -1390,7 +1386,6 @@ def approves_provider_product_and_rejected_offers(ean: str) -> None:
     offer_ids = []
     try:
         with transaction():
-            product.isGcuCompatible = True
             product.gcuCompatibilityType = models.GcuCompatibilityType.COMPATIBLE
             db.session.add(product)
 

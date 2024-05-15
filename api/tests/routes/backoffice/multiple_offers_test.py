@@ -176,18 +176,22 @@ class SearchMultipleOffersTest(GetEndpointHelper):
         assert "EAN-13 : 9783161484100 " in left_card
 
     @pytest.mark.parametrize(
-        "compatibility,expected_cgu_display",
+        "compatibility,expected_gcu_display",
         [
-            (True, "Oui"),
-            (False, "Non"),
+            (offers_models.GcuCompatibilityType.COMPATIBLE, "Oui"),
+            (offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE, "Non (d'après le provider)"),
+            (
+                offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE,
+                "Non (sur décision de l'équipe Fraude & Conformité)",
+            ),
         ],
     )
-    def test_product_compatibility(self, authenticated_client, compatibility, expected_cgu_display):
+    def test_product_compatibility(self, authenticated_client, compatibility, expected_gcu_display):
         provider = providers_factories.APIProviderFactory()
         offers_factories.ThingProductFactory(
             extraData={"ean": "9781234567890"},
             subcategoryId=subcategories.LIVRE_PAPIER.id,
-            isGcuCompatible=compatibility,
+            gcuCompatibilityType=compatibility,
             lastProvider=provider,
         )
 
@@ -197,7 +201,7 @@ class SearchMultipleOffersTest(GetEndpointHelper):
 
         left_card = html_parser.extract_cards_text(response.data)[0]
 
-        assert f"Compatible avec les CGU : {expected_cgu_display}" in left_card
+        assert f"Compatible avec les CGU : {expected_gcu_display}" in left_card
 
     def test_get_current_criteria_on_active_offers(self, authenticated_client):
         provider = providers_factories.APIProviderFactory()
@@ -294,20 +298,20 @@ class SetProductGcuIncompatibleTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     @pytest.mark.parametrize(
-        "validation_status",
+        "validation_status,gcu_compatibility_type",
         [
-            OfferValidationStatus.DRAFT,
-            OfferValidationStatus.PENDING,
-            OfferValidationStatus.REJECTED,
-            OfferValidationStatus.APPROVED,
+            (OfferValidationStatus.DRAFT, offers_models.GcuCompatibilityType.COMPATIBLE),
+            (OfferValidationStatus.PENDING, offers_models.GcuCompatibilityType.COMPATIBLE),
+            (OfferValidationStatus.REJECTED, offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE),
+            (OfferValidationStatus.APPROVED, offers_models.GcuCompatibilityType.COMPATIBLE),
         ],
     )
-    def test_edit_product_gcu_compatibility(self, authenticated_client, validation_status):
+    def test_edit_product_gcu_compatibility(self, authenticated_client, validation_status, gcu_compatibility_type):
         provider = providers_factories.APIProviderFactory()
         product_1 = offers_factories.ThingProductFactory(
             description="premier produit inapproprié",
             extraData={"ean": "9781234567890"},
-            isGcuCompatible=not validation_status == OfferValidationStatus.REJECTED,
+            gcuCompatibilityType=gcu_compatibility_type,
             lastProvider=provider,
         )
         venue = offerers_factories.VenueFactory()
@@ -329,7 +333,7 @@ class SetProductGcuIncompatibleTest(PostEndpointHelper):
         product = offers_models.Product.query.one()
         offers = Offer.query.order_by("id").all()
 
-        assert not product.isGcuCompatible
+        assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
         for offer in offers:
             assert offer.validation == offers_models.OfferValidationStatus.REJECTED
             if offer.id in initially_rejected:
@@ -340,12 +344,11 @@ class SetProductGcuIncompatibleTest(PostEndpointHelper):
                 assert datetime.datetime.utcnow() - offer.lastValidationDate < datetime.timedelta(seconds=5)
 
     def test_send_mail_when_edit_product_gcu_compatibility(self, authenticated_client):
-
         provider = providers_factories.APIProviderFactory()
         product_1 = offers_factories.ThingProductFactory(
             description="premier produit inapproprié",
             extraData={"ean": "9781234567890"},
-            isGcuCompatible=True,
+            gcuCompatibilityType=offers_models.GcuCompatibilityType.COMPATIBLE,
             lastProvider=provider,
         )
         venue = offerers_factories.VenueFactory()

@@ -114,7 +114,7 @@ def search_multiple_offers() -> utils.BackofficeResponse:
         pending_offers_count=pending_offers_count,
         rejected_offers_count=rejected_offers_count,
         ean=ean,
-        product_compatibility=product.isGcuCompatible,
+        product_compatibility=product.gcuCompatibilityType.value,
         current_criteria_on_offers=_get_current_criteria_on_active_offers(offers),
         **operations_forms,
     )
