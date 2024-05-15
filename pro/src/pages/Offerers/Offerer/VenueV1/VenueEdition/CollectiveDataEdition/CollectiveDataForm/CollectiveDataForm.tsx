@@ -80,7 +80,9 @@ export const CollectiveDataForm = ({
 
       await mutate([GET_VENUE_QUERY_KEY, String(venue.id)])
 
-      navigate(`/structures/${venue.managingOfferer.id}/lieux/${venue.id}/eac`)
+      navigate(
+        `/structures/${venue.managingOfferer.id}/lieux/${venue.id}/collectif`
+      )
     } catch {
       notify.error(SENT_DATA_ERROR_MESSAGE)
     }
@@ -224,7 +226,7 @@ export const CollectiveDataForm = ({
             <ButtonLink
               variant={ButtonVariant.SECONDARY}
               link={{
-                to: `/structures/${venue.managingOfferer.id}/lieux/${venue.id}/eac`,
+                to: `/structures/${venue.managingOfferer.id}/lieux/${venue.id}/collectif`,
                 isExternal: false,
               }}
             >

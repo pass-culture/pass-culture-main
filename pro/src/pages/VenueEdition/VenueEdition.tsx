@@ -85,13 +85,13 @@ export const VenueEdition = (): JSX.Element | null => {
     {
       key: 'collective',
       label: 'Pour les enseignants',
-      url: generatePath('/structures/:offererId/lieux/:venueId/eac', {
+      url: generatePath('/structures/:offererId/lieux/:venueId/collectif', {
         offererId: String(venue.managingOfferer.id),
         venueId: String(venue.id),
       }),
     },
   ]
-  const activeStep = location.pathname.includes('eac')
+  const activeStep = location.pathname.includes('collectif')
     ? 'collective'
     : 'individual'
 
