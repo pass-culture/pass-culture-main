@@ -808,7 +808,8 @@ def get_soon_expiring_bookings(expiration_days_delta: int) -> typing.Generator[B
         Booking.query.options(
             contains_eager(Booking.stock).load_only(Stock.id).contains_eager(Stock.offer).load_only(Offer.subcategoryId)
         )
-        .join(Stock, Offer)
+        .join(Booking.stock)
+        .join(Stock.offer)
         .filter_by(canExpire=True)
         .filter(Booking.status == BookingStatus.CONFIRMED)
         .yield_per(1_000)
@@ -852,10 +853,10 @@ def find_individual_bookings_event_happening_tomorrow_query() -> list[Booking]:
     return (
         Booking.query.join(
             Booking.user,
-            Booking.stock,
-            Stock.offer,
-            Offer.venue,
         )
+        .join(Booking.stock)
+        .join(Stock.offer)
+        .join(Offer.venue)
         .outerjoin(Booking.activationCode)
         .outerjoin(Offer.criteria)
         .filter(Stock.beginningDatetime >= tomorrow_min, Stock.beginningDatetime <= tomorrow_max)

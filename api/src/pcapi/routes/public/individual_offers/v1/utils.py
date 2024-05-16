@@ -96,7 +96,8 @@ def retrieve_offer_query(offer_id: int) -> sqla_orm.Query:
 def _retrieve_offer_tied_to_user_query() -> sqla_orm.Query:
     return (
         offers_models.Offer.query.join(offerers_models.Venue)
-        .join(offerers_models.Venue.venueProviders, providers_models.VenueProvider.provider)
+        .join(offerers_models.Venue.venueProviders)
+        .join(providers_models.VenueProvider.provider)
         .filter(providers_models.VenueProvider.provider == current_api_key.provider)
         .filter(providers_models.VenueProvider.isActive)
     )
