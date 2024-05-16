@@ -1,6 +1,11 @@
 import cn from 'classnames'
 import { useState } from 'react'
-import { Link, useLocation, useSearchParams } from 'react-router-dom'
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from 'react-router-dom'
 
 import {
   AdageFrontRoles,
@@ -44,7 +49,7 @@ export function AdageOfferListCard({
   const { adageUser, setInstitutionOfferCount, institutionOfferCount } =
     useAdageUser()
   const location = useLocation()
-
+  const navigate = useNavigate()
   const currentPathname = location.pathname.split('/')[2]
 
   const [offerPrebooked, setOfferPrebooked] = useState(false)
@@ -53,9 +58,10 @@ export function AdageOfferListCard({
   const canAddOfferToFavorites =
     isOfferTemplate && adageUser.role !== AdageFrontRoles.READONLY
 
-  const offerLinkUrl = document.referrer
-    ? `${document.referrer}adage/passculture/offres/offerid/${offer.isTemplate ? '' : 'B-'}${offer.id}`
-    : `/adage-iframe/${currentPathname}/offre/${offer.id}?token=${adageAuthToken}`
+  const offerLinkUrl =
+    document.referrer && !document.referrer.includes('adage-iframe')
+      ? `${document.referrer}adage/passculture/offres/offerid/${offer.isTemplate ? '' : 'B-'}${offer.id}`
+      : `/adage-iframe/${currentPathname}/offre/${offer.id}?token=${adageAuthToken}`
 
   return (
     <div
@@ -118,11 +124,19 @@ export function AdageOfferListCard({
           <div className={styles['offer-card-content']}>
             <AdageOfferListCardTags offer={offer} adageUser={adageUser} />
             <Link
+              onClick={(e) => {
+                onCardClicked?.()
+                if (!e.metaKey) {
+                  e.preventDefault()
+                  navigate(`offre/${offer.id}?token=${adageAuthToken}`, {
+                    state: { offer },
+                  })
+                }
+              }}
               to={offerLinkUrl}
               target="_parent"
               state={{ offer }}
               className={styles['offer-card-link']}
-              onClick={onCardClicked}
             >
               <h2 className={styles['offer-title']}>{offer.name}</h2>
             </Link>

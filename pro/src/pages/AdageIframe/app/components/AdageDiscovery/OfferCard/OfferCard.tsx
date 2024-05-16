@@ -1,4 +1,9 @@
-import { Link, useLocation, useSearchParams } from 'react-router-dom'
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from 'react-router-dom'
 
 import { CollectiveOfferTemplateResponseModel } from 'apiClient/adage'
 import strokeOfferIcon from 'icons/stroke-offer.svg'
@@ -29,20 +34,30 @@ const OfferCardComponent = ({
   const [searchParams] = useSearchParams()
   const adageAuthToken = searchParams.get('token')
   const { adageUser } = useAdageUser()
+  const navigate = useNavigate()
 
-  const offerLinkUrl = document.referrer
-    ? `${document.referrer}adage/passculture/offres/offerid/${offer.isTemplate ? '' : 'B-'}${offer.id}`
-    : `/adage-iframe/${currentPathname}/offre/${offer.id}?token=${adageAuthToken}`
+  const offerLinkUrl =
+    document.referrer && !document.referrer.includes('adage-iframe')
+      ? `${document.referrer}adage/passculture/offres/offerid/${offer.isTemplate ? '' : 'B-'}${offer.id}`
+      : `/adage-iframe/${currentPathname}/offre/${offer.id}?token=${adageAuthToken}`
 
   return (
     <div className={styles['container']}>
       <Link
+        onClick={(e) => {
+          onCardClicked()
+          if (!e.metaKey) {
+            e.preventDefault()
+            navigate(`offre/${offer.id}?token=${adageAuthToken}`, {
+              state: { offer },
+            })
+          }
+        }}
         className={styles['offer-link']}
         data-testid="card-offer-link"
         to={offerLinkUrl}
         target="_parent"
         state={{ offer }}
-        onClick={onCardClicked}
       >
         <div className={styles['offer-image-container']}>
           {offer.imageUrl ? (
