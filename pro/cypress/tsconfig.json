@@ -4,7 +4,9 @@
     "lib": ["es5", "dom"],
     "types": ["cypress", "node"],
     "module": "nodenext",
-    "moduleResolution": "node16"
+    "paths": {
+      "@badeball/cypress-cucumber-preprocessor/*": ["./node_modules/@badeball/cypress-cucumber-preprocessor/dist/subpath-entrypoints/*"]
+    }
   },
   "include": ["**/*.ts"]
 }
