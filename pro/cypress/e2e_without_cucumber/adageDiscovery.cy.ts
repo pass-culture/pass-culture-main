@@ -68,12 +68,14 @@ describe('Adage discovery', () => {
 
     cy.findAllByTestId('card-venue-link').first().scrollIntoView()
 
-    cy.findAllByTestId('card-venue-link').first().within(($cardVenuelink) => {
-      cy.findByTestId('venue-infos-name').then($btn => {
-        const buttonLabel = $btn.text()
-        cy.wrap(buttonLabel).as('buttonLabel')
+    cy.findAllByTestId('card-venue-link')
+      .first()
+      .within(($cardVenuelink) => {
+        cy.findByTestId('venue-infos-name').then(($btn) => {
+          const buttonLabel = $btn.text()
+          cy.wrap(buttonLabel).as('buttonLabel')
+        })
       })
-    })
     cy.findAllByTestId('card-venue-link').first().click()
 
     cy.findByRole('link', { name: 'Rechercher' }).should(
@@ -82,7 +84,7 @@ describe('Adage discovery', () => {
       'page'
     )
 
-    cy.get('@buttonLabel').then(buttonLabel => {
+    cy.get('@buttonLabel').then((buttonLabel) => {
       cy.get(`button[title="Supprimer Lieu :  ${buttonLabel}"]`).click()
     })
   })
@@ -92,12 +94,14 @@ describe('Adage discovery', () => {
     cy.visit(`/adage-iframe?token=${adageToken}`)
 
     cy.findAllByTestId('card-venue-link').first().scrollIntoView()
-    cy.findAllByTestId('card-venue-link').first().within(($cardVenuelink) => {
-      cy.findByTestId('venue-infos-name').then($btn => {
-        const buttonLabel = $btn.text()
-        cy.wrap(buttonLabel).as('buttonLabel')
+    cy.findAllByTestId('card-venue-link')
+      .first()
+      .within(($cardVenuelink) => {
+        cy.findByTestId('venue-infos-name').then(($btn) => {
+          const buttonLabel = $btn.text()
+          cy.wrap(buttonLabel).as('buttonLabel')
+        })
       })
-  })
     cy.findAllByTestId('card-venue-link').first().click()
 
     cy.findByRole('link', { name: 'Rechercher' }).should(
@@ -106,7 +110,7 @@ describe('Adage discovery', () => {
       'page'
     )
 
-    cy.get('@buttonLabel').then(buttonLabel => {
+    cy.get('@buttonLabel').then((buttonLabel) => {
       cy.get(`button[title="Supprimer Lieu :  ${buttonLabel}"]`)
     })
 
@@ -114,8 +118,8 @@ describe('Adage discovery', () => {
 
     cy.findByRole('link', { name: 'Rechercher' }).click()
 
-    cy.get('title').contains("Supprimer Lieu").should('not.exist')
-})
+    cy.get('title').contains('Supprimer Lieu').should('not.exist')
+  })
 
   it('should put an offer in favorite', () => {
     const adageToken = Cypress.env('adageToken')
