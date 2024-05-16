@@ -294,12 +294,10 @@ class Booking(PcObject, Base, Model):
     @isExternal.expression  # type: ignore[no-redef]
     def isExternal(cls) -> Label:  # pylint: disable=no-self-argument
         return select(
-            [
-                case(
-                    (exists().where(ExternalBooking.bookingId == cls.id).correlate(cls), True),
-                    else_=False,
-                ).label("isExternal")
-            ]
+            case(
+                (exists().where(ExternalBooking.bookingId == cls.id).correlate(cls), True),
+                else_=False,
+            ).label("isExternal")
         ).label("number_of_externalBookings")
 
     @property
