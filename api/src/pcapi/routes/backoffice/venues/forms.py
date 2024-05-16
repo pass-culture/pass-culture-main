@@ -5,6 +5,7 @@ import sqlalchemy as sa
 import wtforms
 from wtforms import validators
 
+from pcapi.connectors import acceslibre as acceslibre_connector
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.routes.backoffice.forms import empty as empty_forms
@@ -132,7 +133,8 @@ class EditVenueForm(EditVirtualVenueForm):
             raise validators.ValidationError(
                 "L'URL doit se terminer par /<slug-chez-acceslibre>/ (un slug n'est composé que de minuscules et de tirets du milieu)"
             )
-
+        if not acceslibre_connector.id_exists_at_acceslibre(slug=acceslibre_url.data.split("/")[-2]):
+            raise validators.ValidationError("Cette URL n'existe pas chez acceslibre")
         if self.is_permanent.data is False and acceslibre_url.data:
             if self.venue.isPermanent:
                 acceslibre_url.data = None
