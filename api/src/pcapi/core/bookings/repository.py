@@ -9,6 +9,7 @@ import typing
 
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
+from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm import joinedload
 import xlsxwriter
@@ -48,12 +49,6 @@ BOOKING_STATUS_LABELS = {
     "confirmed": "confirmé",
 }
 
-BOOKING_DATE_STATUS_MAPPING = {
-    BookingStatusFilter.BOOKED: Booking.dateCreated,
-    BookingStatusFilter.VALIDATED: Booking.dateUsed,
-    BookingStatusFilter.REIMBURSED: Booking.reimbursementDate,
-}
-
 BOOKING_EXPORT_HEADER = (
     "Lieu",
     "Nom de l’offre",
@@ -75,6 +70,10 @@ BOOKING_EXPORT_HEADER = (
 )
 
 
+def cast_to_ts(dt: datetime) -> sa.cast:
+    return sa.cast(dt, TIMESTAMP)
+
+
 # FIXME (Gautier, 2022-03-25): also used in collective_bookings. Should we move it to core or some other place?
 def field_to_venue_timezone(field: typing.Any) -> sa.cast:
     return sa.cast(sa.func.timezone(Venue.timezone, sa.func.timezone("UTC", field)), sa.Date)
@@ -82,32 +81,51 @@ def field_to_venue_timezone(field: typing.Any) -> sa.cast:
 
 def _bookings_report_entities() -> tuple:
     return (
-        Booking.status,
+        Booking.status.label("status"),
         Booking.token.label("bookingToken"),
-        Booking.priceCategoryLabel,
-        Booking.dateCreated.label("bookedAt"),
+        Booking.priceCategoryLabel.label("priceCategoryLabel"),
         Booking.amount.label("bookingAmount"),
-        Booking.dateUsed.label("usedAt"),
-        Booking.reimbursementDate.label("reimbursedAt"),
         Booking.cancellationDate.label("cancelledAt"),
         Booking.isExternal.label("isExternal"),  # type: ignore[attr-defined]
-        Booking.isConfirmed,
-        Booking.userId,
-        Booking.stockId,
+        Booking.isConfirmed.label("isConfirmed"),  # type: ignore[attr-defined]
+        Booking.stockId.label("stockId"),
         Offerer.postalCode.label("offererPostalCode"),
         Stock.beginningDatetime.label("stockBeginningDatetime"),
-        Stock.offerId,
         Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
         Venue.departementCode.label("venueDepartmentCode"),
+        Offer.id.label("offerId"),
         Offer.name.label("offerName"),
         Offer.extraData["ean"].label("offerEan"),
-        Offer.id.label("offerId"),
         User.firstName.label("beneficiaryFirstName"),
         User.lastName.label("beneficiaryLastName"),
         User.email.label("beneficiaryEmail"),
         User.phoneNumber.label("beneficiaryPhoneNumber"),  # type: ignore[attr-defined]
         User.postalCode.label("beneficiaryPostalCode"),
     )
+
+
+def _filter_booking_period(
+    query: BaseQuery,
+    booking_period: tuple[date, date],
+    status_filter: BookingStatusFilter | None = None,
+    with_tz: bool = False,
+) -> BaseQuery:
+    if not status_filter:
+        status_filter = BookingStatusFilter.BOOKED
+    field = {
+        BookingStatusFilter.BOOKED: sa.column("bookedAt") if with_tz else Booking.dateCreated,
+        BookingStatusFilter.VALIDATED: sa.column("usedAt") if with_tz else Booking.dateUsed,
+        BookingStatusFilter.REIMBURSED: sa.column("reimbursedAt") if with_tz else Booking.reimbursementDate,
+    }[status_filter]
+    start = datetime.combine(booking_period[0], time.min) - timedelta(days=1)
+    end = datetime.combine(booking_period[1], time.min) + timedelta(days=2)
+    if with_tz:
+        field = sa.func.timezone(sa.column("venueTimezone"), sa.func.timezone("UTC", field))
+        start += timedelta(days=1)
+        end -= timedelta(days=1)
+    query = query.filter(field >= cast_to_ts(start))
+    query = query.filter(field < cast_to_ts(end))
+    return query
 
 
 def _get_bookings_report_query(
@@ -147,10 +165,7 @@ def _get_bookings_report_query(
         query = query.filter(UserOfferer.isValidated)
 
     if booking_period:
-        if not status_filter:
-            status_filter = BookingStatusFilter.BOOKED
-        period_attribut_filter = BOOKING_DATE_STATUS_MAPPING[status_filter]
-        query = query.filter(field_to_venue_timezone(period_attribut_filter).between(*booking_period, symmetric=True))
+        query = _filter_booking_period(query, booking_period=booking_period, status_filter=status_filter)
 
     if validated:
         query = query.filter(
@@ -177,6 +192,10 @@ def _get_bookings_report_query(
         # the label prevents SA from using a bad (prefixed) label for this field
         Booking.id.label("id"),
         Booking.quantity.label("quantity"),
+        Booking.dateCreated.label("bookedAt"),
+        Booking.dateUsed.label("usedAt"),
+        Booking.reimbursementDate.label("reimbursedAt"),
+        Venue.timezone.label("venueTimezone"),
     ]
     if full_entities:
         entities.extend(_bookings_report_entities())
@@ -187,8 +206,13 @@ def _get_bookings_report_query(
     if duplicate_duo:
         query = query.union_all(query.filter(Booking.quantity == DUO_QUANTITY))
 
+    if booking_period:
+        query_cte = query.cte()
+        query = db.session.query(*query_cte.c)
+        query = _filter_booking_period(query, booking_period=booking_period, status_filter=status_filter, with_tz=True)
+
     if offset is not None and limit is not None:
-        query = query.order_by(sa.text('"bookedAt" DESC')).offset(offset).limit(limit)
+        query = query.order_by(sa.column("bookedAt").desc()).offset(offset).limit(limit)
 
     return query
 
