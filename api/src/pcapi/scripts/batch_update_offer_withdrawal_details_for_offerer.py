@@ -4,6 +4,7 @@ Fetch offers from database and update their withdrawal details on Batch.
 
 import math
 
+import sqlalchemy as sa
 from sqlalchemy import func
 
 from pcapi.core.offers.models import Offer
@@ -20,7 +21,8 @@ def batch_update_offer_withdrawal_details_for_offerer(
     ranges = [(i, i + batch_size) for i in range(min_id, max_id + 1, batch_size)]
     for start, end in ranges:
         db.session.execute(
-            """
+            sa.text(
+                """
             UPDATE offer
             SET "withdrawalDetails" = :withdrawal_details
             FROM venue
@@ -30,7 +32,8 @@ def batch_update_offer_withdrawal_details_for_offerer(
               AND offer."isActive" IS TRUE
               AND offer."withdrawalDetails" IS NULL
               AND venue."managingOffererId" = :offerer_id
-            """,
+            """
+            ),
             {"start": start, "end": end, "withdrawal_details": withdrawal_details, "offerer_id": offerer_id},
         )
         db.session.commit()
