@@ -617,7 +617,8 @@ def link_venue_to_pricing_point(
         ),
     ):
         ppoint_update_result = db.session.execute(
-            f"""
+            sa.text(
+                f"""
               update finance_event
               set
                 "pricingPointId" = :pricing_point_id,
@@ -633,7 +634,8 @@ def link_venue_to_pricing_point(
                 and finance_event.status = :finance_event_status_pending
                 and finance_event."pricingPointId" IS NULL
                 and finance_event."venueId" = :venue_id
-            """,
+            """
+            ),
             {
                 "venue_id": venue.id,
                 "pricing_point_id": pricing_point_id,

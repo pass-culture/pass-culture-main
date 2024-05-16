@@ -8,6 +8,7 @@ import re
 
 from dateutil.relativedelta import relativedelta
 from faker import Faker
+import sqlalchemy as sa
 import time_machine
 
 from pcapi.core.bookings import factories as bookings_factory
@@ -282,9 +283,9 @@ def create_short_email_beneficiaries() -> dict[str, User]:
             lastName=fake.last_name(),
             needsToFillCulturalSurvey=False,
         )
-        db.session.execute("ALTER TABLE booking DISABLE TRIGGER booking_update;")
+        db.session.execute(sa.text("ALTER TABLE booking DISABLE TRIGGER booking_update;"))
         bookings_factory.BookingFactory(user=beneficiary_and_exunderage)
-        db.session.execute("ALTER TABLE booking ENABLE TRIGGER booking_update;")
+        db.session.execute(sa.text("ALTER TABLE booking ENABLE TRIGGER booking_update;"))
 
         fraud_factories.BeneficiaryFraudCheckFactory(user=beneficiary_and_exunderage)
     users_factories.DepositGrantFactory(user=beneficiary_and_exunderage)
