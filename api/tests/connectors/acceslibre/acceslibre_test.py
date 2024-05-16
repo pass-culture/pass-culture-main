@@ -204,3 +204,18 @@ class AcceslibreTest:
         with pytest.raises(acceslibre.AccesLibreApiException) as exception:
             acceslibre.get_id_at_accessibility_provider(name=name, public_name=public_name, ban_id=ban_id)
         assert str(exception.value) == "Acceslibre activite should be a dict, but received: Chaîne de caracteres"
+
+    def test_if_id_exists_at_acceslibre(self, requests_mock):
+        existing_slug = "bibliotheque-municipale-de-truchan-les-bains"
+        unexisting_slug = "sniab-sel-nahcurt-ed-elapicinum-euqehtoilbib"
+        requests_mock.get(
+            f"https://acceslibre.beta.gouv.fr/api/erps/{existing_slug}/",
+            json=fixtures.ACCESLIBRE_ACTIVITY_RESULT,
+        )
+        requests_mock.get(
+            f"https://acceslibre.beta.gouv.fr/api/erps/{unexisting_slug}/",
+            json=fixtures.ACCESLIBRE_RESULTS_EMPTY,
+        )
+
+        assert acceslibre.id_exists_at_acceslibre(existing_slug)
+        assert not acceslibre.id_exists_at_acceslibre(unexisting_slug)

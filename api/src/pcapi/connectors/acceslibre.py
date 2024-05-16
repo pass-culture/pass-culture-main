@@ -220,6 +220,12 @@ def find_new_entries_by_activity(activity: AcceslibreActivity) -> list[Acceslibr
     return _get_backend().find_new_entries_by_activity(activity=activity)
 
 
+def id_exists_at_acceslibre(slug: str) -> bool:
+    """This method requests acceslibre for a given slug, and returns True if this
+    slug exists on their side."""
+    return _get_backend().id_exists_at_acceslibre(slug=slug)
+
+
 def get_id_at_accessibility_provider(
     name: str,
     public_name: str | None = None,
@@ -374,6 +380,9 @@ class BaseBackend:
     def get_accessibility_infos(self, slug: str) -> tuple[datetime | None, AccessibilityInfo | None]:
         raise NotImplementedError()
 
+    def id_exists_at_acceslibre(self, slug: str) -> bool:
+        raise NotImplementedError()
+
 
 class TestingBackend(BaseBackend):
     def find_venue_at_accessibility_provider(
@@ -457,6 +466,9 @@ class TestingBackend(BaseBackend):
         ]
         last_update = datetime(2024, 3, 1, 0, 0)
         return last_update, acceslibre_to_accessibility_infos(acceslibre_data)
+
+    def id_exists_at_acceslibre(self, slug: str) -> bool:
+        return True
 
 
 class AcceslibreBackend(BaseBackend):
@@ -642,3 +654,7 @@ class AcceslibreBackend(BaseBackend):
             accessibility_infos = acceslibre_to_accessibility_infos(acceslibre_data)
             return (last_update, accessibility_infos)
         return (None, None)
+
+    def id_exists_at_acceslibre(self, slug: str) -> bool:
+        response = self._send_request(slug=slug)
+        return bool(response and response.get("count"))
