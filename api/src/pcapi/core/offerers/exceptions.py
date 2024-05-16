@@ -69,6 +69,10 @@ class OffererAddressLabelAlreadyUsed(Exception):
     pass
 
 
+class OffererAddressNotEditableException(Exception):
+    pass
+
+
 class CannotSuspendOffererWithBookingsException(ClientError):
     def __init__(self) -> None:
         super().__init__(

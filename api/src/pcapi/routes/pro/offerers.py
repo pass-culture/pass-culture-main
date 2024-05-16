@@ -322,8 +322,11 @@ def patch_offerer_address(
     with transaction():
         with db.session.no_autoflush:
             check_user_has_access_to_offerer(current_user, offerer_id)
-            if not repository.offerer_address_exists(offerer_id, offerer_address_id):
+            offerer_address = repository.get_offerer_address_of_offerer(offerer_id, offerer_address_id)
+            if offerer_address is None:
                 raise ResourceNotFoundError()
+            if offerer_address._isEditable is False:
+                raise ApiErrors({"label": "Le libellé de cette adresse n'est pas modifiable"}, status_code=400)
             try:
                 api.update_offerer_address_label(offerer_address_id, body.label)
             except offerers_exceptions.OffererAddressLabelAlreadyUsed:
