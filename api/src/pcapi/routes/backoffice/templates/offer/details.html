@@ -79,21 +79,11 @@
                 <p class="mb-1">
                   <span class="fw-bold">Sous-catégorie :</span> {{ offer.subcategoryId | format_offer_subcategory }}
                 </p>
-                {% if offer.extraData.musicType or offer.extraData.musicSubType %}
-                  <p class="mb-1">
-                    <span class="fw-bold">Type de musique :</span>
-                    {% if offer.extraData.musicType %}
-                      {{ offer.extraData.musicType | format_music_type }}
-                    {% else %}
-                      [Non renseigné]
-                    {% endif %}
-                    -
-                    {% if offer.extraData.musicSubType %}
-                      {{ offer.extraData.musicSubType | format_music_subtype }}
-                    {% else %}
-                      [Non renseigné]
-                    {% endif %}
-                  </p>
+                {% if offer.extraData.gtl_id %}
+                  <span class="fw-bold">Type de musique :</span>
+                  {{ offer.extraData.gtl_id | format_music_gtl_id }}
+                {% else %}
+                  [Non renseigné]
                 {% endif %}
                 {% if offer.extraData.showType or offer.extraData.showSubType %}
                   <p class="mb-1">

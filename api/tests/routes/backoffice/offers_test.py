@@ -59,9 +59,9 @@ def offers_fixture(criteria) -> tuple:
         criteria=[criteria[0]],
         venue__postalCode="47000",
         venue__departementCode="47",
-        subcategoryId=subcategories.MATERIEL_ART_CREATIF.id,
+        subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id,
         author=users_factories.ProFactory(),
-        extraData={"musicType": 501, "musicSubType": 510},
+        extraData={"musicType": 501, "musicSubType": 510, "gtl_id": "02050000"},
     )
     offer_with_limited_stock = offers_factories.EventOfferFactory(
         name="A Very Specific Name",
@@ -88,7 +88,7 @@ def offers_fixture(criteria) -> tuple:
         venue__departementCode="10",
         subcategoryId=subcategories.JEU_EN_LIGNE.id,
         author=users_factories.ProFactory(),
-        extraData={"musicType": 870, "musicSubType": 871, "showType": 1510, "showSubType": 1511},
+        extraData={"musicType": 870, "musicSubType": 871, "gtl_id": "14000000", "showType": 1510, "showSubType": 1511},
     )
     offers_factories.StockFactory(quantity=None, offer=offer_with_unlimited_stock, price=10.1)
     offers_factories.StockFactory(offer=offer_with_unlimited_stock, price=15)
@@ -563,25 +563,11 @@ class ListOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert {int(row["ID"]) for row in rows} == {offers[1].id, offers[2].id}
 
-    def test_list_offers_by_music_type(self, authenticated_client, offers):
+    def test_list_offers_advanced_search_by_music_type_with_titelive_genres(self, authenticated_client, offers):
         query_args = {
-            "search-3-search_field": "MUSIC_TYPE",
+            "search-3-search_field": "MUSIC_TYPE_GTL",
             "search-3-operator": "IN",
-            "search-3-music_type": ["501", "520", "800"],
-        }
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, **query_args))
-            assert response.status_code == 200
-
-        row = html_parser.extract_table_rows(response.data)
-        assert int(row[0]["ID"]) == offers[0].id
-
-    def test_list_offers_by_music_sub_type(self, authenticated_client, offers):
-        query_args = {
-            "search-0-search_field": "MUSIC_SUB_TYPE",
-            "search-0-operator": "IN",
-            "search-0-music_sub_type": ["510", "511", "512"],
+            "search-3-music_type_gtl": ["01", "02", "19"],
         }
 
         with assert_num_queries(self.expected_num_queries):
@@ -1692,17 +1678,6 @@ class GetOfferDetailsTest(GetEndpointHelper):
         offer = offers_factories.OfferFactory(
             withdrawalDetails="Demander à la caisse",
             extraData={"showType": 1510},
-        )
-
-        url = url_for(self.endpoint, offer_id=offer.id, _external=True)
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url)
-            assert response.status_code == 200
-
-    def test_get_detail_offer_without_music_subtype(self, legit_user, authenticated_client):
-        offer = offers_factories.OfferFactory(
-            withdrawalDetails="Demander à la caisse",
-            extraData={"musicType": 1510},
         )
 
         url = url_for(self.endpoint, offer_id=offer.id, _external=True)
