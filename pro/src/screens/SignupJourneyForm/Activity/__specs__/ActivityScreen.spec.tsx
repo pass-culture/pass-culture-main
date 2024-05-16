@@ -6,11 +6,11 @@ import { Route, Routes } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { Target } from 'apiClient/v1'
 import { Notification } from 'components/Notification/Notification'
+import { DEFAULT_ACTIVITY_VALUES } from 'context/SignupJourneyContext/constants'
 import {
-  DEFAULT_ACTIVITY_VALUES,
   SignupJourneyContext,
   SignupJourneyContextValues,
-} from 'context/SignupJourneyContext'
+} from 'context/SignupJourneyContext/SignupJourneyContext'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 

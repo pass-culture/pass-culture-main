@@ -2,11 +2,11 @@ import React from 'react'
 import { generatePath, useLocation } from 'react-router-dom'
 
 import { Step, StepPattern, Stepper } from 'components/Stepper/Stepper'
-import { useIndividualOfferContext } from 'context/IndividualOfferContext'
+import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
-import { useOfferWizardMode } from 'hooks'
 import useActiveStep from 'hooks/useActiveStep'
+import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import {
   getOfferSubtypeFromParam,
   isOfferSubtypeEvent,

@@ -12,8 +12,8 @@ import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescript
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
-import { useOfferWizardMode } from 'hooks'
 import useNotification from 'hooks/useNotification'
+import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 import RecurrenceSection from './RecurrenceSection/RecurrenceSection'

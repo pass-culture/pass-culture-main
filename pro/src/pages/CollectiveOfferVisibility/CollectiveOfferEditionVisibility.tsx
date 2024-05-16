@@ -9,7 +9,7 @@ import { GET_COLLECTIVE_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
 import { isCollectiveOfferTemplate, Mode } from 'core/OfferEducational/types'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
-import { useAdapter } from 'hooks'
+import { useAdapter } from 'hooks/useAdapter'
 import useNotification from 'hooks/useNotification'
 import { CollectiveOfferVisibilityScreen } from 'screens/CollectiveOfferVisibility/CollectiveOfferVisibility'
 import {

@@ -10,7 +10,7 @@ import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import {
   SignupJourneyContext,
   SignupJourneyContextValues,
-} from 'context/SignupJourneyContext'
+} from 'context/SignupJourneyContext/SignupJourneyContext'
 import * as getSirenData from 'core/Offerers/getSirenData'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
 import { renderWithProviders } from 'utils/renderWithProviders'

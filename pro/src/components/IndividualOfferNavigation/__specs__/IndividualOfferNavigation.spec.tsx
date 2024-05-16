@@ -6,7 +6,7 @@ import { generatePath, Route, Routes } from 'react-router-dom'
 import {
   IndividualOfferContextValues,
   IndividualOfferContext,
-} from 'context/IndividualOfferContext'
+} from 'context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import {

@@ -6,7 +6,7 @@ import { VenueListItemResponseModel } from 'apiClient/v1'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
-} from 'context/IndividualOfferContext'
+} from 'context/IndividualOfferContext/IndividualOfferContext'
 import { REIMBURSEMENT_RULES } from 'core/Finances/constants'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
 import * as filterCategories from 'screens/IndividualOffer/InformationsScreen/utils/filterCategories/filterCategories'

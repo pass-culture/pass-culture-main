@@ -6,7 +6,7 @@ import { GetIndividualOfferResponseModel, OfferStatus } from 'apiClient/v1'
 import {
   IndividualOfferContextValues,
   IndividualOfferContext,
-} from 'context/IndividualOfferContext'
+} from 'context/IndividualOfferContext/IndividualOfferContext'
 import { RootState } from 'store/rootReducer'
 import {
   getOfferVenueFactory,

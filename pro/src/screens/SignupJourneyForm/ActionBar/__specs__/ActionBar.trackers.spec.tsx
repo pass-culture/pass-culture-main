@@ -7,8 +7,10 @@ import * as useAnalytics from 'app/App/analytics/firebase'
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
 import { Events } from 'core/FirebaseEvents/constants'
-import { ActionBarProps } from 'screens/SignupJourneyForm/ActionBar/ActionBar'
-import { ActionBar } from 'screens/SignupJourneyForm/ActionBar/index'
+import {
+  ActionBarProps,
+  ActionBar,
+} from 'screens/SignupJourneyForm/ActionBar/ActionBar'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 

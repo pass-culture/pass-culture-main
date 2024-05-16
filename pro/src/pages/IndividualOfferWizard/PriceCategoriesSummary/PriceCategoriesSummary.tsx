@@ -1,6 +1,6 @@
 /* istanbul ignore file */
-import { useIndividualOfferContext } from 'context/IndividualOfferContext'
-import useOfferWizardMode from 'hooks/useOfferWizardMode'
+import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
+import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import IndivualOfferLayout from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
 import { PriceCategoriesSection } from 'screens/IndividualOffer/SummaryScreen/PriceCategoriesSection/PriceCategoriesSection'
 import Spinner from 'ui-kit/Spinner/Spinner'

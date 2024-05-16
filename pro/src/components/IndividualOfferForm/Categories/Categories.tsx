@@ -10,7 +10,7 @@ import {
 import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { useIndividualOfferContext } from 'context/IndividualOfferContext'
+import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers/constants'
 import { SelectOption } from 'custom_types/form'
 import useActiveFeature from 'hooks/useActiveFeature'

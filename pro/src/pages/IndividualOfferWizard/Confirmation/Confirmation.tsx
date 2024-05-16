@@ -1,5 +1,5 @@
-import { useIndividualOfferContext } from 'context/IndividualOfferContext'
-import { useOfferWizardMode } from 'hooks'
+import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
+import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import IndivualOfferLayout from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
 import { getTitle } from 'screens/IndividualOffer/IndivualOfferLayout/utils/getTitle'
 import IndividualOfferConfirmationScreen from 'screens/IndividualOfferConfirmationScreen/IndividualOfferConfirmationScreen'

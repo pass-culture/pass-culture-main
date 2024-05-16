@@ -4,7 +4,7 @@ import audioDisabilitySvg from 'icons/stroke-accessibility-ear.svg'
 import strokeAccessibilityEye from 'icons/stroke-accessibility-eye.svg'
 import strokeAccessibilityLeg from 'icons/stroke-accessibility-leg.svg'
 
-const useAccessibilityOptions = (
+export const useAccessibilityOptions = (
   setFieldValue: (
     field: string,
     value: any,
@@ -61,5 +61,3 @@ const useAccessibilityOptions = (
     },
   ]
 }
-
-export default useAccessibilityOptions

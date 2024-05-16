@@ -2,7 +2,7 @@ import React from 'react'
 
 import { Banner } from 'ui-kit/Banners/Banner/Banner'
 
-const ShowcaseBannerInfo = (): JSX.Element => (
+export const ShowcaseBannerInfo = (): JSX.Element => (
   <Banner
     type="notification-info"
     links={[
@@ -27,5 +27,3 @@ const ShowcaseBannerInfo = (): JSX.Element => (
     <br />
   </Banner>
 )
-
-export default ShowcaseBannerInfo

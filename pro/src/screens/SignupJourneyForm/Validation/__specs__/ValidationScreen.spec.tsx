@@ -11,11 +11,11 @@ import { api } from 'apiClient/api'
 import { PostOffererResponseModel, Target } from 'apiClient/v1'
 import { Address } from 'components/Address/types'
 import { Notification } from 'components/Notification/Notification'
+import { DEFAULT_ACTIVITY_VALUES } from 'context/SignupJourneyContext/constants'
 import {
-  DEFAULT_ACTIVITY_VALUES,
   SignupJourneyContextValues,
   SignupJourneyContext,
-} from 'context/SignupJourneyContext'
+} from 'context/SignupJourneyContext/SignupJourneyContext'
 import { Validation } from 'screens/SignupJourneyForm/Validation/Validation'
 import * as utils from 'utils/recaptcha'
 import { renderWithProviders } from 'utils/renderWithProviders'

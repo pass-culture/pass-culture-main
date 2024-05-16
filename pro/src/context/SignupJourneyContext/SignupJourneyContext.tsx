@@ -6,7 +6,7 @@ import { ActivityFormValues } from 'screens/SignupJourneyForm/Activity/ActivityF
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
 import { OffererFormValues } from 'screens/SignupJourneyForm/Offerer/OffererForm'
 
-import { DEFAULT_ACTIVITY_VALUES } from '.'
+import { DEFAULT_ACTIVITY_VALUES } from './constants'
 
 export interface Offerer extends OffererFormValues, Address {
   name: string

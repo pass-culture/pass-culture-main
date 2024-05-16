@@ -4,7 +4,7 @@ import React from 'react'
 
 import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
-import { IndividualOfferContext } from 'context/IndividualOfferContext'
+import { IndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import {
   bookingRecapFactory,
   getIndividualOfferFactory,

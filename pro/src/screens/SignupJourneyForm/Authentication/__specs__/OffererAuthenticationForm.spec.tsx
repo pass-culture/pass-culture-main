@@ -6,10 +6,10 @@ import createFetchMock from 'vitest-fetch-mock'
 
 import { apiAdresse } from 'apiClient/adresse/apiAdresse'
 import {
-  Offerer,
-  SignupJourneyContext,
   SignupJourneyContextValues,
-} from 'context/SignupJourneyContext'
+  SignupJourneyContext,
+  Offerer,
+} from 'context/SignupJourneyContext/SignupJourneyContext'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
 import { Button } from 'ui-kit/Button/Button'
 import { renderWithProviders } from 'utils/renderWithProviders'

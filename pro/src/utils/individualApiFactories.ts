@@ -31,7 +31,7 @@ import {
   BookingOfferType,
 } from 'apiClient/v2'
 import { StocksEvent } from 'components/StocksEventList/StocksEventList'
-import { IndividualOfferContextValues } from 'context/IndividualOfferContext'
+import { IndividualOfferContextValues } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { REIMBURSEMENT_RULES } from 'core/Finances/constants'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
 

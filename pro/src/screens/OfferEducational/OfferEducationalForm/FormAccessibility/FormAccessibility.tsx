@@ -3,7 +3,7 @@ import React from 'react'
 
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OfferEducationalFormValues } from 'core/OfferEducational/types'
-import useAccessibilityOptions from 'hooks/useAccessibilityOptions'
+import { useAccessibilityOptions } from 'hooks/useAccessibilityOptions'
 import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'
 
 interface FormAccessibilityProps {

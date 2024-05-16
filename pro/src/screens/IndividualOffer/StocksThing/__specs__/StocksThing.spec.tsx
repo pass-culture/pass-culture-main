@@ -18,7 +18,7 @@ import { Notification } from 'components/Notification/Notification'
 import {
   IndividualOfferContextValues,
   IndividualOfferContext,
-} from 'context/IndividualOfferContext'
+} from 'context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import {
   getIndividualOfferPath,

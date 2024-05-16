@@ -10,10 +10,8 @@ import { Callout } from 'components/Callout/Callout'
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
 import { GET_VENUE_TYPES_QUERY_KEY } from 'config/swrQueryKeys'
-import {
-  DEFAULT_ACTIVITY_VALUES,
-  useSignupJourneyContext,
-} from 'context/SignupJourneyContext'
+import { DEFAULT_ACTIVITY_VALUES } from 'context/SignupJourneyContext/constants'
+import { useSignupJourneyContext } from 'context/SignupJourneyContext/SignupJourneyContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useInitReCaptcha from 'hooks/useInitReCaptcha'
@@ -27,7 +25,7 @@ import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { getReCaptchaToken } from 'utils/recaptcha'
 
-import { ActionBar } from '../ActionBar'
+import { ActionBar } from '../ActionBar/ActionBar'
 
 import styles from './Validation.module.scss'
 

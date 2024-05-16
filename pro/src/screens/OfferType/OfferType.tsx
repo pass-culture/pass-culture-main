@@ -28,7 +28,7 @@ import IndividualOfferType from './IndividualOfferType/IndividualOfferType'
 import styles from './OfferType.module.scss'
 import { OfferTypeFormValues } from './types'
 
-const OfferType = (): JSX.Element => {
+export const OfferTypeScreen = (): JSX.Element => {
   const navigate = useNavigate()
   const location = useLocation()
   const notify = useNotification()
@@ -162,5 +162,3 @@ const OfferType = (): JSX.Element => {
     </div>
   )
 }
-
-export default OfferType
