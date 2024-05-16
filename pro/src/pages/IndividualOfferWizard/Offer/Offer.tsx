@@ -8,10 +8,10 @@ import {
   GET_VENUES_QUERY_KEY,
   GET_OFFERER_NAMES_QUERY_KEY,
 } from 'config/swrQueryKeys'
-import { useIndividualOfferContext } from 'context/IndividualOfferContext'
+import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { useOfferWizardMode } from 'hooks'
 import useCurrentUser from 'hooks/useCurrentUser'
+import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import IndivualOfferLayout from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
 import { getTitle } from 'screens/IndividualOffer/IndivualOfferLayout/utils/getTitle'
 import { InformationsScreen } from 'screens/IndividualOffer/InformationsScreen/InformationsScreen'

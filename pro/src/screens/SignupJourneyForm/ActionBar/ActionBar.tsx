@@ -24,7 +24,7 @@ export interface ActionBarProps {
   legalCategoryCode?: string
 }
 
-const ActionBar = ({
+export const ActionBar = ({
   onClickNext,
   onClickPrevious,
   isDisabled,
@@ -95,5 +95,3 @@ const ActionBar = ({
     </ActionsBarSticky>
   )
 }
-
-export default ActionBar

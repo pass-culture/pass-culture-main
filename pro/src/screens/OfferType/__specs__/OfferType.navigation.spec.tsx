@@ -12,7 +12,7 @@ import {
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
-import OfferType from '../OfferType'
+import { OfferTypeScreen } from '../OfferType'
 
 vi.mock('@firebase/remote-config', () => ({
   getValue: () => ({ asBoolean: () => true }),
@@ -24,7 +24,7 @@ vi.mock('react-router-dom', async () => ({
 }))
 
 const renderOfferTypes = (venueId?: string) => {
-  renderWithProviders(<OfferType />, {
+  renderWithProviders(<OfferTypeScreen />, {
     user: sharedCurrentUserFactory(),
     initialRouterEntries: [`/creation${venueId ? `?lieu=${venueId}` : ''}`],
   })

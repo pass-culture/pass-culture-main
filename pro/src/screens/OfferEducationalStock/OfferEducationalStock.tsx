@@ -32,7 +32,7 @@ import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { DETAILS_PRICE_LABEL } from './constants/labels'
 import { FormStock } from './FormStock/FormStock'
 import styles from './OfferEducationalStock.module.scss'
-import ShowcaseBannerInfo from './ShowcaseBannerInfo'
+import { ShowcaseBannerInfo } from './ShowcaseBannerInfo/ShowcaseBannerInfo'
 import {
   generateValidationSchema,
   showcaseOfferValidationSchema,

@@ -8,11 +8,11 @@ import * as useAnalytics from 'app/App/analytics/firebase'
 import { DEFAULT_ADDRESS_FORM_VALUES } from 'components/Address/constants'
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
+import { DEFAULT_ACTIVITY_VALUES } from 'context/SignupJourneyContext/constants'
 import {
-  DEFAULT_ACTIVITY_VALUES,
   SignupJourneyContext,
   SignupJourneyContextValues,
-} from 'context/SignupJourneyContext'
+} from 'context/SignupJourneyContext/SignupJourneyContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
 import { renderWithProviders } from 'utils/renderWithProviders'

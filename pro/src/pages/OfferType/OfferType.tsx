@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { AppLayout } from 'app/AppLayout'
-import OfferTypeScreen from 'screens/OfferType'
+import { OfferTypeScreen } from 'screens/OfferType/OfferType'
 
 const OfferType = (): JSX.Element => {
   return (

@@ -8,7 +8,7 @@ import {
 } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { defaultEditionProps } from '../__tests-utils__'
+import { defaultEditionProps } from '../__tests-utils__/defaultProps'
 import {
   managedVenueFactory,
   userOffererFactory,

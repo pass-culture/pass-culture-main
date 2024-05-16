@@ -3,12 +3,12 @@ import { userEvent } from '@testing-library/user-event'
 
 import { renderWithProviders } from 'utils/renderWithProviders'
 
+import { defaultCreationProps } from '../__tests-utils__/defaultProps'
 import {
-  defaultCreationProps,
   managedVenueFactory,
+  userOffererFactory,
   userOfferersFactory,
-} from '../__tests-utils__'
-import { userOffererFactory } from '../__tests-utils__/userOfferersFactory'
+} from '../__tests-utils__/userOfferersFactory'
 import { INTERVENTION_AREA_LABEL } from '../constants/labels'
 import { OfferEducational, OfferEducationalProps } from '../OfferEducational'
 

@@ -9,10 +9,10 @@ import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import {
-  Offerer,
-  SignupJourneyContext,
   SignupJourneyContextValues,
-} from 'context/SignupJourneyContext'
+  SignupJourneyContext,
+  Offerer,
+} from 'context/SignupJourneyContext/SignupJourneyContext'
 import { Button } from 'ui-kit/Button/Button'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'

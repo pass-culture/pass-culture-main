@@ -31,7 +31,7 @@ import { patchCollectiveOfferTemplateAdapter } from 'pages/CollectiveOfferEditio
 import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
 
 import styles from './OfferEducational.module.scss'
-import OfferEducationalForm from './OfferEducationalForm'
+import { OfferEducationalForm } from './OfferEducationalForm/OfferEducationalForm'
 import { useCollectiveOfferImageUpload } from './useCollectiveOfferImageUpload'
 import { getOfferEducationalValidationSchema } from './validationSchema'
 

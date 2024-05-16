@@ -2,8 +2,8 @@
 import React from 'react'
 
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
-import { useIndividualOfferContext } from 'context/IndividualOfferContext'
-import useOfferWizardMode from 'hooks/useOfferWizardMode'
+import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
+import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import ActionBar from 'screens/IndividualOffer/ActionBar/ActionBar'
 import { BookingsSummaryScreen } from 'screens/IndividualOffer/BookingsSummary/BookingsSummary'
 import IndivualOfferLayout from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'

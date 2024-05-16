@@ -7,7 +7,7 @@ interface WizardModeDetailsList {
   mode: OFFER_WIZARD_MODE
 }
 
-const useOfferWizardMode = (): OFFER_WIZARD_MODE => {
+export const useOfferWizardMode = (): OFFER_WIZARD_MODE => {
   const location = useLocation()
 
   const modePathMap: WizardModeDetailsList[] = [
@@ -28,5 +28,3 @@ const useOfferWizardMode = (): OFFER_WIZARD_MODE => {
     ? wizardModeDetails.mode
     : OFFER_WIZARD_MODE.READ_ONLY
 }
-
-export default useOfferWizardMode

@@ -4,7 +4,7 @@ import { Outlet, RouteObject } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
-import { IndividualOfferContextProvider } from 'context/IndividualOfferContext'
+import { IndividualOfferContextProvider } from 'context/IndividualOfferContext/IndividualOfferContext'
 
 const IndividualOfferWizard = () => {
   return (

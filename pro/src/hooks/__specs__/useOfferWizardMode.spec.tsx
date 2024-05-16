@@ -4,7 +4,7 @@ import { MemoryRouter } from 'react-router-dom'
 
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 
-import useOfferWizardMode from '../useOfferWizardMode'
+import { useOfferWizardMode } from '../useOfferWizardMode'
 
 const renderUseOfferWizardMode = (url: string) => {
   const wrapper = ({ children }: { children: any }) => (
