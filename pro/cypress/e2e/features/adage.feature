@@ -3,8 +3,8 @@ Feature: Adage discovery
 
   Background:
     Given I go to adage login page with valide token
-
   # note: ce scénario passe pas si on le met à la fin
+
   Scenario: should put an offer in favorite
     When I open adage iframe
     And I add first offer to favorites
@@ -51,4 +51,4 @@ Feature: Adage discovery
     When I open adage iframe
     And I select first card venue
     Then the iframe search page should be display correctly
-    When I go back to search page    
+    When I go back to search page
