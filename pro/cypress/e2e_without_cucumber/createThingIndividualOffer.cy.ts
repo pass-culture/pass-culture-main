@@ -1,7 +1,7 @@
 // what is a thing? une chose?
 describe('Create an individual offer (thing)', () => {
   it('should create an individual offer', () => {
-    // toujours d'actu ce flag? où aller voir pour savoir?    
+    // toujours d'actu ce flag? où aller voir pour savoir?
     cy.setFeatureFlags([{ name: 'WIP_ENABLE_PRO_SIDE_NAV', isActive: false }])
 
     // Random 13-digit number because we can't use the same EAN twice
@@ -29,7 +29,9 @@ describe('Create an individual offer (thing)', () => {
     // Fill in first step: offer details
     cy.findByLabelText('Catégorie *').select('Livre')
     cy.findByLabelText('Sous-catégorie *').select('Livre papier')
-    cy.findByLabelText('Titre de l’offre *').type('H2G2 Le Guide du voyageur galactique')
+    cy.findByLabelText('Titre de l’offre *').type(
+      'H2G2 Le Guide du voyageur galactique'
+    )
     cy.findByLabelText('Description').type(
       'Une quête pour obtenir la question ultime sur la vie, l’univers et tout le reste.'
     )
@@ -39,7 +41,9 @@ describe('Create an individual offer (thing)', () => {
     cy.get('input[type=file]').selectFile('cypress/e2e/offer-image.jpg', {
       force: true,
     })
-    cy.findByLabelText('Crédit de l’image').type('Les êtres les plus intelligents de l’univers')
+    cy.findByLabelText('Crédit de l’image').type(
+      'Les êtres les plus intelligents de l’univers'
+    )
     cy.findByText('Suivant').click()
     cy.findByText('Enregistrer').click()
 

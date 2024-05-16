@@ -45,8 +45,9 @@ describe('Create a venue', () => {
 
     // can add a venue without SIRET
     cy.findByText('Ce lieu possède un SIRET').click()
-    cy.findByLabelText('Commentaire du lieu sans SIRET *')
-      .type('Commentaire du lieu sans SIRET')
+    cy.findByLabelText('Commentaire du lieu sans SIRET *').type(
+      'Commentaire du lieu sans SIRET'
+    )
     cy.findByLabelText('Raison sociale *').type(venueNameWithoutSiret)
     cy.findByLabelText('Adresse postale *')
       .type('89 Rue la Boétie 75008 Paris')
@@ -57,7 +58,9 @@ describe('Create a venue', () => {
     cy.findByText('Enregistrer et créer le lieu').click()
     cy.wait('@getOfferer')
     cy.findByText('Plus tard').click()
-    cy.findByRole('link', { name: 'Gérer la page de ' + venueNameWithoutSiret + '' }).click()
+    cy.findByRole('link', {
+      name: 'Gérer la page de ' + venueNameWithoutSiret + '',
+    }).click()
     cy.contains(venueNameWithoutSiret).should('be.visible')
 
     // Create a venue with SIRET
@@ -73,7 +76,9 @@ describe('Create a venue', () => {
     cy.findByText('Enregistrer et créer le lieu').click()
     cy.wait('@getOfferer')
     cy.contains('Plus tard').click()
-    cy.findByRole('link', { name: 'Gérer la page de ' + venueNameWithSiret + '' }).click()
+    cy.findByRole('link', {
+      name: 'Gérer la page de ' + venueNameWithSiret + '',
+    }).click()
     cy.findByText(venueNameWithSiret).should('be.visible')
     cy.findByText('Vos informations pour le grand public').should('be.visible')
   })
