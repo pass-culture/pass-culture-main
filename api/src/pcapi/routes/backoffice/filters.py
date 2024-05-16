@@ -595,6 +595,10 @@ def format_fraud_action_dict_url(fraud_action_dict: dict) -> str:
     return ""
 
 
+def format_gdpr_date_processed(date_processed: datetime.datetime | None) -> str:
+    return "prêt" if date_processed else "en attente"
+
+
 def _format_modified_info_value(value: typing.Any, name: str | None = None) -> str:
     if name == "venueTypeCode":
         try:
@@ -1242,6 +1246,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["pc_backoffice_public_account_link_in_comment"] = (
         urls.build_backoffice_public_account_link_in_comment
     )
+    app.jinja_env.filters["format_gdpr_date_processed"] = format_gdpr_date_processed
     app.jinja_env.filters["format_finance_incident_nature_badge"] = format_finance_incident_nature_badge
     app.jinja_env.filters["format_finance_incident_status_badge"] = format_finance_incident_status_badge
     app.jinja_env.filters["format_finance_incident_type"] = format_finance_incident_type

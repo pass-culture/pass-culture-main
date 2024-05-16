@@ -936,6 +936,10 @@ class GdprUserDataExtract(PcObject, Base, Model):
     authorUserId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=False)
     authorUser: orm.Mapped[User] = orm.relationship(User, foreign_keys=[authorUserId])
 
-    @property
+    @hybrid_property
     def expirationDate(self) -> datetime:
         return self.dateCreated + timedelta(days=7)
+
+    @expirationDate.expression  # type: ignore [no-redef]
+    def expirationDate(cls):  # pylint: disable=no-self-argument
+        return cls.dateCreated + timedelta(days=7)

@@ -47,7 +47,7 @@ def _get_and_update_extract(extract_id: int) -> users_models.GdprUserDataExtract
         .one_or_none()
     )
 
-    if not extract or extract.expirationDate > datetime.utcnow():
+    if not extract or extract.expirationDate < datetime.utcnow():
         raise ExtractNotFound()
 
     if not (extract.authorUser.isActive and extract.authorUser.has_admin_role):
