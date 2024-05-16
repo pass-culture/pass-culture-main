@@ -5,7 +5,7 @@ import React from 'react'
 
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
-import { IndividualOfferContext } from 'context/IndividualOfferContext'
+import { IndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import {
   getIndividualOfferFactory,

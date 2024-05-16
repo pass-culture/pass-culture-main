@@ -4,10 +4,8 @@ import { useLocation } from 'react-router-dom'
 import useAnalytics from 'app/App/analytics/firebase'
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
 import { Step, Stepper } from 'components/Stepper/Stepper'
-import {
-  DEFAULT_ACTIVITY_VALUES,
-  useSignupJourneyContext,
-} from 'context/SignupJourneyContext'
+import { DEFAULT_ACTIVITY_VALUES } from 'context/SignupJourneyContext/constants'
+import { useSignupJourneyContext } from 'context/SignupJourneyContext/SignupJourneyContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import useActiveStep from 'hooks/useActiveStep'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'

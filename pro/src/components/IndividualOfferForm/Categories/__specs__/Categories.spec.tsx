@@ -9,7 +9,7 @@ import { IndividualOfferFormValues } from 'components/IndividualOfferForm/types'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
-} from 'context/IndividualOfferContext'
+} from 'context/IndividualOfferContext/IndividualOfferContext'
 import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers/constants'
 import { Button } from 'ui-kit/Button/Button'
 import {

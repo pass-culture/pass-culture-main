@@ -62,7 +62,7 @@ export type OfferEducationalFormProps = Omit<
     | GetCollectiveOfferTemplateResponseModel
 }
 
-const OfferEducationalForm = ({
+export const OfferEducationalForm = ({
   userOfferers,
   mode,
   domainsOptions,
@@ -214,5 +214,3 @@ const OfferEducationalForm = ({
     </>
   )
 }
-
-export default OfferEducationalForm

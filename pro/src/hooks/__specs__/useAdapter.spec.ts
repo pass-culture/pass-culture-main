@@ -1,6 +1,6 @@
 import { renderHook, waitFor } from '@testing-library/react'
 
-import { useAdapter } from '..'
+import { useAdapter } from '../useAdapter'
 
 interface SuccessPayload {
   success: string

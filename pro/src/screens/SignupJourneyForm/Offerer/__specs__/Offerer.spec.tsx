@@ -13,7 +13,7 @@ import { Notification } from 'components/Notification/Notification'
 import {
   SignupJourneyContext,
   SignupJourneyContextValues,
-} from 'context/SignupJourneyContext'
+} from 'context/SignupJourneyContext/SignupJourneyContext'
 import * as siretApiValidate from 'core/Venue/siretApiValidate'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'

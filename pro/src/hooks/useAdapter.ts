@@ -24,7 +24,7 @@ type UseAdapterFailure<T> = {
   reloadData: () => Promise<void>
 }
 
-const useAdapter = <ISuccessPayload, IFailurePayload>(
+export const useAdapter = <ISuccessPayload, IFailurePayload>(
   getData: () => Promise<
     AdapterSuccess<ISuccessPayload> | AdapterFailure<IFailurePayload>
   >
@@ -66,5 +66,3 @@ const useAdapter = <ISuccessPayload, IFailurePayload>(
     reloadData: loadData,
   }
 }
-
-export default useAdapter

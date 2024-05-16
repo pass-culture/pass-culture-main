@@ -5,12 +5,12 @@ import React from 'react'
 
 import { api } from 'apiClient/api'
 import { VenueTypeResponseModel } from 'apiClient/v1'
+import { DEFAULT_ACTIVITY_VALUES } from 'context/SignupJourneyContext/constants'
 import {
-  DEFAULT_ACTIVITY_VALUES,
+  ActivityContext,
   SignupJourneyContext,
   SignupJourneyContextValues,
-} from 'context/SignupJourneyContext'
-import { ActivityContext } from 'context/SignupJourneyContext/SignupJourneyContext'
+} from 'context/SignupJourneyContext/SignupJourneyContext'
 import { Button } from 'ui-kit/Button/Button'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'

@@ -4,9 +4,9 @@ import { useNavigate } from 'react-router-dom'
 
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
-import { useSignupJourneyContext } from 'context/SignupJourneyContext'
+import { useSignupJourneyContext } from 'context/SignupJourneyContext/SignupJourneyContext'
 
-import { ActionBar } from '../ActionBar'
+import { ActionBar } from '../ActionBar/ActionBar'
 import { DEFAULT_OFFERER_FORM_VALUES } from '../Offerer/constants'
 
 import styles from './OffererAuthentication.module.scss'

@@ -12,7 +12,10 @@ import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
 import { GET_VENUES_OF_OFFERER_FROM_SIRET_QUERY_KEY } from 'config/swrQueryKeys'
-import { Offerer, useSignupJourneyContext } from 'context/SignupJourneyContext'
+import {
+  useSignupJourneyContext,
+  Offerer,
+} from 'context/SignupJourneyContext/SignupJourneyContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import { getSirenData } from 'core/Offerers/getSirenData'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -26,7 +29,7 @@ import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
-import { ActionBar } from '../ActionBar'
+import { ActionBar } from '../ActionBar/ActionBar'
 
 import styles from './Offerers.module.scss'
 

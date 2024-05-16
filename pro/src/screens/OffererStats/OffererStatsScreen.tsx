@@ -14,7 +14,9 @@ interface OffererStatsScreenProps {
   offererOptions: SelectOption[]
 }
 
-const OffererStatsScreen = ({ offererOptions }: OffererStatsScreenProps) => {
+export const OffererStatsScreen = ({
+  offererOptions,
+}: OffererStatsScreenProps) => {
   const [iframeUrl, setIframeUrl] = useState('')
   const [selectedOffererId, setSelectedOffererId] = useState(
     offererOptions[0].value
@@ -133,5 +135,3 @@ const OffererStatsScreen = ({ offererOptions }: OffererStatsScreenProps) => {
     </div>
   )
 }
-
-export default OffererStatsScreen

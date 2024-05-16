@@ -9,8 +9,10 @@ import {
   renderWithProviders,
 } from 'utils/renderWithProviders'
 
-import OfferEducationalForm from '..'
-import { OfferEducationalFormProps } from '../OfferEducationalForm'
+import {
+  OfferEducationalForm,
+  OfferEducationalFormProps,
+} from '../OfferEducationalForm'
 
 const renderOfferEducationalForm = (
   props: OfferEducationalFormProps,

@@ -1,8 +1,8 @@
 import React from 'react'
 
-import { useIndividualOfferContext } from 'context/IndividualOfferContext'
+import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { useOfferWizardMode } from 'hooks'
+import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import IndivualOfferLayout from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
 import { getTitle } from 'screens/IndividualOffer/IndivualOfferLayout/utils/getTitle'
 import { StocksEventCreation } from 'screens/IndividualOffer/StocksEventCreation/StocksEventCreation'

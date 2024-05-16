@@ -10,11 +10,11 @@ import {
 } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
+import { defaultEditionProps } from '../__tests-utils__/defaultProps'
 import {
-  defaultEditionProps,
-  managedVenuesFactory,
   userOfferersFactory,
-} from '../__tests-utils__'
+  managedVenuesFactory,
+} from '../__tests-utils__/userOfferersFactory'
 import { OfferEducational, OfferEducationalProps } from '../OfferEducational'
 
 describe('screens | OfferEducational : edition offerer step', () => {

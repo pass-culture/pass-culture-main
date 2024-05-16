@@ -9,7 +9,7 @@ import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
-import OffererStatsScreen from '../OffererStatsScreen'
+import { OffererStatsScreen } from '../OffererStatsScreen'
 
 vi.mock('apiClient/api', () => ({
   api: {

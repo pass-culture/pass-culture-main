@@ -10,7 +10,7 @@ import { OfferAppPreview } from 'components/OfferAppPreview/OfferAppPreview'
 import { SummaryAside } from 'components/SummaryLayout/SummaryAside'
 import { SummaryContent } from 'components/SummaryLayout/SummaryContent'
 import { SummaryLayout } from 'components/SummaryLayout/SummaryLayout'
-import { useIndividualOfferContext } from 'context/IndividualOfferContext'
+import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
@@ -18,8 +18,8 @@ import {
 } from 'core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
-import { useOfferWizardMode } from 'hooks'
 import useNotification from 'hooks/useNotification'
+import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
 import { RedirectToBankAccountDialog } from 'screens/Offers/RedirectToBankAccountDialog'
 import { ButtonVariant } from 'ui-kit/Button/types'

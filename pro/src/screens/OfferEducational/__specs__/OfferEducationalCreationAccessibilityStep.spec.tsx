@@ -4,8 +4,11 @@ import { userEvent } from '@testing-library/user-event'
 import { RootState } from 'store/rootReducer'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { defaultCreationProps, managedVenueFactory } from '../__tests-utils__'
-import { userOffererFactory } from '../__tests-utils__/userOfferersFactory'
+import { defaultCreationProps } from '../__tests-utils__/defaultProps'
+import {
+  managedVenueFactory,
+  userOffererFactory,
+} from '../__tests-utils__/userOfferersFactory'
 import { OfferEducational, OfferEducationalProps } from '../OfferEducational'
 
 describe('screens | OfferEducational : event address step', () => {

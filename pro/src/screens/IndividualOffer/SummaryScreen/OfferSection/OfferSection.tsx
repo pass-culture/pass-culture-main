@@ -9,14 +9,14 @@ import {
 } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
-import { useIndividualOfferContext } from 'context/IndividualOfferContext'
+import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import {
   OFFER_WITHDRAWAL_TYPE_LABELS,
   OFFER_WIZARD_MODE,
 } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
-import { useOfferWizardMode } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
+import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 import { OfferSectionData, serializeOfferSectionData } from './serializer'
