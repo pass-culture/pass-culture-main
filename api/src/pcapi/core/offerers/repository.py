@@ -879,3 +879,15 @@ def offerer_address_exists(offerer_id: int, offerer_address_id: int) -> bool:
         .where(models.OffererAddress.offererId == offerer_id, models.OffererAddress.id == offerer_address_id)
         .exists()
     ).scalar()
+
+
+def get_offerer_address_of_offerer(offerer_id: int, offerer_address_id: int) -> models.OffererAddress:
+    return (
+        models.OffererAddress.query.where(
+            models.OffererAddress.offererId == offerer_id, models.OffererAddress.id == offerer_address_id
+        )
+        .options(
+            sqla_orm.with_expression(models.OffererAddress._isEditable, models.OffererAddress.isEditable.expression)  # type: ignore[attr-defined]
+        )
+        .one_or_none()
+    )
