@@ -2,8 +2,8 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
+import * as useAnalytics from 'app/App/analytics/firebase'
 import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
-import * as useAnalytics from 'hooks/useAnalytics'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
@@ -34,7 +34,7 @@ describe('StocksProviderForm', () => {
     }
 
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
-      ...vi.importActual('hooks/useAnalytics'),
+      ...vi.importActual('app/App/analytics/firebase'),
       logEvent: mockLogEvent,
     }))
   })

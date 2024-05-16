@@ -42,7 +42,7 @@ vi.mock('react-instantsearch', async () => {
     useStats: () => ({ nbHits: 1 }),
     useSearchBox: () => ({ refine: vi.fn() }),
     useInfiniteHits: () => ({
-      hits: [],
+      currentPageHits: [],
     }),
     useInstantSearch: () => ({ scopedResults: [] }),
     Index: vi.fn(({ children }) => children),

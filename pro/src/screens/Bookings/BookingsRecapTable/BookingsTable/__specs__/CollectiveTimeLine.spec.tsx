@@ -9,9 +9,9 @@ import {
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
 import { CollectiveBookingCancellationReasons } from 'apiClient/v1/models/CollectiveBookingCancellationReasons'
+import * as useAnalytics from 'app/App/analytics/firebase'
 import { BOOKING_STATUS } from 'core/Bookings/constants'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
-import * as useAnalytics from 'hooks/useAnalytics'
 import {
   collectiveBookingByIdFactory,
   collectiveBookingCollectiveStockFactory,
@@ -130,7 +130,7 @@ describe('collective timeline', () => {
   it('should log event when clicking modify booking limit date', async () => {
     const mockLogEvent = vi.fn()
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
-      ...vi.importActual('hooks/useAnalytics'),
+      ...vi.importActual('app/App/analytics/firebase'),
       logEvent: mockLogEvent,
     }))
     const bookingRecap = collectiveBookingFactory({

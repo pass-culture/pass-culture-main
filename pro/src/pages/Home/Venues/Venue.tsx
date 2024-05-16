@@ -5,8 +5,8 @@ import {
   GetOffererResponseModel,
   GetOffererVenueResponseModel,
 } from 'apiClient/v1'
+import useAnalytics from 'app/App/analytics/firebase'
 import { VenueEvents } from 'core/FirebaseEvents/constants'
-import useAnalytics from 'hooks/useAnalytics'
 import fullDisclosureClose from 'icons/full-disclosure-close.svg'
 import fullDisclosureOpen from 'icons/full-disclosure-open.svg'
 import fullErrorIcon from 'icons/full-error.svg'

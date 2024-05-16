@@ -3,10 +3,10 @@ import { userEvent } from '@testing-library/user-event'
 import { Form, Formik } from 'formik'
 import React from 'react'
 
+import * as useAnalytics from 'app/App/analytics/firebase'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { IndividualOfferContext } from 'context/IndividualOfferContext'
 import { Events } from 'core/FirebaseEvents/constants'
-import * as useAnalytics from 'hooks/useAnalytics'
 import {
   getIndividualOfferFactory,
   individualOfferContextValuesFactory,

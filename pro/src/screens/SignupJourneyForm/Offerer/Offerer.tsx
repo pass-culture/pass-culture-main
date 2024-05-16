@@ -2,7 +2,9 @@ import { FormikProvider, useFormik } from 'formik'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
 import { isError } from 'apiClient/helpers'
+import useAnalytics from 'app/App/analytics/firebase'
 import { BannerInvisibleSiren } from 'components/Banner/BannerInvisibleSiren'
 import Callout from 'components/Callout/Callout'
 import { FormLayout } from 'components/FormLayout/FormLayout'
@@ -14,9 +16,7 @@ import {
   FORM_ERROR_MESSAGE,
   GET_DATA_ERROR_MESSAGE,
 } from 'core/shared/constants'
-import { getVenuesOfOffererFromSiretAdapter } from 'core/Venue/adapters/getVenuesOfOffererFromSiretAdapter/getVenuesOfOffererFromSiretAdapter'
 import getSiretData from 'core/Venue/getSiretData'
-import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { MAYBE_APP_USER_APE_CODE } from 'pages/Signup/SignupContainer/constants'
 import { MaybeAppUserDialog } from 'pages/Signup/SignupContainer/MaybeAppUserDialog/MaybeAppUserDialog'
@@ -67,11 +67,10 @@ export const Offerer = (): JSX.Element => {
       if (showIsAppUserDialog) {
         setShowIsAppUserDialog(false)
       }
+      const venueOfOffererProvidersResponse =
+        await api.getVenuesOfOffererFromSiret(formattedSiret)
 
-      const siretResponse =
-        await getVenuesOfOffererFromSiretAdapter(formattedSiret)
-
-      if (!siretResponse.isOk || !response.values) {
+      if (!response.values) {
         notify.error('Une erreur est survenue')
         return
       }
@@ -85,14 +84,18 @@ export const Offerer = (): JSX.Element => {
         longitude: response.values.longitude,
         postalCode: response.values.postalCode,
         hasVenueWithSiret:
-          siretResponse.payload.venues.find(
+          venueOfOffererProvidersResponse.venues.find(
             (venue) => venue.siret === formattedSiret
           ) !== undefined,
         legalCategoryCode: response.values.legalCategoryCode,
         banId: response.values.banId,
       })
     } catch (error) {
-      notify.error(isError(error) ? error.message : GET_DATA_ERROR_MESSAGE)
+      notify.error(
+        isError(error)
+          ? error.message || 'Une erreur est survenue'
+          : GET_DATA_ERROR_MESSAGE
+      )
       return
     }
   }

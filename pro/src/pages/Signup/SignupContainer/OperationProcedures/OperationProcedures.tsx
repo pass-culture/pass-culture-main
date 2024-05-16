@@ -1,9 +1,9 @@
 import React from 'react'
 import { useLocation } from 'react-router-dom'
 
+import useAnalytics from 'app/App/analytics/firebase'
 import Callout from 'components/Callout/Callout'
 import { Events } from 'core/FirebaseEvents/constants'
-import useAnalytics from 'hooks/useAnalytics'
 
 import styles from './OperationProcedures.module.scss'
 

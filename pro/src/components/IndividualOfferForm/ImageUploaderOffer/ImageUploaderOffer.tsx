@@ -1,5 +1,6 @@
 import React from 'react'
 
+import useAnalytics from 'app/App/analytics/firebase'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { ImageUploader } from 'components/ImageUploader/ImageUploader'
@@ -9,7 +10,6 @@ import { Events } from 'core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { IndividualOfferImage } from 'core/Offers/types'
 import { useOfferWizardMode } from 'hooks'
-import useAnalytics from 'hooks/useAnalytics'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
 import styles from './ImageUploaderOffer.module.scss'

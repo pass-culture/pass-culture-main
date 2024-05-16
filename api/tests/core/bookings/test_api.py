@@ -1419,7 +1419,7 @@ class CancelByOffererTest:
 
         assert not push_testing.requests
 
-    def test_cancel_all_bookings_from_stock(self, app):
+    def test_cancel_all_bookings_from_stock(self):
         stock = offers_factories.StockFactory(dnBookedQuantity=1)
         booking_1 = bookings_factories.BookingFactory(stock=stock)
         booking_2 = bookings_factories.BookingFactory(stock=stock)
@@ -1442,6 +1442,21 @@ class CancelByOffererTest:
         assert not used_booking.cancellationReason
         assert cancelled_booking.status is BookingStatus.CANCELLED
         assert cancelled_booking.cancellationReason == BookingCancellationReasons.BENEFICIARY
+
+    @patch("pcapi.core.bookings.api.external_bookings_api.cancel_event_ticket")
+    def test_cancel_all_bookings_from_stock_dont_call_external_api(self, mock_cancel_event_ticket):
+        provider_with_charlie = providers_factories.PublicApiProviderFactory()
+        event_offer = offers_factories.EventOfferFactory(lastProvider=provider_with_charlie)
+        stock = offers_factories.StockFactory(dnBookedQuantity=1, offer=event_offer)
+        booking = bookings_factories.BookingFactory(stock=stock, status=models.BookingStatus.USED)
+        bookings_factories.ExternalBookingFactory(bookingId=booking.id)
+
+        api.cancel_bookings_from_stock_by_offerer(stock)
+
+        # cancellation can trigger more than one request to Batch
+        assert len(push_testing.requests) >= 1
+
+        mock_cancel_event_ticket.assert_not_called()
 
     def test_send_email_when_cancelled_by_offerer(self):
         # when

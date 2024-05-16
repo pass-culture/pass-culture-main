@@ -869,6 +869,7 @@ class UpdateVenueTest(PostEndpointHelper):
             "latitude": "63.82850",
             "longitude": "20.25473",
             "venue_type_code": offerers_models.VenueTypeCode.CREATIVE_ARTS_STORE.name,
+            "acceslibre_url": "https://acceslibre.beta.gouv.fr/app/slug/",
         }
 
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
@@ -1233,10 +1234,9 @@ class UpdateVenueTest(PostEndpointHelper):
         assert venue.siret == original_siret
 
     def test_update_venue_ban_id(self, authenticated_client):
-        venue = offerers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory(isPermanent=True)
 
         data = self._get_current_data(venue)
-        data["is_permanent"] = True
         data["ban_id"] = "15152_0024_00003"
 
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
@@ -1247,11 +1247,9 @@ class UpdateVenueTest(PostEndpointHelper):
 
         assert venue.street == data["street"]
         assert venue.banId == data["ban_id"]
-        assert venue.isPermanent == data["is_permanent"]
         assert venue.action_history[0].extraData == {
             "modified_info": {
                 "banId": {"new_info": "15152_0024_00003", "old_info": "75102_7560_00001"},
-                "isPermanent": {"new_info": True, "old_info": False},
             }
         }
 
@@ -1306,7 +1304,7 @@ class UpdateVenueTest(PostEndpointHelper):
             }
         }
 
-    def test_delete_venue_accessibility_provider(self, authenticated_client):
+    def test_update_venue_delete_accessibility_provider(self, authenticated_client):
         venue = offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.LIBRARY)
         offerers_factories.AccessibilityProviderFactory(
             venue=venue,
@@ -1361,7 +1359,9 @@ class UpdateVenueTest(PostEndpointHelper):
         db.session.refresh(venue)
         assert venue.accessibilityProvider.externalAccessibilityUrl == "https://acceslibre.beta.gouv.fr/erps/mon-slug/"
 
-    def test_should_update_permanent_venue_accessibility_provider(self, authenticated_client):
+    def test_update_venue_accessibility_provider_from_acceslibre_url_when_becoming_permanent(
+        self, authenticated_client
+    ):
         venue = offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.TRAVELING_CINEMA)
 
         data = self._get_current_data(venue)
@@ -1390,7 +1390,7 @@ class UpdateVenueTest(PostEndpointHelper):
             }
         }
 
-    def test_should_not_update_non_permanent_venue_accessibility_provider(self, authenticated_client):
+    def test_update_venue_should_not_add_accessibility_provider_if_not_permanent(self, authenticated_client):
         venue = offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.TRAVELING_CINEMA)
 
         data = self._get_current_data(venue)
@@ -1402,7 +1402,7 @@ class UpdateVenueTest(PostEndpointHelper):
         db.session.refresh(venue)
         assert venue.accessibilityProvider == None
 
-    def test_should_delete_accessibility_provider_when_venue_becomes_non_permanent(self, authenticated_client):
+    def test_update_venue_remove_accesslibre_url_when_becoming_non_permanent(self, authenticated_client):
         venue = offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.LIBRARY)
         offerers_factories.AccessibilityProviderFactory(
             venue=venue,
@@ -1434,6 +1434,19 @@ class UpdateVenueTest(PostEndpointHelper):
                 },
             }
         }
+
+    @patch("pcapi.workers.match_acceslibre_job.match_acceslibre_job.delay")
+    def test_update_venue_becomes_permanent_should_call_match_acceslibre_job(
+        self, match_acceslibre_job, authenticated_client
+    ):
+        venue = offerers_factories.VenueFactory(isPermanent=False)
+        data = self._get_current_data(venue)
+        data["is_permanent"] = True
+
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+
+        assert response.status_code == 303
+        match_acceslibre_job.assert_called_once_with(venue.id)
 
 
 class GetVenueHistoryTest(GetEndpointHelper):

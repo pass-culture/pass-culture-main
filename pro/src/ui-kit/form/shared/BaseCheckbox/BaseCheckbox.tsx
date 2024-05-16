@@ -41,6 +41,8 @@ export const BaseCheckbox = ({
         styles['base-checkbox'],
         {
           [styles['with-border']]: withBorder,
+          [styles['has-error']]: hasError,
+          [styles['is-disabled']]: props.disabled,
         },
         className
       )}
@@ -51,9 +53,7 @@ export const BaseCheckbox = ({
           aria-invalid={hasError}
           type="checkbox"
           {...props}
-          className={cn(styles['base-checkbox-input'], {
-            [styles['has-error']]: hasError,
-          })}
+          className={styles['base-checkbox-input']}
         />
         {icon && (
           <span className={styles['base-checkbox-icon']}>

@@ -394,11 +394,7 @@ def log_search_show_more(
     institution = find_educational_institution_by_uai_code(authenticated_information.uai)
     educational_utils.log_information_for_data_purpose(
         event_name="SearchShowMore",
-        extra_data={
-            "source": body.source,
-            "from": body.iframeFrom,
-            "queryId": body.queryId,
-        },
+        extra_data={"source": body.source, "from": body.iframeFrom, "queryId": body.queryId, "type": body.type},
         uai=authenticated_information.uai,
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
         user_email=authenticated_information.email,

@@ -1,8 +1,8 @@
 import React from 'react'
 
+import useAnalytics from 'app/App/analytics/firebase'
 import { Dialog } from 'components/Dialog/Dialog/Dialog'
 import { BankAccountEvents } from 'core/FirebaseEvents/constants'
-import useAnalytics from 'hooks/useAnalytics'
 import fullLinkIcon from 'icons/full-link.svg'
 import strokeLinkIcon from 'icons/stroke-link.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'

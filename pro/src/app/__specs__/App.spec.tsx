@@ -3,8 +3,8 @@ import { screen } from '@testing-library/react'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import * as useAnalytics from 'hooks/useAnalytics'
-import * as cookieConsentModal from 'utils/cookieConsentModal'
+import * as useAnalytics from 'app/App/analytics/firebase'
+import * as orejime from 'app/App/analytics/orejime'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
@@ -13,7 +13,7 @@ import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { App } from '../App/App'
 
-vi.mock('hooks/useAnalytics', () => ({ useConfigureFirebase: vi.fn() }))
+vi.mock('app/App/analytics/firebase', () => ({ useFirebase: vi.fn() }))
 vi.mock('app/App/hook/useLogNavigation', () => ({ default: vi.fn() }))
 vi.mock('app/App/hook/usePageTitle', () => ({ default: vi.fn() }))
 vi.mock('@sentry/browser', () => ({ setUser: vi.fn() }))
@@ -92,18 +92,13 @@ describe('App', () => {
   })
 
   it('should not initialize firebase on the adage iframe', async () => {
-    vi.spyOn(cookieConsentModal, 'initCookieConsent').mockImplementation(
-      () => ({
-        internals: {
-          manager: {
-            consents: [cookieConsentModal.Consents.FIREBASE],
-            watch: () => {},
-          },
-        },
-      })
-    )
+    vi.spyOn(orejime, 'useOrejime').mockImplementation(() => ({
+      consentedToBeamer: false,
+      consentedToFirebase: false,
+    }))
+
     const useAnalyticsSpy = vi
-      .spyOn(useAnalytics, 'useConfigureFirebase')
+      .spyOn(useAnalytics, 'useFirebase')
       .mockImplementation(() => {})
 
     renderApp({ initialRouterEntries: ['/adage-iframe'] })

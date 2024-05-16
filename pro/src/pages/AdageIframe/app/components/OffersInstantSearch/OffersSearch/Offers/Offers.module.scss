@@ -109,6 +109,10 @@
   }
 }
 
+.pagination {
+  margin: rem.torem(24px) 0;
+}
+
 
 @media (max-width: size.$mobile) {
   .offer-type-vue {

@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import * as useAnalytics from 'hooks/useAnalytics'
+import * as useAnalytics from 'app/App/analytics/firebase'
 import * as useNotification from 'hooks/useNotification'
 import {
   getCollectiveOfferManagingOffererFactory,

@@ -11,10 +11,10 @@ import {
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { CollectiveBookingStatus } from 'apiClient/v2'
+import * as useAnalytics from 'app/App/analytics/firebase'
 import Notification from 'components/Notification/Notification'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
 import { Audience } from 'core/shared/types'
-import * as useAnalytics from 'hooks/useAnalytics'
 import {
   listOffersVenueFactory,
   collectiveOfferFactory,
@@ -561,7 +561,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
     it('should log event when clicking booking link', async () => {
       const mockLogEvent = vi.fn()
       vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
-        ...vi.importActual('hooks/useAnalytics'),
+        ...vi.importActual('app/App/analytics/firebase'),
         logEvent: mockLogEvent,
       }))
 

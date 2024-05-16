@@ -1,9 +1,7 @@
 import cn from 'classnames'
 import { useField } from 'formik'
-import React from 'react'
 
 import { RadioButton } from '../RadioButton/RadioButton'
-import { BaseRadioVariant } from '../shared/BaseRadio/types'
 import { FieldSetLayout } from '../shared/FieldSetLayout/FieldSetLayout'
 
 import styles from './RadioGroup.module.scss'
@@ -24,7 +22,6 @@ interface RadioGroupProps {
   }[]
   className?: string
   withBorder?: boolean
-  variant?: BaseRadioVariant
 }
 
 export const RadioGroup = ({
@@ -36,7 +33,6 @@ export const RadioGroup = ({
   legend,
   className,
   withBorder,
-  variant = BaseRadioVariant.PRIMARY,
 }: RadioGroupProps): JSX.Element => {
   const [, meta] = useField({ name })
 
@@ -63,7 +59,6 @@ export const RadioGroup = ({
             value={item.value}
             withBorder={withBorder}
             hasError={meta.touched && !!meta.error}
-            variant={variant}
           />
         </div>
       ))}

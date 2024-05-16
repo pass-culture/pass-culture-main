@@ -7,6 +7,10 @@ describe('Adage discovery', () => {
       method: 'GET',
       url: 'adage-iframe/playlists/new_template_offers',
     }).as('getNewTemplateOffersPlaylist')
+    cy.intercept({
+      method: 'GET',
+      url: 'adage-iframe/playlists/classroom',
+    }).as('getClassroomOffersPlaylist')
   })
 
   it('should redirect to adage discovery', () => {
@@ -128,9 +132,10 @@ describe('Adage discovery', () => {
 
   it('should put an offer in favorite', () => {
     const adageToken = Cypress.env('adageToken')
-    cy.visit(`/adage-iframe?token=${adageToken}`)
+    cy.visit(`/adage-iframe/decouverte?token=${adageToken}`)
 
-    cy.wait('@getNewTemplateOffersPlaylist')
+    cy.wait(['@getNewTemplateOffersPlaylist', '@getClassroomOffersPlaylist'])
+    cy.findAllByTestId('spinner').should('have.length', 0)
 
     cy.findAllByTestId('card-offer')
       .first()
@@ -144,8 +149,6 @@ describe('Adage discovery', () => {
         cy.contains(text)
 
         cy.findByRole('link', { name: 'Découvrir' }).click()
-
-        cy.reload()
 
         cy.findAllByTestId('favorite-active').first().click()
       })

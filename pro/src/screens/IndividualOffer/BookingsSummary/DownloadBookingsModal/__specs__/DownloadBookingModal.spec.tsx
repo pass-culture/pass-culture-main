@@ -4,7 +4,7 @@ import React from 'react'
 
 import { api } from 'apiClient/api'
 import { EventDatesInfos } from 'apiClient/v1'
-import * as useAnalytics from 'hooks/useAnalytics'
+import * as useAnalytics from 'app/App/analytics/firebase'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { DownloadBookingsModal } from '../DownloadBookingsModal'

@@ -37,6 +37,20 @@ class SimilarOffersTest:
         RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
         RECOMMENDATION_API_URL="https://example.com/recommendation/",
     )
+    def test_forward_params_as_list_to_recommendation_api(self, requests_mock, client):
+        mocked = requests_mock.get("https://example.com/recommendation/similar_offers/2")
+
+        response = client.get(
+            "/native/v1/recommendation/similar_offers/2", params={"categories": "TEST_CATEGORY,TEST_CATEGORY2"}
+        )
+        assert response.status_code == 200
+        query = urllib.parse.parse_qsl(mocked.last_request.query)
+        assert query == [("categories", "TEST_CATEGORY"), ("categories", "TEST_CATEGORY2")]
+
+    @override_settings(
+        RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
+        RECOMMENDATION_API_URL="https://example.com/recommendation/",
+    )
     def test_failure(self, requests_mock, client):
         requests_mock.get(
             "https://example.com/recommendation/similar_offers/2",
@@ -61,7 +75,7 @@ class PlaylistTest:
         response = client.post("/native/v1/recommendation/playlist")
 
         assert response.status_code == 200
-        assert response.json["playlist_recommended_offers"] == ["300", "301", "302"]
+        assert response.json["playlistRecommendedOffers"] == ["300", "301", "302"]
 
     @override_settings(
         RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",

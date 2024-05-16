@@ -84,6 +84,11 @@ class SuggestionType(enum.Enum):
     OFFER = "offer"
 
 
+class PaginationType(enum.Enum):
+    NEXT = "next"
+    PREVIOUS = "previous"
+
+
 class TrackingAutocompleteSuggestionBody(AdageBaseModel):
     suggestionType: SuggestionType
     suggestionValue: str
@@ -91,6 +96,7 @@ class TrackingAutocompleteSuggestionBody(AdageBaseModel):
 
 class TrackingShowMoreBody(AdageBaseModel):
     source: str
+    type: PaginationType
 
 
 class TrackingCTAShareBody(AdageBaseModel, VueTypeMixin):

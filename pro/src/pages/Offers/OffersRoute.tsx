@@ -7,6 +7,7 @@ import { AppLayout } from 'app/AppLayout'
 import {
   GET_CATEGORIES_QUERY_KEY,
   GET_OFFERER_QUERY_KEY,
+  GET_VENUES_QUERY_KEY,
 } from 'config/swrQueryKeys'
 import { DEFAULT_PAGE, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
@@ -15,10 +16,7 @@ import { computeOffersUrl } from 'core/Offers/utils/computeOffersUrl'
 import { hasSearchFilters } from 'core/Offers/utils/hasSearchFilters'
 import { serializeApiFilters } from 'core/Offers/utils/serializer'
 import { Audience } from 'core/shared/types'
-import { getVenuesForOffererAdapter } from 'core/Venue/adapters/getVenuesForOffererAdapter/getVenuesForOffererAdapter'
-import { SelectOption } from 'custom_types/form'
 import useCurrentUser from 'hooks/useCurrentUser'
-import useNotification from 'hooks/useNotification'
 import { formatAndOrderVenues } from 'repository/venuesService'
 import { Offers } from 'screens/Offers/Offers'
 import Spinner from 'ui-kit/Spinner/Spinner'
@@ -29,13 +27,11 @@ export const GET_OFFERS_QUERY_KEY = 'listOffers'
 export const OffersRoute = (): JSX.Element => {
   const urlSearchFilters = useQuerySearchFilters()
   const currentPageNumber = urlSearchFilters.page ?? DEFAULT_PAGE
-  const notify = useNotification()
   const navigate = useNavigate()
   const { currentUser } = useCurrentUser()
 
   const [initialSearchFilters, setInitialSearchFilters] =
     useState<SearchFiltersParams | null>(null)
-  const [venues, setVenues] = useState<SelectOption[]>([])
 
   const offererQuery = useSWR(
     [GET_OFFERER_QUERY_KEY, urlSearchFilters.offererId],
@@ -49,14 +45,12 @@ export const OffersRoute = (): JSX.Element => {
 
   const categoriesQuery = useSWR(
     [GET_CATEGORIES_QUERY_KEY],
-    async () => {
-      const response = await api.getCategories()
-      return response.categories
-    },
-    { fallbackData: [] }
+    () => api.getCategories(),
+    { fallbackData: { categories: [], subcategories: [] } }
   )
+
   const categoriesOptions = sortByLabel(
-    categoriesQuery.data
+    categoriesQuery.data.categories
       .filter((category) => category.isSelectable)
       .map((category) => ({
         value: category.id,
@@ -85,20 +79,12 @@ export const OffersRoute = (): JSX.Element => {
     setInitialSearchFilters(filters)
   }, [setInitialSearchFilters, urlSearchFilters, currentUser.isAdmin])
 
-  useEffect(() => {
-    const loadAllVenuesByProUser = async () => {
-      const venuesResponse = await getVenuesForOffererAdapter({
-        offererId: offerer?.id.toString(),
-      })
-      if (venuesResponse.isOk) {
-        setVenues(formatAndOrderVenues(venuesResponse.payload))
-      } else {
-        return notify.error(venuesResponse.message)
-      }
-    }
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    loadAllVenuesByProUser()
-  }, [offerer?.id])
+  const { data } = useSWR(
+    [GET_VENUES_QUERY_KEY, offerer?.id],
+    ([, offererIdParam]) => api.getVenues(null, null, offererIdParam),
+    { fallbackData: { venues: [] } }
+  )
+  const venues = formatAndOrderVenues(data.venues)
 
   const apiFilters = {
     ...DEFAULT_SEARCH_FILTERS,

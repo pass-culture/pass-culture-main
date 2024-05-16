@@ -1524,6 +1524,19 @@ def test_public_api(client):
                     "title": "PlaylistRequestQuery",
                     "type": "object",
                 },
+                "PlaylistResponse": {
+                    "properties": {
+                        "params": {"$ref": "#/components/schemas/RecommendationApiParams"},
+                        "playlistRecommendedOffers": {
+                            "items": {"type": "string"},
+                            "title": "Playlistrecommendedoffers",
+                            "type": "array",
+                        },
+                    },
+                    "required": ["playlistRecommendedOffers", "params"],
+                    "title": "PlaylistResponse",
+                    "type": "object",
+                },
                 "PopOverIcon": {
                     "description": "An enumeration.",
                     "enum": ["INFO", "ERROR", "WARNING", "CLOCK", "FILE", "MAGNIFYING_GLASS"],
@@ -1558,6 +1571,20 @@ def test_public_api(client):
                     },
                     "required": ["description", "title"],
                     "title": "ReasonMeta",
+                    "type": "object",
+                },
+                "RecommendationApiParams": {
+                    "properties": {
+                        "ab_test": {"nullable": True, "title": "Ab Test", "type": "string"},
+                        "call_id": {"nullable": True, "title": "Call Id", "type": "string"},
+                        "filtered": {"nullable": True, "title": "Filtered", "type": "boolean"},
+                        "geo_located": {"nullable": True, "title": "Geo Located", "type": "boolean"},
+                        "model_endpoint": {"nullable": True, "title": "Model Endpoint", "type": "string"},
+                        "model_name": {"nullable": True, "title": "Model Name", "type": "string"},
+                        "model_version": {"nullable": True, "title": "Model Version", "type": "string"},
+                        "reco_origin": {"nullable": True, "title": "Reco Origin", "type": "string"},
+                    },
+                    "title": "RecommendationApiParams",
                     "type": "object",
                 },
                 "RefreshResponse": {
@@ -1765,6 +1792,15 @@ def test_public_api(client):
                         },
                     },
                     "title": "SimilarOffersRequestQuery",
+                    "type": "object",
+                },
+                "SimilarOffersResponse": {
+                    "properties": {
+                        "params": {"$ref": "#/components/schemas/RecommendationApiParams"},
+                        "results": {"items": {"type": "string"}, "title": "Results", "type": "array"},
+                    },
+                    "required": ["params"],
+                    "title": "SimilarOffersResponse",
                     "type": "object",
                 },
                 "SubcategoriesResponseModelv2": {
@@ -3594,7 +3630,12 @@ def test_public_api(client):
                         }
                     },
                     "responses": {
-                        "200": {"description": "OK"},
+                        "200": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/PlaylistResponse"}}
+                            },
+                            "description": "OK",
+                        },
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
@@ -3660,7 +3701,12 @@ def test_public_api(client):
                         },
                     ],
                     "responses": {
-                        "200": {"description": "OK"},
+                        "200": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/SimilarOffersResponse"}}
+                            },
+                            "description": "OK",
+                        },
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {

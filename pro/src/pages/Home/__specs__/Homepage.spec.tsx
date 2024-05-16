@@ -9,9 +9,9 @@ import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel } from 'apiClient/v1'
+import * as useAnalytics from 'app/App/analytics/firebase'
 import { RemoteContextProvider } from 'context/remoteConfigContext'
 import { SAVED_OFFERER_ID_KEY } from 'core/shared/constants'
-import * as useAnalytics from 'hooks/useAnalytics'
 import { formatBrowserTimezonedDateAsUTC } from 'utils/date'
 import {
   defaultGetOffererResponseModel,

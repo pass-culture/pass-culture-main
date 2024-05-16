@@ -8,8 +8,8 @@ import {
   BankAccountResponseModel,
   ManagedVenues,
 } from 'apiClient/v1'
+import * as useAnalytics from 'app/App/analytics/firebase'
 import { BankAccountEvents } from 'core/FirebaseEvents/constants'
-import * as useAnalytics from 'hooks/useAnalytics'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import ReimbursementBankAccount from '../ReimbursementBankAccount'

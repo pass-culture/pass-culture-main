@@ -54,6 +54,7 @@ export type { OfferListSwitch } from './models/OfferListSwitch';
 export type { OfferManagingOffererResponse } from './models/OfferManagingOffererResponse';
 export type { OfferStockResponse } from './models/OfferStockResponse';
 export type { OfferVenueResponse } from './models/OfferVenueResponse';
+export { PaginationType } from './models/PaginationType';
 export type { PlaylistBody } from './models/PlaylistBody';
 export type { PostCollectiveRequestBodyModel } from './models/PostCollectiveRequestBodyModel';
 export type { RedactorPreferences } from './models/RedactorPreferences';

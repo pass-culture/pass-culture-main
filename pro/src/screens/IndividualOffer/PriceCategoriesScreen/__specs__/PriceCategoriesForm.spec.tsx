@@ -1,7 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Formik } from 'formik'
-import React from 'react'
 
 import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
@@ -217,11 +216,15 @@ describe('PriceCategories', () => {
     // one price category line : label is default and field is disable
     expect(screen.getByTestId('delete-button')).toBeDisabled()
     expect(screen.getByDisplayValue('Tarif unique')).toBeDisabled()
+    const nameFields = screen.getAllByLabelText('Intitulé du tarif *')
+    const priceFields = screen.getAllByLabelText('Prix par personne *')
+    await userEvent.type(priceFields[0], '66.7')
 
     // I add a price category line
     await userEvent.click(screen.getByText('Ajouter un tarif'))
-    const nameFields = screen.getAllByLabelText('Intitulé du tarif *')
+
     expect(nameFields[0]).toHaveValue('')
+    expect(priceFields[0]).toHaveValue(66.7)
     expect(nameFields[0]).not.toBeDisabled()
 
     // I change the label and remove last line, label is default and field disable
@@ -229,6 +232,8 @@ describe('PriceCategories', () => {
     await userEvent.click(
       screen.getAllByRole('button', { name: 'Supprimer le tarif' })[1]
     )
+    // it keep the input price
+    expect(priceFields[0]).toHaveValue(66.7)
 
     expect(nameFields[0]).toBeDisabled()
   })

@@ -140,43 +140,43 @@ def check_stock_price(
         )
         raise errors
 
-    if FeatureToggle.WIP_ENABLE_OFFER_PRICE_LIMITATION.is_active():
-        offer_price_limitation_rule = models.OfferPriceLimitationRule.query.filter(
-            models.OfferPriceLimitationRule.subcategoryId == offer.subcategoryId
-        ).one_or_none()
+    offer_price_limitation_rule = models.OfferPriceLimitationRule.query.filter(
+        models.OfferPriceLimitationRule.subcategoryId == offer.subcategoryId
+    ).one_or_none()
+    if (  # pylint: disable=too-many-boolean-expressions
+        offer_price_limitation_rule
+        and offer.validation is not OfferValidationStatus.DRAFT
+        and (offer.extraData is not None and not offer.extraData.get("ean"))
+        and (offer.lastValidationPrice is not None or offer.stocks)
+    ):
+        reference_price = (
+            offer.lastValidationPrice
+            if offer.lastValidationPrice is not None
+            else sorted(offer.stocks, key=lambda s: s.id)[0].price
+        )
         if (
-            offer_price_limitation_rule
-            and offer.validation is not OfferValidationStatus.DRAFT
-            and (offer.lastValidationPrice is not None or offer.stocks)
+            price < (1 - offer_price_limitation_rule.rate) * reference_price
+            or price > (1 + offer_price_limitation_rule.rate) * reference_price
         ):
-            reference_price = (
-                offer.lastValidationPrice
-                if offer.lastValidationPrice is not None
-                else sorted(offer.stocks, key=lambda s: s.id)[0].price
+            logger.info(
+                "Stock update blocked because of price limitation",
+                extra={
+                    "offer_id": offer.id,
+                    "reference_price": reference_price,
+                    "old_price": old_price,
+                    "stock_price": price,
+                },
+                technical_message_id="stock.price.forbidden",
             )
-            if (
-                price < (1 - offer_price_limitation_rule.rate) * reference_price
-                or price > (1 + offer_price_limitation_rule.rate) * reference_price
-            ):
-                logger.info(
-                    "Stock update blocked because of price limitation",
-                    extra={
-                        "offer_id": offer.id,
-                        "reference_price": reference_price,
-                        "old_price": old_price,
-                        "stock_price": price,
-                    },
-                    technical_message_id="stock.price.forbidden",
-                )
 
-                if error_key == "price":
-                    error_key += "LimitationRule"
-                errors = api_errors.ApiErrors()
-                errors.add_error(
-                    error_key,
-                    "Le prix indiqué est invalide, veuillez créer une nouvelle offre",
-                )
-                raise errors
+            if error_key == "price":
+                error_key += "LimitationRule"
+            errors = api_errors.ApiErrors()
+            errors.add_error(
+                error_key,
+                "Le prix indiqué est invalide, veuillez créer une nouvelle offre",
+            )
+            raise errors
 
     # Cache this part to avoid N+1 when creating many stocks on the same offer.
     cache_attribute = f"_cached_checked_custom_reimbursement_rules_{offer.id}"
@@ -266,19 +266,8 @@ def check_event_expiration(stock: educational_models.CollectiveStock | models.St
 
 def check_stock_is_deletable(stock: models.Stock) -> None:
     check_validation_status(stock.offer)
-    check_stock_is_not_from_charlie_api(stock)
     if not stock.isEventDeletable:
         raise exceptions.TooLateToDeleteStock()
-
-
-def check_stock_is_not_from_charlie_api(stock: models.Stock) -> None:
-    if (
-        stock.dnBookedQuantity
-        and stock.offer.lastProvider
-        and stock.offer.lastProvider.hasProviderEnableCharlie
-        and stock.offer.withdrawalType == models.WithdrawalTypeEnum.IN_APP
-    ):
-        raise exceptions.StockFromCharlieApiCannotBeDeleted()
 
 
 def check_update_only_allowed_stock_fields_for_allocine_offer(updated_fields: set) -> None:

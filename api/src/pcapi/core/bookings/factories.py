@@ -1,5 +1,6 @@
 import datetime
 import typing
+import uuid
 
 import factory
 
@@ -95,3 +96,10 @@ class ReimbursedBookingFactory(BookingFactory):
     status = models.BookingStatus.REIMBURSED
     dateUsed = factory.LazyFunction(datetime.datetime.utcnow)
     reimbursementDate = factory.LazyFunction(datetime.datetime.utcnow)
+
+
+class ExternalBookingFactory(BaseFactory):
+    class Meta:
+        model = models.ExternalBooking
+
+    barcode = uuid.uuid4()

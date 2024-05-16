@@ -26,16 +26,16 @@ inputs:
     description: "Repository containing helm chart values"
     type: string
     required: true
-  chart_value_path:
-    description: "Path where repository will be cloned"
+  chart_values_destination:
+    description: "Path where repository will be cloned. Helmfile.yaml must reference this path"
     type: string
     required: true
 
 runs:
   using: 'composite'
   steps:
-    - name: "Get registry secret"
-      id: 'get-registry-secrets'
+    - name: "Get secrets (artifact registry, github)"
+      id: 'get-secrets'
       uses: 'google-github-actions/get-secretmanager-secrets@v2'
       with:
         secrets: |-
@@ -48,13 +48,13 @@ runs:
       with:
         create_credentials_file: false
         token_format: 'access_token'
-        workload_identity_provider: ${{ steps.get-registry-secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER }}
-        service_account: ${{ steps.get-registry-secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
+        workload_identity_provider: ${{ steps.get-secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER }}
+        service_account: ${{ steps.get-secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
     - uses: actions/checkout@v4.1.5
       with:
         repository: ${{ inputs.chart_values_repository }}
-        token: ${{ steps.get-registry-secrets.outputs.API_TOKEN_GITHUB }}
-        path: ${{ inputs.chart_value_path }}
+        token: ${{ steps.get-secrets.outputs.API_TOKEN_GITHUB }}
+        path: ${{ inputs.chart_values_destination }}
     - name: "Render manifests"
       shell: bash
       run: |
@@ -74,11 +74,11 @@ runs:
       id: push-manifests
       uses: cpina/github-action-push-to-another-repository@main
       env:
-        API_TOKEN_GITHUB: ${{ steps.get-registry-secrets.outputs.API_TOKEN_GITHUB }}
+        API_TOKEN_GITHUB: ${{ steps.get-secrets.outputs.API_TOKEN_GITHUB }}
       with:
         source-directory: ./rendered-manifests/helmfile-${{ inputs.environment }}/
         destination-github-username: 'pass-culture'
         destination-repository-name: 'rendered-manifests'
         commit-message: "${{ inputs.app_name }}(${{ inputs.environment }}) : pushed rendered manifests for app_version=${{ inputs.app_version }}"
-        target-branch: fdehem
+        target-branch: ${{ inputs.environment }}
         create-target-branch-if-needed: true
