@@ -52,7 +52,7 @@ jobs:
           echo "PCAPI_SECRETS=$PCAPI_SECRETS" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v4.1.5
       - name: "Generate and push rendered manifests"
-        uses: common-workflows/actions/render-push-manifests@PC-29770-move-composite-action-render-manifests-vers-un-autre-repo
+        uses: pass-culture/common-workflows/actions/render-push-manifests@PC-29770-move-composite-action-render-manifests-vers-un-autre-repo
         with:
           environment: 'testing'
           app_name: 'pcapi'
