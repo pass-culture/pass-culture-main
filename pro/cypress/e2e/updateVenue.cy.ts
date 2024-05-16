@@ -39,9 +39,9 @@ describe('Update a venue', () => {
 
     cy.findByText('Annuler et quitter').should('not.exist')
     cy.findByText('Vos informations pour le grand public').should('be.visible')
-    cy.findByText('On peut ajouter des choses, vraiment fantastique !!!').should(
-      'be.visible'
-    )
+    cy.findByText(
+      'On peut ajouter des choses, vraiment fantastique !!!'
+    ).should('be.visible')
 
     // goes to the venue page in "Paramètre de l'activité" and update data
     cy.findByText('Paramètres de l’activité').click()
