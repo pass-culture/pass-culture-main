@@ -20,7 +20,7 @@ const HelpDropdownMenu = () => {
           }}
           icon={fullLinkIcon}
           onClick={() =>
-            logEvent?.(Events.CLICKED_HELP_CENTER, {
+            logEvent(Events.CLICKED_HELP_CENTER, {
               from: location.pathname,
             })
           }
@@ -38,7 +38,7 @@ const HelpDropdownMenu = () => {
             target: '_blank',
           }}
           onClick={() =>
-            logEvent?.(Events.CLICKED_BEST_PRACTICES_STUDIES, {
+            logEvent(Events.CLICKED_BEST_PRACTICES_STUDIES, {
               from: location.pathname,
             })
           }

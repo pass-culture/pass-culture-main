@@ -17,7 +17,6 @@ import {
 import { useCallback, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 
-import { api } from 'apiClient/api'
 import { firebaseConfig } from 'config/firebase'
 import useUtmQueryParams from 'hooks/useUtmQueryParams'
 import { selectCurrentOffererId, selectCurrentUser } from 'store/user/selectors'
@@ -66,11 +65,6 @@ export const useFirebase = (consentedToFirebase: boolean) => {
       initializeAnalytics(firebaseApp, { config: { send_page_view: false } })
       firebaseRemoteConfig = getRemoteConfig(firebaseApp)
       await fetchAndActivate(firebaseRemoteConfig)
-
-      const remoteConfigParams = getRemoteConfigParams()
-      await api.postProFlags({
-        firebase: { ...remoteConfigParams, REMOTE_CONFIG_LOADED: 'true' },
-      })
     }
 
     if (consentedToFirebase) {
