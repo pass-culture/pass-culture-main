@@ -1987,6 +1987,10 @@ MUSIC_SUBCATEGORIES = {
     if subcategory.category in [categories.MUSIQUE_LIVE, categories.MUSIQUE_ENREGISTREE]
 }
 
+MUSIC_TITELIVE_SUBCATEGORY_SEARCH_IDS = {
+    subcategory.id for subcategory in [SUPPORT_PHYSIQUE_MUSIQUE_CD, SUPPORT_PHYSIQUE_MUSIQUE_VINYLE]
+}
+
 
 assert set(subcategory.id for subcategory in ALL_SUBCATEGORIES) == set(
     subcategory.id for subcategory in locals().values() if isinstance(subcategory, Subcategory)

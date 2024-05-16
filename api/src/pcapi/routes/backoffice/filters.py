@@ -29,7 +29,6 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
-from pcapi.domain import music_types
 from pcapi.domain import show_types
 from pcapi.models import offer_mixin
 from pcapi.models import validation_status_mixin
@@ -638,18 +637,11 @@ def format_modified_info_values(modified_info: typing.Any, name: str | None = No
     return str(modified_info)  # this should not happen if data is consistent
 
 
-def format_music_type(music_type_id: int | str) -> str:
-    try:
-        return music_types.MUSIC_TYPES_LABEL_BY_CODE.get(int(music_type_id), f"Autre[{music_type_id}]")
-    except ValueError:
-        return f"Autre[{music_type_id}]"
-
-
-def format_music_subtype(music_subtype_id: int | str) -> str:
-    try:
-        return music_types.MUSIC_SUB_TYPES_LABEL_BY_CODE.get(int(music_subtype_id), f"Autre[{music_subtype_id}]")
-    except ValueError:
-        return f"Autre[{music_subtype_id}]"
+def format_music_gtl_id(music_gtl_id: str) -> str:
+    return next(
+        (music_genre.label for music_genre in categories.TITELIVE_MUSIC_TYPES if music_genre.gtl_id == music_gtl_id),
+        f"Gtl inconnu [{music_gtl_id}]",
+    )
 
 
 def format_show_type(show_type_id: int | str) -> str:
@@ -1227,8 +1219,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_sub_rules_info_type"] = format_sub_rules_info_type
     app.jinja_env.filters["format_offer_validation_sub_rule"] = format_offer_validation_sub_rule
     app.jinja_env.filters["format_offer_validation_operator"] = format_offer_validation_operator
-    app.jinja_env.filters["format_music_type"] = format_music_type
-    app.jinja_env.filters["format_music_subtype"] = format_music_subtype
+    app.jinja_env.filters["format_music_gtl_id"] = format_music_gtl_id
     app.jinja_env.filters["format_show_type"] = format_show_type
     app.jinja_env.filters["format_show_subtype"] = format_show_subtype
     app.jinja_env.filters["get_comparated_format_function"] = get_comparated_format_function
