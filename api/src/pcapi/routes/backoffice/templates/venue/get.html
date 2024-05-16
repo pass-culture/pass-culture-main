@@ -212,7 +212,10 @@
             </div>
             <div class="col-4">
               <p class="mb-1">
-                <span class="fw-bold">Référencé Adage : {{ (venue.adageId is not none) | format_bool_badge }}</span>
+                <span class="fw-bold">Peut créer une offre EAC : {{ venue.managingOfferer.allowedOnAdage | format_bool_badge }}</span>
+              </p>
+              <p class="mb-1">
+                <span class="fw-bold">Cartographié sur Adage : {{ (venue.adageId is not none) | format_bool_badge }}</span>
               </p>
               {% if venue.adageId %}
                 <p class="mb-1">
