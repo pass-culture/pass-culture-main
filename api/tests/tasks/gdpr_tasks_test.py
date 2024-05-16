@@ -143,7 +143,7 @@ def generate_beneficiary(now: datetime | None = None) -> serializers.DataContain
 
 class GetUpdateExtractTest:
     def test_nominal(self) -> None:
-        extract = users_factories.GdprUserDataExtractBeneficiary()
+        extract = users_factories.GdprUserDataExtractBeneficiaryFactory()
         extract_id = extract.id
 
         with assert_num_queries(1):
@@ -158,7 +158,7 @@ class GetUpdateExtractTest:
                 gdpr_tasks._get_and_update_extract(0)
 
     def test_processed_extract(self) -> None:
-        extract = users_factories.GdprUserDataExtractBeneficiary(
+        extract = users_factories.GdprUserDataExtractBeneficiaryFactory(
             dateProcessed=datetime.utcnow(),
         )
         extract_id = extract.id
@@ -168,8 +168,8 @@ class GetUpdateExtractTest:
                 gdpr_tasks._get_and_update_extract(extract_id)
 
     def test_expired_extract(self) -> None:
-        extract = users_factories.GdprUserDataExtractBeneficiary(
-            dateCreated=datetime.utcnow(),
+        extract = users_factories.GdprUserDataExtractBeneficiaryFactory(
+            dateCreated=datetime.utcnow() - timedelta(days=8),
         )
         extract_id = extract.id
 
@@ -178,7 +178,7 @@ class GetUpdateExtractTest:
                 gdpr_tasks._get_and_update_extract(extract_id)
 
     def test_inactive_admin(self) -> None:
-        extract = users_factories.GdprUserDataExtractBeneficiary(
+        extract = users_factories.GdprUserDataExtractBeneficiaryFactory(
             authorUser__isActive=False,
         )
         extract_id = extract.id
@@ -188,7 +188,7 @@ class GetUpdateExtractTest:
                 gdpr_tasks._get_and_update_extract(extract_id)
 
     def test_beneficiary_author(self) -> None:
-        extract = users_factories.GdprUserDataExtractBeneficiary(
+        extract = users_factories.GdprUserDataExtractBeneficiaryFactory(
             authorUser=users_factories.BeneficiaryFactory(),
         )
         extract_id = extract.id
@@ -224,7 +224,7 @@ class ExtractBeneficiaryDataTest:
 
     def test_json_output(self) -> None:
         user = generate_beneficiary()
-        extract = users_factories.GdprUserDataExtractBeneficiary(
+        extract = users_factories.GdprUserDataExtractBeneficiaryFactory(
             user=user,
         )
         payload = serializers.ExtractBeneficiaryDataRequest(extract_id=extract.id)

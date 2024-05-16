@@ -1048,10 +1048,10 @@ class UserProNewNavStateFactory(BaseFactory):
     newNavDate = LazyAttribute(lambda _: datetime.utcnow())
 
 
-class GdprUserDataExtractBeneficiary(BaseFactory):
+class GdprUserDataExtractBeneficiaryFactory(BaseFactory):
     class Meta:
         model = models.GdprUserDataExtract
 
-    dateCreated = LazyAttribute(lambda _: datetime.utcnow() - timedelta(days=8))
+    dateCreated = LazyAttribute(lambda _: datetime.utcnow() - timedelta(days=1))
     user = factory.SubFactory(BeneficiaryFactory)
     authorUser = factory.SubFactory(AdminFactory)

@@ -27,6 +27,7 @@ def install_routes(app: Flask) -> None:
     from .finance import finance_incidents_blueprint
     from .finance import generate_invoices_blueprint as invoices_blueprint
     from .fraud import blueprint as fraud_blueprint
+    from .gdpr_user_extract import blueprint as gdpr_extract_blueprint
     from .multiple_offers import blueprint as multiple_offers_blueprint
     from .offer_price_limitation_rules import blueprint as offer_price_limitation_rule_blueprint
     from .offer_validation_rules import blueprint as offer_validation_rule_blueprint
