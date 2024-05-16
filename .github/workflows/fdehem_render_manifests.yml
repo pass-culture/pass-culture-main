@@ -50,13 +50,14 @@ jobs:
           #Transform list into helm readable parameter list (pattern: --set value={item1,item2,item3})
           PCAPI_SECRETS=secrets={$(echo $PCAPI_SECRETS | sed -r 's/ /,/g')}
           echo "PCAPI_SECRETS=$PCAPI_SECRETS" >> "$GITHUB_OUTPUT"
-      - uses: ./.github/actions/render-push-manifests
+      - uses: actions/checkout@v4.1.5
+      - name: "Generate and push rendered manifests"
+        uses: common-workflows/actions/render-push-manifests@PC-29770-move-composite-action-render-manifests-vers-un-autre-repo
         with:
           environment: 'testing'
           app_name: 'pcapi'
           app_version: 'xxx.xx'
           additional_args: ${{ steps.generate-pcapi-secrets-list.outputs.PCAPI_SECRETS }}
-          api_token_github: ${{ steps.secrets.outputs.API_TOKEN_GITHUB }}
           registry_workload_identity_secret_name: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
           registry_service_account_secret_name: passculture-metier-ehp/passculture-main-artifact-registry-service-account
           api_token_github_secret_name: passculture-metier-ehp/passculture-main-sa-access-token
