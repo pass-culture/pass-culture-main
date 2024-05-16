@@ -18,6 +18,7 @@ import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
 import {
   defaultGetOffererResponseModel,
   getOffererNameFactory,
+  getOfferManagingOffererFactory,
   listOffersOfferFactory,
 } from 'utils/individualApiFactories'
 import {
@@ -34,12 +35,17 @@ const renderOffers = (
   hasNewNav: boolean = false
 ) => {
   renderWithProviders(<Offers {...props} />, {
-    user: sharedCurrentUserFactory({
-      isAdmin: false,
-      navState: {
-        newNavDate: hasNewNav ? '2021-01-01' : null,
+    storeOverrides: {
+      user: {
+        currentUser: sharedCurrentUserFactory({
+          isAdmin: false,
+          navState: {
+            newNavDate: hasNewNav ? '2021-01-01' : null,
+          },
+        }),
+        selectedOffererId: 1,
       },
-    }),
+    },
     ...options,
   })
 }
@@ -650,7 +656,7 @@ describe('screen Offers', () => {
 
   it('should display the create offer button by default for non admins with validated offerers', async () => {
     vi.spyOn(api, 'listOfferersNames').mockResolvedValueOnce({
-      offerersNames: [getOffererNameFactory()],
+      offerersNames: [{ ...getOfferManagingOffererFactory(), id: 1 }],
     })
 
     renderOffers(props)

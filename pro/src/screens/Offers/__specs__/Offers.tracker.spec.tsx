@@ -11,11 +11,19 @@ import {
   getOffererNameFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { Offers, OffersProps } from '../Offers'
 
 const renderOffers = (props: OffersProps) =>
-  renderWithProviders(<Offers {...props} />)
+  renderWithProviders(<Offers {...props} />, {
+    storeOverrides: {
+      user: {
+        selectedOffererId: defaultGetOffererResponseModel.id,
+        currentUser: sharedCurrentUserFactory(),
+      },
+    },
+  })
 
 vi.mock('apiClient/api', () => ({
   api: {
@@ -49,7 +57,9 @@ describe('tracker screen Offers', () => {
 
     const individualOffererNames = getOfferManagingOffererFactory()
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-      offerersNames: [getOffererNameFactory(individualOffererNames)],
+      offerersNames: [
+        getOffererNameFactory({ ...individualOffererNames, id: 1 }),
+      ],
     })
 
     renderOffers(props)

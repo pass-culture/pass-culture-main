@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 
 import {
   CollectiveOfferResponseModel,
@@ -29,6 +30,7 @@ import strokeLibraryIcon from 'icons/stroke-library.svg'
 import strokeUserIcon from 'icons/stroke-user.svg'
 import { ActionsBar } from 'pages/Offers/Offers/ActionsBar/ActionsBar'
 import OffersContainer from 'pages/Offers/Offers/Offers'
+import { selectCurrentOffererId } from 'store/user/selectors'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Tabs } from 'ui-kit/Tabs/Tabs'
@@ -77,6 +79,7 @@ export const Offers = ({
   const [areAllOffersSelected, setAreAllOffersSelected] = useState(false)
   const [selectedOfferIds, setSelectedOfferIds] = useState<string[]>([])
   const isNewSideBarNavigation = useIsNewInterfaceActive()
+  const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const { isAdmin } = currentUser
   const currentPageOffersSubset = offers.slice(
@@ -95,7 +98,10 @@ export const Offers = ({
   useEffect(() => {
     const loadValidatedUserOfferers = async () => {
       const validatedUserOfferers = await getUserValidatedOfferersNamesAdapter()
-      if (validatedUserOfferers.isOk && validatedUserOfferers.payload.length) {
+      const isCurrentOffererValidated = validatedUserOfferers.payload.some(
+        (validatedOfferer) => validatedOfferer.id === selectedOffererId
+      )
+      if (isCurrentOffererValidated) {
         setIsOffererValidated(true)
       } else {
         setIsOffererValidated(false)
@@ -111,7 +117,10 @@ export const Offers = ({
   const actionLink = displayCreateOfferButton ? (
     <ButtonLink
       variant={ButtonVariant.PRIMARY}
-      link={{ isExternal: false, to: '/offre/creation' }}
+      link={{
+        isExternal: false,
+        to: `/offre/creation${selectedOffererId ? `?structure=${selectedOffererId}` : ''}`,
+      }}
       icon={fullPlusIcon}
     >
       Créer une offre
