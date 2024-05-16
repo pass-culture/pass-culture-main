@@ -1,6 +1,7 @@
 from pcapi.sandboxes.scripts.creators.industrial.add_accessibility_compliance_to_venues import (
     add_accessibility_compliance_to_venues,
 )
+from pcapi.sandboxes.scripts.creators.industrial.create_gdpr_user_extracts import create_gdpr_user_extract_data
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_admin_users import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_app_users import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_bank_accounts import create_industrial_bank_accounts
@@ -147,3 +148,5 @@ def save_industrial_sandbox() -> None:
     add_accessibility_compliance_to_venues()
 
     create_industrial_offerer_confidence_rules()
+
+    create_gdpr_user_extract_data()

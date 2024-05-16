@@ -65,6 +65,9 @@
                   {% if has_permission("READ_PUBLIC_ACCOUNT") %}
                     {{ menu_section_item('Jeunes bénéficiaires ou à venir', 'backoffice_web.public_accounts.search_public_accounts') }}
                   {% endif %}
+                  {% if has_permission("EXTRACT_PUBLIC_ACCOUNT") %}
+                    {{ menu_section_item('Extraction des données jeunes', 'backoffice_web.gdpr_extract.list_gdpr_user_data_extract') }}
+                  {% endif %}
                 {% endcall %}
               </div>
               <hr />

@@ -25,6 +25,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
         perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT,
         perm_models.Permissions.SUSPEND_USER,
+        perm_models.Permissions.EXTRACT_PUBLIC_ACCOUNT,
     ],
     "support_pro": [
         perm_models.Permissions.READ_PRO_ENTITY,
@@ -181,6 +182,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MANAGE_PERMISSIONS,
         perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT,
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
+        perm_models.Permissions.EXTRACT_PUBLIC_ACCOUNT,
     ],
     "gestionnaire_des_droits": [
         perm_models.Permissions.MANAGE_PERMISSIONS,

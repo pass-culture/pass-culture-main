@@ -73,6 +73,8 @@ class Permissions(enum.Enum):
 
     MANAGE_TECH_PARTNERS = "gérer les partenaires techniques"
 
+    EXTRACT_PUBLIC_ACCOUNT = "extraire les données personnelles (RGPD) d'un compte"
+
     @classmethod
     def exists(cls, name: str) -> bool:
         try:
