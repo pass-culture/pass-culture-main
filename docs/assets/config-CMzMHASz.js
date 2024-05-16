@@ -1,1 +1,0 @@
-var e={BASE_URL:"./",MODE:"production",DEV:!1,PROD:!0,SSR:!1,STORYBOOK:"true"};let t;typeof window<"u"&&(t=window.location.hostname.includes("beta.gouv")?e.VITE_API_URL_OLD:e.VITE_API_URL_NEW);const _=t||"http://localhost",o=e.VITE_URL_FOR_MAINTENANCE||"";export{_ as A,o as U};
