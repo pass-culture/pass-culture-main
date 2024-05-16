@@ -228,7 +228,7 @@ class GetOffererTest(GetEndpointHelper):
 
         assert "Peut créer une offre EAC : Oui" in html_parser.content_as_text(response.data)
         # One venue with adageId out of two physical venues
-        assert "Lieux référencés : 1/2" in html_parser.content_as_text(response.data)
+        assert "Lieux cartographiés sur Adage : 1/2" in html_parser.content_as_text(response.data)
 
     def test_offerer_with_no_adage_venue_has_adage_data(self, authenticated_client, offerer):
         offerer = offerers_factories.OffererFactory(allowedOnAdage=True)
@@ -240,7 +240,7 @@ class GetOffererTest(GetEndpointHelper):
             assert response.status_code == 200
 
         assert "Peut créer une offre EAC : Oui" in html_parser.content_as_text(response.data)
-        assert "Lieux référencés : 0/1" in html_parser.content_as_text(response.data)
+        assert "Lieux cartographiés sur Adage : 0/1" in html_parser.content_as_text(response.data)
 
     def test_offerer_with_no_individual_subscription_tab(self, authenticated_client, offerer):
         offerer_id = offerer.id

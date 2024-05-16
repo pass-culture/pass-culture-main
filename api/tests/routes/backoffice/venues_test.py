@@ -311,6 +311,7 @@ class GetVenueTest(GetEndpointHelper):
             venueLabel=offerers_factories.VenueLabelFactory(label="Lieu test"),
             contact__website="www.example.com",
             publicName="Le grand Rantanplan 1",
+            managingOfferer__allowedOnAdage=False,
         )
         url = url_for(self.endpoint, venue_id=venue.id)
 
@@ -328,7 +329,8 @@ class GetVenueTest(GetEndpointHelper):
         assert f"Code postal : {venue.postalCode} " in response_text
         assert f"Email : {venue.bookingEmail} " in response_text
         assert f"Numéro de téléphone : {venue.contact.phone_number} " in response_text
-        assert "Référencé Adage : Non" in response_text
+        assert "Peut créer une offre EAC : Non" in response_text
+        assert "Cartographié sur Adage : Non" in response_text
         assert "ID Adage" not in response_text
         assert "Site web : https://www.example.com" in response_text
         assert f"Activité principale : {venue.venueTypeCode.value}" in response_text
@@ -340,14 +342,17 @@ class GetVenueTest(GetEndpointHelper):
         assert "Suspendu" not in badges
 
     def test_get_venue_with_adage_id(self, authenticated_client):
-        venue_id = offerers_factories.VenueFactory(adageId="7122022", contact=None).id
+        venue_id = offerers_factories.VenueFactory(
+            adageId="7122022", contact=None, managingOfferer__allowedOnAdage=True
+        ).id
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
             assert response.status_code == 200
 
         response_text = html_parser.content_as_text(response.data)
-        assert "Référencé Adage : Oui" in response_text
+        assert "Peut créer une offre EAC : Oui" in response_text
+        assert "Cartographié sur Adage : Oui" in response_text
         assert "ID Adage : 7122022" in response_text
 
     def test_get_venue_with_no_contact(self, authenticated_client):
@@ -419,7 +424,7 @@ class GetVenueTest(GetEndpointHelper):
         assert "Resynchroniser les offres" not in buttons
 
     def test_get_virtual_venue(self, authenticated_client):
-        venue = offerers_factories.VirtualVenueFactory()
+        venue = offerers_factories.VirtualVenueFactory(managingOfferer__allowedOnAdage=True)
 
         url = url_for(self.endpoint, venue_id=venue.id)
 
@@ -439,7 +444,8 @@ class GetVenueTest(GetEndpointHelper):
         assert f"Venue ID : {venue.id} " in response_text
         assert f"Email : {venue.bookingEmail} " in response_text
         assert f"Numéro de téléphone : {venue.contact.phone_number} " in response_text
-        assert "Référencé Adage : Non" in response_text
+        assert "Peut créer une offre EAC : Oui" in response_text
+        assert "Cartographié sur Adage : Non" in response_text
         assert "ID Adage" not in response_text
         assert "Site web : https://my.website.com" in response_text
 
