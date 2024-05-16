@@ -856,7 +856,7 @@ def recompute_dnBookedQuantity(stock_ids: list[int]) -> None:
       FROM bookings_per_stock
       WHERE stock.id = bookings_per_stock.stock_id
     """
-    db.session.execute(query, {"stock_ids": tuple(stock_ids)})
+    db.session.execute(sa.text(query), {"stock_ids": tuple(stock_ids)})
 
 
 def auto_mark_as_used_after_event() -> None:

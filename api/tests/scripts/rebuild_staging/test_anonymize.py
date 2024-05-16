@@ -1,6 +1,8 @@
 import pathlib
 import re
 
+import sqlalchemy as sa
+
 import pcapi
 
 
@@ -23,4 +25,4 @@ class AnonymizeTest:
                 else:
                     sql.append(line)
         sql = "\n".join(sql)
-        db_session.execute(sql)
+        db_session.execute(sa.text(sql))
