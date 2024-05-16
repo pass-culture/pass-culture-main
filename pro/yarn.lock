@@ -9483,25 +9483,25 @@ react-inspector@6.0.2:
   resolved "https://registry.yarnpkg.com/react-inspector/-/react-inspector-6.0.2.tgz#aa3028803550cb6dbd7344816d5c80bf39d07e9d"
   integrity sha512-x+b7LxhmHXjHoU/VrFAzw5iutsILRoYyDq97EDYdFpPLcvqtEzk4ZSZSQjnFPbr5T57tLXnHcqFYoN1pI6u8uQ==
 
-react-instantsearch-core@7.8.0:
-  version "7.8.0"
-  resolved "https://registry.yarnpkg.com/react-instantsearch-core/-/react-instantsearch-core-7.8.0.tgz#9cee5f43e1a588b355f0368b8011e6a34d8b060f"
-  integrity sha512-eNsmvSPnKpEgAXKkaDXY2hAeRwkoitWdBmmQy/ij7bc2zi5TUOFth6jUHVe71XyTDsNsBzXph00HWFNSuuxN2Q==
+react-instantsearch-core@7.8.1:
+  version "7.8.1"
+  resolved "https://registry.yarnpkg.com/react-instantsearch-core/-/react-instantsearch-core-7.8.1.tgz#0f5204d72cfaef962a0def0d98fd9c5163949f9f"
+  integrity sha512-5vrrukKlGYWk3bUw+q3PqV8qNmqaOhi44wyMDBYdy3ZfS9d4WrfI0tst5qHjJPg/+PeOCR7aedWEgshGUq5W4g==
   dependencies:
     "@babel/runtime" "^7.1.2"
     algoliasearch-helper "3.19.0"
     instantsearch.js "4.68.1"
     use-sync-external-store "^1.0.0"
 
-react-instantsearch@^7.8.0:
-  version "7.8.0"
-  resolved "https://registry.yarnpkg.com/react-instantsearch/-/react-instantsearch-7.8.0.tgz#53d5971d3cb3ce6cda813494b635fbaa4d845ffb"
-  integrity sha512-T5YcJEM0N1//itFTbIUKLorkBDyAVZ3iZTl1+bjxYr3vzZqatBKt6knCn12oTgm2+2ZF8QKktODTWJEwCiGVCQ==
+react-instantsearch@^7.8.1:
+  version "7.8.1"
+  resolved "https://registry.yarnpkg.com/react-instantsearch/-/react-instantsearch-7.8.1.tgz#d7b270eee74c710453705d9723bd47ebab5fda8d"
+  integrity sha512-Tw2PKU+fgrnT5uWA7vsz/fkT6QG/lfEuNcjj6bUsqGOijhx67TBaDmOyvGG9wVCZoSZFJtbcqUNsXORafBpH/w==
   dependencies:
     "@babel/runtime" "^7.1.2"
     instantsearch-ui-components "0.5.0"
     instantsearch.js "4.68.1"
-    react-instantsearch-core "7.8.0"
+    react-instantsearch-core "7.8.1"
 
 react-is@18.1.0:
   version "18.1.0"
