@@ -62,7 +62,7 @@ jobs:
           registry_service_account_secret_name: passculture-metier-ehp/passculture-main-artifact-registry-service-account
           api_token_github_secret_name: passculture-metier-ehp/passculture-main-sa-access-token
           chart_values_repository: pass-culture/pass-culture-deployment
-          chart_value_path: ./pass-culture-deployment
+          chart_values_destination: ./pass-culture-deployment
       - name: "Install argocd cli"
         id: install_argocd_cli
         run: |
