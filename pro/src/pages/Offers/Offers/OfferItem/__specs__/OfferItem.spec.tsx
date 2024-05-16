@@ -12,7 +12,7 @@ import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { CollectiveBookingStatus } from 'apiClient/v2'
 import * as useAnalytics from 'app/App/analytics/firebase'
-import Notification from 'components/Notification/Notification'
+import { Notification } from 'components/Notification/Notification'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
 import { Audience } from 'core/shared/types'
 import {

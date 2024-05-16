@@ -6,8 +6,7 @@ import { api } from 'apiClient/api'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
-import { UserIdentityForm } from '../'
-import { UserIdentityFormProps } from '../UserIdentityForm'
+import { UserIdentityForm, UserIdentityFormProps } from '../UserIdentityForm'
 
 const renderUserIdentityForm = (props: UserIdentityFormProps) => {
   return renderWithProviders(<UserIdentityForm {...props} />, {

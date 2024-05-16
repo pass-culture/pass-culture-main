@@ -1,6 +1,6 @@
 /* istanbul ignore file: DEBT, TO FIX */
 import { PostOfferBodyModel } from 'apiClient/v1'
-import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
+import { IndividualOfferFormValues } from 'components/IndividualOfferForm/types'
 import { OfferExtraData } from 'core/Offers/types'
 import { AccessibilityEnum } from 'core/shared/types'
 

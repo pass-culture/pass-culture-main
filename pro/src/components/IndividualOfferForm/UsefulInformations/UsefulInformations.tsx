@@ -19,8 +19,8 @@ import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 import styles from '../IndividualOfferForm.module.scss'
 import { IndividualOfferFormValues } from '../types'
 
-import { TicketWithdrawal } from './TicketWithdrawal'
-import { Venue } from './Venue'
+import { TicketWithdrawal } from './TicketWithdrawal/TicketWithdrawal'
+import { Venue } from './Venue/Venue'
 
 export interface UsefulInformationsProps {
   offererNames: GetOffererNameResponseModel[]

@@ -13,7 +13,7 @@ import { useOfferWizardMode } from 'hooks'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
 import styles from './ImageUploaderOffer.module.scss'
-import { buildInitialValues } from './utils'
+import { buildInitialValues } from './utils/buildInitialValues'
 
 export interface ImageUploaderOfferProps {
   onImageUpload: (values: OnImageUploadArgs) => Promise<void>
@@ -21,7 +21,7 @@ export interface ImageUploaderOfferProps {
   imageOffer?: IndividualOfferImage
 }
 
-const ImageUploaderOffer = ({
+export const ImageUploaderOffer = ({
   onImageUpload,
   onImageDelete,
   imageOffer,
@@ -61,5 +61,3 @@ const ImageUploaderOffer = ({
     </FormLayout.Section>
   )
 }
-
-export default ImageUploaderOffer

@@ -1,8 +1,9 @@
 import React from 'react'
 
-import RouteLeavingGuard, {
+import {
+  RouteLeavingGuard,
   BlockerFunction,
-} from 'components/RouteLeavingGuard'
+} from 'components/RouteLeavingGuard/RouteLeavingGuard'
 
 interface RouteLeavingGuardVenueEditionProps {
   shouldBlock: boolean

@@ -7,8 +7,12 @@ import {
   VenueTypeResponseModel,
 } from 'apiClient/v1'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
-import { AddressSelect } from 'components/Address'
+import { AddressSelect } from 'components/Address/Address'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import {
+  RouteLeavingGuard,
+  BlockerFunction,
+} from 'components/RouteLeavingGuard/RouteLeavingGuard'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { Banner } from 'ui-kit/Banners/Banner/Banner'
 import { Button } from 'ui-kit/Button/Button'
@@ -18,9 +22,6 @@ import { Select } from 'ui-kit/form/Select/Select'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
-import RouteLeavingGuard, {
-  BlockerFunction,
-} from '../../components/RouteLeavingGuard'
 import useCurrentUser from '../../hooks/useCurrentUser'
 
 import { Accessibility } from './Accessibility/Accessibility'

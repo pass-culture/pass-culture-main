@@ -20,7 +20,8 @@ type HeaderProps = {
   focusCloseButton?: () => void
   disableHomeLink?: boolean
 }
-const Header = forwardRef(
+
+export const Header = forwardRef(
   (
     {
       lateralPanelOpen = false,
@@ -89,5 +90,3 @@ const Header = forwardRef(
   }
 )
 Header.displayName = 'Header'
-
-export default Header

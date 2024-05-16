@@ -1,6 +1,6 @@
 import React from 'react'
 
-import RouteLeavingGuard from 'components/RouteLeavingGuard/RouteLeavingGuard'
+import { RouteLeavingGuard } from 'components/RouteLeavingGuard/RouteLeavingGuard'
 
 import { shouldBlockNavigation } from './utils'
 

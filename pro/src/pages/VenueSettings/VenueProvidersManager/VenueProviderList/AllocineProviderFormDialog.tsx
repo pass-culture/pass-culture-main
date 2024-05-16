@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { PostVenueProviderBody } from 'apiClient/v1'
-import DialogBox from 'components/DialogBox/DialogBox'
+import { DialogBox } from 'components/DialogBox/DialogBox'
 
 import {
   AllocineProviderForm,

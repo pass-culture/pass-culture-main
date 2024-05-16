@@ -1,6 +1,6 @@
 import React, { useId } from 'react'
 
-import DialogBox from 'components/DialogBox/DialogBox'
+import { DialogBox } from 'components/DialogBox/DialogBox'
 import strokeErrorIcon from 'icons/stroke-error.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 

@@ -2,18 +2,16 @@ import cn from 'classnames'
 import React, { useCallback, useEffect, useState } from 'react'
 
 import useAnalytics from 'app/App/analytics/firebase'
-import {
-  CreateOffer,
-  CreateVenue,
-  ManageBookings,
-  Welcome,
-} from 'components/Tutorial/Step'
 import { Events } from 'core/FirebaseEvents/constants'
 import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { TUTO_DIALOG_LABEL_ID } from './constants'
+import { CreateOffer } from './Step/CreateOffer'
+import { CreateVenue } from './Step/CreateVenue'
+import { ManageBookings } from './Step/ManageBookings'
+import { Welcome } from './Step/Welcome'
 import styles from './Tutorial.module.scss'
 import { Step } from './types'
 
@@ -44,7 +42,7 @@ interface TutorialProps {
   onFinish: () => void
 }
 
-const Tutorial = ({ onFinish }: TutorialProps): JSX.Element => {
+export const Tutorial = ({ onFinish }: TutorialProps): JSX.Element => {
   const { logEvent } = useAnalytics()
   const [activeStepPosition, setActiveStepPosition] = useState<number>(1)
   const isNewInterfaceActive = useIsNewInterfaceActive()
@@ -118,5 +116,3 @@ const Tutorial = ({ onFinish }: TutorialProps): JSX.Element => {
     </div>
   )
 }
-
-export default Tutorial

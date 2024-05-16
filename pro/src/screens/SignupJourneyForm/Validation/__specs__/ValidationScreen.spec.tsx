@@ -9,8 +9,8 @@ import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { PostOffererResponseModel, Target } from 'apiClient/v1'
-import { Address } from 'components/Address'
-import Notification from 'components/Notification/Notification'
+import { Address } from 'components/Address/types'
+import { Notification } from 'components/Notification/Notification'
 import {
   DEFAULT_ACTIVITY_VALUES,
   SignupJourneyContextValues,

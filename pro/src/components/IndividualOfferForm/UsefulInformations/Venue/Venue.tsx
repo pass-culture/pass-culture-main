@@ -6,8 +6,10 @@ import {
   VenueListItemResponseModel,
 } from 'apiClient/v1'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
-import { IndividualOfferForm } from 'components/IndividualOfferForm/types'
+import {
+  IndividualOfferForm,
+  IndividualOfferFormValues,
+} from 'components/IndividualOfferForm/types'
 import { buildAccessibilityFormValues } from 'components/IndividualOfferForm/utils/setDefaultInitialFormValues'
 import { Select } from 'ui-kit/form/Select/Select'
 
@@ -34,7 +36,7 @@ export const onVenueChange = async (
   await setFieldValue('accessibility', buildAccessibilityFormValues(newVenue))
 }
 
-const Venue = ({
+export const Venue = ({
   offererNames,
   venueList,
   readOnlyFields = [],
@@ -91,5 +93,3 @@ const Venue = ({
     </>
   )
 }
-
-export default Venue

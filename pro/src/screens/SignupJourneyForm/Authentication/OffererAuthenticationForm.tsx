@@ -1,6 +1,7 @@
 import React from 'react'
 
-import { AddressSelect, Address } from 'components/Address'
+import { AddressSelect } from 'components/Address/Address'
+import { Address } from 'components/Address/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
@@ -15,7 +16,7 @@ export interface OffererAuthenticationFormValues
   'search-addressAutocomplete': string
 }
 
-const OffererAuthenticationForm = (): JSX.Element => {
+export const OffererAuthenticationForm = (): JSX.Element => {
   return (
     <FormLayout.Section title="Identification">
       <FormLayout.Row>
@@ -36,5 +37,3 @@ const OffererAuthenticationForm = (): JSX.Element => {
     </FormLayout.Section>
   )
 }
-
-export default OffererAuthenticationForm

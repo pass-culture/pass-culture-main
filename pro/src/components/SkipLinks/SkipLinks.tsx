@@ -10,7 +10,9 @@ interface SkipLinksProps {
   displayMenu?: boolean
 }
 
-const SkipLinks = ({ displayMenu = false }: SkipLinksProps): JSX.Element => {
+export const SkipLinks = ({
+  displayMenu = false,
+}: SkipLinksProps): JSX.Element => {
   const buttons: { anchor: string; label: string }[] = [
     { anchor: '#content', label: 'Aller au contenu' },
   ].concat(displayMenu ? { anchor: '#header-navigation', label: 'Menu' } : [])
@@ -59,5 +61,3 @@ const SkipLinks = ({ displayMenu = false }: SkipLinksProps): JSX.Element => {
     </>
   )
 }
-
-export default SkipLinks

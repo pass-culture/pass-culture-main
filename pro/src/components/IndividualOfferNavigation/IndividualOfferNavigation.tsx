@@ -1,8 +1,7 @@
 import React from 'react'
 import { generatePath, useLocation } from 'react-router-dom'
 
-import Stepper from 'components/Stepper'
-import { Step, StepPattern } from 'components/Stepper/Stepper'
+import { Step, StepPattern, Stepper } from 'components/Stepper/Stepper'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'

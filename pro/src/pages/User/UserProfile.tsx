@@ -1,13 +1,13 @@
 import { AppLayout } from 'app/AppLayout'
 import useCurrentUser from 'hooks/useCurrentUser'
-import { UserProfile as UserProfileScreen } from 'screens/UserProfile'
+import { UserProfile } from 'screens/UserProfile/UserProfile'
 
 const Profile = (): JSX.Element => {
   const { currentUser } = useCurrentUser()
 
   return (
     <AppLayout>
-      <UserProfileScreen
+      <UserProfile
         userIdentityInitialValues={{
           firstName: currentUser.firstName || '',
           lastName: currentUser.lastName || '',

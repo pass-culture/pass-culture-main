@@ -4,7 +4,7 @@ import { Configure } from 'react-instantsearch'
 
 import { AdageFrontRoles } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import Notification from 'components/Notification/Notification'
+import { Notification } from 'components/Notification/Notification'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,

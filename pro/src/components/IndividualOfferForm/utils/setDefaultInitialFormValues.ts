@@ -2,11 +2,10 @@ import {
   GetOffererNameResponseModel,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
-import {
-  FORM_DEFAULT_VALUES,
-  IndividualOfferFormValues,
-} from 'components/IndividualOfferForm'
 import { AccessibilityEnum } from 'core/shared/types'
+
+import { FORM_DEFAULT_VALUES } from '../constants'
+import { IndividualOfferFormValues } from '../types'
 
 import { buildSubcategoryFields } from './buildSubCategoryFields'
 

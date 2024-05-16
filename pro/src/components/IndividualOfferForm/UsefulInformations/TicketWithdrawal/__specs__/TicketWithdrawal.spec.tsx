@@ -8,8 +8,8 @@ import { WithdrawalTypeEnum } from 'apiClient/v1'
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm/types'
 import { Button } from 'ui-kit/Button/Button'
 
-import TicketWithdrawal, { TicketWithdrawalProps } from '../TicketWithdrawal'
-import validationSchema from '../validationSchema'
+import { TicketWithdrawalProps, TicketWithdrawal } from '../TicketWithdrawal'
+import { validationSchema } from '../validationSchema'
 
 const renderTicketWithdrawal = ({
   props,

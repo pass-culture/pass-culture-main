@@ -21,7 +21,7 @@ export interface UserIdentityFormProps {
   initialValues: UserIdentityFormValues
 }
 
-const UserIdentityForm = ({
+export const UserIdentityForm = ({
   closeForm,
   initialValues,
 }: UserIdentityFormProps): JSX.Element => {
@@ -97,5 +97,3 @@ const UserIdentityForm = ({
     </>
   )
 }
-
-export default UserIdentityForm

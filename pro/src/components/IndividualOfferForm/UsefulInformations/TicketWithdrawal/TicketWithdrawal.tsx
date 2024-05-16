@@ -19,7 +19,7 @@ export interface TicketWithdrawalProps {
   readOnlyFields?: string[]
 }
 
-const TicketWithdrawal = ({
+export const TicketWithdrawal = ({
   readOnlyFields = [],
 }: TicketWithdrawalProps): JSX.Element => {
   const {
@@ -98,5 +98,3 @@ const TicketWithdrawal = ({
     </>
   )
 }
-
-export default TicketWithdrawal

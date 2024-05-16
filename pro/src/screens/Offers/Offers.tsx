@@ -7,7 +7,7 @@ import {
   ListOffersOfferResponseModel,
   UserRole,
 } from 'apiClient/v1'
-import NoOffers from 'components/NoData'
+import { NoData } from 'components/NoData/NoData'
 import {
   DEFAULT_PAGE,
   DEFAULT_SEARCH_FILTERS,
@@ -250,7 +250,7 @@ export const Offers = ({
         venues={venues}
       />
       {userHasNoOffers ? (
-        <NoOffers audience={audience} page="offers" />
+        <NoData page="offers" />
       ) : (
         <OffersContainer
           applyFilters={applyFilters}

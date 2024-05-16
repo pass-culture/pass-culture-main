@@ -17,7 +17,10 @@ import styles from './ReimbursementsTabs.module.scss'
 type ReimbursementsTabsProps = {
   selectedOfferer: GetOffererResponseModel | null
 }
-const ReimbursementsTabs = ({ selectedOfferer }: ReimbursementsTabsProps) => {
+
+export const ReimbursementsTabs = ({
+  selectedOfferer,
+}: ReimbursementsTabsProps) => {
   const activeStep = useActiveStep(STEP_NAMES)
   const hasWarning =
     (selectedOfferer &&
@@ -65,5 +68,3 @@ const ReimbursementsTabs = ({ selectedOfferer }: ReimbursementsTabsProps) => {
 
   return <Tabs tabs={tabs} selectedKey={activeStep} />
 }
-
-export default ReimbursementsTabs

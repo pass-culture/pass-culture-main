@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
-import Notification from 'components/Notification/Notification'
+import { Notification } from 'components/Notification/Notification'
 import { AdageUserContext } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import { defaultAdageUser } from 'utils/adageFactories'
 import * as localStorageAvailable from 'utils/localStorageAvailable'

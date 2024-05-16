@@ -8,7 +8,7 @@ import {
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
 import useAnalytics from 'app/App/analytics/firebase'
-import NoData from 'components/NoData'
+import { NoData } from 'components/NoData/NoData'
 import {
   GET_BOOKINGS_QUERY_KEY,
   GET_HAS_BOOKINGS_QUERY_KEY,
@@ -268,7 +268,7 @@ export const BookingsScreen = <
       ) : hasBookingsQuery.data ? (
         <ChoosePreFiltersMessage />
       ) : (
-        <NoData audience={audience} page="bookings" />
+        <NoData page="bookings" />
       )}
     </div>
   )

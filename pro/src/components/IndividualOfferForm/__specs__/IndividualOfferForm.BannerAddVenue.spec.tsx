@@ -18,11 +18,13 @@ import {
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
-import { IndividualOfferFormValues, getValidationSchema } from '..'
-import IndividualOfferForm, {
+import {
+  IndividualOfferForm,
   IndividualOfferFormProps,
 } from '../IndividualOfferForm'
+import { IndividualOfferFormValues } from '../types'
 import { setDefaultInitialFormValues } from '../utils/setDefaultInitialFormValues'
+import { getValidationSchema } from '../validationSchema'
 
 const renderIndividualOfferForm = ({
   initialValues,

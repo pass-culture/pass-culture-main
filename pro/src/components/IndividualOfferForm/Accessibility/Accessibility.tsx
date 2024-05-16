@@ -12,7 +12,7 @@ interface AccessiblityProps {
   readOnlyFields?: string[]
 }
 
-const Accessibility = ({
+export const Accessibility = ({
   readOnlyFields = [],
 }: AccessiblityProps): JSX.Element => {
   const { setFieldValue } = useFormikContext<IndividualOfferFormValues>()
@@ -31,5 +31,3 @@ const Accessibility = ({
     </FormLayout.Section>
   )
 }
-
-export default Accessibility

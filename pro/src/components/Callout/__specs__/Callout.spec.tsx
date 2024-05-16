@@ -5,7 +5,7 @@ import React from 'react'
 import { CalloutVariant } from 'components/Callout/types'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import Callout, { CalloutProps } from '../Callout'
+import { Callout, CalloutProps } from '../Callout'
 
 describe('Callout', () => {
   const props: CalloutProps = {

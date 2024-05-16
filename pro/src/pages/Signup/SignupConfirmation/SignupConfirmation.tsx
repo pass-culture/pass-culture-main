@@ -1,6 +1,6 @@
 import React from 'react'
 
-import Callout from 'components/Callout/Callout'
+import { Callout } from 'components/Callout/Callout'
 import fullMailIcon from 'icons/full-mail.svg'
 
 import styles from './SignupConfirmation.module.scss'

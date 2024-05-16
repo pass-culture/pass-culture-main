@@ -12,7 +12,9 @@ import { StepComponentProps } from '../types'
 
 import styles from './Step.module.scss'
 
-const ManageBookings = ({ titleId }: StepComponentProps): JSX.Element => (
+export const ManageBookings = ({
+  titleId,
+}: StepComponentProps): JSX.Element => (
   <>
     <h1 id={titleId}>Suivez et gérez vos réservations</h1>
     <section className={styles['mb-content']}>
@@ -97,5 +99,3 @@ const ManageBookings = ({ titleId }: StepComponentProps): JSX.Element => (
     </section>
   </>
 )
-
-export default ManageBookings

@@ -4,7 +4,7 @@ import React from 'react'
 
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import NewNavReview from '../NewNavReview'
+import { NewNavReview } from '../NewNavReview'
 
 const renderNewNavReview = () => renderWithProviders(<NewNavReview />)
 

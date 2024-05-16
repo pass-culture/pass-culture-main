@@ -8,7 +8,7 @@ import { StepComponentProps } from '../types'
 
 import styles from './Step.module.scss'
 
-const CreateOffer = ({
+export const CreateOffer = ({
   titleId,
   contentClassName,
 }: StepComponentProps): JSX.Element => (
@@ -43,5 +43,3 @@ const CreateOffer = ({
     </section>
   </>
 )
-
-export default CreateOffer

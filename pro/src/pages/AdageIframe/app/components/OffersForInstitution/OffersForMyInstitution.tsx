@@ -1,7 +1,7 @@
 import useSWR from 'swr'
 
 import { apiAdage } from 'apiClient/api'
-import Callout from 'components/Callout/Callout'
+import { Callout } from 'components/Callout/Callout'
 import { GET_COLLECTIVE_OFFERS_FOR_INSTITUTION_QUERY_KEY } from 'config/swrQueryKeys'
 import useActiveFeature from 'hooks/useActiveFeature'
 import strokeMyInstitution from 'icons/stroke-my-institution.svg'

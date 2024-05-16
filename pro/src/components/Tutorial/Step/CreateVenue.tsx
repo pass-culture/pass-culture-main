@@ -8,7 +8,7 @@ import { StepComponentProps } from '../types'
 
 import styles from './Step.module.scss'
 
-const CreateVenue = ({
+export const CreateVenue = ({
   titleId,
   contentClassName,
 }: StepComponentProps): JSX.Element => {
@@ -40,5 +40,3 @@ const CreateVenue = ({
     </>
   )
 }
-
-export default CreateVenue

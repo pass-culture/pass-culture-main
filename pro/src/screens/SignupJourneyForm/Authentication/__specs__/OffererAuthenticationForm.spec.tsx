@@ -15,7 +15,8 @@ import { Button } from 'ui-kit/Button/Button'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
-import OffererAuthenticationForm, {
+import {
+  OffererAuthenticationForm,
   OffererAuthenticationFormValues,
 } from '../OffererAuthenticationForm'
 import { validationSchema } from '../validationSchema'

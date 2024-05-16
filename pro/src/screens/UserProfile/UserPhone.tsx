@@ -1,10 +1,10 @@
 import { UserPhoneBodyModel } from 'apiClient/v1'
 import { BoxFormLayout } from 'components/BoxFormLayout/BoxFormLayout'
-import { UserPhoneForm } from 'components/UserPhoneForm'
+import { UserPhoneForm } from 'components/UserPhoneForm/UserPhoneForm'
 import { formatPhoneNumber } from 'pages/Home/ProfileAndSupport/Profile'
 import { BoxRounded } from 'ui-kit/BoxRounded/BoxRounded'
 
-import { Forms } from '../constants'
+import { Forms } from './constants'
 
 interface UserPhoneProps {
   setCurrentForm: (value: Forms | null) => void
@@ -12,7 +12,7 @@ interface UserPhoneProps {
   showForm: boolean
 }
 
-const UserPhone = ({
+export const UserPhone = ({
   setCurrentForm,
   initialValues,
   showForm = false,
@@ -34,5 +34,3 @@ const UserPhone = ({
     </BoxFormLayout>
   )
 }
-
-export default UserPhone

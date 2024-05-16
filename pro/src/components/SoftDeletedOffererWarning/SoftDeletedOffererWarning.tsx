@@ -5,7 +5,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './SoftDeletedOffererWarning.module.scss'
 
-const SoftDeletedOffererWarning = (): JSX.Element => {
+export const SoftDeletedOffererWarning = (): JSX.Element => {
   return (
     <div className={styles['soft-deleted-offerer-warning']}>
       <div className={styles['soft-deleted-offerer-warning-inner']}>
@@ -35,5 +35,3 @@ const SoftDeletedOffererWarning = (): JSX.Element => {
     </div>
   )
 }
-
-export default SoftDeletedOffererWarning

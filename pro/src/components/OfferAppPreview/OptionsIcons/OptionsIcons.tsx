@@ -14,7 +14,7 @@ interface OptionsIconsProps {
   className?: string
 }
 
-const OptionsIcons = ({
+export const OptionsIcons = ({
   isEvent,
   isDuo,
   className,
@@ -39,5 +39,3 @@ const OptionsIcons = ({
     </div>
   )
 }
-
-export default OptionsIcons
