@@ -1,0 +1,70 @@
+name: "1 [on_push] Render manifests"
+
+on:
+  push:
+
+permissions: write-all
+
+concurrency:
+  # cancel previous workflow of the same branch except on master
+  group: main-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref == 'refs/heads/master' && false || true }}
+
+jobs:
+  render-manifests:
+    environment: testing
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4.1.5
+      - name: "Authentification to Google"
+        uses: 'google-github-actions/auth@v2'
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      - name: "Install Teleport"
+        uses: teleport-actions/setup@v1
+        with:
+          version: 11.1.1
+      - name: "Teleport Authentication"
+        uses: teleport-actions/auth-k8s@v1
+        with:
+          proxy: teleport.ehp.passculture.team:443
+          token: github-token
+          certificate-ttl: 1h
+          kubernetes-cluster: passculture-metier-ehp
+      - name: "Setup helmfile"
+        uses: mamezou-tech/setup-helmfile@v1.3.0
+        with:
+          helmfile-version: "v0.147.0"
+      - name: "Retrieve pcapi secrets list"
+        id: generate-pcapi-secrets-list
+        run: |
+          #Retrieve secrets list from source code
+          PCAPI_SECRETS=$(cat api/src/pcapi/settings.py | grep "secrets_utils.getlist(" | awk -F'=' '{print $1}')
+          PCAPI_SECRETS+=$(cat api/src/pcapi/settings.py | grep "secrets_utils.get(" | grep -oP '(?<=secrets_utils.get\(\").*?(?=\")')
+          #Sort list
+          PCAPI_SECRETS=$(echo $PCAPI_SECRETS | xargs -n1 | sort | xargs)
+          #Transform list into helm readable parameter list (pattern: --set value={item1,item2,item3})
+          PCAPI_SECRETS=secrets={$(echo $PCAPI_SECRETS | sed -r 's/ /,/g')}
+          echo "PCAPI_SECRETS=$PCAPI_SECRETS" >> "$GITHUB_OUTPUT"
+      - name: "Generate and push rendered manifests"
+        uses: pass-culture/common-workflows/actions/render-push-manifests@PC-29770-move-composite-action-render-manifests-vers-un-autre-repo
+        with:
+          environment: 'testing'
+          app_name: 'pcapi'
+          app_version: 'xxx.xx'
+          additional_args: ${{ steps.generate-pcapi-secrets-list.outputs.PCAPI_SECRETS }}
+          registry_workload_identity_secret_name: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
+          registry_service_account_secret_name: passculture-metier-ehp/passculture-main-artifact-registry-service-account
+          api_token_github_secret_name: passculture-metier-ehp/passculture-main-sa-access-token
+          chart_values_repository: pass-culture/pass-culture-deployment
+          chart_values_destination: ./pass-culture-deployment
+      - name: "Install argocd cli"
+        id: install_argocd_cli
+        run: |
+          curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+          sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+          rm argocd-linux-amd64
