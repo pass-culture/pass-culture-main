@@ -2,15 +2,15 @@ import cn from 'classnames'
 import React, { useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 
-import Footer from 'components/Footer/Footer'
-import Header from 'components/Header/Header'
-import NewNavReview from 'components/NewNavReview/NewNavReview'
-import SkipLinks from 'components/SkipLinks'
+import { Footer } from 'components/Footer/Footer'
+import { Header } from 'components/Header/Header'
+import { NewNavReview } from 'components/NewNavReview/NewNavReview'
+import { SkipLinks } from 'components/SkipLinks/SkipLinks'
 import fullInfoIcon from 'icons/full-info.svg'
 import { selectCurrentUser } from 'store/user/selectors'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import LateralPanel from './LateralPanel/LateralPanel'
+import { LateralPanel } from './LateralPanel/LateralPanel'
 import styles from './Layout.module.scss'
 
 interface LayoutProps {

@@ -1,6 +1,6 @@
 import React from 'react'
 
-import DialogBox from 'components/DialogBox'
+import { DialogBox } from 'components/DialogBox/DialogBox'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 
 import { AppPreviewOffer } from '../AppPreviewOffer/AppPreviewOffer'

@@ -7,9 +7,9 @@ import {
   isStickyBarOpenSelector,
   notificationSelector,
 } from 'store/notifications/selectors'
-import NotificationToaster from 'ui-kit/NotificationToaster/NotificationToaster'
+import { NotificationToaster } from 'ui-kit/NotificationToaster/NotificationToaster'
 
-const Notification = (): JSX.Element | null => {
+export const Notification = (): JSX.Element | null => {
   const [isVisible, setIsVisible] = useState(false)
   const [isInDom, setIsInDom] = useState(false)
   const notification = useSelector(notificationSelector)
@@ -51,5 +51,3 @@ const Notification = (): JSX.Element | null => {
     />
   )
 }
-
-export default Notification

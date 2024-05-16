@@ -5,7 +5,7 @@ import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { Target } from 'apiClient/v1'
-import Notification from 'components/Notification/Notification'
+import { Notification } from 'components/Notification/Notification'
 import {
   DEFAULT_ACTIVITY_VALUES,
   SignupJourneyContext,

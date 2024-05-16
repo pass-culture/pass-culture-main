@@ -1,6 +1,8 @@
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
-import StocksEventList from 'components/StocksEventList'
-import { StocksEvent } from 'components/StocksEventList/StocksEventList'
+import {
+  StocksEventList,
+  StocksEvent,
+} from 'components/StocksEventList/StocksEventList'
 
 import { EventCancellationBanner } from '../StocksEventEdition/EventCancellationBanner'
 

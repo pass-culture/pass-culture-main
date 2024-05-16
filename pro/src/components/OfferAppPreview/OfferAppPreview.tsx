@@ -4,14 +4,16 @@ import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { getIndividualOfferImage } from 'screens/IndividualOffer/utils/getIndividualOfferImage'
 
 import style from './OfferAppPreview.module.scss'
-import { OptionsIcons } from './OptionsIcons'
-import { VenueDetails } from './VenueDetails'
+import { OptionsIcons } from './OptionsIcons/OptionsIcons'
+import { VenueDetails } from './VenueDetails/VenueDetails'
 
 interface OfferAppPreviewProps {
   offer: GetIndividualOfferResponseModel
 }
 
-const OfferAppPreview = ({ offer }: OfferAppPreviewProps): JSX.Element => {
+export const OfferAppPreview = ({
+  offer,
+}: OfferAppPreviewProps): JSX.Element => {
   const { venue } = offer
   const image = getIndividualOfferImage(offer)
 
@@ -69,5 +71,3 @@ const OfferAppPreview = ({ offer }: OfferAppPreviewProps): JSX.Element => {
     </div>
   )
 }
-
-export default OfferAppPreview

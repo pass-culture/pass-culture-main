@@ -3,8 +3,7 @@ import { StoryObj } from '@storybook/react'
 import { getIndividualOfferFactory } from 'utils/individualApiFactories'
 
 import testImg from './__specs__/offer_storie_image.jpg'
-
-import { OfferAppPreview } from '.'
+import { OfferAppPreview } from './OfferAppPreview'
 
 const baseOfferData = {
   name: 'Le mouton à trois pattes',

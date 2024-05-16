@@ -3,7 +3,8 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import * as useAnalytics from 'app/App/analytics/firebase'
-import LinkVenueCallout, {
+import {
+  LinkVenueCallout,
   LinkVenueCalloutProps,
 } from 'components/Callout/LinkVenueCallout'
 import { BankAccountEvents } from 'core/FirebaseEvents/constants'

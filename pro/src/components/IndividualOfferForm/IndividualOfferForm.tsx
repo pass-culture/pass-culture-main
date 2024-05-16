@@ -9,7 +9,6 @@ import {
 } from 'apiClient/v1'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
-import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import {
   CATEGORY_STATUS,
@@ -18,12 +17,13 @@ import {
 import { IndividualOfferImage } from 'core/Offers/types'
 import useCurrentUser from 'hooks/useCurrentUser'
 
-import { Accessibility } from './Accessibility'
-import { Categories } from './Categories'
-import { ExternalLink } from './ExternalLink'
-import { ImageUploaderOffer } from './ImageUploaderOffer'
-import { Informations } from './Informations'
-import { Notifications } from './Notifications'
+import { Accessibility } from './Accessibility/Accessibility'
+import { Categories } from './Categories/Categories'
+import { ExternalLink } from './ExternalLink/ExternalLink'
+import { ImageUploaderOffer } from './ImageUploaderOffer/ImageUploaderOffer'
+import { Informations } from './Informations/Informations'
+import { Notifications } from './Notifications/Notifications'
+import { IndividualOfferFormValues } from './types'
 import { UsefulInformations } from './UsefulInformations/UsefulInformations'
 import { getFilteredVenueListBySubcategory } from './utils/getFilteredVenueList'
 
@@ -40,7 +40,7 @@ export interface IndividualOfferFormProps {
   isEvent: boolean | null
 }
 
-const IndividualOfferForm = ({
+export const IndividualOfferForm = ({
   offererNames,
   venueList,
   categories,
@@ -136,5 +136,3 @@ const IndividualOfferForm = ({
     </>
   )
 }
-
-export default IndividualOfferForm

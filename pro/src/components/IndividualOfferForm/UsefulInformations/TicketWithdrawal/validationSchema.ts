@@ -2,7 +2,7 @@ import * as yup from 'yup'
 
 import { WithdrawalTypeEnum } from 'apiClient/v1'
 
-const validationSchema = {
+export const validationSchema = {
   withdrawalType: yup.string().when('subCategoryFields', {
     is: (subCategoryFields: string[]) =>
       subCategoryFields.includes('withdrawalType'),
@@ -21,5 +21,3 @@ const validationSchema = {
       schema.required('Vous devez choisir l’une des options ci-dessus'),
   }),
 }
-
-export default validationSchema

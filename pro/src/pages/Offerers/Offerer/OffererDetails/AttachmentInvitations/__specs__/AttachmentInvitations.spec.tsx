@@ -7,7 +7,7 @@ import { ApiError, OffererMemberStatus } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import * as useAnalytics from 'app/App/analytics/firebase'
-import Notification from 'components/Notification/Notification'
+import { Notification } from 'components/Notification/Notification'
 import AttachmentInvitations from 'pages/Offerers/Offerer/OffererDetails/AttachmentInvitations/AttachmentInvitations'
 import { renderWithProviders } from 'utils/renderWithProviders'
 

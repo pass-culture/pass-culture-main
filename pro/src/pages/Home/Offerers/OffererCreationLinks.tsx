@@ -7,7 +7,7 @@ import { Card } from '../Card'
 
 import styles from './OffererCreationLinks.module.scss'
 
-const OffererCreationLinks = () => (
+export const OffererCreationLinks = () => (
   <Card className={styles['card']} data-testid="offerers-creation-links-card">
     <h3 className={styles['title']}>Structures</h3>
 
@@ -38,5 +38,3 @@ const OffererCreationLinks = () => (
     </div>
   </Card>
 )
-
-export default OffererCreationLinks

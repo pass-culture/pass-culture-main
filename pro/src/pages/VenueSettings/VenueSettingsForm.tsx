@@ -7,7 +7,7 @@ import {
   GetVenueResponseModel,
   VenueTypeResponseModel,
 } from 'apiClient/v1'
-import { AddressSelect } from 'components/Address'
+import { AddressSelect } from 'components/Address/Address'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { SelectOption } from 'custom_types/form'

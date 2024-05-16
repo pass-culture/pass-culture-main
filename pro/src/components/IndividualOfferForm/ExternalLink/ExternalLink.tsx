@@ -6,7 +6,9 @@ export interface ExternalLinkProps {
   readOnlyFields?: string[]
 }
 
-const ExternalLink = ({ readOnlyFields }: ExternalLinkProps): JSX.Element => {
+export const ExternalLink = ({
+  readOnlyFields,
+}: ExternalLinkProps): JSX.Element => {
   return (
     <FormLayout.Section title="Lien pour le grand public">
       <FormLayout.Row
@@ -29,5 +31,3 @@ const ExternalLink = ({ readOnlyFields }: ExternalLinkProps): JSX.Element => {
     </FormLayout.Section>
   )
 }
-
-export default ExternalLink

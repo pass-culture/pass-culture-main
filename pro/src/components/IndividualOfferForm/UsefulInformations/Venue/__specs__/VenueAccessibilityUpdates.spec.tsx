@@ -8,15 +8,14 @@ import {
   GetOffererNameResponseModel,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
-import { Accessibility } from 'components/IndividualOfferForm/Accessibility'
+import { Accessibility } from 'components/IndividualOfferForm/Accessibility/Accessibility'
 import { AccessibilityFormValues, AccessibilityEnum } from 'core/shared/types'
 import {
   getOffererNameFactory,
   venueListItemFactory,
 } from 'utils/individualApiFactories'
 
-import { Venue } from '..'
-import { VenueProps } from '../Venue'
+import { Venue, VenueProps } from '../Venue'
 
 interface InitialValues {
   offererId: string

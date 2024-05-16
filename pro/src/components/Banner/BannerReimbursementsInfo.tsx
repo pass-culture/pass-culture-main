@@ -1,6 +1,6 @@
 import React from 'react'
 
-import Callout from 'components/Callout/Callout'
+import { Callout } from 'components/Callout/Callout'
 
 export const BannerReimbursementsInfo = (): JSX.Element => {
   return (

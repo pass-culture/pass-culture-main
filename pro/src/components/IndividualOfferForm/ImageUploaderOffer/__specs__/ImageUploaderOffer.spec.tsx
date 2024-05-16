@@ -3,12 +3,13 @@ import React from 'react'
 
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import ImageUploaderOffer, {
+import {
+  ImageUploaderOffer,
   ImageUploaderOfferProps,
 } from '../ImageUploaderOffer'
-import * as imageUploaderOfferUtils from '../utils'
+import * as imageUploaderOfferUtils from '../utils/buildInitialValues'
 
-vi.mock('../utils', () => ({
+vi.mock('../utils/buildInitialValues', () => ({
   buildInitialValues: vi.fn(),
 }))
 

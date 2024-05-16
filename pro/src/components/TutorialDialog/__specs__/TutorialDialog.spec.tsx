@@ -11,7 +11,7 @@ import {
 } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
-import TutorialDialog from '../TutorialDialog'
+import { TutorialDialog } from '../TutorialDialog'
 
 vi.mock('apiClient/api', () => ({
   api: { patchUserTutoSeen: vi.fn(() => Promise.resolve()) },

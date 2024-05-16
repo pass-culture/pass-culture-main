@@ -1,9 +1,9 @@
 import { BoxFormLayout } from 'components/BoxFormLayout/BoxFormLayout'
-import { UserIdentityForm } from 'components/UserIdentityForm'
 import { UserIdentityFormValues } from 'components/UserIdentityForm/types'
+import { UserIdentityForm } from 'components/UserIdentityForm/UserIdentityForm'
 import { BoxRounded } from 'ui-kit/BoxRounded/BoxRounded'
 
-import { Forms } from '../constants'
+import { Forms } from './constants'
 
 interface UserIdentityProps {
   setCurrentForm: (value: Forms | null) => void
@@ -11,7 +11,7 @@ interface UserIdentityProps {
   showForm: boolean
 }
 
-const UserIdentity = ({
+export const UserIdentity = ({
   setCurrentForm,
   initialValues,
   showForm = false,
@@ -36,5 +36,3 @@ const UserIdentity = ({
     </BoxFormLayout>
   )
 }
-
-export default UserIdentity

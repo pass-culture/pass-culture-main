@@ -11,7 +11,7 @@ export interface OffererFormValues {
   siret: string
 }
 
-const OffererForm = (): JSX.Element => {
+export const OffererForm = (): JSX.Element => {
   const { setFieldValue } = useFormikContext<OffererFormValues>()
 
   const formatSiret = async (siret: string): Promise<void> => {
@@ -35,5 +35,3 @@ const OffererForm = (): JSX.Element => {
     </FormLayout.Section>
   )
 }
-
-export default OffererForm

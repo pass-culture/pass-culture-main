@@ -5,7 +5,7 @@ import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import { GetVenueResponseModel } from 'apiClient/v1'
-import Callout from 'components/Callout/Callout'
+import { Callout } from 'components/Callout/Callout'
 import {
   GET_CULTURAL_PARTNERS_QUERY_KEY,
   GET_EDUCATIONAL_DOMAINS_QUERY_KEY,

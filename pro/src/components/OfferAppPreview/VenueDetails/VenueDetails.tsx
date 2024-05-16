@@ -10,7 +10,7 @@ interface VenueDetailsProps {
   withdrawalDetails?: string
 }
 
-const VenueDetails = ({
+export const VenueDetails = ({
   venue,
   withdrawalDetails,
 }: VenueDetailsProps): JSX.Element => {
@@ -45,5 +45,3 @@ const VenueDetails = ({
     </div>
   )
 }
-
-export default VenueDetails

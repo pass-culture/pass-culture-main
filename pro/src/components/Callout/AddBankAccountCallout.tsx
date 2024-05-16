@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom'
 
 import { GetOffererResponseModel } from 'apiClient/v1'
 import useAnalytics from 'app/App/analytics/firebase'
-import Callout from 'components/Callout/Callout'
+import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 import { BankAccountEvents } from 'core/FirebaseEvents/constants'
 

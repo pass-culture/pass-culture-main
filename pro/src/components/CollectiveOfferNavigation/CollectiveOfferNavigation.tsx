@@ -2,8 +2,7 @@ import cn from 'classnames'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import useAnalytics from 'app/App/analytics/firebase'
-import Stepper from 'components/Stepper'
-import { Step } from 'components/Stepper/Stepper'
+import { Step, Stepper } from 'components/Stepper/Stepper'
 import {
   Events,
   OFFER_FROM_TEMPLATE_ENTRIES,

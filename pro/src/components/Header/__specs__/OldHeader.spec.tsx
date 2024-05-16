@@ -10,7 +10,7 @@ import {
   renderWithProviders,
 } from 'utils/renderWithProviders'
 
-import OldHeader from '../OldHeader'
+import { OldHeader } from '../OldHeader'
 
 const mockLogEvent = vi.fn()
 vi.mock('apiClient/api', () => ({

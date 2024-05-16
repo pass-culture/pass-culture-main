@@ -13,7 +13,8 @@ import {
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import ImageUploaderOffer, {
+import {
+  ImageUploaderOffer,
   ImageUploaderOfferProps,
 } from '../ImageUploaderOffer'
 

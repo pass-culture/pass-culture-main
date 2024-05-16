@@ -1,8 +1,10 @@
 import { isError } from 'apiClient/helpers'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
-import getSiretData from 'core/Venue/getSiretData'
+import { getSiretData } from 'core/Venue/getSiretData'
 
-const siretApiValidate = async (siret: string): Promise<string | null> => {
+export const siretApiValidate = async (
+  siret: string
+): Promise<string | null> => {
   if (!siret) {
     return 'Ce champ est obligatoire'
   }
@@ -14,5 +16,3 @@ const siretApiValidate = async (siret: string): Promise<string | null> => {
     return isError(e) ? e.message : GET_DATA_ERROR_MESSAGE
   }
 }
-
-export default siretApiValidate

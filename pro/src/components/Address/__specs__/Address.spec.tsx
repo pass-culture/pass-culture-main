@@ -8,7 +8,8 @@ import { apiAdresse } from 'apiClient/adresse/apiAdresse'
 import { VenueCreationFormValues } from 'pages/VenueCreation/types'
 import { Button } from 'ui-kit/Button/Button'
 
-import { AddressSelect, validationSchema as addressValidationSchema } from '../'
+import { AddressSelect } from '../Address'
+import { validationSchema as addressValidationSchema } from '../validationSchema'
 
 const mockAdressData = [
   {

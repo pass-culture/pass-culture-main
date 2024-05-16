@@ -11,15 +11,13 @@ import {
 import useAnalytics from 'app/App/analytics/firebase'
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import {
-  IndividualOfferForm,
-  IndividualOfferFormValues,
-  getValidationSchema,
-} from 'components/IndividualOfferForm'
+import { IndividualOfferForm } from 'components/IndividualOfferForm/IndividualOfferForm'
+import { IndividualOfferFormValues } from 'components/IndividualOfferForm/types'
 import { getFilteredVenueListByCategoryStatus } from 'components/IndividualOfferForm/utils/getFilteredVenueList'
 import { setDefaultInitialFormValues } from 'components/IndividualOfferForm/utils/setDefaultInitialFormValues'
 import setFormReadOnlyFields from 'components/IndividualOfferForm/utils/setFormReadOnlyFields'
 import { setInitialFormValues } from 'components/IndividualOfferForm/utils/setInitialFormValues'
+import { getValidationSchema } from 'components/IndividualOfferForm/validationSchema'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'

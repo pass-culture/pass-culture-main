@@ -3,10 +3,10 @@ import { useEffect, useState } from 'react'
 import { api } from 'apiClient/api'
 import { BannerPendingEmailValidation } from 'components/Banner/BannerPendingEmailValidation'
 import { BoxFormLayout } from 'components/BoxFormLayout/BoxFormLayout'
-import { UserEmailForm } from 'components/UserEmailForm'
+import { UserEmailForm } from 'components/UserEmailForm/UserEmailForm'
 import { BoxRounded } from 'ui-kit/BoxRounded/BoxRounded'
 
-import { Forms } from '../constants'
+import { Forms } from './constants'
 
 export interface UserEmailInitialValues {
   email: string
@@ -18,7 +18,7 @@ interface UserEmailProps {
   showForm: boolean
 }
 
-const UserEmail = ({
+export const UserEmail = ({
   setCurrentForm,
   initialValues,
   showForm = false,
@@ -68,5 +68,3 @@ const UserEmail = ({
     </BoxFormLayout>
   )
 }
-
-export default UserEmail

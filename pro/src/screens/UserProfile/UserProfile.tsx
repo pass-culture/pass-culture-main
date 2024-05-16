@@ -5,7 +5,7 @@ import { BannerRGS } from 'components/Banner/BannerRGS'
 import { UserIdentityFormValues } from 'components/UserIdentityForm/types'
 
 import { Forms } from './constants'
-import UserEmail, { UserEmailInitialValues } from './UserEmail/UserEmail'
+import { UserEmail, UserEmailInitialValues } from './UserEmail'
 import { UserIdentity } from './UserIdentity'
 import { UserPassword } from './UserPassword'
 import { UserPhone } from './UserPhone'
@@ -17,7 +17,7 @@ interface UserProfileProps {
   userEmailInitialValues: UserEmailInitialValues
 }
 
-const UserProfile = ({
+export const UserProfile = ({
   userIdentityInitialValues,
   userPhoneInitialValues,
   userEmailInitialValues,
@@ -49,5 +49,3 @@ const UserProfile = ({
     </>
   )
 }
-
-export default UserProfile

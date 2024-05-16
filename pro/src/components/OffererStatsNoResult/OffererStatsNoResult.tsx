@@ -6,17 +6,17 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './OffererStatsNoResult.module.scss'
 
-type OffererStatsNoResult = {
+type OffererStatsNoResultProps = {
   title: string
   subtitle: string
   extraClassName?: string
 }
 
-const OffererStatsNoResult = ({
+export const OffererStatsNoResult = ({
   title,
   subtitle,
   extraClassName,
-}: OffererStatsNoResult) => {
+}: OffererStatsNoResultProps) => {
   return (
     <div
       className={cn(
@@ -34,5 +34,3 @@ const OffererStatsNoResult = ({
     </div>
   )
 }
-
-export default OffererStatsNoResult

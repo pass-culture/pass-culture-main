@@ -1,6 +1,6 @@
 import { api } from 'apiClient/api'
 import { isError } from 'apiClient/helpers'
-import getSiretData from 'core/Venue/getSiretData'
+import { getSiretData } from 'core/Venue/getSiretData'
 
 describe('getsiretData', () => {
   it('should not call API when SIRET is empty', async () => {

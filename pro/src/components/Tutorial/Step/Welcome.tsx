@@ -10,7 +10,7 @@ import { StepComponentProps } from '../types'
 
 import styles from './Step.module.scss'
 
-const Welcome = ({
+export const Welcome = ({
   titleId,
   contentClassName,
 }: StepComponentProps): JSX.Element => (
@@ -54,5 +54,3 @@ const Welcome = ({
     </section>
   </>
 )
-
-export default Welcome

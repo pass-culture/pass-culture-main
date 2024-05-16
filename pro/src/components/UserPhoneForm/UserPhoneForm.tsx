@@ -22,7 +22,7 @@ export interface UserPhoneFormProps {
   initialValues: UserPhoneBodyModel
 }
 
-const UserPhoneForm = ({
+export const UserPhoneForm = ({
   closeForm,
   initialValues,
 }: UserPhoneFormProps): JSX.Element => {
@@ -92,5 +92,3 @@ const UserPhoneForm = ({
     </BoxFormLayout.Fields>
   )
 }
-
-export default UserPhoneForm

@@ -6,7 +6,7 @@ import * as useNotification from 'hooks/useNotification'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
-import NewNavReviewDialog from '../NewNavReviewDialog'
+import { NewNavReviewDialog } from '../NewNavReviewDialog'
 
 const mockSetIsReviewDialogOpen = vi.fn()
 const notifyError = vi.fn()

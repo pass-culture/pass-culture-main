@@ -21,7 +21,7 @@ type UserPasswordFormValues = {
   newConfirmationPassword: string
 }
 
-const UserPasswordForm = ({
+export const UserPasswordForm = ({
   closeForm,
 }: UserPasswordFormProps): JSX.Element => {
   const onSubmit = async (values: UserPasswordFormValues) => {
@@ -95,5 +95,3 @@ const UserPasswordForm = ({
     </>
   )
 }
-
-export default UserPasswordForm

@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { BankAccountResponseModel } from 'apiClient/v1'
-import Callout from 'components/Callout/Callout'
+import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'

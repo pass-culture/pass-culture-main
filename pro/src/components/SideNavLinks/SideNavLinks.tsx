@@ -36,7 +36,7 @@ interface SideNavLinksProps {
 const INDIVIDUAL_LINKS = ['/offres', '/guichet']
 const COLLECTIVE_LINKS = ['/offres/collectives']
 
-const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
+export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   const isOffererStatsActive = useActiveFeature('ENABLE_OFFERER_STATS')
   const location = useLocation()
   const dispatch = useDispatch()
@@ -232,5 +232,3 @@ const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
     </ul>
   )
 }
-
-export default SideNavLinks

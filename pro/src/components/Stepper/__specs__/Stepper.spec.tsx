@@ -4,7 +4,7 @@ import React from 'react'
 
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import Stepper, { Step, StepperProps } from '../Stepper'
+import { Stepper, Step, StepperProps } from '../Stepper'
 
 const renderStepper = (props: StepperProps) => {
   return renderWithProviders(<Stepper {...props} />)

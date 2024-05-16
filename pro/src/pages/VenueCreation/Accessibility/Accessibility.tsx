@@ -2,7 +2,7 @@ import { useFormikContext } from 'formik'
 import isEqual from 'lodash.isequal'
 import React, { useMemo } from 'react'
 
-import Callout from 'components/Callout/Callout'
+import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { useAccessibilityOptions } from 'hooks'

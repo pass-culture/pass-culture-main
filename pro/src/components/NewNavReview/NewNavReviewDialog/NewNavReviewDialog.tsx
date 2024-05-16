@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import DialogBox from 'components/DialogBox'
+import { DialogBox } from 'components/DialogBox/DialogBox'
 import useNotification from 'hooks/useNotification'
 import strokeValidIcon from 'icons/stroke-valid.svg'
 import { selectCurrentOffererId } from 'store/user/selectors'
@@ -28,7 +28,7 @@ interface NewNavReviewDialogFormValues {
   comment: string
 }
 
-const NewNavReviewDialog = ({
+export const NewNavReviewDialog = ({
   setIsReviewDialogOpen,
 }: NewNavReviewDialogProps) => {
   const notify = useNotification()
@@ -183,5 +183,3 @@ const NewNavReviewDialog = ({
     </DialogBox>
   )
 }
-
-export default NewNavReviewDialog

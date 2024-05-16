@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
 import * as useAnalytics from 'app/App/analytics/firebase'
-import Notification from 'components/Notification/Notification'
+import { Notification } from 'components/Notification/Notification'
 import { Events } from 'core/FirebaseEvents/constants'
 import { Audience } from 'core/shared/types'
 import { renderWithProviders } from 'utils/renderWithProviders'

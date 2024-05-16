@@ -12,7 +12,7 @@ import {
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import StocksEventList, { StocksEventListProps } from '../StocksEventList'
+import { StocksEventList, StocksEventListProps } from '../StocksEventList'
 
 const mockFetcherSubmit = vi.fn()
 

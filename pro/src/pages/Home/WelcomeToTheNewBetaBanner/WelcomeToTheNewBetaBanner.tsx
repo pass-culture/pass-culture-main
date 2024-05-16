@@ -1,6 +1,6 @@
 import React from 'react'
 
-import DialogBox from 'components/DialogBox'
+import { DialogBox } from 'components/DialogBox/DialogBox'
 import { Button } from 'ui-kit/Button/Button'
 
 import topImage from './assets/new-banner-beta.svg'

@@ -4,7 +4,7 @@ import React from 'react'
 
 import FullTrashIcon from 'icons/full-trash.svg'
 
-import StockFormActions, { StockFormActionsProps } from '../StockFormActions'
+import { StockFormActions, StockFormActionsProps } from '../StockFormActions'
 import { StockFormRowAction } from '../types'
 
 const renderStockFormActions = (props: StockFormActionsProps) => {

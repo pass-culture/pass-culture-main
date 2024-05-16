@@ -24,7 +24,7 @@ type UserEmailFormValues = {
   password: string
 }
 
-const UserEmailForm = ({
+export const UserEmailForm = ({
   closeForm,
   getPendingEmailRequest,
 }: UserEmailFormProps): JSX.Element => {
@@ -103,5 +103,3 @@ const UserEmailForm = ({
     </>
   )
 }
-
-export default UserEmailForm

@@ -28,7 +28,7 @@ interface CalloutVariantProps {
   alt: string
 }
 
-const Callout = ({
+export const Callout = ({
   children,
   className,
   title,
@@ -87,5 +87,3 @@ const Callout = ({
     </div>
   )
 }
-
-export default Callout

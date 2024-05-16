@@ -1,7 +1,7 @@
 import * as yup from 'yup'
 
-import { validationSchema as ticketWithdrawalValidationSchema } from './TicketWithdrawal'
-import { validationSchema as venueValidationSchema } from './Venue'
+import { validationSchema as ticketWithdrawalValidationSchema } from './TicketWithdrawal/validationSchema'
+import { validationSchema as venueValidationSchema } from './Venue/validationSchema'
 
 // FIX ME: this regex is subject to backtracking which can lead to "catastrophic backtracking", high memory usage and slow performance
 // we cannot use the yup url validation because we need to allow {} in the url to interpolate some data

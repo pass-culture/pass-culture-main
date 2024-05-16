@@ -2,10 +2,8 @@ import { useFormikContext } from 'formik'
 import React from 'react'
 
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import {
-  FORM_DEFAULT_VALUES,
-  IndividualOfferFormValues,
-} from 'components/IndividualOfferForm'
+import { FORM_DEFAULT_VALUES } from 'components/IndividualOfferForm/constants'
+import { IndividualOfferFormValues } from 'components/IndividualOfferForm/types'
 import { musicOptionsTree } from 'core/Offers/categoriesSubTypes'
 import { SelectOption } from 'custom_types/form'
 import { Select } from 'ui-kit/form/Select/Select'
@@ -34,7 +32,7 @@ const getMusicSubTypeOptions = (
     .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
 }
 
-const LegacyMusicTypes = ({
+export const LegacyMusicTypes = ({
   readOnly = false,
 }: MusicTypesProps): JSX.Element => {
   const {
@@ -81,5 +79,3 @@ const LegacyMusicTypes = ({
     </>
   )
 }
-
-export default LegacyMusicTypes

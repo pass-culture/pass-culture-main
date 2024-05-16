@@ -19,7 +19,7 @@ import styles from './OldHeader.module.scss'
 
 const NAV_ITEM_ICON_SIZE = '24'
 
-const OldHeader = forwardRef(() => {
+export const OldHeader = forwardRef(() => {
   const { logEvent } = useAnalytics()
   const isOffererStatsActive = useActiveFeature('ENABLE_OFFERER_STATS')
   const location = useLocation()
@@ -204,4 +204,3 @@ const OldHeader = forwardRef(() => {
   )
 })
 OldHeader.displayName = 'Header'
-export default OldHeader

@@ -9,12 +9,12 @@ import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { DEFAULT_ADDRESS_FORM_VALUES } from 'components/Address/constants'
-import Notification from 'components/Notification/Notification'
+import { Notification } from 'components/Notification/Notification'
 import {
   SignupJourneyContext,
   SignupJourneyContextValues,
 } from 'context/SignupJourneyContext'
-import * as sirenApiValidate from 'core/Venue/siretApiValidate'
+import * as siretApiValidate from 'core/Venue/siretApiValidate'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
@@ -24,7 +24,7 @@ import { Offerer } from '../Offerer'
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
 
-vi.spyOn(sirenApiValidate, 'default').mockResolvedValue(null)
+vi.spyOn(siretApiValidate, 'siretApiValidate').mockResolvedValue(null)
 
 // Mock l’appel à https://api-adresse.data.gouv.fr/search/?limit=${limit}&q=${address}
 // Appel fait dans apiAdresse.getDataFromAddress
@@ -259,7 +259,7 @@ describe('Offerer', () => {
   })
 
   it('should display BannerInvisibleSiren on error 400 with specific message', async () => {
-    vi.spyOn(sirenApiValidate, 'default').mockResolvedValue(
+    vi.spyOn(siretApiValidate, 'siretApiValidate').mockResolvedValue(
       'Les informations relatives à ce SIREN ou SIRET ne sont pas accessibles.'
     )
     renderOffererScreen(contextValue)
@@ -280,7 +280,7 @@ describe('Offerer', () => {
     })
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
 
-    expect(sirenApiValidate.default).toHaveBeenCalled()
+    expect(siretApiValidate.siretApiValidate).toHaveBeenCalled()
     expect(
       screen.getByText('Modifier la visibilité de mon SIRET')
     ).toBeInTheDocument()

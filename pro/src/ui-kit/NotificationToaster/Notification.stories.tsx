@@ -2,7 +2,7 @@ import type { StoryObj } from '@storybook/react'
 
 import { NotificationTypeEnum } from 'hooks/useNotification'
 
-import NotificationToaster from './NotificationToaster'
+import { NotificationToaster } from './NotificationToaster'
 
 export default {
   title: 'ui-kit/Notification',

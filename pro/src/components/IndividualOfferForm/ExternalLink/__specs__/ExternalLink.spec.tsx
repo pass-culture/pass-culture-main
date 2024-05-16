@@ -4,12 +4,12 @@ import { Form, Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
-import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
+import { IndividualOfferFormValues } from 'components/IndividualOfferForm/types'
 import { Button } from 'ui-kit/Button/Button'
 
 import { EXTERNAL_LINK_DEFAULT_VALUES } from '../constants'
-import ExternalLink, { ExternalLinkProps } from '../ExternalLink'
-import validationSchema from '../validationSchema'
+import { ExternalLink, ExternalLinkProps } from '../ExternalLink'
+import { validationSchema } from '../validationSchema'
 
 const renderExternalLink = ({
   props,

@@ -4,13 +4,13 @@ import { Form, Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
-import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
+import { IndividualOfferFormValues } from 'components/IndividualOfferForm/types'
 import { Button } from 'ui-kit/Button/Button'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
-import Notifications, { NotificationsProps } from '../Notifications'
-import validationSchema from '../validationSchema'
+import { Notifications, NotificationsProps } from '../Notifications'
+import { validationSchema } from '../validationSchema'
 
 const renderNotifications = ({
   props,

@@ -6,7 +6,7 @@ import { Outlet, Route, Routes } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
-import Notification from 'components/Notification/Notification'
+import { Notification } from 'components/Notification/Notification'
 import { BankAccountEvents } from 'core/FirebaseEvents/constants'
 import { BankInformations } from 'pages/Reimbursements/BankInformations/BankInformations'
 import {
