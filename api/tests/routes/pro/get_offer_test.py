@@ -43,6 +43,13 @@ class Returns403Test:
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
+    # session
+    # user
+    # payload (joined query)
+    # user offerer
+    # stocks of offer (a backref)
+    num_queries = 5
+
     def test_access_by_pro_user(self, client):
         # Given
         user_offerer = offerers_factories.UserOffererFactory()
@@ -51,8 +58,10 @@ class Returns200Test:
         )
 
         # When
-        response = client.with_session_auth(email=user_offerer.user.email).get(f"/offers/{offer.id}")
-
+        auth_client = client.with_session_auth(email=user_offerer.user.email)
+        offer_id = offer.id
+        with testing.assert_num_queries(self.num_queries):
+            response = auth_client.get(f"/offers/{offer_id}")
         # Then
         response_json = response.json
         assert response.status_code == 200
@@ -85,7 +94,10 @@ class Returns200Test:
         )
 
         # When
-        response = client.with_session_auth(email=user_offerer.user.email).get(f"/offers/{offer.id}")
+        auth_client = client.with_session_auth(email=user_offerer.user.email)
+        offer_id = offer.id
+        with testing.assert_num_queries(self.num_queries):
+            response = auth_client.get(f"/offers/{offer_id}")
 
         # Then
         assert response.status_code == 200
@@ -98,7 +110,10 @@ class Returns200Test:
         mediation = offers_factories.MediationFactory(offer=offer)
 
         # When
-        response = client.with_session_auth(email=user_offerer.user.email).get(f"/offers/{offer.id}")
+        auth_client = client.with_session_auth(email=user_offerer.user.email)
+        offer_id = offer.id
+        with testing.assert_num_queries(self.num_queries):
+            response = auth_client.get(f"/offers/{offer_id}")
 
         # Then
         assert response.status_code == 200
@@ -149,7 +164,10 @@ class Returns200Test:
         finance_factories.BankInformationFactory(venue=venue)
 
         # When
-        response = client.with_session_auth(email=user_offerer.user.email).get(f"/offers/{offer.id}")
+        auth_client = client.with_session_auth(email=user_offerer.user.email)
+        offer_id = offer.id
+        with testing.assert_num_queries(self.num_queries):
+            response = auth_client.get(f"/offers/{offer_id}")
 
         # Then
         assert response.status_code == 200
@@ -241,7 +259,10 @@ class Returns200Test:
         )
 
         # When
-        response = client.with_session_auth(email=user_offerer.user.email).get(f"/offers/{offer.id}")
+        auth_client = client.with_session_auth(email=user_offerer.user.email)
+        offer_id = offer.id
+        with testing.assert_num_queries(self.num_queries):
+            response = auth_client.get(f"/offers/{offer_id}")
 
         # Then
         assert response.status_code == 200
@@ -257,7 +278,10 @@ class Returns200Test:
         deleted_stock = offers_factories.EventStockFactory(offer=offer, isSoftDeleted=True)
 
         # When
-        response = client.with_session_auth(email=user_offerer.user.email).get(f"/offers/{deleted_stock.offer.id}")
+        auth_client = client.with_session_auth(email=user_offerer.user.email)
+        offer_id = deleted_stock.offer.id
+        with testing.assert_num_queries(self.num_queries):
+            response = auth_client.get(f"/offers/{offer_id}")
 
         # Then
         assert response.status_code == 200
@@ -271,7 +295,10 @@ class Returns200Test:
         bookings_factories.BookingFactory.create_batch(2, stock=stock)
 
         # When
-        response = client.with_session_auth(email=user_offerer.user.email).get(f"/offers/{offer.id}")
+        auth_client = client.with_session_auth(email=user_offerer.user.email)
+        offer_id = offer.id
+        with testing.assert_num_queries(self.num_queries):
+            response = auth_client.get(f"/offers/{offer_id}")
 
         # Then
         assert response.status_code == 200
@@ -287,7 +314,10 @@ class Returns200Test:
         )
 
         # When
-        response = client.with_session_auth(email=user_offerer.user.email).get(f"/offers/{offer.id}")
+        auth_client = client.with_session_auth(email=user_offerer.user.email)
+        offer_id = offer.id
+        with testing.assert_num_queries(self.num_queries):
+            response = auth_client.get(f"/offers/{offer_id}")
 
         # Then
         assert response.status_code == 200

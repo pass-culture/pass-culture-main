@@ -27,7 +27,7 @@ from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.serialization import base as base_serializers
 from pcapi.routes.serialization.offerers_serialize import AddressResponseModel
-from pcapi.routes.serialization.offerers_serialize import GetOffererAddressResponseModel
+from pcapi.routes.serialization.offerers_serialize import GetOffererAddressWithIsEditableResponseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 from pcapi.validation.routes.offers import check_offer_name_length_is_valid
@@ -393,7 +393,7 @@ class IndividualOfferResponseGetterDict(GetterDict):
         if key == "address":
             if not self._obj.offererAddress:
                 return None
-            offererAddress = GetOffererAddressResponseModel.from_orm(self._obj.offererAddress)
+            offererAddress = GetOffererAddressWithIsEditableResponseModel.from_orm(self._obj.offererAddress)
             offererAddress.label = offererAddress.label or self._obj.venue.common_name
             return AddressResponseIsEditableModel(
                 id=self._obj.offererAddress.addressId,
@@ -444,6 +444,14 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     withdrawalType: offers_models.WithdrawalTypeEnum | None
     status: OfferStatus
     isNonFreeOffer: bool | None
+
+    class Config:
+        orm_mode = True
+        json_encoders = {datetime.datetime: format_into_utc_date}
+        use_enum_values = True
+
+
+class GetIndividualOfferWithAddressResponseModel(GetIndividualOfferResponseModel):
     address: AddressResponseIsEditableModel | None
 
     class Config:
