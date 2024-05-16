@@ -5,7 +5,7 @@ import { Route, Routes } from 'react-router-dom'
 import createFetchMock from 'vitest-fetch-mock'
 
 import { apiAdresse } from 'apiClient/adresse/apiAdresse'
-import Notification from 'components/Notification/Notification'
+import { Notification } from 'components/Notification/Notification'
 import {
   SignupJourneyContext,
   SignupJourneyContextValues,

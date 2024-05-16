@@ -22,7 +22,7 @@ interface NotificationToasterProps {
   isStickyBarOpen: boolean
 }
 
-const NotificationToaster = ({
+export const NotificationToaster = ({
   notification,
   isVisible,
   isStickyBarOpen,
@@ -71,4 +71,3 @@ const NotificationToaster = ({
     </div>
   )
 }
-export default NotificationToaster

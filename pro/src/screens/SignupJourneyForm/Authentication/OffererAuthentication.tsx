@@ -10,7 +10,8 @@ import { ActionBar } from '../ActionBar'
 import { DEFAULT_OFFERER_FORM_VALUES } from '../Offerer/constants'
 
 import styles from './OffererAuthentication.module.scss'
-import OffererAuthenticationForm, {
+import {
+  OffererAuthenticationForm,
   OffererAuthenticationFormValues,
 } from './OffererAuthenticationForm'
 import { validationSchema } from './validationSchema'

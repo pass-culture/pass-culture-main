@@ -7,7 +7,7 @@ import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
-import Callout from 'components/Callout/Callout'
+import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import {

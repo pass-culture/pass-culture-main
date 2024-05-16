@@ -73,7 +73,7 @@ enum PartialCheck {
   UNCHECKED = 'unchecked',
 }
 
-const StocksEventList = ({
+export const StocksEventList = ({
   priceCategories,
   departmentCode,
   offer,
@@ -685,5 +685,3 @@ const StocksEventList = ({
     </>
   )
 }
-
-export default StocksEventList

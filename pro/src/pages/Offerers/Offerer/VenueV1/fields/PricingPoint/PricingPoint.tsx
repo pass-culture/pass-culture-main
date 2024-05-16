@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel, GetVenueResponseModel } from 'apiClient/v1'
-import Callout from 'components/Callout/Callout'
+import { Callout } from 'components/Callout/Callout'
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import { SENT_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import useNotification from 'hooks/useNotification'

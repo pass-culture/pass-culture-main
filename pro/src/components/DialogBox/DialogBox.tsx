@@ -15,7 +15,7 @@ interface DialogProps {
   fullContentWidth?: boolean
 }
 
-const DialogBox: FunctionComponent<DialogProps> = ({
+export const DialogBox: FunctionComponent<DialogProps> = ({
   children,
   extraClassNames,
   closeButtonClassName,
@@ -54,4 +54,3 @@ const DialogBox: FunctionComponent<DialogProps> = ({
     </Dialog.Portal>
   </Dialog.Root>
 )
-export default DialogBox

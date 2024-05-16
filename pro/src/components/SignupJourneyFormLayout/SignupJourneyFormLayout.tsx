@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 import React from 'react'
 
-import { SignupJourneyStepper } from 'components/SignupJourneyStepper'
+import { SignupJourneyStepper } from 'components/SignupJourneyStepper/SignupJourneyStepper'
 
 import styles from './SignupJourneyFormLayoutContent.module.scss'
 
@@ -10,7 +10,7 @@ interface SignupOffererFormLayoutProps {
   className?: string
 }
 
-const SignupJourneyFormLayout = ({
+export const SignupJourneyFormLayout = ({
   children,
 }: SignupOffererFormLayoutProps): JSX.Element => {
   return (
@@ -24,5 +24,3 @@ const SignupJourneyFormLayout = ({
     </div>
   )
 }
-
-export default SignupJourneyFormLayout

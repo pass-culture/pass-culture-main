@@ -27,7 +27,7 @@ export interface StepperProps {
   className?: string
 }
 
-const Stepper = ({
+export const Stepper = ({
   activeStep,
   steps,
   className,
@@ -69,5 +69,3 @@ const Stepper = ({
     </>
   )
 }
-
-export default Stepper

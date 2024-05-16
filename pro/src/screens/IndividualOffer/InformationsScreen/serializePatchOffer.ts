@@ -3,7 +3,7 @@ import {
   PatchOfferBodyModel,
   WithdrawalTypeEnum,
 } from 'apiClient/v1'
-import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
+import { IndividualOfferFormValues } from 'components/IndividualOfferForm/types'
 import { SYNCHRONIZED_OFFER_EDITABLE_FIELDS } from 'core/Offers/constants'
 import { OfferExtraData } from 'core/Offers/types'
 import { isAllocineOffer } from 'core/Providers/utils/localProvider'

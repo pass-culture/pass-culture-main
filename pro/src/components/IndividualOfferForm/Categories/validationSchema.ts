@@ -60,5 +60,3 @@ export const getValidationSchema = (
     ...musicTypeFieldsValidator,
   }
 }
-
-export default getValidationSchema

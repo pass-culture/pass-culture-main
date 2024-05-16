@@ -1,7 +1,7 @@
 import { Route, Routes } from 'react-router-dom'
 
 import { GetVenueResponseModel } from 'apiClient/v1'
-import Callout from 'components/Callout/Callout'
+import { Callout } from 'components/Callout/Callout'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { PartnerPageIndividualSection } from 'pages/Home/Offerers/PartnerPageIndividualSection'
 

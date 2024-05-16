@@ -13,7 +13,7 @@ export interface InformationsProps {
   readOnlyFields?: string[]
 }
 
-const Informations = ({
+export const Informations = ({
   readOnlyFields = [],
 }: InformationsProps): JSX.Element => {
   const {
@@ -131,5 +131,3 @@ const Informations = ({
     </FormLayout.Section>
   )
 }
-
-export default Informations

@@ -7,7 +7,7 @@ import { Route, Routes } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { GetOfferStockResponseModel } from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
-import Notification from 'components/Notification/Notification'
+import { Notification } from 'components/Notification/Notification'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import {
   getIndividualOfferPath,

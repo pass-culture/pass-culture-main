@@ -1,7 +1,7 @@
 import { useFormikContext } from 'formik'
 import { ChangeEvent } from 'react'
 
-import Callout from 'components/Callout/Callout'
+import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OfferEducationalFormValues } from 'core/OfferEducational/types'

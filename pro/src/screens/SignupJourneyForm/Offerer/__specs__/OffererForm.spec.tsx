@@ -18,7 +18,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { DEFAULT_OFFERER_FORM_VALUES } from '../constants'
-import OffererForm, { OffererFormValues } from '../OffererForm'
+import { OffererForm, OffererFormValues } from '../OffererForm'
 import { validationSchema } from '../validationSchema'
 
 const fetchMock = createFetchMock(vi)

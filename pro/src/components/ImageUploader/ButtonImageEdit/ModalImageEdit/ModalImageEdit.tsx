@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { CroppedRect } from 'react-avatar-editor'
 
 import { getFileFromURL } from 'apiClient/helpers'
-import DialogBox from 'components/DialogBox'
+import { DialogBox } from 'components/DialogBox/DialogBox'
 import {
   coordonateToPosition,
   heightCropPercentToScale,

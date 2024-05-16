@@ -2,7 +2,7 @@ import {
   AuthenticatedResponse,
   CollectiveOfferTemplateResponseModel,
 } from 'apiClient/adage'
-import Callout from 'components/Callout/Callout'
+import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullMailIcon from 'icons/full-mail.svg'

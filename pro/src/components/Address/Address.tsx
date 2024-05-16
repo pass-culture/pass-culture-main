@@ -12,7 +12,10 @@ interface AddressProps {
   suggestionLimit?: number
 }
 
-const AddressSelect = ({ description, suggestionLimit }: AddressProps) => {
+export const AddressSelect = ({
+  description,
+  suggestionLimit,
+}: AddressProps) => {
   const { setFieldValue } = useFormikContext()
   const [options, setOptions] = useState<SelectOption[]>([])
   const [addressesMap, setAddressesMap] = useState<
@@ -108,5 +111,3 @@ export const handleAddressSelect = (
   setFieldValue('longitude', selectedItem?.extraData.longitude)
   setFieldValue('banId', selectedItem?.value)
 }
-
-export default AddressSelect

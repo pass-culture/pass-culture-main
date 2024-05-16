@@ -8,7 +8,7 @@ import {
   EventDatesInfos,
 } from 'apiClient/v1'
 import useAnalytics from 'app/App/analytics/firebase'
-import DialogBox from 'components/DialogBox'
+import { DialogBox } from 'components/DialogBox/DialogBox'
 import { Events } from 'core/FirebaseEvents/constants'
 import strokeDeskIcon from 'icons/stroke-desk.svg'
 import { daysOfWeek } from 'pages/VenueEdition/OpeningHoursForm/OpeningHoursForm'

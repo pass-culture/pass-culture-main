@@ -2,10 +2,8 @@ import { useFormikContext } from 'formik'
 import React from 'react'
 
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import {
-  FORM_DEFAULT_VALUES,
-  IndividualOfferFormValues,
-} from 'components/IndividualOfferForm'
+import { FORM_DEFAULT_VALUES } from 'components/IndividualOfferForm/constants'
+import { IndividualOfferFormValues } from 'components/IndividualOfferForm/types'
 import { showOptionsTree } from 'core/Offers/categoriesSubTypes'
 import { SelectOption } from 'custom_types/form'
 import { Select } from 'ui-kit/form/Select/Select'
@@ -36,7 +34,9 @@ const getShowSubTypeOptions = (showType: string): SelectOption[] => {
 }
 
 /* istanbul ignore next: DEBT, TO FIX */
-const ShowTypes = ({ readOnly = false }: ShowTypesProps): JSX.Element => {
+export const ShowTypes = ({
+  readOnly = false,
+}: ShowTypesProps): JSX.Element => {
   const {
     values: { showType },
   } = useFormikContext<IndividualOfferFormValues>()
@@ -80,5 +80,3 @@ const ShowTypes = ({ readOnly = false }: ShowTypesProps): JSX.Element => {
     </>
   )
 }
-
-export default ShowTypes

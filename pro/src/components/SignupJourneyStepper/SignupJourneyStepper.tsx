@@ -3,8 +3,7 @@ import { useLocation } from 'react-router-dom'
 
 import useAnalytics from 'app/App/analytics/firebase'
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
-import Stepper from 'components/Stepper'
-import { Step } from 'components/Stepper/Stepper'
+import { Step, Stepper } from 'components/Stepper/Stepper'
 import {
   DEFAULT_ACTIVITY_VALUES,
   useSignupJourneyContext,
@@ -16,7 +15,7 @@ import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/c
 import { SIGNUP_JOURNEY_STEP_IDS } from './constants'
 import styles from './SignupJourneyStepper.module.scss'
 
-const SignupJourneyStepper = () => {
+export const SignupJourneyStepper = () => {
   const { activity, offerer } = useSignupJourneyContext()
 
   const { logEvent } = useAnalytics()
@@ -98,5 +97,3 @@ const SignupJourneyStepper = () => {
     />
   )
 }
-
-export default SignupJourneyStepper

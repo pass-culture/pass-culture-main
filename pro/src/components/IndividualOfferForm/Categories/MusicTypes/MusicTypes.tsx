@@ -1,5 +1,5 @@
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { FORM_DEFAULT_VALUES } from 'components/IndividualOfferForm'
+import { FORM_DEFAULT_VALUES } from 'components/IndividualOfferForm/constants'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import { Select } from 'ui-kit/form/Select/Select'
 
@@ -8,7 +8,7 @@ interface MusicTypesProps {
   isEvent: boolean | null
 }
 
-const MusicTypes = ({
+export const MusicTypes = ({
   readOnly = false,
   isEvent = false,
 }: MusicTypesProps): JSX.Element => {
@@ -35,5 +35,3 @@ const MusicTypes = ({
     </FormLayout.Row>
   )
 }
-
-export default MusicTypes

@@ -6,9 +6,9 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './NewNavReview.module.scss'
-import NewNavReviewDialog from './NewNavReviewDialog/NewNavReviewDialog'
+import { NewNavReviewDialog } from './NewNavReviewDialog/NewNavReviewDialog'
 
-const NewNavReview = () => {
+export const NewNavReview = () => {
   const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false)
   return (
     <>
@@ -38,5 +38,3 @@ const NewNavReview = () => {
     </>
   )
 }
-
-export default NewNavReview

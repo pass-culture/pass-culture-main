@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { GetOffererResponseModel } from 'apiClient/v1'
-import Callout from 'components/Callout/Callout'
+import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 
 import { hasOffererAtLeastOnePhysicalVenue } from '../venueUtils'

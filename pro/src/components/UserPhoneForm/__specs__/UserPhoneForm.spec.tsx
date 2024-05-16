@@ -6,8 +6,7 @@ import { api } from 'apiClient/api'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
-import { UserPhoneForm } from '../'
-import { UserPhoneFormProps } from '../UserPhoneForm'
+import { UserPhoneForm, UserPhoneFormProps } from '../UserPhoneForm'
 
 const renderUserPhoneForm = (props: UserPhoneFormProps) => {
   return renderWithProviders(<UserPhoneForm {...props} />, {

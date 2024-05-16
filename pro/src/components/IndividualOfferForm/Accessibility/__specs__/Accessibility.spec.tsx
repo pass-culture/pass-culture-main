@@ -4,11 +4,12 @@ import { Form, Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
-import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
+import { IndividualOfferFormValues } from 'components/IndividualOfferForm/types'
 import { AccessibilityEnum } from 'core/shared/types'
 import { Button } from 'ui-kit/Button/Button'
 
-import { Accessibility, validationSchema } from '..'
+import { Accessibility } from '../Accessibility'
+import { validationSchema } from '../validationSchema'
 
 const renderAccessibility = ({
   initialValues,

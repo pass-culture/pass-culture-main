@@ -11,7 +11,10 @@ import { StockFormRowAction } from './types'
 export interface StockFormActionsProps {
   actions: StockFormRowAction[]
 }
-const StockFormActions = ({ actions }: StockFormActionsProps): JSX.Element => {
+
+export const StockFormActions = ({
+  actions,
+}: StockFormActionsProps): JSX.Element => {
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger
@@ -52,5 +55,3 @@ const StockFormActions = ({ actions }: StockFormActionsProps): JSX.Element => {
     </DropdownMenu.Root>
   )
 }
-
-export default StockFormActions

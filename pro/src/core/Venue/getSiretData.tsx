@@ -88,6 +88,4 @@ const getSiretDataRequest = async (
   }
 }
 
-const getSiretData = memoize(getSiretDataRequest)
-
-export default getSiretData
+export const getSiretData = memoize(getSiretDataRequest)

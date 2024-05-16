@@ -4,7 +4,7 @@ import { Route, Routes } from 'react-router-dom'
 
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import SkipLinks from '../SkipLinks'
+import { SkipLinks } from '../SkipLinks'
 
 const renderApp = ({ displayMenu }: { displayMenu?: boolean }) =>
   renderWithProviders(

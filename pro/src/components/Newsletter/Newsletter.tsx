@@ -7,7 +7,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import newsletterImage from './assets/newsletter.svg'
 import styles from './Newsletter.module.scss'
 
-const Newsletter = () => {
+export const Newsletter = () => {
   return (
     <div className={styles['newsletter-container']}>
       <ButtonLink
@@ -31,5 +31,3 @@ const Newsletter = () => {
     </div>
   )
 }
-
-export default Newsletter

@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import SideNavLinks from '../SideNavLinks'
+import { SideNavLinks } from '../SideNavLinks'
 
 const renderSideNavLinks = (initialRoute = '/') => {
   renderWithProviders(<SideNavLinks isLateralPanelOpen={true} />, {

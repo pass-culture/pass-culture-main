@@ -5,7 +5,7 @@ import React from 'react'
 import * as yup from 'yup'
 
 import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
-import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
+import { IndividualOfferFormValues } from 'components/IndividualOfferForm/types'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
@@ -19,7 +19,7 @@ import {
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import Categories, { CategoriesProps } from '../Categories'
+import { Categories, CategoriesProps } from '../Categories'
 import { CATEGORIES_DEFAULT_VALUES } from '../constants'
 import { getValidationSchema } from '../validationSchema'
 

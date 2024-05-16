@@ -7,13 +7,9 @@ import {
   SubcategoryResponseModel,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
-import Callout from 'components/Callout/Callout'
+import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import {
-  FORM_DEFAULT_VALUES,
-  IndividualOfferFormValues,
-} from 'components/IndividualOfferForm'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers/constants'
 import { SelectOption } from 'custom_types/form'
@@ -22,15 +18,18 @@ import fullMoreIcon from 'icons/full-more.svg'
 import { Select } from 'ui-kit/form/Select/Select'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
+import { FORM_DEFAULT_VALUES } from '../constants'
 import styles from '../IndividualOfferForm.module.scss'
+import { IndividualOfferFormValues } from '../types'
 import { onVenueChange } from '../UsefulInformations/Venue/Venue'
 import { buildSubcategoryFields } from '../utils/buildSubCategoryFields'
 import { getFilteredVenueListBySubcategory } from '../utils/getFilteredVenueList'
 
 import { SUBCATEGORIES_FIELDS_DEFAULT_VALUES } from './constants'
-import { LegacyMusicTypes, MusicTypes } from './MusicTypes'
+import { LegacyMusicTypes } from './MusicTypes/LegacyMusicTypes'
+import { MusicTypes } from './MusicTypes/MusicTypes'
 import { OfferSubtypeTag } from './OfferSubtypeTag/OfferSubtypeTag'
-import { ShowTypes } from './ShowTypes'
+import { ShowTypes } from './ShowTypes/ShowTypes'
 
 export interface CategoriesProps {
   categories: CategoryResponseModel[]
@@ -63,7 +62,7 @@ const buildSubcategoryOptions = (
     )
   )
 
-const Categories = ({
+export const Categories = ({
   categories,
   subCategories,
   readOnlyFields = [],
@@ -274,5 +273,3 @@ const Categories = ({
     </FormLayout.Section>
   )
 }
-
-export default Categories

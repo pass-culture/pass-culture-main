@@ -15,7 +15,7 @@ export interface NotificationsProps {
   readOnlyFields?: string[]
 }
 
-const Notifications = ({
+export const Notifications = ({
   readOnlyFields,
   venueBookingEmail,
 }: NotificationsProps): JSX.Element => {
@@ -60,5 +60,3 @@ const Notifications = ({
     </FormLayout.Section>
   )
 }
-
-export default Notifications

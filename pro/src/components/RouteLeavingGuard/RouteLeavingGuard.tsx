@@ -21,7 +21,7 @@ export interface RouteLeavingGuardProps {
   closeModalOnRightButton?: boolean
 }
 
-const RouteLeavingGuard = ({
+export const RouteLeavingGuard = ({
   children,
   extraClassNames = '',
   shouldBlockNavigation,
@@ -63,5 +63,3 @@ const RouteLeavingGuard = ({
     </ConfirmDialog>
   ) : null
 }
-
-export default RouteLeavingGuard

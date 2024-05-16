@@ -14,7 +14,7 @@ import {
   VenueListItemResponseModel,
 } from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
-import Notification from 'components/Notification/Notification'
+import { Notification } from 'components/Notification/Notification'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,

@@ -8,7 +8,7 @@ import {
   WithdrawalTypeEnum,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
-import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
+import { IndividualOfferFormValues } from 'components/IndividualOfferForm/types'
 import { setDefaultInitialFormValues } from 'components/IndividualOfferForm/utils/setDefaultInitialFormValues'
 import { REIMBURSEMENT_RULES } from 'core/Finances/constants'
 import { CATEGORY_STATUS } from 'core/Offers/constants'

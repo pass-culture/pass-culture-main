@@ -1,7 +1,7 @@
 import type { StoryObj } from '@storybook/react'
 import React from 'react'
 
-import DialogBox from './DialogBox'
+import { DialogBox } from './DialogBox'
 
 export default {
   title: 'components/DialogBox',

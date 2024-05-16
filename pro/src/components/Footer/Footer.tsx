@@ -14,7 +14,7 @@ import styles from './Footer.module.scss'
 type FooterProps = {
   layout?: 'basic' | 'funnel' | 'without-nav' | 'sticky-actions'
 }
-export default function Footer({ layout }: FooterProps) {
+export const Footer = ({ layout }: FooterProps) => {
   const currentUser = useSelector(selectCurrentUser)
   const isNewSideBarNavigation = useIsNewInterfaceActive()
 

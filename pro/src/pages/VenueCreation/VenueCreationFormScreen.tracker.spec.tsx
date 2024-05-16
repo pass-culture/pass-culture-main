@@ -98,7 +98,7 @@ vi.spyOn(api, 'getSiretInfo').mockResolvedValue({
 })
 
 vi.mock('core/Venue/siretApiValidate', () => ({
-  default: () => Promise.resolve(),
+  siretApiValidate: () => Promise.resolve(),
 }))
 
 // Mock l’appel à https://api-adresse.data.gouv.fr/search/?limit=${limit}&q=${address}
