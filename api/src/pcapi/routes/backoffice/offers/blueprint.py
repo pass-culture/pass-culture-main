@@ -161,9 +161,9 @@ SEARCH_FIELD_TO_PYTHON = {
         "field": "music_type",
         "column": offers_models.Offer.extraData["musicType"].astext,
     },
-    "MUSIC_SUB_TYPE": {
-        "field": "music_sub_type",
-        "column": offers_models.Offer.extraData["musicSubType"].astext,
+    "MUSIC_TYPE_GTL": {
+        "field": "music_type_gtl",
+        "column": sa.func.substring(offers_models.Offer.extraData["gtl_id"].astext, 1, 2),
     },
     "SHOW_TYPE": {
         "field": "show_type",

@@ -31,6 +31,7 @@ from pcapi.core.permissions import factories as perm_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
@@ -61,7 +62,7 @@ def offers_fixture(criteria) -> tuple:
         venue__departementCode="47",
         subcategoryId=subcategories.MATERIEL_ART_CREATIF.id,
         author=users_factories.ProFactory(),
-        extraData={"musicType": 501, "musicSubType": 510},
+        extraData={"musicType": 501, "musicSubType": 510, "gtl_id": "02050000"},
     )
     offer_with_limited_stock = offers_factories.EventOfferFactory(
         name="A Very Specific Name",
@@ -88,7 +89,7 @@ def offers_fixture(criteria) -> tuple:
         venue__departementCode="10",
         subcategoryId=subcategories.JEU_EN_LIGNE.id,
         author=users_factories.ProFactory(),
-        extraData={"musicType": 870, "musicSubType": 871, "showType": 1510, "showSubType": 1511},
+        extraData={"musicType": 870, "musicSubType": 871, "gtl_id": "14000000", "showType": 1510, "showSubType": 1511},
     )
     offers_factories.StockFactory(quantity=None, offer=offer_with_unlimited_stock, price=10.1)
     offers_factories.StockFactory(offer=offer_with_unlimited_stock, price=15)
@@ -123,7 +124,8 @@ class ListOffersTest(GetEndpointHelper):
     # - fetch session (1 query)
     # - fetch user (1 query)
     # - fetch offers with joinedload including extra data (1 query)
-    expected_num_queries = 3
+    # - ENABLE_PRO_TITELIVE_MUSIC_GENRES FF (1 query)
+    expected_num_queries = 4
 
     def test_list_offers_without_filter(self, authenticated_client, offers):
         # no filter => no query to fetch offers
@@ -563,7 +565,10 @@ class ListOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert {int(row["ID"]) for row in rows} == {offers[1].id, offers[2].id}
 
-    def test_list_offers_by_music_type(self, authenticated_client, offers):
+    @override_features(ENABLE_PRO_TITELIVE_MUSIC_GENRES=False)
+    def test_list_offers_advanced_search_by_music_type_with_titelive_genres_FF_disabled(
+        self, authenticated_client, offers
+    ):
         query_args = {
             "search-3-search_field": "MUSIC_TYPE",
             "search-3-operator": "IN",
@@ -577,11 +582,14 @@ class ListOffersTest(GetEndpointHelper):
         row = html_parser.extract_table_rows(response.data)
         assert int(row[0]["ID"]) == offers[0].id
 
-    def test_list_offers_by_music_sub_type(self, authenticated_client, offers):
+    @override_features(ENABLE_PRO_TITELIVE_MUSIC_GENRES=True)
+    def test_list_offers_advanced_search_by_music_type_with_titelive_genres_FF_enabled(
+        self, authenticated_client, offers
+    ):
         query_args = {
-            "search-0-search_field": "MUSIC_SUB_TYPE",
-            "search-0-operator": "IN",
-            "search-0-music_sub_type": ["510", "511", "512"],
+            "search-3-search_field": "MUSIC_TYPE_GTL",
+            "search-3-operator": "IN",
+            "search-3-music_type_gtl": ["01000000", "02000000", "19000000"],
         }
 
         with assert_num_queries(self.expected_num_queries):
@@ -938,7 +946,9 @@ class ListOffersTest(GetEndpointHelper):
             "search-0-operator": "IN",
             "search-0-category": categories.LIVRE.id,
         }
-        with assert_num_queries(2):  # only session + current user, before form validation
+        with assert_num_queries(
+            3
+        ):  # only session + current user, before form validation + ENABLE_PRO_TITELIVE_MUSIC_GENRES FF
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -954,7 +964,9 @@ class ListOffersTest(GetEndpointHelper):
             "search-4-search_field": "BOOKING_LIMIT_DATE",
             "search-4-operator": "DATE_TO",
         }
-        with assert_num_queries(2):  # only session + current user, before form validation
+        with assert_num_queries(
+            3
+        ):  # only session + current user, before form validation + ENABLE_PRO_TITELIVE_MUSIC_GENRES FF
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -969,7 +981,9 @@ class ListOffersTest(GetEndpointHelper):
             "search-0-operator": "IN",
             "search-0-criteria": "A",
         }
-        with assert_num_queries(2):  # only session + current user, before form validation
+        with assert_num_queries(
+            3
+        ):  # only session + current user, before form validation + ENABLE_PRO_TITELIVE_MUSIC_GENRES FF
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -1525,8 +1539,8 @@ class GetOfferDetailsTest(GetEndpointHelper):
     endpoint_kwargs = {"offer_id": 1}
     needed_permission = perm_models.Permissions.READ_OFFERS
 
-    # session + user + offer with joined data
-    expected_num_queries = 3
+    # session + user + offer with joined data + ENABLE_PRO_TITELIVE_MUSIC_GENRES FF
+    expected_num_queries = 4
 
     def test_get_detail_offer(self, authenticated_client):
         offer = offers_factories.OfferFactory(
@@ -1692,17 +1706,6 @@ class GetOfferDetailsTest(GetEndpointHelper):
         offer = offers_factories.OfferFactory(
             withdrawalDetails="Demander à la caisse",
             extraData={"showType": 1510},
-        )
-
-        url = url_for(self.endpoint, offer_id=offer.id, _external=True)
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url)
-            assert response.status_code == 200
-
-    def test_get_detail_offer_without_music_subtype(self, legit_user, authenticated_client):
-        offer = offers_factories.OfferFactory(
-            withdrawalDetails="Demander à la caisse",
-            extraData={"musicType": 1510},
         )
 
         url = url_for(self.endpoint, offer_id=offer.id, _external=True)
