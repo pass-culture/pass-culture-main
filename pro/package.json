@@ -103,6 +103,7 @@
     "@vitejs/plugin-react": "^4.2.1",
     "@vitest/coverage-v8": "^1.5.0",
     "cypress": "^13.9.0",
+    "esbuild": "^0.20.2",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.29.1",
@@ -130,7 +131,9 @@
     "vitest-fetch-mock": "^0.2.2"
   },
   "resolutions": {
-    "@babel/traverse": ">=7.23.2"
+    "@babel/traverse": ">=7.23.2",
+    "wrap-ansi": "7.0.0",
+    "string-width": "4.1.0"
   },
   "engines": {
     "node": ">=20 <21"
