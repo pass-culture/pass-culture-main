@@ -998,7 +998,9 @@ def archive_old_bookings() -> None:
     date_condition = Booking.dateCreated < datetime.datetime.utcnow() - constants.ARCHIVE_DELAY
 
     query_old_booking_ids = (
-        Booking.query.join(Booking.stock, Stock.offer, Booking.activationCode)
+        Booking.query.join(Booking.stock)
+        .join(Stock.offer)
+        .join(Booking.activationCode)
         .filter(date_condition)
         .filter(
             offers_models.Offer.isDigital,
@@ -1006,7 +1008,8 @@ def archive_old_bookings() -> None:
         )
         .with_entities(Booking.id)
         .union(
-            Booking.query.join(Booking.stock, Stock.offer)
+            Booking.query.join(Booking.stock)
+            .join(Stock.offer)
             .filter(date_condition)
             .filter(Booking.display_even_if_used)
             .with_entities(Booking.id)
