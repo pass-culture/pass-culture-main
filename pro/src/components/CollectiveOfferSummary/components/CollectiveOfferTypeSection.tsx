@@ -2,6 +2,7 @@ import {
   GetCollectiveOfferTemplateResponseModel,
   GetCollectiveOfferResponseModel,
 } from 'apiClient/v1'
+import { Markdown } from 'components/Markdown/Markdown'
 import {
   Description,
   SummaryDescriptionList,
@@ -48,7 +49,11 @@ export const CollectiveOfferTypeSection = ({
             { title: 'Titre de l’offre', text: offer.name },
             {
               title: 'Description',
-              text: offer.description || DEFAULT_RECAP_VALUE,
+              text: !offer.description ? (
+                DEFAULT_RECAP_VALUE
+              ) : (
+                <Markdown markdownText={offer.description} />
+              ),
             },
             { title: 'Durée', text: formatDuration(offer.durationMinutes) },
           ]}

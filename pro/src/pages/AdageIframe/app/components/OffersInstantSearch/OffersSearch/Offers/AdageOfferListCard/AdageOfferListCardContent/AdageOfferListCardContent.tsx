@@ -2,8 +2,8 @@ import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
 } from 'apiClient/adage'
+import { Markdown } from 'components/Markdown/Markdown'
 
-import { formatDescription } from '../../utils/formatDescription'
 import { getOfferVenueAndOffererName } from '../../utils/getOfferVenueAndOffererName'
 
 import styles from './AdageOfferListCardContent.module.scss'
@@ -48,7 +48,7 @@ export function AdageOfferListCardContent({
           className={styles['offer-description']}
           data-testid="offer-description"
         >
-          {formatDescription(description)}
+          <Markdown markdownText={description} />
         </p>
       )}
     </>
