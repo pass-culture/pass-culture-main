@@ -1,30 +1,28 @@
 {% import "components/links.html" as links %}
 {% from "components/bookings/extra_row.html" import build_booking_toggle_extra_row_button with context %}
-{% if booking_finance_incidents %}
+{% if incident.booking_finance_incidents %}
   <table class="table mb-4 get-details-bookings-view">
     <thead>
       <tr>
         <th scope="col"></th>
         <th scope="col">ID</th>
         <th scope="col">Bénéficiaire</th>
-        <th scope="col">Contremarque</th>
         <th scope="col">État</th>
         <th scope="col">Nom de l'offre</th>
         <th scope="col">Date de résa</th>
       </tr>
     </thead>
     <tbody>
-      {% for booking_finance_incident in booking_finance_incidents %}
+      {% for booking_finance_incident in incident.booking_finance_incidents %}
         <tr>
           <th scope="row">{{ build_booking_toggle_extra_row_button(booking_finance_incident.booking) }}</th>
-          <td>{{ booking_finance_incident.booking.id }}</td>
-          <td>{{ links.build_public_user_name_to_details_link(booking_finance_incident.beneficiary) }}</td>
           <td>
-            {% if booking_finance_incident.booking.token %}
-              {{ links.build_booking_token_to_booking_details_link(booking_finance_incident.booking.token) }}
-            {% endif %}
+            <a href="{{ url_for('backoffice_web.individual_bookings.list_individual_bookings', q=booking_finance_incident.booking.id) }}"
+               class="link-primary"
+               target="_top">{{ booking_finance_incident.booking.id }}</a>
           </td>
-          <td>{{ booking_finance_incident.booking | format_booking_status_long | safe }}</td>
+          <td>{{ links.build_public_user_name_to_details_link(booking_finance_incident.beneficiary) }}</td>
+          <td>{{ booking_finance_incident.booking | format_booking_status(with_badge=True) | safe }}</td>
           <td>{{ links.build_offer_name_to_pc_pro_link(booking_finance_incident.booking.stock.offer) }}</td>
           <td>{{ booking_finance_incident.booking.dateCreated | format_date("Le %d/%m/%Y à %Hh%M") }}</td>
         </tr>

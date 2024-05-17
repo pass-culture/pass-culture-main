@@ -311,16 +311,9 @@ class PriceEventTest:
         assert pricing.customRuleId == original_pricing.customRuleId
         assert pricing.standardRule == original_pricing.standardRule
 
-    @pytest.mark.parametrize(
-        "event_motive",
-        [
-            models.FinanceEventMotive.INCIDENT_NEW_PRICE,
-            models.FinanceEventMotive.INCIDENT_COMMERCIAL_GESTURE,
-        ],
-    )
-    def test_pricing_new_price_event(self, event_motive):
+    def test_pricing_overpayment_incident(self):
         validation_date = datetime.datetime.utcnow()
-        finance_event = self._make_incident_event(event_motive, validation_date)
+        finance_event = self._make_incident_event(models.FinanceEventMotive.INCIDENT_NEW_PRICE, validation_date)
 
         api.price_event(finance_event)
 
@@ -338,6 +331,423 @@ class PriceEventTest:
         assert created_pricing.lines[0].category == models.PricingLineCategory.OFFERER_REVENUE
         assert created_pricing.lines[1].amount == 0
         assert created_pricing.lines[1].category == models.PricingLineCategory.OFFERER_CONTRIBUTION
+
+    def test_pricing_partial_overpayment_incident_workflow(self):
+        # regular overpayment incident workflow:
+        # 1. Offer is created by the offerer
+        # 2. The offer is booked by the beneficiary
+        # 3. The booking is used by the beneficiary
+        # 4. The booking is reimbursed to the offerer
+        # 5. It turns out that the booking didn't go as expected and the booking is overpriced
+        # 6. Create an overpayment incident to to get back the money from the offerer
+        venue = offerers_factories.VenueFactory(pricing_point="self")
+        bank_account = factories.BankAccountFactory(offerer=venue.managingOfferer)
+        offerers_factories.VenueBankAccountLinkFactory(venue=venue, bankAccount=bank_account)
+        author_user = users_factories.UserFactory()
+
+        user = users_factories.BeneficiaryGrant18Factory()
+        assert user.wallet_balance == Decimal("300")
+        ###############################
+        # Create an offer and book it #
+        ###############################
+        booking = bookings_factories.BookingFactory(
+            user=user,
+            quantity=13,
+            stock__price=Decimal("5.0"),
+            stock__offer__venue=venue,
+        )  # 65€
+        bookings_api.mark_as_used(
+            booking=booking,
+            validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
+        )
+        finance_events = models.FinanceEvent.query.all()
+        assert len(finance_events) == 1
+
+        initial_finance_event = finance_events[0]
+        pricing = api.price_event(initial_finance_event)
+
+        assert pricing.amount == -65_00
+        assert pricing.revenue == 65_00
+        assert pricing.bookingId == booking.id
+        assert pricing.status == models.PricingStatus.VALIDATED
+        assert pricing.venueId == venue.id
+        assert pricing.eventId == initial_finance_event.id
+
+        assert len(pricing.lines) == 2
+        assert {line.category for line in pricing.lines} == {
+            models.PricingLineCategory.OFFERER_REVENUE,
+            models.PricingLineCategory.OFFERER_CONTRIBUTION,
+        }
+        pricing_line_offerer_revenue = [
+            line for line in pricing.lines if line.category == models.PricingLineCategory.OFFERER_REVENUE
+        ][0]
+        pricing_line_offerer_contribution = [
+            line for line in pricing.lines if line.category == models.PricingLineCategory.OFFERER_CONTRIBUTION
+        ][0]
+        assert pricing_line_offerer_revenue.amount == -65_00
+        assert pricing_line_offerer_contribution.amount == 0
+
+        assert user.wallet_balance == Decimal("235.00")
+
+        #################################################
+        # Invoice the booking and reimburse the offerer #
+        #################################################
+        cashflow_batch = factories.CashflowBatchFactory(label="Batch")
+        api._generate_cashflows(cashflow_batch)
+        assert len(cashflow_batch.cashflows) == 1
+        cashflow = cashflow_batch.cashflows[0]
+        cashflow.status = models.CashflowStatus.UNDER_REVIEW
+        db.session.add(cashflow)
+        db.session.flush()
+
+        api._generate_invoice(
+            bank_account_id=bank_account.id, cashflow_ids=[cashflow.id for cashflow in cashflow_batch.cashflows]
+        )
+        assert booking.status == bookings_models.BookingStatus.REIMBURSED
+
+        ##################################
+        # Create an overpayment incident #
+        ##################################
+        incident = api.create_overpayment_finance_incident(
+            bookings=[booking],
+            author=author_user,
+            origin="BO",
+            amount=Decimal("30"),
+        )
+
+        assert incident.kind == models.IncidentType.OVERPAYMENT
+        assert incident.status == models.IncidentStatus.CREATED
+        assert incident.details["authorId"] == author_user.id
+        assert incident.details["origin"] == "BO"
+
+        booking_finance_incidents = models.BookingFinanceIncident.query.all()
+        assert len(booking_finance_incidents) == 1
+        booking_finance_incident = booking_finance_incidents[0]
+        assert booking_finance_incident.beneficiaryId == user.id
+        assert booking_finance_incident.bookingId == booking.id
+        assert (
+            booking_finance_incident.newTotalAmount == 35_00
+        )  # = 65€ - 30€ (30€ being the amount to get back from the offerer and to give to the user's deposit)
+
+        #####################################
+        # Validate the overpayment incident #
+        #####################################
+        api.validate_finance_overpayment_incident(
+            finance_incident=incident,
+            force_debit_note=True,
+            author=author_user,
+        )
+
+        finance_events = models.FinanceEvent.query.filter(models.FinanceEvent.id != initial_finance_event.id).all()
+        assert len(finance_events) == 2
+        assert {finance_event.motive for finance_event in finance_events} == {
+            models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT,
+            models.FinanceEventMotive.INCIDENT_NEW_PRICE,
+        }
+        finance_event_reversal = [
+            finance_event
+            for finance_event in finance_events
+            if finance_event.motive == models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT
+        ][0]
+        assert finance_event_reversal.status == models.FinanceEventStatus.READY
+        assert finance_event_reversal.bookingFinanceIncidentId == booking_finance_incident.id
+        assert finance_event_reversal.bookingId is None
+        assert finance_event_reversal.collectiveBookingId is None
+        assert finance_event_reversal.pricingPointId == venue.id
+        assert finance_event_reversal.venueId == venue.id
+
+        finance_event_new_price = [
+            finance_event
+            for finance_event in finance_events
+            if finance_event.motive == models.FinanceEventMotive.INCIDENT_NEW_PRICE
+        ][0]
+        assert finance_event_new_price.status == models.FinanceEventStatus.READY
+        assert finance_event_new_price.bookingId is None
+        assert finance_event_new_price.collectiveBookingId is None
+        assert finance_event_new_price.pricingPointId == venue.id
+        assert finance_event_new_price.bookingFinanceIncidentId == booking_finance_incident.id
+        assert finance_event_new_price.venueId == venue.id
+
+        reversal_pricing = api.price_event(finance_event_reversal)
+        assert reversal_pricing.amount == 65_00
+        assert reversal_pricing.revenue == 65_00
+        assert reversal_pricing.bookingId is None
+        assert reversal_pricing.collectiveBookingId is None
+        assert reversal_pricing.eventId == finance_event_reversal.id
+        assert reversal_pricing.venueId == venue.id
+        assert reversal_pricing.status == models.PricingStatus.VALIDATED
+        assert reversal_pricing.pricingPointId == venue.id
+        assert len(reversal_pricing.lines) == 2
+        assert {line.category for line in reversal_pricing.lines} == {
+            models.PricingLineCategory.OFFERER_REVENUE,
+            models.PricingLineCategory.OFFERER_CONTRIBUTION,
+        }
+        reversal_pricing_line_offerer_revenue = [
+            line for line in reversal_pricing.lines if line.category == models.PricingLineCategory.OFFERER_REVENUE
+        ][0]
+        assert reversal_pricing_line_offerer_revenue.amount == 65_00
+        reversal_pricing_line_offerer_contribution = [
+            line for line in reversal_pricing.lines if line.category == models.PricingLineCategory.OFFERER_CONTRIBUTION
+        ][0]
+        assert reversal_pricing_line_offerer_contribution.amount == 0
+        assert reversal_pricing_line_offerer_revenue.amount == 65_00
+
+        new_price_pricing = api.price_event(finance_event_new_price)
+        assert new_price_pricing.amount == -35_00
+        assert new_price_pricing.revenue == 100_00
+        assert new_price_pricing.bookingId is None
+        assert new_price_pricing.collectiveBookingId is None
+        assert new_price_pricing.eventId == finance_event_new_price.id
+        assert new_price_pricing.venueId == venue.id
+        assert new_price_pricing.status == models.PricingStatus.VALIDATED
+        assert len(new_price_pricing.lines) == 2
+        assert {line.category for line in new_price_pricing.lines} == {
+            models.PricingLineCategory.OFFERER_REVENUE,
+            models.PricingLineCategory.OFFERER_CONTRIBUTION,
+        }
+        new_price_pricing_line_offerer_revenue = [
+            line for line in new_price_pricing.lines if line.category == models.PricingLineCategory.OFFERER_REVENUE
+        ][0]
+        new_price_pricing_line_offerer_contribution = [
+            line for line in new_price_pricing.lines if line.category == models.PricingLineCategory.OFFERER_CONTRIBUTION
+        ][0]
+        assert new_price_pricing_line_offerer_revenue.amount == -35_00
+        assert new_price_pricing_line_offerer_contribution.amount == 0
+
+        assert user.wallet_balance == Decimal("265")
+        assert booking.status == bookings_models.BookingStatus.REIMBURSED
+
+    def test_pricing_commercial_gesture_workflow(self):
+        # regular commercial gesture workflow:
+        # 1. Offer is created by the offerer
+        # 2. The offer is booked by a beneficiary
+        # 3. Something bad happened → the booking is cancelled
+        # 4. The beneficiary consumes his credit
+        # 5. Cannot give back the amount of the booking to the offerer from the beneficiary's deposit
+        # 6. Create a commercial gesture incident to give back the money to the offerer
+        venue = offerers_factories.VenueFactory(pricing_point="self")
+        author_user = users_factories.UserFactory()
+
+        user = users_factories.BeneficiaryGrant18Factory()
+        assert user.wallet_balance == Decimal("300")
+        ############################
+        # Empty the user's balance #
+        ############################
+        initial_booking = bookings_factories.BookingFactory(
+            user=user,
+            quantity=57,
+            stock__price=Decimal("5.0"),
+            stock__offer__venue=venue,
+        )  # 285€
+        bookings_api.mark_as_used(
+            booking=initial_booking,
+            validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
+        )
+        finance_events = models.FinanceEvent.query.all()
+        assert len(finance_events) == 1
+
+        initial_booking_finance_event = finance_events[0]
+        pricing = api.price_event(initial_booking_finance_event)
+
+        assert pricing.amount == -285_00
+        assert pricing.revenue == 285_00
+        assert pricing.bookingId == initial_booking.id
+        assert pricing.status == models.PricingStatus.VALIDATED
+        assert pricing.venueId == venue.id
+        assert pricing.eventId == initial_booking_finance_event.id
+
+        pricing_lines = pricing.lines
+        assert len(pricing_lines) == 2
+        assert {line.category for line in pricing_lines} == {
+            models.PricingLineCategory.OFFERER_REVENUE,
+            models.PricingLineCategory.OFFERER_CONTRIBUTION,
+        }
+        pricing_line_offerer_revenue = [
+            line for line in pricing_lines if line.category == models.PricingLineCategory.OFFERER_REVENUE
+        ][0]
+        pricing_line_offerer_contribution = [
+            line for line in pricing_lines if line.category == models.PricingLineCategory.OFFERER_CONTRIBUTION
+        ][0]
+
+        assert pricing_line_offerer_revenue.amount == -285_00
+        assert pricing_line_offerer_contribution.amount == 0
+
+        assert user.wallet_balance == Decimal("15.0")
+
+        ###############################
+        # Create a booking and use it #
+        ###############################
+        stock = offers_factories.StockFactory(price=Decimal("10.1"), offer__venue=venue)
+        booking = bookings_factories.BookingFactory(user=user, stock=stock)
+        bookings_api.mark_as_used(
+            booking=booking,
+            validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
+        )
+        booking_finance_events = models.FinanceEvent.query.filter(
+            models.FinanceEvent.id != initial_booking_finance_event.id
+        ).all()
+        assert len(booking_finance_events) == 1
+        booking_finance_event = booking_finance_events[0]
+        pricing = api.price_event(booking_finance_event)
+        assert pricing.amount == -10_10
+        assert pricing.revenue == 295_10
+        assert pricing.bookingId == booking.id
+        assert pricing.status == models.PricingStatus.VALIDATED
+        assert pricing.venueId == venue.id
+        assert pricing.eventId == booking_finance_event.id
+
+        pricing_lines = pricing.lines
+        assert len(pricing_lines) == 2
+        assert {line.category for line in pricing_lines} == {
+            models.PricingLineCategory.OFFERER_REVENUE,
+            models.PricingLineCategory.OFFERER_CONTRIBUTION,
+        }
+        pricing_line_offerer_revenue = [
+            line for line in pricing_lines if line.category == models.PricingLineCategory.OFFERER_REVENUE
+        ][0]
+        pricing_line_offerer_contribution = [
+            line for line in pricing_lines if line.category == models.PricingLineCategory.OFFERER_CONTRIBUTION
+        ][0]
+
+        assert pricing_line_offerer_revenue.amount == -10_10
+        assert pricing_line_offerer_contribution.amount == 0
+        assert user.wallet_balance == Decimal("4.9")
+
+        ######################
+        # Cancel the booking #
+        ######################
+        bookings_api.mark_as_cancelled(
+            booking=booking,
+            reason=bookings_models.BookingCancellationReasons.BACKOFFICE,
+        )
+
+        assert booking.status == bookings_models.BookingStatus.CANCELLED
+        assert booking_finance_event.status == models.FinanceEventStatus.CANCELLED
+        assert booking_finance_event.pricingPointId == venue.id
+        cancel_booking_finance_events = models.FinanceEvent.query.filter(
+            models.FinanceEvent.id.not_in((initial_booking_finance_event.id, booking_finance_event.id)),
+        ).all()
+        assert len(cancel_booking_finance_events) == 1
+        cancel_booking_finance_event = cancel_booking_finance_events[0]
+        assert cancel_booking_finance_event.motive == models.FinanceEventMotive.BOOKING_CANCELLED_AFTER_USE
+        assert cancel_booking_finance_event.pricingPointId is None
+        assert cancel_booking_finance_event.bookingId == booking.id
+        assert cancel_booking_finance_event.status == models.FinanceEventStatus.NOT_TO_BE_PRICED
+        assert pricing.status == models.PricingStatus.CANCELLED
+
+        assert user.wallet_balance == Decimal("15.0")
+
+        ###################################################
+        # Additional booking to further empty the balance #
+        ###################################################
+        additional_booking = bookings_factories.BookingFactory(
+            user=user,
+            quantity=1,
+            stock__price=Decimal("13.3"),
+            stock__offer__venue=venue,
+        )  # €13.3
+        bookings_api.mark_as_used(
+            booking=additional_booking,
+            validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
+        )
+        additional_finance_events = models.FinanceEvent.query.filter(
+            models.FinanceEvent.id.not_in(
+                (initial_booking_finance_event.id, booking_finance_event.id, cancel_booking_finance_event.id)
+            ),
+        ).all()
+        assert len(additional_finance_events) == 1
+        additional_finance_event = additional_finance_events[0]
+        api.price_event(additional_finance_event)
+
+        assert additional_finance_event.bookingId == additional_booking.id
+        assert additional_finance_event.status == models.FinanceEventStatus.PRICED
+
+        assert user.wallet_balance == Decimal("1.70")
+
+        #################################
+        # Create the commercial gesture #
+        #################################
+        commercial_gesture = api.create_finance_commercial_gesture(
+            bookings=[booking],
+            amount=Decimal("10.1"),
+            author=author_user,
+            origin="test",
+        )
+        assert commercial_gesture.kind == models.IncidentType.COMMERCIAL_GESTURE
+        assert commercial_gesture.status == models.IncidentStatus.CREATED
+        assert commercial_gesture.forceDebitNote is False
+        assert commercial_gesture.details["authorId"] == author_user.id
+        assert commercial_gesture.details["origin"] == "test"
+        assert commercial_gesture.venueId == venue.id
+        assert len(commercial_gesture.booking_finance_incidents) == 1
+        booking_finance_incident = commercial_gesture.booking_finance_incidents[0]
+        assert booking_finance_incident.bookingId == booking.id
+        assert booking_finance_incident.incidentId == commercial_gesture.id
+        assert booking_finance_incident.commercial_gesture_amount == 10_10
+        finance_event_count = models.FinanceEvent.query.filter(
+            models.FinanceEvent.id.in_(
+                (
+                    initial_booking_finance_event.id,
+                    booking_finance_event.id,
+                    cancel_booking_finance_event.id,
+                    additional_finance_event.id,
+                ),
+            ),
+        ).count()
+        assert finance_event_count == 4
+
+        ###################################
+        # Validate the commercial gesture #
+        ###################################
+        api.validate_finance_commercial_gesture(commercial_gesture, force_debit_note=False, author=author_user)
+        assert commercial_gesture.status == models.IncidentStatus.VALIDATED
+        commercial_gesture_finance_events = models.FinanceEvent.query.filter(
+            models.FinanceEvent.id.not_in(
+                (
+                    initial_booking_finance_event.id,
+                    booking_finance_event.id,
+                    cancel_booking_finance_event.id,
+                    additional_finance_event.id,
+                ),
+            ),
+        ).all()
+        assert len(commercial_gesture_finance_events) == 1
+        commercial_gesture_finance_event = commercial_gesture_finance_events[0]
+        assert commercial_gesture_finance_event.motive == models.FinanceEventMotive.INCIDENT_COMMERCIAL_GESTURE
+        assert commercial_gesture_finance_event.pricingPointId == venue.id
+        assert commercial_gesture_finance_event.status == models.FinanceEventStatus.READY
+        assert commercial_gesture_finance_event.venueId == venue.id
+        assert commercial_gesture_finance_event.bookingFinanceIncident == booking_finance_incident
+
+        commercial_gesture_pricing = api.price_event(commercial_gesture_finance_event)
+        assert commercial_gesture_finance_event.status == models.FinanceEventStatus.PRICED
+        assert commercial_gesture_pricing.status == models.PricingStatus.VALIDATED
+        assert commercial_gesture_pricing.amount == -10_10
+        assert commercial_gesture_pricing.revenue == 298_30
+        assert commercial_gesture_pricing.eventId == commercial_gesture_finance_event.id
+        assert commercial_gesture_pricing.venueId == venue.id
+        assert commercial_gesture_pricing.pricingPointId == venue.id
+        assert commercial_gesture_pricing.bookingId is None
+        assert commercial_gesture_pricing.collectiveBookingId is None
+
+        assert {line.category for line in commercial_gesture_pricing.lines} == {
+            models.PricingLineCategory.OFFERER_REVENUE,
+            models.PricingLineCategory.OFFERER_CONTRIBUTION,
+        }
+        commercial_gesture_pricing_line_offerer_revenue = [
+            line
+            for line in commercial_gesture_pricing.lines
+            if line.category == models.PricingLineCategory.OFFERER_REVENUE
+        ][0]
+        commercial_gesture_pricing_line_offerer_contribution = [
+            line
+            for line in commercial_gesture_pricing.lines
+            if line.category == models.PricingLineCategory.OFFERER_CONTRIBUTION
+        ][0]
+        assert commercial_gesture_pricing_line_offerer_revenue.amount == -10_10
+        assert commercial_gesture_pricing_line_offerer_contribution.amount == 0
+
+        assert user.wallet_balance == Decimal("1.70")
 
     def test_price_free_booking(self):
         event = self._make_individual_event(price=0)

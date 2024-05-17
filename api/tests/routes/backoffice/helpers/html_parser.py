@@ -139,6 +139,17 @@ def extract_alert(html_content: str) -> str:
     return _filter_whitespaces(alert.text)
 
 
+def get_tag(html_content: str, class_: str, tag: str = "div") -> list[str]:
+    """
+    Find a tag given its class
+    """
+    soup = get_soup(html_content)
+    tag = soup.find(tag, class_=class_)
+    assert tag is not None
+
+    return tag.encode("utf-8")
+
+
 def extract_alerts(html_content: str) -> str:
     """
     Extract all flash messages
