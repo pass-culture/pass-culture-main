@@ -152,6 +152,33 @@ def get_offers_by_ids(user: users_models.User, offer_ids: list[int]) -> flask_sq
     return query
 
 
+def get_offers_details(offer_ids: list[int]) -> flask_sqlalchemy.BaseQuery:
+    return (
+        models.Offer.query.options(
+            sa_orm.joinedload(models.Offer.stocks)
+            .joinedload(models.Stock.priceCategory)
+            .joinedload(models.PriceCategory.priceCategoryLabel)
+        )
+        .options(
+            sa_orm.joinedload(models.Offer.venue)
+            .joinedload(offerers_models.Venue.managingOfferer)
+            .load_only(
+                offerers_models.Offerer.name, offerers_models.Offerer.validationStatus, offerers_models.Offerer.isActive
+            )
+        )
+        .options(sa_orm.joinedload(models.Offer.venue).joinedload(offerers_models.Venue.googlePlacesInfo))
+        .options(sa_orm.joinedload(models.Offer.mediations))
+        .options(
+            sa_orm.joinedload(models.Offer.product)
+            .load_only(models.Product.id, models.Product.last_30_days_booking, models.Product.thumbCount)
+            .joinedload(models.Product.productMediations)
+        )
+        .outerjoin(models.Offer.lastProvider)
+        .options(sa_orm.contains_eager(models.Offer.lastProvider).load_only(providers_models.Provider.localClass))
+        .filter(models.Offer.id.in_(offer_ids), models.Offer.validation == models.OfferValidationStatus.APPROVED)
+    )
+
+
 def get_offers_by_filters(
     user_id: int,
     user_is_admin: bool,
