@@ -1514,8 +1514,7 @@ class CollectiveOfferRequest(PcObject, Base, Model):
 
     comment: str = sa.Column(sa.Text, nullable=False)
 
-    # FIXME(jeremieb): make column non-nullable (fill missing data before)
-    dateCreated: date = sa.Column(sa.Date, nullable=True, server_default=sa.func.current_date())
+    dateCreated: date = sa.Column(sa.Date, nullable=False, server_default=sa.func.current_date())
 
     educationalRedactorId: int = sa.Column(sa.BigInteger, sa.ForeignKey("educational_redactor.id"), nullable=False)
 
