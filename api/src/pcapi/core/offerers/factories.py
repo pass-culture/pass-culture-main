@@ -87,6 +87,9 @@ class VenueFactory(BaseFactory):
     dmsToken = factory.LazyFunction(api.generate_dms_token)
     timezone: str = "Europe/Paris"
     _bannerUrl = None
+    offererAddress = factory.SubFactory(
+        "pcapi.core.offerers.factories.OffererAddressFactory", offerer=factory.SelfAttribute("..managingOfferer")
+    )
 
     @factory.post_generation
     def pricing_point(  # pylint: disable=no-self-argument
