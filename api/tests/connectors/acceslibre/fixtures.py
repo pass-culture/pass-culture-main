@@ -620,6 +620,7 @@ ACCESLIBRE_RESULTS_BY_SLUG = {
     "created_at": "2021-06-24T10:59:42.023966+02:00",
 }
 
+ACCESLIBRE_RESULTS_BY_SLUG_NOT_FOUND = {"détail": "Pas trouvé"}
 
 ACCESLIBRE_WIDGET_RESULT = {
     "slug": "mon-super-slug",
