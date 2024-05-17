@@ -50,7 +50,7 @@ export function PartnerPageCollectiveSection({
     <h4 className={styles['details-title']}>Enseignants</h4>
   ) : (
     <span className={styles['details-normal']}>
-      État de votre activité sur ADAGE :
+      État auprès des enseignants&nbsp;:
     </span>
   )
 

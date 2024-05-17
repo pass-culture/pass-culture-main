@@ -116,9 +116,9 @@ export const VenueEdition = (): JSX.Element | null => {
         {isNewSideBarNavigation && (
           <FormLayout>
             {activeStep === 'individual' ? (
-              <h1>Page sur l’application</h1>
+              <h1 className={styles['header']}>Page sur l’application</h1>
             ) : (
-              <h1>Page sur ADAGE</h1>
+              <h1 className={styles['header']}>Page dans ADAGE</h1>
             )}
             {venuesOptions.length > 1 && (
               <FormLayout.Row>

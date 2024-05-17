@@ -1,6 +1,11 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
+import { api } from 'apiClient/api'
+import {
+  defaultGetOffererResponseModel,
+  defaultGetOffererVenueResponseModel,
+} from 'utils/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
@@ -38,7 +43,28 @@ describe('SideNavLinks', () => {
     expect(screen.getAllByRole('link', { name: 'Offres' })).toHaveLength(2)
   })
 
-  it('should not display partner link if user as no parnter page', () => {
+  it('should display partner link if user as partner page', async () => {
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+      ...defaultGetOffererResponseModel,
+      managedVenues: [
+        { ...defaultGetOffererVenueResponseModel, isPermanent: true, id: 17 },
+      ],
+    })
+    renderSideNavLinks({
+      storeOverrides: {
+        user: {
+          currentUser: sharedCurrentUserFactory({ hasPartnerPage: true }),
+          selectedOffererId: 1,
+        },
+      },
+    })
+
+    expect(
+      await screen.findByText('Page sur l’application')
+    ).toBeInTheDocument()
+  })
+
+  it('should not display partner link if user as no partner page', () => {
     renderSideNavLinks({
       user: sharedCurrentUserFactory({ hasPartnerPage: false }),
     })
