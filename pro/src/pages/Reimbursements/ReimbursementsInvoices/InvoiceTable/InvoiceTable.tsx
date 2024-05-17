@@ -8,15 +8,13 @@ import {
   giveSortingModeForAlly,
   useColumnSorting,
 } from 'hooks/useColumnSorting'
-import fullDownloadIcon from 'icons/full-download.svg'
 import strokeLessIcon from 'icons/stroke-less.svg'
 import strokeMoreIcon from 'icons/stroke-more.svg'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { FORMAT_DD_MM_YYYY } from 'utils/date'
 import { formatPrice } from 'utils/formatPrice'
 
+import { InvoiceActions } from './InvoiceActions'
 import styles from './InvoiceTable.module.scss'
 
 type InvoiceTableProps = {
@@ -290,23 +288,9 @@ export const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
                   styles['invoice-column'],
                   styles['invoice-data']
                 )}
-                data-label="Téléchargement"
+                data-label="Téléchargements"
               >
-                <ButtonLink
-                  link={{
-                    isExternal: true,
-                    to: invoice.url,
-                    target: '_blank',
-                    download: true,
-                  }}
-                  icon={fullDownloadIcon}
-                  svgAlt={`Justificatif de ${
-                    invoice.amount >= 0 ? 'remboursement' : 'trop perçu'
-                  } ${invoice.reference}, nouvelle fenêtre, format`}
-                  variant={ButtonVariant.TERNARY}
-                >
-                  PDF
-                </ButtonLink>
+                <InvoiceActions invoice={invoice} />
               </td>
             </tr>
           )
