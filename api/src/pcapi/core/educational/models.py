@@ -446,11 +446,6 @@ class CollectiveOffer(
     nationalProgram: sa_orm.Mapped["NationalProgram"] = relationship("NationalProgram", foreign_keys=nationalProgramId)
 
     @property
-    def isEducational(self) -> bool:
-        # FIXME (rpaoloni, 2022-03-7): Remove legacy support layer
-        return True
-
-    @property
     def isEditable(self) -> bool:
         return self.status not in [offer_mixin.OfferStatus.PENDING, offer_mixin.OfferStatus.REJECTED]
 
@@ -774,11 +769,6 @@ class CollectiveOfferTemplate(
         if not self.dateRange:
             return None
         return {"start": self.start, "end": self.end}
-
-    @property
-    def isEducational(self) -> bool:
-        # FIXME (rpaoloni, 2022-05-09): Remove legacy support layer
-        return True
 
     @property
     def isEditable(self) -> bool:
