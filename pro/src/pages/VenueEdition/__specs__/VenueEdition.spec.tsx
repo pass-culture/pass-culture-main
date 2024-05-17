@@ -93,13 +93,13 @@ describe('route VenueEdition', () => {
   it('should display the collective title', async () => {
     renderVenueEdition({
       initialRouterEntries: [
-        `/structures/${defaultGetOffererResponseModel.id}/lieux/${defaultGetVenue.id}/edition/eac`,
+        `/structures/${defaultGetOffererResponseModel.id}/lieux/${defaultGetVenue.id}/edition/collectif`,
       ],
     })
 
     await waitForElementToBeRemoved(screen.getByTestId('spinner'))
 
-    expect(screen.getByText('Page sur ADAGE')).toBeInTheDocument()
+    expect(screen.getByText('Page dans ADAGE')).toBeInTheDocument()
   })
 
   it('should let choose an other partner page', async () => {
@@ -114,7 +114,7 @@ describe('route VenueEdition', () => {
         {
           ...defaultGetOffererVenueResponseModel,
           id: 666,
-          publicName: 'Mon lieu diablolique',
+          publicName: 'Mon lieu diabolique',
         },
       ],
     })
@@ -132,11 +132,11 @@ describe('route VenueEdition', () => {
       screen.getByLabelText('Sélectionnez votre page partenaire'),
       '666'
     )
-    expect(screen.getByText('Mon lieu diablolique')).toBeInTheDocument()
+    expect(screen.getByText('Mon lieu diabolique')).toBeInTheDocument()
   })
 
   it('should not let choose an other partner page when there is only one partner page', async () => {
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+    vi.spyOn(api, 'getOfferer').mockResolvedValueOnce({
       ...defaultGetOffererResponseModel,
       managedVenues: [
         {
@@ -147,7 +147,7 @@ describe('route VenueEdition', () => {
         {
           ...defaultGetOffererVenueResponseModel,
           id: 666,
-          publicName: 'Mon lieu diablolique',
+          publicName: 'Mon lieu diabolique',
           isPermanent: false,
         },
       ],
