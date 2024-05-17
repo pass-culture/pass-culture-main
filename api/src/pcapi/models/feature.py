@@ -129,6 +129,7 @@ class FeatureToggle(enum.Enum):
     ENABLE_PRO_NEW_NAV_MODIFICATION = "Activer la modification du statut de la navigation du portail pro"
     WIP_ENABLE_NEW_HASHING_ALGORITHM = "Activer le nouveau système de hachage des clés publiques d'API"
     WIP_ENABLE_BOOST_TWO_STAGES_BOOKING = "Activer la réservation Boost en 2 étapes."
+    WIP_ENABLE_OFFER_MARKDOWN_DESCRIPTION = "Activer la description des offres collectives en markdown."
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -185,6 +186,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_ADAGE_PREVIEW_OFFER_IN_PRO,
     FeatureToggle.WIP_ENABLE_ADAGE_VISUALIZATION,
     FeatureToggle.WIP_ENABLE_BOOST_TWO_STAGES_BOOKING,
+    FeatureToggle.WIP_ENABLE_OFFER_MARKDOWN_DESCRIPTION,
     FeatureToggle.WIP_ENABLE_MOCK_UBBLE,
     FeatureToggle.WIP_ENABLE_NEW_NAV_AB_TEST,
     FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY,
