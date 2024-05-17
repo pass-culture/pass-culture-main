@@ -11,16 +11,6 @@ vi.mock('react-router-dom', () => ({
   useRouteError: vi.fn(),
 }))
 
-const reloadFn = vi.fn()
-global.window = Object.create(window)
-Object.defineProperty(window, 'location', {
-  value: {
-    reload: reloadFn,
-    href: '',
-  },
-  writable: true,
-})
-
 describe('ErrorBoundary', () => {
   it('should capture exception with Sentry', async () => {
     const error = new Error('Some error')
@@ -32,16 +22,14 @@ describe('ErrorBoundary', () => {
     await waitFor(() => {
       expect(Sentry.captureException).toHaveBeenCalledWith(error)
     })
-    expect(reloadFn).not.toHaveBeenCalled()
   })
 
-  it('should reload and not call sentry when the error is a module import error', () => {
+  it('should not call sentry when the error is a module import error', () => {
     vi.spyOn(router, 'useRouteError').mockReturnValue(
       new Error('dynamically imported module')
     )
     render(<ErrorBoundary />)
 
     expect(Sentry.captureException).not.toHaveBeenCalled()
-    expect(reloadFn).toHaveBeenCalled()
   })
 })

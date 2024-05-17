@@ -55,3 +55,9 @@ root.render(
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://cra.link/PWA
 unregister()
+
+// Reloads page when a dynamic import fails (when we release a new version)
+// https://vitejs.dev/guide/build#load-error-handling
+window.addEventListener('vite:preloadError', () => {
+  window.location.reload()
+})
