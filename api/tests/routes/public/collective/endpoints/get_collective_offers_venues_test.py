@@ -23,7 +23,7 @@ class CollectiveOffersGetVenuesTest:
 
         # When
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            url_for("pro_public_api_v2.list_venues")
+            url_for("public_api.v2_prefixed_public_api.collectives_offers.list_venues")
         )
 
         # Then
@@ -63,7 +63,7 @@ class CollectiveOffersGetVenuesTest:
 
         # When
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            url_for("pro_public_api_v2.list_venues")
+            url_for("public_api.v2_prefixed_public_api.collectives_offers.list_venues")
         )
 
         # Then
@@ -75,7 +75,7 @@ class CollectiveOffersGetVenuesTest:
         offerers_factories.VenueFactory()
 
         # When
-        response = client.get(url_for("pro_public_api_v2.list_venues"))
+        response = client.get(url_for("public_api.v2_prefixed_public_api.collectives_offers.list_venues"))
 
         # Then
         assert response.status_code == 401
@@ -90,7 +90,7 @@ class GetOfferersVenuesTest:
         offerers_factories.VenueFactory()  # excluded from results
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            url_for("pro_public_api_v2.get_offerer_venues")
+            url_for("public_api.v2_prefixed_public_api.collectives_offers.get_offerer_venues")
         )
 
         assert response.status_code == 200
@@ -140,7 +140,7 @@ class GetOfferersVenuesTest:
         providers_factories.VenueProviderFactory(provider=provider)  # excluded
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            url_for("pro_public_api_v2.get_offerer_venues", siren=siren)
+            url_for("public_api.v2_prefixed_public_api.collectives_offers.get_offerer_venues", siren=siren)
         )
 
         assert response.status_code == 200
@@ -153,10 +153,12 @@ class GetOfferersVenuesTest:
 
     def test_filter_offerers_venues_by_siren_error(self, client):
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            url_for("pro_public_api_v2.get_offerer_venues", siren="not a siren")
+            url_for("public_api.v2_prefixed_public_api.collectives_offers.get_offerer_venues", siren="not a siren")
         )
         assert response.status_code == 400
 
     def test_unauthenticated_client(self, client):
-        response = client.get(url_for("pro_public_api_v2.get_offerer_venues", siren="123456789"))
+        response = client.get(
+            url_for("public_api.v2_prefixed_public_api.collectives_offers.get_offerer_venues", siren="123456789")
+        )
         assert response.status_code == 401
