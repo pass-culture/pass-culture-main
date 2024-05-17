@@ -3,10 +3,12 @@ from pprint import pprint
 import re
 import typing
 
+from flask_sqlalchemy import BaseQuery as FlaskSQLAlchemyBaseQuery
 from sqlalchemy import BigInteger
 import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.sql.schema import Column
+from werkzeug.exceptions import NotFound
 
 
 logger = logging.getLogger(__name__)
@@ -17,11 +19,21 @@ NOT_FOUND_KEY_ERROR_CODE = "23503"
 OBLIGATORY_FIELD_ERROR_CODE = "23502"
 
 
+class BaseQuery(FlaskSQLAlchemyBaseQuery):
+    def get_or_404(self, obj_id: int) -> typing.Any:
+        obj = self.filter_by(id=obj_id).one_or_none()
+        if not obj:
+            raise NotFound()
+        return obj
+
+
 class DeletedRecordException(Exception):
     pass
 
 
 class PcObject:
+    query_class = BaseQuery
+
     id: sa_orm.Mapped[int] = Column(BigInteger, primary_key=True, autoincrement=True)  # type: ignore[assignment]
 
     def __init__(self, **kwargs: typing.Any) -> None:
