@@ -15,7 +15,7 @@ def public_client_fixture(client):
 
 
 class GetCollectiveFormatsTest:
-    endpoint = "pro_public_api_v2.get_offers_formats"
+    endpoint = "public_api.v2_prefixed_public_api.collectives_offers.get_offers_formats"
 
     def test_get_formats(self, public_client):
         venue_provider = provider_factories.VenueProviderFactory()

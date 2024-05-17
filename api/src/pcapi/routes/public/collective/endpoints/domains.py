@@ -1,5 +1,7 @@
 from pcapi.core.educational import repository as educational_repository
-from pcapi.routes.public import blueprints
+from pcapi.routes.public import documentation_constants
+from pcapi.routes.public import spectree_schemas
+from pcapi.routes.public.collective.blueprint import collective_offers_blueprint
 from pcapi.routes.public.collective.serialization import domains as domains_serialization
 from pcapi.routes.public.collective.serialization import offers as offers_serialization
 from pcapi.serialization.decorator import spectree_serialize
@@ -8,10 +10,10 @@ from pcapi.utils.cache import cached_view
 from pcapi.validation.routes.users_authentifications import api_key_required
 
 
-@blueprints.v2_prefixed_public_api.route("/collective/educational-domains", methods=["GET"])
+@collective_offers_blueprint.route("/collective/educational-domains", methods=["GET"])
 @spectree_serialize(
-    api=blueprints.v2_prefixed_public_api_schema,
-    tags=["API offres collectives"],
+    api=spectree_schemas.public_api_schema,
+    tags=[documentation_constants.COLLECTIVE_EDUCATIONAL_DATA],
     resp=SpectreeResponse(
         HTTP_200=(
             domains_serialization.CollectiveOffersListDomainsResponseModel,

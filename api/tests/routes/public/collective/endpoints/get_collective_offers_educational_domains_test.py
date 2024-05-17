@@ -21,7 +21,7 @@ class CollectiveOffersGetEducationalDomainsTest:
 
         # When
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            url_for("pro_public_api_v2.list_educational_domains")
+            url_for("public_api.v2_prefixed_public_api.collectives_offers.list_educational_domains")
         )
 
         # Then
@@ -41,7 +41,7 @@ class CollectiveOffersGetEducationalDomainsTest:
 
         # When
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            url_for("pro_public_api_v2.list_educational_domains")
+            url_for("public_api.v2_prefixed_public_api.collectives_offers.list_educational_domains")
         )
 
         # Then
@@ -55,7 +55,7 @@ class CollectiveOffersGetEducationalDomainsTest:
 
         # When
         response = client.with_session_auth(user_offerer.user.email).get(
-            url_for("pro_public_api_v2.list_educational_domains")
+            url_for("public_api.v2_prefixed_public_api.collectives_offers.list_educational_domains")
         )
 
         # Then
@@ -66,7 +66,7 @@ class CollectiveOffersGetEducationalDomainsTest:
         educational_factories.EducationalDomainFactory(name="Musique")
 
         # When
-        response = client.get(url_for("pro_public_api_v2.list_educational_domains"))
+        response = client.get(url_for("public_api.v2_prefixed_public_api.collectives_offers.list_educational_domains"))
 
         # Then
         assert response.status_code == 401
