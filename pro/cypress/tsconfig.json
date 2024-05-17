@@ -2,11 +2,8 @@
   "compilerOptions": {
     "target": "es5",
     "lib": ["es5", "dom"],
-    "types": ["cypress", "node"],
-    "module": "nodenext",
-    "paths": {
-      "@badeball/cypress-cucumber-preprocessor/*": ["./node_modules/@badeball/cypress-cucumber-preprocessor/dist/subpath-entrypoints/*"]
-    }
+    "types": ["cypress", "@testing-library/cypress", "node"],
+    "module": "nodenext"
   },
   "include": ["**/*.ts"]
 }

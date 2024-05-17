@@ -1,4 +1,4 @@
-import { When, Then, Given } from '@badeball/cypress-cucumber-preprocessor'
+import { When, Then } from '@badeball/cypress-cucumber-preprocessor'
 
 When('I fill in offer details', () => {
   cy.findByLabelText('Catégorie *').select('Spectacle vivant')
@@ -11,7 +11,9 @@ When('I fill in offer details', () => {
   )
   cy.findByText('Retrait sur place (guichet, comptoir...)').click()
   cy.findByLabelText('Email de contact *').type('passculture@example.com')
+})
 
+When('I validate offer details step', () => {
   cy.intercept({ method: 'POST', url: '/offers' }).as('postOffer')
   cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
   cy.findByText('Enregistrer et continuer').click()
@@ -49,7 +51,9 @@ When('I fill in prices', () => {
   cy.get('[name="priceCategories[2].free"]').click()
 
   cy.findByText('Accepter les réservations “Duo“').should('exist')
+})
 
+When('I validate prices step', () => {
   cy.intercept({ method: 'PATCH', url: '/offers/*' }).as('patchOffer')
   cy.intercept({ method: 'GET', url: '/offers/*/stocks/*' }).as('getStocks')
   cy.findByText('Enregistrer et continuer').click()
@@ -107,6 +111,9 @@ When('I fill in recurrence', () => {
 
   // manque un data-testid ou un placeholder ou un label accessible
   cy.get('[name="bookingLimitDateInterval"]').type('3')
+})
+
+When('I validate recurrence step', () => {
   cy.intercept({ method: 'POST', url: '/stocks/bulk' }).as('postStocks')
   cy.findByText('Valider').click()
   cy.wait(['@postStocks'])
