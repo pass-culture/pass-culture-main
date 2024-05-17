@@ -75,6 +75,7 @@ class Returns200Test:
         assert offer.mentalDisabilityCompliant is True
         assert offer.validation == OfferValidationStatus.DRAFT
         assert offer.isActive is False
+        assert offer.offererAddress.id == venue.offererAddressId
 
     def when_creating_new_thing_offer(self, client):
         # Given
@@ -112,6 +113,7 @@ class Returns200Test:
         assert offer.visualDisabilityCompliant is False
         assert offer.audioDisabilityCompliant is True
         assert offer.mentalDisabilityCompliant is False
+        assert offer.offererAddress.id == venue.offererAddressId
 
     def test_create_offer_with_ean(self, client):
         venue = offerers_factories.VenueFactory()
