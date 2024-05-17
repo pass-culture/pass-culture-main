@@ -10,7 +10,9 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import models as providers_models
 from pcapi.models import api_errors
-from pcapi.routes.public.individual_offers.v1 import constants
+from pcapi.routes.public import documentation_constants
+from pcapi.routes.public import spectree_schemas
+
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.validation.routes.users_authentifications import api_key_required
@@ -20,7 +22,7 @@ from . import blueprint
 from . import bookings_serialization as serialization
 
 
-BOOKINGS_API_BASE_CODE_DESCRIPTIONS = constants.BASE_CODE_DESCRIPTIONS | {
+BOOKINGS_API_BASE_CODE_DESCRIPTIONS = documentation_constants.BASE_CODE_DESCRIPTIONS | {
     "HTTP_404": (None, "This booking cannot be found"),
     "HTTP_410": (
         None,
@@ -72,9 +74,9 @@ def _get_paginated_and_filtered_bookings(
 
 @blueprint.v1_bookings_blueprint.route("/bookings", methods=["GET"])
 @spectree_serialize(
-    api=blueprint.v1_bookings_schema,
+    api=spectree_schemas.public_api_schema,
     response_model=serialization.GetFilteredBookingsResponse,
-    tags=[constants.BOOKING_TAG],
+    tags=[documentation_constants.BOOKING_TAG],
 )
 @api_key_required
 def get_bookings_by_offer(
@@ -117,9 +119,9 @@ def _get_booking_by_token(token: str) -> booking_models.Booking | None:
 
 @blueprint.v1_bookings_blueprint.route("/token/<string:token>", methods=["GET"])
 @spectree_serialize(
-    api=blueprint.v1_bookings_schema,
+    api=spectree_schemas.public_api_schema,
     response_model=serialization.GetBookingResponse,
-    tags=[constants.BOOKING_TAG],
+    tags=[documentation_constants.BOOKING_TAG],
     resp=SpectreeResponse(
         **(
             BOOKINGS_API_BASE_CODE_DESCRIPTIONS
@@ -158,8 +160,8 @@ def get_booking_by_token(token: str) -> serialization.GetBookingResponse:
 @blueprint.v1_bookings_blueprint.route("/use/token/<token>", methods=["PATCH"])
 @spectree_serialize(
     on_success_status=204,
-    api=blueprint.v1_bookings_schema,
-    tags=[constants.BOOKING_TAG],
+    api=spectree_schemas.public_api_schema,
+    tags=[documentation_constants.BOOKING_TAG],
     resp=SpectreeResponse(
         **(
             BOOKINGS_API_BASE_CODE_DESCRIPTIONS
@@ -197,8 +199,8 @@ def validate_booking_by_token(token: str) -> None:
 @blueprint.v1_bookings_blueprint.route("/keep/token/<token>", methods=["PATCH"])
 @spectree_serialize(
     on_success_status=204,
-    api=blueprint.v1_bookings_schema,
-    tags=[constants.BOOKING_TAG],
+    api=spectree_schemas.public_api_schema,
+    tags=[documentation_constants.BOOKING_TAG],
     resp=SpectreeResponse(
         **(
             BOOKINGS_API_BASE_CODE_DESCRIPTIONS
@@ -241,8 +243,8 @@ def cancel_booking_validation_by_token(token: str) -> None:
 @blueprint.v1_bookings_blueprint.route("/cancel/token/<token>", methods=["PATCH"])
 @spectree_serialize(
     on_success_status=204,
-    api=blueprint.v1_bookings_schema,
-    tags=[constants.BOOKING_TAG],
+    api=spectree_schemas.public_api_schema,
+    tags=[documentation_constants.BOOKING_TAG],
     resp=SpectreeResponse(
         **(
             BOOKINGS_API_BASE_CODE_DESCRIPTIONS
