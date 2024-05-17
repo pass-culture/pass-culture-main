@@ -58,6 +58,7 @@ unregister()
 
 // Reloads page when a dynamic import fails (when we release a new version)
 // https://vitejs.dev/guide/build#load-error-handling
-window.addEventListener('vite:preloadError', () => {
+window.addEventListener('vite:preloadError', (event) => {
+  event.preventDefault()
   window.location.reload()
 })
