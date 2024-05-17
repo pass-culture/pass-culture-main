@@ -657,4 +657,4 @@ class AcceslibreBackend(BaseBackend):
 
     def id_exists_at_acceslibre(self, slug: str) -> bool:
         response = self._send_request(slug=slug)
-        return bool(response and response.get("count"))
+        return bool(response and response.get("slug"))
