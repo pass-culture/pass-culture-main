@@ -25,6 +25,7 @@ jobs:
   update-api-client:
     name: "Update API Client template"
     runs-on: ubuntu-latest
+    needs: check-folders-changes
     steps:
       - name: "Checkout 🛎️"
         uses: actions/checkout@v4.1.7
@@ -45,7 +46,11 @@ jobs:
       - name: "Should run cache"
         id: "evaluate-variables"
         run: |
-          if ${{ (!inputs.TRIGGER_ONLY_ON_API_CHANGE && !inputs.TRIGGER_ONLY_ON_DEPENDENCY_CHANGE) || (inputs.TRIGGER_ONLY_ON_API_CHANGE && needs.check-folders-changed.outputs.api-changed == 'true') || (inputs.TRIGGER_ONLY_ON_DEPENDENCY_CHANGE && needs.check-folder-changes.outputs.dependencies-changed == 'true') }}; then
+          echo ${{ toJson(inputs) }}
+          echo ${{ toJson(needs) }}
+          echo ${{ toJson(job) }}
+          echo ${{ toJson(steps) }}
+          if ${{ (!inputs.TRIGGER_ONLY_ON_API_CHANGE && !inputs.TRIGGER_ONLY_ON_DEPENDENCY_CHANGE) || (inputs.TRIGGER_ONLY_ON_API_CHANGE && needs.check-folders-changes.outputs.api-changed == 'true') || (inputs.TRIGGER_ONLY_ON_DEPENDENCY_CHANGE && needs.check-folders-changes.outputs.dependencies-changed == 'true') }}; then
             echo "should-run-cache=true" | tee -a $GITHUB_OUTPUT
           else
             echo "should-run-cache=false" | tee -a $GITHUB_OUTPUT
