@@ -6,6 +6,7 @@ import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import api
+from pcapi.core.offers import repository
 from pcapi.core.offers.exceptions import OfferReportError
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import PriceCategory
@@ -63,27 +64,8 @@ def get_offer(offer_id: str) -> serializers.OfferResponse:
 @blueprint.native_route("/offer/<int:offer_id>", version="v2", methods=["GET"])
 @spectree_serialize(response_model=serializers.OfferResponseV2, api=blueprint.api, on_error_statuses=[404])
 def get_offer_v2(offer_id: int) -> serializers.OfferResponseV2:
-    offer: Offer = (
-        Offer.query.options(
-            joinedload(Offer.stocks).joinedload(Stock.priceCategory).joinedload(PriceCategory.priceCategoryLabel)
-        )
-        .options(
-            joinedload(Offer.venue)
-            .joinedload(Venue.managingOfferer)
-            .load_only(Offerer.name, Offerer.validationStatus, Offerer.isActive)
-        )
-        .options(joinedload(Offer.venue).joinedload(Venue.googlePlacesInfo))
-        .options(joinedload(Offer.mediations))
-        .options(
-            joinedload(Offer.product)
-            .load_only(Product.id, Product.last_30_days_booking, Product.thumbCount)
-            .joinedload(Product.productMediations)
-        )
-        .outerjoin(Offer.lastProvider)
-        .options(sa.orm.contains_eager(Offer.lastProvider).load_only(Provider.localClass))
-        .filter(Offer.id == offer_id, Offer.validation == OfferValidationStatus.APPROVED)
-        .first_or_404()
-    )
+    query = repository.get_offers_details([int(offer_id)])
+    offer = query.first_or_404()
 
     if offer.isActive and providers_repository.is_cinema_external_ticket_applicable(offer):
         api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
@@ -111,28 +93,8 @@ def get_offers_showtimes(body: serializers.OffersStocksRequest) -> serializers.O
 @spectree_serialize(response_model=serializers.OffersStocksResponseV2, api=blueprint.api)
 def get_offers_and_stocks(body: serializers.OffersStocksRequest) -> serializers.OffersStocksResponseV2:
     offer_ids = body.offer_ids
-    offers = (
-        Offer.query.options(
-            joinedload(Offer.stocks).joinedload(Stock.priceCategory).joinedload(PriceCategory.priceCategoryLabel)
-        )
-        .options(
-            joinedload(Offer.venue)
-            .joinedload(Venue.managingOfferer)
-            .load_only(Offerer.name, Offerer.validationStatus, Offerer.isActive)
-        )
-        .options(joinedload(Offer.venue).joinedload(Venue.googlePlacesInfo))
-        .options(joinedload(Offer.mediations))
-        .options(
-            joinedload(Offer.product)
-            .load_only(Product.id, Product.last_30_days_booking, Product.thumbCount)
-            .joinedload(Product.productMediations)
-        )
-        .outerjoin(Offer.lastProvider)
-        .options(sa.orm.contains_eager(Offer.lastProvider).load_only(Provider.localClass))
-        .filter(Offer.id.in_(offer_ids), Offer.validation == OfferValidationStatus.APPROVED)
-        .all()
-    )
-    serialized_offers = [serializers.OfferResponseV2.from_orm(offer) for offer in offers]
+    query = repository.get_offers_details(offer_ids)
+    serialized_offers = [serializers.OfferResponseV2.from_orm(offer) for offer in query]
     offers_response = serializers.OffersStocksResponseV2(offers=serialized_offers)
     return offers_response
 
