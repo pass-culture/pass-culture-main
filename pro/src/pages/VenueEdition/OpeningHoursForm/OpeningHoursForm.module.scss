@@ -41,7 +41,7 @@
 }
 
 .top-aligned-button {
-  margin-top: size.$input-min-height / 2;
+  margin-top: calc(size.$input-min-height / 2);
   transform: translateY(-50%);
 }
 
