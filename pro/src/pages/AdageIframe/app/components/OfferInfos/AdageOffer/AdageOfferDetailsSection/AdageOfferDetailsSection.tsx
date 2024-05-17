@@ -2,6 +2,7 @@ import {
   CollectiveOfferTemplateResponseModel,
   CollectiveOfferResponseModel,
 } from 'apiClient/adage'
+import { Markdown } from 'components/Markdown/Markdown'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 
 import { computeDurationString } from '../../../OffersInstantSearch/OffersSearch/Offers/OfferDetails/OfferDetails'
@@ -86,7 +87,7 @@ export default function AdageOfferDetailsSection({
           <h3 className={styles['offer-section-group-item-subtitle']}>
             Description
           </h3>
-          {offer.description}
+          <Markdown markdownText={offer.description} />
         </div>
       )}
     </>
