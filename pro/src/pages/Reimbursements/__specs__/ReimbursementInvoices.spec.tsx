@@ -137,11 +137,8 @@ describe('reimbursementsWithFilters', () => {
       .getAllByRole('cell')
       .map((cell) => cell.innerHTML)
     expect(reimbursementCells.slice(0, 5)).toEqual(firstLine)
-    expect(reimbursementCells[5]).toContain('J123456789.invoice')
     expect(reimbursementCells.slice(6, 11)).toEqual(secondLine)
-    expect(reimbursementCells[11]).toContain('J666666666.invoice')
     expect(reimbursementCells.slice(12, 17)).toEqual(thirdLine)
-    expect(reimbursementCells[17]).toContain('J987654321.invoice')
   })
 
   it('should display new invoice table if FF WIP_ENABLE_FINANCE_INCIDENT is enable', async () => {
@@ -328,5 +325,38 @@ describe('reimbursementsWithFilters', () => {
     renderReimbursementsInvoices()
 
     expect(screen.queryByLabelText('Compte bancaire')).toBeInTheDocument()
+  })
+
+  it('should let peform actions on invoices', async () => {
+    vi.spyOn(api, 'getInvoicesV2').mockResolvedValueOnce([
+      {
+        reference: 'J123456789',
+        date: '2022-11-02',
+        amount: 100,
+        url: 'J123456789.invoice',
+        bankAccountLabel: 'First reimbursement point',
+        cashflowLabels: ['VIR7', 'VIR5'],
+      },
+    ])
+    vi.spyOn(api, 'getReimbursementsCsvV2')
+
+    renderReimbursementsInvoices({
+      features: ['WIP_ENABLE_FINANCE_INCIDENT'],
+    })
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    await userEvent.click(screen.getByTestId('invoice-actions-button'))
+    expect(
+      screen.getByText('Télécharger le justificatif comptable (.pdf)')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('Télécharger le détail des réservations (.csv)')
+    ).toBeInTheDocument()
+
+    await userEvent.click(
+      screen.getByText('Télécharger le détail des réservations (.csv)')
+    )
+    expect(api.getReimbursementsCsvV2).toHaveBeenCalledWith(['J123456789'])
   })
 })

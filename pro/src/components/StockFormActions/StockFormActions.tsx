@@ -1,6 +1,5 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import cn from 'classnames'
-import React from 'react'
 
 import fullOtherIcon from 'icons/full-other.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
