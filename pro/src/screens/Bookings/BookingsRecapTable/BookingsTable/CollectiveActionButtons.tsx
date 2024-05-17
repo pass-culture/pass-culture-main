@@ -34,6 +34,7 @@ export const CollectiveActionButtons = ({
   const offerEditionUrl = useOfferEditionURL(true, nonHumanizedOfferId, false)
 
   const cancelBooking = async () => {
+    setIsModalOpen(false)
     if (!offerId) {
       notify.error('L’identifiant de l’offre n’est pas valide.')
       return
