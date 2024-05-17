@@ -86,7 +86,7 @@ def test_public_api(client):
                 "AudioDisabilityModel": {
                     "properties": {
                         "deafAndHardOfHearing": {
-                            "default": ["Non renseign\u00e9"],
+                            "default": ["Non renseigné"],
                             "items": {"type": "string"},
                             "title": "Deafandhardofhearing",
                             "type": "array",
@@ -709,7 +709,7 @@ def test_public_api(client):
                     "properties": {
                         "audioDisability": {
                             "allOf": [{"$ref": "#/components/schemas/AudioDisabilityModel"}],
-                            "default": {"deafAndHardOfHearing": ["Non renseign\u00e9"]},
+                            "default": {"deafAndHardOfHearing": ["Non renseigné"]},
                             "title": "Audiodisability",
                         },
                         "isAccessibleAudioDisability": {
@@ -734,25 +734,22 @@ def test_public_api(client):
                         },
                         "mentalDisability": {
                             "allOf": [{"$ref": "#/components/schemas/MentalDisabilityModel"}],
-                            "default": {"trainedPersonnel": "Non renseign\u00e9"},
+                            "default": {"trainedPersonnel": "Non renseigné"},
                             "title": "Mentaldisability",
                         },
                         "motorDisability": {
                             "allOf": [{"$ref": "#/components/schemas/MotorDisabilityModel"}],
                             "default": {
-                                "entrance": "Non renseign\u00e9",
-                                "exterior": "Non renseign\u00e9",
-                                "facilities": "Non renseign\u00e9",
-                                "parking": "Non renseign\u00e9",
+                                "entrance": "Non renseigné",
+                                "exterior": "Non renseigné",
+                                "facilities": "Non renseigné",
+                                "parking": "Non renseigné",
                             },
                             "title": "Motordisability",
                         },
                         "visualDisability": {
                             "allOf": [{"$ref": "#/components/schemas/VisualDisabilityModel"}],
-                            "default": {
-                                "audioDescription": ["Non renseign\u00e9"],
-                                "soundBeacon": "Non renseign\u00e9",
-                            },
+                            "default": {"audioDescription": ["Non renseigné"], "soundBeacon": "Non renseigné"},
                             "title": "Visualdisability",
                         },
                     },
@@ -965,21 +962,17 @@ def test_public_api(client):
                 },
                 "MentalDisabilityModel": {
                     "properties": {
-                        "trainedPersonnel": {
-                            "default": "Non renseign\u00e9",
-                            "title": "Trainedpersonnel",
-                            "type": "string",
-                        }
+                        "trainedPersonnel": {"default": "Non renseigné", "title": "Trainedpersonnel", "type": "string"}
                     },
                     "title": "MentalDisabilityModel",
                     "type": "object",
                 },
                 "MotorDisabilityModel": {
                     "properties": {
-                        "entrance": {"default": "Non renseign\u00e9", "title": "Entrance", "type": "string"},
-                        "exterior": {"default": "Non renseign\u00e9", "title": "Exterior", "type": "string"},
-                        "facilities": {"default": "Non renseign\u00e9", "title": "Facilities", "type": "string"},
-                        "parking": {"default": "Non renseign\u00e9", "title": "Parking", "type": "string"},
+                        "entrance": {"default": "Non renseigné", "title": "Entrance", "type": "string"},
+                        "exterior": {"default": "Non renseigné", "title": "Exterior", "type": "string"},
+                        "facilities": {"default": "Non renseigné", "title": "Facilities", "type": "string"},
+                        "parking": {"default": "Non renseigné", "title": "Parking", "type": "string"},
                     },
                     "title": "MotorDisabilityModel",
                     "type": "object",
@@ -1260,6 +1253,7 @@ def test_public_api(client):
                         "isForbiddenToUnderage": {"title": "Isforbiddentounderage", "type": "boolean"},
                         "isReleased": {"title": "Isreleased", "type": "boolean"},
                         "isSoldOut": {"title": "Issoldout", "type": "boolean"},
+                        "last30DaysBookings": {"nullable": True, "title": "Last30Daysbookings", "type": "integer"},
                         "metadata": {"title": "Metadata", "type": "object"},
                         "name": {"title": "Name", "type": "string"},
                         "stocks": {
@@ -1322,6 +1316,7 @@ def test_public_api(client):
                         "isForbiddenToUnderage": {"title": "Isforbiddentounderage", "type": "boolean"},
                         "isReleased": {"title": "Isreleased", "type": "boolean"},
                         "isSoldOut": {"title": "Issoldout", "type": "boolean"},
+                        "last30DaysBookings": {"nullable": True, "title": "Last30Daysbookings", "type": "integer"},
                         "metadata": {"title": "Metadata", "type": "object"},
                         "name": {"title": "Name", "type": "string"},
                         "stocks": {
@@ -1447,6 +1442,18 @@ def test_public_api(client):
                     },
                     "required": ["offers"],
                     "title": "OffersStocksResponse",
+                    "type": "object",
+                },
+                "OffersStocksResponseV2": {
+                    "properties": {
+                        "offers": {
+                            "items": {"$ref": "#/components/schemas/OfferResponseV2"},
+                            "title": "Offers",
+                            "type": "array",
+                        }
+                    },
+                    "required": ["offers"],
+                    "title": "OffersStocksResponseV2",
                     "type": "object",
                 },
                 "OnlineOfflinePlatformChoicesEnumv2": {
@@ -2464,12 +2471,12 @@ def test_public_api(client):
                 "VisualDisabilityModel": {
                     "properties": {
                         "audioDescription": {
-                            "default": ["Non renseign\u00e9"],
+                            "default": ["Non renseigné"],
                             "items": {"type": "string"},
                             "title": "Audiodescription",
                             "type": "array",
                         },
-                        "soundBeacon": {"default": "Non renseign\u00e9", "title": "Soundbeacon", "type": "string"},
+                        "soundBeacon": {"default": "Non renseigné", "title": "Soundbeacon", "type": "string"},
                     },
                     "title": "VisualDisabilityModel",
                     "type": "object",
@@ -3264,39 +3271,6 @@ def test_public_api(client):
                     "tags": [],
                 }
             },
-            "/native/v2/offer/{offer_id}": {
-                "get": {
-                    "description": "",
-                    "operationId": "get__native_v2_offer_{offer_id}",
-                    "parameters": [
-                        {
-                            "description": "",
-                            "in": "path",
-                            "name": "offer_id",
-                            "required": True,
-                            "schema": {"format": "int32", "type": "integer"},
-                        }
-                    ],
-                    "responses": {
-                        "200": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/OfferResponseV2"}}
-                            },
-                            "description": "OK",
-                        },
-                        "403": {"description": "Forbidden"},
-                        "404": {"description": "Not Found"},
-                        "422": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
-                            },
-                            "description": "Unprocessable Entity",
-                        },
-                    },
-                    "summary": "get_offer_v2 <GET>",
-                    "tags": [],
-                }
-            },
             "/native/v1/offer/{offer_id}/report": {
                 "post": {
                     "description": "",
@@ -3357,6 +3331,7 @@ def test_public_api(client):
             },
             "/native/v1/offers/stocks": {
                 "post": {
+                    "deprecated": True,
                     "description": "",
                     "operationId": "post__native_v1_offers_stocks",
                     "parameters": [],
@@ -4296,6 +4271,68 @@ def test_public_api(client):
                         },
                     },
                     "summary": "get_venue <GET>",
+                    "tags": [],
+                }
+            },
+            "/native/v2/offer/{offer_id}": {
+                "get": {
+                    "description": "",
+                    "operationId": "get__native_v2_offer_{offer_id}",
+                    "parameters": [
+                        {
+                            "description": "",
+                            "in": "path",
+                            "name": "offer_id",
+                            "required": True,
+                            "schema": {"format": "int32", "type": "integer"},
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/OfferResponseV2"}}
+                            },
+                            "description": "OK",
+                        },
+                        "403": {"description": "Forbidden"},
+                        "404": {"description": "Not Found"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "summary": "get_offer_v2 <GET>",
+                    "tags": [],
+                }
+            },
+            "/native/v2/offers/stocks": {
+                "post": {
+                    "description": "",
+                    "operationId": "post__native_v2_offers_stocks",
+                    "parameters": [],
+                    "requestBody": {
+                        "content": {
+                            "application/json": {"schema": {"$ref": "#/components/schemas/OffersStocksRequest"}}
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/OffersStocksResponseV2"}}
+                            },
+                            "description": "OK",
+                        },
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "summary": "get_offers_and_stocks <POST>",
                     "tags": [],
                 }
             },

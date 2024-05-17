@@ -706,11 +706,9 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     def activeStocks(self) -> list[Stock]:
         return [stock for stock in self.stocks if not stock.isSoftDeleted]
 
-    @hybrid_property
+    @property
     def hasStocks(self) -> bool:
-        return db.session.query(
-            Stock.query.filter(Stock.offerId == self.id, sa.not_(Stock.isSoftDeleted)).exists()
-        ).scalar()
+        return any(not stock.isSoftDeleted for stock in self.stocks)
 
     @property
     def bookableStocks(self) -> list[Stock]:
