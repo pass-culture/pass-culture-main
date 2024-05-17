@@ -1263,7 +1263,7 @@ class OffererStats(PcObject, Base, Model):
 
 class OffererAddress(PcObject, Base, Model):
     __tablename__ = "offerer_address"
-    label: str = sa.Column(sa.Text(), nullable=False)
+    label: str | None = sa.Column(sa.Text(), nullable=True)
     addressId = sa.Column(sa.BigInteger, sa.ForeignKey("address.id"), index=True)
     address: sa.orm.Mapped[geography_models.Address] = sa.orm.relationship("Address", foreign_keys=[addressId])
     offererId = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), index=True)
