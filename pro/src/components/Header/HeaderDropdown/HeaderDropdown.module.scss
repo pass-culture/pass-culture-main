@@ -45,6 +45,9 @@ $profil-button-size: rem.torem(34px);
   &-button {
     background-color: transparent;
     border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
     &:hover {
       cursor: pointer;
