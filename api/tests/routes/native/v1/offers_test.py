@@ -1290,7 +1290,6 @@ class OffersStocksTest:
             durationMinutes=33,
         )
         offers_factories.MediationFactory(id=111, offer=offer, thumbCount=1, credit="street credit")
-
         bookable_stock = offers_factories.EventStockFactory(
             offer=offer,
             price=12.34,
@@ -1329,15 +1328,11 @@ class OffersStocksTest:
             priceCategory__priceCategoryLabel__label="exhausted",
             features=[cinema_providers_constants.ShowtimeFeatures.VO.value],
         )
-
         BookingFactory(stock=bookable_stock, user__deposit__expirationDate=datetime(year=2031, month=12, day=31))
         BookingFactory(stock=exhausted_stock, user__deposit__expirationDate=datetime(year=2031, month=12, day=31))
-
         payload = {"offer_ids": [offer.id]}
-
         with assert_num_queries(1):
             response = client.post("/native/v1/offers/stocks", json=payload)
-
         # For the test to be deterministic
         response_offer = response.json["offers"][0]
         response_offer["stocks"].sort(key=lambda stock: stock["id"])
@@ -1434,6 +1429,234 @@ class OffersStocksTest:
                 key=lambda stock: stock["id"],
             ),
         }
+
+
+class OffersStocksV2Test:
+    def test_return_empty_on_empty_request(self, client):
+        response = client.post("/native/v2/offers/stocks", json={"offer_ids": []})
+
+        assert response.status_code == 200
+        assert response.json == {"offers": []}
+
+    def test_return_empty_on_not_found(self, client):
+        response = client.post("/native/v2/offers/stocks", json={"offer_ids": [123456789]})
+
+        assert response.status_code == 200
+        assert response.json == {"offers": []}
+
+    @time_machine.travel("2020-01-01", tick=False)
+    def test_return_offers_stocks(self, client):
+        extra_data = {
+            "allocineId": 12345,
+            "author": "mandibule",
+            "ean": "3838",
+            "musicSubType": "502",
+            "musicType": "501",
+            "performer": "interprète",
+            "showSubType": "101",
+            "showType": "100",
+            "stageDirector": "metteur en scène",
+            "speaker": "intervenant",
+            "visa": "vasi",
+            "genres": ["ACTION", "DRAMA"],
+            "cast": ["cast1", "cast2"],
+            "editeur": "editeur",
+            "gtl_id": "01030000",
+            "releaseDate": "2020-01-01",
+        }
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            name="l'offre du siècle",
+            extraData=extra_data,
+            durationMinutes=33,
+        )
+        offers_factories.MediationFactory(id=111, offer=offer, thumbCount=1, credit="street credit")
+
+        bookable_stock = offers_factories.EventStockFactory(
+            offer=offer,
+            price=12.34,
+            quantity=2,
+            priceCategory__priceCategoryLabel__label="bookable",
+            features=[
+                cinema_providers_constants.ShowtimeFeatures.VF.value,
+                cinema_providers_constants.ShowtimeFeatures.THREE_D.value,
+                cinema_providers_constants.ShowtimeFeatures.ICE.value,
+            ],
+        )
+        another_bookable_stock = offers_factories.EventStockFactory(
+            offer=offer,
+            price=12.34,
+            quantity=3,
+            priceCategory=bookable_stock.priceCategory,
+            features=[
+                cinema_providers_constants.ShowtimeFeatures.VO.value,
+                cinema_providers_constants.ShowtimeFeatures.THREE_D.value,
+            ],
+        )
+        expired_stock = offers_factories.EventStockFactory(
+            offer=offer,
+            price=45.67,
+            beginningDatetime=datetime.utcnow() - timedelta(days=1),
+            priceCategory__priceCategoryLabel__label="expired",
+            features=[
+                cinema_providers_constants.ShowtimeFeatures.VF.value,
+                cinema_providers_constants.ShowtimeFeatures.ICE.value,
+            ],
+        )
+        exhausted_stock = offers_factories.EventStockFactory(
+            offer=offer,
+            price=89.00,
+            quantity=1,
+            priceCategory__priceCategoryLabel__label="exhausted",
+            features=[cinema_providers_constants.ShowtimeFeatures.VO.value],
+        )
+
+        BookingFactory(stock=bookable_stock, user__deposit__expirationDate=datetime(year=2031, month=12, day=31))
+        BookingFactory(stock=exhausted_stock, user__deposit__expirationDate=datetime(year=2031, month=12, day=31))
+
+        payload = {"offer_ids": [offer.id]}
+
+        with assert_num_queries(1):
+            response = client.post("/native/v2/offers/stocks", json=payload)
+
+        # For the test to be deterministic
+        response_offer = response.json["offers"][0]
+        response_offer["stocks"].sort(key=lambda stock: stock["id"])
+
+        assert response.status_code == 200
+
+        assert response_offer["id"] == offer.id
+        assert response_offer["accessibility"] == {
+            "audioDisability": False,
+            "mentalDisability": False,
+            "motorDisability": False,
+            "visualDisability": False,
+        }
+        assert response_offer["stocks"] == sorted(
+            [
+                {
+                    "id": bookable_stock.id,
+                    "price": 1234,
+                    "beginningDatetime": "2020-01-31T00:00:00Z",
+                    "bookingLimitDatetime": "2020-01-30T23:00:00Z",
+                    "cancellationLimitDatetime": "2020-01-03T00:00:00Z",
+                    "features": ["VF", "3D", "ICE"],
+                    "isBookable": True,
+                    "isForbiddenToUnderage": False,
+                    "isSoldOut": False,
+                    "isExpired": False,
+                    "activationCode": None,
+                    "priceCategoryLabel": "bookable",
+                    "remainingQuantity": 1,
+                },
+                {
+                    "id": another_bookable_stock.id,
+                    "price": 1234,
+                    "beginningDatetime": "2020-01-31T00:00:00Z",
+                    "bookingLimitDatetime": "2020-01-30T23:00:00Z",
+                    "cancellationLimitDatetime": "2020-01-03T00:00:00Z",
+                    "features": ["VO", "3D"],
+                    "isBookable": True,
+                    "isForbiddenToUnderage": False,
+                    "isSoldOut": False,
+                    "isExpired": False,
+                    "activationCode": None,
+                    "priceCategoryLabel": "bookable",
+                    "remainingQuantity": 3,
+                },
+                {
+                    "id": expired_stock.id,
+                    "price": 4567,
+                    "beginningDatetime": "2019-12-31T00:00:00Z",
+                    "bookingLimitDatetime": "2019-12-30T23:00:00Z",
+                    "cancellationLimitDatetime": "2020-01-01T00:00:00Z",
+                    "features": ["VF", "ICE"],
+                    "isBookable": False,
+                    "isForbiddenToUnderage": False,
+                    "isSoldOut": True,
+                    "isExpired": True,
+                    "activationCode": None,
+                    "priceCategoryLabel": "expired",
+                    "remainingQuantity": 1000,
+                },
+                {
+                    "id": exhausted_stock.id,
+                    "price": 8900,
+                    "beginningDatetime": "2020-01-31T00:00:00Z",
+                    "bookingLimitDatetime": "2020-01-30T23:00:00Z",
+                    "cancellationLimitDatetime": "2020-01-03T00:00:00Z",
+                    "features": ["VO"],
+                    "isBookable": False,
+                    "isForbiddenToUnderage": False,
+                    "isSoldOut": True,
+                    "isExpired": False,
+                    "activationCode": None,
+                    "priceCategoryLabel": "exhausted",
+                    "remainingQuantity": 0,
+                },
+            ],
+            key=lambda stock: stock["id"],
+        )
+        assert response_offer["description"] == offer.description
+        assert response_offer["externalTicketOfficeUrl"] is None
+        assert response_offer["expenseDomains"] == ["all"]
+        assert response_offer["extraData"] == {
+            "allocineId": 12345,
+            "author": "mandibule",
+            "ean": "3838",
+            "durationMinutes": 33,
+            "musicSubType": "Acid Jazz",
+            "musicType": "Jazz",
+            "performer": "interprète",
+            "showSubType": "Carnaval",
+            "showType": "Arts de la rue",
+            "speaker": "intervenant",
+            "stageDirector": "metteur en scène",
+            "visa": "vasi",
+            "genres": ["Action", "Drame"],
+            "cast": ["cast1", "cast2"],
+            "editeur": "editeur",
+            "gtlLabels": {
+                "label": "Œuvres classiques",
+                "level01Label": "Littérature",
+                "level02Label": "Œuvres classiques",
+                "level03Label": None,
+                "level04Label": None,
+            },
+            "releaseDate": "2020-01-01",
+        }
+        assert response_offer["images"] == {
+            "recto": {
+                "url": "http://localhost/storage/thumbs/mediations/N4",
+                "credit": "street credit",
+            }
+        }
+        assert response_offer["isExpired"] is False
+        assert response_offer["isForbiddenToUnderage"] is False
+        assert response_offer["isSoldOut"] is False
+        assert response_offer["isDuo"] is False
+        assert response_offer["isEducational"] is False
+        assert response_offer["isDigital"] is False
+        assert response_offer["isReleased"] is True
+        assert response_offer["name"] == "l'offre du siècle"
+        assert response_offer["subcategoryId"] == subcategories.SEANCE_CINE.id
+        assert response_offer["venue"] == {
+            "id": offer.venue.id,
+            "address": "1 boulevard Poissonnière",
+            "city": "Paris",
+            "coordinates": {
+                "latitude": 48.87004,
+                "longitude": 2.3785,
+            },
+            "name": offer.venue.name,
+            "offerer": {"name": offer.venue.managingOfferer.name},
+            "postalCode": "75000",
+            "publicName": offer.venue.publicName,
+            "isPermanent": False,
+            "timezone": "Europe/Paris",
+            "bannerUrl": offer.venue.bannerUrl,
+        }
+        assert response_offer["withdrawalDetails"] is None
 
 
 class SendOfferWebAppLinkTest:

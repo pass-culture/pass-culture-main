@@ -44,7 +44,9 @@ def get_offer(offer_id: str) -> serializers.OfferResponse:
         .options(joinedload(Offer.venue).joinedload(Venue.googlePlacesInfo))
         .options(joinedload(Offer.mediations))
         .options(
-            joinedload(Offer.product).load_only(Product.id, Product.thumbCount).joinedload(Product.productMediations)
+            joinedload(Offer.product)
+            .load_only(Product.id, Product.last_30_days_booking, Product.thumbCount)
+            .joinedload(Product.productMediations)
         )
         .outerjoin(Offer.lastProvider)
         .options(sa.orm.contains_eager(Offer.lastProvider).load_only(Provider.localClass))
@@ -60,7 +62,7 @@ def get_offer(offer_id: str) -> serializers.OfferResponse:
 
 @blueprint.native_route("/offer/<int:offer_id>", version="v2", methods=["GET"])
 @spectree_serialize(response_model=serializers.OfferResponseV2, api=blueprint.api, on_error_statuses=[404])
-def get_offer_v2(offer_id: str) -> serializers.OfferResponseV2:
+def get_offer_v2(offer_id: int) -> serializers.OfferResponseV2:
     offer: Offer = (
         Offer.query.options(
             joinedload(Offer.stocks).joinedload(Stock.priceCategory).joinedload(PriceCategory.priceCategoryLabel)
@@ -73,7 +75,9 @@ def get_offer_v2(offer_id: str) -> serializers.OfferResponseV2:
         .options(joinedload(Offer.venue).joinedload(Venue.googlePlacesInfo))
         .options(joinedload(Offer.mediations))
         .options(
-            joinedload(Offer.product).load_only(Product.id, Product.thumbCount).joinedload(Product.productMediations)
+            joinedload(Offer.product)
+            .load_only(Product.id, Product.last_30_days_booking, Product.thumbCount)
+            .joinedload(Product.productMediations)
         )
         .outerjoin(Offer.lastProvider)
         .options(sa.orm.contains_eager(Offer.lastProvider).load_only(Provider.localClass))
@@ -88,7 +92,7 @@ def get_offer_v2(offer_id: str) -> serializers.OfferResponseV2:
 
 
 @blueprint.native_route("/offers/stocks", methods=["POST"])
-@spectree_serialize(response_model=serializers.OffersStocksResponse, api=blueprint.api)
+@spectree_serialize(deprecated=True, response_model=serializers.OffersStocksResponse, api=blueprint.api)
 def get_offers_showtimes(body: serializers.OffersStocksRequest) -> serializers.OffersStocksResponse:
     offer_ids = body.offer_ids
     offers = (
@@ -100,6 +104,36 @@ def get_offers_showtimes(body: serializers.OffersStocksRequest) -> serializers.O
     )
     serialized_offers = [serializers.OfferPreviewResponse.from_orm(offer) for offer in offers]
     offers_response = serializers.OffersStocksResponse(offers=serialized_offers)
+    return offers_response
+
+
+@blueprint.native_route("/offers/stocks", methods=["POST"], version="v2")
+@spectree_serialize(response_model=serializers.OffersStocksResponseV2, api=blueprint.api)
+def get_offers_and_stocks(body: serializers.OffersStocksRequest) -> serializers.OffersStocksResponseV2:
+    offer_ids = body.offer_ids
+    offers = (
+        Offer.query.options(
+            joinedload(Offer.stocks).joinedload(Stock.priceCategory).joinedload(PriceCategory.priceCategoryLabel)
+        )
+        .options(
+            joinedload(Offer.venue)
+            .joinedload(Venue.managingOfferer)
+            .load_only(Offerer.name, Offerer.validationStatus, Offerer.isActive)
+        )
+        .options(joinedload(Offer.venue).joinedload(Venue.googlePlacesInfo))
+        .options(joinedload(Offer.mediations))
+        .options(
+            joinedload(Offer.product)
+            .load_only(Product.id, Product.last_30_days_booking, Product.thumbCount)
+            .joinedload(Product.productMediations)
+        )
+        .outerjoin(Offer.lastProvider)
+        .options(sa.orm.contains_eager(Offer.lastProvider).load_only(Provider.localClass))
+        .filter(Offer.id.in_(offer_ids), Offer.validation == OfferValidationStatus.APPROVED)
+        .all()
+    )
+    serialized_offers = [serializers.OfferResponseV2.from_orm(offer) for offer in offers]
+    offers_response = serializers.OffersStocksResponseV2(offers=serialized_offers)
     return offers_response
 
 
