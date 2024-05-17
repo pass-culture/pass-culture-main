@@ -1897,6 +1897,7 @@ class ReportOfferTest:
         user = users_factories.UserFactory()
         client = client.with_token(user.email)
         offer = offers_factories.OfferFactory()
+        offer_id = offer.id
 
         # expected queries:
         #   * select offer
@@ -1906,7 +1907,7 @@ class ReportOfferTest:
         #   * reload user
         #   * select offer
         with assert_num_queries(5):
-            response = client.post(f"/native/v1/offer/{offer.id}/report", json={"reason": "INAPPROPRIATE"})
+            response = client.post(f"/native/v1/offer/{offer_id}/report", json={"reason": "INAPPROPRIATE"})
             assert response.status_code == 204
 
         assert OfferReport.query.count() == 1
@@ -1926,6 +1927,7 @@ class ReportOfferTest:
         user = users_factories.UserFactory()
         client = client.with_token(user.email)
         offer = offers_factories.OfferFactory()
+        offer_id = offer.id
 
         # expected queries:
         #   * select offer
@@ -1936,7 +1938,7 @@ class ReportOfferTest:
         #   * select offer
         with assert_num_queries(5):
             data = {"reason": "OTHER", "customReason": "saynul"}
-            response = client.post(f"/native/v1/offer/{offer.id}/report", json=data)
+            response = client.post(f"/native/v1/offer/{offer_id}/report", json=data)
             assert response.status_code == 204
 
         assert OfferReport.query.count() == 1
