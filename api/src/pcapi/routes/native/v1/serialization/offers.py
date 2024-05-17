@@ -256,6 +256,9 @@ class BaseOfferResponse(BaseModel):
         else:
             result.extraData = OfferExtraData(durationMinutes=offer.durationMinutes)  # type: ignore [call-arg]
 
+        if offer.product:
+            result.last30DaysBookings = offer.product.last_30_days_booking
+
         result.stocks = [OfferStockResponse.from_orm(stock) for stock in offer.activeStocks]
 
         return result
@@ -274,6 +277,7 @@ class BaseOfferResponse(BaseModel):
     isDigital: bool
     isDuo: bool
     isEducational: bool
+    last30DaysBookings: int | None
     metadata: offer_metadata.Metadata
     name: str
     stocks: list[OfferStockResponse]
@@ -308,8 +312,6 @@ class OfferPreviewResponse(BaseModel):
     durationMinutes: int | None
     extraData: OfferExtraData | None
     image: OfferImageResponse | None
-    # FIXME: (thconte, 24-04-2024): unused for now
-    # Will be used from the merge of the ticket PC-29406
     last30DaysBookings: int | None
     name: str
     stocks: list[OfferStockResponse]
@@ -321,6 +323,13 @@ class OfferPreviewResponse(BaseModel):
 
 class OffersStocksResponse(BaseModel):
     offers: list[OfferPreviewResponse]
+
+    class Config:
+        json_encoders = {datetime: format_into_utc_date}
+
+
+class OffersStocksResponseV2(BaseModel):
+    offers: list[OfferResponseV2]
 
     class Config:
         json_encoders = {datetime: format_into_utc_date}
