@@ -54,7 +54,10 @@ export const OffererStatsScreen = ({
         )
         setVenueOptions([ALL_VENUES_OPTION, ...sortedVenueOptions])
 
-        if (sortedVenueOptions[0].value.toString()) {
+        if (
+          sortedVenueOptions.length > 0 &&
+          sortedVenueOptions[0].value.toString()
+        ) {
           setSelectedVenueId(sortedVenueOptions[0].value.toString())
         }
       } else {
