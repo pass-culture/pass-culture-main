@@ -1,0 +1,8 @@
+{% import "components/links.html" as links %}
+{% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
+{% extends "layouts/standard.html" %}
+{% block title %}Détails de l'incident de trop perçu{% endblock %}
+{% block main_content %}
+  {% include "finance/incidents/get/general_overpayment.html" %}
+  {% include "finance/incidents/get/details.html" %}
+{% endblock main_content %}

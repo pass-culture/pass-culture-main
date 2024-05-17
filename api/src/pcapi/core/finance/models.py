@@ -993,7 +993,7 @@ class FinanceIncident(Base, Model):
         "Venue", foreign_keys=[venueId], backref="finance_incidents"
     )
 
-    details: dict | None = sqla.Column(
+    details: dict = sqla.Column(
         sqla_mutable.MutableDict.as_mutable(sqla_psql.JSONB), nullable=False, default={}, server_default="{}"
     )
 
@@ -1017,6 +1017,20 @@ class FinanceIncident(Base, Model):
             - booking_incident.newTotalAmount
             for booking_incident in self.booking_finance_incidents
         )
+
+    @property
+    def author_full_name(self) -> str:
+        from pcapi.core.users.models import User
+
+        author_full_name = self.details.get("author")
+        if author_id := self.details.get("authorId"):
+            if (
+                author := User.query.filter_by(id=author_id)
+                .options(sqla_orm.load_only(User.firstName, User.lastName))
+                .one_or_none()
+            ):
+                author_full_name = author.full_name
+        return author_full_name or ""
 
     @hybrid_property
     def isClosed(self) -> bool:
@@ -1086,8 +1100,11 @@ class BookingFinanceIncident(Base, Model):
     @property
     def commercial_gesture_amount(self) -> int | None:  # in cents
         # Evaluates to None if the incident is not a commercial gesture
+        # A commercial gesture's amount is the value we want to give to the offerer.
+        # We store in  `newTotalAmount` what should have been the booking amount.
+        # `commercial_gesture_amount` is thus always a negative amount.
         if self.incident.kind == IncidentType.COMMERCIAL_GESTURE:
-            return ((self.booking or self.collectiveBooking).total_amount * 100) - self.newTotalAmount
+            return utils.to_eurocents((self.booking or self.collectiveBooking).total_amount) - self.newTotalAmount
         return None
 
     @property

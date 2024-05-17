@@ -547,13 +547,11 @@ class ValidateFinanceOverpaymentIncidentTest(PostEndpointHelper):
                     else finance_forms.IncidentCompensationModes.COMPENSATE_ON_BOOKINGS.name
                 )
             },
+            follow_redirects=True,
         )
 
-        assert response.status_code == 303
-
-        content = html_parser.content_as_text(authenticated_client.get(response.location).data)
-        assert "L'incident a été validé" in content
-
+        assert response.status_code == 200
+        assert "L'incident a été validé" in html_parser.content_as_text(response.data)
         assert incident.status == finance_models.IncidentStatus.VALIDATED
         assert incident.forceDebitNote == force_debit_note
 
@@ -601,12 +599,12 @@ class ValidateFinanceOverpaymentIncidentTest(PostEndpointHelper):
             authenticated_client,
             finance_incident_id=finance_incident.id,
             form={"compensation_mode": finance_forms.IncidentCompensationModes.COMPENSATE_ON_BOOKINGS.name},
+            follow_redirects=True,
         )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
         assert (
-            html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == "L'incident ne peut être validé que s'il est au statut 'créé'."
+            html_parser.extract_alert(response.data) == "L'incident ne peut être validé que s'il est au statut 'créé'."
         )
         finance_incident = finance_models.FinanceIncident.query.filter_by(id=finance_incident.id).one()
         assert finance_incident.status == initial_status
@@ -991,11 +989,12 @@ class ValidateFinanceCommercialGestureTest(PostEndpointHelper):
             authenticated_client,
             finance_incident_id=finance_incident.id,
             form={"compensation_mode": finance_forms.IncidentCompensationModes.COMPENSATE_ON_BOOKINGS.name},
+            follow_redirects=True,
         )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
         assert (
-            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            html_parser.extract_alert(response.data)
             == "Le geste commercial ne peut être validé que s'il est au statut 'créé'."
         )
         finance_incident = finance_models.FinanceIncident.query.filter_by(id=finance_incident.id).one()
@@ -1120,10 +1119,112 @@ class GetIncidentTest(GetEndpointHelper):
     expected_num_queries = 0
     expected_num_queries += 1  # Fetch Session
     expected_num_queries += 1  # Fetch User
+    expected_num_queries += 1  # Fetch Incident infos
+
+    def test_get_overpayment_incident(self, authenticated_client):
+        overpayment_incident = finance_factories.FinanceIncidentFactory(kind=finance_models.IncidentType.OVERPAYMENT)
+        bank_account = finance_factories.BankAccountFactory(offerer=overpayment_incident.venue.managingOfferer)
+        offerers_factories.VenueBankAccountLinkFactory(venue=overpayment_incident.venue, bankAccount=bank_account)
+        url = url_for(self.endpoint, finance_incident_id=overpayment_incident.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 303
+
+        assert response.location.endswith(
+            url_for(
+                "backoffice_web.finance_incidents.get_incident_overpayment", finance_incident_id=overpayment_incident.id
+            )
+        )
+
+    def test_get_commercial_gesture(self, authenticated_client):
+        commercial_gesture = finance_factories.FinanceIncidentFactory(
+            kind=finance_models.IncidentType.COMMERCIAL_GESTURE
+        )
+        bank_account = finance_factories.BankAccountFactory(offerer=commercial_gesture.venue.managingOfferer)
+        offerers_factories.VenueBankAccountLinkFactory(venue=commercial_gesture.venue, bankAccount=bank_account)
+        url = url_for(self.endpoint, finance_incident_id=commercial_gesture.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 303
+
+        assert response.location.endswith(
+            url_for(
+                "backoffice_web.finance_incidents.get_commercial_gesture", finance_incident_id=commercial_gesture.id
+            )
+        )
+
+    def test_get_unhandled_incident_kind(self, authenticated_client):
+        incident = finance_factories.FinanceIncidentFactory(kind=finance_models.IncidentType.OFFER_PRICE_REGULATION)
+        bank_account = finance_factories.BankAccountFactory(offerer=incident.venue.managingOfferer)
+        offerers_factories.VenueBankAccountLinkFactory(venue=incident.venue, bankAccount=bank_account)
+        url = url_for(self.endpoint, finance_incident_id=incident.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 404
+
+
+class GetOverpaymentIncidentTest(GetEndpointHelper):
+    endpoint = "backoffice_web.finance_incidents.get_incident_overpayment"
+    endpoint_kwargs = {"finance_incident_id": 1}
+    needed_permission = perm_models.Permissions.READ_INCIDENTS
+    expected_num_queries = 0
+    expected_num_queries += 1  # Fetch Session
+    expected_num_queries += 1  # Fetch User
     expected_num_queries += 1  # Fetch Incidents infos
 
     def test_get_incident(self, authenticated_client):
         finance_incident = finance_factories.FinanceIncidentFactory()
+        finance_factories.IndividualBookingFinanceIncidentFactory(newTotalAmount=0, incident=finance_incident)
+        bank_account = finance_factories.BankAccountFactory(offerer=finance_incident.venue.managingOfferer)
+        offerers_factories.VenueBankAccountLinkFactory(venue=finance_incident.venue, bankAccount=bank_account)
+        url = url_for(self.endpoint, finance_incident_id=finance_incident.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        header = html_parser.get_tag(response.data, "incident-header")
+        badges = html_parser.extract(header, tag="span", class_="badge")
+        assert badges == ["Créé", "Total"]
+
+        content = html_parser.content_as_text(response.data)
+        assert f"ID : {finance_incident.id}" in content
+        assert f"Lieu porteur de l'offre : {finance_incident.venue.name}" in content
+
+        assert f"Compte bancaire : {bank_account.label}" in content
+
+    def test_get_collective_booking_incident(self, authenticated_client):
+        finance_incident = finance_factories.FinanceIncidentFactory(
+            booking_finance_incidents=[finance_factories.CollectiveBookingFinanceIncidentFactory()]
+        )
+        finance_factories.CollectiveBookingFinanceIncidentFactory(incident=finance_incident)
+        url = url_for(self.endpoint, finance_incident_id=finance_incident.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        content = html_parser.content_as_text(response.data)
+
+        assert f"ID : {finance_incident.id}" in content
+        assert f"Lieu porteur de l'offre : {finance_incident.venue.name}" in content
+        assert f"Incident créé par : {finance_incident.details['author']}" in content
+
+
+class GetCommercialGestureTest(GetEndpointHelper):
+    endpoint = "backoffice_web.finance_incidents.get_commercial_gesture"
+    endpoint_kwargs = {"finance_incident_id": 1}
+    needed_permission = perm_models.Permissions.READ_INCIDENTS
+    expected_num_queries = 0
+    expected_num_queries += 1  # Fetch Session
+    expected_num_queries += 1  # Fetch User
+    expected_num_queries += 1  # Fetch Incidents infos
+
+    def test_get_incident(self, authenticated_client):
+        finance_incident = finance_factories.FinanceIncidentFactory(kind=finance_models.IncidentType.COMMERCIAL_GESTURE)
         bank_account = finance_factories.BankAccountFactory(offerer=finance_incident.venue.managingOfferer)
         offerers_factories.VenueBankAccountLinkFactory(venue=finance_incident.venue, bankAccount=bank_account)
         url = url_for(self.endpoint, finance_incident_id=finance_incident.id)
@@ -1133,18 +1234,19 @@ class GetIncidentTest(GetEndpointHelper):
             assert response.status_code == 200
 
         badges = html_parser.extract(response.data, tag="span", class_="badge")
-        assert badges == ["Créé", "Trop Perçu", "Total"]
+        assert badges == ["Créé", "Total"]
 
         content = html_parser.content_as_text(response.data)
         assert f"ID : {finance_incident.id}" in content
         assert f"Lieu porteur de l'offre : {finance_incident.venue.name}" in content
-        assert f"Incident créé par : {finance_incident.details['author']}" in content
         assert f"Compte bancaire : {bank_account.label}" in content
 
     def test_get_collective_booking_incident(self, authenticated_client):
         finance_incident = finance_factories.FinanceIncidentFactory(
-            booking_finance_incidents=[finance_factories.CollectiveBookingFinanceIncidentFactory()]
+            kind=finance_models.IncidentType.COMMERCIAL_GESTURE,
+            booking_finance_incidents=[finance_factories.CollectiveBookingFinanceIncidentFactory()],
         )
+        finance_factories.CollectiveBookingFinanceIncidentFactory(incident=finance_incident)
         url = url_for(self.endpoint, finance_incident_id=finance_incident.id)
 
         with assert_num_queries(self.expected_num_queries):
@@ -1495,7 +1597,11 @@ class CreateCommercialGestureTest(PostEndpointHelper):
     def test_create_commercial_gesture_incident_from_one_booking_without_deposit_balance(
         self, legit_user, authenticated_client
     ):
-        booking = bookings_factories.CancelledBookingFactory(user__deposit__amount=decimal.Decimal(2.0))
+        booking = bookings_factories.CancelledBookingFactory(
+            quantity=1,
+            amount=11,
+            user__deposit__amount=decimal.Decimal(2.0),
+        )
 
         object_ids = str(booking.id)
         total_amount = 11
@@ -1514,7 +1620,7 @@ class CreateCommercialGestureTest(PostEndpointHelper):
         assert finance_models.FinanceIncident.query.count() == 1
         assert finance_models.BookingFinanceIncident.query.count() == 1
         booking_finance_incident = finance_models.BookingFinanceIncident.query.first()
-        assert booking_finance_incident.newTotalAmount == (total_amount) * 100
+        assert booking_finance_incident.newTotalAmount == 0
 
         action_history = history_models.ActionHistory.query.one()
         assert action_history.actionType == history_models.ActionType.FINANCE_INCIDENT_CREATED
@@ -1536,16 +1642,16 @@ class CreateCommercialGestureTest(PostEndpointHelper):
                 "kind": finance_models.IncidentType.COMMERCIAL_GESTURE.name,
                 "object_ids": object_ids,
             },
+            follow_redirects=True,
         )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
         assert finance_models.FinanceIncident.query.count() == 0
         assert finance_models.BookingFinanceIncident.query.count() == 0
 
-        redirected_response = authenticated_client.get(response.location)
         assert (
             "Au moins un des jeunes ayant fait une réservation a encore du crédit pour payer la réservation"
-            in html_parser.extract_alert(redirected_response.data)
+            in html_parser.extract_alert(response.data)
         )
 
     def test_create_commercial_gesture_incident_from_used_booking(self, legit_user, authenticated_client):
@@ -1561,16 +1667,16 @@ class CreateCommercialGestureTest(PostEndpointHelper):
                 "kind": finance_models.IncidentType.COMMERCIAL_GESTURE.name,
                 "object_ids": object_ids,
             },
+            follow_redirects=True,
         )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
         assert finance_models.FinanceIncident.query.count() == 0
         assert finance_models.BookingFinanceIncident.query.count() == 0
 
-        redirected_response = authenticated_client.get(response.location)
         assert (
             'Au moins une des réservations sélectionnées est dans un état différent de "annulée".'
-            in html_parser.extract_alert(redirected_response.data)
+            in html_parser.extract_alert(response.data)
         )
 
     def test_not_create_commercial_gesture_incident_too_expensive(self, authenticated_client):
@@ -1586,11 +1692,16 @@ class CreateCommercialGestureTest(PostEndpointHelper):
                 "kind": finance_models.IncidentType.COMMERCIAL_GESTURE.name,
                 "object_ids": object_ids,
             },
+            follow_redirects=True,
         )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
         assert finance_models.FinanceIncident.query.count() == 0  # didn't create new incident
         assert history_models.ActionHistory.query.count() == 0
+        assert (
+            html_parser.extract_alert(response.data)
+            == 'Au moins une des réservations sélectionnées est dans un état différent de "annulée".'
+        )
 
     def test_not_create_commercial_gesture_greater_than_300_per_booking(self, authenticated_client):
         venue = offerers_factories.VenueFactory()
@@ -1655,15 +1766,15 @@ class CreateCollectiveBookingOverpaymentTest(PostEndpointHelper):
         assert booking_incidents[0].newTotalAmount == 0
 
     @pytest.mark.parametrize(
-        "incident_status,expect_incident_creation",
+        "incident_status,expected_incident_count",
         [
-            (finance_models.IncidentStatus.CREATED, False),
-            (finance_models.IncidentStatus.VALIDATED, False),
-            (finance_models.IncidentStatus.CANCELLED, True),
+            (finance_models.IncidentStatus.CREATED, 1),
+            (finance_models.IncidentStatus.VALIDATED, 1),
+            (finance_models.IncidentStatus.CANCELLED, 2),
         ],
     )
     def test_incident_already_exists(
-        self, authenticated_client, incident_status, expect_incident_creation, invoiced_collective_pricing
+        self, authenticated_client, incident_status, expected_incident_count, invoiced_collective_pricing
     ):
         collective_booking = educational_factories.ReimbursedCollectiveBookingFactory(
             pricings=[invoiced_collective_pricing]
@@ -1676,11 +1787,11 @@ class CreateCollectiveBookingOverpaymentTest(PostEndpointHelper):
             authenticated_client,
             form={"origin": "Demande E-mail", "kind": finance_models.IncidentType.OVERPAYMENT.name},
             collective_booking_id=collective_booking.id,
+            follow_redirects=True,
         )
 
-        assert response.status_code == 303
-        incident_expected_count = 2 if expect_incident_creation else 1
-        assert finance_models.FinanceIncident.query.count() == incident_expected_count
+        assert response.status_code == 200
+        assert finance_models.FinanceIncident.query.count() == expected_incident_count
 
 
 class GetIncidentHistoryTest(GetEndpointHelper):
@@ -1890,12 +2001,11 @@ class ForceDebitNoteTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             finance_incident_id=finance_incident.id,
+            follow_redirects=True,
         )
 
-        assert response.status_code == 303
-        assert "Une note de débit sera générée à la prochaine échéance." in html_parser.extract_alert(
-            authenticated_client.get(response.location).data
-        )
+        assert response.status_code == 200
+        assert "Une note de débit sera générée à la prochaine échéance." in html_parser.extract_alert(response.data)
         updated_finance_incident = finance_models.FinanceIncident.query.filter_by(id=finance_incident.id).one()
         assert updated_finance_incident.forceDebitNote is True
 
@@ -1912,11 +2022,14 @@ class ForceDebitNoteTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             finance_incident_id=original_finance_incident.id,
+            follow_redirects=True,
         )
-        redirected_response = authenticated_client.get(response.location)
 
-        alert = html_parser.extract_alert(redirected_response.data)
-        assert "Cette action ne peut être effectuée que sur un incident validé non terminé." == alert
+        assert response.status_code == 200
+        assert (
+            "Cette action ne peut être effectuée que sur un incident validé non terminé."
+            == html_parser.extract_alert(response.data)
+        )
         finance_incident = finance_models.FinanceIncident.query.filter_by(id=original_finance_incident.id).one()
         assert finance_incident.forceDebitNote is False
 
@@ -1956,11 +2069,14 @@ class ForceDebitNoteTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             finance_incident_id=original_finance_incident.id,
+            follow_redirects=True,
         )
-        redirected_response = authenticated_client.get(response.location)
 
-        alert = html_parser.extract_alert(redirected_response.data)
-        assert "Cette action ne peut être effectuée que sur un incident validé non terminé." == alert
+        assert response.status_code == 200
+        assert (
+            "Cette action ne peut être effectuée que sur un incident validé non terminé."
+            == html_parser.extract_alert(response.data)
+        )
         finance_incident = finance_models.FinanceIncident.query.filter_by(id=original_finance_incident.id).one()
         assert finance_incident.forceDebitNote is False
 
@@ -1995,12 +2111,13 @@ class CancelDebitNoteTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             finance_incident_id=finance_incident.id,
+            follow_redirects=True,
         )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
         assert (
             "Vous avez fait le choix de récupérer l'argent sur les prochaines réservations de l'acteur."
-            in html_parser.content_as_text(authenticated_client.get(response.location).data)
+            in html_parser.content_as_text(response.data)
         )
 
         assert len(mails_testing.outbox) == 1
@@ -2031,11 +2148,14 @@ class CancelDebitNoteTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             finance_incident_id=original_finance_incident.id,
+            follow_redirects=True,
         )
-        redirected_response = authenticated_client.get(response.location)
 
-        alert = html_parser.extract_alert(redirected_response.data)
-        assert "Cette action ne peut être effectuée que sur un incident validé non terminé." == alert
+        assert response.status_code == 200
+        assert (
+            "Cette action ne peut être effectuée que sur un incident validé non terminé."
+            == html_parser.extract_alert(response.data)
+        )
         finance_incident = finance_models.FinanceIncident.query.filter_by(id=original_finance_incident.id).one()
         assert finance_incident.forceDebitNote == original_finance_incident.forceDebitNote
 
@@ -2078,10 +2198,13 @@ class CancelDebitNoteTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             finance_incident_id=original_finance_incident.id,
+            follow_redirects=True,
         )
-        redirected_response = authenticated_client.get(response.location)
 
-        alert = html_parser.extract_alert(redirected_response.data)
-        assert "Cette action ne peut être effectuée que sur un incident validé non terminé." == alert
+        assert response.status_code == 200
+        assert (
+            "Cette action ne peut être effectuée que sur un incident validé non terminé."
+            == html_parser.extract_alert(response.data)
+        )
         finance_incident = finance_models.FinanceIncident.query.filter_by(id=original_finance_incident.id).one()
         assert finance_incident.forceDebitNote == original_finance_incident.forceDebitNote

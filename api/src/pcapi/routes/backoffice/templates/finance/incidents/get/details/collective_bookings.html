@@ -1,6 +1,6 @@
 {% import "components/links.html" as links %}
 {% from "components/bookings/extra_row.html" import build_booking_toggle_extra_row_button with context %}
-{% if booking_finance_incidents %}
+{% if incident.booking_finance_incidents %}
   <table class="table mb-4 get-details-bookings-view">
     <thead>
       <tr>
@@ -14,7 +14,7 @@
       </tr>
     </thead>
     <tbody>
-      {% for booking_finance_incident in booking_finance_incidents %}
+      {% for booking_finance_incident in incident.booking_finance_incidents %}
         <tr>
           <th scope="row">{{ build_booking_toggle_extra_row_button(booking_finance_incident.collectiveBooking) }}</th>
           <td>
@@ -23,7 +23,7 @@
           </td>
           <td>{{ booking_finance_incident.collectiveBooking.educationalInstitution.name }}</td>
           <td>{{ booking_finance_incident.collectiveBooking.userName }}</td>
-          <td>{{ booking_finance_incident.collectiveBooking | format_booking_status_long | safe }}</td>
+          <td>{{ booking_finance_incident.collectiveBooking | format_booking_status(with_badge=True) | safe }}</td>
           <td>{{ links.build_offer_name_to_pc_pro_link(booking_finance_incident.collectiveBooking.collectiveStock.collectiveOffer) }}</td>
           <td>{{ booking_finance_incident.collectiveBooking.dateCreated | format_date("Le %d/%m/%Y à %Hh%M") }}</td>
         </tr>

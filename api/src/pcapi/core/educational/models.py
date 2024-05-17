@@ -1357,6 +1357,14 @@ class CollectiveBooking(PcObject, Base, Model):
         return None
 
     @property
+    def invoiced_pricing(self) -> finance_models.Pricing | None:
+        pricings = [pricing for pricing in self.pricings if pricing.status == finance_models.PricingStatus.INVOICED]
+        pricings = sorted(pricings, key=lambda pricing: pricing.creationDate, reverse=True)
+        if pricings:
+            return pricings[0]
+        return None
+
+    @property
     def cashflow_batch(self) -> finance_models.CashflowBatch | None:
         """Return cashflow batch in which this booking has been
         reimbursed (if any).

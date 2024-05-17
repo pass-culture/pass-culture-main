@@ -151,38 +151,6 @@ def list_incidents() -> utils.BackofficeResponse:
     )
 
 
-def render_finance_incident(incident: finance_models.FinanceIncident) -> utils.BackofficeResponse:
-    booking_incidents = incident.booking_finance_incidents
-
-    total_amount = (
-        sum(
-            (
-                booking_incident.collectiveBooking.reimbursement_pricing.amount
-                if booking_incident.collectiveBooking.reimbursement_pricing
-                else 0
-            )
-            for booking_incident in booking_incidents
-        )
-        if incident.relates_to_collective_bookings
-        else sum(
-            (
-                booking_incident.booking.reimbursement_pricing.amount
-                if booking_incident.booking.reimbursement_pricing
-                else 0
-            )
-            for booking_incident in booking_incidents
-        )
-    )
-
-    return render_template(
-        "finance/incidents/get.html",
-        booking_finance_incidents=incident.booking_finance_incidents,
-        total_amount=total_amount,
-        incident=incident,
-        active_tab=request.args.get("active_tab", "bookings"),
-    )
-
-
 @finance_incidents_blueprint.route("/<int:finance_incident_id>/cancel", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def get_finance_incident_cancellation_form(finance_incident_id: int) -> utils.BackofficeResponse:
@@ -227,8 +195,69 @@ def cancel_finance_incident(finance_incident_id: int) -> utils.BackofficeRespons
 @finance_incidents_blueprint.route("/<int:finance_incident_id>", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.READ_INCIDENTS)
 def get_incident(finance_incident_id: int) -> utils.BackofficeResponse:
-    incident = _get_incident(finance_incident_id)
-    return render_finance_incident(incident)
+    incident = finance_models.FinanceIncident.query.filter_by(id=finance_incident_id).one_or_none()
+    if incident is None:
+        raise NotFound()
+
+    if incident.kind.value == finance_models.IncidentType.COMMERCIAL_GESTURE.value:
+        return redirect(
+            url_for("backoffice_web.finance_incidents.get_commercial_gesture", finance_incident_id=finance_incident_id),
+            303,
+        )
+
+    if incident.kind.value == finance_models.IncidentType.OVERPAYMENT.value:
+        return redirect(
+            url_for(
+                "backoffice_web.finance_incidents.get_incident_overpayment", finance_incident_id=finance_incident_id
+            ),
+            303,
+        )
+
+    raise NotFound()
+
+
+@finance_incidents_blueprint.route("/overpayment/<int:finance_incident_id>", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.READ_INCIDENTS)
+def get_incident_overpayment(finance_incident_id: int) -> utils.BackofficeResponse:
+    incident = _get_incident(finance_incident_id, kind=finance_models.IncidentType.OVERPAYMENT)
+    bookings = [
+        (booking_incident.booking or booking_incident.collectiveBooking)
+        for booking_incident in incident.booking_finance_incidents
+    ]
+    bookings_total_amount = sum(booking.total_amount for booking in bookings)
+    reimbursement_pricings = [booking.reimbursement_pricing for booking in bookings if booking.reimbursement_pricing]
+    initial_reimbursement_amount = sum(pricing.amount for pricing in reimbursement_pricings) * -1
+
+    return render_template(
+        "finance/incidents/get_overpayment.html",
+        booking_finance_incidents=incident.booking_finance_incidents,
+        incident=incident,
+        active_tab=request.args.get("active_tab", "bookings"),
+        bookings_total_amount=bookings_total_amount,
+        initial_reimbursement_amount=initial_reimbursement_amount,
+    )
+
+
+@finance_incidents_blueprint.route("/commercial-gesture/<int:finance_incident_id>", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.READ_INCIDENTS)
+def get_commercial_gesture(finance_incident_id: int) -> utils.BackofficeResponse:
+    incident = _get_incident(finance_incident_id, kind=finance_models.IncidentType.COMMERCIAL_GESTURE)
+    commercial_gesture_amount = sum(
+        (booking_finance_incident.commercial_gesture_amount or 0)
+        for booking_finance_incident in incident.booking_finance_incidents
+    )
+    bookings_total_amount = sum(
+        (booking_incident.booking or booking_incident.collectiveBooking).total_amount
+        for booking_incident in incident.booking_finance_incidents
+    )
+
+    return render_template(
+        "finance/incidents/get_commercial_gesture.html",
+        incident=incident,
+        commercial_gesture_amount=commercial_gesture_amount,
+        bookings_total_amount=bookings_total_amount,
+        active_tab=request.args.get("active_tab", "bookings"),
+    )
 
 
 @finance_incidents_blueprint.route("/<int:finance_incident_id>/history", methods=["GET"])
@@ -658,7 +687,7 @@ def create_collective_booking_commercial_gesture(collective_booking_id: int) -> 
         finance_incident_id=incident.id,
     )
 
-    flash(Markup('Un nouvel <a href="{url}">incident</a> a été créé.').format(url=incident_url), "success")
+    flash(Markup('Un nouveau <a href="{url}">geste commercial</a> a été créé.').format(url=incident_url), "success")
     return redirect(redirect_url, 303)
 
 
@@ -790,7 +819,7 @@ def get_finance_incident_validation_form(finance_incident_id: int) -> utils.Back
         title="Valider l'incident",
         button_text="Confirmer",
         information=Markup(
-            "Vous allez valider un incident de {incident_amount} sur le compte bancaire {details}."
+            "Vous allez valider un incident de {incident_amount} sur le compte bancaire {details}. "
             "Voulez-vous continuer ?"
         ).format(
             incident_amount=filters.format_amount(incident_total_amount_euros),
@@ -973,10 +1002,16 @@ def _get_incident(finance_incident_id: int, **args: typing.Any) -> finance_model
             ).load_only(
                 finance_models.BookingFinanceIncident.id,
                 finance_models.BookingFinanceIncident.newTotalAmount,
+                finance_models.BookingFinanceIncident.beneficiaryId,
+                finance_models.BookingFinanceIncident.bookingId,
+                finance_models.BookingFinanceIncident.collectiveBookingId,
+                finance_models.BookingFinanceIncident.incidentId,
             )
             # Bookings info
             .joinedload(finance_models.BookingFinanceIncident.booking).load_only(
                 bookings_models.Booking.id,
+                bookings_models.Booking.quantity,
+                bookings_models.Booking.amount,
                 bookings_models.Booking.cancellationDate,
                 bookings_models.Booking.cancellationReason,
                 bookings_models.Booking.dateCreated,
