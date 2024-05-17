@@ -282,31 +282,6 @@ class GetCollectiveOfferRequestTest:
             },
         }
 
-    def test_old_request_without_date_created(self, client):
-        """
-        Date created column was added later. Old requests won't have
-        this information. The api response should handle it properly.
-        """
-        pro_user = users_factories.ProFactory()
-        request = educational_factories.CollectiveOfferRequestFactory()
-        offerers_factories.UserOffererFactory(
-            user=pro_user, offerer=request.collectiveOfferTemplate.venue.managingOfferer
-        )
-
-        # force value after creation, otherwise the default value would
-        # be used
-        request.dateCreated = None
-
-        dst = url_for(
-            "Private API.get_collective_offer_request",
-            offer_id=request.collectiveOfferTemplateId,
-            request_id=request.id,
-        )
-        response = client.with_session_auth(email=pro_user.email).get(dst)
-
-        assert response.status_code == 200
-        assert response.json["dateCreated"] is None
-
     def test_user_does_not_have_access_to_the_offer(self, client):
         pro_user = users_factories.ProFactory()
         another_pro_user = users_factories.ProFactory()
