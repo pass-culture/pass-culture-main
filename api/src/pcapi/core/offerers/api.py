@@ -2361,9 +2361,9 @@ def get_or_create_address(address_info: AddressInfo) -> geography_models.Address
     return address
 
 
-def get_or_create_offerer_address(offerer_id: int, label: str, address_id: int) -> models.OffererAddress:
+def get_or_create_offerer_address(offerer_id: int, address_id: int, label: str | None = None) -> models.OffererAddress:
     try:
-        offerer_address = models.OffererAddress(offererId=offerer_id, label=label, addressId=address_id)
+        offerer_address = models.OffererAddress(offererId=offerer_id, addressId=address_id, label=label)
         db.session.add(offerer_address)
         db.session.flush()
     except sa.exc.IntegrityError:

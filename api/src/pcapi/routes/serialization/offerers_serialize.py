@@ -412,7 +412,7 @@ class PatchOffererAddressRequest(BaseModel):
 
 class OffererAddressResponseModel(BaseModel):
     id: int
-    label: str
+    label: str | None
     offererId: int
     address: AddressResponseModel
 
