@@ -18,4 +18,6 @@ When("I submit", () => {
 
 Then('my account should be created', () => {
     cy.url().should('contain', '/inscription/confirmation')
+    // TODO: ajouter vérification sur le contenu de la page (et sur le retour API?)
+    // on ne vérifie pas que le compte est bien créé
 });

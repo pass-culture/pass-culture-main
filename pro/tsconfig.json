@@ -35,10 +35,7 @@
       "vite/client",
       "vitest/globals",
       "@testing-library/cypress"
-    ],
-    "paths": {
-      "@badeball/cypress-cucumber-preprocessor/*": ["./node_modules/@badeball/cypress-cucumber-preprocessor/dist/subpath-entrypoints/*"]
-    }
+    ]
   },
   "include": [
     "./src/**/*.ts",

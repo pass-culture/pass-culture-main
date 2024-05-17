@@ -47,6 +47,8 @@ When("I choose a venue wich already has a Siret", () => {
 When("I add a valid Siret", () => {
     cy.findByLabelText('SIRET du lieu *').type(siret)
     cy.wait('@getSiret')
+      .its('response.statusCode').should('eq', 200)
+      // TODO vérifier aussi dans le body de la réponse si le Siret est valide?
 });
 
 When("I add venue without Siret details", () => {
@@ -59,8 +61,11 @@ When("I add venue without Siret details", () => {
     cy.findByLabelText('Activité principale *').select('Centre culturel')
     cy.findByText('Visuel').click()
     cy.findByLabelText('Adresse email *').type('email@example.com')
-    cy.findByText('Enregistrer et créer le lieu').click()
-    cy.wait('@getOfferer')    
+});
+
+When("I validate venue step", () => {
+  cy.findByText('Enregistrer et créer le lieu').click()
+  cy.wait('@getOfferer')    
 });
 
 When("I add venue with Siret details", () => {
@@ -68,9 +73,7 @@ When("I add venue with Siret details", () => {
     cy.findByLabelText('Activité principale *').select('Festival')
     cy.findByText('Moteur').click()
     cy.findByText('Auditif').click()
-    cy.findByLabelText('Adresse email *').type('email@example.com')
-    cy.findByText('Enregistrer et créer le lieu').click()
-    cy.wait('@getOfferer')    
+    cy.findByLabelText('Adresse email *').type('email@example.com')   
 });
 
 When("I skip offer creation", () => {

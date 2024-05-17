@@ -2,7 +2,7 @@ import { When, Then, Given } from "@badeball/cypress-cucumber-preprocessor";
 
 let offerText: string
 
-Given("I go to adage login page with valide token", () => {
+Given("I go to adage login page with valid token", () => {
     cy.visit('/connexion')
     cy.getFakeAdageToken()
 
@@ -75,6 +75,9 @@ Then("the first offer should be added to favorites", () => {
 
   cy.contains(offerText)
 
+});
+
+When("the last added favorite is unselected", () => {
   // à part de là c'est du afterScenario : on désélectionne le favori
   cy.findByRole('link', { name: 'Découvrir' }).click()
 
@@ -83,7 +86,7 @@ Then("the first offer should be added to favorites", () => {
   cy.findAllByTestId('favorite-active').first().click()
 });
 
-Then("the iframe should be display correctly", () => {
+Then("the iframe should be displayed correctly", () => {
     cy.url().should('include', '/decouverte')
     cy.findAllByRole('link', { name: 'Découvrir' }).first().should(
       'have.attr',
@@ -92,7 +95,7 @@ Then("the iframe should be display correctly", () => {
     )
 });
 
-Then("the iframe search page should be display correctly", () => {
+Then("the iframe search page should be displayed correctly", () => {
     cy.url().should('include', '/recherche')
     cy.findByRole('link', { name: 'Rechercher' }).should(
       'have.attr',
