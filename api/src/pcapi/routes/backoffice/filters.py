@@ -651,7 +651,7 @@ def format_music_subtype(music_subtype_id: int | str) -> str:
 def format_music_gtl_id(music_gtl_id: str) -> str:
     return next(
         (music_genre.label for music_genre in categories.TITELIVE_MUSIC_TYPES if music_genre.gtl_id == music_gtl_id),
-        f"Autre[{music_gtl_id}]",
+        f"Gtl inconu [{music_gtl_id}]",
     )
 
 

@@ -995,7 +995,9 @@ class ListOffersTest(GetEndpointHelper):
             "search-0-operator": "OUT",
             "search-0-category": "13",
         }
-        with assert_num_queries(2):  # only session + current user, before form validation
+        with assert_num_queries(
+            3
+        ):  # only session + current user, before form validation + ENABLE_PRO_TITELIVE_MUSIC_GENRES FF
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -1017,7 +1019,9 @@ class ListOffersTest(GetEndpointHelper):
             "search-0-operator": "EQUALS",
             "search-0-string": value,
         }
-        with assert_num_queries(2):  # only session + current user, before form validation
+        with assert_num_queries(
+            3
+        ):  # only session + current user, before form validation + ENABLE_PRO_TITELIVE_MUSIC_GENRES FF
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -1539,8 +1543,8 @@ class GetOfferDetailsTest(GetEndpointHelper):
     endpoint_kwargs = {"offer_id": 1}
     needed_permission = perm_models.Permissions.READ_OFFERS
 
-    # session + user + offer with joined data + ENABLE_PRO_TITELIVE_MUSIC_GENRES FF
-    expected_num_queries = 4
+    # session + user + offer with joined data
+    expected_num_queries = 3
 
     def test_get_detail_offer(self, authenticated_client):
         offer = offers_factories.OfferFactory(
