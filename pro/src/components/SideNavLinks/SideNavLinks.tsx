@@ -50,15 +50,11 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   const isCollectiveSectionOpen = useSelector(selectIsCollectiveSectionOpen)
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
-  // Question: is it ok to call getOfferer here ?
   const selectedOffererQuery = useSWR(
     [GET_OFFERER_QUERY_KEY, selectedOffererId],
     async ([, offererId]) => {
-      const offerer = await api.getOfferer(Number(offererId))
-
-      return offerer
-    },
-    { fallbackData: undefined }
+      return await api.getOfferer(Number(offererId))
+    }
   )
 
   const selectedOfferer = selectedOffererQuery.data
@@ -167,7 +163,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                   Guichet
                 </span>
               </NavLink>
-              {currentUser?.hasPartnerPage && (
+              {currentUser?.hasPartnerPage && venueId && (
                 <NavLink
                   to={`/structures/${offererId}/lieux/${venueId}`}
                   className={({ isActive }) =>
@@ -233,19 +229,21 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                   Réservations
                 </span>
               </NavLink>
-              <NavLink
-                to={`/structures/${offererId}/lieux/${venueId}/eac`}
-                className={({ isActive }) =>
-                  classnames(styles['nav-links-item'], {
-                    [styles['nav-links-item-active']]: isActive,
-                  })
-                }
-                end
-              >
-                <span className={styles['nav-links-item-without-icon']}>
-                  Page sur adage
-                </span>
-              </NavLink>
+              {venueId && (
+                <NavLink
+                  to={`/structures/${offererId}/lieux/${venueId}/eac`}
+                  className={({ isActive }) =>
+                    classnames(styles['nav-links-item'], {
+                      [styles['nav-links-item-active']]: isActive,
+                    })
+                  }
+                  end
+                >
+                  <span className={styles['nav-links-item-without-icon']}>
+                    Page dans Adage
+                  </span>
+                </NavLink>
+              )}
             </>
           )}
         </li>
