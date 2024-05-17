@@ -201,20 +201,23 @@ describe('offer', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('should format the description when links are present', async () => {
-      // Given
-
-      // When
-      renderOffer({
-        ...offerProps,
-        offer: {
-          ...offerInParis,
-          description: `lien 1 : www.lien1.com
+    it('should format the description when links are present and FF is on', async () => {
+      renderOffer(
+        {
+          ...offerProps,
+          offer: {
+            ...offerInParis,
+            description: `lien 1 : www.lien1.com
           https://lien2.com et https://lien3.com
           https://\nurl.com https://unlien avecuneespace
           contact: toto@toto.com`,
+          },
         },
-      })
+        user,
+        {
+          features: ['WIP_ENABLE_OFFER_MARKDOWN_DESCRIPTION'],
+        }
+      )
 
       // Then
       const offerName = await screen.findByText(offerInParis.name)
@@ -222,21 +225,20 @@ describe('offer', () => {
 
       const descriptionParagraph = await screen.findByText('lien 1', {
         exact: false,
-        selector: 'p',
+        selector: 'span',
       })
 
       const links = within(descriptionParagraph).getAllByRole('link')
 
-      expect(links).toHaveLength(6)
+      expect(links).toHaveLength(5)
       expect((links[0] as HTMLLinkElement).href).toBe('https://www.lien1.com/')
       expect((links[0] as HTMLLinkElement).childNodes[0].nodeValue).toBe(
         'www.lien1.com'
       )
       expect((links[1] as HTMLLinkElement).href).toBe('https://lien2.com/')
       expect((links[2] as HTMLLinkElement).href).toBe('https://lien3.com/')
-      expect((links[3] as HTMLLinkElement).href).toBe('https://')
-      expect((links[4] as HTMLLinkElement).href).toBe('https://unlien/')
-      expect((links[5] as HTMLLinkElement).href).toBe('mailto:toto@toto.com')
+      expect((links[3] as HTMLLinkElement).href).toBe('https://unlien/')
+      expect((links[4] as HTMLLinkElement).href).toBe('mailto:toto@toto.com')
     })
 
     it('should display request form modal', async () => {

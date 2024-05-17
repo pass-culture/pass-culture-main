@@ -10,6 +10,7 @@ import {
   StockIdBody,
 } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
+import { Markdown } from 'components/Markdown/Markdown'
 import {
   LOG_OFFER_DETAILS_CLICK_QUERY_KEY,
   LOG_OFFER_TEMPLATE_DETAILS_CLICK_QUERY_KEY,
@@ -36,7 +37,6 @@ import OfferFavoriteButton from './OfferFavoriteButton/OfferFavoriteButton'
 import OfferShareLink from './OfferShareLink/OfferShareLink'
 import OfferSummary from './OfferSummary/OfferSummary'
 import PrebookingButton from './PrebookingButton/PrebookingButton'
-import { formatDescription } from './utils/formatDescription'
 import { getOfferVenueAndOffererName } from './utils/getOfferVenueAndOffererName'
 
 export interface OfferProps {
@@ -262,9 +262,11 @@ const Offer = ({
             </ul>
           </div>
           <OfferSummary offer={offer} />
-          <p className={style['offer-description']}>
-            {formatDescription(offer.description)}
-          </p>
+          {offer.description && (
+            <p className={style['offer-description']}>
+              <Markdown markdownText={offer.description} />
+            </p>
+          )}
           {isNewOfferInfoEnabled ? (
             <ButtonLink
               variant={
