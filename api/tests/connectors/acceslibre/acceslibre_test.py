@@ -210,11 +210,11 @@ class AcceslibreTest:
         unexisting_slug = "sniab-sel-nahcurt-ed-elapicinum-euqehtoilbib"
         requests_mock.get(
             f"https://acceslibre.beta.gouv.fr/api/erps/{existing_slug}/",
-            json=fixtures.ACCESLIBRE_ACTIVITY_RESULT,
+            json=fixtures.ACCESLIBRE_RESULTS_BY_SLUG,
         )
         requests_mock.get(
             f"https://acceslibre.beta.gouv.fr/api/erps/{unexisting_slug}/",
-            json=fixtures.ACCESLIBRE_RESULTS_EMPTY,
+            json=fixtures.ACCESLIBRE_RESULTS_BY_SLUG_NOT_FOUND,
         )
 
         assert acceslibre.id_exists_at_acceslibre(existing_slug)
