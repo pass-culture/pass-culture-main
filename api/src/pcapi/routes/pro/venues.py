@@ -10,6 +10,7 @@ from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions
 from pcapi.core.offerers import models
 from pcapi.core.offerers import repository as offerers_repository
+from pcapi.core.offerers import validation
 from pcapi.core.offerers.models import Venue
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
@@ -87,6 +88,7 @@ def post_create_venue(body: venues_serialize.PostVenueBodyModel) -> venues_seria
         if not siret_info.active:
             raise ApiErrors(errors={"siret": ["SIRET is no longer active"]})
         body.name = siret_info.name  # type: ignore [assignment]
+    validation.check_accessibility_compliance(body)
     venue = offerers_api.create_venue(body)
 
     return venues_serialize.VenueResponseModel.from_orm(venue)

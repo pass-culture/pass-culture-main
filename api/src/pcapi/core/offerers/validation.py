@@ -7,6 +7,10 @@ from pcapi.models.api_errors import ApiErrors
 from . import models
 
 
+if typing.TYPE_CHECKING:
+    from pcapi.routes.serialization import venues_serialize
+
+
 MAX_LONGITUDE = 180
 MAX_LATITUDE = 90
 
@@ -26,19 +30,12 @@ def validate_coordinates(raw_latitude: float | str, raw_longitude: float | str) 
         raise api_errors
 
 
-def check_venue_creation(data: dict[str, typing.Any], strict_accessibility_compliance: bool) -> None:
-    offerer_id = data.get("managingOffererId")
-    if not offerer_id:
-        raise ApiErrors(errors={"managingOffererId": ["Vous devez choisir une structure pour votre lieu."]})
-    offerer = models.Offerer.query.filter(models.Offerer.id == offerer_id).one_or_none()
-    if not offerer:
-        raise ApiErrors(errors={"managingOffererId": ["La structure que vous avez choisie n'existe pas."]})
-
-    if strict_accessibility_compliance and None in [
-        data.get("audioDisabilityCompliant"),
-        data.get("mentalDisabilityCompliant"),
-        data.get("motorDisabilityCompliant"),
-        data.get("visualDisabilityCompliant"),
+def check_accessibility_compliance(venue: "venues_serialize.PostVenueBodyModel") -> None:
+    if None in [
+        venue.audioDisabilityCompliant,
+        venue.mentalDisabilityCompliant,
+        venue.motorDisabilityCompliant,
+        venue.visualDisabilityCompliant,
     ]:
         raise ApiErrors(errors={"global": ["L'accessibilité du lieu doit être définie."]})
 
