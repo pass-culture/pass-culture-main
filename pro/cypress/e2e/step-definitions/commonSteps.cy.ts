@@ -1,11 +1,11 @@
-import { When, Then, Given } from '@badeball/cypress-cucumber-preprocessor'
+import { When, Given } from '@badeball/cypress-cucumber-preprocessor'
 
 Given('I open {string} page', (page: string) => {
   cy.visit('/' + page)
 })
 
 When('I go to {string} page', (page: string) => {
-  cy.findByText(page).click()
+  cy.findAllByText(page).first().click()
 })
 
 Given('I am logged in', () => {

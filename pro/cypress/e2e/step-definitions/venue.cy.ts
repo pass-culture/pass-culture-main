@@ -40,39 +40,41 @@ Given('I want to add a venue', () => {
   cy.findByText('Ajouter un lieu').click()
 })
 
-When('I choose a venue wich already has a Siret', () => {
+When('I choose a venue which already has a Siret', () => {
   cy.findByText('Ce lieu possède un SIRET').click()
 })
 
-When('I add a valid Siret', () => {
-  cy.findByLabelText('SIRET du lieu *').type(siret)
-  cy.wait('@getSiret')
-})
+When("I add a valid Siret", () => {
+    cy.findByLabelText('SIRET du lieu *').type(siret)
+    cy.wait('@getSiret')
+      .its('response.statusCode').should('eq', 200)
+      // TODO vérifier aussi dans le body de la réponse si le Siret est valide?
+});
 
-When('I add venue without Siret details', () => {
-  cy.findByLabelText('Commentaire du lieu sans SIRET *').type(
-    'Commentaire du lieu sans SIRET'
-  )
-  cy.findByLabelText('Raison sociale *').type(venueNameWithoutSiret)
-  cy.findByLabelText('Adresse postale *')
-    .type('89 Rue la Boétie 75008 Paris')
-    .type('{downarrow}{enter}')
-  cy.findByLabelText('Activité principale *').select('Centre culturel')
-  cy.findByText('Visuel').click()
-  cy.findByLabelText('Adresse email *').type('email@example.com')
-  cy.findByText('Enregistrer et créer le lieu').click()
-  cy.wait('@getOfferer')
-})
+When("I add venue without Siret details", () => {
+    cy.findByLabelText('Commentaire du lieu sans SIRET *')
+      .type('Commentaire du lieu sans SIRET')
+    cy.findByLabelText('Raison sociale *').type(venueNameWithoutSiret)
+    cy.findByLabelText('Adresse postale *')
+      .type('89 Rue la Boétie 75008 Paris')
+      .type('{downarrow}{enter}')
+    cy.findByLabelText('Activité principale *').select('Centre culturel')
+    cy.findByText('Visuel').click()
+    cy.findByLabelText('Adresse email *').type('email@example.com')
+});
 
-When('I add venue with Siret details', () => {
-  cy.findByLabelText('Nom public').type(venueNameWithSiret)
-  cy.findByLabelText('Activité principale *').select('Festival')
-  cy.findByText('Moteur').click()
-  cy.findByText('Auditif').click()
-  cy.findByLabelText('Adresse email *').type('email@example.com')
+When("I validate venue step", () => {
   cy.findByText('Enregistrer et créer le lieu').click()
-  cy.wait('@getOfferer')
-})
+  cy.wait('@getOfferer')    
+});
+
+When("I add venue with Siret details", () => {
+    cy.findByLabelText('Nom public').type(venueNameWithSiret)
+    cy.findByLabelText('Activité principale *').select('Festival')
+    cy.findByText('Moteur').click()
+    cy.findByText('Auditif').click()
+    cy.findByLabelText('Adresse email *').type('email@example.com')   
+});
 
 When('I skip offer creation', () => {
   cy.findByText('Plus tard').click()
