@@ -1987,6 +1987,7 @@ MUSIC_SUBCATEGORIES = {
     if subcategory.category in [categories.MUSIQUE_LIVE, categories.MUSIQUE_ENREGISTREE]
 }
 
+# WARNING: You will need to regenerate offer_music_subcategory_with_gtl_id_substr_idx when adding a subcategory to MUSIC_TITELIVE_SEARCH_SUBCATEGORY_IDS
 MUSIC_TITELIVE_SUBCATEGORY_SEARCH_IDS = {
     subcategory.id for subcategory in [SUPPORT_PHYSIQUE_MUSIQUE_CD, SUPPORT_PHYSIQUE_MUSIQUE_VINYLE]
 }
