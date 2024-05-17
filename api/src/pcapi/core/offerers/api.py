@@ -284,11 +284,8 @@ def upsert_venue_opening_hours(venue: models.Venue, opening_hours: serialize_bas
     return venue
 
 
-def create_venue(
-    venue_data: venues_serialize.PostVenueBodyModel, strict_accessibility_compliance: bool = True
-) -> models.Venue:
+def create_venue(venue_data: venues_serialize.PostVenueBodyModel) -> models.Venue:
     data = venue_data.dict(by_alias=True)
-    validation.check_venue_creation(data, strict_accessibility_compliance)
     venue = models.Venue()
     data["dmsToken"] = generate_dms_token()
     if venue.is_soft_deleted():
@@ -1834,7 +1831,7 @@ def create_from_onboarding_data(
             )
         venue_kwargs = common_kwargs | comment_and_siret
         venue_creation_info = venues_serialize.PostVenueBodyModel(**venue_kwargs)  # type: ignore [arg-type]
-        venue = create_venue(venue_creation_info, strict_accessibility_compliance=False)
+        venue = create_venue(venue_creation_info)
         create_venue_registration(venue.id, new_onboarding_info.target, new_onboarding_info.webPresence)
 
     # Send welcome email only in the case of offerer creation
