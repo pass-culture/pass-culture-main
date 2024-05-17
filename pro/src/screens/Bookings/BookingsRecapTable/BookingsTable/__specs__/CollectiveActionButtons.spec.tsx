@@ -153,6 +153,10 @@ describe('collectiveActionButton api call', () => {
       'La réservation sur cette offre a été annulée avec succès, votre offre sera à nouveau visible sur ADAGE.',
       { duration: NOTIFICATION_LONG_SHOW_DURATION }
     )
+
+    expect(
+      screen.queryByRole('button', { name: 'Confirmer' })
+    ).not.toBeInTheDocument()
   })
 
   it('should return an error when booking cancellation failed', async () => {
