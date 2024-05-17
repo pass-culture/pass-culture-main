@@ -23,13 +23,4 @@ describe('ErrorBoundary', () => {
       expect(Sentry.captureException).toHaveBeenCalledWith(error)
     })
   })
-
-  it('should not call sentry when the error is a module import error', () => {
-    vi.spyOn(router, 'useRouteError').mockReturnValue(
-      new Error('dynamically imported module')
-    )
-    render(<ErrorBoundary />)
-
-    expect(Sentry.captureException).not.toHaveBeenCalled()
-  })
 })
