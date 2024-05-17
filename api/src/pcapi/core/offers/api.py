@@ -176,6 +176,7 @@ def create_offer(
         withdrawalDelay=withdrawal_delay,
         withdrawalDetails=withdrawal_details,
         withdrawalType=withdrawal_type,
+        offererAddress=venue.offererAddress,
     )
 
     repository.add_to_session(offer)

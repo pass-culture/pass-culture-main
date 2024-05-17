@@ -233,7 +233,11 @@ def delete_draft_offers(body: offers_serialize.DeleteOfferRequestBody) -> None:
     api=blueprint.pro_private_schema,
 )
 def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.GetIndividualOfferResponseModel:
-    venue: offerers_models.Venue = offerers_models.Venue.query.get_or_404(body.venue_id)
+    venue: offerers_models.Venue = (
+        offerers_models.Venue.query.filter(offerers_models.Venue.id == body.venue_id)
+        .options(sqla.orm.joinedload(offerers_models.Venue.offererAddress))
+        .first_or_404()
+    )
     rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
     try:
         with repository.transaction():
