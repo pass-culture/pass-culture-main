@@ -2,7 +2,7 @@
   <div class="col">
     <div class="card">
       <div class="card-body">
-        <div class="d-flex flex-row justify-content-start">
+        <div class="d-flex flex-row justify-content-start incident-header">
           <div class="card-title">
             {% if incident.details.createdAt %}
               <h5 class="card-title me-2">Créé le : {{ incident.details.createdAt | format_string_to_date_time }}</h5>
@@ -15,7 +15,6 @@
               {{ incident.status | format_finance_incident_status_badge }}
             {% endif %}
           </div>
-          <div class="h5 me-1 align-middle">{{ incident.kind | format_finance_incident_type }}</div>
           <div class="h5 me-1 align-middle">{{ incident.is_partial | format_finance_incident_nature_badge }}</div>
           <div class="d-flex justify-content-end flex-grow-1 gap-2">
             {% if has_permission("MANAGE_INCIDENTS") and incident.status.value == 'created' %}
@@ -23,10 +22,12 @@
                       data-bs-toggle="modal"
                       data-bs-target="#reject-finance-incident-modal-{{ incident.id }}">Annuler l'incident</button>
               {{ build_lazy_modal(url_for('backoffice_web.finance_incidents.get_finance_incident_cancellation_form', finance_incident_id=incident.id) , "reject-finance-incident-modal-" + incident.id|string) }}
-              <button class="btn btn-outline-primary"
-                      data-bs-toggle="modal"
-                      data-bs-target="#finance-incident-validation-modal-{{ incident.id }}">Valider l'incident</button>
-              {{ build_lazy_modal(url_for('backoffice_web.finance_incidents.get_finance_incident_validation_form', finance_incident_id=incident.id) , "finance-incident-validation-modal-" + incident.id|string) }}
+              {% if has_permission("VALIDATE_COMMERCIAL_GESTURE") %}
+                <button class="btn btn-outline-primary"
+                        data-bs-toggle="modal"
+                        data-bs-target="#finance-incident-validation-modal-{{ incident.id }}">Valider le geste commercial</button>
+                {{ build_lazy_modal(url_for('backoffice_web.finance_incidents.get_finance_incident_validation_form', finance_incident_id=incident.id) , "finance-incident-validation-modal-" + incident.id|string) }}
+              {% endif %}
             {% elif has_permission("MANAGE_INCIDENTS") and incident.status.value == 'validated' and not incident.isClosed %}
               {% if incident.forceDebitNote %}
                 <button class="btn btn-outline-primary"
@@ -63,14 +64,14 @@
               </p>
             {% endif %}
             <p class="mb-1">
-              <span class="fw-bold">Montant remboursé initialement :</span> {{ total_amount | format_cents }}
+              <span class="fw-bold">Montant d'origine {{ incident.booking_finance_incidents | length | pluralize('de la réservation', 'des réservations')   }} :</span> {{ bookings_total_amount | format_amount }}
             </p>
             <p class="mb-1">
-              <span class="fw-bold">Montant de l'incident :</span> {{ incident.due_amount_by_offerer | format_cents }}
+              <span class="fw-bold">Montant du geste commercial à verser à l'acteur :</span> {{ commercial_gesture_amount | format_cents }}
             </p>
-            {% if author %}
+            {% if incident.author_full_name %}
               <p class="mb-1">
-                <span class="fw-bold">Incident créé par :</span> {{ author }}
+                <span class="fw-bold">Incident créé par :</span> {{ incident.author_full_name }}
               </p>
             {% endif %}
           </div>

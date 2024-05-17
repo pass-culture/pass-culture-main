@@ -185,6 +185,10 @@ def format_string_list(data: list[str] | None) -> str:
     return ", ".join(data)
 
 
+def pluralize(count: int, singular: str = "", plural: str = "s") -> str:
+    return plural if count > 1 else singular
+
+
 def format_reason_label(reason: str | None) -> str:
     if reason:
         return users_constants.SUSPENSION_REASON_CHOICES.get(
@@ -1149,6 +1153,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_rate"] = format_rate
     app.jinja_env.filters["format_rate_multiply_by_100"] = format_rate_multiply_by_100
     app.jinja_env.filters["format_string_list"] = format_string_list
+    app.jinja_env.filters["pluralize"] = pluralize
     app.jinja_env.filters["format_date"] = format_date
     app.jinja_env.filters["format_date_time"] = format_date_time
     app.jinja_env.filters["format_string_to_date_time"] = format_string_to_date_time
