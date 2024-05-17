@@ -35,7 +35,7 @@ When('I select first card venue', () => {
 
   cy.findAllByTestId('card-venue-link')
     .first()
-    .within(($cardVenuelink) => {
+    .within(() => {
       cy.findByTestId('venue-infos-name').then(($btn) => {
         const buttonLabel = $btn.text()
         cy.wrap(buttonLabel).as('buttonLabel')

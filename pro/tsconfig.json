@@ -29,29 +29,16 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "es6",
-    "types": [
-      "node",
-      "cypress",
-      "vite/client",
-      "vitest/globals",
-      "@testing-library/cypress"
-    ],
-    "paths": {
-      "@badeball/cypress-cucumber-preprocessor/*": ["./node_modules/@badeball/cypress-cucumber-preprocessor/dist/subpath-entrypoints/*"]
-    }
+    "types": ["node", "vite/client", "vitest/globals"]
   },
-  "include": [
-    "./src/**/*.ts",
-    "./src/**/*.tsx",
-    "./cypress/**/*.ts",
-    "cypress.config.ts",
-    "vite.config.ts"
-  ],
+  "include": ["./src/**/*.ts", "./src/**/*.tsx", "vite.config.ts"],
   "exclude": [
     "node_modules",
     "__mocks__/**",
     "coverage/**",
     "**/*.js",
-    "**/*.jsx"
+    "**/*.jsx",
+    "./cypress/**/*.ts",
+    "cypress.config.ts"
   ]
 }

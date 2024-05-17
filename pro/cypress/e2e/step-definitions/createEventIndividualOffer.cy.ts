@@ -1,4 +1,4 @@
-import { When, Then, Given } from '@badeball/cypress-cucumber-preprocessor'
+import { When, Then } from '@badeball/cypress-cucumber-preprocessor'
 
 When('I fill in offer details', () => {
   cy.findByLabelText('Catégorie *').select('Spectacle vivant')

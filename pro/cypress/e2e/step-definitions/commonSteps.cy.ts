@@ -1,4 +1,4 @@
-import { When, Then, Given } from '@badeball/cypress-cucumber-preprocessor'
+import { When, Given } from '@badeball/cypress-cucumber-preprocessor'
 
 Given('I open {string} page', (page: string) => {
   cy.visit('/' + page)

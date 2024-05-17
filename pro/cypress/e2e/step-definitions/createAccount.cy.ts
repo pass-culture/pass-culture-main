@@ -1,4 +1,4 @@
-import { When, Then, Given } from '@badeball/cypress-cucumber-preprocessor'
+import { When, Then } from '@badeball/cypress-cucumber-preprocessor'
 
 When('I fill required information in create account form', () => {
   cy.findByLabelText('Nom *').type('LEMOINE')

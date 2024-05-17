@@ -1,4 +1,4 @@
-import { When, Then, Given } from '@badeball/cypress-cucumber-preprocessor'
+import { When } from '@badeball/cypress-cucumber-preprocessor'
 
 // Random 13-digit number because we can't use the same EAN twice
 const ean = String(Math.floor(1000000000000 + Math.random() * 9000000000000))
