@@ -47,11 +47,11 @@ export const CollectiveTableRow = ({
       setIsLoading(false)
     }
 
-    if (isExpanded && bookingDetails === null) {
+    if (isExpanded) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       fetchBookingDetails()
     }
-  }, [isExpanded])
+  }, [isExpanded, booking.bookingId, booking.bookingStatus])
 
   const onRowClick = () => {
     logEvent?.(
