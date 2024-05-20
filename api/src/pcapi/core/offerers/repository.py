@@ -185,10 +185,6 @@ def find_offerer_by_id(offerer_id: int) -> models.Offerer | None:
     return models.Offerer.query.filter_by(id=offerer_id).one_or_none()
 
 
-def filter_query_where_user_is_user_offerer_and_is_validated(query: BaseQuery, user: users_models.User) -> BaseQuery:
-    return query.join(models.UserOfferer).filter_by(user=user).filter(models.UserOfferer.isValidated)
-
-
 def find_venue_by_id(venue_id: int) -> models.Venue | None:
     return (
         models.Venue.query.filter_by(id=venue_id)

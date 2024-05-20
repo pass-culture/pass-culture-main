@@ -82,8 +82,8 @@ def get_invoices_by_references(references: list[str]) -> list[models.Invoice]:
     return models.Invoice.query.filter(models.Invoice.reference.in_(references)).order_by(models.Invoice.date).all()
 
 
-def find_all_offerers_payments(
-    offerer_ids: list[int],
+def find_offerer_payments(
+    offerer_id: int,
     reimbursement_period: tuple[datetime.date, datetime.date],
     bank_account_id: int | None = None,
 ) -> list[tuple]:
@@ -91,14 +91,14 @@ def find_all_offerers_payments(
 
     results.extend(
         _get_sent_pricings_for_individual_bookings(
-            offerer_ids,
+            offerer_id,
             reimbursement_period,
             bank_account_id,
         )
     )
     results.extend(
         _get_sent_pricings_for_collective_bookings(
-            offerer_ids,
+            offerer_id,
             reimbursement_period,
             bank_account_id,
         )
@@ -123,7 +123,7 @@ def _truncate_milliseconds(
 
 
 def _get_sent_pricings_for_collective_bookings(
-    offerer_ids: list[int],
+    offerer_id: int,
     reimbursement_period: tuple[datetime.date, datetime.date],
     bank_account_id: int | None = None,
 ) -> list[tuple]:
@@ -185,7 +185,7 @@ def _get_sent_pricings_for_collective_bookings(
                 *reimbursement_period,
                 symmetric=True,
             ),
-            educational_models.CollectiveBooking.offererId.in_(offerer_ids),
+            educational_models.CollectiveBooking.offererId == offerer_id,
             (models.Cashflow.bankAccountId == bank_account_id) if bank_account_id else sqla.true(),
             # Complementary invoices (that end with ".2") are linked
             # to the same bookings as the original invoices they
@@ -210,7 +210,7 @@ def _get_sent_pricings_for_collective_bookings(
 
 
 def _get_sent_pricings_for_individual_bookings(
-    offerer_ids: list[int],
+    offerer_id: int,
     reimbursement_period: tuple[datetime.date, datetime.date],
     bank_account_id: int | None = None,
 ) -> list[tuple]:
@@ -265,7 +265,7 @@ def _get_sent_pricings_for_individual_bookings(
                 *reimbursement_period,
                 symmetric=True,
             ),
-            bookings_models.Booking.offererId.in_(offerer_ids),
+            bookings_models.Booking.offererId == offerer_id,
             (models.Cashflow.bankAccountId == bank_account_id) if bank_account_id else sqla.true(),
             # Complementary invoices (that end with ".2") are linked
             # to the same bookings as the original invoices they

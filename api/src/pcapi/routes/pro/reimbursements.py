@@ -1,8 +1,6 @@
 from flask_login import current_user
 from flask_login import login_required
 
-from pcapi.core.offerers.models import Offerer
-import pcapi.core.offerers.repository as offerers_repository
 from pcapi.core.users.models import User
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
@@ -31,13 +29,11 @@ def get_reimbursements_csv(query: ReimbursementCsvQueryModel) -> bytes:
 
 
 def _get_reimbursements_csv_filter(user: User, query: ReimbursementCsvQueryModel) -> str:
-    offerers = Offerer.query.with_entities(Offerer.id)
     if not user.has_admin_role:
-        offerers = offerers_repository.filter_query_where_user_is_user_offerer_and_is_validated(offerers, user)
+        if not user.has_access(query.offererId):
+            raise ApiErrors({"offererId": ["Cet utilisateur ne peut pas accèder à cette structure"]})
     elif not query.bankAccountId:
         raise ApiErrors({"bankAccountId": ["Le filtre par compte bancaire est obligatoire pour les administrateurs"]})
-
-    all_offerer_ids = [row[0] for row in offerers.all()]
 
     reimbursement_period_field_names = ("reimbursementPeriodBeginningDate", "reimbursementPeriodEndingDate")
     reimbursement_period_beginning_date, reimbursement_period_ending_date = validate_reimbursement_period(
@@ -45,8 +41,8 @@ def _get_reimbursements_csv_filter(user: User, query: ReimbursementCsvQueryModel
     )
     bank_account_id = query.bankAccountId
 
-    reimbursement_details = find_all_offerers_reimbursement_details(
-        all_offerer_ids,
+    reimbursement_details = find_offerer_reimbursement_details(
+        query.offererId,
         (reimbursement_period_beginning_date, reimbursement_period_ending_date),
         bank_account_id,
     )
