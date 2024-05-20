@@ -21,7 +21,7 @@ vi.mock('@sentry/browser', () => ({ setUser: vi.fn() }))
 const renderApp = (options?: RenderWithProvidersOptions) =>
   renderWithProviders(
     <>
-      <div id="root"></div>
+      <div id="root" />
 
       <Routes>
         <Route path="/" element={<App />}>

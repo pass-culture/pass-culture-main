@@ -88,6 +88,6 @@ export const VenuePlaylist = ({
           venue={venue}
         />
       ))}
-    ></Carousel>
+    />
   )
 }

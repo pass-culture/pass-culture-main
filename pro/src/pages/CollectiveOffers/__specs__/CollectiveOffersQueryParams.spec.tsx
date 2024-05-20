@@ -40,7 +40,7 @@ const renderOffers = async (
             <h1>Offres individuelles</h1>
           </>
         }
-      ></router.Route>
+      />
     </router.Routes>,
     {
       user: sharedCurrentUserFactory(),

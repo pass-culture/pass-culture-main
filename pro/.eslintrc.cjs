@@ -90,6 +90,13 @@ module.exports = {
         // TODO turn into errors
         '@typescript-eslint/no-unnecessary-condition': 'warn',
         'react-hooks/exhaustive-deps': 'warn',
+        'react/self-closing-comp': [
+          'error',
+          {
+            component: true,
+            html: true,
+          },
+        ],
       },
     },
   ],

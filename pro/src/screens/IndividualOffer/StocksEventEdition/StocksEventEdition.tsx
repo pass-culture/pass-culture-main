@@ -674,7 +674,7 @@ const StocksEventEdition = ({
                           </div>
                         </th>
 
-                        <th className={styles['head-actions']}></th>
+                        <th className={styles['head-actions']} />
                       </tr>
                     </thead>
 

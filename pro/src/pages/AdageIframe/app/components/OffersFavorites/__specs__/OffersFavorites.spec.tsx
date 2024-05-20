@@ -29,7 +29,7 @@ const renderAdageFavoritesOffers = (
         path="/adage-iframe/mes-favoris"
         element={
           <AdageUserContextProvider adageUser={user}>
-            <OffersFavorites></OffersFavorites>
+            <OffersFavorites />
           </AdageUserContextProvider>
         }
       />

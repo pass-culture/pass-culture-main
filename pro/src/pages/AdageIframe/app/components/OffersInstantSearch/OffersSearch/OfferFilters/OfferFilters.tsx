@@ -322,7 +322,7 @@ export const OfferFilters = ({
                         min={1}
                         max={100}
                         displayValue={true}
-                      ></Slider>
+                      />
                     </div>
                   </ModalFilterLayout>
                 )}

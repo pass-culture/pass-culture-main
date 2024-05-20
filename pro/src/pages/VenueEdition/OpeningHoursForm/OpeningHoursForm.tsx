@@ -67,7 +67,7 @@ export function OpeningHoursForm() {
                   styles['column-header'],
                   styles['column-header-first']
                 )}
-              ></th>
+              />
               <th scope="col" className={styles['column-header']}>
                 Ouvre à
               </th>

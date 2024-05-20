@@ -93,6 +93,6 @@ export const SurveySatisfaction = ({
       </div>
     </div>
   ) : (
-    <div></div>
+    <div />
   )
 }
