@@ -63,6 +63,6 @@ export const NewOffererPlaylist = ({
           venue={venue}
         />
       ))}
-    ></Carousel>
+    />
   )
 }

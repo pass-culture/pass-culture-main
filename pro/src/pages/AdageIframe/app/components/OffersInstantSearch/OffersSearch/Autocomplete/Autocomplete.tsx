@@ -363,9 +363,7 @@ export const Autocomplete = ({
 
   return (
     <div>
-      {instantSearchUiState.isOpen && (
-        <div className={styles['backdrop']}></div>
-      )}
+      {instantSearchUiState.isOpen && <div className={styles['backdrop']} />}
       <div {...autocomplete.getRootProps({})}>
         <form
           ref={formRef}

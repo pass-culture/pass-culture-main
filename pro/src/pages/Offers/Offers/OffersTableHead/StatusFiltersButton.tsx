@@ -104,7 +104,7 @@ const StatusFiltersButton = ({
             )}
           />
           {isFilteredByStatus && (
-            <span className={styles['status-badge-icon']}></span>
+            <span className={styles['status-badge-icon']} />
           )}
         </span>
       </button>

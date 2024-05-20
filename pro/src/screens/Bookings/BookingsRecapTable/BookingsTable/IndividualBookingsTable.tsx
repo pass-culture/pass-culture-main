@@ -129,7 +129,7 @@ export const IndividualBookingsTable = ({
                   styles['table-header'],
                   styles['column-booking-duo']
                 )}
-              ></th>
+              />
 
               <th
                 scope="col"

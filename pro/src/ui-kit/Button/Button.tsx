@@ -54,7 +54,7 @@ export const Button = forwardRef(
           />
         )}
         {variant === ButtonVariant.BOX ? (
-          <div className={styles['button-arrow-content']}></div>
+          <div className={styles['button-arrow-content']} />
         ) : (
           <>
             {isLoading && loadingDiv}
