@@ -29,7 +29,7 @@ interface VenueFormProps {
   updateIsSiretValued: (isSiretValued: boolean) => void
   venueLabels: SelectOption[]
   venueTypes: VenueTypeResponseModel[]
-  venueProvider?: VenueProviderResponse[]
+  venueProviders: VenueProviderResponse[]
   venue: GetVenueResponseModel
 }
 
@@ -38,7 +38,7 @@ export const VenueSettingsForm = ({
   updateIsSiretValued,
   venueLabels,
   venueTypes,
-  venueProvider,
+  venueProviders,
   venue,
 }: VenueFormProps) => {
   const { initialValues } = useFormikContext<VenueSettingsFormValues>()
@@ -49,8 +49,8 @@ export const VenueSettingsForm = ({
     <>
       <ScrollToFirstErrorAfterSubmit />
 
-      {!venue.isVirtual && venueProvider && (
-        <OffersSynchronization venueProvider={venueProvider} venue={venue} />
+      {!venue.isVirtual && (
+        <OffersSynchronization venueProviders={venueProviders} venue={venue} />
       )}
 
       <FormLayout fullWidthActions>
