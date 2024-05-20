@@ -227,12 +227,12 @@ def generate_reimbursement_details_csv(reimbursement_details: Iterable[Reimburse
     return output.getvalue()
 
 
-def find_all_offerers_reimbursement_details(
-    offerer_ids: list[int],
+def find_offerer_reimbursement_details(
+    offerer_id: int,
     reimbursements_period: tuple[datetime.date | None, datetime.date | None],
     bank_account_id: int | None = None,
 ) -> list[ReimbursementDetails]:
-    offerer_payments = finance_repository.find_all_offerers_payments(offerer_ids, reimbursements_period, bank_account_id)  # type: ignore [arg-type]
+    offerer_payments = finance_repository.find_offerer_payments(offerer_id, reimbursements_period, bank_account_id)  # type: ignore [arg-type]
     reimbursement_details = [ReimbursementDetails(offerer_payment) for offerer_payment in offerer_payments]
 
     return reimbursement_details
@@ -254,6 +254,7 @@ def validate_reimbursement_period(
 
 
 class ReimbursementCsvQueryModel(BaseModel):
+    offererId: int
     bankAccountId: int | None
     reimbursementPeriodBeginningDate: str | None
     reimbursementPeriodEndingDate: str | None
