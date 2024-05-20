@@ -129,6 +129,8 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
 def get_event(event_id: int) -> serialization.EventOfferResponse:
     """
     Get event offer
+
+    Return event offer by id.
     """
     offer: offers_models.Offer | None = (
         utils.retrieve_offer_relations_query(utils.retrieve_offer_query(event_id))
@@ -164,7 +166,8 @@ def get_events(query: serialization.GetOffersQueryParams) -> serialization.Event
     """
     Get events
 
-    Results are paginated.
+    Return all the events linked to given venue.
+    Results are paginated (by default there are `50` events per page).
     """
     utils.check_venue_id_is_tied_to_api_key(query.venue_id)
     total_offers_query = utils.retrieve_offers(
@@ -203,7 +206,7 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
     """
     Update event offer
 
-    Leave fields undefined to keep their current value.
+    Will update only the non-blank fields. If you some fields to keep their current values, leave them `undefined`.
     """
     offer: offers_models.Offer | None = (
         utils.retrieve_offer_relations_query(utils.retrieve_offer_query(event_id))
@@ -271,6 +274,8 @@ def post_event_price_categories(
 ) -> serialization.PriceCategoriesResponse:
     """
     Create price categories
+
+    Batch create price categories for given event.
     """
     offer = utils.retrieve_offer_query(event_id).filter(offers_models.Offer.isEvent).one_or_none()
     if not offer:
@@ -325,7 +330,10 @@ def patch_event_price_categories(
     body: serialization.PriceCategoryEdition,
 ) -> serialization.PriceCategoryResponse:
     """
-    Update price categories
+    Update price category
+
+    Will update only the non-blank field.
+    If you want one of the field to remain unchanged, leave it `undefined`.
     """
     event_offer = utils.get_event_with_details(event_id)
     if not event_offer:
@@ -383,7 +391,7 @@ def post_event_dates(event_id: int, body: serialization.DatesCreation) -> serial
     """
     Add dates to event
 
-    Each date is attached to a price category so if there are several prices categories, several dates must be added.
+    Add a dates to given event. Each date is attached to a price category so if there are several prices categories, several dates must be added.
     """
     offer = (
         utils.retrieve_offer_query(event_id)
@@ -449,7 +457,7 @@ def get_event_dates(event_id: int, query: serialization.GetDatesQueryParams) -> 
     """
     Get event dates
 
-    Return all the dates linked to an event. Results are paginated.
+    Return all the dates linked to an event. Results are paginated (by default there are `50` date per page).
     """
     offer = utils.retrieve_offer_query(event_id).filter(offers_models.Offer.isEvent).one_or_none()
     if not offer:
@@ -505,7 +513,8 @@ def delete_event_date(event_id: int, date_id: int) -> None:
     """
     Delete event date
 
-    All cancellable bookings (i.e not used) will be cancelled. To prevent from further bookings, you may alternatively update the date's quantity to the bookedQuantity (but not below).
+    When an event date is deleted, all cancellable bookings (i.e not used) are cancelled.
+    To prevent from further bookings, you may alternatively update the date's quantity to the bookedQuantity (but not below).
     """
     offer = (
         utils.retrieve_offer_query(event_id)
@@ -554,6 +563,8 @@ def patch_event_date(
 ) -> serialization.DateResponse:
     """
     Update event date
+
+    Update the price category and the beginning time of an event date.
     """
     offer: offers_models.Offer | None = (
         utils.retrieve_offer_relations_query(utils.retrieve_offer_query(event_id))

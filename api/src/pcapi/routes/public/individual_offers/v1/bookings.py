@@ -83,7 +83,9 @@ def get_bookings_by_offer(
     query: serialization.GetFilteredBookingsRequest,
 ) -> serialization.GetFilteredBookingsResponse:
     """
-    Get paginated bookings for a given offer.
+    Get bookings for a given offer
+
+    Return all the bookings for a given offer. Results are paginated (by default, there are `50` bookings per page)
     """
 
     offer = (
@@ -134,7 +136,7 @@ def _get_booking_by_token(token: str) -> booking_models.Booking | None:
 @api_key_required
 def get_booking_by_token(token: str) -> serialization.GetBookingResponse:
     """
-    Consultation of a booking.
+    Get a booking
 
     The countermark or token code is a character string that identifies the reservation and serves as proof of booking.
     This unique code is generated for each user's booking on the application and is transmitted to them on that occasion.
@@ -174,9 +176,9 @@ def get_booking_by_token(token: str) -> serialization.GetBookingResponse:
 @api_key_required
 def validate_booking_by_token(token: str) -> None:
     """
-    Validation of a booking.
+    Validate a booking
 
-    To confirm that the booking has been successfully used by the beneficiary.
+    Confirms that the booking has been successfully used by the beneficiary.
     """
     booking = _get_booking_by_token(token)
     if booking is None:
@@ -218,9 +220,9 @@ def validate_booking_by_token(token: str) -> None:
 @api_key_required
 def cancel_booking_validation_by_token(token: str) -> None:
     """
-    Cancel a booking's validation.
+    Cancel a booking validation
 
-    To mark a booking as unused.
+    Mark a booking as `unused`.
     """
     booking = _get_booking_by_token(token)
     if booking is None:
@@ -262,9 +264,9 @@ def cancel_booking_validation_by_token(token: str) -> None:
 @api_key_required
 def cancel_booking_by_token(token: str) -> None:
     """
-    Cancel a booking.
+    Cancel a booking
 
-    To cancel a booking that has not been refunded.
+    Cancel a booking that has not been refunded.
     For events, the booking can be cancelled until 48 hours before the event.
     """
     booking = _get_booking_by_token(token)
