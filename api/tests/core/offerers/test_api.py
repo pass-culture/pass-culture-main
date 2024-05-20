@@ -1,5 +1,6 @@
 import datetime
 import decimal
+import logging
 import os
 import pathlib
 import time
@@ -2866,3 +2867,63 @@ class AccessibilityProviderTest:
         offerers_api.match_venue_with_new_entries(venues_list, results_by_activity)
         assert venue.external_accessibility_url == "https://une-fausse-url.com"
         assert venue.external_accessibility_id == "mon-lieu-chez-acceslibre"
+
+
+class GetOffererConfidenceLevelTest:
+    def test_no_rule(self):
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.ManualReviewOffererConfidenceRuleFactory()
+        offerers_factories.WhitelistedVenueConfidenceRuleFactory()
+
+        confidence_level = offerers_api.get_offer_confidence_level(venue)
+
+        assert confidence_level is None
+
+    def test_offerer_manual_review(self):
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.ManualReviewOffererConfidenceRuleFactory(offerer=venue.managingOfferer)
+        offerers_factories.WhitelistedVenueConfidenceRuleFactory()
+
+        confidence_level = offerers_api.get_offer_confidence_level(venue)
+
+        assert confidence_level == offerers_models.OffererConfidenceLevel.MANUAL_REVIEW
+
+    def test_offerer_whitelist(self):
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.WhitelistedOffererConfidenceRuleFactory(offerer=venue.managingOfferer)
+        offerers_factories.ManualReviewVenueConfidenceRuleFactory()
+
+        confidence_level = offerers_api.get_offer_confidence_level(venue)
+
+        assert confidence_level == offerers_models.OffererConfidenceLevel.WHITELIST
+
+    def test_venue_manual_review(self):
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.ManualReviewVenueConfidenceRuleFactory(venue=venue)
+        offerers_factories.WhitelistedOffererConfidenceRuleFactory()
+
+        confidence_level = offerers_api.get_offer_confidence_level(venue)
+
+        assert confidence_level == offerers_models.OffererConfidenceLevel.MANUAL_REVIEW
+
+    def test_venue_whitelist(self):
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.WhitelistedVenueConfidenceRuleFactory(venue=venue)
+        offerers_factories.ManualReviewOffererConfidenceRuleFactory()
+
+        confidence_level = offerers_api.get_offer_confidence_level(venue)
+
+        assert confidence_level == offerers_models.OffererConfidenceLevel.WHITELIST
+
+    def test_conflict(self, caplog):
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.WhitelistedOffererConfidenceRuleFactory(offerer=venue.managingOfferer)
+        offerers_factories.ManualReviewVenueConfidenceRuleFactory(venue=venue)
+
+        with caplog.at_level(logging.ERROR):
+            confidence_level = offerers_api.get_offer_confidence_level(venue)
+
+        assert confidence_level == offerers_models.OffererConfidenceLevel.WHITELIST  # offerer first
+
+        assert caplog.records[0].message == "Incompatible offerer rule detected"
+        assert caplog.records[0].extra == {"offerer_id": venue.managingOffererId, "venue_id": venue.id}

@@ -1051,6 +1051,18 @@ def rule_flags_offer(rule: models.OfferValidationRule, offer: AnyOffer) -> bool:
 
 
 def set_offer_status_based_on_fraud_criteria(offer: AnyOffer) -> models.OfferValidationStatus:
+    status = models.OfferValidationStatus.APPROVED
+
+    confidence_level = offerers_api.get_offer_confidence_level(offer.venue)
+
+    if confidence_level == offerers_models.OffererConfidenceLevel.WHITELIST:
+        logger.info("Computed offer validation", extra={"offer": offer.id, "status": status.value, "whitelist": True})
+        return status
+
+    if confidence_level == offerers_models.OffererConfidenceLevel.MANUAL_REVIEW:
+        status = models.OfferValidationStatus.PENDING
+        # continue so that offers are checked against rules: gives more information for manual validation
+
     offer_validation_rules = (
         models.OfferValidationRule.query.options(
             sa.orm.joinedload(models.OfferValidationSubRule, models.OfferValidationRule.subRules)
@@ -1069,9 +1081,7 @@ def set_offer_status_based_on_fraud_criteria(offer: AnyOffer) -> models.OfferVal
         offer.flaggingValidationRules = flagging_rules
         if isinstance(offer, models.Offer):
             compliance.update_offer_compliance_score(offer, is_primary=True)
-
     else:
-        status = models.OfferValidationStatus.APPROVED
         if isinstance(offer, models.Offer):
             compliance.update_offer_compliance_score(offer, is_primary=False)
 
