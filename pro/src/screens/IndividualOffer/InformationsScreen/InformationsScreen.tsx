@@ -1,6 +1,7 @@
 import { FormikProvider, useFormik } from 'formik'
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
@@ -20,6 +21,7 @@ import { setInitialFormValues } from 'components/IndividualOfferForm/utils/setIn
 import { getValidationSchema } from 'components/IndividualOfferForm/validationSchema'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
+import { GET_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import {
   Events,
@@ -66,6 +68,7 @@ export const InformationsScreen = ({
   const { currentUser } = useCurrentUser()
   const navigate = useNavigate()
   const mode = useOfferWizardMode()
+  const { mutate } = useSWRConfig()
   const { offer, categories, subCategories } = useIndividualOfferContext()
   const { imageOffer, onImageDelete, onImageUpload, handleImageOnSubmit } =
     useIndividualOfferImageUpload()
@@ -151,6 +154,7 @@ export const InformationsScreen = ({
 
       const receivedOfferId = response.id
       await handleImageOnSubmit(receivedOfferId)
+      await mutate([GET_OFFER_QUERY_KEY, receivedOfferId])
 
       // replace url to fix back button
       navigate(

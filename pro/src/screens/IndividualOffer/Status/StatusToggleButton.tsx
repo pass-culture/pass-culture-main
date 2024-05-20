@@ -1,7 +1,8 @@
-import { useFetcher } from 'react-router-dom'
+import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import { OfferStatus } from 'apiClient/v1'
+import { GET_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
 import useNotification from 'hooks/useNotification'
 import fullHideIcon from 'icons/full-hide.svg'
 import strokeCheckIcon from 'icons/stroke-check.svg'
@@ -20,15 +21,12 @@ const StatusToggleButton = ({
   status,
 }: StatusToggleButtonProps) => {
   const notification = useNotification()
-  const fetcher = useFetcher()
+  const { mutate } = useSWRConfig()
 
   const toggleOfferActiveStatus = async () => {
     try {
       await api.patchOffersActiveStatus({ ids: [offerId], isActive: !isActive })
-      fetcher.submit(null, {
-        method: 'patch',
-        action: `/offre/individuelle/${offerId}`,
-      })
+      await mutate([GET_OFFER_QUERY_KEY, offerId])
       notification.success(
         `L’offre a bien été ${isActive ? 'désactivée' : 'publiée'}.`
       )
