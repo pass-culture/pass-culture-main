@@ -2380,3 +2380,20 @@ def get_or_create_offerer_address(offerer_id: int, label: str, address_id: int) 
     )
 
     return offerer_address
+
+
+def get_offer_confidence_level(
+    venue: offerers_models.Venue,
+) -> offerers_models.OffererConfidenceLevel | None:
+    venue_confidence_level = venue.confidenceRule.confidenceLevel if venue.confidenceRule else None
+    offerer_confidence_level = (
+        venue.managingOfferer.confidenceRule.confidenceLevel if venue.managingOfferer.confidenceRule else None
+    )
+
+    if offerer_confidence_level and venue_confidence_level and offerer_confidence_level != venue_confidence_level:
+        logger.error(
+            "Incompatible offerer rule detected",
+            extra={"offerer_id": venue.managingOfferer.id, "venue_id": venue.id},
+        )
+
+    return offerer_confidence_level or venue_confidence_level

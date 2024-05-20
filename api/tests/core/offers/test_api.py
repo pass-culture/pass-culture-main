@@ -1628,18 +1628,24 @@ class DeactivatePermanentlyUnavailableProductTest:
         assert set(mocked_async_index_offer_ids.call_args[0][0]) == {o.id for o in offers}
 
 
+@pytest.fixture(name="offer_matching_one_validation_rule")
+def offer_matching_one_validation_rule_fixture():
+    factories.OfferValidationSubRuleFactory(
+        model=models.OfferValidationModel.OFFER,
+        attribute=models.OfferValidationAttribute.NAME,
+        operator=models.OfferValidationRuleOperator.CONTAINS,
+        comparated={"comparated": ["REJECTED"]},
+    )
+    return factories.OfferFactory(name="REJECTED")
+
+
 @pytest.mark.usefixtures("db_session")
 class ResolveOfferValidationRuleTest:
-    def test_offer_validation_with_one_rule_with_in(self):
-        offer = factories.OfferFactory(name="REJECTED")
-        factories.OfferValidationSubRuleFactory(
-            model=models.OfferValidationModel.OFFER,
-            attribute=models.OfferValidationAttribute.NAME,
-            operator=models.OfferValidationRuleOperator.CONTAINS,
-            comparated={"comparated": ["REJECTED"]},
+    def test_offer_validation_with_one_rule_with_in(self, offer_matching_one_validation_rule):
+        assert (
+            api.set_offer_status_based_on_fraud_criteria(offer_matching_one_validation_rule)
+            == models.OfferValidationStatus.PENDING
         )
-
-        assert api.set_offer_status_based_on_fraud_criteria(offer) == models.OfferValidationStatus.PENDING
         assert models.ValidationRuleOfferLink.query.count() == 1
 
     def test_offer_validation_with_unrelated_rule(self):
@@ -2099,6 +2105,52 @@ class ResolveOfferValidationRuleTest:
         )
 
         assert api.set_offer_status_based_on_fraud_criteria(collective_offer) == expected_status
+
+    def test_offer_validation_when_offerer_whitelisted(self, offer_matching_one_validation_rule):
+        offerers_factories.WhitelistedOffererConfidenceRuleFactory(
+            offerer=offer_matching_one_validation_rule.venue.managingOfferer
+        )
+
+        status = api.set_offer_status_based_on_fraud_criteria(offer_matching_one_validation_rule)
+
+        assert status == models.OfferValidationStatus.APPROVED
+        assert models.ValidationRuleOfferLink.query.count() == 0
+
+    def test_offer_validation_when_offerer_on_manual_review(self):
+        collective_offer = educational_factories.CollectiveOfferFactory()
+        offerers_factories.ManualReviewOffererConfidenceRuleFactory(offerer=collective_offer.venue.managingOfferer)
+
+        status = api.set_offer_status_based_on_fraud_criteria(collective_offer)
+
+        assert status == models.OfferValidationStatus.PENDING
+        assert models.ValidationRuleOfferLink.query.count() == 0
+
+    def test_offer_validation_when_offerer_on_manual_review_with_rules(self, offer_matching_one_validation_rule):
+        offerers_factories.ManualReviewOffererConfidenceRuleFactory(
+            offerer=offer_matching_one_validation_rule.venue.managingOfferer
+        )
+
+        status = api.set_offer_status_based_on_fraud_criteria(offer_matching_one_validation_rule)
+
+        assert status == models.OfferValidationStatus.PENDING
+        assert models.ValidationRuleOfferLink.query.count() == 1
+
+    def test_offer_validation_when_venue_whitelisted(self, offer_matching_one_validation_rule):
+        offerers_factories.WhitelistedVenueConfidenceRuleFactory(venue=offer_matching_one_validation_rule.venue)
+
+        status = api.set_offer_status_based_on_fraud_criteria(offer_matching_one_validation_rule)
+
+        assert status == models.OfferValidationStatus.APPROVED
+        assert models.ValidationRuleOfferLink.query.count() == 0
+
+    def test_offer_validation_when_venue_on_manual_review(self):
+        collective_offer = educational_factories.CollectiveOfferFactory()
+        offerers_factories.ManualReviewVenueConfidenceRuleFactory(venue=collective_offer.venue)
+
+        status = api.set_offer_status_based_on_fraud_criteria(collective_offer)
+
+        assert status == models.OfferValidationStatus.PENDING
+        assert models.ValidationRuleOfferLink.query.count() == 0
 
 
 @pytest.mark.usefixtures("db_session")

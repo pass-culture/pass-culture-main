@@ -457,3 +457,19 @@ class VenueBankAccountLinkTest:
         with pytest.raises(IntegrityError):
             factories.VenueBankAccountLinkFactory(venue=venue, bankAccount=bank_account)
             factories.VenueBankAccountLinkFactory(venue=venue, bankAccount=bank_account)
+
+
+class OffererConfidenceRuleTest:
+    def test_cannot_set_both_offerer_and_venue(self):
+        venue = factories.VenueFactory()
+
+        with pytest.raises(IntegrityError):
+            factories.ManualReviewOffererConfidenceRuleFactory(offerer=venue.managingOfferer, venue=venue)
+
+    def test_cannot_set_no_offerer_no_venue(self):
+        with pytest.raises(IntegrityError):
+            factories.OffererConfidenceRuleFactory(confidenceLevel=models.OffererConfidenceLevel.WHITELIST)
+
+    def test_strategy_cannot_be_null(self):
+        with pytest.raises(IntegrityError):
+            factories.OffererConfidenceRuleFactory(offerer=factories.OffererFactory(), confidenceLevel=None)
