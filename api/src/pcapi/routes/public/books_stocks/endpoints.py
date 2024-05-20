@@ -2,6 +2,7 @@ import logging
 
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
+from pcapi.routes.public import documentation_constants
 from pcapi.routes.public import spectree_schemas
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.validation.routes.users_authentifications import api_key_required
@@ -19,7 +20,11 @@ logger = logging.getLogger(__name__)
 # DEPRECATED: use individual offer api instead
 @blueprint.deprecated_books_stocks_blueprint.route("/venue/<int:venue_id>/stocks", methods=["POST"])
 @spectree_serialize(
-    on_success_status=204, on_error_statuses=[401, 404], api=spectree_schemas.deprecated_public_api_schema
+    on_success_status=204,
+    on_error_statuses=[401, 404],
+    api=spectree_schemas.deprecated_public_api_schema,
+    tags=[documentation_constants.DEPRECATED_VENUES_STOCK],
+    deprecated=True,
 )
 @api_key_required
 def update_stocks(venue_id: int, body: serialization.UpdateVenueStocksBodyModel) -> None:
