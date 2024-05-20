@@ -51,6 +51,6 @@ export const DiffuseHelp = ({
       </div>
     </div>
   ) : (
-    <div></div>
+    <div />
   )
 }

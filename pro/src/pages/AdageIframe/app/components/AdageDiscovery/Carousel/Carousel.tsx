@@ -77,7 +77,7 @@ export default function Carousel({
                 src={arrowLeftIcon}
                 alt="Faire défiler le carrousel vers la gauche"
                 width="24"
-              ></SvgIcon>
+              />
             </Button>
 
             <Button
@@ -90,7 +90,7 @@ export default function Carousel({
                 src={arrowRightIcon}
                 alt="Faire défiler le carrousel vers la droite"
                 width="24"
-              ></SvgIcon>
+              />
             </Button>
           </div>
         )}

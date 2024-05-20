@@ -32,7 +32,7 @@ export const SvgIcon = ({
       {...(width ? { width } : {})}
       style={style}
     >
-      <use xlinkHref={`${src}#icon`}></use>
+      <use xlinkHref={`${src}#icon`} />
     </svg>
   )
 }

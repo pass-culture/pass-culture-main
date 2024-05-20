@@ -152,7 +152,7 @@ export const AdageDiscovery = () => {
                 />
               )
             })}
-          ></Carousel>
+          />
         </div>
         <div className={styles['discovery-playlist']}>
           <NewOffererPlaylist

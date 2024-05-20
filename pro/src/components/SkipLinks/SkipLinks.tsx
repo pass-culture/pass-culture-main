@@ -21,7 +21,7 @@ export const SkipLinks = ({
     <>
       <a tabIndex={-1} href="#" id="top-page" className="visually-hidden" />
       <nav aria-label="Accès rapide" className={styles['skip-links']}>
-        <div id="orejime"></div>
+        <div id="orejime" />
         {buttons.length > 1 ? (
           <ul className={styles['skip-list']}>
             {buttons.map((button) => {

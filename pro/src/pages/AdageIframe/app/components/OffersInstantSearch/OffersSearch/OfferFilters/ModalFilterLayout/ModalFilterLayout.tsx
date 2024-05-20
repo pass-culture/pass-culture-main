@@ -26,7 +26,7 @@ const ModalFilterLayout = ({
       <div className={styles['modal-content-children']}>{children}</div>
       {!hideFooter && (
         <>
-          <div className={styles['modal-content-separator']}></div>
+          <div className={styles['modal-content-separator']} />
           <div className={styles['modal-content-footer']}>
             <Button
               icon={fullRefreshIcon}

@@ -131,9 +131,7 @@ export const FilterByBookingStatus = <
               (bookingStatuses.length > 0 || isToolTipVisible) && 'active'
             )}
           />
-          {bookingStatuses.length > 0 && (
-            <span className="status-badge-icon"></span>
-          )}
+          {bookingStatuses.length > 0 && <span className="status-badge-icon" />}
         </span>
       </button>
       <div className="bs-filter" id="booking-filter-tooltip">
