@@ -21,6 +21,8 @@ from pcapi import settings
 from pcapi.connectors import virustotal
 import pcapi.connectors.acceslibre as accessibility_provider
 from pcapi.connectors.api_adresse import AddressInfo
+from pcapi.connectors.api_adresse import get_address
+from pcapi.connectors.api_adresse import get_municipality_centroid
 from pcapi.connectors.entreprise import exceptions as sirene_exceptions
 from pcapi.connectors.entreprise import models as sirene_models
 from pcapi.connectors.entreprise import sirene
@@ -59,6 +61,7 @@ from pcapi.routes.serialization.offerers_serialize import OffererMemberStatus
 from pcapi.utils import crypto
 from pcapi.utils import human_ids
 from pcapi.utils import image_conversion
+from pcapi.utils import regions as utils_regions
 import pcapi.utils.date as date_utils
 import pcapi.utils.db as db_utils
 import pcapi.utils.email as email_utils
@@ -285,8 +288,20 @@ def upsert_venue_opening_hours(venue: models.Venue, opening_hours: serialize_bas
 
 
 def create_venue(venue_data: venues_serialize.PostVenueBodyModel) -> models.Venue:
-    data = venue_data.dict(by_alias=True)
     venue = models.Venue()
+
+    if feature.FeatureToggle.ENABLE_API_ADRESSE_WHILE_CREATING_UPDATING_VENUE.is_active():
+        if utils_regions.NON_DIFFUSIBLE_TAG in venue_data.street:
+            address_info = get_municipality_centroid(venue_data.city, venue_data.postalCode)
+            address_info.street = utils_regions.NON_DIFFUSIBLE_TAG
+        else:
+            address_info = get_address(venue_data.street, venue_data.postalCode, venue_data.city)
+
+        address = get_or_create_address(address_info)
+        offerer_address = get_or_create_offerer_address(venue_data.managingOffererId, address.id)
+        venue.offererAddressId = offerer_address.id
+
+    data = venue_data.dict(by_alias=True)
     data["dmsToken"] = generate_dms_token()
     if venue.is_soft_deleted():
         raise pc_object.DeletedRecordException()
@@ -2331,6 +2346,8 @@ def update_offerer_address_label(offerer_address_id: int, new_label: str) -> Non
 
 
 def get_or_create_address(address_info: AddressInfo) -> geography_models.Address:
+    departmentCode = utils_regions.get_department_code_from_city_code(address_info.citycode)
+    timezone = date_utils.get_department_timezone(departmentCode)
     try:
         address = geography_models.Address(
             banId=address_info.id,
@@ -2340,6 +2357,8 @@ def get_or_create_address(address_info: AddressInfo) -> geography_models.Address
             city=address_info.city,
             latitude=address_info.latitude,
             longitude=address_info.longitude,
+            departmentCode=departmentCode,
+            timezone=timezone,
         )
         db.session.add(address)
         db.session.flush()

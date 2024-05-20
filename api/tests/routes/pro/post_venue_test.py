@@ -4,6 +4,8 @@ import pytest
 
 from pcapi.core import testing
 from pcapi.core.external.zendesk_sell_backends import testing as zendesk_testing
+from pcapi.core.geography import models as geography_models
+from pcapi.core.offerers import models
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Venue
 from pcapi.core.testing import override_settings
@@ -28,14 +30,13 @@ def create_valid_venue_data(user=None):
     return {
         "name": "MINISTERE DE LA CULTURE",
         "siret": f"{user_offerer.offerer.siren}10045",
-        "street": "75 Rue Charles Fourier, 75013 Paris",
-        "postalCode": "75200",
-        "banId": "75113_1834_00007_ter_a",
+        "street": "Chemin de Chaniaux 48250 Laveyrune",
+        "postalCode": "48250",
         "bookingEmail": "toto@example.com",
-        "city": "Paris",
+        "city": "Laveyrune",
         "managingOffererId": user_offerer.offerer.id,
-        "latitude": 48.82387,
-        "longitude": 2.35284,
+        "latitude": 44.626322,
+        "longitude": 3.893166,
         "publicName": "Ma venue publique",
         "venueTypeCode": "BOOKSTORE",
         "venueLabelId": venue_label.id,
@@ -59,17 +60,54 @@ venue_malformed_test_data = [
 
 
 class Returns201Test:
-    @testing.override_features(ENABLE_ZENDESK_SELL_CREATION=True)
-    def test_register_new_venue(self, client):
+    @testing.override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+    @testing.override_features(ENABLE_ZENDESK_SELL_CREATION=True, ENABLE_API_ADRESSE_WHILE_CREATING_UPDATING_VENUE=True)
+    def test_register_new_venue(self, client, requests_mock):
+        api_adresse_response = {
+            "type": "FeatureCollection",
+            "version": "draft",
+            "features": [
+                {
+                    "type": "Feature",
+                    "geometry": {"type": "Point", "coordinates": [3.893166, 44.626322]},
+                    "properties": {
+                        "label": "Chemin de Chaniaux 48250 Laveyrune",
+                        "score": 0.928571818181818,
+                        "type": "locality",
+                        "importance": 0.21429,
+                        "id": "07136_0040",
+                        "name": "Chemin de Chaniaux",
+                        "postcode": "48250",
+                        "citycode": "07136",
+                        "x": 770848.89,
+                        "y": 6392314.73,
+                        "city": "Laveyrune",
+                        "context": "07, Ardèche, Auvergne-Rhône-Alpes",
+                        "locality": "Chemin de Chaniaux",
+                    },
+                }
+            ],
+            "attribution": "BAN",
+            "licence": "ETALAB-2.0",
+            "query": "Chemin de chaniaux Laveyrune",
+            "filters": {"postcode": "48250"},
+            "limit": 1,
+        }
         user = ProFactory()
-        client = client.with_session_auth(email=user.email)
         venue_data = create_valid_venue_data(user)
+        requests_mock.get(
+            """https://api-adresse.data.gouv.fr/search?q=Chemin+de+Chaniaux+48250+Laveyrune&postcode=48250&autocomplete=0&limit=1""",
+            json=api_adresse_response,
+        )
 
+        client = client.with_session_auth(email=user.email)
         response = client.post("/venues", json=venue_data)
 
         assert response.status_code == 201
 
         venue = Venue.query.filter_by(id=response.json["id"]).one()
+        address = geography_models.Address.query.one()
+        offerer_address = models.OffererAddress.query.one()
 
         assert venue.name == venue_data["name"]
         assert venue.publicName == venue_data["publicName"]
@@ -104,6 +142,67 @@ class Returns201Test:
                 "parent_organization_id": zendesk_testing.TESTING_ZENDESK_ID_OFFERER,
             }
         ]
+
+        assert venue.offererAddressId == offerer_address.id
+        assert offerer_address.addressId == address.id
+        assert venue.timezone == address.timezone
+        assert venue.city == address.city
+        assert venue.postalCode == address.postalCode
+        assert address.street == api_adresse_response["features"][0]["properties"]["locality"]
+        assert address.inseeCode == api_adresse_response["features"][0]["properties"]["citycode"]
+        assert address.inseeCode.startswith(address.departmentCode)
+        assert address.departmentCode == "07"
+        assert address.timezone == "Europe/Paris"
+
+    @testing.override_features(ENABLE_ZENDESK_SELL_CREATION=True)
+    def test_register_new_venue_without_double_model_writing(self, client, requests_mock):
+        user = ProFactory()
+        venue_data = create_valid_venue_data(user)
+
+        client = client.with_session_auth(email=user.email)
+        response = client.post("/venues", json=venue_data)
+
+        assert response.status_code == 201
+
+        venue = Venue.query.filter_by(id=response.json["id"]).one()
+        assert not geography_models.Address.query.one_or_none()
+        assert not models.OffererAddress.query.one_or_none()
+
+        assert venue.name == venue_data["name"]
+        assert venue.publicName == venue_data["publicName"]
+        assert venue.siret == venue_data["siret"]
+        assert venue.venueTypeCode.name == "BOOKSTORE"
+        assert venue.venueLabelId == venue_data["venueLabelId"]
+        assert venue.description == venue_data["description"]
+        assert venue.audioDisabilityCompliant == venue_data["audioDisabilityCompliant"]
+        assert venue.mentalDisabilityCompliant == venue_data["mentalDisabilityCompliant"]
+        assert venue.motorDisabilityCompliant == venue_data["motorDisabilityCompliant"]
+        assert venue.visualDisabilityCompliant == venue_data["visualDisabilityCompliant"]
+        assert venue.contact.email == venue_data["contact"]["email"]
+        assert venue.dmsToken
+
+        assert not venue.isPermanent
+        assert not venue.contact.phone_number
+        assert not venue.contact.social_medias
+
+        assert len(venue.adage_addresses) == 1
+        adage_addr = venue.adage_addresses[0]
+
+        assert adage_addr.venueId == venue.id
+        assert adage_addr.adageId == venue.adageId
+        assert adage_addr.adageInscriptionDate == venue.adageInscriptionDate
+
+        assert len(external_testing.sendinblue_requests) == 1
+        assert external_testing.zendesk_sell_requests == [
+            {
+                "action": "create",
+                "type": "Venue",
+                "id": response.json["id"],
+                "parent_organization_id": zendesk_testing.TESTING_ZENDESK_ID_OFFERER,
+            }
+        ]
+
+        assert not venue.offererAddressId
 
     def test_use_venue_name_retrieved_from_sirene_api(self, client):
         user = ProFactory()
