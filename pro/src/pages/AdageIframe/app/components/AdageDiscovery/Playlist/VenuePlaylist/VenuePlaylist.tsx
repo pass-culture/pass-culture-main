@@ -1,11 +1,9 @@
 import classNames from 'classnames'
 import useSWR from 'swr'
 
-import { InstitutionRuralLevel } from 'apiClient/adage'
 import { AdagePlaylistType } from 'apiClient/adage/models/AdagePlaylistType'
 import { apiAdage } from 'apiClient/api'
 import { GET_LOCAL_OFFERERS_PLAYLIST_QUERY_KEY } from 'config/swrQueryKeys'
-import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 
 import { TrackerElementArg } from '../../AdageDiscovery'
 import Carousel from '../../Carousel/Carousel'
@@ -24,44 +22,37 @@ type VenuePlaylistProps = {
   }: TrackerElementArg) => void
 }
 
-const institutionRuralLevelToPlaylistTitle: {
-  [key in InstitutionRuralLevel]: string
-} = {
-  'urbain dense':
-    'Partenaires culturels à moins de 30 minutes à pied de votre établissement',
-  'urbain densité intermédiaire':
-    'Partenaires culturels à moins de 30 minutes de route de votre établissement',
-  "rural sous forte influence d'un pôle":
-    'Partenaires culturels à environ 30 minutes de route de votre établissement',
-  'rural autonome peu dense':
-    'Partenaires culturels à environ 1h de route de votre établissement',
-  "rural sous faible influence d'un pôle":
-    'Partenaires culturels à environ 1h de route de votre établissement',
-  'rural autonome très peu dense':
-    'À environ 1h de route de votre établissement',
+function getPlaylistTitle(distanceMax: number) {
+  if (distanceMax <= 3) {
+    return 'À moins de 30 minutes à pieds de mon établissement'
+  }
+  if (distanceMax <= 15) {
+    return 'À environ 30 minutes de transport de mon établissement'
+  }
+  return 'À environ 1h de transport de mon établissement'
 }
 
 export const VenuePlaylist = ({
   onWholePlaylistSeen,
   trackPlaylistElementClicked,
 }: VenuePlaylistProps) => {
-  const { adageUser } = useAdageUser()
-
   const { data: playlist, isLoading } = useSWR(
     [GET_LOCAL_OFFERERS_PLAYLIST_QUERY_KEY],
     () => apiAdage.getLocalOfferersPlaylist(),
     { fallbackData: { venues: [] } }
   )
 
+  const distances = playlist.venues
+    .map((venue) => venue.distance)
+    .filter(Boolean) as number[]
+
+  const distanceMax = distances.length === 0 ? 0 : Math.max(...distances)
+
   return (
     <Carousel
       title={
         <h2 className={styles['playlist-carousel-title']}>
-          {adageUser.institutionRuralLevel
-            ? institutionRuralLevelToPlaylistTitle[
-                adageUser.institutionRuralLevel
-              ]
-            : 'Partenaires culturels à moins de 30 minutes à pied de votre établissement'}
+          {getPlaylistTitle(distanceMax)}
         </h2>
       }
       className={classNames(styles['playlist-carousel'], {
