@@ -1,0 +1,21 @@
+<div class="form-floating flex-grow-1 {% if field.type == "PCIntegerField" or field.type == "PCOptIntegerField" %} d-inline-block {% elif field.type == "PCOptHiddenField" or field.type == "PCPostalCodeHiddenField" or field.type == "PCOptPostalCodeHiddenField" or field.type == "PCOptHiddenIntegerField" or field.type == "PCHiddenField" %} d-none {% endif %} pc-field-{{ field.name }}">
+  {% set string_field_id = random_hash() %}
+  <input {% if field.type == "PCIntegerField" or field.type == "PCOptIntegerField" or field.type == "PCOptHiddenIntegerField" or field.type == "PCDecimalField" %} type="number" {% elif field.type == "PCPasswordField" or field.type == "PCOptPasswordField" %} type="password" {% else %} type="text" {% endif %}
+         id="{{ string_field_id }}"
+         name="{{ field.name }}"
+         data-original-name="{{ field.name }}"
+         class="form-control value-element-form {% if field.flags.required %}pc-required{% endif %}"
+         value="{{ field.data | empty_string_if_null }}"
+         {% if field.type == "PCDecimalField" %}step="{{ 1/10**(field.places|int) }}"{% endif %}
+         {% if field.flags.required %}required {% endif +%}
+         {% if field.flags.readonly %}readonly {% endif +%}
+         {% if field.flags.pattern %}pattern="{{ field.flags.pattern }}"{% endif %}
+         {% if field.flags.minlength %}minlength="{{ field.flags.minlength }}"{% endif %}
+         {% if field.flags.maxlength %}maxlength="{{ field.flags.maxlength }}"{% endif %}
+         {% if field.flags.disabled %}disabled{% endif %}
+         {% if field.flags.max is not none %}max="{{ field.flags.max }}"{% endif %}
+         {% if field.flags.min is not none %}min="{{ field.flags.min }}"{% endif %} />
+  <label class="label-element-form"
+         data-original-name="{{ field.name }}"
+         for="{{ string_field_id }}">{{ field.label.text }}</label>
+</div>
