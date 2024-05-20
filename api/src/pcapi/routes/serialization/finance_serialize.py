@@ -58,6 +58,16 @@ class InvoiceResponseV2Model(BaseModel):
         return res
 
 
+class CombinedInvoiceListModel(BaseModel):
+    invoiceReferences: list[str]
+
+    @pydantic_v1.validator("invoiceReferences", pre=True)
+    def ensure_list(cls, v: list[str] | str) -> list[str]:
+        if isinstance(v, str):
+            return [v]
+        return v
+
+
 class InvoiceListV2ResponseModel(BaseModel):
     __root__: list[InvoiceResponseV2Model]
 
