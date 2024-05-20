@@ -10,7 +10,6 @@ from pcapi.core.offerers import models
 from pcapi.core.offerers import repository
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
-import pcapi.core.offers.models as offers_models
 from pcapi.core.users import factories as users_factories
 from pcapi.models.offer_mixin import OfferStatus
 
@@ -143,28 +142,6 @@ class FindNewOffererUserEmailTest:
     def test_find_unknown_email(self):
         with pytest.raises(exceptions.CannotFindOffererUserEmail):
             repository.find_new_offerer_user_email(offerer_id=1)
-
-
-@pytest.mark.usefixtures("db_session")
-def test_filter_query_where_user_is_user_offerer_and_is_validated():
-    # Given
-    offer1 = offers_factories.OfferFactory()
-    offer2 = offers_factories.OfferFactory()
-    offer3 = offers_factories.OfferFactory()
-    offerer1 = offer1.venue.managingOfferer
-    offerer2 = offer2.venue.managingOfferer
-    pro = users_factories.ProFactory()
-    offerers_factories.UserOffererFactory(user=pro, offerer=offerer1)
-    offerers_factories.UserOffererFactory(user=pro, offerer=offerer2)
-
-    # When
-    base_query = offers_models.Offer.query.join(models.Venue).join(models.Offerer)
-    offers = repository.filter_query_where_user_is_user_offerer_and_is_validated(base_query, pro).all()
-
-    # Then
-    assert offer1 in offers
-    assert offer2 in offers
-    assert offer3 not in offers
 
 
 class HasDigitalVenueWithAtLeastOneOfferTest:
