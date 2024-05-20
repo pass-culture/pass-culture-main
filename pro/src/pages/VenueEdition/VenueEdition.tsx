@@ -108,7 +108,7 @@ export const VenueEdition = (): JSX.Element | null => {
 
         <Routes>
           <Route
-            path="eac/*"
+            path="collectif/*"
             element={<CollectiveDataEdition venue={venue} />}
           />
           <Route path="*" element={<VenueEditionFormScreen venue={venue} />} />
