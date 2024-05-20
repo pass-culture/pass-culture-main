@@ -1,0 +1,1 @@
+{ "ENVIRONMENT": "staging", "JOB_BACKOFF_LIMIT": "0", "JOB_TTL_SECONDS_AFTER_FINISHED": "604800", "RESOURCES": "512Mi/0.5", "SCRIPT_ENTRYPOINT_URL": "https://github.com/pass-culture/pass-culture-main/blob/pc-29769-cancel-reimbursed-bookings/api/src/pcapi/scripts/reimburse_booking/main.py", "STEP_TIMEOUT_MINUTES": "360" }
