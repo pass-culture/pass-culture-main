@@ -1,15 +1,9 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import {
-  AdageFrontRoles,
-  AuthenticatedResponse,
-  InstitutionRuralLevel,
-  LocalOfferersPlaylistOffer,
-} from 'apiClient/adage'
+import { LocalOfferersPlaylistOffer } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import * as useNotification from 'hooks/useNotification'
-import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { VenuePlaylist } from '../VenuePlaylist'
@@ -33,26 +27,17 @@ const mockLocalOfferersPlaylistOffer: LocalOfferersPlaylistOffer = {
   publicName: 'Venue playlist offer 1',
 }
 
-const renderNewOfferPlaylist = (user: AuthenticatedResponse) => {
+const renderNewOfferPlaylist = () => {
   renderWithProviders(
-    <AdageUserContextProvider adageUser={user}>
-      <VenuePlaylist
-        onWholePlaylistSeen={mockOnWholePlaylistSeen}
-        trackPlaylistElementClicked={mockTrackPlaylistElementClicked}
-      />
-    </AdageUserContextProvider>
+    <VenuePlaylist
+      onWholePlaylistSeen={mockOnWholePlaylistSeen}
+      trackPlaylistElementClicked={mockTrackPlaylistElementClicked}
+    />
   )
 }
 
-describe('AdageDiscover classRoomPlaylist', () => {
+describe('VenuePlaylist', () => {
   const notifyError = vi.fn()
-  const user = {
-    role: AdageFrontRoles.REDACTOR,
-    uai: 'uai',
-    departmentCode: '30',
-    institutionName: 'COLLEGE BELLEVUE',
-    institutionCity: 'ALES',
-  }
 
   beforeEach(async () => {
     vi.spyOn(apiAdage, 'logConsultPlaylistElement')
@@ -76,17 +61,17 @@ describe('AdageDiscover classRoomPlaylist', () => {
   })
 
   it('should render venue playlist', async () => {
-    renderNewOfferPlaylist(user)
+    renderNewOfferPlaylist()
 
     expect(
       await screen.findByText(
-        'Partenaires culturels à moins de 30 minutes à pied de votre établissement'
+        'À environ 30 minutes de transport de mon établissement'
       )
     ).toBeInTheDocument()
   })
 
   it('should call tracker for venue playlist element', async () => {
-    renderNewOfferPlaylist(user)
+    renderNewOfferPlaylist()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
@@ -101,29 +86,26 @@ describe('AdageDiscover classRoomPlaylist', () => {
 
   it.each([
     {
-      level: InstitutionRuralLevel.RURAL_AUTONOME_PEU_DENSE,
-      title:
-        'Partenaires culturels à environ 1h de route de votre établissement',
+      distance: 3,
+      title: 'À moins de 30 minutes à pieds de mon établissement',
     },
     {
-      level: InstitutionRuralLevel.URBAIN_DENSIT_INTERM_DIAIRE,
-      title:
-        'Partenaires culturels à moins de 30 minutes de route de votre établissement',
+      distance: 15,
+      title: 'À environ 30 minutes de transport de mon établissement',
     },
     {
-      level: null,
-      title:
-        'Partenaires culturels à moins de 30 minutes à pied de votre établissement',
+      distance: 30,
+      title: 'À environ 1h de transport de mon établissement',
     },
   ])(
-    'should display the playlist title based on the institution rural level',
-    async (ruralLevelParam) => {
-      renderNewOfferPlaylist({
-        ...user,
-        institutionRuralLevel: ruralLevelParam.level,
+    'should display the playlist title based on the maximum venue distance',
+    async ({ distance, title }) => {
+      vi.spyOn(apiAdage, 'getLocalOfferersPlaylist').mockResolvedValueOnce({
+        venues: [{ ...mockLocalOfferersPlaylistOffer, distance }],
       })
+      renderNewOfferPlaylist()
 
-      expect(await screen.findByText(ruralLevelParam.title)).toBeInTheDocument()
+      expect(await screen.findByText(title)).toBeInTheDocument()
     }
   )
 })
