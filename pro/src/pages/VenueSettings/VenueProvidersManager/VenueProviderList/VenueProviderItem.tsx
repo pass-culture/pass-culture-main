@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { VenueProviderResponse } from 'apiClient/v1'
+import { GetVenueResponseModel, VenueProviderResponse } from 'apiClient/v1'
 import { getProviderInfo } from 'core/Providers/utils/getProviderInfo'
 import {
   isAllocineProvider,
@@ -15,17 +15,15 @@ import { ToggleVenueProviderStatusButton } from './ToggleVenueProviderStatusButt
 import style from './VenueProviderItem.module.scss'
 
 interface VenueProviderItemV2Props {
-  afterDelete: (deletedVenueProvider: number) => void
-  afterSubmit: (editedVenueProvider: VenueProviderResponse) => void
   venueProvider: VenueProviderResponse
+  venue: GetVenueResponseModel
   venueDepartmentCode?: string | null
   offererId: number
 }
 
 export const VenueProviderItem = ({
-  afterDelete,
-  afterSubmit,
   venueProvider,
+  venue,
   venueDepartmentCode,
   offererId,
 }: VenueProviderItemV2Props): JSX.Element => {
@@ -44,12 +42,12 @@ export const VenueProviderItem = ({
           <div className={style['provider-actions']}>
             <ToggleVenueProviderStatusButton
               venueProvider={venueProvider}
-              afterEdit={afterSubmit}
+              venue={venue}
             />
 
             <DeleteVenueProviderButton
-              afterDelete={afterDelete}
               venueProviderId={venueProvider.id}
+              venue={venue}
             />
           </div>
         </div>
@@ -93,7 +91,7 @@ export const VenueProviderItem = ({
       {isAllocineProvider(venueProvider.provider) && (
         <AllocineProviderParameters
           venueProvider={venueProvider}
-          afterVenueProviderEdit={afterSubmit}
+          venue={venue}
           offererId={offererId}
         />
       )}
@@ -101,7 +99,7 @@ export const VenueProviderItem = ({
       {isCinemaProvider(venueProvider.provider) && (
         <CinemaProviderParameters
           venueProvider={venueProvider}
-          afterVenueProviderEdit={afterSubmit}
+          venue={venue}
           offererId={offererId}
         />
       )}

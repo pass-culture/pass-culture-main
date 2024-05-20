@@ -4,7 +4,6 @@ import { api } from 'apiClient/api'
 import { getHumanReadableApiError } from 'apiClient/helpers'
 import {
   PostVenueProviderBody,
-  VenueProviderResponse,
   GetVenueResponseModel,
   ProviderResponse,
 } from 'apiClient/v1'
@@ -19,7 +18,7 @@ import { CinemaProviderForm } from './CinemaProviderForm/CinemaProviderForm'
 import { StocksProviderForm } from './StocksProviderForm/StocksProviderForm'
 
 interface VenueProviderFormProps {
-  afterSubmit: (createdVenueProvider?: VenueProviderResponse) => void
+  afterSubmit: () => Promise<void>
   provider: ProviderResponse
   venue: GetVenueResponseModel
 }
@@ -36,14 +35,14 @@ export const VenueProviderForm = ({
     payload?: PostVenueProviderBody
   ): Promise<boolean> => {
     try {
-      const createdVenueProvider = await api.createVenueProvider(payload)
+      await api.createVenueProvider(payload)
 
       notify.success('La synchronisation a bien été initiée.')
-      afterSubmit(createdVenueProvider)
+      await afterSubmit()
       return true
     } catch (error) {
       notify.error(getHumanReadableApiError(error))
-      afterSubmit()
+      await afterSubmit()
       return false
     }
   }

@@ -1,40 +1,20 @@
-import React, { useState } from 'react'
+import React from 'react'
 
 import { VenueProviderResponse, GetVenueResponseModel } from 'apiClient/v1'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 
 import { AddVenueProviderButton } from './AddVenueProviderButton'
-import { VenueProviderList } from './VenueProviderList/VenueProviderList'
+import { VenueProviderItem } from './VenueProviderList/VenueProviderItem'
 
 interface OffersSynchronization {
-  venueProvider: VenueProviderResponse[]
+  venueProviders: VenueProviderResponse[]
   venue: GetVenueResponseModel
 }
 
 export const OffersSynchronization = ({
   venue,
-  venueProvider,
+  venueProviders,
 }: OffersSynchronization) => {
-  const [venueProviders, setVenueProviders] =
-    useState<VenueProviderResponse[]>(venueProvider)
-
-  const afterVenueProviderEdit = (
-    editedVenueProvider: VenueProviderResponse
-  ) => {
-    const newVenueProviders = venueProviders.map((venueProvider) =>
-      venueProvider.id === editedVenueProvider.id
-        ? editedVenueProvider
-        : venueProvider
-    )
-    setVenueProviders(newVenueProviders)
-  }
-
-  const afterVenueProviderDelete = (deletedVenueProviderId: number) => {
-    const newVenueProviders = venueProviders.filter(
-      (venueProvider) => venueProvider.id !== deletedVenueProviderId
-    )
-    setVenueProviders(newVenueProviders)
-  }
   return (
     <FormLayout.Section
       title="Gestion des synchronisations"
@@ -42,17 +22,19 @@ export const OffersSynchronization = ({
     >
       <FormLayout.Row>
         {venueProviders.length > 0 ? (
-          <VenueProviderList
-            afterVenueProviderDelete={afterVenueProviderDelete}
-            afterVenueProviderEdit={afterVenueProviderEdit}
-            venue={venue}
-            venueProviders={venueProviders}
-          />
+          <ul>
+            {venueProviders.map((venueProvider) => (
+              <VenueProviderItem
+                key={venueProvider.id}
+                venueProvider={venueProvider}
+                venue={venue}
+                venueDepartmentCode={venue.departementCode}
+                offererId={venue.managingOfferer.id}
+              />
+            ))}
+          </ul>
         ) : (
-          <AddVenueProviderButton
-            setVenueProviders={setVenueProviders}
-            venue={venue}
-          />
+          <AddVenueProviderButton venue={venue} />
         )}
       </FormLayout.Row>
     </FormLayout.Section>
