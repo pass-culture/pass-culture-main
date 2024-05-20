@@ -12,14 +12,6 @@ import {
 
 import { Offerers, OfferersProps } from '../Offerers'
 
-vi.mock('react-router-dom', async () => ({
-  ...(await vi.importActual('react-router-dom')),
-  useLoaderData: vi.fn(() => ({
-    venueTypes: [],
-    offererNames: [{ name: 'name', id: 1 }],
-  })),
-}))
-
 const renderOfferers = (
   props: Partial<OfferersProps> = {},
   options?: RenderWithProvidersOptions
@@ -30,6 +22,7 @@ const renderOfferers = (
       selectedOfferer={defaultGetOffererResponseModel}
       isLoading={false}
       isUserOffererValidated
+      venueTypes={[]}
       {...props}
     />,
     options

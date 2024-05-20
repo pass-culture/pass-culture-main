@@ -1,7 +1,6 @@
 import { screen } from '@testing-library/react'
-import * as router from 'react-router-dom'
 
-import { DMSApplicationstatus, VenueTypeCode } from 'apiClient/v1'
+import { DMSApplicationstatus } from 'apiClient/v1'
 import { defaultDMSApplicationForEAC } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -25,18 +24,7 @@ const renderPartnerPageCollectiveSection = (
   )
 }
 
-vi.mock('react-router-dom', async () => ({
-  ...(await vi.importActual('react-router-dom')),
-  useLoaderData: vi.fn(),
-}))
-
 describe('PartnerPages', () => {
-  beforeEach(() => {
-    vi.spyOn(router, 'useLoaderData').mockReturnValue({
-      venueTypes: [{ id: VenueTypeCode.FESTIVAL, label: 'Festival' }],
-    })
-  })
-
   it('should display the EAC section when no adage', () => {
     renderPartnerPageCollectiveSection({
       collectiveDmsApplications: [],

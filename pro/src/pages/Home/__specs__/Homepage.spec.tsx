@@ -1,9 +1,12 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as router from 'react-router-dom'
+import React from 'react'
 
 import { api } from 'apiClient/api'
-import { GetOffererResponseModel } from 'apiClient/v1'
+import {
+  GetOffererNameResponseModel,
+  GetOffererResponseModel,
+} from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { SAVED_OFFERER_ID_KEY } from 'core/shared/constants'
 import { formatBrowserTimezonedDateAsUTC } from 'utils/date'
@@ -25,10 +28,6 @@ vi.mock('@firebase/remote-config', () => ({
 
 vi.mock('utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn().mockReturnValue(false),
-}))
-vi.mock('react-router-dom', async () => ({
-  ...(await vi.importActual('react-router-dom')),
-  useLoaderData: vi.fn(),
 }))
 
 const reloadFn = vi.fn()
@@ -85,16 +84,19 @@ describe('Homepage', () => {
     },
   ]
 
-  const baseOfferersNames = baseOfferers.map((offerer) => ({
-    id: offerer.id,
-    name: offerer.name,
-  }))
+  const baseOfferersNames = baseOfferers.map(
+    (offerer): GetOffererNameResponseModel => ({
+      id: offerer.id,
+      name: offerer.name,
+      allowedOnAdage: true,
+    })
+  )
 
   beforeEach(() => {
     vi.spyOn(api, 'getProfile')
-    vi.spyOn(router, 'useLoaderData').mockReturnValue({
-      venueTypes: [],
-      offererNames: baseOfferersNames,
+    vi.spyOn(api, 'getVenueTypes').mockResolvedValue([])
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNames: baseOfferersNames,
     })
     vi.spyOn(api, 'getOfferer').mockResolvedValue(baseOfferers[0])
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({

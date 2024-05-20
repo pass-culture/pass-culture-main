@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useSearchParams } from 'react-router-dom'
 
-import { GetOffererResponseModel } from 'apiClient/v1'
+import { GetOffererResponseModel, VenueTypeResponseModel } from 'apiClient/v1'
 import useAnalytics from 'app/App/analytics/firebase'
 import { RedirectDialog } from 'components/Dialog/RedirectDialog/RedirectDialog'
 import { SoftDeletedOffererWarning } from 'components/SoftDeletedOffererWarning/SoftDeletedOffererWarning'
@@ -25,6 +25,7 @@ export interface OfferersProps {
   isLoading: boolean
   isUserOffererValidated: boolean
   offererOptions: SelectOption[]
+  venueTypes: VenueTypeResponseModel[]
 }
 
 export const Offerers = ({
@@ -32,6 +33,7 @@ export const Offerers = ({
   selectedOfferer,
   isLoading,
   isUserOffererValidated,
+  venueTypes,
 }: OfferersProps) => {
   const [openSuccessDialog, setOpenSuccessDialog] = useState(false)
 
@@ -106,7 +108,11 @@ export const Offerers = ({
           />
 
           {selectedOfferer && permanentVenues.length > 0 && (
-            <PartnerPages venues={permanentVenues} offerer={selectedOfferer} />
+            <PartnerPages
+              venues={permanentVenues}
+              offerer={selectedOfferer}
+              venueTypes={venueTypes}
+            />
           )}
 
           {selectedOfferer && !isOffererSoftDeleted && (

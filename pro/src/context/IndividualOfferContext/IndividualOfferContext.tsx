@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from 'react'
-import { useLoaderData } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -13,8 +13,8 @@ import {
 import {
   GET_CATEGORIES_QUERY_KEY,
   GET_MUSIC_TYPES_QUERY_KEY,
+  GET_OFFER_QUERY_KEY,
 } from 'config/swrQueryKeys'
-import { IndividualOfferWizardLoaderData } from 'pages/IndividualOfferWizard/IndividualOfferWizard'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 export interface IndividualOfferContextValues {
@@ -46,10 +46,20 @@ interface IndividualOfferContextProviderProps {
   children: React.ReactNode
 }
 
-export function IndividualOfferContextProvider({
+export const IndividualOfferContextProvider = ({
   children,
-}: IndividualOfferContextProviderProps) {
-  const { offer } = useLoaderData() as IndividualOfferWizardLoaderData
+}: IndividualOfferContextProviderProps) => {
+  const { offerId } = useParams<{
+    offerId: string
+  }>()
+
+  const offerQuery = useSWR(
+    offerId && offerId !== 'creation'
+      ? [GET_OFFER_QUERY_KEY, Number(offerId)]
+      : null,
+    ([, offerIdParam]) => api.getOffer(offerIdParam)
+  )
+  const offer = offerQuery.data
 
   const offerer = offer ? offer.venue.managingOfferer : null
 
@@ -69,7 +79,7 @@ export function IndividualOfferContextProvider({
 
   const [subcategory, setSubcategory] = useState<SubcategoryResponseModel>()
 
-  if (categoriesQuery.isLoading) {
+  if (offerQuery.isLoading || categoriesQuery.isLoading) {
     return <Spinner />
   }
 
@@ -77,7 +87,7 @@ export function IndividualOfferContextProvider({
     <IndividualOfferContext.Provider
       value={{
         offerId: offer?.id || null,
-        offer,
+        offer: offer ?? null,
         categories: categoriesQuery.data.categories,
         subCategories: categoriesQuery.data.subcategories,
         musicTypes: musicTypesQuery.data,

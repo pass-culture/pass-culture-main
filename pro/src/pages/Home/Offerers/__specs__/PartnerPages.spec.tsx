@@ -1,6 +1,5 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as router from 'react-router-dom'
 
 import { VenueTypeCode } from 'apiClient/v1'
 import {
@@ -20,23 +19,13 @@ const renderPartnerPages = (props: Partial<PartnerPagesProps> = {}) => {
     <PartnerPages
       venues={[defaultGetOffererVenueResponseModel]}
       offerer={defaultGetOffererResponseModel}
+      venueTypes={[{ id: VenueTypeCode.FESTIVAL, label: 'Festival' }]}
       {...props}
     />
   )
 }
 
-vi.mock('react-router-dom', async () => ({
-  ...(await vi.importActual('react-router-dom')),
-  useLoaderData: vi.fn(),
-}))
-
 describe('PartnerPages', () => {
-  beforeEach(() => {
-    vi.spyOn(router, 'useLoaderData').mockReturnValue({
-      venueTypes: [{ id: VenueTypeCode.FESTIVAL, label: 'Festival' }],
-    })
-  })
-
   it('should not display select if only one venue', () => {
     renderPartnerPages({
       venues: [

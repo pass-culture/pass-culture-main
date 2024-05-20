@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import { useLoaderData } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
 import {
   GetOffererResponseModel,
   GetOffererVenueResponseModel,
+  VenueTypeResponseModel,
 } from 'apiClient/v1'
 import useAnalytics from 'app/App/analytics/firebase'
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
@@ -18,7 +18,6 @@ import { buildInitialValues } from 'pages/VenueEdition/VenueEditionHeader'
 import { postImageToVenue } from 'repository/pcapi/pcapi'
 
 import { Card } from '../Card'
-import { HomepageLoaderData } from '../Homepage'
 import { VenueOfferSteps } from '../VenueOfferSteps/VenueOfferSteps'
 
 import styles from './PartnerPage.module.scss'
@@ -28,13 +27,17 @@ import { PartnerPageIndividualSection } from './PartnerPageIndividualSection'
 export interface PartnerPageProps {
   offerer: GetOffererResponseModel
   venue: GetOffererVenueResponseModel
+  venueTypes: VenueTypeResponseModel[]
 }
 
-export const PartnerPage = ({ offerer, venue }: PartnerPageProps) => {
+export const PartnerPage = ({
+  offerer,
+  venue,
+  venueTypes,
+}: PartnerPageProps) => {
   const { logEvent } = useAnalytics()
   const { mutate } = useSWRConfig()
   const notify = useNotification()
-  const { venueTypes } = useLoaderData() as HomepageLoaderData
   const venueType = venueTypes.find(
     (venueType) => venueType.id === venue.venueTypeCode
   )

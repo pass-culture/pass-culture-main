@@ -1,6 +1,7 @@
 import { FormikProvider, useFormik } from 'formik'
 import React, { useEffect, useState } from 'react'
-import { useFetcher, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import {
@@ -14,6 +15,7 @@ import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/cons
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { StockFormActions } from 'components/StockFormActions/StockFormActions'
 import { StockFormRowAction } from 'components/StockFormActions/types'
+import { GET_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
@@ -53,7 +55,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   const navigate = useNavigate()
   const notify = useNotification()
   const { subCategories } = useIndividualOfferContext()
-  const fetcher = useFetcher()
+  const { mutate } = useSWRConfig()
 
   const [stocks, setStocks] = useState<GetOfferStockResponseModel[]>([])
   const [isActivationCodeFormVisible, setIsActivationCodeFormVisible] =
@@ -165,10 +167,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     }
     try {
       await api.deleteStock(formik.values.stockId)
-      fetcher.submit(null, {
-        method: 'patch',
-        action: `/offre/individuelle/${offer.id}`,
-      })
+      await mutate([GET_OFFER_QUERY_KEY, offer.id])
       formik.resetForm({ values: STOCK_THING_FORM_DEFAULT_VALUES })
       notify.success('Le stock a été supprimé.')
     } catch {
