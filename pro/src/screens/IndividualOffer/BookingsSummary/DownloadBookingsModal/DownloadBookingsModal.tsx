@@ -78,7 +78,7 @@ export const DownloadBookingsModal = ({
     priceCategoriesCount: number
   ) => {
     const date = new Date(eventDate)
-    const day = mapDayToFrench(daysOfWeek[date.getDay()])
+    const day = mapDayToFrench(daysOfWeek[(date.getDay() + 6) % 7])
     return (
       <tr key={eventDate} className={style['table-row']}>
         <td className={style['table-column']}>
@@ -91,7 +91,11 @@ export const DownloadBookingsModal = ({
             withBorder={false}
             label={
               <div className={style['radio-label']}>
-                <abbr title={day} className={style['bookings-day']}>
+                <abbr
+                  title={day}
+                  className={style['bookings-day']}
+                  data-testid="short-week-day"
+                >
                   {day.substring(0, 3)}
                 </abbr>
                 <span>{format(date, FORMAT_DD_MM_YYYY)}</span>
