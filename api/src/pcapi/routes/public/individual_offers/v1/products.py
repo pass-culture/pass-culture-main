@@ -64,7 +64,7 @@ def get_offerer_venues(
     """
     Get offerer venues
 
-    Get venues attached to the API key for given offerer
+    Return all the venues attached to the API key for given offerer.
     """
     rows = offerers_api.get_providers_offerer_and_venues(current_api_key.provider, query.siren)
     return venues_serialization.GetOfferersVenuesResponse.serialize_offerers_venues(rows)
@@ -219,7 +219,7 @@ def post_product_offer(body: serialization.ProductOfferCreation) -> serializatio
     """
     Create product
 
-    Create a product in authorized categories
+    Create a product in authorized categories.
     """
     venue = utils.retrieve_venue_from_location(body.location)
 
@@ -519,6 +519,8 @@ def _create_offer_from_product(
 def get_product(product_id: int) -> serialization.ProductOfferResponse:
     """
     Get product offer
+
+    Return a product offer by id.
     """
     offer: offers_models.Offer | None = (
         utils.retrieve_offer_relations_query(utils.retrieve_offer_query(product_id))
@@ -552,7 +554,7 @@ def get_product_by_ean(
     """
     Get product offers by EAN
 
-    Get product offers using their European Article Number (EAN-13).
+    Return all the product offers of a given venue matching given EANs (European Article Number, EAN-13).
     """
     utils.check_venue_id_is_tied_to_api_key(query.venueId)
     offers: list[offers_models.Offer] | None = (
@@ -602,7 +604,7 @@ def get_products(
     """
     Get venue products
 
-    Get all products linked to a venue. Results are paginated.
+    Return all products linked to a venue. Results are paginated (by default `50` products by page).
     """
     utils.check_venue_id_is_tied_to_api_key(query.venue_id)
     total_offers_query = utils.retrieve_offers(
@@ -652,7 +654,8 @@ def edit_product(body: serialization.ProductOfferEdition) -> serialization.Produ
     """
     Update product offer
 
-    Leave fields undefined to keep their current value.
+    Will update only the non-blank fields.
+    If you want to keep the current value of certains fields, leave them `undefined`.
     """
     offer = (
         utils.retrieve_offer_relations_query(utils.retrieve_offer_query(body.offer_id))
@@ -773,6 +776,11 @@ def get_product_categories() -> serialization.GetProductCategoriesResponse:
 )
 @api_key_required
 def upload_image(offer_id: int, form: serialization.ImageUploadFile) -> None:
+    """
+    Upload an image
+
+    Upload an image for given offer.
+    """
     offer = utils.retrieve_offer_relations_query(utils.retrieve_offer_query(offer_id)).one_or_none()
     if not offer:
         raise api_errors.ApiErrors({"offerId": ["The offer could not be found"]}, status_code=404)
