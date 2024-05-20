@@ -1,8 +1,14 @@
 import React, { useState } from 'react'
+import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import { getHumanReadableApiError } from 'apiClient/helpers'
-import { PostVenueProviderBody, VenueProviderResponse } from 'apiClient/v1'
+import {
+  GetVenueResponseModel,
+  PostVenueProviderBody,
+  VenueProviderResponse,
+} from 'apiClient/v1'
+import { GET_VENUE_PROVIDERS_QUERY_KEY } from 'config/swrQueryKeys'
 import useNotification from 'hooks/useNotification'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -14,24 +20,25 @@ import style from './AllocineProviderParameters.module.scss'
 
 interface AllocineProviderParametersProps {
   venueProvider: VenueProviderResponse
-  afterVenueProviderEdit: (editedVenueProvider: VenueProviderResponse) => void
+  venue: GetVenueResponseModel
   offererId: number
 }
 
 export const AllocineProviderParameters = ({
   venueProvider,
-  afterVenueProviderEdit,
+  venue,
   offererId,
 }: AllocineProviderParametersProps): JSX.Element => {
   const [isOpenedFormDialog, setIsOpenedFormDialog] = useState(false)
   const notification = useNotification()
+  const { mutate } = useSWRConfig()
 
   const editVenueProvider = async (
     payload: PostVenueProviderBody
   ): Promise<boolean> => {
     try {
-      const editedVenueProvider = await api.updateVenueProvider(payload)
-      afterVenueProviderEdit(editedVenueProvider)
+      await api.updateVenueProvider(payload)
+      await mutate([GET_VENUE_PROVIDERS_QUERY_KEY, venue.id])
       notification.success(
         "Les modifications ont bien été importées et s'appliqueront aux nouvelles séances créées."
       )

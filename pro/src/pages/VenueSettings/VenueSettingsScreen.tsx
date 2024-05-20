@@ -34,7 +34,7 @@ interface VenueSettingsFormScreenProps {
   offerer: GetOffererResponseModel
   venueLabels: SelectOption[]
   venueTypes: VenueTypeResponseModel[]
-  venueProviders?: VenueProviderResponse[]
+  venueProviders: VenueProviderResponse[]
   venue: GetVenueResponseModel
 }
 
@@ -180,7 +180,7 @@ export const VenueSettingsFormScreen = ({
             updateIsSiretValued={setIsSiretValued}
             venueLabels={venueLabels}
             venueTypes={venueTypes}
-            venueProvider={venueProviders}
+            venueProviders={venueProviders}
             venue={venue}
             offerer={offerer}
           />

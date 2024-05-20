@@ -1,7 +1,9 @@
-import React, { useCallback, useState } from 'react'
+import React, { useState } from 'react'
+import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
-import { VenueProviderResponse } from 'apiClient/v1'
+import { GetVenueResponseModel, VenueProviderResponse } from 'apiClient/v1'
+import { GET_VENUE_PROVIDERS_QUERY_KEY } from 'config/swrQueryKeys'
 import useNotification from 'hooks/useNotification'
 import fullPauseIcon from 'icons/full-pause.svg'
 import fullPlayIcon from 'icons/full-play.svg'
@@ -14,18 +16,19 @@ import style from './VenueProviderItem.module.scss'
 
 interface ToggleVenueProviderStatusButtonProps {
   venueProvider: VenueProviderResponse
-  afterEdit: (venueProvider: VenueProviderResponse) => void
+  venue: GetVenueResponseModel
 }
 
 export const ToggleVenueProviderStatusButton = ({
   venueProvider,
-  afterEdit,
+  venue,
 }: ToggleVenueProviderStatusButtonProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const notification = useNotification()
+  const { mutate } = useSWRConfig()
 
-  const updateVenueProviderStatus = useCallback(async () => {
+  const updateVenueProviderStatus = async () => {
     setIsLoading(true)
     const payload = {
       ...venueProvider,
@@ -34,8 +37,8 @@ export const ToggleVenueProviderStatusButton = ({
     }
 
     try {
-      const editedVenueProvider = await api.updateVenueProvider(payload)
-      afterEdit(editedVenueProvider)
+      await api.updateVenueProvider(payload)
+      await mutate([GET_VENUE_PROVIDERS_QUERY_KEY, venue.id])
     } catch {
       notification.error(
         'Une erreur est survenue. Merci de réessayer plus tard'
@@ -44,7 +47,7 @@ export const ToggleVenueProviderStatusButton = ({
       setIsModalOpen(false)
       setIsLoading(false)
     }
-  }, [notification, venueProvider])
+  }
 
   return (
     <>
