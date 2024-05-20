@@ -462,3 +462,32 @@ class OffererAddressFactory(BaseFactory):
 
     class Meta:
         model = models.OffererAddress
+
+
+class OffererConfidenceRuleFactory(BaseFactory):
+    class Meta:
+        model = models.OffererConfidenceRule
+
+    # One (and only one) must be set
+    offerer = None
+    venue = None
+
+
+class ManualReviewOffererConfidenceRuleFactory(OffererConfidenceRuleFactory):
+    offerer = factory.SubFactory(OffererFactory)
+    confidenceLevel = models.OffererConfidenceLevel.MANUAL_REVIEW
+
+
+class WhitelistedOffererConfidenceRuleFactory(OffererConfidenceRuleFactory):
+    offerer = factory.SubFactory(OffererFactory)
+    confidenceLevel = models.OffererConfidenceLevel.WHITELIST
+
+
+class ManualReviewVenueConfidenceRuleFactory(OffererConfidenceRuleFactory):
+    venue = factory.SubFactory(VenueFactory)
+    confidenceLevel = models.OffererConfidenceLevel.MANUAL_REVIEW
+
+
+class WhitelistedVenueConfidenceRuleFactory(OffererConfidenceRuleFactory):
+    venue = factory.SubFactory(VenueFactory)
+    confidenceLevel = models.OffererConfidenceLevel.WHITELIST
