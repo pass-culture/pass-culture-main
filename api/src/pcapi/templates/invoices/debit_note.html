@@ -269,30 +269,5 @@
   sens de l’article 267 du code général des impôts, et qu’à ce
   titre, les offreurs pourront ainsi régulariser leur base imposable (article 267 du CGI).
 </p>
-<h3>Montant des remboursements par lieu et détail de la part individuelle et collective</h3>
-<table class="reimbursmentByVenueTable">
-  <thead>
-  <tr>
-    <th>Lieux</th>
-    <th>Montant des réservations validées (TTC)</th>
-    <th>Montant de la contribution offreur (TTC)</th>
-    <th class="coloredSection">Montant remboursé (TTC)</th>
-    <th class="minimizedCell">Dont offres individuelles (TTC)</th>
-    <th class="minimizedCell">Dont offres collectives (TTC)</th>
-  </tr>
-  </thead>
-  <tbody>
-  {% for venue in reimbursements_by_venue %}
-    <tr>
-      <td>{{ venue.venue_name }}</td>
-      <td>{{ venue.validated_booking_amount|fr_currency_opposite }} €</td>
-      <td>{{ (venue.validated_booking_amount - venue.reimbursed_amount)|fr_currency_opposite }} €</td>
-      <td class="coloredSection">{{ venue.reimbursed_amount|fr_currency_opposite }} €</td>
-      <td>{{ venue.individual_amount|fr_currency_opposite }} €</td>
-      <td>{{ (venue.reimbursed_amount - venue.individual_amount)|fr_currency_opposite }} €</td>
-    </tr>
-  {% endfor %}
-  </tbody>
-</table>
 </body>
 </html>
