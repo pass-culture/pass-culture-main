@@ -3,6 +3,8 @@ import typing
 from pcapi.utils.clean_accents import clean_accents
 
 
+NON_DIFFUSIBLE_TAG = "[ND]"
+
 REGION_DEPARTMENT_CODES: dict[str, tuple[str, ...]] = {
     "Auvergne-Rhône-Alpes": ("01", "03", "07", "15", "26", "38", "42", "43", "63", "69", "73", "74"),
     "Bourgogne-Franche-Comté": ("21", "25", "39", "58", "70", "71", "89", "90"),
@@ -37,26 +39,32 @@ def get_region_name_from_department(department: str | None) -> str:
     return "Aucune valeur"
 
 
-def get_department_code_from_postal_code(postal_code: str) -> str:
-    if postal_code[:3] == "202":
+def get_department_code_from_city_code(city_code: str) -> str:
+    """city_code can be either the postalCode or the inseeCode.
+    Trying to infer the departmentCode from the postalCode is
+    STRONGLY DISCOURAGED as there is no link between the prefix
+    of the postalCode and the departmentCode.
+    Please always use inseeCode.
+    """
+    if city_code[:3] == "202":
         return "2B"
 
-    if postal_code[:2] == "20":
+    if city_code[:2] == "20":
         return "2A"
 
     # Use a fake but distinguishable code for Monaco, used in
     # `core.educational.academis.ACADEMIES`.
-    if postal_code[:3] == "980":
+    if city_code[:3] == "980":
         return "98"
 
-    if postal_code[:2] > "95":
-        return postal_code[:3]
+    if city_code[:2] > "95":
+        return city_code[:3]
 
-    return postal_code[:2]
+    return city_code[:2]
 
 
 def get_region_name_from_postal_code(postal_code: str) -> str:
-    department_code = get_department_code_from_postal_code(postal_code)
+    department_code = get_department_code_from_city_code(postal_code)
     region = get_region_name_from_department(department_code)
     return region
 
