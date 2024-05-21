@@ -29,6 +29,10 @@
           {% if venue.web_presence %}
             {% for link in venue.web_presence.split(", ") %}
               <div class="text-truncate"
+                   data-bs-toggle="tooltip"
+                   data-bs-placement="top"
+                   data-bs-custom-class="primary-tooltip larger-tooltip"
+                   data-bs-title="{{ link }}"
                    style="max-width: 9ch">{{ links.build_safe_redirect_link(link) }}</div>
             {% endfor %}
           {% endif %}
