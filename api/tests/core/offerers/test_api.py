@@ -2968,6 +2968,26 @@ class AccessibilityProviderTest:
         assert venue.external_accessibility_url == "https://une-fausse-url.com"
         assert venue.external_accessibility_id == "mon-lieu-chez-acceslibre"
 
+    def test_acceslibre_matching(self):
+        venues_list = [offerers_factories.VenueFactory(isPermanent=True, isVirtual=False)]
+        venue = offerers_factories.VenueFactory(
+            isPermanent=True,
+            isVirtual=False,
+            name="Un lieu",
+            postalCode="75001",
+            city="Paris",
+            street="3 Rue de Valois",
+        )
+        venues_list.append(venue)
+
+        # match result is given by find_new_entries_by_activity in TestingBackend class in acceslibre connector
+        offerers_api.acceslibre_matching(batch_size=1000, dry_run=False, start_from_batch=1)
+
+        assert (
+            venue.external_accessibility_url == "https://acceslibre.beta.gouv.fr/app/activite/mon-lieu-chez-acceslibre/"
+        )
+        assert venue.external_accessibility_id == "mon-lieu-chez-acceslibre"
+
 
 class GetOffererConfidenceLevelTest:
     def test_no_rule(self):

@@ -3,6 +3,7 @@ from datetime import datetime
 import decimal
 import itertools
 import logging
+from math import ceil
 import re
 import secrets
 import time
@@ -2375,6 +2376,41 @@ def match_venue_with_new_entries(
                 externalAccessibilityUrl=matching_venue.web_url,
             )
             db.session.add(venue.accessibilityProvider)
+
+
+def acceslibre_matching(batch_size: int, dry_run: bool, start_from_batch: int) -> None:
+    """
+    For all permanent venues, we are looking for a match at acceslibre
+
+    If we use the --start-from-batch option, it will start synchronization from the given batch number
+    Use case: synchronization has failed with message "Could not update batch <n>"
+    """
+    venues_list = get_permanent_venues_without_accessibility_provider()
+    num_batches = ceil(len(venues_list) / batch_size)
+    if start_from_batch > num_batches:
+        logger.info("Start from batch must be less than %d", num_batches)
+        return
+
+    results_list = []
+
+    for activity in accessibility_provider.AcceslibreActivity:
+        if results_by_activity := accessibility_provider.find_new_entries_by_activity(activity):
+            results_list.extend(results_by_activity)
+
+    start_batch_index = start_from_batch - 1
+    for i in range(start_batch_index, num_batches):
+        batch_start = i * batch_size
+        batch_end = (i + 1) * batch_size
+        match_venue_with_new_entries(venues_list[batch_start:batch_end], results_list)
+
+        if not dry_run:
+            try:
+                db.session.commit()
+            except sa.exc.SQLAlchemyError:
+                logger.exception("Could not update batch %d", i + 1)
+                db.session.rollback()
+        else:
+            db.session.rollback()
 
 
 def update_offerer_address_label(offerer_address_id: int, new_label: str) -> None:
