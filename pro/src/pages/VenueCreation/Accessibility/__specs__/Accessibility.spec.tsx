@@ -155,13 +155,10 @@ describe('Accessibility', () => {
   })
 
   it('should display the acces libre callout in edition', () => {
-    renderAccessibility(
-      initialValues,
-      { isCreatingVenue: false, isVenuePermanent: true },
-      {
-        features: ['WIP_ACCESLIBRE'],
-      }
-    )
+    renderAccessibility(initialValues, {
+      isCreatingVenue: false,
+      isVenuePermanent: true,
+    })
 
     expect(
       screen.getByText(
@@ -171,13 +168,10 @@ describe('Accessibility', () => {
   })
 
   it('should not display the acces libre callout in edition for non permanent venues', () => {
-    renderAccessibility(
-      initialValues,
-      { isCreatingVenue: false, isVenuePermanent: false },
-      {
-        features: ['WIP_ACCESLIBRE'],
-      }
-    )
+    renderAccessibility(initialValues, {
+      isCreatingVenue: false,
+      isVenuePermanent: false,
+    })
 
     expect(
       screen.queryByText(
@@ -187,13 +181,7 @@ describe('Accessibility', () => {
   })
 
   it('should not display the acces libre callout in creation', () => {
-    renderAccessibility(
-      initialValues,
-      { isCreatingVenue: true },
-      {
-        features: ['WIP_ACCESLIBRE'],
-      }
-    )
+    renderAccessibility(initialValues, { isCreatingVenue: true })
 
     expect(
       screen.queryByText(
