@@ -138,28 +138,7 @@ def synchronize_accessibility_with_acceslibre(
 @click.argument("venue_ids", type=int, nargs=-1, required=True)
 @click.option("--dry-run", type=bool, default=True)
 def synchronize_venues_with_acceslibre(venue_ids: list[int], dry_run: bool = True) -> None:
-    for venue_id in venue_ids:
-        venue = offerers_models.Venue.query.filter_by(id=venue_id).one_or_none()
-        if venue is None:
-            logger.warning("Venue with id %s not found", venue_id)
-            continue
-
-        offerers_api.set_accessibility_provider_id(venue)
-        if not venue.accessibilityProvider:
-            logger.info("No match found at acceslibre for Venue %s ", venue_id)
-            continue
-
-        offerers_api.set_accessibility_infos_from_provider_id(venue)
-        db.session.add(venue)
-
-    if not dry_run:
-        try:
-            db.session.commit()
-        except sa.exc.SQLAlchemyError:
-            logger.exception("Could not update venues %s", venue_ids)
-            db.session.rollback()
-    else:
-        db.session.rollback()
+    offerers_api.synchronize_venues_with_acceslibre(venue_ids, dry_run)
 
 
 @blueprint.cli.command("acceslibre_matching")
