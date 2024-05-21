@@ -817,13 +817,13 @@ development = ["black", "flake8", "mypy", "pytest", "types-colorama"]
 
 [[package]]
 name = "commitizen"
-version = "3.25.0"
+version = "3.26.0"
 description = "Python commitizen client tool"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "commitizen-3.25.0-py3-none-any.whl", hash = "sha256:46b7f2a5a846df7414440d069aaa43b5d6c5a7f8840e68ae4c541492e93cd086"},
-    {file = "commitizen-3.25.0.tar.gz", hash = "sha256:65c9c5114ac2ded5ab1e1a75c2540adc27ae7291ed2db9290f9ed208178d1e99"},
+    {file = "commitizen-3.26.0-py3-none-any.whl", hash = "sha256:582437b9c95f41adb96cb7d4afee508f9925625b5f7179ce092899622be4da8b"},
+    {file = "commitizen-3.26.0.tar.gz", hash = "sha256:9c2fd63117b3b352e9553246efd29a7779f565f5d84b3f18a79ff3f50fef3104"},
 ]
 
 [package.dependencies]
@@ -5663,4 +5663,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "6a833e1fcbb990bedaf17fcae7d2e45d398ff65b2893e5d446b17bae878be161"
+content-hash = "1278f3662d1e65796af365ee75ef102bf8215dc05a64e7024148f46155fb2dfb"
