@@ -4,6 +4,7 @@
 /* eslint-disable */
 export type ReimbursementCsvQueryModel = {
   bankAccountId?: number;
+  offererId: number;
   reimbursementPeriodBeginningDate?: string;
   reimbursementPeriodEndingDate?: string;
 };
