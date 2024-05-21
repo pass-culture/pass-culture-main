@@ -75,7 +75,7 @@ class DMSGraphQLClient:
         if page_token:
             variables["after"] = page_token
         results = self.execute_query(GET_APPLICATIONS_WITH_DETAILS_QUERY_NAME, variables=variables)
-        dossiers = results["demarche"]["dossiers"]  # pylint: disable=unsubscriptable-object
+        dossiers = results["demarche"]["dossiers"]
         dms_demarche_response = dms_models.DmsProcessApplicationsResponse(**dossiers)
         logger.info(
             "[DMS] Found %s applications for procedure %d (page token :%s)",
@@ -99,7 +99,7 @@ class DMSGraphQLClient:
         if deletedSince:
             variables["deletedSince"] = deletedSince.isoformat()
         results = self.execute_query(GET_DELETED_APPLICATIONS_QUERY_NAME, variables=variables)
-        deleted_dossiers = results["demarche"]["deletedDossiers"]  # pylint: disable=unsubscriptable-object
+        deleted_dossiers = results["demarche"]["deletedDossiers"]
         dms_response = dms_models.DmsDeletedApplicationsResponse(**deleted_dossiers)
         logger.info(
             "[DMS] Found %s deleted applications for procedure %d",
@@ -150,7 +150,7 @@ class DMSGraphQLClient:
                 "[DMS] Unexpected error when marking on going", extra={"application_techid": application_techid}
             )
             raise exceptions.DmsGraphQLApiException()
-        errors = response["dossierPasserEnInstruction"]["errors"]  # pylint: disable=unsubscriptable-object
+        errors = response["dossierPasserEnInstruction"]["errors"]
         if errors:
             logger.error(
                 "[DMS] Error while marking application on going %s",
@@ -177,7 +177,7 @@ class DMSGraphQLClient:
                 extra={"application_techid": application_techid},
             )
             raise exceptions.DmsGraphQLApiException()
-        errors = response["dossierClasserSansSuite"]["errors"]  # pylint: disable=unsubscriptable-object
+        errors = response["dossierClasserSansSuite"]["errors"]
         if errors:
             logger.error(
                 "[DMS] Error while marking application without continuation %s",
@@ -191,7 +191,7 @@ class DMSGraphQLClient:
             GET_SINGLE_APPLICATION_QUERY_NAME, variables={"applicationNumber": application_number}
         )
 
-        return dms_models.DmsApplicationResponse(**response["dossier"])  # pylint: disable=unsubscriptable-object
+        return dms_models.DmsApplicationResponse(**response["dossier"])
 
     def get_bank_info_status(self, dossier_id: int) -> dict:
         variables = {"dossierNumber": dossier_id}
@@ -227,7 +227,7 @@ class DMSGraphQLClient:
         if page_token:
             variables["after"] = page_token
         results = self.execute_query(GET_BANK_INFO_APPLICATIONS_QUERY_NAME, variables=variables)
-        dossiers = results["demarche"]["dossiers"]  # pylint: disable=unsubscriptable-object
+        dossiers = results["demarche"]["dossiers"]
         nodes = dossiers["nodes"]
         logger.info(
             "[DS] Found %s applications for procedure %d (page token: %s)",
@@ -262,7 +262,7 @@ class DMSGraphQLClient:
         if page_token:
             variables["after"] = page_token
         results = self.execute_query(GET_EAC_APPLICATIONS_STATE_SIRET, variables=variables)
-        dossiers = results["demarche"]["dossiers"]  # pylint: disable=unsubscriptable-object
+        dossiers = results["demarche"]["dossiers"]
         nodes = dossiers["nodes"]
         logger.info(
             "[DMS] Found %s applications for procedure %d (page token :%s)",
@@ -295,7 +295,7 @@ def get_dms_stats(dms_application_id: int | None, api_v4: bool = False) -> DmsSt
     ):
         return None
 
-    dossier = dms_stats["dossier"]  # pylint: disable=unsubscriptable-object
+    dossier = dms_stats["dossier"]
     state = dossier["state"]
     match state:
         # Be careful, "dateDerniereModification" is updated when the "dossier" is archived; this update should not be

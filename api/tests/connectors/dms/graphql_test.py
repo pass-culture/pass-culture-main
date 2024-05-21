@@ -61,7 +61,7 @@ class DMSGraphQLTest:
         )
         query_result = self.client.execute(query, variable_values={"applicationNumber": 1})
 
-        result = dms_models.DmsApplicationResponse(**query_result["dossier"])  # pylint: disable=unsubscriptable-object
+        result = dms_models.DmsApplicationResponse(**query_result["dossier"])
         assert result == self.expected_dossier
 
     def test_get_applications_with_details_has_all_mandatory_fields(self):
@@ -78,7 +78,5 @@ class DMSGraphQLTest:
             nodes=[self.expected_dossier],
         )
 
-        result = dms_models.DmsProcessApplicationsResponse(
-            **result_query["demarche"]["dossiers"]  # pylint: disable=unsubscriptable-object
-        )
+        result = dms_models.DmsProcessApplicationsResponse(**result_query["demarche"]["dossiers"])
         assert result == expected

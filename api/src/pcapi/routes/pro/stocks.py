@@ -132,43 +132,42 @@ def upsert_stocks(
                 status_code=400,
             )
 
-    if stocks_to_edit:
-        existing_stocks = _get_existing_stocks_by_id(body.offer_id, stocks_to_edit)
-
     price_categories = {price_category.id: price_category for price_category in offer.priceCategories}
 
     upserted_stocks = []
     edited_stocks_with_update_info: list[tuple[offers_models.Stock, bool]] = []
     try:
         with transaction():
-            for stock_to_edit in stocks_to_edit:
-                if stock_to_edit.id not in existing_stocks:
-                    raise ApiErrors(
-                        {"stock_id": ["Le stock avec l'id %s n'existe pas" % stock_to_edit.id]},
-                        status_code=400,
+            if stocks_to_edit:
+                existing_stocks = _get_existing_stocks_by_id(body.offer_id, stocks_to_edit)
+                for stock_to_edit in stocks_to_edit:
+                    if stock_to_edit.id not in existing_stocks:
+                        raise ApiErrors(
+                            {"stock_id": ["Le stock avec l'id %s n'existe pas" % stock_to_edit.id]},
+                            status_code=400,
+                        )
+
+                    offers_validation.check_stock_has_price_or_price_category(offer, stock_to_edit, price_categories)
+
+                    edited_stock, is_beginning_updated = offers_api.edit_stock(
+                        existing_stocks[stock_to_edit.id],
+                        price=stock_to_edit.price,
+                        quantity=stock_to_edit.quantity,
+                        beginning_datetime=(
+                            serialization_utils.as_utc_without_timezone(stock_to_edit.beginning_datetime)
+                            if stock_to_edit.beginning_datetime
+                            else None
+                        ),
+                        booking_limit_datetime=(
+                            serialization_utils.as_utc_without_timezone(stock_to_edit.booking_limit_datetime)
+                            if stock_to_edit.booking_limit_datetime
+                            else None
+                        ),
+                        price_category=price_categories.get(stock_to_edit.price_category_id, None),
                     )
-
-                offers_validation.check_stock_has_price_or_price_category(offer, stock_to_edit, price_categories)
-
-                edited_stock, is_beginning_updated = offers_api.edit_stock(
-                    existing_stocks[stock_to_edit.id],
-                    price=stock_to_edit.price,
-                    quantity=stock_to_edit.quantity,
-                    beginning_datetime=(
-                        serialization_utils.as_utc_without_timezone(stock_to_edit.beginning_datetime)
-                        if stock_to_edit.beginning_datetime
-                        else None
-                    ),
-                    booking_limit_datetime=(
-                        serialization_utils.as_utc_without_timezone(stock_to_edit.booking_limit_datetime)
-                        if stock_to_edit.booking_limit_datetime
-                        else None
-                    ),
-                    price_category=price_categories.get(stock_to_edit.price_category_id, None),
-                )
-                if edited_stock:
-                    upserted_stocks.append(edited_stock)
-                    edited_stocks_with_update_info.append((edited_stock, is_beginning_updated))
+                    if edited_stock:
+                        upserted_stocks.append(edited_stock)
+                        edited_stocks_with_update_info.append((edited_stock, is_beginning_updated))
 
             for stock_to_create in stocks_to_create:
                 offers_validation.check_stock_has_price_or_price_category(offer, stock_to_create, price_categories)
