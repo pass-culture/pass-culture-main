@@ -32,7 +32,6 @@ import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { DETAILS_PRICE_LABEL } from './constants/labels'
 import { FormStock } from './FormStock/FormStock'
 import styles from './OfferEducationalStock.module.scss'
-import { ShowcaseBannerInfo } from './ShowcaseBannerInfo/ShowcaseBannerInfo'
 import {
   generateValidationSchema,
   showcaseOfferValidationSchema,
@@ -110,9 +109,6 @@ export const OfferEducationalStock = <
     resetForm({ values: initialValues })
   }, [initialValues, resetForm])
 
-  const displayElementsForShowcaseOption =
-    formik.values.educationalOfferType === EducationalOfferType.SHOWCASE
-
   return (
     <>
       <OfferEducationalActions
@@ -135,43 +131,40 @@ export const OfferEducationalStock = <
             )}
             <FormLayout.MandatoryInfo />
             <FormLayout.Section title="Date et prix">
-              {displayElementsForShowcaseOption ? (
-                <ShowcaseBannerInfo />
-              ) : (
-                <>
-                  <Callout
-                    className={styles['offer-educational-stock-banner']}
-                    links={[
-                      {
-                        href: 'https://passculture.zendesk.com/hc/fr/articles/4412973958673--Acteurs-culturels-Comment-modifier-une-offre-collective-pr%C3%A9-r%C3%A9serv%C3%A9e-',
-                        label:
-                          'Consultez l’article “Comment modifier ou annuler une offre collective préréservée/réservée”',
-                        isExternal: true,
-                      },
-                    ]}
-                  >
-                    Vous pourrez modifier ces informations en fonction de vos
-                    échanges avec l’établissement scolaire.
-                  </Callout>
-                  <p className={styles['description-text']}>
-                    Indiquez le prix global TTC de l’évènement et le nombre de
-                    personnes qui y participeront.
-                    <br />
-                    <span className={styles['description-text-italic']}>
-                      (Exemple : j’accueille 30 élèves à 5{NBSP}€ la place, le
-                      prix global de mon offre s’élève à 150{NBSP}€ TTC.)
-                    </span>
-                  </p>
-                  <FormStock
-                    mode={mode}
-                    disablePriceAndParticipantInputs={
-                      disablePriceAndParticipantInputs
-                    }
-                    preventPriceIncrease={preventPriceIncrease}
-                    offerDateCreated={offer.dateCreated}
-                  />
-                </>
-              )}
+              <>
+                <Callout
+                  className={styles['offer-educational-stock-banner']}
+                  links={[
+                    {
+                      href: 'https://passculture.zendesk.com/hc/fr/articles/4412973958673--Acteurs-culturels-Comment-modifier-une-offre-collective-pr%C3%A9-r%C3%A9serv%C3%A9e-',
+                      label:
+                        'Consultez l’article “Comment modifier ou annuler une offre collective préréservée/réservée”',
+                      isExternal: true,
+                    },
+                  ]}
+                >
+                  Vous pourrez modifier ces informations en fonction de vos
+                  échanges avec l’établissement scolaire.
+                </Callout>
+                <p className={styles['description-text']}>
+                  Indiquez le prix global TTC de l’évènement et le nombre de
+                  personnes qui y participeront.
+                  <br />
+                  <span className={styles['description-text-italic']}>
+                    (Exemple : j’accueille 30 élèves à 5{NBSP}€ la place, le
+                    prix global de mon offre s’élève à 150{NBSP}€ TTC.)
+                  </span>
+                </p>
+                <FormStock
+                  mode={mode}
+                  disablePriceAndParticipantInputs={
+                    disablePriceAndParticipantInputs
+                  }
+                  preventPriceIncrease={preventPriceIncrease}
+                  offerDateCreated={offer.dateCreated}
+                />
+              </>
+              )
               <FormLayout.Row>
                 <TextArea
                   className={styles['price-details']}
