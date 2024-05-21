@@ -103,6 +103,7 @@ def build_new_offer_from_product(
         venueId=venue.id,
         subcategoryId=product.subcategoryId,
         withdrawalDetails=venue.withdrawalDetails,
+        offererAddressId=venue.offererAddressId,
     )
 
 
