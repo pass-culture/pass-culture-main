@@ -3,8 +3,7 @@ import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { GetIndividualOfferResponseModel } from 'apiClient/v1'
-import { OfferStatus } from 'apiClient/v2'
+import { GetIndividualOfferResponseModel, OfferStatus } from 'apiClient/v1'
 import { Notification } from 'components/Notification/Notification'
 import {
   IndividualOfferContextValues,

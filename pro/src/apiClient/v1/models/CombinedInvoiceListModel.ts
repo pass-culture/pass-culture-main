@@ -2,10 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type OffererResponse = {
-  createdDatetime: string;
-  id: number;
-  name: string;
-  siren?: string | null;
+export type CombinedInvoiceListModel = {
+  invoiceReferences: Array<string>;
 };
 
