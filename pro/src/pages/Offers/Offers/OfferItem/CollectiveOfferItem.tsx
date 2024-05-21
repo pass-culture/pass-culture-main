@@ -18,7 +18,7 @@ type CollectiveOfferItemProps = {
   disabled: boolean
   isSelected: boolean
   offer: CollectiveOfferResponseModel
-  selectOffer: (offerId: number, selected: boolean, isTemplate: boolean) => void
+  selectOffer: (offerId: number, selected: boolean) => void
   editionOfferLink: string
   venue: ListOffersVenueResponseModel
   audience: Audience
@@ -42,7 +42,6 @@ export const CollectiveOfferItem = ({
         disabled={disabled}
         isSelected={isSelected}
         selectOffer={selectOffer}
-        isShowcase={Boolean(offer.isShowcase)}
       />
 
       <ThumbCell offer={offer} editionOfferLink={editionOfferLink} />
