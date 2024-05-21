@@ -133,6 +133,3 @@ When('I go to {string} menu', (menu: string) => {
   cy.contains(menu).click()
 })
 
-When('I pause', () => {
-  cy.pause()
-})
