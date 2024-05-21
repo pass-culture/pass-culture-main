@@ -1998,6 +1998,7 @@ export class DefaultService {
   }
   /**
    * get_reimbursements_csv <GET>
+   * @param offererId
    * @param bankAccountId
    * @param reimbursementPeriodBeginningDate
    * @param reimbursementPeriodEndingDate
@@ -2005,6 +2006,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public getReimbursementsCsv(
+    offererId: number,
     bankAccountId?: number,
     reimbursementPeriodBeginningDate?: string,
     reimbursementPeriodEndingDate?: string,
@@ -2013,6 +2015,7 @@ export class DefaultService {
       method: 'GET',
       url: '/reimbursements/csv',
       query: {
+        'offererId': offererId,
         'bankAccountId': bankAccountId,
         'reimbursementPeriodBeginningDate': reimbursementPeriodBeginningDate,
         'reimbursementPeriodEndingDate': reimbursementPeriodEndingDate,
