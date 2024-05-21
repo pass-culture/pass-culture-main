@@ -12,6 +12,7 @@ import {
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { BannerPublicApi } from 'components/Banner/BannerPublicApi'
 import { Callout } from 'components/Callout/Callout'
+import { CalloutVariant } from 'components/Callout/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OfferEducationalActions } from 'components/OfferEducationalActions/OfferEducationalActions'
 import { MAX_DETAILS_LENGTH } from 'core/OfferEducational/constants'
@@ -130,29 +131,31 @@ export const OfferEducationalStock = <
               </BannerPublicApi>
             )}
             <FormLayout.MandatoryInfo />
+            <Callout
+              className={styles['offer-educational-stock-banner']}
+              links={[
+                {
+                  href: 'https://passculture.zendesk.com/hc/fr/articles/4412973958673--Acteurs-culturels-Comment-modifier-une-offre-collective-pr%C3%A9-r%C3%A9serv%C3%A9e-',
+                  label:
+                    'Consultez l’article “Comment modifier ou annuler une offre collective pré-réservée”',
+                  isExternal: true,
+                },
+              ]}
+              variant={CalloutVariant.INFO}
+            >
+              Vous pouvez modifier ces informations en fonction de vos échanges
+              avec l’établissement scolaire tant que le chef d’établissement n’a
+              pas validé la réservation.
+            </Callout>
             <FormLayout.Section title="Date et prix">
               <>
-                <Callout
-                  className={styles['offer-educational-stock-banner']}
-                  links={[
-                    {
-                      href: 'https://passculture.zendesk.com/hc/fr/articles/4412973958673--Acteurs-culturels-Comment-modifier-une-offre-collective-pr%C3%A9-r%C3%A9serv%C3%A9e-',
-                      label:
-                        'Consultez l’article “Comment modifier ou annuler une offre collective préréservée/réservée”',
-                      isExternal: true,
-                    },
-                  ]}
-                >
-                  Vous pourrez modifier ces informations en fonction de vos
-                  échanges avec l’établissement scolaire.
-                </Callout>
                 <p className={styles['description-text']}>
-                  Indiquez le prix global TTC de l’évènement et le nombre de
+                  Indiquez le prix total TTC de l’évènement et le nombre de
                   personnes qui y participeront.
                   <br />
                   <span className={styles['description-text-italic']}>
                     (Exemple : j’accueille 30 élèves à 5{NBSP}€ la place, le
-                    prix global de mon offre s’élève à 150{NBSP}€ TTC.)
+                    prix total global de mon offre s’élève à 150{NBSP}€ TTC.)
                   </span>
                 </p>
                 <FormStock
