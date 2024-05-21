@@ -81,8 +81,9 @@ describe('OffersFavorites', () => {
 
     renderAdageFavoritesOffers(user)
 
-    const loadingMessage = screen.queryByText(/Chargement en cours/)
-    await waitFor(() => expect(loadingMessage).not.toBeInTheDocument())
+    await waitFor(() =>
+      expect(screen.queryAllByTestId('spinner')).toHaveLength(0)
+    )
 
     const listItemsInOffer = await screen.findAllByTestId('offer-listitem')
 
@@ -98,7 +99,7 @@ describe('OffersFavorites', () => {
     renderAdageFavoritesOffers(user)
 
     await waitFor(() =>
-      expect(screen.queryByText(/Chargement en cours/)).not.toBeInTheDocument()
+      expect(screen.queryAllByTestId('spinner')).toHaveLength(0)
     )
 
     await userEvent.click(screen.getByText('Explorer le catalogue'))
@@ -115,7 +116,7 @@ describe('OffersFavorites', () => {
     renderAdageFavoritesOffers(user, ['WIP_ENABLE_ADAGE_VISUALIZATION'])
 
     await waitFor(() =>
-      expect(screen.queryByText(/Chargement en cours/)).not.toBeInTheDocument()
+      expect(screen.queryAllByTestId('spinner')).toHaveLength(0)
     )
 
     expect(
