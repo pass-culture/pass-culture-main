@@ -3778,6 +3778,8 @@ class UserRecreditTest:
                 dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
                 - relativedelta(years=user_age)
             )
+        else:
+            raise ValueError(f"Unexpected age: {user_age}")
 
         for recredit in user_recredits:
             factories.RecreditFactory(

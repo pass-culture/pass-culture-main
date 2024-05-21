@@ -624,6 +624,7 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
     venue_was_permanent = venue.isPermanent
     new_permanent = attrs.get("isPermanent")
     update_siret = False
+    unavailable_sirene = False
     if not venue.isVirtual and venue.siret != form.siret.data:
         new_siret = form.siret.data
 
@@ -662,8 +663,6 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
                 return render_venue_details(venue, form), 400
         except entreprise_exceptions.SireneException:
             unavailable_sirene = True
-        else:
-            unavailable_sirene = False
 
         update_siret = True
 
