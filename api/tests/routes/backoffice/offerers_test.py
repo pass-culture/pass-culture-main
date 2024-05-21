@@ -107,6 +107,7 @@ class GetOffererTest(GetEndpointHelper):
         assert "Peut créer une offre EAC : Oui" in content
         assert "Présence CB dans les lieux : 0 OK / 0 KO " in content
         assert "Tags structure : Collectivité Top acteur " in content
+        assert "Validation des offres : Suivre les règles" in content
         badges = html_parser.extract(response.data, tag="span", class_="badge")
         assert "Structure" in badges
         assert "Validée" in badges
@@ -273,6 +274,24 @@ class GetOffererTest(GetEndpointHelper):
             assert response.status_code == 200
 
         assert html_parser.get_soup(response.data).find(class_="subscription-tab-pane")
+
+    @pytest.mark.parametrize(
+        "factory, expected_text",
+        [
+            (offerers_factories.WhitelistedOffererConfidenceRuleFactory, "Validation auto"),
+            (offerers_factories.ManualReviewOffererConfidenceRuleFactory, "Revue manuelle"),
+        ],
+    )
+    def test_get_offerer_with_confidence_rule(self, authenticated_client, factory, expected_text):
+        rule = factory()
+        url = url_for(self.endpoint, offerer_id=rule.offerer.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        response_text = html_parser.content_as_text(response.data)
+        assert f"Validation des offres : {expected_text}" in response_text
 
     def test_get_offerer_which_does_not_exist(self, authenticated_client):
         response = authenticated_client.get(url_for(self.endpoint, offerer_id=12345))

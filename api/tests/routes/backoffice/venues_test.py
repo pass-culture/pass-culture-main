@@ -337,6 +337,9 @@ class GetVenueTest(GetEndpointHelper):
         assert f"Activité principale : {venue.venueTypeCode.value}" in response_text
         assert f"Label : {venue.venueLabel.label} " in response_text
         assert "Type de lieu" not in response_text
+        assert f"Structure : {venue.managingOfferer.name}" in response_text
+        assert "Site web : https://www.example.com" in response_text
+        assert "Validation des offres : Suivre les règles" in response_text
 
         badges = html_parser.extract(response.data, tag="span", class_="badge")
         assert "Lieu" in badges
@@ -494,6 +497,43 @@ class GetVenueTest(GetEndpointHelper):
             assert "Nouvelle interface" in badges
         if has_old_nav:
             assert "Ancienne interface" in badges
+
+    @pytest.mark.parametrize(
+        "factory, expected_text",
+        [
+            (offerers_factories.WhitelistedVenueConfidenceRuleFactory, "Validation auto"),
+            (offerers_factories.ManualReviewVenueConfidenceRuleFactory, "Revue manuelle"),
+        ],
+    )
+    def test_get_venue_with_confidence_rule(self, authenticated_client, factory, expected_text):
+        rule = factory()
+        url = url_for(self.endpoint, venue_id=rule.venue.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        response_text = html_parser.content_as_text(response.data)
+        assert f"Validation des offres : {expected_text}" in response_text
+
+    @pytest.mark.parametrize(
+        "factory, expected_text",
+        [
+            (offerers_factories.WhitelistedOffererConfidenceRuleFactory, "Validation auto (structure)"),
+            (offerers_factories.ManualReviewOffererConfidenceRuleFactory, "Revue manuelle (structure)"),
+        ],
+    )
+    def test_get_venue_with_offerer_confidence_rule(self, authenticated_client, factory, expected_text):
+        rule = factory()
+        venue = offerers_factories.VenueFactory(managingOfferer=rule.offerer)
+        url = url_for(self.endpoint, venue_id=venue.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        response_text = html_parser.content_as_text(response.data)
+        assert f"Validation des offres : {expected_text}" in response_text
 
 
 class GetVenueStatsDataTest:

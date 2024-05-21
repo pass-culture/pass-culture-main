@@ -173,6 +173,12 @@
                 <span class="fw-bold">Tags structure :</span>
                 {{ offerer.tags | sort(attribute="label") | format_tag_object_list | safe }}
               </p>
+              {% if has_permission("PRO_FRAUD_ACTIONS") %}
+                <p class="mb-1">
+                  <span class="fw-bold">Validation des offres :</span>
+                  {{ offerer | format_confidence_level(show_no_rule=true) }}
+                </p>
+              {% endif %}
             </div>
             <div class="col-4">
               <p class="mb-1">

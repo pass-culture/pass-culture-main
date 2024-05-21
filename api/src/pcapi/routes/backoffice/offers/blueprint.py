@@ -372,7 +372,12 @@ def _get_offers(form: forms.GetOfferAdvancedSearchForm) -> list[offers_models.Of
                 offerers_models.Venue.departementCode,
             )
             .contains_eager(offerers_models.Venue.managingOfferer)
-            .load_only(offerers_models.Offerer.id, offerers_models.Offerer.name),
+            .load_only(offerers_models.Offerer.id, offerers_models.Offerer.name)
+            .joinedload(offerers_models.Offerer.confidenceRule)
+            .load_only(offerers_models.OffererConfidenceRule.confidenceLevel),
+            sa.orm.contains_eager(offers_models.Offer.venue)
+            .joinedload(offerers_models.Venue.confidenceRule)
+            .load_only(offerers_models.OffererConfidenceRule.confidenceLevel),
             sa.orm.joinedload(offers_models.Offer.author).load_only(
                 users_models.User.id,
                 users_models.User.firstName,

@@ -232,6 +232,36 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
 
         assert rows[0]["ID"] == str(target_offer.id)
 
+    def test_list_collective_offer_templates_with_offerer_confidence_rule(self, client, pro_fraud_admin):
+        rule = offerers_factories.ManualReviewOffererConfidenceRuleFactory(offerer__name="Offerer")
+        collective_offer_template_id = educational_factories.CollectiveOfferTemplateFactory(
+            venue__managingOfferer=rule.offerer, venue__name="Venue"
+        ).id
+
+        client = client.with_bo_session_auth(pro_fraud_admin)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(url_for(self.endpoint, q=collective_offer_template_id))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert rows[0]["Structure"] == "Offerer Revue manuelle"
+        assert rows[0]["Lieu"] == "Venue"
+
+    def test_list_collective_offer_templates_with_venue_confidence_rule(self, client, pro_fraud_admin):
+        rule = offerers_factories.ManualReviewVenueConfidenceRuleFactory(
+            venue__name="Venue", venue__managingOfferer__name="Offerer"
+        )
+        collective_offer_template_id = educational_factories.CollectiveOfferTemplateFactory(venue=rule.venue).id
+
+        client = client.with_bo_session_auth(pro_fraud_admin)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(url_for(self.endpoint, q=collective_offer_template_id))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert rows[0]["Structure"] == "Offerer"
+        assert rows[0]["Lieu"] == "Venue Revue manuelle"
+
 
 class GetCollectiveOfferTemplateDetailTest(GetEndpointHelper):
     endpoint = "backoffice_web.collective_offer_template.get_collective_offer_template_details"

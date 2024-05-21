@@ -81,6 +81,7 @@ tables_to_clean: list[flask_sqlalchemy.Model] = [
     providers_models.CinemaProviderPivot,
     providers_models.AllocinePivot,
     providers_models.AllocineTheater,
+    offerers_models.OffererConfidenceRule,
     offerers_models.OffererAddress,
     geography_models.Address,
     offerers_models.VenuePricingPointLink,
