@@ -109,6 +109,9 @@ def update_venue(
     modifications = {field: value for field, value in attrs.items() if venue.field_exists_and_has_changed(field, value)}
     new_permanent = not venue.isPermanent and attrs.get("isPermanent")
 
+    if feature.FeatureToggle.ENABLE_API_ADRESSE_WHILE_CREATING_UPDATING_VENUE.is_active():
+        update_venue_location(venue, modifications)
+
     if not admin_update:
         # run validation when the venue update is triggered by a pro
         # user. This can be bypassed when done by and admin/backoffice
@@ -204,6 +207,37 @@ def update_venue(
         match_acceslibre_job.delay(venue.id)
 
     return venue
+
+
+def update_venue_location(venue: models.Venue, modifications: dict) -> None:
+    if any(field in modifications for field in ("street", "city", "postalCode")):
+        street = modifications.get("street") or venue.street
+        city = modifications.get("city") or venue.city
+        postalCode = modifications.get("postalCode") or venue.postalCode
+        logger.info(
+            "Updating venue location",
+            extra={"venue_id": venue.id, "venue_street": street, "venue_city": city, "venue_postalCode": postalCode},
+        )
+        address_info = get_address(street, postalCode, city)
+        address = get_or_create_address(address_info)
+        if not venue.offererAddressId:
+            offerer_address = get_or_create_offerer_address(venue.managingOffererId, address.id)
+            venue.offererAddress = offerer_address
+            db.session.add(venue)
+            db.session.flush()
+        else:
+            update_offerer_address(venue.offererAddressId, address.id)
+
+        if modifications.get("street"):
+            modifications["street"] = address.street
+        if modifications.get("city"):
+            modifications["city"] = address.city
+        if modifications.get("postalCode"):
+            modifications["postalCode"] = address.postalCode
+        if modifications.get("latitude"):
+            modifications["latitude"] = address.latitude
+        if modifications.get("longitude"):
+            modifications["longitude"] = address.longitude
 
 
 def update_venue_collective_data(
@@ -2419,3 +2453,15 @@ def get_offer_confidence_level(
         )
 
     return offerer_confidence_level or venue_confidence_level
+
+
+def update_offerer_address(offerer_address_id: int, address_id: int, label: str | None = None) -> None:
+    try:
+        db.session.query(offerers_models.OffererAddress).filter_by(id=offerer_address_id).update(
+            {"addressId": address_id, "label": label}
+        )
+        db.session.flush()
+    except sa.exc.IntegrityError as exc:
+        # We shouldn't enp up here, but if so log the exception so we can investigate
+        db.session.rollback()
+        logger.exception(exc)
