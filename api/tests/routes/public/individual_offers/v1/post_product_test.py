@@ -53,6 +53,7 @@ class PostProductTest:
         assert created_offer.bookingEmail is None
         assert created_offer.description is None
         assert created_offer.status == offer_mixin.OfferStatus.SOLD_OUT
+        assert created_offer.offererAddress.id == venue.offererAddress.id
 
         assert response.json == {
             "bookingContact": None,
@@ -135,6 +136,7 @@ class PostProductTest:
         assert created_offer.externalTicketOfficeUrl == "https://maposaic.com"
         assert created_offer.status == offer_mixin.OfferStatus.ACTIVE
         assert created_offer.withdrawalDetails == "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2"
+        assert created_offer.offererAddress.id == venue.offererAddress.id
 
         created_stock = offers_models.Stock.query.one()
         assert created_stock.price == decimal.Decimal("12.34")
