@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useSelector } from 'react-redux'
 import useSWR from 'swr'
 
@@ -24,6 +24,7 @@ import {
   computeCollectiveOffersUrl,
 } from 'core/Offers/utils/computeOffersUrl'
 import { hasSearchFilters } from 'core/Offers/utils/hasSearchFilters'
+import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
 import { Audience } from 'core/shared/types'
 import { SelectOption } from 'custom_types/form'
 import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
@@ -78,8 +79,7 @@ export const Offers = ({
   const [searchFilters, setSearchFilters] =
     useState<SearchFiltersParams>(initialSearchFilters)
 
-  const [areAllOffersSelected, setAreAllOffersSelected] = useState(false)
-  const [selectedOfferIds, setSelectedOfferIds] = useState<string[]>([])
+  const [selectedOfferIds, setSelectedOfferIds] = useState<number[]>([])
   const isNewSideBarNavigation = useIsNewInterfaceActive()
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
@@ -118,16 +118,26 @@ export const Offers = ({
     </ButtonLink>
   ) : undefined
 
-  const nbSelectedOffers = areAllOffersSelected
-    ? offers.length
-    : selectedOfferIds.length
+  const selectedOffers = offers.filter((offer) =>
+    selectedOfferIds.includes(offer.id)
+  )
 
-  const clearSelectedOfferIds = () => {
+  const areAllOffersSelected =
+    selectedOffers.length ===
+    offers.filter((offer) => !isOfferDisabled(offer.status)).length
+
+  function clearSelectedOfferIds() {
     setSelectedOfferIds([])
   }
 
-  const toggleSelectAllCheckboxes = () => {
-    setAreAllOffersSelected((currentValue) => !currentValue)
+  function toggleSelectAllCheckboxes() {
+    setSelectedOfferIds(
+      areAllOffersSelected
+        ? []
+        : offers
+            .filter((offer) => !isOfferDisabled(offer.status))
+            .map((offer) => offer.id)
+    )
   }
 
   const resetFilters = () => {
@@ -164,9 +174,9 @@ export const Offers = ({
     applyUrlFiltersAndRedirect(updatedFilters)
   }
 
-  const getUpdateOffersStatusMessage = (tmpSelectedOfferIds: string[]) => {
+  const getUpdateOffersStatusMessage = (tmpSelectedOfferIds: number[]) => {
     const selectedOffers = offers.filter((offer) =>
-      tmpSelectedOfferIds.includes(offer.id.toString())
+      tmpSelectedOfferIds.includes(offer.id)
     )
     if (selectedOffers.some((offer) => offer.status === OFFER_STATUS_DRAFT)) {
       return 'Vous ne pouvez pas publier des brouillons depuis cette liste'
@@ -180,12 +190,8 @@ export const Offers = ({
     return ''
   }
 
-  /* istanbul ignore next: DEBT, TO FIX */
-  const canDeleteOffers = (tmpSelectedOfferIds: string[]) => {
-    const selectedOffers = offers.filter((offer) =>
-      tmpSelectedOfferIds.includes(offer.id.toString())
-    )
-    return !selectedOffers.some((offer) => offer.status !== OFFER_STATUS_DRAFT)
+  const canDeleteOffers = () => {
+    return selectedOffers.some((offer) => offer.status !== OFFER_STATUS_DRAFT)
   }
 
   const isNewInterfaceActive = useIsNewInterfaceActive()
@@ -264,12 +270,12 @@ export const Offers = ({
           isAtLeastOneOfferChecked={selectedOfferIds.length > 0}
         />
       )}
-      {nbSelectedOffers > 0 && (
+      {selectedOfferIds.length > 0 && (
         <ActionsBar
           areAllOffersSelected={areAllOffersSelected}
           clearSelectedOfferIds={clearSelectedOfferIds}
-          nbSelectedOffers={nbSelectedOffers}
           selectedOfferIds={selectedOfferIds}
+          selectedOffers={selectedOffers}
           toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
           audience={audience}
           getUpdateOffersStatusMessage={getUpdateOffersStatusMessage}
