@@ -195,9 +195,15 @@ def _get_collective_offers(
                 offerers_models.Venue.departementCode,
             )
             # needed to check if stock is bookable and compute initial/remaining stock:
-            .joinedload(offerers_models.Venue.managingOfferer, innerjoin=True).load_only(
+            .joinedload(offerers_models.Venue.managingOfferer, innerjoin=True)
+            .load_only(
                 offerers_models.Offerer.name, offerers_models.Offerer.isActive, offerers_models.Offerer.validationStatus
-            ),
+            )
+            .joinedload(offerers_models.Offerer.confidenceRule)
+            .load_only(offerers_models.OffererConfidenceRule.confidenceLevel),
+            sa.orm.joinedload(educational_models.CollectiveOffer.venue, innerjoin=True)
+            .joinedload(offerers_models.Venue.confidenceRule)
+            .load_only(offerers_models.OffererConfidenceRule.confidenceLevel),
             sa.orm.joinedload(educational_models.CollectiveOffer.institution).load_only(
                 educational_models.EducationalInstitution.name,
                 educational_models.EducationalInstitution.institutionId,

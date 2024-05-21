@@ -161,6 +161,8 @@ def get_venue(venue_id: int) -> offerers_models.Venue:
         sa.orm.joinedload(offerers_models.Venue.managingOfferer)
         .with_expression(offerers_models.Offerer.hasNewNavUsers, has_new_nav_users_subquery)
         .with_expression(offerers_models.Offerer.hasOldNavUsers, has_old_nav_users_subquery)
+        .joinedload(offerers_models.Offerer.confidenceRule)
+        .load_only(offerers_models.OffererConfidenceRule.confidenceLevel)
     )
 
     venue_query = venue_query.options(
@@ -183,6 +185,9 @@ def get_venue(venue_id: int) -> offerers_models.Venue:
         ),
         sa.orm.joinedload(offerers_models.Venue.accessibilityProvider).load_only(
             offerers_models.AccessibilityProvider.externalAccessibilityId
+        ),
+        sa.orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
+            offerers_models.OffererConfidenceRule.confidenceLevel
         ),
     )
 

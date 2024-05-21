@@ -539,6 +539,32 @@ def format_compliance_reasons(features: list[str]) -> str:
     return format_as_badges([format_compliance_reason(feature) for feature in features])
 
 
+def format_confidence_level(
+    offerer_or_venue: offerers_models.Offerer | offerers_models.Venue,
+    recursive: bool = False,
+    show_no_rule: bool = False,
+    info: str = "",
+) -> str:
+    if offerer_or_venue.confidenceRule:
+        match offerer_or_venue.confidenceRule.confidenceLevel:
+            case offerers_models.OffererConfidenceLevel.MANUAL_REVIEW:
+                return Markup('<span class="badge text-bg-danger shadow-sm">Revue manuelle {info}</span>').format(
+                    info=info
+                )
+            case offerers_models.OffererConfidenceLevel.WHITELIST:
+                return Markup('<span class="badge text-bg-success shadow-sm">Validation auto {info}</span>').format(
+                    info=info
+                )
+
+    if recursive and isinstance(offerer_or_venue, offerers_models.Venue):
+        return format_confidence_level(offerer_or_venue.managingOfferer, show_no_rule=show_no_rule, info="(structure)")
+
+    if show_no_rule:
+        return Markup('<span class="badge text-bg-light shadow-sm">Suivre les règles</span>')
+
+    return ""
+
+
 def format_fraud_check_url(id_check_item: serialization_accounts.IdCheckItemModel) -> str:
     if id_check_item.type == fraud_models.FraudCheckType.UBBLE.value:
         return f"https://dashboard.ubble.ai/identifications/{id_check_item.thirdPartyId}"
@@ -1139,6 +1165,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_subcategories"] = format_subcategories
     app.jinja_env.filters["format_as_badges"] = format_as_badges
     app.jinja_env.filters["format_compliance_reasons"] = format_compliance_reasons
+    app.jinja_env.filters["format_confidence_level"] = format_confidence_level
     app.jinja_env.filters["format_criteria"] = format_criteria
     app.jinja_env.filters["format_tag_object_list"] = format_tag_object_list
     app.jinja_env.filters["format_fraud_review_status"] = format_fraud_review_status
