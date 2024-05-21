@@ -124,7 +124,6 @@ class FeatureToggle(enum.Enum):
     )
     WIP_OPENING_HOURS = "Activer les horaires d'ouverture sur la page partenaire"
     WIP_ENABLE_ADAGE_VISUALIZATION = "Activer la nouvelle manière de visualiser les offres dans la recherche d'ADAGE."
-    WIP_ACCESLIBRE = "Activer l'affichage des données Accès Libre sur les pages partenaires"
     WIP_ENABLE_TITELIVE_API_FOR_BOOKS = "Activer l'utilisation de l'API Titelive pour les synchronisations produits pour les livres(désactive l'utilisation de l'utilisation de FTP pour la synchro)"
     ENABLE_PRO_NEW_NAV_MODIFICATION = "Activer la modification du statut de la navigation du portail pro"
     WIP_ENABLE_NEW_HASHING_ALGORITHM = "Activer le nouveau système de hachage des clés publiques d'API"
@@ -181,7 +180,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
     FeatureToggle.LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC,
     FeatureToggle.SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS,
-    FeatureToggle.WIP_ACCESLIBRE,
     FeatureToggle.WIP_CONNECT_AS,
     FeatureToggle.WIP_ENABLE_ADAGE_PREVIEW_OFFER_IN_PRO,
     FeatureToggle.WIP_ENABLE_ADAGE_VISUALIZATION,
