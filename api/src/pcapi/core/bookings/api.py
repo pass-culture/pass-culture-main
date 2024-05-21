@@ -651,8 +651,6 @@ def cancel_bookings_from_rejected_offer(offer: offers_models.Offer) -> list[Book
         },
     )
 
-    ## TODO(PC-23549) rajouter un envoi de mail au pro pour l'annulation des réservations https://passculture.atlassian.net/browse/PC-23549
-
     return cancelled_bookings
 
 
