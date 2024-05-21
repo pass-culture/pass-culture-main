@@ -28,6 +28,7 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offer_validat
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerer_addresses import (
     create_industrial_offerer_addresses,
 )
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerer_confidence_rules import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerer_tags import create_industrial_offerer_tags
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerers import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_pro_users import *
@@ -144,3 +145,5 @@ def save_industrial_sandbox() -> None:
     create_industrial_venues_with_timezone()
 
     add_accessibility_compliance_to_venues()
+
+    create_industrial_offerer_confidence_rules()

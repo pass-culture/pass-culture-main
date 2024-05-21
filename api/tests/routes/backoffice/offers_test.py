@@ -1141,6 +1141,36 @@ class ListOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert rows[0]["Tarif"] == "10,00 € - 15,00 €"
 
+    def test_list_offers_with_offerer_confidence_rule(self, client, pro_fraud_admin):
+        rule = offerers_factories.ManualReviewOffererConfidenceRuleFactory(offerer__name="Offerer")
+        offer = offers_factories.OfferFactory(venue__managingOfferer=rule.offerer, venue__name="Venue")
+
+        client = client.with_bo_session_auth(pro_fraud_admin)
+        query_args = self._get_query_args_by_id(offer.id)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert rows[0]["Structure"] == "Offerer Revue manuelle"
+        assert rows[0]["Lieu"] == "Venue"
+
+    def test_list_offers_with_venue_confidence_rule(self, client, pro_fraud_admin):
+        rule = offerers_factories.ManualReviewVenueConfidenceRuleFactory(
+            venue__name="Venue", venue__managingOfferer__name="Offerer"
+        )
+        offer = offers_factories.OfferFactory(venue=rule.venue)
+
+        client = client.with_bo_session_auth(pro_fraud_admin)
+        query_args = self._get_query_args_by_id(offer.id)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert rows[0]["Structure"] == "Offerer"
+        assert rows[0]["Lieu"] == "Venue Revue manuelle"
+
 
 class EditOfferTest(PostEndpointHelper):
     endpoint = "backoffice_web.offer.edit_offer"

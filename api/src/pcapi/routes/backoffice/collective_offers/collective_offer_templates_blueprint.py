@@ -51,9 +51,15 @@ def _get_collective_offer_templates(
             offerers_models.Venue.managingOffererId, offerers_models.Venue.name, offerers_models.Venue.publicName
         )
         # needed to check if stock is bookable and compute initial/remaining stock:
-        .joinedload(offerers_models.Venue.managingOfferer).load_only(
+        .joinedload(offerers_models.Venue.managingOfferer)
+        .load_only(
             offerers_models.Offerer.name, offerers_models.Offerer.isActive, offerers_models.Offerer.validationStatus
-        ),
+        )
+        .joinedload(offerers_models.Offerer.confidenceRule)
+        .load_only(offerers_models.OffererConfidenceRule.confidenceLevel),
+        sa.orm.joinedload(educational_models.CollectiveOfferTemplate.venue)
+        .joinedload(offerers_models.Venue.confidenceRule)
+        .load_only(offerers_models.OffererConfidenceRule.confidenceLevel),
         sa.orm.joinedload(educational_models.CollectiveOfferTemplate.flaggingValidationRules).load_only(
             offers_models.OfferValidationRule.name
         ),

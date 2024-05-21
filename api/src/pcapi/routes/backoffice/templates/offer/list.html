@@ -180,8 +180,14 @@
                 <td>{{ offer.dateCreated | format_date("%d/%m/%Y") }}</td>
                 <td>{{ offer.lastValidationDate | format_date("%d/%m/%Y") }}</td>
                 <td>{{ offer.venue.departementCode | empty_string_if_null }}</td>
-                <td>{{ links.build_offerer_name_to_details_link(offer.venue.managingOfferer) }}</td>
-                <td>{{ links.build_venue_name_to_details_link(offer.venue) }}</td>
+                <td>
+                  {{ links.build_offerer_name_to_details_link(offer.venue.managingOfferer) }}
+                  {% if has_permission("PRO_FRAUD_ACTIONS") %}{{ offer.venue.managingOfferer | format_confidence_level }}{% endif %}
+                </td>
+                <td>
+                  {{ links.build_venue_name_to_details_link(offer.venue) }}
+                  {% if has_permission("PRO_FRAUD_ACTIONS") %}{{ offer.venue | format_confidence_level }}{% endif %}
+                </td>
                 <td>{{ links.build_venue_offers_icon_link_advanced(".list_offers", "Offres individuelles", offer.venue) }}</td>
               </tr>
             {% endfor %}
