@@ -90,6 +90,16 @@ describe('reimbursementsWithFilters', () => {
     vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
   })
 
+  it('should display the reimbursement details callout message', async () => {
+    renderReimbursementsDetails()
+
+    expect(
+      await screen.findByText(
+        /Nouveau ! Les détails de remboursements seront bientôt téléchargeables depuis l’onglet justificatif./
+      )
+    ).toBeInTheDocument()
+  })
+
   it('should not disable buttons when the period dates are filled', async () => {
     renderReimbursementsDetails()
 

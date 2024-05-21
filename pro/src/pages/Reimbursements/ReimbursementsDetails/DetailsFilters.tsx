@@ -1,5 +1,7 @@
 import React, { Dispatch, SetStateAction, useState } from 'react'
 
+import { Callout } from 'components/Callout/Callout'
+import { CalloutVariant } from 'components/Callout/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { SelectOption } from 'custom_types/form'
 import { Button } from 'ui-kit/Button/Button'
@@ -76,6 +78,10 @@ export const DetailsFilters = ({
 
   return (
     <>
+      <Callout variant={CalloutVariant.INFO}>
+        Nouveau ! Les détails de remboursements seront bientôt téléchargeables
+        depuis l’onglet justificatif.
+      </Callout>
       <div className={styles['header']}>
         <h2 className={styles['header-title']}>Affichage des remboursements</h2>
         <Button
