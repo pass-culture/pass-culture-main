@@ -2,11 +2,15 @@ from datetime import datetime
 from datetime import timedelta
 from unittest import mock
 
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import rsa
 import fakeredis
 import pytest
 import time_machine
 
+from pcapi import settings
 from pcapi.core import token as token_tools
+from pcapi.core.testing import override_settings
 from pcapi.core.users.exceptions import InvalidToken
 from pcapi.core.users.utils import encode_jwt_payload
 
@@ -190,3 +194,98 @@ class SecureTokenTest:
         app.redis_client.delete(f"pcapi:token:SecureToken_{original_token.token}")
         with pytest.raises(InvalidToken):
             token_tools.SecureToken(token=original_token.token)
+
+
+class AsymetricTokenTest:
+    token_type = token_tools.TokenType.EMAIL_CHANGE_CONFIRMATION
+    ttl = timedelta(days=1)
+    data = {"key1": "value1", "key2": "value2"}
+    private_key = rsa.generate_private_key(
+        public_exponent=65537,
+        key_size=4096,
+    )
+    private_key_pem = private_key.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.TraditionalOpenSSL,
+        encryption_algorithm=serialization.NoEncryption(),
+    )
+    public_key = private_key.public_key()
+    public_key_pem = public_key.public_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo,
+    )
+    wrong_private_key = rsa.generate_private_key(
+        public_exponent=65537,
+        key_size=4096,
+    )
+    wrong_private_key_pem = wrong_private_key.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.TraditionalOpenSSL,
+        encryption_algorithm=serialization.NoEncryption(),
+    )
+    wrong_public_key = wrong_private_key.public_key()
+    wrong_public_key_pem = wrong_public_key.public_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo,
+    )
+
+    @override_settings(DISCORD_JWT_PRIVATE_KEY=private_key_pem, DISCORD_JWT_PUBLIC_KEY=public_key_pem)
+    def test_create_token_then_get_data(self):
+        """testing the creation of a token and getting the data"""
+        token = token_tools.AsymetricToken.create(
+            self.token_type, settings.DISCORD_JWT_PRIVATE_KEY, settings.DISCORD_JWT_PUBLIC_KEY, self.ttl, self.data
+        )
+        assert token.data == self.data
+        assert token.type_ == self.token_type
+        assert token.encoded_token is not None
+        assert token_tools.AsymetricToken.get_expiration_date(
+            self.token_type,
+            token.key_suffix,
+        ).isoformat(
+            timespec="hours"
+        ) == (datetime.utcnow() + self.ttl).isoformat(timespec="hours")
+
+    @override_settings(DISCORD_JWT_PRIVATE_KEY=private_key_pem, DISCORD_JWT_PUBLIC_KEY=public_key_pem)
+    def test_create_token_with_non_corresponding_keys(self):
+        """if the keys do not correspond, an exception should be raised"""
+
+        with pytest.raises(InvalidToken):
+            token_tools.AsymetricToken.create(
+                self.token_type, settings.DISCORD_JWT_PRIVATE_KEY, self.wrong_public_key, self.ttl, self.data
+            )
+
+    @override_settings(DISCORD_JWT_PRIVATE_KEY=private_key_pem, DISCORD_JWT_PUBLIC_KEY=public_key_pem)
+    def test_token_from_encoded_token_and_get_data(self):
+        """if the token is created from an encoded token, the data should be the same"""
+        old_token = token_tools.AsymetricToken.create(
+            self.token_type,
+            settings.DISCORD_JWT_PRIVATE_KEY,
+            settings.DISCORD_JWT_PUBLIC_KEY,
+            self.ttl,
+            self.data,
+        )
+        token = token_tools.AsymetricToken.load_without_checking(
+            old_token.encoded_token, settings.DISCORD_JWT_PUBLIC_KEY
+        )
+        assert token.data == old_token.data
+        assert token.type_ == old_token.type_
+        assert token.encoded_token == old_token.encoded_token
+        assert token_tools.AsymetricToken.get_expiration_date(self.token_type, token.key_suffix).isoformat(
+            timespec="hours"
+        ) == (datetime.utcnow() + self.ttl).isoformat(timespec="hours")
+
+    @override_settings(DISCORD_JWT_PRIVATE_KEY=private_key_pem, DISCORD_JWT_PUBLIC_KEY=public_key_pem)
+    def test_load_without_checking_wrong_public_key(self):
+        """if the token has the wrong signature, an exception should be raised"""
+        old_token = token_tools.AsymetricToken.create(
+            self.token_type,
+            settings.DISCORD_JWT_PRIVATE_KEY,
+            settings.DISCORD_JWT_PUBLIC_KEY,
+            self.ttl,
+            self.data,
+        )
+        with pytest.raises(InvalidToken):
+            token_tools.AsymetricToken.load_without_checking(
+                old_token.encoded_token,
+                self.wrong_public_key,
+            )
