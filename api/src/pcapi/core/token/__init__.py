@@ -14,6 +14,7 @@ import uuid
 from flask import current_app as app
 import jwt
 
+from pcapi import settings
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import utils
 
@@ -32,6 +33,7 @@ class TokenType(enum.Enum):
     RECENTLY_RESET_PASSWORD = "recently_reset_password"
     ACCOUNT_CREATION = "account_creation"
     OAUTH_STATE = "oauth_state"
+    DISCORD_OAUTH = "discord_oauth"
 
 
 T = typing.TypeVar("T", bound="AbstractToken")
@@ -305,3 +307,52 @@ class SecureToken:
     @property
     def key(self) -> str:
         return f"pcapi:token:SecureToken_{self.token}"
+
+
+class AsymetricToken(AbstractToken):
+    """A token that uses asymmetric encryption to encode and decode the token
+    mainly used for external services that need to verify the token signature
+    """
+
+    @classmethod
+    def load_without_checking(
+        cls, encoded_token: str, public_key: str, *args: typing.Any, **kwargs: typing.Any
+    ) -> "AsymetricToken":
+        try:
+            payload = utils.decode_jwt_token_rs256(
+                encoded_token, public_key=public_key
+            )  # do we want to use the same key to all our tokens?
+            type_ = TokenType(payload["token_type"])
+            uuid4 = payload["uuid"]
+        except jwt.exceptions.ExpiredSignatureError as e:
+            raise users_exceptions.ExpiredToken() from e
+        except (KeyError, ValueError, jwt.PyJWTError) as e:
+            raise users_exceptions.InvalidToken() from e
+
+        data = payload.get("data", {})
+        return cls(type_, uuid4, encoded_token, data)
+
+    @classmethod
+    def create(
+        cls,
+        type_: TokenType,
+        private_key: str,
+        public_key: str,
+        ttl: timedelta | None,
+        data: dict | None = None,
+    ) -> "AsymetricToken":
+        random_uuid = str(uuid.uuid4())
+        payload: dict[str, typing.Any] = {
+            "token_type": type_.value,
+            "uuid": random_uuid,
+            "data": data or {},
+        }
+        if ttl:
+            payload["exp"] = (datetime.utcnow() + ttl).timestamp()
+
+        encoded_token = utils.encode_jwt_payload_rs256(payload, private_key=private_key)
+        if ttl is None or ttl > timedelta(0):
+            app.redis_client.set(cls.get_redis_key(type_, random_uuid), encoded_token, ex=ttl)
+        token = cls.load_without_checking(encoded_token, public_key=public_key)
+        token._log(cls._TokenAction.CREATE)
+        return token
