@@ -24,6 +24,12 @@ jobs:
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      - name: "Get secrets (github)"
+        id: 'get-github-token'
+        uses: 'google-github-actions/get-secretmanager-secrets@v2'
+        with:
+          secrets: |-
+            API_TOKEN_GITHUB:passculture-metier-ehp/passculture-main-sa-access-token
       - name: "Install Teleport"
         uses: teleport-actions/setup@v1
         with:
@@ -50,8 +56,16 @@ jobs:
           #Transform list into helm readable parameter list (pattern: --set value={item1,item2,item3})
           PCAPI_SECRETS=secrets={$(echo $PCAPI_SECRETS | sed -r 's/ /,/g')}
           echo "PCAPI_SECRETS=$PCAPI_SECRETS" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v4.1.5
+        with:
+          repository: pass-culture/pass-culture-deployment
+          token: ${{ steps.get-github-token.outputs.API_TOKEN_GITHUB }}
+          path: ./pass-culture-deployment
+      - name: "Update image.tag in pass-culture-deployment repository"
+        run: |
+          cat ./pass-culture-deployment/helm/pcapi/values.testing.yaml
       - name: "Generate and push rendered manifests"
-        uses: pass-culture/common-workflows/actions/render-push-manifests@PC-29770-move-composite-action-render-manifests-vers-un-autre-repo
+        uses: pass-culture/common-workflows/actions/render-push-manifests@fdehem_branch_testing
         with:
           environment: 'testing'
           app_name: 'pcapi'
