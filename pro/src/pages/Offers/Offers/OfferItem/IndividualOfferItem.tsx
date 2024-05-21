@@ -18,7 +18,7 @@ type IndividualOfferItemProps = {
   disabled: boolean
   isSelected: boolean
   offer: ListOffersOfferResponseModel
-  selectOffer: (offerId: number, selected: boolean, isTemplate: boolean) => void
+  selectOffer: (offerId: number, selected: boolean) => void
   editionOfferLink: string
   editionStockLink: string
   venue: ListOffersVenueResponseModel
@@ -44,7 +44,6 @@ export const IndividualOfferItem = ({
         disabled={disabled}
         isSelected={isSelected}
         selectOffer={selectOffer}
-        isShowcase={Boolean(offer.isShowcase)}
       />
 
       <ThumbCell offer={offer} editionOfferLink={editionOfferLink} />

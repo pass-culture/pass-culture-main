@@ -92,33 +92,31 @@ export const OffersRoute = (): JSX.Element => {
   }
   delete apiFilters.page
 
-  const offersQuery = useSWR(
-    [GET_OFFERS_QUERY_KEY, apiFilters],
-    () => {
-      const {
-        nameOrIsbn,
-        offererId,
-        venueId,
-        categoryId,
-        status,
-        creationMode,
-        periodBeginningDate,
-        periodEndingDate,
-      } = serializeApiFilters(apiFilters)
+  const offersQuery = useSWR([GET_OFFERS_QUERY_KEY, apiFilters], () => {
+    const {
+      nameOrIsbn,
+      offererId,
+      venueId,
+      categoryId,
+      status,
+      creationMode,
+      periodBeginningDate,
+      periodEndingDate,
+    } = serializeApiFilters(apiFilters)
 
-      return api.listOffers(
-        nameOrIsbn,
-        offererId,
-        status,
-        venueId,
-        categoryId,
-        creationMode,
-        periodBeginningDate,
-        periodEndingDate
-      )
-    },
-    { fallbackData: [] }
-  )
+    return api.listOffers(
+      nameOrIsbn,
+      offererId,
+      status,
+      venueId,
+      categoryId,
+      creationMode,
+      periodBeginningDate,
+      periodEndingDate
+    )
+  })
+
+  const offers = offersQuery.data || []
 
   return (
     <AppLayout>
@@ -135,7 +133,7 @@ export const OffersRoute = (): JSX.Element => {
           initialSearchFilters={initialSearchFilters}
           isLoading={offersQuery.isLoading}
           offerer={offerer}
-          offers={offersQuery.data}
+          offers={offers}
           redirectWithUrlFilters={redirectWithUrlFilters}
           urlSearchFilters={urlSearchFilters}
           venues={venues}
