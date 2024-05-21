@@ -27,6 +27,7 @@ def retrieve_venue_from_location(
             providers_models.VenueProvider.provider == current_api_key.provider,
             providers_models.VenueProvider.isActive,
         )
+        .options(sqla.orm.joinedload(offerers_models.Venue.offererAddress))
         .one_or_none()
     )
     if not venue:
