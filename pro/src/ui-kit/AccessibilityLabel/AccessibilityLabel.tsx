@@ -6,6 +6,7 @@ import strokeAccessibilityBrain from 'icons/stroke-accessibility-brain.svg'
 import audioDisabilitySvg from 'icons/stroke-accessibility-ear.svg'
 import strokeAccessibilityEye from 'icons/stroke-accessibility-eye.svg'
 import strokeAccessibilityLeg from 'icons/stroke-accessibility-leg.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './AccessibilityLabel.module.scss'
 
@@ -42,7 +43,14 @@ export const AccessibilityLabel = ({
 
   return (
     <div className={cn(styles['accessibility-label'], className)}>
-      {labelData.svg && <img src={labelData.svg} className={styles['icon']} />}
+      {labelData.svg && (
+        <SvgIcon
+          src={labelData.svg}
+          className={styles['icon']}
+          width="24"
+          alt=""
+        />
+      )}
       <span className={styles['text']}>{labelData.label}</span>
     </div>
   )
