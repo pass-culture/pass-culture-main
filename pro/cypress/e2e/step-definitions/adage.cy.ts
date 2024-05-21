@@ -5,11 +5,6 @@ let offerText: string
 Given('I go to adage login page with valid token', () => {
   cy.visit('/connexion')
   cy.getFakeAdageToken()
-
-  cy.intercept({
-    method: 'GET',
-    url: 'adage-iframe/playlists/new_template_offers',
-  }).as('getNewTemplateOffersPlaylist')
 })
 
 When('I open adage iframe', () => {
