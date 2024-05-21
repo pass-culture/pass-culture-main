@@ -51,14 +51,14 @@ def create_data_venues(offerers_by_name: dict) -> dict[str, Venue]:
 
         # create all possible cases:
         # offerer with or without iban / venue with or without iban
+        iban: str | None = None
+        bic: str | None = None
         if offerer.iban:
             if iban_count == 0:
                 iban = iban_prefix
                 bic = bic_prefix + str(bic_suffix)
                 iban_count = 1
             elif iban_count == 2:
-                iban = None
-                bic = None
                 iban_count = 3
         else:
             if iban_count in (0, 1):
@@ -66,8 +66,6 @@ def create_data_venues(offerers_by_name: dict) -> dict[str, Venue]:
                 bic = bic_prefix + str(bic_suffix)
                 iban_count = 2
             elif iban_count == 3:
-                iban = None
-                bic = None
                 iban_count = 0
 
         comment = None

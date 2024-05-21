@@ -204,14 +204,16 @@ class CDSStocks(LocalProvider):
         cds_stock.idAtProviders = _clean_cds_id_at_providers(cds_stock.idAtProviders)
 
         showtime = _find_showtime_by_showtime_uuid(self.filtered_movie_showtimes, showtime_uuid)  # type: ignore[arg-type]
+        if not showtime:
+            raise ValueError(
+                "Could not find showtime for show %s, allocine id %s, venue id %s"
+                % (showtime_uuid, self.movie_information.allocineid, self.venue.id)
+            )
 
-        if showtime:
-            price_label = showtime["price_label"]
-            show_price = decimal.Decimal(str(showtime["price"]))
-            show: ShowCDS = showtime["show_information"]
-
+        show: ShowCDS = showtime["show_information"]
         local_tz = utils_date.get_department_timezone(self.venue.departementCode)
         datetime_in_utc = utils_date.local_datetime_to_default_timezone(show.showtime, local_tz)
+
         cds_stock.beginningDatetime = datetime_in_utc
         cds_stock.bookingLimitDatetime = datetime_in_utc
         is_internet_sale_gauge_active = self.client_cds.get_internet_sale_gauge_active()
@@ -240,8 +242,9 @@ class CDSStocks(LocalProvider):
         )
 
         if "price" not in cds_stock.fieldsUpdated:
+            show_price = decimal.Decimal(str(showtime["price"]))
             cds_stock.price = show_price
-            price_category = self.get_or_create_price_category(show_price, price_label)
+            price_category = self.get_or_create_price_category(show_price, showtime["price_label"])
             cds_stock.priceCategory = price_category
 
     def get_or_create_price_category(self, price: decimal.Decimal, price_label: str) -> offers_models.PriceCategory:

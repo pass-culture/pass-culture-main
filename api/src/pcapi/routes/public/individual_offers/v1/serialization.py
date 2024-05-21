@@ -878,6 +878,7 @@ class ProductCategoryResponse(serialization.ConfiguredBaseModel):
             if field_name in ExtraDataModel.__fields__:
                 conditional_fields[field_name] = condition.is_required_in_external_form
 
+        locationType: LocationTypeEnum | None = None
         if subcategory.is_online_only:
             locationType = LocationTypeEnum.DIGITAL
         elif subcategory.is_offline_only:

@@ -88,7 +88,7 @@ def _remove_dms_pro_prefix(dms_token: str) -> str:
 def update_demarches_simplifiees_text_annotations(dossier_id: str, annotation_id: str, message: str) -> None:
     client = api_dms.DMSGraphQLClient()
     result = client.update_text_annotation(dossier_id, settings.DMS_INSTRUCTOR_ID, annotation_id, message)
-    errors = result["dossierModifierAnnotationText"].get("errors")  # pylint: disable=unsubscriptable-object
+    errors = result["dossierModifierAnnotationText"].get("errors")
     if errors:
         logger.error(
             "Got error when updating DMS annotation",

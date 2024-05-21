@@ -740,6 +740,7 @@ class BankAccountJourneyTest:
         update_ds_applications_for_procedure(procedure_number=settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
 
         assert not finance_models.BankAccount.query.all()
+        message = ""
         if fake_iban:
             message = "L'IBAN n'est pas valide"
         elif fake_bic:

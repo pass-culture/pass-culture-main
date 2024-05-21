@@ -45,6 +45,8 @@ def build_gtl_response_fixture(gtl_id, gtl_level=1) -> dict:
                 "4": {"code": f"{gtl_level_4}", "libelle": f"Level {gtl_level} libelle"},
             }
         }
+    else:
+        raise ValueError(f"Unexpected GTL level: {gtl_level}, should be between 1 and 4")
 
     response = remove_trailing_zeros(response)
     return response

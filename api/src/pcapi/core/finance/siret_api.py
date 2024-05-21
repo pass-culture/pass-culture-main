@@ -261,6 +261,7 @@ def remove_siret(
     old_siret = venue.siret
     now = datetime.datetime.utcnow()
 
+    new_siret: str | None = None
     if new_pricing_point_id:
         new_pricing_point_venue: offerers_models.Venue = offerers_models.Venue.query.filter(
             offerers_models.Venue.id == new_pricing_point_id,
