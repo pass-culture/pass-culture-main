@@ -6,7 +6,6 @@ import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { useAccessibilityOptions } from 'hooks/useAccessibilityOptions'
-import useActiveFeature from 'hooks/useActiveFeature'
 import { VenueEditionFormValues } from 'pages/VenueEdition/types'
 import { Checkbox } from 'ui-kit/form/Checkbox/Checkbox'
 import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'
@@ -24,7 +23,6 @@ export const Accessibility = ({
   isCreatingVenue,
   isVenuePermanent,
 }: AccessiblityProps) => {
-  const isAccesLibreEnabled = useActiveFeature('WIP_ACCESLIBRE')
   const { values, setFieldValue, initialValues } = useFormikContext<
     VenueCreationFormValues | VenueEditionFormValues
   >()
@@ -40,7 +38,7 @@ export const Accessibility = ({
 
   return (
     <FormSectionComponent title="Modalités d’accessibilité">
-      {isAccesLibreEnabled && !isCreatingVenue && isVenuePermanent && (
+      {!isCreatingVenue && isVenuePermanent && (
         <Callout
           links={[
             {

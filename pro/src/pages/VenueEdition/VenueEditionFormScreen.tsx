@@ -2,7 +2,6 @@ import { Route, Routes } from 'react-router-dom'
 
 import { GetVenueResponseModel } from 'apiClient/v1'
 import { Callout } from 'components/Callout/Callout'
-import useActiveFeature from 'hooks/useActiveFeature'
 import { PartnerPageIndividualSection } from 'pages/Home/Offerers/PartnerPageIndividualSection'
 
 import { AccesLibreSection } from './AccesLibreSection/AccesLibreSection'
@@ -17,8 +16,6 @@ interface VenueEditionProps {
 export const VenueEditionFormScreen = ({
   venue,
 }: VenueEditionProps): JSX.Element => {
-  const isAccesLibreEnabled = useActiveFeature('WIP_ACCESLIBRE')
-
   if (venue.isVirtual) {
     return (
       <Callout title="Ce lieu vous permet uniquement de créer des offres numériques, il n’est pas visible sur l’application pass Culture.">
@@ -52,7 +49,7 @@ export const VenueEditionFormScreen = ({
         <Route path="/edition" element={<VenueEditionForm venue={venue} />} />
       </Routes>
 
-      {isAccesLibreEnabled && venue.externalAccessibilityData && (
+      {venue.externalAccessibilityData && (
         <>
           <hr className={styles['separator']} />
           <AccesLibreSection venue={venue} />

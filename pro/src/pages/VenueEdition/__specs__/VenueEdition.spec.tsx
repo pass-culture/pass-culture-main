@@ -254,7 +254,6 @@ describe('route VenueEdition', () => {
       isPermanent: true,
     })
     renderVenueEdition({
-      features: ['WIP_ACCESLIBRE'],
       initialRouterEntries: [
         `/structures/${defaultGetOffererResponseModel.id}/lieux/${defaultGetVenue.id}`,
       ],
@@ -275,7 +274,6 @@ describe('route VenueEdition', () => {
       isPermanent: false,
     })
     renderVenueEdition({
-      features: ['WIP_ACCESLIBRE'],
       initialRouterEntries: [
         `/structures/${defaultGetOffererResponseModel.id}/lieux/${defaultGetVenue.id}`,
       ],

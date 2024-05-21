@@ -39,7 +39,6 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
   const { logEvent } = useAnalytics()
   const { mutate } = useSWRConfig()
   const isOpeningHoursEnabled = useActiveFeature('WIP_OPENING_HOURS')
-  const isAccesLibreEnabled = useActiveFeature('WIP_ACCESLIBRE')
 
   const { currentUser } = useCurrentUser()
 
@@ -100,9 +99,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
     }
   }
 
-  const showAccessibilitySection = !(
-    isAccesLibreEnabled && venue.externalAccessibilityData
-  )
+  const showAccessibilitySection = !venue.externalAccessibilityData
   const validateAccessibility = !venue.isVirtual && showAccessibilitySection
 
   return (
