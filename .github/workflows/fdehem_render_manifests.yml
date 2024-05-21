@@ -30,17 +30,6 @@ jobs:
         with:
           secrets: |-
             API_TOKEN_GITHUB:passculture-metier-ehp/passculture-main-sa-access-token
-      - name: "Install Teleport"
-        uses: teleport-actions/setup@v1
-        with:
-          version: 11.1.1
-      - name: "Teleport Authentication"
-        uses: teleport-actions/auth-k8s@v1
-        with:
-          proxy: teleport.ehp.passculture.team:443
-          token: github-token
-          certificate-ttl: 1h
-          kubernetes-cluster: passculture-metier-ehp
       - name: "Setup helmfile"
         uses: mamezou-tech/setup-helmfile@v1.3.0
         with:
@@ -63,7 +52,11 @@ jobs:
           path: ./pass-culture-deployment
       - name: "Update image.tag in pass-culture-deployment repository"
         run: |
-          cat ./pass-culture-deployment/helm/pcapi/values.testing.yaml
+          cd ./pass-culture-deployment
+          sed -i '/^image:/,/^  tag:/{s/^  tag: .*/  tag: xxx.xx/}' values.${{ inputs.environment }}.yaml
+          git add values.${{ inputs.environment }}.yaml
+          git commit -m “Update image tag by Github Actions Job : ${{ github.run_number }}”
+          git push origin master
       - name: "Generate and push rendered manifests"
         uses: pass-culture/common-workflows/actions/render-push-manifests@fdehem_branch_testing
         with:
