@@ -2988,6 +2988,24 @@ class AccessibilityProviderTest:
         )
         assert venue.external_accessibility_id == "mon-lieu-chez-acceslibre"
 
+    @patch("pcapi.connectors.acceslibre.get_id_at_accessibility_provider")
+    def test_synchronize_venues_with_acceslibre(self, mock_get_id_at_accessibility_provider):
+        mock_get_id_at_accessibility_provider.side_effect = [
+            None,
+            acceslibre_connector.AcceslibreInfos(slug="mon-slug", url="https://mon.adresse/mon-slug"),
+        ]
+
+        venue_1 = offerers_factories.VenueFactory(isPermanent=True, isVirtual=False)
+        venue_2 = offerers_factories.VenueFactory(isPermanent=True, isVirtual=False)
+        venue_ids = [venue_1.id, venue_2.id]
+
+        # match result is given by find_new_entries_by_activity in TestingBackend class in acceslibre connector
+        offerers_api.synchronize_venues_with_acceslibre(venue_ids, dry_run=False)
+
+        assert not venue_1.accessibilityProvider
+        assert venue_2.external_accessibility_url == "https://mon.adresse/mon-slug"
+        assert venue_2.external_accessibility_id == "mon-slug"
+
 
 class GetOffererConfidenceLevelTest:
     def test_no_rule(self):
