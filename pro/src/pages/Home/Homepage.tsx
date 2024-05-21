@@ -202,10 +202,12 @@ export const Homepage = (): JSX.Element => {
         <BankAccountHasPendingCorrectionCallout offerer={selectedOfferer} />
       </div>
 
-      <OffererBanners
-        isUserOffererValidated={isUserOffererValidated}
-        offerer={selectedOfferer}
-      />
+      {!selectedOffererQuery.isLoading && (
+        <OffererBanners
+          isUserOffererValidated={isUserOffererValidated}
+          offerer={selectedOfferer}
+        />
+      )}
 
       {selectedOfferer?.isValidated && selectedOfferer.isActive && (
         <section className={styles['section']}>
