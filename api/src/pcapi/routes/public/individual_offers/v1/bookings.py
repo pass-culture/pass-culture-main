@@ -12,7 +12,6 @@ from pcapi.core.providers import models as providers_models
 from pcapi.models import api_errors
 from pcapi.routes.public import documentation_constants
 from pcapi.routes.public import spectree_schemas
-
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.validation.routes.users_authentifications import api_key_required
