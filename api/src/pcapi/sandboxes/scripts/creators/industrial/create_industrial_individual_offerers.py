@@ -24,13 +24,14 @@ def create_industrial_individual_offerers() -> None:
 
     # offerer with tag but subscription row not yet created
     offerer = offerers_factories.NotValidatedOffererFactory(name="JOE AUTOENTREPRENEUR", tags=[ae_tag])
-    offerers_factories.VenueFactory(name="JOE AUTOENTREPRENEUR", managingOfferer=offerer)
+    venue = offerers_factories.VenueFactory(name="JOE AUTOENTREPRENEUR", managingOfferer=offerer)
     offerers_factories.UserOffererFactory(
         offerer=offerer,
         user__firstName="Joe",
         user__lastName="Autoentrepreneur",
         user__email="joe.autoentrepreneur@example.com",
     )
+    offerers_factories.VenueRegistrationFactory(venue=venue, webPresence="https://www.example.com/ae/joe")
 
     # individual offerer with email sent, no collective
     offerer = offerers_factories.NotValidatedOffererFactory(
@@ -44,7 +45,7 @@ def create_industrial_individual_offerers() -> None:
         offerer=offerer,
         comment="Première action",
     )
-    offerers_factories.VenueFactory(name="JACK AUTOENTREPRENEUR", managingOfferer=offerer)
+    venue = offerers_factories.VenueFactory(name="JACK AUTOENTREPRENEUR", managingOfferer=offerer)
     offerers_factories.UserOffererFactory(
         offerer=offerer,
         user__firstName="Jack",
@@ -52,6 +53,7 @@ def create_industrial_individual_offerers() -> None:
         user__email="jack.autoentrepreneur@example.com",
     )
     offerers_factories.IndividualOffererSubscription(offerer=offerer)
+    offerers_factories.VenueRegistrationFactory(venue=venue, webPresence="https://www.example.com/ae/jack")
 
     # individual offerer with Adage application submitted
     offerer = offerers_factories.NotValidatedOffererFactory(
@@ -73,6 +75,7 @@ def create_industrial_individual_offerers() -> None:
         user__email="william.autoentrepreneur@example.com",
     )
     offerers_factories.IndividualOffererSubscription(offerer=offerer)
+    offerers_factories.VenueRegistrationFactory(venue=venue, webPresence="https://www.example.com/ae/william")
     educational_factories.CollectiveDmsApplicationFactory(venue=venue, state="en_instruction")
 
     # individual offerer with Adage application accepted and everything received
