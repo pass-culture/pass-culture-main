@@ -14,8 +14,8 @@ When('I fill in offer details', () => {
 })
 
 When('I validate offer details step', () => {
-  cy.intercept({ method: 'POST', url: '/offers' }).as('postOffer')
   cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
+  cy.intercept({ method: 'POST', url: '/offers' }).as('postOffer')
   cy.findByText('Enregistrer et continuer').click()
   cy.wait(['@getOffer', '@postOffer'])
 })
@@ -55,6 +55,7 @@ When('I fill in prices', () => {
 
 When('I validate prices step', () => {
   cy.intercept({ method: 'PATCH', url: '/offers/*' }).as('patchOffer')
+  cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
   cy.intercept({ method: 'GET', url: '/offers/*/stocks/*' }).as('getStocks')
   cy.findByText('Enregistrer et continuer').click()
   // pourquoi on attend tellement ici?
@@ -124,6 +125,7 @@ When('I validate recurrence step', () => {
 
 When('I publish my offer', () => {
   cy.intercept({ method: 'PATCH', url: '/offers/publish' }).as('publishOffer')
+  cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
   cy.findByText('Publier l’offre').click()
   cy.wait(['@publishOffer', '@getOffer'])
 })
@@ -131,10 +133,10 @@ When('I publish my offer', () => {
 When('I go to offers list', () => {
   cy.intercept({ method: 'GET', url: '/offers' }).as('getOffers')
   cy.findByText('Voir la liste des offres').click()
+  cy.wait('@getOffers')
 })
 
 Then('my new offer should be displayed', () => {
-  cy.wait('@getOffers')
   cy.url().should('contain', '/offres')
   cy.contains('Le Diner de Devs')
   cy.contains('396 dates')
