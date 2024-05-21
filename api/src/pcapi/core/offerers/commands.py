@@ -5,7 +5,6 @@ from math import ceil
 import click
 import sqlalchemy as sa
 
-import pcapi.connectors.acceslibre as accessibility_provider
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import synchronize_venues_banners_with_google_places as banner_url_synchronizations
@@ -165,37 +164,7 @@ def synchronize_venues_with_acceslibre(venue_ids: list[int], dry_run: bool = Tru
 
 @blueprint.cli.command("acceslibre_matching")
 @click.option("--dry-run", type=bool, default=False)
+@click.option("--batch-size", type=int, default=1000, help="Size of venues batches to synchronize")
 @click.option("--start-from-batch", type=int, default=1, help="Start synchronization from batch number")
 def acceslibre_matching(dry_run: bool = False, start_from_batch: int = 1) -> None:
-    """
-    For all permanent venues, we are looking for a match at acceslibre
-
-    If we use the --start-from-batch option, it will start synchronization from the given batch number
-    Use case: synchronization has failed with message "Could not update batch <n>"
-    """
-    venues_list = offerers_api.get_permanent_venues_without_accessibility_provider()
-    num_batches = ceil(len(venues_list) / BATCH_SIZE)
-    if start_from_batch > num_batches:
-        click.echo(f"Start from batch must be less than {num_batches}")
-        return
-
-    results_list = []
-
-    for activity in accessibility_provider.AcceslibreActivity:
-        if results_by_activity := accessibility_provider.find_new_entries_by_activity(activity):
-            results_list.extend(results_by_activity)
-
-    start_batch_index = start_from_batch - 1
-    for i in range(start_batch_index, num_batches):
-        batch_start = i * BATCH_SIZE
-        batch_end = (i + 1) * BATCH_SIZE
-        offerers_api.match_venue_with_new_entries(venues_list[batch_start:batch_end], results_list)
-
-        if not dry_run:
-            try:
-                db.session.commit()
-            except sa.exc.SQLAlchemyError:
-                logger.exception("Could not update batch %d", i + 1)
-                db.session.rollback()
-        else:
-            db.session.rollback()
+    offerers_api.acceslibre_matching(batch_size=BATCH_SIZE, dry_run=dry_run, start_from_batch=start_from_batch)
