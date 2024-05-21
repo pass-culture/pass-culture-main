@@ -636,8 +636,8 @@ class EditVenueTest:
             website=venue.contact.website,
         )
 
-        # nothing has changed, nothing to save
-        with assert_num_queries(0):
+        # Check FF Api Adresse
+        with assert_num_queries(1):
             offerers_api.update_venue(venue, contact_data=contact_data, author=user, **venue_data)
 
         assert history_models.ActionHistory.query.count() == 0

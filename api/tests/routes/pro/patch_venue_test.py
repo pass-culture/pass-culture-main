@@ -1,11 +1,15 @@
+from decimal import Decimal
 from unittest.mock import patch
 
 import pytest
 
 from pcapi.core.external.zendesk_sell_backends import testing as zendesk_testing
+from pcapi.core.geography import factories as geography_factories
+from pcapi.core.geography import models as geography_models
 from pcapi.core.history import models as history_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
+from pcapi.core.testing import override_features
 from pcapi.core.users import testing as external_testing
 from pcapi.utils.date import timespan_str_to_numrange
 
@@ -97,6 +101,156 @@ class Returns200Test:
                 "contact.phone_number": {"new_info": None, "old_info": "+33102030405"},
                 "contact.website": {"new_info": None, "old_info": "https://my.website.com"},
             }
+        }
+
+    @override_features(ENABLE_API_ADRESSE_WHILE_CREATING_UPDATING_VENUE=True)
+    def test_update_venue_location_should_create_offerer_address_if_not_existing(self, client, requests_mock) -> None:
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+
+        assert not venue.offererAddress
+
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+        venue_id = venue.id
+
+        venue_data = populate_missing_data_from_venue(
+            {
+                # Default data from api adresse TestingBackend
+                "street": "3 Rue de Valois",
+                "banId": "75101_9575_00003",
+                "city": "Paris",
+                "latitude": 48.87171,
+                "longitude": 2.308289,
+                "postalCode": "75001",
+            },
+            venue,
+        )
+
+        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+
+        # then
+        assert response.status_code == 200
+        venue = offerers_models.Venue.query.one()
+        address = geography_models.Address.query.one()
+        offerer_address = offerers_models.OffererAddress.query.one()
+
+        assert venue.offererAddressId == offerer_address.id
+        assert address.street == venue.street == "3 Rue de Valois"
+        assert address.city == venue.city == "Paris"
+        assert address.postalCode == venue.postalCode == "75001"
+        assert address.inseeCode.startswith(address.departmentCode)
+        assert address.longitude == venue.longitude == Decimal("2.30829")
+        assert address.latitude == venue.latitude == Decimal("48.87171")
+        assert offerer_address.addressId == address.id
+        assert offerer_address.label is None
+
+        assert response.json["street"] == venue.street
+        assert response.json["banId"] == venue.banId
+        assert response.json["city"] == venue.city
+        assert response.json["siret"] == venue.siret
+        assert response.json["postalCode"] == venue.postalCode
+        assert len(venue.action_history) == 1
+        assert venue.action_history[0].actionType == history_models.ActionType.INFO_MODIFIED
+        assert venue.action_history[0].venueId == venue_id
+        assert venue.action_history[0].authorUser.id == user_offerer.user.id
+        assert venue.action_history[0].extraData["modified_info"]["street"] == {
+            "new_info": "3 Rue de Valois",
+            "old_info": "1 boulevard Poissonnière",
+        }
+        assert venue.action_history[0].extraData["modified_info"]["banId"] == {
+            "new_info": "75101_9575_00003",
+            "old_info": "75102_7560_00001",
+        }
+        assert venue.action_history[0].extraData["modified_info"]["latitude"] == {
+            "new_info": "48.87171",
+            "old_info": "48.87004",
+        }
+        assert venue.action_history[0].extraData["modified_info"]["longitude"] == {
+            "new_info": "2.308289",
+            "old_info": "2.3785",
+        }
+        assert venue.action_history[0].extraData["modified_info"]["postalCode"] == {
+            "new_info": "75001",
+            "old_info": "75000",
+        }
+
+    @override_features(ENABLE_API_ADRESSE_WHILE_CREATING_UPDATING_VENUE=True)
+    def test_update_venue_location_should_update_venue_offerer_address(self, client, requests_mock) -> None:
+        user_offerer = offerers_factories.UserOffererFactory()
+        address = geography_factories.AddressFactory(
+            street="1 boulevard Poissonnière", postalCode="75000", inseeCode="75000", city="Paris"
+        )
+        offerer_address = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer, address=address)
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer,
+            street=address.street,
+            postalCode=address.postalCode,
+            city=address.city,
+            offererAddress=offerer_address,
+        )
+
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+        venue_id = venue.id
+
+        venue_data = populate_missing_data_from_venue(
+            {
+                # Default data from api adresse TestingBackend
+                "street": "3 Rue de Valois",
+                "banId": "75101_9575_00003",
+                "city": "Paris",
+                "latitude": 48.87171,
+                "longitude": 2.308289,
+                "postalCode": "75001",
+            },
+            venue,
+        )
+
+        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+
+        # then
+        assert response.status_code == 200
+        venue = offerers_models.Venue.query.one()
+        address = geography_models.Address.query.order_by(geography_models.Address.id.desc()).first()
+        offerer_address = offerers_models.OffererAddress.query.one()
+
+        assert venue.offererAddressId == offerer_address.id
+        assert address.street == venue.street == "3 Rue de Valois"
+        assert address.city == venue.city == "Paris"
+        assert address.postalCode == venue.postalCode == "75001"
+        assert address.inseeCode.startswith(address.departmentCode)
+        assert address.longitude == venue.longitude == Decimal("2.30829")
+        assert address.latitude == venue.latitude == Decimal("48.87171")
+        assert offerer_address.addressId == address.id
+        assert offerer_address.label is None
+
+        assert response.json["street"] == venue.street
+        assert response.json["banId"] == venue.banId
+        assert response.json["city"] == venue.city
+        assert response.json["siret"] == venue.siret
+        assert response.json["postalCode"] == venue.postalCode
+        assert len(venue.action_history) == 1
+        assert venue.action_history[0].actionType == history_models.ActionType.INFO_MODIFIED
+        assert venue.action_history[0].venueId == venue_id
+        assert venue.action_history[0].authorUser.id == user_offerer.user.id
+        assert venue.action_history[0].extraData["modified_info"]["street"] == {
+            "new_info": "3 Rue de Valois",
+            "old_info": "1 boulevard Poissonnière",
+        }
+        assert venue.action_history[0].extraData["modified_info"]["banId"] == {
+            "new_info": "75101_9575_00003",
+            "old_info": "75102_7560_00001",
+        }
+        assert venue.action_history[0].extraData["modified_info"]["latitude"] == {
+            "new_info": "48.87171",
+            "old_info": "48.87004",
+        }
+        assert venue.action_history[0].extraData["modified_info"]["longitude"] == {
+            "new_info": "2.308289",
+            "old_info": "2.3785",
+        }
+        assert venue.action_history[0].extraData["modified_info"]["postalCode"] == {
+            "new_info": "75001",
+            "old_info": "75000",
         }
 
     def test_edit_only_activity_parameters_and_not_venue_accessibility(self, client):
