@@ -79,6 +79,7 @@ class PostProductByEanTest:
         assert created_offer.mentalDisabilityCompliant == venue.mentalDisabilityCompliant
         assert created_offer.motorDisabilityCompliant == venue.motorDisabilityCompliant
         assert created_offer.visualDisabilityCompliant == venue.visualDisabilityCompliant
+        assert created_offer.offererAddressId == venue.offererAddressId
 
         created_stock = offers_models.Stock.query.one()
         assert created_stock.price == decimal.Decimal("12.34")
