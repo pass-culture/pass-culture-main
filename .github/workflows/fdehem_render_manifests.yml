@@ -54,16 +54,15 @@ jobs:
         run: |
           cd ./pass-culture-deployment/helm/pcapi
           cp values.testing.yaml values.fdehem.yaml
-          sed -i '/^image:/,/^  tag:/{s/^  tag: .*/  tag: xxx.xx/}' values.fdehem.yaml
+          sed -i '/^image:/,/^  tag:/{s/^  tag: .*/  tag: uuuuu.uuuuu/}' values.fdehem.yaml
           git add values.fdehem.yaml
-          git commit -m “Update image tag by Github Actions Job : ${{ github.run_number }}”
+          git commit -m "Update image tag by Github Actions Job : ${{ github.run_number }}"
           git push origin master
       - name: "Generate and push rendered manifests"
         uses: pass-culture/common-workflows/actions/render-push-manifests@fdehem_branch_testing
         with:
           environment: 'testing'
           app_name: 'pcapi'
-          app_version: 'xxx.xx'
           additional_args: ${{ steps.generate-pcapi-secrets-list.outputs.PCAPI_SECRETS }}
           registry_workload_identity_secret_name: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
           registry_service_account_secret_name: passculture-metier-ehp/passculture-main-artifact-registry-service-account
