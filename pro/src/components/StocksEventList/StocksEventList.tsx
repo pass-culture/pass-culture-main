@@ -14,7 +14,9 @@ import { useAnalytics } from 'app/App/analytics/firebase'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { GET_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
 import { Events } from 'core/FirebaseEvents/constants'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'
+import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import { useNotification } from 'hooks/useNotification'
 import { usePaginationWithSearchParams } from 'hooks/usePagination'
 import fullTrashIcon from 'icons/full-trash.svg'
@@ -85,6 +87,8 @@ export const StocksEventList = ({
   const notify = useNotification()
   const [searchParams, setSearchParams] = useSearchParams()
   const { mutate } = useSWRConfig()
+  const isWithoutFrame = useActiveFeature('WIP_ENABLE_PRO_WITHOUT_FRAME')
+  const hasNewInterface = useIsNewInterfaceActive()
 
   // states
   const [allStocksChecked, setAllStocksChecked] = useState<PartialCheck>(
@@ -429,7 +433,10 @@ export const StocksEventList = ({
 
                 <th
                   scope="col"
-                  className={cn(styles['price-column'], styles['header'])}
+                  className={cn(styles['price-column'], styles['header'], {
+                    [styles['price-column-without-frame']]:
+                      isWithoutFrame && hasNewInterface,
+                  })}
                 >
                   <span className={styles['header-name']}>Tarif</span>
 

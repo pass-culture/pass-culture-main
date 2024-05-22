@@ -43,6 +43,10 @@
   &-funnel {
     background-color: var(--color-white);
   }
+
+  &-without-frame {
+    background-color: var(--color-white);
+  }
 }
 
 .content {
@@ -54,6 +58,12 @@
     border: rem.torem(1px) solid var(--color-grey-medium);
     margin: rem.torem(32px);
     border-radius: rem.torem(10px);
+  }
+
+  &-without-frame {
+    max-width: 100%;
+    border: none;
+    margin: 0;
   }
 }
 

@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import React from 'react'
 
 import { GetVenueResponseModel, VenueProviderResponse } from 'apiClient/v1'
@@ -6,6 +7,8 @@ import {
   isAllocineProvider,
   isCinemaProvider,
 } from 'core/Providers/utils/utils'
+import { useActiveFeature } from 'hooks/useActiveFeature'
+import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
 import { AllocineProviderParameters } from './AllocineProviderParameters'
@@ -30,10 +33,22 @@ export const VenueProviderItem = ({
   const { lastSyncDate, provider, venueIdAtOfferProvider } = venueProvider
 
   const providerInfo = getProviderInfo(provider.name)
+  const isWithoutFrame = useActiveFeature('WIP_ENABLE_PRO_WITHOUT_FRAME')
+  const hasNewInterface = useIsNewInterfaceActive()
 
   return (
-    <li className={style['venue-provider-row']}>
-      <div className={style['venue-provider-item-info']}>
+    <li
+      className={cn(style['venue-provider-row'], {
+        [style['venue-provider-row-without-frame']]:
+          isWithoutFrame && hasNewInterface,
+      })}
+    >
+      <div
+        className={cn(style['venue-provider-item-info'], {
+          [style['venue-provider-item-info-without-frame']]:
+            isWithoutFrame && hasNewInterface,
+        })}
+      >
         <div className={style['provider-name-container']}>
           <div className={style['provider-name']}>
             {providerInfo?.name ?? provider.name}
