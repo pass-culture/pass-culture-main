@@ -103,5 +103,5 @@ class PostMergeInstitutionPrebookingTest:
 
         response = client.post("/adage/v1/prebookings/move", json=body)
 
-        assert response.status_code == 403
-        assert response.json == {"Authorization": ["Wrong api key"]}
+        assert response.status_code == 401
+        assert response.json == {"Authorization": ["Missing API key"]}
