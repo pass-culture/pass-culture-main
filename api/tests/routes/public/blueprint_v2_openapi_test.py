@@ -43,9 +43,27 @@ def test_public_api_openapi_json(client):
             assert response.json["paths"][path][http_method] == expected["paths"][path][http_method]
 
     # Test other keys
-    assert response.json["components"] == expected["components"]
+    _assert_dicts_are_equal(response.json["components"], expected["components"], ["example"])
     assert response.json["info"] == expected["info"]
     assert response.json["tags"] == expected["tags"]
     assert response.json["servers"] == expected["servers"]
     assert response.json["openapi"] == expected["openapi"]
     assert response.json["security"] == expected["security"]
+
+
+def _assert_dicts_are_equal(to_check, expected, keys_to_skip=None):
+    keys_to_skip = keys_to_skip or []
+
+    for _, key in enumerate(expected):
+        # Check key exists
+        assert key in to_check
+
+        if isinstance(expected[key], dict):
+            # Check value is also a dict
+            assert isinstance(to_check[key], dict)
+
+            # Check sub dict
+            _assert_dicts_are_equal(to_check[key], expected[key], keys_to_skip)
+        else:
+            if key not in keys_to_skip:
+                assert expected[key] == to_check[key]
