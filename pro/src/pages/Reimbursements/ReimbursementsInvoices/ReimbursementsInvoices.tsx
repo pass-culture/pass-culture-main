@@ -1,11 +1,15 @@
 import { format, subMonths } from 'date-fns'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useOutletContext } from 'react-router-dom'
+import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import { InvoiceResponseV2Model } from 'apiClient/v1'
 import { BannerReimbursementsInfo } from 'components/Banner/BannerReimbursementsInfo'
-import { SelectOption } from 'custom_types/form'
+import {
+  GET_INVOICES_QUERY_KEY,
+  GET_HAS_INVOICE_QUERY_KEY,
+  GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY,
+} from 'config/swrQueryKeys'
 import { ReimbursementsContextProps } from 'pages/Reimbursements/Reimbursements'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { FORMAT_ISO_DATE_ONLY, getToday } from 'utils/date'
@@ -31,110 +35,75 @@ export const ReimbursementsInvoices = (): JSX.Element => {
   }, [])
 
   const [filters, setFilters] = useState(INITIAL_FILTERS)
-  const [invoices, setInvoices] = useState<InvoiceResponseV2Model[]>([])
-  const [offererHasInvoice, setOffererHasInvoice] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
-  const [hasError, setHasError] = useState(false)
   const [areFiltersDefault, setAreFiltersDefault] = useState(true)
-  const [filterOptions, setFilterOptions] = useState<SelectOption[]>([])
   const [hasSearchedOnce, setHasSearchedOnce] = useState(false)
   const { selectedOfferer = null }: ReimbursementsContextProps =
-    useOutletContext() || {}
+    useOutletContext()
 
-  const hasNoSearchResult =
-    (!hasError && invoices.length === 0 && hasSearchedOnce) ||
-    (invoices.length === 0 && offererHasInvoice)
+  const getInvoicesQuery = useSWR(
+    [GET_INVOICES_QUERY_KEY, selectedOfferer?.id, filters],
+    async () => {
+      const reimbursmentPoint = filters.reimbursementPoint
+      const periodStart = filters.periodStart
+      const periodEnd = filters.periodEnd
 
-  const hasNoInvoicesYet = !hasError && !offererHasInvoice && !hasSearchedOnce
+      const invoices = await api.getInvoicesV2(
+        periodStart,
+        periodEnd,
+        reimbursmentPoint !== DEFAULT_INVOICES_FILTERS.reimbursementPointId
+          ? parseInt(reimbursmentPoint)
+          : undefined,
+        selectedOfferer?.id
+      )
 
-  const loadInvoices = useCallback(
-    async (shouldReset?: boolean) => {
-      const reimbursmentPoint = shouldReset
-        ? INITIAL_FILTERS.reimbursementPoint
-        : filters.reimbursementPoint
-      const periodStart = shouldReset
-        ? INITIAL_FILTERS.periodStart
-        : filters.periodStart
-      const periodEnd = shouldReset
-        ? INITIAL_FILTERS.periodEnd
-        : filters.periodEnd
-      try {
-        const invoices = await api.getInvoicesV2(
-          periodStart,
-          periodEnd,
-          reimbursmentPoint !== DEFAULT_INVOICES_FILTERS.reimbursementPointId
-            ? parseInt(reimbursmentPoint)
-            : undefined,
-          selectedOfferer?.id
-        )
-        setInvoices(invoices)
-
-        setIsLoading(false)
-        setHasError(false)
-      } catch (error) {
-        setIsLoading(false)
-        setHasError(true)
-      }
+      return invoices
     },
-    [
-      INITIAL_FILTERS,
-      filters.periodEnd,
-      filters.periodStart,
-      filters.reimbursementPoint,
-      selectedOfferer?.id,
-    ]
+    { fallbackData: [] }
   )
 
-  useEffect(() => {
-    const hasInvoice = async () => {
+  const hasInvoiceQuery = useSWR(
+    [GET_HAS_INVOICE_QUERY_KEY, selectedOfferer?.id],
+    async () => {
       if (!selectedOfferer) {
-        return false
+        return null
       }
-      const result = await api.hasInvoice(selectedOfferer.id)
-      return result.hasInvoice
+      return await api.hasInvoice(selectedOfferer.id)
     }
-    const firstLoad = async () => {
-      const offererHasInvoice = await hasInvoice()
-      setOffererHasInvoice(offererHasInvoice)
-      if (offererHasInvoice) {
-        await loadInvoices()
-      } else {
-        setIsLoading(false)
-      }
+  )
+
+  const getOffererBankAccountsAndAttachedVenuesQuery = useSWR(
+    [
+      GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY,
+      selectedOfferer?.id,
+    ],
+    () => {
+      const bankAccounts = selectedOfferer?.id
+        ? api.getOffererBankAccountsAndAttachedVenues(selectedOfferer.id)
+        : null
+      return bankAccounts
     }
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    firstLoad()
+  )
 
-    // We let the dependancies table empty here to have the same behavior as the previous version :
-    //  data load when we arrive on the page
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedOfferer?.id])
-
-  useEffect(() => {
-    const getBankAccountOptions = async () => {
-      if (!selectedOfferer) {
-        return
-      }
-      const result = await api.getOffererBankAccountsAndAttachedVenues(
-        selectedOfferer.id
-      )
-
-      setFilterOptions(
-        sortByLabel(
-          result.bankAccounts.map((item) => ({
-            value: String(item.id),
-            label: item.label,
-          }))
-        )
-      )
-    }
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    getBankAccountOptions()
-  }, [selectedOfferer])
-
-  if (isLoading) {
+  if (
+    getOffererBankAccountsAndAttachedVenuesQuery.isLoading ||
+    !getOffererBankAccountsAndAttachedVenuesQuery.data ||
+    getInvoicesQuery.isLoading
+  ) {
     return <Spinner />
   }
+
+  const filterOptions = sortByLabel(
+    getOffererBankAccountsAndAttachedVenuesQuery.data.bankAccounts.map(
+      (item) => ({
+        value: String(item.id),
+        label: item.label,
+      })
+    )
+  )
+  const invoices = getInvoicesQuery.data
+  const hasNoSearchResult =
+    !invoices.length && hasSearchedOnce && hasInvoiceQuery.data
+  const hasNoInvoicesYet = !invoices.length && !hasSearchedOnce
 
   return (
     <>
@@ -142,26 +111,24 @@ export const ReimbursementsInvoices = (): JSX.Element => {
       <InvoicesFilters
         areFiltersDefault={areFiltersDefault}
         filters={filters}
-        disable={!offererHasInvoice}
+        disable={!invoices.length}
         initialFilters={INITIAL_FILTERS}
-        loadInvoices={loadInvoices}
         selectableOptions={filterOptions}
         setAreFiltersDefault={setAreFiltersDefault}
         setFilters={setFilters}
         setHasSearchedOnce={setHasSearchedOnce}
       />
-      {hasError && <InvoicesServerError />}
+      {getInvoicesQuery.error && <InvoicesServerError />}
       {hasNoInvoicesYet && <NoInvoicesYet />}
       {hasNoSearchResult && (
         <InvoicesNoResult
           areFiltersDefault={areFiltersDefault}
           initialFilters={INITIAL_FILTERS}
-          loadInvoices={loadInvoices}
           setAreFiltersDefault={setAreFiltersDefault}
           setFilters={setFilters}
         />
       )}
-      {invoices.length > 0 && <InvoiceTable invoices={invoices} />}
+      {invoices.length && <InvoiceTable invoices={invoices} />}
     </>
   )
 }
