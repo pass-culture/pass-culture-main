@@ -46,3 +46,7 @@ export const LOG_OFFER_DETAILS_CLICK_QUERY_KEY = 'logOfferDetailsButtonClick'
 export const LOG_OFFER_TEMPLATE_DETAILS_CLICK_QUERY_KEY =
   'logOfferTemplateDetailsButtonClick'
 export const LOG_TRACKING_FILTER_QUERY_KEY = 'logTrackingFilter'
+export const GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY =
+  'getOffererBankAccountsAndAttachedVenues'
+export const GET_HAS_INVOICE_QUERY_KEY = 'getHasInvoice'
+export const GET_INVOICES_QUERY_KEY = 'getInvoices'

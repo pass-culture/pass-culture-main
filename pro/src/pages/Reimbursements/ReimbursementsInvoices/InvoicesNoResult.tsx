@@ -11,7 +11,6 @@ import { FiltersType } from './types'
 interface InvoicesNoResultsProps {
   areFiltersDefault: boolean
   initialFilters: FiltersType
-  loadInvoices: (shouldReset: boolean) => void
   setAreFiltersDefault: Dispatch<SetStateAction<boolean>>
   setFilters: Dispatch<SetStateAction<FiltersType>>
 }
@@ -19,14 +18,12 @@ interface InvoicesNoResultsProps {
 export const InvoicesNoResult = ({
   areFiltersDefault,
   initialFilters,
-  loadInvoices,
   setAreFiltersDefault,
   setFilters,
 }: InvoicesNoResultsProps): JSX.Element => {
   function resetFilters() {
     setAreFiltersDefault(true)
     setFilters(initialFilters)
-    loadInvoices(true)
   }
 
   return (
