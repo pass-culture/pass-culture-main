@@ -231,7 +231,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
               </NavLink>
               {venueId && (
                 <NavLink
-                  to={`/structures/${offererId}/lieux/${venueId}/eac`}
+                  to={`/structures/${offererId}/lieux/${venueId}/collectif`}
                   className={({ isActive }) =>
                     classnames(styles['nav-links-item'], {
                       [styles['nav-links-item-active']]: isActive,

@@ -197,7 +197,7 @@ function AdageInformations({
           variant={ButtonVariant.TERNARY}
           className={styles['details-link']}
           link={{
-            to: `/structures/${offererId}/lieux/${venueId}/eac`,
+            to: `/structures/${offererId}/lieux/${venueId}/collectif`,
             'aria-label': `Gérer la page pour les enseignants ${venueName}`,
           }}
           icon={fullNextIcon}
