@@ -1,9 +1,7 @@
 import { useFormikContext } from 'formik'
-import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
-import { api } from 'apiClient/api'
-import { DMSApplicationForEAC } from 'apiClient/v1'
+import { GetOffererResponseModel } from 'apiClient/v1'
 import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
@@ -11,116 +9,38 @@ import {
   COLLECTIVE_OFFER_SUBTYPE,
   OFFER_TYPES,
   COLLECTIVE_OFFER_SUBTYPE_DUPLICATE,
-  DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
-import useNotification from 'hooks/useNotification'
 import strokeBookedIcon from 'icons/stroke-booked.svg'
 import duplicateOfferIcon from 'icons/stroke-duplicate-offer.svg'
 import strokeNewOfferIcon from 'icons/stroke-new-offer.svg'
 import strokeTemplateOfferIcon from 'icons/stroke-template-offer.svg'
-import { getFilteredCollectiveOffersAdapter } from 'pages/CollectiveOffers/adapters/getFilteredCollectiveOffersAdapter'
 import { Banner } from 'ui-kit/Banners/Banner/Banner'
 import { RadioButtonWithImage } from 'ui-kit/RadioButtonWithImage/RadioButtonWithImage'
-import Spinner from 'ui-kit/Spinner/Spinner'
 import { getLastDmsApplicationForOfferer } from 'utils/getLastCollectiveDmsApplication'
 
 import styles from '../OfferType.module.scss'
 import { OfferTypeFormValues } from '../types'
 
 interface CollectiveOfferTypeProps {
-  setHasCollectiveTemplateOffer: (arg: boolean) => void
-  setIsEligible: (arg: boolean) => void
-  isEligible: boolean
+  offerer?: GetOffererResponseModel
 }
 
-const CollectiveOfferType = ({
-  setHasCollectiveTemplateOffer,
-  setIsEligible,
-  isEligible,
-}: CollectiveOfferTypeProps): JSX.Element => {
+const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
   const location = useLocation()
-  const notify = useNotification()
   const { values, handleChange } = useFormikContext<OfferTypeFormValues>()
 
   const queryParams = new URLSearchParams(location.search)
   const queryOffererId = queryParams.get('structure')
   const queryVenueId = queryParams.get('lieu')
-  const [isLoading, setIsLoading] = useState(false)
-  const [isValidated, setIsValidated] = useState(true)
-  const [lastDmsApplication, setLastDmsApplication] = useState<
-    DMSApplicationForEAC | null | undefined
-  >(null)
 
-  useEffect(() => {
-    const getTemplateCollectiveOffers = async () => {
-      const apiFilters = {
-        ...DEFAULT_SEARCH_FILTERS,
-        collectiveOfferType: COLLECTIVE_OFFER_SUBTYPE.TEMPLATE.toLowerCase(),
-        offererId: queryOffererId ? queryOffererId : 'all',
-        venueId: queryVenueId ? queryVenueId : 'all',
-      }
-      const { isOk, message, payload } =
-        await getFilteredCollectiveOffersAdapter(apiFilters)
-
-      if (!isOk) {
-        setHasCollectiveTemplateOffer(false)
-        return notify.error(message)
-      }
-
-      if (payload.offers.length > 0) {
-        setHasCollectiveTemplateOffer(true)
-      }
-    }
-
-    const checkOffererEligibility = async () => {
-      const offererNames = await api.listOfferersNames()
-
-      const offererId = queryOffererId ?? offererNames.offerersNames[0].id
-      if (offererNames.offerersNames.length > 1 && !queryOffererId) {
-        setIsEligible(true)
-        return
-      }
-
-      if (offererId) {
-        const canCreate = offererNames.offerersNames.find(
-          (offerer) => offerer.id === Number(offererId)
-        )?.allowedOnAdage
-
-        setIsEligible(Boolean(canCreate))
-      }
-    }
-
-    const checkOffererValidation = async () => {
-      if (queryOffererId !== null) {
-        const response = await api.getOfferer(Number(queryOffererId))
-        setIsValidated(response.isValidated)
-        const lastDmsApplication = getLastDmsApplicationForOfferer(
-          queryVenueId,
-          response
-        )
-        setLastDmsApplication(lastDmsApplication)
-      }
-    }
-    const initializeStates = async () => {
-      setIsLoading(true)
-      await Promise.all([
-        getTemplateCollectiveOffers(),
-        checkOffererEligibility(),
-        checkOffererValidation(),
-      ])
-      setIsLoading(false)
-    }
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    initializeStates()
-  }, [queryOffererId, queryVenueId])
-
-  if (isLoading) {
-    return <Spinner />
-  }
+  const lastDmsApplication = getLastDmsApplicationForOfferer(
+    queryVenueId,
+    offerer
+  )
 
   return (
     <>
-      {isValidated && isEligible && (
+      {offerer?.isValidated && offerer.allowedOnAdage && (
         <FormLayout.Section
           title="Quel est le type de l’offre ?"
           className={styles['subtype-section']}
@@ -156,7 +76,7 @@ const CollectiveOfferType = ({
           </FormLayout.Row>
         </FormLayout.Section>
       )}
-      {isEligible &&
+      {offerer?.allowedOnAdage &&
         values.collectiveOfferSubtype ===
           COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE && (
           <FormLayout.Section
@@ -194,13 +114,14 @@ const CollectiveOfferType = ({
           </FormLayout.Section>
         )}
 
-      {values.offerType === OFFER_TYPES.EDUCATIONAL && !isValidated && (
-        <Banner>
-          Votre structure est en cours de validation par les équipes pass
-          Culture.
-        </Banner>
-      )}
-      {!isEligible &&
+      {values.offerType === OFFER_TYPES.EDUCATIONAL &&
+        !offerer?.isValidated && (
+          <Banner>
+            Votre structure est en cours de validation par les équipes pass
+            Culture.
+          </Banner>
+        )}
+      {!offerer?.allowedOnAdage &&
         (lastDmsApplication ? (
           <Banner
             links={[
