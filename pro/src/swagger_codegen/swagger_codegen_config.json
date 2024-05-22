@@ -1,0 +1,7 @@
+{
+  "modelPropertyNaming": "original",
+  "typeMappings": {
+    "DateTime": "Date",
+    "Date": "Date"
+  }
+}

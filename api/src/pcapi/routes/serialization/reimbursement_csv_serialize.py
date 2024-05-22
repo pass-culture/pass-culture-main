@@ -255,5 +255,5 @@ def validate_reimbursement_period(
 
 class ReimbursementCsvQueryModel(BaseModel):
     bankAccountId: int | None
-    reimbursementPeriodBeginningDate: str | None
-    reimbursementPeriodEndingDate: str | None
+    reimbursementPeriodBeginningDate: datetime.date | None
+    reimbursementPeriodEndingDate: datetime.datetime | None
