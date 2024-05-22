@@ -5,11 +5,11 @@ on:
     inputs:
       environment:
         type: string
-        required: false
+        required: true
         default: testing
       app_version:
         type: string
-        required: false
+        required: true
         default: test_fdehem
 
 permissions: write-all
