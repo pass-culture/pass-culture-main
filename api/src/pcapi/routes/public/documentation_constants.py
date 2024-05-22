@@ -1,6 +1,19 @@
 from spectree import Tag
 
 
+# HIGH LEVEL INFORMATIONS
+PUBLIC_API_DESCRIPTION = """
+This the documentation of the Pass Culture public REST API.
+
+**Important notice:**
+- Since January 2023, rate limiting has been implemented on the Pass Culture API.
+  You are limited to **200 requests/minute** per API key.
+  Once this limit reached, you will received a `429 Too Many Requests` error message. You will then need to back down.
+- Dates of event offers are stored in the **UTC format** to be able to format them correctly, according to the user timezone, in our application interface.
+- Any non-blank field sent using a `PATH` method will be considered as changed, even if the new value is equal to old value.
+  _For example, if you update the stock of an event, you **should not resend the `beginningDate`** if it has not changed because, otherwise it is going to trigger the reschedule process on our side._
+"""
+
 # BOOKING_TAGS
 BOOKING_TAG = Tag(name="Booking", description="Endpoints to manage the bookings of an offer (event and product).")
 
@@ -39,6 +52,7 @@ COLLECTIVE_EDUCATIONAL_DATA = Tag(name="Collective educational data")
 BASE_CODE_DESCRIPTIONS = {
     "HTTP_401": (None, "Authentication is necessary to use this API"),
     "HTTP_403": (None, "You do not have the necessary rights to use this API"),
+    "HTTP_429": (None, "You have made too many requests. (**rate limit: 200 requests/minute**)"),
 }
 
 OPEN_API_TAGS = [
