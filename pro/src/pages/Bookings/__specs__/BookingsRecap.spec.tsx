@@ -3,10 +3,6 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import {
-  SharedCurrentUserResponseModel,
-  VenueListItemResponseModel,
-} from 'apiClient/v1'
 import { ApiError } from 'apiClient/v2'
 import { ApiRequestOptions } from 'apiClient/v2/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v2/core/ApiResult'
@@ -22,6 +18,7 @@ import {
   venueListItemFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { Bookings } from '../Bookings'
 
@@ -50,53 +47,26 @@ const NTH_ARGUMENT_GET_BOOKINGS = {
   bookingEndingDate: 7,
 }
 
-const renderBookingsRecap = async (
-  storeOverrides: any,
-  initialEntries = '/reservations',
-  waitDomReady?: boolean
-) => {
-  const rtlReturn = renderWithProviders(
+const user = sharedCurrentUserFactory()
+const venue = venueListItemFactory()
+
+const renderBookingsRecap = () => {
+  return renderWithProviders(
     <>
       <Bookings />
       <Notification />
     </>,
-    { storeOverrides, initialRouterEntries: [initialEntries] }
+    { initialRouterEntries: ['/reservations'], user }
   )
+}
 
-  const { hasBookings } = await api.getUserHasBookings()
-  const displayBookingsButton = screen.getByRole('button', { name: 'Afficher' })
-  const downloadBookingsCsvButton = screen.getByRole('button', {
-    name: 'Télécharger',
-  })
-
-  const submitFilters = async () => {
-    await userEvent.click(displayBookingsButton)
-  }
-  const submitDownloadFilters = async () => {
-    await userEvent.click(downloadBookingsCsvButton)
-  }
-
-  if (waitDomReady || waitDomReady === undefined) {
-    if (hasBookings) {
-      await waitFor(() => expect(displayBookingsButton).not.toBeDisabled())
-    } else {
-      const loadingMessage = screen.queryByText('Chargement en cours ...')
-      await waitFor(() => expect(loadingMessage).not.toBeInTheDocument())
-    }
-  }
-
-  return {
-    rtlReturn,
-    submitDownloadFilters,
-    submitFilters,
-  }
+const waitForCompleteLoading = async () => {
+  await waitFor(() =>
+    expect(screen.getByRole('button', { name: 'Afficher' })).not.toBeDisabled()
+  )
 }
 
 describe('components | BookingsRecap | Pro user', () => {
-  let store: any
-  let venue: VenueListItemResponseModel
-  let user
-
   beforeEach(() => {
     const emptyBookingsRecapPage = {
       bookingsRecap: [],
@@ -105,24 +75,14 @@ describe('components | BookingsRecap | Pro user', () => {
       total: 0,
     }
     vi.spyOn(api, 'getBookingsPro').mockResolvedValue(emptyBookingsRecapPage)
-
-    user = {
-      isAdmin: false,
-      email: 'rené@example.com',
-    } as SharedCurrentUserResponseModel
-    store = {
-      user: {
-        currentUser: user,
-      },
-    }
     vi.spyOn(api, 'getProfile').mockResolvedValue(user)
-    venue = venueListItemFactory()
     vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [venue] })
     vi.spyOn(api, 'getUserHasBookings').mockResolvedValue({ hasBookings: true })
   })
 
   it('should show a pre-filter section', async () => {
-    await renderBookingsRecap(store)
+    renderBookingsRecap()
+    await waitForCompleteLoading()
 
     const eventDateFilter = screen.getByLabelText('Date de l’évènement')
     const eventVenueFilter = screen.getByLabelText('Lieu')
@@ -135,7 +95,8 @@ describe('components | BookingsRecap | Pro user', () => {
   })
 
   it('should ask user to select a pre-filter before clicking on "Afficher"', async () => {
-    await renderBookingsRecap(store)
+    renderBookingsRecap()
+    await waitForCompleteLoading()
 
     expect(api.getBookingsPro).not.toHaveBeenCalled()
     const choosePreFiltersMessage = screen.getByText(
@@ -154,13 +115,14 @@ describe('components | BookingsRecap | Pro user', () => {
         total: 1,
         bookingsRecap: [bookingRecap],
       })
-    const { submitFilters } = await renderBookingsRecap(store)
+    renderBookingsRecap()
+    await waitForCompleteLoading()
 
     await userEvent.selectOptions(
       screen.getByLabelText('Lieu'),
       venue.id.toString()
     )
-    await submitFilters()
+    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
     await screen.findAllByText(bookingRecap.stock.offerName)
     expect(
@@ -175,9 +137,10 @@ describe('components | BookingsRecap | Pro user', () => {
       total: 0,
       bookingsRecap: [],
     })
-    const { submitFilters } = await renderBookingsRecap(store)
+    renderBookingsRecap()
+    await waitForCompleteLoading()
 
-    await submitFilters()
+    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
     const noBookingsForPreFilters = await screen.findByText(
       'Aucune réservation trouvée pour votre recherche'
@@ -192,12 +155,14 @@ describe('components | BookingsRecap | Pro user', () => {
       total: 0,
       bookingsRecap: [],
     })
-    const { submitFilters } = await renderBookingsRecap(store)
+    renderBookingsRecap()
+    await waitForCompleteLoading()
+
     await userEvent.selectOptions(
       screen.getByLabelText('Lieu'),
       venue.id.toString()
     )
-    await submitFilters()
+    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
     const resetButton = await screen.findByText(
       'Afficher toutes les réservations'
@@ -217,9 +182,10 @@ describe('components | BookingsRecap | Pro user', () => {
       total: 1,
       bookingsRecap: [bookingRecap],
     })
-    const { submitFilters } = await renderBookingsRecap(store)
+    renderBookingsRecap()
+    await waitForCompleteLoading()
 
-    await submitFilters()
+    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
     expect(
       screen.getByRole('button', { name: 'Réinitialiser les filtres' })
@@ -234,7 +200,9 @@ describe('components | BookingsRecap | Pro user', () => {
       total: 1,
       bookingsRecap: [bookingRecap],
     })
-    const { submitFilters } = await renderBookingsRecap(store)
+    renderBookingsRecap()
+    await waitForCompleteLoading()
+
     await userEvent.selectOptions(
       screen.getByLabelText('Lieu'),
       venue.id.toString()
@@ -246,7 +214,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     await userEvent.type(beginningPeriodInput, '2019-01-01')
     await userEvent.type(endingPeriodInput, '2019-02-01')
-    await submitFilters()
+    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
     const resetButton = await screen.findByText('Réinitialiser les filtres')
     await userEvent.click(resetButton)
@@ -269,12 +237,14 @@ describe('components | BookingsRecap | Pro user', () => {
       total: 1,
       bookingsRecap: [bookingRecap],
     })
-    const { submitFilters } = await renderBookingsRecap(store)
+    renderBookingsRecap()
+    await waitForCompleteLoading()
+
     await userEvent.selectOptions(
       screen.getByLabelText('Lieu'),
       venue.id.toString()
     )
-    await submitFilters()
+    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
     const resetButton = await screen.findByText('Réinitialiser les filtres')
     await userEvent.click(resetButton)
@@ -289,7 +259,8 @@ describe('components | BookingsRecap | Pro user', () => {
   })
 
   it('should have a CSV download button', async () => {
-    await renderBookingsRecap(store)
+    renderBookingsRecap()
+    await waitForCompleteLoading()
 
     expect(
       screen.getByRole('button', { name: 'Télécharger' })
@@ -297,12 +268,11 @@ describe('components | BookingsRecap | Pro user', () => {
   })
 
   it('should fetch API for CSV when clicking on the download button and disable button while its loading', async () => {
-    const { submitDownloadFilters } = await renderBookingsRecap({
-      ...store,
-    })
+    renderBookingsRecap()
+    await waitForCompleteLoading()
 
     // submit utils method wait for button to become disabled then enabled.
-    await submitDownloadFilters()
+    await userEvent.click(screen.getByRole('button', { name: 'Télécharger' }))
     const downloadSubButton = await screen.findByRole('button', {
       name: 'Fichier CSV (.csv)',
     })
@@ -325,11 +295,10 @@ describe('components | BookingsRecap | Pro user', () => {
       new ApiError({} as ApiRequestOptions, { status: 400 } as ApiResult, '')
     )
 
-    const { submitDownloadFilters } = await renderBookingsRecap({
-      ...store,
-    })
+    renderBookingsRecap()
+    await waitForCompleteLoading()
 
-    await submitDownloadFilters()
+    await userEvent.click(screen.getByRole('button', { name: 'Télécharger' }))
     const downloadSubButton = await screen.findByRole('button', {
       name: 'Fichier CSV (.csv)',
     })
@@ -360,13 +329,14 @@ describe('components | BookingsRecap | Pro user', () => {
       .mockResolvedValueOnce(paginatedBookingRecapReturned)
       .mockResolvedValueOnce(secondPaginatedBookingRecapReturned)
 
-    const { submitFilters } = await renderBookingsRecap(store)
+    renderBookingsRecap()
+    await waitForCompleteLoading()
 
     await userEvent.selectOptions(
       screen.getByLabelText('Lieu'),
       venue.id.toString()
     )
-    await submitFilters()
+    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
     expect(
       await screen.findByText(bookings2.stock.offerName)
@@ -399,13 +369,14 @@ describe('components | BookingsRecap | Pro user', () => {
         total: 1,
         bookingsRecap: [bookingRecap],
       })
-    const { submitFilters } = await renderBookingsRecap(store)
+    renderBookingsRecap()
+    await waitForCompleteLoading()
 
     await userEvent.type(
       screen.getByLabelText('Date de l’évènement'),
       '2020-06-08'
     )
-    await submitFilters()
+    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
     await screen.findAllByText(bookingRecap.stock.offerName)
     expect(
@@ -428,13 +399,14 @@ describe('components | BookingsRecap | Pro user', () => {
         total: 1,
         bookingsRecap: [bookingRecap],
       })
-    const { submitFilters } = await renderBookingsRecap(store)
+    renderBookingsRecap()
+    await waitForCompleteLoading()
 
     await userEvent.type(
       screen.getByLabelText('Date de l’évènement'),
       '2020-08-10'
     )
-    await submitFilters()
+    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
     await screen.findAllByText(bookingRecap.stock.offerName)
     expect(
@@ -460,9 +432,10 @@ describe('components | BookingsRecap | Pro user', () => {
         total: 1,
         bookingsRecap: [bookingRecap],
       })
-    const { submitFilters } = await renderBookingsRecap(store)
+    renderBookingsRecap()
+    await waitForCompleteLoading()
 
-    await submitFilters()
+    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
     await screen.findAllByText(bookingRecap.stock.offerName)
     expect(
@@ -487,7 +460,8 @@ describe('components | BookingsRecap | Pro user', () => {
         total: 1,
         bookingsRecap: [bookingRecap],
       })
-    const { submitFilters } = await renderBookingsRecap(store)
+    renderBookingsRecap()
+    await waitForCompleteLoading()
 
     const beginningPeriodInput = screen.getByLabelText('Début de la période')
     const endingPeriodInput = screen.getByLabelText('Fin de la période')
@@ -496,7 +470,7 @@ describe('components | BookingsRecap | Pro user', () => {
     await userEvent.clear(endingPeriodInput)
     await userEvent.type(beginningPeriodInput, '2020-05-10')
     await userEvent.type(endingPeriodInput, '2020-06-05')
-    await submitFilters()
+    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
     await screen.findAllByText(bookingRecap.stock.offerName)
     expect(
@@ -534,20 +508,21 @@ describe('components | BookingsRecap | Pro user', () => {
       .mockResolvedValueOnce(otherVenuePaginatedBookingRecapReturned)
       .mockResolvedValueOnce(paginatedBookingRecapReturned)
 
-    const { submitFilters } = await renderBookingsRecap(store)
+    renderBookingsRecap()
+    await waitForCompleteLoading()
 
     await userEvent.selectOptions(
       screen.getByLabelText('Lieu'),
       otherVenue.id.toString()
     )
 
-    await submitFilters()
+    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
     await userEvent.selectOptions(
       screen.getByLabelText('Lieu'),
       venue.id.toString()
     )
-    await submitFilters()
+    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
     expect(await screen.findByText(booking.stock.offerName)).toBeInTheDocument()
     expect(
@@ -564,7 +539,8 @@ describe('components | BookingsRecap | Pro user', () => {
       .mockResolvedValueOnce({ ...bookingsRecap, page: 4 })
       .mockResolvedValueOnce({ ...bookingsRecap, page: 5 })
       .mockResolvedValueOnce({ ...bookingsRecap, page: 6 })
-    await renderBookingsRecap(store)
+    renderBookingsRecap()
+    await waitForCompleteLoading()
 
     await userEvent.selectOptions(
       screen.getByLabelText('Lieu'),
@@ -587,7 +563,8 @@ describe('components | BookingsRecap | Pro user', () => {
       .mockResolvedValueOnce({ ...bookingsRecap, page: 3 })
       .mockResolvedValueOnce({ ...bookingsRecap, page: 4 })
       .mockResolvedValueOnce({ ...bookingsRecap, page: 5 })
-    await renderBookingsRecap(store)
+    renderBookingsRecap()
+    await waitForCompleteLoading()
 
     await userEvent.selectOptions(
       screen.getByLabelText('Lieu'),
@@ -603,8 +580,10 @@ describe('components | BookingsRecap | Pro user', () => {
   })
 
   it('should inform the user that the filters have been modified when at least one of them was and before clicking on the "Afficher" button', async () => {
-    const { submitFilters } = await renderBookingsRecap(store)
-    await submitFilters()
+    renderBookingsRecap()
+    await waitForCompleteLoading()
+
+    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
     await userEvent.selectOptions(
       screen.getByLabelText('Lieu'),
@@ -618,7 +597,9 @@ describe('components | BookingsRecap | Pro user', () => {
   })
 
   it('should not inform the user when the selected filter is the same than the actual filter', async () => {
-    await renderBookingsRecap(store)
+    renderBookingsRecap()
+    await waitForCompleteLoading()
+
     await userEvent.selectOptions(
       screen.getByLabelText('Lieu'),
       venue.publicName ?? venue.name
@@ -636,7 +617,8 @@ describe('components | BookingsRecap | Pro user', () => {
   })
 
   it('should not inform the user of pre-filter modifications before first click on "Afficher" button', async () => {
-    await renderBookingsRecap(store)
+    renderBookingsRecap()
+    await waitForCompleteLoading()
 
     await userEvent.selectOptions(
       screen.getByLabelText('Lieu'),
@@ -650,25 +632,23 @@ describe('components | BookingsRecap | Pro user', () => {
   })
 
   it('should display no booking screen when user does not have any booking yet', async () => {
-    //Given
     vi.spyOn(api, 'getUserHasBookings').mockResolvedValue({
       hasBookings: false,
     })
-    await renderBookingsRecap(store)
+    renderBookingsRecap()
 
-    //Then
-    const displayBookingsButton = screen.getByRole('button', {
-      name: 'Afficher',
-    })
-    const downloadBookingsCsvButton = screen.getByRole('button', {
-      name: 'Télécharger',
-    })
-    const informationMessage = await screen.findByText(
-      'Vous n’avez aucune réservation pour le moment'
-    )
-
-    expect(displayBookingsButton).toBeDisabled()
-    expect(downloadBookingsCsvButton).toBeDisabled()
-    expect(informationMessage).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', {
+        name: 'Afficher',
+      })
+    ).toBeDisabled()
+    expect(
+      screen.getByRole('button', {
+        name: 'Télécharger',
+      })
+    ).toBeDisabled()
+    expect(
+      await screen.findByText('Vous n’avez aucune réservation pour le moment')
+    ).toBeInTheDocument()
   })
 })

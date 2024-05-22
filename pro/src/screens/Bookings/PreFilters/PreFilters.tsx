@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 import isEqual from 'lodash.isequal'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { FormEvent, useCallback, useEffect, useState } from 'react'
 
 import useAnalytics from 'app/App/analytics/firebase'
 import { FormLayout } from 'components/FormLayout/FormLayout'
@@ -114,17 +114,13 @@ export const PreFilters = ({
     [appliedPreFilters]
   )
 
-  const requestFilteredBookings = useCallback(
-    /* istanbul ignore next: DEBT to fix */
-    (event: any) => {
-      event.preventDefault()
-      applyPreFilters(selectedPreFilters)
-      if (updateUrl) {
-        updateUrl(selectedPreFilters)
-      }
-    },
-    [applyPreFilters, selectedPreFilters]
-  )
+  const requestFilteredBookings = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    applyPreFilters(selectedPreFilters)
+    if (updateUrl) {
+      updateUrl(selectedPreFilters)
+    }
+  }
 
   const isRefreshRequired =
     !isEqual(selectedPreFilters, appliedPreFilters) && wereBookingsRequested
