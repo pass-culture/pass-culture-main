@@ -25,6 +25,7 @@ export const GET_OFFER_QUERY_KEY = 'getOffer'
 export const GET_OFFERER_QUERY_KEY = 'getOfferer'
 export const GET_OFFERER_NAMES_QUERY_KEY = 'getOffererNames'
 export const GET_PROVIDERS_QUERY_KEY = 'getProviders'
+export const GET_VALIDATED_OFFERERS_NAMES_QUERY_KEY = 'listOfferersNames'
 export const GET_VENUE_QUERY_KEY = 'getVenue'
 export const GET_VENUE_LABELS_QUERY_KEY = 'getVenueLabels'
 export const GET_VENUES_OF_OFFERER_FROM_SIRET_QUERY_KEY =

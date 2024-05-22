@@ -1,6 +1,8 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
+import useSWR from 'swr'
 
+import { api } from 'apiClient/api'
 import {
   CollectiveOfferResponseModel,
   GetOffererResponseModel,
@@ -8,6 +10,7 @@ import {
   UserRole,
 } from 'apiClient/v1'
 import { NoData } from 'components/NoData/NoData'
+import { GET_VALIDATED_OFFERERS_NAMES_QUERY_KEY } from 'config/swrQueryKeys'
 import {
   DEFAULT_PAGE,
   DEFAULT_SEARCH_FILTERS,
@@ -21,7 +24,6 @@ import {
   computeCollectiveOffersUrl,
 } from 'core/Offers/utils/computeOffersUrl'
 import { hasSearchFilters } from 'core/Offers/utils/hasSearchFilters'
-import getUserValidatedOfferersNamesAdapter from 'core/shared/adapters/getUserValidatedOfferersNamesAdapter'
 import { Audience } from 'core/shared/types'
 import { SelectOption } from 'custom_types/form'
 import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
@@ -91,28 +93,17 @@ export const Offers = ({
   const userHasNoOffers =
     !isLoading && !hasOffers && !hasSearchFilters(urlSearchFilters)
 
-  const [isOffererValidated, setIsOffererValidated] = useState<boolean>(false)
+  const validatedUserOfferersQuery = useSWR(
+    !isAdmin ? [GET_VALIDATED_OFFERERS_NAMES_QUERY_KEY] : null,
+    () => api.listOfferersNames(undefined, true)
+  )
+
+  const isOffererValidated =
+    validatedUserOfferersQuery.data?.offerersNames.some(
+      (validatedOfferer) => validatedOfferer.id === selectedOffererId
+    )
   const displayCreateOfferButton =
     !isNewSideBarNavigation && !isAdmin && isOffererValidated
-
-  useEffect(() => {
-    const loadValidatedUserOfferers = async () => {
-      const validatedUserOfferers = await getUserValidatedOfferersNamesAdapter()
-      const isCurrentOffererValidated = validatedUserOfferers.payload.some(
-        (validatedOfferer) => validatedOfferer.id === selectedOffererId
-      )
-      if (isCurrentOffererValidated) {
-        setIsOffererValidated(true)
-      } else {
-        setIsOffererValidated(false)
-      }
-    }
-    // If user is admin, offer creation button doesn't show
-    if (!isAdmin) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      loadValidatedUserOfferers()
-    }
-  }, [])
 
   const actionLink = displayCreateOfferButton ? (
     <ButtonLink
@@ -131,14 +122,13 @@ export const Offers = ({
     ? offers.length
     : selectedOfferIds.length
 
-  const clearSelectedOfferIds = useCallback(() => {
-    /* istanbul ignore next: DEBT, TO FIX */
+  const clearSelectedOfferIds = () => {
     setSelectedOfferIds([])
-  }, [])
+  }
 
-  const toggleSelectAllCheckboxes = useCallback(() => {
+  const toggleSelectAllCheckboxes = () => {
     setAreAllOffersSelected((currentValue) => !currentValue)
-  }, [])
+  }
 
   const resetFilters = () => {
     setSearchFilters(DEFAULT_SEARCH_FILTERS)
