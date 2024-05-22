@@ -1,6 +1,7 @@
 {% from "components/badges.html" import build_user_offerer_status_badge %}
 {% from "components/badges.html" import build_new_navigation_badge %}
 {% from "components/badges.html" import build_old_navigation_badge %}
+{% from "components/generic_modal.html" import build_modal_form with context %}
 {% import "components/links.html" as links %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
 {% import "components/clipboard.html" as clipboard %}
@@ -8,43 +9,7 @@
 {% if has_permission("VALIDATE_OFFERER") %}
   {% if add_user_form %}
     {% set add_pro_user_modal_label_id = random_hash() %}
-    <button class="btn btn-outline-primary lead fw-bold mt-2"
-            data-bs-toggle="modal"
-            data-bs-target=".pc-add-pro-user-modal"
-            type="button">Récupérer un compte pro rejeté</button>
-    <div class="modal modal-lg fade pc-add-pro-user-modal"
-         tabindex="-1"
-         aria-describedby="{{ add_pro_user_modal_label_id }}"
-         aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header fs-5"
-               id="{{ add_pro_user_modal_label_id }}">Récupérer un compte pro rejeté</div>
-          <div class="mx-4 mt-4">Veuillez sélectionner le compte pro à rattacher à cette structure</div>
-          <form action="{{ add_user_dst }}"
-                name="{{ add_user_dst | action_to_name }}"
-                method="post">
-            <div class="modal-body">
-              <div class="form-group">
-                {% for form_field in add_user_form %}
-                  <div class="w-100 my-4">
-                    {% for error in form_field.errors %}<p class="text-warning lead">{{ error }}</p>{% endfor %}
-                  </div>
-                  {{ form_field }}
-                {% endfor %}
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button"
-                      class="btn btn-outline-primary"
-                      data-bs-dismiss="modal">Annuler</button>
-              <button type="submit"
-                      class="btn btn-primary">Valider le rattachement</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
+    {{ build_modal_form("add-pro-user", add_user_dst, add_user_form, "Récupérer un compte pro rejeté", "Récupérer un compte pro rejeté", "Valider le rattachement", "Veuillez sélectionner le compte pro à rattacher à cette structure") }}
   {% else %}
     <button class="btn lead fw-bold mt-2"
             type="button"

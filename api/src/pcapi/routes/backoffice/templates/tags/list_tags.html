@@ -1,5 +1,6 @@
 {% from "components/forms.html" import build_form_fields_group with context %}
 {% from "components/forms.html" import build_filters_form with context %}
+{% from "components/generic_modal.html" import build_modal_form with context %}
 {% import "components/presentation/details/tabs.html" as tabs %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
 {% extends "layouts/connected.html" %}
@@ -106,36 +107,7 @@
         {% endcall %}
         {% call tabs.build_details_tab_content("categories", active_tab == 'categories') %}
           {% if create_category_form %}
-            <button class="btn btn-outline-primary lead fw-bold my-2"
-                    data-bs-toggle="modal"
-                    data-bs-target=".pc-create-tag-category-modal"
-                    type="button">Créer une catégorie</button>
-            <div class="modal modal-lg fade pc-create-tag-category-modal"
-                 tabindex="-1"
-                 aria-describedby="{{ create_tag_category_modal_label_id }}"
-                 aria-hidden="true">
-              <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                  <form action="{{ url_for("backoffice_web.tags.create_tag_category") }}"
-                        name="{{ url_for("backoffice_web.tags.create_tag_category") | action_to_name }}"
-                        method="post"
-                        data-turbo="false">
-                    <div class="modal-header"
-                         id="{{ create_tag_category_modal_label_id }}">
-                      <h5 class="modal-title">Créer une catégorie</h5>
-                    </div>
-                    <div class="modal-body row">{{ build_form_fields_group(create_category_form) }}</div>
-                    <div class="modal-footer">
-                      <button type="button"
-                              class="btn btn-outline-primary"
-                              data-bs-dismiss="modal">Annuler</button>
-                      <button type="submit"
-                              class="btn btn-primary">Enregistrer</button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
+            {{ build_modal_form("create-tag-category", url_for("backoffice_web.tags.create_tag_category") , create_category_form, "Créer une catégorie", "Enregistrer") }}
           {% endif %}
           <div>
             <table class="table mb-4">

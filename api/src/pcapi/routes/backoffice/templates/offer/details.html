@@ -1,6 +1,7 @@
 {% import "components/clipboard.html" as clipboard %}
 {% import "components/links.html" as links %}
 {% from "components/forms.html" import build_form_fields_group with context %}
+{% from "components/generic_modal.html" import build_modal_form with context %}
 {% from "components/presentation/details/tabs.html" import build_details_tab %}
 {% from "components/presentation/details/tabs.html" import build_details_tabs_wrapper %}
 {% from "components/presentation/details/tabs.html" import build_details_tab_content %}
@@ -61,36 +62,7 @@
               {% endif %}
               {% if edit_offer_venue_form %}
                 {% set edit_offer_venue_aria_described_by_id = random_hash() %}
-                <button class="btn btn-outline-primary lead fw-bold mt-2 mx-2"
-                        data-bs-toggle="modal"
-                        data-bs-target="#edit-offer-venue-modal"
-                        type="button">Modifier le lieu</button>
-                <div class="modal modal-lg fade"
-                     id="edit-offer-venue-modal"
-                     tabindex="-1"
-                     aria-describedby="{{ edit_offer_venue_aria_described_by_id }}"
-                     aria-hidden="true">
-                  <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                      <form action="{{ url_for("backoffice_web.offer.edit_offer_venue", offer_id=offer.id) }}"
-                            name="{{ url_for("backoffice_web.offer.edit_offer_venue", offer_id=offer.id) | action_to_name }}"
-                            method="post">
-                        <div class="modal-header"
-                             id="{{ edit_offer_venue_aria_described_by_id }}">
-                          <h5 class="modal-title">Modifier le lieu de l'offre</h5>
-                        </div>
-                        <div class="modal-body pb-3">{{ build_form_fields_group(edit_offer_venue_form) }}</div>
-                        <div class="modal-footer">
-                          <button type="button"
-                                  class="btn btn-outline-primary"
-                                  data-bs-dismiss="modal">Annuler</button>
-                          <button type="submit"
-                                  class="btn btn-primary">Enregistrer</button>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
-                </div>
+                {{ build_modal_form("edit-offer-venue", url_for("backoffice_web.offer.edit_offer_venue", offer_id=offer.id) , edit_offer_venue_form, "Modifier le lieu", "Modifier le lieu", "Enregistrer") }}
               {% endif %}
             </div>
             <div class="col-2"></div>

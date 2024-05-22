@@ -288,7 +288,7 @@ def _user_can_be_deleted(user: users_models.User) -> bool:
 def _get_delete_kwargs(user: users_models.User) -> dict:
     kwargs = {
         "can_be_deleted": _user_can_be_deleted(user),
-        "delete_dest": url_for("backoffice_web.pro_user.delete", user_id=user.id),
+        "delete_dst": url_for("backoffice_web.pro_user.delete", user_id=user.id),
         "delete_form": pro_users_forms.DeleteProUser(),
     }
     return kwargs
