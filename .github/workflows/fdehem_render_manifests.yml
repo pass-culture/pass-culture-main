@@ -1,5 +1,7 @@
 name: "[on_workflow_dispatch] Render manifests"
 
+run-name: "Testing render-manifests process"
+
 on:
   workflow_dispatch:
     inputs:
@@ -13,11 +15,6 @@ on:
         default: test_fdehem
 
 permissions: write-all
-
-concurrency:
-  # cancel previous workflow of the same branch except on master
-  group: main-${{ github.ref }}
-  cancel-in-progress: ${{ github.ref == 'refs/heads/master' && false || true }}
 
 jobs:
   render-manifests:
