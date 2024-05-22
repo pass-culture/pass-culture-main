@@ -45,7 +45,7 @@
   margin-bottom: rem.torem(16px);
 }
 
-.data{
+.data {
   display: flex;
   justify-content: space-between;
   padding: rem.torem(12px) rem.torem(8px);
@@ -59,7 +59,6 @@
   text-align: left;
   margin-right: rem.torem(16px);
 }
-
 
 .body .row:nth-child(n + 1):nth-child(odd) {
   background-color: var(--color-grey-light);
@@ -140,6 +139,10 @@
 
   .price-column {
     width: rem.torem(174px);
+
+    &-without-frame {
+      width: rem.torem(300px);
+    }
   }
 
   .filter-input {

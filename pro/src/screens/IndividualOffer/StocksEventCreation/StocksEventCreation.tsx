@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
@@ -7,6 +8,8 @@ import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/cons
 import { StocksEventList } from 'components/StocksEventList/StocksEventList'
 import { GET_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
+import { useActiveFeature } from 'hooks/useActiveFeature'
+import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import { useNotification } from 'hooks/useNotification'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 
@@ -28,6 +31,8 @@ export const StocksEventCreation = ({
   const notify = useNotification()
 
   const [hasStocks, setHasStocks] = useState<boolean | null>(null)
+  const isWithoutFrame = useActiveFeature('WIP_ENABLE_PRO_WITHOUT_FRAME')
+  const hasNewInterface = useIsNewInterfaceActive()
 
   const handlePreviousStep = () => {
     /* istanbul ignore next: DEBT, TO FIX */
@@ -59,7 +64,12 @@ export const StocksEventCreation = ({
 
   return (
     <>
-      <div className={styles['container']}>
+      <div
+        className={classNames(styles['container'], {
+          [styles['container-without-frame']]:
+            isWithoutFrame && hasNewInterface,
+        })}
+      >
         {hasStocks === false && (
           <HelpSection className={styles['help-section']} />
         )}
