@@ -1,10 +1,14 @@
-{% macro build_modal_form(modal_id, dst, form, title, button_text, description) %}
+{% macro build_modal_form(modal_id, dst, form, button_text, title, submit_button_text, description, icon) %}
   {% set modal_aria_described_by_id = random_hash() %}
   <button class="btn btn-outline-primary lead fw-bold mt-2"
           data-bs-toggle="modal"
-          data-bs-target=".pc-{{ modal_id }}-modal"
-          type="button">{{ title }}</button>
-  <div class="modal modal-lg fade pc-{{ modal_id }}-modal"
+          data-bs-target="#{{ modal_id }}-modal"
+          type="button">
+    {% if icon %}<i class="bi {{ icon }}"></i>{% endif %}
+    {{ button_text }}
+  </button>
+  <div class="modal modal-lg fade"
+       id="{{ modal_id }}-modal"
        tabindex="-1"
        aria-describedby="{{ modal_aria_described_by_id }}"
        aria-hidden="true">
@@ -19,11 +23,9 @@
             {% if description %}<p>{{ description }}</p>{% endif %}
             <div class="form-group">
               {% for form_field in form %}
-                {% if form_field.errors %}
-                  <div class="w-100 my-4">
-                    {% for error in form_field.errors %}<p class="text-warning lead">{{ error }}</p>{% endfor %}
-                  </div>
-                {% endif %}
+                <div class="w-100 my-4">
+                  {% for error in form_field.errors %}<p class="text-warning lead">{{ error }}</p>{% endfor %}
+                </div>
                 {{ form_field }}
               {% endfor %}
             </div>
@@ -33,7 +35,7 @@
                     class="btn btn-outline-primary"
                     data-bs-dismiss="modal">Annuler</button>
             <button type="submit"
-                    class="btn btn-primary">{{ button_text }}</button>
+                    class="btn btn-primary">{{ submit_button_text }}</button>
           </div>
         </form>
       </div>

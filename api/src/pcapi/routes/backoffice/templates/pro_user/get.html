@@ -3,7 +3,6 @@
 {% from "components/badges.html" import build_pro_user_status_badge, build_old_navigation_badge, build_new_navigation_badge %}
 {% from "components/generic_modal.html" import build_modal_form with context %}
 {% from "components/forms.html" import build_form_fields_group with context %}
-{% from "components/generic_modal.html" import build_modal_form with context %}
 {% from "components/turbo/spinner.html" import build_loading_spinner with context %}
 {% extends "layouts/pro.html" %}
 {% block pro_main_content %}
@@ -29,44 +28,16 @@
               <div class="d-flex row-reverse justify-content-end flex-grow-1">
                 {% if has_permission("MANAGE_PRO_ENTITY") %}
                   {% set edit_pro_user_information_label_id = random_hash() %}
-                  <button class="btn btn-outline-primary lead fw-bold mt-2 mx-2"
-                          data-bs-toggle="modal"
-                          data-bs-target=".pc-edit-pro-user-modal"
-                          type="button">Modifier les informations</button>
-                  <div class="modal modal-lg fade pc-edit-pro-user-modal"
-                       tabindex="-1"
-                       aria-describedby="{{ edit_pro_user_information_label_id }}"
-                       aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                      <div class="modal-content">
-                        <div class="modal-header fs-5"
-                             id="{{ edit_pro_user_information_label_id }}">
-                          Modification des informations
-                          de {{ user.firstName }} {{ user.lastName | upper }}
-                        </div>
-                        <form action="{{ dst }}"
-                              name="{{ dst | action_to_name }}"
-                              method="post">
-                          <div class="modal-body">{{ build_form_fields_group(form) }}</div>
-                          <div class="modal-footer">
-                            <button type="button"
-                                    class="btn btn-outline-primary"
-                                    data-bs-dismiss="modal">Annuler</button>
-                            <button type="submit"
-                                    class="btn btn-primary">Enregistrer</button>
-                          </div>
-                        </form>
-                      </div>
-                    </div>
-                  </div>
+                  {{ build_modal_form("edit-pro-user", dst, form, "Modifier les informations", "Modification des informations
+                                    de " + user.firstName + " " + user.lastName|upper, "Enregistrer") }}
                 {% endif %}
                 {% if has_permission("PRO_FRAUD_ACTIONS") and user.isActive %}
-                  {{ build_modal_form("suspend", suspension_dst, suspension_form, "Suspendre le compte", "Confirmer la suspension") }}
+                  {{ build_modal_form("suspend-pro-user", suspension_dst, suspension_form, "Suspendre le compte", "Suspendre le compte", "Confirmer la suspension") }}
                 {% elif has_permission("PRO_FRAUD_ACTIONS") and not user.isActive %}
-                  {{ build_modal_form("unsuspend", suspension_dst, suspension_form, "Réactiver le compte", "Confirmer la réactivation") }}
+                  {{ build_modal_form("unsuspend-pro-user", suspension_dst, suspension_form, "Réactiver le compte", "Réactiver le compte", "Confirmer la réactivation") }}
                 {% endif %}
                 {% if has_permission("MANAGE_PRO_ENTITY") and can_be_deleted %}
-                  {{ build_modal_form("delete", delete_dest, delete_form, "Supprimer le compte", "Supprimer le compte", "Pour confirmer la suppression du compte merci de saisir son adresse email") }}
+                  {{ build_modal_form("delete-pro-user", delete_dst, delete_form, "Supprimer le compte", "Supprimer le compte", "Supprimer le compte", "Pour confirmer la suppression du compte merci de saisir son adresse email") }}
                 {% endif %}
                 {% if user.isActive %}
                   <div class="mx-3 pt-2 pc-brevo-logo-link">
