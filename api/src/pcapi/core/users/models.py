@@ -39,7 +39,6 @@ from pcapi.utils.phone_number import ParsedPhoneNumber
 if typing.TYPE_CHECKING:
     from pcapi.core.finance.models import Deposit
     from pcapi.core.offerers.models import UserOfferer
-    from pcapi.core.offers.models import Mediation
     from pcapi.core.offers.models import Offer
     from pcapi.core.permissions.models import BackOfficeUserProfile
 
