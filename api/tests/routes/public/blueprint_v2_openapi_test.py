@@ -51,6 +51,7 @@ def test_public_api_openapi_json(client):
     assert response.json["security"] == expected["security"]
 
 
+# test
 def _assert_dicts_are_equal(to_check, expected, keys_to_skip=None):
     keys_to_skip = keys_to_skip or []
 
