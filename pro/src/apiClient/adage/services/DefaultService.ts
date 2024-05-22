@@ -777,22 +777,6 @@ export class DefaultService {
     });
   }
   /**
-   * get_any_new_template_offers_playlist <GET>
-   * @returns ListCollectiveOfferTemplateResponseModel OK
-   * @throws ApiError
-   */
-  public getAnyNewTemplateOffersPlaylist(): CancelablePromise<ListCollectiveOfferTemplateResponseModel> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/adage-iframe/playlists/any_new_template_offers',
-      errors: {
-        403: `Forbidden`,
-        404: `Not Found`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-  /**
    * get_classroom_playlist <GET>
    * @returns ListCollectiveOfferTemplateResponseModel OK
    * @throws ApiError
