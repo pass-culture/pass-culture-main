@@ -59,6 +59,7 @@ class FeatureToggle(enum.Enum):
     ENABLE_NATIVE_CULTURAL_SURVEY = (
         "Active le Questionnaire des pratiques initiales natif (non TypeForm) sur l'app native et décli web"
     )
+    ENABLE_PASSWORD_FEATURES_SURVEY = "Activer l'enregistrement de la complexité des mots de passe"
     ENABLE_PHONE_VALIDATION = "Active la validation du numéro de téléphone"
     ENABLE_PRO_ACCOUNT_CREATION = "Permettre l'inscription des comptes professionels"
     ENABLE_PRO_BOOKINGS_V2 = "Activer l'affichage de la page booking avec la nouvelle architecture."
@@ -176,6 +177,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ENABLE_SWITCH_ALLOCINE_SYNC_TO_EMS_SYNC,
     FeatureToggle.ENABLE_TITELIVE_MUSIC_TYPES_IN_API_OUTPUT,
     FeatureToggle.ENABLE_UBBLE_SUBSCRIPTION_LIMITATION,
+    FeatureToggle.ENABLE_PASSWORD_FEATURES_SURVEY,
     FeatureToggle.ENABLE_VIRUSTOTAL,
     FeatureToggle.ENABLE_ZENDESK_SELL_CREATION,
     FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,

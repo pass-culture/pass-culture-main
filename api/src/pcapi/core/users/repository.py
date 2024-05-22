@@ -1,5 +1,6 @@
 from datetime import date
 from datetime import datetime
+import hashlib
 import logging
 import typing
 
@@ -10,6 +11,7 @@ from sqlalchemy.sql.functions import func
 
 import pcapi.core.offerers.models as offerers_models
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.utils import crypto
 import pcapi.utils.email as email_utils
 
@@ -59,6 +61,16 @@ def get_user_with_credentials(identifier: str, password: str, allow_inactive: bo
             extra={"identifier": identifier, "user": user.id, "avoid_current_user": True, "success": True},
             technical_message_id="users.login",
         )
+        if FeatureToggle.ENABLE_PASSWORD_FEATURES_SURVEY.is_active():
+            email_hash = hashlib.sha3_512(user.email.encode("utf-8"))
+            features = password_utils.get_password_features(password)
+            # FIXME
+            # insert into password_features
+            #    on conflict email_hash update
+            #    (email_hash, roles, length, features)
+            #    values
+            #    (...)
+            pass
     return typing.cast(models.User, user)
 
 

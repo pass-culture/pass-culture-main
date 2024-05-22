@@ -33,6 +33,7 @@ from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import crypto
+import pcapi.utils.db as db_utils
 from pcapi.utils.phone_number import ParsedPhoneNumber
 
 
@@ -952,3 +953,20 @@ class GdprUserDataExtract(PcObject, Base):
     @property
     def expirationDate(self) -> datetime:
         return self.dateCreated + timedelta(days=7)
+
+
+class PasswordFeatures(Base, Model):
+    emailHash = sa.Column(sa.String(128), nullable=False, unique=True)
+    dateUpdated = sa.Column(
+        sa.DateTime,
+        nullable=False,
+        default=datetime.datetime.utcnow,
+        onupdate=datetime.datetime.utcnow,
+    )
+    roles: list[UserRole] = sa.Column(
+        MutableList.as_mutable(postgresql.ARRAY(db_utils.MacgicEnum(UserRole))),
+        nullable=False,
+        server_default="{}",
+    )
+    length = sa.Column(sa.Internal, nullable=False)
+    features = sa.Column(sa.Integer, nullable=False)
