@@ -11,7 +11,7 @@ from . import documentation_constants
 public_api_schema = ExtendedSpecTree(
     "flask",
     title="Pass Culture REST API",
-    description="This the documentation of the Pass Culture public REST API",
+    description=documentation_constants.PUBLIC_API_DESCRIPTION,
     PATH="/",
     MODE="strict",
     version="1.0",
