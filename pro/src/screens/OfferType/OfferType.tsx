@@ -1,10 +1,12 @@
 import { FormikProvider, useFormik } from 'formik'
-import React, { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import useSWR from 'swr'
 
+import { api } from 'apiClient/api'
 import useAnalytics from 'app/App/analytics/firebase'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
+import { GET_OFFERER_QUERY_KEY } from 'config/swrQueryKeys'
 import {
   Events,
   OFFER_FORM_HOMEPAGE,
@@ -15,12 +17,15 @@ import {
   OFFER_TYPES,
   OFFER_WIZARD_MODE,
   COLLECTIVE_OFFER_SUBTYPE_DUPLICATE,
+  DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import useNotification from 'hooks/useNotification'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
 import strokeProfIcon from 'icons/stroke-prof.svg'
+import { getFilteredCollectiveOffersAdapter } from 'pages/CollectiveOffers/adapters/getFilteredCollectiveOffersAdapter'
 import { RadioButtonWithImage } from 'ui-kit/RadioButtonWithImage/RadioButtonWithImage'
+import Spinner from 'ui-kit/Spinner/Spinner'
 
 import { ActionsBar } from './ActionsBar/ActionsBar'
 import CollectiveOfferType from './CollectiveOfferType/CollectiveOfferType'
@@ -31,6 +36,10 @@ import { OfferTypeFormValues } from './types'
 export const OfferTypeScreen = (): JSX.Element => {
   const navigate = useNavigate()
   const location = useLocation()
+  const queryParams = new URLSearchParams(location.search)
+  const queryOffererId = queryParams.get('structure')
+  const queryVenueId = queryParams.get('lieu')
+
   const notify = useNotification()
   const { logEvent } = useAnalytics()
   const initialValues: OfferTypeFormValues = {
@@ -41,11 +50,25 @@ export const OfferTypeScreen = (): JSX.Element => {
     individualOfferSubtype: '',
   }
 
-  const [hasCollectiveTemplateOffer, setHasCollectiveTemplateOffer] =
-    useState(false)
-  const [isEligible, setIsEligible] = useState(false)
+  const offererQuery = useSWR(
+    [GET_OFFERER_QUERY_KEY, queryOffererId],
+    async function ([, offererIdParam]) {
+      if (!offererIdParam) {
+        //  If there is no offerer id in the url, consider the first offerer found in the user's offerers list
+        const offerers = await api.listOfferersNames()
+        if (offerers.offerersNames.length === 0) {
+          return
+        }
+        const firstoffererId = offerers.offerersNames[0].id
+        return api.getOfferer(firstoffererId)
+      }
+      return api.getOfferer(Number(offererIdParam))
+    }
+  )
 
-  const onSubmit = (values: OfferTypeFormValues) => {
+  const offerer = offererQuery.data
+
+  const onSubmit = async (values: OfferTypeFormValues) => {
     if (values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO) {
       logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
         offerType: values.individualOfferSubtype,
@@ -79,16 +102,26 @@ export const OfferTypeScreen = (): JSX.Element => {
       values.collectiveOfferSubtypeDuplicate ===
       COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.DUPLICATE
     ) {
-      if (!hasCollectiveTemplateOffer) {
-        return notify.error(
-          'Vous devez créer une offre vitrine avant de pouvoir utiliser cette fonctionnalité'
-        )
+      const apiFilters = {
+        ...DEFAULT_SEARCH_FILTERS,
+        collectiveOfferType: COLLECTIVE_OFFER_SUBTYPE.TEMPLATE.toLowerCase(),
+        offererId: queryOffererId ? queryOffererId : 'all',
+        venueId: queryVenueId ? queryVenueId : 'all',
       }
 
-      return navigate({
-        pathname: '/offre/creation/collectif/selection',
-        search: location.search,
-      })
+      const templateOffersOnSelectedVenue =
+        await getFilteredCollectiveOffersAdapter(apiFilters)
+      if (templateOffersOnSelectedVenue.payload.offers.length === 0) {
+        notify.error(
+          'Vous devez créer une offre vitrine avant de pouvoir utiliser cette fonctionnalité'
+        )
+        return
+      } else {
+        return navigate({
+          pathname: '/offre/creation/collectif/selection',
+          search: location.search,
+        })
+      }
     }
 
     return navigate({
@@ -104,7 +137,7 @@ export const OfferTypeScreen = (): JSX.Element => {
   const { values, handleChange } = formik
 
   const isDisabledForEducationnal =
-    values.offerType === OFFER_TYPES.EDUCATIONAL && !isEligible
+    values.offerType === OFFER_TYPES.EDUCATIONAL && !offerer?.allowedOnAdage
 
   const hasNotChosenOfferType = values.individualOfferSubtype === ''
 
@@ -144,13 +177,12 @@ export const OfferTypeScreen = (): JSX.Element => {
               <IndividualOfferType />
             )}
 
-            {values.offerType === OFFER_TYPES.EDUCATIONAL && (
-              <CollectiveOfferType
-                setHasCollectiveTemplateOffer={setHasCollectiveTemplateOffer}
-                setIsEligible={setIsEligible}
-                isEligible={isEligible}
-              />
-            )}
+            {values.offerType === OFFER_TYPES.EDUCATIONAL &&
+              (offererQuery.isLoading ? (
+                <Spinner />
+              ) : (
+                <CollectiveOfferType offerer={offerer} />
+              ))}
             <ActionsBar
               disableNextButton={
                 isDisabledForEducationnal || isDisableForIndividual
