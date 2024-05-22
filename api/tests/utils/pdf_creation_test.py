@@ -46,6 +46,9 @@ class GeneratePdfFromHtmlTest:
         # Do not use `assert out == expected_pdf`: pytest would try to
         # use a smart, but very slow algorithm to show diffs, which
         # would produce garbage anyway because it's binary.
+        # FIXME: DEBUG ONLY
+        with open("/tests/test.pdf", "bw") as fp:
+            fp.write(out)
         if out != expected_pdf:
             assert False, "Output PDF is not as expected"
         assert duration < ACCEPTABLE_GENERATION_DURATION

@@ -353,11 +353,7 @@ jobs:
       matrix:
         pytest_args:
           [
-            "tests/core/bookings tests/core/offers tests/core/finance",
-            "tests/core --ignore=tests/core/bookings --ignore=tests/core/offers --ignore=tests/core/finance",
-            "tests/routes -m 'not backoffice'",
-            "tests --ignore=tests/core --ignore=tests/routes",
-            "tests/routes/backoffice -m 'backoffice'",
+          "tests/utils/pdf_creation_test.py::GeneratePdfFromHtmlTest::test_basics",
           ]
     services:
       redis:
@@ -440,6 +436,13 @@ jobs:
           options: -e RUN_ENV -e DATABASE_URL_TEST -e REDIS_URL -v ${{ runner.workspace }}/pass-culture-main/api/tests/:/tests
           run: |
             pytest ${{ matrix.pytest_args }} --durations=10 --junitxml='/tests/junit.xml' -vv
+      - name: Store test PDF as artifacts
+        uses: actions/upload-artifact@v3
+        if: always() # always run even if the previous step fails
+        with:
+          name: test-pdf
+          path: |
+            ${{ runner.workspace }}/pass-culture-main/api/tests/test.pdf
       - name: "Publish Test Report"
         uses: mikepenz/action-junit-report@v4
         if: always() # always run even if the previous step fails
