@@ -103,7 +103,7 @@ When('I go to the venue page in Individual section', () => {
   )
 
   // findByText() et findByRole() marchent pas ici
-  cy.contains('Gérer ma page').click()
+  cy.contains('Gérer votre page pour le grand public').click()
   cy.findByText('Vos informations pour le grand public').should('be.visible')
   cy.findByText('À propos de votre activité').should('be.visible')
   cy.findByText('Modifier').click()
