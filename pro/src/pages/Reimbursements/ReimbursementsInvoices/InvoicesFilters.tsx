@@ -1,6 +1,8 @@
 import React, { Dispatch, SetStateAction } from 'react'
+import { useSWRConfig } from 'swr'
 
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import { GET_INVOICES_QUERY_KEY } from 'config/swrQueryKeys'
 import { SelectOption } from 'custom_types/form'
 import fullRefreshIcon from 'icons/full-refresh.svg'
 import { Button } from 'ui-kit/Button/Button'
@@ -18,7 +20,6 @@ interface ReimbursementsSectionHeaderProps {
   filters: FiltersType
   disable: boolean
   initialFilters: FiltersType
-  loadInvoices: (shouldReset?: boolean) => Promise<void>
   selectableOptions: SelectOption[]
   setAreFiltersDefault: Dispatch<SetStateAction<boolean>>
   setFilters: Dispatch<SetStateAction<FiltersType>>
@@ -30,12 +31,13 @@ export const InvoicesFilters = ({
   filters,
   disable,
   initialFilters,
-  loadInvoices,
   selectableOptions,
   setAreFiltersDefault,
   setFilters,
   setHasSearchedOnce,
 }: ReimbursementsSectionHeaderProps): JSX.Element => {
+  const { mutate } = useSWRConfig()
+
   const {
     reimbursementPoint: selectedReimbursementPoint,
     periodStart: selectedPeriodStart,
@@ -45,7 +47,7 @@ export const InvoicesFilters = ({
   async function resetFilters() {
     setAreFiltersDefault(true)
     setFilters(initialFilters)
-    await loadInvoices(true)
+    await mutate([GET_INVOICES_QUERY_KEY])
   }
 
   const setReimbursementPointFilter = (
@@ -131,7 +133,7 @@ export const InvoicesFilters = ({
             disabled={!filters.periodStart || !filters.periodEnd || disable}
             onClick={async () => {
               setHasSearchedOnce(true)
-              await loadInvoices()
+              await mutate([GET_INVOICES_QUERY_KEY])
             }}
           >
             Lancer la recherche
