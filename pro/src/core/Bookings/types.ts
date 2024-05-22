@@ -20,6 +20,3 @@ export type APIFilters = {
   offerId?: string
   page: number
 }
-
-export type VenuesPayload = { venues: { value: string; label: string }[] }
-export type GetVenuesAdapter = Adapter<void, VenuesPayload, VenuesPayload>
