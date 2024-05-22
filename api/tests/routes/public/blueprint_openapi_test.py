@@ -31,6 +31,7 @@ def test_public_api_openapi_json(client):
     response = client.get("/openapi.json")
     assert response.status_code == 200
 
+    # To regenerate the expected JSON use the generate_openapi_json function
     expected = _get_expected_json()
 
     # Test paths key
