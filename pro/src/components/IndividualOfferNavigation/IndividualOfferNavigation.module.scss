@@ -2,7 +2,8 @@
 @use "styles/variables/_size.scss" as size;
 
 .stepper {
-  margin: rem.torem(32px) 0 rem.torem(38px);
+  margin: rem.torem(32px) 0 rem.torem(48px);
+  max-width: rem.torem(810px);
 }
 
 .tabs {
@@ -12,5 +13,6 @@
 @media (min-width: size.$tablet) {
   .stepper {
     padding: 0 rem.torem(10px);
+    padding-left: rem.torem(24px);
   }
 }

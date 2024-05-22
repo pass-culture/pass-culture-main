@@ -3,10 +3,11 @@
 @use "styles/variables/_z-index.scss" as zIndex;
 
 .stock-event-table {
-  width: 100%;
   table-layout: fixed;
   margin-top: rem.torem(16px);
   margin-bottom: rem.torem(32px);
+  width: 100%;
+  align-self: flex-start;
 }
 
 .select-all-container {

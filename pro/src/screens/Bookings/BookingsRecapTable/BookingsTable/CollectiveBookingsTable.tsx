@@ -106,7 +106,7 @@ export const CollectiveBookingsTable = ({
               scope="col"
               className={cn(
                 styles['table-header'],
-                styles['column-offer-name']
+                styles['column-collective-offer-name']
               )}
             >
               <span>Nom de l’offre</span>

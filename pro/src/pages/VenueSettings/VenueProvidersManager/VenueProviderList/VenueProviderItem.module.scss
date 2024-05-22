@@ -6,13 +6,13 @@
   align-items: center;
   display: flex;
   flex-direction: column;
-  width: 100%;
+  max-width: rem.torem(900px);
 }
 
 .venue-provider-item-info {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  max-width: rem.torem(900px);
 }
 
 .provider-name-container {
