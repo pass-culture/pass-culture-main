@@ -1,5 +1,5 @@
 {% import "components/clipboard.html" as clipboard %}
-{% from "components/forms.html" import build_form_fields_group with context %}
+{% from "components/generic_modal.html" import build_modal_form with context %}
 {% import "components/links.html" as links %}
 {% from "components/presentation/details/tabs.html" import build_details_tab %}
 {% from "components/presentation/details/tabs.html" import build_details_tabs_wrapper %}
@@ -22,36 +22,7 @@
             <div class="d-flex row-reverse justify-content-end flex-grow-1">
               {% if edit_form %}
                 {% set edit_bank_account_aria_described_by_id = random_hash() %}
-                <button class="btn btn-outline-primary lead fw-bold mt-2 mx-2"
-                        data-bs-toggle="modal"
-                        data-bs-target="#edit-bank-account-modal"
-                        type="button">Modifier les informations</button>
-                <div class="modal modal-lg fade"
-                     id="edit-bank-account-modal"
-                     tabindex="-1"
-                     aria-describedby="{{ edit_bank_account_aria_described_by_id }}"
-                     aria-hidden="true">
-                  <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                      <form action="{{ url_for("backoffice_web.bank_account.update_bank_account", bank_account_id=bank_account.id) }}"
-                            name="{{ url_for("backoffice_web.bank_account.update_bank_account", bank_account_id=bank_account.id) | action_to_name }}"
-                            method="post">
-                        <div class="modal-header"
-                             id="{{ edit_bank_account_aria_described_by_id }}">
-                          <h5 class="modal-title">Modifier les informations du compte bancaire</h5>
-                        </div>
-                        <div class="modal-body pb-3">{{ build_form_fields_group(edit_form) }}</div>
-                        <div class="modal-footer">
-                          <button type="button"
-                                  class="btn btn-outline-primary"
-                                  data-bs-dismiss="modal">Annuler</button>
-                          <button type="submit"
-                                  class="btn btn-primary">Enregistrer</button>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
-                </div>
+                {{ build_modal_form("edit-bank-account", url_for("backoffice_web.bank_account.update_bank_account", bank_account_id=bank_account.id) , edit_form, "Modifier les informations", "Modifier les informations du compte bancaire", "Enregistrer") }}
               {% endif %}
               {% if dms_stats %}
                 <a href="{{ dms_stats.url }}"
