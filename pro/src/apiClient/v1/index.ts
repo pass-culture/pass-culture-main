@@ -57,6 +57,7 @@ export type { CollectiveOfferVenueBodyModel } from './models/CollectiveOfferVenu
 export type { CollectiveStockCreationBodyModel } from './models/CollectiveStockCreationBodyModel';
 export type { CollectiveStockEditionBodyModel } from './models/CollectiveStockEditionBodyModel';
 export type { CollectiveStockResponseModel } from './models/CollectiveStockResponseModel';
+export type { CombinedInvoiceListModel } from './models/CombinedInvoiceListModel';
 export type { Consent } from './models/Consent';
 export type { CookieConsentRequest } from './models/CookieConsentRequest';
 export type { CreateOffererQueryModel } from './models/CreateOffererQueryModel';
