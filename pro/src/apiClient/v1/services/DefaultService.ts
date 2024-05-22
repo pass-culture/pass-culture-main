@@ -1148,6 +1148,27 @@ export class DefaultService {
     });
   }
   /**
+   * get_combined_invoices <GET>
+   * @param invoiceReferences
+   * @returns any OK
+   * @throws ApiError
+   */
+  public getCombinedInvoices(
+    invoiceReferences: Array<string>,
+  ): CancelablePromise<any> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/finance/combined-invoices',
+      query: {
+        'invoiceReferences': invoiceReferences,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
    * get_national_programs <GET>
    * @returns ListNationalProgramsResponseModel OK
    * @throws ApiError
@@ -1556,6 +1577,7 @@ export class DefaultService {
    * @param periodBeginningDate
    * @param periodEndingDate
    * @param collectiveOfferType
+   * @param offererAddressId
    * @returns ListOffersResponseModel OK
    * @throws ApiError
    */
@@ -1569,6 +1591,7 @@ export class DefaultService {
     periodBeginningDate?: string | null,
     periodEndingDate?: string | null,
     collectiveOfferType?: CollectiveOfferType | null,
+    offererAddressId?: number | null,
   ): CancelablePromise<ListOffersResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
@@ -1583,6 +1606,7 @@ export class DefaultService {
         'periodBeginningDate': periodBeginningDate,
         'periodEndingDate': periodEndingDate,
         'collectiveOfferType': collectiveOfferType,
+        'offererAddressId': offererAddressId,
       },
       errors: {
         403: `Forbidden`,
