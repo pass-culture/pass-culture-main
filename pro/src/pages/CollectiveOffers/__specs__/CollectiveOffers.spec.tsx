@@ -6,7 +6,10 @@ import {
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
-import { CollectiveOfferResponseModel } from 'apiClient/v1'
+import {
+  CollectiveOfferResponseModel,
+  CollectiveOffersStockResponseModel,
+} from 'apiClient/v1'
 import {
   ALL_VENUES_OPTION,
   DEFAULT_SEARCH_FILTERS,
@@ -50,9 +53,16 @@ const renderOffers = async (
 
 describe('route CollectiveOffers', () => {
   let offersRecap: CollectiveOfferResponseModel[]
+  const stocks: Array<CollectiveOffersStockResponseModel> = [
+    {
+      beginningDatetime: String(new Date()),
+      hasBookingLimitDatetimePassed: false,
+      remainingQuantity: 1,
+    },
+  ]
 
   beforeEach(() => {
-    offersRecap = [collectiveOfferFactory()]
+    offersRecap = [collectiveOfferFactory({ stocks })]
     vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue(offersRecap)
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames: [] })
     vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: proVenues })
@@ -267,7 +277,9 @@ describe('route CollectiveOffers', () => {
 
   describe('page navigation', () => {
     it('should display next page when clicking on right arrow', async () => {
-      const offers = Array.from({ length: 11 }, () => collectiveOfferFactory())
+      const offers = Array.from({ length: 11 }, () =>
+        collectiveOfferFactory({ stocks })
+      )
       vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offers)
       await renderOffers()
       const nextIcon = screen.getByRole('button', { name: 'Page suivante' })
@@ -280,7 +292,9 @@ describe('route CollectiveOffers', () => {
     })
 
     it('should display previous page when clicking on left arrow', async () => {
-      const offers = Array.from({ length: 11 }, () => collectiveOfferFactory())
+      const offers = Array.from({ length: 11 }, () =>
+        collectiveOfferFactory({ stocks })
+      )
       vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offers)
       await renderOffers()
       const nextIcon = screen.getByRole('button', { name: 'Page suivante' })
@@ -299,7 +313,7 @@ describe('route CollectiveOffers', () => {
     describe('when 501 offers are fetched', () => {
       beforeEach(() => {
         offersRecap = Array.from({ length: 501 }, () =>
-          collectiveOfferFactory()
+          collectiveOfferFactory({ stocks })
         )
       })
 

@@ -1,9 +1,7 @@
-import React from 'react'
-
 import { CollectiveBookingStatus } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
-import arrowIcon from 'icons/full-arrow-right.svg'
+import nextIcon from 'icons/full-next.svg'
 import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
 import {
   FORMAT_ISO_DATE_ONLY,
@@ -38,7 +36,7 @@ export const BookingLinkCell = ({
     <ListIconButton
       url={bookingLink}
       isExternal={false}
-      icon={arrowIcon}
+      icon={nextIcon}
       onClick={() =>
         logEvent(CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING, {
           from: location.pathname,
