@@ -145,8 +145,8 @@ export const OfferEducationalActions = ({
               iconPosition={IconPositionEnum.LEFT}
             >
               {offer.isActive
-                ? 'Masquer la publication sur Adage'
-                : 'Publier sur Adage'}
+                ? 'Masquer la publication sur ADAGE'
+                : 'Publier sur ADAGE'}
             </Button>
           )}
 
