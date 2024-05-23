@@ -481,7 +481,6 @@ class ListOffersTest(GetEndpointHelper):
         assert set(int(row["ID"]) for row in rows) == {offers[2].id}
 
     def test_list_offers_by_price(self, authenticated_client, offers):
-
         query_args = {
             "search-3-search_field": "PRICE",
             "search-3-operator": "GREATER_THAN_OR_EQUAL_TO",
@@ -496,7 +495,6 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["ID"] == str(offers[0].id)
 
     def test_list_offers_by_price_multiple_stocks(self, authenticated_client):
-
         offer_with_multiple_stocks_valid_and_not_valid = offers_factories.OfferFactory()
 
         offers_factories.StockFactory(
@@ -526,7 +524,6 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["ID"] == str(offer_with_multiple_stocks_valid_and_not_valid.id)
 
     def test_list_offers_by_price_no_offer_is_valid(self, authenticated_client, offers):
-
         query_args = {
             "search-3-search_field": "PRICE",
             "search-3-operator": "GREATER_THAN_OR_EQUAL_TO",
@@ -2041,6 +2038,7 @@ class EditOfferVenueTest(PostEndpointHelper):
         assert finance_event1_2.pricingPointId == expected_venue.current_pricing_point.id
         assert finance_event2_1.venueId == expected_venue.id
         assert finance_event2_1.pricingPointId == expected_venue.current_pricing_point.id
+        assert offer.offererAddressId == expected_venue.offererAddress.id
 
     @pytest.mark.parametrize("notify_beneficiary", [False, True])
     @patch("pcapi.core.search.async_index_offer_ids")
@@ -2179,6 +2177,24 @@ class EditOfferVenueTest(PostEndpointHelper):
         assert silver_stock.priceCategory.priceCategoryLabel.venue == destination_venue
         assert silver_stock.priceCategory.priceCategoryLabel == destination_silver_label
         assert offers_models.PriceCategoryLabel.query.count() == 4
+
+    @patch("pcapi.core.search.async_index_offer_ids")
+    def test_sould_move_event_offerer_address(
+        self, mocked_async_index_offer_ids, authenticated_client, venues_in_same_offerer
+    ):
+        source_venue, _, _, _ = venues_in_same_offerer
+        offerer_address = offerers_factories.OffererAddressFactory(offerer=source_venue.managingOfferer)
+        venue_with_offerer_address = offerers_factories.VenueFactory(
+            managingOfferer=source_venue.managingOfferer, pricing_point=source_venue, offererAddress=offerer_address
+        )
+
+        self._test_move_event(
+            mocked_async_index_offer_ids,
+            authenticated_client,
+            source_venue,
+            venue_with_offerer_address,
+            False,
+        )
 
 
 class GetOfferStockEditFormTest(GetEndpointHelper):
