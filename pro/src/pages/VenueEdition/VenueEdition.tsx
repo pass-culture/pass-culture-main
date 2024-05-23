@@ -110,17 +110,20 @@ export const VenueEdition = (): JSX.Element | null => {
     value: venue.id.toString(),
   }))
 
+  const titleText =
+    activeStep === 'collective'
+      ? 'Page dans ADAGE'
+      : !venue.isPermanent
+        ? 'Page adresse'
+        : 'Page sur l’application'
+
   return (
     <AppLayout>
       <div>
         {isNewSideBarNavigation && (
           <FormLayout>
-            {activeStep === 'individual' ? (
-              <h1 className={styles['header']}>Page sur l’application</h1>
-            ) : (
-              <h1 className={styles['header']}>Page dans ADAGE</h1>
-            )}
-            {venuesOptions.length > 1 && (
+            <h1 className={styles['header']}>{titleText}</h1>
+            {venuesOptions.length > 1 && activeStep === 'individual' && (
               <FormLayout.Row>
                 <FieldLayout
                   label="Sélectionnez votre page partenaire"
