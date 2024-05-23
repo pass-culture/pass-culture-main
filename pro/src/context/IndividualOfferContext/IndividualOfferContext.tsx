@@ -6,7 +6,6 @@ import { api } from 'apiClient/api'
 import {
   CategoryResponseModel,
   GetIndividualOfferResponseModel,
-  GetOffererNameResponseModel,
   MusicTypeResponse,
   SubcategoryResponseModel,
 } from 'apiClient/v1'
@@ -22,7 +21,6 @@ export interface IndividualOfferContextValues {
   offer: GetIndividualOfferResponseModel | null
   categories: CategoryResponseModel[]
   subCategories: SubcategoryResponseModel[]
-  offerOfferer?: GetOffererNameResponseModel | null
   musicTypes: MusicTypeResponse[]
 }
 
@@ -58,8 +56,6 @@ export const IndividualOfferContextProvider = ({
   )
   const offer = offerQuery.data
 
-  const offerer = offer ? offer.venue.managingOfferer : null
-
   const categoriesQuery = useSWR(
     [GET_CATEGORIES_QUERY_KEY],
     () => api.getCategories(),
@@ -86,7 +82,6 @@ export const IndividualOfferContextProvider = ({
         categories: categoriesQuery.data.categories,
         subCategories: categoriesQuery.data.subcategories,
         musicTypes: musicTypesQuery.data,
-        offerOfferer: offerer,
       }}
     >
       {children}
