@@ -49,7 +49,11 @@ const StoreProvider = ({
 
       if (localStorageAvailable()) {
         const savedOffererId = localStorage.getItem(SAVED_OFFERER_ID_KEY)
-        dispatch(updateSelectedOffererId(Number(savedOffererId)))
+        dispatch(
+          updateSelectedOffererId(
+            savedOffererId ? Number(savedOffererId) : null
+          )
+        )
       }
       setIsStoreInitialized(true)
     }
