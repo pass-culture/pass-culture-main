@@ -889,7 +889,7 @@ def add_criteria_to_offers(
 def reject_inappropriate_products(
     eans: list[str],
     author: users_models.User | None,
-    rejected_by_gcu_incompatibility: bool = False,
+    rejected_by_fraud_action: bool = False,
     send_booking_cancellation_emails: bool = True,
 ) -> bool:
     products = models.Product.query.filter(
@@ -926,7 +926,7 @@ def reject_inappropriate_products(
         product.isGcuCompatible = False
         product.gcuCompatibilityType = (
             models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
-            if rejected_by_gcu_incompatibility
+            if rejected_by_fraud_action
             else models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE
         )
 
@@ -954,7 +954,7 @@ def reject_inappropriate_products(
                 transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(
                     booking,
                     reason=BookingCancellationReasons.FRAUD,
-                    rejected_by_gcu_incompatibility=rejected_by_gcu_incompatibility,
+                    rejected_by_fraud_action=rejected_by_fraud_action,
                 )
 
     logger.info(

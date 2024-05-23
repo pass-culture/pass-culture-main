@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 def send_booking_cancellation_emails_to_user_and_offerer(
     booking: Booking,
     reason: BookingCancellationReasons | None,
-    rejected_by_gcu_incompatibility: bool = False,
+    rejected_by_fraud_action: bool = False,
 ) -> None:
     if reason is None:
         logger.error(
@@ -35,8 +35,8 @@ def send_booking_cancellation_emails_to_user_and_offerer(
         send_booking_cancellation_by_pro_to_beneficiary_email(booking)
         send_booking_cancellation_confirmation_by_pro_to_pro_email(booking)
     elif reason == BookingCancellationReasons.FRAUD:
-        if rejected_by_gcu_incompatibility:
-            send_booking_cancellation_by_pro_to_beneficiary_email(booking, rejected_by_gcu_incompatibility)
+        if rejected_by_fraud_action:
+            send_booking_cancellation_by_pro_to_beneficiary_email(booking, rejected_by_fraud_action)
         send_booking_cancellation_by_beneficiary_to_pro_email(booking)
 
 
