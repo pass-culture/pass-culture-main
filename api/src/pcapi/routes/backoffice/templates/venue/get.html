@@ -215,11 +215,11 @@
                 <span class="fw-bold">Peut créer une offre EAC : {{ venue.managingOfferer.allowedOnAdage | format_bool_badge }}</span>
               </p>
               <p class="mb-1">
-                <span class="fw-bold">Cartographié sur Adage : {{ (venue.adageId is not none) | format_bool_badge }}</span>
+                <span class="fw-bold">Cartographié sur ADAGE : {{ (venue.adageId is not none) | format_bool_badge }}</span>
               </p>
               {% if venue.adageId %}
                 <p class="mb-1">
-                  <span class="fw-bold">ID Adage :</span>
+                  <span class="fw-bold">ID ADAGE :</span>
                   {{ venue.adageId }}
                 </p>
               {% endif %}
@@ -411,7 +411,7 @@
           {% if venue.siret and has_permission("READ_PRO_ENTREPRISE_INFO") %}
             {{ build_details_tab("entreprise", "Données Entreprise", active_tab == 'entreprise') }}
           {% endif %}
-          {% if venue.siret %}{{ build_details_tab("dms-adage", "Dossiers DMS Adage", active_tab == 'dms_adage') }}{% endif %}
+          {% if venue.siret %}{{ build_details_tab("dms-adage", "Dossiers DMS ADAGE", active_tab == 'dms_adage') }}{% endif %}
         {% endcall %}
         {% call build_details_tabs_content_wrapper() %}
           {% call build_details_tab_content("history", active_tab == 'history') %}
