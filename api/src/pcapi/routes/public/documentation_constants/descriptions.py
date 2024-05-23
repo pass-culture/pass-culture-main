@@ -9,6 +9,14 @@ This the documentation of the Pass Culture public REST API.
 - Dates of event offers are stored in the **UTC format** to be able to format them correctly, according to the user timezone, in our application interface.
 - Any non-blank field sent using a `PATCH` method will be considered as changed, even if the new value is equal to old value.
   _For example, if you update the stock of an event, you **should not resend the `beginningDate`** if it has not changed because, otherwise it is going to trigger the reschedule process on our side._
+
+# Authentication
+The authentication system on Pass Culture API is using an API Key that should be put in the header of the request (the name of the header is `bearer`).
+An API key is linked to a provider and will give you access to the venues linked to this provider by the offerer.
+
+| Security Scheme Type  | Bearer          |
+| :--------------- |:---------------|
+| Header parameter name  |   bearer        |
 """
 
 
