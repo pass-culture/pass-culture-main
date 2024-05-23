@@ -565,31 +565,31 @@ class ListOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert {int(row["ID"]) for row in rows} == {offers[1].id, offers[2].id}
 
-    @override_features(ENABLE_PRO_TITELIVE_MUSIC_GENRES=False)
-    def test_list_offers_advanced_search_by_music_type_with_titelive_genres_FF_disabled(
-        self, authenticated_client, offers
-    ):
-        query_args = {
-            "search-3-search_field": "MUSIC_TYPE",
-            "search-3-operator": "IN",
-            "search-3-music_type": ["501", "520", "800"],
-        }
+    # @override_features(ENABLE_PRO_TITELIVE_MUSIC_GENRES=False)
+    # def test_list_offers_advanced_search_by_music_type_with_titelive_genres_FF_disabled(
+    #     self, authenticated_client, offers
+    # ):
+    #     query_args = {
+    #         "search-3-search_field": "MUSIC_TYPE",
+    #         "search-3-operator": "IN",
+    #         "search-3-music_type": ["501", "520", "800"],
+    #     }
 
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, **query_args))
-            assert response.status_code == 200
+    #     with assert_num_queries(self.expected_num_queries):
+    #         response = authenticated_client.get(url_for(self.endpoint, **query_args))
+    #         assert response.status_code == 200
 
-        row = html_parser.extract_table_rows(response.data)
-        assert int(row[0]["ID"]) == offers[0].id
+    #     row = html_parser.extract_table_rows(response.data)
+    #     assert int(row[0]["ID"]) == offers[0].id
 
-    @override_features(ENABLE_PRO_TITELIVE_MUSIC_GENRES=True)
+    # @override_features(ENABLE_PRO_TITELIVE_MUSIC_GENRES=True)
     def test_list_offers_advanced_search_by_music_type_with_titelive_genres_FF_enabled(
         self, authenticated_client, offers
     ):
         query_args = {
             "search-3-search_field": "MUSIC_TYPE_GTL",
             "search-3-operator": "IN",
-            "search-3-music_type_gtl": ["01000000", "02000000", "19000000"],
+            "search-3-music_type_gtl": ["01", "02", "19"],
         }
 
         with assert_num_queries(self.expected_num_queries):

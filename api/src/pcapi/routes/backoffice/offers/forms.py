@@ -48,7 +48,7 @@ class IndividualOffersSearchAttributes(enum.Enum):
     STATUS = "Statut"
     OFFERER = "Structure"
     TAG = "Tag"
-    MUSIC_TYPE = "Type de musique"
+    # MUSIC_TYPE = "Type de musique"
     MUSIC_TYPE_GTL = "Type de musique"
     SHOW_TYPE = "Type de spectacle"
     SHOW_SUB_TYPE = "Sous-type de spectacle"
@@ -75,7 +75,7 @@ form_field_configuration = {
     "VENUE": {"field": "venue", "operator": ["IN", "NOT_IN"]},
     "VALIDATION": {"field": "validation", "operator": ["IN", "NOT_IN"]},
     "VISA": {"field": "string", "operator": ["EQUALS", "NOT_EQUALS"]},
-    "MUSIC_TYPE": {"field": "music_type", "operator": ["IN", "NOT_IN"]},
+    # "MUSIC_TYPE": {"field": "music_type", "operator": ["IN", "NOT_IN"]},
     "MUSIC_TYPE_GTL": {"field": "music_type_gtl", "operator": ["IN", "NOT_IN"]},
     "SHOW_TYPE": {"field": "show_type", "operator": ["IN", "NOT_IN"]},
     "SHOW_SUB_TYPE": {"field": "show_sub_type", "operator": ["IN", "NOT_IN"]},
@@ -140,7 +140,7 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
                 "subcategory",
                 "venue",
                 "validation",
-                "music_type",
+                # "music_type",
                 "music_type_gtl",
                 "show_type",
                 "show_sub_type",
@@ -160,16 +160,17 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
         autocomplete.prefill_venues_choices(self.venue)
         autocomplete.prefill_addresses_choices(self.address)
         autocomplete.prefill_providers_choices(self.provider)
-        if FeatureToggle.ENABLE_PRO_TITELIVE_MUSIC_GENRES.is_active():
-            self.music_type = None
-            self.search_field.choices = forms_utils.choices_from_enum(
-                IndividualOffersSearchAttributes, exclude_opts=[IndividualOffersSearchAttributes.MUSIC_TYPE]
-            )
-        else:
-            self.music_type_gtl = None
-            self.search_field.choices = forms_utils.choices_from_enum(
-                IndividualOffersSearchAttributes, exclude_opts=[IndividualOffersSearchAttributes.MUSIC_TYPE_GTL]
-            )
+        # if FeatureToggle.ENABLE_PRO_TITELIVE_MUSIC_GENRES.is_active():
+        #     breakpoint()
+        #     self.music_type = None
+        #     self.search_field.choices = forms_utils.choices_from_enum(
+        #         IndividualOffersSearchAttributes, exclude_opts=[IndividualOffersSearchAttributes.MUSIC_TYPE]
+        #     )
+        # else:
+        #     self.music_type_gtl = None
+        #     self.search_field.choices = forms_utils.choices_from_enum(
+        #         IndividualOffersSearchAttributes, exclude_opts=[IndividualOffersSearchAttributes.MUSIC_TYPE_GTL]
+        #     )
 
     search_field = fields.PCSelectWithPlaceholderValueField(
         "Champ de recherche",
@@ -306,13 +307,13 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
         search_inline=True,
         field_list_compatibility=True,
     )
-    music_type: fields.PCSelectMultipleField | None = fields.PCSelectMultipleField(
-        "Type de musique",
-        choices=[(str(s), music_types.MUSIC_TYPES_LABEL_BY_CODE[s]) for s in music_types.MUSIC_TYPES_LABEL_BY_CODE],
-        search_inline=True,
-        field_list_compatibility=True,
-    )
-    music_type_gtl: fields.PCSelectMultipleField | None = fields.PCSelectMultipleField(
+    # music_type = fields.PCSelectMultipleField(
+    #     "Type de musique",
+    #     choices=[(str(s), music_types.MUSIC_TYPES_LABEL_BY_CODE[s]) for s in music_types.MUSIC_TYPES_LABEL_BY_CODE],
+    #     search_inline=True,
+    #     field_list_compatibility=True,
+    # )
+    music_type_gtl = fields.PCSelectMultipleField(
         "Type de musique",
         choices=[(s.gtl_id[:2], s.label) for s in categories.TITELIVE_MUSIC_TYPES],
         search_inline=True,
@@ -416,7 +417,7 @@ class GetOfferAdvancedSearchForm(GetOffersBaseFields):
         if errors:
             flash("\n".join(errors), "warning")
             return False
-
+        breakpoint()
         return super().validate(extra_validators)
 
 

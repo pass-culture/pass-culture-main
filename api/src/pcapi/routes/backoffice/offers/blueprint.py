@@ -157,10 +157,10 @@ SEARCH_FIELD_TO_PYTHON = {
         "column": offers_models.Offer.extraData["visa"].astext,
         "special": string_utils.format_ean_or_visa,
     },
-    "MUSIC_TYPE": {
-        "field": "music_type",
-        "column": offers_models.Offer.extraData["musicType"].astext,
-    },
+    # "MUSIC_TYPE": {
+    #     "field": "music_type",
+    #     "column": offers_models.Offer.extraData["musicType"].astext,
+    # },
     "MUSIC_TYPE_GTL": {
         "field": "music_type_gtl",
         "column": sa.func.substring(offers_models.Offer.extraData["gtl_id"].astext, 1, 2),
