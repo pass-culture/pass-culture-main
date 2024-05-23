@@ -977,6 +977,7 @@ def edit_offer_venue(offer_id: int) -> utils.BackofficeResponse:
                     offerers_models.VenuePricingPointLink.pricingPointId, offerers_models.VenuePricingPointLink.timespan
                 ),
             )
+            .options(sa.orm.joinedload(offerers_models.Venue.offererAddress))
         ).one()
 
         offers_api.move_event_offer(offer, destination_venue, notify_beneficiary=form.notify_beneficiary.data)

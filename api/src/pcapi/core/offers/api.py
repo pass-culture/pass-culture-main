@@ -1666,9 +1666,9 @@ def move_event_offer(
         price_category_label: _get_or_create_same_price_category_label(destination_venue, price_category_label)
         for price_category_label in original_price_category_labels
     }
-
     with transaction():
         offer.venue = destination_venue
+        offer.offererAddressId = destination_venue.offererAddressId
         db.session.add(offer)
 
         for price_category in offer.priceCategories:
