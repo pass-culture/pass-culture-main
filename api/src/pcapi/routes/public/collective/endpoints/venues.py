@@ -46,6 +46,7 @@ def list_venues() -> serialization.CollectiveOffersListVenuesResponseModel:
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[documentation_constants.COLLECTIVE_VENUES],
+    deprecated=True,
     resp=SpectreeResponse(
         HTTP_200=(
             venues_serialization.GetOfferersVenuesResponse,
@@ -61,11 +62,10 @@ def list_venues() -> serialization.CollectiveOffersListVenuesResponseModel:
 def get_offerer_venues(
     query: venues_serialization.GetOfferersVenuesQuery,
 ) -> venues_serialization.GetOfferersVenuesResponse:
-    # in French, to be used by Swagger for the API documentation
     """
-    Récupération des lieux associés au fournisseur authentifié par le jeton d'API; groupés par structures.
+    [LEGACY] Récupération des lieux associés au fournisseur authentifié par le jeton d'API; groupés par structures
 
-    Tous les lieux enregistrés, sont listés ici avec leurs coordonnées.
+    You should be using **/public/offer/v1/offerer_venues endpoint**.
     """
     rows = offerers_api.get_providers_offerer_and_venues(current_api_key.provider, query.siren)
     return venues_serialization.GetOfferersVenuesResponse.serialize_offerers_venues(rows)
