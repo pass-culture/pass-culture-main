@@ -15,6 +15,7 @@ import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { Notification } from 'components/Notification/Notification'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
+import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { Audience } from 'core/shared/types'
 import {
   listOffersVenueFactory,
@@ -32,6 +33,7 @@ import { OfferItem, OfferItemProps } from '../OfferItem'
 vi.mock('apiClient/api', () => ({
   api: {
     deleteDraftOffers: vi.fn(),
+    cancelCollectiveOfferBooking: vi.fn(),
   },
 }))
 
@@ -71,6 +73,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       offer,
       selectOffer: vi.fn(),
       audience: Audience.INDIVIDUAL,
+      urlSearchFilters: DEFAULT_SEARCH_FILTERS,
     }
   })
 
@@ -609,6 +612,75 @@ describe('src | components | pages | Offers | OfferItem', () => {
           from: '/',
         }
       )
+    })
+
+    it('should cancel booking of an offer', async () => {
+      props.audience = Audience.COLLECTIVE
+      props.offer = collectiveOfferFactory({
+        stocks,
+        status: OfferStatus.SOLD_OUT,
+        booking: { booking_status: 'booked', id: 1 },
+      })
+      renderOfferItem(props)
+
+      await userEvent.click(screen.getByTitle('Action'))
+
+      const cancelBookingButton = screen.getByText('Annuler la réservation')
+      await userEvent.click(cancelBookingButton)
+
+      const modalTitle = screen.getByText(
+        'Êtes-vous sûr de vouloir annuler la réservation liée à cette offre ?'
+      )
+      expect(modalTitle).toBeInTheDocument()
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Annuler la réservation' })
+      )
+
+      expect(
+        screen.getByText(
+          'La réservation sur cette offre a été annulée avec succès, votre offre sera à nouveau visible sur ADAGE.'
+        )
+      ).toBeInTheDocument()
+    })
+
+    it('should return an error when there are no bookings for this offer', async () => {
+      props.audience = Audience.COLLECTIVE
+      props.offer = collectiveOfferFactory({
+        stocks,
+        status: OfferStatus.SOLD_OUT,
+        booking: { booking_status: 'NO_BOOKING', id: 0 },
+      })
+
+      vi.spyOn(api, 'cancelCollectiveOfferBooking').mockRejectedValueOnce(
+        new ApiError(
+          {} as ApiRequestOptions,
+          { body: { code: 'NO_BOOKING' }, status: 400 } as ApiResult,
+          ''
+        )
+      )
+
+      renderOfferItem(props)
+
+      await userEvent.click(screen.getByTitle('Action'))
+
+      const cancelBookingButton = screen.getByText('Annuler la réservation')
+      await userEvent.click(cancelBookingButton)
+
+      const modalTitle = screen.getByText(
+        'Êtes-vous sûr de vouloir annuler la réservation liée à cette offre ?'
+      )
+      expect(modalTitle).toBeInTheDocument()
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Annuler la réservation' })
+      )
+
+      expect(
+        screen.getByText(
+          'Cette offre n’a aucune réservation en cours. Il est possible que la réservation que vous tentiez d’annuler ait déjà été utilisée.'
+        )
+      ).toBeInTheDocument()
     })
   })
 })

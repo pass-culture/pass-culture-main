@@ -2,6 +2,7 @@ import {
   CollectiveOfferResponseModel,
   ListOffersOfferResponseModel,
 } from 'apiClient/v1'
+import { SearchFiltersParams } from 'core/Offers/types'
 import { Audience } from 'core/shared/types'
 
 import { OfferItem } from '../OfferItem/OfferItem'
@@ -11,6 +12,7 @@ type OffersTableBodyProps = {
   selectOffer: (offerId: number, isSelected: boolean) => void
   selectedOfferIds: number[]
   audience: Audience
+  urlSearchFilters: SearchFiltersParams
 }
 
 export const OffersTableBody = ({
@@ -18,6 +20,7 @@ export const OffersTableBody = ({
   selectOffer,
   selectedOfferIds,
   audience,
+  urlSearchFilters,
 }: OffersTableBodyProps) => {
   return (
     <tbody className="offers-list">
@@ -29,6 +32,7 @@ export const OffersTableBody = ({
             offer={offer}
             selectOffer={selectOffer}
             audience={audience}
+            urlSearchFilters={urlSearchFilters}
           />
         )
       })}

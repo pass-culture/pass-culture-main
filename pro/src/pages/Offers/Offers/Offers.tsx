@@ -158,6 +158,7 @@ export const Offers = ({
                   selectOffer={selectOffer}
                   selectedOfferIds={selectedOfferIds}
                   audience={audience}
+                  urlSearchFilters={urlSearchFilters}
                 />
               </table>
             </>

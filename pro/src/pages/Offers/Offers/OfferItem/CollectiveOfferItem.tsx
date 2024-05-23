@@ -4,6 +4,7 @@ import {
   CollectiveOfferResponseModel,
   ListOffersVenueResponseModel,
 } from 'apiClient/v1'
+import { SearchFiltersParams } from 'core/Offers/types'
 import { Audience } from 'core/shared/types'
 
 import { CheckboxCell } from './Cells/CheckboxCell'
@@ -22,6 +23,7 @@ type CollectiveOfferItemProps = {
   editionOfferLink: string
   venue: ListOffersVenueResponseModel
   audience: Audience
+  urlSearchFilters: SearchFiltersParams
 }
 
 export const CollectiveOfferItem = ({
@@ -32,6 +34,7 @@ export const CollectiveOfferItem = ({
   editionOfferLink,
   venue,
   audience,
+  urlSearchFilters,
 }: CollectiveOfferItemProps) => {
   return (
     <>
@@ -63,6 +66,7 @@ export const CollectiveOfferItem = ({
       <CollectiveActionsCells
         offer={offer}
         editionOfferLink={editionOfferLink}
+        urlSearchFilters={urlSearchFilters}
       />
     </>
   )
