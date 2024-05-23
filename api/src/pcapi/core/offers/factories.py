@@ -172,6 +172,10 @@ class OfferFactory(BaseFactory):
                 subcategory_id, str
             )  # if the subcategoryId was not given in the factory, it will get the default subcategoryId
             kwargs["extraData"] = build_extra_data_from_subcategory(subcategory_id, kwargs.pop("set_all_fields", False))
+        if "offererAddress" not in kwargs and "offererAddressId" not in kwargs:
+            venue = kwargs.get("venue")
+            if venue:
+                kwargs["offererAddress"] = venue.offererAddress
 
         return super()._create(model_class, *args, **kwargs)
 

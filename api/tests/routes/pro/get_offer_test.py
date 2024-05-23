@@ -131,6 +131,7 @@ class Returns200Test:
             venue__dateCreated=now,
             venue__bookingEmail="test@test.com",
             venue__managingOfferer=user_offerer.offerer,
+            offererAddress=None,
         )
 
         stock = offers_factories.EventStockFactory(
