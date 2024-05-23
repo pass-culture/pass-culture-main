@@ -102,6 +102,22 @@ describe('route VenueEdition', () => {
     expect(screen.getByText('Page dans ADAGE')).toBeInTheDocument()
   })
 
+  it('should display the addresse title', async () => {
+    vi.spyOn(api, 'getVenue').mockResolvedValueOnce({
+      ...baseVenue,
+      isPermanent: false,
+    })
+    renderVenueEdition({
+      initialRouterEntries: [
+        `/structures/${defaultGetOffererResponseModel.id}/lieux/${defaultGetVenue.id}`,
+      ],
+    })
+
+    await waitForElementToBeRemoved(screen.getByTestId('spinner'))
+
+    expect(screen.getByText('Page adresse')).toBeInTheDocument()
+  })
+
   it('should let choose an other partner page', async () => {
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
