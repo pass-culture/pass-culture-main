@@ -6,12 +6,10 @@ import { api } from 'apiClient/api'
 import {
   CategoryResponseModel,
   GetIndividualOfferResponseModel,
-  MusicTypeResponse,
   SubcategoryResponseModel,
 } from 'apiClient/v1'
 import {
   GET_CATEGORIES_QUERY_KEY,
-  GET_MUSIC_TYPES_QUERY_KEY,
   GET_OFFER_QUERY_KEY,
 } from 'config/swrQueryKeys'
 import Spinner from 'ui-kit/Spinner/Spinner'
@@ -21,7 +19,6 @@ export interface IndividualOfferContextValues {
   offer: GetIndividualOfferResponseModel | null
   categories: CategoryResponseModel[]
   subCategories: SubcategoryResponseModel[]
-  musicTypes: MusicTypeResponse[]
 }
 
 export const IndividualOfferContext =
@@ -30,7 +27,6 @@ export const IndividualOfferContext =
     offer: null,
     categories: [],
     subCategories: [],
-    musicTypes: [],
   })
 
 export const useIndividualOfferContext = () => {
@@ -62,14 +58,6 @@ export const IndividualOfferContextProvider = ({
     { fallbackData: { categories: [], subcategories: [] } }
   )
 
-  const musicTypesQuery = useSWR(
-    GET_MUSIC_TYPES_QUERY_KEY,
-    () => api.getMusicTypes(),
-    {
-      fallbackData: [],
-    }
-  )
-
   if (offerQuery.isLoading || categoriesQuery.isLoading) {
     return <Spinner />
   }
@@ -81,7 +69,6 @@ export const IndividualOfferContextProvider = ({
         offer: offer ?? null,
         categories: categoriesQuery.data.categories,
         subCategories: categoriesQuery.data.subcategories,
-        musicTypes: musicTypesQuery.data,
       }}
     >
       {children}

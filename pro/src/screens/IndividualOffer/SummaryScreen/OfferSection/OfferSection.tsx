@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
+import useSWR from 'swr'
 
+import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { AccessibilitySummarySection } from 'components/AccessibilitySummarySection/AccessibilitySummarySection'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
@@ -9,6 +10,7 @@ import {
 } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
+import { GET_MUSIC_TYPES_QUERY_KEY } from 'config/swrQueryKeys'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import {
   OFFER_WITHDRAWAL_TYPE_LABELS,
@@ -19,7 +21,7 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
-import { OfferSectionData, serializeOfferSectionData } from './serializer'
+import { serializeOfferSectionData } from './serializer'
 import humanizeDelay from './utils'
 
 interface OfferSummaryProps {
@@ -32,7 +34,14 @@ const OfferSummary = ({
   offer,
 }: OfferSummaryProps): JSX.Element => {
   const mode = useOfferWizardMode()
-  const { categories, subCategories, musicTypes } = useIndividualOfferContext()
+  const { categories, subCategories } = useIndividualOfferContext()
+  const musicTypesQuery = useSWR(
+    GET_MUSIC_TYPES_QUERY_KEY,
+    () => api.getMusicTypes(),
+    { fallbackData: [] }
+  )
+  const musicTypes = musicTypesQuery.data
+
   const isBookingContactEnabled = useActiveFeature(
     'WIP_MANDATORY_BOOKING_CONTACT'
   )
@@ -40,36 +49,22 @@ const OfferSummary = ({
     'ENABLE_PRO_TITELIVE_MUSIC_GENRES'
   )
 
-  const [offerData, setOfferData] = useState<OfferSectionData>()
-
-  useEffect(() => {
-    const updateOfferData = () => {
-      const data = serializeOfferSectionData(
-        offer,
-        categories,
-        subCategories,
-        isTiteliveMusicGenreEnabled,
-        musicTypes
-      )
-      setOfferData(data)
-    }
-    updateOfferData()
-  }, [
+  const offerData = serializeOfferSectionData(
     offer,
-    musicTypes,
     categories,
     subCategories,
     isTiteliveMusicGenreEnabled,
-  ])
+    musicTypes
+  )
 
   const editLink = getIndividualOfferUrl({
-    offerId: offerData?.id,
+    offerId: offerData.id,
     step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
     mode:
       mode === OFFER_WIZARD_MODE.READ_ONLY ? OFFER_WIZARD_MODE.EDITION : mode,
   })
 
-  if (!offerData) {
+  if (musicTypesQuery.isLoading) {
     return <Spinner />
   }
 

@@ -154,8 +154,8 @@ describe('Summary', () => {
     vi.spyOn(api, 'getMusicTypes').mockResolvedValue(musicTypes)
   })
 
-  const expectOfferFields = () => {
-    expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
+  const expectOfferFields = async () => {
+    expect(await screen.findByText('Détails de l’offre')).toBeInTheDocument()
     expect(screen.getByText('Type d’offre')).toBeInTheDocument()
     expect(screen.getByText('Informations artistiques')).toBeInTheDocument()
     expect(screen.getByText('Informations pratiques')).toBeInTheDocument()
@@ -187,10 +187,10 @@ describe('Summary', () => {
   }
 
   describe('On edition', () => {
-    it('should render component with informations', () => {
+    it('should render component with informations', async () => {
       renderSummary(customContext)
 
-      expectOfferFields()
+      await expectOfferFields()
       expect(
         screen.getByText('Retour à la liste des offres')
       ).toBeInTheDocument()
@@ -208,7 +208,7 @@ describe('Summary', () => {
       }
     })
 
-    it('should render component with informations', () => {
+    it('should render component with informations', async () => {
       renderSummary(
         customContext,
         generatePath(
@@ -220,7 +220,7 @@ describe('Summary', () => {
         )
       )
 
-      expectOfferFields()
+      await expectOfferFields()
       expect(
         screen.queryByText('Visualiser dans l’app')
       ).not.toBeInTheDocument()
@@ -284,7 +284,7 @@ describe('Summary', () => {
         )
       )
 
-      const pageTitle = screen.getByRole('heading', {
+      const pageTitle = await screen.findByRole('heading', {
         name: /Détails de l’offre/,
       })
       const buttonPublish = screen.getByRole('button', {
