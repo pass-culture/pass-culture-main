@@ -192,14 +192,6 @@ class AllocineVenueProviderFactory(BaseFactory):
     internalId = factory.Sequence("P{}".format)
     isDuo = True
     quantity = 1000
-
-
-class AllocineVenueProviderPriceRuleFactory(BaseFactory):
-    class Meta:
-        model = models.AllocineVenueProviderPriceRule
-
-    allocineVenueProvider = factory.SubFactory(AllocineVenueProviderFactory)
-    priceRule = "default"
     price = decimal.Decimal("5.7")
 
 

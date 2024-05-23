@@ -142,7 +142,6 @@ def create_offerer_with_allocine_venue_provider_and_external_bookings() -> None:
     allocine_provider = get_provider_by_local_class("AllocineStocks")
     venue = _create_offers(allocine_provider)
     allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue, provider=allocine_provider)
-    providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
     providers_factories.AllocinePivotFactory(venue=venue, internalId=allocine_venue_provider.internalId)
     logger.info("created Offerer with allocine venueProvider")
 

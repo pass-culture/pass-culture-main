@@ -1,4 +1,5 @@
 from datetime import datetime
+from decimal import Decimal
 
 import pytest
 
@@ -39,9 +40,7 @@ class Returns200Test:
             venue__name="Whatever cinema",
             venue__managingOfferer=user_offerer.offerer,
             provider=allocine_stocks_provider,
-        )
-        providers_factories.AllocineVenueProviderPriceRuleFactory(
-            price=123.2, allocineVenueProvider=allocine_venue_provider
+            price=Decimal("123.2"),
         )
 
         # when

@@ -166,10 +166,9 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
     pivot = providers_factories.AllocinePivotFactory(
         venue=venue_synchronized_with_allocine, theaterId=theater.theaterId, internalId=theater.internalId
     )
-    allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(
+    providers_factories.AllocineVenueProviderFactory(
         venue=venue_synchronized_with_allocine, provider=allocine_provider, venueIdAtOfferProvider=pivot.theaterId
     )
-    providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
     venue_by_name[venue_synchronized_with_allocine.name] = venue_synchronized_with_allocine
 
     logger.info("created %d venues", len(venue_by_name))

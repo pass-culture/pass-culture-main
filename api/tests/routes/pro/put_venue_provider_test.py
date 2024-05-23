@@ -15,14 +15,9 @@ class Returns200Test:
         offerer = user_offerer.offerer
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         provider = providers_factories.AllocineProviderFactory()
-        venue_provider = providers_factories.AllocineVenueProviderFactory(
-            venue=venue,
-            provider=provider,
-            isDuo=False,
-            quantity=42,
-            isActive=True,
+        providers_factories.AllocineVenueProviderFactory(
+            venue=venue, provider=provider, isDuo=False, quantity=42, isActive=True, price=10
         )
-        providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=venue_provider, price=10)
 
         updated_venue_provider_data = {
             "providerId": provider.id,
@@ -117,13 +112,9 @@ class Returns403Test:
         offerer = owner_offerer.offerer
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         provider = providers_factories.AllocineProviderFactory()
-        venue_provider = providers_factories.AllocineVenueProviderFactory(
-            venue=venue,
-            provider=provider,
-            isDuo=False,
-            quantity=42,
+        providers_factories.AllocineVenueProviderFactory(
+            venue=venue, provider=provider, isDuo=False, quantity=42, price=10
         )
-        providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=venue_provider, price=10)
 
         updated_venue_provider_data = {
             "providerId": provider.id,

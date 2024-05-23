@@ -87,14 +87,10 @@ class AllocineContext(PivotContext):
         if not pivot:
             raise NotFound()
 
-        venue_provider = (
-            providers_models.AllocineVenueProvider.query.join(
-                providers_models.AllocinePivot,
-                providers_models.AllocineVenueProvider.internalId == pivot.internalId,
-            )
-            .options(sa.orm.joinedload(providers_models.AllocineVenueProvider.priceRules))
-            .one_or_none()
-        )
+        venue_provider = providers_models.AllocineVenueProvider.query.join(
+            providers_models.AllocinePivot,
+            providers_models.AllocineVenueProvider.internalId == pivot.internalId,
+        ).one_or_none()
 
         if venue_provider and venue_provider.isActive:
             return False
@@ -108,8 +104,6 @@ class AllocineContext(PivotContext):
             )
 
         if venue_provider:
-            for price_rule in venue_provider.priceRules:
-                db.session.delete(price_rule)
             db.session.delete(venue_provider)
         db.session.delete(pivot)
         return True

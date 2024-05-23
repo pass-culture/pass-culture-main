@@ -42,11 +42,6 @@ class ProviderResponse(BaseModel):
 class VenueProviderGetterDict(GetterDict):
     def get(self, key: str, default: Any | None = None) -> Any:
         venue_provider = self._obj
-        if key == "price" and venue_provider.isFromAllocineProvider:
-            for price_rule in venue_provider.priceRules:
-                if price_rule.priceRule():
-                    return price_rule.price
-            return None
         if key == "isDuo" and not venue_provider.isFromAllocineProvider:
             return venue_provider.isDuoOffers
 
