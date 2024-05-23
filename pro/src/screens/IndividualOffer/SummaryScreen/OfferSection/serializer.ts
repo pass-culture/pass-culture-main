@@ -117,8 +117,6 @@ const serializerOfferSubCategoryFields = (
   }
 }
 
-export type OfferSectionData = ReturnType<typeof serializeOfferSectionData>
-
 export const serializeOfferSectionData = (
   offer: GetIndividualOfferResponseModel,
   categories: CategoryResponseModel[],

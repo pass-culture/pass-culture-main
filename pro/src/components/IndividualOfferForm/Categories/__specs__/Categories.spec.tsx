@@ -4,6 +4,7 @@ import { Form, Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
+import { api } from 'apiClient/api'
 import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm/types'
 import {
@@ -91,6 +92,14 @@ describe('IndividualOffer section: Categories', () => {
       isEvent: true,
       showAddVenueBanner: true,
     }
+
+    vi.spyOn(api, 'getMusicTypes').mockResolvedValue([
+      {
+        gtl_id: '07000000',
+        label: 'Metal',
+        canBeEvent: true,
+      },
+    ])
   })
 
   it('should render the component', () => {
