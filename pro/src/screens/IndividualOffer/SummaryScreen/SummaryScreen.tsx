@@ -40,7 +40,7 @@ const SummaryScreen = () => {
   const notification = useNotification()
   const mode = useOfferWizardMode()
   const navigate = useNavigate()
-  const { offerOfferer, offer, subCategories } = useIndividualOfferContext()
+  const { offer, subCategories } = useIndividualOfferContext()
   const { logEvent } = useAnalytics()
 
   if (offer === null) {
@@ -187,10 +187,10 @@ const SummaryScreen = () => {
         isDisabled={isDisabled}
       />
 
-      {displayRedirectDialog && offerOfferer?.id && offer.venue.id && (
+      {displayRedirectDialog && (
         <RedirectToBankAccountDialog
           cancelRedirectUrl={offerConfirmationStepUrl}
-          offerId={offerOfferer.id}
+          offerId={offer.venue.managingOfferer.id}
           venueId={offer.venue.id}
         />
       )}

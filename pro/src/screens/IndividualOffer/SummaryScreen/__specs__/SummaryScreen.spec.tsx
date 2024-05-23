@@ -31,7 +31,6 @@ import {
   individualOfferContextValuesFactory,
   subcategoryFactory,
   venueListItemFactory,
-  getOffererNameFactory,
 } from 'utils/individualApiFactories'
 import {
   RenderWithProvidersOptions,
@@ -353,10 +352,6 @@ describe('Summary', () => {
         offer: getIndividualOfferFactory({
           venue: getOfferVenueFactory({ id: venueId }),
         }),
-        offerOfferer: getOffererNameFactory({
-          name: 'offerOffererName',
-          id: 1,
-        }),
         showVenuePopin: {
           [venueId]: true,
         },
@@ -387,17 +382,13 @@ describe('Summary', () => {
         })
       ).toHaveAttribute(
         'href',
-        '/remboursements/informations-bancaires?structure=1'
+        `/remboursements/informations-bancaires?structure=${context.offer.venue.managingOfferer.id}`
       )
     })
 
     it('should display redirect modal if first non free offer', async () => {
       const context = {
         offer: getIndividualOfferFactory(),
-        offerOfferer: getOffererNameFactory({
-          name: 'offerOffererName',
-          id: 1,
-        }),
         venueList: [venueListItemFactory()],
       }
 
@@ -437,17 +428,13 @@ describe('Summary', () => {
         screen.getByRole('link', { name: 'Ajouter un compte bancaire' })
       ).toHaveAttribute(
         'href',
-        '/remboursements/informations-bancaires?structure=1'
+        `/remboursements/informations-bancaires?structure=${context.offer.venue.managingOfferer.id}`
       )
     })
 
     it('should not display redirect modal if hasPendingBankAccount is true', async () => {
       const context = {
         offer: getIndividualOfferFactory(),
-        offerOfferer: getOffererNameFactory({
-          name: 'offerOffererName',
-          id: 1,
-        }),
         venueList: [venueListItemFactory()],
       }
 
@@ -485,6 +472,10 @@ describe('Summary', () => {
     })
 
     it('should not display redirect modal if offer is free', async () => {
+      vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
+        getIndividualOfferFactory({ isNonFreeOffer: false })
+      )
+
       const context = {
         offer: getIndividualOfferFactory(),
         venueList: [venueListItemFactory()],
@@ -514,6 +505,11 @@ describe('Summary', () => {
     })
 
     it('should not display redirect modal if venue hasNonFreeOffers', async () => {
+      vi.spyOn(api, 'getOfferer').mockResolvedValue({
+        ...defaultGetOffererResponseModel,
+        hasNonFreeOffer: true,
+      })
+
       const context = {
         offer: getIndividualOfferFactory(),
         venueList: [venueListItemFactory()],
