@@ -60,9 +60,7 @@ class AllocineStocksTest:
                 siret="77567146400110",
                 bookingEmail="toto@example.com",
             )
-
             allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue)
-
             allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
 
             # When
@@ -106,12 +104,9 @@ class UpdateObjectsTest:
             bookingEmail="toto@example.com",
             withdrawalDetails="Modalités",
         )
-
         allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(
             venue=venue, internalId="PXXXXX", isDuo=False
         )
-        providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
-
         allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
 
         # When
@@ -175,7 +170,6 @@ class UpdateObjectsTest:
             siret="77567146400110",
             bookingEmail="toto@example.com",
         )
-
         offers_factories.OfferFactory(
             name="Test event",
             subcategoryId=subcategories.SEANCE_CINE.id,
@@ -183,10 +177,7 @@ class UpdateObjectsTest:
             idAtProvider="TW92aWU6MTMxMTM2%77567146400110",
             venue=venue,
         )
-
         allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue)
-        providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
-
         allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
 
         # When
@@ -216,8 +207,6 @@ class UpdateObjectsTest:
         )
 
         allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue)
-        providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
-
         allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
 
         # When
@@ -252,8 +241,6 @@ class UpdateObjectsTest:
         )
 
         allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue)
-        providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
-
         allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
 
         # When
@@ -288,10 +275,7 @@ class UpdateObjectsTest:
             siret="77567146400110",
             bookingEmail="toto@example.com",
         )
-
         allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue)
-        providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
-
         allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
 
         # When
@@ -323,11 +307,7 @@ class UpdateObjectsTest:
             bookingEmail="toto@example.com",
         )
 
-        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue, quantity=None)
-        providers_factories.AllocineVenueProviderPriceRuleFactory(
-            allocineVenueProvider=allocine_venue_provider, price=10
-        )
-
+        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue, quantity=None, price=10)
         allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
 
         # When
@@ -410,7 +390,6 @@ class UpdateObjectsTest:
             )
 
             allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue)
-            providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
 
             # When
             allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
@@ -471,11 +450,9 @@ class UpdateObjectsTest:
             venue_provider1 = providers_factories.AllocineVenueProviderFactory(
                 venue=venue1, internalId="P12345", venueIdAtOfferProvider=theater_token1
             )
-            providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=venue_provider1)
             venue_provider2 = providers_factories.AllocineVenueProviderFactory(
                 venue=venue2, internalId="C12345", venueIdAtOfferProvider=theater_token2
             )
-            providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=venue_provider2)
 
             allocine_stocks_provider1 = AllocineStocks(venue_provider1)
             allocine_stocks_provider1.updateObjects()
@@ -518,11 +495,9 @@ class UpdateObjectsTest:
                 bookingEmail="toto@example.com",
             )
 
-            allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue, quantity=None)
-            providers_factories.AllocineVenueProviderPriceRuleFactory(
-                allocineVenueProvider=allocine_venue_provider, price=10
+            allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(
+                venue=venue, quantity=None, price=10
             )
-
             allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
             allocine_stocks_provider.updateObjects()
 
@@ -580,10 +555,7 @@ class UpdateObjectsTest:
                 siret="77567146400110",
                 bookingEmail="toto@example.com",
             )
-
             allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue)
-            providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
-
             allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
             allocine_stocks_provider.updateObjects()
 
@@ -619,9 +591,6 @@ class UpdateObjectsTest:
                 bookingEmail="toto@example.com",
             )
             allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue)
-            price_rule = providers_factories.AllocineVenueProviderPriceRuleFactory(
-                allocineVenueProvider=allocine_venue_provider
-            )
 
             offer = offers_factories.OfferFactory(
                 name="Test event",
@@ -629,9 +598,9 @@ class UpdateObjectsTest:
                 idAtProvider="TW92aWU6MTMxMTM2%77567146400110",
                 venue=venue,
             )
-            offers_factories.PriceCategoryFactory(offer=offer, price=price_rule.price)
+            offers_factories.PriceCategoryFactory(offer=offer, price=allocine_venue_provider.price)
             newest_price_category = offers_factories.PriceCategoryFactory(
-                offer=offer, price=price_rule.price, priceCategoryLabel__label="Nouveau tarif"
+                offer=offer, price=allocine_venue_provider.price, priceCategoryLabel__label="Nouveau tarif"
             )
 
             # When
@@ -684,21 +653,19 @@ class UpdateObjectsTest:
                 priceCategory=manually_created_price_category,
             )
 
-            allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue)
-            new_price_rule = providers_factories.AllocineVenueProviderPriceRuleFactory(
-                allocineVenueProvider=allocine_venue_provider, price=decimal.Decimal("1.2")
-            )
+            new_price = decimal.Decimal("1.2")
+            allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue, price=new_price)
 
             # When
             allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
             allocine_stocks_provider.updateObjects()
 
             # Then
-            assert stock_with_price_to_edit.price == new_price_rule.price
-            assert default_price_category.price == new_price_rule.price
+            assert stock_with_price_to_edit.price == new_price
+            assert default_price_category.price == new_price
 
-            assert manually_created_price_category.price != new_price_rule.price
-            assert stock_with_unchanging_price.price != new_price_rule.price
+            assert manually_created_price_category.price != new_price
+            assert stock_with_unchanging_price.price != new_price
 
             assert allocine_stocks_provider.erroredObjects == 0
             assert allocine_stocks_provider.erroredThumbs == 0
@@ -721,7 +688,6 @@ class UpdateObjectsTest:
             )
 
             allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue)
-            providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
 
             allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
             allocine_stocks_provider.updateObjects()
@@ -758,7 +724,6 @@ class UpdateObjectsTest:
             )
 
             allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue)
-            providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
 
             # When
             allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
@@ -787,7 +752,6 @@ class UpdateObjectsTest:
             )
 
             allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue, quantity=50)
-            providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
 
             # When
             allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
@@ -813,7 +777,6 @@ class UpdateObjectsTest:
             mock_get_object_thumb.return_value = thumb_file.read()
 
         allocine_venue_provider = providers_factories.AllocineVenueProviderFactory()
-        providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
         allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
 
         allocine_stocks_provider.updateObjects()

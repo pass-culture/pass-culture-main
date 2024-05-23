@@ -459,13 +459,12 @@ class ConnectVenueToAllocineTest:
 
         venue_provider = providers_models.AllocineVenueProvider.query.one()
         pivot = providers_models.AllocinePivot.query.one()
-        price_rule = providers_models.AllocineVenueProviderPriceRule.query.one()
         assert venue_provider.venue == venue
         assert venue_provider.isDuo
         assert venue_provider.quantity == 50
         assert venue_provider.internalId == "PXXXXXX"
         assert venue_provider.venueIdAtOfferProvider == "123VHJ=="
-        assert price_rule.price == Decimal("9.99")
+        assert venue_provider.price == Decimal("9.99")
         assert pivot.venueId == venue.id
 
     def test_connect_venue_without_siret_to_allocine_provider(self):
@@ -481,13 +480,12 @@ class ConnectVenueToAllocineTest:
         api.connect_venue_to_allocine(venue, allocine_provider.id, payload)
 
         venue_provider = providers_models.AllocineVenueProvider.query.one()
-        price_rule = providers_models.AllocineVenueProviderPriceRule.query.one()
         assert venue_provider.venue == venue
         assert venue_provider.isDuo
         assert venue_provider.quantity == 50
         assert venue_provider.internalId == pivot.internalId
         assert venue_provider.venueIdAtOfferProvider == pivot.theaterId
-        assert price_rule.price == Decimal("9.99")
+        assert venue_provider.price == Decimal("9.99")
 
     def test_should_throw_when_venue_is_unknown_by_allocine(self):
         venue = offerers_factories.VenueFactory()

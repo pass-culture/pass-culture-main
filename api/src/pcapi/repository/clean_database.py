@@ -29,7 +29,6 @@ from pcapi.models.feature import install_feature_flags
 tables_to_clean: list[flask_sqlalchemy.Model] = [
     providers_models.LocalProviderEvent,
     offers_models.ActivationCode,
-    providers_models.AllocineVenueProviderPriceRule,
     providers_models.AllocineVenueProvider,
     providers_models.VenueProvider,
     finance_models.PaymentStatus,
