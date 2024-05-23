@@ -110,6 +110,10 @@
 
     th.th-actions {
       text-align: right;
+
+      &-eac {
+        padding-right: 0;
+      }
     }
 
     tbody > tr {

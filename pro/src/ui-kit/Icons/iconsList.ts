@@ -42,6 +42,7 @@ import fullRightIcon from 'icons/full-right.svg'
 import fullShowIcon from 'icons/full-show.svg'
 import fullSortIcon from 'icons/full-sort.svg'
 import fullStarIcon from 'icons/full-star.svg'
+import fullThreeDotsIcon from 'icons/full-three-dots.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import fullUpIcon from 'icons/full-up.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
@@ -183,6 +184,7 @@ export const fullIcons: IconListItem[] = [
   { src: fullDisclosureOpenIcon, viewBox: '0 0 16 16' }, // TODO clean viewbox
   { src: fullProfilIcon },
   { src: fullCloseIcon },
+  { src: fullThreeDotsIcon },
 ]
 
 export const strokeIcons: IconListItem[] = [
