@@ -7,10 +7,10 @@ from pcapi.core.educational.api import booking as educational_api_booking
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.providers.models as providers_models
 from pcapi.models.api_errors import ApiErrors
-from pcapi.routes.public import documentation_constants
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.collective.blueprint import collective_offers_blueprint
 from pcapi.routes.public.collective.serialization import offers as offers_serialization
+from pcapi.routes.public.documentation_constants import tags
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.validation.routes.users_authentifications import api_key_required
@@ -20,7 +20,7 @@ from pcapi.validation.routes.users_authentifications import current_api_key
 @collective_offers_blueprint.route("/collective/bookings/<int:booking_id>", methods=["PATCH"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[documentation_constants.COLLECTIVE_BOOKING],
+    tags=[tags.COLLECTIVE_BOOKING],
     on_success_status=204,
     resp=SpectreeResponse(
         HTTP_204=(None, "Annuler une réservation collective"),
