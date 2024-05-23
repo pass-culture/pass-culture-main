@@ -10,6 +10,7 @@ from pcapi.core.users.repository import find_user_by_email
 from pcapi.tasks.sendinblue_tasks import send_transactional_email_primary_task
 from pcapi.tasks.sendinblue_tasks import send_transactional_email_secondary_task
 import pcapi.tasks.serialization.sendinblue_tasks as serializers
+from pcapi.utils.email import is_email_whitelisted
 from pcapi.utils.requests import ExternalAPIException
 
 from .. import models
@@ -174,15 +175,9 @@ class ToDevSendinblueBackend(SendinblueBackend):
                 and recipient.startswith(end_to_end_tests_email_address_arr[0])
                 and recipient.endswith(f"@{end_to_end_tests_email_address_arr[1]}")
             )
-            staging_whitelisted_email_recipients = settings.IS_STAGING and recipient.endswith("@yeswehack.ninja")
             # Only for e2e, when IS_RUNNING_TESTS is true and EMAIL_BACKEND is pcapi.core.mails.backends.sendinblue.ToDevSendinblueBackend
             # This override can be seen in pass-culture-app-native/.github/workflows/e2e-*.yml
             e2e_whitelisted_email_recipients = settings.IS_E2E_TESTS and is_e2e_recipient
-            if (
-                (user and user.has_test_role)
-                or recipient in settings.WHITELISTED_EMAIL_RECIPIENTS
-                or staging_whitelisted_email_recipients
-                or e2e_whitelisted_email_recipients
-            ):
+            if (user and user.has_test_role) or is_email_whitelisted(recipient) or e2e_whitelisted_email_recipients:
                 whitelisted_recipients.add(recipient)
         return list(whitelisted_recipients)
