@@ -121,7 +121,6 @@ describe('screens:StocksThing', () => {
       offer,
     }
     contextValue = individualOfferContextValuesFactory({
-      offerId: offerId,
       offer,
       subCategories: [
         subcategoryFactory({
