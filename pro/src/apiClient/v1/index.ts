@@ -201,6 +201,7 @@ export type { PriceCategoryResponseModel } from './models/PriceCategoryResponseM
 export type { ProFlagsQueryModel } from './models/ProFlagsQueryModel';
 export type { ProUserCreationBodyV2Model } from './models/ProUserCreationBodyV2Model';
 export type { ProviderResponse } from './models/ProviderResponse';
+export type { ReimbursementCsvByInvoicesModel } from './models/ReimbursementCsvByInvoicesModel';
 export type { ReimbursementCsvQueryModel } from './models/ReimbursementCsvQueryModel';
 export type { ResetPasswordBodyModel } from './models/ResetPasswordBodyModel';
 export type { SaveNewOnboardingDataQueryModel } from './models/SaveNewOnboardingDataQueryModel';
