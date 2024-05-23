@@ -1,9 +1,9 @@
 import { api } from 'apiClient/api'
 import { EducationalInstitutionsResponseModel } from 'apiClient/v1'
 
-import { getEducationalInstitutionsAdapter } from '../getEducationalInstitutionsAdapter'
+import { getEducationalInstitutions } from '../getEducationalInstitutions'
 
-describe('getEducationalInstitutionsAdapter', () => {
+describe('getEducationalInstitutions', () => {
   let institutionsPaginated: EducationalInstitutionsResponseModel
   beforeEach(() => {
     institutionsPaginated = {
@@ -40,31 +40,28 @@ describe('getEducationalInstitutionsAdapter', () => {
   })
 
   it('should return an error when the institutions could not be retrieved', async () => {
-    vi.spyOn(api, 'getEducationalInstitutions').mockRejectedValueOnce(null)
-    const response = await getEducationalInstitutionsAdapter()
-    expect(response.isOk).toBe(false)
-    expect(response.message).toBe(
-      'Une erreur est survenue lors du chargement des données'
+    vi.spyOn(api, 'getEducationalInstitutions').mockRejectedValueOnce(
+      new Error()
     )
+
+    await expect(() => getEducationalInstitutions()).rejects.toThrowError()
   })
+
   it('should return an error if any page returns an error', async () => {
     vi.spyOn(api, 'getEducationalInstitutions')
       .mockResolvedValueOnce(institutionsPaginated)
       .mockResolvedValueOnce({ ...institutionsPaginated, page: 2 })
-      .mockRejectedValueOnce(null)
-    const response = await getEducationalInstitutionsAdapter()
-    expect(response.isOk).toBeFalsy()
-    expect(response.message).toBe(
-      'Une erreur est survenue lors du chargement des données'
-    )
+      .mockRejectedValueOnce(new Error())
+
+    await expect(() => getEducationalInstitutions()).rejects.toThrowError()
   })
+
   it('should return a confirmation when all results are retrieved', async () => {
     vi.spyOn(api, 'getEducationalInstitutions')
       .mockResolvedValueOnce(institutionsPaginated)
       .mockResolvedValueOnce({ ...institutionsPaginated, page: 2 })
       .mockResolvedValueOnce({ ...institutionsPaginated, page: 3 })
-    const response = await getEducationalInstitutionsAdapter()
-    expect(response.isOk).toBeTruthy()
-    expect(response.payload?.institutions.length).toBe(9)
+    const response = await getEducationalInstitutions()
+    expect(response.length).toBe(9)
   })
 })

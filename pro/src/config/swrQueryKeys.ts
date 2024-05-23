@@ -15,6 +15,8 @@ export const GET_EDUCATIONAL_DOMAINS_QUERY_KEY = 'listEducationalDomains'
 export const GET_EDUCATIONAL_STATUSES_QUERY_KEY = 'getVenuesEducationalStatuses'
 export const GET_EDUCATIONAL_INSTITUTION_BUDGET_QUERY_KEY =
   'getEducationalInstitutionWithBudget'
+export const GET_EDUCATIONAL_INSTITUTIONS_QUERY_KEY =
+  'getEducationalInstitutions'
 export const GET_EVENT_PRICE_CATEGORIES_AND_SCHEDULES_BY_DATE_QUERY_KEY =
   'getPriceCategoriesAndSchedulesByDate'
 export const GET_FEATURES_QUERY_KEY = 'getFeatures'
