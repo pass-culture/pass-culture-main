@@ -1,9 +1,11 @@
 import cn from 'classnames'
 import { useEffect, useRef, useState } from 'react'
+import useSWR from 'swr'
 
+import { api } from 'apiClient/api'
 import { CollectiveBookingResponseModel } from 'apiClient/v1'
-import { CollectiveBookingByIdResponseModel } from 'apiClient/v1/models/CollectiveBookingByIdResponseModel'
 import useAnalytics from 'app/App/analytics/firebase'
+import { GET_COLLECTIVE_BOOKING_BY_ID_QUERY_KEY } from 'config/swrQueryKeys'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
@@ -16,7 +18,6 @@ import { DetailsButtonCell } from './Cells/DetailsButtonCell'
 import { InstitutionCell } from './Cells/InstitutionCell'
 import { NumberOfTicketsAndPriceCell } from './Cells/NumberOfTicketsAndPriceCell'
 import { CollectiveBookingDetails } from './CollectiveBookingDetails'
-import getCollectiveBookingAdapter from './getCollectiveBookingAdapter'
 
 export interface CollectiveTableRowProps {
   booking: CollectiveBookingResponseModel
@@ -27,31 +28,17 @@ export const CollectiveTableRow = ({
   booking,
   defaultOpenedBookingId,
 }: CollectiveTableRowProps) => {
-  const [bookingDetails, setBookingDetails] =
-    useState<CollectiveBookingByIdResponseModel | null>(null)
   const [isExpanded, setIsExpanded] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
   const { logEvent } = useAnalytics()
 
   const detailsRef = useRef<HTMLTableRowElement | null>(null)
 
-  useEffect(() => {
-    const fetchBookingDetails = async () => {
-      setIsLoading(true)
-      const bookingResponse = await getCollectiveBookingAdapter(
-        Number(booking.bookingId)
-      )
-      if (bookingResponse.isOk) {
-        setBookingDetails(bookingResponse.payload)
-      }
-      setIsLoading(false)
-    }
-
-    if (isExpanded) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      fetchBookingDetails()
-    }
-  }, [isExpanded, booking.bookingId, booking.bookingStatus])
+  const bookingDetailsQuery = useSWR(
+    isExpanded
+      ? [GET_COLLECTIVE_BOOKING_BY_ID_QUERY_KEY, Number(booking.bookingId)]
+      : null,
+    ([, bookingIdParam]) => api.getCollectiveBookingById(bookingIdParam)
+  )
 
   const onRowClick = () => {
     logEvent(CollectiveBookingsEvents.CLICKED_EXPAND_COLLECTIVE_BOOKING_DETAILS)
@@ -111,14 +98,14 @@ export const CollectiveTableRow = ({
 
       {isExpanded ? (
         <tr className={styles['details-container']} ref={detailsRef}>
-          {isLoading || bookingDetails === null ? (
+          {bookingDetailsQuery.isLoading || !bookingDetailsQuery.data ? (
             <td className={styles['loader']}>
               <Spinner />
             </td>
           ) : (
             <td className={styles['details-content']} id={booking.bookingId}>
               <CollectiveBookingDetails
-                bookingDetails={bookingDetails}
+                bookingDetails={bookingDetailsQuery.data}
                 bookingRecap={booking}
               />
             </td>
