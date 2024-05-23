@@ -2935,7 +2935,7 @@
                                 "$ref": "#/components/schemas/OfferStatus"
                             }
                         ],
-                        "description": "\nOffer status:\n\n- `ACTIVE`: offer is validated and active. \n\n\n- `DRAFT`: offer is still draft and not yet submitted for validation - this status is not applicable to offers created via this API.\n\n\n- `EXPIRED`: offer is validated but the booking limit datetime has passed.\n\n\n- `INACTIVE`: offer is not active and cannot be booked.\n\n\n- `PENDING`: offer is pending for pass Culture rules compliance validation. This step may last 72 hours.\n\n\n- `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n\n- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.\n",
+                        "description": "\n**Offer status:**\n\n- `ACTIVE`: offer is validated and active. \n\n\n- `DRAFT`: offer is still draft and not yet submitted for validation - this status is not applicable to offers created via this API.\n\n\n- `EXPIRED`: offer is validated but the booking limit datetime has passed.\n\n\n- `INACTIVE`: offer is not active and cannot be booked.\n\n\n- `PENDING`: offer is pending for pass Culture rules compliance validation. This step may last 72 hours.\n\n\n- `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n\n- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.\n",
                         "example": "ACTIVE"
                     }
                 },
@@ -6435,7 +6435,7 @@
                                 "$ref": "#/components/schemas/OfferStatus"
                             }
                         ],
-                        "description": "\nOffer status:\n\n- `ACTIVE`: offer is validated and active. \n\n\n- `DRAFT`: offer is still draft and not yet submitted for validation - this status is not applicable to offers created via this API.\n\n\n- `EXPIRED`: offer is validated but the booking limit datetime has passed.\n\n\n- `INACTIVE`: offer is not active and cannot be booked.\n\n\n- `PENDING`: offer is pending for pass Culture rules compliance validation. This step may last 72 hours.\n\n\n- `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n\n- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.\n",
+                        "description": "\n**Offer status:**\n\n- `ACTIVE`: offer is validated and active. \n\n\n- `DRAFT`: offer is still draft and not yet submitted for validation - this status is not applicable to offers created via this API.\n\n\n- `EXPIRED`: offer is validated but the booking limit datetime has passed.\n\n\n- `INACTIVE`: offer is not active and cannot be booked.\n\n\n- `PENDING`: offer is pending for pass Culture rules compliance validation. This step may last 72 hours.\n\n\n- `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n\n- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.\n",
                         "example": "ACTIVE"
                     },
                     "stock": {
@@ -8158,7 +8158,7 @@
         }
     },
     "info": {
-        "description": "\nThis the documentation of the Pass Culture public REST API.\n\n**Important notice:**\n- Since January 2023, rate limiting has been implemented on the Pass Culture API.\n  You are limited to **200 requests/minute** per API key.\n  Once this limit reached, you will received a `429 Too Many Requests` error message. You will then need to back down.\n- Dates of event offers are stored in the **UTC format** to be able to format them correctly, according to the user timezone, in our application interface.\n- Any non-blank field sent using a `PATCH` method will be considered as changed, even if the new value is equal to old value.\n  _For example, if you update the stock of an event, you **should not resend the `beginningDate`** if it has not changed because, otherwise it is going to trigger the reschedule process on our side._\n",
+        "description": "\nThis the documentation of the Pass Culture public REST API.\n\n# Important notice\n- Since January 2023, rate limiting has been implemented on the Pass Culture API.\n  You are limited to **200 requests/minute** per API key.\n  Once this limit reached, you will received a `429 Too Many Requests` error message. You will then need to back down.\n- Dates of event offers are stored in the **UTC format** to be able to format them correctly, according to the user timezone, in our application interface.\n- Any non-blank field sent using a `PATCH` method will be considered as changed, even if the new value is equal to old value.\n  _For example, if you update the stock of an event, you **should not resend the `beginningDate`** if it has not changed because, otherwise it is going to trigger the reschedule process on our side._\n",
         "title": "Pass Culture REST API",
         "version": "1.0"
     },
