@@ -4,6 +4,7 @@ from pypdf import PdfReader
 import pytest
 
 from pcapi.core.finance import factories
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.users import factories as users_factories
 
 from tests.utils.pdf_creation_test import TEST_FILES_PATH
@@ -25,13 +26,17 @@ def invoice_2_example_pdf_fixture() -> bytes:
 
 
 def test_get_combined_invoices_pdf(client, requests_mock, invoice_1_example_pdf, invoice_2_example_pdf):
-    invoice_1 = factories.InvoiceFactory(reference="F240000187")
-    invoice_2 = factories.InvoiceFactory(reference="F240000189")
+    pro = users_factories.ProFactory()
+    user_offerer = offerers_factories.UserOffererFactory(user=pro)
+
+    bank_account = factories.BankAccountFactory(offerer=user_offerer.offerer)
+
+    invoice_1 = factories.InvoiceFactory(reference="F240000187", bankAccount=bank_account)
+    invoice_2 = factories.InvoiceFactory(reference="F240000189", bankAccount=bank_account)
 
     requests_mock.get(invoice_1.url, content=invoice_1_example_pdf)
     requests_mock.get(invoice_2.url, content=invoice_2_example_pdf)
 
-    pro = users_factories.ProFactory()
     client = client.with_session_auth(pro.email)
 
     response = client.get("/finance/combined-invoices?invoiceReferences=F240000189&invoiceReferences=F240000187")
@@ -43,11 +48,14 @@ def test_get_combined_invoices_pdf(client, requests_mock, invoice_1_example_pdf,
 
 
 def test_get_one_invoice_pdf(client, requests_mock, invoice_1_example_pdf):
-    invoice = factories.InvoiceFactory(reference="F240000187")
+    pro = users_factories.ProFactory()
+    user_offerer = offerers_factories.UserOffererFactory(user=pro)
+
+    bank_account = factories.BankAccountFactory(offerer=user_offerer.offerer)
+
+    invoice = factories.InvoiceFactory(reference="F240000187", bankAccount=bank_account)
 
     requests_mock.get(invoice.url, content=invoice_1_example_pdf)
-
-    pro = users_factories.ProFactory()
     client = client.with_session_auth(pro.email)
 
     response = client.get("/finance/combined-invoices?invoiceReferences=F240000187")
@@ -81,3 +89,15 @@ def test_get_combined_invoices_pdf_no_invoice_references(client):
 
     assert response.status_code == 400
     assert response.json == {"invoiceReferences": ["Ce champ est obligatoire"]}
+
+
+def test_user_has_no_access_to_offerer(client):
+    factories.InvoiceFactory(reference="F240000000")
+
+    pro = users_factories.ProFactory()
+    client = client.with_session_auth(pro.email)
+
+    response = client.get("/finance/combined-invoices?invoiceReferences=F240000000")
+
+    assert response.status_code == 400
+    assert response.json == {"invoiceReferences": ["Aucune structure trouvée pour les factures fournies"]}
