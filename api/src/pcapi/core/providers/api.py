@@ -167,6 +167,7 @@ def update_allocine_venue_provider(
         # could need to be tweaked in the future
         if price_rule.priceRule == PriceRule.default:
             price_rule.price = venue_provider_payload.price
+            allocine_venue_provider.price = venue_provider_payload.price
 
     repository.save(allocine_venue_provider, *allocine_venue_provider.priceRules)
 
@@ -221,6 +222,7 @@ def connect_venue_to_allocine(
         isDuo=payload.isDuo,
         quantity=payload.quantity,
         internalId=pivot.internalId,
+        price=payload.price,
     )
     price_rule = providers_models.AllocineVenueProviderPriceRule(
         allocineVenueProvider=venue_provider,
