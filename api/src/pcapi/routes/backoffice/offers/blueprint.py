@@ -41,7 +41,6 @@ from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.utils import regions as regions_utils
 from pcapi.utils import string as string_utils
-from pcapi.workers import push_notification_job
 
 from . import forms
 
@@ -732,13 +731,9 @@ def _batch_reject_offers(offer_ids: list[int]) -> None:
             repository.save(offer)
 
             cancelled_bookings = bookings_api.cancel_bookings_from_rejected_offer(offer)
-
-            if cancelled_bookings:
-                # FIXME: La notification indique que l'offreur a annulé alors que c'est la fraude
-                # TODO(PC-23550): SPIKE avec marketing https://passculture.atlassian.net/browse/PC-23550
-                # Il faudrait utiliser send_booking_cancellation_emails_to_user_and_offerer et retirer cette notification soit la déplacer dedans, mais un mail est mieux (TBD)
-                push_notification_job.send_cancel_booking_notification.delay(
-                    [booking.id for booking in cancelled_bookings]
+            for booking in cancelled_bookings:
+                transactional_mails.send_booking_cancellation_by_pro_to_beneficiary_email(
+                    booking, rejected_by_fraud_action=True
                 )
 
             repository.save(offer)
