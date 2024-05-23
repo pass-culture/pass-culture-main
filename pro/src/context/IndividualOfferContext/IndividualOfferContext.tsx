@@ -15,7 +15,6 @@ import {
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 export interface IndividualOfferContextValues {
-  offerId: number | null
   offer: GetIndividualOfferResponseModel | null
   categories: CategoryResponseModel[]
   subCategories: SubcategoryResponseModel[]
@@ -23,7 +22,6 @@ export interface IndividualOfferContextValues {
 
 export const IndividualOfferContext =
   createContext<IndividualOfferContextValues>({
-    offerId: null,
     offer: null,
     categories: [],
     subCategories: [],
@@ -65,7 +63,6 @@ export const IndividualOfferContextProvider = ({
   return (
     <IndividualOfferContext.Provider
       value={{
-        offerId: offer?.id || null,
         offer: offer ?? null,
         categories: categoriesQuery.data.categories,
         subCategories: categoriesQuery.data.subcategories,
