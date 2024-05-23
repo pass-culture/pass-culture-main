@@ -3,6 +3,8 @@ import logging
 import email_validator
 import email_validator.syntax
 
+from pcapi import settings
+
 
 logger = logging.getLogger(__name__)
 
@@ -49,3 +51,12 @@ def is_valid_email_domain(content: str) -> bool:
         return True
     except email_validator.EmailNotValidError:
         return False
+
+
+def is_email_whitelisted(email: str) -> bool:
+    # Returns True if email domain is found in WHITELISTED_EMAIL_RECIPIENTS
+    # To whitelist a domain, the format must be '*@my.domain';
+    if not is_valid_email(email):
+        return False
+    domain = f"*@{email.split('@')[1]}"
+    return email in settings.WHITELISTED_EMAIL_RECIPIENTS or domain in settings.WHITELISTED_EMAIL_RECIPIENTS

@@ -7,6 +7,7 @@ from pcapi import settings
 from pcapi.core import mails
 import pcapi.core.mails.models as mails_models
 from pcapi.utils import requests
+from pcapi.utils.email import is_email_whitelisted
 
 
 logger = logging.getLogger(__name__)
@@ -79,11 +80,7 @@ class ToDevSendinblueBackend(SendinblueBackend):
         else:
             # Imported test users are whitelisted (Internal users, Bug Bounty, audit, etc.)
             if user is not None:
-                if (
-                    (user and user.has_test_role)
-                    or recipient in settings.WHITELISTED_EMAIL_RECIPIENTS
-                    or (settings.IS_STAGING and recipient.endswith("@yeswehack.ninja"))
-                ):
+                if (user and user.has_test_role) or is_email_whitelisted(recipient):
                     mail_recipient = user.email
 
         mails.send(recipients=[mail_recipient], data=mail_content)
