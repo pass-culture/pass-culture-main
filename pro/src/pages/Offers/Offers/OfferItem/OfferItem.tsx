@@ -1,5 +1,4 @@
 import cn from 'classnames'
-import React from 'react'
 
 import {
   CollectiveOfferResponseModel,
@@ -7,6 +6,7 @@ import {
 } from 'apiClient/v1'
 import { isOfferEducational } from 'core/OfferEducational/types'
 import { OFFER_STATUS_DRAFT } from 'core/Offers/constants'
+import { SearchFiltersParams } from 'core/Offers/types'
 import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
 import { Audience } from 'core/shared/types'
 import {
@@ -24,6 +24,7 @@ export type OfferItemProps = {
   offer: CollectiveOfferResponseModel | ListOffersOfferResponseModel
   selectOffer: (offerId: number, selected: boolean) => void
   audience: Audience
+  urlSearchFilters: SearchFiltersParams
 }
 
 export const OfferItem = ({
@@ -32,6 +33,7 @@ export const OfferItem = ({
   isSelected = false,
   selectOffer,
   audience,
+  urlSearchFilters,
 }: OfferItemProps) => {
   const { venue, isEducational, isShowcase, status, id } = offer
   const editionOfferLink = useOfferEditionURL(
@@ -83,6 +85,7 @@ export const OfferItem = ({
           editionOfferLink={editionOfferLink}
           venue={venue}
           audience={audience}
+          urlSearchFilters={urlSearchFilters}
         />
       )}
     </tr>

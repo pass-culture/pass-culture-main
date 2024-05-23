@@ -65,6 +65,7 @@ export const CollectiveActionButtons = ({
       )
     }
   }
+
   return (
     <>
       <div className={styles['action-buttons']}>

@@ -1,0 +1,7 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+
+.modal-text {
+    @include fonts.body-important;
+
+    color: var(--color-error-light)
+}
