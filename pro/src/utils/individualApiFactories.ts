@@ -181,7 +181,6 @@ export const individualOfferContextValuesFactory = (
     offer,
     categories: [],
     subCategories: [],
-    setSubcategory: () => {},
     musicTypes: [
       {
         gtl_id: '01000000',

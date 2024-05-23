@@ -10,7 +10,6 @@ import {
 import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers/constants'
 import { SelectOption } from 'custom_types/form'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -76,7 +75,6 @@ export const Categories = ({
     setFieldValue,
     handleChange,
   } = useFormikContext<IndividualOfferFormValues>()
-  const { setSubcategory } = useIndividualOfferContext()
   const isBookingContactEnabled = useActiveFeature(
     'WIP_MANDATORY_BOOKING_CONTACT'
   )
@@ -97,8 +95,6 @@ export const Categories = ({
     )
     await setFieldValue('subCategoryFields', newSubcategoryFields)
     await setFieldValue('isDuo', Boolean(newSubcategory?.canBeDuo))
-
-    setSubcategory(newSubcategory)
 
     if (newSubcategoryFields === subCategoryFields) {
       return
