@@ -21,9 +21,7 @@ Yarn est prometteur, on vous conseille de l’utiliser. Tâchez de l’installer
 
 #### Troubleshooting:
 
-Sur linux + chrome / chromium l’application peut se charger indéfiniment
-un workaround est de changer de navigateur,
-une solution est proposée ici : https://vitejs.dev/guide/troubleshooting.html#dev-server
+Sur linux + chrome / chromium l’application peut se charger indéfiniment un workaround est de changer de navigateur, une solution est proposée ici : https://vitejs.dev/guide/troubleshooting.html#dev-server
 
 ## Lancement des tests
 
@@ -40,11 +38,11 @@ une solution est proposée ici : https://vitejs.dev/guide/troubleshooting.html#d
     - Injection des données de test `pc sandbox -n industrial`
   - Lancement des tests depuis la ligne de commande `yarn test:e2e`
 
-## Adage
+## ADAGE
 
-Nous intégrons une sous-route du portail Pro (`/adage-iframe/`) dans une iframe au sein d'Adage, la plateforme des établissements scolaires permettant de gérer leurs activités culturelles.
+Nous intégrons une sous-route du portail Pro (`/adage-iframe/`) dans une iframe au sein d'ADAGE, la plateforme des établissements scolaires permettant de gérer leurs activités culturelles.
 
-### Accès à l’iframe Adage
+### Accès à l’iframe ADAGE
 
 Application web pour les rédacteurs de projets scolaires, leur permettant de réserver des offres sur le pass Culture pour leurs élèves.
 

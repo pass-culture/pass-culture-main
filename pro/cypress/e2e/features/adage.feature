@@ -1,5 +1,5 @@
 @P0
-Feature: Adage discovery
+Feature: ADAGE discovery
 
   Background:
     Given I go to adage login page with valid token
