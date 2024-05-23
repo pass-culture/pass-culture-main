@@ -233,18 +233,15 @@ class CDSCinemaDetails(PcObject, Base, Model):
 
 class AllocineVenueProvider(VenueProvider):
     __tablename__ = "allocine_venue_provider"
+    __mapper_args__ = {"polymorphic_identity": "allocine_venue_provider"}
 
     id: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue_provider.id"), primary_key=True)
-
     isDuo: bool = sa.Column(sa.Boolean, default=True, server_default=sa.true(), nullable=False)
-
     quantity = sa.Column(sa.Integer, nullable=True)
-
     internalId: str = sa.Column(sa.Text, nullable=False, unique=True)
-
-    __mapper_args__ = {
-        "polymorphic_identity": "allocine_venue_provider",
-    }
+    price: decimal.Decimal = sa.Column(
+        sa.Numeric(10, 2), sa.CheckConstraint("price >= 0", name="check_price_is_not_negative"), nullable=True
+    )
 
 
 class AllocineVenueProviderPriceRule(PcObject, Base, Model):
