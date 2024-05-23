@@ -24,7 +24,7 @@ const userSlice = createSlice({
     },
     updateSelectedOffererId: (
       state: UserState,
-      action: PayloadAction<number>
+      action: PayloadAction<number | null>
     ) => {
       state.selectedOffererId = action.payload
     },
