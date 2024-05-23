@@ -12,8 +12,9 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.validation import check_for_duplicated_price_categories
 from pcapi.models import api_errors
 from pcapi.models import db
-from pcapi.routes.public import documentation_constants
 from pcapi.routes.public import spectree_schemas
+from pcapi.routes.public.documentation_constants import http_responses
+from pcapi.routes.public.documentation_constants import tags
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.validation.routes.users_authentifications import api_key_required
@@ -44,11 +45,11 @@ def _deserialize_has_ticket(
 @blueprint.v1_offers_blueprint.route("/events", methods=["POST"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[documentation_constants.EVENT_OFFER_INFO_TAG],
+    tags=[tags.EVENT_OFFER_INFO_TAG],
     response_model=serialization.EventOfferResponse,
     resp=SpectreeResponse(
         **(
-            documentation_constants.BASE_CODE_DESCRIPTIONS
+            http_responses.BASE_CODE_DESCRIPTIONS
             | {
                 "HTTP_400": (
                     None,
@@ -110,11 +111,11 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
 @blueprint.v1_offers_blueprint.route("/events/<int:event_id>", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[documentation_constants.EVENT_OFFER_INFO_TAG],
+    tags=[tags.EVENT_OFFER_INFO_TAG],
     response_model=serialization.EventOfferResponse,
     resp=SpectreeResponse(
         **(
-            documentation_constants.BASE_CODE_DESCRIPTIONS
+            http_responses.BASE_CODE_DESCRIPTIONS
             | {
                 "HTTP_404": (
                     None,
@@ -146,11 +147,11 @@ def get_event(event_id: int) -> serialization.EventOfferResponse:
 @blueprint.v1_offers_blueprint.route("/events", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[documentation_constants.EVENT_OFFER_INFO_TAG],
+    tags=[tags.EVENT_OFFER_INFO_TAG],
     response_model=serialization.EventOffersResponse,
     resp=SpectreeResponse(
         **(
-            documentation_constants.BASE_CODE_DESCRIPTIONS
+            http_responses.BASE_CODE_DESCRIPTIONS
             | {
                 "HTTP_404": (
                     None,
@@ -182,11 +183,11 @@ def get_events(query: serialization.GetOffersQueryParams) -> serialization.Event
 @blueprint.v1_offers_blueprint.route("/events/<int:event_id>", methods=["PATCH"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[documentation_constants.EVENT_OFFER_INFO_TAG],
+    tags=[tags.EVENT_OFFER_INFO_TAG],
     response_model=serialization.EventOfferResponse,
     resp=SpectreeResponse(
         **(
-            documentation_constants.BASE_CODE_DESCRIPTIONS
+            http_responses.BASE_CODE_DESCRIPTIONS
             | {
                 "HTTP_404": (
                     None,
@@ -249,11 +250,11 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
 @blueprint.v1_offers_blueprint.route("/events/<int:event_id>/price_categories", methods=["POST"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[documentation_constants.EVENT_OFFER_PRICES_TAG],
+    tags=[tags.EVENT_OFFER_PRICES_TAG],
     response_model=serialization.PriceCategoriesResponse,
     resp=SpectreeResponse(
         **(
-            documentation_constants.BASE_CODE_DESCRIPTIONS
+            http_responses.BASE_CODE_DESCRIPTIONS
             | {
                 "HTTP_404": (
                     None,
@@ -304,11 +305,11 @@ def post_event_price_categories(
 )
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[documentation_constants.EVENT_OFFER_PRICES_TAG],
+    tags=[tags.EVENT_OFFER_PRICES_TAG],
     response_model=serialization.PriceCategoryResponse,
     resp=SpectreeResponse(
         **(
-            documentation_constants.BASE_CODE_DESCRIPTIONS
+            http_responses.BASE_CODE_DESCRIPTIONS
             | {
                 "HTTP_404": (
                     None,
@@ -367,11 +368,11 @@ def patch_event_price_categories(
 @blueprint.v1_offers_blueprint.route("/events/<int:event_id>/dates", methods=["POST"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[documentation_constants.EVENT_OFFER_DATES_TAG],
+    tags=[tags.EVENT_OFFER_DATES_TAG],
     response_model=serialization.PostDatesResponse,
     resp=SpectreeResponse(
         **(
-            documentation_constants.BASE_CODE_DESCRIPTIONS
+            http_responses.BASE_CODE_DESCRIPTIONS
             | {
                 "HTTP_404": (
                     None,
@@ -433,11 +434,11 @@ def post_event_dates(event_id: int, body: serialization.DatesCreation) -> serial
 @blueprint.v1_offers_blueprint.route("/events/<int:event_id>/dates", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[documentation_constants.EVENT_OFFER_DATES_TAG],
+    tags=[tags.EVENT_OFFER_DATES_TAG],
     response_model=serialization.GetDatesResponse,
     resp=SpectreeResponse(
         **(
-            documentation_constants.BASE_CODE_DESCRIPTIONS
+            http_responses.BASE_CODE_DESCRIPTIONS
             | {
                 "HTTP_404": (
                     None,
@@ -489,11 +490,11 @@ def get_event_dates(event_id: int, query: serialization.GetDatesQueryParams) -> 
 @blueprint.v1_offers_blueprint.route("/events/<int:event_id>/dates/<int:date_id>", methods=["DELETE"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[documentation_constants.EVENT_OFFER_DATES_TAG],
+    tags=[tags.EVENT_OFFER_DATES_TAG],
     on_success_status=204,
     resp=SpectreeResponse(
         **(
-            documentation_constants.BASE_CODE_DESCRIPTIONS
+            http_responses.BASE_CODE_DESCRIPTIONS
             | {
                 "HTTP_404": (
                     None,
@@ -536,11 +537,11 @@ def delete_event_date(event_id: int, date_id: int) -> None:
 @blueprint.v1_offers_blueprint.route("/events/<int:event_id>/dates/<int:date_id>", methods=["PATCH"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[documentation_constants.EVENT_OFFER_DATES_TAG],
+    tags=[tags.EVENT_OFFER_DATES_TAG],
     response_model=serialization.DateResponse,
     resp=SpectreeResponse(
         **(
-            documentation_constants.BASE_CODE_DESCRIPTIONS
+            http_responses.BASE_CODE_DESCRIPTIONS
             | {
                 "HTTP_404": (
                     None,
@@ -619,11 +620,11 @@ def patch_event_date(
 @blueprint.v1_offers_blueprint.route("/events/categories", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[documentation_constants.OFFER_ATTRIBUTES],
+    tags=[tags.OFFER_ATTRIBUTES],
     response_model=serialization.GetEventCategoriesResponse,
     resp=SpectreeResponse(
         **(
-            documentation_constants.BASE_CODE_DESCRIPTIONS
+            http_responses.BASE_CODE_DESCRIPTIONS
             | {
                 "HTTP_200": (serialization.GetEventCategoriesResponse, "The event categories have been returned"),
             }

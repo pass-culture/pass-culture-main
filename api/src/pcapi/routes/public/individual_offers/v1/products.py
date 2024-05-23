@@ -23,8 +23,9 @@ from pcapi.domain import show_types
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
-from pcapi.routes.public import documentation_constants
 from pcapi.routes.public import spectree_schemas
+from pcapi.routes.public.documentation_constants import http_responses
+from pcapi.routes.public.documentation_constants import tags
 from pcapi.routes.public.serialization import venues as venues_serialization
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
@@ -46,11 +47,11 @@ logger = logging.getLogger(__name__)
 @blueprint.v1_offers_blueprint.route("/offerer_venues", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[documentation_constants.OFFERER_VENUES_TAG],
+    tags=[tags.OFFERER_VENUES_TAG],
     response_model=venues_serialization.GetOfferersVenuesResponse,
     resp=SpectreeResponse(
         **(
-            documentation_constants.BASE_CODE_DESCRIPTIONS
+            http_responses.BASE_CODE_DESCRIPTIONS
             | {
                 "HTTP_200": (venues_serialization.GetOfferersVenuesResponse, "The offerer and its venues"),
             }
@@ -73,11 +74,11 @@ def get_offerer_venues(
 @blueprint.v1_offers_blueprint.route("/show_types", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[documentation_constants.OFFER_ATTRIBUTES],
+    tags=[tags.OFFER_ATTRIBUTES],
     response_model=serialization.GetShowTypesResponse,
     resp=SpectreeResponse(
         **(
-            documentation_constants.BASE_CODE_DESCRIPTIONS
+            http_responses.BASE_CODE_DESCRIPTIONS
             | {
                 "HTTP_200": (serialization.GetShowTypesResponse, "The show types have been returned"),
             }
@@ -102,12 +103,12 @@ def get_show_types() -> serialization.GetShowTypesResponse:
 @blueprint.v1_offers_blueprint.route("/music_types", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[documentation_constants.OFFER_ATTRIBUTES],
+    tags=[tags.OFFER_ATTRIBUTES],
     response_model=serialization.GetMusicTypesResponse,
     deprecated=True,
     resp=SpectreeResponse(
         **(
-            documentation_constants.BASE_CODE_DESCRIPTIONS
+            http_responses.BASE_CODE_DESCRIPTIONS
             | {
                 "HTTP_200": (serialization.GetMusicTypesResponse, "The music types have been returned"),
             }
@@ -135,11 +136,11 @@ def get_music_types() -> serialization.GetMusicTypesResponse:
 @blueprint.v1_offers_blueprint.route("/music_types/all", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[documentation_constants.OFFER_ATTRIBUTES],
+    tags=[tags.OFFER_ATTRIBUTES],
     response_model=serialization.GetMusicTypesResponse,
     resp=SpectreeResponse(
         **(
-            documentation_constants.BASE_CODE_DESCRIPTIONS
+            http_responses.BASE_CODE_DESCRIPTIONS
             | {
                 "HTTP_200": (serialization.GetMusicTypesResponse, "The music types have been returned"),
             }
@@ -166,11 +167,11 @@ def get_all_titelive_music_types() -> serialization.GetMusicTypesResponse:
 @blueprint.v1_offers_blueprint.route("/music_types/event", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[documentation_constants.OFFER_ATTRIBUTES],
+    tags=[tags.OFFER_ATTRIBUTES],
     response_model=serialization.GetMusicTypesResponse,
     resp=SpectreeResponse(
         **(
-            documentation_constants.BASE_CODE_DESCRIPTIONS
+            http_responses.BASE_CODE_DESCRIPTIONS
             | {
                 "HTTP_200": (serialization.GetMusicTypesResponse, "The music types have been returned"),
             }
@@ -198,11 +199,11 @@ def get_event_titelive_music_types() -> serialization.GetMusicTypesResponse:
 @blueprint.v1_offers_blueprint.route("/products", methods=["POST"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[documentation_constants.PRODUCT_OFFER_TAG],
+    tags=[tags.PRODUCT_OFFER_TAG],
     response_model=serialization.ProductOfferResponse,
     resp=SpectreeResponse(
         **(
-            documentation_constants.BASE_CODE_DESCRIPTIONS
+            http_responses.BASE_CODE_DESCRIPTIONS
             | {
                 "HTTP_404": (None, "No venue found for the used api key"),
                 "HTTP_400": (None, "The product offer could not be created"),
@@ -270,11 +271,11 @@ def post_product_offer(body: serialization.ProductOfferCreation) -> serializatio
 @blueprint.v1_offers_blueprint.route("/products/ean", methods=["POST"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[documentation_constants.PRODUCT_EAN_OFFER_TAG],
+    tags=[tags.PRODUCT_EAN_OFFER_TAG],
     on_success_status=204,
     resp=SpectreeResponse(
         **(
-            documentation_constants.BASE_CODE_DESCRIPTIONS
+            http_responses.BASE_CODE_DESCRIPTIONS
             | {
                 "HTTP_404": (None, "No venue found for the used api key"),
                 "HTTP_400": (None, "The product offers could not be created"),
@@ -503,11 +504,11 @@ def _create_offer_from_product(
 @blueprint.v1_offers_blueprint.route("/products/<int:product_id>", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[documentation_constants.PRODUCT_OFFER_TAG],
+    tags=[tags.PRODUCT_OFFER_TAG],
     response_model=serialization.ProductOfferResponse,
     resp=SpectreeResponse(
         **(
-            documentation_constants.BASE_CODE_DESCRIPTIONS
+            http_responses.BASE_CODE_DESCRIPTIONS
             | {
                 "HTTP_404": (None, "The product offer could not be found"),
                 "HTTP_200": (serialization.ProductOfferResponse, "The product offer"),
@@ -536,11 +537,11 @@ def get_product(product_id: int) -> serialization.ProductOfferResponse:
 @blueprint.v1_offers_blueprint.route("/products/ean", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[documentation_constants.PRODUCT_EAN_OFFER_TAG],
+    tags=[tags.PRODUCT_EAN_OFFER_TAG],
     response_model=serialization.ProductOffersByEanResponse,
     resp=SpectreeResponse(
         **(
-            documentation_constants.BASE_CODE_DESCRIPTIONS
+            http_responses.BASE_CODE_DESCRIPTIONS
             | {
                 "HTTP_200": (serialization.ProductOffersByEanResponse, "The product offers"),
             }
@@ -585,11 +586,11 @@ def _retrieve_offer_by_eans_query(eans: list[str], venueId: int) -> sqla.orm.Que
 @blueprint.v1_offers_blueprint.route("/products", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[documentation_constants.PRODUCT_OFFER_TAG],
+    tags=[tags.PRODUCT_OFFER_TAG],
     response_model=serialization.ProductOffersResponse,
     resp=SpectreeResponse(
         **(
-            documentation_constants.BASE_CODE_DESCRIPTIONS
+            http_responses.BASE_CODE_DESCRIPTIONS
             | {
                 "HTTP_404": (None, "No venue found for the used api key"),
                 "HTTP_200": (serialization.ProductOffersResponse, "The product offers"),
@@ -633,11 +634,11 @@ def _check_offer_can_be_edited(offer: offers_models.Offer) -> None:
 @blueprint.v1_offers_blueprint.route("/products", methods=["PATCH"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[documentation_constants.PRODUCT_OFFER_TAG],
+    tags=[tags.PRODUCT_OFFER_TAG],
     response_model=serialization.ProductOfferResponse,
     resp=SpectreeResponse(
         **(
-            documentation_constants.BASE_CODE_DESCRIPTIONS
+            http_responses.BASE_CODE_DESCRIPTIONS
             | {
                 "HTTP_404": (None, "The product offer could not be found"),
                 "HTTP_400": (None, "The product offer could not be edited"),
@@ -733,11 +734,11 @@ def _upsert_product_stock(
 @blueprint.v1_offers_blueprint.route("/products/categories", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[documentation_constants.PRODUCT_OFFER_TAG],
+    tags=[tags.PRODUCT_OFFER_TAG],
     response_model=serialization.GetProductCategoriesResponse,
     resp=SpectreeResponse(
         **(
-            documentation_constants.BASE_CODE_DESCRIPTIONS
+            http_responses.BASE_CODE_DESCRIPTIONS
             | {
                 "HTTP_200": (serialization.GetProductCategoriesResponse, "The product categories have been returned"),
             }
@@ -763,11 +764,11 @@ def get_product_categories() -> serialization.GetProductCategoriesResponse:
 @blueprint.v1_offers_blueprint.route("/<int:offer_id>/image", methods=["POST"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[documentation_constants.IMAGE_TAG],
+    tags=[tags.IMAGE_TAG],
     on_success_status=204,
     resp=SpectreeResponse(
         **(
-            documentation_constants.BASE_CODE_DESCRIPTIONS
+            http_responses.BASE_CODE_DESCRIPTIONS
             | {
                 "HTTP_204": (None, "Image updated successfully"),
             }

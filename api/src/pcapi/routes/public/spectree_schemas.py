@@ -4,18 +4,19 @@ from pcapi.serialization import utils as serialization_utils
 from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.validation.routes import users_authentifications
 
-from . import documentation_constants
+from .documentation_constants import descriptions
+from .documentation_constants import tags
 
 
 # Schema of current public API
 public_api_schema = ExtendedSpecTree(
     "flask",
     title="Pass Culture REST API",
-    description=documentation_constants.PUBLIC_API_DESCRIPTION,
+    description=descriptions.PUBLIC_API_DESCRIPTION,
     PATH="/",
     MODE="strict",
     version="1.0",
-    tags=documentation_constants.OPEN_API_TAGS,
+    tags=tags.OPEN_API_TAGS,
     before=serialization_utils.public_api_before_handler,
     security_schemes=[
         SecurityScheme(
@@ -33,7 +34,7 @@ deprecated_public_api_schema = ExtendedSpecTree(
     MODE="strict",
     before=serialization_utils.before_handler,
     PATH="/deprecated",
-    tags=documentation_constants.DEPRACTED_TAGS,
+    tags=tags.DEPRACTED_TAGS,
     security_schemes=[
         SecurityScheme(
             name=users_authentifications.API_KEY_AUTH_NAME,
