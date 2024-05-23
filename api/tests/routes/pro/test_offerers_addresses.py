@@ -36,8 +36,8 @@ class CreateOffererAddressesTest:
         # Fetch the user
         # Check permissions
         # Insert address
+        # Check if offererAddress exists
         # Insert OffererAddress
-        # Select OffererAddress & address
         with assert_num_queries(6):
             response = http_client.post(
                 f"/offerers/{offerer_id}/addresses/",
@@ -85,8 +85,8 @@ class CreateOffererAddressesTest:
         # Check permissions
         # Try to insert address & rollback
         # Select address
+        # Check if offererAddress exists
         # Insert OffererAddress
-        # Select OffererAddress & address
         with assert_num_queries(7):
             response = http_client.post(
                 f"/offerers/{offerer_id}/addresses/",
@@ -134,10 +134,10 @@ class CreateOffererAddressesTest:
         # Fetch the session
         # Fetch the user
         # Check permissions
-        # Try to insert address & rollback
+        # rollback
         # Select address
-        # Try to insert OffererAddress & rollback
-        # Select OffererAddress & address
+        # Select offererAddress if exists
+        # Insert offererAddress
         with assert_num_queries(7):
             response = http_client.post(
                 f"/offerers/{offerer_id}/addresses/",
@@ -233,8 +233,8 @@ class CreateOffererAddressesTest:
         # Fetch the user
         # Check permissions
         # Insert address
+        # Check if offererAddress exists
         # Insert OffererAddress
-        # Select OffererAddress & address
         with assert_num_queries(6):
             response = http_client.post(
                 f"/offerers/{offerer_id}/addresses/",
@@ -326,6 +326,9 @@ class CreateOffererAddressesTest:
         # Fetch the session
         # Fetch the user
         # Check permissions
+        # Insert address
+        # Select offererAddress if exists
+        # Insert offererAddress
         with assert_num_queries(6):
             response = http_client.post(
                 f"/offerers/{offerer_id}/addresses/",
