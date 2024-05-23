@@ -89,7 +89,7 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
             établissement scolaire. Vous pouvez créer une offre à partir des
             informations saisies par l’enseignant. Toutes les informations sont
             modifiables.
-            <br /> L’offre sera visible par l’enseignant sur Adage.
+            <br /> L’offre sera visible par l’enseignant sur ADAGE.
           </div>
           <SummarySection title="Détails de la demande">
             <div className={styles['eac-section']}>

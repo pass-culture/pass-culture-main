@@ -240,7 +240,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                   end
                 >
                   <span className={styles['nav-links-item-without-icon']}>
-                    Page dans Adage
+                    Page dans ADAGE
                   </span>
                 </NavLink>
               )}

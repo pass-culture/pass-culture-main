@@ -66,7 +66,7 @@ export const PartnerPages = ({
       <p className={styles['description']}>
         Complétez vos informations pour présenter votre activité au grand public
         sur le site et l’application pass Culture à destination des jeunes et /
-        ou auprès des enseignants sur la plateforme Adage.
+        ou auprès des enseignants sur la plateforme ADAGE.
       </p>
 
       {venues.length > 1 && (
