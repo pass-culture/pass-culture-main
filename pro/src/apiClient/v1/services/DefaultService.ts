@@ -2519,6 +2519,27 @@ export class DefaultService {
     });
   }
   /**
+   * get_reimbursements_csv_v2 <GET>
+   * @param invoicesReferences
+   * @returns any OK
+   * @throws ApiError
+   */
+  public getReimbursementsCsvV2(
+    invoicesReferences: Array<string>,
+  ): CancelablePromise<any> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/v2/reimbursements/csv',
+      query: {
+        'invoicesReferences': invoicesReferences,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
    * signup_pro_V2 <POST>
    * @param requestBody
    * @returns void
