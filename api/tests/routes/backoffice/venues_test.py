@@ -331,8 +331,8 @@ class GetVenueTest(GetEndpointHelper):
         assert f"Email : {venue.bookingEmail} " in response_text
         assert f"Numéro de téléphone : {venue.contact.phone_number} " in response_text
         assert "Peut créer une offre EAC : Non" in response_text
-        assert "Cartographié sur Adage : Non" in response_text
-        assert "ID Adage" not in response_text
+        assert "Cartographié sur ADAGE : Non" in response_text
+        assert "ID ADAGE" not in response_text
         assert "Site web : https://www.example.com" in response_text
         assert f"Activité principale : {venue.venueTypeCode.value}" in response_text
         assert f"Label : {venue.venueLabel.label} " in response_text
@@ -353,8 +353,8 @@ class GetVenueTest(GetEndpointHelper):
 
         response_text = html_parser.content_as_text(response.data)
         assert "Peut créer une offre EAC : Oui" in response_text
-        assert "Cartographié sur Adage : Oui" in response_text
-        assert "ID Adage : 7122022" in response_text
+        assert "Cartographié sur ADAGE : Oui" in response_text
+        assert "ID ADAGE : 7122022" in response_text
 
     def test_get_venue_with_no_contact(self, authenticated_client):
         venue = offerers_factories.VenueFactory(contact=None)
@@ -446,8 +446,8 @@ class GetVenueTest(GetEndpointHelper):
         assert f"Email : {venue.bookingEmail} " in response_text
         assert f"Numéro de téléphone : {venue.contact.phone_number} " in response_text
         assert "Peut créer une offre EAC : Oui" in response_text
-        assert "Cartographié sur Adage : Non" in response_text
-        assert "ID Adage" not in response_text
+        assert "Cartographié sur ADAGE : Non" in response_text
+        assert "ID ADAGE" not in response_text
         assert "Site web : https://my.website.com" in response_text
 
         badges = html_parser.extract(response.data, tag="span", class_="badge")
