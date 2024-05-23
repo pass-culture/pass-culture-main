@@ -1,4 +1,3 @@
-import decimal
 import typing
 
 from pcapi.core.offerers import constants as offerers_constants
@@ -10,24 +9,7 @@ from . import models
 if typing.TYPE_CHECKING:
     from pcapi.routes.serialization import venues_serialize
 
-
-MAX_LONGITUDE = 180
-MAX_LATITUDE = 90
-
 VENUE_BANNER_MAX_SIZE = 10_000_000
-
-
-def validate_coordinates(raw_latitude: float | str, raw_longitude: float | str) -> None:
-    api_errors = ApiErrors()
-
-    if raw_latitude:
-        _validate_latitude(api_errors, raw_latitude)
-
-    if raw_longitude:
-        _validate_longitude(api_errors, raw_longitude)
-
-    if api_errors.errors:
-        raise api_errors
 
 
 def check_accessibility_compliance(venue: "venues_serialize.PostVenueBodyModel") -> None:
@@ -79,26 +61,6 @@ def check_venue_edition(modifications: dict[str, typing.Any], venue: models.Venu
         and offerers_constants.UNCHANGED not in modifications_disability_compliance
     ):
         raise ApiErrors(errors={"global": ["L'accessibilité du lieu doit être définie."]})
-
-
-def _validate_longitude(api_errors: ApiErrors, raw_longitude: float | str) -> None:
-    try:
-        longitude = decimal.Decimal(raw_longitude)
-    except decimal.InvalidOperation:
-        api_errors.add_error("longitude", "Format incorrect")
-    else:
-        if longitude > MAX_LONGITUDE or longitude < -MAX_LONGITUDE:
-            api_errors.add_error("longitude", "La longitude doit être comprise entre -180.0 et +180.0")
-
-
-def _validate_latitude(api_errors: ApiErrors, raw_latitude: float | str) -> None:
-    try:
-        latitude = decimal.Decimal(raw_latitude)
-    except decimal.InvalidOperation:
-        api_errors.add_error("latitude", "Format incorrect")
-    else:
-        if latitude > MAX_LATITUDE or latitude < -MAX_LATITUDE:
-            api_errors.add_error("latitude", "La latitude doit être comprise entre -90.0 et +90.0")
 
 
 def check_venue_can_be_linked_to_pricing_point(venue: models.Venue, pricing_point_id: int) -> None:

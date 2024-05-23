@@ -578,25 +578,6 @@ class EditVenueTest:
         # Then
         assert error.value.errors["name"] == ["Vous ne pouvez pas modifier la raison sociale d'un lieu"]
 
-    def test_latitude_and_longitude_wrong_format(self, app) -> None:
-        # given
-        user = users_factories.UserFactory()
-        venue = offerers_factories.VenueFactory(
-            isVirtual=False,
-        )
-
-        # when
-        venue_data = {
-            "latitude": -98.82387,
-            "longitude": "112°3534",
-        }
-        with pytest.raises(api_errors.ApiErrors) as error:
-            offerers_api.update_venue(venue, author=user, **venue_data)
-
-        # Then
-        assert error.value.errors["latitude"] == ["La latitude doit être comprise entre -90.0 et +90.0"]
-        assert error.value.errors["longitude"] == ["Format incorrect"]
-
     def test_accessibility_fields_are_updated(self, app) -> None:
         # given
         user = users_factories.UserFactory()
