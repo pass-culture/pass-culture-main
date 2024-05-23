@@ -1,6 +1,7 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_size.scss" as size;
+@use "styles/variables/_z-index.scss" as zIndex;
 
 .offer-item {
   display: grid;
@@ -93,9 +94,7 @@
 
   .actions-column {
     display: table-cell;
-    text-align: center;
     width: rem.torem(80px);
-    grid-area: text4;
     padding-top: 0.25rem;
 
     &-container {
@@ -205,11 +204,82 @@
     }
 
     .actions-column {
-      padding-top: unset;
+      padding: 0 0 0 rem.torem(10px);
+
 
       & > div {
         justify-content: flex-end;
       }
     }
   }
+}
+
+.actions-container {
+  display: flex;
+  gap: rem.torem(8px);
+}
+
+.pop-in {
+  background-color: var(--color-white);
+  border: rem.torem(1px) solid var(--color-grey-light);
+  border-radius: rem.torem(6px);
+  z-index: zIndex.$profil-pop-in-z-index;
+  width: 100dvw;
+  height: 100dvh;
+  padding: rem.torem(8px);
+  box-shadow: 0 rem.torem(3px) rem.torem(4px) var(--color-medium-shadow);
+
+  @media (min-width: size.$mobile) {
+    height: auto;
+    width: rem.torem(270px);
+    margin-left: 0;
+    margin-top: 0;
+  }
+}
+
+.dropdown-button {
+  cursor: pointer;
+  outline: none;
+  border: none;
+  background-color: var(--color-white);
+  color: var(--color-black);
+  height: rem.torem(32px);
+
+  &[data-state="open"] {
+    color: var(--color-secondary-light);
+  }
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: flex-start;
+
+  &-item {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    padding: rem.torem(8px);
+  
+    &:focus-visible {
+      outline: rem.torem(1px) solid var(--color-input-text-color);
+      outline-offset: rem.torem(2px);
+      border-radius: rem.torem(4px);
+    }
+
+    &[data-highlighted] {
+      outline: none;
+      background: var(--color-grey-light);
+      cursor: pointer;
+    }
+  }
+}
+
+.separator {
+  height: rem.torem(1px);
+  width: rem.torem(20px);
+  background-color: var(--color-black);
+  margin: rem.torem(4px) 0;
 }

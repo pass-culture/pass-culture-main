@@ -561,6 +561,13 @@ describe('screen Offers', () => {
         collectiveOfferFactory({
           isActive: false,
           hasBookingLimitDatetimesPassed: true,
+          stocks: [
+            {
+              beginningDatetime: String(new Date()),
+              hasBookingLimitDatetimePassed: true,
+              remainingQuantity: 1,
+            },
+          ],
         }),
       ]
 

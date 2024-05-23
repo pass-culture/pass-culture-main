@@ -4,7 +4,11 @@ import React from 'react'
 import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { CollectiveOfferResponseModel, OfferStatus } from 'apiClient/v1'
+import {
+  CollectiveOfferResponseModel,
+  CollectiveOffersStockResponseModel,
+  OfferStatus,
+} from 'apiClient/v1'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeOffersUrl'
@@ -72,10 +76,17 @@ vi.mock('repository/venuesService', async () => ({
 
 describe('route CollectiveOffers', () => {
   let offersRecap: CollectiveOfferResponseModel[]
+  const stocks: Array<CollectiveOffersStockResponseModel> = [
+    {
+      beginningDatetime: String(new Date()),
+      hasBookingLimitDatetimePassed: false,
+      remainingQuantity: 1,
+    },
+  ]
   const mockNavigate = vi.fn()
 
   beforeEach(() => {
-    offersRecap = [collectiveOfferFactory()]
+    offersRecap = [collectiveOfferFactory({ stocks })]
     vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue(offersRecap)
     vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames: [] })
@@ -85,7 +96,7 @@ describe('route CollectiveOffers', () => {
   describe('url query params', () => {
     it('should have page value when page value is not first page', async () => {
       const offersRecap = Array.from({ length: 11 }, () =>
-        collectiveOfferFactory()
+        collectiveOfferFactory({ stocks })
       )
       vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
       await renderOffers()
@@ -160,6 +171,7 @@ describe('route CollectiveOffers', () => {
             id: 'KE',
             availabilityMessage: 'Pas de stock',
             status: OfferStatus.ACTIVE,
+            stocks,
           },
           // @ts-expect-error collectiveOfferFactory is not typed and null throws an error but is accepted by the function
           null
@@ -187,6 +199,7 @@ describe('route CollectiveOffers', () => {
             id: 'KE',
             availabilityMessage: 'Pas de stock',
             status: OfferStatus.ACTIVE,
+            stocks,
           },
           // @ts-expect-error collectiveOfferFactory is not typed and null throws an error but is accepted by the function
           null
