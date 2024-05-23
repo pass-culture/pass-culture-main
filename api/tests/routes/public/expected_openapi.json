@@ -1741,14 +1741,14 @@
             "DateCreation": {
                 "properties": {
                     "beginningDatetime": {
-                        "description": "Timezone aware datetime of the event.",
+                        "description": "Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
                         "example": "2024-06-23T14:00:00+02:00",
                         "format": "date-time",
                         "title": "Beginningdatetime",
                         "type": "string"
                     },
                     "bookingLimitDatetime": {
-                        "description": "Timezone aware datetime after which the offer can no longer be booked.",
+                        "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
                         "example": "2024-06-23T14:00:00+02:00",
                         "format": "date-time",
                         "title": "Bookinglimitdatetime",
@@ -1788,7 +1788,7 @@
                 "additionalProperties": false,
                 "properties": {
                     "beginningDatetime": {
-                        "description": "Timezone aware datetime of the event.",
+                        "description": "Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
                         "example": "2024-06-23T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
@@ -1796,7 +1796,7 @@
                         "type": "string"
                     },
                     "bookingLimitDatetime": {
-                        "description": "Timezone aware datetime after which the offer can no longer be booked.",
+                        "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
                         "example": "2024-06-23T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
@@ -1832,7 +1832,7 @@
             "DateResponse": {
                 "properties": {
                     "beginningDatetime": {
-                        "description": "Timezone aware datetime of the event.",
+                        "description": "Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
                         "example": "2024-06-23T14:00:00+02:00",
                         "format": "date-time",
                         "title": "Beginningdatetime",
@@ -1845,7 +1845,7 @@
                         "type": "integer"
                     },
                     "bookingLimitDatetime": {
-                        "description": "Timezone aware datetime after which the offer can no longer be booked.",
+                        "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
                         "example": "2024-06-23T14:00:00+02:00",
                         "format": "date-time",
                         "title": "Bookinglimitdatetime",
@@ -2935,7 +2935,7 @@
                                 "$ref": "#/components/schemas/OfferStatus"
                             }
                         ],
-                        "description": "ACTIVE: offer is validated and active.\n\nDRAFT: offer is still draft and not yet submitted for validation - this status is not applicable to offers created via this API.\n\nEXPIRED: offer is validated but the booking limit datetime has passed.\n\nINACTIVE: offer is not active and cannot be booked.\n\nPENDING: offer is pending for pass Culture rules compliance validation. This step may last 72 hours.\n\nREJECTED: offer validation has been rejected because it is not compliant with pass Culture rules.\n\nSOLD_OUT: offer is validated but there is no (more) stock available for booking.",
+                        "description": "\nOffer status:\n\n- `ACTIVE`: offer is validated and active. \n\n\n- `DRAFT`: offer is still draft and not yet submitted for validation - this status is not applicable to offers created via this API.\n\n\n- `EXPIRED`: offer is validated but the booking limit datetime has passed.\n\n\n- `INACTIVE`: offer is not active and cannot be booked.\n\n\n- `PENDING`: offer is pending for pass Culture rules compliance validation. This step may last 72 hours.\n\n\n- `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n\n- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.\n",
                         "example": "ACTIVE"
                     }
                 },
@@ -6435,7 +6435,7 @@
                                 "$ref": "#/components/schemas/OfferStatus"
                             }
                         ],
-                        "description": "ACTIVE: offer is validated and active.\n\nDRAFT: offer is still draft and not yet submitted for validation - this status is not applicable to offers created via this API.\n\nEXPIRED: offer is validated but the booking limit datetime has passed.\n\nINACTIVE: offer is not active and cannot be booked.\n\nPENDING: offer is pending for pass Culture rules compliance validation. This step may last 72 hours.\n\nREJECTED: offer validation has been rejected because it is not compliant with pass Culture rules.\n\nSOLD_OUT: offer is validated but there is no (more) stock available for booking.",
+                        "description": "\nOffer status:\n\n- `ACTIVE`: offer is validated and active. \n\n\n- `DRAFT`: offer is still draft and not yet submitted for validation - this status is not applicable to offers created via this API.\n\n\n- `EXPIRED`: offer is validated but the booking limit datetime has passed.\n\n\n- `INACTIVE`: offer is not active and cannot be booked.\n\n\n- `PENDING`: offer is pending for pass Culture rules compliance validation. This step may last 72 hours.\n\n\n- `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n\n- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.\n",
                         "example": "ACTIVE"
                     },
                     "stock": {
@@ -6500,7 +6500,7 @@
                         "type": "integer"
                     },
                     "bookingLimitDatetime": {
-                        "description": "Timezone aware datetime after which the offer can no longer be booked.",
+                        "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
                         "example": "2024-06-23T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
@@ -7449,7 +7449,7 @@
             "StockCreation": {
                 "properties": {
                     "bookingLimitDatetime": {
-                        "description": "Timezone aware datetime after which the offer can no longer be booked.",
+                        "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
                         "example": "2024-06-23T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
@@ -7492,7 +7492,7 @@
                 "additionalProperties": false,
                 "properties": {
                     "bookingLimitDatetime": {
-                        "description": "Timezone aware datetime after which the offer can no longer be booked.",
+                        "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
                         "example": "2024-06-23T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
@@ -10413,7 +10413,8 @@
         },
         "/v2/collective/offerer_venues": {
             "get": {
-                "description": "Tous les lieux enregistr\u00e9s, sont list\u00e9s ici avec leurs coordonn\u00e9es.",
+                "deprecated": true,
+                "description": "You should be using **/public/offer/v1/offerer_venues endpoint**.",
                 "operationId": "GetOffererVenues",
                 "parameters": [
                     {
@@ -10467,7 +10468,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "R\u00e9cup\u00e9ration des lieux associ\u00e9s au fournisseur authentifi\u00e9 par le jeton d'API; group\u00e9s par structures.",
+                "summary": "[LEGACY] R\u00e9cup\u00e9ration des lieux associ\u00e9s au fournisseur authentifi\u00e9 par le jeton d'API; group\u00e9s par structures",
                 "tags": [
                     "Collective venues"
                 ]
@@ -11076,7 +11077,7 @@
             "name": "Event offer prices"
         },
         {
-            "description": "Endpoints to manager the dates of an event. The date of an event is composed of a price category and an actual date.         Hence for a given performance, you might have several dates (one per category).",
+            "description": "Endpoints to manage the dates of an event. The date of an event is composed of a price category and an actual date.         Hence for a given performance, you might have several dates (one per category).",
             "externalDocs": null,
             "name": "Event offer dates"
         },
@@ -11106,7 +11107,7 @@
             "name": "Offer attributes"
         },
         {
-            "description": "",
+            "description": "Endpoints to manage collective offers that are \"bookable\", not the one that are displayed in the showcase.",
             "externalDocs": null,
             "name": "Collective offers"
         },

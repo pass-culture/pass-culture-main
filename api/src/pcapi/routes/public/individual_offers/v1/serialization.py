@@ -20,6 +20,7 @@ from pcapi.domain import music_types
 from pcapi.domain import show_types
 from pcapi.models import offer_mixin
 from pcapi.routes import serialization
+from pcapi.routes.public import documentation_constants
 from pcapi.routes.public.individual_offers.v1.base_serialization import IndexPaginationQueryParams
 import pcapi.routes.public.serialization.accessibility as accessibility_serialization
 from pcapi.routes.public.serialization.utils import StrEnum
@@ -399,11 +400,11 @@ next_month = datetime.datetime.utcnow().replace(hour=12, minute=0, second=0) + r
 paris_tz_next_month = date_utils.utc_datetime_to_department_timezone(next_month, "75")
 
 BEGINNING_DATETIME_FIELD = pydantic_v1.Field(
-    description="Timezone aware datetime of the event.",
+    description=documentation_constants.BEGINNING_DATETIME_FIELD_DESCRIPTION,
     example=paris_tz_next_month.isoformat(timespec="seconds"),
 )
 BOOKING_LIMIT_DATETIME_FIELD = pydantic_v1.Field(
-    description="Timezone aware datetime after which the offer can no longer be booked.",
+    description=documentation_constants.BOOKING_LIMIT_DATETIME_FIELD_DESCRIPTION,
     example=paris_tz_next_month.isoformat(timespec="seconds"),
 )
 PRICE_FIELD = pydantic_v1.Field(description="Offer price in euro cents.", example=1000)
@@ -711,13 +712,7 @@ class OfferResponse(serialization.ConfiguredBaseModel):
     name: str = NAME_FIELD
     status: offer_mixin.OfferStatus = pydantic_v1.Field(
         ...,
-        description="ACTIVE: offer is validated and active.\n\n"
-        "DRAFT: offer is still draft and not yet submitted for validation - this status is not applicable to offers created via this API.\n\n"
-        "EXPIRED: offer is validated but the booking limit datetime has passed.\n\n"
-        "INACTIVE: offer is not active and cannot be booked.\n\n"
-        "PENDING: offer is pending for pass Culture rules compliance validation. This step may last 72 hours.\n\n"
-        "REJECTED: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n"
-        "SOLD_OUT: offer is validated but there is no (more) stock available for booking.",
+        description=documentation_constants.OFFER_STATUS_FIELD_DESCRIPTION,
         example=offer_mixin.OfferStatus.ACTIVE.name,
     )
     withdrawal_details: str | None = WITHDRAWAL_DETAILS_FIELD
