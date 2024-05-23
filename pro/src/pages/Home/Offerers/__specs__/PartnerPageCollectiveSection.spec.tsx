@@ -49,7 +49,7 @@ describe('PartnerPages', () => {
     ).toBeInTheDocument()
   })
 
-  it('should display the EAC section when no adage but allowed on Adage', () => {
+  it('should display the EAC section when no adage but allowed on ADAGE', () => {
     renderPartnerPageCollectiveSection({
       collectiveDmsApplications: [],
       allowedOnAdage: true,
