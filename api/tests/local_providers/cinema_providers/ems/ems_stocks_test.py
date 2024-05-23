@@ -669,13 +669,11 @@ class EMSSyncSitesTest:
             venue=oceanic, provider=allocine_provider, venueIdAtOfferProvider="1111", internalId="P1025"
         )
         providers_factories.AllocinePivotFactory(venue=oceanic)
-        providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
 
         collect_elligible_venues_and_activate_ems_sync()
 
         assert not providers_models.AllocinePivot.query.all()
         assert not providers_models.AllocineVenueProvider.query.all()
-        assert not providers_models.AllocineVenueProviderPriceRule.query.all()
 
         venues = Venue.query.all()
         assert len(venues) == 1

@@ -20,7 +20,6 @@ import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.models as providers_models
 import pcapi.core.providers.repository as providers_repository
 from pcapi.core.users import models as users_models
-from pcapi.domain.price_rule import PriceRule
 from pcapi.models import db
 from pcapi.repository import repository
 from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
@@ -97,10 +96,6 @@ def delete_venue_provider(
     if send_email and venue_provider.venue.bookingEmail:
         transactional_mails.send_venue_provider_deleted_email(venue_provider.venue.bookingEmail)
 
-    if venue_provider.isFromAllocineProvider:
-        for price_rule in venue_provider.priceRules:
-            repository.delete(price_rule)
-
     # Save data now: it won't be available after we have deleted the object.
     venue_id = venue_provider.venueId
     provider_id = venue_provider.provider.id
@@ -162,14 +157,9 @@ def update_allocine_venue_provider(
     allocine_venue_provider.quantity = venue_provider_payload.quantity
     assert venue_provider_payload.isDuo is not None  # helps mypy, see PostVenueProviderBody
     allocine_venue_provider.isDuo = venue_provider_payload.isDuo
-    for price_rule in allocine_venue_provider.priceRules:
-        # PriceRule.default is the only existing value at this time
-        # could need to be tweaked in the future
-        if price_rule.priceRule == PriceRule.default:
-            price_rule.price = venue_provider_payload.price
-            allocine_venue_provider.price = venue_provider_payload.price
+    allocine_venue_provider.price = venue_provider_payload.price
 
-    repository.save(allocine_venue_provider, *allocine_venue_provider.priceRules)
+    repository.save(allocine_venue_provider)
 
     return allocine_venue_provider
 
@@ -224,12 +214,7 @@ def connect_venue_to_allocine(
         internalId=pivot.internalId,
         price=payload.price,
     )
-    price_rule = providers_models.AllocineVenueProviderPriceRule(
-        allocineVenueProvider=venue_provider,
-        priceRule=PriceRule.default,
-        price=payload.price,
-    )
-    repository.save(venue_provider, price_rule)
+    repository.save(venue_provider)
 
     return venue_provider
 

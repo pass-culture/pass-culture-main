@@ -213,13 +213,12 @@ def create_allocine_venues() -> None:
         pivot = providers_factories.AllocinePivotFactory(
             venue=allocine_synchonized_venue, theaterId=theater.theaterId, internalId=theater.internalId
         )
-        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(
+        providers_factories.AllocineVenueProviderFactory(
             internalId=theater.internalId,
             provider=allocine_provider,
             venue=allocine_synchonized_venue,
             venueIdAtOfferProvider=pivot.theaterId,
         )
-        providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
         _create_offer_and_stocks_for_allocine_venues(allocine_synchonized_venue)
 
 

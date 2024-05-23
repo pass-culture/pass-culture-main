@@ -494,13 +494,6 @@ def _delete_objects_linked_to_venue(venue_id: int) -> dict:
     offers_models.Offer.query.filter(offers_models.Offer.venueId == venue_id).delete(synchronize_session=False)
 
     # delete all things providers related
-    providers_models.AllocineVenueProviderPriceRule.query.filter(
-        providers_models.AllocineVenueProviderPriceRule.allocineVenueProviderId
-        == providers_models.AllocineVenueProvider.id,
-        providers_models.AllocineVenueProvider.id == providers_models.VenueProvider.id,
-        providers_models.VenueProvider.venueId == venue_id,
-        offerers_models.Venue.id == venue_id,
-    ).delete(synchronize_session=False)
     providers_models.AllocineVenueProvider.query.filter(
         providers_models.AllocineVenueProvider.id == providers_models.VenueProvider.id,
         providers_models.VenueProvider.venueId == venue_id,

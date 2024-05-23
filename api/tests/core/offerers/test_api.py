@@ -404,8 +404,8 @@ class DeleteVenueTest:
         # Given
         venue = offerers_factories.VenueFactory()
         venue_to_delete = offerers_factories.VenueFactory()
-        providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider__venue=venue_to_delete)
-        providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider__venue=venue)
+        providers_factories.AllocineVenueProviderFactory(venue=venue_to_delete)
+        providers_factories.AllocineVenueProviderFactory(venue=venue)
         providers_factories.AllocinePivotFactory(venue=venue_to_delete)
         providers_factories.AllocinePivotFactory(venue=venue, theaterId="ABCDEFGHIJKLMNOPQR==", internalId="PABCDE")
 
@@ -416,7 +416,6 @@ class DeleteVenueTest:
         assert offerers_models.Venue.query.count() == 1
         assert providers_models.VenueProvider.query.count() == 1
         assert providers_models.AllocineVenueProvider.query.count() == 1
-        assert providers_models.AllocineVenueProviderPriceRule.query.count() == 1
         assert providers_models.AllocinePivot.query.count() == 1
         assert providers_models.Provider.query.count() > 0
 
@@ -1430,8 +1429,8 @@ class DeleteOffererTest:
         offerer_to_delete = offerers_factories.OffererFactory()
         venue_to_delete = offerers_factories.VenueFactory(managingOfferer=offerer_to_delete)
         other_venue = offerers_factories.VenueFactory()
-        providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider__venue=venue_to_delete)
-        providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider__venue=other_venue)
+        providers_factories.AllocineVenueProviderFactory(venue=venue_to_delete)
+        providers_factories.AllocineVenueProviderFactory(venue=other_venue)
         providers_factories.AllocinePivotFactory(venue=venue_to_delete)
         providers_factories.AllocinePivotFactory(
             venue=other_venue, theaterId="ABCDEFGHIJKLMNOPQR==", internalId="PABCDE"
@@ -1445,7 +1444,6 @@ class DeleteOffererTest:
         assert offerers_models.Venue.query.count() == 1
         assert providers_models.VenueProvider.query.count() == 1
         assert providers_models.AllocineVenueProvider.query.count() == 1
-        assert providers_models.AllocineVenueProviderPriceRule.query.count() == 1
         assert providers_models.AllocinePivot.query.count() == 1
         assert providers_models.Provider.query.count() > 0
 

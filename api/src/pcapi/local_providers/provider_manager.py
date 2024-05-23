@@ -182,7 +182,6 @@ def collect_elligible_venues_and_activate_ems_sync() -> None:
         pivot_to_create: list[dict] = []
         venue_providers_to_deactivate: list[dict] = []
         allocine_pivot_to_delete: list[int] = []
-        price_rules_to_delete: list[int] = []
 
         ems_provider_id = providers_repository.get_provider_by_local_class("EMSStocks").id
         available_sites_by_allocine_id: dict[str, Site] = {}
@@ -204,12 +203,7 @@ def collect_elligible_venues_and_activate_ems_sync() -> None:
                 ),
             )
             .outerjoin(Venue.allocinePivot)
-            .outerjoin(allocine_venue_provider_aliased.priceRules)
-            .options(
-                sqla_orm.joinedload(Venue.venueProviders.of_type(provider_models.AllocineVenueProvider)).joinedload(
-                    provider_models.AllocineVenueProvider.priceRules
-                )
-            )
+            .options(sqla_orm.joinedload(Venue.venueProviders.of_type(provider_models.AllocineVenueProvider)))
             .options(sqla_orm.joinedload(Venue.allocinePivot))
             .all()
         )
@@ -237,7 +231,6 @@ def collect_elligible_venues_and_activate_ems_sync() -> None:
                     "is_active": False,
                 }
             )
-            price_rules_to_delete.extend([price_rule.id for price_rule in allocine_venue_provider.priceRules])
             logger.info(
                 "Deactivating Allocine sync for a venue",
                 extra={
@@ -283,9 +276,6 @@ def collect_elligible_venues_and_activate_ems_sync() -> None:
             venues_successfully_activated.add(allocine_venue_provider.internalId)
 
         # Removing no longer up to date allocine sync
-        provider_models.AllocineVenueProviderPriceRule.query.filter(
-            provider_models.AllocineVenueProviderPriceRule.id.in_(price_rules_to_delete)
-        ).delete()
         # As AllocineVenueProvider inherit from VenueProvider, we need to delete rows in both tables
         provider_models.AllocineVenueProvider.query.filter(
             provider_models.AllocineVenueProvider.id.in_(

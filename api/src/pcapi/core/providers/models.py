@@ -12,7 +12,6 @@ import sqlalchemy.sql as sa_sql
 
 from pcapi.core.offerers.models import Venue
 import pcapi.core.providers.constants as provider_constants
-from pcapi.domain.price_rule import PriceRule
 from pcapi.infrastructure.repository.stock_provider.provider_api import ProviderAPI
 from pcapi.models import Base
 from pcapi.models import Model
@@ -240,36 +239,8 @@ class AllocineVenueProvider(VenueProvider):
     quantity = sa.Column(sa.Integer, nullable=True)
     internalId: str = sa.Column(sa.Text, nullable=False, unique=True)
     price: decimal.Decimal = sa.Column(
-        sa.Numeric(10, 2), sa.CheckConstraint("price >= 0", name="check_price_is_not_negative"), nullable=True
-    )
-
-
-class AllocineVenueProviderPriceRule(PcObject, Base, Model):
-    priceRule: PriceRule = sa.Column(sa.Enum(PriceRule), nullable=False)
-
-    allocineVenueProviderId: int = sa.Column(
-        sa.BigInteger, sa.ForeignKey("allocine_venue_provider.id"), index=True, nullable=False
-    )
-
-    allocineVenueProvider: sa_orm.Mapped["AllocineVenueProvider"] = sa_orm.relationship(
-        "AllocineVenueProvider", foreign_keys=[allocineVenueProviderId], backref="priceRules"
-    )
-
-    price: decimal.Decimal = sa.Column(
         sa.Numeric(10, 2), sa.CheckConstraint("price >= 0", name="check_price_is_not_negative"), nullable=False
     )
-
-    sa.UniqueConstraint(
-        allocineVenueProviderId,
-        priceRule,
-        name="unique_allocine_venue_provider_price_rule",
-    )
-
-    @staticmethod
-    def restize_integrity_error(error: sa_exc.IntegrityError) -> tuple[str, str]:
-        if "unique_allocine_venue_provider_price_rule" in str(error.orig):
-            return ("global", "Vous ne pouvez avoir qu''un seul prix par catégorie")
-        return PcObject.restize_integrity_error(error)
 
 
 @dataclass
