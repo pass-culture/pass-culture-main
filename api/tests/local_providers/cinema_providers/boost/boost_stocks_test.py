@@ -240,6 +240,7 @@ class BoostStocksTest:
         assert created_offers[0].name == "BLACK PANTHER : WAKANDA FOREVER"
         assert not created_offers[0].product
         assert created_offers[0].venue == venue_provider.venue
+        assert created_offers[0].offererAddressId == venue_provider.venue.offererAddressId
         assert not created_offers[0].description
         assert created_offers[0].durationMinutes == 162
         assert created_offers[0].isDuo
@@ -299,6 +300,7 @@ class BoostStocksTest:
         assert created_offers[0].name == "Produit allociné 1"
         assert created_offers[0].product == self._get_product_by_allocine_id(263242)
         assert created_offers[0].venue == venue_provider.venue
+        assert created_offers[0].offererAddressId == venue_provider.venue.offererAddressId
         assert created_offers[0].description == "Description du produit allociné 1"
         assert created_offers[0].durationMinutes == 111
         assert created_offers[0].isDuo
@@ -377,6 +379,7 @@ class BoostStocksTest:
         assert created_offers[0].name == "Produit allociné 3"
         assert created_offers[0].product == self._get_product_by_allocine_id(270935)
         assert created_offers[0].venue == venue_provider.venue
+        assert created_offers[0].offererAddressId == venue_provider.venue.offererAddressId
         assert created_offers[0].description == "Description du produit allociné 3"
         assert created_offers[0].durationMinutes == 333
         assert created_offers[0].isDuo

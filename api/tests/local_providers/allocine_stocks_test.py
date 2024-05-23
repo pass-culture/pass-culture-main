@@ -195,6 +195,7 @@ class UpdateObjectsTest:
         # Then
         existing_offer = offers_models.Offer.query.one()
         assert existing_offer.durationMinutes == 21
+        assert existing_offer.offererAddressId == venue.offererAddressId
 
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
     @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
@@ -226,6 +227,7 @@ class UpdateObjectsTest:
         created_offer = offers_models.Offer.query.one()
         assert created_offer.durationMinutes == 21
         assert created_offer.name == "Ceux de chez nous"
+        assert created_offer.offererAddressId == venue.offererAddressId
 
     @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
     @patch("pcapi.local_providers.allocine.allocine_stocks.AllocineStocks.get_object_thumb")

@@ -151,6 +151,7 @@ class EMSStocks:
         offer.subcategoryId = subcategories.SEANCE_CINE.id
 
         offer.venueId = venue.id
+        offer.offererAddress = self.venue.offererAddress
         offer.bookingEmail = venue.bookingEmail
         offer.withdrawalDetails = venue.withdrawalDetails
         self.created_objects += 1
