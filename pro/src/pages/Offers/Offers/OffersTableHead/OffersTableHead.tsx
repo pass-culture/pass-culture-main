@@ -1,4 +1,4 @@
-import React from 'react'
+import cn from 'classnames'
 
 import { SearchFiltersParams } from 'core/Offers/types'
 import { Audience } from 'core/shared/types'
@@ -39,7 +39,13 @@ export const OffersTableHead = ({
             audience={audience}
           />
         </th>
-        <th className="th-actions">Actions</th>
+        <th
+          className={cn('th-actions', {
+            ['th-actions-eac']: audience === Audience.COLLECTIVE,
+          })}
+        >
+          Actions
+        </th>
       </tr>
     </thead>
   )

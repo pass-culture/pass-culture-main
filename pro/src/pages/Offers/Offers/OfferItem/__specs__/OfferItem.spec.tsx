@@ -6,6 +6,7 @@ import {
   ApiError,
   CollectiveOfferResponseModel,
   ListOffersOfferResponseModel,
+  ListOffersStockResponseModel,
   OfferStatus,
   CollectiveBookingStatus,
 } from 'apiClient/v1'
@@ -50,6 +51,12 @@ describe('src | components | pages | Offers | OfferItem', () => {
   let props: OfferItemProps
   let offer: CollectiveOfferResponseModel | ListOffersOfferResponseModel
   const offerId = 12
+  const stocks: Array<ListOffersStockResponseModel> = [
+    listOffersStockFactory({
+      beginningDatetime: String(new Date()),
+      remainingQuantity: 0,
+    }),
+  ]
 
   beforeEach(() => {
     offer = listOffersOfferFactory({
@@ -57,6 +64,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       hasBookingLimitDatetimesPassed: false,
       name: 'My little offer',
       thumbUrl: '/my-fake-thumb',
+      stocks,
     })
 
     props = {
@@ -278,7 +286,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
       it('should display "Tous les établissements" when offer is collective and is not assigned to a specific institution', () => {
         props.audience = Audience.COLLECTIVE
-        props.offer = collectiveOfferFactory({ booking: null })
+        props.offer = collectiveOfferFactory({ booking: null, stocks })
 
         renderOfferItem(props)
 
@@ -298,6 +306,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
             phoneNumber: '',
             institutionId: 'ABCDEF11',
           },
+          stocks,
         })
 
         renderOfferItem(props)
@@ -319,6 +328,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
               institutionId: 'ABCDEF11',
               institutionType: 'LYCEE',
             },
+            stocks,
           }),
         })
 
@@ -462,7 +472,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
     describe('when audience is COLLECTIVE', () => {
       it('should display a tag when offer is template', () => {
         props.audience = Audience.COLLECTIVE
-        props.offer = collectiveOfferFactory({ isShowcase: true })
+        props.offer = collectiveOfferFactory({ isShowcase: true, stocks })
         renderOfferItem(props)
 
         expect(
@@ -472,7 +482,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
       it('should not display a tag when offer is not template', () => {
         props.audience = Audience.COLLECTIVE
-        props.offer = collectiveOfferFactory({ isShowcase: false })
+        props.offer = collectiveOfferFactory({ isShowcase: false, stocks })
         renderOfferItem(props)
 
         expect(
@@ -482,24 +492,30 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
       it('should display confirm dialog when clicking on duplicate button when user did not see the modal', async () => {
         props.audience = Audience.COLLECTIVE
-        props.offer = collectiveOfferFactory({ isShowcase: true })
+        props.offer = collectiveOfferFactory({ isShowcase: true, stocks })
 
         renderOfferItem(props)
+
+        await userEvent.click(screen.getByTitle('Action'))
 
         const duplicateButton = screen.getByRole('button', {
           name: 'Créer une offre réservable',
         })
         await userEvent.click(duplicateButton)
 
-        const modalTitle = screen.getAllByText('Créer une offre réservable')
-        expect(modalTitle.length > 1).toBeTruthy()
+        const modalTitle = screen.getByText(
+          'Créer une offre réservable pour un établissement scolaire'
+        )
+        expect(modalTitle).toBeInTheDocument()
       })
 
       it('should not display confirm dialog when clicking on duplicate button when user did see the modal', async () => {
         props.audience = Audience.COLLECTIVE
-        props.offer = collectiveOfferFactory({ isShowcase: true })
+        props.offer = collectiveOfferFactory({ isShowcase: true, stocks })
         Storage.prototype.getItem = vi.fn(() => 'true')
         renderOfferItem(props)
+
+        await userEvent.click(screen.getByTitle('Action'))
 
         const duplicateButton = screen.getByRole('button', {
           name: 'Créer une offre réservable',

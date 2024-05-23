@@ -6,7 +6,11 @@ import {
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
-import { CollectiveOfferResponseModel, OfferStatus } from 'apiClient/v1'
+import {
+  CollectiveOfferResponseModel,
+  CollectiveOffersStockResponseModel,
+  OfferStatus,
+} from 'apiClient/v1'
 import { ALL_VENUES, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeOffersUrl'
@@ -50,9 +54,16 @@ const renderOffers = async (
 
 describe('route CollectiveOffers when user is admin', () => {
   let offersRecap: CollectiveOfferResponseModel[]
+  const stocks: Array<CollectiveOffersStockResponseModel> = [
+    {
+      beginningDatetime: String(new Date()),
+      hasBookingLimitDatetimePassed: false,
+      remainingQuantity: 1,
+    },
+  ]
 
   beforeEach(() => {
-    offersRecap = [collectiveOfferFactory()]
+    offersRecap = [collectiveOfferFactory({ stocks })]
     vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue(offersRecap)
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames: [] })
     vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: proVenues })
