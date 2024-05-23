@@ -104,8 +104,6 @@ def update_venue(
     admin_update: bool = False,
     **attrs: typing.Any,
 ) -> models.Venue:
-    validation.validate_coordinates(attrs.get("latitude"), attrs.get("longitude"))  # type: ignore [arg-type]
-
     modifications = {field: value for field, value in attrs.items() if venue.field_exists_and_has_changed(field, value)}
     new_permanent = not venue.isPermanent and attrs.get("isPermanent")
 
