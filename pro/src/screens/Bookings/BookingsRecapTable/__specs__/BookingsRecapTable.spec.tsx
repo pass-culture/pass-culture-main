@@ -2,10 +2,10 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React, { ComponentProps } from 'react'
 
+import { api } from 'apiClient/api'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
 import { Audience } from 'core/shared/types'
-import * as bookingDetailsAdapter from 'screens/Bookings/BookingsRecapTable/BookingsTable/getCollectiveBookingAdapter'
 import * as filterBookingsRecap from 'screens/Bookings/BookingsRecapTable/utils/filterBookingsRecap'
 import {
   collectiveBookingByIdFactory,
@@ -130,12 +130,10 @@ describe('components | BookingsRecapTable', () => {
   })
 
   it('should filter bookings collective on render', () => {
-    vi.spyOn(bookingDetailsAdapter, 'default').mockResolvedValue({
-      isOk: true,
-      message: '',
-      payload: collectiveBookingByIdFactory(),
-    })
-    // Given
+    vi.spyOn(api, 'getCollectiveBookingById').mockResolvedValue(
+      collectiveBookingByIdFactory()
+    )
+
     const props: Props = {
       ...defaultProps,
       audience: Audience.COLLECTIVE,
@@ -269,11 +267,9 @@ describe('components | BookingsRecapTable', () => {
       collectiveBookingFactory({ bookingId: 'mon booking id' }),
     ]
     vi.spyOn(filterBookingsRecap, 'default').mockReturnValue(bookingsRecap)
-    vi.spyOn(bookingDetailsAdapter, 'default').mockResolvedValue({
-      isOk: true,
-      message: '',
-      payload: collectiveBookingByIdFactory(),
-    })
+    vi.spyOn(api, 'getCollectiveBookingById').mockResolvedValue(
+      collectiveBookingByIdFactory()
+    )
 
     const mockLogEvent = vi.fn()
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
