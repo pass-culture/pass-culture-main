@@ -14,6 +14,22 @@ This the documentation of the Pass Culture public REST API.
   _For example, if you update the stock of an event, you **should not resend the `beginningDate`** if it has not changed because, otherwise it is going to trigger the reschedule process on our side._
 """
 
+# FIELDS DESCRIPTIONS
+OFFER_STATUS_FIELD_DESCRIPTION = """
+Offer status:
+
+- `ACTIVE`: offer is validated and active. \n\n
+- `DRAFT`: offer is still draft and not yet submitted for validation - this status is not applicable to offers created via this API.\n\n
+- `EXPIRED`: offer is validated but the booking limit datetime has passed.\n\n
+- `INACTIVE`: offer is not active and cannot be booked.\n\n
+- `PENDING`: offer is pending for pass Culture rules compliance validation. This step may last 72 hours.\n\n
+- `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n
+- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.
+"""
+
+BEGINNING_DATETIME_FIELD_DESCRIPTION = "Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime)."
+BOOKING_LIMIT_DATETIME_FIELD_DESCRIPTION = "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime)."
+
 # BOOKING_TAGS
 BOOKING_TAG = Tag(name="Booking", description="Endpoints to manage the bookings of an offer (event and product).")
 
@@ -26,7 +42,7 @@ EVENT_OFFER_PRICES_TAG = Tag(
 )
 EVENT_OFFER_DATES_TAG = Tag(
     name="Event offer dates",
-    description="Endpoints to manager the dates of an event. The date of an event is composed of a price category and an actual date. \
+    description="Endpoints to manage the dates of an event. The date of an event is composed of a price category and an actual date. \
         Hence for a given performance, you might have several dates (one per category).",
 )
 
@@ -42,7 +58,10 @@ OFFER_ATTRIBUTES = Tag(name="Offer attributes")
 
 
 # COLLECTIVE TAGS
-COLLECTIVE_OFFERS = Tag(name="Collective offers")
+COLLECTIVE_OFFERS = Tag(
+    name="Collective offers",
+    description='Endpoints to manage collective offers that are "bookable", not the one that are displayed in the showcase.',
+)
 COLLECTIVE_BOOKING = Tag(name="Collective booking")
 COLLECTIVE_CATEGORIES = Tag(name="Collective categories")
 COLLECTIVE_VENUES = Tag(name="Collective venues")
