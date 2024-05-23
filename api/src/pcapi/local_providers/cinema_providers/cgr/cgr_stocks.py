@@ -107,6 +107,7 @@ class CGRStocks(LocalProvider):
 
     def fill_offer_attributes(self, offer: offers_models.Offer) -> None:
         offer.venueId = self.venue.id
+        offer.offererAddress = self.venue.offererAddress
         offer.bookingEmail = self.venue.bookingEmail
         offer.withdrawalDetails = self.venue.withdrawalDetails
         offer.product = self.product
