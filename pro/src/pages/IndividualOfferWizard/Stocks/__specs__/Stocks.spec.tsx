@@ -47,7 +47,6 @@ describe('screens:Stocks', () => {
     })
     storeOverrides = {}
     contextOverride = individualOfferContextValuesFactory({
-      offerId,
       offer,
     })
 

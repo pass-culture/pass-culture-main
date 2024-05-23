@@ -24,7 +24,6 @@ const TEST_OFFER_ID = 12
 
 const renderImageUploaderOffer = (props: ImageUploaderOfferProps) => {
   const contextValue = individualOfferContextValuesFactory({
-    offerId: TEST_OFFER_ID,
     offer: getIndividualOfferFactory({ id: TEST_OFFER_ID }),
   })
 
