@@ -106,7 +106,7 @@ class Returns200Test:
     @override_features(ENABLE_API_ADRESSE_WHILE_CREATING_UPDATING_VENUE=True)
     def test_update_venue_location_should_create_offerer_address_if_not_existing(self, client, requests_mock) -> None:
         user_offerer = offerers_factories.UserOffererFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, offererAddress=None)
 
         assert not venue.offererAddress
 

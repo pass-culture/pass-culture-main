@@ -1573,6 +1573,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
     def test_get_detail_event_offer(self, authenticated_client):
         offer = offers_factories.OfferFactory(
             name="good movie",
+            offererAddress=None,
             subcategoryId=subcategories.SEANCE_CINE.id,
             durationMinutes=133,
             description="description",

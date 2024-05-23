@@ -939,6 +939,7 @@ class UpdateVenueTest(PostEndpointHelper):
             contact__email=contact_email,
             contact__website=website,
             contact__social_medias=social_medias,
+            offererAddress=None,
         )
 
         data = {
@@ -1013,6 +1014,7 @@ class UpdateVenueTest(PostEndpointHelper):
             contact__email=contact_email,
             contact__website=website,
             contact__social_medias=social_medias,
+            offererAddress=None,
         )
 
         data = {
