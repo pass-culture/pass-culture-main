@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react'
+import React, { createContext, useContext } from 'react'
 import { useParams } from 'react-router-dom'
 import useSWR from 'swr'
 
@@ -22,8 +22,6 @@ export interface IndividualOfferContextValues {
   offer: GetIndividualOfferResponseModel | null
   categories: CategoryResponseModel[]
   subCategories: SubcategoryResponseModel[]
-  subcategory?: SubcategoryResponseModel
-  setSubcategory: (p?: SubcategoryResponseModel) => void
   offerOfferer?: GetOffererNameResponseModel | null
   musicTypes: MusicTypeResponse[]
 }
@@ -34,7 +32,6 @@ export const IndividualOfferContext =
     offer: null,
     categories: [],
     subCategories: [],
-    setSubcategory: () => {},
     musicTypes: [],
   })
 
@@ -77,8 +74,6 @@ export const IndividualOfferContextProvider = ({
     }
   )
 
-  const [subcategory, setSubcategory] = useState<SubcategoryResponseModel>()
-
   if (offerQuery.isLoading || categoriesQuery.isLoading) {
     return <Spinner />
   }
@@ -92,8 +87,6 @@ export const IndividualOfferContextProvider = ({
         subCategories: categoriesQuery.data.subcategories,
         musicTypes: musicTypesQuery.data,
         offerOfferer: offerer,
-        subcategory,
-        setSubcategory,
       }}
     >
       {children}

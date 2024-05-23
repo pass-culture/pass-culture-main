@@ -18,7 +18,7 @@ import styles from './IndividualOfferNavigation.module.scss'
 import { LabelBooking } from './LabelBooking/LabelBooking'
 
 export const IndividualOfferNavigation = () => {
-  const { offer, subcategory } = useIndividualOfferContext()
+  const { offer } = useIndividualOfferContext()
   const activeStep = useActiveStep(Object.values(OFFER_WIZARD_STEP_IDS))
   const mode = useOfferWizardMode()
   const hasOffer = offer !== null
@@ -30,8 +30,7 @@ export const IndividualOfferNavigation = () => {
   const queryOfferType = queryParams.get('offer-type')
 
   const offerSubtype = getOfferSubtypeFromParam(queryOfferType)
-  const isEvent =
-    offer?.isEvent || subcategory?.isEvent || isOfferSubtypeEvent(offerSubtype)
+  const isEvent = offer?.isEvent || isOfferSubtypeEvent(offerSubtype)
 
   const steps: StepPattern[] = []
 
