@@ -7,6 +7,7 @@ import typing
 from typing import Callable
 from typing import Iterable
 
+from pydantic.v1 import validator
 from pydantic.v1.main import BaseModel
 import pytz
 
@@ -238,6 +239,15 @@ def find_offerer_reimbursement_details(
     return reimbursement_details
 
 
+def find_reimbursement_details_by_invoices(
+    invoices_references: list[str],
+) -> list[ReimbursementDetails]:
+    offerers_payments = finance_repository.find_offerer_payments(invoices_references=invoices_references)
+    reimbursement_details = [ReimbursementDetails(offerer_payment) for offerer_payment in offerers_payments]
+
+    return reimbursement_details
+
+
 def validate_reimbursement_period(
     reimbursement_period_field_names: tuple[str, str], get_query_param: Callable
 ) -> tuple[None, ...] | tuple[datetime.date, ...]:
@@ -258,3 +268,13 @@ class ReimbursementCsvQueryModel(BaseModel):
     bankAccountId: int | None
     reimbursementPeriodBeginningDate: str | None
     reimbursementPeriodEndingDate: str | None
+
+
+class ReimbursementCsvByInvoicesModel(BaseModel):
+    invoicesReferences: list[str]
+
+    @validator("invoicesReferences", pre=True)
+    def ensure_invoices_references_is_list(cls, v: list[str] | str) -> list[str]:
+        if isinstance(v, str):
+            return [v]
+        return v
