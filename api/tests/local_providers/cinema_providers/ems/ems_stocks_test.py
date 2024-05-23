@@ -343,6 +343,7 @@ class EMSStocksTest:
 
         assert created_offers[0].name == "Mon voisin Totoro"
         assert created_offers[0].venue == venue_provider.venue
+        assert created_offers[0].offererAddressId == venue_provider.venue.offererAddressId
         assert (
             created_offers[0].description
             == "Mei, 4 ans, et Satsuki, 10 ans, s’installent à la campagne avec leur père pour se rapprocher de l’hôpital où séjourne leur mère. Elles découvrent la nature tout autour de la maison et, surtout, l’existence d’animaux étranges et merveilleux, les Totoros, avec qui elles deviennent très amies. Un jour, alors que Satsuki et Mei attendent le retour de leur mère, elles apprennent que sa sortie de l’hôpital a été repoussée. Mei décide alors d’aller lui rendre visite seule. Satsuki et les gens du village la recherchent en vain. Désespérée, Satsuki va finalement demander de l’aide à son voisin Totoro."
@@ -399,6 +400,7 @@ class EMSStocksTest:
 
         assert created_offers[0].name == "Spider-Man : Across the Spider-Verse"
         assert created_offers[0].venue == venue_provider.venue
+        assert created_offers[0].offererAddressId == venue_provider.venue.offererAddressId
         assert (
             created_offers[0].description
             == "Après avoir retrouvé Gwen Stacy, Spider-Man, le sympathique héros originaire de Brooklyn, est catapulté à travers le Multivers, où il rencontre une équipe de Spider-Héros chargée d'en protéger l'existence. Mais lorsque les héros s'opposent sur la façon de gérer une nouvelle menace, Miles se retrouve confronté à eux et doit redéfinir ce que signifie être un héros afin de sauver les personnes qu'il aime le plus."
@@ -486,6 +488,7 @@ class EMSStocksTest:
 
         assert created_offers[0].name == "Produit allociné 1"
         assert created_offers[0].venue == venue_provider.venue
+        assert created_offers[0].offererAddressId == venue_provider.venue.offererAddressId
         assert created_offers[0].description == "Description du produit allociné 1"
         assert created_offers[0].durationMinutes == 111
         assert (
@@ -535,6 +538,7 @@ class EMSStocksTest:
 
         assert created_offers[0].name == "Mon voisin Totoro"
         assert created_offers[0].venue == venue_provider.venue
+        assert created_offers[0].offererAddressId == venue_provider.venue.offererAddressId
         assert (
             created_offers[0].description
             == "Mei, 4 ans, et Satsuki, 10 ans, s’installent à la campagne avec leur père pour se rapprocher de l’hôpital où séjourne leur mère. Elles découvrent la nature tout autour de la maison et, surtout, l’existence d’animaux étranges et merveilleux, les Totoros, avec qui elles deviennent très amies. Un jour, alors que Satsuki et Mei attendent le retour de leur mère, elles apprennent que sa sortie de l’hôpital a été repoussée. Mei décide alors d’aller lui rendre visite seule. Satsuki et les gens du village la recherchent en vain. Désespérée, Satsuki va finalement demander de l’aide à son voisin Totoro."
