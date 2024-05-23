@@ -1,12 +1,13 @@
 import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
+import { SENT_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import useNotification from 'hooks/useNotification'
 
 import { getCollectiveOfferFormDataApdater } from '../adapters/getCollectiveOfferFormDataAdapter'
-import { postCollectiveOfferAdapter } from '../adapters/postCollectiveOfferAdapter'
 
 import { computeInitialValuesFromOffer } from './computeInitialValuesFromOffer'
+import { createCollectiveOfferPayload } from './createOfferPayload'
 import { postCollectiveOfferImage } from './postCollectiveOfferImage'
 
 export const createOfferFromTemplate = async (
@@ -40,22 +41,24 @@ export const createOfferFromTemplate = async (
       undefined,
       isMarseilleActive
     )
-    const { isOk, message, payload } = await postCollectiveOfferAdapter({
-      offer: initialValues,
-      offerTemplateId: templateOfferId,
-    })
+    const payload = createCollectiveOfferPayload(initialValues, templateOfferId)
 
-    if (!isOk) {
-      return notify.error(message)
+    try {
+      const response = await api.createCollectiveOffer(payload)
+      await postCollectiveOfferImage({
+        initialValues,
+        notify,
+        payload: response,
+      })
+
+      navigate(
+        `/offre/collectif/${response.id}/creation?structure=${offererId}${
+          requestId ? `&requete=${requestId}` : ''
+        }`
+      )
+    } catch (error) {
+      notify.error(SENT_DATA_ERROR_MESSAGE)
     }
-
-    await postCollectiveOfferImage({ initialValues, notify, payload })
-
-    navigate(
-      `/offre/collectif/${payload.id}/creation?structure=${offererId}${
-        requestId ? `&requete=${requestId}` : ''
-      }`
-    )
   } catch (error) {
     return notify.error(
       'Une erreur est survenue lors de la récupération de votre offre'

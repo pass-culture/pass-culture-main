@@ -2,8 +2,8 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router-dom'
 
+import { api } from 'apiClient/api'
 import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
-import * as patchCollectiveOfferAdapter from 'core/OfferEducational/adapters/patchCollectiveOfferAdapter'
 import { RootState } from 'store/rootReducer'
 import { getCollectiveOfferFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -52,14 +52,7 @@ describe('screens | OfferEducational : event address step', () => {
   })
 
   it('should redirect to stock on submit', async () => {
-    vi.spyOn(
-      patchCollectiveOfferAdapter,
-      'patchCollectiveOfferAdapter'
-    ).mockResolvedValueOnce({
-      isOk: true,
-      message: '',
-      payload: offer,
-    })
+    vi.spyOn(api, 'editCollectiveOffer').mockResolvedValueOnce(offer)
 
     renderWithProviders(<OfferEducational {...props} />)
 
@@ -73,14 +66,7 @@ describe('screens | OfferEducational : event address step', () => {
   })
 
   it('should redirect to right url if requete params exist on submit', async () => {
-    vi.spyOn(
-      patchCollectiveOfferAdapter,
-      'patchCollectiveOfferAdapter'
-    ).mockResolvedValueOnce({
-      isOk: true,
-      message: '',
-      payload: offer,
-    })
+    vi.spyOn(api, 'editCollectiveOffer').mockResolvedValueOnce(offer)
 
     renderWithProviders(<OfferEducational {...props} />, {
       storeOverrides: store,
