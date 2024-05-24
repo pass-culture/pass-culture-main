@@ -45,18 +45,11 @@ Cypress.on('uncaught:exception', () => {
 
 Cypress.Commands.add(
   'login',
-  ({ email, password, redirectUrl, acceptCookies = true }) => {
+  ({ email, password, redirectUrl/*, acceptCookies = true */}) => {
     cy.intercept({ method: 'POST', url: '/users/signin' }).as('signinUser')
 
-    cy.visit(
-      redirectUrl
-        ? `/connexion?de=${encodeURIComponent(redirectUrl)}`
-        : '/connexion'
-    )
-
-    if (acceptCookies) {
+    cy.visit('/connexion')
       cy.acceptCookies()
-    }
 
     cy.get('#email').type(email)
     cy.get('#password').type(password)

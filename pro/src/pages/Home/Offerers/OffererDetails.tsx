@@ -63,6 +63,7 @@ export const OffererDetails = ({
           <SelectInput
             onChange={handleChangeOfferer}
             name="offererId"
+            data-testid="offerer-details-offerId"
             options={[...offererOptions, addOffererOption]}
             value={selectedOffererId ? String(selectedOffererId) : ''}
             aria-label="Structure"
