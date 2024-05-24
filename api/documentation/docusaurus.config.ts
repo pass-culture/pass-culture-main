@@ -53,7 +53,7 @@ const config: Config = {
           // You can also pass it a OpenAPI spec URL
           {
             spec: 'http://localhost/openapi.json', // TODO : Make it env dependent
-            route: '/rest_api/',
+            route: '/rest-api/',
           },
         ],
         // Theme Options for modifying how redoc renders them
@@ -79,14 +79,19 @@ const config: Config = {
           type: 'docSidebar',
           sidebarId: 'tutorialSidebar',
           position: 'left',
-          label: 'Tutorial',
+          label: 'Docs',
         },
         {
           type: 'docSidebar',
           sidebarId: 'tutorialSidebar',
           position: 'left',
           label: 'REST API',
-          href: '/rest_api',
+          href: '/rest-api/',
+        },
+        {
+          to: '/change-logs',
+          label: 'Change logs',
+          position: 'left',
         },
         {
           href: 'https://github.com/pass-culture/pass-culture-main',
