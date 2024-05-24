@@ -1,0 +1,8 @@
+{
+  "label": "Tutorials",
+  "position": 3,
+  "link": {
+    "type": "generated-index",
+    "description": "Tutorials explaining how to perform usual tasks with our API."
+  }
+}
