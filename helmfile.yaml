@@ -1,22 +1,22 @@
 environments:
   testing:
     values:
-      - chartVersion: 0.26.2
+      - chartVersion: 0.26.3
   staging:
     values:
-      - chartVersion: 0.26.2
+      - chartVersion: 0.26.3
   integration:
     values:
-      - chartVersion: 0.26.2
+      - chartVersion: 0.26.3
   production:
     values:
-      - chartVersion: 0.26.2
+      - chartVersion: 0.26.3
   ops:
     values:
-      - chartVersion: 0.26.2
+      - chartVersion: 0.26.3
   perf:
     values:
-      - chartVersion: 0.26.2
+      - chartVersion: 0.26.3
 ---
 helmDefaults:
   wait: true
