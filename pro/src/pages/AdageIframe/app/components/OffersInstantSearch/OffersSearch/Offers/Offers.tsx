@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import {
   useInfiniteHits,
   useInstantSearch,
@@ -6,6 +6,7 @@ import {
 } from 'react-instantsearch'
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
+import useSWR from 'swr'
 
 import {
   AdageFrontRoles,
@@ -14,6 +15,7 @@ import {
   VenueResponse,
 } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
+import { GET_COLLECTIVE_OFFER_TEMPLATES_QUERY_KEY } from 'config/swrQueryKeys'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { useMediaQuery } from 'hooks/useMediaQuery'
 import fullGoTop from 'icons/full-go-top.svg'
@@ -25,7 +27,6 @@ import { setSearchView } from 'store/adageFilter/reducer'
 import { adageSearchViewSelector } from 'store/adageFilter/selectors'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { LOGS_DATA } from 'utils/config'
-import { sendSentryCustomError } from 'utils/sendSentryCustomError'
 
 import OfferCardComponent from '../../../AdageDiscovery/OfferCard/OfferCard'
 import { DiffuseHelp } from '../../../DiffuseHelp/DiffuseHelp'
@@ -40,29 +41,21 @@ import { AdageOfferListCard } from './AdageOfferListCard/AdageOfferListCard'
 import { NoResultsPage } from './NoResultsPage/NoResultsPage'
 import Offer from './Offer'
 import styles from './Offers.module.scss'
-import { extractOfferIdFromObjectId } from './utils/extractOfferIdFromObjectId'
 import { offerIsBookable } from './utils/offerIsBookable'
 
 export interface OffersProps {
   displayStats?: boolean
   displayShowMore?: boolean
   displayNoResult?: boolean
-  logFiltersOnSearch?: (nbHits: number, queryId?: string) => void
   submitCount?: number
   isBackToTopVisibile?: boolean
   indexId?: string //  IndexId is necessary if the component is within the scope of a react-instantsearch <Index />
   venue?: VenueResponse | null
 }
 
-type CollectiveOffer =
-  | CollectiveOfferResponseModel
-  | CollectiveOfferTemplateResponseModel
-type OfferMap = Map<string, CollectiveOffer>
-
 export const Offers = ({
   displayStats = true,
   displayNoResult = true,
-  logFiltersOnSearch,
   submitCount,
   isBackToTopVisibile = false,
   indexId,
@@ -87,9 +80,6 @@ export const Offers = ({
     ? scopedResults.find((res) => res.indexId === indexId)?.results
     : nonScopedResult
 
-  const [queriesAreLoading, setQueriesAreLoading] = useState(false)
-  const [fetchedOffers, setFetchedOffers] = useState<OfferMap>(new Map())
-
   const showDiffuseHelp = (submitCount ?? 0) > 0
 
   const isInSuggestions = indexId?.startsWith('no_results_offers')
@@ -100,82 +90,32 @@ export const Offers = ({
     !adageUser.preferences?.feedback_form_closed &&
     adageUser.role !== AdageFrontRoles.READONLY
 
-  useEffect(() => {
-    setQueriesAreLoading(true)
-    if (logFiltersOnSearch) {
-      logFiltersOnSearch(nbHits, results?.queryID)
-    }
+  const hitsIds = hits.map((hit) => Number(hit.objectID.split('-')[1]))
+  const { data, isLoading } = useSWR(
+    hitsIds.length > 0
+      ? [GET_COLLECTIVE_OFFER_TEMPLATES_QUERY_KEY, ...hitsIds]
+      : null,
+    ([, ...offererIdParam]) =>
+      apiAdage.getCollectiveOfferTemplates(offererIdParam)
+  )
 
-    Promise.allSettled(
-      hits.map(
-        async (hit): Promise<{ hitId?: string; offer?: CollectiveOffer }> => {
-          if (fetchedOffers.has(hit.objectID)) {
-            return {
-              hitId: hit.objectID,
-              offer: fetchedOffers.get(hit.objectID),
-            }
-          }
-          const offerId = extractOfferIdFromObjectId(hit.objectID)
+  const fetchedOffers = data?.collectiveOffers ?? []
 
-          try {
-            if (hit.isTemplate) {
-              const offer = await apiAdage.getCollectiveOfferTemplate(offerId)
-              return {
-                hitId: hit.objectID,
-                offer: { ...offer, isTemplate: true },
-              }
-            } else {
-              const offer = await apiAdage.getCollectiveOffer(offerId)
-              return {
-                hitId: hit.objectID,
-                offer: { ...offer, isTemplate: false },
-              }
-            }
-          } catch (e) {
-            sendSentryCustomError(e, { adageOfferId: hit.objectID })
-
-            return {}
-          }
-        }
-      )
+  //  Reorder the fetched offers in the order of the initial algolia hits
+  const offers = hits
+    .map((hit) =>
+      fetchedOffers.find((offerTmp) => `T-${offerTmp.id}` === hit.objectID)
     )
-      .then((offersFromHits) => {
-        const offersFromHitsMap = new Map(fetchedOffers)
-        offersFromHits
-          .filter(
-            (res) =>
-              res.status === 'fulfilled' &&
-              res.value.offer &&
-              offerIsBookable(res.value.offer)
-          )
-          .forEach((res) => {
-            if (
-              res.status === 'fulfilled' &&
-              res.value.hitId &&
-              res.value.offer
-            ) {
-              offersFromHitsMap.set(res.value.hitId, res.value.offer)
-            }
-          })
-        setFetchedOffers(offersFromHitsMap)
-      })
-      .catch((e) => {
-        sendSentryCustomError(e, undefined, 'data-processing')
-      })
-      .finally(() => {
-        setQueriesAreLoading(false)
-      })
-  }, [results?.queryID])
+    .filter(
+      (offer): offer is CollectiveOfferTemplateResponseModel =>
+        !!offer && offerIsBookable(offer)
+    )
 
   useEffect(() => {
     isMobileScreen && dispatch(setSearchView('grid'))
-  }, [isMobileScreen])
+  }, [isMobileScreen, dispatch])
 
-  const offers = hits
-    .map((hit) => fetchedOffers.get(hit.objectID))
-    .filter((offer): offer is CollectiveOffer => !!offer)
-
-  if (queriesAreLoading && offers.length === 0) {
+  if (isLoading && offers.length === 0) {
     return (
       <div className={styles['offers-loader']}>
         <AdageSkeleton />

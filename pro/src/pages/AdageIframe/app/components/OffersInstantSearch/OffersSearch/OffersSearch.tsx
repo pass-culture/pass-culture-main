@@ -69,6 +69,16 @@ export const OffersSearch = ({
   )?.results
   const nbHits = mainOffersSearchResults?.nbHits
 
+  useEffect(() => {
+    if (mainOffersSearchResults) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      logFiltersOnSearch(
+        mainOffersSearchResults.nbHits,
+        mainOffersSearchResults.queryID
+      )
+    }
+  }, [mainOffersSearchResults?.queryID])
+
   const isMarseilleEnabled = useActiveFeature('WIP_ENABLE_MARSEILLE')
   const isUserInMarseilleProgram = (adageUser.programs ?? []).some(
     (prog) => prog.name === MARSEILLE_EN_GRAND
@@ -138,7 +148,7 @@ export const OffersSearch = ({
     formik.handleSubmit()
   }
 
-  const logFiltersOnSearch = async (nbHits: number, queryId?: string) => {
+  async function logFiltersOnSearch(nbHits: number, queryId?: string) {
     /* istanbul ignore next: TO FIX the current structure make it hard to test, we probably should not mock Offers in OfferSearch tests */
     if (formik.submitCount > 0 || adageQueryFromSelector !== null) {
       await logTrackingFilter({
@@ -204,10 +214,9 @@ export const OffersSearch = ({
       </FormikContext.Provider>
       <div className="search-results">
         <Offers
-          logFiltersOnSearch={logFiltersOnSearch}
           submitCount={formik.submitCount}
           isBackToTopVisibile={!isOfferFiltersVisible}
-          indexId="main_offers_index"
+          indexId={MAIN_INDEX_ID}
           venue={formik.values.venue}
         />
         {nbHits === 0 && !isUserAdmin && (
