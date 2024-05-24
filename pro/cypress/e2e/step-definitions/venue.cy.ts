@@ -19,7 +19,7 @@ beforeEach(() => {
   venueNameWithoutSiret = 'Lieu sans Siret ' + randomSeed // just to distinguish them
 
   // mettre l'intercept à part?
-  cy.intercept('GET', `http://localhost:5001/sirene/siret/${siret}`, (req) =>
+  cy.intercept('GET', `/sirene/siret/${siret}`, (req) =>
     req.reply({
       statusCode: 200,
       body: {
@@ -35,7 +35,7 @@ beforeEach(() => {
         legal_category_code: '1000',
       },
     })
-  ).as('getSiret')
+  ).as('getSiretVenue')
   cy.visit('/connexion')
 })
 
@@ -50,7 +50,7 @@ When('I choose a venue which already has a Siret', () => {
 
 When('I add a valid Siret', () => {
   cy.findByLabelText('SIRET du lieu *').type(siret)
-  cy.wait('@getSiret').its('response.statusCode').should('eq', 200)
+  cy.wait('@getSiretVenue').its('response.statusCode').should('eq', 200)
   cy.findByTestId('error-siret').should('not.exist')
 })
 
