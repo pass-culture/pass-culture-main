@@ -49,7 +49,7 @@ BOOKING_STATUS_LABELS = {
     "confirmed": "confirmé",
 }
 
-BOOKING_EXPORT_HEADER = (
+BOOKING_EXPORT_HEADERS = (
     "Lieu",
     "Nom de l’offre",
     "Date de l'évènement",
@@ -70,38 +70,43 @@ BOOKING_EXPORT_HEADER = (
 )
 
 
-def cast_to_ts(dt: datetime) -> sa.cast:
-    return sa.cast(dt, TIMESTAMP)
-
-
 # FIXME (Gautier, 2022-03-25): also used in collective_bookings. Should we move it to core or some other place?
 def field_to_venue_timezone(field: typing.Any) -> sa.cast:
     return sa.cast(sa.func.timezone(Venue.timezone, sa.func.timezone("UTC", field)), sa.Date)
 
 
-def _bookings_report_entities() -> tuple:
-    return (
-        Booking.status.label("status"),
-        Booking.token.label("bookingToken"),
-        Booking.priceCategoryLabel.label("priceCategoryLabel"),
-        Booking.amount.label("bookingAmount"),
-        Booking.cancellationDate.label("cancelledAt"),
-        Booking.isExternal.label("isExternal"),  # type: ignore[attr-defined]
-        Booking.isConfirmed.label("isConfirmed"),  # type: ignore[attr-defined]
-        Booking.stockId.label("stockId"),
-        Offerer.postalCode.label("offererPostalCode"),
-        Stock.beginningDatetime.label("stockBeginningDatetime"),
-        Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
-        Venue.departementCode.label("venueDepartmentCode"),
-        Offer.id.label("offerId"),
-        Offer.name.label("offerName"),
-        Offer.extraData["ean"].label("offerEan"),
-        User.firstName.label("beneficiaryFirstName"),
-        User.lastName.label("beneficiaryLastName"),
-        User.email.label("beneficiaryEmail"),
-        User.phoneNumber.label("beneficiaryPhoneNumber"),  # type: ignore[attr-defined]
-        User.postalCode.label("beneficiaryPostalCode"),
-    )
+def _bookings_export_entities(full_entities: bool = True) -> list:
+    entities = [
+        Booking.id.label("id"),
+        Booking.quantity.label("quantity"),
+        Booking.dateCreated.label("bookedAt"),
+        Booking.dateUsed.label("usedAt"),
+        Booking.reimbursementDate.label("reimbursedAt"),
+        Venue.timezone.label("venueTimezone"),
+    ]
+    if full_entities:
+        extra_entities = [
+            Booking.status.label("status"),
+            Booking.token.label("bookingToken"),
+            Booking.priceCategoryLabel.label("priceCategoryLabel"),
+            Booking.amount.label("bookingAmount"),
+            Booking.cancellationDate.label("cancelledAt"),
+            Booking.isExternal.label("isExternal"),  # type: ignore[attr-defined]
+            Booking.isConfirmed.label("isConfirmed"),  # type: ignore[attr-defined]
+            Booking.stockId.label("stockId"),
+            Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
+            Stock.beginningDatetime.label("stockBeginningDatetime"),
+            Offer.id.label("offerId"),
+            Offer.name.label("offerName"),
+            Offer.extraData["ean"].label("offerEan"),
+            User.firstName.label("beneficiaryFirstName"),
+            User.lastName.label("beneficiaryLastName"),
+            User.email.label("beneficiaryEmail"),
+            User.phoneNumber.label("beneficiaryPhoneNumber"),  # type: ignore[attr-defined]
+            User.postalCode.label("beneficiaryPostalCode"),
+        ]
+        entities.extend(extra_entities)
+    return entities
 
 
 def _filter_booking_period(
@@ -123,21 +128,19 @@ def _filter_booking_period(
         field = sa.func.timezone(sa.column("venueTimezone"), sa.func.timezone("UTC", field))
         start += timedelta(days=1)
         end -= timedelta(days=1)
-    query = query.filter(field >= cast_to_ts(start))
-    query = query.filter(field < cast_to_ts(end))
+    query = query.filter(field >= sa.cast(start, TIMESTAMP))  # type: ignore[type-var]
+    query = query.filter(field < sa.cast(end, TIMESTAMP))  # type: ignore[type-var]
     return query
 
 
-def _get_bookings_report_query(
+def _get_bookings_export_query(
     pro_user: User | None = None,
-    validated_offerer: bool = True,
     booking_period: tuple[date, date] | None = None,
     status_filter: BookingStatusFilter | None = None,
     validated: bool = False,
     event_date: date | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
-    isouter: bool = True,
     ordered: bool = False,
     full_entities: bool = True,
     duplicate_duo: bool = False,
@@ -147,25 +150,21 @@ def _get_bookings_report_query(
     if not pro_user and not offer_id:
         raise ValueError("Missing either pro_user or offer_id")
 
-    query = (
-        Booking.query.join(Booking.offerer)
-        .join(Offerer.UserOfferers)
-        .join(Booking.stock)
-        .join(Booking.venue, isouter=isouter)
-    )
+    query = Booking.query.join(Booking.venue)
+    query = query.join(Booking.stock)
     if full_entities:
-        extra_joins = (Stock.offer, Booking.user)
-        for extra_join in extra_joins:
-            query = query.join(extra_join, isouter=isouter)
+        query = query.join(Stock.offer)
+        query = query.join(Booking.user)
 
     if pro_user is not None and not pro_user.has_admin_role:
-        query = query.filter(UserOfferer.user == pro_user)
-
-    if validated_offerer:
-        query = query.filter(UserOfferer.isValidated)
+        subquery = UserOfferer.query.filter(
+            UserOfferer.user == pro_user,
+            UserOfferer.isValidated,
+        ).with_entities(UserOfferer.offererId)
+        query = query.filter(Booking.offererId.in_(subquery))
 
     if booking_period:
-        query = _filter_booking_period(query, booking_period=booking_period, status_filter=status_filter)
+        query = _filter_booking_period(query, booking_period, status_filter=status_filter)
 
     if validated:
         query = query.filter(
@@ -187,29 +186,23 @@ def _get_bookings_report_query(
     if ordered:
         query = query.order_by(Booking.id)
 
-    entities = [
-        # `get_batch` function needs a field called exactly `id` to work,
-        # the label prevents SA from using a bad (prefixed) label for this field
-        Booking.id.label("id"),
-        Booking.quantity.label("quantity"),
-        Booking.dateCreated.label("bookedAt"),
-        Booking.dateUsed.label("usedAt"),
-        Booking.reimbursementDate.label("reimbursedAt"),
-        Venue.timezone.label("venueTimezone"),
-    ]
-    if full_entities:
-        entities.extend(_bookings_report_entities())
+    entities = _bookings_export_entities(full_entities=full_entities)
     query = query.with_entities(*entities)
-
-    query = query.distinct(Booking.id)
 
     if duplicate_duo:
         query = query.union_all(query.filter(Booking.quantity == DUO_QUANTITY))
 
+    query_cte = None
     if booking_period:
         query_cte = query.cte()
         query = db.session.query(*query_cte.c)
-        query = _filter_booking_period(query, booking_period=booking_period, status_filter=status_filter, with_tz=True)
+        query = _filter_booking_period(query, booking_period, status_filter=status_filter, with_tz=True)
+
+    if not full_entities:
+        quantity_c = query_cte.c.quantity if query_cte is not None else Booking.quantity
+        # We really want total quantities here (and not the number of bookings),
+        # since we'll build two rows for each "duo" bookings later.
+        query = query.with_entities(sa.func.coalesce(sa.func.sum(quantity_c), 0))
 
     if offset is not None and limit is not None:
         query = query.order_by(sa.column("bookedAt").desc()).offset(offset).limit(limit)
@@ -223,7 +216,7 @@ def _get_booking_status(status: BookingStatus | str, is_confirmed: bool) -> str:
     return BOOKING_STATUS_LABELS[status]
 
 
-def _build_report_columns(booking: Booking, duo_column: str, is_csv: bool) -> list[dict]:
+def _build_export_columns(booking: Booking, duo_column: str, is_csv: bool) -> list[dict]:
     booking_token = booking_recap_utils.get_booking_token(
         booking.bookingToken,
         booking.status,
@@ -260,14 +253,14 @@ def _build_report_columns(booking: Booking, duo_column: str, is_csv: bool) -> li
 
 
 def _write_csv_row(writer: typing.Any, booking: Booking, duo_column: str) -> None:
-    columns = _build_report_columns(booking, duo_column, True)
+    columns = _build_export_columns(booking, duo_column, True)
     writer.writerow(tuple(column["value"] for column in columns))
 
 
 def _write_bookings_to_csv(query: BaseQuery) -> str:
     output = StringIO()
     writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
-    writer.writerow(BOOKING_EXPORT_HEADER)
+    writer.writerow(BOOKING_EXPORT_HEADERS)
     for booking in query.yield_per(1000):
         if booking.quantity == DUO_QUANTITY:
             _write_csv_row(writer, booking, "DUO 1")
@@ -281,7 +274,7 @@ def _write_bookings_to_csv(query: BaseQuery) -> str:
 def _write_excel_row(
     worksheet: Worksheet, row: int, booking: Booking, currency_format: Format, duo_column: str
 ) -> None:
-    columns = _build_report_columns(booking, duo_column, False)
+    columns = _build_export_columns(booking, duo_column, False)
     for i, column in enumerate(columns):
         if column.get("type") == "currency":
             write_args: tuple = (currency_format,)
@@ -301,7 +294,7 @@ def _write_bookings_to_excel(query: BaseQuery) -> bytes:
     worksheet = workbook.add_worksheet()
 
     row = 0
-    for col_num, title in enumerate(BOOKING_EXPORT_HEADER):
+    for col_num, title in enumerate(BOOKING_EXPORT_HEADERS):
         worksheet.write(row, col_num, title, bold)
         worksheet.set_column(col_num, col_num, col_width)
 
@@ -328,7 +321,7 @@ def get_export(
     offer_id: int | None = None,
     export_type: BookingExportType | None = BookingExportType.CSV,
 ) -> str | bytes:
-    query = _get_bookings_report_query(
+    query = _get_bookings_export_query(
         pro_user=user,
         booking_period=booking_period,
         status_filter=status_filter,
@@ -344,12 +337,10 @@ def get_export(
 def export_bookings_by_offer_id(
     offer_id: int, event_date: date, export_type: BookingExportType, validated: bool = True
 ) -> str | bytes:
-    query = _get_bookings_report_query(
-        validated_offerer=False,
+    query = _get_bookings_export_query(
         validated=validated,
         event_date=event_date,
         offer_id=offer_id,
-        isouter=False,
         ordered=True,
     )
     if export_type == BookingExportType.EXCEL:
@@ -365,7 +356,7 @@ def _get_bookings_count(
     venue_id: int | None = None,
     offer_id: int | None = None,
 ) -> int:
-    query = _get_bookings_report_query(
+    query = _get_bookings_export_query(
         pro_user=pro_user,
         booking_period=booking_period,
         status_filter=status_filter,
@@ -374,10 +365,7 @@ def _get_bookings_count(
         offer_id=offer_id,
         full_entities=False,
     )
-    query = query.cte()
-    # We really want total quantities here (and not the number of bookings),
-    # since we'll build two rows for each "duo" bookings later.
-    return db.session.query(sa.func.coalesce(sa.func.sum(query.c.quantity), 0)).scalar()
+    return query.scalar()
 
 
 def find_by_pro_user(
@@ -398,7 +386,7 @@ def find_by_pro_user(
         venue_id=venue_id,
         offer_id=offer_id,
     )
-    bookings_query = _get_bookings_report_query(
+    bookings_query = _get_bookings_export_query(
         pro_user=user,
         booking_period=booking_period,
         status_filter=status_filter,
@@ -522,7 +510,7 @@ def get_active_bookings_quantity_for_venue(venue_id: int) -> int:
             sa.not_(Booking.isConfirmed),
         )
         .with_entities(sa.func.coalesce(sa.func.sum(Booking.quantity), 0))
-        .one()[0]
+        .scalar()
     )
 
     n_active_collective_bookings = (
@@ -544,7 +532,7 @@ def get_active_bookings_quantity_for_venue(venue_id: int) -> int:
             ),
         )
         .with_entities(sa.func.coalesce(sa.func.sum(1), 0))
-        .one()[0]
+        .scalar()
     )
 
     return n_active_bookings + n_active_collective_bookings
@@ -561,7 +549,7 @@ def get_validated_bookings_quantity_for_venue(venue_id: int) -> int:
             ),
         )
         .with_entities(sa.func.coalesce(sa.func.sum(Booking.quantity), 0))
-        .one()[0]
+        .scalar()
     )
 
     n_validated_collective_bookings_quantity = (
@@ -575,7 +563,7 @@ def get_validated_bookings_quantity_for_venue(venue_id: int) -> int:
             ),
         )
         .with_entities(sa.func.coalesce(sa.func.sum(1), 0))
-        .one()[0]
+        .scalar()
     )
 
     return n_validated_bookings_quantity + n_validated_collective_bookings_quantity
@@ -612,7 +600,7 @@ def get_soon_expiring_bookings(expiration_days_delta: int) -> typing.Generator[B
             Offer.canExpire,
             Booking.status == BookingStatus.CONFIRMED,
         )
-        .yield_per(1_000)
+        .yield_per(1000)
     )
     for booking in query:
         expiration_date = booking.expirationDate
