@@ -22,8 +22,9 @@ from pcapi.validation.routes.users_authentifications import api_key_required
 )
 @api_key_required
 def get_national_programs() -> serialization.ListNationalProgramsResponseModel:
-    # in French, to be used by Swagger for the API documentation
-    """Liste de tous les dispositifs nationaux connus"""
+    """
+    Get all known national programs
+    """
     query = educational_models.NationalProgram.query
     return serialization.ListNationalProgramsResponseModel(
         __root__=[serialization.NationalProgramModel(id=program.id, name=program.name) for program in query]

@@ -10362,7 +10362,7 @@
         },
         "/v2/collective/categories": {
             "get": {
-                "description": "",
+                "description": "Return categories for collective offers.",
                 "operationId": "ListCategories",
                 "parameters": [],
                 "responses": {
@@ -10374,7 +10374,7 @@
                                 }
                             }
                         },
-                        "description": "La liste des cat\u00e9gories \u00e9ligibles existantes."
+                        "description": "Your request was succesful."
                     },
                     "401": {
                         "content": {
@@ -10405,7 +10405,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "R\u00e9cup\u00e9ration de la liste des cat\u00e9gories d'offres propos\u00e9es.",
+                "summary": "Get collective offers categories",
                 "tags": [
                     "Collective categories"
                 ]
@@ -10413,7 +10413,7 @@
         },
         "/v2/collective/educational-domains": {
             "get": {
-                "description": "",
+                "description": "Return the educational domains that can be linked to a collective offer.",
                 "operationId": "ListEducationalDomains",
                 "parameters": [],
                 "responses": {
@@ -10425,7 +10425,7 @@
                                 }
                             }
                         },
-                        "description": "La liste des domaines d'\u00e9ducation."
+                        "description": "Your request was succesful."
                     },
                     "401": {
                         "content": {
@@ -10456,7 +10456,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "R\u00e9cup\u00e9ration de la liste des domaines d'\u00e9ducation pouvant \u00eatre associ\u00e9s aux offres collectives.",
+                "summary": "Get the eductional domains",
                 "tags": [
                     "Collective educational data"
                 ]
@@ -10554,7 +10554,7 @@
                                 }
                             }
                         },
-                        "description": "La liste des \u00e9tablissement scolaires \u00e9ligibles."
+                        "description": "Your request was succesful."
                     },
                     "400": {
                         "content": {
@@ -10595,7 +10595,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "R\u00e9cup\u00e9ration de la liste \u00e9tablissements scolaires.",
+                "summary": "Get all educational institutions",
                 "tags": [
                     "Collective educational data"
                 ]
@@ -10646,7 +10646,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Liste de tous les dispositifs nationaux connus",
+                "summary": "Get all known national programs",
                 "tags": [
                     "Collective educational data"
                 ]
@@ -10681,7 +10681,7 @@
                                 }
                             }
                         },
-                        "description": "La liste des lieux, group\u00e9s par structures"
+                        "description": "Your request was succesful."
                     },
                     "401": {
                         "content": {
@@ -10720,7 +10720,7 @@
         },
         "/v2/collective/offers/": {
             "get": {
-                "description": "",
+                "description": "Return collective offers linker to the venue. It doesn't return the showcase offers or the collective offers that have been started on the pro interface and that are in the draft status.",
                 "operationId": "GetCollectiveOffersPublic",
                 "parameters": [
                     {
@@ -10814,7 +10814,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "R\u00e9cuperation des offres collectives Cette api ignore les offre vitrines et les offres commenc\u00e9es sur l'interface web et non finalis\u00e9es.",
+                "summary": "Get collective offers",
                 "tags": [
                     "Collective offers"
                 ]
@@ -10841,7 +10841,7 @@
                                 }
                             }
                         },
-                        "description": "L'offre collective \u00e0 \u00e9t\u00e9 cr\u00e9\u00e9e avec succes"
+                        "description": "Your request was succesful."
                     },
                     "400": {
                         "content": {
@@ -10936,7 +10936,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Liste des formats d'offres collectives",
+                "summary": "Get collectice offer formats",
                 "tags": [
                     "Collective offers"
                 ]
@@ -10944,7 +10944,7 @@
         },
         "/v2/collective/offers/{offer_id}": {
             "get": {
-                "description": "",
+                "description": "Return one collective offer using provided id.",
                 "operationId": "GetCollectiveOfferPublic",
                 "parameters": [
                     {
@@ -10967,7 +10967,7 @@
                                 }
                             }
                         },
-                        "description": "L'offre collective existe"
+                        "description": "Your request was succesful."
                     },
                     "400": {
                         "content": {
@@ -11021,7 +11021,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "R\u00e9cuperation de l'offre collective avec l'identifiant offer_id.",
+                "summary": "Get a collective offer",
                 "tags": [
                     "Collective offers"
                 ]
@@ -11059,7 +11059,7 @@
                                 }
                             }
                         },
-                        "description": "L'offre collective \u00e0 \u00e9t\u00e9 \u00e9dit\u00e9 avec succes"
+                        "description": "Your request was succesful."
                     },
                     "400": {
                         "content": {
@@ -11113,7 +11113,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "\u00c9dition d'une offre collective.",
+                "summary": "Update collective offer",
                 "tags": [
                     "Collective offers"
                 ]
@@ -11133,7 +11133,7 @@
                                 }
                             }
                         },
-                        "description": "La liste des domaines d'\u00e9ducation."
+                        "description": "Your request was succesful."
                     },
                     "401": {
                         "content": {
@@ -11164,7 +11164,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Get student levels eliguble to collective offers",
+                "summary": "Get student levels eligible for collective offers",
                 "tags": [
                     "Collective educational data"
                 ]
@@ -11172,7 +11172,7 @@
         },
         "/v2/collective/subcategories": {
             "get": {
-                "description": "",
+                "description": "Return subcategories for collective offerS.",
                 "operationId": "ListSubcategories",
                 "parameters": [],
                 "responses": {
@@ -11184,7 +11184,7 @@
                                 }
                             }
                         },
-                        "description": "La liste des sous-cat\u00e9gories \u00e9ligibles existantes."
+                        "description": "Your request was succesful."
                     },
                     "401": {
                         "content": {
@@ -11215,7 +11215,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "R\u00e9cup\u00e9ration de la liste des sous-cat\u00e9gories d'offres propos\u00e9es a un public collectif.",
+                "summary": "Get collective offers subcatgories",
                 "tags": [
                     "Collective categories"
                 ]
@@ -11223,7 +11223,7 @@
         },
         "/v2/collective/venues": {
             "get": {
-                "description": "Tous les lieux enregistr\u00e9s, sont list\u00e9s ici avec leurs coordonn\u00e9es.",
+                "description": "Get all venues linked to your API key.",
                 "operationId": "ListVenues",
                 "parameters": [],
                 "responses": {
@@ -11235,7 +11235,7 @@
                                 }
                             }
                         },
-                        "description": "La liste des lieux ou vous pouvez cr\u00e9er une offre."
+                        "description": "Your request was succesful."
                     },
                     "401": {
                         "content": {
@@ -11266,7 +11266,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "R\u00e9cup\u00e9ration de la liste des lieux associ\u00e9s au fournisseur authentifi\u00e9e par le jeton d'API.",
+                "summary": "Get all venues",
                 "tags": [
                     "Collective venues"
                 ]

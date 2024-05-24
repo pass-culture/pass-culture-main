@@ -21,7 +21,7 @@ from pcapi.validation.routes.users_authentifications import api_key_required
             {
                 "HTTP_200": (
                     offers_serialization.CollectiveOffersListCategoriesResponseModel,
-                    "La liste des catégories éligibles existantes.",
+                    http_responses.HTTP_200_MESSAGE,
                 )
             }
             | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
@@ -30,9 +30,10 @@ from pcapi.validation.routes.users_authentifications import api_key_required
 )
 @api_key_required
 def list_categories() -> offers_serialization.CollectiveOffersListCategoriesResponseModel:
-    # in French, to be used by Swagger for the API documentation
     """
-    Récupération de la liste des catégories d'offres proposées.
+    Get collective offers categories
+
+    Return categories for collective offers.
     """
     return offers_serialization.CollectiveOffersListCategoriesResponseModel(
         __root__=[
@@ -52,7 +53,7 @@ def list_categories() -> offers_serialization.CollectiveOffersListCategoriesResp
             {
                 "HTTP_200": (
                     offers_serialization.CollectiveOffersListSubCategoriesResponseModel,
-                    "La liste des sous-catégories éligibles existantes.",
+                    http_responses.HTTP_200_MESSAGE,
                 ),
             }
             | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
@@ -61,8 +62,11 @@ def list_categories() -> offers_serialization.CollectiveOffersListCategoriesResp
 )
 @api_key_required
 def list_subcategories() -> offers_serialization.CollectiveOffersListSubCategoriesResponseModel:
-    # in French, to be used by Swagger for the API documentation
-    """Récupération de la liste des sous-catégories d'offres proposées a un public collectif."""
+    """
+    Get collective offers subcatgories
+
+    Return subcategories for collective offerS.
+    """
     result_dict = defaultdict(list)
     for _, subcategory in subcategories_v2.COLLECTIVE_SUBCATEGORIES.items():
         if not subcategory.is_selectable:

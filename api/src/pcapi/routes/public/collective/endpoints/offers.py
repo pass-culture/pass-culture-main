@@ -45,11 +45,11 @@ from pcapi.validation.routes.users_authentifications import current_api_key
 def get_collective_offers_public(
     query: offers_serialization.ListCollectiveOffersQueryModel,
 ) -> offers_serialization.CollectiveOffersListResponseModel:
-    # in French, to be used by Swagger for the API documentation
     """
-    Récuperation des offres collectives
-    Cette api ignore les offre vitrines et les offres commencées sur
-    l'interface web et non finalisées.
+    Get collective offers
+
+    Return collective offers linker to the venue.
+    It doesn't return the showcase offers or the collective offers that have been started on the pro interface and that are in the draft status.
     """
 
     offers = educational_api_offer.list_public_collective_offers(
@@ -71,7 +71,7 @@ def get_collective_offers_public(
     tags=[tags.COLLECTIVE_OFFERS_TAG],
     resp=SpectreeResponse(
         **(
-            {"HTTP_200": (offers_serialization.GetPublicCollectiveOfferResponseModel, "L'offre collective existe")}
+            {"HTTP_200": (offers_serialization.GetPublicCollectiveOfferResponseModel, http_responses.HTTP_200_MESSAGE)}
             # errors
             | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
             | http_responses.HTTP_400_BAD_REQUEST
@@ -84,8 +84,11 @@ def get_collective_offers_public(
 def get_collective_offer_public(
     offer_id: int,
 ) -> offers_serialization.GetPublicCollectiveOfferResponseModel:
-    # in French, to be used by Swagger for the API documentation
-    """Récuperation de l'offre collective avec l'identifiant offer_id."""
+    """
+    Get a collective offer
+
+    Return one collective offer using provided id.
+    """
     try:
         offer = educational_repository.get_collective_offer_by_id(offer_id)
     except educational_exceptions.CollectiveOfferNotFound:
@@ -121,7 +124,7 @@ def get_collective_offer_public(
             {
                 "HTTP_201": (
                     offers_serialization.GetPublicCollectiveOfferResponseModel,
-                    "L'offre collective à été créée avec succes",
+                    http_responses.HTTP_200_MESSAGE,
                 )
             }
             # errors
@@ -136,8 +139,9 @@ def get_collective_offer_public(
 def post_collective_offer_public(
     body: offers_serialization.PostCollectiveOfferBodyModel,
 ) -> offers_serialization.GetPublicCollectiveOfferResponseModel:
-    # in French, to be used by Swagger for the API documentation
-    """Création d'une offre collective."""
+    """
+    Create collective offer
+    """
     image_as_bytes = None
 
     if body.image_file:
@@ -254,7 +258,7 @@ def post_collective_offer_public(
             {
                 "HTTP_200": (
                     offers_serialization.GetPublicCollectiveOfferResponseModel,
-                    "L'offre collective à été édité avec succes",
+                    http_responses.HTTP_200_MESSAGE,
                 ),
             }
             # errors
@@ -270,8 +274,9 @@ def patch_collective_offer_public(
     offer_id: int,
     body: offers_serialization.PatchCollectiveOfferBodyModel,
 ) -> offers_serialization.GetPublicCollectiveOfferResponseModel:
-    # in French, to be used by Swagger for the API documentation
-    """Édition d'une offre collective."""
+    """
+    Update collective offer
+    """
     new_values = body.dict(exclude_unset=True)
     image_as_bytes = None
     image_file = False
@@ -540,8 +545,9 @@ def patch_collective_offer_public(
 )
 @api_key_required
 def get_offers_formats() -> offers_serialization.GetCollectiveFormatListModel:
-    # in French, to be used by Swagger for the API documentation
-    """Liste des formats d'offres collectives"""
+    """
+    Get collectice offer formats
+    """
     return offers_serialization.GetCollectiveFormatListModel(
         __root__=[
             offers_serialization.GetCollectiveFormatModel(id=format.name, name=format.value)

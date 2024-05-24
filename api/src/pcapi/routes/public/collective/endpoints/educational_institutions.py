@@ -18,7 +18,7 @@ from pcapi.validation.routes.users_authentifications import api_key_required
             {
                 "HTTP_200": (
                     institutions_serialization.CollectiveOffersListEducationalInstitutionResponseModel,
-                    "La liste des établissement scolaires éligibles.",
+                    http_responses.HTTP_200_MESSAGE,
                 ),
             }
             | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
@@ -30,8 +30,9 @@ from pcapi.validation.routes.users_authentifications import api_key_required
 def list_educational_institutions(
     query: institutions_serialization.GetListEducationalInstitutionsQueryModel,
 ) -> institutions_serialization.CollectiveOffersListEducationalInstitutionResponseModel:
-    # in French, to be used by Swagger for the API documentation
-    """Récupération de la liste établissements scolaires."""
+    """
+    Get all educational institutions
+    """
 
     institutions = search_educational_institution(
         name=query.name,

@@ -19,7 +19,7 @@ from pcapi.validation.routes.users_authentifications import api_key_required
             {
                 "HTTP_200": (
                     domains_serialization.CollectiveOffersListDomainsResponseModel,
-                    "La liste des domaines d'éducation.",
+                    http_responses.HTTP_200_MESSAGE,
                 ),
             }
             | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
@@ -29,8 +29,11 @@ from pcapi.validation.routes.users_authentifications import api_key_required
 @api_key_required
 @cached_view(prefix="pro_public_api_v2")
 def list_educational_domains() -> domains_serialization.CollectiveOffersListDomainsResponseModel:
-    # in French, to be used by Swagger for the API documentation
-    """Récupération de la liste des domaines d'éducation pouvant être associés aux offres collectives."""
+    """
+    Get the eductional domains
+
+    Return the educational domains that can be linked to a collective offer.
+    """
     educational_domains = educational_repository.get_all_educational_domains_ordered_by_name()
 
     return domains_serialization.CollectiveOffersListDomainsResponseModel(
