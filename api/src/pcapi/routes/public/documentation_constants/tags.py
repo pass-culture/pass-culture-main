@@ -29,14 +29,14 @@ OFFER_ATTRIBUTES = Tag(name="Offer attributes")
 
 
 # COLLECTIVE TAGS
-COLLECTIVE_OFFERS = Tag(
+COLLECTIVE_OFFERS_TAG = Tag(
     name="Collective offers",
     description='Endpoints to manage collective offers that are "bookable", not the one that are displayed in the showcase.',
 )
-COLLECTIVE_BOOKING = Tag(name="Collective booking")
-COLLECTIVE_CATEGORIES = Tag(name="Collective categories")
-COLLECTIVE_VENUES = Tag(name="Collective venues")
-COLLECTIVE_EDUCATIONAL_DATA = Tag(name="Collective educational data")
+COLLECTIVE_BOOKING_TAG = Tag(name="Collective booking")
+COLLECTIVE_CATEGORIES_TAG = Tag(name="Collective categories")
+COLLECTIVE_VENUES_TAG = Tag(name="Collective venues")
+COLLECTIVE_EDUCATIONAL_DATA_TAG = Tag(name="Collective educational data")
 
 
 OPEN_API_TAGS = [
@@ -55,19 +55,19 @@ OPEN_API_TAGS = [
     IMAGE_TAG,
     OFFER_ATTRIBUTES,
     # COLLECTIVE
-    COLLECTIVE_OFFERS,
-    COLLECTIVE_BOOKING,
-    COLLECTIVE_CATEGORIES,
-    COLLECTIVE_VENUES,
-    COLLECTIVE_EDUCATIONAL_DATA,
+    COLLECTIVE_OFFERS_TAG,
+    COLLECTIVE_BOOKING_TAG,
+    COLLECTIVE_CATEGORIES_TAG,
+    COLLECTIVE_VENUES_TAG,
+    COLLECTIVE_EDUCATIONAL_DATA_TAG,
 ]
 
 # DEPRECATED APIS TAGS
-DEPRECATED_BOOKING_TOKEN = Tag(name="[Dépréciée] API Contremarque")
-DEPRECATED_VENUES_STOCK = Tag(name="[Dépréciée] API stocks")
+DEPRECATED_BOOKING_TOKEN_TAG = Tag(name="[Dépréciée] API Contremarque")
+DEPRECATED_VENUES_STOCK_TAG = Tag(name="[Dépréciée] API stocks")
 
 
 DEPRACTED_TAGS = [
-    DEPRECATED_BOOKING_TOKEN,
-    DEPRECATED_VENUES_STOCK,
+    DEPRECATED_BOOKING_TOKEN_TAG,
+    DEPRECATED_VENUES_STOCK_TAG,
 ]

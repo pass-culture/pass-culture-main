@@ -20,7 +20,7 @@ from pcapi.validation.routes.users_authentifications import current_api_key
 @collective_offers_blueprint.route("/collective/bookings/<int:booking_id>", methods=["PATCH"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.COLLECTIVE_BOOKING],
+    tags=[tags.COLLECTIVE_BOOKING_TAG],
     on_success_status=204,
     resp=SpectreeResponse(
         HTTP_204=(None, "Annuler une réservation collective"),

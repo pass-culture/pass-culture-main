@@ -38,7 +38,7 @@ BASE_CODE_DESCRIPTIONS = {
 @collective_offers_blueprint.route("/collective/offers/", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.COLLECTIVE_OFFERS],
+    tags=[tags.COLLECTIVE_OFFERS_TAG],
     resp=SpectreeResponse(
         **(BASE_CODE_DESCRIPTIONS),
         HTTP_200=(
@@ -74,7 +74,7 @@ def get_collective_offers_public(
 @collective_offers_blueprint.route("/collective/offers/<int:offer_id>", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.COLLECTIVE_OFFERS],
+    tags=[tags.COLLECTIVE_OFFERS_TAG],
     resp=SpectreeResponse(
         **(BASE_CODE_DESCRIPTIONS),
         HTTP_200=(
@@ -118,7 +118,7 @@ def get_collective_offer_public(
 @collective_offers_blueprint.route("/collective/offers/", methods=["POST"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.COLLECTIVE_OFFERS],
+    tags=[tags.COLLECTIVE_OFFERS_TAG],
     resp=SpectreeResponse(
         **(
             {
@@ -259,7 +259,7 @@ def post_collective_offer_public(
 @collective_offers_blueprint.route("/collective/offers/<int:offer_id>", methods=["PATCH"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.COLLECTIVE_OFFERS],
+    tags=[tags.COLLECTIVE_OFFERS_TAG],
     resp=SpectreeResponse(
         **(
             {
@@ -558,7 +558,7 @@ def patch_collective_offer_public(
 @collective_offers_blueprint.route("/collective/offers/formats", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.COLLECTIVE_OFFERS],
+    tags=[tags.COLLECTIVE_OFFERS_TAG],
     resp=SpectreeResponse(**(BASE_CODE_DESCRIPTIONS)),
 )
 @api_key_required

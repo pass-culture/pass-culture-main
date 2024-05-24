@@ -15,7 +15,7 @@ from pcapi.validation.routes.users_authentifications import current_api_key
 @collective_offers_blueprint.route("/collective/venues", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.COLLECTIVE_VENUES],
+    tags=[tags.COLLECTIVE_VENUES_TAG],
     resp=SpectreeResponse(
         HTTP_200=(
             serialization.CollectiveOffersListVenuesResponseModel,
@@ -45,7 +45,7 @@ def list_venues() -> serialization.CollectiveOffersListVenuesResponseModel:
 @collective_offers_blueprint.route("/collective/offerer_venues", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.COLLECTIVE_VENUES],
+    tags=[tags.COLLECTIVE_VENUES_TAG],
     deprecated=True,
     resp=SpectreeResponse(
         HTTP_200=(
