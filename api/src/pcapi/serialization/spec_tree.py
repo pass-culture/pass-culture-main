@@ -7,8 +7,6 @@ from spectree import Response
 from spectree import SpecTree
 from spectree import Tag
 
-from pcapi import settings
-
 
 def get_model_key(model: type[BaseModel]) -> str:
     return model.__name__
@@ -56,7 +54,6 @@ class ExtendedSpecTree(SpecTree):
                     path_parameter_descriptions = getattr(func, "path_parameter_descriptions", None)
                     path, _parameters = self.backend.parse_path(route, path_parameter_descriptions)
                     spec["paths"][path][method.lower()]["operationId"] = build_operation_id(func)
-                    spec["servers"] = [{"url": settings.API_URL}]
 
         orderered_tags = self._generate_tags_list()
         if orderered_tags:

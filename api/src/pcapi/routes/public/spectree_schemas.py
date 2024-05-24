@@ -1,4 +1,5 @@
 from spectree import SecurityScheme
+from spectree.models import Server
 
 from pcapi.serialization import utils as serialization_utils
 from pcapi.serialization.spec_tree import ExtendedSpecTree
@@ -7,6 +8,13 @@ from pcapi.validation.routes import users_authentifications
 from .documentation_constants import descriptions
 from .documentation_constants import tags
 
+
+_INTEGRATION_SERVER = Server(
+    url="https://backend.integration.passculture.pro", description="Integration test server", variables=None
+)
+_PRODUCTION_SERVER = Server(url="https://backend.passculture.app", description="Production server", variables=None)
+
+_servers = [_INTEGRATION_SERVER, _PRODUCTION_SERVER]
 
 # Schema of current public API
 public_api_schema = ExtendedSpecTree(
@@ -24,6 +32,7 @@ public_api_schema = ExtendedSpecTree(
             data={"type": "http", "scheme": "bearer", "description": "Api key issued by passculture"},  # type: ignore [arg-type]
         ),
     ],
+    servers=_servers,
     humanize_operation_id=True,
 )
 
@@ -44,6 +53,7 @@ deprecated_public_api_schema = ExtendedSpecTree(
             name=users_authentifications.COOKIE_AUTH_NAME, data={"type": "apiKey", "in": "cookie", "name": "session"}  # type: ignore [arg-type]
         ),
     ],
+    servers=_servers,
     humanize_operation_id=True,
     version="0.1",
 )

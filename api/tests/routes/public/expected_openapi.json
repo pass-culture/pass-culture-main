@@ -11276,7 +11276,12 @@
     "security": [],
     "servers": [
         {
-            "url": "http://localhost:5001"
+            "description": "Integration test server",
+            "url": "https://backend.integration.passculture.pro"
+        },
+        {
+            "description": "Production server",
+            "url": "https://backend.passculture.app"
         }
     ],
     "tags": [
