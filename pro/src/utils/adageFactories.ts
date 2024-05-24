@@ -136,7 +136,7 @@ export const defaultUseStatsReturn = {
 }
 
 const hit = {
-  objectID: '481',
+  objectID: 'T-481',
   offer: {
     dates: [new Date('2021-09-29T13:54:30+00:00').valueOf()],
     name: 'titre',
@@ -147,7 +147,7 @@ const hit = {
     publicName: 'lieu public',
   },
   _highlightResult: {},
-  isTemplate: false,
+  isTemplate: true,
   __queryID: 'queryId',
   __position: 0,
 }

@@ -7,6 +7,8 @@ export const GET_CLASSROOM_PLAYLIST_QUERY_KEY = 'getClassroomPlaylist'
 export const GET_COLLECTIVE_OFFER_QUERY_KEY = 'getCollectiveOffer'
 export const GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY =
   'getCollectiveOfferTemplate'
+export const GET_COLLECTIVE_OFFER_TEMPLATES_QUERY_KEY =
+  'getCollectiveOfferTemplates'
 export const GET_COLLECTIVE_OFFERS_FOR_INSTITUTION_QUERY_KEY =
   'getCollectiveOffersForMyInstitution'
 export const GET_COLLECTIVE_OFFERS_QUERY_KEY = 'getCollectiveOffers'
