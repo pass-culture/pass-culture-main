@@ -15,7 +15,7 @@ from pcapi.validation.routes.users_authentifications import api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     deprecated=True,
-    tags=[tags.COLLECTIVE_CATEGORIES],
+    tags=[tags.COLLECTIVE_CATEGORIES_TAG],
     resp=SpectreeResponse(
         HTTP_200=(
             offers_serialization.CollectiveOffersListCategoriesResponseModel,
@@ -46,7 +46,7 @@ def list_categories() -> offers_serialization.CollectiveOffersListCategoriesResp
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     deprecated=True,
-    tags=[tags.COLLECTIVE_CATEGORIES],
+    tags=[tags.COLLECTIVE_CATEGORIES_TAG],
     resp=SpectreeResponse(
         HTTP_200=(
             offers_serialization.CollectiveOffersListSubCategoriesResponseModel,
