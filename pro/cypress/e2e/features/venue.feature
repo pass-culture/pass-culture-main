@@ -24,6 +24,6 @@ Feature: Create and update venue
     When I go to the venue page in Individual section
     And I update Individual section data
     Then Individual section data should be updated
-    When I go to the venue page in Paramètre de l'activité
-    And I update Paramètre de l'activité data
-    Then Paramètre de l'activité data should be updated
+    When I go to the venue page in Paramètres généraux
+    And I update Paramètres généraux data
+    Then Paramètres généraux data should be updated

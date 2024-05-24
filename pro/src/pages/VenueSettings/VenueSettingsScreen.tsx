@@ -170,7 +170,7 @@ export const VenueSettingsFormScreen = ({
         Retour vers la page précédente
       </Button>
 
-      <h1 className={styles['title']}>Paramètres de l’activité</h1>
+      <h1 className={styles['title']}>Paramètres généraux</h1>
 
       <FormikProvider value={formik}>
         <form onSubmit={formik.handleSubmit}>
