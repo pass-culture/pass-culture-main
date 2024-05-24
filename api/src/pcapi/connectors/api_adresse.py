@@ -40,6 +40,10 @@ class InvalidFormatException(AdresseException):
     pass
 
 
+class RateLimitExceeded(AdresseApiException):
+    pass
+
+
 class AddressInfo(pydantic_v1.BaseModel):
     id: str
     label: str
@@ -256,6 +260,8 @@ class ApiAdresseBackend(BaseBackend):
             raise AdresseApiException("Adresse API is unavailable")
         if response.status_code == 400:
             raise InvalidFormatException()
+        if response.status_code == 429:
+            raise RateLimitExceeded("Rate limit exceeded from API Adresse")
         if response.status_code != 200:
             raise AdresseApiException(f"Unexpected {response.status_code} response from Adresse API: {url}")
 
