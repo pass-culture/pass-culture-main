@@ -9,12 +9,33 @@ Given('I go to adage login page with valid token', () => {
 
 When('I open adage iframe', () => {
   const adageToken = Cypress.env('adageToken')
+  cy.intercept({
+    method: 'GET',
+    url: '/adage-iframe/playlists/new_template_offers',
+  }).as('new_template_offers')
   cy.visit(`/adage-iframe?token=${adageToken}`)
+  cy.wait('@new_template_offers').its('response.statusCode').should('eq', 200)
+  cy.findAllByTestId('spinner').should('not.exist')
+})
+
+When('I open adage iframe with venue', () => {
+  const adageToken = Cypress.env('adageToken')
+  cy.visit(`/adage-iframe?token=${adageToken}&venue=1`)
+  cy.findAllByTestId('spinner').should('not.exist')
 })
 
 When('I open adage iframe with search page', () => {
   const adageToken = Cypress.env('adageToken')
-  cy.visit(`/adage-iframe?token=${adageToken}&venue=1`)
+  cy.setFeatureFlags([
+    { name: 'WIP_ENABLE_ADAGE_VISUALIZATION', isActive: true },
+  ])
+  cy.intercept({
+    method: 'GET',
+    url: '/adage-iframe/collective/offers-template/**',
+  }).as('offers_template')
+  cy.visit(`/adage-iframe/recherche?token=${adageToken}`)
+  cy.wait('@offers_template').its('response.statusCode').should('eq', 200)
+  cy.findAllByTestId('spinner').should('not.exist')
 })
 
 When('I select first card domain', () => {
@@ -61,8 +82,15 @@ When('I add first offer to favorites', () => {
       }).as('fav-offer')
       cy.findAllByTestId('favorite-inactive').first().click()
       cy.wait('@fav-offer').its('response.statusCode').should('eq', 204)
-      cy.contains('Ajouté à vos favoris')
+      cy.findByTestId('global-notification-success').should(
+        'contain',
+        'Ajouté à vos favoris'
+      )
     })
+})
+
+When('I chose grid view', () => {
+  cy.findAllByTestId('toggle-button').click()
 })
 
 Then('the banner is displayed', () => {
@@ -73,17 +101,23 @@ Then('the banner is displayed', () => {
 
 Then('the first offer should be added to favorites', () => {
   cy.contains('Mes Favoris').click()
-
   cy.contains(offerText)
 })
 
-When('the last added favorite is unselected', () => {
+When('the first favorite is unselected', () => {
   // à part de là c'est du afterScenario : on désélectionne le favori
   cy.findByRole('link', { name: 'Découvrir' }).click()
-
-  cy.reload()
-
+  // cy.reload()
+  cy.intercept({
+    method: 'DELETE',
+    url: '/adage-iframe/collective/template/**/favorites',
+  }).as('delete_fav')
   cy.findAllByTestId('favorite-active').first().click()
+  cy.wait('@delete_fav').its('response.statusCode').should('eq', 204)
+  cy.findByTestId('global-notification-success').should(
+    'contain',
+    'Supprimé de vos favoris'
+  )
 })
 
 Then('the iframe should be displayed correctly', () => {
@@ -129,7 +163,16 @@ Then('I see no offer', () => {
   cy.findByText('Nous n’avons trouvé aucune offre publiée')
 })
 
+Then('offer descriptions are not displayed', () => {
+  cy.findAllByTestId('offer-listitem')
+  cy.findAllByTestId('offer-description').should('not.exist')
+})
+
+Then('offer descriptions are displayed', () => {
+  cy.findAllByTestId('offer-listitem')
+  cy.findAllByTestId('offer-description').should('exist')
+})
+
 When('I go to {string} menu', (menu: string) => {
   cy.contains(menu).click()
 })
-
