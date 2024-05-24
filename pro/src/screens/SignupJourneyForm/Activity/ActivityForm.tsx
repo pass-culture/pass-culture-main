@@ -69,6 +69,7 @@ export const ActivityForm = ({
                   name={`socialUrls[${index}]`}
                   label="Site internet, réseau social"
                   placeholder="https://www.siteinternet.com"
+                  data-testid="activity-form-social-url"
                   type="url"
                   className={styles['url-input']}
                   isLabelHidden={index !== 0}
