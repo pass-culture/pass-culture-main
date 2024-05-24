@@ -2,7 +2,7 @@ from pcapi.core.educational.api.institution import search_educational_institutio
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.collective.blueprint import collective_offers_blueprint
 from pcapi.routes.public.collective.serialization import institutions as institutions_serialization
-from pcapi.routes.public.collective.serialization import offers as offers_serialization
+from pcapi.routes.public.documentation_constants import http_responses
 from pcapi.routes.public.documentation_constants import tags
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
@@ -14,18 +14,16 @@ from pcapi.validation.routes.users_authentifications import api_key_required
     api=spectree_schemas.public_api_schema,
     tags=[tags.COLLECTIVE_EDUCATIONAL_DATA_TAG],
     resp=SpectreeResponse(
-        HTTP_200=(
-            institutions_serialization.CollectiveOffersListEducationalInstitutionResponseModel,
-            "La liste des établissement scolaires éligibles.",
-        ),
-        HTTP_400=(
-            offers_serialization.ErrorResponseModel,
-            "Requête malformée",
-        ),
-        HTTP_401=(
-            offers_serialization.AuthErrorResponseModel,
-            "Authentification nécessaire",
-        ),
+        **(
+            {
+                "HTTP_200": (
+                    institutions_serialization.CollectiveOffersListEducationalInstitutionResponseModel,
+                    "La liste des établissement scolaires éligibles.",
+                ),
+            }
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+            | http_responses.HTTP_400_BAD_REQUEST
+        )
     ),
 )
 @api_key_required
