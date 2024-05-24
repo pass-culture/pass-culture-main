@@ -33,9 +33,10 @@ from pcapi.validation.routes.users_authentifications import current_api_key
 )
 @api_key_required
 def cancel_collective_booking(booking_id: int) -> None:
-    # in French, to be used by Swagger for the API documentation
     """
     Cancel collective booking
+
+    Cancel an collective event booking.
     """
     booking = _get_booking(booking_id)
     if not booking:

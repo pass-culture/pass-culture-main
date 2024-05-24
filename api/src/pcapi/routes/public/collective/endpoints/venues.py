@@ -21,7 +21,7 @@ from pcapi.validation.routes.users_authentifications import current_api_key
             {
                 "HTTP_200": (
                     serialization.CollectiveOffersListVenuesResponseModel,
-                    "La liste des lieux ou vous pouvez créer une offre.",
+                    http_responses.HTTP_200_MESSAGE,
                 )
             }
             | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
@@ -30,11 +30,10 @@ from pcapi.validation.routes.users_authentifications import current_api_key
 )
 @api_key_required
 def list_venues() -> serialization.CollectiveOffersListVenuesResponseModel:
-    # in French, to be used by Swagger for the API documentation
     """
-    Récupération de la liste des lieux associés au fournisseur authentifiée par le jeton d'API.
+    Get all venues
 
-    Tous les lieux enregistrés, sont listés ici avec leurs coordonnées.
+    Get all venues linked to your API key.
     """
     venues = providers_repository.get_providers_venues(current_api_key.providerId)
 
@@ -53,7 +52,7 @@ def list_venues() -> serialization.CollectiveOffersListVenuesResponseModel:
             {
                 "HTTP_200": (
                     venues_serialization.GetOfferersVenuesResponse,
-                    "La liste des lieux, groupés par structures",
+                    http_responses.HTTP_200_MESSAGE,
                 )
             }
             | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
