@@ -2,7 +2,7 @@
 title: Pass Culture API change logs
 ---
 
-# Changes logs
+# Change logs
 
 ## January 2023
 
