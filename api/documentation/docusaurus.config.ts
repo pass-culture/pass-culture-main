@@ -3,16 +3,49 @@ import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 import type * as Redocusaurus from 'redocusaurus';
 
+const getOpenAPIJsonUrlFromEnv = (): string => {
+  const env = process.env['ENV'];
 
+  if (env === 'testing') {
+    return 'https://backend.testing.passculture.team/openapi.json';
+  }
+
+  if (env === 'staging') {
+    return 'https://backend.staging.passculture.team/openapi.json';
+  }
+
+  if (env === 'production') {
+    return 'https://backend.passculture.pro/openapi.json';
+  }
+
+  return 'http://localhost/openapi.json';
+}
+
+
+const getDocumentationBaseUrlFromEnv = (): string => {
+  const env = process.env['ENV'];
+
+  if (env === 'testing') {
+    return 'https://developers.testing.passculture.team';
+  }
+
+  if (env === 'staging') {
+    return 'https://developers.staging.passculture.team';
+  }
+
+  if (env === 'production') {
+    return 'https://developers.passculture.pro';
+  }
+
+  return 'http://localhost:3000';
+}
 const config: Config = {
   title: 'Pass culture documentation',
   tagline: '',
   favicon: 'img/favicon.ico',
 
-  // Set the production url of your site here
-  url: 'https://your-docusaurus-site.example.com', // TODO : make it env dependent
-  // Set the /<baseUrl>/ pathname under which your site is served
-  // For GitHub pages deployment, it is often '/<projectName>/'
+
+  url: getDocumentationBaseUrlFromEnv(),
   baseUrl: '/',
 
   organizationName: 'Pass Culture',
@@ -21,9 +54,6 @@ const config: Config = {
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
 
-  // Even if you don't use internationalization, you can use this field to set
-  // useful metadata like html lang. For example, if your site is Chinese, you
-  // may want to replace "en" with "zh-Hans".
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],
@@ -36,9 +66,6 @@ const config: Config = {
         docs: {
           sidebarPath: './sidebars.ts',
         },
-        blog: {
-          showReadingTime: true,
-        },
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -48,17 +75,13 @@ const config: Config = {
     [
       'redocusaurus',
       {
-        // Plugin Options for loading OpenAPI files
         specs: [
-          // You can also pass it a OpenAPI spec URL
           {
-            spec: 'http://localhost/openapi.json', // TODO : Make it env dependent
+            spec: getOpenAPIJsonUrlFromEnv(),
             route: '/rest-api/',
           },
         ],
-        // Theme Options for modifying how redoc renders them
         theme: {
-          // Change with your site colors
           primaryColor: '#6123df',
         },
       },
