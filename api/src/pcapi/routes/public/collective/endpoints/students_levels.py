@@ -18,7 +18,7 @@ from pcapi.validation.routes.users_authentifications import api_key_required
             {
                 "HTTP_200": (
                     students_levels_serialization.CollectiveOffersListStudentLevelsResponseModel,
-                    "La liste des domaines d'éducation.",
+                    http_responses.HTTP_200_MESSAGE,
                 )
             }
             | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
@@ -27,8 +27,9 @@ from pcapi.validation.routes.users_authentifications import api_key_required
 )
 @api_key_required
 def list_students_levels() -> students_levels_serialization.CollectiveOffersListStudentLevelsResponseModel:
-    # in French, to be used by Swagger for the API documentation
-    """Récupération de la liste des publics cibles pour lesquelles des offres collectives peuvent être proposées."""
+    """
+    Get student levels eligible for collective offers
+    """
     return students_levels_serialization.CollectiveOffersListStudentLevelsResponseModel(
         __root__=[
             students_levels_serialization.CollectiveOffersStudentLevelResponseModel(
