@@ -21,7 +21,7 @@ export const VenueEditionFormScreen = ({
       <Callout title="Ce lieu vous permet uniquement de créer des offres numériques, il n’est pas visible sur l’application pass Culture.">
         Vous n’avez pas d’informations à remplir à destination du grand public.
         Si vous souhaitez modifier d’autres informations, vous pouvez vous
-        rendre dans la page "Paramètres de l’activité".
+        rendre dans la page "Paramètres généraux".
       </Callout>
     )
   }
