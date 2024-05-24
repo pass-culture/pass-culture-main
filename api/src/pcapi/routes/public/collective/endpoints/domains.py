@@ -2,7 +2,7 @@ from pcapi.core.educational import repository as educational_repository
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.collective.blueprint import collective_offers_blueprint
 from pcapi.routes.public.collective.serialization import domains as domains_serialization
-from pcapi.routes.public.collective.serialization import offers as offers_serialization
+from pcapi.routes.public.documentation_constants import http_responses
 from pcapi.routes.public.documentation_constants import tags
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
@@ -15,14 +15,15 @@ from pcapi.validation.routes.users_authentifications import api_key_required
     api=spectree_schemas.public_api_schema,
     tags=[tags.COLLECTIVE_EDUCATIONAL_DATA_TAG],
     resp=SpectreeResponse(
-        HTTP_200=(
-            domains_serialization.CollectiveOffersListDomainsResponseModel,
-            "La liste des domaines d'éducation.",
-        ),
-        HTTP_401=(
-            offers_serialization.AuthErrorResponseModel,
-            "Authentification nécessaire",
-        ),
+        **(
+            {
+                "HTTP_200": (
+                    domains_serialization.CollectiveOffersListDomainsResponseModel,
+                    "La liste des domaines d'éducation.",
+                ),
+            }
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+        )
     ),
 )
 @api_key_required

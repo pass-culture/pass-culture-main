@@ -16,6 +16,7 @@ from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public import utils
 from pcapi.routes.public.collective.blueprint import collective_offers_blueprint
 from pcapi.routes.public.collective.serialization import offers as offers_serialization
+from pcapi.routes.public.documentation_constants import http_responses
 from pcapi.routes.public.documentation_constants import tags
 from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.serialization.decorator import spectree_serialize
@@ -25,26 +26,19 @@ from pcapi.validation.routes.users_authentifications import api_key_required
 from pcapi.validation.routes.users_authentifications import current_api_key
 
 
-BASE_CODE_DESCRIPTIONS = {
-    "HTTP_401": (offers_serialization.AuthErrorResponseModel, "Authentification nécessaire"),
-    "HTTP_403": (
-        offers_serialization.ErrorResponseModel,
-        "Vous n'avez pas les droits nécessaires pour voir cette offre collective",
-    ),
-    "HTTP_404": (offers_serialization.ErrorResponseModel, "L'offre collective n'existe pas"),
-}
-
-
 @collective_offers_blueprint.route("/collective/offers/", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.COLLECTIVE_OFFERS_TAG],
     resp=SpectreeResponse(
-        **(BASE_CODE_DESCRIPTIONS),
-        HTTP_200=(
-            offers_serialization.CollectiveOffersListResponseModel,
-            "L'offre collective existe",
-        ),
+        **(
+            {
+                "HTTP_200": (offers_serialization.CollectiveOffersListResponseModel, http_responses.HTTP_200_MESSAGE),
+            }
+            # errors
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+            | http_responses.HTTP_404_COLLECTIVE_OFFER_NOT_FOUND
+        )
     ),
 )
 @api_key_required
@@ -76,11 +70,14 @@ def get_collective_offers_public(
     api=spectree_schemas.public_api_schema,
     tags=[tags.COLLECTIVE_OFFERS_TAG],
     resp=SpectreeResponse(
-        **(BASE_CODE_DESCRIPTIONS),
-        HTTP_200=(
-            offers_serialization.GetPublicCollectiveOfferResponseModel,
-            "L'offre collective existe",
-        ),
+        **(
+            {"HTTP_200": (offers_serialization.GetPublicCollectiveOfferResponseModel, "L'offre collective existe")}
+            # errors
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+            | http_responses.HTTP_400_BAD_REQUEST
+            | http_responses.HTTP_403_COLLECTIVE_OFFER_INSUFFICIENT_RIGHTS
+            | http_responses.HTTP_404_COLLECTIVE_OFFER_NOT_FOUND
+        )
     ),
 )
 @api_key_required
@@ -125,21 +122,13 @@ def get_collective_offer_public(
                 "HTTP_201": (
                     offers_serialization.GetPublicCollectiveOfferResponseModel,
                     "L'offre collective à été créée avec succes",
-                ),
-                "HTTP_400": (offers_serialization.ErrorResponseModel, "Requête malformée"),
-                "HTTP_401": (
-                    offers_serialization.AuthErrorResponseModel,
-                    "Authentification nécessaire",
-                ),
-                "HTTP_403": (
-                    offers_serialization.ErrorResponseModel,
-                    "Non éligible pour les offres collectives",
-                ),
-                "HTTP_404": (
-                    offers_serialization.ErrorResponseModel,
-                    "L'une des resources pour la création de l'offre n'a pas été trouvée",
-                ),
+                )
             }
+            # errors
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+            | http_responses.HTTP_400_BAD_REQUEST
+            | http_responses.HTTP_403_COLLECTIVE_OFFER_INACTIVE_INSTITUTION
+            | http_responses.HTTP_404_SOME_RESOURCE_NOT_FOUND
         )
     ),
 )
@@ -267,24 +256,12 @@ def post_collective_offer_public(
                     offers_serialization.GetPublicCollectiveOfferResponseModel,
                     "L'offre collective à été édité avec succes",
                 ),
-                "HTTP_400": (offers_serialization.ErrorResponseModel, "Requête malformée"),
-                "HTTP_401": (
-                    offers_serialization.AuthErrorResponseModel,
-                    "Authentification nécessaire",
-                ),
-                "HTTP_403": (
-                    offers_serialization.ErrorResponseModel,
-                    "Vous n'avez pas les droits nécessaires pour éditer cette offre collective",
-                ),
-                "HTTP_404": (
-                    offers_serialization.ErrorResponseModel,
-                    "L'une des resources pour la création de l'offre n'a pas été trouvée",
-                ),
-                "HTTP_422": (
-                    offers_serialization.ErrorResponseModel,
-                    "Cetains champs ne peuvent pas être édités selon l'état de l'offre",
-                ),
             }
+            # errors
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+            | http_responses.HTTP_400_BAD_REQUEST
+            | http_responses.HTTP_403_COLLECTIVE_OFFER_INSUFFICIENT_RIGHTS
+            | http_responses.HTTP_404_SOME_RESOURCE_NOT_FOUND
         )
     ),
 )
@@ -559,7 +536,7 @@ def patch_collective_offer_public(
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.COLLECTIVE_OFFERS_TAG],
-    resp=SpectreeResponse(**(BASE_CODE_DESCRIPTIONS)),
+    resp=SpectreeResponse(**(http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS)),
 )
 @api_key_required
 def get_offers_formats() -> offers_serialization.GetCollectiveFormatListModel:

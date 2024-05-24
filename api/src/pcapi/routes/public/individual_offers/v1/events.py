@@ -49,12 +49,10 @@ def _deserialize_has_ticket(
     response_model=serialization.EventOfferResponse,
     resp=SpectreeResponse(
         **(
-            http_responses.BASE_CODE_DESCRIPTIONS
+            http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+            | http_responses.HTTP_400_BAD_REQUEST
+            | http_responses.HTTP_404_VENUE_NOT_FOUND
             | {
-                "HTTP_400": (
-                    None,
-                    "The request is invalid. The response body contains a list of errors.",
-                ),
                 "HTTP_200": (serialization.EventOfferResponse, "The event offer has been created successfully"),
             }
         )
@@ -115,14 +113,10 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
     response_model=serialization.EventOfferResponse,
     resp=SpectreeResponse(
         **(
-            http_responses.BASE_CODE_DESCRIPTIONS
-            | {
-                "HTTP_404": (
-                    None,
-                    "The event offer could not be found.",
-                ),
-                "HTTP_200": (serialization.EventOfferResponse, "The event offer has been returned"),
-            }
+            {"HTTP_200": (serialization.EventOfferResponse, "The event offer has been returned")}
+            # errors
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+            | http_responses.HTTP_404_EVENT_NOT_FOUND
         )
     ),
 )
@@ -151,14 +145,10 @@ def get_event(event_id: int) -> serialization.EventOfferResponse:
     response_model=serialization.EventOffersResponse,
     resp=SpectreeResponse(
         **(
-            http_responses.BASE_CODE_DESCRIPTIONS
-            | {
-                "HTTP_404": (
-                    None,
-                    "The venue could not be found.",
-                ),
-                "HTTP_200": (serialization.EventOffersResponse, "The event offers have been returned"),
-            }
+            {"HTTP_200": (serialization.EventOffersResponse, "The event offers have been returned")}
+            # errors
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+            | http_responses.HTTP_404_VENUE_NOT_FOUND
         )
     ),
 )
@@ -187,18 +177,11 @@ def get_events(query: serialization.GetOffersQueryParams) -> serialization.Event
     response_model=serialization.EventOfferResponse,
     resp=SpectreeResponse(
         **(
-            http_responses.BASE_CODE_DESCRIPTIONS
-            | {
-                "HTTP_404": (
-                    None,
-                    "The event offer could not be found.",
-                ),
-                "HTTP_400": (
-                    None,
-                    "The request is invalid. The response body contains a list of errors.",
-                ),
-                "HTTP_200": (serialization.EventOfferResponse, "The event offer has been returned"),
-            }
+            {"HTTP_200": (serialization.EventOfferResponse, "The event offer has been returned")}
+            # errors
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+            | http_responses.HTTP_400_BAD_REQUEST
+            | http_responses.HTTP_404_EVENT_NOT_FOUND
         )
     ),
 )
@@ -254,18 +237,11 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
     response_model=serialization.PriceCategoriesResponse,
     resp=SpectreeResponse(
         **(
-            http_responses.BASE_CODE_DESCRIPTIONS
-            | {
-                "HTTP_404": (
-                    None,
-                    "The event offer could not be found.",
-                ),
-                "HTTP_400": (
-                    None,
-                    "The request is invalid. The response body contains a list of errors. Or one of the price categories already exists.",
-                ),
-                "HTTP_200": (serialization.PriceCategoriesResponse, "The price category has been created successfully"),
-            }
+            {"HTTP_200": (serialization.PriceCategoriesResponse, "The price category has been created successfully")}
+            # errors
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+            | http_responses.HTTP_400_BAD_REQUEST
+            | http_responses.HTTP_404_EVENT_NOT_FOUND
         )
     ),
 )
@@ -309,18 +285,11 @@ def post_event_price_categories(
     response_model=serialization.PriceCategoryResponse,
     resp=SpectreeResponse(
         **(
-            http_responses.BASE_CODE_DESCRIPTIONS
-            | {
-                "HTTP_404": (
-                    None,
-                    "The event offer or the price category could not be found.",
-                ),
-                "HTTP_400": (
-                    None,
-                    "The request is invalid. The response body contains a list of errors.",
-                ),
-                "HTTP_200": (serialization.PriceCategoryResponse, "The price category has been modified successfully"),
-            }
+            {"HTTP_200": (serialization.PriceCategoryResponse, "The price category has been modified successfully")}
+            # errors
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+            | http_responses.HTTP_400_BAD_REQUEST
+            | http_responses.HTTP_404_PRICE_CATEGORY_OR_EVENT_NOT_FOUND
         )
     ),
 )
@@ -372,18 +341,11 @@ def patch_event_price_categories(
     response_model=serialization.PostDatesResponse,
     resp=SpectreeResponse(
         **(
-            http_responses.BASE_CODE_DESCRIPTIONS
-            | {
-                "HTTP_404": (
-                    None,
-                    "The event offer or the price category could not be found.",
-                ),
-                "HTTP_400": (
-                    None,
-                    "The request is invalid. The response body contains a list of errors.",
-                ),
-                "HTTP_200": (serialization.PostDatesResponse, "The event dates have been created successfully"),
-            }
+            {"HTTP_200": (serialization.PostDatesResponse, "The event dates have been created successfully")}
+            # errors
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+            | http_responses.HTTP_400_BAD_REQUEST
+            | http_responses.HTTP_404_PRICE_CATEGORY_OR_EVENT_NOT_FOUND
         )
     ),
 )
@@ -438,18 +400,11 @@ def post_event_dates(event_id: int, body: serialization.DatesCreation) -> serial
     response_model=serialization.GetDatesResponse,
     resp=SpectreeResponse(
         **(
-            http_responses.BASE_CODE_DESCRIPTIONS
-            | {
-                "HTTP_404": (
-                    None,
-                    "The event offer or the price category could not be found.",
-                ),
-                "HTTP_400": (
-                    None,
-                    "The request is invalid. The response body contains a list of errors.",
-                ),
-                "HTTP_200": (serialization.GetDatesResponse, "The event dates have been returned"),
-            }
+            {"HTTP_200": (serialization.GetDatesResponse, "The event dates have been returned")}
+            # errors
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+            | http_responses.HTTP_400_BAD_REQUEST
+            | http_responses.HTTP_404_PRICE_CATEGORY_OR_EVENT_NOT_FOUND
         )
     ),
 )
@@ -494,18 +449,11 @@ def get_event_dates(event_id: int, query: serialization.GetDatesQueryParams) -> 
     on_success_status=204,
     resp=SpectreeResponse(
         **(
-            http_responses.BASE_CODE_DESCRIPTIONS
-            | {
-                "HTTP_404": (
-                    None,
-                    "The event offer or the price category could not be found.",
-                ),
-                "HTTP_400": (
-                    None,
-                    "The request is invalid. The response body contains a list of errors.",
-                ),
-                "HTTP_204": (None, "The event date has been deleted successfully"),
-            }
+            {"HTTP_204": (None, "The event date has been deleted successfully")}
+            # errors
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+            | http_responses.HTTP_400_BAD_REQUEST
+            | http_responses.HTTP_404_PRICE_CATEGORY_OR_EVENT_NOT_FOUND
         )
     ),
 )
@@ -541,18 +489,11 @@ def delete_event_date(event_id: int, date_id: int) -> None:
     response_model=serialization.DateResponse,
     resp=SpectreeResponse(
         **(
-            http_responses.BASE_CODE_DESCRIPTIONS
-            | {
-                "HTTP_404": (
-                    None,
-                    "The event offer or the price category could not be found.",
-                ),
-                "HTTP_400": (
-                    None,
-                    "The request is invalid. The response body contains a list of errors.",
-                ),
-                "HTTP_200": (serialization.DateResponse, "The event date has been modified successfully"),
-            }
+            {"HTTP_200": (serialization.DateResponse, "The event date has been modified successfully")}
+            # errors
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+            | http_responses.HTTP_400_BAD_REQUEST
+            | http_responses.HTTP_404_PRICE_CATEGORY_OR_EVENT_NOT_FOUND
         )
     ),
 )
@@ -624,10 +565,9 @@ def patch_event_date(
     response_model=serialization.GetEventCategoriesResponse,
     resp=SpectreeResponse(
         **(
-            http_responses.BASE_CODE_DESCRIPTIONS
-            | {
-                "HTTP_200": (serialization.GetEventCategoriesResponse, "The event categories have been returned"),
-            }
+            {"HTTP_200": (serialization.GetEventCategoriesResponse, "The event categories have been returned")}
+            # errors
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
         )
     ),
 )

@@ -9,7 +9,7 @@ import pcapi.core.providers.models as providers_models
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.collective.blueprint import collective_offers_blueprint
-from pcapi.routes.public.collective.serialization import offers as offers_serialization
+from pcapi.routes.public.documentation_constants import http_responses
 from pcapi.routes.public.documentation_constants import tags
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
@@ -23,11 +23,12 @@ from pcapi.validation.routes.users_authentifications import current_api_key
     tags=[tags.COLLECTIVE_BOOKING_TAG],
     on_success_status=204,
     resp=SpectreeResponse(
-        HTTP_204=(None, "Annuler une réservation collective"),
-        HTTP_401=(
-            offers_serialization.AuthErrorResponseModel,
-            "Authentification nécessaire",
-        ),
+        **(
+            http_responses.HTTP_204_COLLECTIVE_BOOKING_CANCELLATION_SUCCESS
+            # errors
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+            | http_responses.HTTP_400_BAD_REQUEST
+        )
     ),
 )
 @api_key_required

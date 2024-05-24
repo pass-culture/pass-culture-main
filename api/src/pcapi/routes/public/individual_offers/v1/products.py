@@ -51,10 +51,9 @@ logger = logging.getLogger(__name__)
     response_model=venues_serialization.GetOfferersVenuesResponse,
     resp=SpectreeResponse(
         **(
-            http_responses.BASE_CODE_DESCRIPTIONS
-            | {
-                "HTTP_200": (venues_serialization.GetOfferersVenuesResponse, "The offerer and its venues"),
-            }
+            {"HTTP_200": (venues_serialization.GetOfferersVenuesResponse, http_responses.HTTP_200_MESSAGE)}
+            # errors
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
         )
     ),
 )
@@ -78,10 +77,9 @@ def get_offerer_venues(
     response_model=serialization.GetShowTypesResponse,
     resp=SpectreeResponse(
         **(
-            http_responses.BASE_CODE_DESCRIPTIONS
-            | {
-                "HTTP_200": (serialization.GetShowTypesResponse, "The show types have been returned"),
-            }
+            {"HTTP_200": (serialization.GetShowTypesResponse, http_responses.HTTP_200_MESSAGE)}
+            # errors
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
         )
     ),
 )
@@ -108,10 +106,9 @@ def get_show_types() -> serialization.GetShowTypesResponse:
     deprecated=True,
     resp=SpectreeResponse(
         **(
-            http_responses.BASE_CODE_DESCRIPTIONS
-            | {
-                "HTTP_200": (serialization.GetMusicTypesResponse, "The music types have been returned"),
-            }
+            {"HTTP_200": (serialization.GetMusicTypesResponse, http_responses.HTTP_200_MESSAGE)}
+            # errors
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
         )
     ),
 )
@@ -140,10 +137,9 @@ def get_music_types() -> serialization.GetMusicTypesResponse:
     response_model=serialization.GetMusicTypesResponse,
     resp=SpectreeResponse(
         **(
-            http_responses.BASE_CODE_DESCRIPTIONS
-            | {
-                "HTTP_200": (serialization.GetMusicTypesResponse, "The music types have been returned"),
-            }
+            {"HTTP_200": (serialization.GetMusicTypesResponse, http_responses.HTTP_200_MESSAGE)}
+            # errors
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
         )
     ),
 )
@@ -171,10 +167,9 @@ def get_all_titelive_music_types() -> serialization.GetMusicTypesResponse:
     response_model=serialization.GetMusicTypesResponse,
     resp=SpectreeResponse(
         **(
-            http_responses.BASE_CODE_DESCRIPTIONS
-            | {
-                "HTTP_200": (serialization.GetMusicTypesResponse, "The music types have been returned"),
-            }
+            {"HTTP_200": (serialization.GetMusicTypesResponse, http_responses.HTTP_200_MESSAGE)}
+            # errors
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
         )
     ),
 )
@@ -203,15 +198,11 @@ def get_event_titelive_music_types() -> serialization.GetMusicTypesResponse:
     response_model=serialization.ProductOfferResponse,
     resp=SpectreeResponse(
         **(
-            http_responses.BASE_CODE_DESCRIPTIONS
-            | {
-                "HTTP_404": (None, "No venue found for the used api key"),
-                "HTTP_400": (None, "The product offer could not be created"),
-                "HTTP_201": (
-                    serialization.ProductOfferResponse,
-                    "The product offer have been created successfully",
-                ),
-            }
+            {"HTTP_201": (serialization.ProductOfferResponse, "The product offer have been created successfully")}
+            # errors
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+            | http_responses.HTTP_400_BAD_REQUEST
+            | http_responses.HTTP_404_VENUE_NOT_FOUND
         )
     ),
 )
@@ -275,12 +266,11 @@ def post_product_offer(body: serialization.ProductOfferCreation) -> serializatio
     on_success_status=204,
     resp=SpectreeResponse(
         **(
-            http_responses.BASE_CODE_DESCRIPTIONS
-            | {
-                "HTTP_404": (None, "No venue found for the used api key"),
-                "HTTP_400": (None, "The product offers could not be created"),
-                "HTTP_204": (None, "The product offers have been created successfully"),
-            }
+            {"HTTP_204": (None, "The product offers have been created successfully")}
+            # errors
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+            | http_responses.HTTP_400_BAD_REQUEST
+            | http_responses.HTTP_404_VENUE_NOT_FOUND
         )
     ),
 )
@@ -508,11 +498,10 @@ def _create_offer_from_product(
     response_model=serialization.ProductOfferResponse,
     resp=SpectreeResponse(
         **(
-            http_responses.BASE_CODE_DESCRIPTIONS
-            | {
-                "HTTP_404": (None, "The product offer could not be found"),
-                "HTTP_200": (serialization.ProductOfferResponse, "The product offer"),
-            }
+            {"HTTP_200": (serialization.ProductOfferResponse, "The product offer")}
+            # errors
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+            | http_responses.HTTP_404_PRODUCT_NOT_FOUND
         )
     ),
 )
@@ -541,10 +530,9 @@ def get_product(product_id: int) -> serialization.ProductOfferResponse:
     response_model=serialization.ProductOffersByEanResponse,
     resp=SpectreeResponse(
         **(
-            http_responses.BASE_CODE_DESCRIPTIONS
-            | {
-                "HTTP_200": (serialization.ProductOffersByEanResponse, "The product offers"),
-            }
+            {"HTTP_200": (serialization.ProductOffersByEanResponse, "The product offers")}
+            # errors
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
         )
     ),
 )
@@ -590,11 +578,10 @@ def _retrieve_offer_by_eans_query(eans: list[str], venueId: int) -> sqla.orm.Que
     response_model=serialization.ProductOffersResponse,
     resp=SpectreeResponse(
         **(
-            http_responses.BASE_CODE_DESCRIPTIONS
-            | {
-                "HTTP_404": (None, "No venue found for the used api key"),
-                "HTTP_200": (serialization.ProductOffersResponse, "The product offers"),
-            }
+            {"HTTP_200": (serialization.ProductOffersResponse, "The product offers")}
+            # errors
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+            | http_responses.HTTP_404_VENUE_NOT_FOUND
         )
     ),
 )
@@ -638,15 +625,11 @@ def _check_offer_can_be_edited(offer: offers_models.Offer) -> None:
     response_model=serialization.ProductOfferResponse,
     resp=SpectreeResponse(
         **(
-            http_responses.BASE_CODE_DESCRIPTIONS
-            | {
-                "HTTP_404": (None, "The product offer could not be found"),
-                "HTTP_400": (None, "The product offer could not be edited"),
-                "HTTP_200": (
-                    serialization.ProductOfferResponse,
-                    "The product offer have been edited successfully",
-                ),
-            }
+            {"HTTP_200": (serialization.ProductOfferResponse, "The product offer have been edited successfully")}
+            # errors
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+            | http_responses.HTTP_400_BAD_REQUEST
+            | http_responses.HTTP_404_PRODUCT_NOT_FOUND
         )
     ),
 )
@@ -738,10 +721,9 @@ def _upsert_product_stock(
     response_model=serialization.GetProductCategoriesResponse,
     resp=SpectreeResponse(
         **(
-            http_responses.BASE_CODE_DESCRIPTIONS
-            | {
-                "HTTP_200": (serialization.GetProductCategoriesResponse, "The product categories have been returned"),
-            }
+            {"HTTP_200": (serialization.GetProductCategoriesResponse, "The product categories have been returned")}
+            # errors
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
         )
     ),
 )
@@ -767,12 +749,7 @@ def get_product_categories() -> serialization.GetProductCategoriesResponse:
     tags=[tags.IMAGE_TAG],
     on_success_status=204,
     resp=SpectreeResponse(
-        **(
-            http_responses.BASE_CODE_DESCRIPTIONS
-            | {
-                "HTTP_204": (None, "Image updated successfully"),
-            }
-        ),
+        **({"HTTP_204": (None, "Image updated successfully")} | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS),
     ),
 )
 @api_key_required

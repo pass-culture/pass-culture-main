@@ -2,8 +2,8 @@ from pcapi.core.offerers import api as offerers_api
 from pcapi.core.providers import repository as providers_repository
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.collective.blueprint import collective_offers_blueprint
-from pcapi.routes.public.collective.serialization import offers as offers_serialization
 from pcapi.routes.public.collective.serialization import venues as serialization
+from pcapi.routes.public.documentation_constants import http_responses
 from pcapi.routes.public.documentation_constants import tags
 import pcapi.routes.public.serialization.venues as venues_serialization
 from pcapi.serialization.decorator import spectree_serialize
@@ -17,14 +17,15 @@ from pcapi.validation.routes.users_authentifications import current_api_key
     api=spectree_schemas.public_api_schema,
     tags=[tags.COLLECTIVE_VENUES_TAG],
     resp=SpectreeResponse(
-        HTTP_200=(
-            serialization.CollectiveOffersListVenuesResponseModel,
-            "La liste des lieux ou vous pouvez créer une offre.",
-        ),
-        HTTP_401=(
-            offers_serialization.AuthErrorResponseModel,
-            "Authentification nécessaire",
-        ),
+        **(
+            {
+                "HTTP_200": (
+                    serialization.CollectiveOffersListVenuesResponseModel,
+                    "La liste des lieux ou vous pouvez créer une offre.",
+                )
+            }
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+        )
     ),
 )
 @api_key_required
@@ -48,14 +49,15 @@ def list_venues() -> serialization.CollectiveOffersListVenuesResponseModel:
     tags=[tags.COLLECTIVE_VENUES_TAG],
     deprecated=True,
     resp=SpectreeResponse(
-        HTTP_200=(
-            venues_serialization.GetOfferersVenuesResponse,
-            "La liste des lieux, groupés par structures",
-        ),
-        HTTP_401=(
-            offers_serialization.AuthErrorResponseModel,
-            "Authentification nécessaire",
-        ),
+        **(
+            {
+                "HTTP_200": (
+                    venues_serialization.GetOfferersVenuesResponse,
+                    "La liste des lieux, groupés par structures",
+                )
+            }
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+        )
     ),
 )
 @api_key_required
