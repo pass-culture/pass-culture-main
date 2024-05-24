@@ -44,37 +44,37 @@ When('I choose a venue which already has a Siret', () => {
   cy.findByText('Ce lieu possède un SIRET').click()
 })
 
-When("I add a valid Siret", () => {
-    cy.findByLabelText('SIRET du lieu *').type(siret)
-    cy.wait('@getSiret')
-      .its('response.statusCode').should('eq', 200)
-      // TODO vérifier aussi dans le body de la réponse si le Siret est valide?
-});
+When('I add a valid Siret', () => {
+  cy.findByLabelText('SIRET du lieu *').type(siret)
+  cy.wait('@getSiret').its('response.statusCode').should('eq', 200)
+  // TODO vérifier aussi dans le body de la réponse si le Siret est valide?
+})
 
-When("I add venue without Siret details", () => {
-    cy.findByLabelText('Commentaire du lieu sans SIRET *')
-      .type('Commentaire du lieu sans SIRET')
-    cy.findByLabelText('Raison sociale *').type(venueNameWithoutSiret)
-    cy.findByLabelText('Adresse postale *')
-      .type('89 Rue la Boétie 75008 Paris')
-      .type('{downarrow}{enter}')
-    cy.findByLabelText('Activité principale *').select('Centre culturel')
-    cy.findByText('Visuel').click()
-    cy.findByLabelText('Adresse email *').type('email@example.com')
-});
+When('I add venue without Siret details', () => {
+  cy.findByLabelText('Commentaire du lieu sans SIRET *').type(
+    'Commentaire du lieu sans SIRET'
+  )
+  cy.findByLabelText('Raison sociale *').type(venueNameWithoutSiret)
+  cy.findByLabelText('Adresse postale *')
+    .type('89 Rue la Boétie 75008 Paris')
+    .type('{downarrow}{enter}')
+  cy.findByLabelText('Activité principale *').select('Centre culturel')
+  cy.findByText('Visuel').click()
+  cy.findByLabelText('Adresse email *').type('email@example.com')
+})
 
-When("I validate venue step", () => {
+When('I validate venue step', () => {
   cy.findByText('Enregistrer et créer le lieu').click()
-  cy.wait('@getOfferer')    
-});
+  cy.wait('@getOfferer')
+})
 
-When("I add venue with Siret details", () => {
-    cy.findByLabelText('Nom public').type(venueNameWithSiret)
-    cy.findByLabelText('Activité principale *').select('Festival')
-    cy.findByText('Moteur').click()
-    cy.findByText('Auditif').click()
-    cy.findByLabelText('Adresse email *').type('email@example.com')   
-});
+When('I add venue with Siret details', () => {
+  cy.findByLabelText('Nom public').type(venueNameWithSiret)
+  cy.findByLabelText('Activité principale *').select('Festival')
+  cy.findByText('Moteur').click()
+  cy.findByText('Auditif').click()
+  cy.findByLabelText('Adresse email *').type('email@example.com')
+})
 
 When('I skip offer creation', () => {
   cy.findByText('Plus tard').click()
@@ -123,8 +123,8 @@ When('I update Individual section data', () => {
   cy.wait('@patchVenue')
 })
 
-When("I go to the venue page in Paramètre de l'activité", () => {
-  cy.findByText('Paramètres de l’activité').click()
+When('I go to the venue page in Paramètres généraux', () => {
+  cy.findByText('Paramètres généraux').click()
   cy.findByLabelText(
     'Label du ministère de la Culture ou du Centre national du cinéma et de l’image animée'
   ).select('Musée de France')
@@ -135,8 +135,8 @@ When("I go to the venue page in Paramètre de l'activité", () => {
     )
 })
 
-When("I update Paramètre de l'activité data", () => {
-  cy.findByText('Paramètres de l’activité').click()
+When('I update Paramètres généraux data', () => {
+  cy.findByText('Paramètres généraux').click()
 })
 
 Then('Individual section data should be updated', () => {
@@ -147,6 +147,6 @@ Then('Individual section data should be updated', () => {
   )
 })
 
-Then("Paramètre de l'activité data should be updated", () => {
+Then('Paramètres généraux data should be updated', () => {
   cy.findByText('Musée de France').should('be.visible')
 })

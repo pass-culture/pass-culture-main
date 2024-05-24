@@ -119,7 +119,7 @@ const routes: RouteConfig[] = [
   {
     lazy: () => import('pages/VenueSettings/VenueSettings'),
     path: '/structures/:offererId/lieux/:venueId/parametres',
-    title: 'Paramètres de l’activité',
+    title: 'Paramètres généraux',
   },
   {
     lazy: () => import('pages/OfferType/OfferType'),

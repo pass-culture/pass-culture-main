@@ -152,7 +152,7 @@ export const VenueEditionHeader = ({
             to: `/structures/${venue.managingOfferer.id}/lieux/${venue.id}/parametres`,
           }}
         >
-          Paramètres de l’activité
+          Paramètres généraux
         </ButtonLink>
 
         {imageValues.originalImageUrl && (
