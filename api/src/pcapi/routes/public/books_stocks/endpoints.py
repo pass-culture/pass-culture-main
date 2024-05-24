@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
     on_success_status=204,
     on_error_statuses=[401, 404],
     api=spectree_schemas.deprecated_public_api_schema,
-    tags=[tags.DEPRECATED_VENUES_STOCK],
+    tags=[tags.DEPRECATED_VENUES_STOCK_TAG],
     deprecated=True,
 )
 @api_key_required

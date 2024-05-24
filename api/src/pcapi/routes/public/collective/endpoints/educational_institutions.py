@@ -12,7 +12,7 @@ from pcapi.validation.routes.users_authentifications import api_key_required
 @collective_offers_blueprint.route("/collective/educational-institutions/", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.COLLECTIVE_EDUCATIONAL_DATA],
+    tags=[tags.COLLECTIVE_EDUCATIONAL_DATA_TAG],
     resp=SpectreeResponse(
         HTTP_200=(
             institutions_serialization.CollectiveOffersListEducationalInstitutionResponseModel,

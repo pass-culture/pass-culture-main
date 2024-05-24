@@ -21,7 +21,7 @@ BASE_CODE_DESCRIPTIONS = {
 @collective_offers_blueprint.route("/collective/national-programs/", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.COLLECTIVE_EDUCATIONAL_DATA],
+    tags=[tags.COLLECTIVE_EDUCATIONAL_DATA_TAG],
     resp=SpectreeResponse(
         **(BASE_CODE_DESCRIPTIONS),
         HTTP_200=(
