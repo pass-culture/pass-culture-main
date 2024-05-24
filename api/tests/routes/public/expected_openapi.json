@@ -1742,14 +1742,14 @@
                 "properties": {
                     "beginningDatetime": {
                         "description": "Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-06-23T14:00:00+02:00",
+                        "example": "2024-06-24T14:00:00+02:00",
                         "format": "date-time",
                         "title": "Beginningdatetime",
                         "type": "string"
                     },
                     "bookingLimitDatetime": {
                         "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-06-23T14:00:00+02:00",
+                        "example": "2024-06-24T14:00:00+02:00",
                         "format": "date-time",
                         "title": "Bookinglimitdatetime",
                         "type": "string"
@@ -1789,7 +1789,7 @@
                 "properties": {
                     "beginningDatetime": {
                         "description": "Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-06-23T14:00:00+02:00",
+                        "example": "2024-06-24T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Beginningdatetime",
@@ -1797,7 +1797,7 @@
                     },
                     "bookingLimitDatetime": {
                         "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-06-23T14:00:00+02:00",
+                        "example": "2024-06-24T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Bookinglimitdatetime",
@@ -1833,7 +1833,7 @@
                 "properties": {
                     "beginningDatetime": {
                         "description": "Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-06-23T14:00:00+02:00",
+                        "example": "2024-06-24T14:00:00+02:00",
                         "format": "date-time",
                         "title": "Beginningdatetime",
                         "type": "string"
@@ -1846,7 +1846,7 @@
                     },
                     "bookingLimitDatetime": {
                         "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-06-23T14:00:00+02:00",
+                        "example": "2024-06-24T14:00:00+02:00",
                         "format": "date-time",
                         "title": "Bookinglimitdatetime",
                         "type": "string"
@@ -6501,7 +6501,7 @@
                     },
                     "bookingLimitDatetime": {
                         "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-06-23T14:00:00+02:00",
+                        "example": "2024-06-24T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Bookinglimitdatetime",
@@ -7450,7 +7450,7 @@
                 "properties": {
                     "bookingLimitDatetime": {
                         "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-06-23T14:00:00+02:00",
+                        "example": "2024-06-24T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Bookinglimitdatetime",
@@ -7493,7 +7493,7 @@
                 "properties": {
                     "bookingLimitDatetime": {
                         "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-06-23T14:00:00+02:00",
+                        "example": "2024-06-24T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Bookinglimitdatetime",
@@ -8158,7 +8158,7 @@
         }
     },
     "info": {
-        "description": "\nThis the documentation of the Pass Culture public REST API.\n\n# Important notice\n- Since January 2023, rate limiting has been implemented on the Pass Culture API.\n  You are limited to **200 requests/minute** per API key.\n  Once this limit reached, you will received a `429 Too Many Requests` error message. You will then need to back down.\n- Dates of event offers are stored in the **UTC format** to be able to format them correctly, according to the user timezone, in our application interface.\n- Any non-blank field sent using a `PATCH` method will be considered as changed, even if the new value is equal to old value.\n  _For example, if you update the stock of an event, you **should not resend the `beginningDate`** if it has not changed because, otherwise it is going to trigger the reschedule process on our side._\n",
+        "description": "\nThis the documentation of the Pass Culture public REST API.\n\n# Important notice\n- Since January 2023, rate limiting has been implemented on the Pass Culture API.\n  You are limited to **200 requests/minute** per API key.\n  Once this limit reached, you will received a `429 Too Many Requests` error message. You will then need to back down.\n- Dates of event offers are stored in the **UTC format** to be able to format them correctly, according to the user timezone, in our application interface.\n- Any non-blank field sent using a `PATCH` method will be considered as changed, even if the new value is equal to old value.\n  _For example, if you update the stock of an event, you **should not resend the `beginningDate`** if it has not changed because, otherwise it is going to trigger the reschedule process on our side._\n\n# Authentication\nThe authentication system on Pass Culture API is using an API Key that should be put in the header of the request (the name of the header is `bearer`).\nAn API key is linked to a provider and will give you access to the venues linked to this provider by the offerer.\n\n| Security Scheme Type  | Bearer          |\n| :--------------- |:---------------|\n| Header parameter name  |   bearer        |\n",
         "title": "Pass Culture REST API",
         "version": "1.0"
     },
@@ -8269,10 +8269,20 @@
                                 }
                             }
                         },
-                        "description": "OK"
+                        "description": "Your request was succesful."
                     },
-                    "403": {
-                        "description": "Forbidden"
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "Authentication is necessary to use this API."
+                    },
+                    "404": {
+                        "description": "The offer could not be found."
                     },
                     "422": {
                         "content": {
@@ -8283,6 +8293,9 @@
                             }
                         },
                         "description": "Unprocessable Entity"
+                    },
+                    "429": {
+                        "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
                     }
                 },
                 "security": [
@@ -8313,19 +8326,36 @@
                 ],
                 "responses": {
                     "204": {
-                        "description": "The booking has been cancelled successfully"
+                        "description": "This booking has been successfully cancelled"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "The request is invalid. The response body contains a list of errors."
                     },
                     "401": {
-                        "description": "Authentication is necessary to use this API"
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "Authentication is necessary to use this API."
                     },
                     "403": {
-                        "description": "This booking cannot be cancelled because you do not have the proper right or because the token has already been validated"
+                        "description": "You are not authorized to perform this action because the booking has either been reimbursed, confirmed or not used."
                     },
                     "404": {
-                        "description": "This booking cannot be found"
+                        "description": "The booking could not be found."
                     },
                     "410": {
-                        "description": "This booking has already been cancelled"
+                        "description": "You cannot perform this action because the booking has either been validated or canceled."
                     },
                     "422": {
                         "content": {
@@ -8369,19 +8399,26 @@
                 ],
                 "responses": {
                     "204": {
-                        "description": "The booking's validation has been cancelled successfully"
+                        "description": "The booking's validation has been successfully cancelled"
                     },
                     "401": {
-                        "description": "Authentication is necessary to use this API"
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "Authentication is necessary to use this API."
                     },
                     "403": {
-                        "description": "This booking's validation cannot be cancelled because you do not have the proper rights or because the token's status is not used"
+                        "description": "You are not authorized to perform this action because the booking has either been reimbursed, confirmed or not used."
                     },
                     "404": {
-                        "description": "This booking cannot be found"
+                        "description": "The booking could not be found."
                     },
                     "410": {
-                        "description": "This booking cannot be unvalidated because it is already cancelled"
+                        "description": "You cannot perform this action because the booking has either been validated or canceled."
                     },
                     "422": {
                         "content": {
@@ -8435,16 +8472,23 @@
                         "description": "The booking has been found successfully"
                     },
                     "401": {
-                        "description": "Authentication is necessary to use this API"
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "Authentication is necessary to use this API."
                     },
                     "403": {
-                        "description": "You do not have the necessary rights to use this API"
+                        "description": "You are not authorized to perform this action because the booking has either been reimbursed, confirmed or not used."
                     },
                     "404": {
-                        "description": "This booking cannot be found"
+                        "description": "The booking could not be found."
                     },
                     "410": {
-                        "description": "You do not have the proper right or the token has already been validated."
+                        "description": "You cannot perform this action because the booking has either been validated or canceled."
                     },
                     "422": {
                         "content": {
@@ -8488,19 +8532,26 @@
                 ],
                 "responses": {
                     "204": {
-                        "description": "This countermark has been validated successfully"
+                        "description": "This booking has been successfully validated"
                     },
                     "401": {
-                        "description": "Authentication is necessary to use this API"
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "Authentication is necessary to use this API."
                     },
                     "403": {
-                        "description": "You do not have the necessary rights to use this API"
+                        "description": "You are not authorized to perform this action because the booking has either been reimbursed, confirmed or not used."
                     },
                     "404": {
-                        "description": "This booking cannot be found"
+                        "description": "The booking could not be found."
                     },
                     "410": {
-                        "description": "You do not have the proper right or the token has already been validated."
+                        "description": "You cannot perform this action because the booking has either been validated or canceled."
                     },
                     "422": {
                         "content": {
@@ -8583,13 +8634,17 @@
                         "description": "The event offers have been returned"
                     },
                     "401": {
-                        "description": "Authentication is necessary to use this API"
-                    },
-                    "403": {
-                        "description": "You do not have the necessary rights to use this API"
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "Authentication is necessary to use this API."
                     },
                     "404": {
-                        "description": "The venue could not be found."
+                        "description": "The venue could not found for your API key."
                     },
                     "422": {
                         "content": {
@@ -8640,13 +8695,27 @@
                         "description": "The event offer has been created successfully"
                     },
                     "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponseModel"
+                                }
+                            }
+                        },
                         "description": "The request is invalid. The response body contains a list of errors."
                     },
                     "401": {
-                        "description": "Authentication is necessary to use this API"
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "Authentication is necessary to use this API."
                     },
-                    "403": {
-                        "description": "You do not have the necessary rights to use this API"
+                    "404": {
+                        "description": "The venue could not found for your API key."
                     },
                     "422": {
                         "content": {
@@ -8690,10 +8759,14 @@
                         "description": "The event categories have been returned"
                     },
                     "401": {
-                        "description": "Authentication is necessary to use this API"
-                    },
-                    "403": {
-                        "description": "You do not have the necessary rights to use this API"
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "Authentication is necessary to use this API."
                     },
                     "422": {
                         "content": {
@@ -8748,10 +8821,14 @@
                         "description": "The event offer has been returned"
                     },
                     "401": {
-                        "description": "Authentication is necessary to use this API"
-                    },
-                    "403": {
-                        "description": "You do not have the necessary rights to use this API"
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "Authentication is necessary to use this API."
                     },
                     "404": {
                         "description": "The event offer could not be found."
@@ -8816,13 +8893,24 @@
                         "description": "The event offer has been returned"
                     },
                     "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponseModel"
+                                }
+                            }
+                        },
                         "description": "The request is invalid. The response body contains a list of errors."
                     },
                     "401": {
-                        "description": "Authentication is necessary to use this API"
-                    },
-                    "403": {
-                        "description": "You do not have the necessary rights to use this API"
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "Authentication is necessary to use this API."
                     },
                     "404": {
                         "description": "The event offer could not be found."
@@ -8907,13 +8995,24 @@
                         "description": "The event dates have been returned"
                     },
                     "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponseModel"
+                                }
+                            }
+                        },
                         "description": "The request is invalid. The response body contains a list of errors."
                     },
                     "401": {
-                        "description": "Authentication is necessary to use this API"
-                    },
-                    "403": {
-                        "description": "You do not have the necessary rights to use this API"
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "Authentication is necessary to use this API."
                     },
                     "404": {
                         "description": "The event offer or the price category could not be found."
@@ -8978,13 +9077,24 @@
                         "description": "The event dates have been created successfully"
                     },
                     "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponseModel"
+                                }
+                            }
+                        },
                         "description": "The request is invalid. The response body contains a list of errors."
                     },
                     "401": {
-                        "description": "Authentication is necessary to use this API"
-                    },
-                    "403": {
-                        "description": "You do not have the necessary rights to use this API"
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "Authentication is necessary to use this API."
                     },
                     "404": {
                         "description": "The event offer or the price category could not be found."
@@ -9045,13 +9155,24 @@
                         "description": "The event date has been deleted successfully"
                     },
                     "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponseModel"
+                                }
+                            }
+                        },
                         "description": "The request is invalid. The response body contains a list of errors."
                     },
                     "401": {
-                        "description": "Authentication is necessary to use this API"
-                    },
-                    "403": {
-                        "description": "You do not have the necessary rights to use this API"
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "Authentication is necessary to use this API."
                     },
                     "404": {
                         "description": "The event offer or the price category could not be found."
@@ -9126,13 +9247,24 @@
                         "description": "The event date has been modified successfully"
                     },
                     "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponseModel"
+                                }
+                            }
+                        },
                         "description": "The request is invalid. The response body contains a list of errors."
                     },
                     "401": {
-                        "description": "Authentication is necessary to use this API"
-                    },
-                    "403": {
-                        "description": "You do not have the necessary rights to use this API"
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "Authentication is necessary to use this API."
                     },
                     "404": {
                         "description": "The event offer or the price category could not be found."
@@ -9199,13 +9331,24 @@
                         "description": "The price category has been created successfully"
                     },
                     "400": {
-                        "description": "The request is invalid. The response body contains a list of errors. Or one of the price categories already exists."
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "The request is invalid. The response body contains a list of errors."
                     },
                     "401": {
-                        "description": "Authentication is necessary to use this API"
-                    },
-                    "403": {
-                        "description": "You do not have the necessary rights to use this API"
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "Authentication is necessary to use this API."
                     },
                     "404": {
                         "description": "The event offer could not be found."
@@ -9282,13 +9425,24 @@
                         "description": "The price category has been modified successfully"
                     },
                     "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponseModel"
+                                }
+                            }
+                        },
                         "description": "The request is invalid. The response body contains a list of errors."
                     },
                     "401": {
-                        "description": "Authentication is necessary to use this API"
-                    },
-                    "403": {
-                        "description": "You do not have the necessary rights to use this API"
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "Authentication is necessary to use this API."
                     },
                     "404": {
                         "description": "The event offer or the price category could not be found."
@@ -9333,13 +9487,17 @@
                                 }
                             }
                         },
-                        "description": "The music types have been returned"
+                        "description": "Your request was succesful."
                     },
                     "401": {
-                        "description": "Authentication is necessary to use this API"
-                    },
-                    "403": {
-                        "description": "You do not have the necessary rights to use this API"
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "Authentication is necessary to use this API."
                     },
                     "422": {
                         "content": {
@@ -9380,13 +9538,17 @@
                                 }
                             }
                         },
-                        "description": "The music types have been returned"
+                        "description": "Your request was succesful."
                     },
                     "401": {
-                        "description": "Authentication is necessary to use this API"
-                    },
-                    "403": {
-                        "description": "You do not have the necessary rights to use this API"
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "Authentication is necessary to use this API."
                     },
                     "422": {
                         "content": {
@@ -9427,13 +9589,17 @@
                                 }
                             }
                         },
-                        "description": "The music types have been returned"
+                        "description": "Your request was succesful."
                     },
                     "401": {
-                        "description": "Authentication is necessary to use this API"
-                    },
-                    "403": {
-                        "description": "You do not have the necessary rights to use this API"
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "Authentication is necessary to use this API."
                     },
                     "422": {
                         "content": {
@@ -9488,13 +9654,17 @@
                                 }
                             }
                         },
-                        "description": "The offerer and its venues"
+                        "description": "Your request was succesful."
                     },
                     "401": {
-                        "description": "Authentication is necessary to use this API"
-                    },
-                    "403": {
-                        "description": "You do not have the necessary rights to use this API"
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "Authentication is necessary to use this API."
                     },
                     "422": {
                         "content": {
@@ -9577,13 +9747,17 @@
                         "description": "The product offers"
                     },
                     "401": {
-                        "description": "Authentication is necessary to use this API"
-                    },
-                    "403": {
-                        "description": "You do not have the necessary rights to use this API"
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "Authentication is necessary to use this API."
                     },
                     "404": {
-                        "description": "No venue found for the used api key"
+                        "description": "The venue could not found for your API key."
                     },
                     "422": {
                         "content": {
@@ -9634,16 +9808,27 @@
                         "description": "The product offer have been edited successfully"
                     },
                     "400": {
-                        "description": "The product offer could not be edited"
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "The request is invalid. The response body contains a list of errors."
                     },
                     "401": {
-                        "description": "Authentication is necessary to use this API"
-                    },
-                    "403": {
-                        "description": "You do not have the necessary rights to use this API"
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "Authentication is necessary to use this API."
                     },
                     "404": {
-                        "description": "The product offer could not be found"
+                        "description": "The product offer could not be found."
                     },
                     "422": {
                         "content": {
@@ -9694,16 +9879,27 @@
                         "description": "The product offer have been created successfully"
                     },
                     "400": {
-                        "description": "The product offer could not be created"
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "The request is invalid. The response body contains a list of errors."
                     },
                     "401": {
-                        "description": "Authentication is necessary to use this API"
-                    },
-                    "403": {
-                        "description": "You do not have the necessary rights to use this API"
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "Authentication is necessary to use this API."
                     },
                     "404": {
-                        "description": "No venue found for the used api key"
+                        "description": "The venue could not found for your API key."
                     },
                     "422": {
                         "content": {
@@ -9747,10 +9943,14 @@
                         "description": "The product categories have been returned"
                     },
                     "401": {
-                        "description": "Authentication is necessary to use this API"
-                    },
-                    "403": {
-                        "description": "You do not have the necessary rights to use this API"
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "Authentication is necessary to use this API."
                     },
                     "422": {
                         "content": {
@@ -9817,10 +10017,14 @@
                         "description": "The product offers"
                     },
                     "401": {
-                        "description": "Authentication is necessary to use this API"
-                    },
-                    "403": {
-                        "description": "You do not have the necessary rights to use this API"
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "Authentication is necessary to use this API."
                     },
                     "422": {
                         "content": {
@@ -9864,16 +10068,27 @@
                         "description": "The product offers have been created successfully"
                     },
                     "400": {
-                        "description": "The product offers could not be created"
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "The request is invalid. The response body contains a list of errors."
                     },
                     "401": {
-                        "description": "Authentication is necessary to use this API"
-                    },
-                    "403": {
-                        "description": "You do not have the necessary rights to use this API"
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "Authentication is necessary to use this API."
                     },
                     "404": {
-                        "description": "No venue found for the used api key"
+                        "description": "The venue could not found for your API key."
                     },
                     "422": {
                         "content": {
@@ -9928,13 +10143,17 @@
                         "description": "The product offer"
                     },
                     "401": {
-                        "description": "Authentication is necessary to use this API"
-                    },
-                    "403": {
-                        "description": "You do not have the necessary rights to use this API"
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "Authentication is necessary to use this API."
                     },
                     "404": {
-                        "description": "The product offer could not be found"
+                        "description": "The product offer could not be found."
                     },
                     "422": {
                         "content": {
@@ -9975,13 +10194,17 @@
                                 }
                             }
                         },
-                        "description": "The show types have been returned"
+                        "description": "Your request was succesful."
                     },
                     "401": {
-                        "description": "Authentication is necessary to use this API"
-                    },
-                    "403": {
-                        "description": "You do not have the necessary rights to use this API"
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "Authentication is necessary to use this API."
                     },
                     "422": {
                         "content": {
@@ -10038,10 +10261,14 @@
                         "description": "Image updated successfully"
                     },
                     "401": {
-                        "description": "Authentication is necessary to use this API"
-                    },
-                    "403": {
-                        "description": "You do not have the necessary rights to use this API"
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "Authentication is necessary to use this API."
                     },
                     "422": {
                         "content": {
@@ -10070,7 +10297,7 @@
         },
         "/v2/collective/bookings/{booking_id}": {
             "patch": {
-                "description": "",
+                "description": "Cancel an collective event booking.",
                 "operationId": "CancelCollectiveBooking",
                 "parameters": [
                     {
@@ -10086,7 +10313,17 @@
                 ],
                 "responses": {
                     "204": {
-                        "description": "Annuler une r\u00e9servation collective"
+                        "description": "This collective booking has been successfully cancelled"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "The request is invalid. The response body contains a list of errors."
                     },
                     "401": {
                         "content": {
@@ -10096,7 +10333,7 @@
                                 }
                             }
                         },
-                        "description": "Authentification n\u00e9cessaire"
+                        "description": "Authentication is necessary to use this API."
                     },
                     "422": {
                         "content": {
@@ -10107,6 +10344,9 @@
                             }
                         },
                         "description": "Unprocessable Entity"
+                    },
+                    "429": {
+                        "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
                     }
                 },
                 "security": [
@@ -10145,7 +10385,7 @@
                                 }
                             }
                         },
-                        "description": "Authentification n\u00e9cessaire"
+                        "description": "Authentication is necessary to use this API."
                     },
                     "422": {
                         "content": {
@@ -10156,6 +10396,9 @@
                             }
                         },
                         "description": "Unprocessable Entity"
+                    },
+                    "429": {
+                        "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
                     }
                 },
                 "security": [
@@ -10193,7 +10436,7 @@
                                 }
                             }
                         },
-                        "description": "Authentification n\u00e9cessaire"
+                        "description": "Authentication is necessary to use this API."
                     },
                     "422": {
                         "content": {
@@ -10204,6 +10447,9 @@
                             }
                         },
                         "description": "Unprocessable Entity"
+                    },
+                    "429": {
+                        "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
                     }
                 },
                 "security": [
@@ -10319,7 +10565,7 @@
                                 }
                             }
                         },
-                        "description": "Requ\u00eate malform\u00e9e"
+                        "description": "The request is invalid. The response body contains a list of errors."
                     },
                     "401": {
                         "content": {
@@ -10329,7 +10575,7 @@
                                 }
                             }
                         },
-                        "description": "Authentification n\u00e9cessaire"
+                        "description": "Authentication is necessary to use this API."
                     },
                     "422": {
                         "content": {
@@ -10340,6 +10586,9 @@
                             }
                         },
                         "description": "Unprocessable Entity"
+                    },
+                    "429": {
+                        "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
                     }
                 },
                 "security": [
@@ -10367,7 +10616,7 @@
                                 }
                             }
                         },
-                        "description": "Il n'y a pas de dispositifs nationaux"
+                        "description": "Your request was succesful."
                     },
                     "401": {
                         "content": {
@@ -10377,17 +10626,7 @@
                                 }
                             }
                         },
-                        "description": "Authentification n\u00e9cessaire"
-                    },
-                    "403": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponseModel"
-                                }
-                            }
-                        },
-                        "description": "Vous n'avez pas les droits n\u00e9cessaires pour voir ces informations"
+                        "description": "Authentication is necessary to use this API."
                     },
                     "422": {
                         "content": {
@@ -10398,6 +10637,9 @@
                             }
                         },
                         "description": "Unprocessable Entity"
+                    },
+                    "429": {
+                        "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
                     }
                 },
                 "security": [
@@ -10450,7 +10692,7 @@
                                 }
                             }
                         },
-                        "description": "Authentification n\u00e9cessaire"
+                        "description": "Authentication is necessary to use this API."
                     },
                     "422": {
                         "content": {
@@ -10461,6 +10703,9 @@
                             }
                         },
                         "description": "Unprocessable Entity"
+                    },
+                    "429": {
+                        "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
                     }
                 },
                 "security": [
@@ -10536,7 +10781,7 @@
                                 }
                             }
                         },
-                        "description": "L'offre collective existe"
+                        "description": "Your request was succesful."
                     },
                     "401": {
                         "content": {
@@ -10546,27 +10791,10 @@
                                 }
                             }
                         },
-                        "description": "Authentification n\u00e9cessaire"
-                    },
-                    "403": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponseModel"
-                                }
-                            }
-                        },
-                        "description": "Vous n'avez pas les droits n\u00e9cessaires pour voir cette offre collective"
+                        "description": "Authentication is necessary to use this API."
                     },
                     "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponseModel"
-                                }
-                            }
-                        },
-                        "description": "L'offre collective n'existe pas"
+                        "description": "The collective offer could not be found."
                     },
                     "422": {
                         "content": {
@@ -10577,6 +10805,9 @@
                             }
                         },
                         "description": "Unprocessable Entity"
+                    },
+                    "429": {
+                        "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
                     }
                 },
                 "security": [
@@ -10621,7 +10852,7 @@
                                 }
                             }
                         },
-                        "description": "Requ\u00eate malform\u00e9e"
+                        "description": "The request is invalid. The response body contains a list of errors."
                     },
                     "401": {
                         "content": {
@@ -10631,7 +10862,7 @@
                                 }
                             }
                         },
-                        "description": "Authentification n\u00e9cessaire"
+                        "description": "Authentication is necessary to use this API."
                     },
                     "403": {
                         "content": {
@@ -10641,17 +10872,10 @@
                                 }
                             }
                         },
-                        "description": "Non \u00e9ligible pour les offres collectives"
+                        "description": "The educational institution is not active."
                     },
                     "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponseModel"
-                                }
-                            }
-                        },
-                        "description": "L'une des resources pour la cr\u00e9ation de l'offre n'a pas \u00e9t\u00e9 trouv\u00e9e"
+                        "description": "Some resource has not been found."
                     },
                     "422": {
                         "content": {
@@ -10662,6 +10886,9 @@
                             }
                         },
                         "description": "Unprocessable Entity"
+                    },
+                    "429": {
+                        "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
                     }
                 },
                 "security": [
@@ -10669,7 +10896,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Cr\u00e9ation d'une offre collective.",
+                "summary": "Create collective offer",
                 "tags": [
                     "Collective offers"
                 ]
@@ -10689,27 +10916,7 @@
                                 }
                             }
                         },
-                        "description": "Authentification n\u00e9cessaire"
-                    },
-                    "403": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponseModel"
-                                }
-                            }
-                        },
-                        "description": "Vous n'avez pas les droits n\u00e9cessaires pour voir cette offre collective"
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponseModel"
-                                }
-                            }
-                        },
-                        "description": "L'offre collective n'existe pas"
+                        "description": "Authentication is necessary to use this API."
                     },
                     "422": {
                         "content": {
@@ -10720,6 +10927,9 @@
                             }
                         },
                         "description": "Unprocessable Entity"
+                    },
+                    "429": {
+                        "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
                     }
                 },
                 "security": [
@@ -10760,6 +10970,16 @@
                         },
                         "description": "L'offre collective existe"
                     },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "The request is invalid. The response body contains a list of errors."
+                    },
                     "401": {
                         "content": {
                             "application/json": {
@@ -10768,7 +10988,7 @@
                                 }
                             }
                         },
-                        "description": "Authentification n\u00e9cessaire"
+                        "description": "Authentication is necessary to use this API."
                     },
                     "403": {
                         "content": {
@@ -10778,17 +10998,10 @@
                                 }
                             }
                         },
-                        "description": "Vous n'avez pas les droits n\u00e9cessaires pour voir cette offre collective"
+                        "description": "You don't have enough rights to access or edit the collective offer"
                     },
                     "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponseModel"
-                                }
-                            }
-                        },
-                        "description": "L'offre collective n'existe pas"
+                        "description": "The collective offer could not be found."
                     },
                     "422": {
                         "content": {
@@ -10799,6 +11012,9 @@
                             }
                         },
                         "description": "Unprocessable Entity"
+                    },
+                    "429": {
+                        "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
                     }
                 },
                 "security": [
@@ -10854,7 +11070,7 @@
                                 }
                             }
                         },
-                        "description": "Requ\u00eate malform\u00e9e"
+                        "description": "The request is invalid. The response body contains a list of errors."
                     },
                     "401": {
                         "content": {
@@ -10864,7 +11080,7 @@
                                 }
                             }
                         },
-                        "description": "Authentification n\u00e9cessaire"
+                        "description": "Authentication is necessary to use this API."
                     },
                     "403": {
                         "content": {
@@ -10874,27 +11090,23 @@
                                 }
                             }
                         },
-                        "description": "Vous n'avez pas les droits n\u00e9cessaires pour \u00e9diter cette offre collective"
+                        "description": "You don't have enough rights to access or edit the collective offer"
                     },
                     "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponseModel"
-                                }
-                            }
-                        },
-                        "description": "L'une des resources pour la cr\u00e9ation de l'offre n'a pas \u00e9t\u00e9 trouv\u00e9e"
+                        "description": "Some resource has not been found."
                     },
                     "422": {
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponseModel"
+                                    "$ref": "#/components/schemas/ValidationError"
                                 }
                             }
                         },
-                        "description": "Cetains champs ne peuvent pas \u00eatre \u00e9dit\u00e9s selon l'\u00e9tat de l'offre"
+                        "description": "Unprocessable Entity"
+                    },
+                    "429": {
+                        "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
                     }
                 },
                 "security": [
@@ -10932,7 +11144,7 @@
                                 }
                             }
                         },
-                        "description": "Authentification n\u00e9cessaire"
+                        "description": "Authentication is necessary to use this API."
                     },
                     "422": {
                         "content": {
@@ -10943,6 +11155,9 @@
                             }
                         },
                         "description": "Unprocessable Entity"
+                    },
+                    "429": {
+                        "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
                     }
                 },
                 "security": [
@@ -10950,7 +11165,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "R\u00e9cup\u00e9ration de la liste des publics cibles pour lesquelles des offres collectives peuvent \u00eatre propos\u00e9es.",
+                "summary": "Get student levels eliguble to collective offers",
                 "tags": [
                     "Collective educational data"
                 ]
@@ -10981,7 +11196,7 @@
                                 }
                             }
                         },
-                        "description": "Authentification n\u00e9cessaire"
+                        "description": "Authentication is necessary to use this API."
                     },
                     "422": {
                         "content": {
@@ -10992,6 +11207,9 @@
                             }
                         },
                         "description": "Unprocessable Entity"
+                    },
+                    "429": {
+                        "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
                     }
                 },
                 "security": [
@@ -11029,7 +11247,7 @@
                                 }
                             }
                         },
-                        "description": "Authentification n\u00e9cessaire"
+                        "description": "Authentication is necessary to use this API."
                     },
                     "422": {
                         "content": {
@@ -11040,6 +11258,9 @@
                             }
                         },
                         "description": "Unprocessable Entity"
+                    },
+                    "429": {
+                        "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
                     }
                 },
                 "security": [
