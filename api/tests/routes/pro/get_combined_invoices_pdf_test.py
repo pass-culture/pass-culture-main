@@ -6,6 +6,7 @@ import pytest
 from pcapi.core.finance import factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.users import factories as users_factories
+from pcapi.utils import requests
 
 from tests.utils.pdf_creation_test import TEST_FILES_PATH
 
@@ -89,6 +90,24 @@ def test_get_combined_invoices_pdf_no_invoice_references(client):
 
     assert response.status_code == 400
     assert response.json == {"invoiceReferences": ["Ce champ est obligatoire"]}
+
+
+def test_get_combined_invoices_pdf_failed_http_request(client, requests_mock):
+    pro = users_factories.ProFactory()
+    user_offerer = offerers_factories.UserOffererFactory(user=pro)
+
+    bank_account = factories.BankAccountFactory(offerer=user_offerer.offerer)
+
+    invoice = factories.InvoiceFactory(reference="F240000187", bankAccount=bank_account)
+    client = client.with_session_auth(pro.email)
+
+    requests_mock.side_effect = [requests.exceptions.ConnectionError]
+
+    response = client.get("/finance/combined-invoices?invoiceReferences=F240000187")
+    assert response.status_code == 424
+    assert response.json == {"invoice": f"Failed to fetch invoice PDF from url: {invoice.url}"}
+
+    requests_mock.side_effect = [requests.exceptions.ConnectionError]
 
 
 def test_user_has_no_access_to_offerer(client):

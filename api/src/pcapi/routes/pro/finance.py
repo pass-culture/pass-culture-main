@@ -93,7 +93,11 @@ def get_combined_invoices(query: finance_serialize.CombinedInvoiceListModel) -> 
     tmp = BytesIO()
 
     for invoice_pdf_url in invoice_pdf_urls:
-        invoice_pdf = PdfReader(BytesIO(requests.get(invoice_pdf_url).content))
+        try:
+            invoice_pdf = PdfReader(BytesIO(requests.get(invoice_pdf_url).content))
+        except Exception:
+            merger.close()
+            raise ApiErrors({"invoice": f"Failed to fetch invoice PDF from url: {invoice_pdf_url}"}, status_code=424)
         merger.append(invoice_pdf)
 
     merger.write(tmp)
