@@ -22,15 +22,6 @@ from . import blueprint
 from . import bookings_serialization as serialization
 
 
-BOOKINGS_API_BASE_CODE_DESCRIPTIONS = http_responses.BASE_CODE_DESCRIPTIONS | {
-    "HTTP_404": (None, "This booking cannot be found"),
-    "HTTP_410": (
-        None,
-        "You do not have the proper right or the token has already been validated.",
-    ),
-}
-
-
 def _get_base_booking_query() -> sqla_orm.Query:
     return (
         booking_models.Booking.query.join(offerers_models.Venue)
@@ -77,6 +68,14 @@ def _get_paginated_and_filtered_bookings(
     api=spectree_schemas.public_api_schema,
     response_model=serialization.GetFilteredBookingsResponse,
     tags=[tags.BOOKING_TAG],
+    resp=SpectreeResponse(
+        **(
+            {"HTTP_200": (serialization.GetFilteredBookingsResponse, http_responses.HTTP_200_MESSAGE)}
+            # errors
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+            | http_responses.HTTP_404_OFFER_NOT_FOUND
+        ),
+    ),
 )
 @api_key_required
 def get_bookings_by_offer(
@@ -126,10 +125,12 @@ def _get_booking_by_token(token: str) -> booking_models.Booking | None:
     tags=[tags.BOOKING_TAG],
     resp=SpectreeResponse(
         **(
-            BOOKINGS_API_BASE_CODE_DESCRIPTIONS
-            | {
-                "HTTP_200": (serialization.GetBookingResponse, "The booking has been found successfully"),
-            }
+            {"HTTP_200": (serialization.GetBookingResponse, "The booking has been found successfully")}
+            # errors
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+            | http_responses.HTTP_403_BOOKING_REIMBURSED_OR_CONFIRMED_OR_NOT_USED
+            | http_responses.HTTP_404_BOOKING_NOT_FOUND
+            | http_responses.HTTP_410_BOOKING_CANCELED_OR_VALIDATED
         )
     ),
 )
@@ -166,10 +167,12 @@ def get_booking_by_token(token: str) -> serialization.GetBookingResponse:
     tags=[tags.BOOKING_TAG],
     resp=SpectreeResponse(
         **(
-            BOOKINGS_API_BASE_CODE_DESCRIPTIONS
-            | {
-                "HTTP_204": (None, "This countermark has been validated successfully"),
-            }
+            http_responses.HTTP_204_BOOKING_VALIDATION_SUCCESS
+            # errors
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+            | http_responses.HTTP_403_BOOKING_REIMBURSED_OR_CONFIRMED_OR_NOT_USED
+            | http_responses.HTTP_404_BOOKING_NOT_FOUND
+            | http_responses.HTTP_410_BOOKING_CANCELED_OR_VALIDATED
         )
     ),
 )
@@ -205,15 +208,12 @@ def validate_booking_by_token(token: str) -> None:
     tags=[tags.BOOKING_TAG],
     resp=SpectreeResponse(
         **(
-            BOOKINGS_API_BASE_CODE_DESCRIPTIONS
-            | {
-                "HTTP_204": (None, "The booking's validation has been cancelled successfully"),
-                "HTTP_403": (
-                    None,
-                    "This booking's validation cannot be cancelled because you do not have the proper rights or because the token's status is not used",
-                ),
-                "HTTP_410": (None, "This booking cannot be unvalidated because it is already cancelled"),
-            }
+            http_responses.HTTP_204_BOOKING_VALIDATION_CANCELLATION_SUCCESS
+            # errors
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+            | http_responses.HTTP_403_BOOKING_REIMBURSED_OR_CONFIRMED_OR_NOT_USED
+            | http_responses.HTTP_404_BOOKING_NOT_FOUND
+            | http_responses.HTTP_410_BOOKING_CANCELED_OR_VALIDATED
         )
     ),
 )
@@ -249,15 +249,13 @@ def cancel_booking_validation_by_token(token: str) -> None:
     tags=[tags.BOOKING_TAG],
     resp=SpectreeResponse(
         **(
-            BOOKINGS_API_BASE_CODE_DESCRIPTIONS
-            | {
-                "HTTP_204": (None, "The booking has been cancelled successfully"),
-                "HTTP_403": (
-                    None,
-                    "This booking cannot be cancelled because you do not have the proper right or because the token has already been validated",
-                ),
-                "HTTP_410": (None, "This booking has already been cancelled"),
-            }
+            http_responses.HTTP_204_BOOKING_CANCELLATION_SUCCESS
+            # errors
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+            | http_responses.HTTP_400_BAD_REQUEST
+            | http_responses.HTTP_403_BOOKING_REIMBURSED_OR_CONFIRMED_OR_NOT_USED
+            | http_responses.HTTP_404_BOOKING_NOT_FOUND
+            | http_responses.HTTP_410_BOOKING_CANCELED_OR_VALIDATED
         )
     ),
 )
