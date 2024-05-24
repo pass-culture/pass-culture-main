@@ -65,89 +65,89 @@ describe.skip('Signup journey', () => {
 
   // TODO: bon candidat à des scénarios gherkin !
 
-  it('should create offerer', () => {
-    cy.login({
-      email: 'eac_1_lieu@example.com',
-      password: 'user@AZERTY123',
-      redirectUrl: '/parcours-inscription',
-    })
+  // it('should create offerer', () => {
+  //   cy.login({
+  //     email: 'eac_1_lieu@example.com',
+  //     password: 'user@AZERTY123',
+  //     redirectUrl: '/parcours-inscription',
+  //   })
 
-    // Welcome page
-    cy.findByText('Commencer').click()
+  //   // Welcome page
+  //   cy.findByText('Commencer').click()
 
-    // Offerer page
-    cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(siret)
-    cy.wait('@getSiret')
-    cy.findByText('Continuer').click()
-    cy.wait('@getSiret')
+  //   // Offerer page
+  //   cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(siret)
+  //   cy.wait('@getSiret')
+  //   cy.findByText('Continuer').click()
+  //   cy.wait('@getSiret')
 
-    // Authentication page
-    cy.findByLabelText('Nom public').type('First Offerer')
-    cy.findByText('Étape suivante').click()
+  //   // Authentication page
+  //   cy.findByLabelText('Nom public').type('First Offerer')
+  //   cy.findByText('Étape suivante').click()
 
-    // Activity page
-    cy.findByLabelText('Activité principale *').select('Spectacle vivant')
-    cy.findByLabelText('Site internet, réseau social').type(
-      'https://exemple.com'
-    )
-    cy.findByText('Ajouter un lien').click()
-    // manque un data-testid ou un placeholder
-    cy.get('[name="socialUrls[1]"]').type('https://exemple2.com')
+  //   // Activity page
+  //   cy.findByLabelText('Activité principale *').select('Spectacle vivant')
+  //   cy.findByLabelText('Site internet, réseau social').type(
+  //     'https://exemple.com'
+  //   )
+  //   cy.findByText('Ajouter un lien').click()
+  //   // manque un data-testid ou un placeholder
+  //   cy.get('[name="socialUrls[1]"]').type('https://exemple2.com')
 
-    cy.findByText('Au grand public').click()
-    cy.findByText('Étape suivante').click()
+  //   cy.findByText('Au grand public').click()
+  //   cy.findByText('Étape suivante').click()
 
-    // Validation page
-    cy.intercept({ method: 'POST', url: '/offerers/new' }).as('createOfferer')
-    cy.findByText('Valider et créer ma structure').click()
-    cy.wait('@createOfferer').its('response.statusCode').should('eq', 201)
+  //   // Validation page
+  //   cy.intercept({ method: 'POST', url: '/offerers/new' }).as('createOfferer')
+  //   cy.findByText('Valider et créer ma structure').click()
+  //   cy.wait('@createOfferer').its('response.statusCode').should('eq', 201)
 
-    // Homepage
-    cy.url().should('contain', '/accueil')
-  })
+  //   // Homepage
+  //   cy.url().should('contain', '/accueil')
+  // })
 
-  it('should ask offerer attachment to a user and create new offerer', () => {
-    cy.login({
-      email: 'retention@example.com',
-      password: 'user@AZERTY123',
-      redirectUrl: '/parcours-inscription',
-    })
+  // it('should ask offerer attachment to a user and create new offerer', () => {
+  //   cy.login({
+  //     email: 'retention@example.com',
+  //     password: 'user@AZERTY123',
+  //     redirectUrl: '/parcours-inscription',
+  //   })
 
-    // Welcome page
-    cy.findByText('Commencer').click()
+  //   // Welcome page
+  //   cy.findByText('Commencer').click()
 
-    // Offerer page
-    cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(siret)
-    cy.wait('@getSiret')
-    cy.findByText('Continuer').click()
-    cy.wait('@getSiret')
+  //   // Offerer page
+  //   cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(siret)
+  //   cy.wait('@getSiret')
+  //   cy.findByText('Continuer').click()
+  //   cy.wait('@getSiret')
 
-    // Offerer attachment
-    cy.findByText('Ajouter une nouvelle structure').click()
+  //   // Offerer attachment
+  //   cy.findByText('Ajouter une nouvelle structure').click()
 
-    // Authentication page
-    cy.findByLabelText('Adresse postale *')
-      .clear()
-      .type('89 Rue la Boétie 75008 Paris')
-    cy.findByRole('option', { name: '89 Rue la Boétie 75008 Paris' }).click()
+  //   // Authentication page
+  //   cy.findByLabelText('Adresse postale *')
+  //     .clear()
+  //     .type('89 Rue la Boétie 75008 Paris')
+  //   cy.findByRole('option', { name: '89 Rue la Boétie 75008 Paris' }).click()
 
-    cy.findByText('Étape suivante').click()
+  //   cy.findByText('Étape suivante').click()
 
-    // Activity page
-    cy.findByLabelText('Activité principale *').select('Spectacle vivant')
+  //   // Activity page
+  //   cy.findByLabelText('Activité principale *').select('Spectacle vivant')
 
-    cy.findByText('Au grand public').click()
-    cy.findByText('Étape suivante').click()
+  //   cy.findByText('Au grand public').click()
+  //   cy.findByText('Étape suivante').click()
 
-    // Validation page
-    // TODO: ajouter des assertions
-    cy.intercept({ method: 'POST', url: '/offerers/new' }).as('createOfferer')
-    cy.findByText('Valider et créer ma structure').click()
-    cy.wait('@createOfferer').its('response.statusCode').should('eq', 201)
+  //   // Validation page
+  //   // TODO: ajouter des assertions
+  //   cy.intercept({ method: 'POST', url: '/offerers/new' }).as('createOfferer')
+  //   cy.findByText('Valider et créer ma structure').click()
+  //   cy.wait('@createOfferer').its('response.statusCode').should('eq', 201)
 
-    // Homepage
-    cy.url().should('contain', '/accueil')
-  })
+  //   // Homepage
+  //   cy.url().should('contain', '/accueil')
+  // })
 
   it.skip('should attach user to an existing offerer', () => {
     // TODO: debug and testing-library-ize
