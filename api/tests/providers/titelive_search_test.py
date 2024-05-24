@@ -790,3 +790,28 @@ class TiteliveBookSearchTest:
 
         offers = offers_models.Offer.query.all()
         assert all(offer.validation == OfferValidationStatus.APPROVED for offer in offers)
+
+    @pytest.mark.parametrize(
+        "auteurs_multi,expected_author",
+        [
+            (["John Mc Crae"], "John Mc Crae"),
+            (["John Mc Crae", "John Doe"], "John Mc Crae, John Doe"),
+            ("John Smith", "John Smith"),
+            ("John Mc Crae, John Doe", "John Mc Crae, John Doe"),
+            ({"auteur": "John Mc Crae"}, "John Mc Crae"),
+            ({"auteur": "John Mc Crae", "auteur2": "Eraticerrata"}, "John Mc Crae, Eraticerrata"),
+            (1234, None),  # invalid type
+        ],
+    )
+    def test_handles_all_authors_formats(self, requests_mock, auteurs_multi, expected_author):
+        # Given
+        self.setup_api_response_fixture(
+            requests_mock, fixtures.build_titelive_one_book_response(auteurs_multi=auteurs_multi)
+        )
+
+        # When
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+
+        # Then
+        product = offers_models.Product.query.one()
+        assert product.extraData.get("author") == expected_author
