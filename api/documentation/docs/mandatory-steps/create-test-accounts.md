@@ -1,8 +1,8 @@
 ---
-sidebar_position: 1
+sidebar_position: 2
 ---
 
-# Create a test account
+# Create test accounts
 
 In order to test your integration before publishing it in production, we provide you with a test environment.
 In this section, you will learn how to create an account on this test environment in **3 simple steps**.
