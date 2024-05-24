@@ -64,6 +64,7 @@ Cypress.Commands.add(
     cy.wait('@signinUser')
 
     cy.url().should('contain', redirectUrl ?? '/accueil')
+    cy.findAllByTestId('spinner').should('not.exist')
   }
 )
 
