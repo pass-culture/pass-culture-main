@@ -41,9 +41,6 @@ from pcapi.routes.serialization.bookings_recap_serialize import OfferType
 from pcapi.utils.token import random_token
 
 
-DUO_QUANTITY = 2
-
-
 BOOKING_STATUS_LABELS = {
     BookingStatus.CONFIRMED: "réservé",
     BookingStatus.CANCELLED: "annulé",
@@ -327,7 +324,7 @@ def _write_bookings_to_csv(query: BaseQuery) -> str:
     writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
     writer.writerow(constants.BOOKING_EXPORT_HEADERS)
     for booking in query.yield_per(1000):
-        if booking.quantity == DUO_QUANTITY:
+        if booking.quantity == constants.DUO_QUANTITY:
             _write_csv_row(writer, booking, "DUO 1")
             _write_csv_row(writer, booking, "DUO 2")
         else:
@@ -388,7 +385,7 @@ def _write_bookings_to_excel(query: BaseQuery) -> bytes:
 
     row = 1
     for booking in query.yield_per(1000):
-        if booking.quantity == DUO_QUANTITY:
+        if booking.quantity == constants.DUO_QUANTITY:
             _write_excel_row(worksheet, row, booking, currency_format, "DUO 1")
             row += 1
             _write_excel_row(worksheet, row, booking, currency_format, "DUO 2")
@@ -428,7 +425,7 @@ def _serialize_csv_report(query: BaseQuery) -> str:
                 # This method is still used in the old Payment model
                 serialize_offer_type_educational_or_individual(offer_is_educational=False),
                 booking.beneficiaryPostalCode or "",
-                "Oui" if booking.quantity == DUO_QUANTITY else "Non",
+                "Oui" if booking.quantity == constants.DUO_QUANTITY else "Non",
             )
         )
 
@@ -481,7 +478,7 @@ def _serialize_excel_report(query: BaseQuery) -> bytes:
         worksheet.write(
             row,
             16,
-            "Oui" if booking.quantity == DUO_QUANTITY else "Non",
+            "Oui" if booking.quantity == constants.DUO_QUANTITY else "Non",
         )
         row += 1
 
@@ -514,7 +511,7 @@ def export_validated_bookings_by_offer_id(
 
 
 def _duplicate_booking_when_quantity_is_two(bookings_recap_query: BaseQuery) -> BaseQuery:
-    return bookings_recap_query.union_all(bookings_recap_query.filter(Booking.quantity == DUO_QUANTITY))
+    return bookings_recap_query.union_all(bookings_recap_query.filter(Booking.quantity == constants.DUO_QUANTITY))
 
 
 def get_export(

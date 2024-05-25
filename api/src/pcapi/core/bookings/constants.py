@@ -36,6 +36,8 @@ BOOKING_CONFIRMATION_ERROR_CLAUSES = {
     f" avant le début de l'évènement",
 }
 
+DUO_QUANTITY = 2
+
 BOOKING_EXPORT_HEADERS = (
     "Lieu",
     "Nom de l’offre",
