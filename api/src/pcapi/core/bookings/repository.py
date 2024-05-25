@@ -583,8 +583,11 @@ def find_ongoing_bookings_by_stock(stock_id: int) -> list[Booking]:
     ).all()
 
 
-def find_not_cancelled_bookings_by_stock(stock: Stock) -> list[Booking]:
-    return Booking.query.filter(Booking.stockId == stock.id, Booking.status != BookingStatus.CANCELLED).all()
+def find_not_cancelled_bookings_by_stock(stock_id: int) -> list[Booking]:
+    return Booking.query.filter(
+        Booking.stockId == stock_id,
+        Booking.status != BookingStatus.CANCELLED,
+    ).all()
 
 
 def find_expiring_individual_bookings_query() -> BaseQuery:

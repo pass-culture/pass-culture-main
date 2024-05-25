@@ -68,7 +68,7 @@ def test_find_not_cancelled_bookings_by_stock(app):
     not_cancelled_booking = bookings_factories.BookingFactory(user=user, stock=stock)
 
     # When
-    all_not_cancelled_bookings = booking_repository.find_not_cancelled_bookings_by_stock(stock)
+    all_not_cancelled_bookings = booking_repository.find_not_cancelled_bookings_by_stock(stock.id)
 
     # Then
     assert set(all_not_cancelled_bookings) == {used_booking, not_cancelled_booking}
