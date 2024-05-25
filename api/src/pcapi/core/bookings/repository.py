@@ -588,7 +588,7 @@ def find_not_cancelled_bookings_by_stock(stock: Stock) -> list[Booking]:
 
 
 def find_expiring_individual_bookings_query() -> BaseQuery:
-    today_at_midnight = datetime.combine(date.today(), time(0, 0))
+    today_at_midnight = datetime.combine(date.today(), time.min)
     return (
         Booking.query.join(Stock)
         .join(Offer)
@@ -608,15 +608,15 @@ def find_expiring_individual_bookings_query() -> BaseQuery:
 
 def find_soon_to_be_expiring_individual_bookings_ordered_by_user(given_date: date | None = None) -> BaseQuery:
     given_date = given_date or date.today()
-    books_expiring_date = datetime.combine(given_date, time(0, 0)) + constants.BOOKS_BOOKINGS_EXPIRY_NOTIFICATION_DELAY
-    other_expiring_date = datetime.combine(given_date, time(0, 0)) + constants.BOOKINGS_EXPIRY_NOTIFICATION_DELAY
+    books_expiring_date = datetime.combine(given_date, time.min) + constants.BOOKS_BOOKINGS_EXPIRY_NOTIFICATION_DELAY
+    other_expiring_date = datetime.combine(given_date, time.min) + constants.BOOKINGS_EXPIRY_NOTIFICATION_DELAY
     books_window = (
-        datetime.combine(books_expiring_date, time(0, 0)),
-        datetime.combine(books_expiring_date, time(23, 59, 59)),
+        datetime.combine(books_expiring_date, time.min),
+        datetime.combine(books_expiring_date, time.max),
     )
     rest_window = (
-        datetime.combine(other_expiring_date, time(0, 0)),
-        datetime.combine(other_expiring_date, time(23, 59, 59)),
+        datetime.combine(other_expiring_date, time.min),
+        datetime.combine(other_expiring_date, time.max),
     )
 
     return (
