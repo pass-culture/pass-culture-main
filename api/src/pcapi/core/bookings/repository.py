@@ -675,17 +675,24 @@ def find_expired_individual_bookings_ordered_by_offerer(expired_on: date | None 
 
 def get_active_bookings_quantity_for_venue(venue_id: int) -> int:
     # Stock.dnBookedQuantity cannot be used here because we exclude used/confirmed bookings.
-    active_bookings_query = Booking.query.join(Stock, Booking.stock).filter(
-        Booking.venueId == venue_id,
-        Booking.status == BookingStatus.CONFIRMED,
-        sa.not_(Booking.isConfirmed),
+    active_individual_bookings_quantity = (
+        Booking.query.join(
+            Stock,
+            Booking.stock,
+        )
+        .filter(
+            Booking.venueId == venue_id,
+            Booking.status == BookingStatus.CONFIRMED,
+            sa.not_(Booking.isConfirmed),
+        )
+        .with_entities(sa.func.coalesce(sa.func.sum(Booking.quantity), 0))
+        .one()[0]
     )
 
-    n_active_bookings = active_bookings_query.with_entities(sa.func.coalesce(sa.func.sum(Booking.quantity), 0)).one()[0]
-
-    n_active_collective_bookings = (
+    active_collective_bookings_quantity = (
         educational_models.CollectiveBooking.query.join(
-            educational_models.CollectiveStock, educational_models.CollectiveBooking.collectiveStock
+            educational_models.CollectiveStock,
+            educational_models.CollectiveBooking.collectiveStock,
         )
         .filter(
             educational_models.CollectiveBooking.venueId == venue_id,
@@ -704,21 +711,24 @@ def get_active_bookings_quantity_for_venue(venue_id: int) -> int:
         .one()[0]
     )
 
-    return n_active_bookings + n_active_collective_bookings
+    return active_individual_bookings_quantity + active_collective_bookings_quantity
 
 
 def get_validated_bookings_quantity_for_venue(venue_id: int) -> int:
-    validated_bookings_quantity_query = Booking.query.filter(
-        Booking.venueId == venue_id,
-        Booking.status != BookingStatus.CANCELLED,
-        sa.or_(Booking.is_used_or_reimbursed, Booking.isConfirmed),  # type: ignore[type-var]
+    validated_individual_bookings_quantity = (
+        Booking.query.filter(
+            Booking.venueId == venue_id,
+            Booking.status != BookingStatus.CANCELLED,
+            sa.or_(  # type: ignore[type-var]
+                Booking.is_used_or_reimbursed,
+                Booking.isConfirmed,
+            ),
+        )
+        .with_entities(sa.func.coalesce(sa.func.sum(Booking.quantity), 0))
+        .one()[0]
     )
 
-    n_validated_bookings_quantity = validated_bookings_quantity_query.with_entities(
-        sa.func.coalesce(sa.func.sum(Booking.quantity), 0)
-    ).one()[0]
-
-    n_validated_collective_bookings_quantity = (
+    validated_collective_bookings_quantity = (
         educational_models.CollectiveBooking.query.filter(
             educational_models.CollectiveBooking.venueId == venue_id,
             educational_models.CollectiveBooking.status != educational_models.CollectiveBookingStatus.CANCELLED,
@@ -732,7 +742,7 @@ def get_validated_bookings_quantity_for_venue(venue_id: int) -> int:
         .one()[0]
     )
 
-    return n_validated_bookings_quantity + n_validated_collective_bookings_quantity
+    return validated_individual_bookings_quantity + validated_collective_bookings_quantity
 
 
 def find_cancellable_bookings_by_offerer(offerer_id: int) -> list[Booking]:
