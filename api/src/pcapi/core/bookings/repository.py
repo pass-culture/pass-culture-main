@@ -339,6 +339,10 @@ def export_validated_bookings_by_offer_id(
     return _write_bookings_to_csv(offer_validated_bookings_query)
 
 
+def _duplicate_booking_when_quantity_is_two(bookings_recap_query: BaseQuery) -> BaseQuery:
+    return bookings_recap_query.union_all(bookings_recap_query.filter(Booking.quantity == DUO_QUANTITY))
+
+
 def get_export(
     user: User,
     booking_period: tuple[date, date] | None = None,
@@ -593,10 +597,6 @@ def get_bookings_from_deposit(deposit_id: int) -> list[Booking]:
         .options(joinedload(Booking.stock).joinedload(Stock.offer))
         .all()
     )
-
-
-def _duplicate_booking_when_quantity_is_two(bookings_recap_query: BaseQuery) -> BaseQuery:
-    return bookings_recap_query.union_all(bookings_recap_query.filter(Booking.quantity == DUO_QUANTITY))
 
 
 def _get_booking_status(status: BookingStatus, is_confirmed: bool) -> str:
