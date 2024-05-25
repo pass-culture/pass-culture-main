@@ -9,15 +9,7 @@ import typing
 from typing import Iterable
 
 from flask_sqlalchemy import BaseQuery
-from sqlalchemy import Column
-from sqlalchemy import Date
-from sqlalchemy import and_
-from sqlalchemy import case
-from sqlalchemy import cast
-from sqlalchemy import func
-from sqlalchemy import not_
-from sqlalchemy import or_
-from sqlalchemy import text
+import sqlalchemy as sa
 from sqlalchemy.orm import InstrumentedAttribute
 from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm import joinedload
@@ -88,8 +80,8 @@ BOOKING_EXPORT_HEADER = [
 
 
 # FIXME (Gautier, 03-25-2022): also used in collective_booking. SHould we move it to core or some other place?
-def field_to_venue_timezone(field: InstrumentedAttribute) -> cast:
-    return cast(func.timezone(Venue.timezone, func.timezone("UTC", field)), Date)
+def field_to_venue_timezone(field: InstrumentedAttribute) -> sa.cast:
+    return sa.cast(sa.func.timezone(Venue.timezone, sa.func.timezone("UTC", field)), sa.Date)
 
 
 def _get_filtered_bookings_query(
@@ -100,7 +92,7 @@ def _get_filtered_bookings_query(
     venue_id: int | None = None,
     offer_id: int | None = None,
     offer_type: OfferType | None = None,
-    extra_joins: Iterable[Column] | None = None,
+    extra_joins: Iterable[sa.Column] | None = None,
 ) -> BaseQuery:
     extra_joins = extra_joins or tuple()
 
@@ -213,7 +205,7 @@ def _get_filtered_bookings_count(
     ).cte()
     # We really want total quantities here (and not the number of bookings),
     # since we'll build two rows for each "duo" bookings later.
-    bookings_count = db.session.query(func.coalesce(func.sum(bookings.c.quantity), 0))
+    bookings_count = db.session.query(sa.func.coalesce(sa.func.sum(bookings.c.quantity), 0))
     return bookings_count.scalar()
 
 
@@ -531,8 +523,8 @@ def export_validated_bookings_by_offer_id(
 ) -> str | bytes:
     offer_validated_bookings_query = _create_export_query(offer_id, event_beginning_date)
     offer_validated_bookings_query = offer_validated_bookings_query.filter(
-        or_(
-            and_(Booking.isConfirmed, Booking.status != BookingStatus.CANCELLED),  # type: ignore[type-var]
+        sa.or_(
+            sa.and_(Booking.isConfirmed, Booking.status != BookingStatus.CANCELLED),  # type: ignore[type-var]
             Booking.status == BookingStatus.USED,
         )
     )
@@ -602,7 +594,7 @@ def find_by_pro_user(
     )
     bookings_query = _duplicate_booking_when_quantity_is_two(bookings_query)
     bookings_query = (
-        bookings_query.order_by(text('"bookedAt" DESC')).offset((page - 1) * per_page_limit).limit(per_page_limit)
+        bookings_query.order_by(sa.text('"bookedAt" DESC')).offset((page - 1) * per_page_limit).limit(per_page_limit)
     )
 
     return bookings_query, total_bookings_recap
@@ -627,7 +619,7 @@ def find_expiring_individual_bookings_query() -> BaseQuery:
         .filter(
             Booking.status == BookingStatus.CONFIRMED,
             Offer.canExpire,
-            case(
+            sa.case(
                 (
                     Offer.subcategoryId == subcategories.LIVRE_PAPIER.id,
                     (Booking.dateCreated + constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY) <= today_at_midnight,
@@ -657,7 +649,7 @@ def find_soon_to_be_expiring_individual_bookings_ordered_by_user(given_date: dat
         .filter(
             Booking.status == BookingStatus.CONFIRMED,
             Offer.canExpire,
-            case(
+            sa.case(
                 (
                     Offer.subcategoryId == subcategories.LIVRE_PAPIER.id,
                     ((Booking.dateCreated + constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY).between(*books_window)),
@@ -714,7 +706,7 @@ def find_expired_individual_bookings_ordered_by_offerer(expired_on: date | None 
     expired_on = expired_on or date.today()
     return (
         Booking.query.filter(Booking.status == BookingStatus.CANCELLED)
-        .filter(cast(Booking.cancellationDate, Date) == expired_on)
+        .filter(sa.cast(Booking.cancellationDate, sa.Date) == expired_on)
         .filter(Booking.cancellationReason == BookingCancellationReasons.EXPIRED)
         .order_by(Booking.offererId)
         .all()
@@ -726,10 +718,10 @@ def get_active_bookings_quantity_for_venue(venue_id: int) -> int:
     active_bookings_query = Booking.query.join(Stock, Booking.stock).filter(
         Booking.venueId == venue_id,
         Booking.status == BookingStatus.CONFIRMED,
-        not_(Booking.isConfirmed),
+        sa.not_(Booking.isConfirmed),
     )
 
-    n_active_bookings = active_bookings_query.with_entities(func.coalesce(func.sum(Booking.quantity), 0)).one()[0]
+    n_active_bookings = active_bookings_query.with_entities(sa.func.coalesce(sa.func.sum(Booking.quantity), 0)).one()[0]
 
     n_active_collective_bookings = (
         educational_models.CollectiveBooking.query.join(
@@ -737,18 +729,18 @@ def get_active_bookings_quantity_for_venue(venue_id: int) -> int:
         )
         .filter(
             educational_models.CollectiveBooking.venueId == venue_id,
-            or_(
-                and_(
+            sa.or_(
+                sa.and_(
                     educational_models.CollectiveBooking.status == educational_models.CollectiveBookingStatus.PENDING,
-                    not_(educational_models.CollectiveStock.hasBookingLimitDatetimePassed),
+                    sa.not_(educational_models.CollectiveStock.hasBookingLimitDatetimePassed),
                 ),
-                and_(
+                sa.and_(
                     educational_models.CollectiveBooking.status == educational_models.CollectiveBookingStatus.CONFIRMED,
-                    not_(educational_models.CollectiveBooking.isConfirmed),
+                    sa.not_(educational_models.CollectiveBooking.isConfirmed),
                 ),
             ),
         )
-        .with_entities(func.coalesce(func.sum(1), 0))
+        .with_entities(sa.func.coalesce(sa.func.sum(1), 0))
         .one()[0]
     )
 
@@ -759,11 +751,11 @@ def get_validated_bookings_quantity_for_venue(venue_id: int) -> int:
     validated_bookings_quantity_query = Booking.query.filter(
         Booking.venueId == venue_id,
         Booking.status != BookingStatus.CANCELLED,
-        or_(Booking.is_used_or_reimbursed, Booking.isConfirmed),  # type: ignore[type-var]
+        sa.or_(Booking.is_used_or_reimbursed, Booking.isConfirmed),  # type: ignore[type-var]
     )
 
     n_validated_bookings_quantity = validated_bookings_quantity_query.with_entities(
-        func.coalesce(func.sum(Booking.quantity), 0)
+        sa.func.coalesce(sa.func.sum(Booking.quantity), 0)
     ).one()[0]
 
     n_validated_collective_bookings_quantity = (
@@ -771,12 +763,12 @@ def get_validated_bookings_quantity_for_venue(venue_id: int) -> int:
             educational_models.CollectiveBooking.venueId == venue_id,
             educational_models.CollectiveBooking.status != educational_models.CollectiveBookingStatus.CANCELLED,
             educational_models.CollectiveBooking.status != educational_models.CollectiveBookingStatus.PENDING,
-            or_(  # type: ignore[type-var]
+            sa.or_(  # type: ignore[type-var]
                 educational_models.CollectiveBooking.is_used_or_reimbursed,
                 educational_models.CollectiveBooking.isConfirmed,
             ),
         )
-        .with_entities(func.coalesce(func.sum(1), 0))
+        .with_entities(sa.func.coalesce(sa.func.sum(1), 0))
         .one()[0]
     )
 
@@ -860,7 +852,7 @@ def find_individual_bookings_event_happening_tomorrow_query() -> list[Booking]:
         .outerjoin(Offer.criteria)
         .filter(Stock.beginningDatetime >= tomorrow_min, Stock.beginningDatetime <= tomorrow_max)
         .filter(Offer.isEvent)
-        .filter(not_(Offer.isDigital))
+        .filter(sa.not_(Offer.isDigital))
         .filter(Booking.status != BookingStatus.CANCELLED)
         .options(contains_eager(Booking.user))
         .options(contains_eager(Booking.activationCode))
