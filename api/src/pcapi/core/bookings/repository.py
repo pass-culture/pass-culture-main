@@ -315,6 +315,13 @@ def _create_export_query(offer_id: int, event_beginning_date: date) -> BaseQuery
     )
 
 
+def _get_booking_status(status: BookingStatus, is_confirmed: bool) -> str:
+    cancellation_limit_date_exists_and_past = is_confirmed
+    if cancellation_limit_date_exists_and_past and status == BookingStatus.CONFIRMED:
+        return BOOKING_STATUS_LABELS["confirmed"]
+    return BOOKING_STATUS_LABELS[status]
+
+
 def _write_csv_row(csv_writer: typing.Any, booking: Booking, booking_duo_column: str) -> None:
     csv_writer.writerow(
         (
@@ -793,13 +800,6 @@ def get_bookings_from_deposit(deposit_id: int) -> list[Booking]:
         .options(joinedload(Booking.stock).joinedload(Stock.offer))
         .all()
     )
-
-
-def _get_booking_status(status: BookingStatus, is_confirmed: bool) -> str:
-    cancellation_limit_date_exists_and_past = is_confirmed
-    if cancellation_limit_date_exists_and_past and status == BookingStatus.CONFIRMED:
-        return BOOKING_STATUS_LABELS["confirmed"]
-    return BOOKING_STATUS_LABELS[status]
 
 
 def get_soon_expiring_bookings(expiration_days_delta: int) -> typing.Generator[Booking, None, None]:
