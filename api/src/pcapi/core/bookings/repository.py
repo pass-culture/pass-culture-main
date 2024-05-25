@@ -421,6 +421,42 @@ def _write_bookings_to_excel(query: BaseQuery) -> bytes:
     return output.getvalue()
 
 
+def _serialize_csv_report(query: BaseQuery) -> str:
+    output = StringIO()
+    writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
+    writer.writerow(BOOKING_EXPORT_HEADER)
+    for booking in query.yield_per(1000):
+        writer.writerow(
+            (
+                booking.venueName,
+                booking.offerName,
+                convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking),
+                booking.ean,
+                f"{booking.beneficiaryLastName} {booking.beneficiaryFirstName}",
+                booking.beneficiaryEmail,
+                booking.beneficiaryPhoneNumber,
+                convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking),
+                convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking),
+                booking_recap_utils.get_booking_token(
+                    booking.token,
+                    booking.status,
+                    booking.isExternal,
+                    booking.stockBeginningDatetime,
+                ),
+                booking.priceCategoryLabel or "",
+                booking.amount,
+                _get_booking_status(booking.status, booking.isConfirmed),
+                convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking),
+                # This method is still used in the old Payment model
+                serialize_offer_type_educational_or_individual(offer_is_educational=False),
+                booking.beneficiaryPostalCode or "",
+                "Oui" if booking.quantity == DUO_QUANTITY else "Non",
+            )
+        )
+
+    return output.getvalue()
+
+
 def export_bookings_by_offer_id(
     offer_id: int, event_beginning_date: date, export_type: BookingExportType
 ) -> str | bytes:
@@ -710,42 +746,6 @@ def _get_booking_status(status: BookingStatus, is_confirmed: bool) -> str:
     if cancellation_limit_date_exists_and_past and status == BookingStatus.CONFIRMED:
         return BOOKING_STATUS_LABELS["confirmed"]
     return BOOKING_STATUS_LABELS[status]
-
-
-def _serialize_csv_report(query: BaseQuery) -> str:
-    output = StringIO()
-    writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
-    writer.writerow(BOOKING_EXPORT_HEADER)
-    for booking in query.yield_per(1000):
-        writer.writerow(
-            (
-                booking.venueName,
-                booking.offerName,
-                convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking),
-                booking.ean,
-                f"{booking.beneficiaryLastName} {booking.beneficiaryFirstName}",
-                booking.beneficiaryEmail,
-                booking.beneficiaryPhoneNumber,
-                convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking),
-                convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking),
-                booking_recap_utils.get_booking_token(
-                    booking.token,
-                    booking.status,
-                    booking.isExternal,
-                    booking.stockBeginningDatetime,
-                ),
-                booking.priceCategoryLabel or "",
-                booking.amount,
-                _get_booking_status(booking.status, booking.isConfirmed),
-                convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking),
-                # This method is still used in the old Payment model
-                serialize_offer_type_educational_or_individual(offer_is_educational=False),
-                booking.beneficiaryPostalCode or "",
-                "Oui" if booking.quantity == DUO_QUANTITY else "Non",
-            )
-        )
-
-    return output.getvalue()
 
 
 def _serialize_excel_report(query: BaseQuery) -> bytes:
