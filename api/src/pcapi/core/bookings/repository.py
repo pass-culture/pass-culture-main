@@ -5,13 +5,13 @@ from datetime import time
 from datetime import timedelta
 from io import BytesIO
 from io import StringIO
-from operator import and_
 import typing
 from typing import Iterable
 
 from flask_sqlalchemy import BaseQuery
 from sqlalchemy import Column
 from sqlalchemy import Date
+from sqlalchemy import and_
 from sqlalchemy import case
 from sqlalchemy import cast
 from sqlalchemy import func
@@ -533,7 +533,7 @@ def export_validated_bookings_by_offer_id(
     offer_validated_bookings_query = _create_export_query(offer_id, event_beginning_date)
     offer_validated_bookings_query = offer_validated_bookings_query.filter(
         or_(
-            and_(Booking.isConfirmed, Booking.status != BookingStatus.CANCELLED),
+            and_(Booking.isConfirmed, Booking.status != BookingStatus.CANCELLED),  # type: ignore[type-var]
             Booking.status == BookingStatus.USED,
         )
     )
