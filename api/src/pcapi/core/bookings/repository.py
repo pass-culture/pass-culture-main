@@ -272,6 +272,49 @@ def _get_filtered_booking_pro(
     return bookings_query
 
 
+def _create_export_query(offer_id: int, event_beginning_date: date) -> BaseQuery:
+    return (
+        Booking.query.join(Booking.offerer)
+        .join(Booking.user)
+        .join(Offerer.UserOfferers)
+        .join(Booking.venue)
+        .join(Booking.stock)
+        .join(Stock.offer)
+        .filter(Stock.offerId == offer_id, field_to_venue_timezone(Stock.beginningDatetime) == event_beginning_date)
+        .order_by(Booking.id)
+        .with_entities(
+            Booking.id.label("id"),
+            Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
+            Venue.departementCode.label("venueDepartmentCode"),
+            Offerer.postalCode.label("offererPostalCode"),
+            Offer.name.label("offerName"),
+            Stock.beginningDatetime.label("stockBeginningDatetime"),
+            Stock.offerId,
+            Offer.extraData["ean"].label("ean"),
+            User.firstName.label("beneficiaryFirstName"),
+            User.lastName.label("beneficiaryLastName"),
+            User.email.label("beneficiaryEmail"),
+            User.phoneNumber.label("beneficiaryPhoneNumber"),  # type: ignore[attr-defined]
+            User.postalCode.label("beneficiaryPostalCode"),
+            Booking.token,
+            Booking.priceCategoryLabel,
+            Booking.amount,
+            Booking.quantity,
+            Booking.status,
+            Booking.dateCreated.label("bookedAt"),
+            Booking.dateUsed.label("usedAt"),
+            Booking.reimbursementDate.label("reimbursedAt"),
+            Booking.cancellationDate.label("cancelledAt"),
+            Booking.isExternal.label("isExternal"),  # type: ignore[attr-defined]
+            Booking.isConfirmed,
+            # `get_batch` function needs a field called exactly `id` to work,
+            # the label prevents SA from using a bad (prefixed) label for this field
+            Booking.userId,
+        )
+        .distinct(Booking.id)
+    )
+
+
 def find_by_pro_user(
     user: User,
     booking_period: tuple[date, date] | None = None,
@@ -500,49 +543,6 @@ def get_bookings_from_deposit(deposit_id: int) -> list[Booking]:
         )
         .options(joinedload(Booking.stock).joinedload(Stock.offer))
         .all()
-    )
-
-
-def _create_export_query(offer_id: int, event_beginning_date: date) -> BaseQuery:
-    return (
-        Booking.query.join(Booking.offerer)
-        .join(Booking.user)
-        .join(Offerer.UserOfferers)
-        .join(Booking.venue)
-        .join(Booking.stock)
-        .join(Stock.offer)
-        .filter(Stock.offerId == offer_id, field_to_venue_timezone(Stock.beginningDatetime) == event_beginning_date)
-        .order_by(Booking.id)
-        .with_entities(
-            Booking.id.label("id"),
-            Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
-            Venue.departementCode.label("venueDepartmentCode"),
-            Offerer.postalCode.label("offererPostalCode"),
-            Offer.name.label("offerName"),
-            Stock.beginningDatetime.label("stockBeginningDatetime"),
-            Stock.offerId,
-            Offer.extraData["ean"].label("ean"),
-            User.firstName.label("beneficiaryFirstName"),
-            User.lastName.label("beneficiaryLastName"),
-            User.email.label("beneficiaryEmail"),
-            User.phoneNumber.label("beneficiaryPhoneNumber"),  # type: ignore[attr-defined]
-            User.postalCode.label("beneficiaryPostalCode"),
-            Booking.token,
-            Booking.priceCategoryLabel,
-            Booking.amount,
-            Booking.quantity,
-            Booking.status,
-            Booking.dateCreated.label("bookedAt"),
-            Booking.dateUsed.label("usedAt"),
-            Booking.reimbursementDate.label("reimbursedAt"),
-            Booking.cancellationDate.label("cancelledAt"),
-            Booking.isExternal.label("isExternal"),  # type: ignore[attr-defined]
-            Booking.isConfirmed,
-            # `get_batch` function needs a field called exactly `id` to work,
-            # the label prevents SA from using a bad (prefixed) label for this field
-            Booking.userId,
-        )
-        .distinct(Booking.id)
     )
 
 
