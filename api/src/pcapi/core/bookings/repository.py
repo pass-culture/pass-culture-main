@@ -88,6 +88,11 @@ BOOKING_EXPORT_HEADER = [
 ]
 
 
+# FIXME (Gautier, 03-25-2022): also used in collective_booking. SHould we move it to core or some other place?
+def field_to_venue_timezone(field: InstrumentedAttribute) -> cast:
+    return cast(func.timezone(Venue.timezone, func.timezone("UTC", field)), Date)
+
+
 def _get_filtered_bookings_query(
     pro_user: User,
     period: tuple[date, date] | None = None,
@@ -478,11 +483,6 @@ def get_export(
     if export_type == BookingExportType.EXCEL:
         return _serialize_excel_report(bookings_query)
     return _serialize_csv_report(bookings_query)
-
-
-# FIXME (Gautier, 03-25-2022): also used in collective_booking. SHould we move it to core or some other place?
-def field_to_venue_timezone(field: InstrumentedAttribute) -> cast:
-    return cast(func.timezone(Venue.timezone, func.timezone("UTC", field)), Date)
 
 
 def _get_filtered_booking_report(
