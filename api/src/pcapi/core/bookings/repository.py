@@ -767,20 +767,21 @@ def get_bookings_from_deposit(deposit_id: int) -> list[Booking]:
 
 def get_soon_expiring_bookings(expiration_days_delta: int) -> typing.Generator[Booking, None, None]:
     """Find bookings expiring in exactly `expiration_days_delta` days"""
+    dt = date.today() + timedelta(days=expiration_days_delta)
     query = (
-        Booking.query.options(
+        Booking.query.join(Booking.stock)
+        .join(Stock.offer)
+        .filter(
+            Offer.canExpire,
+            Booking.status == BookingStatus.CONFIRMED,
+        )
+        .options(
             contains_eager(Booking.stock).load_only(Stock.id).contains_eager(Stock.offer).load_only(Offer.subcategoryId)
         )
-        .join(Booking.stock)
-        .join(Stock.offer)
-        .filter_by(canExpire=True)
-        .filter(Booking.status == BookingStatus.CONFIRMED)
     )
-
-    delta = timedelta(days=expiration_days_delta)
     for booking in query.yield_per(1000):
         expiration_date = booking.expirationDate
-        if expiration_date and expiration_date.date() == date.today() + delta:
+        if expiration_date and expiration_date.date() == dt:
             yield booking
 
 
