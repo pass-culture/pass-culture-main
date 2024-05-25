@@ -620,10 +620,6 @@ def find_not_cancelled_bookings_by_stock(stock: Stock) -> list[Booking]:
     return Booking.query.filter(Booking.stockId == stock.id, Booking.status != BookingStatus.CANCELLED).all()
 
 
-def token_exists(token: str) -> bool:
-    return db.session.query(Booking.query.filter_by(token=token.upper()).exists()).scalar()
-
-
 def find_expiring_individual_bookings_query() -> BaseQuery:
     today_at_midnight = datetime.combine(date.today(), time(0, 0))
     return (
@@ -672,6 +668,10 @@ def find_soon_to_be_expiring_individual_bookings_ordered_by_user(given_date: dat
         )
         .order_by(Booking.userId)
     )
+
+
+def token_exists(token: str) -> bool:
+    return db.session.query(Booking.query.filter_by(token=token.upper()).exists()).scalar()
 
 
 def generate_booking_token() -> str:
