@@ -21,7 +21,6 @@ from sqlalchemy import text
 from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.attributes import InstrumentedAttribute
-from sqlalchemy.sql.functions import coalesce
 import xlsxwriter
 from xlsxwriter.format import Format
 from xlsxwriter.worksheet import Worksheet
@@ -730,7 +729,7 @@ def get_active_bookings_quantity_for_venue(venue_id: int) -> int:
         not_(Booking.isConfirmed),
     )
 
-    n_active_bookings = active_bookings_query.with_entities(coalesce(func.sum(Booking.quantity), 0)).one()[0]
+    n_active_bookings = active_bookings_query.with_entities(func.coalesce(func.sum(Booking.quantity), 0)).one()[0]
 
     n_active_collective_bookings = (
         educational_models.CollectiveBooking.query.join(
@@ -749,7 +748,7 @@ def get_active_bookings_quantity_for_venue(venue_id: int) -> int:
                 ),
             ),
         )
-        .with_entities(coalesce(func.sum(1), 0))
+        .with_entities(func.coalesce(func.sum(1), 0))
         .one()[0]
     )
 
@@ -764,7 +763,7 @@ def get_validated_bookings_quantity_for_venue(venue_id: int) -> int:
     )
 
     n_validated_bookings_quantity = validated_bookings_quantity_query.with_entities(
-        coalesce(func.sum(Booking.quantity), 0)
+        func.coalesce(func.sum(Booking.quantity), 0)
     ).one()[0]
 
     n_validated_collective_bookings_quantity = (
@@ -777,7 +776,7 @@ def get_validated_bookings_quantity_for_venue(venue_id: int) -> int:
                 educational_models.CollectiveBooking.isConfirmed,
             ),
         )
-        .with_entities(coalesce(func.sum(1), 0))
+        .with_entities(func.coalesce(func.sum(1), 0))
         .one()[0]
     )
 
