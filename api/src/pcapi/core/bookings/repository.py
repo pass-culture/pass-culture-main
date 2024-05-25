@@ -162,6 +162,60 @@ def _get_filtered_bookings_count(
     return bookings_count.scalar()
 
 
+def _get_filtered_booking_pro(
+    pro_user: User,
+    period: tuple[date, date] | None = None,
+    status_filter: BookingStatusFilter | None = None,
+    event_date: date | None = None,
+    venue_id: int | None = None,
+    offer_id: int | None = None,
+    offer_type: OfferType | None = None,
+) -> BaseQuery:
+    bookings_query = (
+        _get_filtered_bookings_query(
+            pro_user,
+            period,
+            status_filter,
+            event_date,
+            venue_id,
+            offer_id,
+            offer_type,
+            extra_joins=(
+                Stock.offer,
+                Booking.user,
+            ),
+        )
+        .with_entities(
+            Booking.token.label("bookingToken"),
+            Booking.dateCreated.label("bookedAt"),
+            Booking.quantity,
+            Booking.amount.label("bookingAmount"),
+            Booking.priceCategoryLabel,
+            Booking.dateUsed.label("usedAt"),
+            Booking.cancellationDate.label("cancelledAt"),
+            Booking.cancellationLimitDate,
+            Booking.status,
+            Booking.reimbursementDate.label("reimbursedAt"),
+            Booking.isExternal.label("isExternal"),  # type: ignore[attr-defined]
+            Booking.isConfirmed,
+            Offer.name.label("offerName"),
+            Offer.id.label("offerId"),
+            Offer.extraData["ean"].label("offerEan"),
+            User.firstName.label("beneficiaryFirstname"),
+            User.lastName.label("beneficiaryLastname"),
+            User.email.label("beneficiaryEmail"),
+            User.phoneNumber.label("beneficiaryPhoneNumber"),  # type: ignore[attr-defined]
+            Stock.beginningDatetime.label("stockBeginningDatetime"),
+            Booking.stockId,
+            Venue.departementCode.label("venueDepartmentCode"),
+            Offerer.postalCode.label("offererPostalCode"),
+        )
+        .distinct(Booking.id)
+    )
+
+    return bookings_query
+
+
 def find_by_pro_user(
     user: User,
     booking_period: tuple[date, date] | None = None,
@@ -534,60 +588,6 @@ def _get_filtered_booking_report(
             # the label prevents SA from using a bad (prefixed) label for this field
             Booking.id.label("id"),
             Booking.userId,
-        )
-        .distinct(Booking.id)
-    )
-
-    return bookings_query
-
-
-def _get_filtered_booking_pro(
-    pro_user: User,
-    period: tuple[date, date] | None = None,
-    status_filter: BookingStatusFilter | None = None,
-    event_date: date | None = None,
-    venue_id: int | None = None,
-    offer_id: int | None = None,
-    offer_type: OfferType | None = None,
-) -> BaseQuery:
-    bookings_query = (
-        _get_filtered_bookings_query(
-            pro_user,
-            period,
-            status_filter,
-            event_date,
-            venue_id,
-            offer_id,
-            offer_type,
-            extra_joins=(
-                Stock.offer,
-                Booking.user,
-            ),
-        )
-        .with_entities(
-            Booking.token.label("bookingToken"),
-            Booking.dateCreated.label("bookedAt"),
-            Booking.quantity,
-            Booking.amount.label("bookingAmount"),
-            Booking.priceCategoryLabel,
-            Booking.dateUsed.label("usedAt"),
-            Booking.cancellationDate.label("cancelledAt"),
-            Booking.cancellationLimitDate,
-            Booking.status,
-            Booking.reimbursementDate.label("reimbursedAt"),
-            Booking.isExternal.label("isExternal"),  # type: ignore[attr-defined]
-            Booking.isConfirmed,
-            Offer.name.label("offerName"),
-            Offer.id.label("offerId"),
-            Offer.extraData["ean"].label("offerEan"),
-            User.firstName.label("beneficiaryFirstname"),
-            User.lastName.label("beneficiaryLastname"),
-            User.email.label("beneficiaryEmail"),
-            User.phoneNumber.label("beneficiaryPhoneNumber"),  # type: ignore[attr-defined]
-            Stock.beginningDatetime.label("stockBeginningDatetime"),
-            Booking.stockId,
-            Venue.departementCode.label("venueDepartmentCode"),
-            Offerer.postalCode.label("offererPostalCode"),
         )
         .distinct(Booking.id)
     )
