@@ -88,6 +88,55 @@ BOOKING_EXPORT_HEADER = [
 ]
 
 
+def _get_filtered_bookings_query(
+    pro_user: User,
+    period: tuple[date, date] | None = None,
+    status_filter: BookingStatusFilter | None = None,
+    event_date: date | None = None,
+    venue_id: int | None = None,
+    offer_id: int | None = None,
+    offer_type: OfferType | None = None,
+    extra_joins: Iterable[Column] | None = None,
+) -> BaseQuery:
+    extra_joins = extra_joins or tuple()
+
+    bookings_query = (
+        Booking.query.join(Booking.offerer)
+        .join(Offerer.UserOfferers)
+        .join(Booking.stock)
+        .join(Booking.externalBookings, isouter=True)
+        .join(Booking.venue, isouter=True)
+    )
+    for join_key in extra_joins:
+        bookings_query = bookings_query.join(join_key, isouter=True)
+
+    if not pro_user.has_admin_role:
+        bookings_query = bookings_query.filter(UserOfferer.user == pro_user)
+
+    bookings_query = bookings_query.filter(UserOfferer.isValidated)
+
+    if period:
+        period_attribut_filter = (
+            BOOKING_DATE_STATUS_MAPPING[status_filter]
+            if status_filter
+            else BOOKING_DATE_STATUS_MAPPING[BookingStatusFilter.BOOKED]
+        )
+
+        bookings_query = bookings_query.filter(
+            field_to_venue_timezone(period_attribut_filter).between(*period, symmetric=True)
+        )
+
+    if venue_id is not None:
+        bookings_query = bookings_query.filter(Booking.venueId == venue_id)
+
+    if offer_id is not None:
+        bookings_query = bookings_query.filter(Stock.offerId == offer_id)
+
+    if event_date:
+        bookings_query = bookings_query.filter(field_to_venue_timezone(Stock.beginningDatetime) == event_date)
+    return bookings_query
+
+
 def _get_filtered_bookings_count(
     pro_user: User,
     period: tuple[date, date] | None = None,
@@ -434,55 +483,6 @@ def get_export(
 # FIXME (Gautier, 03-25-2022): also used in collective_booking. SHould we move it to core or some other place?
 def field_to_venue_timezone(field: InstrumentedAttribute) -> cast:
     return cast(func.timezone(Venue.timezone, func.timezone("UTC", field)), Date)
-
-
-def _get_filtered_bookings_query(
-    pro_user: User,
-    period: tuple[date, date] | None = None,
-    status_filter: BookingStatusFilter | None = None,
-    event_date: date | None = None,
-    venue_id: int | None = None,
-    offer_id: int | None = None,
-    offer_type: OfferType | None = None,
-    extra_joins: Iterable[Column] | None = None,
-) -> BaseQuery:
-    extra_joins = extra_joins or tuple()
-
-    bookings_query = (
-        Booking.query.join(Booking.offerer)
-        .join(Offerer.UserOfferers)
-        .join(Booking.stock)
-        .join(Booking.externalBookings, isouter=True)
-        .join(Booking.venue, isouter=True)
-    )
-    for join_key in extra_joins:
-        bookings_query = bookings_query.join(join_key, isouter=True)
-
-    if not pro_user.has_admin_role:
-        bookings_query = bookings_query.filter(UserOfferer.user == pro_user)
-
-    bookings_query = bookings_query.filter(UserOfferer.isValidated)
-
-    if period:
-        period_attribut_filter = (
-            BOOKING_DATE_STATUS_MAPPING[status_filter]
-            if status_filter
-            else BOOKING_DATE_STATUS_MAPPING[BookingStatusFilter.BOOKED]
-        )
-
-        bookings_query = bookings_query.filter(
-            field_to_venue_timezone(period_attribut_filter).between(*period, symmetric=True)
-        )
-
-    if venue_id is not None:
-        bookings_query = bookings_query.filter(Booking.venueId == venue_id)
-
-    if offer_id is not None:
-        bookings_query = bookings_query.filter(Stock.offerId == offer_id)
-
-    if event_date:
-        bookings_query = bookings_query.filter(field_to_venue_timezone(Stock.beginningDatetime) == event_date)
-    return bookings_query
 
 
 def _get_filtered_booking_report(
