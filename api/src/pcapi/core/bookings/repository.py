@@ -686,7 +686,7 @@ def get_active_bookings_quantity_for_venue(venue_id: int) -> int:
             sa.not_(Booking.isConfirmed),
         )
         .with_entities(sa.func.coalesce(sa.func.sum(Booking.quantity), 0))
-        .one()[0]
+        .scalar()
     )
 
     active_collective_bookings_quantity = (
@@ -708,7 +708,7 @@ def get_active_bookings_quantity_for_venue(venue_id: int) -> int:
             ),
         )
         .with_entities(sa.func.coalesce(sa.func.sum(1), 0))
-        .one()[0]
+        .scalar()
     )
 
     return active_individual_bookings_quantity + active_collective_bookings_quantity
@@ -725,7 +725,7 @@ def get_validated_bookings_quantity_for_venue(venue_id: int) -> int:
             ),
         )
         .with_entities(sa.func.coalesce(sa.func.sum(Booking.quantity), 0))
-        .one()[0]
+        .scalar()
     )
 
     validated_collective_bookings_quantity = (
@@ -739,7 +739,7 @@ def get_validated_bookings_quantity_for_venue(venue_id: int) -> int:
             ),
         )
         .with_entities(sa.func.coalesce(sa.func.sum(1), 0))
-        .one()[0]
+        .scalar()
     )
 
     return validated_individual_bookings_quantity + validated_collective_bookings_quantity
