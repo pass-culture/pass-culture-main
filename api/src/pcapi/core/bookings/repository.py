@@ -803,11 +803,10 @@ def get_soon_expiring_bookings(expiration_days_delta: int) -> typing.Generator[B
         .join(Stock.offer)
         .filter_by(canExpire=True)
         .filter(Booking.status == BookingStatus.CONFIRMED)
-        .yield_per(1_000)
     )
 
     delta = timedelta(days=expiration_days_delta)
-    for booking in query:
+    for booking in query.yield_per(1000):
         expiration_date = booking.expirationDate
         if expiration_date and expiration_date.date() == date.today() + delta:
             yield booking
