@@ -2941,7 +2941,7 @@ class GetTomorrowEventOfferTest:
             )
         )
 
-        bookings = booking_repository.find_individual_bookings_event_happening_tomorrow_query()
+        bookings = booking_repository.find_individual_bookings_event_happening_tomorrow()
 
         assert len(bookings) == 1
 
@@ -2953,7 +2953,7 @@ class GetTomorrowEventOfferTest:
             )
         )
 
-        bookings = booking_repository.find_individual_bookings_event_happening_tomorrow_query()
+        bookings = booking_repository.find_individual_bookings_event_happening_tomorrow()
 
         assert len(bookings) == 0
 
@@ -2965,7 +2965,7 @@ class GetTomorrowEventOfferTest:
             )
         )
 
-        bookings = booking_repository.find_individual_bookings_event_happening_tomorrow_query()
+        bookings = booking_repository.find_individual_bookings_event_happening_tomorrow()
 
         assert len(bookings) == 0
 
@@ -2973,7 +2973,7 @@ class GetTomorrowEventOfferTest:
         tomorrow = datetime.utcnow() + timedelta(days=1)
         bookings_factories.BookingFactory(stock__beginningDatetime=tomorrow)
 
-        bookings = booking_repository.find_individual_bookings_event_happening_tomorrow_query()
+        bookings = booking_repository.find_individual_bookings_event_happening_tomorrow()
 
         assert len(bookings) == 0
 
@@ -2986,7 +2986,7 @@ class GetTomorrowEventOfferTest:
         )
 
         with assert_no_duplicated_queries():
-            bookings = booking_repository.find_individual_bookings_event_happening_tomorrow_query()
+            bookings = booking_repository.find_individual_bookings_event_happening_tomorrow()
 
         assert len(bookings) == 1
 
@@ -2999,7 +2999,7 @@ class GetTomorrowEventOfferTest:
             )
         )
 
-        bookings = booking_repository.find_individual_bookings_event_happening_tomorrow_query()
+        bookings = booking_repository.find_individual_bookings_event_happening_tomorrow()
 
         assert len(bookings) == 0
 
@@ -3019,7 +3019,7 @@ class GetTomorrowEventOfferTest:
             )
         )
 
-        bookings = booking_repository.find_individual_bookings_event_happening_tomorrow_query()
+        bookings = booking_repository.find_individual_bookings_event_happening_tomorrow()
 
         assert len(bookings) == 1
 
@@ -3032,7 +3032,7 @@ class GetTomorrowEventOfferTest:
             status=BookingStatus.CANCELLED,
         )
 
-        bookings = booking_repository.find_individual_bookings_event_happening_tomorrow_query()
+        bookings = booking_repository.find_individual_bookings_event_happening_tomorrow()
 
         assert len(bookings) == 0
 
@@ -3044,6 +3044,6 @@ class GetTomorrowEventOfferTest:
         bookings_factories.BookingFactory(stock=stock)
         bookings_factories.BookingFactory(stock=stock)
 
-        bookings = booking_repository.find_individual_bookings_event_happening_tomorrow_query()
+        bookings = booking_repository.find_individual_bookings_event_happening_tomorrow()
 
         assert len(bookings) == 2

@@ -805,24 +805,24 @@ def offerer_has_ongoing_bookings(offerer_id: int) -> bool:
     ).scalar()
 
 
-def find_individual_bookings_event_happening_tomorrow_query() -> list[Booking]:
+def find_individual_bookings_event_happening_tomorrow() -> list[Booking]:
     tomorrow = datetime.utcnow() + timedelta(days=1)
     tomorrow_min = datetime.combine(tomorrow, time.min)
     tomorrow_max = datetime.combine(tomorrow, time.max)
-
     return (
-        Booking.query.join(
-            Booking.user,
-        )
+        Booking.query.join(Booking.user)
         .join(Booking.stock)
         .join(Stock.offer)
         .join(Offer.venue)
         .outerjoin(Booking.activationCode)
         .outerjoin(Offer.criteria)
-        .filter(Stock.beginningDatetime >= tomorrow_min, Stock.beginningDatetime <= tomorrow_max)
-        .filter(Offer.isEvent)
-        .filter(sa.not_(Offer.isDigital))
-        .filter(Booking.status != BookingStatus.CANCELLED)
+        .filter(
+            Stock.beginningDatetime >= tomorrow_min,
+            Stock.beginningDatetime <= tomorrow_max,
+            Offer.isEvent,
+            sa.not_(Offer.isDigital),
+            Booking.status != BookingStatus.CANCELLED,
+        )
         .options(contains_eager(Booking.user))
         .options(contains_eager(Booking.activationCode))
         .options(

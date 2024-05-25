@@ -223,7 +223,7 @@ def send_email_reminder_7_days_before_event() -> None:
 
 def send_email_reminder_tomorrow_event_to_beneficiaries() -> None:
     """Triggers email reminder to beneficiaries for none digitals events happening tomorrow"""
-    bookings = bookings_repository.find_individual_bookings_event_happening_tomorrow_query()
+    bookings = bookings_repository.find_individual_bookings_event_happening_tomorrow()
     for booking in bookings:
         try:
             transactional_mails.send_individual_booking_event_reminder_email_to_beneficiary(booking)
