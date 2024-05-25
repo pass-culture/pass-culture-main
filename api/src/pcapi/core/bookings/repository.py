@@ -621,7 +621,6 @@ def find_soon_to_be_expiring_individual_bookings_ordered_by_user(given_date: dat
         datetime.combine(other_expiring_date, time.min),
         datetime.combine(other_expiring_date, time.max),
     )
-
     return (
         Booking.query.join(Stock)
         .join(Offer)
