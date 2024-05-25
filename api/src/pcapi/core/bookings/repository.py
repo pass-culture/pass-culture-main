@@ -339,6 +339,31 @@ def export_validated_bookings_by_offer_id(
     return _write_bookings_to_csv(offer_validated_bookings_query)
 
 
+def get_export(
+    user: User,
+    booking_period: tuple[date, date] | None = None,
+    status_filter: BookingStatusFilter | None = BookingStatusFilter.BOOKED,
+    event_date: date | None = None,
+    venue_id: int | None = None,
+    offer_id: int | None = None,
+    offer_type: OfferType | None = None,
+    export_type: BookingExportType | None = BookingExportType.CSV,
+) -> str | bytes:
+    bookings_query = _get_filtered_booking_report(
+        pro_user=user,
+        period=booking_period,
+        status_filter=status_filter,
+        event_date=event_date,
+        venue_id=venue_id,
+        offer_id=offer_id,
+        offer_type=offer_type,
+    )
+    bookings_query = _duplicate_booking_when_quantity_is_two(bookings_query)
+    if export_type == BookingExportType.EXCEL:
+        return _serialize_excel_report(bookings_query)
+    return _serialize_csv_report(bookings_query)
+
+
 def find_by_pro_user(
     user: User,
     booking_period: tuple[date, date] | None = None,
@@ -568,31 +593,6 @@ def get_bookings_from_deposit(deposit_id: int) -> list[Booking]:
         .options(joinedload(Booking.stock).joinedload(Stock.offer))
         .all()
     )
-
-
-def get_export(
-    user: User,
-    booking_period: tuple[date, date] | None = None,
-    status_filter: BookingStatusFilter | None = BookingStatusFilter.BOOKED,
-    event_date: date | None = None,
-    venue_id: int | None = None,
-    offer_id: int | None = None,
-    offer_type: OfferType | None = None,
-    export_type: BookingExportType | None = BookingExportType.CSV,
-) -> str | bytes:
-    bookings_query = _get_filtered_booking_report(
-        pro_user=user,
-        period=booking_period,
-        status_filter=status_filter,
-        event_date=event_date,
-        venue_id=venue_id,
-        offer_id=offer_id,
-        offer_type=offer_type,
-    )
-    bookings_query = _duplicate_booking_when_quantity_is_two(bookings_query)
-    if export_type == BookingExportType.EXCEL:
-        return _serialize_excel_report(bookings_query)
-    return _serialize_csv_report(bookings_query)
 
 
 def _duplicate_booking_when_quantity_is_two(bookings_recap_query: BaseQuery) -> BaseQuery:
