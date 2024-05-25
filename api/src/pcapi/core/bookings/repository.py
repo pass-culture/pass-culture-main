@@ -142,6 +142,62 @@ def _get_filtered_bookings_query(
     return bookings_query
 
 
+def _get_filtered_booking_report(
+    pro_user: User,
+    period: tuple[date, date] | None,
+    status_filter: BookingStatusFilter | None,
+    event_date: date | None = None,
+    venue_id: int | None = None,
+    offer_id: int | None = None,
+    offer_type: OfferType | None = None,
+) -> str:
+    bookings_query = (
+        _get_filtered_bookings_query(
+            pro_user,
+            period,
+            status_filter,
+            event_date,
+            venue_id,
+            offer_id,
+            offer_type,
+            extra_joins=(Stock.offer, Booking.user),
+        )
+        .with_entities(
+            Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
+            Venue.departementCode.label("venueDepartmentCode"),
+            Offerer.postalCode.label("offererPostalCode"),
+            Offer.name.label("offerName"),
+            Stock.beginningDatetime.label("stockBeginningDatetime"),
+            Stock.offerId,
+            Offer.extraData["ean"].label("ean"),
+            User.firstName.label("beneficiaryFirstName"),
+            User.lastName.label("beneficiaryLastName"),
+            User.email.label("beneficiaryEmail"),
+            User.phoneNumber.label("beneficiaryPhoneNumber"),  # type: ignore[attr-defined]
+            User.postalCode.label("beneficiaryPostalCode"),
+            Booking.id,
+            Booking.token,
+            Booking.priceCategoryLabel,
+            Booking.amount,
+            Booking.quantity,
+            Booking.status,
+            Booking.dateCreated.label("bookedAt"),
+            Booking.dateUsed.label("usedAt"),
+            Booking.reimbursementDate.label("reimbursedAt"),
+            Booking.cancellationDate.label("cancelledAt"),
+            Booking.isExternal.label("isExternal"),  # type: ignore[attr-defined]
+            Booking.isConfirmed,
+            # `get_batch` function needs a field called exactly `id` to work,
+            # the label prevents SA from using a bad (prefixed) label for this field
+            Booking.id.label("id"),
+            Booking.userId,
+        )
+        .distinct(Booking.id)
+    )
+
+    return bookings_query
+
+
 def _get_filtered_bookings_count(
     pro_user: User,
     period: tuple[date, date] | None = None,
@@ -537,62 +593,6 @@ def get_export(
     if export_type == BookingExportType.EXCEL:
         return _serialize_excel_report(bookings_query)
     return _serialize_csv_report(bookings_query)
-
-
-def _get_filtered_booking_report(
-    pro_user: User,
-    period: tuple[date, date] | None,
-    status_filter: BookingStatusFilter | None,
-    event_date: date | None = None,
-    venue_id: int | None = None,
-    offer_id: int | None = None,
-    offer_type: OfferType | None = None,
-) -> str:
-    bookings_query = (
-        _get_filtered_bookings_query(
-            pro_user,
-            period,
-            status_filter,
-            event_date,
-            venue_id,
-            offer_id,
-            offer_type,
-            extra_joins=(Stock.offer, Booking.user),
-        )
-        .with_entities(
-            Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
-            Venue.departementCode.label("venueDepartmentCode"),
-            Offerer.postalCode.label("offererPostalCode"),
-            Offer.name.label("offerName"),
-            Stock.beginningDatetime.label("stockBeginningDatetime"),
-            Stock.offerId,
-            Offer.extraData["ean"].label("ean"),
-            User.firstName.label("beneficiaryFirstName"),
-            User.lastName.label("beneficiaryLastName"),
-            User.email.label("beneficiaryEmail"),
-            User.phoneNumber.label("beneficiaryPhoneNumber"),  # type: ignore[attr-defined]
-            User.postalCode.label("beneficiaryPostalCode"),
-            Booking.id,
-            Booking.token,
-            Booking.priceCategoryLabel,
-            Booking.amount,
-            Booking.quantity,
-            Booking.status,
-            Booking.dateCreated.label("bookedAt"),
-            Booking.dateUsed.label("usedAt"),
-            Booking.reimbursementDate.label("reimbursedAt"),
-            Booking.cancellationDate.label("cancelledAt"),
-            Booking.isExternal.label("isExternal"),  # type: ignore[attr-defined]
-            Booking.isConfirmed,
-            # `get_batch` function needs a field called exactly `id` to work,
-            # the label prevents SA from using a bad (prefixed) label for this field
-            Booking.id.label("id"),
-            Booking.userId,
-        )
-        .distinct(Booking.id)
-    )
-
-    return bookings_query
 
 
 def _duplicate_booking_when_quantity_is_two(bookings_recap_query: BaseQuery) -> BaseQuery:
