@@ -422,7 +422,6 @@ def _serialize_csv_report(query: BaseQuery) -> str:
                 booking.amount,
                 _get_booking_status(booking.status, booking.isConfirmed),
                 convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking),
-                # This method is still used in the old Payment model
                 serialize_offer_type_educational_or_individual(offer_is_educational=False),
                 booking.beneficiaryPostalCode or "",
                 "Oui" if booking.quantity == constants.DUO_QUANTITY else "Non",
