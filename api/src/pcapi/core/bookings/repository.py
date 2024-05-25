@@ -315,6 +315,20 @@ def _create_export_query(offer_id: int, event_beginning_date: date) -> BaseQuery
     )
 
 
+def _write_bookings_to_csv(query: BaseQuery) -> str:
+    output = StringIO()
+    writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
+    writer.writerow(BOOKING_EXPORT_HEADER)
+    for booking in query.yield_per(1000):
+        if booking.quantity == DUO_QUANTITY:
+            _write_csv_row(writer, booking, "DUO 1")
+            _write_csv_row(writer, booking, "DUO 2")
+        else:
+            _write_csv_row(writer, booking, "Non")
+
+    return output.getvalue()
+
+
 def export_bookings_by_offer_id(
     offer_id: int, event_beginning_date: date, export_type: BookingExportType
 ) -> str | bytes:
@@ -604,20 +618,6 @@ def _get_booking_status(status: BookingStatus, is_confirmed: bool) -> str:
     if cancellation_limit_date_exists_and_past and status == BookingStatus.CONFIRMED:
         return BOOKING_STATUS_LABELS["confirmed"]
     return BOOKING_STATUS_LABELS[status]
-
-
-def _write_bookings_to_csv(query: BaseQuery) -> str:
-    output = StringIO()
-    writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
-    writer.writerow(BOOKING_EXPORT_HEADER)
-    for booking in query.yield_per(1000):
-        if booking.quantity == DUO_QUANTITY:
-            _write_csv_row(writer, booking, "DUO 1")
-            _write_csv_row(writer, booking, "DUO 2")
-        else:
-            _write_csv_row(writer, booking, "Non")
-
-    return output.getvalue()
 
 
 def _write_csv_row(csv_writer: typing.Any, booking: Booking, booking_duo_column: str) -> None:
