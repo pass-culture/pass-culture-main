@@ -649,44 +649,28 @@ def generate_booking_token() -> str:
     raise ValueError("Could not generate new booking token")
 
 
-def find_user_ids_with_expired_individual_bookings(expired_on: date | None = None) -> list[int]:
+def _is_expired(expired_on: date | None = None) -> tuple:
     expired_on = expired_on or date.today()
-    return [
-        user_id
-        for user_id, in (
-            db.session.query(User.id)
-            .join(Booking)
-            .filter(
-                Booking.status == BookingStatus.CANCELLED,
-                Booking.cancellationDate >= expired_on,
-                Booking.cancellationDate < (expired_on + timedelta(days=1)),
-                Booking.cancellationReason == BookingCancellationReasons.EXPIRED,
-            )
-            .all()
-        )
-    ]
+    expired_on_min = datetime.combine(expired_on, time.min)
+    expired_on_max = datetime.combine(expired_on, time.max)
+    return (
+        Booking.status == BookingStatus.CANCELLED,
+        Booking.cancellationDate >= expired_on_min,
+        Booking.cancellationDate <= expired_on_max,
+        Booking.cancellationReason == BookingCancellationReasons.EXPIRED,
+    )
+
+
+def find_user_ids_with_expired_individual_bookings(expired_on: date | None = None) -> list[int]:
+    return [user_id for user_id, in db.session.query(User.id).join(Booking).filter(*_is_expired(expired_on)).all()]
 
 
 def get_expired_individual_bookings_for_user(user: User, expired_on: date | None = None) -> list[Booking]:
-    expired_on = expired_on or date.today()
-    return Booking.query.filter(
-        Booking.user == user,
-        Booking.status == BookingStatus.CANCELLED,
-        Booking.cancellationDate >= expired_on,
-        Booking.cancellationDate < (expired_on + timedelta(days=1)),
-        Booking.cancellationReason == BookingCancellationReasons.EXPIRED,
-    ).all()
+    return Booking.query.filter(Booking.user == user).filter(*_is_expired(expired_on)).all()
 
 
 def find_expired_individual_bookings_ordered_by_offerer(expired_on: date | None = None) -> list[Booking]:
-    expired_on = expired_on or date.today()
-    return (
-        Booking.query.filter(Booking.status == BookingStatus.CANCELLED)
-        .filter(sa.cast(Booking.cancellationDate, sa.Date) == expired_on)
-        .filter(Booking.cancellationReason == BookingCancellationReasons.EXPIRED)
-        .order_by(Booking.offererId)
-        .all()
-    )
+    return Booking.query.filter(*_is_expired(expired_on)).order_by(Booking.offererId).all()
 
 
 def get_active_bookings_quantity_for_venue(venue_id: int) -> int:
