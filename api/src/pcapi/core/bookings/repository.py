@@ -58,7 +58,7 @@ BOOKING_DATE_STATUS_MAPPING: dict[BookingStatusFilter, InstrumentedAttribute] = 
     BookingStatusFilter.REIMBURSED: Booking.reimbursementDate,
 }
 
-BOOKING_EXPORT_HEADERS = [
+BOOKING_EXPORT_HEADERS = (
     "Lieu",
     "Nom de l’offre",
     "Date de l'évènement",
@@ -76,7 +76,7 @@ BOOKING_EXPORT_HEADERS = [
     "Type d'offre",
     "Code postal du bénéficiaire",
     "Duo",
-]
+)
 
 
 # FIXME (Gautier, 03-25-2022): also used in collective_booking. SHould we move it to core or some other place?
