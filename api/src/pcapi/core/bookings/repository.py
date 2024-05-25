@@ -837,13 +837,13 @@ def find_individual_bookings_event_happening_tomorrow_query() -> list[Booking]:
     )
 
 
-def get_external_bookings_by_cinema_id_and_barcodes(
-    venueIdAtOfferProvider: str, barcodes: list[str]
-) -> list[ExternalBooking]:
+def get_external_bookings_by_cinema_id_and_barcodes(cinema_id: str, barcodes: list[str]) -> list[ExternalBooking]:
     return (
         ExternalBooking.query.join(Booking)
         .join(VenueProvider, Booking.venueId == VenueProvider.venueId)
-        .filter(VenueProvider.venueIdAtOfferProvider == venueIdAtOfferProvider)
-        .filter(ExternalBooking.barcode.in_(barcodes))
+        .filter(
+            VenueProvider.venueIdAtOfferProvider == cinema_id,
+            ExternalBooking.barcode.in_(barcodes),
+        )
         .all()
     )
