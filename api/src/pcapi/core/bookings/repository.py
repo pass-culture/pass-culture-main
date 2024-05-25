@@ -661,14 +661,14 @@ def find_soon_to_be_expiring_individual_bookings_ordered_by_user(given_date: dat
     )
 
 
-def token_exists(token: str) -> bool:
+def _token_exists(token: str) -> bool:
     return db.session.query(Booking.query.filter_by(token=token.upper()).exists()).scalar()
 
 
 def generate_booking_token() -> str:
     for _ in range(100):
         token = random_token()
-        if not token_exists(token):
+        if not _token_exists(token):
             return token
     raise ValueError("Could not generate new booking token")
 
