@@ -88,6 +88,26 @@ BOOKING_EXPORT_HEADER = [
 ]
 
 
+def _get_filtered_bookings_count(
+    pro_user: User,
+    period: tuple[date, date] | None = None,
+    status_filter: BookingStatusFilter | None = None,
+    event_date: date | None = None,
+    venue_id: int | None = None,
+    offer_id: int | None = None,
+    offer_type: OfferType | None = None,
+) -> int:
+    bookings = (
+        _get_filtered_bookings_query(pro_user, period, status_filter, event_date, venue_id, offer_id, offer_type)
+        .with_entities(Booking.id, Booking.quantity)
+        .distinct(Booking.id)
+    ).cte()
+    # We really want total quantities here (and not the number of bookings),
+    # since we'll build two rows for each "duo" bookings later.
+    bookings_count = db.session.query(func.coalesce(func.sum(bookings.c.quantity), 0))
+    return bookings_count.scalar()
+
+
 def find_by_pro_user(
     user: User,
     booking_period: tuple[date, date] | None = None,
@@ -463,26 +483,6 @@ def _get_filtered_bookings_query(
     if event_date:
         bookings_query = bookings_query.filter(field_to_venue_timezone(Stock.beginningDatetime) == event_date)
     return bookings_query
-
-
-def _get_filtered_bookings_count(
-    pro_user: User,
-    period: tuple[date, date] | None = None,
-    status_filter: BookingStatusFilter | None = None,
-    event_date: date | None = None,
-    venue_id: int | None = None,
-    offer_id: int | None = None,
-    offer_type: OfferType | None = None,
-) -> int:
-    bookings = (
-        _get_filtered_bookings_query(pro_user, period, status_filter, event_date, venue_id, offer_id, offer_type)
-        .with_entities(Booking.id, Booking.quantity)
-        .distinct(Booking.id)
-    ).cte()
-    # We really want total quantities here (and not the number of bookings),
-    # since we'll build two rows for each "duo" bookings later.
-    bookings_count = db.session.query(func.coalesce(func.sum(bookings.c.quantity), 0))
-    return bookings_count.scalar()
 
 
 def _get_filtered_booking_report(
