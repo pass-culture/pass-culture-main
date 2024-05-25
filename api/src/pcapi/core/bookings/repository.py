@@ -315,6 +315,15 @@ def _create_export_query(offer_id: int, event_beginning_date: date) -> BaseQuery
     )
 
 
+def export_bookings_by_offer_id(
+    offer_id: int, event_beginning_date: date, export_type: BookingExportType
+) -> str | bytes:
+    offer_bookings_query = _create_export_query(offer_id, event_beginning_date)
+    if export_type == BookingExportType.EXCEL:
+        return _write_bookings_to_excel(offer_bookings_query)
+    return _write_bookings_to_csv(offer_bookings_query)
+
+
 def export_validated_bookings_by_offer_id(
     offer_id: int, event_beginning_date: date, export_type: BookingExportType
 ) -> str | bytes:
@@ -559,15 +568,6 @@ def get_bookings_from_deposit(deposit_id: int) -> list[Booking]:
         .options(joinedload(Booking.stock).joinedload(Stock.offer))
         .all()
     )
-
-
-def export_bookings_by_offer_id(
-    offer_id: int, event_beginning_date: date, export_type: BookingExportType
-) -> str | bytes:
-    offer_bookings_query = _create_export_query(offer_id, event_beginning_date)
-    if export_type == BookingExportType.EXCEL:
-        return _write_bookings_to_excel(offer_bookings_query)
-    return _write_bookings_to_csv(offer_bookings_query)
 
 
 def get_export(
