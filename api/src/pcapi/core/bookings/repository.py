@@ -315,6 +315,35 @@ def _create_export_query(offer_id: int, event_beginning_date: date) -> BaseQuery
     )
 
 
+def _write_csv_row(csv_writer: typing.Any, booking: Booking, booking_duo_column: str) -> None:
+    csv_writer.writerow(
+        (
+            booking.venueName,
+            booking.offerName,
+            convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking),
+            booking.ean,
+            f"{booking.beneficiaryLastName} {booking.beneficiaryFirstName}",
+            booking.beneficiaryEmail,
+            booking.beneficiaryPhoneNumber,
+            convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking),
+            convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking),
+            booking_recap_utils.get_booking_token(
+                booking.token,
+                booking.status,
+                booking.isExternal,
+                booking.stockBeginningDatetime,
+            ),
+            booking.priceCategoryLabel or "",
+            booking.amount,
+            _get_booking_status(booking.status, booking.isConfirmed),
+            convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking),
+            serialize_offer_type_educational_or_individual(offer_is_educational=False),
+            booking.beneficiaryPostalCode or "",
+            booking_duo_column,
+        )
+    )
+
+
 def _write_bookings_to_csv(query: BaseQuery) -> str:
     output = StringIO()
     writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
@@ -618,35 +647,6 @@ def _get_booking_status(status: BookingStatus, is_confirmed: bool) -> str:
     if cancellation_limit_date_exists_and_past and status == BookingStatus.CONFIRMED:
         return BOOKING_STATUS_LABELS["confirmed"]
     return BOOKING_STATUS_LABELS[status]
-
-
-def _write_csv_row(csv_writer: typing.Any, booking: Booking, booking_duo_column: str) -> None:
-    csv_writer.writerow(
-        (
-            booking.venueName,
-            booking.offerName,
-            convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking),
-            booking.ean,
-            f"{booking.beneficiaryLastName} {booking.beneficiaryFirstName}",
-            booking.beneficiaryEmail,
-            booking.beneficiaryPhoneNumber,
-            convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking),
-            convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking),
-            booking_recap_utils.get_booking_token(
-                booking.token,
-                booking.status,
-                booking.isExternal,
-                booking.stockBeginningDatetime,
-            ),
-            booking.priceCategoryLabel or "",
-            booking.amount,
-            _get_booking_status(booking.status, booking.isConfirmed),
-            convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking),
-            serialize_offer_type_educational_or_individual(offer_is_educational=False),
-            booking.beneficiaryPostalCode or "",
-            booking_duo_column,
-        )
-    )
 
 
 def _write_bookings_to_excel(query: BaseQuery) -> bytes:
