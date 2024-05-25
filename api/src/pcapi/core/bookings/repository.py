@@ -358,6 +358,41 @@ def _write_bookings_to_csv(query: BaseQuery) -> str:
     return output.getvalue()
 
 
+def _write_excel_row(
+    worksheet: Worksheet, row: int, booking: Booking, currency_format: Format, duo_column: str
+) -> None:
+    worksheet.write(row, 0, booking.venueName)
+    worksheet.write(row, 1, booking.offerName)
+    worksheet.write(row, 2, str(convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking)))
+    worksheet.write(row, 3, booking.ean)
+    worksheet.write(row, 4, f"{booking.beneficiaryLastName} {booking.beneficiaryFirstName}")
+    worksheet.write(row, 5, booking.beneficiaryEmail)
+    worksheet.write(row, 6, booking.beneficiaryPhoneNumber)
+    worksheet.write(row, 7, str(convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking)))
+    worksheet.write(row, 8, str(convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking)))
+    worksheet.write(
+        row,
+        9,
+        booking_recap_utils.get_booking_token(
+            booking.token,
+            booking.status,
+            booking.isExternal,
+            booking.stockBeginningDatetime,
+        ),
+    )
+    worksheet.write(row, 10, booking.priceCategoryLabel)
+    worksheet.write(row, 11, booking.amount, currency_format)
+    worksheet.write(row, 12, _get_booking_status(booking.status, booking.isConfirmed))
+    worksheet.write(row, 13, str(convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking)))
+    worksheet.write(row, 14, serialize_offer_type_educational_or_individual(offer_is_educational=False))
+    worksheet.write(row, 15, booking.beneficiaryPostalCode)
+    worksheet.write(
+        row,
+        16,
+        duo_column,
+    )
+
+
 def _write_bookings_to_excel(query: BaseQuery) -> bytes:
     output = BytesIO()
     workbook = xlsxwriter.Workbook(output)
@@ -675,41 +710,6 @@ def _get_booking_status(status: BookingStatus, is_confirmed: bool) -> str:
     if cancellation_limit_date_exists_and_past and status == BookingStatus.CONFIRMED:
         return BOOKING_STATUS_LABELS["confirmed"]
     return BOOKING_STATUS_LABELS[status]
-
-
-def _write_excel_row(
-    worksheet: Worksheet, row: int, booking: Booking, currency_format: Format, duo_column: str
-) -> None:
-    worksheet.write(row, 0, booking.venueName)
-    worksheet.write(row, 1, booking.offerName)
-    worksheet.write(row, 2, str(convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking)))
-    worksheet.write(row, 3, booking.ean)
-    worksheet.write(row, 4, f"{booking.beneficiaryLastName} {booking.beneficiaryFirstName}")
-    worksheet.write(row, 5, booking.beneficiaryEmail)
-    worksheet.write(row, 6, booking.beneficiaryPhoneNumber)
-    worksheet.write(row, 7, str(convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking)))
-    worksheet.write(row, 8, str(convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking)))
-    worksheet.write(
-        row,
-        9,
-        booking_recap_utils.get_booking_token(
-            booking.token,
-            booking.status,
-            booking.isExternal,
-            booking.stockBeginningDatetime,
-        ),
-    )
-    worksheet.write(row, 10, booking.priceCategoryLabel)
-    worksheet.write(row, 11, booking.amount, currency_format)
-    worksheet.write(row, 12, _get_booking_status(booking.status, booking.isConfirmed))
-    worksheet.write(row, 13, str(convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking)))
-    worksheet.write(row, 14, serialize_offer_type_educational_or_individual(offer_is_educational=False))
-    worksheet.write(row, 15, booking.beneficiaryPostalCode)
-    worksheet.write(
-        row,
-        16,
-        duo_column,
-    )
 
 
 def _serialize_csv_report(query: BaseQuery) -> str:
