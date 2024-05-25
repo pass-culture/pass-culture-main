@@ -68,7 +68,7 @@ def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel
 @spectree_serialize(response_model=UserHasBookingResponse, api=blueprint.pro_private_schema)
 def get_user_has_bookings() -> UserHasBookingResponse:
     user = current_user._get_current_object()
-    return UserHasBookingResponse(hasBookings=booking_repository.user_has_bookings(user))
+    return UserHasBookingResponse(hasBookings=booking_repository.user_has_bookings(user.id))
 
 
 @blueprint.pro_private_api.route("/bookings/offer/<int:offer_id>/csv", methods=["GET"])

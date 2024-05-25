@@ -791,9 +791,10 @@ def venues_have_bookings(*venues: Venue) -> bool:
     ).scalar()
 
 
-def user_has_bookings(user: User) -> bool:
-    bookings_query = Booking.query.join(Booking.offerer).join(Offerer.UserOfferers)
-    return db.session.query(bookings_query.filter(UserOfferer.userId == user.id).exists()).scalar()
+def user_has_bookings(user_id: int) -> bool:
+    return db.session.query(
+        Booking.query.join(Booking.offerer).join(Offerer.UserOfferers).filter(UserOfferer.userId == user_id).exists()
+    ).scalar()
 
 
 def offerer_has_ongoing_bookings(offerer_id: int) -> bool:
