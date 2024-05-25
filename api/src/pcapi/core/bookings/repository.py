@@ -18,9 +18,9 @@ from sqlalchemy import func
 from sqlalchemy import not_
 from sqlalchemy import or_
 from sqlalchemy import text
+from sqlalchemy.orm import InstrumentedAttribute
 from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm import joinedload
-from sqlalchemy.orm.attributes import InstrumentedAttribute
 import xlsxwriter
 from xlsxwriter.format import Format
 from xlsxwriter.worksheet import Worksheet
