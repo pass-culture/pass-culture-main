@@ -35,3 +35,23 @@ BOOKING_CONFIRMATION_ERROR_CLAUSES = {
     "before_event_delay": f"moins de {_get_hours_from_timedelta(CONFIRM_BOOKING_BEFORE_EVENT_DELAY):.0f}h"
     f" avant le début de l'évènement",
 }
+
+BOOKING_EXPORT_HEADERS = (
+    "Lieu",
+    "Nom de l’offre",
+    "Date de l'évènement",
+    "EAN",
+    "Nom et prénom du bénéficiaire",
+    "Email du bénéficiaire",
+    "Téléphone du bénéficiaire",
+    "Date et heure de réservation",
+    "Date et heure de validation",
+    "Contremarque",
+    "Intitulé du tarif",
+    "Prix de la réservation",
+    "Statut de la contremarque",
+    "Date et heure de remboursement",
+    "Type d'offre",
+    "Code postal du bénéficiaire",
+    "Duo",
+)

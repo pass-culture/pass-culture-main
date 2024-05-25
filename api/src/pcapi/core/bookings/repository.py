@@ -58,26 +58,6 @@ BOOKING_DATE_STATUS_MAPPING: dict[BookingStatusFilter, InstrumentedAttribute] = 
     BookingStatusFilter.REIMBURSED: Booking.reimbursementDate,
 }
 
-BOOKING_EXPORT_HEADERS = (
-    "Lieu",
-    "Nom de l’offre",
-    "Date de l'évènement",
-    "EAN",
-    "Nom et prénom du bénéficiaire",
-    "Email du bénéficiaire",
-    "Téléphone du bénéficiaire",
-    "Date et heure de réservation",
-    "Date et heure de validation",
-    "Contremarque",
-    "Intitulé du tarif",
-    "Prix de la réservation",
-    "Statut de la contremarque",
-    "Date et heure de remboursement",
-    "Type d'offre",
-    "Code postal du bénéficiaire",
-    "Duo",
-)
-
 
 # FIXME (Gautier, 03-25-2022): also used in collective_booking. SHould we move it to core or some other place?
 def field_to_venue_timezone(field: InstrumentedAttribute) -> sa.cast:
@@ -345,7 +325,7 @@ def _write_csv_row(csv_writer: typing.Any, booking: Booking, booking_duo_column:
 def _write_bookings_to_csv(query: BaseQuery) -> str:
     output = StringIO()
     writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
-    writer.writerow(BOOKING_EXPORT_HEADERS)
+    writer.writerow(constants.BOOKING_EXPORT_HEADERS)
     for booking in query.yield_per(1000):
         if booking.quantity == DUO_QUANTITY:
             _write_csv_row(writer, booking, "DUO 1")
@@ -402,7 +382,7 @@ def _write_bookings_to_excel(query: BaseQuery) -> bytes:
     worksheet = workbook.add_worksheet()
     row = 0
 
-    for col_num, title in enumerate(BOOKING_EXPORT_HEADERS):
+    for col_num, title in enumerate(constants.BOOKING_EXPORT_HEADERS):
         worksheet.write(row, col_num, title, bold)
         worksheet.set_column(col_num, col_num, col_width)
 
@@ -422,7 +402,7 @@ def _write_bookings_to_excel(query: BaseQuery) -> bytes:
 def _serialize_csv_report(query: BaseQuery) -> str:
     output = StringIO()
     writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
-    writer.writerow(BOOKING_EXPORT_HEADERS)
+    writer.writerow(constants.BOOKING_EXPORT_HEADERS)
     for booking in query.yield_per(1000):
         writer.writerow(
             (
@@ -466,7 +446,7 @@ def _serialize_excel_report(query: BaseQuery) -> bytes:
     worksheet = workbook.add_worksheet()
     row = 0
 
-    for col_num, title in enumerate(BOOKING_EXPORT_HEADERS):
+    for col_num, title in enumerate(constants.BOOKING_EXPORT_HEADERS):
         worksheet.write(row, col_num, title, bold)
         worksheet.set_column(col_num, col_num, col_width)
     row = 1
