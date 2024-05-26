@@ -129,13 +129,10 @@ def _get_filtered_bookings_query(
     query = query.filter(UserOfferer.isValidated)
 
     if booking_period:
-        period_attribut_filter = (
-            BOOKING_DATE_STATUS_MAPPING[status_filter]
-            if status_filter
-            else BOOKING_DATE_STATUS_MAPPING[BookingStatusFilter.BOOKED]
-        )
-
-        query = query.filter(field_to_venue_timezone(period_attribut_filter).between(*booking_period, symmetric=True))
+        if not status_filter:
+            status_filter = BookingStatusFilter.BOOKED
+        field = BOOKING_DATE_STATUS_MAPPING[status_filter]
+        query = query.filter(field_to_venue_timezone(field).between(*booking_period, symmetric=True))
 
     if venue_id is not None:
         query = query.filter(Booking.venueId == venue_id)
