@@ -63,7 +63,7 @@ def field_to_venue_timezone(field: InstrumentedAttribute) -> sa.cast:
 
 def _get_filtered_bookings_query(
     pro_user: User,
-    period: tuple[date, date] | None = None,
+    booking_period: tuple[date, date] | None = None,
     status_filter: BookingStatusFilter | None = None,
     event_date: date | None = None,
     venue_id: int | None = None,
@@ -88,7 +88,7 @@ def _get_filtered_bookings_query(
 
     bookings_query = bookings_query.filter(UserOfferer.isValidated)
 
-    if period:
+    if booking_period:
         period_attribut_filter = (
             BOOKING_DATE_STATUS_MAPPING[status_filter]
             if status_filter
@@ -96,7 +96,7 @@ def _get_filtered_bookings_query(
         )
 
         bookings_query = bookings_query.filter(
-            field_to_venue_timezone(period_attribut_filter).between(*period, symmetric=True)
+            field_to_venue_timezone(period_attribut_filter).between(*booking_period, symmetric=True)
         )
 
     if venue_id is not None:
@@ -112,7 +112,7 @@ def _get_filtered_bookings_query(
 
 def _get_filtered_booking_report(
     pro_user: User,
-    period: tuple[date, date] | None,
+    booking_period: tuple[date, date] | None,
     status_filter: BookingStatusFilter | None,
     event_date: date | None = None,
     venue_id: int | None = None,
@@ -122,7 +122,7 @@ def _get_filtered_booking_report(
     bookings_query = (
         _get_filtered_bookings_query(
             pro_user,
-            period,
+            booking_period,
             status_filter,
             event_date,
             venue_id,
@@ -168,7 +168,7 @@ def _get_filtered_booking_report(
 
 def _get_filtered_bookings_count(
     pro_user: User,
-    period: tuple[date, date] | None = None,
+    booking_period: tuple[date, date] | None = None,
     status_filter: BookingStatusFilter | None = None,
     event_date: date | None = None,
     venue_id: int | None = None,
@@ -176,7 +176,9 @@ def _get_filtered_bookings_count(
     offer_type: OfferType | None = None,
 ) -> int:
     bookings = (
-        _get_filtered_bookings_query(pro_user, period, status_filter, event_date, venue_id, offer_id, offer_type)
+        _get_filtered_bookings_query(
+            pro_user, booking_period, status_filter, event_date, venue_id, offer_id, offer_type
+        )
         .with_entities(Booking.id, Booking.quantity)
         .distinct(Booking.id)
     ).cte()
@@ -188,7 +190,7 @@ def _get_filtered_bookings_count(
 
 def _get_filtered_booking_pro(
     pro_user: User,
-    period: tuple[date, date] | None = None,
+    booking_period: tuple[date, date] | None = None,
     status_filter: BookingStatusFilter | None = None,
     event_date: date | None = None,
     venue_id: int | None = None,
@@ -198,7 +200,7 @@ def _get_filtered_booking_pro(
     bookings_query = (
         _get_filtered_bookings_query(
             pro_user,
-            period,
+            booking_period,
             status_filter,
             event_date,
             venue_id,
@@ -525,7 +527,7 @@ def get_export(
 ) -> str | bytes:
     bookings_query = _get_filtered_booking_report(
         pro_user=user,
-        period=booking_period,
+        booking_period=booking_period,
         status_filter=status_filter,
         event_date=event_date,
         venue_id=venue_id,
@@ -561,7 +563,7 @@ def find_by_pro_user(
 
     bookings_query = _get_filtered_booking_pro(
         pro_user=user,
-        period=booking_period,
+        booking_period=booking_period,
         status_filter=status_filter,
         event_date=event_date,
         venue_id=venue_id,
