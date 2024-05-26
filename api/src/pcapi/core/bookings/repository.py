@@ -298,10 +298,10 @@ def _write_bookings_to_excel(query: BaseQuery, duplicate_duo: bool = True) -> by
 
 
 def export_bookings_by_offer_id(
-    offer_id: int, event_beginning_date: date, export_type: BookingExportType, validated: bool = False
+    offer_id: int, event_date: date, export_type: BookingExportType, validated: bool = False
 ) -> str | bytes:
     query = _get_filtered_bookings_query(
-        event_date=event_beginning_date,
+        event_date=event_date,
         offer_id=offer_id,
         isouter=False,
         validated=validated,

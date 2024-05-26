@@ -88,7 +88,7 @@ def export_bookings_for_offer_as_csv(offer_id: int, query: BookingsExportQueryMo
 
     bookings = booking_repository.export_bookings_by_offer_id(
         offer_id,
-        event_beginning_date=query.event_date,
+        event_date=query.event_date,
         export_type=BookingExportType.CSV,
         validated=bool(query.status == BookingsExportStatusFilter.VALIDATED),
     )
@@ -114,7 +114,7 @@ def export_bookings_for_offer_as_excel(offer_id: int, query: BookingsExportQuery
 
     bookings = booking_repository.export_bookings_by_offer_id(
         offer_id,
-        event_beginning_date=query.event_date,
+        event_date=query.event_date,
         export_type=BookingExportType.EXCEL,
         validated=bool(query.status == BookingsExportStatusFilter.VALIDATED),
     )

@@ -832,7 +832,7 @@ class GetOfferBookingsByStatusCSVTest:
         with assert_num_queries(queries):
             bookings_csv = booking_repository.export_bookings_by_offer_id(
                 offer_id=offer_id,
-                event_beginning_date=date.today() + timedelta(days=10),
+                event_date=date.today() + timedelta(days=10),
                 export_type=BookingExportType.CSV,
                 validated=True,
             )
@@ -907,7 +907,7 @@ class GetOfferBookingsByStatusCSVTest:
         with assert_num_queries(queries):
             bookings_csv = booking_repository.export_bookings_by_offer_id(
                 offer_id=offer_id,
-                event_beginning_date=date.today() + timedelta(days=10),
+                event_date=date.today() + timedelta(days=10),
                 export_type=BookingExportType.CSV,
                 validated=True,
             )
@@ -972,7 +972,7 @@ class GetOfferBookingsByStatusCSVTest:
         # When
         bookings_csv = booking_repository.export_bookings_by_offer_id(
             offer_id=offer.id,
-            event_beginning_date=date.today() + timedelta(days=5),
+            event_date=date.today() + timedelta(days=5),
             export_type=BookingExportType.CSV,
             validated=True,
         )
@@ -1043,7 +1043,7 @@ class GetOfferBookingsByStatusCSVTest:
         # When
         bookings_csv = booking_repository.export_bookings_by_offer_id(
             offer_id=offer.id,
-            event_beginning_date=date.today() + timedelta(days=10),
+            event_date=date.today() + timedelta(days=10),
             export_type=BookingExportType.CSV,
         )
 
@@ -1106,7 +1106,7 @@ class GetOfferBookingsByStatusCSVTest:
         # When
         bookings_csv = booking_repository.export_bookings_by_offer_id(
             offer_id=offer.id,
-            event_beginning_date=date.today() + timedelta(days=5),
+            event_date=date.today() + timedelta(days=5),
             export_type=BookingExportType.CSV,
         )
 
@@ -1262,7 +1262,7 @@ class GetOfferBookingsByStatusExcelTest:
         with assert_num_queries(2):
             bookings_excel = booking_repository.export_bookings_by_offer_id(
                 offer_id=offer.id,
-                event_beginning_date=date.today() + timedelta(days=3),
+                event_date=date.today() + timedelta(days=3),
                 export_type=BookingExportType.EXCEL,
                 validated=True,
             )
@@ -1328,7 +1328,7 @@ class GetOfferBookingsByStatusExcelTest:
         # When
         bookings_excel = booking_repository.export_bookings_by_offer_id(
             offer_id=offer.id,
-            event_beginning_date=date.today() + timedelta(days=3),
+            event_date=date.today() + timedelta(days=3),
             export_type=BookingExportType.EXCEL,
             validated=True,
         )
@@ -1406,7 +1406,7 @@ class GetOfferBookingsByStatusExcelTest:
         # When
         bookings_excel = booking_repository.export_bookings_by_offer_id(
             offer_id=offer.id,
-            event_beginning_date=date.today() + timedelta(days=30),
+            event_date=date.today() + timedelta(days=30),
             export_type=BookingExportType.EXCEL,
         )
         headers = [
@@ -1479,7 +1479,7 @@ class GetOfferBookingsByStatusExcelTest:
         # When
         bookings_excel = booking_repository.export_bookings_by_offer_id(
             offer_id=offer.id,
-            event_beginning_date=date.today() + timedelta(days=3),
+            event_date=date.today() + timedelta(days=3),
             export_type=BookingExportType.EXCEL,
             validated=True,
         )
@@ -1551,7 +1551,7 @@ class GetOfferBookingsByStatusExcelTest:
         # When
         bookings_excel = booking_repository.export_bookings_by_offer_id(
             offer_id=offer.id,
-            event_beginning_date=date.today() + timedelta(days=30),
+            event_date=date.today() + timedelta(days=30),
             export_type=BookingExportType.EXCEL,
         )
         headers = [
