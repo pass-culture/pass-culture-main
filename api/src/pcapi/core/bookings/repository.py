@@ -149,17 +149,6 @@ def _get_filtered_bookings_query(
     return bookings_query
 
 
-def _get_filtered_booking_report(
-    pro_user: User,
-    booking_period: tuple[date, date] | None = None,
-    status_filter: BookingStatusFilter | None = None,
-    event_date: date | None = None,
-    venue_id: int | None = None,
-    offer_id: int | None = None,
-) -> BaseQuery:
-    return _get_filtered_bookings_query(pro_user, booking_period, status_filter, event_date, venue_id, offer_id)
-
-
 def _get_filtered_bookings_count(
     pro_user: User,
     booking_period: tuple[date, date] | None = None,
@@ -338,7 +327,7 @@ def get_export(
     offer_id: int | None = None,
     export_type: BookingExportType | None = BookingExportType.CSV,
 ) -> str | bytes:
-    bookings_query = _get_filtered_booking_report(
+    bookings_query = _get_filtered_bookings_query(
         pro_user=user,
         booking_period=booking_period,
         status_filter=status_filter,
@@ -371,7 +360,7 @@ def find_by_pro_user(
         offer_id=offer_id,
     )
 
-    bookings_query = _get_filtered_booking_report(
+    bookings_query = _get_filtered_bookings_query(
         pro_user=user,
         booking_period=booking_period,
         status_filter=status_filter,
