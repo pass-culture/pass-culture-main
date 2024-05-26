@@ -111,7 +111,6 @@ def _get_filtered_bookings_query(
         Booking.query.join(Booking.offerer)
         .join(Offerer.UserOfferers)
         .join(Booking.stock)
-        .join(Booking.externalBookings, isouter=True)
         .join(Booking.venue, isouter=True)
     )
     if not count_bookings:
