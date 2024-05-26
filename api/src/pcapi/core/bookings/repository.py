@@ -6,7 +6,6 @@ from datetime import timedelta
 from io import BytesIO
 from io import StringIO
 import typing
-from typing import Iterable
 
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
@@ -103,10 +102,8 @@ def _get_filtered_bookings_query(
     event_date: date | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
-    extra_joins: Iterable[sa.Column] | None = None,
+    count_bookings: bool = False,
 ) -> BaseQuery:
-    extra_joins = extra_joins or tuple()
-
     bookings_query = (
         Booking.query.join(Booking.offerer)
         .join(Offerer.UserOfferers)
@@ -114,8 +111,9 @@ def _get_filtered_bookings_query(
         .join(Booking.externalBookings, isouter=True)
         .join(Booking.venue, isouter=True)
     )
-    for join_key in extra_joins:
-        bookings_query = bookings_query.join(join_key, isouter=True)
+    if not count_bookings:
+        bookings_query = bookings_query.join(Stock.offer, isouter=True)
+        bookings_query = bookings_query.join(Booking.user, isouter=True)
 
     if not pro_user.has_admin_role:
         bookings_query = bookings_query.filter(UserOfferer.user == pro_user)
@@ -160,7 +158,6 @@ def _get_filtered_booking_report(
             event_date,
             venue_id,
             offer_id,
-            extra_joins=(Stock.offer, Booking.user),
         )
         .with_entities(*_get_bookings_export_entities())
         .distinct(Booking.id)
@@ -177,7 +174,9 @@ def _get_filtered_bookings_count(
     offer_id: int | None = None,
 ) -> int:
     bookings = (
-        _get_filtered_bookings_query(pro_user, booking_period, status_filter, event_date, venue_id, offer_id)
+        _get_filtered_bookings_query(
+            pro_user, booking_period, status_filter, event_date, venue_id, offer_id, count_bookings=True
+        )
         .with_entities(Booking.id, Booking.quantity)
         .distinct(Booking.id)
     ).cte()
