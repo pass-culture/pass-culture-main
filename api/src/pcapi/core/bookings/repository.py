@@ -59,6 +59,40 @@ def field_to_venue_timezone(field: typing.Any) -> sa.cast:
     return sa.cast(sa.func.timezone(Venue.timezone, sa.func.timezone("UTC", field)), sa.Date)
 
 
+def _get_bookings_export_entities() -> tuple:
+    entities = (
+        Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
+        Venue.departementCode.label("venueDepartmentCode"),
+        Offerer.postalCode.label("offererPostalCode"),
+        Offer.name.label("offerName"),
+        Stock.beginningDatetime.label("stockBeginningDatetime"),
+        Stock.offerId,
+        Offer.extraData["ean"].label("ean"),
+        User.firstName.label("beneficiaryFirstName"),
+        User.lastName.label("beneficiaryLastName"),
+        User.email.label("beneficiaryEmail"),
+        User.phoneNumber.label("beneficiaryPhoneNumber"),  # type: ignore[attr-defined]
+        User.postalCode.label("beneficiaryPostalCode"),
+        Booking.id,
+        Booking.token,
+        Booking.priceCategoryLabel,
+        Booking.amount,
+        Booking.quantity,
+        Booking.status,
+        Booking.dateCreated.label("bookedAt"),
+        Booking.dateUsed.label("usedAt"),
+        Booking.reimbursementDate.label("reimbursedAt"),
+        Booking.cancellationDate.label("cancelledAt"),
+        Booking.isExternal.label("isExternal"),  # type: ignore[attr-defined]
+        Booking.isConfirmed,
+        # `get_batch` function needs a field called exactly `id` to work,
+        # the label prevents SA from using a bad (prefixed) label for this field
+        Booking.id.label("id"),
+        Booking.userId,
+    )
+    return entities
+
+
 def _get_filtered_bookings_query(
     pro_user: User,
     booking_period: tuple[date, date] | None = None,
@@ -125,36 +159,7 @@ def _get_filtered_booking_report(
             offer_id,
             extra_joins=(Stock.offer, Booking.user),
         )
-        .with_entities(
-            Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
-            Venue.departementCode.label("venueDepartmentCode"),
-            Offerer.postalCode.label("offererPostalCode"),
-            Offer.name.label("offerName"),
-            Stock.beginningDatetime.label("stockBeginningDatetime"),
-            Stock.offerId,
-            Offer.extraData["ean"].label("ean"),
-            User.firstName.label("beneficiaryFirstName"),
-            User.lastName.label("beneficiaryLastName"),
-            User.email.label("beneficiaryEmail"),
-            User.phoneNumber.label("beneficiaryPhoneNumber"),  # type: ignore[attr-defined]
-            User.postalCode.label("beneficiaryPostalCode"),
-            Booking.id,
-            Booking.token,
-            Booking.priceCategoryLabel,
-            Booking.amount,
-            Booking.quantity,
-            Booking.status,
-            Booking.dateCreated.label("bookedAt"),
-            Booking.dateUsed.label("usedAt"),
-            Booking.reimbursementDate.label("reimbursedAt"),
-            Booking.cancellationDate.label("cancelledAt"),
-            Booking.isExternal.label("isExternal"),  # type: ignore[attr-defined]
-            Booking.isConfirmed,
-            # `get_batch` function needs a field called exactly `id` to work,
-            # the label prevents SA from using a bad (prefixed) label for this field
-            Booking.id.label("id"),
-            Booking.userId,
-        )
+        .with_entities(*_get_bookings_export_entities())
         .distinct(Booking.id)
     )
 
@@ -242,35 +247,7 @@ def _create_export_query(offer_id: int, event_beginning_date: date, validated: b
         .join(Stock.offer)
         .filter(Stock.offerId == offer_id, field_to_venue_timezone(Stock.beginningDatetime) == event_beginning_date)
         .order_by(Booking.id)
-        .with_entities(
-            Booking.id.label("id"),
-            Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
-            Venue.departementCode.label("venueDepartmentCode"),
-            Offerer.postalCode.label("offererPostalCode"),
-            Offer.name.label("offerName"),
-            Stock.beginningDatetime.label("stockBeginningDatetime"),
-            Stock.offerId,
-            Offer.extraData["ean"].label("ean"),
-            User.firstName.label("beneficiaryFirstName"),
-            User.lastName.label("beneficiaryLastName"),
-            User.email.label("beneficiaryEmail"),
-            User.phoneNumber.label("beneficiaryPhoneNumber"),  # type: ignore[attr-defined]
-            User.postalCode.label("beneficiaryPostalCode"),
-            Booking.token,
-            Booking.priceCategoryLabel,
-            Booking.amount,
-            Booking.quantity,
-            Booking.status,
-            Booking.dateCreated.label("bookedAt"),
-            Booking.dateUsed.label("usedAt"),
-            Booking.reimbursementDate.label("reimbursedAt"),
-            Booking.cancellationDate.label("cancelledAt"),
-            Booking.isExternal.label("isExternal"),  # type: ignore[attr-defined]
-            Booking.isConfirmed,
-            # `get_batch` function needs a field called exactly `id` to work,
-            # the label prevents SA from using a bad (prefixed) label for this field
-            Booking.userId,
-        )
+        .with_entities(*_get_bookings_export_entities())
         .distinct(Booking.id)
     )
     if validated:
