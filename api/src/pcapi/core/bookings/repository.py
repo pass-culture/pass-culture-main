@@ -63,7 +63,6 @@ def _get_bookings_export_entities() -> tuple:
         # `get_batch` function needs a field called exactly `id` to work,
         # the label prevents SA from using a bad (prefixed) label for this field
         Booking.id.label("id"),
-        Booking.id,
         Booking.token.label("bookingToken"),
         Booking.priceCategoryLabel,
         Booking.amount.label("bookingAmount"),
