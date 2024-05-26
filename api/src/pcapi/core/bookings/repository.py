@@ -10,7 +10,6 @@ from typing import Iterable
 
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
-from sqlalchemy.orm import InstrumentedAttribute
 from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm import joinedload
 import xlsxwriter
@@ -49,7 +48,7 @@ BOOKING_STATUS_LABELS = {
     "confirmed": "confirmé",
 }
 
-BOOKING_DATE_STATUS_MAPPING: dict[BookingStatusFilter, InstrumentedAttribute] = {
+BOOKING_DATE_STATUS_MAPPING = {
     BookingStatusFilter.BOOKED: Booking.dateCreated,
     BookingStatusFilter.VALIDATED: Booking.dateUsed,
     BookingStatusFilter.REIMBURSED: Booking.reimbursementDate,
@@ -57,7 +56,7 @@ BOOKING_DATE_STATUS_MAPPING: dict[BookingStatusFilter, InstrumentedAttribute] = 
 
 
 # FIXME (Gautier, 03-25-2022): also used in collective_booking. SHould we move it to core or some other place?
-def field_to_venue_timezone(field: InstrumentedAttribute) -> sa.cast:
+def field_to_venue_timezone(field: typing.Any) -> sa.cast:
     return sa.cast(sa.func.timezone(Venue.timezone, sa.func.timezone("UTC", field)), sa.Date)
 
 
@@ -118,7 +117,7 @@ def _get_filtered_booking_report(
     venue_id: int | None = None,
     offer_id: int | None = None,
     offer_type: OfferType | None = None,
-) -> str:
+) -> BaseQuery:
     bookings_query = (
         _get_filtered_bookings_query(
             pro_user,
@@ -306,12 +305,12 @@ def _write_csv_row(csv_writer: typing.Any, booking: Booking, booking_duo_column:
             booking_recap_utils.get_booking_token(
                 booking.token,
                 booking.status,
-                booking.isExternal,
+                bool(booking.isExternal),
                 booking.stockBeginningDatetime,
             ),
             booking.priceCategoryLabel or "",
             booking.amount,
-            _get_booking_status(booking.status, booking.isConfirmed),
+            _get_booking_status(booking.status, bool(booking.isConfirmed)),
             convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking),
             serialize_offer_type_educational_or_individual(offer_is_educational=False),
             booking.beneficiaryPostalCode or "",
@@ -352,13 +351,13 @@ def _write_excel_row(
         booking_recap_utils.get_booking_token(
             booking.token,
             booking.status,
-            booking.isExternal,
+            bool(booking.isExternal),
             booking.stockBeginningDatetime,
         ),
     )
     worksheet.write(row, 10, booking.priceCategoryLabel)
     worksheet.write(row, 11, booking.amount, currency_format)
-    worksheet.write(row, 12, _get_booking_status(booking.status, booking.isConfirmed))
+    worksheet.write(row, 12, _get_booking_status(booking.status, bool(booking.isConfirmed)))
     worksheet.write(row, 13, str(convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking)))
     worksheet.write(row, 14, serialize_offer_type_educational_or_individual(offer_is_educational=False))
     worksheet.write(row, 15, booking.beneficiaryPostalCode)
@@ -416,12 +415,12 @@ def _serialize_csv_report(query: BaseQuery) -> str:
                 booking_recap_utils.get_booking_token(
                     booking.token,
                     booking.status,
-                    booking.isExternal,
+                    bool(booking.isExternal),
                     booking.stockBeginningDatetime,
                 ),
                 booking.priceCategoryLabel or "",
                 booking.amount,
-                _get_booking_status(booking.status, booking.isConfirmed),
+                _get_booking_status(booking.status, bool(booking.isConfirmed)),
                 convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking),
                 serialize_offer_type_educational_or_individual(offer_is_educational=False),
                 booking.beneficiaryPostalCode or "",
@@ -465,13 +464,13 @@ def _serialize_excel_report(query: BaseQuery) -> bytes:
             booking_recap_utils.get_booking_token(
                 booking.token,
                 booking.status,
-                booking.isExternal,
+                bool(booking.isExternal),
                 booking.stockBeginningDatetime,
             ),
         )
         worksheet.write(row, 10, booking.priceCategoryLabel)
         worksheet.write(row, 11, booking.amount, currency_format)
-        worksheet.write(row, 12, _get_booking_status(booking.status, booking.isConfirmed))
+        worksheet.write(row, 12, _get_booking_status(booking.status, bool(booking.isConfirmed)))
         worksheet.write(row, 13, str(convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking)))
         worksheet.write(row, 14, serialize_offer_type_educational_or_individual(offer_is_educational=False))
         worksheet.write(row, 15, booking.beneficiaryPostalCode)
