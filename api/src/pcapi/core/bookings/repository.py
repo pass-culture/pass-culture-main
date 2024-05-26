@@ -95,6 +95,15 @@ def _get_bookings_export_entities(count_bookings: bool = False) -> list:
     return entities
 
 
+# TODO: is UserOfferer.isValidated filter always needed, even when exporting bookings from offer_id and not by pro_user?
+def _filter_user_offerer(query: BaseQuery, user_id: int | None = None) -> BaseQuery:
+    subquery = UserOfferer.query.filter(UserOfferer.isValidated)
+    if user_id is not None:
+        subquery = subquery.filter(UserOfferer.userId == user_id)
+    subquery = subquery.with_entities(UserOfferer.offererId)
+    return query.filter(Booking.offererId.in_(subquery))
+
+
 def _get_filtered_bookings_query(
     pro_user: User | None = None,
     booking_period: tuple[date, date] | None = None,
@@ -113,7 +122,6 @@ def _get_filtered_bookings_query(
         raise ValueError("Missing either pro_user or offer_id")
 
     query = Booking.query.join(Booking.offerer)
-    query = query.join(Offerer.UserOfferers)
     query = query.join(Booking.stock)
     query = query.join(Booking.venue)
     if not count_bookings:
@@ -121,9 +129,10 @@ def _get_filtered_bookings_query(
         query = query.join(Booking.user)
 
     if pro_user is not None and not pro_user.has_admin_role:
-        query = query.filter(UserOfferer.user == pro_user)
-
-    query = query.filter(UserOfferer.isValidated)
+        user_id = pro_user.id
+    else:
+        user_id = None
+    query = _filter_user_offerer(query, user_id=user_id)
 
     if booking_period:
         if not status_filter:
@@ -152,7 +161,6 @@ def _get_filtered_bookings_query(
         query = query.order_by(Booking.id)
 
     query = query.with_entities(*_get_bookings_export_entities(count_bookings=count_bookings))
-    query = query.distinct(Booking.id)
 
     if duplicate_duo:
         query = query.union_all(query.filter(Booking.quantity == constants.DUO_QUANTITY))
