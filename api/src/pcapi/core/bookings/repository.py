@@ -329,14 +329,17 @@ def _write_csv_row(writer: typing.Any, booking: Booking, duo_column: str) -> Non
     writer.writerow([column["value"] for column in columns])
 
 
-def _write_bookings_to_csv(query: BaseQuery) -> str:
+def _write_bookings_to_csv(query: BaseQuery, duplicate_duo: bool = True) -> str:
     output = StringIO()
     writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
     writer.writerow(constants.BOOKING_EXPORT_HEADERS)
     for booking in query.yield_per(1000):
         if booking.quantity == constants.DUO_QUANTITY:
-            _write_csv_row(writer, booking, "DUO 1")
-            _write_csv_row(writer, booking, "DUO 2")
+            if duplicate_duo:
+                _write_csv_row(writer, booking, "DUO 1")
+                _write_csv_row(writer, booking, "DUO 2")
+            else:
+                _write_csv_row(writer, booking, "Oui")
         else:
             _write_csv_row(writer, booking, "Non")
 
@@ -380,17 +383,6 @@ def _write_bookings_to_excel(query: BaseQuery) -> bytes:
             _write_excel_row(worksheet, row, booking, currency_format, "Non")
         row += 1
     workbook.close()
-    return output.getvalue()
-
-
-def _serialize_csv_report(query: BaseQuery) -> str:
-    output = StringIO()
-    writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
-    writer.writerow(constants.BOOKING_EXPORT_HEADERS)
-    for booking in query.yield_per(1000):
-        duo_column = "Oui" if booking.quantity == constants.DUO_QUANTITY else "Non"
-        _write_csv_row(writer, booking, duo_column)
-
     return output.getvalue()
 
 
@@ -466,7 +458,7 @@ def get_export(
     bookings_query = _duplicate_booking_when_quantity_is_two(bookings_query)
     if export_type == BookingExportType.EXCEL:
         return _serialize_excel_report(bookings_query)
-    return _serialize_csv_report(bookings_query)
+    return _write_bookings_to_csv(bookings_query, duplicate_duo=False)
 
 
 def find_by_pro_user(
