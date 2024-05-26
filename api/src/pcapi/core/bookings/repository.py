@@ -58,39 +58,43 @@ def field_to_venue_timezone(field: typing.Any) -> sa.cast:
     return sa.cast(sa.func.timezone(Venue.timezone, sa.func.timezone("UTC", field)), sa.Date)
 
 
-def _get_bookings_export_entities() -> tuple:
-    entities = (
+def _get_bookings_export_entities(count_bookings: bool = False) -> list:
+    entities = [
         # `get_batch` function needs a field called exactly `id` to work,
         # the label prevents SA from using a bad (prefixed) label for this field
         Booking.id.label("id"),
-        Booking.token.label("bookingToken"),
-        Booking.priceCategoryLabel,
-        Booking.amount.label("bookingAmount"),
         Booking.quantity,
-        Booking.status,
-        Booking.dateCreated.label("bookedAt"),
-        Booking.dateUsed.label("usedAt"),
-        Booking.reimbursementDate.label("reimbursedAt"),
-        Booking.cancellationDate.label("cancelledAt"),
-        Booking.cancellationLimitDate,
-        Booking.isExternal.label("isExternal"),  # type: ignore[attr-defined]
-        Booking.isConfirmed,
-        Booking.stockId,
-        Booking.userId,
-        Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
-        Venue.departementCode.label("venueDepartmentCode"),
-        Offerer.postalCode.label("offererPostalCode"),
-        Stock.beginningDatetime.label("stockBeginningDatetime"),
-        Stock.offerId,
-        Offer.id.label("offerId"),
-        Offer.name.label("offerName"),
-        Offer.extraData["ean"].label("offerEan"),
-        User.firstName.label("beneficiaryFirstName"),
-        User.lastName.label("beneficiaryLastName"),
-        User.email.label("beneficiaryEmail"),
-        User.phoneNumber.label("beneficiaryPhoneNumber"),  # type: ignore[attr-defined]
-        User.postalCode.label("beneficiaryPostalCode"),
-    )
+    ]
+    if not count_bookings:
+        extra_entities = [
+            Booking.token.label("bookingToken"),
+            Booking.priceCategoryLabel,
+            Booking.amount.label("bookingAmount"),
+            Booking.status,
+            Booking.dateCreated.label("bookedAt"),
+            Booking.dateUsed.label("usedAt"),
+            Booking.reimbursementDate.label("reimbursedAt"),
+            Booking.cancellationDate.label("cancelledAt"),
+            Booking.cancellationLimitDate,
+            Booking.isExternal.label("isExternal"),  # type: ignore[attr-defined]
+            Booking.isConfirmed,
+            Booking.stockId,
+            Booking.userId,
+            Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
+            Venue.departementCode.label("venueDepartmentCode"),
+            Offerer.postalCode.label("offererPostalCode"),
+            Stock.beginningDatetime.label("stockBeginningDatetime"),
+            Stock.offerId,
+            Offer.id.label("offerId"),
+            Offer.name.label("offerName"),
+            Offer.extraData["ean"].label("offerEan"),
+            User.firstName.label("beneficiaryFirstName"),
+            User.lastName.label("beneficiaryLastName"),
+            User.email.label("beneficiaryEmail"),
+            User.phoneNumber.label("beneficiaryPhoneNumber"),  # type: ignore[attr-defined]
+            User.postalCode.label("beneficiaryPostalCode"),
+        ]
+        entities.extend(extra_entities)
     return entities
 
 
@@ -138,6 +142,10 @@ def _get_filtered_bookings_query(
 
     if event_date:
         bookings_query = bookings_query.filter(field_to_venue_timezone(Stock.beginningDatetime) == event_date)
+
+    bookings_query = bookings_query.with_entities(*_get_bookings_export_entities(count_bookings=count_bookings))
+    bookings_query = bookings_query.distinct(Booking.id)
+
     return bookings_query
 
 
@@ -149,19 +157,7 @@ def _get_filtered_booking_report(
     venue_id: int | None = None,
     offer_id: int | None = None,
 ) -> BaseQuery:
-    bookings_query = (
-        _get_filtered_bookings_query(
-            pro_user,
-            booking_period,
-            status_filter,
-            event_date,
-            venue_id,
-            offer_id,
-        )
-        .with_entities(*_get_bookings_export_entities())
-        .distinct(Booking.id)
-    )
-    return bookings_query
+    return _get_filtered_bookings_query(pro_user, booking_period, status_filter, event_date, venue_id, offer_id)
 
 
 def _get_filtered_bookings_count(
@@ -172,13 +168,10 @@ def _get_filtered_bookings_count(
     venue_id: int | None = None,
     offer_id: int | None = None,
 ) -> int:
-    bookings = (
-        _get_filtered_bookings_query(
-            pro_user, booking_period, status_filter, event_date, venue_id, offer_id, count_bookings=True
-        )
-        .with_entities(Booking.id.label("id"), Booking.quantity)
-        .distinct(Booking.id)
-    ).cte()
+    query = _get_filtered_bookings_query(
+        pro_user, booking_period, status_filter, event_date, venue_id, offer_id, count_bookings=True
+    )
+    bookings = query.cte()
     # We really want total quantities here (and not the number of bookings),
     # since we'll build two rows for each "duo" bookings later.
     bookings_count = db.session.query(sa.func.coalesce(sa.func.sum(bookings.c.quantity), 0))
