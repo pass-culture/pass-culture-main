@@ -63,21 +63,21 @@ def _get_bookings_export_entities(count_bookings: bool = False) -> list:
         # `get_batch` function needs a field called exactly `id` to work,
         # the label prevents SA from using a bad (prefixed) label for this field
         Booking.id.label("id"),
-        Booking.quantity,
+        Booking.quantity.label("quantity"),
     ]
     if not count_bookings:
         extra_entities = [
             Booking.token.label("bookingToken"),
-            Booking.priceCategoryLabel,
+            Booking.priceCategoryLabel.label("priceCategoryLabel"),
             Booking.amount.label("bookingAmount"),
-            Booking.status,
+            Booking.status.label("status"),
             Booking.dateCreated.label("bookedAt"),
             Booking.dateUsed.label("usedAt"),
             Booking.reimbursementDate.label("reimbursedAt"),
             Booking.cancellationDate.label("cancelledAt"),
             Booking.isExternal.label("isExternal"),  # type: ignore[attr-defined]
-            Booking.isConfirmed,
-            Booking.stockId,
+            Booking.isConfirmed.label("isConfirmed"),  # type: ignore[attr-defined]
+            Booking.stockId.label("stockId"),
             Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
             Venue.departementCode.label("venueDepartmentCode"),
             Offerer.postalCode.label("offererPostalCode"),
