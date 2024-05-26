@@ -281,7 +281,7 @@ def _get_booking_status(status: BookingStatus | str, is_confirmed: bool) -> str:
     return BOOKING_STATUS_LABELS[status]
 
 
-def _write_csv_row(writer: typing.Any, booking: Booking, booking_duo_column: str) -> None:
+def _write_csv_row(writer: typing.Any, booking: Booking, duo_column: str) -> None:
     writer.writerow(
         (
             booking.venueName,
@@ -305,7 +305,7 @@ def _write_csv_row(writer: typing.Any, booking: Booking, booking_duo_column: str
             convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking),
             serialize_offer_type_educational_or_individual(offer_is_educational=False),
             booking.beneficiaryPostalCode or "",
-            booking_duo_column,
+            duo_column,
         )
     )
 
@@ -392,8 +392,8 @@ def _serialize_csv_report(query: BaseQuery) -> str:
     writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
     writer.writerow(constants.BOOKING_EXPORT_HEADERS)
     for booking in query.yield_per(1000):
-        booking_duo_column = "Oui" if booking.quantity == constants.DUO_QUANTITY else "Non"
-        _write_csv_row(writer, booking, booking_duo_column)
+        duo_column = "Oui" if booking.quantity == constants.DUO_QUANTITY else "Non"
+        _write_csv_row(writer, booking, duo_column)
 
     return output.getvalue()
 
