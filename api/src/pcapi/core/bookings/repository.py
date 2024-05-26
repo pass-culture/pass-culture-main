@@ -146,8 +146,8 @@ def _get_filtered_bookings_query(
 
 def _get_filtered_booking_report(
     pro_user: User,
-    booking_period: tuple[date, date] | None,
-    status_filter: BookingStatusFilter | None,
+    booking_period: tuple[date, date] | None = None,
+    status_filter: BookingStatusFilter | None = None,
     event_date: date | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
@@ -165,7 +165,6 @@ def _get_filtered_booking_report(
         .with_entities(*_get_bookings_export_entities())
         .distinct(Booking.id)
     )
-
     return bookings_query
 
 
@@ -186,34 +185,6 @@ def _get_filtered_bookings_count(
     # since we'll build two rows for each "duo" bookings later.
     bookings_count = db.session.query(sa.func.coalesce(sa.func.sum(bookings.c.quantity), 0))
     return bookings_count.scalar()
-
-
-def _get_filtered_booking_pro(
-    pro_user: User,
-    booking_period: tuple[date, date] | None = None,
-    status_filter: BookingStatusFilter | None = None,
-    event_date: date | None = None,
-    venue_id: int | None = None,
-    offer_id: int | None = None,
-) -> BaseQuery:
-    bookings_query = (
-        _get_filtered_bookings_query(
-            pro_user,
-            booking_period,
-            status_filter,
-            event_date,
-            venue_id,
-            offer_id,
-            extra_joins=(
-                Stock.offer,
-                Booking.user,
-            ),
-        )
-        .with_entities(*_get_bookings_export_entities())
-        .distinct(Booking.id)
-    )
-
-    return bookings_query
 
 
 def _create_export_query(offer_id: int, event_beginning_date: date, validated: bool = False) -> BaseQuery:
@@ -409,7 +380,7 @@ def find_by_pro_user(
         offer_id=offer_id,
     )
 
-    bookings_query = _get_filtered_booking_pro(
+    bookings_query = _get_filtered_booking_report(
         pro_user=user,
         booking_period=booking_period,
         status_filter=status_filter,
