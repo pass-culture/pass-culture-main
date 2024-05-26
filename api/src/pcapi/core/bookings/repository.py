@@ -176,7 +176,7 @@ def _get_filtered_bookings_count(
         _get_filtered_bookings_query(
             pro_user, booking_period, status_filter, event_date, venue_id, offer_id, count_bookings=True
         )
-        .with_entities(Booking.id, Booking.quantity)
+        .with_entities(Booking.id.label("id"), Booking.quantity)
         .distinct(Booking.id)
     ).cte()
     # We really want total quantities here (and not the number of bookings),
