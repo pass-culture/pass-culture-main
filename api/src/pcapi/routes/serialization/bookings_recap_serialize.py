@@ -193,7 +193,7 @@ class ListBookingsQueryModel(BaseModel):
     booking_status_filter: BookingStatusFilter | None
     booking_period_beginning_date: date | None
     booking_period_ending_date: date | None
-    offer_type: OfferType | None
+    offer_type: OfferType | None  # TODO: check offer_type is no longer used and remove it
     export_type: BookingExportType | None
 
     class Config:

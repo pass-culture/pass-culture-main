@@ -41,7 +41,6 @@ class GetAllBookingsTest:
             event_date=None,
             venue_id=None,
             offer_id=None,
-            offer_type=None,
             page=3,
             per_page_limit=1000,
         )
@@ -58,7 +57,6 @@ class GetAllBookingsTest:
             event_date=None,
             venue_id=None,
             offer_id=None,
-            offer_type=None,
             page=1,
             per_page_limit=1000,
         )
@@ -83,7 +81,6 @@ class GetAllBookingsTest:
             event_date=None,
             venue_id=venue.id,
             offer_id=None,
-            offer_type=None,
             page=1,
             per_page_limit=1000,
         )
@@ -108,7 +105,6 @@ class GetAllBookingsTest:
             event_date=None,
             venue_id=None,
             offer_id=offer.id,
-            offer_type=None,
             page=1,
             per_page_limit=1000,
         )
