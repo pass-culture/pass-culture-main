@@ -285,10 +285,9 @@ def _create_export_query(offer_id: int, event_beginning_date: date) -> BaseQuery
     )
 
 
-def _get_booking_status(status: BookingStatus, is_confirmed: bool) -> str:
-    cancellation_limit_date_exists_and_past = is_confirmed
-    if cancellation_limit_date_exists_and_past and status == BookingStatus.CONFIRMED:
-        return BOOKING_STATUS_LABELS["confirmed"]
+def _get_booking_status(status: BookingStatus | str, is_confirmed: bool) -> str:
+    if is_confirmed and status == BookingStatus.CONFIRMED:
+        status = "confirmed"
     return BOOKING_STATUS_LABELS[status]
 
 
