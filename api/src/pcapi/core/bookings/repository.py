@@ -154,20 +154,6 @@ def _get_filtered_bookings_query(
     return bookings_query
 
 
-def _get_filtered_bookings_count(
-    pro_user: User,
-    booking_period: tuple[date, date] | None = None,
-    status_filter: BookingStatusFilter | None = None,
-    event_date: date | None = None,
-    venue_id: int | None = None,
-    offer_id: int | None = None,
-) -> int:
-    query = _get_filtered_bookings_query(
-        pro_user, booking_period, status_filter, event_date, venue_id, offer_id, count_bookings=True
-    )
-    return query.scalar()
-
-
 def _create_export_query(offer_id: int, event_beginning_date: date, validated: bool = False) -> BaseQuery:
     query = (
         Booking.query.join(Booking.offerer)
@@ -352,14 +338,16 @@ def find_by_pro_user(
     page: int = 1,
     per_page_limit: int = 1000,
 ) -> tuple[BaseQuery, int]:
-    total_bookings_recap = _get_filtered_bookings_count(
-        user,
-        booking_period,
+    query = _get_filtered_bookings_query(
+        pro_user=user,
+        booking_period=booking_period,
         status_filter=status_filter,
         event_date=event_date,
         venue_id=venue_id,
         offer_id=offer_id,
+        count_bookings=True,
     )
+    total_bookings_recap = query.scalar()
 
     bookings_query = _get_filtered_bookings_query(
         pro_user=user,
