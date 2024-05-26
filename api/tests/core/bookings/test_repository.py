@@ -1838,8 +1838,8 @@ class GetCsvReportTest:
         # Then
         _, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 2
-        assert data[0][16] == "Oui"
-        assert data[1][16] == "Oui"
+        assert data[0][16] == "DUO 1"
+        assert data[1][16] == "DUO 2"
 
     def test_should_not_duplicate_bookings_when_user_is_admin_and_bookings_offerer_has_multiple_user(
         self, app: fixture

@@ -228,17 +228,14 @@ def _write_csv_row(writer: typing.Any, booking: Booking, duo_column: str) -> Non
     writer.writerow([column["value"] for column in columns])
 
 
-def _write_bookings_to_csv(query: BaseQuery, duplicate_duo: bool = True) -> str:
+def _write_bookings_to_csv(query: BaseQuery) -> str:
     output = StringIO()
     writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
     writer.writerow(constants.BOOKING_EXPORT_HEADERS)
     for booking in query.yield_per(1000):
         if booking.quantity == constants.DUO_QUANTITY:
-            if duplicate_duo:
-                _write_csv_row(writer, booking, "DUO 1")
-                _write_csv_row(writer, booking, "DUO 2")
-            else:
-                _write_csv_row(writer, booking, "Oui")
+            _write_csv_row(writer, booking, "DUO 1")
+            _write_csv_row(writer, booking, "DUO 2")
         else:
             _write_csv_row(writer, booking, "Non")
 
@@ -257,7 +254,7 @@ def _write_excel_row(
         worksheet.write(row, i, column["value"], *write_args)
 
 
-def _write_bookings_to_excel(query: BaseQuery, duplicate_duo: bool = True) -> bytes:
+def _write_bookings_to_excel(query: BaseQuery) -> bytes:
     output = BytesIO()
     workbook = xlsxwriter.Workbook(output)
 
@@ -275,12 +272,9 @@ def _write_bookings_to_excel(query: BaseQuery, duplicate_duo: bool = True) -> by
     row = 1
     for booking in query.yield_per(1000):
         if booking.quantity == constants.DUO_QUANTITY:
-            if duplicate_duo:
-                _write_excel_row(worksheet, row, booking, currency_format, "DUO 1")
-                row += 1
-                _write_excel_row(worksheet, row, booking, currency_format, "DUO 2")
-            else:
-                _write_excel_row(worksheet, row, booking, currency_format, "Oui")
+            _write_excel_row(worksheet, row, booking, currency_format, "DUO 1")
+            row += 1
+            _write_excel_row(worksheet, row, booking, currency_format, "DUO 2")
         else:
             _write_excel_row(worksheet, row, booking, currency_format, "Non")
         row += 1
@@ -319,11 +313,10 @@ def get_export(
         event_date=event_date,
         venue_id=venue_id,
         offer_id=offer_id,
-        duplicate_duo=True,
     )
     if export_type == BookingExportType.EXCEL:
-        return _write_bookings_to_excel(query, duplicate_duo=False)
-    return _write_bookings_to_csv(query, duplicate_duo=False)
+        return _write_bookings_to_excel(query)
+    return _write_bookings_to_csv(query)
 
 
 def find_by_pro_user(
