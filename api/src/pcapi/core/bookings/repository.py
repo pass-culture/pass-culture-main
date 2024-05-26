@@ -146,6 +146,11 @@ def _get_filtered_bookings_query(
     bookings_query = bookings_query.with_entities(*_get_bookings_export_entities(count_bookings=count_bookings))
     bookings_query = bookings_query.distinct(Booking.id)
 
+    if count_bookings:
+        # We really want total quantities here (and not the number of bookings),
+        # since we'll build two rows for each "duo" bookings later.
+        bookings_query = bookings_query.with_entities(sa.func.coalesce(sa.func.sum(Booking.quantity), 0))
+
     return bookings_query
 
 
@@ -160,11 +165,7 @@ def _get_filtered_bookings_count(
     query = _get_filtered_bookings_query(
         pro_user, booking_period, status_filter, event_date, venue_id, offer_id, count_bookings=True
     )
-    bookings = query.cte()
-    # We really want total quantities here (and not the number of bookings),
-    # since we'll build two rows for each "duo" bookings later.
-    bookings_count = db.session.query(sa.func.coalesce(sa.func.sum(bookings.c.quantity), 0))
-    return bookings_count.scalar()
+    return query.scalar()
 
 
 def _create_export_query(offer_id: int, event_beginning_date: date, validated: bool = False) -> BaseQuery:
