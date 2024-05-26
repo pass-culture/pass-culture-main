@@ -104,6 +104,8 @@ def _get_filtered_bookings_query(
     offer_id: int | None = None,
     duplicate_duo: bool = False,
     count_bookings: bool = False,
+    offset: int | None = None,
+    limit: int | None = None,
 ) -> BaseQuery:
     bookings_query = (
         Booking.query.join(Booking.offerer)
@@ -146,6 +148,13 @@ def _get_filtered_bookings_query(
 
     if duplicate_duo:
         bookings_query = bookings_query.union_all(bookings_query.filter(Booking.quantity == constants.DUO_QUANTITY))
+
+    if offset is not None and limit is not None:
+        if duplicate_duo:
+            col = sa.column("bookedAt")
+        else:
+            col = Booking.dateCreated
+        bookings_query = bookings_query.order_by(col.desc()).offset(offset).limit(limit)
 
     if count_bookings:
         if duplicate_duo:
@@ -356,11 +365,9 @@ def find_by_pro_user(
         venue_id=venue_id,
         offer_id=offer_id,
         duplicate_duo=True,
+        offset=(page - 1) * per_page_limit,
+        limit=per_page_limit,
     )
-    bookings_query = (
-        bookings_query.order_by(sa.text('"bookedAt" DESC')).offset((page - 1) * per_page_limit).limit(per_page_limit)
-    )
-
     return bookings_query, total_bookings_recap
 
 
