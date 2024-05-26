@@ -281,33 +281,52 @@ def _get_booking_status(status: BookingStatus | str, is_confirmed: bool) -> str:
     return BOOKING_STATUS_LABELS[status]
 
 
-def _write_csv_row(writer: typing.Any, booking: Booking, duo_column: str) -> None:
-    writer.writerow(
-        (
-            booking.venueName,
-            booking.offerName,
-            convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking),
-            booking.ean,
-            f"{booking.beneficiaryLastName} {booking.beneficiaryFirstName}",
-            booking.beneficiaryEmail,
-            booking.beneficiaryPhoneNumber,
-            convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking),
-            convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking),
-            booking_recap_utils.get_booking_token(
-                booking.token,
-                booking.status,
-                bool(booking.isExternal),
-                booking.stockBeginningDatetime,
-            ),
-            booking.priceCategoryLabel or "",
-            booking.amount,
-            _get_booking_status(booking.status, bool(booking.isConfirmed)),
-            convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking),
-            serialize_offer_type_educational_or_individual(offer_is_educational=False),
-            booking.beneficiaryPostalCode or "",
-            duo_column,
-        )
+def _build_export_columns(booking: Booking, duo_column: str, is_csv: bool) -> list[dict]:
+    booking_token = booking_recap_utils.get_booking_token(
+        booking.token,
+        booking.status,
+        bool(booking.isExternal),
+        booking.stockBeginningDatetime,
     )
+    price_category_label = booking.priceCategoryLabel
+    beneficiary_postal_code = booking.beneficiaryPostalCode
+    stock_beginning_datetime = convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking)
+    booked_at = convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking)
+    used_at = convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking)
+    reimbursed_at = convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking)
+    if is_csv:
+        price_category_label = price_category_label or ""
+        beneficiary_postal_code = beneficiary_postal_code or ""
+    else:
+        stock_beginning_datetime = str(stock_beginning_datetime)  # type: ignore[assignment]
+        booked_at = str(booked_at)  # type: ignore[assignment]
+        used_at = str(used_at)  # type: ignore[assignment]
+        reimbursed_at = str(reimbursed_at)  # type: ignore[assignment]
+    columns = [
+        {"value": booking.venueName},
+        {"value": booking.offerName},
+        {"value": stock_beginning_datetime},
+        {"value": booking.ean},
+        {"value": f"{booking.beneficiaryLastName} {booking.beneficiaryFirstName}"},
+        {"value": booking.beneficiaryEmail},
+        {"value": booking.beneficiaryPhoneNumber},
+        {"value": booked_at},
+        {"value": used_at},
+        {"value": booking_token},
+        {"value": price_category_label},
+        {"value": booking.amount, "type": "currency"},
+        {"value": _get_booking_status(booking.status, bool(booking.isConfirmed))},
+        {"value": reimbursed_at},
+        {"value": serialize_offer_type_educational_or_individual(offer_is_educational=False)},
+        {"value": beneficiary_postal_code},
+        {"value": duo_column},
+    ]
+    return columns
+
+
+def _write_csv_row(writer: typing.Any, booking: Booking, duo_column: str) -> None:
+    columns = _build_export_columns(booking, duo_column, True)
+    writer.writerow([column["value"] for column in columns])
 
 
 def _write_bookings_to_csv(query: BaseQuery) -> str:
@@ -327,36 +346,13 @@ def _write_bookings_to_csv(query: BaseQuery) -> str:
 def _write_excel_row(
     worksheet: Worksheet, row: int, booking: Booking, currency_format: Format, duo_column: str
 ) -> None:
-    worksheet.write(row, 0, booking.venueName)
-    worksheet.write(row, 1, booking.offerName)
-    worksheet.write(row, 2, str(convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking)))
-    worksheet.write(row, 3, booking.ean)
-    worksheet.write(row, 4, f"{booking.beneficiaryLastName} {booking.beneficiaryFirstName}")
-    worksheet.write(row, 5, booking.beneficiaryEmail)
-    worksheet.write(row, 6, booking.beneficiaryPhoneNumber)
-    worksheet.write(row, 7, str(convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking)))
-    worksheet.write(row, 8, str(convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking)))
-    worksheet.write(
-        row,
-        9,
-        booking_recap_utils.get_booking_token(
-            booking.token,
-            booking.status,
-            bool(booking.isExternal),
-            booking.stockBeginningDatetime,
-        ),
-    )
-    worksheet.write(row, 10, booking.priceCategoryLabel)
-    worksheet.write(row, 11, booking.amount, currency_format)
-    worksheet.write(row, 12, _get_booking_status(booking.status, bool(booking.isConfirmed)))
-    worksheet.write(row, 13, str(convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking)))
-    worksheet.write(row, 14, serialize_offer_type_educational_or_individual(offer_is_educational=False))
-    worksheet.write(row, 15, booking.beneficiaryPostalCode)
-    worksheet.write(
-        row,
-        16,
-        duo_column,
-    )
+    columns = _build_export_columns(booking, duo_column, False)
+    for i, column in enumerate(columns):
+        if column.get("type") == "currency":
+            write_args: tuple = (currency_format,)
+        else:
+            write_args = tuple()
+        worksheet.write(row, i, column["value"], *write_args)
 
 
 def _write_bookings_to_excel(query: BaseQuery) -> bytes:
