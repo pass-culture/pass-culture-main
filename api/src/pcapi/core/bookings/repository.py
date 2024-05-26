@@ -60,8 +60,6 @@ def field_to_venue_timezone(field: typing.Any) -> sa.cast:
 
 def _get_bookings_export_entities(count_bookings: bool = False) -> list:
     entities = [
-        # `get_batch` function needs a field called exactly `id` to work,
-        # the label prevents SA from using a bad (prefixed) label for this field
         Booking.id.label("id"),
         Booking.quantity.label("quantity"),
     ]
