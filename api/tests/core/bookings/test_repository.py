@@ -112,8 +112,8 @@ class FindByProUserTest:
         expected_booking = bookings[0]
         assert expected_booking.offerId == stock.offer.id
         assert expected_booking.offerName == offer.name
-        assert expected_booking.beneficiaryFirstname == "Ron"
-        assert expected_booking.beneficiaryLastname == "Weasley"
+        assert expected_booking.beneficiaryFirstName == "Ron"
+        assert expected_booking.beneficiaryLastName == "Weasley"
         assert expected_booking.beneficiaryEmail == "beneficiary@example.com"
         assert expected_booking.bookedAt == booking_date  # .astimezone(tz.gettz("Europe/Paris"))
         assert expected_booking.bookingToken == "ABCDEF"
@@ -264,8 +264,8 @@ class FindByProUserTest:
         expected_booking = bookings[0]
         assert expected_booking.offerId == stock.offer.id
         assert expected_booking.offerName == stock.offer.name
-        assert expected_booking.beneficiaryFirstname == "Ron"
-        assert expected_booking.beneficiaryLastname == "Weasley"
+        assert expected_booking.beneficiaryFirstName == "Ron"
+        assert expected_booking.beneficiaryLastName == "Weasley"
         assert expected_booking.beneficiaryEmail == "beneficiary@example.com"
         assert expected_booking.bookedAt == yesterday
         assert expected_booking.bookingToken == "ABCDEF"

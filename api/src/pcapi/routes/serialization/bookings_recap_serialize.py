@@ -147,8 +147,8 @@ def serialize_bookings(booking: Booking) -> BookingRecapResponseModel:
             "offerIsEducational": False,
         },
         beneficiary={  # type: ignore[arg-type]
-            "lastname": booking.beneficiaryLastname,
-            "firstname": booking.beneficiaryFirstname,
+            "lastname": booking.beneficiaryLastName,
+            "firstname": booking.beneficiaryFirstName,
             "email": booking.beneficiaryEmail,
             "phonenumber": booking.beneficiaryPhoneNumber,
         },

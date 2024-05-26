@@ -61,34 +61,37 @@ def field_to_venue_timezone(field: typing.Any) -> sa.cast:
 
 def _get_bookings_export_entities() -> tuple:
     entities = (
-        Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
-        Venue.departementCode.label("venueDepartmentCode"),
-        Offerer.postalCode.label("offererPostalCode"),
-        Offer.name.label("offerName"),
-        Stock.beginningDatetime.label("stockBeginningDatetime"),
-        Stock.offerId,
-        Offer.extraData["ean"].label("ean"),
-        User.firstName.label("beneficiaryFirstName"),
-        User.lastName.label("beneficiaryLastName"),
-        User.email.label("beneficiaryEmail"),
-        User.phoneNumber.label("beneficiaryPhoneNumber"),  # type: ignore[attr-defined]
-        User.postalCode.label("beneficiaryPostalCode"),
+        # `get_batch` function needs a field called exactly `id` to work,
+        # the label prevents SA from using a bad (prefixed) label for this field
+        Booking.id.label("id"),
         Booking.id,
-        Booking.token,
+        Booking.token.label("bookingToken"),
         Booking.priceCategoryLabel,
-        Booking.amount,
+        Booking.amount.label("bookingAmount"),
         Booking.quantity,
         Booking.status,
         Booking.dateCreated.label("bookedAt"),
         Booking.dateUsed.label("usedAt"),
         Booking.reimbursementDate.label("reimbursedAt"),
         Booking.cancellationDate.label("cancelledAt"),
+        Booking.cancellationLimitDate,
         Booking.isExternal.label("isExternal"),  # type: ignore[attr-defined]
         Booking.isConfirmed,
-        # `get_batch` function needs a field called exactly `id` to work,
-        # the label prevents SA from using a bad (prefixed) label for this field
-        Booking.id.label("id"),
+        Booking.stockId,
         Booking.userId,
+        Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
+        Venue.departementCode.label("venueDepartmentCode"),
+        Offerer.postalCode.label("offererPostalCode"),
+        Stock.beginningDatetime.label("stockBeginningDatetime"),
+        Stock.offerId,
+        Offer.id.label("offerId"),
+        Offer.name.label("offerName"),
+        Offer.extraData["ean"].label("offerEan"),
+        User.firstName.label("beneficiaryFirstName"),
+        User.lastName.label("beneficiaryLastName"),
+        User.email.label("beneficiaryEmail"),
+        User.phoneNumber.label("beneficiaryPhoneNumber"),  # type: ignore[attr-defined]
+        User.postalCode.label("beneficiaryPostalCode"),
     )
     return entities
 
@@ -206,31 +209,7 @@ def _get_filtered_booking_pro(
                 Booking.user,
             ),
         )
-        .with_entities(
-            Booking.token.label("bookingToken"),
-            Booking.dateCreated.label("bookedAt"),
-            Booking.quantity,
-            Booking.amount.label("bookingAmount"),
-            Booking.priceCategoryLabel,
-            Booking.dateUsed.label("usedAt"),
-            Booking.cancellationDate.label("cancelledAt"),
-            Booking.cancellationLimitDate,
-            Booking.status,
-            Booking.reimbursementDate.label("reimbursedAt"),
-            Booking.isExternal.label("isExternal"),  # type: ignore[attr-defined]
-            Booking.isConfirmed,
-            Offer.name.label("offerName"),
-            Offer.id.label("offerId"),
-            Offer.extraData["ean"].label("offerEan"),
-            User.firstName.label("beneficiaryFirstname"),
-            User.lastName.label("beneficiaryLastname"),
-            User.email.label("beneficiaryEmail"),
-            User.phoneNumber.label("beneficiaryPhoneNumber"),  # type: ignore[attr-defined]
-            Stock.beginningDatetime.label("stockBeginningDatetime"),
-            Booking.stockId,
-            Venue.departementCode.label("venueDepartmentCode"),
-            Offerer.postalCode.label("offererPostalCode"),
-        )
+        .with_entities(*_get_bookings_export_entities())
         .distinct(Booking.id)
     )
 
@@ -268,7 +247,7 @@ def _get_booking_status(status: BookingStatus | str, is_confirmed: bool) -> str:
 
 def _build_export_columns(booking: Booking, duo_column: str, is_csv: bool) -> list[dict]:
     booking_token = booking_recap_utils.get_booking_token(
-        booking.token,
+        booking.bookingToken,
         booking.status,
         bool(booking.isExternal),
         booking.stockBeginningDatetime,
@@ -291,7 +270,7 @@ def _build_export_columns(booking: Booking, duo_column: str, is_csv: bool) -> li
         {"value": booking.venueName},
         {"value": booking.offerName},
         {"value": stock_beginning_datetime},
-        {"value": booking.ean},
+        {"value": booking.offerEan},
         {"value": f"{booking.beneficiaryLastName} {booking.beneficiaryFirstName}"},
         {"value": booking.beneficiaryEmail},
         {"value": booking.beneficiaryPhoneNumber},
@@ -299,7 +278,7 @@ def _build_export_columns(booking: Booking, duo_column: str, is_csv: bool) -> li
         {"value": used_at},
         {"value": booking_token},
         {"value": price_category_label},
-        {"value": booking.amount, "type": "currency"},
+        {"value": booking.bookingAmount, "type": "currency"},
         {"value": _get_booking_status(booking.status, bool(booking.isConfirmed))},
         {"value": reimbursed_at},
         {"value": serialize_offer_type_educational_or_individual(offer_is_educational=False)},
