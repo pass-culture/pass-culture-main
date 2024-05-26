@@ -414,38 +414,8 @@ def _serialize_excel_report(query: BaseQuery) -> bytes:
         worksheet.set_column(col_num, col_num, col_width)
     row = 1
     for booking in query.yield_per(1000):
-        worksheet.write(row, 0, booking.venueName)
-        worksheet.write(row, 1, booking.offerName)
-        worksheet.write(
-            row, 2, str(convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking))
-        )
-        worksheet.write(row, 3, booking.ean)
-        worksheet.write(row, 4, f"{booking.beneficiaryLastName} {booking.beneficiaryFirstName}")
-        worksheet.write(row, 5, booking.beneficiaryEmail)
-        worksheet.write(row, 6, booking.beneficiaryPhoneNumber)
-        worksheet.write(row, 7, str(convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking)))
-        worksheet.write(row, 8, str(convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking)))
-        worksheet.write(
-            row,
-            9,
-            booking_recap_utils.get_booking_token(
-                booking.token,
-                booking.status,
-                bool(booking.isExternal),
-                booking.stockBeginningDatetime,
-            ),
-        )
-        worksheet.write(row, 10, booking.priceCategoryLabel)
-        worksheet.write(row, 11, booking.amount, currency_format)
-        worksheet.write(row, 12, _get_booking_status(booking.status, bool(booking.isConfirmed)))
-        worksheet.write(row, 13, str(convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking)))
-        worksheet.write(row, 14, serialize_offer_type_educational_or_individual(offer_is_educational=False))
-        worksheet.write(row, 15, booking.beneficiaryPostalCode)
-        worksheet.write(
-            row,
-            16,
-            "Oui" if booking.quantity == constants.DUO_QUANTITY else "Non",
-        )
+        duo_column = "Oui" if booking.quantity == constants.DUO_QUANTITY else "Non"
+        _write_excel_row(worksheet, row, booking, currency_format, duo_column)
         row += 1
 
     workbook.close()
