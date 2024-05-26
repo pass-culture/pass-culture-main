@@ -830,10 +830,11 @@ class GetOfferBookingsByStatusCSVTest:
 
         offer_id = offer.id
         with assert_num_queries(queries):
-            bookings_csv = booking_repository.export_validated_bookings_by_offer_id(
+            bookings_csv = booking_repository.export_bookings_by_offer_id(
                 offer_id=offer_id,
                 event_beginning_date=date.today() + timedelta(days=10),
                 export_type=BookingExportType.CSV,
+                validated=True,
             )
 
         # Then
@@ -904,10 +905,11 @@ class GetOfferBookingsByStatusCSVTest:
 
         offer_id = offer.id
         with assert_num_queries(queries):
-            bookings_csv = booking_repository.export_validated_bookings_by_offer_id(
+            bookings_csv = booking_repository.export_bookings_by_offer_id(
                 offer_id=offer_id,
                 event_beginning_date=date.today() + timedelta(days=10),
                 export_type=BookingExportType.CSV,
+                validated=True,
             )
 
         # Then
@@ -968,10 +970,11 @@ class GetOfferBookingsByStatusCSVTest:
         bookings_factories.BookingFactory(stock=stock_2)
 
         # When
-        bookings_csv = booking_repository.export_validated_bookings_by_offer_id(
+        bookings_csv = booking_repository.export_bookings_by_offer_id(
             offer_id=offer.id,
             event_beginning_date=date.today() + timedelta(days=5),
             export_type=BookingExportType.CSV,
+            validated=True,
         )
 
         # Then
@@ -1257,10 +1260,11 @@ class GetOfferBookingsByStatusExcelTest:
 
         # When
         with assert_num_queries(2):
-            bookings_excel = booking_repository.export_validated_bookings_by_offer_id(
+            bookings_excel = booking_repository.export_bookings_by_offer_id(
                 offer_id=offer.id,
                 event_beginning_date=date.today() + timedelta(days=3),
                 export_type=BookingExportType.EXCEL,
+                validated=True,
             )
         headers = [
             "Lieu",
@@ -1322,10 +1326,11 @@ class GetOfferBookingsByStatusExcelTest:
         bookings_factories.BookingFactory(stock=stock_2)
 
         # When
-        bookings_excel = booking_repository.export_validated_bookings_by_offer_id(
+        bookings_excel = booking_repository.export_bookings_by_offer_id(
             offer_id=offer.id,
             event_beginning_date=date.today() + timedelta(days=3),
             export_type=BookingExportType.EXCEL,
+            validated=True,
         )
         headers = [
             "Lieu",
@@ -1472,10 +1477,11 @@ class GetOfferBookingsByStatusExcelTest:
         bookings_factories.BookingFactory(stock=stock_2)
 
         # When
-        bookings_excel = booking_repository.export_validated_bookings_by_offer_id(
+        bookings_excel = booking_repository.export_bookings_by_offer_id(
             offer_id=offer.id,
             event_beginning_date=date.today() + timedelta(days=3),
             export_type=BookingExportType.EXCEL,
+            validated=True,
         )
         headers = [
             "Lieu",

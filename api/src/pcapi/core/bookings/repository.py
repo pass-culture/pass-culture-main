@@ -232,8 +232,8 @@ def _get_filtered_booking_pro(
     return bookings_query
 
 
-def _create_export_query(offer_id: int, event_beginning_date: date) -> BaseQuery:
-    return (
+def _create_export_query(offer_id: int, event_beginning_date: date, validated: bool = False) -> BaseQuery:
+    query = (
         Booking.query.join(Booking.offerer)
         .join(Booking.user)
         .join(Offerer.UserOfferers)
@@ -273,6 +273,14 @@ def _create_export_query(offer_id: int, event_beginning_date: date) -> BaseQuery
         )
         .distinct(Booking.id)
     )
+    if validated:
+        query = query.filter(
+            sa.or_(
+                sa.and_(Booking.isConfirmed, Booking.status != BookingStatus.CANCELLED),  # type: ignore[type-var]
+                Booking.status == BookingStatus.USED,
+            )
+        )
+    return query
 
 
 def _get_booking_status(status: BookingStatus | str, is_confirmed: bool) -> str:
@@ -391,27 +399,12 @@ def _write_bookings_to_excel(query: BaseQuery, duplicate_duo: bool = True) -> by
 
 
 def export_bookings_by_offer_id(
-    offer_id: int, event_beginning_date: date, export_type: BookingExportType
+    offer_id: int, event_beginning_date: date, export_type: BookingExportType, validated: bool = False
 ) -> str | bytes:
-    offer_bookings_query = _create_export_query(offer_id, event_beginning_date)
+    query = _create_export_query(offer_id, event_beginning_date, validated=validated)
     if export_type == BookingExportType.EXCEL:
-        return _write_bookings_to_excel(offer_bookings_query)
-    return _write_bookings_to_csv(offer_bookings_query)
-
-
-def export_validated_bookings_by_offer_id(
-    offer_id: int, event_beginning_date: date, export_type: BookingExportType
-) -> str | bytes:
-    offer_validated_bookings_query = _create_export_query(offer_id, event_beginning_date)
-    offer_validated_bookings_query = offer_validated_bookings_query.filter(
-        sa.or_(
-            sa.and_(Booking.isConfirmed, Booking.status != BookingStatus.CANCELLED),  # type: ignore[type-var]
-            Booking.status == BookingStatus.USED,
-        )
-    )
-    if export_type == BookingExportType.EXCEL:
-        return _write_bookings_to_excel(offer_validated_bookings_query)
-    return _write_bookings_to_csv(offer_validated_bookings_query)
+        return _write_bookings_to_excel(query)
+    return _write_bookings_to_csv(query)
 
 
 def _duplicate_booking_when_quantity_is_two(bookings_recap_query: BaseQuery) -> BaseQuery:

@@ -86,19 +86,13 @@ def export_bookings_for_offer_as_csv(offer_id: int, query: BookingsExportQueryMo
     if not users_repository.has_access(user, offer.venue.managingOffererId):
         raise api_errors.ForbiddenError({"global": "You are not allowed to access this offer"})
 
-    if query.status == BookingsExportStatusFilter.VALIDATED:
-        return cast(
-            str,
-            booking_repository.export_validated_bookings_by_offer_id(
-                offer_id, event_beginning_date=query.event_date, export_type=BookingExportType.CSV
-            ),
-        ).encode("utf-8-sig")
-    return cast(
-        str,
-        booking_repository.export_bookings_by_offer_id(
-            offer_id, event_beginning_date=query.event_date, export_type=BookingExportType.CSV
-        ),
-    ).encode("utf-8-sig")
+    bookings = booking_repository.export_bookings_by_offer_id(
+        offer_id,
+        event_beginning_date=query.event_date,
+        export_type=BookingExportType.CSV,
+        validated=bool(query.status == BookingsExportStatusFilter.VALIDATED),
+    )
+    return cast(str, bookings).encode("utf-8-sig")
 
 
 @blueprint.pro_private_api.route("/bookings/offer/<int:offer_id>/excel", methods=["GET"])
@@ -118,19 +112,13 @@ def export_bookings_for_offer_as_excel(offer_id: int, query: BookingsExportQuery
     if not users_repository.has_access(user, offer.venue.managingOffererId):
         raise api_errors.ForbiddenError({"global": "You are not allowed to access this offer"})
 
-    if query.status == BookingsExportStatusFilter.VALIDATED:
-        return cast(
-            bytes,
-            booking_repository.export_validated_bookings_by_offer_id(
-                offer_id, event_beginning_date=query.event_date, export_type=BookingExportType.EXCEL
-            ),
-        )
-    return cast(
-        bytes,
-        booking_repository.export_bookings_by_offer_id(
-            offer_id, event_beginning_date=query.event_date, export_type=BookingExportType.EXCEL
-        ),
+    bookings = booking_repository.export_bookings_by_offer_id(
+        offer_id,
+        event_beginning_date=query.event_date,
+        export_type=BookingExportType.EXCEL,
+        validated=bool(query.status == BookingsExportStatusFilter.VALIDATED),
     )
+    return cast(bytes, bookings)
 
 
 @blueprint.pro_private_api.route("/bookings/csv", methods=["GET"])
