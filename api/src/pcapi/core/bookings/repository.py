@@ -281,8 +281,8 @@ def _get_booking_status(status: BookingStatus | str, is_confirmed: bool) -> str:
     return BOOKING_STATUS_LABELS[status]
 
 
-def _write_csv_row(csv_writer: typing.Any, booking: Booking, booking_duo_column: str) -> None:
-    csv_writer.writerow(
+def _write_csv_row(writer: typing.Any, booking: Booking, booking_duo_column: str) -> None:
+    writer.writerow(
         (
             booking.venueName,
             booking.offerName,
@@ -392,32 +392,8 @@ def _serialize_csv_report(query: BaseQuery) -> str:
     writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
     writer.writerow(constants.BOOKING_EXPORT_HEADERS)
     for booking in query.yield_per(1000):
-        writer.writerow(
-            (
-                booking.venueName,
-                booking.offerName,
-                convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking),
-                booking.ean,
-                f"{booking.beneficiaryLastName} {booking.beneficiaryFirstName}",
-                booking.beneficiaryEmail,
-                booking.beneficiaryPhoneNumber,
-                convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking),
-                convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking),
-                booking_recap_utils.get_booking_token(
-                    booking.token,
-                    booking.status,
-                    bool(booking.isExternal),
-                    booking.stockBeginningDatetime,
-                ),
-                booking.priceCategoryLabel or "",
-                booking.amount,
-                _get_booking_status(booking.status, bool(booking.isConfirmed)),
-                convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking),
-                serialize_offer_type_educational_or_individual(offer_is_educational=False),
-                booking.beneficiaryPostalCode or "",
-                "Oui" if booking.quantity == constants.DUO_QUANTITY else "Non",
-            )
-        )
+        booking_duo_column = "Oui" if booking.quantity == constants.DUO_QUANTITY else "Non"
+        _write_csv_row(writer, booking, booking_duo_column)
 
     return output.getvalue()
 
