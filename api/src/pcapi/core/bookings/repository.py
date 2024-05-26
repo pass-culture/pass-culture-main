@@ -102,6 +102,7 @@ def _get_filtered_bookings_query(
     event_date: date | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
+    duplicate_duo: bool = False,
     count_bookings: bool = False,
 ) -> BaseQuery:
     bookings_query = (
@@ -143,10 +144,15 @@ def _get_filtered_bookings_query(
     bookings_query = bookings_query.with_entities(*_get_bookings_export_entities(count_bookings=count_bookings))
     bookings_query = bookings_query.distinct(Booking.id)
 
+    if duplicate_duo:
+        bookings_query = bookings_query.union_all(bookings_query.filter(Booking.quantity == constants.DUO_QUANTITY))
+
     if count_bookings:
-        # We really want total quantities here (and not the number of bookings),
-        # since we'll build two rows for each "duo" bookings later.
-        bookings_query = bookings_query.with_entities(sa.func.coalesce(sa.func.sum(Booking.quantity), 0))
+        if duplicate_duo:
+            quantity = sa.func.count(sa.column("id"))
+        else:
+            quantity = sa.func.sum(Booking.quantity)
+        bookings_query = bookings_query.with_entities(sa.func.coalesce(quantity, 0))
 
     return bookings_query
 
@@ -298,10 +304,6 @@ def export_bookings_by_offer_id(
     return _write_bookings_to_csv(query)
 
 
-def _duplicate_booking_when_quantity_is_two(bookings_recap_query: BaseQuery) -> BaseQuery:
-    return bookings_recap_query.union_all(bookings_recap_query.filter(Booking.quantity == constants.DUO_QUANTITY))
-
-
 def get_export(
     user: User,
     booking_period: tuple[date, date] | None = None,
@@ -318,8 +320,8 @@ def get_export(
         event_date=event_date,
         venue_id=venue_id,
         offer_id=offer_id,
+        duplicate_duo=True,
     )
-    bookings_query = _duplicate_booking_when_quantity_is_two(bookings_query)
     if export_type == BookingExportType.EXCEL:
         return _write_bookings_to_excel(bookings_query, duplicate_duo=False)
     return _write_bookings_to_csv(bookings_query, duplicate_duo=False)
@@ -353,8 +355,8 @@ def find_by_pro_user(
         event_date=event_date,
         venue_id=venue_id,
         offer_id=offer_id,
+        duplicate_duo=True,
     )
-    bookings_query = _duplicate_booking_when_quantity_is_two(bookings_query)
     bookings_query = (
         bookings_query.order_by(sa.text('"bookedAt" DESC')).offset((page - 1) * per_page_limit).limit(per_page_limit)
     )
