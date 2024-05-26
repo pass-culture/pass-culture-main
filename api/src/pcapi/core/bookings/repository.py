@@ -96,7 +96,7 @@ def _get_bookings_export_entities(count_bookings: bool = False) -> list:
 
 
 def _get_filtered_bookings_query(
-    pro_user: User,
+    pro_user: User | None = None,
     booking_period: tuple[date, date] | None = None,
     status_filter: BookingStatusFilter | None = None,
     event_date: date | None = None,
@@ -106,18 +106,24 @@ def _get_filtered_bookings_query(
     count_bookings: bool = False,
     offset: int | None = None,
     limit: int | None = None,
+    isouter: bool = True,
+    validated: bool = False,
+    ordered: bool = False,
 ) -> BaseQuery:
+    if pro_user is None and offer_id is None:
+        raise ValueError("Missing either pro_user or offer_id")
+
     bookings_query = (
         Booking.query.join(Booking.offerer)
         .join(Offerer.UserOfferers)
         .join(Booking.stock)
-        .join(Booking.venue, isouter=True)
+        .join(Booking.venue, isouter=isouter)
     )
     if not count_bookings:
-        bookings_query = bookings_query.join(Stock.offer, isouter=True)
-        bookings_query = bookings_query.join(Booking.user, isouter=True)
+        bookings_query = bookings_query.join(Stock.offer, isouter=isouter)
+        bookings_query = bookings_query.join(Booking.user, isouter=isouter)
 
-    if not pro_user.has_admin_role:
+    if pro_user is not None and not pro_user.has_admin_role:
         bookings_query = bookings_query.filter(UserOfferer.user == pro_user)
 
     bookings_query = bookings_query.filter(UserOfferer.isValidated)
@@ -142,6 +148,17 @@ def _get_filtered_bookings_query(
     if event_date:
         bookings_query = bookings_query.filter(field_to_venue_timezone(Stock.beginningDatetime) == event_date)
 
+    if validated:
+        bookings_query = bookings_query.filter(
+            sa.or_(
+                sa.and_(Booking.isConfirmed, Booking.status != BookingStatus.CANCELLED),  # type: ignore[type-var]
+                Booking.status == BookingStatus.USED,
+            )
+        )
+
+    if ordered:
+        bookings_query = bookings_query.order_by(Booking.id)
+
     bookings_query = bookings_query.with_entities(*_get_bookings_export_entities(count_bookings=count_bookings))
     bookings_query = bookings_query.distinct(Booking.id)
 
@@ -165,27 +182,14 @@ def _get_filtered_bookings_query(
     return bookings_query
 
 
-def _create_export_query(offer_id: int, event_beginning_date: date, validated: bool = False) -> BaseQuery:
-    query = (
-        Booking.query.join(Booking.offerer)
-        .join(Booking.user)
-        .join(Offerer.UserOfferers)
-        .join(Booking.venue)
-        .join(Booking.stock)
-        .join(Stock.offer)
-        .filter(Stock.offerId == offer_id, field_to_venue_timezone(Stock.beginningDatetime) == event_beginning_date)
-        .order_by(Booking.id)
-        .with_entities(*_get_bookings_export_entities())
-        .distinct(Booking.id)
+def _create_export_query(offer_id: int, event_date: date, validated: bool = False) -> BaseQuery:
+    return _get_filtered_bookings_query(
+        event_date=event_date,
+        offer_id=offer_id,
+        isouter=False,
+        validated=validated,
+        ordered=True,
     )
-    if validated:
-        query = query.filter(
-            sa.or_(
-                sa.and_(Booking.isConfirmed, Booking.status != BookingStatus.CANCELLED),  # type: ignore[type-var]
-                Booking.status == BookingStatus.USED,
-            )
-        )
-    return query
 
 
 def _get_booking_status(status: BookingStatus | str, is_confirmed: bool) -> str:
