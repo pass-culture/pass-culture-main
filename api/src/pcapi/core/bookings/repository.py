@@ -106,22 +106,19 @@ def _get_filtered_bookings_query(
     count_bookings: bool = False,
     offset: int | None = None,
     limit: int | None = None,
-    isouter: bool = True,
     validated: bool = False,
     ordered: bool = False,
 ) -> BaseQuery:
     if pro_user is None and offer_id is None:
         raise ValueError("Missing either pro_user or offer_id")
 
-    query = (
-        Booking.query.join(Booking.offerer)
-        .join(Offerer.UserOfferers)
-        .join(Booking.stock)
-        .join(Booking.venue, isouter=isouter)
-    )
+    query = Booking.query.join(Booking.offerer)
+    query = query.join(Offerer.UserOfferers)
+    query = query.join(Booking.stock)
+    query = query.join(Booking.venue)
     if not count_bookings:
-        query = query.join(Stock.offer, isouter=isouter)
-        query = query.join(Booking.user, isouter=isouter)
+        query = query.join(Stock.offer)
+        query = query.join(Booking.user)
 
     if pro_user is not None and not pro_user.has_admin_role:
         query = query.filter(UserOfferer.user == pro_user)
@@ -298,7 +295,6 @@ def export_bookings_by_offer_id(
     query = _get_filtered_bookings_query(
         event_date=event_date,
         offer_id=offer_id,
-        isouter=False,
         validated=validated,
         ordered=True,
     )
