@@ -9,13 +9,12 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingExportType
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import BookingStatusFilter
-from pcapi.core.bookings.utils import _apply_departement_timezone
-from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezone
 from pcapi.domain.booking_recap.utils import get_booking_token
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import isoformat
+from pcapi.utils.date import utc_to_local_datetime
 
 
 class OfferType(Enum):
@@ -100,11 +99,12 @@ def _serialize_booking_status_info(
 def serialize_booking_status_history(
     booking: Booking,
 ) -> list[BookingRecapResponseBookingStatusHistoryModel]:
+    timezone = booking.venueTimezone
 
     serialized_booking_status_history = [
         _serialize_booking_status_info(
             BookingRecapStatus.booked,
-            typing.cast(datetime, convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking)),
+            typing.cast(datetime, utc_to_local_datetime(booking.bookedAt, timezone)),
         )
     ]
 
@@ -112,7 +112,7 @@ def serialize_booking_status_history(
         serialized_booking_status_history.append(
             _serialize_booking_status_info(
                 BookingRecapStatus.validated,
-                typing.cast(datetime, convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking)),
+                typing.cast(datetime, utc_to_local_datetime(booking.usedAt, timezone)),
             )
         )
 
@@ -120,23 +120,22 @@ def serialize_booking_status_history(
         serialized_booking_status_history.append(
             _serialize_booking_status_info(
                 BookingRecapStatus.cancelled,
-                typing.cast(
-                    datetime, convert_booking_dates_utc_to_venue_timezone(booking.cancelledAt, booking=booking)
-                ),
+                typing.cast(datetime, utc_to_local_datetime(booking.cancelledAt, timezone)),
             )
         )
     if booking.reimbursedAt:
         serialized_booking_status_history.append(
             _serialize_booking_status_info(
                 BookingRecapStatus.reimbursed,
-                typing.cast(datetime, convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking)),
+                typing.cast(datetime, utc_to_local_datetime(booking.reimbursedAt, timezone)),
             )
         )
     return serialized_booking_status_history
 
 
 def serialize_bookings(booking: Booking) -> BookingRecapResponseModel:
-    stock_beginning_datetime = _apply_departement_timezone(booking.stockBeginningDatetime, booking.venueDepartmentCode)
+    timezone = booking.venueTimezone
+    stock_beginning_datetime = utc_to_local_datetime(booking.stockBeginningDatetime, timezone)
     serialized_booking_recap = BookingRecapResponseModel(  # type: ignore[call-arg]
         stock={  # type: ignore[arg-type]
             "stockIdentifier": booking.stockId,
@@ -156,11 +155,9 @@ def serialize_bookings(booking: Booking) -> BookingRecapResponseModel:
             booking.bookingToken,
             booking.status,
             bool(booking.isExternal),
-            _apply_departement_timezone(booking.stockBeginningDatetime, booking.venueDepartmentCode),
+            utc_to_local_datetime(booking.stockBeginningDatetime, timezone),
         ),
-        bookingDate=isoformat(
-            typing.cast(datetime, convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking))
-        ),
+        bookingDate=isoformat(typing.cast(datetime, utc_to_local_datetime(booking.bookedAt, timezone))),
         bookingStatus=build_booking_status(booking),
         bookingIsDuo=booking.quantity == 2,
         bookingAmount=booking.bookingAmount,

@@ -10,8 +10,6 @@ from flask_sqlalchemy import BaseQuery
 from pydantic.v1 import root_validator
 import xlsxwriter
 
-from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezone
-from pcapi.core.bookings.utils import convert_real_booking_dates_utc_to_venue_timezone
 from pcapi.core.educational import models
 from pcapi.core.educational import repository
 from pcapi.core.finance.models import BankAccountApplicationStatus
@@ -22,6 +20,7 @@ from pcapi.routes.serialization.educational_institutions import EducationalInsti
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.date import isoformat
+from pcapi.utils.date import utc_to_local_datetime
 
 
 class CollectiveBookingRecapStatus(Enum):
@@ -214,34 +213,27 @@ def _serialize_collective_booking_status_info(
 def serialize_collective_booking_stock(
     collective_booking: models.CollectiveBooking,
 ) -> CollectiveBookingCollectiveStockResponseModel:
+    timezone = collective_booking.venue.timezone
     return CollectiveBookingCollectiveStockResponseModel(  # type: ignore[call-arg]
         offerName=collective_booking.collectiveStock.collectiveOffer.name,
         offerId=collective_booking.collectiveStock.collectiveOfferId,
         eventBeginningDatetime=typing.cast(
             datetime,
-            convert_real_booking_dates_utc_to_venue_timezone(
-                collective_booking.collectiveStock.beginningDatetime, collective_booking
-            ),
+            utc_to_local_datetime(collective_booking.collectiveStock.beginningDatetime, timezone),
         ).isoformat(),
         eventStartDatetime=typing.cast(
             datetime,
-            convert_real_booking_dates_utc_to_venue_timezone(
-                collective_booking.collectiveStock.startDatetime, collective_booking
-            ),
+            utc_to_local_datetime(collective_booking.collectiveStock.startDatetime, timezone),
         ).isoformat(),
         eventEndDatetime=typing.cast(
             datetime,
-            convert_real_booking_dates_utc_to_venue_timezone(
-                collective_booking.collectiveStock.endDatetime, collective_booking
-            ),
+            utc_to_local_datetime(collective_booking.collectiveStock.endDatetime, timezone),
         ).isoformat(),
         offerIsEducational=True,
         numberOfTickets=collective_booking.collectiveStock.numberOfTickets,
         bookingLimitDatetime=typing.cast(
             datetime,
-            convert_real_booking_dates_utc_to_venue_timezone(
-                collective_booking.collectiveStock.bookingLimitDatetime, collective_booking
-            ),
+            utc_to_local_datetime(collective_booking.collectiveStock.bookingLimitDatetime, timezone),
         ).isoformat(),
     )
 
@@ -277,35 +269,30 @@ def _serialize_collective_booking_recap_status(
 
 
 def serialize_collective_booking(collective_booking: models.CollectiveBooking) -> CollectiveBookingResponseModel:
+    timezone = collective_booking.venue.timezone
     return CollectiveBookingResponseModel(  # type: ignore[call-arg]
         stock=serialize_collective_booking_stock(collective_booking),
         institution=serialize_collective_booking_institution(collective_booking),
         bookingId=collective_booking.id,
         bookingDate=typing.cast(
             datetime,
-            convert_real_booking_dates_utc_to_venue_timezone(collective_booking.dateCreated, collective_booking),
+            utc_to_local_datetime(collective_booking.dateCreated, timezone),
         ).isoformat(),
         bookingCancellationLimitDate=typing.cast(
             datetime,
-            convert_real_booking_dates_utc_to_venue_timezone(
-                collective_booking.cancellationLimitDate, collective_booking
-            ),
+            utc_to_local_datetime(collective_booking.cancellationLimitDate, timezone),
         ).isoformat(),
         bookingConfirmationDate=(
             typing.cast(
                 datetime,
-                convert_real_booking_dates_utc_to_venue_timezone(
-                    collective_booking.confirmationDate, collective_booking
-                ),
+                utc_to_local_datetime(collective_booking.confirmationDate, timezone),
             ).isoformat()
             if collective_booking.confirmationDate
             else ""
         ),
         bookingConfirmationLimitDate=typing.cast(
             datetime,
-            convert_real_booking_dates_utc_to_venue_timezone(
-                collective_booking.confirmationLimitDate, collective_booking
-            ),
+            utc_to_local_datetime(collective_booking.confirmationLimitDate, timezone),
         ).isoformat(),
         bookingStatus=_serialize_collective_booking_recap_status(collective_booking).value,
         bookingAmount=collective_booking.collectiveStock.price,
@@ -313,21 +300,13 @@ def serialize_collective_booking(collective_booking: models.CollectiveBooking) -
             booking_status=collective_booking.status,
             booking_date=typing.cast(
                 datetime,
-                convert_real_booking_dates_utc_to_venue_timezone(collective_booking.dateCreated, collective_booking),
+                utc_to_local_datetime(collective_booking.dateCreated, timezone),
             ),
-            cancellation_date=convert_real_booking_dates_utc_to_venue_timezone(
-                collective_booking.cancellationDate, collective_booking
-            ),
-            cancellation_limit_date=convert_real_booking_dates_utc_to_venue_timezone(
-                collective_booking.cancellationLimitDate, collective_booking
-            ),
-            payment_date=convert_real_booking_dates_utc_to_venue_timezone(
-                collective_booking.reimbursementDate, collective_booking
-            ),
-            date_used=convert_real_booking_dates_utc_to_venue_timezone(collective_booking.dateUsed, collective_booking),
-            confirmation_date=convert_real_booking_dates_utc_to_venue_timezone(
-                collective_booking.confirmationDate, collective_booking
-            ),
+            cancellation_date=utc_to_local_datetime(collective_booking.cancellationDate, timezone),
+            cancellation_limit_date=utc_to_local_datetime(collective_booking.cancellationLimitDate, timezone),
+            payment_date=utc_to_local_datetime(collective_booking.reimbursementDate, timezone),
+            date_used=utc_to_local_datetime(collective_booking.dateUsed, timezone),
+            confirmation_date=utc_to_local_datetime(collective_booking.confirmationDate, timezone),
             is_confirmed=collective_booking.isConfirmed,
         ),
         bookingCancellationReason=collective_booking.cancellationReason,
@@ -355,20 +334,19 @@ def serialize_collective_booking_csv_report(query: BaseQuery) -> str:
     writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
     writer.writerow(COLLECTIVE_BOOKING_EXPORT_HEADER)
     for collective_booking in query.yield_per(1000):
+        timezone = collective_booking.venueTimezone
         writer.writerow(
             (
                 collective_booking.venueName,
                 collective_booking.offerName,
-                convert_booking_dates_utc_to_venue_timezone(
-                    collective_booking.stockBeginningDatetime, collective_booking
-                ),
+                utc_to_local_datetime(collective_booking.stockBeginningDatetime, timezone),
                 f"{collective_booking.lastName} {collective_booking.firstName}",
                 collective_booking.email,
-                convert_booking_dates_utc_to_venue_timezone(collective_booking.bookedAt, collective_booking),
-                convert_booking_dates_utc_to_venue_timezone(collective_booking.usedAt, collective_booking),
+                utc_to_local_datetime(collective_booking.bookedAt, timezone),
+                utc_to_local_datetime(collective_booking.usedAt, timezone),
                 collective_booking.price,
                 _get_booking_status(collective_booking.status, collective_booking.isConfirmed),
-                convert_booking_dates_utc_to_venue_timezone(collective_booking.reimbursedAt, collective_booking),
+                utc_to_local_datetime(collective_booking.reimbursedAt, timezone),
                 collective_booking.institutionId,
                 f"{collective_booking.institutionType} {collective_booking.institutionName}",
             )
@@ -393,32 +371,21 @@ def serialize_collective_booking_excel_report(query: BaseQuery) -> bytes:
         worksheet.set_column(col_num, col_num, col_width)
     row = 1
     for collective_booking in query.yield_per(1000):
+        timezone = collective_booking.venueTimezone
         worksheet.write(row, 0, collective_booking.venueName)
         worksheet.write(row, 1, collective_booking.offerName)
         worksheet.write(
             row,
             2,
-            str(
-                convert_booking_dates_utc_to_venue_timezone(
-                    collective_booking.stockBeginningDatetime, collective_booking
-                )
-            ),
+            str(utc_to_local_datetime(collective_booking.stockBeginningDatetime, timezone)),
         )
         worksheet.write(row, 3, f"{collective_booking.lastName} {collective_booking.firstName}")
         worksheet.write(row, 4, collective_booking.email)
-        worksheet.write(
-            row, 5, str(convert_booking_dates_utc_to_venue_timezone(collective_booking.bookedAt, collective_booking))
-        )
-        worksheet.write(
-            row, 6, str(convert_booking_dates_utc_to_venue_timezone(collective_booking.usedAt, collective_booking))
-        )
+        worksheet.write(row, 5, str(utc_to_local_datetime(collective_booking.bookedAt, timezone)))
+        worksheet.write(row, 6, str(utc_to_local_datetime(collective_booking.usedAt, timezone)))
         worksheet.write(row, 7, collective_booking.price, currency_format)
         worksheet.write(row, 8, _get_booking_status(collective_booking.status, collective_booking.isConfirmed))
-        worksheet.write(
-            row,
-            9,
-            str(convert_booking_dates_utc_to_venue_timezone(collective_booking.reimbursedAt, collective_booking)),
-        )
+        worksheet.write(row, 9, str(utc_to_local_datetime(collective_booking.reimbursedAt, timezone)))
         worksheet.write(row, 10, collective_booking.institutionId, currency_format)
         worksheet.write(row, 11, f"{collective_booking.institutionType} {collective_booking.institutionName}")
 

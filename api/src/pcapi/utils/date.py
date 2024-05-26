@@ -96,11 +96,18 @@ def get_department_timezone(departement_code: str | None) -> str:
     )
 
 
-def utc_datetime_to_department_timezone(date_time: datetime, departement_code: str | None) -> datetime:
+def utc_to_local_datetime(date_time: datetime | None, timezone: str) -> datetime | None:
+    if date_time is None:
+        return None
     from_zone = ZoneInfo(DEFAULT_STORED_TIMEZONE)
-    to_zone = ZoneInfo(get_department_timezone(departement_code))
+    to_zone = ZoneInfo(timezone)
     utc_datetime = date_time.replace(tzinfo=from_zone)
     return utc_datetime.astimezone(to_zone)
+
+
+def utc_datetime_to_department_timezone(date_time: datetime, departement_code: str | None) -> datetime:
+    timezone = get_department_timezone(departement_code)
+    return utc_to_local_datetime(date_time, timezone)  # type: ignore[return-value]
 
 
 def format_into_utc_date(date_to_format: datetime) -> str:
