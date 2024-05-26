@@ -358,7 +358,7 @@ def _write_excel_row(
         worksheet.write(row, i, column["value"], *write_args)
 
 
-def _write_bookings_to_excel(query: BaseQuery) -> bytes:
+def _write_bookings_to_excel(query: BaseQuery, duplicate_duo: bool = True) -> bytes:
     output = BytesIO()
     workbook = xlsxwriter.Workbook(output)
 
@@ -367,8 +367,8 @@ def _write_bookings_to_excel(query: BaseQuery) -> bytes:
     col_width = 18
 
     worksheet = workbook.add_worksheet()
-    row = 0
 
+    row = 0
     for col_num, title in enumerate(constants.BOOKING_EXPORT_HEADERS):
         worksheet.write(row, col_num, title, bold)
         worksheet.set_column(col_num, col_num, col_width)
@@ -376,34 +376,14 @@ def _write_bookings_to_excel(query: BaseQuery) -> bytes:
     row = 1
     for booking in query.yield_per(1000):
         if booking.quantity == constants.DUO_QUANTITY:
-            _write_excel_row(worksheet, row, booking, currency_format, "DUO 1")
-            row += 1
-            _write_excel_row(worksheet, row, booking, currency_format, "DUO 2")
+            if duplicate_duo:
+                _write_excel_row(worksheet, row, booking, currency_format, "DUO 1")
+                row += 1
+                _write_excel_row(worksheet, row, booking, currency_format, "DUO 2")
+            else:
+                _write_excel_row(worksheet, row, booking, currency_format, "Oui")
         else:
             _write_excel_row(worksheet, row, booking, currency_format, "Non")
-        row += 1
-    workbook.close()
-    return output.getvalue()
-
-
-def _serialize_excel_report(query: BaseQuery) -> bytes:
-    output = BytesIO()
-    workbook = xlsxwriter.Workbook(output)
-
-    bold = workbook.add_format({"bold": 1})
-    currency_format = workbook.add_format({"num_format": "###0.00[$€-fr-FR]"})
-    col_width = 18
-
-    worksheet = workbook.add_worksheet()
-    row = 0
-
-    for col_num, title in enumerate(constants.BOOKING_EXPORT_HEADERS):
-        worksheet.write(row, col_num, title, bold)
-        worksheet.set_column(col_num, col_num, col_width)
-    row = 1
-    for booking in query.yield_per(1000):
-        duo_column = "Oui" if booking.quantity == constants.DUO_QUANTITY else "Non"
-        _write_excel_row(worksheet, row, booking, currency_format, duo_column)
         row += 1
 
     workbook.close()
@@ -457,7 +437,7 @@ def get_export(
     )
     bookings_query = _duplicate_booking_when_quantity_is_two(bookings_query)
     if export_type == BookingExportType.EXCEL:
-        return _serialize_excel_report(bookings_query)
+        return _write_bookings_to_excel(bookings_query, duplicate_duo=False)
     return _write_bookings_to_csv(bookings_query, duplicate_duo=False)
 
 
