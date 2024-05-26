@@ -774,8 +774,7 @@ def get_filtered_collective_booking_report(
     )
     bookings_query = bookings_query.with_entities(
         offerers_models.Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
-        offerers_models.Venue.departementCode.label("venueDepartmentCode"),
-        offerers_models.Offerer.postalCode.label("offererPostalCode"),
+        offerers_models.Venue.timezone.label("venueTimezone"),
         educational_models.CollectiveOffer.name.label("offerName"),
         educational_models.CollectiveStock.price,
         educational_models.CollectiveStock.beginningDatetime.label("stockBeginningDatetime"),

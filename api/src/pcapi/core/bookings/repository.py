@@ -22,7 +22,6 @@ from pcapi.core.bookings.models import BookingExportType
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import BookingStatusFilter
 from pcapi.core.bookings.models import ExternalBooking
-from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezone
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers.models import Offerer
@@ -35,6 +34,7 @@ from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users.models import User
 from pcapi.domain.booking_recap import utils as booking_recap_utils
 from pcapi.models import db
+from pcapi.utils.date import utc_to_local_datetime
 from pcapi.utils.token import random_token
 
 
@@ -79,8 +79,7 @@ def _get_bookings_export_entities(count_bookings: bool = False) -> list:
             Booking.isConfirmed.label("isConfirmed"),  # type: ignore[attr-defined]
             Booking.stockId.label("stockId"),
             Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
-            Venue.departementCode.label("venueDepartmentCode"),
-            Offerer.postalCode.label("offererPostalCode"),
+            Venue.timezone.label("venueTimezone"),
             Stock.beginningDatetime.label("stockBeginningDatetime"),
             Offer.id.label("offerId"),
             Offer.name.label("offerName"),
@@ -121,8 +120,7 @@ def _get_filtered_bookings_query(
     if pro_user is None and offer_id is None:
         raise ValueError("Missing either pro_user or offer_id")
 
-    query = Booking.query.join(Booking.offerer)
-    query = query.join(Booking.stock)
+    query = Booking.query.join(Booking.stock)
     query = query.join(Booking.venue)
     if not count_bookings:
         query = query.join(Stock.offer)
@@ -195,12 +193,13 @@ def _build_export_columns(booking: Booking, duo_column: str, is_csv: bool) -> li
         bool(booking.isExternal),
         booking.stockBeginningDatetime,
     )
+    timezone = booking.venueTimezone
     price_category_label = booking.priceCategoryLabel
     beneficiary_postal_code = booking.beneficiaryPostalCode
-    stock_beginning_datetime = convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking)
-    booked_at = convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking)
-    used_at = convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking)
-    reimbursed_at = convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking)
+    stock_beginning_datetime = utc_to_local_datetime(booking.stockBeginningDatetime, timezone)
+    booked_at = utc_to_local_datetime(booking.bookedAt, timezone)
+    used_at = utc_to_local_datetime(booking.usedAt, timezone)
+    reimbursed_at = utc_to_local_datetime(booking.reimbursedAt, timezone)
     if is_csv:
         price_category_label = price_category_label or ""
         beneficiary_postal_code = beneficiary_postal_code or ""

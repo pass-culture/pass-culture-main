@@ -18,7 +18,6 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import BookingStatusFilter
 import pcapi.core.bookings.repository as booking_repository
 from pcapi.core.bookings.repository import get_bookings_from_deposit
-from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezone
 from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Venue
@@ -29,6 +28,7 @@ from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import User
 from pcapi.domain.booking_recap import utils as booking_recap_utils
+from pcapi.utils.date import utc_to_local_datetime
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -753,9 +753,8 @@ class GetOfferBookingsByStatusCSVTest:
     ):
         assert data_dict["Lieu"] == venue.name
         assert data_dict["Nom de l’offre"] == offer.name
-        booking.venueDepartmentCode = booking.venue.departementCode
         assert data_dict["Date de l'évènement"] == str(
-            convert_booking_dates_utc_to_venue_timezone(booking.stock.beginningDatetime, booking)
+            utc_to_local_datetime(booking.stock.beginningDatetime, venue.timezone)
         )
         assert data_dict["EAN"] == ((offer.extraData or {}).get("ean") or "")
         assert data_dict["Nom et prénom du bénéficiaire"] == " ".join((beneficiary.lastName, beneficiary.firstName))
@@ -1177,9 +1176,8 @@ class GetOfferBookingsByStatusExcelTest:
         # Nom de l’offre
         assert sheet.cell(row=row, column=2).value == offer.name
         # Date de l'évènement
-        booking.venueDepartmentCode = booking.venue.departementCode
         assert sheet.cell(row=row, column=3).value == str(
-            convert_booking_dates_utc_to_venue_timezone(booking.stock.beginningDatetime, booking)
+            utc_to_local_datetime(booking.stock.beginningDatetime, venue.timezone)
         )
         # EAN
         assert sheet.cell(row=row, column=4).value == ((offer.extraData or {}).get("ean") or None)
