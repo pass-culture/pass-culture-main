@@ -75,16 +75,13 @@ def _get_bookings_export_entities(count_bookings: bool = False) -> list:
             Booking.dateUsed.label("usedAt"),
             Booking.reimbursementDate.label("reimbursedAt"),
             Booking.cancellationDate.label("cancelledAt"),
-            Booking.cancellationLimitDate,
             Booking.isExternal.label("isExternal"),  # type: ignore[attr-defined]
             Booking.isConfirmed,
             Booking.stockId,
-            Booking.userId,
             Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
             Venue.departementCode.label("venueDepartmentCode"),
             Offerer.postalCode.label("offererPostalCode"),
             Stock.beginningDatetime.label("stockBeginningDatetime"),
-            Stock.offerId,
             Offer.id.label("offerId"),
             Offer.name.label("offerName"),
             Offer.extraData["ean"].label("offerEan"),
