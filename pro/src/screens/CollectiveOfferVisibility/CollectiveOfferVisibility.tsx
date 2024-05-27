@@ -1,6 +1,7 @@
 import { FormikProvider, useFormik } from 'formik'
 import React, { useEffect, useMemo, useState } from 'react'
 
+import { api } from 'apiClient/api'
 import {
   EducationalInstitutionResponseModel,
   EducationalRedactor,
@@ -20,6 +21,7 @@ import {
   extractInitialVisibilityValues,
   formatInstitutionDisplayName,
 } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import { SelectOption } from 'custom_types/form'
 import useNotification from 'hooks/useNotification'
 import strokeSearch from 'icons/stroke-search.svg'
@@ -36,7 +38,6 @@ import {
   SelectOptionNormalized,
 } from 'utils/searchPatternInOptions'
 
-import { getEducationalRedactorsAdapter } from './adapters/getEducationalRedactorAdapter'
 import styles from './CollectiveOfferVisibility.module.scss'
 import validationSchema from './validationSchema'
 
@@ -204,11 +205,12 @@ export const CollectiveOfferVisibilityScreen = ({
       setTeachersOptions([])
       return
     }
-    const { payload } = await getEducationalRedactorsAdapter({
-      uai: selectedInstitution.institutionId,
-      candidate: searchTeacherValue,
-    })
-    payload &&
+
+    try {
+      const payload = await api.getAutocompleteEducationalRedactorsForUai(
+        selectedInstitution.institutionId,
+        searchTeacherValue
+      )
       setTeachersOptions(
         payload.map(
           ({
@@ -226,6 +228,9 @@ export const CollectiveOfferVisibilityScreen = ({
           })
         )
       )
+    } catch (e) {
+      notify.error(GET_DATA_ERROR_MESSAGE)
+    }
   }
 
   return (
