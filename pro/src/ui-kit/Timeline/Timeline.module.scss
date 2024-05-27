@@ -8,6 +8,7 @@ $time-line-width: rem.torem(2px);
 
 .container {
   display: flex;
+  gap: $margin-between-steps;
   flex-direction: column;
 
   // TODO This kind of reset should be in a global reset file
@@ -59,7 +60,6 @@ $time-line-width: rem.torem(2px);
 
 .step {
   position: relative;
-  margin-bottom: $margin-between-steps;
   margin-left: calc(
     #{$icon-size} / 2 + #{$margin-between-content-and-time-line}
   );

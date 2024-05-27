@@ -102,8 +102,8 @@ export const IndividualBookingsTable = ({
               <th
                 scope="col"
                 className={cn(
-                  styles['table-header'],
-                  styles['column-offer-name']
+                  styles['column-offer-name'],
+                  styles['table-header-cell']
                 )}
               >
                 <span>Nom de l’offre</span>
@@ -126,16 +126,16 @@ export const IndividualBookingsTable = ({
               <th
                 scope="col"
                 className={cn(
-                  styles['table-header'],
-                  styles['column-booking-duo']
+                  styles['column-booking-duo'],
+                  styles['table-header-cell']
                 )}
               />
 
               <th
                 scope="col"
                 className={cn(
-                  styles['table-header'],
-                  styles['column-beneficiary']
+                  styles['column-beneficiary'],
+                  styles['table-header-cell']
                 )}
               >
                 <span>Bénéficiaire</span>
@@ -158,8 +158,8 @@ export const IndividualBookingsTable = ({
               <th
                 scope="col"
                 className={cn(
-                  styles['table-header'],
-                  styles['column-booking-date']
+                  styles['column-booking-date'],
+                  styles['table-header-cell']
                 )}
               >
                 <span>Réservation</span>
@@ -182,8 +182,8 @@ export const IndividualBookingsTable = ({
               <th
                 scope="col"
                 className={cn(
-                  styles['table-header'],
-                  styles['column-booking-token']
+                  styles['column-booking-token'],
+                  styles['table-header-cell']
                 )}
               >
                 Contremarque
@@ -192,8 +192,8 @@ export const IndividualBookingsTable = ({
               <th
                 scope="col"
                 className={cn(
-                  styles['table-header'],
-                  styles['column-booking-status']
+                  styles['column-booking-status'],
+                  styles['table-header-cell']
                 )}
               >
                 <FilterByBookingStatus
