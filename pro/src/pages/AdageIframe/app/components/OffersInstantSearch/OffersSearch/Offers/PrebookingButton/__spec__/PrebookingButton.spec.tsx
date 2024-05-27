@@ -69,6 +69,7 @@ describe('offer item', () => {
 
     expect(screen.getByText('Préréserver l’offre')).toBeInTheDocument()
   })
+
   it('should display modal on click', async () => {
     renderPrebookingButton({ ...props })
 
@@ -83,15 +84,13 @@ describe('offer item', () => {
   })
 
   it('should display error message if uai does not match', async () => {
-    // Given
     renderPrebookingButton({ ...props })
-    // When
+
     const preBookButton = screen.getByRole('button', {
       name: 'Préréserver l’offre',
     })
     await userEvent.click(preBookButton)
 
-    // Then
     expect(
       screen.getByText('Êtes-vous sûr de vouloir préréserver ?')
     ).toBeInTheDocument()
@@ -113,15 +112,14 @@ describe('offer item', () => {
     vi.spyOn(apiAdage, 'bookCollectiveOffer').mockResolvedValue({
       bookingId: 123,
     })
-    // Given
+
     renderPrebookingButton({ ...props })
-    // When
+
     const preBookButton = screen.getByRole('button', {
       name: 'Préréserver l’offre',
     })
     await userEvent.click(preBookButton)
 
-    // Then
     expect(
       screen.getByText('Êtes-vous sûr de vouloir préréserver ?')
     ).toBeInTheDocument()
