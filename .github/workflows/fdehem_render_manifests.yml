@@ -44,12 +44,6 @@ jobs:
           echo "PCAPI_SECRETS=$PCAPI_SECRETS" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v4.1.5
         with:
-          ref: PC-28876-enable-iap-on-backoffice
-          repository: pass-culture/pc-helm-chart
-          token: ${{ steps.get-github-token.outputs.API_TOKEN_GITHUB }}
-          path: ./pc-helm-chart
-      - uses: actions/checkout@v4.1.5
-        with:
           ref: dimitri/backoffice-iap
           repository: pass-culture/pass-culture-deployment
           token: ${{ steps.get-github-token.outputs.API_TOKEN_GITHUB }}
