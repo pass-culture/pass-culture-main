@@ -30,11 +30,10 @@ export const BankInformations = (): JSX.Element => {
 
   const [showAddBankInformationsDialog, setShowAddBankInformationsDialog] =
     useState(false)
-  const { selectedOfferer, setSelectedOfferer }: ReimbursementsContextProps =
-    useOutletContext() ?? {
-      selectedOfferer: null,
-      setSelectedOfferer: () => null,
-    }
+  const {
+    selectedOfferer = null,
+    setSelectedOfferer = () => {},
+  }: ReimbursementsContextProps = useOutletContext() || {}
 
   const [isOffererBankAccountsLoading, setIsOffererBankAccountsLoading] =
     useState<boolean>(false)
