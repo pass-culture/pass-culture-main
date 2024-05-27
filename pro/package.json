@@ -121,7 +121,7 @@
     "stylelint": "^16.3.1",
     "stylelint-a11y": "^1.2.3",
     "stylelint-config-standard-scss": "^13.1.0",
-    "ts-unused-exports": "^10.0.1",
+    "ts-unused-exports": "^10.1.0",
     "typescript": "^5.4.5",
     "vite": "^5.2.11",
     "vite-plugin-html": "^3.2.2",
