@@ -485,11 +485,7 @@ def find_expired_individual_bookings_ordered_by_offerer(expired_on: date | None 
 def get_active_bookings_quantity_for_venue(venue_id: int) -> int:
     # Stock.dnBookedQuantity cannot be used here because we exclude used/confirmed bookings.
     active_individual_bookings_quantity = (
-        Booking.query.join(
-            Stock,
-            Booking.stock,
-        )
-        .filter(
+        Booking.query.filter(
             Booking.venueId == venue_id,
             Booking.status == BookingStatus.CONFIRMED,
             sa.not_(Booking.isConfirmed),
