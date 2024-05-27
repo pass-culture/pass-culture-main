@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
+import { CollectiveOfferDisplayedStatus } from 'apiClient/v1'
 import useAnalytics from 'app/App/analytics/firebase'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
@@ -14,16 +15,16 @@ import {
 } from 'core/FirebaseEvents/constants'
 import {
   COLLECTIVE_OFFER_SUBTYPE,
-  OFFER_TYPES,
-  OFFER_WIZARD_MODE,
   COLLECTIVE_OFFER_SUBTYPE_DUPLICATE,
   DEFAULT_SEARCH_FILTERS,
+  OFFER_TYPES,
+  OFFER_WIZARD_MODE,
 } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
+import { serializeApiFilters } from 'core/Offers/utils/serializer'
 import useNotification from 'hooks/useNotification'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
 import strokeProfIcon from 'icons/stroke-prof.svg'
-import { getFilteredCollectiveOffersAdapter } from 'pages/CollectiveOffers/adapters/getFilteredCollectiveOffersAdapter'
 import { RadioButtonWithImage } from 'ui-kit/RadioButtonWithImage/RadioButtonWithImage'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
@@ -108,10 +109,33 @@ export const OfferTypeScreen = (): JSX.Element => {
         offererId: queryOffererId ? queryOffererId : 'all',
         venueId: queryVenueId ? queryVenueId : 'all',
       }
+      const {
+        nameOrIsbn,
+        offererId,
+        venueId,
+        categoryId,
+        status,
+        creationMode,
+        periodBeginningDate,
+        periodEndingDate,
+        collectiveOfferType,
+        format,
+      } = serializeApiFilters(apiFilters)
 
-      const templateOffersOnSelectedVenue =
-        await getFilteredCollectiveOffersAdapter(apiFilters)
-      if (templateOffersOnSelectedVenue.payload.offers.length === 0) {
+      const templateOffersOnSelectedVenue = await api.getCollectiveOffers(
+        nameOrIsbn,
+        offererId,
+        status as CollectiveOfferDisplayedStatus,
+        venueId,
+        categoryId,
+        creationMode,
+        periodBeginningDate,
+        periodEndingDate,
+        collectiveOfferType,
+        format
+      )
+
+      if (templateOffersOnSelectedVenue.length === 0) {
         notify.error(
           'Vous devez créer une offre vitrine avant de pouvoir utiliser cette fonctionnalité'
         )
