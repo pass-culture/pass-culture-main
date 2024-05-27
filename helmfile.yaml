@@ -29,7 +29,9 @@ repositories:
 releases:
   - name: {{ .Environment.Name }}
     namespace: {{ .Environment.Name }}
-    chart: passCulture/pass-culture-helm-registry/pcapi
+    # chart: passCulture/pass-culture-helm-registry/pcapi
+    # chart: /home/dka/workspace/github.com/pass-culture/pc-helm-charts/pcapi
+    chart: ./pc-helm-charts/pcapi
     version: {{ .Values.chartVersion }}
     values:
       - ./pass-culture-deployment/helm/pcapi/values.{{ .Environment.Name }}.yaml
