@@ -58,7 +58,7 @@ jobs:
       #     git commit -m "Update image tag by Github Actions Job : ${{ github.run_number }}"
       #     git push origin master
       - name: "Generate and push rendered manifests"
-        uses: pass-culture/common-workflows/actions/render-push-manifests@dimitri_branch_testing
+        uses: pass-culture/common-workflows/actions/render-push-manifests@dimitri_branch_testing # v1
         with:
           environment: 'testing'
           app_name: 'pcapi'
