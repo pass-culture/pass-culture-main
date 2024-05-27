@@ -48,10 +48,13 @@
 .content {
   background-color: var(--color-white);
   padding: size.$main-content-padding;
-  border-radius: rem.torem(10px);
   max-width: rem.torem(size.$main-content-width);
-  margin: rem.torem(32px);
-  border: rem.torem(1px) solid var(--color-grey-medium);
+
+  @media (min-width: size.$mobile) {
+    border: rem.torem(1px) solid var(--color-grey-medium);
+    margin: rem.torem(32px);
+    border-radius: rem.torem(10px);
+  }
 }
 
 .connect-as {
