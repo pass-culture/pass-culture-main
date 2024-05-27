@@ -343,11 +343,12 @@ def find_siren_by_offerer_id(offerer_id: int) -> str:
     raise exceptions.CannotFindOffererSiren
 
 
-def venues_have_offers(*venues: models.Venue) -> bool:
+def venues_have_offers(venue_ids: list[int]) -> bool:
     """At least one venue which has email as bookingEmail has at least one active offer"""
     return db.session.query(
         Offer.query.filter(
-            Offer.venueId.in_([venue.id for venue in venues]), Offer.status == OfferStatus.ACTIVE.name
+            Offer.venueId.in_(venue_ids),
+            Offer.status == OfferStatus.ACTIVE.name,
         ).exists()
     ).scalar()
 
