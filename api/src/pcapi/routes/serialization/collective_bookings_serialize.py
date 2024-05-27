@@ -57,11 +57,14 @@ class ListCollectiveBookingsQueryModel(BaseModel):
         booking_period_beginning_date = values.get("bookingPeriodBeginningDate")
         booking_period_ending_date = values.get("bookingPeriodEndingDate")
         if not event_date and not (booking_period_beginning_date and booking_period_ending_date):
+            # TODO: typo --> n'est pas renseignée ?
+            # TODO: typo --> missing "." ?
+            msg = "Ce champ est obligatoire si la date d'évènement n'est renseignée"
             raise ApiErrors(
                 errors={
                     "eventDate": ["Ce champ est obligatoire si aucune période n'est renseignée."],
-                    "bookingPeriodEndingDate": ["Ce champ est obligatoire si la date d'évènement n'est renseignée"],
-                    "bookingPeriodBeginningDate": ["Ce champ est obligatoire si la date d'évènement n'est renseignée"],
+                    "bookingPeriodEndingDate": [msg],
+                    "bookingPeriodBeginningDate": [msg],
                 }
             )
         return values
