@@ -73,8 +73,8 @@ export const ReimbursementsDetails = (): JSX.Element => {
   const requireBankAccountFilterForAdmin =
     currentUser.isAdmin && bankAccount === ALL_BANK_ACCOUNTS_OPTION_ID
 
-  const { selectedOfferer }: ReimbursementsContextProps =
-    useOutletContext() ?? { selectedOfferer: null }
+  const { selectedOfferer = null }: ReimbursementsContextProps =
+    useOutletContext() || {}
 
   const shouldDisableButtons =
     !isPeriodFilterSelected ||
