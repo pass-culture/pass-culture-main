@@ -46,6 +46,28 @@ def validate_venue_id(venue_id: int | str | None) -> int | None:
     return int(venue_id)  # should not be needed but it makes mypy happy
 
 
+def strip_string(s: str | None) -> str | None:
+    if not s:
+        return s
+    return s.strip()
+
+
+def empty_to_null(s: str | None) -> str | None:
+    if not s:
+        return None
+    return s
+
+
+class EmptyAsNullString(str):
+    @classmethod
+    def __get_validators__(cls) -> typing.Generator[typing.Callable, None, None]:
+        yield strip_string
+        yield empty_to_null
+
+
+EmptyStringToNone = EmptyAsNullString | None
+
+
 class ListCollectiveOffersQueryModel(BaseModel):
     nameOrIsbn: str | None
     offerer_id: int | None
@@ -101,7 +123,7 @@ class CollectiveOfferResponseModel(BaseModel):
     name: str
     stocks: list[CollectiveOffersStockResponseModel]
     booking: CollectiveOffersBookingResponseModel | None
-    subcategoryId: SubcategoryIdEnum | None
+    subcategoryId: SubcategoryIdEnum | EmptyStringToNone
     isShowcase: bool
     venue: base_serializers.ListOffersVenueResponseModel
     status: OfferStatus
@@ -294,7 +316,7 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     isEditable: bool
     id: int
     name: str
-    subcategoryId: SubcategoryIdEnum | None
+    subcategoryId: SubcategoryIdEnum | EmptyStringToNone
     venue: GetCollectiveOfferVenueResponseModel
     status: OfferStatus
     domains: list[OfferDomain]
@@ -613,7 +635,7 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     contactEmail: EmailStr | None
     contactPhone: str | None
     durationMinutes: int | None
-    subcategoryId: SubcategoryIdEnum | None
+    subcategoryId: SubcategoryIdEnum | EmptyStringToNone
     domains: list[int] | None
     interventionArea: list[str] | None
     venueId: int | None
