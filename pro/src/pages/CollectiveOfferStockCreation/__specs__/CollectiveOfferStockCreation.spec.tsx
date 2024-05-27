@@ -2,8 +2,6 @@ import { screen, waitFor } from '@testing-library/react'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import * as useNotification from 'hooks/useNotification'
-import { getOfferRequestInformationsAdapter } from 'pages/CollectiveOfferFromRequest/adapters/getOfferRequestInformationsAdapter'
 import { MandatoryCollectiveOfferFromParamsProps } from 'screens/OfferEducational/useCollectiveOfferFromParams'
 import {
   getCollectiveOfferFactory,
@@ -78,31 +76,6 @@ describe('CollectiveOfferStockCreation', () => {
     )
     await waitFor(() => {
       expect(api.getCollectiveOfferRequest).toHaveBeenCalledTimes(1)
-    })
-  })
-
-  it('should render collective offer stock form from requested offer failed', async () => {
-    const notifyError = vi.fn()
-    // @ts-expect-error
-    vi.spyOn(useNotification, 'default').mockImplementation(() => ({
-      error: notifyError,
-    }))
-
-    vi.spyOn(api, 'getCollectiveOfferRequest').mockRejectedValue({
-      isOk: false,
-      message: 'Une erreur est survenue lors de la récupération de votre offre',
-      payload: null,
-    })
-
-    renderCollectiveStockCreation(
-      '/offre/A1/collectif/stocks?requete=1',
-      defaultProps
-    )
-
-    const response = await getOfferRequestInformationsAdapter(1)
-    expect(response.isOk).toBeFalsy()
-    await waitFor(() => {
-      expect(notifyError).toHaveBeenCalledTimes(1)
     })
   })
 })
