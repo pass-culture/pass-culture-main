@@ -60,11 +60,7 @@ export const ActivityForm = ({
         render={(arrayHelpers) => (
           <FormLayout.Row>
             {values.socialUrls.map((url, index) => (
-              <FormLayout.Row
-                key={index}
-                inline
-                className={styles['input-gap']}
-              >
+              <FormLayout.Row key={index} className={styles['input-gap']}>
                 <TextInput
                   name={`socialUrls[${index}]`}
                   label="Site internet, réseau social"

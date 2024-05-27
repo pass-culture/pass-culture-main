@@ -5,6 +5,9 @@
 
 .notification-mail {
   position: relative;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: rem.torem(8px);
 
   &-input {
     width: 90%;

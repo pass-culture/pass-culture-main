@@ -23,7 +23,7 @@ const EmailInputRow = ({
   onDelete,
 }: EmailInputRowProps) => {
   return (
-    <FormLayout.Row inline className={styles['notification-mail']}>
+    <FormLayout.Row className={styles['notification-mail']}>
       <TextInput
         label={NOTIFICATIONS_EMAIL_LABEL}
         name={name}
