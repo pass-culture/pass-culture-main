@@ -124,6 +124,15 @@ def _filter_event_date(query: BaseQuery, event_date: date) -> BaseQuery:
     return _filter_start_end(query, Stock.beginningDatetime, event_date, event_date)
 
 
+def _filter_validated_bookings(query: BaseQuery) -> BaseQuery:
+    return query.filter(
+        sa.or_(
+            sa.and_(Booking.isConfirmed, Booking.status != BookingStatus.CANCELLED),  # type: ignore[type-var]
+            Booking.status == BookingStatus.USED,
+        )
+    )
+
+
 def _get_filtered_bookings_query(
     pro_user: User | None = None,
     booking_period: tuple[date, date] | None = None,
@@ -166,12 +175,7 @@ def _get_filtered_bookings_query(
         query = query.filter(Stock.offerId == offer_id)
 
     if validated:
-        query = query.filter(
-            sa.or_(
-                sa.and_(Booking.isConfirmed, Booking.status != BookingStatus.CANCELLED),  # type: ignore[type-var]
-                Booking.status == BookingStatus.USED,
-            )
-        )
+        query = _filter_validated_bookings(query)
 
     if ordered:
         query = query.order_by(Booking.id)
