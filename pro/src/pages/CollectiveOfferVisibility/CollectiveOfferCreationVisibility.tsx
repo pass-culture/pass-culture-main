@@ -23,7 +23,6 @@ import {
   withCollectiveOfferFromParams,
 } from 'screens/OfferEducational/useCollectiveOfferFromParams'
 
-import { patchEducationalInstitutionAdapter } from './adapters/patchEducationalInstitutionAdapter'
 import { getEducationalInstitutions } from './getEducationalInstitutions'
 
 export const CollectiveOfferVisibility = ({
@@ -75,7 +74,6 @@ export const CollectiveOfferVisibility = ({
       >
         <CollectiveOfferVisibilityScreen
           mode={Mode.CREATION}
-          patchInstitution={patchEducationalInstitutionAdapter}
           initialValues={initialValues}
           onSuccess={onSuccess}
           institutions={educationalInstitutionsQuery.data}

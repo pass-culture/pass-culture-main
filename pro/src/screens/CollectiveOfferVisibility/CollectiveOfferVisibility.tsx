@@ -21,12 +21,14 @@ import {
   extractInitialVisibilityValues,
   formatInstitutionDisplayName,
 } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
+import {
+  GET_DATA_ERROR_MESSAGE,
+  SENT_DATA_ERROR_MESSAGE,
+} from 'core/shared/constants'
 import { SelectOption } from 'custom_types/form'
 import useNotification from 'hooks/useNotification'
 import strokeSearch from 'icons/stroke-search.svg'
 import { getOfferRequestInformationsAdapter } from 'pages/CollectiveOfferFromRequest/adapters/getOfferRequestInformationsAdapter'
-import { PatchEducationalInstitutionAdapter } from 'pages/CollectiveOfferVisibility/adapters/patchEducationalInstitutionAdapter'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -42,7 +44,6 @@ import styles from './CollectiveOfferVisibility.module.scss'
 import validationSchema from './validationSchema'
 
 export interface CollectiveOfferVisibilityProps {
-  patchInstitution: PatchEducationalInstitutionAdapter
   mode: Mode
   initialValues: VisibilityFormValues
   onSuccess: ({
@@ -76,7 +77,6 @@ interface TeacherOption extends SelectOption {
 
 export const CollectiveOfferVisibilityScreen = ({
   mode,
-  patchInstitution,
   initialValues,
   onSuccess,
   institutions,
@@ -138,24 +138,29 @@ export const CollectiveOfferVisibilityScreen = ({
 
   const onSubmit = async (values: VisibilityFormValues) => {
     setButtonPressed(true)
-    const result = await patchInstitution({
-      offerId: offer.id,
-      institutionId: values.institution,
-      teacherEmail: selectedTeacher ? selectedTeacher.email : null,
-    })
-    if (!result.isOk) {
+
+    try {
+      const collectiveOffer =
+        await api.patchCollectiveOffersEducationalInstitution(offer.id, {
+          educationalInstitutionId: Number(values.institution),
+          teacherEmail: selectedTeacher ? selectedTeacher.email : null,
+        })
+
+      onSuccess({
+        offerId: offer.id.toString(),
+        message:
+          'Les paramètres de visibilité de votre offre ont bien été enregistrés',
+        payload: collectiveOffer,
+      })
+
+      formik.resetForm({
+        values: extractInitialVisibilityValues(collectiveOffer.institution),
+      })
       setButtonPressed(false)
-      return notify.error(result.message)
+    } catch {
+      notify.error(SENT_DATA_ERROR_MESSAGE)
+      setButtonPressed(false)
     }
-    onSuccess({
-      offerId: offer.id.toString(),
-      message: result.message ?? '',
-      payload: result.payload,
-    })
-    setButtonPressed(false)
-    formik.resetForm({
-      values: extractInitialVisibilityValues(result.payload.institution),
-    })
   }
 
   initialValues = requestInformations
@@ -171,6 +176,7 @@ export const CollectiveOfferVisibilityScreen = ({
             ?.value.toString() || '',
       }
     : initialValues
+
   const formik = useFormik<VisibilityFormValues>({
     initialValues,
     onSubmit,
