@@ -263,11 +263,46 @@ def extract_street_name(address: str | None = None, city: str | None = None, pos
     return ""
 
 
+def address_match(
+    acceslibre_address: str | None = None,
+    acceslibre_city: str | None = None,
+    acceslibre_postal_code: str | None = None,
+    acceslibre_ban_id: str | None = None,
+    venue_address: str | None = None,
+    venue_city: str | None = None,
+    venue_postal_code: str | None = None,
+    venue_ban_id: str | None = None,
+) -> bool:
+    if venue_ban_id and venue_ban_id == acceslibre_ban_id:
+        return True
+    # If cities / postal codes are given, they must match.
+    if (venue_city and venue_city != acceslibre_city) or (
+        venue_postal_code and venue_postal_code != acceslibre_postal_code
+    ):
+        return False
+    return bool(
+        venue_address and acceslibre_address and fuzz.ratio(acceslibre_address, venue_address) > ADDRESS_MATCHING_RATIO
+    )
+
+
+def name_match(acceslibre_name: str, venue_name: str, venue_public_name: str) -> bool:
+    return bool(
+        acceslibre_name in venue_name
+        or venue_name in acceslibre_name
+        or venue_public_name in acceslibre_name
+        or acceslibre_name in venue_public_name
+        or fuzz.ratio(acceslibre_name, venue_name) > NAME_MATCHING_RATIO
+        or fuzz.ratio(acceslibre_name, venue_public_name) > NAME_MATCHING_RATIO
+    )
+
+
 def match_venue_with_acceslibre(
     acceslibre_results: list[AcceslibreResult],
     venue_name: str,
     venue_public_name: str | None = None,
     venue_address: str | None = None,
+    venue_city: str | None = None,
+    venue_postal_code: str | None = None,
     venue_ban_id: str | None = None,
     venue_siret: str | None = None,
 ) -> AcceslibreResult | None:
@@ -283,31 +318,26 @@ def match_venue_with_acceslibre(
     for result in acceslibre_results:
         acceslibre_name = result.nom.lower()
         acceslibre_address = extract_street_name(result.adresse, result.commune, result.code_postal)
+        acceslibre_city = result.commune
+        acceslibre_postal_code = result.code_postal
         acceslibre_activity = result.activite["slug"]
         acceslibre_ban_id = result.ban_id
         acceslibre_siret = result.siret
-        # check siret matching
         if venue_siret and venue_siret == acceslibre_siret:
             return result
-        if (  # pylint: disable=too-many-boolean-expressions
-            # check activity is valid
+        if (
             acceslibre_activity in [a.value for a in AcceslibreActivity]
-            # name matching
+            and name_match(acceslibre_name, venue_name, venue_public_name)
             and (
-                acceslibre_name in venue_name
-                or venue_name in acceslibre_name
-                or venue_public_name in acceslibre_name
-                or acceslibre_name in venue_public_name
-                or fuzz.ratio(acceslibre_name, venue_name) > NAME_MATCHING_RATIO
-                or fuzz.ratio(acceslibre_name, venue_public_name) > NAME_MATCHING_RATIO
-            )
-            # check if BAN id or address matching
-            and (
-                (venue_ban_id and venue_ban_id == acceslibre_ban_id)
-                or (
-                    venue_address
-                    and acceslibre_address
-                    and fuzz.ratio(acceslibre_address, venue_address) > ADDRESS_MATCHING_RATIO
+                address_match(
+                    acceslibre_address=acceslibre_address,
+                    acceslibre_city=acceslibre_city,
+                    acceslibre_postal_code=acceslibre_postal_code,
+                    acceslibre_ban_id=acceslibre_ban_id,
+                    venue_address=venue_address,
+                    venue_city=venue_city,
+                    venue_postal_code=venue_postal_code,
+                    venue_ban_id=venue_ban_id,
                 )
             )
         ):

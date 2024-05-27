@@ -2393,6 +2393,8 @@ def match_venue_with_new_entries(
             venue_name=venue.name,
             venue_public_name=venue.publicName,
             venue_address=venue.street,
+            venue_city=venue.city,
+            venue_postal_code=venue.postalCode,
             venue_ban_id=venue.banId,
             venue_siret=venue.siret,
         ):
