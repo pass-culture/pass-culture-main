@@ -1,9 +1,9 @@
 import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
+import { serializeEducationalOfferers } from 'core/OfferEducational/utils/serializeEducationalOfferers'
 import useNotification from 'hooks/useNotification'
 
-import { getCollectiveOfferFormDataApdater } from '../adapters/getCollectiveOfferFormDataAdapter'
 import { postCollectiveDuplicateOfferAdapter } from '../adapters/postCollectiveDuplicateOfferAdapter'
 
 import { computeInitialValuesFromOffer } from './computeInitialValuesFromOffer'
@@ -17,17 +17,10 @@ export const createOfferFromBookableOffer = async (
   try {
     const offerResponse = await api.getCollectiveOffer(offerId)
     const offererId = offerResponse.venue.managingOfferer.id
-
-    const result = await getCollectiveOfferFormDataApdater({
-      offererId: offererId,
-      offer: offerResponse,
-    })
-
-    if (!result.isOk) {
-      return notify.error(result.message)
-    }
-
-    const { offerers } = result.payload
+    const targetOffererId = offerResponse.venue.managingOfferer.id || offererId
+    const { educationalOfferers } =
+      await api.listEducationalOfferers(targetOffererId)
+    const offerers = serializeEducationalOfferers(educationalOfferers)
 
     const initialValues = computeInitialValuesFromOffer(
       offerers,
