@@ -47,14 +47,23 @@ class GetClassroomPlaylistTest(SharedPlaylistsErrorTests, AuthError):
         institution = educational_factories.EducationalInstitutionFactory()
         institution2 = educational_factories.EducationalInstitutionFactory()
 
-        offers = educational_factories.CollectiveOfferTemplateFactory.create_batch(2)
-        for offer in offers:
+        offers = educational_factories.CollectiveOfferTemplateFactory.create_batch(3)
+        for offer in offers[:-1]:
             educational_models.CollectivePlaylist(
                 type=educational_models.PlaylistType.CLASSROOM,
                 distanceInKm=expected_distance_prior_rounding,
                 institution=institution,
                 collective_offer_template=offer,
             )
+        # This item is to make sure that we issue an extended search if we have less than
+        # 10 offers in the default search radius
+        educational_models.CollectivePlaylist(
+            type=educational_models.PlaylistType.CLASSROOM,
+            distanceInKm=150,
+            institution=institution,
+            collective_offer_template=offers[-1],
+        )
+        # this should not appear in the playlist because it is for a different institution
         educational_models.CollectivePlaylist(
             type=educational_models.PlaylistType.CLASSROOM,
             distanceInKm=expected_distance_prior_rounding,
@@ -67,8 +76,9 @@ class GetClassroomPlaylistTest(SharedPlaylistsErrorTests, AuthError):
         # fetch institution (1 query)
         # fetch redactor (1 query)
         # fetch playlist data (1 query)
+        # fetch playlist data if below 10 items (1 query)
         # fetch redactor's favorites (1 query)
-        with assert_num_queries(4):
+        with assert_num_queries(5):
             response = iframe_client.get(url_for(self.endpoint))
 
             assert response.status_code == 200
@@ -78,7 +88,11 @@ class GetClassroomPlaylistTest(SharedPlaylistsErrorTests, AuthError):
 
             for idx, response_offer in enumerate(response_offers):
                 assert response_offer["id"] == offers[idx].id
-                assert response_offer["venue"]["distance"] == expected_distance
+                # Ensure we rounded the distance
+                if idx == 2:
+                    assert response_offer["venue"]["distance"] == 150
+                else:
+                    assert response_offer["venue"]["distance"] == expected_distance
 
     def test_no_rows(self, client):
         iframe_client = _get_iframe_client(client)
@@ -129,20 +143,33 @@ class GetNewTemplateOffersPlaylistQueryTest(SharedPlaylistsErrorTests, AuthError
         institution = educational_factories.EducationalInstitutionFactory()
         expected_distance = 10.0
 
-        playlist_offers = educational_factories.CollectiveOfferTemplateFactory.create_batch(2)
-        for offer in playlist_offers:
+        playlist_offers = educational_factories.CollectiveOfferTemplateFactory.create_batch(3)
+        for offer in playlist_offers[:-1]:
             offer.offerVenue = {
                 "addressType": collective_offers_serialize.OfferAddressType.OFFERER_VENUE.value,
                 "otherAddress": "",
                 "venueId": offer.venueId,
             }
-
             educational_models.CollectivePlaylist(
                 type=educational_models.PlaylistType.NEW_OFFER,
                 distanceInKm=expected_distance,
                 institution=institution,
                 collective_offer_template=offer,
             )
+
+        # This item is to make sure that we issue an extended search if we have less than
+        # 10 offers in the default search radius
+        playlist_offers[-1].offerVenue = {
+            "addressType": collective_offers_serialize.OfferAddressType.OFFERER_VENUE.value,
+            "otherAddress": "",
+            "venueId": playlist_offers[-1].venueId,
+        }
+        educational_models.CollectivePlaylist(
+            type=educational_models.PlaylistType.NEW_OFFER,
+            distanceInKm=150,
+            institution=institution,
+            collective_offer_template=playlist_offers[-1],
+        )
 
         redactor = educational_factories.EducationalRedactorFactory(
             favoriteCollectiveOfferTemplates=[playlist_offers[0]]
@@ -155,8 +182,9 @@ class GetNewTemplateOffersPlaylistQueryTest(SharedPlaylistsErrorTests, AuthError
         # fetch institution (1 query)
         # fetch redactor (1 query)
         # fetch playlist data (1 query)
+        # fetch playlist data if below 10 items (1 query)
         # fetch redactor's favorites (1 query)
-        with assert_num_queries(4):
+        with assert_num_queries(5):
             response = iframe_client.get(url_for(self.endpoint))
 
             assert response.status_code == 200
@@ -167,8 +195,8 @@ class GetNewTemplateOffersPlaylistQueryTest(SharedPlaylistsErrorTests, AuthError
 
         for idx, response_offer in enumerate(response_offers):
             assert response_offer["id"] == playlist_offers[idx].id
-            assert response_offer["venue"]["distance"] == expected_distance
-            assert response_offer["offerVenue"]["distance"] == expected_distance
+            assert response_offer["venue"]["distance"] == expected_distance if idx < 2 else 150
+            assert response_offer["offerVenue"]["distance"] == expected_distance if idx < 2 else 150
             assert response_offer["isFavorite"] == (
                 redactor.favoriteCollectiveOfferTemplates[0].id == response_offer["id"]
             )
