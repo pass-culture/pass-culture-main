@@ -13,7 +13,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { isDateValid } from 'utils/date'
 
-import { createCollectiveRequestAdapter } from './adapter/createCollectiveRequestAdapter'
+import { createCollectiveRequestPayload } from './createCollectiveRequestPayload'
 import DefaultFormContact from './DefaultFormContact'
 import styles from './NewRequestFormDialog.module.scss'
 import { RequestFormValues } from './type'
@@ -50,17 +50,18 @@ export const NewRequestFormDialog = ({
     offerDate: '',
   }
   const onSubmit = async (formValues: RequestFormValues) => {
-    const response = await createCollectiveRequestAdapter({
-      offerId,
-      formValues,
-    })
-    if (!response.isOk) {
-      notify.error(response.message)
+    const payload = createCollectiveRequestPayload(formValues)
+    try {
+      await apiAdage.createCollectiveRequest(offerId, payload)
+      notify.success('Votre demande a bien été envoyée')
+      closeModal()
+    } catch (error) {
+      notify.error(
+        'Impossible de créer la demande.\nVeuillez contacter le support pass culture'
+      )
       closeModal()
       return
     }
-    notify.success('Votre demande a bien été envoyée')
-    closeModal()
   }
 
   const closeRequestFormDialog = async () => {
