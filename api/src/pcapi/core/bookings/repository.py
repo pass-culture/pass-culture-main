@@ -329,7 +329,7 @@ def export_bookings_by_offer_id(
 def get_export(
     user: User,
     booking_period: tuple[date, date] | None = None,
-    status_filter: BookingStatusFilter | None = BookingStatusFilter.BOOKED,
+    status_filter: BookingStatusFilter | None = None,
     event_date: date | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
