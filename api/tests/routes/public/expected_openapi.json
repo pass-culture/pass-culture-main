@@ -10122,6 +10122,7 @@
         },
         "/v2/collective/categories": {
             "get": {
+                "deprecated": true,
                 "description": "",
                 "operationId": "ListCategories",
                 "parameters": [],
@@ -10956,6 +10957,7 @@
         },
         "/v2/collective/subcategories": {
             "get": {
+                "deprecated": true,
                 "description": "",
                 "operationId": "ListSubcategories",
                 "parameters": [],
