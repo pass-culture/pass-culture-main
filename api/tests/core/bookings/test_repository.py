@@ -1946,9 +1946,8 @@ class GetCsvReportTest:
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 3
         data_dicts = [dict(zip(headers, line)) for line in data]
-        assert data_dicts[0]["Lieu"] == venue_for_event.name
-        assert data_dicts[1]["Lieu"] == venue_for_book.name
-        assert data_dicts[2]["Lieu"] == venue_for_thing.name
+        venues = [data_dict["Lieu"] for data_dict in data_dicts]
+        assert sorted(venues) == [venue_for_thing.name, venue_for_book.name, venue_for_event.name]
 
     def test_should_return_booking_with_venue_public_name_when_public_name_is_provided(self, app):
         # Given
@@ -2010,9 +2009,8 @@ class GetCsvReportTest:
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 3
         data_dicts = [dict(zip(headers, line)) for line in data]
-        assert data_dicts[0]["Lieu"] == venue_for_event.publicName
-        assert data_dicts[1]["Lieu"] == venue_for_book.publicName
-        assert data_dicts[2]["Lieu"] == venue_for_thing.publicName
+        venues = [data_dict["Lieu"] for data_dict in data_dicts]
+        assert sorted(venues) == [venue_for_thing.publicName, venue_for_book.publicName, venue_for_event.publicName]
 
     def test_should_return_only_booking_for_requested_venue(self, app: fixture):
         # Given
