@@ -181,6 +181,28 @@ class AcceslibreTest:
             == "https://acceslibre.info/app/11-tuchan/a/bibliotheque-mediatheque/erp/bibliotheque-municipale-de-truchan-les-bains/"
         )
 
+    def test_should_not_match_wrong_city(self, requests_mock):
+        activity = AcceslibreActivity.BIBLIOTHEQUE
+        requests_mock.get(
+            "https://acceslibre.beta.gouv.fr/api/erps/?activite=bibliotheque-mediatheque&created_or_updated_in_last_days=7&page_size=50&page=1",
+            json=fixtures.ACCESLIBRE_ACTIVITY_RESULT,
+        )
+        requests_mock.get(
+            "https://acceslibre.beta.gouv.fr/api/erps/?activite=bibliotheque-mediatheque&created_or_updated_in_last_days=7&page_size=1",
+            json=fixtures.ACCESLIBRE_ACTIVITY_RESULT,
+        )
+
+        activity_results = acceslibre.find_new_entries_by_activity(activity)
+        assert activity_results
+        matching_venue = acceslibre.match_venue_with_acceslibre(
+            acceslibre_results=activity_results,
+            venue_address="2 Place des Thermes",
+            venue_name="Bibliothèque Municipale de Truchan-les-Bains",
+            venue_city="Paris",
+            venue_postal_code="75001",
+        )
+        assert not matching_venue
+
     def test_should_raise_error_when_slug_is_none(self, requests_mock):
         name = "Le Livre Bateau"
         public_name = ""
