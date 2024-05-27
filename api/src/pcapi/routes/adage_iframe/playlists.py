@@ -67,6 +67,21 @@ def get_classroom_playlist(
         .limit(10)
         .all()
     )
+    # TODO(xordoquy): refactorise the code to avoid duplicates
+    # If there was not enough elements in the ideal area, we'll fill in the gaps with the next nearest items
+    missing_items_count = 10 - len(playlist_items)
+    if missing_items_count > 0:
+        playlist_items += (
+            repository.get_collective_offer_templates_for_playlist_query(
+                institution_id=institution.id,
+                playlist_type=educational_models.PlaylistType.CLASSROOM,
+                min_distance=institution_api.get_playlist_max_distance(institution),
+            )
+            .order_by(educational_models.CollectivePlaylist.distanceInKm)
+            .limit(missing_items_count)
+            .all()
+        )
+
     favorite_ids = favorites_api.get_redactors_favorite_templates_subset(
         redactor, [item.collective_offer_template.id for item in playlist_items]
     )
@@ -146,10 +161,25 @@ def new_template_offers_playlist(
             playlist_type=educational_models.PlaylistType.NEW_OFFER,
             max_distance=institution_api.get_playlist_max_distance(institution),
         )
-        .order_by(educational_models.CollectivePlaylist.distanceInKm)
+        .order_by(func.random())
         .limit(10)
         .all()
     )
+    # TODO(xordoquy): refactorise the code to avoid duplicates
+    # If there was not enough elements in the ideal area, we'll fill in the gaps with the next nearest items
+    missing_items_count = 10 - len(playlist_items)
+    if missing_items_count > 0:
+        playlist_items += (
+            repository.get_collective_offer_templates_for_playlist_query(
+                institution_id=institution.id,
+                playlist_type=educational_models.PlaylistType.NEW_OFFER,
+                min_distance=institution_api.get_playlist_max_distance(institution),
+            )
+            .order_by(educational_models.CollectivePlaylist.distanceInKm)
+            .limit(missing_items_count)
+            .all()
+        )
+
     favorite_ids = favorites_api.get_redactors_favorite_templates_subset(
         redactor, [item.collective_offer_template.id for item in playlist_items]
     )
