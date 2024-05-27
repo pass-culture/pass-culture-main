@@ -1,8 +1,8 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
-import { Route, Routes } from 'react-router-dom'
 import * as router from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import createFetchMock from 'vitest-fetch-mock'
 
 import { api } from 'apiClient/api'
@@ -12,8 +12,8 @@ import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import * as createFromTemplateUtils from 'core/OfferEducational/utils/createOfferFromTemplate'
 import * as useNotification from 'hooks/useNotification'
 import {
-  getCollectiveOfferFactory,
   defaultGetVenue,
+  getCollectiveOfferFactory,
 } from 'utils/collectiveApiFactories'
 import * as localStorageAvailable from 'utils/localStorageAvailable'
 import { renderWithProviders } from 'utils/renderWithProviders'

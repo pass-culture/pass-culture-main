@@ -42,7 +42,7 @@ export const createOfferFromTemplate = async (
       await postCollectiveOfferImage({
         initialValues,
         notify,
-        payload: response,
+        id: response.id,
       })
 
       navigate(
