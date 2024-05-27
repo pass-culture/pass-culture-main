@@ -44,6 +44,7 @@ jobs:
           echo "PCAPI_SECRETS=$PCAPI_SECRETS" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v4.1.5
         with:
+          ref: dimitri/backoffice-iap
           repository: pass-culture/pass-culture-deployment
           token: ${{ steps.get-github-token.outputs.API_TOKEN_GITHUB }}
           path: ./pass-culture-deployment
