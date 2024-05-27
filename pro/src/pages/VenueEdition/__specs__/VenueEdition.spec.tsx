@@ -177,6 +177,37 @@ describe('route VenueEdition', () => {
     ).not.toBeInTheDocument()
   })
 
+  it('should not let choose an other partner page when on adress page', async () => {
+    vi.spyOn(api, 'getVenue').mockResolvedValue({
+      ...baseVenue,
+      isPermanent: false,
+    })
+
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+      ...defaultGetOffererResponseModel,
+      managedVenues: [
+        {
+          ...defaultGetOffererVenueResponseModel,
+          id: 13,
+          publicName: 'Mon lieu de malheur',
+        },
+        {
+          ...defaultGetOffererVenueResponseModel,
+          id: 666,
+          publicName: 'Mon lieu diabolique',
+        },
+      ],
+    })
+    renderVenueEdition()
+
+    await waitForElementToBeRemoved(screen.getByTestId('spinner'))
+
+    expect(screen.getByText('Page adresse')).toBeInTheDocument()
+    expect(
+      screen.queryByLabelText('Sélectionnez votre page partenaire')
+    ).not.toBeInTheDocument()
+  })
+
   it('should display the selector only for new navigation', async () => {
     renderVenueEdition({
       user: sharedCurrentUserFactory({

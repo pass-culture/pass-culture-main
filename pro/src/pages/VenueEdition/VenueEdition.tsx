@@ -123,26 +123,30 @@ export const VenueEdition = (): JSX.Element | null => {
         {isNewSideBarNavigation && (
           <FormLayout>
             <h1 className={styles['header']}>{titleText}</h1>
-            {venuesOptions.length > 1 && activeStep === 'individual' && (
-              <FormLayout.Row>
-                <FieldLayout
-                  label="Sélectionnez votre page partenaire"
-                  name="venues"
-                  isOptional
-                  className={styles['select-partner-page']}
-                >
-                  <SelectInput
-                    name="venues"
-                    options={venuesOptions}
-                    value={selectedVenueId}
-                    onChange={(e) => {
-                      setSelectedVenueId(e.target.value)
-                    }}
-                  />
-                </FieldLayout>
-              </FormLayout.Row>
-            )}
-            <hr className={styles['separator']} />
+            {venuesOptions.length > 1 &&
+              activeStep === 'individual' &&
+              venue.isPermanent && (
+                <>
+                  <FormLayout.Row>
+                    <FieldLayout
+                      label="Sélectionnez votre page partenaire"
+                      name="venues"
+                      isOptional
+                      className={styles['select-partner-page']}
+                    >
+                      <SelectInput
+                        name="venues"
+                        options={venuesOptions}
+                        value={selectedVenueId}
+                        onChange={(e) => {
+                          setSelectedVenueId(e.target.value)
+                        }}
+                      />
+                    </FieldLayout>
+                  </FormLayout.Row>
+                  <hr className={styles['separator']} />
+                </>
+              )}
           </FormLayout>
         )}
         <VenueEditionHeader

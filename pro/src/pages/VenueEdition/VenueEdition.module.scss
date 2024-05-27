@@ -3,6 +3,8 @@
 
 .header {
   @include fonts.title1;
+
+  margin-bottom: rem.torem(32px);
 }
 
 .tabs {
@@ -19,6 +21,5 @@
   height: 2px;
   background: var(--color-grey-medium);
   border: none;
-  margin-top: rem.torem(32px);
   margin-bottom: rem.torem(32px);
 }
