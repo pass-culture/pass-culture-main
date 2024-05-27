@@ -2,6 +2,10 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/variables/_z-index.scss" as zIndex;
 
+.stock-event-table-container {
+  overflow-x: scroll;
+}
+
 .stock-event-table {
   width: 100%;
   table-layout: fixed;
@@ -65,6 +69,10 @@ $icon-size: rem.torem(20px);
 
 .date-column {
   width: rem.torem(192px);
+}
+
+.price-column {
+  width: rem.torem(174px);
 }
 
 .filter-input {
