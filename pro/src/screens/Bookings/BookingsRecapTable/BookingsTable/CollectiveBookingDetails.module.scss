@@ -1,9 +1,11 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/variables/_size.scss" as size;
 
 .container {
   display: flex;
   gap: rem.torem(16px);
+  flex-wrap: wrap;
 }
 
 .details-timeline {
@@ -80,5 +82,11 @@
         margin-right: 0;
       }
     }
+  }
+}
+
+@media (min-width: size.$tablet) {
+  .container {
+    flex-wrap: nowrap;
   }
 }

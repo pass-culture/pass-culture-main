@@ -91,12 +91,12 @@ export const CollectiveBookingsTable = ({
         <caption className="visually-hidden">Liste des réservations</caption>
 
         <thead className={styles['table-header']}>
-          <tr>
+          <tr className={styles['table-header-row']}>
             <th
               scope="col"
               className={cn(
-                styles['table-header'],
-                styles['column-booking-id']
+                styles['column-booking-id'],
+                styles['table-header-cell']
               )}
             >
               Réservation
@@ -105,8 +105,8 @@ export const CollectiveBookingsTable = ({
             <th
               scope="col"
               className={cn(
-                styles['table-header'],
-                styles['column-offer-name']
+                styles['column-offer-name'],
+                styles['table-header-cell']
               )}
             >
               <span>Nom de l’offre</span>
@@ -129,8 +129,8 @@ export const CollectiveBookingsTable = ({
             <th
               scope="col"
               className={cn(
-                styles['table-header'],
-                styles['column-institution']
+                styles['column-institution'],
+                styles['table-header-cell']
               )}
             >
               <span>Établissement</span>
@@ -153,8 +153,8 @@ export const CollectiveBookingsTable = ({
             <th
               scope="col"
               className={cn(
-                styles['table-header'],
-                styles['column-price-and-price']
+                styles['column-price-and-price'],
+                styles['table-header-cell']
               )}
             >
               Places et prix
@@ -163,8 +163,8 @@ export const CollectiveBookingsTable = ({
             <th
               scope="col"
               className={cn(
-                styles['table-header'],
-                styles['column-booking-status']
+                styles['column-booking-status'],
+                styles['table-header-cell']
               )}
             >
               <FilterByBookingStatus
