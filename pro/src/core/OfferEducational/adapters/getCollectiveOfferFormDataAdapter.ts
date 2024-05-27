@@ -1,3 +1,4 @@
+import { api } from 'apiClient/api'
 import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
@@ -9,7 +10,6 @@ import { SelectOption } from 'custom_types/form'
 import { getUserOfferersFromOffer } from '../utils/getUserOfferersFromOffer'
 
 import { getEducationalDomainsAdapter } from './getEducationalDomainsAdapter'
-import { getNationalProgramsAdapter } from './getNationalProgramAdapter'
 import { getOfferersAdapter } from './getOfferersAdapter'
 
 type Payload = {
@@ -44,13 +44,17 @@ export const getCollectiveOfferFormDataApdater: GetCollectiveOfferFormDataApdate
       const responses = await Promise.all([
         getEducationalDomainsAdapter(),
         getOfferersAdapter(targetOffererId),
-        getNationalProgramsAdapter(),
+        await api.getNationalPrograms(),
       ])
 
-      if (responses.some((response) => !response.isOk)) {
-        return ERROR_RESPONSE
-      }
-      const [domains, offerers, nationalPrograms] = responses
+      const [domains, offerers, nationalProgramsResponse] = responses
+
+      const nationalPrograms = nationalProgramsResponse.map(
+        (nationalProgram) => ({
+          label: nationalProgram.name,
+          value: nationalProgram.id,
+        })
+      )
 
       const offerersOptions = getUserOfferersFromOffer(offerers.payload, offer)
 
@@ -60,7 +64,7 @@ export const getCollectiveOfferFormDataApdater: GetCollectiveOfferFormDataApdate
         payload: {
           domains: domains.payload,
           offerers: offerersOptions,
-          nationalPrograms: nationalPrograms.payload,
+          nationalPrograms: nationalPrograms,
         },
       }
     } catch (e) {
