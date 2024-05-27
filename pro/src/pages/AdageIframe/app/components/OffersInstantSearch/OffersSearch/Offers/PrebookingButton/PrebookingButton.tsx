@@ -10,8 +10,8 @@ import { logOfferConversion } from 'pages/AdageIframe/libs/initAlgoliaAnalytics'
 import { Button } from 'ui-kit/Button/Button'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { LOGS_DATA } from 'utils/config'
+import { hasErrorCode } from 'utils/error'
 
-import { postBookingAdapater } from './adapters/postBookingAdapter'
 import styles from './PrebookingButton.module.scss'
 import PrebookingModal from './PrebookingModal'
 
@@ -69,10 +69,26 @@ const PrebookingButton = ({
   const preBookCurrentStock = useCallback(async () => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     logOfferConversion(offerId.toString(), queryId)
-    const { isOk, message } = await postBookingAdapater(stock.id)
 
-    if (!isOk) {
-      notification.error(message)
+    try {
+      await apiAdage.bookCollectiveOffer({ stockId: stock.id })
+    } catch (error) {
+      if (hasErrorCode(error)) {
+        if (error.body.code === 'WRONG_UAI_CODE') {
+          notification.error(
+            'Cette offre n’est pas préréservable par votre établissement'
+          )
+        } else if (error.body.code === 'UNKNOWN_EDUCATIONAL_INSTITUTION') {
+          notification.error(
+            'Votre établissement scolaire n’est pas recensé dans le dispositif pass Culture'
+          )
+        }
+      } else {
+        notification.error(
+          'Impossible de préréserver cette offre.\nVeuillez contacter le support'
+        )
+      }
+
       return
     }
 
@@ -84,7 +100,7 @@ const PrebookingButton = ({
       )
     setOfferPrebooked && setOfferPrebooked(true)
     closeModal()
-    notification.success(message)
+    notification.success('Votre préréservation a été effectuée avec succès')
   }, [stock.id, offerId, queryId])
 
   return canPrebookOffers ? (
