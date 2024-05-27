@@ -344,6 +344,26 @@ class Returns200Test:
         assert len(response_json[0]["stocks"]) == 1
         assert response_json[0]["isShowcase"] is True
 
+    def test_offers_with_empty_string_subcategory_instead_of_none(self, client):
+        """Test that a list of offers can contain one that has a legal
+        but unexpected subcategory (empty string instead if none).
+        """
+        user = users_factories.UserFactory()
+        offerer = offerer_factories.OffererFactory()
+        offerer_factories.UserOffererFactory(user=user, offerer=offerer)
+
+        venue = offerer_factories.VenueFactory(managingOfferer=offerer)
+        offer = educational_factories.CollectiveOfferFactory(venue=venue, subcategoryId="")
+        educational_factories.CollectiveStockFactory(collectiveOffer=offer)
+
+        response = client.with_session_auth(user.email).get("/collective/offers")
+        response_json = response.json
+
+        assert response.status_code == 200
+        assert isinstance(response_json, list)
+        assert len(response_json) == 1
+        assert response_json[0]["subcategoryId"] is None
+
 
 @pytest.mark.usefixtures("db_session")
 class Return400Test:

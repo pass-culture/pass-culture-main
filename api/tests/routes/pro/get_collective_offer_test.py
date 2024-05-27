@@ -211,6 +211,24 @@ class Returns200Test:
             "otherAddress": "some address",
         }
 
+    def test_offer_with_empty_string_subcategory_instead_of_none(self, client):
+        """Test that an offer with a legal but unexpected subcategory
+        (empty string instead if none) can be serialized.
+        """
+        user = users_factories.UserFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
+
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        offer = educational_factories.CollectiveOfferFactory(venue=venue, subcategoryId="")
+        educational_factories.CollectiveStockFactory(collectiveOffer=offer)
+
+        dst = url_for("Private API.get_collective_offer", offer_id=offer.id)
+        response = client.with_session_auth(user.email).get(dst)
+
+        assert response.status_code == 200
+        assert response.json["subcategoryId"] is None
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:
