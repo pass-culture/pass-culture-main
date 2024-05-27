@@ -9,8 +9,6 @@ import { SelectOption } from 'custom_types/form'
 
 import { getUserOfferersFromOffer } from '../utils/getUserOfferersFromOffer'
 
-import { getEducationalDomainsAdapter } from './getEducationalDomainsAdapter'
-
 type Payload = {
   domains: SelectOption[]
   offerers: GetEducationalOffererResponseModel[]
@@ -59,13 +57,21 @@ export const getCollectiveOfferFormDataApdater: GetCollectiveOfferFormDataApdate
     try {
       const targetOffererId = offer?.venue.managingOfferer.id || offererId
       const responses = await Promise.all([
-        getEducationalDomainsAdapter(),
+        api.listEducationalDomains(),
         api.listEducationalOfferers(targetOffererId),
         api.getNationalPrograms(),
       ])
 
-      const [domains, { educationalOfferers }, nationalProgramsResponse] =
-        responses
+      const [
+        domainsResposne,
+        { educationalOfferers },
+        nationalProgramsResponse,
+      ] = responses
+
+      const domains = domainsResposne.map((domain) => ({
+        value: domain.id.toString(),
+        label: domain.name,
+      }))
 
       const offerers = serializeOfferers(educationalOfferers)
 
@@ -82,7 +88,7 @@ export const getCollectiveOfferFormDataApdater: GetCollectiveOfferFormDataApdate
         isOk: true,
         message: '',
         payload: {
-          domains: domains.payload,
+          domains: domains,
           offerers: offerersOptions,
           nationalPrograms: nationalPrograms,
         },
