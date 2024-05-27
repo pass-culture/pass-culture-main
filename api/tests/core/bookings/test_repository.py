@@ -2254,8 +2254,8 @@ class GetCsvReportTest:
             )
 
             # When
-            beginning_period = (datetime.utcnow().date() - timedelta(days=1)).isoformat()
-            ending_period = (datetime.utcnow().date() + timedelta(days=360)).isoformat()
+            beginning_period = datetime.utcnow().date() - timedelta(days=1)
+            ending_period = datetime.utcnow().date() + timedelta(days=360)
             bookings_csv = booking_repository.get_export(
                 user=pro,
                 booking_period=(beginning_period, ending_period),
@@ -2295,8 +2295,8 @@ class GetCsvReportTest:
             )
 
             # When
-            beginning_period = (datetime.utcnow().date() - timedelta(days=11)).isoformat()
-            ending_period = (datetime.utcnow().date() + timedelta(days=360)).isoformat()
+            beginning_period = datetime.utcnow().date() - timedelta(days=11)
+            ending_period = datetime.utcnow().date() + timedelta(days=360)
             bookings_csv = booking_repository.get_export(
                 user=pro,
                 booking_period=(beginning_period, ending_period),
@@ -2337,8 +2337,8 @@ class GetCsvReportTest:
             )
 
             # When
-            beginning_period = (datetime.utcnow().date() - timedelta(days=11)).isoformat()
-            ending_period = (datetime.utcnow().date() + timedelta(days=360)).isoformat()
+            beginning_period = datetime.utcnow().date() - timedelta(days=11)
+            ending_period = datetime.utcnow().date() + timedelta(days=360)
             bookings_csv = booking_repository.get_export(
                 user=pro,
                 booking_period=(beginning_period, ending_period),
