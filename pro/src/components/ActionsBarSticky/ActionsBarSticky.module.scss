@@ -56,6 +56,12 @@
   }
 }
 
+@media (min-width: size.$laptop) {
+  .actions-bar-new-interface {
+    padding-left: calc(rem.torem(size.$side-nav-width) + rem.torem(32px));
+  }
+}
+
 @media (min-width: size.$tablet) {
   .actions-bar {
     position: fixed;
@@ -63,7 +69,6 @@
     border-top: unset;
 
     &-new-interface {
-      padding-left: calc(rem.torem(size.$side-nav-width) + rem.torem(32px));
       justify-content: flex-start;
       max-width: size.$desktop;
 

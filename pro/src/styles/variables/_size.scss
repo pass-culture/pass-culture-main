@@ -3,6 +3,7 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
 $desktop: rem.torem(1440px);
+$laptop: rem.torem(1024px);
 $tablet: rem.torem(744px);
 $mobile: rem.torem(380px);
 $main-content-width: rem.torem(874px);
