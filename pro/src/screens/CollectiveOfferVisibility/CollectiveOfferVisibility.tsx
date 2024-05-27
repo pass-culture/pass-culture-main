@@ -1,17 +1,18 @@
 import { FormikProvider, useFormik } from 'formik'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
+import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import {
   EducationalInstitutionResponseModel,
   EducationalRedactor,
-  GetCollectiveOfferRequestResponseModel,
   GetCollectiveOfferResponseModel,
 } from 'apiClient/v1'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { BannerPublicApi } from 'components/Banner/BannerPublicApi'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OfferEducationalActions } from 'components/OfferEducationalActions/OfferEducationalActions'
+import { GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY } from 'config/swrQueryKeys'
 import {
   VisibilityFormValues,
   isCollectiveOffer,
@@ -28,7 +29,6 @@ import {
 import { SelectOption } from 'custom_types/form'
 import useNotification from 'hooks/useNotification'
 import strokeSearch from 'icons/stroke-search.svg'
-import { getOfferRequestInformationsAdapter } from 'pages/CollectiveOfferFromRequest/adapters/getOfferRequestInformationsAdapter'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -88,8 +88,6 @@ export const CollectiveOfferVisibilityScreen = ({
 
   const [teachersOptions, setTeachersOptions] = useState<TeacherOption[]>([])
   const [buttonPressed, setButtonPressed] = useState(false)
-  const [requestInformations, setRequestInformations] =
-    useState<GetCollectiveOfferRequestResponseModel | null>(null)
 
   const institutionsOptions: InstitutionOption[] = useMemo(
     () =>
@@ -117,24 +115,10 @@ export const CollectiveOfferVisibilityScreen = ({
     [institutions]
   )
 
-  const getOfferRequestInformation = async () => {
-    const { isOk, message, payload } = await getOfferRequestInformationsAdapter(
-      Number(requestId)
-    )
-
-    if (!isOk) {
-      return notify.error(message)
-    }
-
-    setRequestInformations(payload)
-  }
-
-  useEffect(() => {
-    if (requestId) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      getOfferRequestInformation()
-    }
-  }, [])
+  const { data: requestInformations } = useSWR(
+    [GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY, requestId],
+    ([, id]) => api.getCollectiveOfferRequest(Number(id))
+  )
 
   const onSubmit = async (values: VisibilityFormValues) => {
     setButtonPressed(true)

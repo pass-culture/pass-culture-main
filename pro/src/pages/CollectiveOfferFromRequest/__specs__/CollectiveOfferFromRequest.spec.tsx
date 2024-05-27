@@ -119,20 +119,6 @@ describe('CollectiveOfferFromRequest', () => {
     expect(screen.getByText('27 juin 2030')).toBeInTheDocument()
   })
 
-  it('should call api and get error', async () => {
-    vi.spyOn(api, 'getCollectiveOfferTemplate').mockRejectedValueOnce({})
-    vi.spyOn(api, 'getCollectiveOfferRequest').mockRejectedValueOnce({})
-
-    renderWithProviders(<CollectiveOfferFromRequest />)
-
-    expect(await screen.findByText('Chargement en cours')).toBeInTheDocument()
-
-    expect(mockNotifyError).toHaveBeenNthCalledWith(
-      1,
-      'Nous avons rencontré un problème lors de la récupération des données.'
-    )
-  })
-
   it('should create offer on button click', async () => {
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,

@@ -12,7 +12,6 @@ import { DEFAULT_VISIBILITY_FORM_VALUES } from 'core/OfferEducational/constants'
 import { Mode } from 'core/OfferEducational/types'
 import { SENT_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import * as useNotification from 'hooks/useNotification'
-import { getOfferRequestInformationsAdapter } from 'pages/CollectiveOfferFromRequest/adapters/getOfferRequestInformationsAdapter'
 import { getCollectiveOfferFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -417,38 +416,6 @@ describe('CollectiveOfferVisibility', () => {
           /Option sélectionnée : LYCEE POLYVALENT METIER ROBERT DOISNEAU - CORBEIL-ESSONNES - AZERTY13/
         )
       ).toBeInTheDocument()
-    })
-
-    it('should display error message on api error getting requested info', async () => {
-      const notifyError = vi.fn()
-
-      const notifsImport = (await vi.importActual(
-        'hooks/useNotification'
-      )) as ReturnType<typeof useNotification.default>
-      vi.spyOn(useNotification, 'default').mockImplementation(() => ({
-        ...notifsImport,
-        error: notifyError,
-      }))
-
-      vi.spyOn(api, 'getCollectiveOfferRequest').mockRejectedValue({
-        isOk: false,
-        message:
-          'Une erreur est survenue lors de la récupération de votre offre',
-        payload: null,
-      })
-
-      renderVisibilityStep({
-        ...props,
-        requestId: '1',
-        mode: Mode.CREATION,
-        initialValues: DEFAULT_VISIBILITY_FORM_VALUES,
-      })
-
-      const response = await getOfferRequestInformationsAdapter(1)
-      expect(response.isOk).toBeFalsy()
-      await waitFor(() => {
-        expect(notifyError).toHaveBeenCalledTimes(1)
-      })
     })
   })
 
