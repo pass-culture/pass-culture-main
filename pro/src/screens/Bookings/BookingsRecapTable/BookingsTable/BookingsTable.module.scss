@@ -16,11 +16,15 @@
   @include fonts.caption;
 
   color: var(--color-black);
-  line-height: rem.torem(20px);
-  min-height: rem.torem(60px);
   padding: rem.torem(14px);
-  vertical-align: middle;
-  text-align: left;
+}
+
+.table-header-cell {
+  @include fonts.caption;
+
+  color: var(--color-black);
+  padding: rem.torem(14px);
+  display: inline-block;
 }
 
 .table-body {
@@ -46,8 +50,6 @@
 
 .column-booking-id {
   width: rem.torem(110px);
-  display: flex;
-  align-items: center;
 }
 
 .column-offer-name {
@@ -59,8 +61,6 @@
 }
 
 .column-booking-duo {
-  align-items: center;
-  display: flex;
   padding: 0;
   width: rem.torem(35px);
 }
