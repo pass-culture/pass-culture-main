@@ -47,18 +47,18 @@ jobs:
           repository: pass-culture/pass-culture-deployment
           token: ${{ steps.get-github-token.outputs.API_TOKEN_GITHUB }}
           path: ./pass-culture-deployment
-      - name: "Update image.tag in pass-culture-deployment repository"
-        run: |
-          git config --global user.email "PassCulture-SA@passculture.team"
-          git config --global user.name "PassCulture-SA"
-          cd ./pass-culture-deployment/helm/pcapi
-          cp values.testing.yaml values.fdehem.yaml
-          sed -i '/^image:/,/^  tag:/{s/^  tag: .*/  tag: mytag/}' values.fdehem.yaml
-          git add values.fdehem.yaml
-          git commit -m "Update image tag by Github Actions Job : ${{ github.run_number }}"
-          git push origin master
+      # - name: "Update image.tag in pass-culture-deployment repository"
+      #   run: |
+      #     git config --global user.email "PassCulture-SA@passculture.team"
+      #     git config --global user.name "PassCulture-SA"
+      #     cd ./pass-culture-deployment/helm/pcapi
+      #     cp values.testing.yaml values.fdehem.yaml
+      #     sed -i '/^image:/,/^  tag:/{s/^  tag: .*/  tag: mytag/}' values.fdehem.yaml
+      #     git add values.fdehem.yaml
+      #     git commit -m "Update image tag by Github Actions Job : ${{ github.run_number }}"
+      #     git push origin master
       - name: "Generate and push rendered manifests"
-        uses: pass-culture/common-workflows/actions/render-push-manifests@fdehem_branch_testing
+        uses: pass-culture/common-workflows/actions/render-push-manifests@dimitri_branch_testing
         with:
           environment: 'testing'
           app_name: 'pcapi'

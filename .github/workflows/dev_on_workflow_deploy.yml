@@ -90,11 +90,7 @@ jobs:
           echo "PCAPI_SECRETS=$PCAPI_SECRETS" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v4.1.5
       - name: "Generate and push rendered manifests"
-<<<<<<< HEAD
-        uses: pass-culture/common-workflows/actions/render-push-manifests@v1.0.0
-=======
         uses: common-workflows/actions/render-push-manifests@PC-29770-move-composite-action-render-manifests-vers-un-autre-repo
->>>>>>> c7892bd9d0 (Test composite render manifests)
         with:
           environment: ${{ inputs.environment }}
           app_name: pcapi
