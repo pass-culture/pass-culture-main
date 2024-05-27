@@ -1,11 +1,14 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
+import { api } from 'apiClient/api'
 import {
-  GetEducationalOffererResponseModel,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
+  GetEducationalOffererResponseModel,
 } from 'apiClient/v1'
-import { getCollectiveOfferFormDataApdater } from 'core/OfferEducational/adapters/getCollectiveOfferFormDataAdapter'
+import { getUserOfferersFromOffer } from 'core/OfferEducational/utils/getUserOfferersFromOffer'
+import { serializeEducationalOfferers } from 'core/OfferEducational/utils/serializeEducationalOfferers'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import { SelectOption } from 'custom_types/form'
 import useNotification from 'hooks/useNotification'
 
@@ -15,6 +18,7 @@ type OfferEducationalFormData = {
   nationalPrograms: SelectOption<number>[]
 }
 
+// TODO: Delete this hook and use useSwr where needed.
 const useOfferEducationalFormData = (
   offererId: number | null,
   offer?:
@@ -38,24 +42,48 @@ const useOfferEducationalFormData = (
         | GetCollectiveOfferResponseModel
         | GetCollectiveOfferTemplateResponseModel
     ) => {
-      const result = await getCollectiveOfferFormDataApdater({
-        offererId,
-        offer: offerResponse,
-      })
+      try {
+        const targetOffererId =
+          offerResponse?.venue.managingOfferer.id || offererId
+        const responses = await Promise.all([
+          api.listEducationalDomains(),
+          api.listEducationalOfferers(targetOffererId),
+          api.getNationalPrograms(),
+        ])
 
-      if (!result.isOk) {
-        notify.error(result.message)
+        const [
+          domainsResponse,
+          { educationalOfferers },
+          nationalProgramsResponse,
+        ] = responses
+
+        const domains = domainsResponse.map((domain) => ({
+          value: domain.id.toString(),
+          label: domain.name,
+        }))
+
+        const offerersResponse =
+          serializeEducationalOfferers(educationalOfferers)
+
+        const nationalPrograms = nationalProgramsResponse.map(
+          (nationalProgram) => ({
+            label: nationalProgram.name,
+            value: nationalProgram.id,
+          })
+        )
+
+        const offerers = getUserOfferersFromOffer(offerersResponse, offer)
+
+        setData({
+          offerers,
+          domains,
+          nationalPrograms,
+        })
+
+        setIsReady(true)
+      } catch (e) {
+        notify.error(GET_DATA_ERROR_MESSAGE)
       }
-
-      const { offerers, domains, nationalPrograms } = result.payload
-
-      setData({
-        offerers,
-        domains,
-        nationalPrograms,
-      })
-
-      setIsReady(true)
     },
     [notify]
   )
