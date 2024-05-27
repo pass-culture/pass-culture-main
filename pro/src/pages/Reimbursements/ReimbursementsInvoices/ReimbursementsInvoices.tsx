@@ -38,8 +38,8 @@ export const ReimbursementsInvoices = (): JSX.Element => {
   const [areFiltersDefault, setAreFiltersDefault] = useState(true)
   const [filterOptions, setFilterOptions] = useState<SelectOption[]>([])
   const [hasSearchedOnce, setHasSearchedOnce] = useState(false)
-  const { selectedOfferer }: ReimbursementsContextProps =
-    useOutletContext() ?? { selectedOfferer: null }
+  const { selectedOfferer = null }: ReimbursementsContextProps =
+    useOutletContext() || {}
 
   const hasNoSearchResult =
     (!hasError && invoices.length === 0 && hasSearchedOnce) ||
