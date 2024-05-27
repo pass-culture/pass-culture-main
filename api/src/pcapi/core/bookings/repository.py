@@ -358,6 +358,7 @@ def find_by_pro_user(
     page: int = 1,
     per_page_limit: int = 1000,
 ) -> tuple[BaseQuery, int]:
+    # TODO: we could do count and paginated in a single query, using a window function
     count_query = _get_filtered_bookings_query(
         pro_user=user,
         booking_period=booking_period,
