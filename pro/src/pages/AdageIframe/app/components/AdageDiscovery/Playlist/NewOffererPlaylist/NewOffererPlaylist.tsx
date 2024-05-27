@@ -3,7 +3,7 @@ import useSWR from 'swr'
 
 import { AdagePlaylistType } from 'apiClient/adage/models/AdagePlaylistType'
 import { apiAdage } from 'apiClient/api'
-import { GET_LOCAL_OFFERERS_PLAYLIST_QUERY_KEY } from 'config/swrQueryKeys'
+import { GET_NEW_OFFERERS_PLAYLIST_QUERY_KEY } from 'config/swrQueryKeys'
 
 import { TrackerElementArg } from '../../AdageDiscovery'
 import Carousel from '../../Carousel/Carousel'
@@ -27,7 +27,7 @@ export const NewOffererPlaylist = ({
   trackPlaylistElementClicked,
 }: NewOffererPlaylistProps) => {
   const { data: playlist, isLoading } = useSWR(
-    [GET_LOCAL_OFFERERS_PLAYLIST_QUERY_KEY],
+    [GET_NEW_OFFERERS_PLAYLIST_QUERY_KEY],
     () => apiAdage.getNewOfferersPlaylist(),
     { fallbackData: { venues: [] } }
   )
