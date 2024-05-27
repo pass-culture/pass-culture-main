@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
+from decimal import Decimal
 
 import pytest
 
@@ -12,6 +13,7 @@ from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as users_testing
 from pcapi.core.users.models import Favorite
+from pcapi.notifications import push as push_notifications
 from pcapi.notifications.push import testing as push_testing
 from pcapi.utils.human_ids import humanize
 
@@ -330,78 +332,92 @@ class GetTest:
 
 
 class PostTest:
-    class Returns200Test:
-        def when_user_creates_a_favorite(self, client):
-            # Given
-            user = users_factories.UserFactory()
-            stock = offers_factories.EventStockFactory()
-            offer1 = stock.offer
+    def when_user_creates_a_favorite(self, client):
+        # Given
+        user = users_factories.UserFactory()
+        offer = offers_factories.EventOfferFactory()
+        stock = offers_factories.EventStockFactory(offer=offer, price=Decimal("10.1"))
+        offers_factories.EventStockFactory(beginningDatetime=stock.beginningDatetime + timedelta(days=30))
 
-            assert Favorite.query.count() == 0
+        # When
+        response = client.with_token(user.email).post(FAVORITES_URL, json={"offerId": offer.id})
 
-            # When
-            response = client.with_token(user.email).post(FAVORITES_URL, json={"offerId": offer1.id})
+        # Then
+        assert response.status_code == 200, response.data
+        assert Favorite.query.count() == 1
+        favorite = Favorite.query.first()
+        assert favorite.dateCreated
+        assert favorite.userId == user.id
+        assert response.json["id"] == favorite.id
+        assert response.json["offer"]["price"] == 1010
 
-            # Then
-            assert response.status_code == 200, response.data
-            assert Favorite.query.count() == 1
-            favorite = Favorite.query.first()
-            assert favorite.dateCreated
-            assert favorite.userId == user.id
-            assert response.json["id"] == favorite.id
-            assert response.json["offer"]
-            assert response.json["offer"]["price"]
+        expected_push_counts = (
+            1  # for user attribute update in android
+            + 1  # for user attribute update in iOS
+            + 1  # for favorite tracking
+        )
+        assert len(push_testing.requests) == expected_push_counts
+        assert len(users_testing.sendinblue_requests) == 1
+        sendinblue_data = users_testing.sendinblue_requests[0]
+        assert sendinblue_data["attributes"]["LAST_FAVORITE_CREATION_DATE"] is not None
 
-            # One call should be sent to batch, and one to sendinblue
-            assert len(push_testing.requests) == 2
-            assert len(users_testing.sendinblue_requests) == 1
-            sendinblue_data = users_testing.sendinblue_requests[0]
-            assert sendinblue_data["attributes"]["LAST_FAVORITE_CREATION_DATE"] is not None
+        # The earliest bookable stock should be tracked
+        favorite_creation_tracking_event = next(
+            event
+            for event in push_testing.requests
+            if event.get("event_name") == push_notifications.BatchEvent.HAS_ADDED_OFFER_TO_FAVORITES.value
+        )
+        assert favorite_creation_tracking_event["event_payload"]["event_date"] == stock.beginningDatetime.isoformat(
+            timespec="seconds"
+        )
 
-        def when_user_creates_a_favorite_twice(self, client):
-            # Given
-            user = users_factories.UserFactory()
-            offerer = offerers_factories.OffererFactory()
-            venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-            offer1 = offers_factories.EventOfferFactory(venue=venue)
-            assert Favorite.query.count() == 0
+    def when_user_creates_a_favorite_twice(self, client):
+        # Given
+        user = users_factories.UserFactory()
+        offerer = offerers_factories.OffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        offer1 = offers_factories.EventOfferFactory(venue=venue)
+        assert Favorite.query.count() == 0
 
-            client.with_token(user.email)
+        client.with_token(user.email)
 
-            # When
-            response = client.post(FAVORITES_URL, json={"offerId": offer1.id})
-            assert response.status_code == 200
-            response = client.post(FAVORITES_URL, json={"offerId": offer1.id})
+        # When
+        response = client.post(FAVORITES_URL, json={"offerId": offer1.id})
+        assert response.status_code == 200
+        response = client.post(FAVORITES_URL, json={"offerId": offer1.id})
 
-            # Then
-            assert response.status_code == 200
-            assert Favorite.query.count() == 1
+        # Then
+        assert response.status_code == 200
+        assert Favorite.query.count() == 1
 
-            # One call should be sent to batch, and one to sendinblue
-            assert len(push_testing.requests) == 2
-            assert len(users_testing.sendinblue_requests) == 1
-            sendinblue_data = users_testing.sendinblue_requests[0]
-            assert sendinblue_data["attributes"]["LAST_FAVORITE_CREATION_DATE"] is not None
+        expected_push_counts = (
+            1  # for user attribute update in android
+            + 1  # for user attribute update in iOS
+            + 1  # for favorite tracking
+        )
+        assert len(push_testing.requests) == expected_push_counts
+        assert len(users_testing.sendinblue_requests) == 1
+        sendinblue_data = users_testing.sendinblue_requests[0]
+        assert sendinblue_data["attributes"]["LAST_FAVORITE_CREATION_DATE"] is not None
 
-    class Returns400Test:
-        @override_settings(MAX_FAVORITES=1)
-        def when_user_creates_one_favorite_above_the_limit(self, client):
-            user = users_factories.UserFactory()
-            offer = offers_factories.EventOfferFactory()
-            assert Favorite.query.count() == 0
+    @override_settings(MAX_FAVORITES=1)
+    def when_user_creates_one_favorite_above_the_limit(self, client):
+        user = users_factories.UserFactory()
+        offer = offers_factories.EventOfferFactory()
+        assert Favorite.query.count() == 0
 
-            client.with_token(user.email)
+        client.with_token(user.email)
 
-            response = client.post(FAVORITES_URL, json={"offerId": offer.id})
+        response = client.post(FAVORITES_URL, json={"offerId": offer.id})
 
-            assert response.status_code == 200, response.data
-            assert Favorite.query.count() == 1
+        assert response.status_code == 200, response.data
+        assert Favorite.query.count() == 1
 
-            response = client.post(FAVORITES_URL, json={"offerId": offer.id})
+        response = client.post(FAVORITES_URL, json={"offerId": offer.id})
 
-            assert response.status_code == 400, response.data
-            assert response.json == {"code": "MAX_FAVORITES_REACHED"}
-            assert Favorite.query.count() == 1
+        assert response.status_code == 400, response.data
+        assert response.json == {"code": "MAX_FAVORITES_REACHED"}
+        assert Favorite.query.count() == 1
 
 
 class DeleteTest:

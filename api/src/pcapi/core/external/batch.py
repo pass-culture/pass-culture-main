@@ -5,6 +5,7 @@ from pcapi.core.cultural_survey import models as cultural_survey_models
 from pcapi.core.external.attributes import models as attributes_models
 import pcapi.core.finance.models as finance_models
 import pcapi.core.fraud.models as fraud_models
+import pcapi.core.offers.models as offers_models
 import pcapi.notifications.push as push_notifications
 from pcapi.tasks import batch_tasks
 
@@ -109,3 +110,39 @@ def track_ubble_ko_event(user_id: int, reason_code: fraud_models.FraudReasonCode
         event_name=event_name, event_payload={"error_code": reason_code.value}, user_id=user_id
     )
     batch_tasks.track_event_task.delay(payload)
+
+
+def track_offer_added_to_favorites_event(user_id: int, offer: offers_models.Offer) -> None:
+    event_name = push_notifications.BatchEvent.HAS_ADDED_OFFER_TO_FAVORITES
+    formatted_offer_attributes = format_offer_attributes(offer)
+    payload = batch_tasks.TrackBatchEventRequest(
+        event_name=event_name, event_payload=formatted_offer_attributes, user_id=user_id
+    )
+    batch_tasks.track_event_task.delay(payload)
+
+
+def format_offer_attributes(offer: offers_models.Offer) -> dict:
+    stock = min(
+        offer.bookableStocks,
+        default=None,
+        key=lambda stock: (stock.bookingLimitDatetime is None, stock.bookingLimitDatetime, stock.price),
+    )
+    stock_quantity: int | None = None
+    event_date: str | None = None
+    expiry_date: str | None = None
+    if stock is not None:
+        if stock.remainingQuantity != "unlimited":
+            stock_quantity = stock.remainingQuantity
+        event_date = _format_date(stock.beginningDatetime)
+        expiry_date = _format_date(stock.bookingLimitDatetime)
+
+    return {
+        "offer_id": offer.id,
+        "offer_name": offer.name,
+        "offer_category": offer.categoryId,
+        "offer_subcategory": offer.subcategoryId,
+        "offer_type": "duo" if offer.isDuo else "solo",
+        "stock": stock_quantity,
+        "event_date": event_date,
+        "expiry_date": expiry_date,
+    }
