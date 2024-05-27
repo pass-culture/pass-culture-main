@@ -7,7 +7,6 @@ import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
 import { GET_COLLECTIVE_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
-import { getStockCollectiveOfferAdapter } from 'core/OfferEducational/adapters/getStockCollectiveOfferAdapter'
 import {
   isCollectiveOfferTemplate,
   OfferEducationalStockFormValues,
@@ -64,11 +63,6 @@ const CollectiveOfferStockEdition = ({
           'Une erreur est survenue lors de la mise à jour de votre stock.'
         )
       }
-    }
-    const offerResponse = await getStockCollectiveOfferAdapter(offer.id)
-
-    if (!offerResponse.isOk) {
-      return notify.error(offerResponse.message)
     }
 
     await mutate([GET_COLLECTIVE_OFFER_QUERY_KEY, offer.id])
