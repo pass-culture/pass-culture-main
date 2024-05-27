@@ -1,6 +1,6 @@
 import { format, subMonths } from 'date-fns'
-import { useMemo, useState } from 'react'
-import { useOutletContext } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
+import { useOutletContext, useSearchParams } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -24,6 +24,8 @@ import { InvoiceTable } from './InvoiceTable/InvoiceTable'
 import { NoInvoicesYet } from './NoInvoicesYet'
 
 export const ReimbursementsInvoices = (): JSX.Element => {
+  const [searchParams, setSearchParams] = useSearchParams()
+
   const INITIAL_FILTERS = useMemo(() => {
     const today = getToday()
     const oneMonthAgo = subMonths(today, 1)
@@ -35,13 +37,24 @@ export const ReimbursementsInvoices = (): JSX.Element => {
   }, [])
 
   const [filters, setFilters] = useState(INITIAL_FILTERS)
+
+  useEffect(() => {
+    const { reimbursementPoint, periodStart, periodEnd } = filters
+    searchParams.set('reimbursementPoint', reimbursementPoint)
+    searchParams.set('periodStart', periodStart)
+    searchParams.set('periodEnd', periodEnd)
+    setSearchParams(searchParams)
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, setSearchParams])
+
   const [areFiltersDefault, setAreFiltersDefault] = useState(true)
   const [hasSearchedOnce, setHasSearchedOnce] = useState(false)
   const { selectedOfferer = null }: ReimbursementsContextProps =
     useOutletContext()
 
   const getInvoicesQuery = useSWR(
-    [GET_INVOICES_QUERY_KEY, selectedOfferer?.id, filters],
+    [GET_INVOICES_QUERY_KEY, selectedOfferer?.id, searchParams.toString()],
     async () => {
       const reimbursmentPoint = filters.reimbursementPoint
       const periodStart = filters.periodStart
@@ -103,7 +116,8 @@ export const ReimbursementsInvoices = (): JSX.Element => {
   const invoices = getInvoicesQuery.data
   const hasNoSearchResult =
     !invoices.length && hasSearchedOnce && hasInvoiceQuery.data
-  const hasNoInvoicesYet = !invoices.length && !hasSearchedOnce
+  const hasNoInvoicesYet =
+    !invoices.length && !hasSearchedOnce && !hasInvoiceQuery.data
 
   return (
     <>
@@ -128,7 +142,7 @@ export const ReimbursementsInvoices = (): JSX.Element => {
           setFilters={setFilters}
         />
       )}
-      {invoices.length && <InvoiceTable invoices={invoices} />}
+      {invoices.length > 0 && <InvoiceTable invoices={invoices} />}
     </>
   )
 }
