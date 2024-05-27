@@ -16,8 +16,8 @@ beforeEach(() => {
         name: offererName,
         active: true,
         address: {
-          street: '3 RUE DE VALOIS',
-          postalCode: '75001',
+          street: '89 Rue la Boétie 75008 Paris',
+          postalCode: '75008',
           city: 'Paris',
         },
         ape_code: '90.03A',
@@ -64,7 +64,73 @@ beforeEach(() => {
           limit: 1,
         },
       })
-  )
+  ).as('searchAddress')
+
+  // cy.intercept(
+  //   'GET',
+  //   `https://api-adresse.data.gouv.fr/search/?limit=5&q=89%20Rue%20la%20Bo%C3%A9tie%2075008%20Paris`,
+  //   (req) =>
+  //     req.reply({
+  //       statusCode: 200,
+  //       body: {
+  //         type: 'FeatureCollection',
+  //         version: 'draft',
+  //         features: [
+  //           {
+  //             type: 'Feature',
+  //             geometry: {
+  //               type: 'Point',
+  //               coordinates: [2.308289, 48.87171],
+  //             },
+  //             properties: {
+  //               label: '89 Rue la Boétie 75008 Paris',
+  //               score: 0.97351,
+  //               housenumber: '89',
+  //               id: '75108_5194_00089',
+  //               name: '89 Rue la Boétie',
+  //               postcode: '75008',
+  //               citycode: '75108',
+  //               x: 649261.94,
+  //               y: 6863742.69,
+  //               city: 'Paris',
+  //               district: 'Paris 8e Arrondissement',
+  //               context: '75, Paris, Île-de-France',
+  //               type: 'housenumber',
+  //               importance: 0.70861,
+  //               street: 'Rue la Boétie',
+  //             },
+  //           },
+  //           // {
+  //           //   type: 'Feature',
+  //           //   geometry: {
+  //           //     type: 'Point',
+  //           //     coordinates: [2.306726, 48.870711],
+  //           //   },
+  //           //   properties: {
+  //           //     label: 'Galerie Elysées-la Boétie 75008 Paris',
+  //           //     score: 0.49326529933481156,
+  //           //     id: '75108_3191',
+  //           //     name: 'Galerie Elysées-la Boétie',
+  //           //     postcode: '75008',
+  //           //     citycode: '75108',
+  //           //     x: 649146.32,
+  //           //     y: 6863632.62,
+  //           //     city: 'Paris',
+  //           //     district: 'Paris 8e Arrondissement',
+  //           //     context: '75, Paris, Île-de-France',
+  //           //     type: 'street',
+  //           //     importance: 0.59665,
+  //           //     street: 'Galerie Elysées-la Boétie',
+  //           //   },
+  //           // },
+  //         ],
+  //         attribution: 'BAN',
+  //         licence: 'ETALAB-2.0',
+  //         query: '89 Rue la Boétie 75008 Paris',
+  //         limit: 5,
+  //       },
+  //     })
+  // )
 })
 
 Given('I log in with an EAC account', () => {
@@ -78,6 +144,14 @@ Given('I log in with an EAC account', () => {
 Given('I log in with a retention account', () => {
   cy.login({
     email: 'retention@example.com',
+    password: 'user@AZERTY123',
+    redirectUrl: '/parcours-inscription',
+  })
+})
+
+Given('I log in with another retention account', () => {
+  cy.login({
+    email: 'retention_structures@example.com',
     password: 'user@AZERTY123',
     redirectUrl: '/parcours-inscription',
   })
@@ -156,16 +230,66 @@ When('I ask for an offerer attachment', () => {
   cy.findByText('Valider et créer ma structure').click()
 })
 
+When('I ask to join a space', () => {
+  // Welcome page
+  cy.findByText('Commencer').click()
+
+  // Offerer/Structure page
+  cy.url().should('contain', '/parcours-inscription/structure')
+  cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(siret)
+  cy.wait('@getSiret').its('response.statusCode').should('eq', 200)
+  cy.findByText('Continuer').click()
+  cy.wait('@getSiret').its('response.statusCode').should('eq', 200)
+
+  // Offerer attachment
+  cy.contains('Rejoindre cet espace').click()
+
+  //   cy.get('[data-testid="confirm-dialog-button-confirm"]').as(
+  //     'dialogConfirmButton'
+  //   )
+  cy.intercept({ method: 'POST', url: '/offerers' }).as('postOfferers')
+  //   cy.get('@dialogConfirmButton').click()
+  cy.findByTestId('confirm-dialog-button-confirm').click()
+  cy.wait('@postOfferers').its('response.statusCode').should('eq', 201)
+
+  // Confirmation page
+  cy.contains('Accéder à votre espace').click()
+
+  // Homepage
+  cy.url().should('contain', '/accueil')
+
+  // cy.get('#structures') // @todo
+  //   .find('option')
+  //   .its('length')
+  //   .then((len) => {
+  //     cy.get('select').select(len - 2)
+  //   })
+  cy.findByLabelText('Structure').select(offererName)
+})
+
+Then('the rattachment is in progress', () => {
+  cy.contains(
+    'Le rattachement à votre structure est en cours de traitement par les équipes du pass Culture'
+  ).should('be.visible')
+})
+
 Then('the offerer is created', () => {
   cy.wait('@createOfferer').its('response.statusCode').should('eq', 201)
   cy.findAllByTestId('global-notification-success').should(
     'contain',
     'Votre structure a bien été créée'
   )
+  cy.reload()
   cy.url().should('contain', '/accueil')
+  cy.findAllByTestId('spinner').should('exist')
   cy.findAllByTestId('spinner').should('not.exist')
 
   // check offerer list
+  cy.intercept({
+    method: 'GET',
+    url: '/offerers/**',
+  }).as('offerersItem')
   cy.findByTestId('offerer-details-offerId').select(offererName)
-  cy.findByTestId('offerer-details-offerId').should('have.value', offererName)
+  cy.findAllByTestId('spinner').should('not.exist')
+  cy.wait('@offerersItem').its('response.statusCode').should('eq', 200)
 })

@@ -11,6 +11,7 @@ Feature: Signup journey
     When I ask for an offerer attachment
     Then the offerer is created
 
-#   Scenario: It should attach user to an existing offerer
-#     Given I log in with a retention account
-#     And I click on Start
+  Scenario: It should attach user to an existing offerer
+    Given I log in with another retention account
+    When I ask to join a space
+    Then the rattachment is in progress

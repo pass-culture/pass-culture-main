@@ -30,7 +30,7 @@ beforeEach(() => {
         legal_category_code: '1000',
       },
     })
-  ).as('getSiret')
+  ).as('getSiretVenue')
   cy.intercept({ method: 'GET', url: '/offerers/*' }).as('getOfferer')
   cy.visit('/connexion')
 })
@@ -46,7 +46,7 @@ When('I choose a venue which already has a Siret', () => {
 
 When("I add a valid Siret", () => {
     cy.findByLabelText('SIRET du lieu *').type(siret)
-    cy.wait('@getSiret')
+    cy.wait('@getSiretVenue')
       .its('response.statusCode').should('eq', 200)
       // TODO vérifier aussi dans le body de la réponse si le Siret est valide?
 });
