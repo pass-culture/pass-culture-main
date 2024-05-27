@@ -7,6 +7,10 @@
   margin-bottom: rem.torem(32px);
 }
 
+.stock-table-container {
+  overflow-x: scroll;
+}
+
 .stock-table {
   margin-top: rem.torem(16px);
   table-layout: fixed;
@@ -53,6 +57,10 @@
 
 .head-time {
   width: rem.torem(105px);
+}
+
+.head-price {
+  width: rem.torem(171px);
 }
 
 .head-booking-limit-datetime {

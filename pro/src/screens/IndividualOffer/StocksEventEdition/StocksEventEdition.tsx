@@ -470,7 +470,7 @@ const StocksEventEdition = ({
             <FieldArray
               name="stocks"
               render={() => (
-                <>
+                <div className={styles['stock-table-container']}>
                   <table className={styles['stock-table']}>
                     <caption className="visually-hidden">
                       Tableau d’édition des stocks
@@ -855,7 +855,7 @@ const StocksEventEdition = ({
                       onCancel={() => setStockToDeleteWithConfirmation(null)}
                     />
                   )}
-                </>
+                </div>
               )}
             />
 
