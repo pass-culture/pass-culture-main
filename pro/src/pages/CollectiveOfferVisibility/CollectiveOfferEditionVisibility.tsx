@@ -20,7 +20,6 @@ import {
 } from 'screens/OfferEducational/useCollectiveOfferFromParams'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
-import { patchEducationalInstitutionAdapter } from './adapters/patchEducationalInstitutionAdapter'
 import { getEducationalInstitutions } from './getEducationalInstitutions'
 
 const CollectiveOfferVisibility = ({
@@ -69,7 +68,6 @@ const CollectiveOfferVisibility = ({
       <CollectiveOfferLayout subTitle={offer.name} isTemplate={isTemplate}>
         <CollectiveOfferVisibilityScreen
           mode={offer.isVisibilityEditable ? Mode.EDITION : Mode.READ_ONLY}
-          patchInstitution={patchEducationalInstitutionAdapter}
           initialValues={extractInitialVisibilityValues(
             offer.institution,
             offer.teacher
