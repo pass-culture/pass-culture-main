@@ -1,10 +1,9 @@
 import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
+import { serializeEducationalOfferers } from 'core/OfferEducational/utils/serializeEducationalOfferers'
 import { SENT_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import useNotification from 'hooks/useNotification'
-
-import { getCollectiveOfferFormDataApdater } from '../adapters/getCollectiveOfferFormDataAdapter'
 
 import { computeInitialValuesFromOffer } from './computeInitialValuesFromOffer'
 import { createCollectiveOfferPayload } from './createOfferPayload'
@@ -22,16 +21,11 @@ export const createOfferFromTemplate = async (
       await api.getCollectiveOfferTemplate(templateOfferId)
 
     const offererId = offerTemplateResponse.venue.managingOfferer.id
-    const result = await getCollectiveOfferFormDataApdater({
-      offererId: offererId,
-      offer: offerTemplateResponse,
-    })
-
-    if (!result.isOk) {
-      return notify.error(result.message)
-    }
-
-    const { offerers } = result.payload
+    const targetOffererId =
+      offerTemplateResponse.venue.managingOfferer.id || offererId
+    const { educationalOfferers } =
+      await api.listEducationalOfferers(targetOffererId)
+    const offerers = serializeEducationalOfferers(educationalOfferers)
 
     const initialValues = computeInitialValuesFromOffer(
       offerers,
