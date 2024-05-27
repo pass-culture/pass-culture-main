@@ -588,11 +588,12 @@ def get_soon_expiring_bookings(expiration_days_delta: int) -> typing.Generator[B
             yield booking
 
 
-def venues_have_bookings(*venues: Venue) -> bool:
+def venues_have_bookings(venue_ids: list[int]) -> bool:
     """At least one venue which has email as bookingEmail has at least one non-cancelled booking"""
     return db.session.query(
         Booking.query.filter(
-            Booking.venueId.in_([venue.id for venue in venues]), Booking.status != BookingStatus.CANCELLED
+            Booking.venueId.in_(venue_ids),
+            Booking.status != BookingStatus.CANCELLED,
         ).exists()
     ).scalar()
 
