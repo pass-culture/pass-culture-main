@@ -10,16 +10,20 @@ from sqlalchemy.orm import joinedload
 
 from pcapi import settings
 from pcapi.core.external.attributes.api import update_external_user
+from pcapi.core.external.batch import track_offer_added_to_favorites_event
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
+from pcapi.core.offers.exceptions import OfferNotFound
 from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Stock
+from pcapi.core.offers.repository import get_offer_by_id
 from pcapi.core.users.models import Favorite
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.repository import transaction
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.serialization.decorator import spectree_serialize
@@ -191,23 +195,22 @@ def create_favorite(user: User, body: serializers.FavoriteRequest) -> serializer
         if Favorite.query.filter_by(user=user).count() >= settings.MAX_FAVORITES:
             raise ApiErrors({"code": "MAX_FAVORITES_REACHED"})
 
-    offer = Offer.query.filter_by(id=body.offerId).first_or_404()
     try:
+        offer = get_offer_by_id(body.offerId, load_options=["stock"])
         with transaction():
-            favorite = Favorite(
-                offer=offer,
-                user=user,
-            )
+            favorite = Favorite(offer=offer, user=user)
             db.session.add(favorite)
-            db.session.flush()
-        update_external_user(user)
+    except OfferNotFound as exception:
+        raise ResourceNotFoundError() from exception
     except exc.IntegrityError as exception:
         favorite = Favorite.query.filter_by(offerId=body.offerId, userId=user.id).one_or_none()
         if not favorite:
             raise exception
+    else:
+        update_external_user(user)
+        track_offer_added_to_favorites_event(user.id, offer)
 
     favorite = get_favorites_for(user, favorite.id)[0]
-
     return serializers.FavoriteResponse.from_orm(favorite)
 
 
