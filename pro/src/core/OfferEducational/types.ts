@@ -1,8 +1,6 @@
 import { EacFormat } from 'apiClient/adage'
 import {
-  EducationalInstitutionResponseModel,
   OfferAddressType,
-  OfferStatus,
   StudentLevels,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
@@ -64,20 +62,6 @@ export type OfferEducationalStockFormValues = {
   bookingLimitDatetime: string
   priceDetail: string
   educationalOfferType: EducationalOfferType
-}
-
-export type GetStockOfferSuccessPayload = {
-  isActive: boolean
-  status: OfferStatus
-  isBooked: boolean
-  isCancellable: boolean
-  venueDepartmentCode: string
-  managingOffererId: number
-  isEducational: boolean
-  isShowcase: boolean
-  offerId?: number | null
-  institution?: EducationalInstitutionResponseModel | null
-  name: string
 }
 
 export enum EducationalOfferType {
