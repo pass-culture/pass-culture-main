@@ -1,4 +1,5 @@
 import React, { Dispatch, SetStateAction } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
 import { FormLayout } from 'components/FormLayout/FormLayout'
@@ -36,6 +37,7 @@ export const InvoicesFilters = ({
   setFilters,
   setHasSearchedOnce,
 }: ReimbursementsSectionHeaderProps): JSX.Element => {
+  const [searchParams, setSearchParams] = useSearchParams()
   const { mutate } = useSWRConfig()
 
   const {
@@ -44,19 +46,22 @@ export const InvoicesFilters = ({
     periodEnd: selectedPeriodEnd,
   } = filters
 
-  async function resetFilters() {
+  function resetFilters() {
+    searchParams.set('reimbursementPoint', initialFilters.reimbursementPoint)
+    searchParams.set('periodStart', initialFilters.periodStart)
+    searchParams.set('periodEnd', initialFilters.periodEnd)
+    setSearchParams(searchParams)
     setAreFiltersDefault(true)
     setFilters(initialFilters)
-    await mutate([GET_INVOICES_QUERY_KEY])
   }
 
   const setReimbursementPointFilter = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
-    const reimbursementPointId = event.target.value
+    const reimbursementPoint = event.target.value
     setFilters((prevFilters: FiltersType) => ({
       ...prevFilters,
-      reimbursementPoint: reimbursementPointId,
+      reimbursementPoint,
     }))
     setAreFiltersDefault(false)
   }
@@ -133,6 +138,10 @@ export const InvoicesFilters = ({
             disabled={!filters.periodStart || !filters.periodEnd || disable}
             onClick={async () => {
               setHasSearchedOnce(true)
+              searchParams.set('reimbursementPoint', filters.reimbursementPoint)
+              searchParams.set('periodStart', filters.periodStart)
+              searchParams.set('periodEnd', filters.periodEnd)
+              setSearchParams(searchParams)
               await mutate([GET_INVOICES_QUERY_KEY])
             }}
           >
