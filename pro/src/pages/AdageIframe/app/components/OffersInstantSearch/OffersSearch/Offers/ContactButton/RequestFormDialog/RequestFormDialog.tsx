@@ -7,7 +7,7 @@ import MandatoryInfo from 'components/FormLayout/FormLayoutMandatoryInfo'
 import useNotification from 'hooks/useNotification'
 import { isDateValid } from 'utils/date'
 
-import { createCollectiveRequestAdapter } from './adapter/createCollectiveRequestAdapter'
+import { createCollectiveRequestPayload } from './createCollectiveRequestPayload'
 import DefaultFormContact from './DefaultFormContact'
 import styles from './RequestFormDialog.module.scss'
 import { RequestFormValues } from './type'
@@ -39,17 +39,18 @@ export const RequestFormDialog = ({
     offerDate: '',
   }
   const onSubmit = async (formValues: RequestFormValues) => {
-    const response = await createCollectiveRequestAdapter({
-      offerId,
-      formValues,
-    })
-    if (!response.isOk) {
-      notify.error(response.message)
+    const payload = createCollectiveRequestPayload(formValues)
+    try {
+      await apiAdage.createCollectiveRequest(offerId, payload)
+      notify.success('Votre demande a bien été envoyée')
+      closeModal()
+    } catch (error) {
+      notify.error(
+        'Impossible de créer la demande.\nVeuillez contacter le support pass culture'
+      )
       closeModal()
       return
     }
-    notify.success('Votre demande a bien été envoyée')
-    closeModal()
   }
   const closeRequestFormDialog = async () => {
     if (!isPreview) {
