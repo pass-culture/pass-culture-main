@@ -10,7 +10,6 @@ import { SelectOption } from 'custom_types/form'
 import { getUserOfferersFromOffer } from '../utils/getUserOfferersFromOffer'
 
 import { getEducationalDomainsAdapter } from './getEducationalDomainsAdapter'
-import { getOfferersAdapter } from './getOfferersAdapter'
 
 type Payload = {
   domains: SelectOption[]
@@ -37,17 +36,38 @@ const ERROR_RESPONSE = {
   },
 }
 
+const serializeVenues = (
+  venues: GetEducationalOffererResponseModel['managedVenues']
+): GetEducationalOffererResponseModel['managedVenues'] =>
+  venues
+    .filter((venue) => !venue.isVirtual)
+    .map((venue) => ({
+      ...venue,
+      name: venue.publicName || venue.name,
+    }))
+
+const serializeOfferers = (
+  offerers: GetEducationalOffererResponseModel[]
+): GetEducationalOffererResponseModel[] =>
+  offerers.map((offerer) => ({
+    ...offerer,
+    managedVenues: serializeVenues(offerer.managedVenues),
+  }))
+
 export const getCollectiveOfferFormDataApdater: GetCollectiveOfferFormDataApdater =
   async ({ offererId, offer }) => {
     try {
       const targetOffererId = offer?.venue.managingOfferer.id || offererId
       const responses = await Promise.all([
         getEducationalDomainsAdapter(),
-        getOfferersAdapter(targetOffererId),
-        await api.getNationalPrograms(),
+        api.listEducationalOfferers(targetOffererId),
+        api.getNationalPrograms(),
       ])
 
-      const [domains, offerers, nationalProgramsResponse] = responses
+      const [domains, { educationalOfferers }, nationalProgramsResponse] =
+        responses
+
+      const offerers = serializeOfferers(educationalOfferers)
 
       const nationalPrograms = nationalProgramsResponse.map(
         (nationalProgram) => ({
@@ -56,7 +76,7 @@ export const getCollectiveOfferFormDataApdater: GetCollectiveOfferFormDataApdate
         })
       )
 
-      const offerersOptions = getUserOfferersFromOffer(offerers.payload, offer)
+      const offerersOptions = getUserOfferersFromOffer(offerers, offer)
 
       return {
         isOk: true,
