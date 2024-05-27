@@ -8,11 +8,17 @@
 }
 
 .url-input input {
-  width: size.$signup-content-width;
+  max-width: size.$signup-content-width;
 }
 
 .form-row-actions {
   margin-top: rem.torem(4px);
+}
+
+.input-gap {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: rem.torem(8px);
 }
 
 .first-row {
@@ -22,13 +28,13 @@
 }
 
 .delete-button {
-    display: flex;
-    align-content: center;
+  display: flex;
+  align-content: center;
 
-    & svg {
-        width: 24px;
-        height: 24px;
-    }
+  & svg {
+    width: 24px;
+    height: 24px;
+  }
 }
 
 .target-customer-row {
