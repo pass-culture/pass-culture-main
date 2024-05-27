@@ -99,6 +99,47 @@ one_year_after_booking = default_booking_date + timedelta(weeks=52)
 
 
 class FindByProUserTest:
+    def test_should_return_only_expected_pro_user_bookings(self, app: fixture):
+        # Given
+        booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
+
+        beneficiary_1 = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary_1@example.com", firstName="Ron", lastName="Weasley"
+        )
+        pro_1 = users_factories.ProFactory()
+        offerer_1 = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro_1, offerer=offerer_1)
+        venue_1 = offerers_factories.VenueFactory(managingOfferer=offerer_1)
+        offer_1 = offers_factories.ThingOfferFactory(venue=venue_1)
+        stock_1 = offers_factories.ThingStockFactory(offer=offer_1, price=0)
+        bookings_factories.UsedBookingFactory(user=beneficiary_1, stock=stock_1, dateCreated=booking_date)
+
+        beneficiary_2 = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary_2@example.com", firstName="Harry", lastName="Potter"
+        )
+        pro_2 = users_factories.ProFactory()
+        offerer_2 = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro_2, offerer=offerer_2)
+        venue_2 = offerers_factories.VenueFactory(managingOfferer=offerer_2)
+        offer_2 = offers_factories.ThingOfferFactory(venue=venue_2)
+        stock_2 = offers_factories.ThingStockFactory(offer=offer_2, price=0)
+        bookings_factories.UsedBookingFactory(user=beneficiary_2, stock=stock_2, dateCreated=booking_date)
+
+        # When
+        booking_period = (booking_date - timedelta(days=365), booking_date + timedelta(days=365))
+        bookings_query, total = booking_repository.find_by_pro_user(user=pro_2, booking_period=booking_period)
+        bookings = bookings_query.all()
+
+        # Then
+        assert total == 1
+        assert len(bookings) == 1
+        expected_booking = bookings[0]
+        assert expected_booking.offerId == stock_2.offer.id
+        assert expected_booking.offerName == offer_2.name
+        assert expected_booking.beneficiaryFirstName == "Harry"
+        assert expected_booking.beneficiaryLastName == "Potter"
+        assert expected_booking.beneficiaryEmail == "beneficiary_2@example.com"
+
     def test_should_return_only_expected_booking_attributes(self, app: fixture):
         # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory(
