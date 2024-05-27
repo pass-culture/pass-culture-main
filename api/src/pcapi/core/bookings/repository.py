@@ -131,12 +131,12 @@ def _get_filtered_bookings_query(
     event_date: date | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
-    duplicate_duo: bool = False,
-    count_bookings: bool = False,
-    offset: int | None = None,
-    limit: int | None = None,
     validated: bool = False,
     ordered: bool = False,
+    duplicate_duo: bool = False,
+    offset: int | None = None,
+    limit: int | None = None,
+    count_bookings: bool = False,
 ) -> BaseQuery:
     if pro_user is None and offer_id is None:
         raise ValueError("Missing either pro_user or offer_id")
@@ -156,14 +156,14 @@ def _get_filtered_bookings_query(
     if booking_period:
         query = _filter_booking_period(query, booking_period, status_filter)
 
+    if event_date:
+        query = _filter_event_date(query, event_date)
+
     if venue_id is not None:
         query = query.filter(Booking.venueId == venue_id)
 
     if offer_id is not None:
         query = query.filter(Stock.offerId == offer_id)
-
-    if event_date:
-        query = _filter_event_date(query, event_date)
 
     if validated:
         query = query.filter(
