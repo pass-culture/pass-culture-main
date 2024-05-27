@@ -195,7 +195,7 @@ class FindByProUserTest:
 
         bookings_query, _ = booking_repository.find_by_pro_user(
             user=pro,
-            booking_period=((booking_date + timedelta(1)), (booking_date + timedelta(3))),
+            booking_period=((booking_date + timedelta(2)), (booking_date + timedelta(3))),
             status_filter=BookingStatusFilter.REIMBURSED,
         )
         bookings = bookings_query.all()
@@ -1568,7 +1568,7 @@ class GetCsvReportTest:
 
         bookings_csv = booking_repository.get_export(
             user=pro,
-            booking_period=((booking_date + timedelta(1)), (booking_date + timedelta(3))),
+            booking_period=((booking_date + timedelta(2)), (booking_date + timedelta(3))),
             status_filter=BookingStatusFilter.REIMBURSED,
         )
 

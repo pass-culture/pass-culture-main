@@ -9,6 +9,7 @@ import typing
 
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
+from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm import joinedload
 import xlsxwriter
@@ -51,11 +52,6 @@ BOOKING_DATE_STATUS_MAPPING = {
     BookingStatusFilter.VALIDATED: Booking.dateUsed,
     BookingStatusFilter.REIMBURSED: Booking.reimbursementDate,
 }
-
-
-# FIXME (Gautier, 03-25-2022): also used in collective_booking. SHould we move it to core or some other place?
-def field_to_venue_timezone(field: typing.Any) -> sa.cast:
-    return sa.cast(sa.func.timezone(Venue.timezone, sa.func.timezone("UTC", field)), sa.Date)
 
 
 def _get_bookings_export_entities(count_bookings: bool = False) -> list:
@@ -101,6 +97,33 @@ def _filter_user_offerer(query: BaseQuery, user_id: int | None = None) -> BaseQu
     return query.filter(Booking.offererId.in_(subquery))
 
 
+def _filter_start_end(query: BaseQuery, field: typing.Any, start: date, end: date) -> BaseQuery:
+    dt_start = datetime.combine(start, time.min)
+    dt_end = datetime.combine(end, time.max)
+    # Between symmetric:
+    if dt_start > dt_end:
+        dt_start, dt_end = dt_end, dt_start
+
+    field = sa.func.timezone(Venue.timezone, sa.func.timezone("UTC", field))
+
+    query = query.filter(field >= sa.cast(dt_start, TIMESTAMP))  # type: ignore[type-var]
+    query = query.filter(field <= sa.cast(dt_end, TIMESTAMP))  # type: ignore[type-var]
+    return query
+
+
+def _filter_booking_period(
+    query: BaseQuery, booking_period: tuple[date, date], status_filter: BookingStatusFilter | None = None
+) -> BaseQuery:
+    if not status_filter:
+        status_filter = BookingStatusFilter.BOOKED
+    field = BOOKING_DATE_STATUS_MAPPING[status_filter]
+    return _filter_start_end(query, field, booking_period[0], booking_period[1])
+
+
+def _filter_event_date(query: BaseQuery, event_date: date) -> BaseQuery:
+    return _filter_start_end(query, Stock.beginningDatetime, event_date, event_date)
+
+
 def _get_filtered_bookings_query(
     pro_user: User | None = None,
     booking_period: tuple[date, date] | None = None,
@@ -131,10 +154,7 @@ def _get_filtered_bookings_query(
     query = _filter_user_offerer(query, user_id=user_id)
 
     if booking_period:
-        if not status_filter:
-            status_filter = BookingStatusFilter.BOOKED
-        field = BOOKING_DATE_STATUS_MAPPING[status_filter]
-        query = query.filter(field_to_venue_timezone(field).between(*booking_period, symmetric=True))
+        query = _filter_booking_period(query, booking_period, status_filter)
 
     if venue_id is not None:
         query = query.filter(Booking.venueId == venue_id)
@@ -143,7 +163,7 @@ def _get_filtered_bookings_query(
         query = query.filter(Stock.offerId == offer_id)
 
     if event_date:
-        query = query.filter(field_to_venue_timezone(Stock.beginningDatetime) == event_date)
+        query = _filter_event_date(query, event_date)
 
     if validated:
         query = query.filter(

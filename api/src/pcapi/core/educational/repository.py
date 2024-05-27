@@ -10,7 +10,6 @@ import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.sql.expression import extract
 
-from pcapi.core.bookings.repository import field_to_venue_timezone
 import pcapi.core.categories.subcategories_v2 as subcategories
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
@@ -572,6 +571,10 @@ def get_collective_offers_template_for_filters(
     return offers
 
 
+def _field_to_venue_timezone(field: typing.Any) -> sa.cast:
+    return sa.cast(sa.func.timezone(offerers_models.Venue.timezone, sa.func.timezone("UTC", field)), sa.Date)
+
+
 def _get_filtered_collective_bookings_query(
     pro_user: User,
     period: tuple[date, date] | None = None,
@@ -605,15 +608,15 @@ def _get_filtered_collective_bookings_query(
 
         if all(period):
             collective_bookings_query = collective_bookings_query.filter(
-                field_to_venue_timezone(period_attribute_filter).between(*period, symmetric=True)
+                _field_to_venue_timezone(period_attribute_filter).between(*period, symmetric=True)
             )
         elif period[0]:
             collective_bookings_query = collective_bookings_query.filter(
-                field_to_venue_timezone(period_attribute_filter) >= period[0]
+                _field_to_venue_timezone(period_attribute_filter) >= period[0]
             )
         elif period[1]:
             collective_bookings_query = collective_bookings_query.filter(
-                field_to_venue_timezone(period_attribute_filter) <= period[1]
+                _field_to_venue_timezone(period_attribute_filter) <= period[1]
             )
 
     if venue_id is not None:
@@ -623,7 +626,7 @@ def _get_filtered_collective_bookings_query(
 
     if event_date:
         collective_bookings_query = collective_bookings_query.filter(
-            field_to_venue_timezone(educational_models.CollectiveStock.beginningDatetime) == event_date
+            _field_to_venue_timezone(educational_models.CollectiveStock.beginningDatetime) == event_date
         )
 
     return collective_bookings_query
