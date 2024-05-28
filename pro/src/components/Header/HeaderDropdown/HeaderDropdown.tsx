@@ -30,7 +30,7 @@ const HeaderDropdown = () => {
             <DropdownMenu.Label className={styles['menu-title']}>
               Profil
             </DropdownMenu.Label>
-            <div>{currentUser?.email}</div>
+            <div className={styles['menu-email']}>{currentUser?.email}</div>
             <DropdownMenu.Item className={styles['close-item']}>
               <button className={styles['close-button']}>
                 <SvgIcon
