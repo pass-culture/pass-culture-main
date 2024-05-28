@@ -113,7 +113,8 @@
               {% if has_permission("PRO_FRAUD_ACTIONS") %}
                 <p class="mb-1">
                   <span class="fw-bold">Validation des offres :</span>
-                  {{ offerer | format_confidence_level(show_no_rule=true) }}
+                  {{ offerer.confidenceLevel | format_confidence_level_badge(show_no_rule=true) }}
+                  {{ build_modal_form("edit-fraud", url_for("backoffice_web.offerer.update_for_fraud", offerer_id=offerer.id) , fraud_form, "", "Fraude et Conformité", "Enregistrer", none, "bi-pencil") }}
                 </p>
               {% endif %}
             </div>

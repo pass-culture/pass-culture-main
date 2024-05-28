@@ -47,6 +47,7 @@ class ActionType(enum.Enum):
     # Fraud and compliance actions:
     BLACKLIST_DOMAIN_NAME = "Blacklist d'un nom de domaine"
     REMOVE_BLACKLISTED_DOMAIN_NAME = "Suppression d'un nom de domaine banni"
+    FRAUD_INFO_MODIFIED = "Fraude et Conformité"  # protected information
 
     # Finance incident events
     FINANCE_INCIDENT_CREATED = "Création de l'incident"
