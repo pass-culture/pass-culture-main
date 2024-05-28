@@ -67,7 +67,7 @@ export const LinkNode = ({
   )
 }
 
-const LinkNodes = ({
+export const LinkNodes = ({
   links = [],
 }: LinkNodesProps): React.ReactNode | React.ReactNode[] => {
   if (links.length > 1) {
@@ -85,5 +85,3 @@ const LinkNodes = ({
   }
   return links[0] && <LinkNode {...links[0]} />
 }
-
-export default LinkNodes

@@ -19,7 +19,7 @@ type OfferEducationalFormData = {
 }
 
 // TODO: Delete this hook and use useSwr where needed.
-const useOfferEducationalFormData = (
+export const useOfferEducationalFormData = (
   offererId: number | null,
   offer?:
     | GetCollectiveOfferResponseModel
@@ -100,5 +100,3 @@ const useOfferEducationalFormData = (
     ...data,
   }
 }
-
-export default useOfferEducationalFormData

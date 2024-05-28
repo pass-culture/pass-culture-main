@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import React from 'react'
 
-import StepContent from 'components/Stepper/StepContent'
+import { StepContent } from 'components/Stepper/StepContent'
 import { findLastIndex } from 'utils/findLastIndex'
 
 import styles from './Stepper.module.scss'

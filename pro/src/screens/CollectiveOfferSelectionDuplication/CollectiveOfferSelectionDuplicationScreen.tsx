@@ -25,7 +25,7 @@ import { RadioButton } from 'ui-kit/form/RadioButton/RadioButton'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Thumb } from 'ui-kit/Thumb/Thumb'
-import Titles from 'ui-kit/Titles/Titles'
+import { Titles } from 'ui-kit/Titles/Titles'
 import { pluralize } from 'utils/pluralize'
 
 import styles from './CollectiveOfferSelectionDuplication.module.scss'

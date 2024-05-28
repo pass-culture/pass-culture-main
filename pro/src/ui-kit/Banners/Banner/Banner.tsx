@@ -7,7 +7,7 @@ import shadowTipsWarningIcon from 'icons/shadow-tips-warning.svg'
 import strokeCloseIcon from 'icons/stroke-close.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import LinkNodes, { Link } from '../LinkNodes/LinkNodes'
+import { LinkNodes, Link } from '../LinkNodes/LinkNodes'
 
 import styles from './Banner.module.scss'
 

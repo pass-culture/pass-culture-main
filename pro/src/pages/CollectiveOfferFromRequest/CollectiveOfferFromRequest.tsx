@@ -16,7 +16,7 @@ import { createOfferFromTemplate } from 'core/OfferEducational/utils/createOffer
 import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import { Button } from 'ui-kit/Button/Button'
-import Spinner from 'ui-kit/Spinner/Spinner'
+import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { getDateToFrenchText } from 'utils/date'
 
 import styles from './CollectiveOfferFromRequest.module.scss'

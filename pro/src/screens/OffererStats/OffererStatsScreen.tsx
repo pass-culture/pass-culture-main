@@ -5,7 +5,7 @@ import { OffererStatsNoResult } from 'components/OffererStatsNoResult/OffererSta
 import { SelectOption } from 'custom_types/form'
 import { SelectInput } from 'ui-kit/form/Select/SelectInput'
 import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
-import Titles from 'ui-kit/Titles/Titles'
+import { Titles } from 'ui-kit/Titles/Titles'
 import { sortByLabel } from 'utils/strings'
 
 import styles from './OffererStatsScreen.module.scss'

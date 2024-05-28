@@ -2,7 +2,7 @@ import cn from 'classnames'
 import { MouseEvent } from 'react'
 
 import styles from './ToggleButtonGroup.module.scss'
-import ToggleButtonGroupButton from './ToggleButtonGroupButton/ToggleButtonGroupButton'
+import { ToggleButtonGroupButton } from './ToggleButtonGroupButton/ToggleButtonGroupButton'
 
 export type ToggleButton = {
   label: string
@@ -19,7 +19,7 @@ type ToggleButtonGroupProps = {
   className?: string
 }
 
-export default function ToggleButtonGroup({
+export function ToggleButtonGroup({
   groupLabel,
   buttons,
   activeButton,

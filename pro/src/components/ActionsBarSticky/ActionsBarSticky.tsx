@@ -6,8 +6,8 @@ import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
 import { setIsStickyBarOpen } from 'store/notifications/reducer'
 
 import style from './ActionsBarSticky.module.scss'
-import Left from './ActionsBarStickyLeft'
-import Right from './ActionsBarStickyRight'
+import { Left } from './ActionsBarStickyLeft'
+import { Right } from './ActionsBarStickyRight'
 
 interface ActionsBarStickyProps {
   children: React.ReactNode

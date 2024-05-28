@@ -13,7 +13,7 @@ import {
 } from 'apiClient/v1'
 import { isCollectiveOffer } from 'core/OfferEducational/types'
 import logoPassCultureIcon from 'icons/logo-pass-culture.svg'
-import Spinner from 'ui-kit/Spinner/Spinner'
+import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { AdageOffer } from '../AdageOffer/AdageOffer'

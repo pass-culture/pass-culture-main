@@ -6,7 +6,7 @@ import { apiAdage } from 'apiClient/api'
 import { GET_NEW_OFFERERS_PLAYLIST_QUERY_KEY } from 'config/swrQueryKeys'
 
 import { TrackerElementArg } from '../../AdageDiscovery'
-import Carousel from '../../Carousel/Carousel'
+import { Carousel } from '../../Carousel/Carousel'
 import { VENUE_PLAYLIST } from '../../constant'
 import VenueCard from '../../VenueCard/VenueCard'
 

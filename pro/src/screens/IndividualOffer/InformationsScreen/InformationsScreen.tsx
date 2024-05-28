@@ -16,7 +16,7 @@ import { IndividualOfferForm } from 'components/IndividualOfferForm/IndividualOf
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm/types'
 import { getFilteredVenueListByCategoryStatus } from 'components/IndividualOfferForm/utils/getFilteredVenueList'
 import { setDefaultInitialFormValues } from 'components/IndividualOfferForm/utils/setDefaultInitialFormValues'
-import setFormReadOnlyFields from 'components/IndividualOfferForm/utils/setFormReadOnlyFields'
+import { setFormReadOnlyFields } from 'components/IndividualOfferForm/utils/setFormReadOnlyFields'
 import { setInitialFormValues } from 'components/IndividualOfferForm/utils/setInitialFormValues'
 import { getValidationSchema } from 'components/IndividualOfferForm/validationSchema'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
@@ -37,7 +37,7 @@ import useNotification from 'hooks/useNotification'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import strokeMailIcon from 'icons/stroke-mail.svg'
 
-import ActionBar from '../ActionBar/ActionBar'
+import { ActionBar } from '../ActionBar/ActionBar'
 import { useIndividualOfferImageUpload } from '../hooks/useIndividualOfferImageUpload'
 
 import { serializePatchOffer } from './serializePatchOffer'

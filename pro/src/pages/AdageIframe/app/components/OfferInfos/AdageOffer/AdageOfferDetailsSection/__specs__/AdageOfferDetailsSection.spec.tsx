@@ -4,7 +4,8 @@ import { EacFormat } from 'apiClient/adage'
 import { defaultCollectiveTemplateOffer } from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import AdageOfferDetailsSection, {
+import {
+  AdageOfferDetailsSection,
   AdageOfferDetailsSectionProps,
 } from '../AdageOfferDetailsSection'
 

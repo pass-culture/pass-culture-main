@@ -11,13 +11,13 @@ import { isCollectiveOfferBookable } from 'pages/AdageIframe/app/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './AdageOffer.module.scss'
-import AdageOfferDetailsSection from './AdageOfferDetailsSection/AdageOfferDetailsSection'
-import AdageOfferInfoSection from './AdageOfferDetailsSection/AdageOfferInfoSection'
-import AdageOfferPartnerSection from './AdageOfferDetailsSection/AdageOfferPartnerSection'
-import AdageOfferPublicSection from './AdageOfferDetailsSection/AdageOfferPublicSection'
-import AdageOfferHeader from './AdageOfferHeader/AdageOfferHeader'
-import AdageOfferInstitutionPanel from './AdageOfferInstitutionPanel/AdageOfferInstitutionPanel'
-import AdageOfferPartnerPanel from './AdageOfferPartnerPanel/AdageOfferPartnerPanel'
+import { AdageOfferDetailsSection } from './AdageOfferDetailsSection/AdageOfferDetailsSection'
+import { AdageOfferInfoSection } from './AdageOfferDetailsSection/AdageOfferInfoSection'
+import { AdageOfferPartnerSection } from './AdageOfferDetailsSection/AdageOfferPartnerSection'
+import { AdageOfferPublicSection } from './AdageOfferDetailsSection/AdageOfferPublicSection'
+import { AdageOfferHeader } from './AdageOfferHeader/AdageOfferHeader'
+import { AdageOfferInstitutionPanel } from './AdageOfferInstitutionPanel/AdageOfferInstitutionPanel'
+import { AdageOfferPartnerPanel } from './AdageOfferPartnerPanel/AdageOfferPartnerPanel'
 
 export type AdageOfferProps = {
   offer: CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel

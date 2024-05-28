@@ -16,7 +16,7 @@ import { initAlgoliaAnalytics } from '../libs/initAlgoliaAnalytics'
 
 import { AppLayout } from './components/AppLayout/AppLayout'
 import { LoaderPage } from './components/LoaderPage/LoaderPage'
-import UnauthenticatedError from './components/UnauthenticatedError/UnauthenticatedError'
+import { UnauthenticatedError } from './components/UnauthenticatedError/UnauthenticatedError'
 import { AdageUserContextProvider } from './providers/AdageUserContext'
 
 export const App = (): JSX.Element => {

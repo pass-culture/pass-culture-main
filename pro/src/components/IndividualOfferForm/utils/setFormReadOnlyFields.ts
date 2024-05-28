@@ -21,7 +21,7 @@ const setFormReadOnlyFieldsForSynchronizedOffer = (
   )
 }
 
-const setFormReadOnlyFields = (
+export const setFormReadOnlyFields = (
   offer: GetIndividualOfferResponseModel | null,
   isAdmin?: boolean
 ): string[] => {
@@ -46,5 +46,3 @@ const setFormReadOnlyFields = (
   readOnlyField.push('categoryId', 'subcategoryId', 'offererId', 'venueId')
   return [...new Set(readOnlyField)]
 }
-
-export default setFormReadOnlyFields

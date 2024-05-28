@@ -3,7 +3,7 @@ import cn from 'classnames'
 import { useSelector } from 'react-redux'
 
 import useAnalytics from 'app/App/analytics/firebase'
-import HelpDropdownMenu from 'components/Header/HeaderHelpDropdown/HelpDropdownMenu'
+import { HelpDropdownMenu } from 'components/Header/HeaderHelpDropdown/HelpDropdownMenu'
 import { Events } from 'core/FirebaseEvents/constants'
 import fullCloseIcon from 'icons/full-close.svg'
 import fullLogoutIcon from 'icons/full-logout.svg'
@@ -14,7 +14,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './HeaderDropdown.module.scss'
 
-const HeaderDropdown = () => {
+export const HeaderDropdown = () => {
   const { logEvent } = useAnalytics()
   const currentUser = useSelector(selectCurrentUser)
   return (
@@ -77,5 +77,3 @@ const HeaderDropdown = () => {
     </DropdownMenu.Root>
   )
 }
-
-export default HeaderDropdown

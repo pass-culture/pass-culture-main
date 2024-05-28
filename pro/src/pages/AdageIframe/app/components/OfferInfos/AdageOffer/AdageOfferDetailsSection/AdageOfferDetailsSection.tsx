@@ -12,7 +12,7 @@ export type AdageOfferDetailsSectionProps = {
   offer: CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel
 }
 
-export default function AdageOfferDetailsSection({
+export function AdageOfferDetailsSection({
   offer,
 }: AdageOfferDetailsSectionProps) {
   const domains = offer.domains || []

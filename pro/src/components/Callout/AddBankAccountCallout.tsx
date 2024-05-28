@@ -11,7 +11,7 @@ interface AddBankAccountCalloutProps {
   offerer?: GetOffererResponseModel | null
 }
 
-const AddBankAccountCallout = ({
+export const AddBankAccountCallout = ({
   offerer = null,
 }: AddBankAccountCalloutProps): JSX.Element | null => {
   const { logEvent } = useAnalytics()
@@ -47,5 +47,3 @@ const AddBankAccountCallout = ({
     </Callout>
   )
 }
-
-export default AddBankAccountCallout

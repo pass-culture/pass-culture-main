@@ -3,7 +3,7 @@ import React from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
 import { StatusLabel } from 'components/StatusLabel/StatusLabel'
-import StatusToggleButton from 'screens/IndividualOffer/Status/StatusToggleButton'
+import { StatusToggleButton } from 'screens/IndividualOffer/Status/StatusToggleButton'
 
 import styles from './Status.module.scss'
 
@@ -14,7 +14,12 @@ interface StatusProps {
   canDeactivate: boolean
 }
 
-const Status = ({ offerId, status, isActive, canDeactivate }: StatusProps) => (
+export const Status = ({
+  offerId,
+  status,
+  isActive,
+  canDeactivate,
+}: StatusProps) => (
   <div
     className={cn(styles['status'], {
       [styles['multiple-columns']]: canDeactivate,
@@ -34,5 +39,3 @@ const Status = ({ offerId, status, isActive, canDeactivate }: StatusProps) => (
     <StatusLabel status={status} />
   </div>
 )
-
-export default Status

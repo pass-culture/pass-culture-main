@@ -4,7 +4,7 @@ import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
 
 import styles from './AdageDiscoveryBanner.module.scss'
 
-export default function AdageDiscoveryBanner() {
+export function AdageDiscoveryBanner() {
   const circlesGroupRef = createRef<SVGGElement>()
   const crossesGroupRef = createRef<SVGGElement>()
   const ovalsGroupRef = createRef<SVGGElement>()

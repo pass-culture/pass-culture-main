@@ -7,7 +7,7 @@ interface DialogStocksEventEditConfirmProps {
   onCancel: () => void
 }
 
-const DialogStocksEventEditConfirm = ({
+export const DialogStocksEventEditConfirm = ({
   onConfirm,
   onCancel,
 }: DialogStocksEventEditConfirmProps) => {
@@ -34,5 +34,3 @@ const DialogStocksEventEditConfirm = ({
     </ConfirmDialog>
   )
 }
-
-export default DialogStocksEventEditConfirm

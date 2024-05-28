@@ -10,8 +10,8 @@ import {
   OptionalCollectiveOfferFromParamsProps,
   withOptionalCollectiveOfferFromParams,
 } from 'screens/OfferEducational/useCollectiveOfferFromParams'
-import useOfferEducationalFormData from 'screens/OfferEducational/useOfferEducationalFormData'
-import Spinner from 'ui-kit/Spinner/Spinner'
+import { useOfferEducationalFormData } from 'screens/OfferEducational/useOfferEducationalFormData'
+import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 export const CollectiveOfferCreation = ({
   offer,

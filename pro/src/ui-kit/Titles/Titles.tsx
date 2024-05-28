@@ -7,7 +7,7 @@ interface TitlesProps {
   title: string
 }
 
-const Titles = ({
+export const Titles = ({
   action,
   description,
   subtitle,
@@ -24,5 +24,3 @@ const Titles = ({
     </div>
   )
 }
-
-export default Titles

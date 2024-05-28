@@ -22,7 +22,7 @@ import { updateUser } from 'store/user/reducer'
 import { Banner } from 'ui-kit/Banners/Banner/Banner'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
-import Spinner from 'ui-kit/Spinner/Spinner'
+import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { getReCaptchaToken } from 'utils/recaptcha'
 
 import { ActionBar } from '../ActionBar/ActionBar'

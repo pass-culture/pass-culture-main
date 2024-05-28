@@ -5,7 +5,7 @@ import React from 'react'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import ActionBar, { ActionBarProps } from '../ActionBar'
+import { ActionBar, ActionBarProps } from '../ActionBar'
 
 const renderActionBar = ({
   props,

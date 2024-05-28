@@ -12,7 +12,7 @@ function getScaledCoordinates(coordinates: Coordinates): Coordinates {
 }
 
 /* istanbul ignore next: DEBT, TO FIX */
-class CanvasTools {
+export class CanvasTools {
   context: CanvasRenderingContext2D
 
   constructor(context: CanvasRenderingContext2D) {
@@ -33,5 +33,3 @@ class CanvasTools {
     return this
   }
 }
-
-export default CanvasTools

@@ -6,7 +6,7 @@ interface ObjectFromCsv {
   data: string[][]
 }
 
-const convertFromCsvToObject = (csv: string): ObjectFromCsv => {
+export const convertFromCsvToObject = (csv: string): ObjectFromCsv => {
   const result: any = Papa.parse(csv, {
     delimiter: CSV_SEMI_COLON_SEPARATOR,
     skipEmptyLines: true,
@@ -19,5 +19,3 @@ const convertFromCsvToObject = (csv: string): ObjectFromCsv => {
     data: result.data,
   }
 }
-
-export default convertFromCsvToObject

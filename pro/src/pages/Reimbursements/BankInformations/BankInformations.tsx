@@ -8,7 +8,7 @@ import {
   ManagedVenues,
 } from 'apiClient/v1'
 import useAnalytics from 'app/App/analytics/firebase'
-import ReimbursementBankAccount from 'components/ReimbursementBankAccount/ReimbursementBankAccount'
+import { ReimbursementBankAccount } from 'components/ReimbursementBankAccount/ReimbursementBankAccount'
 import { BankAccountEvents } from 'core/FirebaseEvents/constants'
 import useNotification from 'hooks/useNotification'
 import fullLinkIcon from 'icons/full-link.svg'
@@ -18,7 +18,7 @@ import { ReimbursementsContextProps } from 'pages/Reimbursements/Reimbursements'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import Spinner from 'ui-kit/Spinner/Spinner'
+import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import AddBankInformationsDialog from './AddBankInformationsDialog'
 import styles from './BankInformations.module.scss'

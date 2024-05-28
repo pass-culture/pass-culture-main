@@ -1,12 +1,12 @@
 import cn from 'classnames'
 
 import style from './FormLayout.module.scss'
-import Actions from './FormLayoutActions'
-import MandatoryInfo from './FormLayoutMandatoryInfo'
-import Row from './FormLayoutRow'
-import RowWithInfo from './FormLayoutRowWithInfo'
-import Section from './FormLayoutSection'
-import SubSection from './FormLayoutSubSection'
+import { Actions } from './FormLayoutActions'
+import { MandatoryInfo } from './FormLayoutMandatoryInfo'
+import { Row } from './FormLayoutRow'
+import { RowWithInfo } from './FormLayoutRowWithInfo'
+import { Section } from './FormLayoutSection'
+import { SubSection } from './FormLayoutSubSection'
 
 export interface FormLayoutProps {
   children: React.ReactNode | React.ReactNode[]

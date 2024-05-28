@@ -16,7 +16,7 @@ interface CountryCodeSelectProps {
   onChange: (event: ChangeEvent<HTMLSelectElement>) => void
 }
 
-const CountryCodeSelect = ({
+export const CountryCodeSelect = ({
   disabled,
   options,
   className,
@@ -50,5 +50,3 @@ const CountryCodeSelect = ({
     </div>
   )
 }
-
-export default CountryCodeSelect

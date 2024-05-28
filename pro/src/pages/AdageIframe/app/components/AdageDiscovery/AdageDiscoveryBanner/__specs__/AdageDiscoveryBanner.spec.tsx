@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 
-import AdageDiscoveryBanner from '../AdageDiscoveryBanner'
+import { AdageDiscoveryBanner } from '../AdageDiscoveryBanner'
 
 Object.defineProperty(window, 'matchMedia', {
   writable: true,

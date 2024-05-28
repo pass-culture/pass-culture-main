@@ -7,7 +7,7 @@ import { BaseInput } from '../shared/BaseInput/BaseInput'
 import { FieldError } from '../shared/FieldError/FieldError'
 import { FieldLayoutBaseProps } from '../shared/FieldLayout/FieldLayout'
 
-import CodeCountrySelect from './CodeCountrySelect/CountryCodeSelect'
+import { CountryCodeSelect } from './CodeCountrySelect/CountryCodeSelect'
 import { PHONE_CODE_COUNTRY_CODE_OPTIONS, PLACEHOLDER_MAP } from './constants'
 import styles from './PhoneNumberInput.module.scss'
 import { getPhoneNumberInputAndCountryCode } from './utils/getPhoneNumberInputAndCountryCode'
@@ -112,7 +112,7 @@ export const PhoneNumberInput = ({
       <label htmlFor="countryCode" className="visually-hidden">
         Indicatif téléphonique
       </label>
-      <CodeCountrySelect
+      <CountryCodeSelect
         disabled={Boolean(disabled)}
         options={PHONE_CODE_COUNTRY_CODE_OPTIONS}
         className={styles['country-code-select']}

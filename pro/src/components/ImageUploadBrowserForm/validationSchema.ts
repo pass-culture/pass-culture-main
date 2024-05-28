@@ -6,7 +6,9 @@ interface GetValidationSchemaArgs {
   constraints: Constraint[]
 }
 
-const getValidationSchema = ({ constraints }: GetValidationSchemaArgs) => {
+export const getValidationSchema = ({
+  constraints,
+}: GetValidationSchemaArgs) => {
   return yup.object().shape(
     constraints.reduce((acc: any, constraint: Constraint) => {
       return {
@@ -20,5 +22,3 @@ const getValidationSchema = ({ constraints }: GetValidationSchemaArgs) => {
     }, {})
   )
 }
-
-export default getValidationSchema

@@ -18,7 +18,7 @@ export interface AdageButtonFilterProps
   handleSubmit: () => void
 }
 
-const AdageButtonFilter = ({
+export const AdageButtonFilter = ({
   title,
   children,
   isActive,
@@ -113,5 +113,3 @@ const AdageButtonFilter = ({
     </div>
   )
 }
-
-export default AdageButtonFilter

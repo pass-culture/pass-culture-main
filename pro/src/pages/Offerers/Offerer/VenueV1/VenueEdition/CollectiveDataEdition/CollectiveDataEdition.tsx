@@ -13,7 +13,7 @@ import {
 import { SelectOption } from 'custom_types/form'
 import { PartnerPageCollectiveSection } from 'pages/Home/Offerers/PartnerPageCollectiveSection'
 import { CollectiveDmsTimeline } from 'pages/VenueCreation/CollectiveDmsTimeline/CollectiveDmsTimeline'
-import Spinner from 'ui-kit/Spinner/Spinner'
+import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { getLastCollectiveDmsApplication } from 'utils/getLastCollectiveDmsApplication'
 
 import styles from './CollectiveDataEdition.module.scss'

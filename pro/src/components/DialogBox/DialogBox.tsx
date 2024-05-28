@@ -2,7 +2,7 @@ import * as Dialog from '@radix-ui/react-dialog'
 import cn from 'classnames'
 import React, { FunctionComponent } from 'react'
 
-import CloseButton from './CloseButton'
+import { CloseButton } from './CloseButton'
 import styles from './DialogBox.module.scss'
 
 interface DialogProps {
