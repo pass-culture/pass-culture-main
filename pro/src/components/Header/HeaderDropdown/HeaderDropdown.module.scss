@@ -71,6 +71,11 @@ $profil-button-size: rem.torem(34px);
     border: solid rem.torem(1px) var(--color-grey-medium);
   }
 
+  &-email {
+    max-width: 100%;
+    overflow-wrap: break-word;
+  }
+
   &-title {
     @include fonts.caption;
 
