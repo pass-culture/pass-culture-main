@@ -1,6 +1,6 @@
 import type { StoryObj } from '@storybook/react'
 
-import AdageButtonFilter from './AdageButtonFilter'
+import { AdageButtonFilter } from './AdageButtonFilter'
 
 export default {
   title: 'components/AdageButtonFilter',

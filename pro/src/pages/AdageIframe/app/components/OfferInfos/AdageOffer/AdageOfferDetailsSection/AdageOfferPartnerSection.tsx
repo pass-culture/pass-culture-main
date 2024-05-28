@@ -6,7 +6,7 @@ export type AdageOfferPartnerSectionProps = {
   offer: CollectiveOfferResponseModel
 }
 
-export default function AdageOfferPartnerSection({
+export function AdageOfferPartnerSection({
   offer,
 }: AdageOfferPartnerSectionProps) {
   return (

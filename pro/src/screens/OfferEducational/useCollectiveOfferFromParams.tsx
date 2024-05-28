@@ -14,7 +14,7 @@ import {
   GET_OFFERER_QUERY_KEY,
 } from 'config/swrQueryKeys'
 import { extractOfferIdAndOfferTypeFromRouteParams } from 'core/OfferEducational/utils/extractOfferIdAndOfferTypeFromRouteParams'
-import Spinner from 'ui-kit/Spinner/Spinner'
+import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 export type MandatoryCollectiveOfferFromParamsProps = {
   offer:

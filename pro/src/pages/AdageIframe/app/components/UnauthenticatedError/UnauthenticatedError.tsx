@@ -3,7 +3,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './UnauthenticatedError.module.scss'
 
-export default function UnauthenticatedError(): JSX.Element {
+export function UnauthenticatedError(): JSX.Element {
   return (
     <main className={styles['error']} id="content">
       <div className={styles['error-header']}>

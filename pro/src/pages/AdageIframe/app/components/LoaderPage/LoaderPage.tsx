@@ -1,7 +1,7 @@
 import './LoaderPage.scss'
 import * as React from 'react'
 
-import Spinner from 'ui-kit/Spinner/Spinner'
+import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 export const LoaderPage = (): JSX.Element => (
   <div className="root-adage">

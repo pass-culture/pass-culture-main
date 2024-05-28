@@ -17,7 +17,10 @@ interface LegalInfoProps {
   className: string
 }
 
-const LegalInfos = ({ title, className }: LegalInfoProps): JSX.Element => {
+export const LegalInfos = ({
+  title,
+  className,
+}: LegalInfoProps): JSX.Element => {
   const location = useLocation()
   const { logEvent } = useAnalytics()
   return (
@@ -98,5 +101,3 @@ const LegalInfos = ({ title, className }: LegalInfoProps): JSX.Element => {
     </div>
   )
 }
-
-export default LegalInfos

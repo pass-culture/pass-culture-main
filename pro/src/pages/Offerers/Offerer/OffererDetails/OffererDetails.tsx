@@ -8,7 +8,7 @@ import fullBackIcon from 'icons/full-back.svg'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import Spinner from 'ui-kit/Spinner/Spinner'
+import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { hasProperty } from 'utils/types'
 
 import ApiKey from './ApiKey/ApiKey'

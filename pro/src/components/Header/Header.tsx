@@ -3,7 +3,7 @@ import { ForwardedRef, forwardRef } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 
 import useAnalytics from 'app/App/analytics/firebase'
-import HeaderHelpDropdown from 'components/Header/HeaderHelpDropdown/HeaderHelpDropdown'
+import { HeaderHelpDropdown } from 'components/Header/HeaderHelpDropdown/HeaderHelpDropdown'
 import { Events } from 'core/FirebaseEvents/constants'
 import fullBurgerIcon from 'icons/full-burger.svg'
 import logoPassCultureProIcon from 'icons/logo-pass-culture-pro.svg'
@@ -12,7 +12,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Header.module.scss'
-import HeaderDropdown from './HeaderDropdown/HeaderDropdown'
+import { HeaderDropdown } from './HeaderDropdown/HeaderDropdown'
 
 type HeaderProps = {
   lateralPanelOpen?: boolean

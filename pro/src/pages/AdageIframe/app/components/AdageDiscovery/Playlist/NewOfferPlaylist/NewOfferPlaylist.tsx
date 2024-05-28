@@ -8,7 +8,7 @@ import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import useNotification from 'hooks/useNotification'
 
 import { TrackerElementArg } from '../../AdageDiscovery'
-import Carousel from '../../Carousel/Carousel'
+import { Carousel } from '../../Carousel/Carousel'
 import { NEW_OFFER_PLAYLIST } from '../../constant'
 import OfferCardComponent from '../../OfferCard/OfferCard'
 

@@ -7,14 +7,12 @@ import { userReducer } from 'store/user/reducer'
 import { adageFilterReducer } from './adageFilter/reducer'
 import { navReducer } from './nav/reducer'
 
-const rootReducer = combineReducers({
+export const rootReducer = combineReducers({
   features: featuresReducer,
   notification: notificationsReducer,
   user: userReducer,
   nav: navReducer,
   adageFilter: adageFilterReducer,
 })
-
-export default rootReducer
 
 export type RootState = ReturnType<typeof rootReducer>

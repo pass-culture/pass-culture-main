@@ -40,9 +40,9 @@ function getLocationForOfferVenue(
   }
 }
 
-export default function AdageOfferInfoSection({
+export const AdageOfferInfoSection = ({
   offer,
-}: AdageOfferInfoSectionProps) {
+}: AdageOfferInfoSectionProps) => {
   const offerVenue = offer.offerVenue
 
   const location = getLocationForOfferVenue(offerVenue)

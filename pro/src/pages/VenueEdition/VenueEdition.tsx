@@ -24,7 +24,7 @@ import { CollectiveDataEdition } from 'pages/Offerers/Offerer/VenueV1/VenueEditi
 import { updateSelectedOffererId } from 'store/user/reducer'
 import { SelectInput } from 'ui-kit/form/Select/SelectInput'
 import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
-import Spinner from 'ui-kit/Spinner/Spinner'
+import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { Tab, Tabs } from 'ui-kit/Tabs/Tabs'
 
 import styles from './VenueEdition.module.scss'

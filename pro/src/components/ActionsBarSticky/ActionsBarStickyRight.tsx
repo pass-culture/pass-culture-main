@@ -7,7 +7,7 @@ interface ActionsBarStickyRightProps {
   inverseWhenSmallerThanTablet?: boolean
 }
 
-const Right = ({
+export const Right = ({
   children,
   inverseWhenSmallerThanTablet = false,
 }: ActionsBarStickyRightProps): JSX.Element | null => {
@@ -21,5 +21,3 @@ const Right = ({
     </div>
   ) : null
 }
-
-export default Right

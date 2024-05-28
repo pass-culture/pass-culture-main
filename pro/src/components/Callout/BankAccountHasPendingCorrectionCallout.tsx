@@ -12,7 +12,7 @@ export interface BankAccountHasPendingCorrectionCalloutProps {
   titleOnly?: boolean
 }
 
-const BankAccountHasPendingCorrectionCallout = ({
+export const BankAccountHasPendingCorrectionCallout = ({
   offerer,
 }: BankAccountHasPendingCorrectionCalloutProps): JSX.Element | null => {
   const { logEvent } = useAnalytics()
@@ -48,5 +48,3 @@ const BankAccountHasPendingCorrectionCallout = ({
     </Callout>
   )
 }
-
-export default BankAccountHasPendingCorrectionCallout

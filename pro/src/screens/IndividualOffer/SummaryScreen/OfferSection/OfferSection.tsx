@@ -19,7 +19,7 @@ import {
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
-import Spinner from 'ui-kit/Spinner/Spinner'
+import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { serializeOfferSectionData } from './serializer'
 import humanizeDelay from './utils'

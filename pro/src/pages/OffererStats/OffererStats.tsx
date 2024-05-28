@@ -7,7 +7,7 @@ import { GET_OFFERER_NAMES_QUERY_KEY } from 'config/swrQueryKeys'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import useNotification from 'hooks/useNotification'
 import { OffererStatsScreen } from 'screens/OffererStats/OffererStatsScreen'
-import Spinner from 'ui-kit/Spinner/Spinner'
+import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { sortByLabel } from 'utils/strings'
 
 export const OffererStats = (): JSX.Element | null => {

@@ -11,7 +11,7 @@ import { NoResults } from 'screens/Offers/NoResults/NoResults'
 import { Banner } from 'ui-kit/Banners/Banner/Banner'
 import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { Pagination } from 'ui-kit/Pagination/Pagination'
-import Spinner from 'ui-kit/Spinner/Spinner'
+import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import styles from './Offers.module.scss'
 import { OffersTableBody } from './OffersTableBody/OffersTableBody'

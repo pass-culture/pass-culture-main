@@ -21,7 +21,7 @@ import { getBookableOfferStockPrice } from '../utils/adageOfferStocks'
 
 import styles from './AdageOfferHeader.module.scss'
 
-export default function AdageOfferHeader({
+export function AdageOfferHeader({
   offer,
   adageUser,
   isPreview,

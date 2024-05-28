@@ -7,7 +7,7 @@ import fullMoreIcon from 'icons/full-more.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
-import EmailInputRow from './EmailInputRow/EmailInputRow'
+import { EmailInputRow } from './EmailInputRow/EmailInputRow'
 import styles from './FormNotifications.module.scss'
 
 interface FormNotificationsProps {

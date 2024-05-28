@@ -37,7 +37,7 @@ import { selectCurrentOffererId } from 'store/user/selectors'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Tabs } from 'ui-kit/Tabs/Tabs'
-import Titles from 'ui-kit/Titles/Titles'
+import { Titles } from 'ui-kit/Titles/Titles'
 
 import { SearchFilters } from './SearchFilters/SearchFilters'
 

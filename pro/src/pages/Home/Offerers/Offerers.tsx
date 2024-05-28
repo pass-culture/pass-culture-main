@@ -10,7 +10,7 @@ import { SelectOption } from 'custom_types/form'
 import fullWaitIcon from 'icons/full-wait.svg'
 import strokePartyIcon from 'icons/stroke-party.svg'
 import { VenueList } from 'pages/Home/Venues/VenueList'
-import Spinner from 'ui-kit/Spinner/Spinner'
+import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { Card } from '../Card'
 

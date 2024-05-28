@@ -18,7 +18,7 @@ const addActionClass = (
     className: cn(style['form-layout-action'], element.props.className),
   })
 
-const Actions = ({
+export const Actions = ({
   children,
   className,
 }: FormLayoutActionsProps): JSX.Element => (
@@ -28,5 +28,3 @@ const Actions = ({
       : addActionClass(children)}
   </div>
 )
-
-export default Actions

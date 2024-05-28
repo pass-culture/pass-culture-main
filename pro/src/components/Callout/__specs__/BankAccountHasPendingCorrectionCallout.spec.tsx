@@ -3,7 +3,8 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import * as useAnalytics from 'app/App/analytics/firebase'
-import BankAccountHasPendingCorrectionCallout, {
+import {
+  BankAccountHasPendingCorrectionCallout,
   BankAccountHasPendingCorrectionCalloutProps,
 } from 'components/Callout/BankAccountHasPendingCorrectionCallout'
 import { BankAccountEvents } from 'core/FirebaseEvents/constants'

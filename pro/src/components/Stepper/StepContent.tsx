@@ -9,7 +9,7 @@ interface StepContent {
   stepIndex: number
 }
 
-const StepContent = ({ step, stepIndex }: StepContent): JSX.Element => {
+export const StepContent = ({ step, stepIndex }: StepContent): JSX.Element => {
   const stepContent = (
     <>
       <div className={styles['number']}>
@@ -34,5 +34,3 @@ const StepContent = ({ step, stepIndex }: StepContent): JSX.Element => {
     <div className={styles['step']}>{stepContent}</div>
   )
 }
-
-export default StepContent

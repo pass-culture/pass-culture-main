@@ -42,7 +42,7 @@ import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { BaseTimePicker } from 'ui-kit/form/TimePicker/BaseTimePicker'
 import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
 import { Pagination } from 'ui-kit/Pagination/Pagination'
-import Spinner from 'ui-kit/Spinner/Spinner'
+import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { getToday } from 'utils/date'
 import { hasErrorCode } from 'utils/error'
 import {
@@ -50,9 +50,9 @@ import {
   getLocalDepartementDateTimeFromUtc,
 } from 'utils/timezone'
 
-import ActionBar from '../ActionBar/ActionBar'
-import DialogStockEventDeleteConfirm from '../DialogStockDeleteConfirm/DialogStockEventDeleteConfirm'
-import DialogStocksEventEditConfirm from '../DialogStocksEventEditConfirm/DialogStocksEventEditConfirm'
+import { ActionBar } from '../ActionBar/ActionBar'
+import { DialogStockEventDeleteConfirm } from '../DialogStockDeleteConfirm/DialogStockEventDeleteConfirm'
+import { DialogStocksEventEditConfirm } from '../DialogStocksEventEditConfirm/DialogStocksEventEditConfirm'
 import useNotifyFormError from '../hooks/useNotifyFormError'
 import { RecurrenceFormValues } from '../StocksEventCreation/form/types'
 import { RecurrenceForm } from '../StocksEventCreation/RecurrenceForm'
@@ -117,7 +117,7 @@ interface StocksEventEditionProps {
   offer: GetIndividualOfferResponseModel
 }
 
-const StocksEventEdition = ({
+export const StocksEventEdition = ({
   offer,
 }: StocksEventEditionProps): JSX.Element => {
   // utilities
@@ -892,5 +892,3 @@ const StocksEventEdition = ({
     </FormikProvider>
   )
 }
-
-export default StocksEventEdition

@@ -22,7 +22,7 @@ export interface ActionBarProps {
   dirtyForm?: boolean
 }
 
-const ActionBar = ({
+export const ActionBar = ({
   onClickNext,
   onClickPrevious,
   isDisabled,
@@ -135,5 +135,3 @@ const ActionBar = ({
     </ActionsBarSticky>
   )
 }
-
-export default ActionBar

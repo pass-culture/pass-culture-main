@@ -32,7 +32,7 @@ const getAccessibilityLevels = ({
   return disabilityCompliance
 }
 
-export default function AdageOfferPublicSection({
+export function AdageOfferPublicSection({
   offer,
 }: AdageOfferPublicSectionProps) {
   const studentLevels = offer.students || []

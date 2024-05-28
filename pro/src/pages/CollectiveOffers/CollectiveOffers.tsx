@@ -20,7 +20,7 @@ import { Audience } from 'core/shared/types'
 import useCurrentUser from 'hooks/useCurrentUser'
 import { formatAndOrderVenues } from 'repository/venuesService'
 import { Offers } from 'screens/Offers/Offers'
-import Spinner from 'ui-kit/Spinner/Spinner'
+import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 export const CollectiveOffers = (): JSX.Element => {
   const urlSearchFilters = useQuerySearchFilters()

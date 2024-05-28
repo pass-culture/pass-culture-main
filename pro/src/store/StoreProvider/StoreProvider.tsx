@@ -5,7 +5,7 @@ import { api } from 'apiClient/api'
 import { SAVED_OFFERER_ID_KEY } from 'core/shared/constants'
 import { updateFeatures } from 'store/features/reducer'
 import { updateSelectedOffererId, updateUser } from 'store/user/reducer'
-import Spinner from 'ui-kit/Spinner/Spinner'
+import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { localStorageAvailable } from 'utils/localStorageAvailable'
 
 import styles from './StoreProvider.module.scss'
@@ -15,7 +15,7 @@ interface StoreProviderProps {
   isAdageIframe?: boolean
 }
 
-const StoreProvider = ({
+export const StoreProvider = ({
   children,
   isAdageIframe = false,
 }: StoreProviderProps) => {
@@ -72,5 +72,3 @@ const StoreProvider = ({
 
   return children
 }
-
-export default StoreProvider

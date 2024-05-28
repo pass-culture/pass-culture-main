@@ -12,7 +12,7 @@ import * as useAnalytics from 'app/App/analytics/firebase'
 import { BankAccountEvents } from 'core/FirebaseEvents/constants'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import ReimbursementBankAccount from '../ReimbursementBankAccount'
+import { ReimbursementBankAccount } from '../ReimbursementBankAccount'
 
 const mockLogEvent = vi.fn()
 const mockUpdateButtonClick = vi.fn()

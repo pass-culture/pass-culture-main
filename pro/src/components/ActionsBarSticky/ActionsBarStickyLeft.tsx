@@ -6,8 +6,8 @@ interface ActionsBarStickyLeftProps {
   children: React.ReactNode
 }
 
-const Left = ({ children }: ActionsBarStickyLeftProps): JSX.Element | null => {
+export const Left = ({
+  children,
+}: ActionsBarStickyLeftProps): JSX.Element | null => {
   return children ? <div className={style['left']}>{children}</div> : null
 }
-
-export default Left

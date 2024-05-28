@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 
 import * as useIsElementVisible from 'hooks/useIsElementVisible'
 
-import Carousel from '../Carousel'
+import { Carousel } from '../Carousel'
 
 vi.mock('hooks/useIsElementVisible', () => ({
   default: vi.fn(() => [false, false]),

@@ -3,7 +3,7 @@ import useSWR from 'swr'
 
 import { AdageFrontRoles } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import Breadcrumb, { Crumb } from 'components/Breadcrumb/Breadcrumb'
+import { Breadcrumb, Crumb } from 'components/Breadcrumb/Breadcrumb'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
@@ -15,7 +15,7 @@ import strokeStarIcon from 'icons/stroke-star.svg'
 import strokeVenueIcon from 'icons/stroke-venue.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import Spinner from 'ui-kit/Spinner/Spinner'
+import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import useAdageUser from '../../hooks/useAdageUser'
 import Offer from '../OffersInstantSearch/OffersSearch/Offers/Offer'

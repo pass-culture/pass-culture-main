@@ -2,7 +2,8 @@ import { render, screen } from '@testing-library/react'
 
 import { defaultCollectiveOffer } from 'utils/adageFactories'
 
-import AdageOfferPartnerSection, {
+import {
+  AdageOfferPartnerSection,
   AdageOfferPartnerSectionProps,
 } from '../AdageOfferPartnerSection'
 

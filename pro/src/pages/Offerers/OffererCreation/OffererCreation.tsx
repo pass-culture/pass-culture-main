@@ -15,7 +15,7 @@ import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SirenInput } from 'ui-kit/form/SirenInput/SirenInput'
-import Titles from 'ui-kit/Titles/Titles'
+import { Titles } from 'ui-kit/Titles/Titles'
 
 import styles from './OffererCreation.module.scss'
 import { OffererCreationUnavailable } from './OffererCreationUnavailable/OffererCreationUnavailable'

@@ -33,7 +33,8 @@ import { DiffuseHelp } from '../../../DiffuseHelp/DiffuseHelp'
 import { CustomPagination } from '../../../Pagination/Pagination'
 import AdageSkeleton from '../../../Skeleton/AdageSkeleton'
 import { SurveySatisfaction } from '../../../SurveySatisfaction/SurveySatisfaction'
-import ToggleButtonGroup, {
+import {
+  ToggleButtonGroup,
   ToggleButton,
 } from '../../../ToggleButtonGroup/ToggleButtonGroup'
 

@@ -21,7 +21,7 @@ interface MultiDownloadButtonsModalType {
   filters: PreFiltersParams
 }
 
-const MultiDownloadButtonsModal = ({
+export const MultiDownloadButtonsModal = ({
   isDownloading,
   isLocalLoading,
   isFiltersDisabled,
@@ -99,5 +99,3 @@ const MultiDownloadButtonsModal = ({
     </div>
   )
 }
-
-export default MultiDownloadButtonsModal

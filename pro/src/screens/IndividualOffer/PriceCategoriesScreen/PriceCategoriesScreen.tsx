@@ -16,7 +16,7 @@ import { isOfferAllocineSynchronized } from 'core/Offers/utils/synchronization'
 import useNotification from 'hooks/useNotification'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 
-import ActionBar from '../ActionBar/ActionBar'
+import { ActionBar } from '../ActionBar/ActionBar'
 import { getSuccessMessage } from '../utils/getSuccessMessage'
 
 import { computeInitialValues } from './form/computeInitialValues'

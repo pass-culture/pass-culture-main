@@ -10,7 +10,7 @@ import {
 import { getIndividualOfferFactory } from 'utils/individualApiFactories'
 
 import { FORM_DEFAULT_VALUES } from '../../constants'
-import setFormReadOnlyFields from '../setFormReadOnlyFields'
+import { setFormReadOnlyFields } from '../setFormReadOnlyFields'
 
 describe('setFormReadOnlyFields', () => {
   it('should return empty array when no offer is given', () => {

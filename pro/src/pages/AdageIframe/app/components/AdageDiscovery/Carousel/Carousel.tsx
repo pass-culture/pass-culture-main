@@ -20,7 +20,7 @@ type CarouselProps = {
   className?: string
 }
 
-export default function Carousel({
+export function Carousel({
   title,
   elements,
   onLastCarouselElementVisible,
