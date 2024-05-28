@@ -707,11 +707,12 @@ def edit_product(body: serialization.ProductOfferEdition) -> serialization.Produ
     Will update only the non-blank fields.
     If you want to keep the current value of certains fields, leave them `undefined`.
     """
-    offer = (
-        utils.retrieve_offer_relations_query(utils.retrieve_offer_query(body.offer_id))
-        .filter(sqla.not_(offers_models.Offer.isEvent))
-        .one_or_none()
-    )
+    query = utils.retrieve_offer_query(body.offer_id)
+    query = utils.retrieve_offer_relations_query(query)
+    query = utils.load_venue_and_provider_query(query)
+    query = query.filter(sqla.not_(offers_models.Offer.isEvent))
+
+    offer = query.one_or_none()
 
     if not offer:
         raise api_errors.ApiErrors({"offerId": ["The product offer could not be found"]}, status_code=404)
@@ -745,6 +746,12 @@ def edit_product(body: serialization.ProductOfferEdition) -> serialization.Produ
     except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as e:
         raise api_errors.ApiErrors(e.errors, status_code=400)
 
+    # TODO(jeremieb): this should not be needed. BUT since datetime from
+    # db are not timezone aware and those from the request are...
+    # things get complicated during serialization (which does not
+    # know how to serialize timezone-aware datetime). So... reload
+    # everything and use data from the db.
+    offer = query.one_or_none()
     return serialization.ProductOfferResponse.build_product_offer(offer)
 
 
