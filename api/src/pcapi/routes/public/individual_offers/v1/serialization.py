@@ -530,6 +530,11 @@ STOCK_EDITION_FIELD = pydantic_v1.Field(
 )
 
 
+class OfferName(pydantic_v1.ConstrainedStr):
+    min_length = 1
+    max_length = 140
+
+
 class ProductOfferEdition(OfferEditionBase):
     offer_id: int
     category_related_fields: product_category_edition_fields | None = pydantic_v1.Field(
@@ -537,6 +542,8 @@ class ProductOfferEdition(OfferEditionBase):
         description="To override category related fields, the category must be specified, even if it cannot be changed. Other category related fields may be left undefined to keep their current value.",
     )
     stock: StockEdition | None = STOCK_EDITION_FIELD
+    name: OfferName | None = fields.OFFER_NAME
+    description: str | None = fields.OFFER_DESCRIPTION
 
     class Config:
         extra = "forbid"

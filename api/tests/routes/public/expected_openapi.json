@@ -6585,6 +6585,13 @@
                         "title": "Itemcollectiondetails",
                         "type": "string"
                     },
+                    "name": {
+                        "maxLength": 140,
+                        "minLength": 1,
+                        "nullable": true,
+                        "title": "Name",
+                        "type": "string"
+                    },
                     "offerId": {
                         "title": "Offerid",
                         "type": "integer"

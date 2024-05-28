@@ -1,5 +1,6 @@
 import datetime
 
+from flask import url_for
 import pytest
 
 from pcapi import settings
@@ -9,6 +10,8 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.core.testing import assert_num_queries
+from pcapi.models import db
 from pcapi.utils import human_ids
 
 from tests.routes import image_data
@@ -312,3 +315,38 @@ class PatchProductTest:
                 "Only ABO_BIBLIOTHEQUE, ABO_CONCERT, ABO_LIVRE_NUMERIQUE, ABO_MEDIATHEQUE, ABO_PLATEFORME_MUSIQUE, ABO_PLATEFORME_VIDEO, ABO_PRATIQUE_ART, ABO_PRESSE_EN_LIGNE, ABO_SPECTACLE, ACHAT_INSTRUMENT, APP_CULTURELLE, AUTRE_SUPPORT_NUMERIQUE, CAPTATION_MUSIQUE, CARTE_JEUNES, CARTE_MUSEE, LIVRE_AUDIO_PHYSIQUE, LIVRE_NUMERIQUE, LOCATION_INSTRUMENT, PARTITION, PLATEFORME_PRATIQUE_ARTISTIQUE, PODCAST, PRATIQUE_ART_VENTE_DISTANCE, SPECTACLE_ENREGISTRE, SUPPORT_PHYSIQUE_FILM, TELECHARGEMENT_LIVRE_AUDIO, TELECHARGEMENT_MUSIQUE, VISITE_VIRTUELLE, VOD products can be edited"
             ]
         }
+
+    def test_update_name_and_description(self, client):
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
+        product_offer = offers_factories.ThingOfferFactory(
+            venue=venue,
+            lastProvider=api_key.provider,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+        )
+
+        offer_id = product_offer.id
+        new_name = product_offer.name + " updated"
+        new_desc = product_offer.description + " updated"
+
+        # 1. get api key
+        # 2. check FF
+        # 3. get offer
+        # 4. get offerer provider
+        # 5. get venue
+        # 6. update offer
+        # 7. get offer
+        # 8. get mediation
+        # 9. get stock
+        with assert_num_queries(9):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+                url_for("public_api.v1_public_api.individual_offers.v1_blueprint.edit_product"),
+                json={"offerId": offer_id, "name": new_name, "description": new_desc},
+            )
+
+            assert response.status_code == 200
+            assert response.json["name"] == new_name
+            assert response.json["description"] == new_desc
+
+        db.session.refresh(product_offer)
+        assert product_offer.name == new_name
+        assert product_offer.description == new_desc
