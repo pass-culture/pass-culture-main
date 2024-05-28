@@ -82,7 +82,6 @@ export const Homepage = (): JSX.Element => {
       new Date(formatBrowserTimezonedDateAsUTC(new Date()))
 
   const [isNewNavEnabled, setIsNewNavEnabled] = useState(false)
-  const [isUserOffererValidated, setIsUserOffererValidated] = useState(false)
   const [seesNewNavAvailableBanner, setSeesNewNavAvailableBanner] = useState(
     userClosedBetaTestBanner && !hasNewSideBarNavigation && isEligibleToNewNav
   )
@@ -119,21 +118,19 @@ export const Homepage = (): JSX.Element => {
         const offerer = await api.getOfferer(Number(offererIdParam))
         localStorage.setItem(SAVED_OFFERER_ID_KEY, offererIdParam)
         dispatch(updateSelectedOffererId(Number(offererIdParam)))
-        setIsUserOffererValidated(true)
 
         return offerer
       } catch (error) {
         if (hasStatusCode(error) && error.status === HTTP_STATUS.FORBIDDEN) {
-          setIsUserOffererValidated(false)
-          return null
+          throw error
         }
+        return null
       }
-
-      return null
     },
-    { fallbackData: null }
+    { fallbackData: null, shouldRetryOnError: false, onError: () => {} }
   )
   const selectedOfferer = selectedOffererQuery.data
+  const isUserOffererValidated = !selectedOffererQuery.error
 
   const hasNoVenueVisible = useMemo(() => {
     const physicalVenues = getPhysicalVenuesFromOfferer(selectedOfferer)
@@ -222,13 +219,13 @@ export const Homepage = (): JSX.Element => {
         <LinkVenueCallout offerer={selectedOfferer} />
         <BankAccountHasPendingCorrectionCallout offerer={selectedOfferer} />
       </div>
-
-      {!selectedOffererQuery.isLoading && (
-        <OffererBanners
-          isUserOffererValidated={isUserOffererValidated}
-          offerer={selectedOfferer}
-        />
-      )}
+      {!selectedOffererQuery.isValidating &&
+        (selectedOffererQuery.data || selectedOffererQuery.error) && (
+          <OffererBanners
+            isUserOffererValidated={isUserOffererValidated}
+            offerer={selectedOfferer}
+          />
+        )}
 
       {selectedOfferer?.isValidated && selectedOfferer.isActive && (
         <section className={styles['section']}>
