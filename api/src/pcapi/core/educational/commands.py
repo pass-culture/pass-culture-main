@@ -150,11 +150,20 @@ def synchronize_offerers_from_adage_cultural_partners(with_timestamp: bool = Fal
         adage_api.synchronize_adage_ids_on_offerers(adage_cultural_partners.partners)
 
 
+# TODO(EAC): remove this command once the eac_notify_pro_one_day_before
+# is deployed and used in production
 @blueprint.cli.command("eac_notify_pro_one_day")
 @log_cron_with_transaction
 def notify_pro_users_one_day() -> None:
     """Notify pro users 1 day before EAC event."""
-    educational_api_booking.notify_pro_users_one_day()
+    educational_api_booking.notify_pro_users_one_day_before()
+
+
+@blueprint.cli.command("eac_notify_pro_one_day_before")
+@log_cron_with_transaction
+def notify_pro_users_one_day_before() -> None:
+    """Notify pro users 1 day before EAC event."""
+    educational_api_booking.notify_pro_users_one_day_before()
 
 
 @blueprint.cli.command("eac_handle_pending_collective_booking_j3")

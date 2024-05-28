@@ -456,7 +456,7 @@ class EACPendingBookingWithConfirmationLimitDate3DaysTest:
 class NotifyProUserOneDayTest:
     @time_machine.travel("2020-01-05 10:00:00")
     @mock.patch("pcapi.core.mails.transactional.educational.eac_one_day_before_event.mails.send")
-    def test_notify_pro_users_one_day(self, mock_mail_sender) -> None:
+    def test_notify_pro_users_one_day_before(self, mock_mail_sender) -> None:
         # sould send email
         booking1 = educational_factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__name="booking1",
@@ -507,7 +507,7 @@ class NotifyProUserOneDayTest:
             collectiveStock__beginningDatetime=datetime.datetime(2021, 1, 6),
             status=educational_models.CollectiveBookingStatus.CONFIRMED,
         )
-        educational_api_booking.notify_pro_users_one_day()
+        educational_api_booking.notify_pro_users_one_day_before()
         assert mock_mail_sender.call_count == 2
         for args in mock_mail_sender.call_args_list:
             data = args.kwargs["data"]
