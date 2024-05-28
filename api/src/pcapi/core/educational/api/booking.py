@@ -320,6 +320,12 @@ def notify_pro_users_one_day_before() -> None:
         transactional_mails.send_eac_alert_one_day_before_event(booking)
 
 
+def notify_pro_users_one_day_after() -> None:
+    bookings = educational_repository.find_bookings_happening_in_x_days(-1)
+    for booking in bookings:
+        transactional_mails.send_eac_alert_one_day_after_event(booking)
+
+
 def notify_pro_pending_booking_confirmation_limit_in_3_days() -> None:
     bookings = find_pending_booking_confirmation_limit_date_in_3_days()
     for booking in bookings:
