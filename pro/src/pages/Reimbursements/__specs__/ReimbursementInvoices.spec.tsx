@@ -84,7 +84,7 @@ const BASE_BANK_ACCOUNTS: Array<BankAccountResponseModel> = [
 
 describe('reimbursementsWithFilters', () => {
   beforeEach(() => {
-    vi.spyOn(api, 'getInvoicesV2').mockResolvedValueOnce(BASE_INVOICES)
+    vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
     vi.spyOn(
       api,
       'getOffererBankAccountsAndAttachedVenues'
@@ -108,7 +108,7 @@ describe('reimbursementsWithFilters', () => {
       undefined,
       1
     )
-    expect(screen.queryAllByRole('row').length).toEqual(4)
+    expect((await screen.findAllByRole('row')).length).toEqual(4)
     expect(screen.queryAllByRole('columnheader').length).toEqual(5)
 
     const firstLine = [
@@ -145,7 +145,7 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should display new invoice table if FF WIP_ENABLE_FINANCE_INCIDENT is enable', async () => {
-    vi.spyOn(api, 'getInvoicesV2').mockResolvedValueOnce([
+    vi.spyOn(api, 'getInvoicesV2').mockResolvedValue([
       {
         reference: 'J123456789',
         date: '2022-11-02',
@@ -179,8 +179,8 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('shoud render no invoice yet information block', async () => {
-    vi.spyOn(api, 'getInvoicesV2').mockResolvedValueOnce([])
-    vi.spyOn(api, 'hasInvoice').mockResolvedValueOnce({ hasInvoice: false })
+    vi.spyOn(api, 'getInvoicesV2').mockResolvedValue([])
+    vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: false })
     renderReimbursementsInvoices()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
@@ -199,7 +199,7 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('shoud render error block', async () => {
-    vi.spyOn(api, 'getInvoicesV2').mockRejectedValueOnce([])
+    vi.spyOn(api, 'getInvoicesV2').mockRejectedValue([])
     renderReimbursementsInvoices()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
@@ -300,7 +300,9 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should disable filter if no invoices', async () => {
-    vi.spyOn(api, 'hasInvoice').mockResolvedValueOnce({ hasInvoice: false })
+    vi.spyOn(api, 'getInvoicesV2').mockResolvedValue([])
+
+    vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: false })
     renderReimbursementsInvoices()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
@@ -322,6 +324,7 @@ describe('reimbursementsWithFilters', () => {
 
   it('should render even without context', async () => {
     vi.spyOn(router, 'useOutletContext').mockReturnValue(undefined)
+
     renderReimbursementsInvoices()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
