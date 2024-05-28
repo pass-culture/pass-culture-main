@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
@@ -70,5 +70,21 @@ describe('SideNavLinks', () => {
     })
 
     expect(screen.queryByText('Page sur l’application')).not.toBeInTheDocument()
+  })
+
+  it('should not display create offre button if offerer is not validated', async () => {
+    vi.spyOn(api, 'getOfferer').mockRejectedValueOnce({})
+
+    renderSideNavLinks({
+      user: sharedCurrentUserFactory({ hasPartnerPage: false }),
+    })
+
+    await waitFor(() => {
+      expect(api.getOfferer).toHaveBeenCalled()
+    })
+
+    expect(
+      screen.queryByRole('link', { name: 'Créer une offre' })
+    ).not.toBeInTheDocument()
   })
 })

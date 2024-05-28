@@ -1,6 +1,8 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
+import { api } from 'apiClient/api'
+import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
@@ -9,10 +11,10 @@ import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { AppLayout, AppLayoutProps } from '../AppLayout'
 
-const renderApp = (
+const renderApp = async (
   props: AppLayoutProps,
   options?: RenderWithProvidersOptions
-) =>
+) => {
   renderWithProviders(
     <AppLayout {...props}>
       <p>Sub component</p>
@@ -23,13 +25,24 @@ const renderApp = (
       ...options,
     }
   )
+  await waitFor(() => {
+    expect(api.getOfferer).toHaveBeenCalled()
+  })
+}
 
 describe('src | AppLayout', () => {
   let props: AppLayoutProps
 
+  beforeEach(() => {
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+      ...defaultGetOffererResponseModel,
+      isValidated: true,
+    })
+  })
+
   describe('side navigation', () => {
-    it('should render the new header when the WIP_ENABLE_PRO_SIDE_NAV is active', () => {
-      renderApp(props, {
+    it('should render the new header when the WIP_ENABLE_PRO_SIDE_NAV is active', async () => {
+      await renderApp(props, {
         user: sharedCurrentUserFactory({
           navState: {
             newNavDate: '2021-01-01',
@@ -41,8 +54,8 @@ describe('src | AppLayout', () => {
       expect(screen.queryByAltText('Menu')).not.toBeInTheDocument()
     })
 
-    it('should display review banner if user has new nav active', () => {
-      renderApp(props, {
+    it('should display review banner if user has new nav active', async () => {
+      await renderApp(props, {
         user: sharedCurrentUserFactory({
           navState: {
             newNavDate: '2021-01-01',
@@ -56,8 +69,8 @@ describe('src | AppLayout', () => {
       ).toBeInTheDocument()
     })
 
-    it('should not display review banner if user has new nav active but is not eligible (from a/b test)', () => {
-      renderApp(props, {
+    it('should not display review banner if user has new nav active but is not eligible (from a/b test)', async () => {
+      await renderApp(props, {
         user: sharedCurrentUserFactory({
           navState: {
             newNavDate: '2021-01-01',
@@ -72,8 +85,8 @@ describe('src | AppLayout', () => {
     })
 
     describe('on smaller screen sizes', () => {
-      beforeEach(() => {
-        renderApp(props, {
+      beforeEach(async () => {
+        await renderApp(props, {
           user: sharedCurrentUserFactory({
             navState: {
               newNavDate: '2021-01-01',

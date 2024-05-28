@@ -1,5 +1,5 @@
 import classnames from 'classnames'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { NavLink, useLocation } from 'react-router-dom'
 import useSWR from 'swr'
@@ -49,11 +49,19 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   const isIndividualSectionOpen = useSelector(selectIsIndividualSectionOpen)
   const isCollectiveSectionOpen = useSelector(selectIsCollectiveSectionOpen)
   const selectedOffererId = useSelector(selectCurrentOffererId)
+  const [isUserOffererValidated, setIsUserOffererValidated] = useState(false)
 
   const selectedOffererQuery = useSWR(
     [GET_OFFERER_QUERY_KEY, selectedOffererId],
     async ([, offererId]) => {
-      return await api.getOfferer(Number(offererId))
+      try {
+        const response = await api.getOfferer(Number(offererId))
+        setIsUserOffererValidated(true)
+        return response
+      } catch (error) {
+        setIsUserOffererValidated(false)
+        return null
+      }
     }
   )
 
@@ -85,14 +93,16 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
       })}
     >
       <div className={styles['nav-links-first-group']}>
-        <li className={styles['nav-links-create-offer-wrapper']}>
-          <ButtonLink
-            variant={ButtonVariant.PRIMARY}
-            link={{ isExternal: false, to: createOfferPageUrl }}
-          >
-            Créer une offre
-          </ButtonLink>
-        </li>
+        {!selectedOffererQuery.isLoading && isUserOffererValidated && (
+          <li className={styles['nav-links-create-offer-wrapper']}>
+            <ButtonLink
+              variant={ButtonVariant.PRIMARY}
+              link={{ isExternal: false, to: createOfferPageUrl }}
+            >
+              Créer une offre
+            </ButtonLink>
+          </li>
+        )}
         <li>
           <NavLink
             to="/accueil"
