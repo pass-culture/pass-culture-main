@@ -2343,9 +2343,9 @@ def synchronize_accessibility_provider(venue: models.Venue, force_sync: bool = F
                 db.session.add(venue.accessibilityProvider)
         else:
             logger.info(
-                "Slug %s has not been found at acceslibre. Removing AccessibilityProvider %d",
+                "Slug %s has not been found at acceslibre. Removing AccessibilityProvider for venue %d",
                 slug,
-                venue.accessibilityProvider.id,
+                venue.id,
             )
             db.session.delete(venue.accessibilityProvider)
 
