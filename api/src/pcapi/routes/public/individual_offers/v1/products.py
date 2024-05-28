@@ -734,6 +734,8 @@ def edit_product(body: serialization.ProductOfferEdition) -> serialization.Produ
                 isDuo=updated_offer_from_body.get("enable_double_bookings", offers_api.UNCHANGED),
                 withdrawalDetails=updated_offer_from_body.get("withdrawal_details", offers_api.UNCHANGED),
                 idAtProvider=updated_offer_from_body.get("id_at_provider", offers_api.UNCHANGED),
+                name=updated_offer_from_body.get("name", offers_api.UNCHANGED),
+                description=updated_offer_from_body.get("description", offers_api.UNCHANGED),
                 **utils.compute_accessibility_edition_fields(updated_offer_from_body.get("accessibility")),
             )
             if body.image:

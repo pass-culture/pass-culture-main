@@ -32,6 +32,7 @@ from pcapi.utils import date
 logger = logging.getLogger(__name__)
 
 EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER = {
+    "name",
     "audioDisabilityCompliant",
     "externalTicketOfficeUrl",
     "mentalDisabilityCompliant",
@@ -42,6 +43,8 @@ EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER = {
 EDITABLE_FIELDS_FOR_ALLOCINE_OFFER = {"isDuo"} | EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER
 EDITABLE_FIELDS_FOR_ALLOCINE_STOCK = {"bookingLimitDatetime", "price", "priceCategory", "quantity"}
 EDITABLE_FIELDS_FOR_INDIVIDUAL_OFFERS_API_PROVIDER = {
+    "name",
+    "description",
     "isActive",
     "isDuo",
     "bookingContact",
