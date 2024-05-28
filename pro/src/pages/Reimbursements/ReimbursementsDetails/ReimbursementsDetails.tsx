@@ -24,6 +24,7 @@ import { DetailsFilters } from './DetailsFilters'
 import styles from './ReimbursementDetails.module.scss'
 
 type CsvQueryParams = {
+  offererId?: string
   bankAccountId?: string
   reimbursementPeriodBeginningDate?: string
   reimbursementPeriodEndingDate?: string
@@ -33,10 +34,14 @@ const ALL_BANK_ACCOUNTS_OPTION_ID = 'allBankAccounts'
 
 const getCsvQueryParams = (
   bankAccount: string,
+  offererId?: number,
   periodStart?: string,
   periodEnd?: string
 ) => {
   const params: CsvQueryParams = {}
+  if (offererId) {
+    params.offererId = offererId.toString()
+  }
   if (periodStart) {
     params.reimbursementPeriodBeginningDate = periodStart
   }
@@ -67,11 +72,14 @@ export const ReimbursementsDetails = (): JSX.Element => {
   const isPeriodFilterSelected = periodStart && periodEnd
   const requireBankAccountFilterForAdmin =
     currentUser.isAdmin && bankAccount === ALL_BANK_ACCOUNTS_OPTION_ID
-  const shouldDisableButtons =
-    !isPeriodFilterSelected || requireBankAccountFilterForAdmin
 
   const { selectedOfferer }: ReimbursementsContextProps =
     useOutletContext() ?? { selectedOfferer: null }
+
+  const shouldDisableButtons =
+    !isPeriodFilterSelected ||
+    requireBankAccountFilterForAdmin ||
+    !selectedOfferer
 
   const bankAccountQuery = useSWR(
     selectedOfferer
@@ -113,8 +121,12 @@ export const ReimbursementsDetails = (): JSX.Element => {
 
   const downloadCSVFile = async () => {
     try {
+      if (!selectedOfferer) {
+        return
+      }
       downloadFile(
         await api.getReimbursementsCsv(
+          selectedOfferer.id,
           bankAccount !== ALL_BANK_ACCOUNTS_OPTION_ID
             ? Number(bankAccount)
             : undefined,
@@ -144,7 +156,7 @@ export const ReimbursementsDetails = (): JSX.Element => {
         <ButtonLink
           isDisabled={shouldDisableButtons}
           link={{
-            to: `/remboursements-details?${getCsvQueryParams(bankAccount, periodStart, periodEnd)}`,
+            to: `/remboursements-details?${getCsvQueryParams(bankAccount, selectedOfferer?.id, periodStart, periodEnd)}`,
             target: '_blank',
             isExternal: false,
           }}

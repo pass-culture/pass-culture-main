@@ -1,3 +1,4 @@
+import dataclasses
 import datetime
 import decimal
 from io import BytesIO
@@ -21,6 +22,7 @@ from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import factories as geography_factories
 from pcapi.core.mails import testing as mails_testing
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
@@ -1141,6 +1143,36 @@ class ListOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert rows[0]["Tarif"] == "10,00 € - 15,00 €"
 
+    def test_list_offers_with_offerer_confidence_rule(self, client, pro_fraud_admin):
+        rule = offerers_factories.ManualReviewOffererConfidenceRuleFactory(offerer__name="Offerer")
+        offer = offers_factories.OfferFactory(venue__managingOfferer=rule.offerer, venue__name="Venue")
+
+        client = client.with_bo_session_auth(pro_fraud_admin)
+        query_args = self._get_query_args_by_id(offer.id)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert rows[0]["Structure"] == "Offerer Revue manuelle"
+        assert rows[0]["Lieu"] == "Venue"
+
+    def test_list_offers_with_venue_confidence_rule(self, client, pro_fraud_admin):
+        rule = offerers_factories.ManualReviewVenueConfidenceRuleFactory(
+            venue__name="Venue", venue__managingOfferer__name="Offerer"
+        )
+        offer = offers_factories.OfferFactory(venue=rule.venue)
+
+        client = client.with_bo_session_auth(pro_fraud_admin)
+        query_args = self._get_query_args_by_id(offer.id)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert rows[0]["Structure"] == "Offerer"
+        assert rows[0]["Lieu"] == "Venue Revue manuelle"
+
 
 class EditOfferTest(PostEndpointHelper):
     endpoint = "backoffice_web.offer.edit_offer"
@@ -1371,6 +1403,11 @@ class RejectOfferTest(PostEndpointHelper):
 
     def test_reject_offer(self, legit_user, authenticated_client):
         offer_to_reject = offers_factories.OfferFactory(validation=offers_models.OfferValidationStatus.APPROVED)
+        confirmed_booking = bookings_factories.BookingFactory(
+            user=users_factories.BeneficiaryGrant18Factory(),
+            stock__offer=offer_to_reject,
+            status=BookingStatus.CONFIRMED,
+        )
 
         response = self.post_to_endpoint(authenticated_client, offer_id=offer_to_reject.id)
         assert response.status_code == 303
@@ -1383,6 +1420,17 @@ class RejectOfferTest(PostEndpointHelper):
         assert offer_to_reject.lastValidationType == OfferValidationType.MANUAL
         assert offer_to_reject.lastValidationDate.date() == datetime.date.today()
         assert offer_to_reject.lastValidationPrice is None
+
+        assert len(mails_testing.outbox) == 2
+        assert mails_testing.outbox[0]["To"] == confirmed_booking.user.email
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
+            TransactionalEmail.BOOKING_CANCELLATION_BY_PRO_TO_BENEFICIARY.value
+        )
+        assert mails_testing.outbox[0]["params"]["REJECTED"] is True
+        assert mails_testing.outbox[1]["To"] == offer_to_reject.venue.bookingEmail
+        assert mails_testing.outbox[1]["template"] == dataclasses.asdict(
+            TransactionalEmail.OFFER_VALIDATED_TO_REJECTED_TO_PRO.value
+        )
 
 
 class GetRejectOfferFormTest(GetEndpointHelper):
@@ -1432,11 +1480,13 @@ class BatchOfferRejectTest(PostEndpointHelper):
 
     def test_batch_reject_offers(self, legit_user, authenticated_client):
         beneficiary = users_factories.BeneficiaryGrant18Factory()
-        offers = offers_factories.OfferFactory.create_batch(3, validation=offers_models.OfferValidationStatus.DRAFT)
+        draft_offer = offers_factories.OfferFactory(validation=offers_models.OfferValidationStatus.DRAFT)
+        pending_offer = offers_factories.OfferFactory(validation=offers_models.OfferValidationStatus.PENDING)
+        confirmed_offer = offers_factories.OfferFactory(validation=offers_models.OfferValidationStatus.APPROVED)
         confirmed_booking = bookings_factories.BookingFactory(
-            user=beneficiary, stock__offer=offers[0], status=BookingStatus.CONFIRMED
+            user=beneficiary, stock__offer=confirmed_offer, status=BookingStatus.CONFIRMED
         )
-        parameter_ids = ",".join(str(offer.id) for offer in offers)
+        parameter_ids = ",".join(str(offer.id) for offer in [draft_offer, pending_offer, confirmed_offer])
 
         assert confirmed_booking.status == BookingStatus.CONFIRMED
 
@@ -1444,13 +1494,33 @@ class BatchOfferRejectTest(PostEndpointHelper):
 
         assert confirmed_booking.status == BookingStatus.CANCELLED
         assert response.status_code == 303
-        for offer in offers:
+        for offer in [draft_offer, pending_offer, confirmed_offer]:
             db.session.refresh(offer)
             assert offer.lastValidationDate.strftime("%d/%m/%Y") == datetime.date.today().strftime("%d/%m/%Y")
             assert offer.isActive is False
             assert offer.lastValidationType is OfferValidationType.MANUAL
             assert offer.validation is offers_models.OfferValidationStatus.REJECTED
             assert offer.lastValidationAuthor == legit_user
+
+        assert len(mails_testing.outbox) == 4
+        emails_dict = {email_data["To"]: email_data for email_data in mails_testing.outbox}
+        assert confirmed_booking.user.email in emails_dict
+        assert emails_dict[confirmed_booking.user.email]["template"] == dataclasses.asdict(
+            TransactionalEmail.BOOKING_CANCELLATION_BY_PRO_TO_BENEFICIARY.value
+        )
+        assert emails_dict[confirmed_booking.user.email]["params"]["REJECTED"] is True
+        assert draft_offer.venue.bookingEmail in emails_dict
+        assert emails_dict[draft_offer.venue.bookingEmail]["template"] == dataclasses.asdict(
+            TransactionalEmail.OFFER_REJECTION_TO_PRO.value
+        )
+        assert pending_offer.venue.bookingEmail in emails_dict
+        assert emails_dict[pending_offer.venue.bookingEmail]["template"] == dataclasses.asdict(
+            TransactionalEmail.OFFER_PENDING_TO_REJECTED_TO_PRO.value
+        )
+        assert confirmed_offer.venue.bookingEmail in emails_dict
+        assert emails_dict[confirmed_offer.venue.bookingEmail]["template"] == dataclasses.asdict(
+            TransactionalEmail.OFFER_VALIDATED_TO_REJECTED_TO_PRO.value
+        )
 
 
 class GetOfferDetailsTest(GetEndpointHelper):

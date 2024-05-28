@@ -7,7 +7,6 @@ import { userEvent } from '@testing-library/user-event'
 import { format } from 'date-fns'
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
-import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import {
@@ -46,21 +45,13 @@ vi.mock('utils/date', async () => {
   }
 })
 
-vi.mock('react-router-dom', async () => ({
-  ...(await vi.importActual('react-router-dom')),
-  useFetcher: () => ({
-    submit: vi.fn(),
-  }),
-  useLoaderData: vi.fn(),
-}))
-
 const renderStockEventScreen = async (
   apiOffer: GetIndividualOfferResponseModel,
   apiStocks: GetOfferStockResponseModel[] = [],
   stocksCount?: number,
   searchParams = ''
 ) => {
-  vi.spyOn(router, 'useLoaderData').mockReturnValue({ offer: apiOffer })
+  vi.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
   vi.spyOn(api, 'getCategories').mockResolvedValue({
     categories: [],
     subcategories: [],

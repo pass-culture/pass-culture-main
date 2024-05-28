@@ -1,6 +1,5 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as router from 'react-router-dom'
 
 import { VenueTypeCode } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
@@ -8,7 +7,11 @@ import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { Events } from 'core/FirebaseEvents/constants'
 import { defaultGetVenue } from 'utils/collectiveApiFactories'
 import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import {
   VenueEditionHeader,
@@ -17,29 +20,22 @@ import {
 
 const mockLogEvent = vi.fn()
 
-const renderPartnerPages = (props: Partial<VenueEditionHeaderProps>) => {
+const renderPartnerPages = (
+  props: Partial<VenueEditionHeaderProps>,
+  options?: RenderWithProvidersOptions
+) => {
   renderWithProviders(
     <VenueEditionHeader
       offerer={{ ...defaultGetOffererResponseModel }}
       venue={{ ...defaultGetVenue }}
       venueTypes={[{ id: VenueTypeCode.FESTIVAL, label: 'Festival' }]}
       {...props}
-    />
+    />,
+    { ...options }
   )
 }
 
-vi.mock('react-router-dom', async () => ({
-  ...(await vi.importActual('react-router-dom')),
-  useLoaderData: vi.fn(),
-}))
-
 describe('PartnerPages', () => {
-  beforeEach(() => {
-    vi.spyOn(router, 'useLoaderData').mockReturnValue({
-      venueTypes: [{ id: VenueTypeCode.FESTIVAL, label: 'Festival' }],
-    })
-  })
-
   it('should display image upload if no image', async () => {
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
@@ -85,5 +81,23 @@ describe('PartnerPages', () => {
       'src',
       'https://www.example.com/image.png'
     )
+  })
+
+  it('should not display new offer button in new nav', () => {
+    renderPartnerPages(
+      {
+        venue: {
+          ...defaultGetVenue,
+          venueTypeCode: VenueTypeCode.FESTIVAL,
+        },
+      },
+      {
+        user: sharedCurrentUserFactory({
+          navState: { newNavDate: '2002-07-29T12:18:43.087097Z' },
+        }),
+      }
+    )
+
+    expect(screen.queryByText('Créer une offre')).not.toBeInTheDocument()
   })
 })

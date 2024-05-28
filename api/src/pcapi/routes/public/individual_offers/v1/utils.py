@@ -1,3 +1,4 @@
+import sqlalchemy as sqla
 from sqlalchemy import orm as sqla_orm
 
 from pcapi.core.offerers import models as offerers_models
@@ -150,3 +151,27 @@ def save_image(image_body: serialization.ImageBody, offer: offers_models.Offer) 
         raise api_errors.ApiErrors(
             errors={"imageFile": f"Bad image ratio: expected {str(error.expected)[:4]}, found {str(error.found)[:4]}"}
         )
+
+
+def get_event_with_details(event_id: int) -> offers_models.Offer | None:
+    return (
+        retrieve_offer_query(event_id)
+        .filter(offers_models.Offer.isEvent)
+        .outerjoin(offers_models.Offer.stocks.and_(sqla.not_(offers_models.Stock.isEventExpired)))
+        .options(sqla.orm.contains_eager(offers_models.Offer.stocks))
+        .options(
+            sqla.orm.joinedload(offers_models.Offer.priceCategories).joinedload(
+                offers_models.PriceCategory.priceCategoryLabel
+            )
+        )
+        .one_or_none()
+    )
+
+
+def get_price_category_from_event(
+    event: offers_models.Offer, price_category_id: int
+) -> offers_models.PriceCategory | None:
+    try:
+        return next(cat for cat in event.priceCategories if cat.id == price_category_id)
+    except StopIteration:
+        return None

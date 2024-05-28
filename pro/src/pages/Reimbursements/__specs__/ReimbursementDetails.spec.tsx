@@ -90,6 +90,16 @@ describe('reimbursementsWithFilters', () => {
     vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
   })
 
+  it('should display the reimbursement details callout message', async () => {
+    renderReimbursementsDetails()
+
+    expect(
+      await screen.findByText(
+        /Nouveau ! Les détails de remboursements seront bientôt téléchargeables depuis l’onglet justificatif./
+      )
+    ).toBeInTheDocument()
+  })
+
   it('should not disable buttons when the period dates are filled', async () => {
     renderReimbursementsDetails()
 
@@ -133,7 +143,7 @@ describe('reimbursementsWithFilters', () => {
     ).toBeEnabled()
     expect(screen.getByRole('link', { name: /Afficher/ })).toHaveAttribute(
       'href',
-      `/remboursements-details?reimbursementPeriodBeginningDate=2020-11-15&reimbursementPeriodEndingDate=2020-12-15&bankAccountId=${bankAccountId}`
+      `/remboursements-details?offererId=${contextData.selectedOfferer!.id}&reimbursementPeriodBeginningDate=2020-11-15&reimbursementPeriodEndingDate=2020-12-15&bankAccountId=${bankAccountId}`
     )
   })
 
@@ -195,7 +205,7 @@ describe('reimbursementsWithFilters', () => {
 
     expect(screen.getByText(/Afficher/)).toHaveAttribute(
       'href',
-      `/remboursements-details?reimbursementPeriodBeginningDate=1998-11-12&reimbursementPeriodEndingDate=1999-12-12&bankAccountId=${bankAccountId}`
+      `/remboursements-details?offererId=${contextData.selectedOfferer!.id}&reimbursementPeriodBeginningDate=1998-11-12&reimbursementPeriodEndingDate=1999-12-12&bankAccountId=${bankAccountId}`
     )
   })
 

@@ -38,6 +38,9 @@ class FeatureToggle(enum.Enum):
     DISABLE_EMS_EXTERNAL_BOOKINGS = "Désactiver les réservations externes EMS"
     DISPLAY_DMS_REDIRECTION = "Affiche une redirection vers DMS si ID Check est KO"
     EMS_CANCEL_PENDING_EXTERNAL_BOOKING = "Annuler les réservations externes EMS qui ont échouées"
+    ENABLE_API_ADRESSE_WHILE_CREATING_UPDATING_VENUE = (
+        "Activer les appels à l'API Adresse lors de création et modification des lieux"
+    )
     ENABLE_AUTO_VALIDATION_FOR_EXTERNAL_BOOKING = (
         "Valide automatiquement après 48h les offres issues de l'api billeterie cinéma"
     )
@@ -124,7 +127,6 @@ class FeatureToggle(enum.Enum):
     )
     WIP_OPENING_HOURS = "Activer les horaires d'ouverture sur la page partenaire"
     WIP_ENABLE_ADAGE_VISUALIZATION = "Activer la nouvelle manière de visualiser les offres dans la recherche d'ADAGE."
-    WIP_ACCESLIBRE = "Activer l'affichage des données Accès Libre sur les pages partenaires"
     WIP_ENABLE_TITELIVE_API_FOR_BOOKS = "Activer l'utilisation de l'API Titelive pour les synchronisations produits pour les livres(désactive l'utilisation de l'utilisation de FTP pour la synchro)"
     ENABLE_PRO_NEW_NAV_MODIFICATION = "Activer la modification du statut de la navigation du portail pro"
     WIP_ENABLE_NEW_HASHING_ALGORITHM = "Activer le nouveau système de hachage des clés publiques d'API"
@@ -160,6 +162,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.DISABLE_ENTERPRISE_API,
     FeatureToggle.DISPLAY_DMS_REDIRECTION,
     FeatureToggle.EMS_CANCEL_PENDING_EXTERNAL_BOOKING,
+    FeatureToggle.ENABLE_API_ADRESSE_WHILE_CREATING_UPDATING_VENUE,
     FeatureToggle.ENABLE_AUTO_VALIDATION_FOR_EXTERNAL_BOOKING,
     FeatureToggle.ENABLE_BEAMER,
     FeatureToggle.ENABLE_CODIR_OFFERERS_REPORT,  # only for production
@@ -181,7 +184,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
     FeatureToggle.LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC,
     FeatureToggle.SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS,
-    FeatureToggle.WIP_ACCESLIBRE,
     FeatureToggle.WIP_CONNECT_AS,
     FeatureToggle.WIP_ENABLE_ADAGE_PREVIEW_OFFER_IN_PRO,
     FeatureToggle.WIP_ENABLE_ADAGE_VISUALIZATION,

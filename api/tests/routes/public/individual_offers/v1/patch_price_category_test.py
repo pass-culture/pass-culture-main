@@ -1,15 +1,103 @@
+import collections
+import contextlib
 import datetime
 import decimal
 
+from flask import url_for
 import pytest
 
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
+from pcapi.models import db
+from pcapi.routes.shared.price import convert_to_cent
 
 from . import utils
 
 
-@pytest.mark.usefixtures("db_session")
+pytestmark = pytest.mark.usefixtures("db_session")
+
+
+EmptyGenerator = collections.abc.Generator[None, None, None]
+
+
+@contextlib.contextmanager
+def assert_event_and_price_category_did_not_change(event, price_category) -> EmptyGenerator:
+    old_price = price_category.price
+    old_label = price_category.priceCategoryLabel
+    old_event_prices = {stock.id: (stock.price, stock.priceCategoryId) for stock in event.stocks}
+
+    yield
+
+    db.session.refresh(price_category)
+    db.session.refresh(event)
+
+    new_price = price_category.price
+    new_label = price_category.priceCategoryLabel
+    new_event_prices = {stock.id: (stock.price, stock.priceCategoryId) for stock in event.stocks}
+
+    assert new_price == old_price
+    assert new_label == old_label
+    assert new_event_prices == old_event_prices
+
+
+@pytest.fixture(name="event_with_stock")
+def event_with_stock_fixture(stock):
+    return stock.offer
+
+
+class PatchPriceCategoryErrorsTest:
+    endpoint = "public_api.v1_public_api.individual_offers.v1_blueprint.patch_event_price_categories"
+
+    def test_cannot_access_resource_from_other_api_key(self, other_auth_client, event_with_stock, price_category):
+        kwargs = {"event_id": event_with_stock.id, "price_category_id": price_category.id}
+        json_data = {"price": convert_to_cent(price_category.price * 3)}
+
+        with assert_event_and_price_category_did_not_change(event_with_stock, price_category):
+            assert other_auth_client.patch(url_for(self.endpoint, **kwargs), json=json_data).status_code == 404
+
+    def test_unauthenticated(self, client, event_with_stock, price_category):
+        kwargs = {"event_id": event_with_stock.id, "price_category_id": price_category.id}
+        json_data = {"price": convert_to_cent(price_category.price * 3)}
+
+        with assert_event_and_price_category_did_not_change(event_with_stock, price_category):
+            assert client.patch(url_for(self.endpoint, **kwargs), json=json_data).status_code == 401
+
+    def test_unknown_event(self, auth_client, event_with_stock, price_category):
+        kwargs = {"event_id": event_with_stock.id * 16, "price_category_id": price_category.id}
+        json_data = {"price": convert_to_cent(price_category.price * 3)}
+
+        with assert_event_and_price_category_did_not_change(event_with_stock, price_category):
+            assert auth_client.patch(url_for(self.endpoint, **kwargs), json=json_data).status_code == 404
+
+    def test_unknown_price_category(self, auth_client, event_with_stock, price_category):
+        kwargs = {"event_id": event_with_stock.id, "price_category_id": price_category.id * 16}
+        json_data = {"price": convert_to_cent(price_category.price * 3)}
+
+        with assert_event_and_price_category_did_not_change(event_with_stock, price_category):
+            assert auth_client.patch(url_for(self.endpoint, **kwargs), json=json_data).status_code == 404
+
+    def test_both_event_and_price_category_unknown(self, auth_client, event_with_stock, price_category):
+        kwargs = {"event_id": event_with_stock.id * 16, "price_category_id": price_category.id * 16}
+        json_data = {"price": convert_to_cent(price_category.price * 3)}
+
+        with assert_event_and_price_category_did_not_change(event_with_stock, price_category):
+            assert auth_client.patch(url_for(self.endpoint, **kwargs), json=json_data).status_code == 404
+
+    def test_negative_price(self, auth_client, event_with_stock, price_category):
+        kwargs = {"event_id": event_with_stock.id, "price_category_id": price_category.id}
+        json_data = {"price": -1}
+
+        with assert_event_and_price_category_did_not_change(event_with_stock, price_category):
+            assert auth_client.patch(url_for(self.endpoint, **kwargs), json=json_data).status_code == 400
+
+    def test_price_too_high(self, auth_client, event_with_stock, price_category):
+        kwargs = {"event_id": event_with_stock.id, "price_category_id": price_category.id}
+        json_data = {"price": convert_to_cent(301)}
+
+        with assert_event_and_price_category_did_not_change(event_with_stock, price_category):
+            assert auth_client.patch(url_for(self.endpoint, **kwargs), json=json_data).status_code == 400
+
+
 class PatchPriceCategoryTest:
     def test_update_price_category(self, client):
         venue, api_key = utils.create_offerer_provider_linked_to_venue()

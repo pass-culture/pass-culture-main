@@ -1,7 +1,7 @@
 import cn from 'classnames'
-import React from 'react'
 import { useSWRConfig } from 'swr'
 
+import { api } from 'apiClient/api'
 import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
@@ -14,8 +14,10 @@ import {
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
 } from 'config/swrQueryKeys'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
-import { patchIsCollectiveOfferActiveAdapter } from 'core/OfferEducational/adapters/patchIsCollectiveOfferActiveAdapter'
-import { patchIsTemplateOfferActiveAdapter } from 'core/OfferEducational/adapters/patchIsTemplateOfferActiveAdapter'
+import {
+  offerAdageActivated,
+  offerAdageDeactivate,
+} from 'core/OfferEducational/constants'
 import {
   isCollectiveOffer,
   isCollectiveOfferTemplate,
@@ -77,19 +79,35 @@ export const OfferEducationalActions = ({
   const { mutate } = useSWRConfig()
 
   const setIsOfferActive = async (isActive: boolean) => {
-    const patchAdapter = offer.isTemplate
-      ? patchIsTemplateOfferActiveAdapter
-      : patchIsCollectiveOfferActiveAdapter
-    const { isOk, message } = await patchAdapter({
-      isActive,
-      offerId: offer.id,
-    })
-
-    if (!isOk) {
-      return notify.error(message)
+    try {
+      if (offer.isTemplate) {
+        await api.patchCollectiveOffersTemplateActiveStatus({
+          ids: [offer.id],
+          isActive,
+        })
+      } else {
+        await api.patchCollectiveOffersActiveStatus({
+          ids: [offer.id],
+          isActive,
+        })
+      }
+      notify.success(isActive ? offerAdageActivated : offerAdageDeactivate)
+    } catch (error) {
+      if (error instanceof Error) {
+        return notify.error(
+          `Une erreur est survenue lors de ${
+            isActive ? 'l’activation' : 'la désactivation'
+          } de votre offre. ${error.message}`
+        )
+      } else {
+        notify.error(
+          `Une  erreur est survenue lors de ${
+            isActive ? 'l’activation' : 'la désactivation'
+          } de votre offre.`
+        )
+      }
     }
 
-    notify.success(message)
     await mutate([
       offer.isTemplate
         ? GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY
@@ -145,8 +163,8 @@ export const OfferEducationalActions = ({
               iconPosition={IconPositionEnum.LEFT}
             >
               {offer.isActive
-                ? 'Masquer la publication sur Adage'
-                : 'Publier sur Adage'}
+                ? 'Masquer la publication sur ADAGE'
+                : 'Publier sur ADAGE'}
             </Button>
           )}
 

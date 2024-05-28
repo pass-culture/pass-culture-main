@@ -44,6 +44,7 @@ class Returns200Test:
             templateId=template.id,
             nationalProgramId=national_program.id,
             providerId=provider.id,
+            venue___bannerUrl="http://localhost/image.png",
         )
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
@@ -56,6 +57,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert "iban" not in response_json["venue"]
         assert "bic" not in response_json["venue"]
+        assert response_json["venue"]["imgUrl"]
         assert "iban" not in response_json["venue"]["managingOfferer"]
         assert "bic" not in response_json["venue"]["managingOfferer"]
         assert "validationStatus" not in response_json["venue"]["managingOfferer"]

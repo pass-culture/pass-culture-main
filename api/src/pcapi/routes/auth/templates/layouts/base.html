@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="description"
+          content="lier un compte Discord au pass Culture" />
+    <meta name="keywords"
+          content="pass Culture, Discord" />
+    <meta name="robots"
+          content="noindex,nofollow" />
+    <title>PassCulture</title>
+    {% set icon_path = get_setting("BACKOFFICE_FAVICON_PATH") if get_setting else "favicon_default.ico" %}
+    <link rel="icon"
+          type="image/x-icon"
+          href="{{ url_for('static', filename='backoffice/favicon/' + icon_path) }}" />
+    <!-- Bootstrap icons -->
+    <link href="{{ url_for('static', filename='backoffice/css/bootstrap-icons@1.9.1/font/bootstrap-icons.css') }}"
+          rel="stylesheet"
+          type="text/css" />
+    <!-- Tom Select JS configuration -->
+    <link href="{{ url_for('static', filename='backoffice/css/tom-select@2.2.2/dist/css/tom-select.css') }}"
+          rel="stylesheet"
+          type="text/css" />
+    <link href="{{ url_for('static', filename='backoffice/css/tom-select-bootstrap-5.min.css') }}"
+          rel="stylesheet"
+          type="text/css" />
+    <!-- Vanilla datetime range picker -->
+    <link href="{{ url_for('static', filename='backoffice/css/vanilla-datetimerange-picker@latest/dist/vanilla-datetimerange-picker.css') }}"
+          rel="stylesheet"
+          type="text/css" />
+    <!-- Our css needs to be imported after Bootstrap to have a stronger weight -->
+    <link href="{{ url_for('static', filename='backoffice/css/compiled/pc/pc.css') }}"
+          rel="stylesheet"
+          type="text/css" />
+    <!-- Useful for local script and styles modification per-view -->
+    {% block head %}
+    {% endblock head %}
+  </head>
+  {#  Navigation with turbolink is disabled because bootstrap is not reloaded and so is not working after navigation  #}
+  <body data-turbo="false"
+        class="data-bs-no-jquery">
+    {% block content %}
+    {% endblock content %}
+  </body>
+</html>

@@ -211,7 +211,7 @@ def build_book_extra_data(article: TiteLiveBookArticle, authors: list) -> offers
             csr_id = csr_label.get("csr_id")
 
     result = offers_models.OfferExtraData(
-        author=",".join(authors) if authors else None,
+        author=", ".join(authors) if authors else None,
         bookFormat=get_book_format(article.codesupport),
         code_clil=article.code_clil,
         collection=article.collection,

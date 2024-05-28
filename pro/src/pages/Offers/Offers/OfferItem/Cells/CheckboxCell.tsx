@@ -10,8 +10,7 @@ interface CheckboxCellProps {
   offerId: number
   status: OfferStatus
   disabled: boolean
-  isShowcase: boolean
-  selectOffer: (offerId: number, selected: boolean, isTemplate: boolean) => void
+  selectOffer: (offerId: number, selected: boolean) => void
 }
 
 export const CheckboxCell = ({
@@ -20,11 +19,10 @@ export const CheckboxCell = ({
   offerId,
   status,
   disabled,
-  isShowcase,
   selectOffer,
 }: CheckboxCellProps) => {
   const handleOnChangeSelected = () => {
-    selectOffer(offerId, !isSelected, !!isShowcase)
+    selectOffer(offerId, !isSelected)
   }
 
   return (

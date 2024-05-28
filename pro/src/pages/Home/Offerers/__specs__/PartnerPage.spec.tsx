@@ -1,6 +1,5 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as router from 'react-router-dom'
 
 import { VenueTypeCode } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
@@ -21,23 +20,13 @@ const renderPartnerPages = (props: Partial<PartnerPageProps>) => {
     <PartnerPage
       offerer={{ ...defaultGetOffererResponseModel }}
       venue={{ ...defaultGetOffererVenueResponseModel }}
+      venueTypes={[{ id: VenueTypeCode.FESTIVAL, label: 'Festival' }]}
       {...props}
     />
   )
 }
 
-vi.mock('react-router-dom', async () => ({
-  ...(await vi.importActual('react-router-dom')),
-  useLoaderData: vi.fn(),
-}))
-
 describe('PartnerPages', () => {
-  beforeEach(() => {
-    vi.spyOn(router, 'useLoaderData').mockReturnValue({
-      venueTypes: [{ id: VenueTypeCode.FESTIVAL, label: 'Festival' }],
-    })
-  })
-
   it('should display image upload if no image', async () => {
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,

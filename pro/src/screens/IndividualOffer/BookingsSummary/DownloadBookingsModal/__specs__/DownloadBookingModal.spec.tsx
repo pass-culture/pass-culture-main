@@ -67,6 +67,12 @@ describe('DownloadBookingModal', () => {
       tableCells.filter((cell) => cell.textContent?.match(/^\d+ tarif[s]?$/))
     ).toHaveLength(3)
 
+    const shortWeekDays = screen.getAllByTestId('short-week-day')
+    expect(shortWeekDays).toHaveLength(3)
+    expect(shortWeekDays[0]).toHaveTextContent('Sam')
+    expect(shortWeekDays[1]).toHaveTextContent('Dim')
+    expect(shortWeekDays[2]).toHaveTextContent('Lun')
+
     expect(screen.getByRole('button', { name: 'Annuler' })).toBeInTheDocument()
     expect(
       screen.getByRole('button', { name: 'Télécharger au format CSV' })

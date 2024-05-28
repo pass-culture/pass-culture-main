@@ -1,10 +1,12 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
-import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { GetOffererResponseModel } from 'apiClient/v1'
+import {
+  GetOffererNameResponseModel,
+  GetOffererResponseModel,
+} from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { SAVED_OFFERER_ID_KEY } from 'core/shared/constants'
 import { formatBrowserTimezonedDateAsUTC } from 'utils/date'
@@ -26,10 +28,6 @@ vi.mock('@firebase/remote-config', () => ({
 
 vi.mock('utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn().mockReturnValue(false),
-}))
-vi.mock('react-router-dom', async () => ({
-  ...(await vi.importActual('react-router-dom')),
-  useLoaderData: vi.fn(),
 }))
 
 const reloadFn = vi.fn()
@@ -86,16 +84,19 @@ describe('Homepage', () => {
     },
   ]
 
-  const baseOfferersNames = baseOfferers.map((offerer) => ({
-    id: offerer.id,
-    name: offerer.name,
-  }))
+  const baseOfferersNames = baseOfferers.map(
+    (offerer): GetOffererNameResponseModel => ({
+      id: offerer.id,
+      name: offerer.name,
+      allowedOnAdage: true,
+    })
+  )
 
   beforeEach(() => {
     vi.spyOn(api, 'getProfile')
-    vi.spyOn(router, 'useLoaderData').mockReturnValue({
-      venueTypes: [],
-      offererNames: baseOfferersNames,
+    vi.spyOn(api, 'getVenueTypes').mockResolvedValue([])
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNames: baseOfferersNames,
     })
     vi.spyOn(api, 'getOfferer').mockResolvedValue(baseOfferers[0])
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
@@ -221,7 +222,12 @@ describe('Homepage', () => {
 
     expect(await screen.findByText('Autre lieu')).toBeInTheDocument()
 
-    expect(screen.getByText('Gérer ma page')).toBeInTheDocument()
+    expect(
+      screen.getByText('Gérer votre page pour le grand public')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('Gérer votre page pour les enseignants')
+    ).toBeInTheDocument()
   })
 
   it('should load saved offerer in localStorage if no get parameter', async () => {

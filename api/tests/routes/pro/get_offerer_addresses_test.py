@@ -40,7 +40,7 @@ def test_get_offerer_addresses_success(client):
         {
             "city": "Paris",
             "id": offerer_address_1.id,
-            "isEditable": False,
+            "isEditable": True,
             "label": "1ere adresse",
             "postalCode": "75002",
             "street": "1 boulevard Poissonnière",
@@ -48,7 +48,7 @@ def test_get_offerer_addresses_success(client):
         {
             "city": "Paris",
             "id": offerer_address_2.id,
-            "isEditable": False,
+            "isEditable": True,
             "label": "2eme adresse",
             "postalCode": "75007",
             "street": "20 Avenue de Ségur",

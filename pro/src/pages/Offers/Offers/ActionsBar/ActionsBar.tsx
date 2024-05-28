@@ -2,8 +2,15 @@ import { useState } from 'react'
 import { mutate, useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
+import {
+  CollectiveBookingStatus,
+  CollectiveOfferResponseModel,
+  ListOffersOfferResponseModel,
+  OfferStatus,
+} from 'apiClient/v1'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { GET_COLLECTIVE_OFFERS_QUERY_KEY } from 'config/swrQueryKeys'
+import { isOfferEducational } from 'core/OfferEducational/types'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
 import { SearchFiltersParams } from 'core/Offers/types'
@@ -35,19 +42,24 @@ import {
 export interface ActionBarProps {
   areAllOffersSelected: boolean
   clearSelectedOfferIds: () => void
-  nbSelectedOffers: number
-  selectedOfferIds: string[]
+  selectedOfferIds: number[]
+  selectedOffers: (
+    | CollectiveOfferResponseModel
+    | ListOffersOfferResponseModel
+  )[]
   toggleSelectAllCheckboxes: () => void
   audience: Audience
-  getUpdateOffersStatusMessage: (selectedOfferIds: string[]) => string
-  canDeleteOffers: (selectedOfferIds: string[]) => boolean
+  getUpdateOffersStatusMessage: (selectedOfferIds: number[]) => string
+  canDeleteOffers: () => boolean
 }
 
 const handleCollectiveOffers = async (
   isActive: boolean,
   areAllOffersSelected: boolean,
-  nbSelectedOffers: number,
-  selectedOfferIds: string[],
+  selectedOffers: (
+    | CollectiveOfferResponseModel
+    | ListOffersOfferResponseModel
+  )[],
   notify: ReturnType<typeof useNotification>,
   apiFilters: SearchFiltersParams
 ) => {
@@ -61,8 +73,8 @@ const handleCollectiveOffers = async (
 
       notify.pending(
         isActive
-          ? computeAllActivationSuccessMessage(nbSelectedOffers)
-          : computeAllDeactivationSuccessMessage(nbSelectedOffers)
+          ? computeAllActivationSuccessMessage(selectedOffers.length)
+          : computeAllDeactivationSuccessMessage(selectedOffers.length)
       )
     } catch {
       notify.error(
@@ -76,11 +88,11 @@ const handleCollectiveOffers = async (
       const collectiveOfferIds = []
       const collectiveOfferTemplateIds = []
 
-      for (const id of selectedOfferIds) {
-        if (id.startsWith('T-')) {
-          collectiveOfferTemplateIds.push(id.split('T-')[1])
+      for (const offer of selectedOffers) {
+        if (offer.isShowcase) {
+          collectiveOfferTemplateIds.push(offer.id)
         } else {
-          collectiveOfferIds.push(id)
+          collectiveOfferIds.push(offer.id)
         }
       }
 
@@ -97,8 +109,8 @@ const handleCollectiveOffers = async (
 
       notify.information(
         isActive
-          ? computeActivationSuccessMessage(nbSelectedOffers)
-          : computeDeactivationSuccessMessage(nbSelectedOffers)
+          ? computeActivationSuccessMessage(selectedOffers.length)
+          : computeDeactivationSuccessMessage(selectedOffers.length)
       )
     } catch {
       notify.error(
@@ -115,8 +127,7 @@ const handleCollectiveOffers = async (
 const handleIndividualOffers = async (
   isActive: boolean,
   areAllOffersSelected: boolean,
-  nbSelectedOffers: number,
-  selectedOfferIds: string[],
+  selectedOfferIds: number[],
   notify: ReturnType<typeof useNotification>,
   apiFilters: SearchFiltersParams
 ) => {
@@ -129,8 +140,8 @@ const handleIndividualOffers = async (
       })
       notify.pending(
         isActive
-          ? computeAllActivationSuccessMessage(nbSelectedOffers)
-          : computeAllDeactivationSuccessMessage(nbSelectedOffers)
+          ? computeAllActivationSuccessMessage(selectedOfferIds.length)
+          : computeAllDeactivationSuccessMessage(selectedOfferIds.length)
       )
     } catch (error) {
       notify.error(
@@ -147,8 +158,8 @@ const handleIndividualOffers = async (
       })
       notify.information(
         isActive
-          ? computeActivationSuccessMessage(nbSelectedOffers)
-          : computeDeactivationSuccessMessage(nbSelectedOffers)
+          ? computeActivationSuccessMessage(selectedOfferIds.length)
+          : computeDeactivationSuccessMessage(selectedOfferIds.length)
       )
     } catch (error) {
       notify.error(
@@ -162,12 +173,29 @@ const handleIndividualOffers = async (
   await mutate([GET_OFFERS_QUERY_KEY, apiFilters])
 }
 
+function canDeactivateCollectiveOffers(
+  offers: (CollectiveOfferResponseModel | ListOffersOfferResponseModel)[]
+) {
+  return offers.every((offer) => {
+    if (!isOfferEducational(offer)) {
+      return false
+    }
+
+    //  Check that all the offers are published or expired
+    return (
+      offer.status === OfferStatus.ACTIVE ||
+      (offer.status === OfferStatus.EXPIRED &&
+        offer.booking?.booking_status !== CollectiveBookingStatus.CANCELLED)
+    )
+  })
+}
+
 export const ActionsBar = ({
   selectedOfferIds,
+  selectedOffers,
   clearSelectedOfferIds,
   toggleSelectAllCheckboxes,
   areAllOffersSelected,
-  nbSelectedOffers,
   audience,
   getUpdateOffersStatusMessage,
   canDeleteOffers,
@@ -190,13 +218,25 @@ export const ActionsBar = ({
     areAllOffersSelected && toggleSelectAllCheckboxes()
   }
 
+  function onDeactivateOffersClicked() {
+    if (
+      audience === Audience.COLLECTIVE &&
+      !canDeactivateCollectiveOffers(selectedOffers)
+    ) {
+      notify.error(
+        'Seules les offres au statut publié ou expiré peuvent être désactivées.'
+      )
+      return
+    }
+    setIsConfirmDialogOpen(true)
+  }
+
   const handleUpdateOffersStatus = async (isActivating: boolean) => {
     if (audience === Audience.COLLECTIVE) {
       await handleCollectiveOffers(
         isActivating,
         areAllOffersSelected,
-        nbSelectedOffers,
-        selectedOfferIds,
+        selectedOffers,
         notify,
         apiFilters
       )
@@ -204,7 +244,6 @@ export const ActionsBar = ({
       await handleIndividualOffers(
         isActivating,
         areAllOffersSelected,
-        nbSelectedOffers,
         selectedOfferIds,
         notify,
         apiFilters
@@ -224,21 +263,21 @@ export const ActionsBar = ({
     }
   }
 
-  const handleDeactivate = async () => {
+  const handleDeactivateOffers = async () => {
     await handleUpdateOffersStatus(false)
     setIsConfirmDialogOpen(false)
   }
 
   const computeSelectedOffersLabel = () => {
-    if (nbSelectedOffers > 1) {
-      return `${getOffersCountToDisplay(nbSelectedOffers)} offres sélectionnées`
+    if (selectedOfferIds.length > 1) {
+      return `${getOffersCountToDisplay(selectedOfferIds.length)} offres sélectionnées`
     }
 
-    return `${nbSelectedOffers} offre sélectionnée`
+    return `${selectedOfferIds.length} offre sélectionnée`
   }
 
   const handleDelete = async () => {
-    if (!canDeleteOffers(selectedOfferIds)) {
+    if (!canDeleteOffers()) {
       notify.error('Seuls les  brouillons peuvent être supprimés')
       return
     }
@@ -246,17 +285,17 @@ export const ActionsBar = ({
       await api.deleteDraftOffers({
         ids: selectedOfferIds.map((id) => Number(id)),
       })
-      notify.success(computeDeletionSuccessMessage(nbSelectedOffers))
+      notify.success(computeDeletionSuccessMessage(selectedOfferIds.length))
       await mutate([GET_OFFERS_QUERY_KEY, apiFilters])
       clearSelectedOfferIds()
     } catch {
-      notify.error(computeDeletionErrorMessage(nbSelectedOffers))
+      notify.error(computeDeletionErrorMessage(selectedOfferIds.length))
     }
     setIsDeleteDialogOpen(false)
   }
 
   const handleOpenDeleteDialog = () => {
-    if (!canDeleteOffers(selectedOfferIds)) {
+    if (!canDeleteOffers()) {
       notify.error('Seuls les brouillons peuvent être supprimés')
       return
     }
@@ -271,7 +310,7 @@ export const ActionsBar = ({
         Annuler
       </Button>
       <Button
-        onClick={() => setIsConfirmDialogOpen(true)}
+        onClick={onDeactivateOffersClicked}
         icon={fullHideIcon}
         variant={ButtonVariant.SECONDARY}
       >
@@ -301,8 +340,8 @@ export const ActionsBar = ({
       {isConfirmDialogOpen && (
         <DeactivationConfirmDialog
           areAllOffersSelected={areAllOffersSelected}
-          nbSelectedOffers={nbSelectedOffers}
-          onConfirm={handleDeactivate}
+          nbSelectedOffers={selectedOfferIds.length}
+          onConfirm={handleDeactivateOffers}
           onCancel={() => setIsConfirmDialogOpen(false)}
           audience={audience}
         />
@@ -311,7 +350,7 @@ export const ActionsBar = ({
       {isDeleteDialogOpen && (
         <DeleteConfirmDialog
           onCancel={() => setIsDeleteDialogOpen(false)}
-          nbSelectedOffers={nbSelectedOffers}
+          nbSelectedOffers={selectedOfferIds.length}
           handleDelete={handleDelete}
         />
       )}

@@ -111,7 +111,7 @@ export const AdagePreviewLayout = ({ offer }: AdagePreviewLayoutProps) => {
     <div className={styles['fake-adage-page']}>
       <div className={styles['fake-adage-page-header']}>
         <div className={styles['fake-adage-page-header-logo']}>
-          <img src={adageLogo} alt="Logo de la plateforme Adage" />
+          <img src={adageLogo} alt="Logo de la plateforme ADAGE" />
         </div>
         <img
           src={adageBurger}

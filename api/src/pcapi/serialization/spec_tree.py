@@ -5,6 +5,7 @@ from typing import Callable
 from pydantic.v1 import BaseModel
 from spectree import Response
 from spectree import SpecTree
+from spectree import Tag
 
 from pcapi import settings
 
@@ -33,9 +34,17 @@ def build_operation_id(func: Callable) -> str:
 
 
 class ExtendedSpecTree(SpecTree):
-    def __init__(self, *args: Any, humanize_operation_id: bool = False, **kwargs: Any):
+    def __init__(self, *args: Any, humanize_operation_id: bool = False, tags: list[Tag] | None = None, **kwargs: Any):
+        """
+        :tags:  An ordered list of tags to structure the swagger and the redoc generated
+                by spectree.
+        """
         super().__init__(*args, **kwargs)
         self.humanize_operation_id = humanize_operation_id
+        self.tags = tags or []
+
+    def _generate_tags_list(self) -> list[dict]:
+        return [tag.dict() for tag in self.tags]
 
     def _generate_spec(self) -> dict:
         spec = super()._generate_spec()
@@ -48,6 +57,11 @@ class ExtendedSpecTree(SpecTree):
                     path, _parameters = self.backend.parse_path(route, path_parameter_descriptions)
                     spec["paths"][path][method.lower()]["operationId"] = build_operation_id(func)
                     spec["servers"] = [{"url": settings.API_URL}]
+
+        orderered_tags = self._generate_tags_list()
+        if orderered_tags:
+            spec["tags"] = orderered_tags
+
         return spec
 
     def _add_model(self, model: type[BaseModel]) -> str:

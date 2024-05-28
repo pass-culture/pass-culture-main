@@ -37,7 +37,6 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
   const notify = useNotification()
   const { logEvent } = useAnalytics()
   const { mutate } = useSWRConfig()
-
   const { currentUser } = useCurrentUser()
 
   const onSubmit: FormikConfig<VenueEditionFormValues>['onSubmit'] = async (

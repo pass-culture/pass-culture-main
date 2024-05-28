@@ -41,7 +41,7 @@ describe('CollectiveOfferSummary', () => {
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     const desactivateOffer = screen.getByRole('button', {
-      name: 'Masquer la publication sur Adage',
+      name: 'Masquer la publication sur ADAGE',
     })
     expect(desactivateOffer).toBeInTheDocument()
   })

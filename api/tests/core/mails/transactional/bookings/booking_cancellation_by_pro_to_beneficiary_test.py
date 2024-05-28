@@ -67,9 +67,7 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
         )
 
         # When
-        email_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(
-            booking, rejected_by_gcu_incompatibility=False
-        )
+        email_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(booking, rejected_by_fraud_action=False)
 
         # Then
         assert email_data.params == {
@@ -99,9 +97,7 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
         )
 
         # When
-        email_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(
-            booking, rejected_by_gcu_incompatibility=False
-        )
+        email_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(booking, rejected_by_fraud_action=False)
 
         # Then
         assert email_data.template == models.Template(
@@ -134,9 +130,7 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
         )
 
         # When
-        email_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(
-            booking, rejected_by_gcu_incompatibility=False
-        )
+        email_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(booking, rejected_by_fraud_action=False)
 
         # Then
         assert email_data.params == {
@@ -165,7 +159,7 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
 
         # When
         sendiblue_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(
-            booking, rejected_by_gcu_incompatibility=False
+            booking, rejected_by_fraud_action=False
         )
 
         # Then
@@ -182,7 +176,7 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
 
         # When
         sendiblue_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(
-            booking, rejected_by_gcu_incompatibility=False
+            booking, rejected_by_fraud_action=False
         )
 
         # Then

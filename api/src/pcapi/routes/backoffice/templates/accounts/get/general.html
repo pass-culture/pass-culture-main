@@ -26,37 +26,7 @@
           </h5>
           <div class="d-flex row-reverse justify-content-end flex-grow-1">
             {% if edit_account_form %}
-              <button class="btn btn-outline-primary lead fw-bold mt-2 justify-content-end"
-                      data-bs-toggle="modal"
-                      data-bs-target="#edit-account-modal"
-                      type="button">Modifier les informations</button>
-              <div class="modal modal-lg fade"
-                   id="edit-account-modal"
-                   tabindex="-1"
-                   aria-labelledby="edit-account-modal-label"
-                   aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                  <div class="modal-content">
-                    <form action="{{ edit_account_dst }}"
-                          name="{{ edit_account_dst | action_to_name }}"
-                          method="post">
-                      <div class="modal-header">
-                        <h5 class="modal-title">Modifier les informations</h5>
-                      </div>
-                      <div class="modal-body">
-                        <div class="form-floating my-3">{{ build_form_fields_group(edit_account_form) }}</div>
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button"
-                                class="btn btn-outline-primary"
-                                data-bs-dismiss="modal">Annuler</button>
-                        <button type="submit"
-                                class="btn btn-primary">Enregistrer</button>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </div>
+              {{ build_modal_form("edit-account", edit_account_dst, edit_account_form, "Modifier les informations", "Modifier les informations", "Enregistrer") }}
             {% endif %}
             {% if user.isActive %}
               <div class="mx-3 pt-2 pc-brevo-logo-link">
@@ -161,42 +131,18 @@
           <div class="d-flex flex-column ms-auto align-items-end justify-content-end mb-1">
             {% if suspension_form %}
               {% if user.isActive %}
-                <div>{{ build_modal_form("suspend", suspension_dst, suspension_form, "Suspendre le compte", "Confirmer la suspension") }}</div>
+                <div>
+                  {{ build_modal_form("suspend-public-account", suspension_dst, suspension_form, "Suspendre le compte", "Suspendre le compte", "Confirmer la suspension") }}
+                </div>
               {% else %}
-                <div>{{ build_modal_form("unsuspend", suspension_dst, suspension_form, "Réactiver le compte", "Confirmer la réactivation") }}</div>
+                <div>
+                  {{ build_modal_form("unsuspend-public-account", suspension_dst, suspension_form, "Réactiver le compte", "Réactiver le compte", "Confirmer la réactivation") }}
+                </div>
               {% endif %}
             {% endif %}
             {% if manual_review_form %}
-              <button class="btn btn-outline-primary lead fw-bold mt-2 justify-content-end"
-                      data-bs-toggle="modal"
-                      data-bs-target="#review-public-account-modal"
-                      type="button">Revue manuelle</button>
-              <div class="modal modal-lg fade"
-                   id="review-public-account-modal"
-                   tabindex="-1"
-                   aria-labelledby="review-public-account-modal-label"
-                   aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                  <div class="modal-content">
-                    <form action="{{ manual_review_dst }}"
-                          name="{{ manual_review_dst | action_to_name }}"
-                          method="post">
-                      <div class="modal-header">
-                        <h5 class="modal-title">Revue manuelle</h5>
-                      </div>
-                      <div class="modal-body">
-                        <div class="form-floating my-3">{{ build_form_fields_group(manual_review_form) }}</div>
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button"
-                                class="btn btn-outline-primary"
-                                data-bs-dismiss="modal">Annuler</button>
-                        <button type="submit"
-                                class="btn btn-primary">Enregistrer</button>
-                      </div>
-                    </form>
-                  </div>
-                </div>
+              <div>
+                {{ build_modal_form("review-public-account", manual_review_dst, manual_review_form, "Revue manuelle", "Revue manuelle", "Enregistrer") }}
               </div>
             {% endif %}
             {% if anonymize_form %}

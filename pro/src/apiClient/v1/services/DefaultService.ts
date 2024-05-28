@@ -1148,6 +1148,27 @@ export class DefaultService {
     });
   }
   /**
+   * get_combined_invoices <GET>
+   * @param invoiceReferences
+   * @returns any OK
+   * @throws ApiError
+   */
+  public getCombinedInvoices(
+    invoiceReferences: Array<string>,
+  ): CancelablePromise<any> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/finance/combined-invoices',
+      query: {
+        'invoiceReferences': invoiceReferences,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
    * get_national_programs <GET>
    * @returns ListNationalProgramsResponseModel OK
    * @throws ApiError
@@ -1556,6 +1577,7 @@ export class DefaultService {
    * @param periodBeginningDate
    * @param periodEndingDate
    * @param collectiveOfferType
+   * @param offererAddressId
    * @returns ListOffersResponseModel OK
    * @throws ApiError
    */
@@ -1569,6 +1591,7 @@ export class DefaultService {
     periodBeginningDate?: string | null,
     periodEndingDate?: string | null,
     collectiveOfferType?: CollectiveOfferType | null,
+    offererAddressId?: number | null,
   ): CancelablePromise<ListOffersResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
@@ -1583,6 +1606,7 @@ export class DefaultService {
         'periodBeginningDate': periodBeginningDate,
         'periodEndingDate': periodEndingDate,
         'collectiveOfferType': collectiveOfferType,
+        'offererAddressId': offererAddressId,
       },
       errors: {
         403: `Forbidden`,
@@ -1974,6 +1998,7 @@ export class DefaultService {
   }
   /**
    * get_reimbursements_csv <GET>
+   * @param offererId
    * @param bankAccountId
    * @param reimbursementPeriodBeginningDate
    * @param reimbursementPeriodEndingDate
@@ -1981,6 +2006,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public getReimbursementsCsv(
+    offererId: number,
     bankAccountId?: number,
     reimbursementPeriodBeginningDate?: string,
     reimbursementPeriodEndingDate?: string,
@@ -1989,6 +2015,7 @@ export class DefaultService {
       method: 'GET',
       url: '/reimbursements/csv',
       query: {
+        'offererId': offererId,
         'bankAccountId': bankAccountId,
         'reimbursementPeriodBeginningDate': reimbursementPeriodBeginningDate,
         'reimbursementPeriodEndingDate': reimbursementPeriodEndingDate,
@@ -2484,6 +2511,27 @@ export class DefaultService {
         'periodEndingDate': periodEndingDate,
         'bankAccountId': bankAccountId,
         'offererId': offererId,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * get_reimbursements_csv_v2 <GET>
+   * @param invoicesReferences
+   * @returns any OK
+   * @throws ApiError
+   */
+  public getReimbursementsCsvV2(
+    invoicesReferences: Array<string>,
+  ): CancelablePromise<any> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/v2/reimbursements/csv',
+      query: {
+        'invoicesReferences': invoicesReferences,
       },
       errors: {
         403: `Forbidden`,

@@ -13,7 +13,7 @@ class CollectiveOffersGetCategoriesTest:
 
         # When
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            url_for("pro_public_api_v2.list_categories")
+            url_for("public_api.v2_prefixed_public_api.collectives_offers.list_categories")
         )
 
         # Then
@@ -42,7 +42,9 @@ class CollectiveOffersGetCategoriesTest:
         offerers_factories.ApiKeyFactory(offerer=user_offerer.offerer)
 
         # When
-        response = client.with_session_auth(user_offerer.user.email).get(url_for("pro_public_api_v2.list_categories"))
+        response = client.with_session_auth(user_offerer.user.email).get(
+            url_for("public_api.v2_prefixed_public_api.collectives_offers.list_categories")
+        )
 
         # Then
         assert response.status_code == 401
@@ -51,7 +53,7 @@ class CollectiveOffersGetCategoriesTest:
         # Given
 
         # When
-        response = client.get(url_for("pro_public_api_v2.list_categories"))
+        response = client.get(url_for("public_api.v2_prefixed_public_api.collectives_offers.list_categories"))
 
         # Then
         assert response.status_code == 401

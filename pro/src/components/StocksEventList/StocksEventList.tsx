@@ -1,6 +1,7 @@
 import cn from 'classnames'
 import { useEffect, useState } from 'react'
-import { useFetcher, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
+import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import {
@@ -11,6 +12,7 @@ import {
 } from 'apiClient/v1'
 import useAnalytics from 'app/App/analytics/firebase'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
+import { GET_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
 import { Events } from 'core/FirebaseEvents/constants'
 import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'
 import useNotification from 'hooks/useNotification'
@@ -85,7 +87,7 @@ export const StocksEventList = ({
   const { logEvent } = useAnalytics()
   const notify = useNotification()
   const [searchParams, setSearchParams] = useSearchParams()
-  const fetcher = useFetcher()
+  const { mutate } = useSWRConfig()
 
   // states
   const [allStocksChecked, setAllStocksChecked] = useState<PartialCheck>(
@@ -256,10 +258,7 @@ export const StocksEventList = ({
     // When all stocks are deleted, we need to reload the offer
     // to disable the stepper
     if (stocks.length === 1 && page === 1) {
-      fetcher.submit(null, {
-        method: 'patch',
-        action: `/offre/individuelle/${offer.id}`,
-      })
+      await mutate([GET_OFFER_QUERY_KEY, offer.id])
     }
     notify.success('1 date a été supprimée')
   }
@@ -321,10 +320,7 @@ export const StocksEventList = ({
 
     // When all stocks are deleted, we need to reload the offer
     // to disable the stepper
-    fetcher.submit(null, {
-      method: 'patch',
-      action: `/offre/individuelle/${offer.id}`,
-    })
+    await mutate([GET_OFFER_QUERY_KEY, offer.id])
     notify.success(
       stocksIdToDelete.length === 1
         ? '1 date a été supprimée'

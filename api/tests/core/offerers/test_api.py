@@ -1,5 +1,6 @@
 import datetime
 import decimal
+import logging
 import os
 import pathlib
 import time
@@ -20,6 +21,7 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
+from pcapi.core.geography import models as geography_models
 from pcapi.core.history import models as history_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
@@ -576,25 +578,6 @@ class EditVenueTest:
         # Then
         assert error.value.errors["name"] == ["Vous ne pouvez pas modifier la raison sociale d'un lieu"]
 
-    def test_latitude_and_longitude_wrong_format(self, app) -> None:
-        # given
-        user = users_factories.UserFactory()
-        venue = offerers_factories.VenueFactory(
-            isVirtual=False,
-        )
-
-        # when
-        venue_data = {
-            "latitude": -98.82387,
-            "longitude": "112°3534",
-        }
-        with pytest.raises(api_errors.ApiErrors) as error:
-            offerers_api.update_venue(venue, author=user, **venue_data)
-
-        # Then
-        assert error.value.errors["latitude"] == ["La latitude doit être comprise entre -90.0 et +90.0"]
-        assert error.value.errors["longitude"] == ["Format incorrect"]
-
     def test_accessibility_fields_are_updated(self, app) -> None:
         # given
         user = users_factories.UserFactory()
@@ -634,8 +617,8 @@ class EditVenueTest:
             website=venue.contact.website,
         )
 
-        # nothing has changed, nothing to save
-        with assert_num_queries(0):
+        # Check FF Api Adresse
+        with assert_num_queries(1):
             offerers_api.update_venue(venue, contact_data=contact_data, author=user, **venue_data)
 
         assert history_models.ActionHistory.query.count() == 0
@@ -2293,12 +2276,53 @@ class CreateFromOnboardingDataTest:
             token="token",
         )
 
-    def test_new_siren_new_siret(self):
+    @override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+    @override_features(ENABLE_API_ADRESSE_WHILE_CREATING_UPDATING_VENUE=True)
+    def test_new_siren_new_siret(self, requests_mock):
+        api_adresse_response = {
+            "type": "FeatureCollection",
+            "version": "draft",
+            "features": [
+                {
+                    "type": "Feature",
+                    "geometry": {"type": "Point", "coordinates": [2.337933, 48.863666]},
+                    "properties": {
+                        "label": "3 Rue de Valois 75001 Paris",
+                        "score": 0.9652045454545454,
+                        "housenumber": "3",
+                        "id": "75101_9575_00003",
+                        "name": "3 Rue de Valois",
+                        "postcode": "75001",
+                        "citycode": "75101",
+                        "x": 651428.82,
+                        "y": 6862829.62,
+                        "city": "Paris",
+                        "district": "Paris 1er Arrondissement",
+                        "context": "75, Paris, Île-de-France",
+                        "type": "housenumber",
+                        "importance": 0.61725,
+                        "street": "Rue de Valois",
+                    },
+                }
+            ],
+            "attribution": "BAN",
+            "licence": "ETALAB-2.0",
+            "query": "3 Rue de valois, 75001 Paris",
+            "filters": {"postcode": "75001"},
+            "limit": 1,
+        }
+        requests_mock.get(
+            "https://api-adresse.data.gouv.fr/search?q=3 RUE DE VALOIS&postcode=75001&autocomplete=0&limit=1",
+            json=api_adresse_response,
+        )
         user = users_factories.UserFactory(email="pro@example.com")
         user.add_non_attached_pro_role()
 
         onboarding_data = self.get_onboarding_data(create_venue_without_siret=False)
         created_user_offerer = offerers_api.create_from_onboarding_data(user, onboarding_data)
+
+        address = geography_models.Address.query.one()
+        offerer_address = offerers_models.OffererAddress.query.one()
 
         # Offerer has been created
         created_offerer = created_user_offerer.offerer
@@ -2323,6 +2347,63 @@ class CreateFromOnboardingDataTest:
         assert created_venue.comment is None
         assert created_venue.siret == "85331845900031"
         assert created_venue.current_pricing_point_id == created_venue.id
+        assert created_venue.street.lower() == address.street.lower()
+        assert created_venue.city == address.city
+        assert created_venue.postalCode == address.postalCode
+        assert address.inseeCode.startswith(address.departmentCode)
+        assert address.departmentCode == "75"
+        assert address.timezone == "Europe/Paris"
+        assert created_venue.offererAddressId == offerer_address.id
+        assert offerer_address.addressId == address.id
+
+        # Action logs
+        assert history_models.ActionHistory.query.count() == 1
+        offerer_action = history_models.ActionHistory.query.filter(
+            history_models.ActionHistory.actionType == history_models.ActionType.OFFERER_NEW
+        ).one()
+        assert offerer_action.offerer == created_offerer
+        assert offerer_action.authorUser == user
+        assert offerer_action.user == user
+        self.assert_common_action_history_extra_data(offerer_action)
+        self.assert_only_welcome_email_to_pro_was_sent()
+        # Venue Registration
+        self.assert_venue_registration_attrs(created_venue)
+
+    def test_new_siren_new_siret_without_double_model_writing(self, requests_mock):
+        user = users_factories.UserFactory(email="pro@example.com")
+        user.add_non_attached_pro_role()
+
+        onboarding_data = self.get_onboarding_data(create_venue_without_siret=False)
+        created_user_offerer = offerers_api.create_from_onboarding_data(user, onboarding_data)
+
+        assert not geography_models.Address.query.one_or_none()
+        assert not offerers_models.OffererAddress.query.one_or_none()
+
+        # Offerer has been created
+        created_offerer = created_user_offerer.offerer
+        assert created_offerer.name == "MINISTERE DE LA CULTURE"
+        assert created_offerer.siren == "853318459"
+        assert created_offerer.street == "3 RUE DE VALOIS"
+        assert created_offerer.postalCode == "75001"
+        assert created_offerer.city == "Paris"
+        assert created_offerer.validationStatus == ValidationStatus.NEW
+        # User is attached to offerer
+        assert created_user_offerer.userId == user.id
+        assert created_user_offerer.validationStatus == ValidationStatus.VALIDATED
+        # but does not have PRO role yet, because the Offerer is not validated
+        assert created_user_offerer.user.has_non_attached_pro_role
+        # 1 virtual Venue + 1 Venue with siret have been created
+        assert len(created_user_offerer.offerer.managedVenues) == 2
+        created_venue, created_virtual_venue = sorted(
+            created_user_offerer.offerer.managedVenues, key=lambda v: v.isVirtual
+        )
+        assert created_virtual_venue.isVirtual
+        self.assert_common_venue_attrs(created_venue)
+        assert created_venue.comment is None
+        assert created_venue.siret == "85331845900031"
+        assert created_venue.current_pricing_point_id == created_venue.id
+        assert not created_venue.offererAddressId
+
         # Action logs
         assert history_models.ActionHistory.query.count() == 1
         offerer_action = history_models.ActionHistory.query.filter(
@@ -2866,3 +2947,63 @@ class AccessibilityProviderTest:
         offerers_api.match_venue_with_new_entries(venues_list, results_by_activity)
         assert venue.external_accessibility_url == "https://une-fausse-url.com"
         assert venue.external_accessibility_id == "mon-lieu-chez-acceslibre"
+
+
+class GetOffererConfidenceLevelTest:
+    def test_no_rule(self):
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.ManualReviewOffererConfidenceRuleFactory()
+        offerers_factories.WhitelistedVenueConfidenceRuleFactory()
+
+        confidence_level = offerers_api.get_offer_confidence_level(venue)
+
+        assert confidence_level is None
+
+    def test_offerer_manual_review(self):
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.ManualReviewOffererConfidenceRuleFactory(offerer=venue.managingOfferer)
+        offerers_factories.WhitelistedVenueConfidenceRuleFactory()
+
+        confidence_level = offerers_api.get_offer_confidence_level(venue)
+
+        assert confidence_level == offerers_models.OffererConfidenceLevel.MANUAL_REVIEW
+
+    def test_offerer_whitelist(self):
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.WhitelistedOffererConfidenceRuleFactory(offerer=venue.managingOfferer)
+        offerers_factories.ManualReviewVenueConfidenceRuleFactory()
+
+        confidence_level = offerers_api.get_offer_confidence_level(venue)
+
+        assert confidence_level == offerers_models.OffererConfidenceLevel.WHITELIST
+
+    def test_venue_manual_review(self):
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.ManualReviewVenueConfidenceRuleFactory(venue=venue)
+        offerers_factories.WhitelistedOffererConfidenceRuleFactory()
+
+        confidence_level = offerers_api.get_offer_confidence_level(venue)
+
+        assert confidence_level == offerers_models.OffererConfidenceLevel.MANUAL_REVIEW
+
+    def test_venue_whitelist(self):
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.WhitelistedVenueConfidenceRuleFactory(venue=venue)
+        offerers_factories.ManualReviewOffererConfidenceRuleFactory()
+
+        confidence_level = offerers_api.get_offer_confidence_level(venue)
+
+        assert confidence_level == offerers_models.OffererConfidenceLevel.WHITELIST
+
+    def test_conflict(self, caplog):
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.WhitelistedOffererConfidenceRuleFactory(offerer=venue.managingOfferer)
+        offerers_factories.ManualReviewVenueConfidenceRuleFactory(venue=venue)
+
+        with caplog.at_level(logging.ERROR):
+            confidence_level = offerers_api.get_offer_confidence_level(venue)
+
+        assert confidence_level == offerers_models.OffererConfidenceLevel.WHITELIST  # offerer first
+
+        assert caplog.records[0].message == "Incompatible offerer rule detected"
+        assert caplog.records[0].extra == {"offerer_id": venue.managingOffererId, "venue_id": venue.id}

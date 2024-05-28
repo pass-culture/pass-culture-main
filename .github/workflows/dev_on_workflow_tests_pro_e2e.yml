@@ -122,11 +122,10 @@ jobs:
         if: always()
         uses: cypress-io/github-action@v6
         with:
-          config: baseUrl=http://localhost:3001
-          browser: chrome
           wait-on: "http://localhost:5001/health/api,http://localhost:5001/health/database"
           wait-on-timeout: 600
           working-directory: pro
+          command: yarn test:bdd
       - name: "Move cypress videos"
         run: |
           mkdir -p cypress/videos/${{ github.ref }}/${{ github.sha }} && \

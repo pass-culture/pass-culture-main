@@ -3,6 +3,7 @@ import useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'core/FirebaseEvents/constants'
 import fullInfoIcon from 'icons/full-info.svg'
 import fullLinkIcon from 'icons/full-link.svg'
+import fullNextIcon from 'icons/full-next.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
@@ -13,14 +14,18 @@ import styles from './PartnerPage.module.scss'
 export type PartnerPageCollectiveSectionProps = {
   collectiveDmsApplications: DMSApplicationForEAC[]
   venueId: number
+  offererId: number
+  venueName: string
   allowedOnAdage: boolean
   isDisplayedInHomepage?: boolean
 }
 
 export function PartnerPageCollectiveSection({
-  collectiveDmsApplications,
   venueId,
+  offererId,
+  venueName,
   allowedOnAdage,
+  collectiveDmsApplications,
   isDisplayedInHomepage = false,
 }: PartnerPageCollectiveSectionProps) {
   const { logEvent } = useAnalytics()
@@ -41,48 +46,33 @@ export function PartnerPageCollectiveSection({
     })
   }
 
-  const header = isDisplayedInHomepage ? (
-    <h4 className={styles['details-title']}>Enseignants</h4>
-  ) : (
-    <span className={styles['details-normal']}>
-      État de votre activité sur ADAGE :
-    </span>
-  )
-
   if (allowedOnAdage) {
     return (
-      <section className={styles['details']}>
-        <div>
-          {header}
-          <Tag className={styles['tag']} variant={TagVariant.LIGHT_GREEN}>
-            Référencé dans ADAGE
-          </Tag>
-        </div>
-        {isDisplayedInHomepage && (
-          <p className={styles['details-description']}>
-            Les enseignants voient les offres vitrines et celles que vous
-            adressez à leur établissement sur ADAGE. Complétez vos informations
-            à destination des enseignants pour qu’ils vous contactent !
-          </p>
-        )}
-      </section>
+      <AdageInformations
+        tagText="Référencé dans ADAGE"
+        variant={TagVariant.LIGHT_GREEN}
+        isDisplayedInHomepage={isDisplayedInHomepage}
+        description={
+          isDisplayedInHomepage
+            ? 'Les enseignants voient les offres vitrines et celles que vous adressez à leur établissement sur ADAGE. Complétez vos informations à destination des enseignants pour qu’ils vous contactent !'
+            : undefined
+        }
+        offererId={offererId}
+        venueId={venueId}
+        venueName={venueName}
+      />
     )
   } else if (lastDmsApplication === null) {
     return (
-      <section className={styles['details']}>
-        <div>
-          {header}
-          <Tag className={styles['tag']} variant={TagVariant.LIGHT_BLUE}>
-            Non référencé dans ADAGE
-          </Tag>
-        </div>
-
-        <p className={styles['details-description']}>
-          Pour pouvoir adresser des offres aux enseignants, vous devez être
-          référencé dans ADAGE, l’application du ministère de l’Education
-          nationale et de la Jeunesse dédiée à l’EAC.
-        </p>
-
+      <AdageInformations
+        tagText="Non référencé dans ADAGE"
+        variant={TagVariant.LIGHT_BLUE}
+        isDisplayedInHomepage={isDisplayedInHomepage}
+        description="Pour pouvoir adresser des offres aux enseignants, vous devez être référencé dans ADAGE, l’application du ministère de l’Education nationale et de la Jeunesse dédiée à l’EAC."
+        offererId={offererId}
+        venueId={venueId}
+        venueName={venueName}
+      >
         <ButtonLink
           variant={ButtonVariant.TERNARY}
           icon={fullLinkIcon}
@@ -112,27 +102,24 @@ export function PartnerPageCollectiveSection({
         >
           En savoir plus sur le pass Culture à destination des scolaires
         </ButtonLink>
-      </section>
+      </AdageInformations>
     )
   } else if (
     lastDmsApplication.state === DMSApplicationstatus.REFUSE ||
     lastDmsApplication.state === DMSApplicationstatus.SANS_SUITE
   ) {
     return (
-      <section className={styles['details']}>
-        <div>
-          {header}
-          <Tag className={styles['tag']} variant={TagVariant.LIGHT_BLUE}>
-            Non référencé dans ADAGE
-          </Tag>
-        </div>
-
-        <p className={styles['details-description']}>
-          Pour pouvoir adresser des offres aux enseignants, vous devez être
-          référencé dans ADAGE, l’application du ministère de l’Education
-          nationale et de la Jeunesse dédiée à l’EAC.
-        </p>
-      </section>
+      <AdageInformations
+        tagText="Non référencé dans ADAGE"
+        variant={TagVariant.LIGHT_BLUE}
+        isDisplayedInHomepage={isDisplayedInHomepage}
+        description="Pour pouvoir adresser des offres aux enseignants, vous devez être
+        référencé dans ADAGE, l’application du ministère de l’Education
+        nationale et de la Jeunesse dédiée à l’EAC."
+        offererId={offererId}
+        venueId={venueId}
+        venueName={venueName}
+      />
     )
   }
   // Last case :
@@ -140,18 +127,15 @@ export function PartnerPageCollectiveSection({
   // lastDmsApplication?.state === DMSApplicationstatus.EN_CONSTRUCTION ||
   // lastDmsApplication?.state === DMSApplicationstatus.EN_INSTRUCTION)
   return (
-    <section className={styles['details']}>
-      <div>
-        {header}
-        <Tag className={styles['tag']} variant={TagVariant.LIGHT_YELLOWN}>
-          Référencement en cours
-        </Tag>
-      </div>
-
-      <p className={styles['details-description']}>
-        Votre démarche de référencement est en cours de traitement par ADAGE.
-      </p>
-
+    <AdageInformations
+      tagText="Référencement en cours"
+      variant={TagVariant.LIGHT_YELLOW}
+      isDisplayedInHomepage={isDisplayedInHomepage}
+      description="Votre démarche de référencement est en cours de traitement par ADAGE."
+      offererId={offererId}
+      venueId={venueId}
+      venueName={venueName}
+    >
       <ButtonLink
         variant={ButtonVariant.TERNARY}
         icon={fullInfoIcon}
@@ -166,6 +150,62 @@ export function PartnerPageCollectiveSection({
       >
         En savoir plus sur le pass Culture à destination des scolaires
       </ButtonLink>
+    </AdageInformations>
+  )
+}
+
+type AdageInformationsProps = {
+  children?: React.ReactNode
+  variant: TagVariant
+  tagText: string
+  isDisplayedInHomepage: boolean
+  description?: string
+  offererId: number
+  venueId: number
+  venueName: string
+}
+
+function AdageInformations({
+  children,
+  tagText,
+  variant,
+  isDisplayedInHomepage,
+  description,
+  offererId,
+  venueId,
+  venueName,
+}: AdageInformationsProps) {
+  return (
+    <section className={styles['details']}>
+      <div>
+        {isDisplayedInHomepage ? (
+          <h4 className={styles['details-title']}>Enseignants</h4>
+        ) : (
+          <span className={styles['details-normal']}>
+            État auprès des enseignants&nbsp;:
+          </span>
+        )}
+        <Tag className={styles['tag']} variant={variant}>
+          {tagText}
+        </Tag>
+      </div>
+      {description && (
+        <p className={styles['details-description']}>{description}</p>
+      )}
+      {isDisplayedInHomepage && (
+        <ButtonLink
+          variant={ButtonVariant.TERNARY}
+          className={styles['details-link']}
+          link={{
+            to: `/structures/${offererId}/lieux/${venueId}/collectif`,
+            'aria-label': `Gérer la page pour les enseignants ${venueName}`,
+          }}
+          icon={fullNextIcon}
+        >
+          Gérer votre page pour les enseignants
+        </ButtonLink>
+      )}
+      {children}
     </section>
   )
 }

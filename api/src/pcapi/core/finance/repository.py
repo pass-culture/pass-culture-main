@@ -82,25 +82,22 @@ def get_invoices_by_references(references: list[str]) -> list[models.Invoice]:
     return models.Invoice.query.filter(models.Invoice.reference.in_(references)).order_by(models.Invoice.date).all()
 
 
-def find_all_offerers_payments(
-    offerer_ids: list[int],
-    reimbursement_period: tuple[datetime.date, datetime.date],
+def find_offerer_payments(
+    offerer_id: int | None = None,
+    reimbursement_period: tuple[datetime.date, datetime.date] | None = None,
     bank_account_id: int | None = None,
+    invoices_references: list[str] | None = None,
 ) -> list[tuple]:
     results = []
 
     results.extend(
         _get_sent_pricings_for_individual_bookings(
-            offerer_ids,
-            reimbursement_period,
-            bank_account_id,
+            offerer_id, reimbursement_period, bank_account_id, invoices_references
         )
     )
     results.extend(
         _get_sent_pricings_for_collective_bookings(
-            offerer_ids,
-            reimbursement_period,
-            bank_account_id,
+            offerer_id, reimbursement_period, bank_account_id, invoices_references
         )
     )
 
@@ -123,9 +120,10 @@ def _truncate_milliseconds(
 
 
 def _get_sent_pricings_for_collective_bookings(
-    offerer_ids: list[int],
-    reimbursement_period: tuple[datetime.date, datetime.date],
+    offerer_id: int | None = None,
+    reimbursement_period: tuple[datetime.date, datetime.date] | None = None,
     bank_account_id: int | None = None,
+    invoices_references: list[str] | None = None,
 ) -> list[tuple]:
     query = (
         models.Pricing.query.join(educational_models.CollectiveBooking, models.Pricing.collectiveBooking)
@@ -181,12 +179,19 @@ def _get_sent_pricings_for_collective_bookings(
         .outerjoin(models.Pricing.customRule)
         .filter(
             models.Pricing.status == models.PricingStatus.INVOICED,
-            sqla.cast(models.Cashflow.creationDate, sqla.Date).between(
-                *reimbursement_period,
-                symmetric=True,
+            (
+                (
+                    sqla.cast(models.Cashflow.creationDate, sqla.Date).between(
+                        *reimbursement_period,
+                        symmetric=True,
+                    )
+                )
+                if reimbursement_period
+                else sqla.true()
             ),
-            educational_models.CollectiveBooking.offererId.in_(offerer_ids),
+            (educational_models.CollectiveBooking.offererId == offerer_id) if offerer_id else sqla.true(),
             (models.Cashflow.bankAccountId == bank_account_id) if bank_account_id else sqla.true(),
+            (models.Invoice.reference.in_(invoices_references)) if invoices_references else sqla.true(),
             # Complementary invoices (that end with ".2") are linked
             # to the same bookings as the original invoices they
             # complement. We don't want these bookings to be listed
@@ -210,9 +215,10 @@ def _get_sent_pricings_for_collective_bookings(
 
 
 def _get_sent_pricings_for_individual_bookings(
-    offerer_ids: list[int],
-    reimbursement_period: tuple[datetime.date, datetime.date],
+    offerer_id: int | None,
+    reimbursement_period: tuple[datetime.date, datetime.date] | None = None,
     bank_account_id: int | None = None,
+    invoices_references: list[str] | None = None,
 ) -> list[tuple]:
     query = (
         models.Pricing.query.join(models.Pricing.booking)
@@ -261,12 +267,19 @@ def _get_sent_pricings_for_individual_bookings(
         query.outerjoin(models.Pricing.customRule)
         .filter(
             models.Pricing.status == models.PricingStatus.INVOICED,
-            sqla.cast(models.Cashflow.creationDate, sqla.Date).between(
-                *reimbursement_period,
-                symmetric=True,
+            (
+                (
+                    sqla.cast(models.Cashflow.creationDate, sqla.Date).between(
+                        *reimbursement_period,
+                        symmetric=True,
+                    )
+                )
+                if reimbursement_period
+                else sqla.true()
             ),
-            bookings_models.Booking.offererId.in_(offerer_ids),
+            (bookings_models.Booking.offererId == offerer_id) if offerer_id else sqla.true(),
             (models.Cashflow.bankAccountId == bank_account_id) if bank_account_id else sqla.true(),
+            (models.Invoice.reference.in_(invoices_references)) if invoices_references else sqla.true(),
             # Complementary invoices (that end with ".2") are linked
             # to the same bookings as the original invoices they
             # complement. We don't want these bookings to be listed

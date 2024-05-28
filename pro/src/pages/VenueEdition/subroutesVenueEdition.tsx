@@ -14,6 +14,6 @@ export const routesVenueEdition: RouteConfig[] = [
   },
   {
     path: '/structures/:offererId/lieux/:venueId/collectif',
-    title: 'Gérer ma page sur Adage',
+    title: 'Gérer ma page sur ADAGE',
   },
 ]

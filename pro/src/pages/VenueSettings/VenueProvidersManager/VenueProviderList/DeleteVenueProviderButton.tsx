@@ -1,6 +1,9 @@
-import React, { useCallback, useState } from 'react'
+import React, { useState } from 'react'
+import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
+import { GetVenueResponseModel } from 'apiClient/v1'
+import { GET_VENUE_PROVIDERS_QUERY_KEY } from 'config/swrQueryKeys'
 import useNotification from 'hooks/useNotification'
 import fullTrashIcon from 'icons/full-trash.svg'
 import { Button } from 'ui-kit/Button/Button'
@@ -12,23 +15,24 @@ import style from './VenueProviderItem.module.scss'
 
 interface DeleteVenueProviderButtonProps {
   venueProviderId: number
-  afterDelete: (deletedVenueProvider: number) => void
+  venue: GetVenueResponseModel
 }
 
 export const DeleteVenueProviderButton = ({
   venueProviderId,
-  afterDelete,
+  venue,
 }: DeleteVenueProviderButtonProps): JSX.Element => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const notification = useNotification()
+  const { mutate } = useSWRConfig()
 
-  const tryToDeleteVenueProvider = useCallback(async () => {
+  const tryToDeleteVenueProvider = async () => {
     setIsLoading(true)
     try {
       await api.deleteVenueProvider(venueProviderId)
 
-      afterDelete(venueProviderId)
+      await mutate([GET_VENUE_PROVIDERS_QUERY_KEY, venue.id])
     } catch (exception) {
       notification.error(
         'Une erreur est survenue. Merci de réessayer plus tard.'
@@ -37,7 +41,7 @@ export const DeleteVenueProviderButton = ({
       setIsModalOpen(false)
       setIsLoading(false)
     }
-  }, [notification])
+  }
 
   return (
     <>

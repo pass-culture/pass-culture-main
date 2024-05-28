@@ -11,7 +11,7 @@ class GetNationalProgramsTest:
         programs = educational_factories.NationalProgramFactory.create_batch(2)
         offerers_factories.ApiKeyFactory()
 
-        dst = url_for("pro_public_api_v2.get_national_programs")
+        dst = url_for("public_api.v2_prefixed_public_api.collectives_offers.get_national_programs")
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(dst)
 
         assert response.status_code == 200

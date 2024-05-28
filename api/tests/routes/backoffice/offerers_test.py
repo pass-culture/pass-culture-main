@@ -107,6 +107,7 @@ class GetOffererTest(GetEndpointHelper):
         assert "Peut créer une offre EAC : Oui" in content
         assert "Présence CB dans les lieux : 0 OK / 0 KO " in content
         assert "Tags structure : Collectivité Top acteur " in content
+        assert "Validation des offres : Suivre les règles" in content
         badges = html_parser.extract(response.data, tag="span", class_="badge")
         assert "Structure" in badges
         assert "Validée" in badges
@@ -228,7 +229,7 @@ class GetOffererTest(GetEndpointHelper):
 
         assert "Peut créer une offre EAC : Oui" in html_parser.content_as_text(response.data)
         # One venue with adageId out of two physical venues
-        assert "Lieux cartographiés sur Adage : 1/2" in html_parser.content_as_text(response.data)
+        assert "Lieux cartographiés sur ADAGE : 1/2" in html_parser.content_as_text(response.data)
 
     def test_offerer_with_no_adage_venue_has_adage_data(self, authenticated_client, offerer):
         offerer = offerers_factories.OffererFactory(allowedOnAdage=True)
@@ -240,7 +241,7 @@ class GetOffererTest(GetEndpointHelper):
             assert response.status_code == 200
 
         assert "Peut créer une offre EAC : Oui" in html_parser.content_as_text(response.data)
-        assert "Lieux cartographiés sur Adage : 0/1" in html_parser.content_as_text(response.data)
+        assert "Lieux cartographiés sur ADAGE : 0/1" in html_parser.content_as_text(response.data)
 
     def test_offerer_with_no_individual_subscription_tab(self, authenticated_client, offerer):
         offerer_id = offerer.id
@@ -273,6 +274,24 @@ class GetOffererTest(GetEndpointHelper):
             assert response.status_code == 200
 
         assert html_parser.get_soup(response.data).find(class_="subscription-tab-pane")
+
+    @pytest.mark.parametrize(
+        "factory, expected_text",
+        [
+            (offerers_factories.WhitelistedOffererConfidenceRuleFactory, "Validation auto"),
+            (offerers_factories.ManualReviewOffererConfidenceRuleFactory, "Revue manuelle"),
+        ],
+    )
+    def test_get_offerer_with_confidence_rule(self, authenticated_client, factory, expected_text):
+        rule = factory()
+        url = url_for(self.endpoint, offerer_id=rule.offerer.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        response_text = html_parser.content_as_text(response.data)
+        assert f"Validation des offres : {expected_text}" in response_text
 
     def test_get_offerer_which_does_not_exist(self, authenticated_client):
         response = authenticated_client.get(url_for(self.endpoint, offerer_id=12345))
@@ -1640,7 +1659,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             dms_adage_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[0]
             assert f"Nom : {venue.name}" in dms_adage_data
             assert f"SIRET : {venue.siret}" in dms_adage_data
-            assert "Statut du dossier DMS Adage : Accepté" in dms_adage_data
+            assert "Statut du dossier DMS ADAGE : Accepté" in dms_adage_data
 
         @pytest.mark.parametrize(
             "total_items, pagination_config, expected_total_pages, expected_page, expected_items",
@@ -3653,7 +3672,7 @@ class GetIndividualOffererSubscriptionTest(GetEndpointHelper):
                 "Casier judiciaire": ["bi-exclamation-circle-fill", "text-warning"],
                 "Diplômes": ["bi-check-circle-fill", "text-success"],
                 "Certifications professionnelles": ["bi-exclamation-circle-fill", "text-warning"],
-                "Référencement Adage": ["bi-exclamation-circle-fill", "text-warning"],
+                "Référencement ADAGE": ["bi-exclamation-circle-fill", "text-warning"],
             },
         )
 
@@ -3688,7 +3707,7 @@ class GetIndividualOffererSubscriptionTest(GetEndpointHelper):
                 "Casier judiciaire": ["bi-check-circle-fill", "text-success"],
                 "Diplômes": ["bi-check-circle-fill", "text-success"],
                 "Certifications professionnelles": ["bi-check-circle-fill", "text-success"],
-                "Référencement Adage": expected_adage_classes,
+                "Référencement ADAGE": expected_adage_classes,
             },
         )
 

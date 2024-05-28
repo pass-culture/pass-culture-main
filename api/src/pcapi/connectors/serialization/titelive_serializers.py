@@ -1,4 +1,5 @@
 import datetime
+import logging
 import typing
 
 import pydantic.v1 as pydantic_v1
@@ -6,6 +7,9 @@ from pydantic.v1 import generics
 
 from pcapi.routes.serialization import BaseModel
 from pcapi.utils import date as date_utils
+
+
+logger = logging.getLogger(__name__)
 
 
 class GenreTitelive(BaseModel):
@@ -154,6 +158,17 @@ class TiteLiveBookOeuvre(BaseTiteliveOeuvre[TiteLiveBookArticle]):
     article: list[TiteLiveBookArticle]  # repeated without generics so mypy understands
     auteurs_multi: list[str]
     titre: str
+
+    @pydantic_v1.validator("auteurs_multi", pre=True)
+    def validate_auteurs_multi(cls, auteurs_multi: typing.Any) -> list:
+        if isinstance(auteurs_multi, list):
+            return auteurs_multi
+        if isinstance(auteurs_multi, str):
+            return [auteurs_multi]
+        if isinstance(auteurs_multi, dict):
+            return list(auteurs_multi.values())
+        logger.error("unhandled auteurs_multi type %s", auteurs_multi)
+        return []
 
 
 class TiteliveMusicOeuvre(BaseTiteliveOeuvre[TiteliveMusicArticle]):

@@ -179,7 +179,7 @@ export const FormPracticalInformation = ({
         <FormLayout.Row
           sideComponent={
             <InfoBox>
-              La zone de mobilité permet d’indiquer aux enseignants sur Adage où
+              La zone de mobilité permet d’indiquer aux enseignants sur ADAGE où
               vous pouvez vous déplacer en France.
             </InfoBox>
           }

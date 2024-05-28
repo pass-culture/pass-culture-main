@@ -544,7 +544,7 @@ def top_acteur_tag_fixture():
 @pytest.fixture(name="adage_tag")
 def adage_tag_fixture():
     category = offerers_factories.OffererTagCategoryFactory(name="homologation", label="Homologation")
-    return offerers_factories.OffererTagFactory(name="adage", label="Adage", categories=[category])
+    return offerers_factories.OffererTagFactory(name="adage", label="ADAGE", categories=[category])
 
 
 @pytest.fixture(name="offerer_tags")
@@ -604,7 +604,7 @@ def offerers_to_be_validated_fixture(offerer_tags):
     offerers_factories.OffererFactory(name="G")
     offerers_factories.RejectedOffererFactory(name="H")
 
-    # DMS adage statuses
+    # DMS ADAGE statuses
     educational_factories.CollectiveDmsApplicationFactory(venue__managingOfferer=no_tag, state="accepte")
     educational_factories.CollectiveDmsApplicationFactory(venue__managingOfferer=no_tag, state="refuse")
     educational_factories.CollectiveDmsApplicationFactory(venue__managingOfferer=top, state="en_instruction")

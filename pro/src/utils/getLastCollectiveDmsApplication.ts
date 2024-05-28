@@ -19,9 +19,12 @@ export const getLastCollectiveDmsApplication = (
 }
 
 export const getLastDmsApplicationForOfferer = (
-  venueId: string | null,
-  offerer: GetOffererResponseModel
+  venueId?: string | null,
+  offerer?: GetOffererResponseModel
 ) => {
+  if (!offerer) {
+    return
+  }
   if (venueId) {
     const venue = offerer.managedVenues?.find(
       (venue) => venue.id.toString() === venueId

@@ -1,4 +1,5 @@
 {% from "components/forms.html" import build_form_fields_group with context %}
+{% from "components/generic_modal.html" import build_modal_form with context %}
 {% import "components/presentation/details/tabs.html" as tabs %}
 {% extends "layouts/connected.html" %}
 {% block page %}
@@ -15,36 +16,7 @@
       {% call tabs.build_details_tabs_content_wrapper() %}
         {% call tabs.build_details_tab_content("tags", active_tab == 'tags') %}
           {% if create_tag_form %}
-            <button class="btn btn-outline-primary lead fw-bold my-2"
-                    data-bs-toggle="modal"
-                    data-bs-target=".pc-create-offerer-tag-modal"
-                    type="button">Créer un tag structure</button>
-            <div class="modal modal-lg fade pc-create-offerer-tag-modal"
-                 tabindex="-1"
-                 aria-describedby="{{ create_offerer_tag_modal_label_id }}"
-                 aria-hidden="true">
-              <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                  <form action="{{ url_for("backoffice_web.offerer_tag.create_offerer_tag") }}"
-                        name="{{ url_for("backoffice_web.offerer_tag.create_offerer_tag") | action_to_name }}"
-                        method="post"
-                        data-turbo="false">
-                    <div class="modal-header"
-                         id="{{ create_offerer_tag_modal_label_id }}">
-                      <h5 class="modal-title">Créer un tag structure</h5>
-                    </div>
-                    <div class="modal-body row">{{ build_form_fields_group(create_tag_form) }}</div>
-                    <div class="modal-footer">
-                      <button type="button"
-                              class="btn btn-outline-primary"
-                              data-bs-dismiss="modal">Annuler</button>
-                      <button type="submit"
-                              class="btn btn-primary">Enregistrer</button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
+            {{ build_modal_form("create-offerer-tag", url_for("backoffice_web.offerer_tag.create_offerer_tag") , create_tag_form, "Créer un tag structure", "Créer un tag structure", "Enregistrer") }}
           {% endif %}
           <div>
             <table class="table mb-4">
@@ -164,36 +136,7 @@
         {% endcall %}
         {% call tabs.build_details_tab_content("categories", active_tab == 'categories') %}
           {% if create_category_form %}
-            <button class="btn btn-outline-primary lead fw-bold my-2"
-                    data-bs-toggle="modal"
-                    data-bs-target=".pc-create-offerer-tag-category-modal"
-                    type="button">Créer une catégorie</button>
-            <div class="modal modal-lg fade pc-create-offerer-tag-category-modal"
-                 tabindex="-1"
-                 aria-describedby="{{ create_offerer_tag_category_modal_label_id }}"
-                 aria-hidden="true">
-              <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                  <form action="{{ url_for("backoffice_web.offerer_tag.create_offerer_tag_category") }}"
-                        name="{{ url_for("backoffice_web.offerer_tag.create_offerer_tag_category") | action_to_name }}"
-                        method="post"
-                        data-turbo="false">
-                    <div class="modal-header"
-                         id="{{ create_offerer_tag_category_modal_label_id }}">
-                      <h5 class="modal-title">Créer une catégorie</h5>
-                    </div>
-                    <div class="modal-body row">{{ build_form_fields_group(create_category_form) }}</div>
-                    <div class="modal-footer">
-                      <button type="button"
-                              class="btn btn-outline-primary"
-                              data-bs-dismiss="modal">Annuler</button>
-                      <button type="submit"
-                              class="btn btn-primary">Enregistrer</button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
+            {{ build_modal_form("create-offerer-tag-category", url_for("backoffice_web.offerer_tag.create_offerer_tag_category") , create_category_form, "Créer une catégorie", "Créer une catégorie", "Enregistrer") }}
           {% endif %}
           <div>
             <table class="table mb-4">

@@ -2,17 +2,19 @@ from collections import defaultdict
 
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories_v2
-from pcapi.routes.public import blueprints
+from pcapi.routes.public import documentation_constants
+from pcapi.routes.public import spectree_schemas
+from pcapi.routes.public.collective.blueprint import collective_offers_blueprint
 from pcapi.routes.public.collective.serialization import offers as offers_serialization
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.validation.routes.users_authentifications import api_key_required
 
 
-@blueprints.v2_prefixed_public_api.route("/collective/categories", methods=["GET"])
+@collective_offers_blueprint.route("/collective/categories", methods=["GET"])
 @spectree_serialize(
-    api=blueprints.v2_prefixed_public_api_schema,
-    tags=["API offres collectives"],
+    api=spectree_schemas.public_api_schema,
+    tags=[documentation_constants.COLLECTIVE_CATEGORIES],
     resp=SpectreeResponse(
         HTTP_200=(
             offers_serialization.CollectiveOffersListCategoriesResponseModel,
@@ -27,7 +29,9 @@ from pcapi.validation.routes.users_authentifications import api_key_required
 @api_key_required
 def list_categories() -> offers_serialization.CollectiveOffersListCategoriesResponseModel:
     # in French, to be used by Swagger for the API documentation
-    """Récupération de la liste des catégories d'offres proposées."""
+    """
+    Récupération de la liste des catégories d'offres proposées.
+    """
     return offers_serialization.CollectiveOffersListCategoriesResponseModel(
         __root__=[
             offers_serialization.CollectiveOffersCategoryResponseModel(id=category.id, name=category.pro_label)
@@ -37,10 +41,10 @@ def list_categories() -> offers_serialization.CollectiveOffersListCategoriesResp
     )
 
 
-@blueprints.v2_prefixed_public_api.route("/collective/subcategories", methods=["GET"])
+@collective_offers_blueprint.route("/collective/subcategories", methods=["GET"])
 @spectree_serialize(
-    api=blueprints.v2_prefixed_public_api_schema,
-    tags=["API offres collectives"],
+    api=spectree_schemas.public_api_schema,
+    tags=[documentation_constants.COLLECTIVE_CATEGORIES],
     resp=SpectreeResponse(
         HTTP_200=(
             offers_serialization.CollectiveOffersListSubCategoriesResponseModel,

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
+import { api } from 'apiClient/api'
 import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
@@ -14,8 +15,6 @@ import {
 } from 'config/swrQueryKeys'
 import useNotification from 'hooks/useNotification'
 import { AdagePreviewLayout } from 'pages/AdageIframe/app/components/OfferInfos/AdagePreviewLayout/AdagePreviewLayout'
-import { publishCollectiveOfferAdapter } from 'screens/CollectiveOfferSummaryCreation/adapters/publishCollectiveOfferAdapter'
-import { publishCollectiveOfferTemplateAdapter } from 'screens/CollectiveOfferSummaryCreation/adapters/publishCollectiveOfferTemplateAdapter'
 import { RedirectToBankAccountDialog } from 'screens/Offers/RedirectToBankAccountDialog'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
@@ -46,48 +45,47 @@ export const CollectiveOfferPreviewCreationScreen = ({
     : `/offre/${offer.id}/collectif/confirmation`
 
   const publishOffer = async () => {
-    if (offer.isTemplate) {
-      const response = await publishCollectiveOfferTemplateAdapter(offer.id)
+    try {
+      if (offer.isTemplate) {
+        const newOffer = await api.patchCollectiveOfferTemplatePublication(
+          offer.id
+        )
 
-      if (!response.isOk) {
-        notify.error(response.message)
+        await mutate<GetCollectiveOfferTemplateResponseModel>(
+          [GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY, offer.id],
+          newOffer,
+          { revalidate: false }
+        )
+
+        navigate(confirmationUrl)
         return
       }
 
-      await mutate<GetCollectiveOfferTemplateResponseModel>(
-        [GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY, offer.id],
-        response.payload,
-        {
-          revalidate: false,
-        }
+      const newOffer = await api.patchCollectiveOfferPublication(offer.id)
+
+      await mutate<GetCollectiveOfferResponseModel>(
+        [GET_COLLECTIVE_OFFER_QUERY_KEY, offer.id],
+        newOffer,
+        { revalidate: false }
       )
-      navigate(confirmationUrl)
-      return
-    }
 
-    const response = await publishCollectiveOfferAdapter(offer.id)
-    if (!response.isOk) {
-      return notify.error(response.message)
-    }
+      const shouldDisplayRedirectDialog =
+        newOffer.isNonFreeOffer &&
+        offerer &&
+        !offerer.hasNonFreeOffer &&
+        !offerer.hasValidBankAccount &&
+        !offerer.hasPendingBankAccount
 
-    await mutate<GetCollectiveOfferResponseModel>(
-      [GET_COLLECTIVE_OFFER_QUERY_KEY, offer.id],
-      response.payload,
-      {
-        revalidate: false,
+      if (shouldDisplayRedirectDialog) {
+        setDisplayRedirectDialog(true)
+      } else {
+        navigate(confirmationUrl)
       }
-    )
-    const shouldDisplayRedirectDialog =
-      response.payload.isNonFreeOffer &&
-      offerer &&
-      !offerer.hasNonFreeOffer &&
-      !offerer.hasValidBankAccount &&
-      !offerer.hasPendingBankAccount
-
-    if (shouldDisplayRedirectDialog) {
-      setDisplayRedirectDialog(true)
-    } else {
-      navigate(confirmationUrl)
+    } catch {
+      notify.error(
+        'Une erreur est survenue lors de la publication de votre offre.'
+      )
+      return
     }
   }
 

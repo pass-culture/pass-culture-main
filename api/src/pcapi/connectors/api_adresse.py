@@ -14,6 +14,8 @@ import re
 import pydantic.v1 as pydantic_v1
 
 from pcapi import settings
+from pcapi.core.geography.constants import MAX_LATITUDE
+from pcapi.core.geography.constants import MAX_LONGITUDE
 from pcapi.utils import module_loading
 from pcapi.utils import requests
 
@@ -40,6 +42,10 @@ class InvalidFormatException(AdresseException):
     pass
 
 
+class RateLimitExceeded(AdresseApiException):
+    pass
+
+
 class AddressInfo(pydantic_v1.BaseModel):
     id: str
     label: str
@@ -50,6 +56,18 @@ class AddressInfo(pydantic_v1.BaseModel):
     score: float
     city: str
     street: str | None
+
+    @pydantic_v1.validator("latitude")
+    def validate_latitude(cls, latitude: float) -> float:
+        if not -MAX_LATITUDE <= latitude <= MAX_LATITUDE:
+            raise ValueError("latitude out of bounds")
+        return latitude
+
+    @pydantic_v1.validator("longitude")
+    def validate_longitude(cls, longitude: float) -> float:
+        if not -MAX_LONGITUDE <= longitude <= MAX_LONGITUDE:
+            raise ValueError("longitude out of bounds")
+        return longitude
 
 
 class ResultColumn(enum.Enum):
@@ -256,6 +274,8 @@ class ApiAdresseBackend(BaseBackend):
             raise AdresseApiException("Adresse API is unavailable")
         if response.status_code == 400:
             raise InvalidFormatException()
+        if response.status_code == 429:
+            raise RateLimitExceeded("Rate limit exceeded from API Adresse")
         if response.status_code != 200:
             raise AdresseApiException(f"Unexpected {response.status_code} response from Adresse API: {url}")
 

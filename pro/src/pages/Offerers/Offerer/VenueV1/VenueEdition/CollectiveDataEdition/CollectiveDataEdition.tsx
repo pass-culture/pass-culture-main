@@ -1,5 +1,4 @@
 import { addDays, isBefore } from 'date-fns'
-import React from 'react'
 import { Route, Routes, useParams } from 'react-router-dom'
 import useSWR from 'swr'
 
@@ -96,6 +95,8 @@ export const CollectiveDataEdition = ({
 
       <PartnerPageCollectiveSection
         venueId={venue.id}
+        venueName={venue.name}
+        offererId={venue.managingOfferer.id}
         collectiveDmsApplications={venue.collectiveDmsApplications}
         allowedOnAdage={venue.managingOfferer.allowedOnAdage}
       />

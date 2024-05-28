@@ -15,7 +15,6 @@ interface VenueEditionReadOnlyProps {
 }
 
 export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
-  const isAccesLibreEnabled = useActiveFeature('WIP_ACCESLIBRE')
 
   return (
     <SummarySection
@@ -56,10 +55,10 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
         />
       </SummarySubSection>
 
-      {!(isAccesLibreEnabled && venue.externalAccessibilityData) && (
+      {!venue.externalAccessibilityData && (
         <AccessibilitySummarySection
           callout={
-            isAccesLibreEnabled && venue.isPermanent ? (
+            venue.isPermanent ? (
               <Callout
                 links={[
                   {

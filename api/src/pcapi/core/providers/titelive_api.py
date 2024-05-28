@@ -61,9 +61,21 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
 
         products_to_update_pages = self.get_updated_titelive_pages(from_date, from_page)
         for titelive_page in products_to_update_pages:
-            with repository.transaction():
-                updated_products = self.upsert_titelive_page(titelive_page)
-                db.session.add_all(updated_products)
+            updated_products = self.upsert_titelive_page(titelive_page)
+            failed_to_update_products = []
+            # Saving the products one by one to avoid a rollback of the whole transaction if and when an error occurs
+            for product in updated_products:
+                try:
+                    with repository.transaction():
+                        db.session.add(product)
+                except Exception as e:  # pylint: disable=broad-except
+                    ean = product.extraData.get("ean") if product.extraData else None
+                    logger.error(
+                        "Error while saving product in db",
+                        extra={"exception": e, "productId": product.id, "ean": ean},
+                    )
+                    failed_to_update_products.append(product)
+            updated_products = [product for product in updated_products if product not in failed_to_update_products]
 
             with repository.transaction():
                 updated_thumb_products = self.update_product_thumbnails(updated_products, titelive_page)

@@ -76,6 +76,7 @@ export const DEFAULT_SEARCH_FILTERS: SearchFiltersParams = {
   periodBeginningDate: ALL_EVENT_PERIODS,
   periodEndingDate: ALL_EVENT_PERIODS,
   page: DEFAULT_PAGE,
+  offererAddressId: 'all',
 }
 
 export const ALL_VENUES_OPTION: SelectOption = {

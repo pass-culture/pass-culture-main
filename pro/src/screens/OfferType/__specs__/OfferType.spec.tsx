@@ -84,6 +84,11 @@ describe('OfferType', () => {
     })
     vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue([])
 
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+      ...defaultGetOffererResponseModel,
+      isValidated: true,
+    })
+
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
@@ -159,14 +164,9 @@ describe('OfferType', () => {
   })
 
   it('should display non eligible banner if offerer can not create collective offer', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-      offerersNames: [
-        getOffererNameFactory({
-          id: 1,
-          name: 'Ma super structure',
-          allowedOnAdage: false,
-        }),
-      ],
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+      ...defaultGetOffererResponseModel,
+      allowedOnAdage: false,
     })
 
     renderOfferTypes()
@@ -182,9 +182,10 @@ describe('OfferType', () => {
     ).toBeInTheDocument()
   })
 
-  it('should display dms application banner if offerer can not create collective offer but as dms application', async () => {
+  it('should display dms application banner if offerer can not create collective offer but has a dms application', async () => {
     const offerer: GetOffererResponseModel = {
       ...defaultGetOffererResponseModel,
+      allowedOnAdage: false,
       managedVenues: [
         {
           ...defaultGetOffererVenueResponseModel,
@@ -274,21 +275,6 @@ describe('OfferType', () => {
       screen.getByRole('radio', { name: 'À un groupe scolaire' })
     )
 
-    await waitFor(() => {
-      expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        'template',
-        undefined
-      )
-    })
-
     await userEvent.click(
       await screen.findByRole('radio', {
         name: 'Une offre réservable Cette offre a une date et un prix. Elle doit être associée à un établissement scolaire avec lequel vous avez préalablement échangé.',
@@ -310,6 +296,21 @@ describe('OfferType', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Étape suivante' })
     )
+
+    await waitFor(() => {
+      expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        'template',
+        undefined
+      )
+    })
 
     expect(screen.getByText('Sélection collectif')).toBeInTheDocument()
   })

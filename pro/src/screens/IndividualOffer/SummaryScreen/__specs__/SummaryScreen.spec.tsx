@@ -31,7 +31,6 @@ import {
   individualOfferContextValuesFactory,
   subcategoryFactory,
   venueListItemFactory,
-  getOffererNameFactory,
 } from 'utils/individualApiFactories'
 import {
   RenderWithProvidersOptions,
@@ -155,8 +154,8 @@ describe('Summary', () => {
     vi.spyOn(api, 'getMusicTypes').mockResolvedValue(musicTypes)
   })
 
-  const expectOfferFields = () => {
-    expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
+  const expectOfferFields = async () => {
+    expect(await screen.findByText('Détails de l’offre')).toBeInTheDocument()
     expect(screen.getByText('Type d’offre')).toBeInTheDocument()
     expect(screen.getByText('Informations artistiques')).toBeInTheDocument()
     expect(screen.getByText('Informations pratiques')).toBeInTheDocument()
@@ -188,10 +187,10 @@ describe('Summary', () => {
   }
 
   describe('On edition', () => {
-    it('should render component with informations', () => {
+    it('should render component with informations', async () => {
       renderSummary(customContext)
 
-      expectOfferFields()
+      await expectOfferFields()
       expect(
         screen.getByText('Retour à la liste des offres')
       ).toBeInTheDocument()
@@ -209,7 +208,7 @@ describe('Summary', () => {
       }
     })
 
-    it('should render component with informations', () => {
+    it('should render component with informations', async () => {
       renderSummary(
         customContext,
         generatePath(
@@ -221,7 +220,7 @@ describe('Summary', () => {
         )
       )
 
-      expectOfferFields()
+      await expectOfferFields()
       expect(
         screen.queryByText('Visualiser dans l’app')
       ).not.toBeInTheDocument()
@@ -285,7 +284,7 @@ describe('Summary', () => {
         )
       )
 
-      const pageTitle = screen.getByRole('heading', {
+      const pageTitle = await screen.findByRole('heading', {
         name: /Détails de l’offre/,
       })
       const buttonPublish = screen.getByRole('button', {
@@ -353,10 +352,6 @@ describe('Summary', () => {
         offer: getIndividualOfferFactory({
           venue: getOfferVenueFactory({ id: venueId }),
         }),
-        offerOfferer: getOffererNameFactory({
-          name: 'offerOffererName',
-          id: 1,
-        }),
         showVenuePopin: {
           [venueId]: true,
         },
@@ -387,17 +382,13 @@ describe('Summary', () => {
         })
       ).toHaveAttribute(
         'href',
-        '/remboursements/informations-bancaires?structure=1'
+        `/remboursements/informations-bancaires?structure=${context.offer.venue.managingOfferer.id}`
       )
     })
 
     it('should display redirect modal if first non free offer', async () => {
       const context = {
         offer: getIndividualOfferFactory(),
-        offerOfferer: getOffererNameFactory({
-          name: 'offerOffererName',
-          id: 1,
-        }),
         venueList: [venueListItemFactory()],
       }
 
@@ -437,17 +428,13 @@ describe('Summary', () => {
         screen.getByRole('link', { name: 'Ajouter un compte bancaire' })
       ).toHaveAttribute(
         'href',
-        '/remboursements/informations-bancaires?structure=1'
+        `/remboursements/informations-bancaires?structure=${context.offer.venue.managingOfferer.id}`
       )
     })
 
     it('should not display redirect modal if hasPendingBankAccount is true', async () => {
       const context = {
         offer: getIndividualOfferFactory(),
-        offerOfferer: getOffererNameFactory({
-          name: 'offerOffererName',
-          id: 1,
-        }),
         venueList: [venueListItemFactory()],
       }
 
@@ -485,6 +472,10 @@ describe('Summary', () => {
     })
 
     it('should not display redirect modal if offer is free', async () => {
+      vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
+        getIndividualOfferFactory({ isNonFreeOffer: false })
+      )
+
       const context = {
         offer: getIndividualOfferFactory(),
         venueList: [venueListItemFactory()],
@@ -514,6 +505,11 @@ describe('Summary', () => {
     })
 
     it('should not display redirect modal if venue hasNonFreeOffers', async () => {
+      vi.spyOn(api, 'getOfferer').mockResolvedValue({
+        ...defaultGetOffererResponseModel,
+        hasNonFreeOffer: true,
+      })
+
       const context = {
         offer: getIndividualOfferFactory(),
         venueList: [venueListItemFactory()],

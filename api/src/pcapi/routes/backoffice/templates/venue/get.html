@@ -1,6 +1,7 @@
 {% import "components/clipboard.html" as clipboard %}
 {% from "components/badges.html" import build_venue_badges %}
 {% from "components/forms.html" import build_form_fields_group with context %}
+{% from "components/generic_modal.html" import build_modal_form with context %}
 {% import "components/links.html" as links %}
 {% from "components/presentation/details/tabs.html" import build_details_tab %}
 {% from "components/presentation/details/tabs.html" import build_details_tabs_wrapper %}
@@ -63,79 +64,12 @@
                 </div>
               {% endif %}
               {% if has_permission("MANAGE_PRO_ENTITY") %}
-                <button class="btn btn-outline-primary lead fw-bold mt-2 mx-3"
-                        data-bs-toggle="modal"
-                        data-bs-target="#edit-venue-modal"
-                        type="button">Modifier les informations</button>
-                <div class="modal modal-lg fade"
-                     id="edit-venue-modal"
-                     tabindex="-1"
-                     aria-labelledby="edit-venue-modal-label"
-                     aria-hidden="true">
-                  <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                      <form action="{{ url_for("backoffice_web.venue.update_venue", venue_id=venue.id) }}"
-                            name="{{ url_for("backoffice_web.venue.update_venue", venue_id=venue.id) | action_to_name }}"
-                            method="post">
-                        <div class="modal-header">
-                          <h5 class="modal-title">Modifier les informations du lieu</h5>
-                        </div>
-                        <div class="modal-body">
-                          <div class="form-floating my-3">{{ build_form_fields_group(edit_venue_form) }}</div>
-                        </div>
-                        <div class="modal-footer">
-                          <button type="button"
-                                  class="btn btn-outline-primary"
-                                  data-bs-dismiss="modal">Annuler</button>
-                          <button type="submit"
-                                  class="btn btn-primary">Enregistrer</button>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
-                </div>
+                {{ build_modal_form("edit-venue", url_for("backoffice_web.venue.update_venue", venue_id=venue.id) , edit_venue_form, "Modifier les informations", "Modifier les informations du lieu", "Enregistrer") }}
               {% endif %}
               {% if has_permission("DELETE_PRO_ENTITY") %}
                 {% set delete_venue_modal_label_id = random_hash() %}
-                <button class="btn btn-outline-primary lead fw-bold mt-2"
-                        data-bs-toggle="modal"
-                        data-bs-target=".pc-delete-venue-modal"
-                        type="button">
-                  <i class="bi bi-trash3-fill"></i>
-                  Supprimer le lieu
-                </button>
-                <div class="modal modal-lg fade pc-delete-venue-modal"
-                     tabindex="-1"
-                     aria-describedby="{{ delete_venue_modal_label_id }}"
-                     aria-hidden="true">
-                  <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                      <form action="{{ url_for("backoffice_web.venue.delete_venue", venue_id=venue.id) }}"
-                            name="{{ url_for("backoffice_web.venue.delete_venue", venue_id=venue.id) | action_to_name }}"
-                            method="post"
-                            data-turbo="false">
-                        <div class="modal-header"
-                             id="delete-venue-modal-label">
-                          <h5 class="modal-title">Supprimer le lieu {{ venue.common_name }}</h5>
-                        </div>
-                        <div class="modal-body row">
-                          <p>
-                            Le lieu <strong>{{ venue.common_name }} ({{ venue.id }})</strong> sera définitivement supprimé
-                            de la base de données. Veuillez confirmer ce choix.
-                          </p>
-                          {{ build_form_fields_group(delete_form) }}
-                        </div>
-                        <div class="modal-footer">
-                          <button type="button"
-                                  class="btn btn-outline-primary"
-                                  data-bs-dismiss="modal">Annuler</button>
-                          <button type="submit"
-                                  class="btn btn-primary">Confirmer</button>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
-                </div>
+                {% set form_description = "Le lieu <strong>"|safe + venue.common_name + "</strong> ("|safe + venue.id|string + ") sera définitivement supprimé de la base de données. Veuillez confirmer ce choix." %}
+                {{ build_modal_form("delete-venue", url_for("backoffice_web.venue.delete_venue", venue_id=venue.id) , delete_form, "Supprimer le lieu", "Supprimer le lieu " + venue.common_name, "Confirmer", form_description, "bi-trash3-fill") }}
               {% endif %}
             </div>
           </div>
@@ -215,11 +149,11 @@
                 <span class="fw-bold">Peut créer une offre EAC : {{ venue.managingOfferer.allowedOnAdage | format_bool_badge }}</span>
               </p>
               <p class="mb-1">
-                <span class="fw-bold">Cartographié sur Adage : {{ (venue.adageId is not none) | format_bool_badge }}</span>
+                <span class="fw-bold">Cartographié sur ADAGE : {{ (venue.adageId is not none) | format_bool_badge }}</span>
               </p>
               {% if venue.adageId %}
                 <p class="mb-1">
-                  <span class="fw-bold">ID Adage :</span>
+                  <span class="fw-bold">ID ADAGE :</span>
                   {{ venue.adageId }}
                 </p>
               {% endif %}
@@ -259,6 +193,12 @@
                   {% elif not venue.accessibilityProvider.externalAccessibilityId and not venue.accessibilityProvider.externalAccessibilityUrl %}
                     Attention, l'URL et l'identifiant Acceslibre ne sont pas renseignés alors que le lieu est synchronisé
                   {% endif %}
+                </p>
+              {% endif %}
+              {% if has_permission("PRO_FRAUD_ACTIONS") %}
+                <p class="mb-1">
+                  <span class="fw-bold">Validation des offres :</span>
+                  {{ venue | format_confidence_level(recursive=true, show_no_rule=true) }}
                 </p>
               {% endif %}
             </div>
@@ -411,7 +351,7 @@
           {% if venue.siret and has_permission("READ_PRO_ENTREPRISE_INFO") %}
             {{ build_details_tab("entreprise", "Données Entreprise", active_tab == 'entreprise') }}
           {% endif %}
-          {% if venue.siret %}{{ build_details_tab("dms-adage", "Dossiers DMS Adage", active_tab == 'dms_adage') }}{% endif %}
+          {% if venue.siret %}{{ build_details_tab("dms-adage", "Dossiers DMS ADAGE", active_tab == 'dms_adage') }}{% endif %}
         {% endcall %}
         {% call build_details_tabs_content_wrapper() %}
           {% call build_details_tab_content("history", active_tab == 'history') %}

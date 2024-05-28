@@ -3,6 +3,7 @@ import {
   VenueListItemResponseModel,
 } from 'apiClient/v1'
 import { SelectOption } from 'custom_types/form'
+import { computeVenueDisplayName } from 'repository/venuesService'
 
 export const buildOffererOptions = (
   offererNames: GetOffererNameResponseModel[]
@@ -48,7 +49,7 @@ export const buildVenueOptions = (
   let venueOptions = offererVenues
     .map((venue) => ({
       value: venue.id.toString(),
-      label: venue.publicName || venue.name,
+      label: computeVenueDisplayName(venue),
     }))
     .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
   if (venueOptions.length !== 1) {

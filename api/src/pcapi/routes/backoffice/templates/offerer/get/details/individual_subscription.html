@@ -45,13 +45,13 @@
             {{ build_step("Certifications professionnelles", "bi-box-fill", "bi-check-circle-fill text-success" if individual_subscription.isExperienceReceived else ("bi-exclamation-circle-fill text-warning" if individual_subscription) , "step-success" if individual_subscription.isExperienceReceived) }}
             {% if has_adage_tag or adage_decision %}
               {% if adage_decision == "accepte" %}
-                {{ build_step('Référencement Adage', 'bi-briefcase-fill', 'bi-check-circle-fill text-success', 'step-success') }}
+                {{ build_step('Référencement ADAGE', 'bi-briefcase-fill', 'bi-check-circle-fill text-success', 'step-success') }}
               {% elif adage_decision == "refuse" %}
-                {{ build_step('Référencement Adage', 'bi-briefcase-fill', 'bi-x-circle-fill text-danger', 'step-error') }}
+                {{ build_step('Référencement ADAGE', 'bi-briefcase-fill', 'bi-x-circle-fill text-danger', 'step-error') }}
               {% elif adage_decision == "en_instruction" %}
-                {{ build_step("Référencement Adage", "bi-briefcase-fill", "bi-hourglass-split text-info", null) }}
+                {{ build_step("Référencement ADAGE", "bi-briefcase-fill", "bi-hourglass-split text-info", null) }}
               {% else %}
-                {{ build_step("Référencement Adage", "bi-briefcase-fill", "bi-exclamation-circle-fill text-warning" if individual_subscription, "") }}
+                {{ build_step("Référencement ADAGE", "bi-briefcase-fill", "bi-exclamation-circle-fill text-warning" if individual_subscription, "") }}
               {% endif %}
             {% endif %}
           </ol>

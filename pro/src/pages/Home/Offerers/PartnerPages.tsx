@@ -3,6 +3,7 @@ import { useState } from 'react'
 import {
   GetOffererResponseModel,
   GetOffererVenueResponseModel,
+  VenueTypeResponseModel,
 } from 'apiClient/v1'
 import { SelectOption } from 'custom_types/form'
 import { SelectInput } from 'ui-kit/form/Select/SelectInput'
@@ -37,9 +38,14 @@ const getSavedVenueId = (
 export interface PartnerPagesProps {
   offerer: GetOffererResponseModel
   venues: GetOffererVenueResponseModel[]
+  venueTypes: VenueTypeResponseModel[]
 }
 
-export const PartnerPages = ({ venues, offerer }: PartnerPagesProps) => {
+export const PartnerPages = ({
+  venues,
+  offerer,
+  venueTypes,
+}: PartnerPagesProps) => {
   const [selectedVenueId, setSelectedVenueId] = useState<string>(
     venues.length > 0 ? getSavedVenueId(venues) ?? venues[0].id.toString() : ''
   )
@@ -60,7 +66,7 @@ export const PartnerPages = ({ venues, offerer }: PartnerPagesProps) => {
       <p className={styles['description']}>
         Complétez vos informations pour présenter votre activité au grand public
         sur le site et l’application pass Culture à destination des jeunes et /
-        ou auprès des enseignants sur la plateforme Adage.
+        ou auprès des enseignants sur la plateforme ADAGE.
       </p>
 
       {venues.length > 1 && (
@@ -87,6 +93,7 @@ export const PartnerPages = ({ venues, offerer }: PartnerPagesProps) => {
         <PartnerPage
           offerer={offerer}
           venue={selectedVenue}
+          venueTypes={venueTypes}
           // In order to have the image state changing in PartnerPage,
           // we wanna the state reset when the venue change, see :
           // https://react.dev/learn/preserving-and-resetting-state#option-2-resetting-state-with-a-key

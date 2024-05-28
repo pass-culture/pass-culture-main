@@ -16,6 +16,7 @@ import {
   Events,
   OFFER_FROM_TEMPLATE_ENTRIES,
 } from 'core/FirebaseEvents/constants'
+import { SENT_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import * as useNotification from 'hooks/useNotification'
 import {
   defaultGetVenue,
@@ -288,9 +289,7 @@ describe('CollectiveOfferNavigation', () => {
 
     await userEvent.click(duplicateOffer)
 
-    expect(notifyError).toHaveBeenCalledWith(
-      'Une ou plusieurs erreurs sont présentes dans le formulaire'
-    )
+    expect(notifyError).toHaveBeenCalledWith(SENT_DATA_ERROR_MESSAGE)
   })
 
   it('should return an error when trying to get offerer image', async () => {

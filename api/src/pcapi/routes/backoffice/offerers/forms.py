@@ -108,7 +108,7 @@ class OffererValidationListForm(utils.PCForm):
         endpoint="backoffice_web.autocomplete_bo_users",
     )
     dms_adage_status = fields.PCSelectMultipleField(
-        "États du dossier DMS Adage",
+        "États du dossier DMS ADAGE",
         choices=utils.choices_from_enum(GraphQLApplicationStates, filters.format_dms_application_status),
     )
     from_date = fields.PCDateField("Demande à partir du", validators=(wtforms.validators.Optional(),))

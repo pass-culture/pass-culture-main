@@ -1,39 +1,77 @@
 from flask import Blueprint
-import flask_cors
-import spectree
+from flask import redirect
+from flask_cors import CORS
+from werkzeug.wrappers.response import Response
 
-from pcapi.serialization import utils as serialization_utils
-from pcapi.serialization.spec_tree import ExtendedSpecTree
-from pcapi.validation.routes import users_authentifications
+# Spectree schemas
+from . import spectree_schemas
 
-from .individual_offers import blueprint
+# DEPRECATED APIs
+from .booking_token import blueprint as booking_token_blueprint
+from .books_stocks import blueprint as booking_stocks_blueprint
 
-
-public_blueprint = Blueprint("public_blueprint", __name__, url_prefix="/public")
-public_blueprint.register_blueprint(blueprint.individual_offers_blueprint)
-public_blueprint.register_blueprint(blueprint.individual_bookings_blueprint)
-
-
-v2_prefixed_public_api = Blueprint("pro_public_api_v2", __name__, url_prefix="/v2")
-flask_cors.CORS(v2_prefixed_public_api, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
+# ACTIVE APIs
+from .collective import blueprint as collective_blueprint
+from .individual_offers import blueprint as indivual_offers_blueprints
 
 
-v2_prefixed_public_api_schema = ExtendedSpecTree(
-    "flask",
-    title="pass Culture pro public API v2",
-    MODE="strict",
-    before=serialization_utils.before_handler,
-    PATH="/",
-    security_schemes=[
-        spectree.SecurityScheme(
-            name=users_authentifications.API_KEY_AUTH_NAME,
-            data={"type": "http", "scheme": "bearer", "description": "Api key issued by passculture"},  # type: ignore [arg-type]
-        ),
-        spectree.SecurityScheme(
-            name=users_authentifications.COOKIE_AUTH_NAME, data={"type": "apiKey", "in": "cookie", "name": "session"}  # type: ignore [arg-type]
-        ),
-    ],
-    humanize_operation_id=True,
-    version=2,
+public_api_blueprint = Blueprint(
+    "public_api", __name__, url_prefix="/"  # we must add `url_prefix="/"` for spectree to work
 )
-v2_prefixed_public_api_schema.register(v2_prefixed_public_api)
+
+# [ACTIVE] Public API following pattern /public/<resource>/v1/....
+_public_v1_blueprint = Blueprint("v1_public_api", __name__, url_prefix="/public")
+_public_v1_blueprint.register_blueprint(indivual_offers_blueprints.individual_offers_blueprint)
+_public_v1_blueprint.register_blueprint(indivual_offers_blueprints.individual_bookings_blueprint)
+
+
+# [ACTIVE] Public API following pattern /v2/collective/....
+_v2_prefixed_public_api = Blueprint("v2_prefixed_public_api", __name__, url_prefix="/v2")
+_v2_prefixed_public_api.register_blueprint(collective_blueprint.collective_offers_blueprint)
+
+
+# [OLD] Old tokens and stocks apis
+_deprecated_v2_prefixed_public_api = Blueprint("deprecated_public_api", __name__, url_prefix="/v2")
+_deprecated_v2_prefixed_public_api.register_blueprint(booking_token_blueprint.deprecated_booking_token_blueprint)
+_deprecated_v2_prefixed_public_api.register_blueprint(booking_stocks_blueprint.deprecated_books_stocks_blueprint)
+
+
+# DOCUMENTATION REDIRECTS
+# TODO: Remove once all the providers have been informed that the documentation has changed location (by the end of year 2024).
+documentation_redirect_blueprint = Blueprint("documentation_redirect", __name__)
+
+
+@documentation_redirect_blueprint.route("/v2/swagger", methods=["GET"])
+@documentation_redirect_blueprint.route("/public/bookings/v1/swagger", methods=["GET"])
+@documentation_redirect_blueprint.route("/public/offers/v1/event/swagger", methods=["GET"])
+@documentation_redirect_blueprint.route("/public/offers/v1/swagger", methods=["GET"])
+def redirect_to_new_swagger() -> "Response":
+    return redirect("/swagger", code=301)
+
+
+@documentation_redirect_blueprint.route("/v2/redoc", methods=["GET"])
+@documentation_redirect_blueprint.route("/public/bookings/v1/redoc", methods=["GET"])
+@documentation_redirect_blueprint.route("/public/offers/v1/event/redoc", methods=["GET"])
+@documentation_redirect_blueprint.route("/public/offers/v1/redoc", methods=["GET"])
+def redirect_bookings_swagger_to_new_swagger() -> "Response":
+    return redirect("/redoc", code=301)
+
+
+public_api_blueprint.register_blueprint(documentation_redirect_blueprint)
+# End TODO
+
+
+# Registering blueprints (current & deprecated public APIs)
+public_api_blueprint.register_blueprint(_public_v1_blueprint)
+public_api_blueprint.register_blueprint(_v2_prefixed_public_api)
+public_api_blueprint.register_blueprint(_deprecated_v2_prefixed_public_api)
+CORS(
+    public_api_blueprint,
+    resources={r"/*": {"origins": "*"}},
+    supports_credentials=True,
+)
+
+
+# Registering spectree schemas
+spectree_schemas.public_api_schema.register(public_api_blueprint)
+spectree_schemas.deprecated_public_api_schema.register(_deprecated_v2_prefixed_public_api)

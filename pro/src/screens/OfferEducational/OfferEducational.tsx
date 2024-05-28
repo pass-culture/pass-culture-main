@@ -2,6 +2,8 @@ import { FormikProvider, useFormik } from 'formik'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
+import { api } from 'apiClient/api'
+import { isErrorAPIError } from 'apiClient/helpers'
 import {
   GetEducationalOffererResponseModel,
   GetCollectiveOfferResponseModel,
@@ -12,9 +14,6 @@ import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
 } from 'config/swrQueryKeys'
-import { patchCollectiveOfferAdapter } from 'core/OfferEducational/adapters/patchCollectiveOfferAdapter'
-import { postCollectiveOfferAdapter } from 'core/OfferEducational/adapters/postCollectiveOfferAdapter'
-import { postCollectiveOfferTemplateAdapter } from 'core/OfferEducational/adapters/postCollectiveOfferTemplateAdapter'
 import {
   Mode,
   OfferEducationalFormValues,
@@ -24,10 +23,21 @@ import {
 import { applyVenueDefaultsToFormValues } from 'core/OfferEducational/utils/applyVenueDefaultsToFormValues'
 import { computeInitialValuesFromOffer } from 'core/OfferEducational/utils/computeInitialValuesFromOffer'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
+import {
+  createCollectiveOfferPayload,
+  createCollectiveOfferTemplatePayload,
+} from 'core/OfferEducational/utils/createOfferPayload'
+import {
+  FORM_ERROR_MESSAGE,
+  SENT_DATA_ERROR_MESSAGE,
+} from 'core/shared/constants'
 import { SelectOption } from 'custom_types/form'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
-import { patchCollectiveOfferTemplateAdapter } from 'pages/CollectiveOfferEdition/adapters/patchCollectiveOfferTemplateAdapter'
+import {
+  createPatchOfferPayload,
+  createPatchOfferTemplatePayload,
+} from 'pages/CollectiveOfferEdition/utils/createPatchOfferPayload'
 import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
 
 import styles from './OfferEducational.module.scss'
@@ -98,70 +108,76 @@ export const OfferEducational = ({
 
   const onSubmit = async (offerValues: OfferEducationalFormValues) => {
     let response = null
-    if (isTemplate) {
-      if (offer === undefined) {
-        response = await postCollectiveOfferTemplateAdapter({
-          offer: offerValues,
-          isCustomContactActive,
-        })
-      } else {
-        response = await patchCollectiveOfferTemplateAdapter({
-          offer: offerValues,
-          initialValues,
-          offerId: offer.id,
-          isCustomContactActive,
-        })
-      }
-    } else {
-      if (offer === undefined) {
-        response = await postCollectiveOfferAdapter({
-          offer: offerValues,
-        })
-      } else {
-        response = await patchCollectiveOfferAdapter({
-          offer: offerValues,
-          initialValues,
-          offerId: offer.id,
-        })
-      }
-    }
 
-    const { payload, isOk, message } = response
-    if (!isOk) {
-      return notify.error(message)
-    }
-    const offerId = offer?.id ?? payload.id
-    await handleImageOnSubmit(offerId)
-    if (
-      offer &&
-      (isCollectiveOffer(payload) || isCollectiveOfferTemplate(payload))
-    ) {
-      await mutate(
-        offer.isTemplate
-          ? GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY
-          : GET_COLLECTIVE_OFFER_QUERY_KEY,
-        {
-          ...payload,
-          imageUrl: imageOffer?.url,
-          imageCredit: imageOffer?.credit,
-        },
-        { revalidate: false }
-      )
-    }
-    if (mode === Mode.EDITION && offer !== undefined) {
-      return navigate(
-        `/offre/${computeURLCollectiveOfferId(
-          offer.id,
+    try {
+      if (isTemplate) {
+        if (offer === undefined) {
+          const payload = createCollectiveOfferTemplatePayload(
+            offerValues,
+            isCustomContactActive
+          )
+
+          response = await api.createCollectiveOfferTemplate(payload)
+        } else {
+          const payload = createPatchOfferTemplatePayload(
+            offerValues,
+            initialValues,
+            isCustomContactActive
+          )
+
+          response = await api.editCollectiveOfferTemplate(offer.id, payload)
+        }
+      } else {
+        if (offer === undefined) {
+          const payload = createCollectiveOfferPayload(offerValues)
+
+          response = await api.createCollectiveOffer(payload)
+        } else {
+          const payload = createPatchOfferPayload(offerValues, initialValues)
+          response = await api.editCollectiveOffer(offer.id, payload)
+        }
+      }
+
+      const offerId = offer?.id ?? response.id
+      await handleImageOnSubmit(offerId)
+
+      if (
+        offer &&
+        (isCollectiveOffer(response) || isCollectiveOfferTemplate(response))
+      ) {
+        await mutate(
           offer.isTemplate
-        )}/collectif/recapitulatif`
+            ? GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY
+            : GET_COLLECTIVE_OFFER_QUERY_KEY,
+          {
+            ...response,
+            imageUrl: imageOffer?.url,
+            imageCredit: imageOffer?.credit,
+          },
+          { revalidate: false }
+        )
+      }
+      if (mode === Mode.EDITION && offer !== undefined) {
+        return navigate(
+          `/offre/${computeURLCollectiveOfferId(
+            offer.id,
+            offer.isTemplate
+          )}/collectif/recapitulatif`
+        )
+      }
+      const requestIdParams = requestId ? `?requete=${requestId}` : ''
+      navigate(
+        isTemplate
+          ? `/offre/${offerId}/collectif/vitrine/creation/recapitulatif`
+          : `/offre/${offerId}/collectif/stocks${requestIdParams}`
       )
+    } catch (error) {
+      if (isErrorAPIError(error) && error.status === 400) {
+        notify.error(FORM_ERROR_MESSAGE)
+      } else {
+        notify.error(SENT_DATA_ERROR_MESSAGE)
+      }
     }
-    const requestIdParams = requestId ? `?requete=${requestId}` : ''
-    navigate(
-      isTemplate
-        ? `/offre/${payload.id}/collectif/vitrine/creation/recapitulatif`
-        : `/offre/${payload.id}/collectif/stocks${requestIdParams}`
-    )
   }
 
   const { resetForm, ...formik } = useFormik({

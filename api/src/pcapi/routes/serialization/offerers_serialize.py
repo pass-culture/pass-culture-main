@@ -369,10 +369,6 @@ class GetOffererAddressResponseModel(BaseModel):
         offerer_address.street = offerer_address.address.street
         offerer_address.postalCode = offerer_address.address.postalCode
         offerer_address.city = offerer_address.address.city
-        offerer_address.isEditable = (
-            False  # TODO (yacine) default value until the relation between Venue and OffererAddress be added
-        )
-
         return super().from_orm(offerer_address)
 
     class Config:
@@ -416,7 +412,7 @@ class PatchOffererAddressRequest(BaseModel):
 
 class OffererAddressResponseModel(BaseModel):
     id: int
-    label: str
+    label: str | None
     offererId: int
     address: AddressResponseModel
 

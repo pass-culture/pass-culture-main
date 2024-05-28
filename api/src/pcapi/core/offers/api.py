@@ -889,7 +889,7 @@ def add_criteria_to_offers(
 def reject_inappropriate_products(
     eans: list[str],
     author: users_models.User | None,
-    rejected_by_gcu_incompatibility: bool = False,
+    rejected_by_fraud_action: bool = False,
     send_booking_cancellation_emails: bool = True,
 ) -> bool:
     products = models.Product.query.filter(
@@ -926,7 +926,7 @@ def reject_inappropriate_products(
         product.isGcuCompatible = False
         product.gcuCompatibilityType = (
             models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
-            if rejected_by_gcu_incompatibility
+            if rejected_by_fraud_action
             else models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE
         )
 
@@ -954,7 +954,7 @@ def reject_inappropriate_products(
                 transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(
                     booking,
                     reason=BookingCancellationReasons.FRAUD,
-                    rejected_by_gcu_incompatibility=rejected_by_gcu_incompatibility,
+                    rejected_by_fraud_action=rejected_by_fraud_action,
                 )
 
     logger.info(
@@ -1051,6 +1051,18 @@ def rule_flags_offer(rule: models.OfferValidationRule, offer: AnyOffer) -> bool:
 
 
 def set_offer_status_based_on_fraud_criteria(offer: AnyOffer) -> models.OfferValidationStatus:
+    status = models.OfferValidationStatus.APPROVED
+
+    confidence_level = offerers_api.get_offer_confidence_level(offer.venue)
+
+    if confidence_level == offerers_models.OffererConfidenceLevel.WHITELIST:
+        logger.info("Computed offer validation", extra={"offer": offer.id, "status": status.value, "whitelist": True})
+        return status
+
+    if confidence_level == offerers_models.OffererConfidenceLevel.MANUAL_REVIEW:
+        status = models.OfferValidationStatus.PENDING
+        # continue so that offers are checked against rules: gives more information for manual validation
+
     offer_validation_rules = (
         models.OfferValidationRule.query.options(
             sa.orm.joinedload(models.OfferValidationSubRule, models.OfferValidationRule.subRules)
@@ -1069,9 +1081,7 @@ def set_offer_status_based_on_fraud_criteria(offer: AnyOffer) -> models.OfferVal
         offer.flaggingValidationRules = flagging_rules
         if isinstance(offer, models.Offer):
             compliance.update_offer_compliance_score(offer, is_primary=True)
-
     else:
-        status = models.OfferValidationStatus.APPROVED
         if isinstance(offer, models.Offer):
             compliance.update_offer_compliance_score(offer, is_primary=False)
 

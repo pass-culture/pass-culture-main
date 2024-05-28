@@ -177,28 +177,9 @@ export const individualOfferContextValuesFactory = (
   const offer = getIndividualOfferFactory()
 
   return {
-    offerId: offer.id,
     offer,
     categories: [],
     subCategories: [],
-    setSubcategory: () => {},
-    musicTypes: [
-      {
-        gtl_id: '01000000',
-        label: 'Musique Classique',
-        canBeEvent: true,
-      },
-      {
-        gtl_id: '07000000',
-        label: 'Metal',
-        canBeEvent: true,
-      },
-      {
-        gtl_id: '15000000',
-        label: 'Vidéos musicales',
-        canBeEvent: false,
-      },
-    ],
     ...customIndividualOfferContextValues,
   }
 }

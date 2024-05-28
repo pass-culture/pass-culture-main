@@ -20,7 +20,7 @@ import useNotification from 'hooks/useNotification'
 import fullBackIcon from 'icons/full-back.svg'
 import strokeMailIcon from 'icons/stroke-mail.svg'
 import { generateSiretValidationSchema } from 'pages/VenueCreation/SiretOrCommentFields/validationSchema'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { serializeEditVenueBodyModel } from './serializers'
@@ -34,7 +34,7 @@ interface VenueSettingsFormScreenProps {
   offerer: GetOffererResponseModel
   venueLabels: SelectOption[]
   venueTypes: VenueTypeResponseModel[]
-  venueProviders?: VenueProviderResponse[]
+  venueProviders: VenueProviderResponse[]
   venue: GetVenueResponseModel
 }
 
@@ -162,15 +162,13 @@ export const VenueSettingsFormScreen = ({
 
   return (
     <>
-      <ButtonLink
+      <Button
         variant={ButtonVariant.TERNARYPINK}
         icon={fullBackIcon}
-        link={{
-          to: `/structures/${offerer.id}/lieux/${venue.id}`,
-        }}
+        onClick={() => navigate(-1)}
       >
-        Retour vers la page partenaire
-      </ButtonLink>
+        Retour vers la page précédente
+      </Button>
 
       <h1 className={styles['title']}>Paramètres de l’activité</h1>
 
@@ -180,7 +178,7 @@ export const VenueSettingsFormScreen = ({
             updateIsSiretValued={setIsSiretValued}
             venueLabels={venueLabels}
             venueTypes={venueTypes}
-            venueProvider={venueProviders}
+            venueProviders={venueProviders}
             venue={venue}
             offerer={offerer}
           />

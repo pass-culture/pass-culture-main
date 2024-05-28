@@ -12,6 +12,7 @@ export type { OpenAPIConfig } from './core/OpenAPI';
 
 export type { AdageCulturalPartnersResponseModel } from './models/AdageCulturalPartnersResponseModel';
 export type { Address } from './models/Address';
+export type { AddressResponseIsEditableModel } from './models/AddressResponseIsEditableModel';
 export type { AddressResponseModel } from './models/AddressResponseModel';
 export type { AttachImageFormModel } from './models/AttachImageFormModel';
 export type { AttachImageResponseModel } from './models/AttachImageResponseModel';
@@ -56,6 +57,7 @@ export type { CollectiveOfferVenueBodyModel } from './models/CollectiveOfferVenu
 export type { CollectiveStockCreationBodyModel } from './models/CollectiveStockCreationBodyModel';
 export type { CollectiveStockEditionBodyModel } from './models/CollectiveStockEditionBodyModel';
 export type { CollectiveStockResponseModel } from './models/CollectiveStockResponseModel';
+export type { CombinedInvoiceListModel } from './models/CombinedInvoiceListModel';
 export type { Consent } from './models/Consent';
 export type { CookieConsentRequest } from './models/CookieConsentRequest';
 export type { CreateOffererQueryModel } from './models/CreateOffererQueryModel';
@@ -199,6 +201,7 @@ export type { PriceCategoryResponseModel } from './models/PriceCategoryResponseM
 export type { ProFlagsQueryModel } from './models/ProFlagsQueryModel';
 export type { ProUserCreationBodyV2Model } from './models/ProUserCreationBodyV2Model';
 export type { ProviderResponse } from './models/ProviderResponse';
+export type { ReimbursementCsvByInvoicesModel } from './models/ReimbursementCsvByInvoicesModel';
 export type { ReimbursementCsvQueryModel } from './models/ReimbursementCsvQueryModel';
 export type { ResetPasswordBodyModel } from './models/ResetPasswordBodyModel';
 export type { SaveNewOnboardingDataQueryModel } from './models/SaveNewOnboardingDataQueryModel';

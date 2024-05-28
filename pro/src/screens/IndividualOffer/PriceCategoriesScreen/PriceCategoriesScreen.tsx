@@ -1,11 +1,13 @@
 import { FormikProvider, useFormik } from 'formik'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useSWRConfig } from 'swr'
 
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
+import { GET_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
@@ -87,6 +89,7 @@ export const PriceCategoriesScreen = ({
   const navigate = useNavigate()
   const mode = useOfferWizardMode()
   const notify = useNotification()
+  const { mutate } = useSWRConfig()
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] =
     useState<boolean>(false)
 
@@ -128,6 +131,7 @@ export const PriceCategoriesScreen = ({
     // Submit
     try {
       await submitToApi(values, offer, formik.resetForm)
+      await mutate([GET_OFFER_QUERY_KEY, offer.id])
     } catch (error) {
       if (error instanceof Error) {
         notify.error(error.message)

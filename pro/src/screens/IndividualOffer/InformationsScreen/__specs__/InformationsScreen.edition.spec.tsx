@@ -166,7 +166,6 @@ describe('screens:IndividualOffer::Informations:edition', () => {
     })
 
     contextOverride = individualOfferContextValuesFactory({
-      offerId: offer.id,
       offer: offer,
       categories,
       subCategories,

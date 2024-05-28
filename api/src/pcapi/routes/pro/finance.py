@@ -9,6 +9,7 @@ import sqlalchemy.orm as sqla_orm
 
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.repository as finance_repository
+from pcapi.core.offerers import models as offerers_models
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import finance_serialize
@@ -69,12 +70,34 @@ def get_combined_invoices(query: finance_serialize.CombinedInvoiceListModel) -> 
     invoices = finance_repository.get_invoices_by_references(query.invoiceReferences)
     if not invoices:
         raise ApiErrors({"invoice": "Invoice not found"}, status_code=404)
+    bank_accounts = (
+        finance_models.Invoice.query.join(finance_models.Invoice.bankAccount)
+        .filter(finance_models.Invoice.reference.in_(query.invoiceReferences))
+        .with_entities(finance_models.BankAccount.offererId)
+        .all()
+    )
+    offerer_ids = {bank_account.offererId for bank_account in bank_accounts}
+    if not offerer_ids:
+        raise ApiErrors({"invoiceReferences": ["Aucune structure trouvée pour les factures fournies"]})
+    if not current_user.has_admin_role:
+        user_offerers_count = offerers_models.UserOfferer.query.filter(
+            offerers_models.UserOfferer.userId == current_user.id,
+            offerers_models.UserOfferer.offererId.in_(offerer_ids),
+            offerers_models.UserOfferer.isValidated,
+        ).count()
+        if user_offerers_count != len(offerer_ids):
+            raise ApiErrors({"offererId": ["Cet utilisateur ne peut pas accéder à cette structure"]})
+
     invoice_pdf_urls = [invoice.url for invoice in invoices]
     merger = PdfWriter()
     tmp = BytesIO()
 
     for invoice_pdf_url in invoice_pdf_urls:
-        invoice_pdf = PdfReader(BytesIO(requests.get(invoice_pdf_url).content))
+        try:
+            invoice_pdf = PdfReader(BytesIO(requests.get(invoice_pdf_url).content))
+        except Exception:
+            merger.close()
+            raise ApiErrors({"invoice": f"Failed to fetch invoice PDF from url: {invoice_pdf_url}"}, status_code=424)
         merger.append(invoice_pdf)
 
     merger.write(tmp)

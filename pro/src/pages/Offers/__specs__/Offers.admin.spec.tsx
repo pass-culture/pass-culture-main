@@ -180,6 +180,10 @@ describe('route Offers when user is admin', () => {
         undefined
       )
     })
+
+    const loadingMessage = screen.queryByText(/Chargement en cours/)
+    await waitFor(() => expect(loadingMessage).not.toBeInTheDocument())
+
     expect(
       screen.getByRole('button', {
         name: 'Statut Afficher ou masquer le filtre par statut',
@@ -213,6 +217,10 @@ describe('route Offers when user is admin', () => {
         undefined
       )
     })
+
+    const loadingMessage = screen.queryByText(/Chargement en cours/)
+    await waitFor(() => expect(loadingMessage).not.toBeInTheDocument())
+
     expect(
       screen.getByRole('button', {
         name: /Afficher ou masquer le filtre par statut/,

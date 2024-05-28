@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
 
+import { api } from 'apiClient/api'
 import {
   BookingRecapResponseModel,
   BookingStatusFilter,
@@ -12,12 +13,12 @@ import { NoData } from 'components/NoData/NoData'
 import {
   GET_BOOKINGS_QUERY_KEY,
   GET_HAS_BOOKINGS_QUERY_KEY,
+  GET_VENUES_QUERY_KEY,
 } from 'config/swrQueryKeys'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
-import { GetVenuesAdapter, PreFiltersParams } from 'core/Bookings/types'
+import { PreFiltersParams } from 'core/Bookings/types'
 import { Events } from 'core/FirebaseEvents/constants'
 import { Audience } from 'core/shared/types'
-import { SelectOption } from 'custom_types/form'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
 import useNotification from 'hooks/useNotification'
@@ -25,6 +26,7 @@ import strokeLibraryIcon from 'icons/stroke-library.svg'
 import strokeUserIcon from 'icons/stroke-user.svg'
 import { ChoosePreFiltersMessage } from 'pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
 import NoBookingsForPreFiltersMessage from 'pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
+import { formatAndOrderVenues } from 'repository/venuesService'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { Tabs } from 'ui-kit/Tabs/Tabs'
 import Titles from 'ui-kit/Titles/Titles'
@@ -45,7 +47,6 @@ type BookingsProps<T> = {
     currentPage: number
   }>
   getUserHasBookingsAdapter: () => Promise<boolean>
-  getVenuesAdapter: GetVenuesAdapter
 }
 
 const MAX_LOADED_PAGES = 5
@@ -57,7 +58,6 @@ export const BookingsScreen = <
   audience,
   getFilteredBookingsAdapter,
   getUserHasBookingsAdapter,
-  getVenuesAdapter,
 }: BookingsProps<T>): JSX.Element => {
   const { currentUser: user } = useCurrentUser()
   const notify = useNotification()
@@ -66,8 +66,6 @@ export const BookingsScreen = <
   const [appliedPreFilters, setAppliedPreFilters] =
     useState<PreFiltersParams>(DEFAULT_PRE_FILTERS)
   const [wereBookingsRequested, setWereBookingsRequested] = useState(false)
-  const [isLocalLoading, setIsLocalLoading] = useState(false)
-  const [venues, setVenues] = useState<SelectOption[]>([])
   const [urlParams, setUrlParams] =
     useState<PreFiltersParams>(DEFAULT_PRE_FILTERS)
 
@@ -98,6 +96,17 @@ export const BookingsScreen = <
     user.isAdmin ? null : [GET_HAS_BOOKINGS_QUERY_KEY],
     () => getUserHasBookingsAdapter(),
     { fallbackData: true }
+  )
+
+  const venuesQuery = useSWR([GET_VENUES_QUERY_KEY], () =>
+    api.getVenues(undefined, false)
+  )
+
+  const venues = formatAndOrderVenues(venuesQuery.data?.venues ?? []).map(
+    (venue) => ({
+      id: String(venue.value),
+      displayName: venue.label,
+    })
   )
 
   const resetPreFilters = () => {
@@ -186,22 +195,6 @@ export const BookingsScreen = <
     )
   }
 
-  useEffect(() => {
-    async function fetchVenues() {
-      setIsLocalLoading(true)
-      const { isOk, message, payload } = await getVenuesAdapter()
-
-      if (!isOk) {
-        notify.error(message)
-      }
-      setVenues(payload.venues)
-      setIsLocalLoading(false)
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    fetchVenues()
-  }, [setIsLocalLoading, setVenues, notify, getVenuesAdapter])
-
   const isNewInterfaceActive = useIsNewInterfaceActive()
   const title = isNewInterfaceActive
     ? audience === Audience.COLLECTIVE
@@ -239,13 +232,10 @@ export const BookingsScreen = <
         audience={audience}
         hasResult={bookingsQuery.data.length > 0}
         isFiltersDisabled={!hasBookingsQuery.data}
-        isLocalLoading={isLocalLoading}
+        isLocalLoading={venuesQuery.isLoading}
         isTableLoading={bookingsQuery.isLoading}
         resetPreFilters={resetPreFilters}
-        venues={venues.map((venue) => ({
-          id: String(venue.value),
-          displayName: venue.label,
-        }))}
+        venues={venues}
         urlParams={urlParams}
         updateUrl={updateUrl}
         wereBookingsRequested={wereBookingsRequested}

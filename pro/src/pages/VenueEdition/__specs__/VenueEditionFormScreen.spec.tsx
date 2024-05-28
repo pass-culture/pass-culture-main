@@ -241,7 +241,6 @@ describe('VenueFormScreen', () => {
         },
       },
       {
-        features: ['WIP_ACCESLIBRE'],
         initialRouterEntries: ['/'],
       }
     )
@@ -257,18 +256,15 @@ describe('VenueFormScreen', () => {
   })
 
   it('should display the acceslibre section under the form if the feature is enabled and data is present', () => {
-    renderForm(
-      {
-        ...baseVenue,
-        externalAccessibilityData: {
-          isAccessibleAudioDisability: true,
-          isAccessibleMentalDisability: false,
-          isAccessibleMotorDisability: true,
-          isAccessibleVisualDisability: true,
-        },
+    renderForm({
+      ...baseVenue,
+      externalAccessibilityData: {
+        isAccessibleAudioDisability: true,
+        isAccessibleMentalDisability: false,
+        isAccessibleMotorDisability: true,
+        isAccessibleVisualDisability: true,
       },
-      { features: ['WIP_ACCESLIBRE'] }
-    )
+    })
 
     expect(
       screen.getByText('Modalités d’accessibilité via acceslibre')

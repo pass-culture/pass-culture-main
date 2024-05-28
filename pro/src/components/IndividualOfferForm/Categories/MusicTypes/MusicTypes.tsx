@@ -1,6 +1,9 @@
+import useSWR from 'swr'
+
+import { api } from 'apiClient/api'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { FORM_DEFAULT_VALUES } from 'components/IndividualOfferForm/constants'
-import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
+import { GET_MUSIC_TYPES_QUERY_KEY } from 'config/swrQueryKeys'
 import { Select } from 'ui-kit/form/Select/Select'
 
 interface MusicTypesProps {
@@ -12,7 +15,12 @@ export const MusicTypes = ({
   readOnly = false,
   isEvent = false,
 }: MusicTypesProps): JSX.Element => {
-  const { musicTypes } = useIndividualOfferContext()
+  const musicTypesQuery = useSWR(
+    GET_MUSIC_TYPES_QUERY_KEY,
+    () => api.getMusicTypes(),
+    { fallbackData: [] }
+  )
+  const musicTypes = musicTypesQuery.data
 
   return (
     <FormLayout.Row>

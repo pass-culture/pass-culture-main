@@ -8,6 +8,7 @@ import type { BaseHttpRequest } from '../core/BaseHttpRequest';
 export class DPrCiEApiContremarqueService {
   constructor(public readonly httpRequest: BaseHttpRequest) {}
   /**
+   * @deprecated
    * [Dépréciée] Contactez partenaires.techniques@passculture.app pour plus d'informations.
    * @param token
    * @returns void
@@ -32,6 +33,7 @@ export class DPrCiEApiContremarqueService {
     });
   }
   /**
+   * @deprecated
    * [Dépréciée] Contactez partenaires.techniques@passculture.app pour plus d'informations.
    * @param token
    * @returns void
@@ -56,6 +58,7 @@ export class DPrCiEApiContremarqueService {
     });
   }
   /**
+   * @deprecated
    * [Dépréciée] Contactez partenaires.techniques@passculture.app pour plus d'informations.
    * @param token
    * @returns GetBookingResponse La contremarque existe et n’est pas validée
@@ -81,6 +84,7 @@ export class DPrCiEApiContremarqueService {
     });
   }
   /**
+   * @deprecated
    * [Dépréciée] Contactez partenaires.techniques@passculture.app pour plus d'informations.
    * @param token
    * @returns void

@@ -42,9 +42,21 @@ def post_fork(server, worker):
     """Called when a Gunicorn worker is started."""
     if ENABLE_FLASK_PROMETHEUS_EXPORTER:
         registry = prometheus_client.registry.CollectorRegistry()
-        metric_name = "gunicorn_available_threads_" + KUBERNETES_DEPLOYMENT.replace("-", "_")
+        # We could export a ratio (percentage) of availability (number
+        # of available threads divided by total threads), but each pod
+        # would export a value, which would have to be averaged to
+        # calculate the overall ratio. Instead, we export 2 metrics
+        # (total and available) and let Grafana and Alert Manager
+        # calculate the ratio.
+        worker.total_threads = prometheus_client.Gauge(
+            "gunicorn_total_threads_" + KUBERNETES_DEPLOYMENT.replace("-", "_"),
+            "number of total Gunicorn threads",
+            registry=registry,
+            multiprocess_mode="sum",
+        )
+        worker.total_threads.set(worker.cfg.settings["threads"].value)
         worker.available_threads = prometheus_client.Gauge(
-            metric_name,
+            "gunicorn_available_threads_" + KUBERNETES_DEPLOYMENT.replace("-", "_"),
             "number of available Gunicorn threads",
             registry=registry,
             multiprocess_mode="sum",

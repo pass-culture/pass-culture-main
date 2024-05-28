@@ -232,10 +232,12 @@ class GetCollectiveOfferVenueResponseModel(BaseModel):
     managingOfferer: GetCollectiveOfferManagingOffererResponseModel
     name: str
     publicName: str | None
+    bannerUrl: str | None = Field(alias="imgUrl")
 
     class Config:
         orm_mode = True
         json_encoders = {datetime: format_into_utc_date}
+        allow_population_by_field_name = True
 
 
 class OfferAddressType(enum.Enum):

@@ -60,7 +60,10 @@ def build_titelive_one_book_response(
     taux_tva="5.50",
     support_code="BL",
     id_lectorat="0",
+    auteurs_multi=None,
 ) -> dict:
+    if auteurs_multi is None:
+        auteurs_multi = ["Eraticerrata"]
     if no_gtl:
         gtl_response = None
     else:
@@ -86,7 +89,7 @@ def build_titelive_one_book_response(
                 "id": 2842547,
                 "titre": title,
                 "auteurs": "Eraticerrata",
-                "auteurs_multi": ["Eraticerrata"],
+                "auteurs_multi": auteurs_multi,
                 "auteurs_id": [],
                 "auteurs_fonctions": [],
                 "realisateur_multi": [],

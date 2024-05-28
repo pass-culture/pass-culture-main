@@ -117,6 +117,7 @@ class Returns200Test:
                     "siren": venue.managingOfferer.siren,
                 },
                 "id": venue.id,
+                "imgUrl": None,
                 "name": venue.name,
                 "publicName": venue.publicName,
             },

@@ -415,6 +415,32 @@ class TiteliveBookSearchTest:
         assert product.extraData.get("rayon") == closest_csr.get("label")
         assert product.extraData.get("code_clil") == "3774"
 
+    def test_handle_bad_product_by_ignoring_it(self, requests_mock):
+        self.setup_api_response_fixture(
+            requests_mock, fixtures.build_titelive_one_book_response(title="Long title with more than 140 chars" * 10)
+        )
+
+        # When
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+
+        # Then
+        assert offers_models.Product.query.count() == 0
+
+    def test_handle_bad_product_by_skipping_it(self, requests_mock):
+        TWO_BOOKS_RESPONSE_FIXTURE_WITH_LONG_TITLE = copy.deepcopy(fixtures.TWO_BOOKS_RESPONSE_FIXTURE)
+        TWO_BOOKS_RESPONSE_FIXTURE_WITH_LONG_TITLE["result"][0][
+            "titre"
+        ] = "L'Arabe du futur Tome 2 : une jeunesse au Moyen-Orient (1984-1985) - Edition spéciale avec un titre très long pour tester la longueur de la description"
+
+        self.setup_api_response_fixture(requests_mock, TWO_BOOKS_RESPONSE_FIXTURE_WITH_LONG_TITLE)
+
+        # When
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+
+        # Then
+        product = offers_models.Product.query.one()
+        assert product.name == "Mortelle Adèle Tome 1 : tout ça finira mal"
+
     def test_create_1_thing_when_gtl_not_has_lpad_zero(self, requests_mock):
         self.setup_api_response_fixture(
             requests_mock, fixtures.build_titelive_one_book_response(gtl_id="03020300", gtl_level=3)
@@ -764,3 +790,28 @@ class TiteliveBookSearchTest:
 
         offers = offers_models.Offer.query.all()
         assert all(offer.validation == OfferValidationStatus.APPROVED for offer in offers)
+
+    @pytest.mark.parametrize(
+        "auteurs_multi,expected_author",
+        [
+            (["John Mc Crae"], "John Mc Crae"),
+            (["John Mc Crae", "John Doe"], "John Mc Crae, John Doe"),
+            ("John Smith", "John Smith"),
+            ("John Mc Crae, John Doe", "John Mc Crae, John Doe"),
+            ({"auteur": "John Mc Crae"}, "John Mc Crae"),
+            ({"auteur": "John Mc Crae", "auteur2": "Eraticerrata"}, "John Mc Crae, Eraticerrata"),
+            (1234, None),  # invalid type
+        ],
+    )
+    def test_handles_all_authors_formats(self, requests_mock, auteurs_multi, expected_author):
+        # Given
+        self.setup_api_response_fixture(
+            requests_mock, fixtures.build_titelive_one_book_response(auteurs_multi=auteurs_multi)
+        )
+
+        # When
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+
+        # Then
+        product = offers_models.Product.query.one()
+        assert product.extraData.get("author") == expected_author

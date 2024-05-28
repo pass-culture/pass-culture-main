@@ -2,10 +2,13 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
+import { CollectiveBookingStatus, OfferStatus } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { Notification } from 'components/Notification/Notification'
 import { Events } from 'core/FirebaseEvents/constants'
 import { Audience } from 'core/shared/types'
+import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
+import { listOffersOfferFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { ActionsBar, ActionBarProps } from '../ActionsBar'
@@ -34,16 +37,16 @@ const mockCanDeleteOffers = vi.fn(() => true)
 
 describe('ActionsBar', () => {
   let props: ActionBarProps
-  const offerIds = ['1', '2']
+  const offerIds = [1, 2]
 
   beforeEach(() => {
     props = {
       getUpdateOffersStatusMessage: mockGetUpdateOffersStatusMessage,
       canDeleteOffers: mockCanDeleteOffers,
       selectedOfferIds: offerIds,
+      selectedOffers: [collectiveOfferFactory(), collectiveOfferFactory()],
       clearSelectedOfferIds: vi.fn(),
       toggleSelectAllCheckboxes: vi.fn(),
-      nbSelectedOffers: 2,
       areAllOffersSelected: false,
       audience: Audience.INDIVIDUAL,
     }
@@ -72,7 +75,7 @@ describe('ActionsBar', () => {
   })
 
   it('should say how many offers are selected when only 1 offer is selected', () => {
-    props.nbSelectedOffers = 1
+    props.selectedOfferIds = [1]
 
     renderActionsBar(props)
 
@@ -87,7 +90,9 @@ describe('ActionsBar', () => {
   })
 
   it('should say how many offers are selected when more than 500 offers are selected', () => {
-    props.nbSelectedOffers = 501
+    props.selectedOfferIds = Array(501)
+      .fill(null)
+      .map((val, i) => i)
 
     renderActionsBar(props)
 
@@ -239,6 +244,75 @@ describe('ActionsBar', () => {
       expectedBody
     )
     expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
+  })
+
+  it('should not deactivate offers on click on "Désactiver" when at least one offer is not published or expired', async () => {
+    renderActionsBar({
+      ...props,
+      audience: Audience.COLLECTIVE,
+      selectedOffers: [
+        collectiveOfferFactory({ id: 1, status: OfferStatus.ACTIVE }),
+        collectiveOfferFactory({ id: 2, status: OfferStatus.PENDING }),
+      ],
+      selectedOfferIds: [1, 2],
+    })
+
+    const deactivateButton = screen.getByText('Désactiver')
+    await userEvent.click(deactivateButton)
+
+    expect(
+      screen.getByText(
+        'Seules les offres au statut publié ou expiré peuvent être désactivées.'
+      )
+    ).toBeInTheDocument()
+  })
+  it('should not deactivate offers on click on "Désactiver" when at least one offer expired but with booking cancelled', async () => {
+    const expiredOffer = collectiveOfferFactory({
+      id: 1,
+      status: OfferStatus.EXPIRED,
+    })
+    renderActionsBar({
+      ...props,
+      audience: Audience.COLLECTIVE,
+      selectedOffers: [
+        {
+          ...expiredOffer,
+          booking: { booking_status: CollectiveBookingStatus.CANCELLED, id: 3 },
+        },
+        collectiveOfferFactory({ id: 2, status: OfferStatus.ACTIVE }),
+      ],
+      selectedOfferIds: [1, 2],
+    })
+
+    const deactivateButton = screen.getByText('Désactiver')
+    await userEvent.click(deactivateButton)
+
+    expect(
+      screen.getByText(
+        'Seules les offres au statut publié ou expiré peuvent être désactivées.'
+      )
+    ).toBeInTheDocument()
+  })
+
+  it('should not deactivate offers on click on "Désactiver" when audience is collective and an induvidual offer is checked ', async () => {
+    renderActionsBar({
+      ...props,
+      audience: Audience.COLLECTIVE,
+      selectedOffers: [
+        collectiveOfferFactory({ id: 1, status: OfferStatus.ACTIVE }),
+        listOffersOfferFactory({ id: 2, status: OfferStatus.ACTIVE }),
+      ],
+      selectedOfferIds: [1, 2],
+    })
+
+    const deactivateButton = screen.getByText('Désactiver')
+    await userEvent.click(deactivateButton)
+
+    expect(
+      screen.getByText(
+        'Seules les offres au statut publié ou expiré peuvent être désactivées.'
+      )
+    ).toBeInTheDocument()
   })
 
   it('should track cancel all offers on click on "Annuler" button', async () => {

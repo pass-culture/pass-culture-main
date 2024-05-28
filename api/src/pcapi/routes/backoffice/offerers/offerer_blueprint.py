@@ -165,6 +165,9 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
             ),
             sa.orm.with_expression(offerers_models.Offerer.hasNewNavUsers, has_new_nav_users_subquery),
             sa.orm.with_expression(offerers_models.Offerer.hasOldNavUsers, has_old_nav_users_subquery),
+            sa.orm.joinedload(offerers_models.Offerer.confidenceRule).load_only(
+                offerers_models.OffererConfidenceRule.confidenceLevel
+            ),
         )
     )
 

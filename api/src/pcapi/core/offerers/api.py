@@ -21,6 +21,8 @@ from pcapi import settings
 from pcapi.connectors import virustotal
 import pcapi.connectors.acceslibre as accessibility_provider
 from pcapi.connectors.api_adresse import AddressInfo
+from pcapi.connectors.api_adresse import get_address
+from pcapi.connectors.api_adresse import get_municipality_centroid
 from pcapi.connectors.entreprise import exceptions as sirene_exceptions
 from pcapi.connectors.entreprise import models as sirene_models
 from pcapi.connectors.entreprise import sirene
@@ -59,6 +61,7 @@ from pcapi.routes.serialization.offerers_serialize import OffererMemberStatus
 from pcapi.utils import crypto
 from pcapi.utils import human_ids
 from pcapi.utils import image_conversion
+from pcapi.utils import regions as utils_regions
 import pcapi.utils.date as date_utils
 import pcapi.utils.db as db_utils
 import pcapi.utils.email as email_utils
@@ -101,10 +104,11 @@ def update_venue(
     admin_update: bool = False,
     **attrs: typing.Any,
 ) -> models.Venue:
-    validation.validate_coordinates(attrs.get("latitude"), attrs.get("longitude"))  # type: ignore [arg-type]
-
     modifications = {field: value for field, value in attrs.items() if venue.field_exists_and_has_changed(field, value)}
     new_permanent = not venue.isPermanent and attrs.get("isPermanent")
+
+    if feature.FeatureToggle.ENABLE_API_ADRESSE_WHILE_CREATING_UPDATING_VENUE.is_active():
+        update_venue_location(venue, modifications)
 
     if not admin_update:
         # run validation when the venue update is triggered by a pro
@@ -203,6 +207,37 @@ def update_venue(
     return venue
 
 
+def update_venue_location(venue: models.Venue, modifications: dict) -> None:
+    if any(field in modifications for field in ("street", "city", "postalCode")):
+        street = modifications.get("street") or venue.street
+        city = modifications.get("city") or venue.city
+        postalCode = modifications.get("postalCode") or venue.postalCode
+        logger.info(
+            "Updating venue location",
+            extra={"venue_id": venue.id, "venue_street": street, "venue_city": city, "venue_postalCode": postalCode},
+        )
+        address_info = get_address(street, postalCode, city)
+        address = get_or_create_address(address_info)
+        if not venue.offererAddressId:
+            offerer_address = get_or_create_offerer_address(venue.managingOffererId, address.id)
+            venue.offererAddress = offerer_address
+            db.session.add(venue)
+            db.session.flush()
+        else:
+            update_offerer_address(venue.offererAddressId, address.id)
+
+        if modifications.get("street"):
+            modifications["street"] = address.street
+        if modifications.get("city"):
+            modifications["city"] = address.city
+        if modifications.get("postalCode"):
+            modifications["postalCode"] = address.postalCode
+        if modifications.get("latitude"):
+            modifications["latitude"] = address.latitude
+        if modifications.get("longitude"):
+            modifications["longitude"] = address.longitude
+
+
 def update_venue_collective_data(
     venue: models.Venue,
     **attrs: typing.Any,
@@ -284,12 +319,21 @@ def upsert_venue_opening_hours(venue: models.Venue, opening_hours: serialize_bas
     return venue
 
 
-def create_venue(
-    venue_data: venues_serialize.PostVenueBodyModel, strict_accessibility_compliance: bool = True
-) -> models.Venue:
-    data = venue_data.dict(by_alias=True)
-    validation.check_venue_creation(data, strict_accessibility_compliance)
+def create_venue(venue_data: venues_serialize.PostVenueBodyModel) -> models.Venue:
     venue = models.Venue()
+
+    if feature.FeatureToggle.ENABLE_API_ADRESSE_WHILE_CREATING_UPDATING_VENUE.is_active():
+        if utils_regions.NON_DIFFUSIBLE_TAG in venue_data.street:
+            address_info = get_municipality_centroid(venue_data.city, venue_data.postalCode)
+            address_info.street = utils_regions.NON_DIFFUSIBLE_TAG
+        else:
+            address_info = get_address(venue_data.street, venue_data.postalCode, venue_data.city)
+
+        address = get_or_create_address(address_info)
+        offerer_address = get_or_create_offerer_address(venue_data.managingOffererId, address.id)
+        venue.offererAddressId = offerer_address.id
+
+    data = venue_data.dict(by_alias=True)
     data["dmsToken"] = generate_dms_token()
     if venue.is_soft_deleted():
         raise pc_object.DeletedRecordException()
@@ -1834,7 +1878,7 @@ def create_from_onboarding_data(
             )
         venue_kwargs = common_kwargs | comment_and_siret
         venue_creation_info = venues_serialize.PostVenueBodyModel(**venue_kwargs)  # type: ignore [arg-type]
-        venue = create_venue(venue_creation_info, strict_accessibility_compliance=False)
+        venue = create_venue(venue_creation_info)
         create_venue_registration(venue.id, new_onboarding_info.target, new_onboarding_info.webPresence)
 
     # Send welcome email only in the case of offerer creation
@@ -2334,6 +2378,8 @@ def update_offerer_address_label(offerer_address_id: int, new_label: str) -> Non
 
 
 def get_or_create_address(address_info: AddressInfo) -> geography_models.Address:
+    departmentCode = utils_regions.get_department_code_from_city_code(address_info.citycode)
+    timezone = date_utils.get_department_timezone(departmentCode)
     try:
         address = geography_models.Address(
             banId=address_info.id,
@@ -2343,6 +2389,8 @@ def get_or_create_address(address_info: AddressInfo) -> geography_models.Address
             city=address_info.city,
             latitude=address_info.latitude,
             longitude=address_info.longitude,
+            departmentCode=departmentCode,
+            timezone=timezone,
         )
         db.session.add(address)
         db.session.flush()
@@ -2361,14 +2409,14 @@ def get_or_create_address(address_info: AddressInfo) -> geography_models.Address
     return address
 
 
-def get_or_create_offerer_address(offerer_id: int, label: str, address_id: int) -> models.OffererAddress:
-    try:
-        offerer_address = models.OffererAddress(offererId=offerer_id, label=label, addressId=address_id)
-        db.session.add(offerer_address)
-        db.session.flush()
-    except sa.exc.IntegrityError:
-        db.session.rollback()
-
+def get_or_create_offerer_address(offerer_id: int, address_id: int, label: str | None = None) -> models.OffererAddress:
+    # FIXME (dramelet, 23/05/2024)
+    # Change to try/except block over IntegrityError
+    # when postgres15 is available on production
+    # so we can use `NULLS NOT DISTINCT` in OffererAddress
+    # unique constraint. Otherwise we will try to create
+    # same offererAddress over and over because actual postgres12
+    # consider null values distinct over differents rows
     offerer_address = (
         models.OffererAddress.query.filter(
             models.OffererAddress.offererId == offerer_id,
@@ -2376,7 +2424,42 @@ def get_or_create_offerer_address(offerer_id: int, label: str, address_id: int) 
             models.OffererAddress.addressId == address_id,
         )
         .options(sa_orm.joinedload(models.OffererAddress.address))
-        .one()
+        .one_or_none()
     )
+    if offerer_address:
+        return offerer_address
+
+    offerer_address = models.OffererAddress(offererId=offerer_id, addressId=address_id, label=label)
+    db.session.add(offerer_address)
+    db.session.flush()
 
     return offerer_address
+
+
+def get_offer_confidence_level(
+    venue: offerers_models.Venue,
+) -> offerers_models.OffererConfidenceLevel | None:
+    venue_confidence_level = venue.confidenceRule.confidenceLevel if venue.confidenceRule else None
+    offerer_confidence_level = (
+        venue.managingOfferer.confidenceRule.confidenceLevel if venue.managingOfferer.confidenceRule else None
+    )
+
+    if offerer_confidence_level and venue_confidence_level and offerer_confidence_level != venue_confidence_level:
+        logger.error(
+            "Incompatible offerer rule detected",
+            extra={"offerer_id": venue.managingOfferer.id, "venue_id": venue.id},
+        )
+
+    return offerer_confidence_level or venue_confidence_level
+
+
+def update_offerer_address(offerer_address_id: int, address_id: int, label: str | None = None) -> None:
+    try:
+        db.session.query(offerers_models.OffererAddress).filter_by(id=offerer_address_id).update(
+            {"addressId": address_id, "label": label}
+        )
+        db.session.flush()
+    except sa.exc.IntegrityError as exc:
+        # We shouldn't enp up here, but if so log the exception so we can investigate
+        db.session.rollback()
+        logger.exception(exc)

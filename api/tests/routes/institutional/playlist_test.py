@@ -2,12 +2,11 @@ import datetime
 
 import pytest
 
-from pcapi import settings
 from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.testing import assert_num_queries
-from pcapi.routes.native.utils import convert_to_cent
+from pcapi.routes.shared.price import convert_to_cent
 
 
 @pytest.mark.usefixtures("db_session")

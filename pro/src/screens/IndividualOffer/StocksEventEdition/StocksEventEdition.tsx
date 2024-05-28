@@ -9,8 +9,8 @@ import {
   GetIndividualOfferResponseModel,
   GetStocksResponseModel,
   StocksOrderedBy,
+  OfferStatus,
 } from 'apiClient/v1'
-import { OfferStatus } from 'apiClient/v2'
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import { DialogBox } from 'components/DialogBox/DialogBox'
 import { FormLayout } from 'components/FormLayout/FormLayout'

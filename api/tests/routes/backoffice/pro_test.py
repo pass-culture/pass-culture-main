@@ -8,16 +8,19 @@ from flask import url_for
 import pytest
 
 from pcapi.core.finance import factories as finance_factories
+from pcapi.core.geography import models as geography_models
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.routes.backoffice.pro.forms import TypeOptions
+from pcapi.utils import regions as regions_utils
 from pcapi.utils.human_ids import humanize
 
 from .helpers import button as button_helpers
@@ -697,6 +700,7 @@ class CreateOffererTest(PostEndpointHelper):
     endpoint = "backoffice_web.pro.create_offerer"
     needed_permission = perm_models.Permissions.CREATE_PRO_ENTITY
 
+    @override_features(ENABLE_API_ADRESSE_WHILE_CREATING_UPDATING_VENUE=True)
     def test_create_offerer(self, legit_user, authenticated_client, non_diffusible_tag):
         user = users_factories.NonAttachedProFactory()
 
@@ -738,6 +742,95 @@ class CreateOffererTest(PostEndpointHelper):
         assert new_venue.city == "CANNES"
         assert new_venue.latitude == Decimal("43.55547")  # centroid
         assert new_venue.longitude == Decimal("7.00459")  # centroid
+
+        new_address: geography_models.Address = geography_models.Address.query.one()
+        assert new_address.street == new_venue.street == regions_utils.NON_DIFFUSIBLE_TAG
+        assert new_address.city.lower() == new_venue.city.lower()
+        assert new_address.postalCode == new_venue.postalCode
+        assert new_address.inseeCode.startswith(new_address.departmentCode)
+        assert new_address.departmentCode == "06"
+        assert new_address.timezone == "Europe/Paris"
+
+        new_offerer_address: offerers_models.OffererAddress = offerers_models.OffererAddress.query.one()
+        assert new_offerer_address.addressId == new_address.id
+        assert new_venue.offererAddressId == new_offerer_address.id
+
+        venue_registration: offerers_models.VenueRegistration = offerers_models.VenueRegistration.query.one()
+        assert venue_registration.venueId == new_venue.id
+        assert venue_registration.target == offerers_models.Target.INDIVIDUAL
+        assert venue_registration.webPresence == form_data["web_presence"]
+
+        new_action: history_models.ActionHistory = history_models.ActionHistory.query.one()
+        assert new_action.actionType == history_models.ActionType.OFFERER_NEW
+        assert new_action.offererId == new_offerer.id
+        assert new_action.userId == user.id
+        assert new_action.authorUserId == legit_user.id
+        assert new_action.comment == "Structure créée depuis le backoffice"
+        assert new_action.extraData == {
+            "target": form_data["target"],
+            "venue_type_code": form_data["venue_type_code"],
+            "web_presence": form_data["web_presence"],
+            "ds_dossier_id": int(form_data["ds_id"]),
+            "sirene_info": {
+                "active": True,
+                "address": {"city": "CANNES", "insee_code": "06029", "postal_code": "[ND]", "street": "[ND]"},
+                "ape_code": "90.01Z",
+                "ape_label": "Arts du spectacle vivant",
+                "creation_date": f"{datetime.date.today().year}-01-01",
+                "diffusible": False,
+                "head_office_siret": "90000000100017",
+                "legal_category_code": "1000",
+                "name": "[ND]",
+                "siren": "900000001",
+            },
+        }
+
+        assert response.location == url_for("backoffice_web.offerer.get", offerer_id=new_offerer.id, _external=True)
+
+    def test_create_offerer_without_double_model_writing(self, legit_user, authenticated_client, non_diffusible_tag):
+        user = users_factories.NonAttachedProFactory()
+
+        form_data = {
+            "email": user.email,
+            "siret": "90000000100017",
+            "public_name": "Le Masque de Fer",
+            "venue_type_code": offerers_models.VenueTypeCode.PERFORMING_ARTS.name,
+            "web_presence": "https://www.example.com, https://offers.example.com",
+            "target": offerers_models.Target.INDIVIDUAL.name,
+            "ds_id": "12345",
+        }
+
+        response = self.post_to_endpoint(authenticated_client, form=form_data)
+        assert response.status_code == 303
+
+        new_offerer: offerers_models.Offerer = offerers_models.Offerer.query.one()
+        assert new_offerer.siren == "900000001"
+        assert new_offerer.name == form_data["public_name"]
+        assert new_offerer.street == "[ND]"
+        assert new_offerer.postalCode == "06400"
+        assert new_offerer.city == "CANNES"
+        assert new_offerer.isActive
+        assert new_offerer.isNew
+        assert new_offerer.tags == [non_diffusible_tag]
+
+        new_user_offerer: offerers_models.UserOfferer = offerers_models.UserOfferer.query.one()
+        assert new_user_offerer.user == user
+        assert new_user_offerer.offerer == new_offerer
+        assert new_user_offerer.isValidated
+
+        new_venue: offerers_models.Venue = offerers_models.Venue.query.filter_by(siret=form_data["siret"]).one()
+        assert new_venue.name == form_data["public_name"]
+        assert new_venue.publicName == form_data["public_name"]
+        assert new_venue.venueTypeCode == offerers_models.VenueTypeCode.PERFORMING_ARTS
+        assert new_venue.street == "[ND]"
+        assert new_venue.departementCode == "06"
+        assert new_venue.postalCode == "06400"
+        assert new_venue.city == "CANNES"
+        assert new_venue.latitude == Decimal("43.55547")  # centroid
+        assert new_venue.longitude == Decimal("7.00459")  # centroid
+
+        assert not geography_models.Address.query.one_or_none()
+        assert not offerers_models.OffererAddress.query.one_or_none()
 
         venue_registration: offerers_models.VenueRegistration = offerers_models.VenueRegistration.query.one()
         assert venue_registration.venueId == new_venue.id

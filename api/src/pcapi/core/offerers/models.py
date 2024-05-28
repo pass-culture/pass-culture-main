@@ -1263,10 +1263,47 @@ class OffererStats(PcObject, Base, Model):
 
 class OffererAddress(PcObject, Base, Model):
     __tablename__ = "offerer_address"
-    label: str = sa.Column(sa.Text(), nullable=False)
+    label: str | None = sa.Column(sa.Text(), nullable=True)
     addressId = sa.Column(sa.BigInteger, sa.ForeignKey("address.id"), index=True)
     address: sa.orm.Mapped[geography_models.Address] = sa.orm.relationship("Address", foreign_keys=[addressId])
     offererId = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), index=True)
     offerer: sa.orm.Mapped["Offerer"] = sa.orm.relationship("Offerer", foreign_keys=[offererId])
 
     __table_args__ = (sa.Index("ix_unique_offerer_address_per_label", "offererId", "addressId", "label", unique=True),)
+
+    @hybrid_property
+    def isEditable(self) -> bool:
+        return db.session.query(~sa.select(1).exists().where(Venue.offererAddressId == self.id)).scalar()
+
+    @isEditable.expression  # type: ignore [no-redef]
+    def isEditable(cls) -> sa.sql.elements.BooleanClauseList:  # pylint: disable=no-self-argument
+        return ~sa.select(1).where(Venue.offererAddressId == cls.id).exists()
+
+
+class OffererConfidenceLevel(enum.Enum):
+    # No default value when offerer follows rules in offer_validation_rule table,
+    # in which case there is no row in table below
+    MANUAL_REVIEW = "MANUAL_REVIEW"
+    WHITELIST = "WHITELIST"
+
+
+class OffererConfidenceRule(PcObject, Base, Model):
+    __tablename__ = "offerer_confidence_rule"
+
+    offererId = sa.Column(
+        sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), index=True, unique=True, nullable=True
+    )
+    offerer: sa.orm.Mapped["Offerer"] = sa.orm.relationship(
+        "Offerer", foreign_keys=[offererId], backref=sa_orm.backref("confidenceRule", uselist=False)
+    )
+
+    venueId = sa.Column(
+        sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), index=True, unique=True, nullable=True
+    )
+    venue: sa.orm.Mapped["Offerer"] = sa.orm.relationship(
+        "Venue", foreign_keys=[venueId], backref=sa_orm.backref("confidenceRule", uselist=False)
+    )
+
+    confidenceLevel: OffererConfidenceLevel = sa.Column(db_utils.MagicEnum(OffererConfidenceLevel), nullable=False)
+
+    __table_args__ = (sa.CheckConstraint('num_nonnulls("offererId", "venueId") = 1'),)

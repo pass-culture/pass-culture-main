@@ -1,0 +1,46 @@
+{% extends "layouts/base.html" %}
+{% block content %}
+<div class="container pc-login-container">
+    <div class="row">
+        <div class="col-md-8 col-lg-6 offset-lg-2">
+            <div class="card p-5">
+                <div class="d-flex justify-content-between align-items-start">
+                    <img src="{{ url_for('static', filename='backoffice/icons/government.svg') }}"
+                        class="government-logo" alt="Logo du Gouvernement Français" />
+                    <img src="{{ url_for('static', filename='backoffice/icons/passculture.svg') }}"
+                        class="pass-culture-logo" alt="Logo du pass Culture" />
+                </div>
+                <hr class="my-5" />
+                <h1>Associer un compte Discord au pass Culture</h1>
+                <div>
+                    <div>
+                        {{ form.error_message }}
+                    </div>
+                    <form action="" name="" method="post" data-turbo="false">
+                        {{ form.redirect_url }}
+                        <div class=" col-10 gap-2 w-2  items-center">
+                            <div>
+                                {{ form.redirect_url }}
+                            </div>
+                            <div class="mt-2" >
+                                {{ form.discord_id }}
+                            </div>
+                            <div class="mt-2">
+                                {{ form.email }}
+                            </div>
+                            <div class="mt-2">
+                                {{ form.password }}
+                            </div>
+                            <div class="mt-2 flex-row  justify-center">
+                                <button type="submit" class="btn btn-primary">Se connecter</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<img src="{{ url_for('static', filename='backoffice/login/background.svg') }}" class="pc-login-background"
+    alt="fond d'écran pass Culture" />
+{% endblock content %}

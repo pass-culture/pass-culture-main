@@ -2,7 +2,6 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
-import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import {
@@ -32,14 +31,6 @@ vi.mock('screens/IndividualOffer/Informations/utils', () => {
     filterCategories: vi.fn(),
   }
 })
-
-vi.mock('react-router-dom', async () => ({
-  ...(await vi.importActual('react-router-dom')),
-  useFetcher: () => ({
-    submit: vi.fn(),
-  }),
-  useLoaderData: vi.fn(),
-}))
 
 vi.mock('repository/pcapi/pcapi', () => ({
   postThumbnail: vi.fn(),
@@ -162,7 +153,7 @@ describe('screens:StocksThing', () => {
       bookingsCount: 0,
     }
 
-    vi.spyOn(router, 'useLoaderData').mockReturnValue({ offer: apiOffer })
+    vi.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
     vi.spyOn(api, 'getStocks').mockResolvedValue({
       stocks: [stockToDelete],
       hasStocks: true,

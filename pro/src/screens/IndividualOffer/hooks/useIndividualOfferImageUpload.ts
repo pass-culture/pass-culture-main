@@ -12,7 +12,7 @@ import { getIndividualOfferImage } from '../utils/getIndividualOfferImage'
 
 export const useIndividualOfferImageUpload = () => {
   const notify = useNotification()
-  const { offerId, offer } = useIndividualOfferContext()
+  const { offer } = useIndividualOfferContext()
 
   const [imageOfferCreationArgs, setImageOfferCreationArgs] = useState<
     OnImageUploadArgs | undefined
@@ -69,7 +69,7 @@ export const useIndividualOfferImageUpload = () => {
       credit,
       cropParams,
     }
-    if (offerId === null) {
+    if (offer === null) {
       setImageOfferCreationArgs(creationArgs)
       imageFileToDataUrl(imageFile, (imageUrl) => {
         setImageOffer({
@@ -88,7 +88,7 @@ export const useIndividualOfferImageUpload = () => {
       })
     } else {
       try {
-        await handleImageOnSubmit(offerId, creationArgs)
+        await handleImageOnSubmit(offer.id, creationArgs)
       } catch {
         notify.error(SENT_DATA_ERROR_MESSAGE)
       }
@@ -97,14 +97,14 @@ export const useIndividualOfferImageUpload = () => {
 
   const onImageDelete = async () => {
     /* istanbul ignore next: DEBT, TO FIX */
-    if (!offerId) {
+    if (!offer) {
       /* istanbul ignore next: DEBT, TO FIX */
       setImageOffer(undefined)
       /* istanbul ignore next: DEBT, TO FIX */
       setImageOfferCreationArgs(undefined)
     } else {
       try {
-        await api.deleteThumbnail(offerId)
+        await api.deleteThumbnail(offer.id)
         setImageOffer(undefined)
       } catch {
         notify.error(

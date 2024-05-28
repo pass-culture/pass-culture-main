@@ -1,5 +1,25 @@
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+
+.header {
+  @include fonts.title1;
+
+  margin-bottom: rem.torem(32px);
+}
 
 .tabs {
   flex-direction: row;
+}
+
+.select-partner-page {
+  margin-top: rem.torem(32px);
+  max-width: rem.torem(405px);
+}
+
+.separator {
+  width: 100%;
+  height: 2px;
+  background: var(--color-grey-medium);
+  border: none;
+  margin-bottom: rem.torem(32px);
 }

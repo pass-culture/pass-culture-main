@@ -1,16 +1,18 @@
 import { FormikProvider, useFormik } from 'formik'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
+import useSWR from 'swr'
 
+import { api } from 'apiClient/api'
 import {
   EducationalInstitutionResponseModel,
   EducationalRedactor,
-  GetCollectiveOfferRequestResponseModel,
   GetCollectiveOfferResponseModel,
 } from 'apiClient/v1'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { BannerPublicApi } from 'components/Banner/BannerPublicApi'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OfferEducationalActions } from 'components/OfferEducationalActions/OfferEducationalActions'
+import { GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY } from 'config/swrQueryKeys'
 import {
   VisibilityFormValues,
   isCollectiveOffer,
@@ -20,11 +22,13 @@ import {
   extractInitialVisibilityValues,
   formatInstitutionDisplayName,
 } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
+import {
+  GET_DATA_ERROR_MESSAGE,
+  SENT_DATA_ERROR_MESSAGE,
+} from 'core/shared/constants'
 import { SelectOption } from 'custom_types/form'
 import useNotification from 'hooks/useNotification'
 import strokeSearch from 'icons/stroke-search.svg'
-import { getOfferRequestInformationsAdapter } from 'pages/CollectiveOfferFromRequest/adapters/getOfferRequestInformationsAdapter'
-import { PatchEducationalInstitutionAdapter } from 'pages/CollectiveOfferVisibility/adapters/patchEducationalInstitutionAdapter'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -36,12 +40,10 @@ import {
   SelectOptionNormalized,
 } from 'utils/searchPatternInOptions'
 
-import { getEducationalRedactorsAdapter } from './adapters/getEducationalRedactorAdapter'
 import styles from './CollectiveOfferVisibility.module.scss'
 import validationSchema from './validationSchema'
 
 export interface CollectiveOfferVisibilityProps {
-  patchInstitution: PatchEducationalInstitutionAdapter
   mode: Mode
   initialValues: VisibilityFormValues
   onSuccess: ({
@@ -75,7 +77,6 @@ interface TeacherOption extends SelectOption {
 
 export const CollectiveOfferVisibilityScreen = ({
   mode,
-  patchInstitution,
   initialValues,
   onSuccess,
   institutions,
@@ -87,8 +88,6 @@ export const CollectiveOfferVisibilityScreen = ({
 
   const [teachersOptions, setTeachersOptions] = useState<TeacherOption[]>([])
   const [buttonPressed, setButtonPressed] = useState(false)
-  const [requestInformations, setRequestInformations] =
-    useState<GetCollectiveOfferRequestResponseModel | null>(null)
 
   const institutionsOptions: InstitutionOption[] = useMemo(
     () =>
@@ -116,45 +115,36 @@ export const CollectiveOfferVisibilityScreen = ({
     [institutions]
   )
 
-  const getOfferRequestInformation = async () => {
-    const { isOk, message, payload } = await getOfferRequestInformationsAdapter(
-      Number(requestId)
-    )
-
-    if (!isOk) {
-      return notify.error(message)
-    }
-
-    setRequestInformations(payload)
-  }
-
-  useEffect(() => {
-    if (requestId) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      getOfferRequestInformation()
-    }
-  }, [])
+  const { data: requestInformations } = useSWR(
+    [GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY, requestId],
+    ([, id]) => api.getCollectiveOfferRequest(Number(id))
+  )
 
   const onSubmit = async (values: VisibilityFormValues) => {
     setButtonPressed(true)
-    const result = await patchInstitution({
-      offerId: offer.id,
-      institutionId: values.institution,
-      teacherEmail: selectedTeacher ? selectedTeacher.email : null,
-    })
-    if (!result.isOk) {
+
+    try {
+      const collectiveOffer =
+        await api.patchCollectiveOffersEducationalInstitution(offer.id, {
+          educationalInstitutionId: Number(values.institution),
+          teacherEmail: selectedTeacher ? selectedTeacher.email : null,
+        })
+
+      onSuccess({
+        offerId: offer.id.toString(),
+        message:
+          'Les paramètres de visibilité de votre offre ont bien été enregistrés',
+        payload: collectiveOffer,
+      })
+
+      formik.resetForm({
+        values: extractInitialVisibilityValues(collectiveOffer.institution),
+      })
       setButtonPressed(false)
-      return notify.error(result.message)
+    } catch {
+      notify.error(SENT_DATA_ERROR_MESSAGE)
+      setButtonPressed(false)
     }
-    onSuccess({
-      offerId: offer.id.toString(),
-      message: result.message ?? '',
-      payload: result.payload,
-    })
-    setButtonPressed(false)
-    formik.resetForm({
-      values: extractInitialVisibilityValues(result.payload.institution),
-    })
   }
 
   initialValues = requestInformations
@@ -170,6 +160,7 @@ export const CollectiveOfferVisibilityScreen = ({
             ?.value.toString() || '',
       }
     : initialValues
+
   const formik = useFormik<VisibilityFormValues>({
     initialValues,
     onSubmit,
@@ -204,11 +195,12 @@ export const CollectiveOfferVisibilityScreen = ({
       setTeachersOptions([])
       return
     }
-    const { payload } = await getEducationalRedactorsAdapter({
-      uai: selectedInstitution.institutionId,
-      candidate: searchTeacherValue,
-    })
-    payload &&
+
+    try {
+      const payload = await api.getAutocompleteEducationalRedactorsForUai(
+        selectedInstitution.institutionId,
+        searchTeacherValue
+      )
       setTeachersOptions(
         payload.map(
           ({
@@ -226,6 +218,9 @@ export const CollectiveOfferVisibilityScreen = ({
           })
         )
       )
+    } catch (e) {
+      notify.error(GET_DATA_ERROR_MESSAGE)
+    }
   }
 
   return (

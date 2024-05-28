@@ -8,10 +8,10 @@ from pcapi.core.categories.subcategories_v2 import SubcategoryIdEnum
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.models import WithdrawalTypeEnum
-from pcapi.routes.native.utils import convert_to_cent
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
 from pcapi.routes.native.v1.serialization.offers import OfferImageResponse
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.shared.price import convert_to_cent
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 

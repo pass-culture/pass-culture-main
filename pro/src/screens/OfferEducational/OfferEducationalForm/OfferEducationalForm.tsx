@@ -11,9 +11,9 @@ import { BannerPublicApi } from 'components/Banner/BannerPublicApi'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import {
-  OfferEducationalFormValues,
-  Mode,
   isCollectiveOffer,
+  Mode,
+  OfferEducationalFormValues,
 } from 'core/OfferEducational/types'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeOffersUrl'
 import { SelectOption } from 'custom_types/form'
@@ -48,7 +48,6 @@ export type OfferEducationalFormProps = Omit<
   | 'setOffer'
   | 'initialValues'
   | 'isEdition'
-  | 'getEducationalDomainsAdapter'
   | 'isOfferCancellable'
   | 'useOfferForFormValues'
 > & {

@@ -1,7 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
-import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { OfferStatus } from 'apiClient/v1'
@@ -11,11 +10,6 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import StatusToggleButton, {
   StatusToggleButtonProps,
 } from '../StatusToggleButton'
-
-vi.mock('react-router-dom', async () => ({
-  ...(await vi.importActual('react-router-dom')),
-  useFetcher: vi.fn(),
-}))
 
 const renderStatusToggleButton = (props: StatusToggleButtonProps) =>
   renderWithProviders(<StatusToggleButton {...props} />)
@@ -29,11 +23,6 @@ describe('StatusToggleButton', () => {
       isActive: true,
       status: OfferStatus.ACTIVE,
     }
-
-    vi.spyOn(router, 'useFetcher').mockReturnValue({
-      ...router.useFetcher(),
-      submit: vi.fn(),
-    })
   })
 
   it('should deactivate an offer and confirm', async () => {

@@ -2,7 +2,6 @@ import React from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { AppLayout } from 'app/AppLayout'
-import getVenuesAdapter from 'core/Bookings/adapters/getVenuesAdapter'
 import { Audience } from 'core/shared/types'
 import { BookingsScreen } from 'screens/Bookings/Bookings'
 
@@ -18,7 +17,6 @@ const CollectiveBookings = (): JSX.Element => {
         audience={Audience.COLLECTIVE}
         getFilteredBookingsAdapter={getFilteredCollectiveBookingsAdapter}
         getUserHasBookingsAdapter={getUserHasCollectiveBookingsAdapter}
-        getVenuesAdapter={getVenuesAdapter}
         locationState={location.state}
       />
     </AppLayout>

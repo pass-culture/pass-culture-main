@@ -23,86 +23,23 @@
             <span class="fs-5 ps-4">{{ build_offerer_badges(offerer) }}</span>
             <div class="d-flex row-reverse justify-content-end flex-grow-1">
               {% if has_permission("MANAGE_PRO_ENTITY") %}
-                <button class="btn btn-outline-primary lead fw-bold mt-2 mx-2"
-                        data-bs-toggle="modal"
-                        data-bs-target=".pc-edit-offerer-modal"
-                        type="button">Modifier les informations</button>
-                <div class="modal modal-lg fade pc-edit-offerer-modal"
-                     tabindex="-1"
-                     aria-describedby="{{ edit_offerer_aria_described_by_id }}"
-                     aria-hidden="true">
-                  <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                      <form action="{{ url_for("backoffice_web.offerer.update_offerer", offerer_id=offerer.id) }}"
-                            name="{{ url_for("backoffice_web.offerer.update_offerer", offerer_id=offerer.id) | action_to_name }}"
-                            method="post">
-                        <div class="modal-header"
-                             id="{{ edit_offerer_aria_described_by_id }}">
-                          <h5 class="modal-title">Modifier les informations de la structure</h5>
-                        </div>
-                        <div class="modal-body pb-3">{{ build_form_fields_group(edit_offerer_form) }}</div>
-                        <div class="modal-footer">
-                          <button type="button"
-                                  class="btn btn-outline-primary"
-                                  data-bs-dismiss="modal">Annuler</button>
-                          <button type="submit"
-                                  class="btn btn-primary">Enregistrer</button>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
-                </div>
+                {{ build_modal_form("edit-offerer", url_for("backoffice_web.offerer.update_offerer", offerer_id=offerer.id) ,
+                edit_offerer_form, "Modifier les informations", "Modifier les informations de la structure", "Enregistrer") }}
               {% endif %}
               {% if has_permission("PRO_FRAUD_ACTIONS") %}
                 {% if offerer.isActive %}
-                  {{ build_modal_form("suspend", url_for("backoffice_web.offerer.suspend_offerer", offerer_id=offerer.id) ,
-                  suspension_form, "Suspendre la structure", "Confirmer la suspension") }}
+                  {{ build_modal_form("suspend-offerer", url_for("backoffice_web.offerer.suspend_offerer", offerer_id=offerer.id) ,
+                  suspension_form, "Suspendre la structure", "Suspendre la structure", "Confirmer la suspension") }}
                 {% else %}
-                  {{ build_modal_form("unsuspend", url_for("backoffice_web.offerer.unsuspend_offerer", offerer_id=offerer.id) ,
-                  suspension_form, "Réactiver la structure", "Confirmer la réactivation") }}
+                  {{ build_modal_form("unsuspend-offerer", url_for("backoffice_web.offerer.unsuspend_offerer", offerer_id=offerer.id) ,
+                  suspension_form, "Réactiver la structure", "Réactiver la structure", "Confirmer la réactivation") }}
                 {% endif %}
               {% endif %}
               {% if has_permission("DELETE_PRO_ENTITY") %}
-                <button class="btn btn-outline-primary lead fw-bold mt-2 mx-2"
-                        data-bs-toggle="modal"
-                        data-bs-target=".pc-delete-offerer-modal"
-                        type="button">
-                  <i class="bi bi-trash3-fill"></i>
-                  Supprimer la structure
-                </button>
-                <div class="modal modal-lg fade pc-delete-offerer-modal"
-                     tabindex="-1"
-                     aria-describedby="{{ delete_offerer_aria_described_by_id }}"
-                     aria-hidden="true">
-                  <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                      <form action="{{ url_for("backoffice_web.offerer.delete_offerer", offerer_id=offerer.id) }}"
-                            name="{{ url_for("backoffice_web.offerer.delete_offerer", offerer_id=offerer.id) | action_to_name }}"
-                            method="post"
-                            data-turbo="false">
-                        <div class="modal-header"
-                             id="{{ delete_offerer_aria_described_by_id }}">
-                          <h5 class="modal-title">Supprimer la structure {{ offerer.name }}</h5>
-                        </div>
-                        <div class="modal-body row">
-                          <p>
-                            La structure <strong>{{ offerer.name }} ({{ offerer.id }})</strong> sera définitivement
-                            supprimée
-                            de la base de données. Veuillez confirmer ce choix.
-                          </p>
-                          {{ build_form_fields_group(delete_offerer_form) }}
-                        </div>
-                        <div class="modal-footer">
-                          <button type="button"
-                                  class="btn btn-outline-primary"
-                                  data-bs-dismiss="modal">Annuler</button>
-                          <button type="submit"
-                                  class="btn btn-primary">Confirmer</button>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
-                </div>
+                {% set form_description = "La structure <strong>"|safe + offerer.name + "</strong> ("|safe + offerer.id|string + ") sera définitivement supprimée de la base de données. Veuillez confirmer ce choix." %}
+                {{ build_modal_form("delete-offerer", url_for("backoffice_web.offerer.delete_offerer", offerer_id=offerer.id) ,
+                delete_offerer_form, "Supprimer la structure", "Supprimer la structure " + offerer.name,
+                "Confirmer", form_description, "bi-trash3-fill") }}
               {% endif %}
             </div>
           </div>
@@ -162,7 +99,7 @@
                 <span class="fw-bold">Peut créer une offre EAC : {{ offerer.allowedOnAdage | format_bool_badge }}</span>
               </p>
               <p class="mb-1">
-                <span class="fw-bold">Lieux cartographiés sur Adage : {{ adage_information }}</span>
+                <span class="fw-bold">Lieux cartographiés sur ADAGE : {{ adage_information }}</span>
               </p>
               <p class="mb-1">
                 <span class="fw-bold">Présence CB dans les lieux :</span>
@@ -173,6 +110,12 @@
                 <span class="fw-bold">Tags structure :</span>
                 {{ offerer.tags | sort(attribute="label") | format_tag_object_list | safe }}
               </p>
+              {% if has_permission("PRO_FRAUD_ACTIONS") %}
+                <p class="mb-1">
+                  <span class="fw-bold">Validation des offres :</span>
+                  {{ offerer | format_confidence_level(show_no_rule=true) }}
+                </p>
+              {% endif %}
             </div>
             <div class="col-4">
               <p class="mb-1">
@@ -275,7 +218,7 @@
             {# tab is hidden when there is no address in database; so it does not need a FF until migration #}
             {{ build_details_tab("addresses", "Adresses", active_tab == 'addresses') }}
           {% endif %}
-          {{ build_details_tab("dms-adage", "Dossiers DMS Adage", active_tab == 'dms_adage') }}
+          {{ build_details_tab("dms-adage", "Dossiers DMS ADAGE", active_tab == 'dms_adage') }}
           {{ build_details_tab("bank-accounts", "Comptes bancaires", active_tab == 'bank_accounts') }}
         {% endcall %}
         {% call build_details_tabs_content_wrapper() %}

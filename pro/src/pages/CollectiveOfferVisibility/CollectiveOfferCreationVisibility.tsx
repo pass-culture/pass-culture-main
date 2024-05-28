@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { useSWRConfig } from 'swr'
+import useSWR, { useSWRConfig } from 'swr'
 
-import {
-  EducationalInstitutionResponseModel,
-  GetCollectiveOfferResponseModel,
-} from 'apiClient/v1'
+import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
 import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
-import { GET_COLLECTIVE_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
+import {
+  GET_COLLECTIVE_OFFER_QUERY_KEY,
+  GET_EDUCATIONAL_INSTITUTIONS_QUERY_KEY,
+} from 'config/swrQueryKeys'
 import {
   isCollectiveOfferTemplate,
   isCollectiveOffer,
@@ -23,8 +23,7 @@ import {
   withCollectiveOfferFromParams,
 } from 'screens/OfferEducational/useCollectiveOfferFromParams'
 
-import { getEducationalInstitutionsAdapter } from './adapters/getEducationalInstitutionsAdapter'
-import { patchEducationalInstitutionAdapter } from './adapters/patchEducationalInstitutionAdapter'
+import { getEducationalInstitutions } from './getEducationalInstitutions'
 
 export const CollectiveOfferVisibility = ({
   offer,
@@ -33,13 +32,15 @@ export const CollectiveOfferVisibility = ({
   const navigate = useNavigate()
   const location = useLocation()
   const isCreation = !location.pathname.includes('edition')
-
   const { requete: requestId } = queryParamsFromOfferer(location)
-  const [institutions, setInstitutions] = useState<
-    EducationalInstitutionResponseModel[]
-  >([])
-  const [isLoadingInstitutions, setIsLoadingInstitutions] = useState(true)
   const { mutate } = useSWRConfig()
+
+  const educationalInstitutionsQuery = useSWR(
+    [GET_EDUCATIONAL_INSTITUTIONS_QUERY_KEY],
+    () => getEducationalInstitutions(),
+    { fallbackData: [] }
+  )
+
   const onSuccess = async ({
     offerId,
     payload,
@@ -53,21 +54,6 @@ export const CollectiveOfferVisibility = ({
 
     navigate(`/offre/${offerId}/collectif/creation/recapitulatif`)
   }
-
-  useEffect(() => {
-    async function getEducationalInstitutions() {
-      const result = await getEducationalInstitutionsAdapter()
-      if (!result.isOk) {
-        return
-      }
-
-      setInstitutions(result.payload.institutions)
-      setIsLoadingInstitutions(false)
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    getEducationalInstitutions()
-  }, [])
 
   if (isCollectiveOfferTemplate(offer)) {
     throw new Error(
@@ -88,11 +74,10 @@ export const CollectiveOfferVisibility = ({
       >
         <CollectiveOfferVisibilityScreen
           mode={Mode.CREATION}
-          patchInstitution={patchEducationalInstitutionAdapter}
           initialValues={initialValues}
           onSuccess={onSuccess}
-          institutions={institutions}
-          isLoadingInstitutions={isLoadingInstitutions}
+          institutions={educationalInstitutionsQuery.data}
+          isLoadingInstitutions={educationalInstitutionsQuery.isLoading}
           offer={offer}
           requestId={requestId}
         />

@@ -27,7 +27,7 @@ from pcapi.domain.music_types import MUSIC_TYPES_LABEL_BY_CODE
 from pcapi.domain.show_types import SHOW_TYPES_LABEL_BY_CODE
 from pcapi.utils import requests
 import pcapi.utils.date as date_utils
-from pcapi.utils.regions import get_department_code_from_postal_code
+from pcapi.utils.regions import get_department_code_from_city_code
 from pcapi.utils.stopwords import STOPWORDS
 
 
@@ -614,7 +614,7 @@ class AlgoliaBackend(base.SearchBackend):
         venue = collective_offer_template.venue
         offerer = venue.managingOfferer
         date_created = collective_offer_template.dateCreated.timestamp()
-        department_code = get_department_code_from_postal_code(venue.postalCode)
+        department_code = get_department_code_from_city_code(venue.postalCode)
         latitude, longitude = educational_api_offer.get_offer_coordinates(collective_offer_template)
 
         raw_formats = collective_offer_template.get_formats()

@@ -1,14 +1,10 @@
-import React, { useCallback } from 'react'
-
 import {
   CollectiveOfferResponseModel,
   ListOffersOfferResponseModel,
 } from 'apiClient/v1'
-import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { MAX_OFFERS_TO_DISPLAY } from 'core/Offers/constants'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { hasSearchFilters } from 'core/Offers/utils/hasSearchFilters'
-import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
 import { Audience } from 'core/shared/types'
 import { getOffersCountToDisplay } from 'pages/Offers/domain/getOffersCountToDisplay'
 import { NoResults } from 'screens/Offers/NoResults/NoResults'
@@ -40,9 +36,9 @@ type OffersProps = {
   pageCount: number
   resetFilters: () => void
   searchFilters: SearchFiltersParams
-  selectedOfferIds: string[]
+  selectedOfferIds: number[]
   setSearchFilters: React.Dispatch<React.SetStateAction<SearchFiltersParams>>
-  setSelectedOfferIds: React.Dispatch<React.SetStateAction<string[]>>
+  setSelectedOfferIds: React.Dispatch<React.SetStateAction<number[]>>
   toggleSelectAllCheckboxes: () => void
   urlSearchFilters: SearchFiltersParams
   isAtLeastOneOfferChecked: boolean
@@ -97,33 +93,17 @@ const Offers = ({
       false
     )
 
-  const selectOffer = useCallback(
-    (offerId: number, selected: boolean, isTemplate: boolean) => {
-      setSelectedOfferIds((currentSelectedIds) => {
-        const newSelectedOfferIds = [...currentSelectedIds]
-        const id = computeURLCollectiveOfferId(offerId, isTemplate)
-        if (selected) {
-          newSelectedOfferIds.push(id)
-        } else {
-          const offerIdIndex = newSelectedOfferIds.indexOf(id)
-          newSelectedOfferIds.splice(offerIdIndex, 1)
-        }
-        return newSelectedOfferIds
-      })
-    },
-    [setSelectedOfferIds]
-  )
-
-  function selectAllOffers() {
-    setSelectedOfferIds(
-      areAllOffersSelected
-        ? []
-        : currentPageOffersSubset
-            .filter((offer) => !isOfferDisabled(offer.status))
-            .map((offer) => offer.id.toString())
-    )
-
-    toggleSelectAllCheckboxes()
+  function selectOffer(offerId: number, isAlreadyChecked: boolean) {
+    setSelectedOfferIds((currentSelectedIds) => {
+      const newSelectedOfferIds = [...currentSelectedIds]
+      if (isAlreadyChecked) {
+        newSelectedOfferIds.push(offerId)
+      } else {
+        const offerIdIndex = newSelectedOfferIds.indexOf(offerId)
+        newSelectedOfferIds.splice(offerIdIndex, 1)
+      }
+      return newSelectedOfferIds
+    })
   }
 
   return (
@@ -149,12 +129,12 @@ const Offers = ({
             <>
               <div className={styles['select-all-container']}>
                 <BaseCheckbox
-                  checked={areAllOffersSelected || isAtLeastOneOfferChecked}
+                  checked={areAllOffersSelected}
                   partialCheck={
                     !areAllOffersSelected && isAtLeastOneOfferChecked
                   }
                   disabled={isAdminForbidden(searchFilters)}
-                  onChange={selectAllOffers}
+                  onChange={toggleSelectAllCheckboxes}
                   label={
                     areAllOffersSelected
                       ? 'Tout désélectionner'
@@ -169,13 +149,11 @@ const Offers = ({
                   areOffersPresent={hasOffers}
                   filters={searchFilters}
                   isAdminForbidden={isAdminForbidden}
-                  selectAllOffers={selectAllOffers}
                   updateStatusFilter={updateStatusFilter}
                   audience={audience}
                   isAtLeastOneOfferChecked={isAtLeastOneOfferChecked}
                 />
                 <OffersTableBody
-                  areAllOffersSelected={areAllOffersSelected}
                   offers={currentPageOffersSubset}
                   selectOffer={selectOffer}
                   selectedOfferIds={selectedOfferIds}

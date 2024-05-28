@@ -66,12 +66,14 @@ def list_offers(query: offers_serialize.ListOffersQueryModel) -> offers_serializ
     api=blueprint.pro_private_schema,
 )
 def get_offer(offer_id: int) -> offers_serialize.GetIndividualOfferResponseModel:
+
     load_all: offers_repository.OFFER_LOAD_OPTIONS = [
         "mediations",
         "product",
         "price_category",
         "venue",
         "bookings_count",
+        "offerer_address",
     ]
     try:
         offer = offers_repository.get_offer_by_id(offer_id, load_options=load_all)

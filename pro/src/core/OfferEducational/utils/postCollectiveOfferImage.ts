@@ -6,13 +6,13 @@ import { OfferEducationalFormValues } from '../types'
 interface PostCollectiveOfferImageProps {
   initialValues: OfferEducationalFormValues
   notify: ReturnType<typeof useNotification>
-  payload: { id: number }
+  id: number
 }
 
 export const postCollectiveOfferImage = async ({
   initialValues,
   notify,
-  payload,
+  id,
 }: PostCollectiveOfferImageProps) => {
   const { imageUrl, imageCredit } = initialValues
   const imageErrorMessage = 'Impossible de dupliquer l’image'
@@ -28,7 +28,7 @@ export const postCollectiveOfferImage = async ({
     /* istanbul ignore next: DEBT to fix */
     const imageFile = new File([blob], '', { type: contentType ?? '' })
 
-    await api.attachOfferImage(payload.id, {
+    await api.attachOfferImage(id, {
       // TODO This TS error will be removed when spectree is updated to the latest
       // version (dependant on Flask update) which will include files in the generated schema
       // @ts-expect-error

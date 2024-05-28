@@ -1,6 +1,5 @@
 import { waitFor } from '@testing-library/react'
 import React from 'react'
-import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
@@ -10,11 +9,6 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import { IndividualOfferContextProvider } from '../IndividualOfferContext'
 
 const apiOffer: GetIndividualOfferResponseModel = getIndividualOfferFactory()
-
-vi.mock('react-router-dom', async () => ({
-  ...(await vi.importActual('react-router-dom')),
-  useLoaderData: vi.fn(),
-}))
 
 const renderIndividualOfferContextProvider = () =>
   renderWithProviders(
@@ -27,7 +21,7 @@ describe('IndividualOfferContextProvider', () => {
       categories: [],
       subcategories: [],
     })
-    vi.spyOn(router, 'useLoaderData').mockResolvedValue({ offer: apiOffer })
+    vi.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
   })
 
   it('should initialize context with api', async () => {

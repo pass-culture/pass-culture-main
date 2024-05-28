@@ -20,9 +20,9 @@ from pcapi.core.users import young_status
 import pcapi.core.users.models as users_models
 from pcapi.core.users.utils import decode_jwt_token
 from pcapi.models.feature import FeatureToggle
-from pcapi.routes.native.utils import convert_to_cent
 from pcapi.routes.native.v1.serialization import subscription as subscription_serialization
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.shared.price import convert_to_cent
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.email import sanitize_email

@@ -329,9 +329,16 @@ class VenueContactFactory(BaseFactory):
     social_medias = {"instagram": "http://instagram.com/@venue"}
 
 
+def build_clear_api_key(prefix: str | None = None, secret: str | None = None) -> str:
+    prefix = prefix if prefix else DEFAULT_PREFIX
+    secret = secret if secret else DEFAULT_SECRET
+
+    return f"{prefix}_{secret}"
+
+
 DEFAULT_PREFIX = "development_prefix"
 DEFAULT_SECRET = "clearSecret"
-DEFAULT_CLEAR_API_KEY = f"{DEFAULT_PREFIX}_{DEFAULT_SECRET}"
+DEFAULT_CLEAR_API_KEY = build_clear_api_key()
 
 
 class ApiKeyFactory(BaseFactory):
@@ -455,3 +462,32 @@ class OffererAddressFactory(BaseFactory):
 
     class Meta:
         model = models.OffererAddress
+
+
+class OffererConfidenceRuleFactory(BaseFactory):
+    class Meta:
+        model = models.OffererConfidenceRule
+
+    # One (and only one) must be set
+    offerer = None
+    venue = None
+
+
+class ManualReviewOffererConfidenceRuleFactory(OffererConfidenceRuleFactory):
+    offerer = factory.SubFactory(OffererFactory)
+    confidenceLevel = models.OffererConfidenceLevel.MANUAL_REVIEW
+
+
+class WhitelistedOffererConfidenceRuleFactory(OffererConfidenceRuleFactory):
+    offerer = factory.SubFactory(OffererFactory)
+    confidenceLevel = models.OffererConfidenceLevel.WHITELIST
+
+
+class ManualReviewVenueConfidenceRuleFactory(OffererConfidenceRuleFactory):
+    venue = factory.SubFactory(VenueFactory)
+    confidenceLevel = models.OffererConfidenceLevel.MANUAL_REVIEW
+
+
+class WhitelistedVenueConfidenceRuleFactory(OffererConfidenceRuleFactory):
+    venue = factory.SubFactory(VenueFactory)
+    confidenceLevel = models.OffererConfidenceLevel.WHITELIST

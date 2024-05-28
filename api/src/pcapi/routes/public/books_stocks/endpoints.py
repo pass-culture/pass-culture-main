@@ -2,12 +2,14 @@ import logging
 
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
-from pcapi.routes.public import blueprints
+from pcapi.routes.public import documentation_constants
+from pcapi.routes.public import spectree_schemas
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.validation.routes.users_authentifications import api_key_required
 from pcapi.validation.routes.users_authentifications import current_api_key
 from pcapi.workers.synchronize_stocks_job import synchronize_stocks_job
 
+from . import blueprint
 from . import serialization
 
 
@@ -16,10 +18,13 @@ logger = logging.getLogger(__name__)
 
 # This api allow to update stocks for a venue
 # DEPRECATED: use individual offer api instead
-@blueprints.v2_prefixed_public_api.route("/venue/<int:venue_id>/stocks", methods=["POST"])
+@blueprint.deprecated_books_stocks_blueprint.route("/venue/<int:venue_id>/stocks", methods=["POST"])
 @spectree_serialize(
     on_success_status=204,
     on_error_statuses=[401, 404],
+    api=spectree_schemas.deprecated_public_api_schema,
+    tags=[documentation_constants.DEPRECATED_VENUES_STOCK],
+    deprecated=True,
 )
 @api_key_required
 def update_stocks(venue_id: int, body: serialization.UpdateVenueStocksBodyModel) -> None:

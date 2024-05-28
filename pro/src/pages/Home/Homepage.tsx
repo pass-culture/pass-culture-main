@@ -1,20 +1,20 @@
 import React, { useMemo, useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { RouteObject, useLoaderData, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import {
-  GetOffererNameResponseModel,
-  VenueTypeResponseModel,
-} from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import AddBankAccountCallout from 'components/Callout/AddBankAccountCallout'
 import BankAccountHasPendingCorrectionCallout from 'components/Callout/BankAccountHasPendingCorrectionCallout'
 import { LinkVenueCallout } from 'components/Callout/LinkVenueCallout'
 import { Newsletter } from 'components/Newsletter/Newsletter'
 import { TutorialDialog } from 'components/TutorialDialog/TutorialDialog'
-import { GET_OFFERER_QUERY_KEY } from 'config/swrQueryKeys'
+import {
+  GET_OFFERER_NAMES_QUERY_KEY,
+  GET_OFFERER_QUERY_KEY,
+  GET_VENUE_TYPES_QUERY_KEY,
+} from 'config/swrQueryKeys'
 import { hasStatusCode } from 'core/OfferEducational/utils/hasStatusCode'
 import { SAVED_OFFERER_ID_KEY } from 'core/shared/constants'
 import { SelectOption } from 'custom_types/form'
@@ -27,6 +27,7 @@ import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 import { updateSelectedOffererId, updateUser } from 'store/user/reducer'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import Spinner from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { formatBrowserTimezonedDateAsUTC, isDateValid } from 'utils/date'
 import { localStorageAvailable } from 'utils/localStorageAvailable'
@@ -61,16 +62,16 @@ const getSavedOffererId = (offererOptions: SelectOption[]): string | null => {
   return savedOffererId
 }
 
-export const Homepage = (): JSX.Element => {
-  const HAS_CLOSED_BETA_TEST_BANNER = 'HAS_CLOSED_BETA_TEST_BANNER'
+const HAS_CLOSED_BETA_TEST_BANNER = 'HAS_CLOSED_BETA_TEST_BANNER'
 
-  const profileRef = useRef<HTMLElement>(null)
-  const offerersRef = useRef<HTMLElement>(null)
-  const [searchParams] = useSearchParams()
-  const { offererNames } = useLoaderData() as HomepageLoaderData
+export const Homepage = (): JSX.Element => {
+  const dispatch = useDispatch()
   const hasNewSideBarNavigation = useIsNewInterfaceActive()
   const { currentUser } = useCurrentUser()
   const notify = useNotification()
+  const [searchParams] = useSearchParams()
+  const profileRef = useRef<HTMLElement>(null)
+  const offerersRef = useRef<HTMLElement>(null)
 
   const userClosedBetaTestBanner = localStorageAvailable()
     ? !localStorage.getItem(HAS_CLOSED_BETA_TEST_BANNER)
@@ -80,45 +81,27 @@ export const Homepage = (): JSX.Element => {
     new Date(currentUser.navState.eligibilityDate) <=
       new Date(formatBrowserTimezonedDateAsUTC(new Date()))
 
+  const [isNewNavEnabled, setIsNewNavEnabled] = useState(false)
   const [isUserOffererValidated, setIsUserOffererValidated] = useState(false)
   const [seesNewNavAvailableBanner, setSeesNewNavAvailableBanner] = useState(
     userClosedBetaTestBanner && !hasNewSideBarNavigation && isEligibleToNewNav
   )
 
-  const [isNewNavEnabled, setIsNewNavEnabled] = useState(false)
+  const offererNamesQuery = useSWR([GET_OFFERER_NAMES_QUERY_KEY], () =>
+    api.listOfferersNames()
+  )
+  const offererNames = offererNamesQuery.data?.offerersNames
 
-  const dispatch = useDispatch()
-
-  async function showNewNav() {
-    try {
-      await api.postNewProNav()
-      setSeesNewNavAvailableBanner(false)
-      dispatch(
-        updateUser({
-          ...currentUser,
-          navState: {
-            newNavDate: formatBrowserTimezonedDateAsUTC(new Date()),
-            eligibilityDate: currentUser.navState?.eligibilityDate,
-          },
-        })
-      )
-      setIsNewNavEnabled(true)
-    } catch (error) {
-      notify.error("Impossible de réaliser l'action. Réessayez plus tard")
-    }
-  }
-
-  function hideBanner() {
-    localStorageAvailable() &&
-      localStorage.setItem(HAS_CLOSED_BETA_TEST_BANNER, 'true')
-    setSeesNewNavAvailableBanner(false)
-  }
+  const venueTypesQuery = useSWR([GET_VENUE_TYPES_QUERY_KEY], () =>
+    api.getVenueTypes()
+  )
+  const venueTypes = venueTypesQuery.data
 
   const offererOptions = sortByLabel(
-    offererNames.map((item) => ({
+    offererNames?.map((item) => ({
       value: item['id'].toString(),
       label: item['name'],
-    }))
+    })) ?? []
   )
 
   const selectedOffererId =
@@ -130,7 +113,7 @@ export const Homepage = (): JSX.Element => {
     ''
 
   const selectedOffererQuery = useSWR(
-    [GET_OFFERER_QUERY_KEY, selectedOffererId],
+    offererNames ? [GET_OFFERER_QUERY_KEY, selectedOffererId] : null,
     async ([, offererIdParam]) => {
       try {
         const offerer = await api.getOfferer(Number(offererIdParam))
@@ -158,6 +141,44 @@ export const Homepage = (): JSX.Element => {
 
     return physicalVenues.length === 0 && !virtualVenue
   }, [selectedOfferer])
+
+  if (
+    offererNamesQuery.isLoading ||
+    venueTypesQuery.isLoading ||
+    !offererNames ||
+    !venueTypes
+  ) {
+    return (
+      <AppLayout>
+        <Spinner />
+      </AppLayout>
+    )
+  }
+
+  async function showNewNav() {
+    try {
+      await api.postNewProNav()
+      setSeesNewNavAvailableBanner(false)
+      dispatch(
+        updateUser({
+          ...currentUser,
+          navState: {
+            newNavDate: formatBrowserTimezonedDateAsUTC(new Date()),
+            eligibilityDate: currentUser.navState?.eligibilityDate,
+          },
+        })
+      )
+      setIsNewNavEnabled(true)
+    } catch (error) {
+      notify.error("Impossible de réaliser l'action. Réessayez plus tard")
+    }
+  }
+
+  function hideBanner() {
+    localStorageAvailable() &&
+      localStorage.setItem(HAS_CLOSED_BETA_TEST_BANNER, 'true')
+    setSeesNewNavAvailableBanner(false)
+  }
 
   return (
     <AppLayout>
@@ -202,10 +223,12 @@ export const Homepage = (): JSX.Element => {
         <BankAccountHasPendingCorrectionCallout offerer={selectedOfferer} />
       </div>
 
-      <OffererBanners
-        isUserOffererValidated={isUserOffererValidated}
-        offerer={selectedOfferer}
-      />
+      {!selectedOffererQuery.isLoading && (
+        <OffererBanners
+          isUserOffererValidated={isUserOffererValidated}
+          offerer={selectedOfferer}
+        />
+      )}
 
       {selectedOfferer?.isValidated && selectedOfferer.isActive && (
         <section className={styles['section']}>
@@ -219,6 +242,7 @@ export const Homepage = (): JSX.Element => {
           isLoading={selectedOffererQuery.isLoading}
           offererOptions={offererOptions}
           isUserOffererValidated={isUserOffererValidated}
+          venueTypes={venueTypes}
         />
       </section>
 
@@ -252,25 +276,3 @@ export const Homepage = (): JSX.Element => {
 // Below exports are used by react-router-dom
 // ts-unused-exports:disable-next-line
 export const Component = Homepage
-
-export type HomepageLoaderData = {
-  venueTypes: VenueTypeResponseModel[]
-  offererNames: GetOffererNameResponseModel[]
-}
-
-// ts-unused-exports:disable-next-line
-export const loader: RouteObject['loader'] =
-  async (): Promise<HomepageLoaderData> => {
-    const venueTypes = await api.getVenueTypes()
-    const offererNamesResponse = await api.listOfferersNames()
-
-    return {
-      venueTypes,
-      offererNames: offererNamesResponse.offerersNames,
-    }
-  }
-
-// ts-unused-exports:disable-next-line
-export const shouldRevalidate: RouteObject['shouldRevalidate'] = () => {
-  return false
-}

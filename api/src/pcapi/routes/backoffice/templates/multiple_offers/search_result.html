@@ -60,6 +60,7 @@
               {% if incompatibility_form %}
                 <div>
                   {{ build_modal_form("set-gcu-incompatible", url_for('.set_product_gcu_incompatible') , incompatibility_form,
+                  "Rendre le livre et les offres associées incompatibles avec les CGU",
                   "Rendre le livre et les offres associées incompatibles avec les CGU", "Confirmer",
                   "⚠️ Êtes-vous sûr de vouloir rendre le produit incompatible et rejeter les offres associées ?") }}
                 </div>
@@ -86,7 +87,7 @@
               {% if offer_criteria_form %}
                 <div class="search-results-modal-container">
                   {{ build_modal_form("add-criteria", url_for('.add_criteria_to_offers') , offer_criteria_form,
-                  "Tag des offres", "Enregistrer",
+                  "Tag des offres", "Tag des offres", "Enregistrer",
                   "⚠️ " + active_offers_count|string + " offres actives associées à cet EAN-13 seront affectées") }}
                 </div>
               {% endif %}

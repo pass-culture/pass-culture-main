@@ -3,8 +3,8 @@ from typing import Any
 from pydantic.v1.class_validators import validator
 from pydantic.v1.utils import GetterDict
 
-from pcapi.routes.native.utils import convert_to_cent
 from pcapi.routes.serialization import ConfiguredBaseModel
+from pcapi.routes.shared.price import convert_to_cent
 
 
 class OfferImageResponse(ConfiguredBaseModel):

@@ -59,7 +59,7 @@ describe('OfferEducationalActions', () => {
       offer: offer,
     })
     const activateOffer = screen.getByRole('button', {
-      name: 'Publier sur Adage',
+      name: 'Publier sur ADAGE',
     })
 
     await userEvent.click(activateOffer)
@@ -93,7 +93,7 @@ describe('OfferEducationalActions', () => {
       }),
     })
     const activateOffer = screen.getByRole('button', {
-      name: 'Publier sur Adage',
+      name: 'Publier sur ADAGE',
     })
 
     await userEvent.click(activateOffer)
@@ -107,7 +107,7 @@ describe('OfferEducationalActions', () => {
   it('should display actions button and status tag by default', () => {
     renderOfferEducationalActions({ ...defaultValues, isBooked: false })
     expect(
-      screen.getByRole('button', { name: 'Masquer la publication sur Adage' })
+      screen.getByRole('button', { name: 'Masquer la publication sur ADAGE' })
     ).toBeInTheDocument()
     expect(screen.getByText('publiée')).toBeInTheDocument()
   })
@@ -211,7 +211,7 @@ describe('OfferEducationalActions', () => {
       }),
     })
     await userEvent.click(
-      screen.getByRole('button', { name: 'Publier sur Adage' })
+      screen.getByRole('button', { name: 'Publier sur ADAGE' })
     )
     expect(notifyError).toHaveBeenCalledWith(
       'La date limite de réservation est dépassée. Pour publier l’offre, vous devez modifier la date limite de réservation.'
@@ -244,7 +244,7 @@ describe('OfferEducationalActions', () => {
       }),
     })
     await userEvent.click(
-      screen.getByRole('button', { name: 'Publier sur Adage' })
+      screen.getByRole('button', { name: 'Publier sur ADAGE' })
     )
     expect(api.patchCollectiveOffersActiveStatus).toHaveBeenCalledWith({
       ids: [offerId],
@@ -262,7 +262,7 @@ describe('OfferEducationalActions', () => {
 
     expect(
       screen.queryByRole('button', {
-        name: 'Publier sur Adage',
+        name: 'Publier sur ADAGE',
       })
     ).not.toBeInTheDocument()
   })

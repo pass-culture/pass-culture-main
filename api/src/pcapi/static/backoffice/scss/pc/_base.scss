@@ -26,3 +26,9 @@ pre:has(code) {
 .primary-tooltip {
   --bs-tooltip-bg: var(--bs-primary);
 }
+
+.larger-tooltip {
+  .tooltip-inner {
+    max-width: 600px !important;
+  }
+}

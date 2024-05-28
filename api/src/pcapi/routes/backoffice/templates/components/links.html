@@ -129,12 +129,12 @@
 {% macro build_dms_adage_application_external_link(collective_dms_application) %}
   <a href="https://www.demarches-simplifiees.fr/procedures/{{ collective_dms_application.procedure }}/dossiers/{{ collective_dms_application.application }}"
      target="_blank"
-     title="Visualiser le dossier Démarches Simplifiées Adage"
+     title="Visualiser le dossier Démarches Simplifiées ADAGE"
      class="link-primary">{{ collective_dms_application.application }} <i class="bi bi-box-arrow-up-right"></i></a>
 {% endmacro %}
 {% macro build_safe_redirect_link(url) %}
   <a href="{{ url_for('backoffice_web.safe_redirect', url=url) }}"
      target="_blank"
-     title="Vérifier et ouvrir le site web externe"
+     title="Ouvrir le site web externe"
      class="link-primary">{{ url }} <i class="bi bi-box-arrow-up-right"></i></a>
 {% endmacro %}

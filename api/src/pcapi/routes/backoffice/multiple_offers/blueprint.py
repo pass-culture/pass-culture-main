@@ -142,7 +142,7 @@ def set_product_gcu_incompatible() -> utils.BackofficeResponse:
 
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
-    elif offers_api.reject_inappropriate_products([form.ean.data], current_user, rejected_by_gcu_incompatibility=True):
+    elif offers_api.reject_inappropriate_products([form.ean.data], current_user, rejected_by_fraud_action=True):
         flash("Le produit a été rendu incompatible aux CGU et les offres ont été désactivées", "success")
     else:
         flash("Une erreur s'est produite lors de l'opération", "warning")

@@ -3,16 +3,21 @@ import { Form, FormikProvider, useFormik } from 'formik'
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { CollectiveOfferResponseModel } from 'apiClient/v1'
+import { api } from 'apiClient/api'
+import {
+  CollectiveOfferDisplayedStatus,
+  CollectiveOfferResponseModel,
+} from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { createOfferFromTemplate } from 'core/OfferEducational/utils/createOfferFromTemplate'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { computeOffersUrl } from 'core/Offers/utils/computeOffersUrl'
+import { serializeApiFilters } from 'core/Offers/utils/serializer'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import strokeSearchIcon from 'icons/stroke-search.svg'
-import { getFilteredCollectiveOffersAdapter } from 'pages/CollectiveOffers/adapters/getFilteredCollectiveOffersAdapter'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -48,29 +53,51 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
   const filterTemplateOfferByName = useCallback(
     async (offerName: string) => {
       setIsLoading(true)
-      const apiFilters = {
+      const {
+        nameOrIsbn,
+        offererId,
+        venueId,
+        categoryId,
+        status,
+        creationMode,
+        periodBeginningDate,
+        periodEndingDate,
+        collectiveOfferType,
+        format,
+      } = serializeApiFilters({
         ...DEFAULT_SEARCH_FILTERS,
         nameOrIsbn: offerName,
         collectiveOfferType: 'template',
         offererId: queryOffererId ? queryOffererId : 'all',
         venueId: queryVenueId ? queryVenueId : 'all',
-      }
-      const { isOk, message, payload } =
-        await getFilteredCollectiveOffersAdapter(apiFilters)
+      })
 
-      if (!isOk) {
+      try {
+        const offers = await api.getCollectiveOffers(
+          nameOrIsbn,
+          offererId,
+          status as CollectiveOfferDisplayedStatus,
+          venueId,
+          categoryId,
+          creationMode,
+          periodBeginningDate,
+          periodEndingDate,
+          collectiveOfferType,
+          format
+        )
+
+        if (offerName.length < 1) {
+          setShowAll(true)
+        } else {
+          setShowAll(false)
+        }
+
+        setOffers(offers)
         setIsLoading(false)
-        return notify.error(message)
+      } catch (error) {
+        setIsLoading(false)
+        return notify.error(GET_DATA_ERROR_MESSAGE)
       }
-
-      if (offerName.length < 1) {
-        setShowAll(true)
-      } else {
-        setShowAll(false)
-      }
-
-      setOffers(payload.offers)
-      setIsLoading(false)
     },
     [notify]
   )

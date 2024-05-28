@@ -34,7 +34,7 @@ export const OffererStats = (): JSX.Element | null => {
     data.offerersNames.map((offerer) => ({
       value: offerer.id.toString(),
       label: offerer.name,
-    })) ?? []
+    }))
   )
 
   return (

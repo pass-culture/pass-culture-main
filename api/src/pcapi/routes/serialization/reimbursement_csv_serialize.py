@@ -7,6 +7,7 @@ import typing
 from typing import Callable
 from typing import Iterable
 
+from pydantic.v1 import validator
 from pydantic.v1.main import BaseModel
 import pytz
 
@@ -227,13 +228,22 @@ def generate_reimbursement_details_csv(reimbursement_details: Iterable[Reimburse
     return output.getvalue()
 
 
-def find_all_offerers_reimbursement_details(
-    offerer_ids: list[int],
+def find_offerer_reimbursement_details(
+    offerer_id: int,
     reimbursements_period: tuple[datetime.date | None, datetime.date | None],
     bank_account_id: int | None = None,
 ) -> list[ReimbursementDetails]:
-    offerer_payments = finance_repository.find_all_offerers_payments(offerer_ids, reimbursements_period, bank_account_id)  # type: ignore [arg-type]
+    offerer_payments = finance_repository.find_offerer_payments(offerer_id, reimbursements_period, bank_account_id)  # type: ignore [arg-type]
     reimbursement_details = [ReimbursementDetails(offerer_payment) for offerer_payment in offerer_payments]
+
+    return reimbursement_details
+
+
+def find_reimbursement_details_by_invoices(
+    invoices_references: list[str],
+) -> list[ReimbursementDetails]:
+    offerers_payments = finance_repository.find_offerer_payments(invoices_references=invoices_references)
+    reimbursement_details = [ReimbursementDetails(offerer_payment) for offerer_payment in offerers_payments]
 
     return reimbursement_details
 
@@ -254,6 +264,17 @@ def validate_reimbursement_period(
 
 
 class ReimbursementCsvQueryModel(BaseModel):
+    offererId: int
     bankAccountId: int | None
     reimbursementPeriodBeginningDate: str | None
     reimbursementPeriodEndingDate: str | None
+
+
+class ReimbursementCsvByInvoicesModel(BaseModel):
+    invoicesReferences: list[str]
+
+    @validator("invoicesReferences", pre=True)
+    def ensure_invoices_references_is_list(cls, v: list[str] | str) -> list[str]:
+        if isinstance(v, str):
+            return [v]
+        return v

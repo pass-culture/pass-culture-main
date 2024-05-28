@@ -1,15 +1,16 @@
-import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import { GetCollectiveOfferRequestResponseModel } from 'apiClient/v1'
 import useAnalytics from 'app/App/analytics/firebase'
 import { AppLayout } from 'app/AppLayout'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
-import { GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY } from 'config/swrQueryKeys'
+import {
+  GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
+  GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY,
+} from 'config/swrQueryKeys'
 import { Events } from 'core/FirebaseEvents/constants'
 import { createOfferFromTemplate } from 'core/OfferEducational/utils/createOfferFromTemplate'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -18,17 +19,12 @@ import { Button } from 'ui-kit/Button/Button'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { getDateToFrenchText } from 'utils/date'
 
-import { getOfferRequestInformationsAdapter } from './adapters/getOfferRequestInformationsAdapter'
 import styles from './CollectiveOfferFromRequest.module.scss'
 
 export const CollectiveOfferFromRequest = (): JSX.Element => {
   const navigate = useNavigate()
   const notify = useNotification()
   const { logEvent } = useAnalytics()
-
-  const [informations, setInformations] =
-    useState<GetCollectiveOfferRequestResponseModel | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
 
   const isMarseilleActive = useActiveFeature('WIP_ENABLE_MARSEILLE')
 
@@ -40,6 +36,11 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
   const { data: offerTemplate } = useSWR(
     [GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY, offerId],
     ([, offerIdParams]) => api.getCollectiveOfferTemplate(Number(offerIdParams))
+  )
+
+  const { isLoading, data: informations } = useSWR(
+    [GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY, requestId],
+    ([, id]) => api.getCollectiveOfferRequest(Number(id))
   )
 
   const handleButtonClick = () => {
@@ -58,26 +59,9 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
     )
   }
 
-  const getOfferRequestInformation = async () => {
-    const { isOk, message, payload } = await getOfferRequestInformationsAdapter(
-      Number(requestId)
-    )
-
-    if (!isOk) {
-      return notify.error(message)
-    }
-    setInformations(payload)
-    setIsLoading(false)
-  }
-
-  useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    requestId && getOfferRequestInformation()
-  }, [requestId])
-
   return (
     <AppLayout>
-      {isLoading ? (
+      {isLoading || !informations ? (
         <Spinner />
       ) : (
         <>
@@ -89,7 +73,7 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
             établissement scolaire. Vous pouvez créer une offre à partir des
             informations saisies par l’enseignant. Toutes les informations sont
             modifiables.
-            <br /> L’offre sera visible par l’enseignant sur Adage.
+            <br /> L’offre sera visible par l’enseignant sur ADAGE.
           </div>
           <SummarySection title="Détails de la demande">
             <div className={styles['eac-section']}>
@@ -97,7 +81,7 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
                 descriptions={[
                   {
                     title: 'Demande reçue le',
-                    text: informations?.dateCreated
+                    text: informations.dateCreated
                       ? getDateToFrenchText(informations.dateCreated)
                       : '-',
                   },
@@ -116,23 +100,23 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
                     title: 'Etablissement scolaire',
                     text: (
                       <div>
-                        {`${informations?.institution.institutionType} ${informations?.institution.name}`.trim()}
+                        {`${informations.institution.institutionType} ${informations.institution.name}`.trim()}
                         <br />
-                        {`${informations?.institution.postalCode} ${informations?.institution.city}`}
+                        {`${informations.institution.postalCode} ${informations.institution.city}`}
                       </div>
                     ),
                   },
                   {
                     title: "Prénom et nom de l'enseignant",
-                    text: `${informations?.redactor.firstName} ${informations?.redactor.lastName}`,
+                    text: `${informations.redactor.firstName} ${informations.redactor.lastName}`,
                   },
                   {
                     title: 'Téléphone',
-                    text: informations?.phoneNumber ?? '-',
+                    text: informations.phoneNumber ?? '-',
                   },
                   {
                     title: 'Email',
-                    text: informations?.redactor.email,
+                    text: informations.redactor.email,
                   },
                 ]}
               />
@@ -142,21 +126,21 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
               descriptions={[
                 {
                   title: "Nombre d'élèves",
-                  text: informations?.totalStudents ?? '-',
+                  text: informations.totalStudents ?? '-',
                 },
                 {
                   title: "Nombre d'accompagnateurs",
-                  text: informations?.totalTeachers ?? '-',
+                  text: informations.totalTeachers ?? '-',
                 },
                 {
                   title: 'Date souhaitée',
-                  text: informations?.requestedDate
+                  text: informations.requestedDate
                     ? getDateToFrenchText(informations.requestedDate)
                     : '-',
                 },
                 {
                   title: 'Descriptif de la demande',
-                  text: informations?.comment,
+                  text: informations.comment,
                 },
               ]}
             />

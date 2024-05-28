@@ -22,7 +22,7 @@ export type OfferItemProps = {
   disabled?: boolean
   isSelected?: boolean
   offer: CollectiveOfferResponseModel | ListOffersOfferResponseModel
-  selectOffer: (offerId: number, selected: boolean, isTemplate: boolean) => void
+  selectOffer: (offerId: number, selected: boolean) => void
   audience: Audience
 }
 

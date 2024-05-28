@@ -1,5 +1,5 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
-import React from 'react'
+import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -7,6 +7,7 @@ import { GetVenueResponseModel } from 'apiClient/v1'
 import { defaultGetVenue } from 'utils/collectiveApiFactories'
 import {
   defaultGetOffererResponseModel,
+  defaultGetOffererVenueResponseModel,
   defaultVenueProvider,
 } from 'utils/individualApiFactories'
 import {
@@ -27,7 +28,11 @@ const renderVenueEdition = (options?: RenderWithProvidersOptions) => {
       <Route path="/accueil" element={<h1>Home</h1>} />
     </Routes>,
     {
-      user: sharedCurrentUserFactory(),
+      user: sharedCurrentUserFactory({
+        // a date in the past to have the new interface
+        navState: { newNavDate: '2002-07-29T12:18:43.087097Z' },
+      }),
+
       initialRouterEntries: [
         `/structures/${defaultGetOffererResponseModel.id}/lieux/${defaultGetVenue.id}/edition`,
       ],
@@ -73,6 +78,147 @@ describe('route VenueEdition', () => {
     })
     expect(api.getVenue).toHaveBeenCalledWith(defaultGetVenue.id)
     expect(venuePublicName).toBeInTheDocument()
+  })
+
+  it('should display the individual title', async () => {
+    renderVenueEdition()
+
+    await waitForElementToBeRemoved(screen.getByTestId('spinner'))
+
+    expect(
+      screen.getByRole('heading', { name: 'Page sur l’application' })
+    ).toBeInTheDocument()
+  })
+
+  it('should display the collective title', async () => {
+    renderVenueEdition({
+      initialRouterEntries: [
+        `/structures/${defaultGetOffererResponseModel.id}/lieux/${defaultGetVenue.id}/edition/collectif`,
+      ],
+    })
+
+    await waitForElementToBeRemoved(screen.getByTestId('spinner'))
+
+    expect(screen.getByText('Page dans ADAGE')).toBeInTheDocument()
+  })
+
+  it('should display the addresse title', async () => {
+    vi.spyOn(api, 'getVenue').mockResolvedValueOnce({
+      ...baseVenue,
+      isPermanent: false,
+    })
+    renderVenueEdition({
+      initialRouterEntries: [
+        `/structures/${defaultGetOffererResponseModel.id}/lieux/${defaultGetVenue.id}`,
+      ],
+    })
+
+    await waitForElementToBeRemoved(screen.getByTestId('spinner'))
+
+    expect(screen.getByText('Page adresse')).toBeInTheDocument()
+  })
+
+  it('should let choose an other partner page', async () => {
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+      ...defaultGetOffererResponseModel,
+      managedVenues: [
+        {
+          ...defaultGetOffererVenueResponseModel,
+          id: 13,
+          publicName: 'Mon lieu de malheur',
+        },
+        {
+          ...defaultGetOffererVenueResponseModel,
+          id: 666,
+          publicName: 'Mon lieu diabolique',
+        },
+      ],
+    })
+    renderVenueEdition()
+
+    await waitForElementToBeRemoved(screen.getByTestId('spinner'))
+
+    await userEvent.selectOptions(
+      screen.getByLabelText('Sélectionnez votre page partenaire'),
+      '13'
+    )
+    expect(screen.getByText('Mon lieu de malheur')).toBeInTheDocument()
+
+    await userEvent.selectOptions(
+      screen.getByLabelText('Sélectionnez votre page partenaire'),
+      '666'
+    )
+    expect(screen.getByText('Mon lieu diabolique')).toBeInTheDocument()
+  })
+
+  it('should not let choose an other partner page when there is only one partner page', async () => {
+    vi.spyOn(api, 'getOfferer').mockResolvedValueOnce({
+      ...defaultGetOffererResponseModel,
+      managedVenues: [
+        {
+          ...defaultGetOffererVenueResponseModel,
+          id: 13,
+          publicName: 'Mon lieu de malheur',
+        },
+        {
+          ...defaultGetOffererVenueResponseModel,
+          id: 666,
+          publicName: 'Mon lieu diabolique',
+          isPermanent: false,
+        },
+      ],
+    })
+    renderVenueEdition()
+
+    await waitForElementToBeRemoved(screen.getByTestId('spinner'))
+
+    expect(
+      screen.queryByLabelText('Sélectionnez votre page partenaire')
+    ).not.toBeInTheDocument()
+  })
+
+  it('should not let choose an other partner page when on adress page', async () => {
+    vi.spyOn(api, 'getVenue').mockResolvedValue({
+      ...baseVenue,
+      isPermanent: false,
+    })
+
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+      ...defaultGetOffererResponseModel,
+      managedVenues: [
+        {
+          ...defaultGetOffererVenueResponseModel,
+          id: 13,
+          publicName: 'Mon lieu de malheur',
+        },
+        {
+          ...defaultGetOffererVenueResponseModel,
+          id: 666,
+          publicName: 'Mon lieu diabolique',
+        },
+      ],
+    })
+    renderVenueEdition()
+
+    await waitForElementToBeRemoved(screen.getByTestId('spinner'))
+
+    expect(screen.getByText('Page adresse')).toBeInTheDocument()
+    expect(
+      screen.queryByLabelText('Sélectionnez votre page partenaire')
+    ).not.toBeInTheDocument()
+  })
+
+  it('should display the selector only for new navigation', async () => {
+    renderVenueEdition({
+      user: sharedCurrentUserFactory({
+        // a date in the futur to not have the new interface
+        navState: { newNavDate: '2225-07-29T12:18:43.087097Z' },
+      }),
+    })
+
+    await waitForElementToBeRemoved(screen.getByTestId('spinner'))
+
+    expect(screen.queryByText('Page sur l’application')).not.toBeInTheDocument()
   })
 
   it('should check none accessibility', async () => {
@@ -139,7 +285,6 @@ describe('route VenueEdition', () => {
       isPermanent: true,
     })
     renderVenueEdition({
-      features: ['WIP_ACCESLIBRE'],
       initialRouterEntries: [
         `/structures/${defaultGetOffererResponseModel.id}/lieux/${defaultGetVenue.id}`,
       ],
@@ -160,7 +305,6 @@ describe('route VenueEdition', () => {
       isPermanent: false,
     })
     renderVenueEdition({
-      features: ['WIP_ACCESLIBRE'],
       initialRouterEntries: [
         `/structures/${defaultGetOffererResponseModel.id}/lieux/${defaultGetVenue.id}`,
       ],
@@ -173,5 +317,33 @@ describe('route VenueEdition', () => {
         'Renseignez facilement les modalités d’accessibilité de votre établissement sur la plateforme collaborative acceslibre.beta.gouv.fr'
       )
     ).not.toBeInTheDocument()
+  })
+
+  it('should not display tab navigation for permanent venues', async () => {
+    vi.spyOn(api, 'getVenue').mockResolvedValueOnce({
+      ...baseVenue,
+      isPermanent: true,
+    })
+    renderVenueEdition({
+      user: sharedCurrentUserFactory({
+        navState: { newNavDate: '2002-07-29T12:18:43.087097Z' },
+      }),
+    })
+    await waitForElementToBeRemoved(screen.getByTestId('spinner'))
+
+    expect(screen.queryByText('Pour le grand public')).not.toBeInTheDocument()
+    expect(screen.queryByText('Pour les enseignants')).not.toBeInTheDocument()
+  })
+
+  it('should display tab navigation for not permanent venues', async () => {
+    vi.spyOn(api, 'getVenue').mockResolvedValueOnce({
+      ...baseVenue,
+      isPermanent: false,
+    })
+    renderVenueEdition({})
+    await waitForElementToBeRemoved(screen.getByTestId('spinner'))
+
+    expect(screen.getByText('Pour le grand public')).toBeInTheDocument()
+    expect(screen.getByText('Pour les enseignants')).toBeInTheDocument()
   })
 })

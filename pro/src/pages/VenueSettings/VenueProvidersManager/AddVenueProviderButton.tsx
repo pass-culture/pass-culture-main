@@ -1,10 +1,13 @@
 import React, { useState } from 'react'
-import useSWR from 'swr'
+import useSWR, { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
-import { VenueProviderResponse, GetVenueResponseModel } from 'apiClient/v1'
+import { GetVenueResponseModel } from 'apiClient/v1'
 import useAnalytics from 'app/App/analytics/firebase'
-import { GET_PROVIDERS_QUERY_KEY } from 'config/swrQueryKeys'
+import {
+  GET_PROVIDERS_QUERY_KEY,
+  GET_VENUE_PROVIDERS_QUERY_KEY,
+} from 'config/swrQueryKeys'
 import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
 import fullMoreIcon from 'icons/full-more.svg'
 import { Button } from 'ui-kit/Button/Button'
@@ -18,14 +21,14 @@ import { DEFAULT_PROVIDER_OPTION } from './utils/_constants'
 import { VenueProviderForm } from './VenueProviderForm'
 
 interface AddVenueProviderButtonProps {
-  setVenueProviders: (venueProviders: VenueProviderResponse[]) => void
   venue: GetVenueResponseModel
 }
 
 export const AddVenueProviderButton = ({
-  setVenueProviders,
   venue,
 }: AddVenueProviderButtonProps) => {
+  const { mutate } = useSWRConfig()
+
   const providersQuery = useSWR(
     [GET_PROVIDERS_QUERY_KEY, venue.id],
     ([, venueIdParam]) => api.getProvidersByVenue(venueIdParam)
@@ -66,9 +69,9 @@ export const AddVenueProviderButton = ({
     setSelectedProviderId(DEFAULT_PROVIDER_OPTION.value)
   }
 
-  const afterSubmit = (venueProvider?: VenueProviderResponse) => {
+  const afterSubmit = async () => {
     cancelProviderSelection()
-    venueProvider && setVenueProviders([venueProvider])
+    await mutate([GET_VENUE_PROVIDERS_QUERY_KEY, venue.id])
   }
 
   const AddButton = (

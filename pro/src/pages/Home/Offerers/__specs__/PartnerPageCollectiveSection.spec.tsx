@@ -1,7 +1,6 @@
 import { screen } from '@testing-library/react'
-import * as router from 'react-router-dom'
 
-import { DMSApplicationstatus, VenueTypeCode } from 'apiClient/v1'
+import { DMSApplicationstatus } from 'apiClient/v1'
 import { defaultDMSApplicationForEAC } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -17,24 +16,15 @@ const renderPartnerPageCollectiveSection = (
     <PartnerPageCollectiveSection
       collectiveDmsApplications={[defaultDMSApplicationForEAC]}
       venueId={7}
+      offererId={8}
+      venueName="Venue name"
       allowedOnAdage={false}
       {...props}
     />
   )
 }
 
-vi.mock('react-router-dom', async () => ({
-  ...(await vi.importActual('react-router-dom')),
-  useLoaderData: vi.fn(),
-}))
-
 describe('PartnerPages', () => {
-  beforeEach(() => {
-    vi.spyOn(router, 'useLoaderData').mockReturnValue({
-      venueTypes: [{ id: VenueTypeCode.FESTIVAL, label: 'Festival' }],
-    })
-  })
-
   it('should display the EAC section when no adage', () => {
     renderPartnerPageCollectiveSection({
       collectiveDmsApplications: [],
@@ -47,7 +37,7 @@ describe('PartnerPages', () => {
     ).toBeInTheDocument()
   })
 
-  it('should display the EAC section when no adage but allowed on Adage', () => {
+  it('should display the EAC section when no adage but allowed on ADAGE', () => {
     renderPartnerPageCollectiveSection({
       collectiveDmsApplications: [],
       allowedOnAdage: true,

@@ -11,7 +11,6 @@ type OffersTableHeadProps = {
   areOffersPresent: boolean
   filters: SearchFiltersParams
   isAdminForbidden: (searchFilters: SearchFiltersParams) => boolean
-  selectAllOffers: () => void
   updateStatusFilter: (status: SearchFiltersParams['status']) => void
   audience: Audience
   isAtLeastOneOfferChecked: boolean
