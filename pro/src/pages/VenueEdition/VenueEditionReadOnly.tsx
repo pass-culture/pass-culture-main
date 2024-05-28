@@ -15,7 +15,6 @@ interface VenueEditionReadOnlyProps {
 }
 
 export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
-  const isOpeningHoursEnabled = useActiveFeature('WIP_OPENING_HOURS')
   const isAccesLibreEnabled = useActiveFeature('WIP_ACCESLIBRE')
 
   return (
@@ -34,7 +33,7 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
         />
       </SummarySubSection>
 
-      {isOpeningHoursEnabled && venue.isPermanent && (
+      {venue.isPermanent && (
         <OpeningHoursReadOnly openingHours={venue.openingHours} />
       )}
 

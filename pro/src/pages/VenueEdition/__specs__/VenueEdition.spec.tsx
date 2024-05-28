@@ -133,22 +133,6 @@ describe('route VenueEdition', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should display Opening hours section if WIP_OPENING_HOURS feature flag is enabled and venue is permanent', async () => {
-    renderVenueEdition({ features: ['WIP_OPENING_HOURS'] })
-
-    await waitForElementToBeRemoved(screen.getByTestId('spinner'))
-
-    expect(screen.getByText("Horaires d'ouverture")).toBeInTheDocument()
-  })
-
-  it('should not display Opening hours section if WIP_OPENING_HOURS feature flag is disabled', async () => {
-    renderVenueEdition()
-
-    await waitForElementToBeRemoved(screen.getByTestId('spinner'))
-
-    expect(screen.queryByText("Horaires d'ouverture")).not.toBeInTheDocument()
-  })
-
   it('should display the acces libre callout for permanent venues', async () => {
     vi.spyOn(api, 'getVenue').mockResolvedValueOnce({
       ...baseVenue,
