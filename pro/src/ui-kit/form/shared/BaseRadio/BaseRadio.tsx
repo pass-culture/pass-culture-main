@@ -9,6 +9,7 @@ interface BaseRadioProps
   hasError?: boolean
   className?: string
   withBorder?: boolean
+  fullWidth?: boolean
 }
 
 export const BaseRadio = ({
@@ -16,6 +17,7 @@ export const BaseRadio = ({
   hasError,
   className,
   withBorder = false,
+  fullWidth = false,
   ...props
 }: BaseRadioProps): JSX.Element => {
   const id = useId()
@@ -27,6 +29,7 @@ export const BaseRadio = ({
         {
           [styles[`with-border`]]: withBorder,
           [styles[`is-disabled`]]: props.disabled,
+          [styles[`full-width`]]: fullWidth,
           [styles[`with-border-checked`]]:
             withBorder && props.checked && !props.disabled,
         },
