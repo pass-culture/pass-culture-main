@@ -11,7 +11,6 @@ import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfte
 import { GET_VENUE_QUERY_KEY } from 'config/swrQueryKeys'
 import { Events } from 'core/FirebaseEvents/constants'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared/constants'
-import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useCurrentUser } from 'hooks/useCurrentUser'
 import { useNotification } from 'hooks/useNotification'
 import { PhoneNumberInput } from 'ui-kit/form/PhoneNumberInput/PhoneNumberInput'
@@ -38,8 +37,6 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
   const notify = useNotification()
   const { logEvent } = useAnalytics()
   const { mutate } = useSWRConfig()
-  const isOpeningHoursEnabled = useActiveFeature('WIP_OPENING_HOURS')
-
   const { currentUser } = useCurrentUser()
 
   const onSubmit: FormikConfig<VenueEditionFormValues>['onSubmit'] = async (
@@ -49,7 +46,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
     try {
       await api.editVenue(
         venue.id,
-        serializeEditVenueBodyModel(values, !venue.siret, isOpeningHoursEnabled)
+        serializeEditVenueBodyModel(values, !venue.siret, true)
       )
 
       await mutate([GET_VENUE_QUERY_KEY, String(venue.id)])
@@ -133,7 +130,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
               </FormLayout.Row>
             </FormLayout.SubSection>
 
-            {isOpeningHoursEnabled && venue.isPermanent && (
+            {venue.isPermanent && (
               <FormLayout.SubSection title="Horaires d'ouverture">
                 <OpeningHoursForm />
               </FormLayout.SubSection>
