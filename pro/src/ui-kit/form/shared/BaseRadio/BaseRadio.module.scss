@@ -5,7 +5,6 @@
   display: inline-flex;
   align-items: center;
   cursor: pointer;
-  width: 100%;
 
   &-label {
     line-height: rem.torem(16px);
@@ -100,7 +99,6 @@
 
   .base-radio-label {
     padding: rem.torem(16px) rem.torem(16px) rem.torem(16px) 0;
-    white-space: nowrap;
   }
 
   &:focus-within {
@@ -136,4 +134,8 @@
       padding: rem.torem(16px) rem.torem(16px) rem.torem(16px) 0;
     }
   }
+}
+
+.full-width {
+  width: 100%;
 }

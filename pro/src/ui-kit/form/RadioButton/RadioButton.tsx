@@ -11,6 +11,7 @@ interface RadioButtonProps
   value: string
   withBorder?: boolean
   hasError?: boolean
+  fullWidth?: boolean
 }
 
 export const RadioButton = ({
@@ -19,6 +20,7 @@ export const RadioButton = ({
   label,
   value,
   withBorder,
+  fullWidth,
   className,
   hasError,
   onChange,
@@ -46,6 +48,7 @@ export const RadioButton = ({
       checked={field.checked}
       hasError={hasError}
       withBorder={withBorder}
+      fullWidth={fullWidth}
       onChange={(e) => onCustomChange(e)}
     />
   )
