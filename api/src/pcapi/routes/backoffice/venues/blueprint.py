@@ -239,6 +239,12 @@ def render_venue_details(
     delete_form = empty_forms.EmptyForm()
     fully_sync_venue_form = empty_forms.EmptyForm()
 
+    fraud_form = (
+        forms.FraudForm(confidence_level=venue.confidenceLevel.value if venue.confidenceLevel else None)
+        if utils.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+        else None
+    )
+
     search_form = pro_forms.CompactProSearchForm(
         q=request.args.get("q"),
         pro_type=pro_forms.TypeOptions.VENUE.name,
@@ -262,6 +268,7 @@ def render_venue_details(
         ),
         delete_form=delete_form,
         fully_sync_venue_form=fully_sync_venue_form,
+        fraud_form=fraud_form,
         active_tab=request.args.get("active_tab", "history"),
         zendesk_sell_synchronisation_form=(
             empty_forms.EmptyForm()
@@ -439,11 +446,20 @@ def delete_venue_provider(venue_id: int, provider_id: int) -> utils.BackofficeRe
 
 
 def get_venue_with_history(venue_id: int) -> offerers_models.Venue:
+    history_filter = history_models.ActionHistory.venueId == venue_id
+    if not utils.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
+        history_filter = sa.and_(
+            history_filter, history_models.ActionHistory.actionType != history_models.ActionType.FRAUD_INFO_MODIFIED
+        )
+
     venue = (
         offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id)
+        .outerjoin(history_models.ActionHistory, history_filter)
         .options(
-            sa.orm.joinedload(offerers_models.Venue.action_history).joinedload(history_models.ActionHistory.user),
-            sa.orm.joinedload(offerers_models.Venue.action_history).joinedload(history_models.ActionHistory.authorUser),
+            sa.orm.contains_eager(offerers_models.Venue.action_history).joinedload(history_models.ActionHistory.user),
+            sa.orm.contains_eager(offerers_models.Venue.action_history).joinedload(
+                history_models.ActionHistory.authorUser
+            ),
         )
         .one_or_none()
     )
@@ -694,6 +710,33 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
             offerers_api.link_venue_to_pricing_point(venue, pricing_point_id=venue.id)
 
     flash("Les informations ont été mises à jour", "success")
+    return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
+
+
+@venue_blueprint.route("/<int:venue_id>/fraud", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def update_for_fraud(venue_id: int) -> utils.BackofficeResponse:
+    venue = (
+        offerers_models.Venue.query.filter_by(id=venue_id)
+        .options(sa.orm.joinedload(offerers_models.Venue.confidenceRule))
+        .one_or_none()
+    )
+    if not venue:
+        raise NotFound()
+
+    form = forms.FraudForm()
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+    elif offerers_api.update_fraud_info(
+        None,
+        venue,
+        current_user,
+        offerers_models.OffererConfidenceLevel(form.confidence_level.data) if form.confidence_level.data else None,
+        form.comment.data,
+    ):
+        db.session.commit()
+        flash("Les informations ont été mises à jour", "success")
+
     return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
 
 

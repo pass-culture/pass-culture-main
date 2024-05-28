@@ -198,7 +198,8 @@
               {% if has_permission("PRO_FRAUD_ACTIONS") %}
                 <p class="mb-1">
                   <span class="fw-bold">Validation des offres :</span>
-                  {{ venue | format_confidence_level(recursive=true, show_no_rule=true) }}
+                  {{ venue | format_confidence_level_badge_for_venue }}
+                  {{ build_modal_form("edit-fraud", url_for("backoffice_web.venue.update_for_fraud", venue_id=venue.id) , fraud_form, "", "Fraude et Conformité", "Enregistrer", none, "bi-pencil") }}
                 </p>
               {% endif %}
             </div>

@@ -758,6 +758,12 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
             return None
         return self.accessibilityProvider.externalAccessibilityUrl
 
+    @property
+    def confidenceLevel(self) -> "OffererConfidenceLevel | None":
+        if not self.confidenceRule:
+            return None
+        return self.confidenceRule.confidenceLevel
+
 
 class GooglePlacesInfo(PcObject, Base, Model):
     __tablename__ = "google_places_info"
@@ -1076,6 +1082,12 @@ class Offerer(
             else_=func.substring(cls.postalCode, 1, 2),
         )
 
+    @property
+    def confidenceLevel(self) -> "OffererConfidenceLevel | None":
+        if not self.confidenceRule:
+            return None
+        return self.confidenceRule.confidenceLevel
+
 
 class UserOfferer(PcObject, Base, Model, ValidationStatusMixin):
     __table_name__ = "user_offerer"
@@ -1293,14 +1305,14 @@ class OffererConfidenceRule(PcObject, Base, Model):
     offererId = sa.Column(
         sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), index=True, unique=True, nullable=True
     )
-    offerer: sa.orm.Mapped["Offerer"] = sa.orm.relationship(
+    offerer: sa.orm.Mapped["Offerer | None"] = sa.orm.relationship(
         "Offerer", foreign_keys=[offererId], backref=sa_orm.backref("confidenceRule", uselist=False)
     )
 
     venueId = sa.Column(
         sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), index=True, unique=True, nullable=True
     )
-    venue: sa.orm.Mapped["Offerer"] = sa.orm.relationship(
+    venue: sa.orm.Mapped["Venue | None"] = sa.orm.relationship(
         "Venue", foreign_keys=[venueId], backref=sa_orm.backref("confidenceRule", uselist=False)
     )
 

@@ -2444,13 +2444,56 @@ def get_or_create_offerer_address(offerer_id: int, address_id: int, label: str |
     return offerer_address
 
 
+def update_fraud_info(
+    offerer: offerers_models.Offerer | None,
+    venue: offerers_models.Venue | None,
+    author_user: users_models.User,
+    confidence_level: offerers_models.OffererConfidenceLevel | None,
+    comment: str | None = None,
+) -> bool:
+    offerer_or_venue = offerer or venue
+    assert offerer_or_venue  # helps mypy
+
+    current_confidence_level = offerer_or_venue.confidenceLevel
+    is_confidence_level_changed = current_confidence_level != confidence_level
+
+    if not (is_confidence_level_changed or comment):
+        return False
+
+    kwargs: dict[str, typing.Any] = {}
+
+    if is_confidence_level_changed:
+        kwargs["modified_info"] = {
+            "confidenceRule.confidenceLevel": {"old_info": current_confidence_level, "new_info": confidence_level}
+        }
+
+        if not current_confidence_level:
+            assert confidence_level  # helps mypy
+            db.session.add(
+                offerers_models.OffererConfidenceRule(offerer=offerer, venue=venue, confidenceLevel=confidence_level)
+            )
+        else:
+            query = offerers_models.OffererConfidenceRule.query.filter_by(id=offerer_or_venue.confidenceRule.id)
+            if not confidence_level:
+                query.delete(synchronize_session=False)
+            else:
+                query.update({"confidenceLevel": confidence_level})
+
+    if comment:
+        kwargs["comment"] = comment
+
+    history_api.add_action(
+        history_models.ActionType.FRAUD_INFO_MODIFIED, author_user, offerer=offerer, venue=venue, **kwargs
+    )
+
+    return True
+
+
 def get_offer_confidence_level(
     venue: offerers_models.Venue,
 ) -> offerers_models.OffererConfidenceLevel | None:
-    venue_confidence_level = venue.confidenceRule.confidenceLevel if venue.confidenceRule else None
-    offerer_confidence_level = (
-        venue.managingOfferer.confidenceRule.confidenceLevel if venue.managingOfferer.confidenceRule else None
-    )
+    venue_confidence_level = venue.confidenceLevel
+    offerer_confidence_level = venue.managingOfferer.confidenceLevel
 
     if offerer_confidence_level and venue_confidence_level and offerer_confidence_level != venue_confidence_level:
         logger.error(

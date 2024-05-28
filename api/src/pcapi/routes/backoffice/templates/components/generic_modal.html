@@ -1,6 +1,6 @@
 {% macro build_modal_form(modal_id, dst, form, button_text, title, submit_button_text, description, icon) %}
   {% set modal_aria_described_by_id = random_hash() %}
-  <button class="btn btn-outline-primary lead fw-bold mt-2"
+  <button class="btn {% if button_text %}btn-outline-primary mt-2{% else %}btn-link mx-0 my-0 py-0{% endif %} lead fw-bold"
           data-bs-toggle="modal"
           data-bs-target="#{{ modal_id }}-modal"
           type="button">

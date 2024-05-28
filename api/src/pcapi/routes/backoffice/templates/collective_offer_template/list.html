@@ -107,11 +107,15 @@
                 <td>{{ collective_offer_template.dateCreated | format_date("%d/%m/%Y") }}</td>
                 <td>
                   {{ links.build_offerer_name_to_details_link(collective_offer_template.venue.managingOfferer) }}
-                  {% if has_permission("PRO_FRAUD_ACTIONS") %}{{ collective_offer_template.venue.managingOfferer | format_confidence_level }}{% endif %}
+                  {% if has_permission("PRO_FRAUD_ACTIONS") %}
+                    {{ collective_offer_template.venue.managingOfferer.confidenceLevel | format_confidence_level_badge }}
+                  {% endif %}
                 </td>
                 <td>
                   {{ links.build_venue_name_to_details_link(collective_offer_template.venue) }}
-                  {% if has_permission("PRO_FRAUD_ACTIONS") %}{{ collective_offer_template.venue | format_confidence_level }}{% endif %}
+                  {% if has_permission("PRO_FRAUD_ACTIONS") %}
+                    {{ collective_offer_template.venue.confidenceLevel | format_confidence_level_badge }}
+                  {% endif %}
                 </td>
                 <td>
                   {{ links.build_venue_offers_icon_link(".list_collective_offer_templates", "Offres collectives vitrine", collective_offer_template.venue) }}

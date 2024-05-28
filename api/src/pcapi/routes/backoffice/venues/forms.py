@@ -8,6 +8,7 @@ from wtforms import validators
 from pcapi.connectors import acceslibre as acceslibre_connector
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import utils
@@ -144,6 +145,23 @@ class EditVenueForm(EditVirtualVenueForm):
                 )
 
         return acceslibre_url
+
+
+class FraudForm(FlaskForm):
+    confidence_level = fields.PCSelectField(
+        "Validation des offres",
+        choices=utils.choices_from_enum(
+            offerers_models.OffererConfidenceLevel, formatter=filters.format_confidence_level
+        ),
+        default_text="Suivre les règles",
+        validators=(wtforms.validators.Optional(""),),
+    )
+    comment = fields.PCOptCommentField("Commentaire visible uniquement par l'équipe Fraude et Conformité")
+
+    def filter_confidence_level(self, raw_confidence_level: str | None) -> str | None:
+        if not raw_confidence_level:
+            return None  # instead of empty string
+        return raw_confidence_level
 
 
 class CommentForm(FlaskForm):

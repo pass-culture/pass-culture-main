@@ -542,6 +542,116 @@ class UpdateOffererTest(PostEndpointHelper):
         assert len(offerer.action_history) == 0
 
 
+class UpdateForFraudTest(PostEndpointHelper):
+    endpoint = "backoffice_web.offerer.update_for_fraud"
+    endpoint_kwargs = {"offerer_id": 1}
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+
+    def test_set_rule(self, legit_user, authenticated_client):
+        offerer = offerers_factories.OffererFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offerer_id=offerer.id,
+            form={
+                "confidence_level": offerers_models.OffererConfidenceLevel.WHITELIST.name,
+                "comment": "Test",
+            },
+        )
+        assert response.status_code == 303
+
+        assert offerer.confidenceLevel == offerers_models.OffererConfidenceLevel.WHITELIST
+        assert len(offerer.action_history) == 1
+        action = offerer.action_history[0]
+        assert action.actionType == history_models.ActionType.FRAUD_INFO_MODIFIED
+        assert action.authorUser == legit_user
+        assert action.comment == "Test"
+        assert action.extraData == {
+            "modified_info": {
+                "confidenceRule.confidenceLevel": {
+                    "old_info": None,
+                    "new_info": offerers_models.OffererConfidenceLevel.WHITELIST.name,
+                }
+            }
+        }
+
+    def test_update_rule(self, legit_user, authenticated_client):
+        rule = offerers_factories.WhitelistedOffererConfidenceRuleFactory()
+        offerer = rule.offerer
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offerer_id=offerer.id,
+            form={
+                "confidence_level": offerers_models.OffererConfidenceLevel.MANUAL_REVIEW.name,
+                "comment": "Test",
+            },
+        )
+        assert response.status_code == 303
+
+        assert offerer.confidenceLevel == offerers_models.OffererConfidenceLevel.MANUAL_REVIEW
+        assert len(offerer.action_history) == 1
+        action = offerer.action_history[0]
+        assert action.actionType == history_models.ActionType.FRAUD_INFO_MODIFIED
+        assert action.authorUser == legit_user
+        assert action.comment == "Test"
+        assert action.extraData == {
+            "modified_info": {
+                "confidenceRule.confidenceLevel": {
+                    "old_info": offerers_models.OffererConfidenceLevel.WHITELIST.name,
+                    "new_info": offerers_models.OffererConfidenceLevel.MANUAL_REVIEW.name,
+                }
+            }
+        }
+
+    def test_remove_rule(self, legit_user, authenticated_client):
+        rule = offerers_factories.ManualReviewOffererConfidenceRuleFactory()
+        offerer = rule.offerer
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offerer_id=offerer.id,
+            form={
+                "confidence_level": "",
+                "comment": "Test",
+            },
+        )
+        assert response.status_code == 303
+
+        assert offerer.confidenceLevel is None
+        assert offerers_models.OffererConfidenceRule.query.count() == 0
+        assert len(offerer.action_history) == 1
+        action = offerer.action_history[0]
+        assert action.actionType == history_models.ActionType.FRAUD_INFO_MODIFIED
+        assert action.authorUser == legit_user
+        assert action.comment == "Test"
+        assert action.extraData == {
+            "modified_info": {
+                "confidenceRule.confidenceLevel": {
+                    "old_info": offerers_models.OffererConfidenceLevel.MANUAL_REVIEW.name,
+                    "new_info": None,
+                }
+            }
+        }
+
+    def test_update_nothing(self, legit_user, authenticated_client):
+        rule = offerers_factories.ManualReviewOffererConfidenceRuleFactory()
+        offerer = rule.offerer
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offerer_id=offerer.id,
+            form={
+                "confidence_level": offerers_models.OffererConfidenceLevel.MANUAL_REVIEW.name,
+                "comment": "",
+            },
+        )
+        assert response.status_code == 303
+
+        assert offerer.confidenceLevel == offerers_models.OffererConfidenceLevel.MANUAL_REVIEW
+        assert len(offerer.action_history) == 0
+
+
 class GetOffererStatsTest(GetEndpointHelper):
     endpoint = "backoffice_web.offerer.get_stats"
     endpoint_kwargs = {"offerer_id": 1}
@@ -738,10 +848,26 @@ class GetOffererHistoryTest(GetEndpointHelper):
             offerer = offerers_factories.UserOffererFactory().offerer
             return url_for("backoffice_web.offerer.get_history", offerer_id=offerer.id)
 
-    def test_get_history(self, authenticated_client):
+    def test_get_history(self, authenticated_client, pro_fraud_admin):
         user_offerer = offerers_factories.UserOffererFactory()
         offerer = user_offerer.offerer
         action = history_factories.ActionHistoryFactory(offerer=offerer)
+        history_factories.ActionHistoryFactory(
+            # displayed because legit_user has fraud permission
+            actionType=history_models.ActionType.FRAUD_INFO_MODIFIED,
+            actionDate=datetime.datetime.utcnow() - datetime.timedelta(days=2),
+            authorUser=pro_fraud_admin,
+            offerer=offerer,
+            comment=None,
+            extraData={
+                "modified_info": {
+                    "confidenceRule.confidenceLevel": {
+                        "old_info": offerers_models.OffererConfidenceLevel.MANUAL_REVIEW.name,
+                        "new_info": offerers_models.OffererConfidenceLevel.WHITELIST.name,
+                    },
+                }
+            },
+        )
         history_factories.ActionHistoryFactory(offerer=offerers_factories.OffererFactory())  # other offerer
 
         url = url_for(self.endpoint, offerer_id=offerer.id)
@@ -757,11 +883,19 @@ class GetOffererHistoryTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert len(rows) == 1
+        assert len(rows) == 2
+
         assert rows[0]["Type"] == history_models.ActionType.COMMENT.value
         assert rows[0]["Date/Heure"].startswith(action.actionDate.strftime("Le %d/%m/%Y à "))
         assert rows[0]["Commentaire"] == action.comment
         assert rows[0]["Auteur"] == action.authorUser.full_name
+
+        assert rows[1]["Type"] == "Fraude et Conformité"
+        assert (
+            rows[1]["Commentaire"]
+            == "Informations modifiées : Validation des offres : Revue manuelle => Validation auto"
+        )
+        assert rows[1]["Auteur"] == pro_fraud_admin.full_name
 
     def test_get_history_with_missing_authorId(self, authenticated_client):
         user_offerer = offerers_factories.UserOffererFactory()
@@ -787,6 +921,27 @@ class GetOffererHistoryTest(GetEndpointHelper):
         assert rows[0]["Type"] == history_models.ActionType.OFFERER_NEW.value
         assert rows[0]["Commentaire"] == action.comment
         assert not rows[0]["Auteur"]
+
+    def test_get_history_without_fraud_permission(self, client, read_only_bo_user):
+        user_offerer = offerers_factories.UserOffererFactory()
+        offerer = user_offerer.offerer
+        history_factories.ActionHistoryFactory(actionType=history_models.ActionType.COMMENT, offerer=offerer)
+        history_factories.ActionHistoryFactory(
+            actionType=history_models.ActionType.FRAUD_INFO_MODIFIED, offerer=offerer
+        )
+
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        db.session.expire(offerer)
+
+        auth_client = client.with_bo_session_auth(read_only_bo_user)
+        with assert_num_queries(self.expected_num_queries):
+            response = auth_client.get(url)
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["Type"] == "Commentaire interne"
 
     def test_no_action(self, authenticated_client, offerer):
         url = url_for(self.endpoint, offerer_id=offerer.id)

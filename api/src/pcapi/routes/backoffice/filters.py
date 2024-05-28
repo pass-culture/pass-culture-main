@@ -539,30 +539,40 @@ def format_compliance_reasons(features: list[str]) -> str:
     return format_as_badges([format_compliance_reason(feature) for feature in features])
 
 
-def format_confidence_level(
-    offerer_or_venue: offerers_models.Offerer | offerers_models.Venue,
-    recursive: bool = False,
-    show_no_rule: bool = False,
-    info: str = "",
-) -> str:
-    if offerer_or_venue.confidenceRule:
-        match offerer_or_venue.confidenceRule.confidenceLevel:
-            case offerers_models.OffererConfidenceLevel.MANUAL_REVIEW:
-                return Markup('<span class="badge text-bg-danger shadow-sm">Revue manuelle {info}</span>').format(
-                    info=info
-                )
-            case offerers_models.OffererConfidenceLevel.WHITELIST:
-                return Markup('<span class="badge text-bg-success shadow-sm">Validation auto {info}</span>').format(
-                    info=info
-                )
+def format_confidence_level(confidence_level: offerers_models.OffererConfidenceLevel | None) -> str:
+    match confidence_level:
+        case offerers_models.OffererConfidenceLevel.MANUAL_REVIEW:
+            return "Revue manuelle de toutes les offres"
+        case offerers_models.OffererConfidenceLevel.WHITELIST:
+            return "Validation automatique (liste blanche)"
+        case None:
+            return "Suivre les règles"
 
-    if recursive and isinstance(offerer_or_venue, offerers_models.Venue):
-        return format_confidence_level(offerer_or_venue.managingOfferer, show_no_rule=show_no_rule, info="(structure)")
+    return confidence_level
+
+
+def format_confidence_level_badge(
+    confidence_level: offerers_models.OffererConfidenceLevel, show_no_rule: bool = False, info: str = ""
+) -> str:
+    match confidence_level:
+        case offerers_models.OffererConfidenceLevel.MANUAL_REVIEW:
+            return Markup('<span class="badge text-bg-danger shadow-sm">Revue manuelle {info}</span>').format(info=info)
+        case offerers_models.OffererConfidenceLevel.WHITELIST:
+            return Markup('<span class="badge text-bg-success shadow-sm">Validation auto {info}</span>').format(
+                info=info
+            )
 
     if show_no_rule:
         return Markup('<span class="badge text-bg-light shadow-sm">Suivre les règles</span>')
 
     return ""
+
+
+def format_confidence_level_badge_for_venue(venue: offerers_models.Venue) -> str:
+    if venue.confidenceLevel:
+        return format_confidence_level_badge(venue.confidenceLevel)
+
+    return format_confidence_level_badge(venue.managingOfferer.confidenceLevel, show_no_rule=True, info="(structure)")
 
 
 def format_fraud_check_url(id_check_item: serialization_accounts.IdCheckItemModel) -> str:
@@ -588,6 +598,12 @@ def _format_modified_info_value(value: typing.Any, name: str | None = None) -> s
         except KeyError:
             pass  # in case of an old type code removed from enum
 
+    if name == "confidenceRule.confidenceLevel":
+        try:
+            return format_confidence_level_badge(offerers_models.OffererConfidenceLevel[value])
+        except KeyError:
+            pass  # in case of an old type code removed from enum
+
     if isinstance(value, list):
         return format_string_list(value)
     if isinstance(value, bool):
@@ -600,13 +616,16 @@ def format_modified_info_values(modified_info: typing.Any, name: str | None = No
     new_info = modified_info.get("new_info")
 
     if old_info is not None and new_info is not None:
-        return f"{_format_modified_info_value(old_info, name)} => {_format_modified_info_value(new_info, name)}"
+        return Markup("{old_value} => {new_value}").format(
+            old_value=_format_modified_info_value(old_info, name),
+            new_value=_format_modified_info_value(new_info, name),
+        )
 
     if old_info is not None:
-        return f"suppression de : {_format_modified_info_value(old_info, name)}"
+        return Markup("suppression de : {value}").format(value=_format_modified_info_value(old_info, name))
 
     if new_info is not None:
-        return f"ajout de : {_format_modified_info_value(new_info, name)}"
+        return Markup("ajout de : {value}").format(value=_format_modified_info_value(new_info, name))
 
     return str(modified_info)  # this should not happen if data is consistent
 
@@ -727,6 +746,8 @@ def format_modified_info_name(info_name: str) -> str:
             return "Date de passage sur la nouvelle interface Pro"
         case "pro_new_nav_state.eligibilityDate":
             return "Date d'éligibilité à la nouvelle interface Pro"
+        case "confidenceRule.confidenceLevel":
+            return "Validation des offres"
 
     if day := match_opening_hours(info_name):
         return f"Horaires du {day}"
@@ -1165,7 +1186,8 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_subcategories"] = format_subcategories
     app.jinja_env.filters["format_as_badges"] = format_as_badges
     app.jinja_env.filters["format_compliance_reasons"] = format_compliance_reasons
-    app.jinja_env.filters["format_confidence_level"] = format_confidence_level
+    app.jinja_env.filters["format_confidence_level_badge"] = format_confidence_level_badge
+    app.jinja_env.filters["format_confidence_level_badge_for_venue"] = format_confidence_level_badge_for_venue
     app.jinja_env.filters["format_criteria"] = format_criteria
     app.jinja_env.filters["format_tag_object_list"] = format_tag_object_list
     app.jinja_env.filters["format_fraud_review_status"] = format_fraud_review_status

@@ -203,6 +203,12 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
             tags=offerer.tags,
         )
 
+    fraud_form = (
+        offerer_forms.FraudForm(confidence_level=offerer.confidenceLevel.value if offerer.confidenceLevel else None)
+        if utils.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+        else None
+    )
+
     search_form = pro_forms.CompactProSearchForm(
         q=request.args.get("q"),
         pro_type=pro_forms.TypeOptions.OFFERER.name,
@@ -237,6 +243,7 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
         edit_offerer_form=edit_offerer_form,
         suspension_form=offerer_forms.SuspendOffererForm(),
         delete_offerer_form=empty_forms.EmptyForm(),
+        fraud_form=fraud_form,
         show_subscription_tab=show_subscription_tab,
         has_offerer_address=row.has_offerer_address,
         active_tab=request.args.get("active_tab", "history"),
@@ -460,14 +467,47 @@ def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
     return _self_redirect(offerer.id)
 
 
+@offerer_blueprint.route("/fraud", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def update_for_fraud(offerer_id: int) -> utils.BackofficeResponse:
+    offerer = (
+        offerers_models.Offerer.query.filter_by(id=offerer_id)
+        .options(sa.orm.joinedload(offerers_models.Offerer.confidenceRule))
+        .one_or_none()
+    )
+    if not offerer:
+        raise NotFound()
+
+    form = offerer_forms.FraudForm()
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+    elif offerers_api.update_fraud_info(
+        offerer,
+        None,
+        current_user,
+        offerers_models.OffererConfidenceLevel(form.confidence_level.data) if form.confidence_level.data else None,
+        form.comment.data,
+    ):
+        db.session.commit()
+        flash("Les informations ont été mises à jour", "success")
+
+    return _self_redirect(offerer.id)
+
+
 @offerer_blueprint.route("/history", methods=["GET"])
 def get_history(offerer_id: int) -> utils.BackofficeResponse:
     # this should not be necessary but in case there is a huge amount
     # of actions, it is safer to set a limit
     max_actions_count = 50
 
+    filters = [history_models.ActionHistory.offererId == offerer_id]
+    if not utils.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
+        filters.append(
+            history_models.ActionHistory.actionType != history_models.ActionType.FRAUD_INFO_MODIFIED,
+        )
+
     actions_history = (
-        history_models.ActionHistory.query.filter_by(offererId=offerer_id)
+        history_models.ActionHistory.query.filter(*filters)
         .order_by(history_models.ActionHistory.actionDate.desc())
         .limit(max_actions_count)
         .options(

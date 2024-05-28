@@ -1631,6 +1631,116 @@ class UpdateVenueTest(PostEndpointHelper):
         assert venue.accessibilityProvider.externalAccessibilityId == "mon-slug"
 
 
+class UpdateForFraudTest(PostEndpointHelper):
+    endpoint = "backoffice_web.venue.update_for_fraud"
+    endpoint_kwargs = {"venue_id": 1}
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+
+    def test_set_rule(self, legit_user, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            venue_id=venue.id,
+            form={
+                "confidence_level": offerers_models.OffererConfidenceLevel.WHITELIST.name,
+                "comment": "Test",
+            },
+        )
+        assert response.status_code == 303
+
+        assert venue.confidenceLevel == offerers_models.OffererConfidenceLevel.WHITELIST
+        assert len(venue.action_history) == 1
+        action = venue.action_history[0]
+        assert action.actionType == history_models.ActionType.FRAUD_INFO_MODIFIED
+        assert action.authorUser == legit_user
+        assert action.comment == "Test"
+        assert action.extraData == {
+            "modified_info": {
+                "confidenceRule.confidenceLevel": {
+                    "old_info": None,
+                    "new_info": offerers_models.OffererConfidenceLevel.WHITELIST.name,
+                }
+            }
+        }
+
+    def test_update_rule(self, legit_user, authenticated_client):
+        rule = offerers_factories.WhitelistedVenueConfidenceRuleFactory()
+        venue = rule.venue
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            venue_id=venue.id,
+            form={
+                "confidence_level": offerers_models.OffererConfidenceLevel.MANUAL_REVIEW.name,
+                "comment": "Test",
+            },
+        )
+        assert response.status_code == 303
+
+        assert venue.confidenceLevel == offerers_models.OffererConfidenceLevel.MANUAL_REVIEW
+        assert len(venue.action_history) == 1
+        action = venue.action_history[0]
+        assert action.actionType == history_models.ActionType.FRAUD_INFO_MODIFIED
+        assert action.authorUser == legit_user
+        assert action.comment == "Test"
+        assert action.extraData == {
+            "modified_info": {
+                "confidenceRule.confidenceLevel": {
+                    "old_info": offerers_models.OffererConfidenceLevel.WHITELIST.name,
+                    "new_info": offerers_models.OffererConfidenceLevel.MANUAL_REVIEW.name,
+                }
+            }
+        }
+
+    def test_remove_rule(self, legit_user, authenticated_client):
+        rule = offerers_factories.ManualReviewVenueConfidenceRuleFactory()
+        venue = rule.venue
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            venue_id=venue.id,
+            form={
+                "confidence_level": "",
+                "comment": "Test",
+            },
+        )
+        assert response.status_code == 303
+
+        assert venue.confidenceLevel is None
+        assert offerers_models.OffererConfidenceRule.query.count() == 0
+        assert len(venue.action_history) == 1
+        action = venue.action_history[0]
+        assert action.actionType == history_models.ActionType.FRAUD_INFO_MODIFIED
+        assert action.authorUser == legit_user
+        assert action.comment == "Test"
+        assert action.extraData == {
+            "modified_info": {
+                "confidenceRule.confidenceLevel": {
+                    "old_info": offerers_models.OffererConfidenceLevel.MANUAL_REVIEW.name,
+                    "new_info": None,
+                }
+            }
+        }
+
+    def test_update_nothing(self, legit_user, authenticated_client):
+        rule = offerers_factories.ManualReviewVenueConfidenceRuleFactory()
+        venue = rule.venue
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            venue_id=venue.id,
+            form={
+                "confidence_level": offerers_models.OffererConfidenceLevel.MANUAL_REVIEW.name,
+                "comment": "",
+            },
+        )
+        assert response.status_code == 303
+
+        assert venue.confidenceLevel == offerers_models.OffererConfidenceLevel.MANUAL_REVIEW
+        assert len(venue.action_history) == 0
+
+
 class GetVenueHistoryTest(GetEndpointHelper):
     endpoint = "backoffice_web.venue.get_history"
     endpoint_kwargs = {"venue_id": 1}
@@ -1650,10 +1760,26 @@ class GetVenueHistoryTest(GetEndpointHelper):
             venue = offerers_factories.VenueFactory()
             return url_for("backoffice_web.venue.get_history", venue_id=venue.id)
 
-    def test_venue_history(self, authenticated_client, legit_user):
+    def test_venue_history(self, authenticated_client, legit_user, pro_fraud_admin):
         venue = offerers_factories.VenueFactory()
 
         comment = "test comment"
+        history_factories.ActionHistoryFactory(
+            # displayed because legit_user has fraud permission
+            actionType=history_models.ActionType.FRAUD_INFO_MODIFIED,
+            actionDate=datetime.utcnow() - timedelta(days=2),
+            authorUser=pro_fraud_admin,
+            venue=venue,
+            comment="Sous surveillance",
+            extraData={
+                "modified_info": {
+                    "confidenceRule.confidenceLevel": {
+                        "old_info": None,
+                        "new_info": offerers_models.OffererConfidenceLevel.MANUAL_REVIEW.name,
+                    },
+                }
+            },
+        )
         history_factories.ActionHistoryFactory(
             actionType=history_models.ActionType.COMMENT,
             actionDate=datetime.utcnow() - timedelta(hours=3),
@@ -1703,7 +1829,8 @@ class GetVenueHistoryTest(GetEndpointHelper):
         assert comment in response.data.decode("utf-8")
 
         rows = html_parser.extract_table_rows(response.data)
-        assert len(rows) == 2
+        assert len(rows) == 3
+
         assert rows[0]["Type"] == "Modification des informations"
         assert "Informations modifiées : " in rows[0]["Commentaire"]
         assert "Activité principale : Autre => Librairie " in rows[0]["Commentaire"]
@@ -1713,9 +1840,35 @@ class GetVenueHistoryTest(GetEndpointHelper):
         assert "Horaires du lundi : 14:00-19:30 => 10:00-13:00, 14:00-19:30" in rows[0]["Commentaire"]
         assert "Horaires du mardi : suppression de : 14:00-19:30" in rows[0]["Commentaire"]
         assert rows[0]["Auteur"] == legit_user.full_name
+
         assert rows[1]["Type"] == "Commentaire interne"
         assert rows[1]["Commentaire"] == comment
         assert rows[1]["Auteur"] == legit_user.full_name
+
+        assert rows[2]["Type"] == "Fraude et Conformité"
+        assert (
+            rows[2]["Commentaire"]
+            == "Sous surveillance Informations modifiées : Validation des offres : ajout de : Revue manuelle"
+        )
+        assert rows[2]["Auteur"] == pro_fraud_admin.full_name
+
+    def test_venue_history_without_fraud_permission(self, client, read_only_bo_user):
+        venue = offerers_factories.VenueFactory()
+        history_factories.ActionHistoryFactory(actionType=history_models.ActionType.COMMENT, venue=venue)
+        history_factories.ActionHistoryFactory(actionType=history_models.ActionType.FRAUD_INFO_MODIFIED, venue=venue)
+
+        url = url_for(self.endpoint, venue_id=venue.id)
+
+        db.session.expire(venue)
+
+        auth_client = client.with_bo_session_auth(read_only_bo_user)
+        with assert_num_queries(self.expected_num_queries):
+            response = auth_client.get(url)
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["Type"] == "Commentaire interne"
 
     def test_venue_without_history(self, authenticated_client, legit_user):
         venue = offerers_factories.VenueFactory()
