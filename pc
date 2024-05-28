@@ -31,12 +31,18 @@ Commands:
   python                Open a Python prompt the given environment
   rebuild-backend       Force docker-compose to build the docker images
   reset-all-db          Clear all data in the local database
+  reset-db-no-docker    Clear all data in the local database (without docker)
+  reset-db-test-no-docker  Clear test data in the local database (without docker)
   reset-all-storage     Delete all local images
   restart-backend       Restart API after removing the database and files
+  restart-api-no-docker Restart API after cleaning the database (without docker)
   restore-db            Restore a postgresql database from file (and anonymize data)
   restore-db-intact     Restore a postgresql database from file (non anonymized)
   set-git-config        Define a local Git configuration
+  setup-no-docker       Create the setup to use no-docker pc commands
   start-backend         Start API and backoffice on localhost
+  start-api-no-docker   Start API without docker
+  start-backoffice-no-docker  Start Backoffice withtout docker
   start-pro             Start PC pro frontend on localhost
   symlink               Create symlink to use \"pc\" command (admin rights may be needed)
   test-backend          Run tests for the API
@@ -209,6 +215,31 @@ elif [[ "$CMD" == "start-backend" ]]; then
 elif [[ "$CMD" == "start-proxy-backend" ]]; then
   source "$INFRA_SCRIPTS_PATH"/start_backend.sh
   start_proxy_backend
+
+# Commands to start API & Backoffice without docker
+elif [[ "$CMD" == "setup-no-docker" ]]; then
+  source "$INFRA_SCRIPTS_PATH"/start_backend_no_docker.sh
+  RUN='setup_no_docker'
+
+elif [[ "$CMD" == "start-api-no-docker" ]]; then
+  source "$INFRA_SCRIPTS_PATH"/start_backend_no_docker.sh
+  start_api_no_docker
+
+elif [[ "$CMD" == "restart-api-no-docker" ]]; then
+  source "$INFRA_SCRIPTS_PATH"/start_backend_no_docker.sh
+  restart_api_no_docker
+
+elif [[ "$CMD" == "start-backoffice-no-docker" ]]; then
+  source "$INFRA_SCRIPTS_PATH"/start_backend_no_docker.sh
+  start_backoffice_no_docker
+
+elif [[ "$CMD" == "reset-db-no-docker" ]]; then
+  source "$INFRA_SCRIPTS_PATH"/start_backend_no_docker.sh
+  RUN='recreate_database && recreate_database_test'
+
+elif [[ "$CMD" == "reset-db-test-no-docker" ]]; then
+  source "$INFRA_SCRIPTS_PATH"/start_backend_no_docker.sh
+  RUN='recreate_database_test'
 
 # Start pro or adage application
 elif [[ "$CMD" == "start-pro" ]]; then
