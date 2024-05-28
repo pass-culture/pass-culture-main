@@ -61,7 +61,7 @@ with app.app_context():
 
 
 if __name__ == "__main__":
-    port = settings.FLASK_PORT
+    port = settings.FLASK_BACKOFFICE_PORT
     if settings.IS_DEV and settings.DEBUG_ACTIVATED:
         import debugpy
 
