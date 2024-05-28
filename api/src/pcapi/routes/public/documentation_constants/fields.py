@@ -99,6 +99,9 @@ class _FIELDS:
     OFFER_ID = Field(description="Offer id", example=12345)
     OFFER_STATUS = Field(description=descriptions.OFFER_STATUS_FIELD_DESCRIPTION, example="ACTIVE")
     OFFER_NAME = Field(description="Offer title", example="Le Petit Prince")
+    OFFER_DESCRIPTION = Field(
+        description="Offer description", example="A great book for kids and old kids.", max_length=1000
+    )
     OFFER_NAME_WITH_MAX_LENGTH = Field(description="Offer title", example="Le Petit Prince", max_length=90)
     OFFER_DESCRIPTION = Field(
         description="Offer description",

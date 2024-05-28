@@ -2647,12 +2647,12 @@
                         "type": "array"
                     },
                     "publicationDate": {
-                      "description": "Date and time when we want the offer to be published on the native app. It cannot be a date in the past, and the time must be on the exact hour. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime)",
-                      "example": "2034-07-24T14:00:00+02:00",
-                      "format": "date-time",
-                      "nullable": true,
-                      "title": "Publicationdate",
-                      "type": "string"
+                        "description": "Date and time when we want the offer to be published on the native app. It cannot be a date in the past, and the time must be on the exact hour. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime)",
+                        "example": "2034-07-24T14:00:00+02:00",
+                        "format": "date-time",
+                        "nullable": true,
+                        "title": "Publicationdate",
+                        "type": "string"
                     }
                 },
                 "required": [
@@ -3074,12 +3074,12 @@
                         "type": "array"
                     },
                     "publicationDate": {
-                      "description": "Date and time when we want the offer to be published on the native app. It cannot be a date in the past, and the time must be on the exact hour. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime)",
-                      "example": "2034-07-24T14:00:00+02:00",
-                      "format": "date-time",
-                      "nullable": true,
-                      "title": "Publicationdate",
-                      "type": "string"
+                        "description": "Date and time when we want the offer to be published on the native app. It cannot be a date in the past, and the time must be on the exact hour. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime)",
+                        "example": "2034-07-24T14:00:00+02:00",
+                        "format": "date-time",
+                        "nullable": true,
+                        "title": "Publicationdate",
+                        "type": "string"
                     },
                     "status": {
                         "allOf": [
@@ -6544,7 +6544,6 @@
                     "description": {
                         "description": "Offer description",
                         "example": "A great book for kids and old kids.",
-                        "maxLength": 1000,
                         "nullable": true,
                         "title": "Description",
                         "type": "string"
@@ -6585,6 +6584,15 @@
                         "example": "Opening hours, specific office, collection period, access code, email announcement...",
                         "nullable": true,
                         "title": "Itemcollectiondetails",
+                        "type": "string"
+                    },
+                    "name": {
+                        "description": "Offer title",
+                        "example": "Le Petit Prince",
+                        "maxLength": 140,
+                        "minLength": 1,
+                        "nullable": true,
+                        "title": "Name",
                         "type": "string"
                     },
                     "offerId": {
