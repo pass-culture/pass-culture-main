@@ -166,6 +166,13 @@ def notify_pro_users_one_day_before() -> None:
     educational_api_booking.notify_pro_users_one_day_before()
 
 
+@blueprint.cli.command("eac_notify_pro_one_day_after")
+@log_cron_with_transaction
+def notify_pro_users_one_day_after() -> None:
+    """Notify pro users 1 day after EAC event."""
+    educational_api_booking.notify_pro_users_one_day_after()
+
+
 @blueprint.cli.command("eac_handle_pending_collective_booking_j3")
 @log_cron_with_transaction
 def handle_pending_collective_booking_j3() -> None:
