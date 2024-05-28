@@ -2950,7 +2950,7 @@ class AccessibilityProviderTest:
         ]
 
         results_by_activity = acceslibre_connector.find_new_entries_by_activity(
-            activity=acceslibre_connector.AcceslibreActivity.BIBLIOTHEQUE
+            activity=acceslibre_connector.AcceslibreActivity.BIBLIOTHEQUE,
         )
 
         venues_list = [offerers_factories.VenueFactory(isPermanent=True, isVirtual=False)]

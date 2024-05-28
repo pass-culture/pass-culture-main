@@ -145,5 +145,8 @@ def synchronize_venues_with_acceslibre(venue_ids: list[int], dry_run: bool = Tru
 @click.option("--dry-run", type=bool, default=False)
 @click.option("--batch-size", type=int, default=1000, help="Size of venues batches to synchronize")
 @click.option("--start-from-batch", type=int, default=1, help="Start synchronization from batch number")
-def acceslibre_matching(dry_run: bool = False, start_from_batch: int = 1) -> None:
-    offerers_api.acceslibre_matching(batch_size=BATCH_SIZE, dry_run=dry_run, start_from_batch=start_from_batch)
+@click.option("--n-days-to-fetch", type=int, default=7, help="Number of days to look for new data at acceslibre")
+def acceslibre_matching(dry_run: bool = False, start_from_batch: int = 1, n_days_to_fetch: int = 7) -> None:
+    offerers_api.acceslibre_matching(
+        batch_size=BATCH_SIZE, dry_run=dry_run, start_from_batch=start_from_batch, n_days_to_fetch=n_days_to_fetch
+    )
