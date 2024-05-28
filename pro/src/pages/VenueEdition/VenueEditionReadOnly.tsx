@@ -1,5 +1,3 @@
-import React from 'react'
-
 import { GetVenueResponseModel } from 'apiClient/v1'
 import { AccessibilitySummarySection } from 'components/AccessibilitySummarySection/AccessibilitySummarySection'
 import { Callout } from 'components/Callout/Callout'
@@ -7,7 +5,6 @@ import { CalloutVariant } from 'components/Callout/types'
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
-import { useActiveFeature } from 'hooks/useActiveFeature'
 import { OpeningHoursReadOnly } from 'pages/VenueEdition/OpeningHoursReadOnly/OpeningHoursReadOnly'
 
 interface VenueEditionReadOnlyProps {
@@ -15,8 +12,6 @@ interface VenueEditionReadOnlyProps {
 }
 
 export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
-  const isOpeningHoursEnabled = useActiveFeature('WIP_OPENING_HOURS')
-
   return (
     <SummarySection
       title="Vos informations pour le grand public"
@@ -33,7 +28,7 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
         />
       </SummarySubSection>
 
-      {isOpeningHoursEnabled && venue.isPermanent && (
+      {venue.isPermanent && (
         <OpeningHoursReadOnly openingHours={venue.openingHours} />
       )}
 
