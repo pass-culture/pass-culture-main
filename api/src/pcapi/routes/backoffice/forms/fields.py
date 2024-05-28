@@ -327,6 +327,10 @@ class PCSelectField(wtforms.SelectField):
     widget = partial(widget, template="components/forms/select_field.html")
     validators = [validators.InputRequired("Information obligatoire")]
 
+    def __init__(self, label: str | None = None, *, default_text: str = "", **kwargs: typing.Any):
+        super().__init__(label, **kwargs)
+        self.default_text = default_text
+
 
 class PCSelectWithPlaceholderValueField(wtforms.SelectField):
     widget = partial(widget, template="components/forms/select_with_placeholder_value_field.html")

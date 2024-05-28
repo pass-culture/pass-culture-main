@@ -80,6 +80,23 @@ class SuspendOffererForm(FlaskForm):
     comment = fields.PCOptCommentField("Commentaire interne optionnel")
 
 
+class FraudForm(FlaskForm):
+    confidence_level = fields.PCSelectField(
+        "Validation des offres",
+        choices=utils.choices_from_enum(
+            offerers_models.OffererConfidenceLevel, formatter=filters.format_confidence_level
+        ),
+        default_text="Suivre les règles",
+        validators=(wtforms.validators.Optional(""),),
+    )
+    comment = fields.PCOptCommentField("Commentaire visible uniquement par l'équipe Fraude et Conformité")
+
+    def filter_confidence_level(self, raw_confidence_level: str | None) -> str | None:
+        if not raw_confidence_level:
+            return None  # instead of empty string
+        return raw_confidence_level
+
+
 class OffererValidationListForm(utils.PCForm):
     class Meta:
         csrf = False
