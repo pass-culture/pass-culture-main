@@ -51,7 +51,7 @@ export const ReimbursementsInvoices = (): JSX.Element => {
   const [areFiltersDefault, setAreFiltersDefault] = useState(true)
   const [hasSearchedOnce, setHasSearchedOnce] = useState(false)
   const { selectedOfferer = null }: ReimbursementsContextProps =
-    useOutletContext()
+    useOutletContext() ?? {}
 
   const getInvoicesQuery = useSWR(
     [GET_INVOICES_QUERY_KEY, selectedOfferer?.id, searchParams.toString()],
@@ -78,7 +78,7 @@ export const ReimbursementsInvoices = (): JSX.Element => {
     [GET_HAS_INVOICE_QUERY_KEY, selectedOfferer?.id],
     async () => {
       if (!selectedOfferer) {
-        return null
+        return { hasInvoice: false }
       }
       return await api.hasInvoice(selectedOfferer.id)
     }
@@ -89,18 +89,21 @@ export const ReimbursementsInvoices = (): JSX.Element => {
       GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY,
       selectedOfferer?.id,
     ],
-    () => {
-      const bankAccounts = selectedOfferer?.id
-        ? api.getOffererBankAccountsAndAttachedVenues(selectedOfferer.id)
-        : null
-      return bankAccounts
-    }
+    async () => {
+      if (!selectedOfferer) {
+        return { bankAccounts: [] }
+      }
+      return await api.getOffererBankAccountsAndAttachedVenues(
+        selectedOfferer.id
+      )
+    },
+    { fallbackData: { bankAccounts: [] } }
   )
 
   if (
     getOffererBankAccountsAndAttachedVenuesQuery.isLoading ||
-    !getOffererBankAccountsAndAttachedVenuesQuery.data ||
-    getInvoicesQuery.isLoading
+    getInvoicesQuery.isLoading ||
+    hasInvoiceQuery.isLoading
   ) {
     return <Spinner />
   }
@@ -114,10 +117,14 @@ export const ReimbursementsInvoices = (): JSX.Element => {
     )
   )
   const invoices = getInvoicesQuery.data
+
+  const hasInvoice = Boolean(hasInvoiceQuery.data?.hasInvoice)
+
   const hasNoSearchResult =
-    !invoices.length && hasSearchedOnce && hasInvoiceQuery.data
-  const hasNoInvoicesYet =
-    !invoices.length && !hasSearchedOnce && !hasInvoiceQuery.data
+    (!getInvoicesQuery.error && !invoices.length && hasSearchedOnce) ||
+    (!invoices.length && hasInvoice)
+
+  const hasNoInvoicesYet = !hasSearchedOnce && !hasInvoice
 
   return (
     <>
