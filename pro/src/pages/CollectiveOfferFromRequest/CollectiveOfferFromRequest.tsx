@@ -34,12 +34,15 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
   }>()
 
   const { data: offerTemplate } = useSWR(
-    [GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY, offerId],
+    () => (offerId ? [GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY, offerId] : null),
     ([, offerIdParams]) => api.getCollectiveOfferTemplate(Number(offerIdParams))
   )
 
   const { isLoading, data: informations } = useSWR(
-    [GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY, requestId],
+    () =>
+      requestId
+        ? [GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY, requestId]
+        : null,
     ([, id]) => api.getCollectiveOfferRequest(Number(id))
   )
 
