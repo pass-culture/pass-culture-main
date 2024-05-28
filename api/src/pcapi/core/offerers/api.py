@@ -2405,7 +2405,7 @@ def match_venue_with_new_entries(
             db.session.add(venue.accessibilityProvider)
 
 
-def acceslibre_matching(batch_size: int, dry_run: bool, start_from_batch: int) -> None:
+def acceslibre_matching(batch_size: int, dry_run: bool, start_from_batch: int, n_days_to_fetch: int = 7) -> None:
     """
     For all permanent venues, we are looking for a match at acceslibre
 
@@ -2421,7 +2421,7 @@ def acceslibre_matching(batch_size: int, dry_run: bool, start_from_batch: int) -
     results_list = []
 
     for activity in accessibility_provider.AcceslibreActivity:
-        if results_by_activity := accessibility_provider.find_new_entries_by_activity(activity):
+        if results_by_activity := accessibility_provider.find_new_entries_by_activity(activity, n_days_to_fetch):
             results_list.extend(results_by_activity)
 
     start_batch_index = start_from_batch - 1
