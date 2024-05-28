@@ -6,7 +6,7 @@ import { apiAdage } from 'apiClient/api'
 import { GET_CLASSROOM_PLAYLIST_QUERY_KEY } from 'config/swrQueryKeys'
 
 import { TrackerElementArg } from '../../AdageDiscovery'
-import Carousel from '../../Carousel/Carousel'
+import { Carousel } from '../../Carousel/Carousel'
 import { CLASSROOM_PLAYLIST } from '../../constant'
 import OfferCardComponent from '../../OfferCard/OfferCard'
 

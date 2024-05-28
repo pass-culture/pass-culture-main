@@ -8,7 +8,7 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
-import useParticipantsOptions from './useParticipantsOptions'
+import { useParticipantsOptions } from './useParticipantsOptions'
 
 export const FormParticipants = ({
   disableForm,

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
-import Spinner from 'ui-kit/Spinner/Spinner'
+import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { API_URL } from 'utils/config'
 import { getKey } from 'utils/strings'
 

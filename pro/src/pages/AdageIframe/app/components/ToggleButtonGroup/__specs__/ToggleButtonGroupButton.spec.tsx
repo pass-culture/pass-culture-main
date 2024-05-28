@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 
-import ToggleButtonGroup from '../ToggleButtonGroup'
+import { ToggleButtonGroup } from '../ToggleButtonGroup'
 
 describe('ToggleButtonGroup', () => {
   it('should set active styles on the active button', () => {

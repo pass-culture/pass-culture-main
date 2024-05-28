@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import * as useAnalytics from 'app/App/analytics/firebase'
-import AddBankAccountCallout from 'components/Callout/AddBankAccountCallout'
+import { AddBankAccountCallout } from 'components/Callout/AddBankAccountCallout'
 import { BankAccountEvents } from 'core/FirebaseEvents/constants'
 import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'

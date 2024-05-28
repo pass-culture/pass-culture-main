@@ -7,7 +7,7 @@ import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 
 import dropdownStyles from '../HeaderDropdown/HeaderDropdown.module.scss'
 
-const HelpDropdownMenu = () => {
+export const HelpDropdownMenu = () => {
   const { logEvent } = useAnalytics()
   return (
     <>
@@ -50,5 +50,3 @@ const HelpDropdownMenu = () => {
     </>
   )
 }
-
-export default HelpDropdownMenu

@@ -15,7 +15,7 @@ interface ToggleButtonGroupButtonProps
   isActive: boolean
 }
 
-export default function ToggleButtonGroupButton({
+export function ToggleButtonGroupButton({
   button,
   isActive,
   ...buttonAttrs

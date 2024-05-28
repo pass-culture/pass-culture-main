@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import { describe } from 'vitest'
 
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import {
@@ -7,7 +8,8 @@ import {
 } from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import AdageOfferPartnerPanel, {
+import {
+  AdageOfferPartnerPanel,
   AdageOfferPartnerPanelProps,
 } from '../AdageOfferPartnerPanel'
 

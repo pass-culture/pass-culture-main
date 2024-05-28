@@ -16,7 +16,7 @@ import IndivualOfferLayout from 'screens/IndividualOffer/IndivualOfferLayout/Ind
 import { getTitle } from 'screens/IndividualOffer/IndivualOfferLayout/utils/getTitle'
 import { InformationsScreen } from 'screens/IndividualOffer/InformationsScreen/InformationsScreen'
 import { selectCurrentOffererId } from 'store/user/selectors'
-import Spinner from 'ui-kit/Spinner/Spinner'
+import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 export const Offer = (): JSX.Element | null => {
   const mode = useOfferWizardMode()

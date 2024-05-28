@@ -10,7 +10,7 @@ import { SAVED_OFFERER_ID_KEY } from 'core/shared/constants'
 import useCurrentUser from 'hooks/useCurrentUser'
 import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
 import { updateSelectedOffererId } from 'store/user/reducer'
-import Spinner from 'ui-kit/Spinner/Spinner'
+import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import styles from './Reimbursement.module.scss'
 

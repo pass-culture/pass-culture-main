@@ -1,10 +1,10 @@
-import csvConverter from '../csvConverter'
+import { convertFromCsvToObject } from '../csvConverter'
 
-describe('csvConverter', () => {
+describe('convertFromCsvToObject', () => {
   it('should return an object containing csv headers and data', () => {
     const csv = 'Column1;Column2\nData1;Data2\nData3;Data4'
 
-    const result = csvConverter(csv)
+    const result = convertFromCsvToObject(csv)
 
     expect(result).toStrictEqual({
       data: [
@@ -18,7 +18,7 @@ describe('csvConverter', () => {
   it('should return an object containing csv headers and data ignoring empty lines', () => {
     const csv = 'Column1;Column2\nData1;Data2\nData3;Data4\n'
 
-    const result = csvConverter(csv)
+    const result = convertFromCsvToObject(csv)
 
     expect(result).toStrictEqual({
       data: [
@@ -32,7 +32,7 @@ describe('csvConverter', () => {
   it('should ignore quotes of quoted column', () => {
     const csv = 'Column1;Column2\nData1;"Data2"\nData3;"Data4"\n'
 
-    const result = csvConverter(csv)
+    const result = convertFromCsvToObject(csv)
 
     expect(result).toStrictEqual({
       data: [
@@ -46,7 +46,7 @@ describe('csvConverter', () => {
   it('should ignore delimiter when inside quoted column', () => {
     const csv = 'Column1;Column2\nData1;"Data;2"\nData3;"Data;4"\n'
 
-    const result = csvConverter(csv)
+    const result = convertFromCsvToObject(csv)
 
     expect(result).toStrictEqual({
       data: [
@@ -61,7 +61,7 @@ describe('csvConverter', () => {
     const csv =
       'Column1;Column2\n"Data with some ""quotes"" 1";Data2\n"Other data with ""quotes""";Data4\n'
 
-    const result = csvConverter(csv)
+    const result = convertFromCsvToObject(csv)
 
     expect(result).toStrictEqual({
       data: [

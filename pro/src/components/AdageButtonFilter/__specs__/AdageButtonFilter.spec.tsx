@@ -4,7 +4,7 @@ import React from 'react'
 
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import AdageButtonFilter, { AdageButtonFilterProps } from '../AdageButtonFilter'
+import { AdageButtonFilter, AdageButtonFilterProps } from '../AdageButtonFilter'
 
 const renderAdageButtonFilter = ({
   title,

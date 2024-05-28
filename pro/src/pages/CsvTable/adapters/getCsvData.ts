@@ -1,6 +1,6 @@
 /* istanbul ignore file: DEBT, TO FIX */
 import { TableData } from 'screens/CsvTable/types'
-import csvConverter from 'utils/csvConverter'
+import { convertFromCsvToObject } from 'utils/csvConverter'
 
 export const getCsvData = (csvUrl: string): Promise<TableData | null> => {
   return new Promise((resolve, reject) => {
@@ -12,7 +12,7 @@ export const getCsvData = (csvUrl: string): Promise<TableData | null> => {
         const { status } = result
         if (status === 200) {
           const text = await result.text()
-          resolve(csvConverter(text))
+          resolve(convertFromCsvToObject(text))
         } else {
           reject(null)
         }

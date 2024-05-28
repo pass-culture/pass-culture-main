@@ -7,7 +7,8 @@ import { OfferStatus } from 'apiClient/v1'
 import * as useNotification from 'hooks/useNotification'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import StatusToggleButton, {
+import {
+  StatusToggleButton,
   StatusToggleButtonProps,
 } from '../StatusToggleButton'
 

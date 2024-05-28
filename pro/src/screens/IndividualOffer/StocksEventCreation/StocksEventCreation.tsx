@@ -8,7 +8,7 @@ import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import useNotification from 'hooks/useNotification'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 
-import ActionBar from '../ActionBar/ActionBar'
+import { ActionBar } from '../ActionBar/ActionBar'
 
 import { HelpSection } from './HelpSection/HelpSection'
 import styles from './StocksEventCreation.module.scss'

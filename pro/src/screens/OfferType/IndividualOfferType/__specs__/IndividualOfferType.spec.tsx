@@ -9,7 +9,7 @@ import {
 } from 'core/Offers/constants'
 import { OfferTypeFormValues } from 'screens/OfferType/types'
 
-import OfferTypeIndiviual from '../IndividualOfferType'
+import { IndividualOfferType } from '../IndividualOfferType'
 
 const TestForm = (): JSX.Element => {
   const initialValues: OfferTypeFormValues = {
@@ -27,7 +27,7 @@ const TestForm = (): JSX.Element => {
 
   return (
     <FormikProvider value={formik}>
-      <OfferTypeIndiviual />
+      <IndividualOfferType />
     </FormikProvider>
   )
 }

@@ -12,7 +12,7 @@ interface FormLayoutSectionProps {
   id?: string
 }
 
-const Section = ({
+export const Section = ({
   title,
   description,
   children,
@@ -29,5 +29,3 @@ const Section = ({
     {children}
   </fieldset>
 )
-
-export default Section

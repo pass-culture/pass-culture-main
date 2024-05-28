@@ -14,7 +14,7 @@ import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SelectInput } from 'ui-kit/form/Select/SelectInput'
 import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
-import Spinner from 'ui-kit/Spinner/Spinner'
+import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { sortByLabel } from 'utils/strings'
 
 import { DEFAULT_PROVIDER_OPTION } from './utils/_constants'

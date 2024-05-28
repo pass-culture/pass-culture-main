@@ -22,7 +22,7 @@ export type AdageOfferPartnerPanelProps = {
   isPreview?: boolean
 }
 
-export default function AdageOfferPartnerPanel({
+export function AdageOfferPartnerPanel({
   offer,
   adageUser,
   isPreview = false,

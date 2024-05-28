@@ -4,7 +4,8 @@ import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageU
 import { defaultAdageUser, defaultCollectiveOffer } from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import AdageOfferInstitutionPanel, {
+import {
+  AdageOfferInstitutionPanel,
   AdageOfferInstitutionPanelProps,
 } from '../AdageOfferInstitutionPanel'
 

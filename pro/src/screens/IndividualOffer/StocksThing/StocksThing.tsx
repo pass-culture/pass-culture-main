@@ -32,7 +32,7 @@ import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 import { getToday, getYearMonthDay, isDateValid } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
-import ActionBar from '../ActionBar/ActionBar'
+import { ActionBar } from '../ActionBar/ActionBar'
 import DialogStockThingDeleteConfirm from '../DialogStockDeleteConfirm/DialogStockThingDeleteConfirm'
 import useNotifyFormError from '../hooks/useNotifyFormError'
 import { getSuccessMessage } from '../utils/getSuccessMessage'

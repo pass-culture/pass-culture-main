@@ -12,7 +12,7 @@ interface CloseButtonProps {
   ref?: RefObject<HTMLButtonElement> | null
 }
 
-const CloseButton = ({
+export const CloseButton = ({
   onCloseClick,
   className,
   ref,
@@ -31,5 +31,3 @@ const CloseButton = ({
     />
   </button>
 )
-
-export default CloseButton

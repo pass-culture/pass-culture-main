@@ -21,7 +21,7 @@ export type AdageOfferInstitutionPanelProps = {
   institutionOfferCount?: number
 }
 
-export default function AdageOfferInstitutionPanel({
+export function AdageOfferInstitutionPanel({
   offer,
   adageUser,
   isPreview = false,

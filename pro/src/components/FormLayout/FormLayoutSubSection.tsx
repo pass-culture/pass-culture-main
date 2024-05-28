@@ -11,7 +11,7 @@ interface FormLayoutSubSectionProps {
   className?: string
 }
 
-const SubSection = ({
+export const SubSection = ({
   title,
   children,
   className,
@@ -28,5 +28,3 @@ const SubSection = ({
     {children}
   </div>
 )
-
-export default SubSection

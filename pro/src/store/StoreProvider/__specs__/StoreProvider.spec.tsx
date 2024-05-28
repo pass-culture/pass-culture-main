@@ -5,7 +5,7 @@ import { api } from 'apiClient/api'
 import { UserRole } from 'apiClient/v1'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import StoreProvider from '../StoreProvider'
+import { StoreProvider } from '../StoreProvider'
 
 const renderStoreProvider = () => {
   return renderWithProviders(

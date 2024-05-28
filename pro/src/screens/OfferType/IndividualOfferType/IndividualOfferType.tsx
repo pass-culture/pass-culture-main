@@ -11,7 +11,7 @@ import { RadioButtonWithImage } from 'ui-kit/RadioButtonWithImage/RadioButtonWit
 import styles from '../OfferType.module.scss'
 import { OfferTypeFormValues } from '../types'
 
-const IndividualOfferType = (): JSX.Element | null => {
+export const IndividualOfferType = (): JSX.Element | null => {
   const { values, handleChange } = useFormikContext<OfferTypeFormValues>()
 
   return (
@@ -91,5 +91,3 @@ const IndividualOfferType = (): JSX.Element | null => {
     </>
   )
 }
-
-export default IndividualOfferType

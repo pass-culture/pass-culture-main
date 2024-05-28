@@ -11,10 +11,10 @@ type AdageHeaderBudgetProps = {
   institutionBudget: number
 }
 
-export default function AdageHeaderBudget({
+export const AdageHeaderBudget = ({
   logAdageLinkClick,
   institutionBudget,
-}: AdageHeaderBudgetProps) {
+}: AdageHeaderBudgetProps) => {
   return (
     <div className={styles['adage-header-budget']}>
       <ButtonLink

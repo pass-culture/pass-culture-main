@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 
 import { AdageFrontRoles, EacFormat, OfferAddressType } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import AdageButtonFilter from 'components/AdageButtonFilter/AdageButtonFilter'
+import { AdageButtonFilter } from 'components/AdageButtonFilter/AdageButtonFilter'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import strokeBuildingIcon from 'icons/stroke-building.svg'
 import strokeFranceIcon from 'icons/stroke-france.svg'

@@ -10,7 +10,7 @@ import {
   GET_VENUE_QUERY_KEY,
   GET_VENUE_TYPES_QUERY_KEY,
 } from 'config/swrQueryKeys'
-import Spinner from 'ui-kit/Spinner/Spinner'
+import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { setInitialFormValues } from './setInitialFormValues'
 import { VenueSettingsFormScreen } from './VenueSettingsScreen'

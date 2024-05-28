@@ -26,7 +26,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { getOfferConditionalFields } from 'utils/getOfferConditionalFields'
 
-import ActionBar from '../ActionBar/ActionBar'
+import { ActionBar } from '../ActionBar/ActionBar'
 
 import { DisplayOfferInAppLink } from './DisplayOfferInAppLink/DisplayOfferInAppLink'
 import OfferSection from './OfferSection/OfferSection'

@@ -11,7 +11,7 @@ import {
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { AdageOfferProps } from '../../AdageOffer'
-import AdageOfferHeader from '../AdageOfferHeader'
+import { AdageOfferHeader } from '../AdageOfferHeader'
 
 function renderAdageOfferHeader(
   props: AdageOfferProps = {

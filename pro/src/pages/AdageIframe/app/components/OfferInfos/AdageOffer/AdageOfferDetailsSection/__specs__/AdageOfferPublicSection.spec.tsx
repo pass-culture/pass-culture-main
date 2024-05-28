@@ -3,7 +3,8 @@ import { render, screen } from '@testing-library/react'
 import { StudentLevels } from 'apiClient/adage'
 import { defaultCollectiveTemplateOffer } from 'utils/adageFactories'
 
-import AdageOfferPublicSection, {
+import {
+  AdageOfferPublicSection,
   AdageOfferPublicSectionProps,
 } from '../AdageOfferPublicSection'
 

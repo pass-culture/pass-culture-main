@@ -7,7 +7,7 @@ interface FormLayoutMandatoryInfoProps {
   className?: string
 }
 
-const MandatoryInfo = ({
+export const MandatoryInfo = ({
   className,
 }: FormLayoutMandatoryInfoProps): JSX.Element => {
   return (
@@ -16,5 +16,3 @@ const MandatoryInfo = ({
     </p>
   )
 }
-
-export default MandatoryInfo

@@ -25,7 +25,7 @@ interface CollectiveOfferTypeProps {
   offerer?: GetOffererResponseModel
 }
 
-const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
+export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
   const location = useLocation()
   const { values, handleChange } = useFormikContext<OfferTypeFormValues>()
 
@@ -158,5 +158,3 @@ const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
     </>
   )
 }
-
-export default CollectiveOfferType

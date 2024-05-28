@@ -27,7 +27,7 @@ interface ReimbursementBankAccountProps {
   hasWarning?: boolean
 }
 
-const ReimbursementBankAccount = ({
+export const ReimbursementBankAccount = ({
   bankAccount,
   onUpdateButtonClick,
   offererId,
@@ -185,5 +185,3 @@ const ReimbursementBankAccount = ({
     </div>
   )
 }
-
-export default ReimbursementBankAccount

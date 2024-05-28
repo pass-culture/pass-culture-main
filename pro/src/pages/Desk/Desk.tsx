@@ -9,7 +9,7 @@ import { AppLayout } from 'app/AppLayout'
 import { Callout } from 'components/Callout/Callout'
 import { Button } from 'ui-kit/Button/Button'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
-import Titles from 'ui-kit/Titles/Titles'
+import { Titles } from 'ui-kit/Titles/Titles'
 
 import { BookingDetails } from './BookingDetails'
 import { ButtonInvalidateToken } from './ButtonInvalidateToken'

@@ -2,7 +2,7 @@ import cn from 'classnames'
 import React from 'react'
 
 import style from './FormLayout.module.scss'
-import Row from './FormLayoutRow'
+import { Row } from './FormLayoutRow'
 
 interface FormLayoutRowWithInfoProps {
   children: React.ReactNode | React.ReactNode[]
@@ -13,7 +13,7 @@ interface FormLayoutRowWithInfoProps {
   sideComponent: JSX.Element | null
 }
 
-const RowWithInfo = ({
+export const RowWithInfo = ({
   children,
   className,
   inline,
@@ -38,5 +38,3 @@ const RowWithInfo = ({
     </Row>
   )
 }
-
-export default RowWithInfo

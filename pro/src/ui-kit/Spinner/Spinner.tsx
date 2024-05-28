@@ -9,7 +9,7 @@ interface SpinnerProps {
   className?: string
 }
 
-const Spinner = ({
+export const Spinner = ({
   message = 'Chargement en cours',
   className,
 }: SpinnerProps): JSX.Element => {
@@ -39,5 +39,3 @@ const Spinner = ({
     </div>
   )
 }
-
-export default Spinner

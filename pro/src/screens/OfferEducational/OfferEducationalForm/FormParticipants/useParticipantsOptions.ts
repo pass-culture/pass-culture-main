@@ -4,7 +4,7 @@ import { buildStudentLevelsMapWithDefaultValue } from 'core/OfferEducational/uti
 
 export const ALL_STUDENTS_LABEL = 'Tout sélectionner'
 
-const useParticipantsOptions = (
+export const useParticipantsOptions = (
   values: OfferEducationalFormValues['participants'],
   setFieldValue: (
     field: string,
@@ -56,4 +56,3 @@ const useParticipantsOptions = (
     })),
   ]
 }
-export default useParticipantsOptions

@@ -14,7 +14,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import useAdageUser from '../../hooks/useAdageUser'
 
 import styles from './AdageHeader.module.scss'
-import AdageHeaderBudget from './AdageHeaderBudget/AdageHeaderBudget'
+import { AdageHeaderBudget } from './AdageHeaderBudget/AdageHeaderBudget'
 import { AdageHeaderMenu } from './AdageHeaderMenu/AdageHeaderMenu'
 
 export const AdageHeader = () => {

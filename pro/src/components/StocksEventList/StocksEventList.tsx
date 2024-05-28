@@ -28,7 +28,7 @@ import { SelectInput } from 'ui-kit/form/Select/SelectInput'
 import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { BaseTimePicker } from 'ui-kit/form/TimePicker/BaseTimePicker'
 import { Pagination } from 'ui-kit/Pagination/Pagination'
-import Spinner from 'ui-kit/Spinner/Spinner'
+import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { formatPrice } from 'utils/formatPrice'
 import { pluralize, pluralizeString } from 'utils/pluralize'
 import {

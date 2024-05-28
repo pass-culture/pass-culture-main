@@ -4,11 +4,11 @@ import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { IndividualOfferNavigation } from 'components/IndividualOfferNavigation/IndividualOfferNavigation'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 
-import Status from '../Status/Status'
+import { Status } from '../Status/Status'
 import SynchronizedProviderInformation from '../SynchronisedProviderInfos/SynchronizedProviderInformation'
 
 import styles from './IndivualOfferLayout.module.scss'
-import OfferStatusBanner from './OfferStatusBanner/OfferStatusBanner'
+import { OfferStatusBanner } from './OfferStatusBanner/OfferStatusBanner'
 
 export interface IndivualOfferLayoutProps {
   title: string

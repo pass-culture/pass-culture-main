@@ -11,7 +11,7 @@ import { BaseFileInput } from 'ui-kit/form/shared/BaseFileInput/BaseFileInput'
 
 import { modeValidationConstraints } from './constants'
 import { ImageUploadBrowserFormValues } from './types'
-import getValidationSchema from './validationSchema'
+import { getValidationSchema } from './validationSchema'
 
 interface ImageUploadBrowserFormProps {
   onSubmit: (values: ImageUploadBrowserFormValues) => void

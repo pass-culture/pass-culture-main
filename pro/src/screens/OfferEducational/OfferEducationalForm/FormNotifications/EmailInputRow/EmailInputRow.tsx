@@ -16,7 +16,7 @@ interface EmailInputRowProps {
   onDelete?: () => void
 }
 
-const EmailInputRow = ({
+export const EmailInputRow = ({
   disableForm,
   displayTrash = true,
   name,
@@ -46,5 +46,3 @@ const EmailInputRow = ({
     </FormLayout.Row>
   )
 }
-
-export default EmailInputRow

@@ -6,7 +6,8 @@ import {
   defaultCollectiveOffer,
 } from 'utils/adageFactories'
 
-import AdageOfferInfoSection, {
+import {
+  AdageOfferInfoSection,
   AdageOfferInfoSectionProps,
 } from '../AdageOfferInfoSection'
 

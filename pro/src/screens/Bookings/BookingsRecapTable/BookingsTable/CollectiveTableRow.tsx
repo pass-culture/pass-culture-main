@@ -7,7 +7,7 @@ import { CollectiveBookingResponseModel } from 'apiClient/v1'
 import useAnalytics from 'app/App/analytics/firebase'
 import { GET_COLLECTIVE_BOOKING_BY_ID_QUERY_KEY } from 'config/swrQueryKeys'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
-import Spinner from 'ui-kit/Spinner/Spinner'
+import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
 
 import styles from './BookingsTable.module.scss'

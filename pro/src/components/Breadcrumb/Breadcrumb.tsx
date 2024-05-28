@@ -15,7 +15,7 @@ type BreadcrumbProps = {
   crumbs: Crumb[]
 }
 
-export default function Breadcrumb({ crumbs }: BreadcrumbProps) {
+export const Breadcrumb = ({ crumbs }: BreadcrumbProps) => {
   return (
     <nav aria-label="Vous êtes ici:" className={styles['breadcrumb']}>
       <ol className={styles['breadcrumb-list']}>

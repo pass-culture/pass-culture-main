@@ -15,7 +15,7 @@ export interface StatusToggleButtonProps {
   status: OfferStatus
 }
 
-const StatusToggleButton = ({
+export const StatusToggleButton = ({
   offerId,
   isActive,
   status,
@@ -48,5 +48,3 @@ const StatusToggleButton = ({
     </Button>
   )
 }
-
-export default StatusToggleButton

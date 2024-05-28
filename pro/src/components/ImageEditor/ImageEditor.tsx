@@ -5,7 +5,7 @@ import AvatarEditor, { Position } from 'react-avatar-editor'
 import { ImageEditorFormValues } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageCrop'
 import { Slider } from 'ui-kit/form/Slider/Slider'
 
-import CanvasTools from './canvas'
+import { CanvasTools } from './canvas'
 import style from './ImageEditor.module.scss'
 
 const CANVAS_MOBILE_BREAKPOINT = 744

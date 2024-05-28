@@ -7,7 +7,7 @@ import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import IndivualOfferLayout from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
 import { getTitle } from 'screens/IndividualOffer/IndivualOfferLayout/utils/getTitle'
 import SummaryScreen from 'screens/IndividualOffer/SummaryScreen/SummaryScreen'
-import Spinner from 'ui-kit/Spinner/Spinner'
+import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 const Summary = (): JSX.Element | null => {
   const { offer } = useIndividualOfferContext()

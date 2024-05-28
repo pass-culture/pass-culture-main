@@ -27,7 +27,7 @@ import tempStrokeAddUserIcon from 'icons/temp-stroke-add-user.svg'
 import { updateUser } from 'store/user/reducer'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import Spinner from 'ui-kit/Spinner/Spinner'
+import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { ActionBar } from '../ActionBar/ActionBar'
 
