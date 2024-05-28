@@ -330,16 +330,13 @@ class PatchProductTest:
 
         # 1. get api key
         # 2. check FF
-        # 3. get offer
-        # 4. get offerer provider
-        # 5. get venue
-        # 6. update offer
-        # 7. get offer
-        # 8. get mediation
-        # 9. get stock
-        with assert_num_queries(9):
+        # 3. get offer and related data
+        # 4. update offer
+        # 5. reload provider
+        # 6. reload offer and related data (before serialization)
+        with assert_num_queries(6):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                url_for("public_api.v1_public_api.individual_offers.v1_blueprint.edit_product"),
+                url_for("public_api.edit_product"),
                 json={"offerId": offer_id, "name": new_name, "description": new_desc},
             )
 
