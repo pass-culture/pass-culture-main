@@ -240,6 +240,19 @@ class DeleteVenueTest:
         assert offerers_models.Venue.query.count() == 2
         assert offerers_models.VenueReimbursementPointLink.query.count() == 2
 
+    def test_delete_cascade_venue_should_abort_when_has_bank_account(self):
+        # Given
+        bank_account = finance_factories.BankAccountFactory()
+        venue_to_delete = offerers_factories.VenueFactory(reimbursement_point="self", bank_account=bank_account)
+        # When
+        with pytest.raises(offerers_exceptions.CannotDeleteVenueThatHasBankAccountException) as exception:
+            offerers_api.delete_venue(venue_to_delete.id)
+        # Then
+        assert exception.value.errors["CannotDeleteVenueThatHasBankAccountException"] == [
+            "Lieu non supprimable car il est associé à un compte bancaire"
+        ]
+        assert offerers_models.Venue.query.count() == 1
+
     def test_delete_cascade_venue_should_remove_offers_stocks_and_activation_codes(self):
         # Given
         venue_to_delete = offerers_factories.VenueFactory()
@@ -421,7 +434,14 @@ class DeleteVenueTest:
         # Given
         bank_account = finance_factories.BankAccountFactory()
         venue_to_delete = offerers_factories.VenueFactory()
-        offerers_factories.VenueBankAccountLinkFactory(venue=venue_to_delete, bankAccount=bank_account)
+        offerers_factories.VenueBankAccountLinkFactory(
+            venue=venue_to_delete,
+            bankAccount=bank_account,
+            timespan=[
+                datetime.datetime.utcnow() - datetime.timedelta(days=5),
+                datetime.datetime.utcnow() - datetime.timedelta(days=3),
+            ],
+        )
         bank_account_id = bank_account.id
 
         # When
