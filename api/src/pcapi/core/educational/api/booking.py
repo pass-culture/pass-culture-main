@@ -314,7 +314,7 @@ def cancel_collective_offer_booking(offer_id: int) -> None:
     notify_pro_that_booking_has_been_cancelled(cancelled_booking)
 
 
-def notify_pro_users_one_day() -> None:
+def notify_pro_users_one_day_before() -> None:
     bookings = educational_repository.find_bookings_happening_in_x_days(1)
     for booking in bookings:
         transactional_mails.send_eac_alert_one_day_before_event(booking)
