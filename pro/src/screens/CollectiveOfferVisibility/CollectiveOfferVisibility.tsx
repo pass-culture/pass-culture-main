@@ -116,7 +116,10 @@ export const CollectiveOfferVisibilityScreen = ({
   )
 
   const { data: requestInformations } = useSWR(
-    [GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY, requestId],
+    () =>
+      requestId
+        ? [GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY, requestId]
+        : null,
     ([, id]) => api.getCollectiveOfferRequest(Number(id))
   )
 
