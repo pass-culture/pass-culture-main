@@ -213,11 +213,13 @@ def find_venue_at_accessibility_provider(
     )
 
 
-def find_new_entries_by_activity(activity: AcceslibreActivity) -> list[AcceslibreResult] | None:
+def find_new_entries_by_activity(
+    activity: AcceslibreActivity, n_days_to_fetch: int = 7
+) -> list[AcceslibreResult] | None:
     """
     Requests acceslibre for last week new entries for a given activity
     """
-    return _get_backend().find_new_entries_by_activity(activity=activity)
+    return _get_backend().find_new_entries_by_activity(activity=activity, n_days_to_fetch=n_days_to_fetch)
 
 
 def id_exists_at_acceslibre(slug: str) -> bool:
@@ -392,7 +394,9 @@ class BaseBackend:
     ) -> AcceslibreResult | None:
         raise NotImplementedError()
 
-    def find_new_entries_by_activity(self, activity: AcceslibreActivity) -> list[AcceslibreResult] | None:
+    def find_new_entries_by_activity(
+        self, activity: AcceslibreActivity, n_days_to_fetch: int
+    ) -> list[AcceslibreResult] | None:
         raise NotImplementedError()
 
     def get_id_at_accessibility_provider(
@@ -437,7 +441,9 @@ class TestingBackend(BaseBackend):
             siret="",
         )
 
-    def find_new_entries_by_activity(self, activity: AcceslibreActivity) -> list[AcceslibreResult] | None:
+    def find_new_entries_by_activity(
+        self, activity: AcceslibreActivity, n_days_to_fetch: int
+    ) -> list[AcceslibreResult] | None:
         return [
             AcceslibreResult(
                 slug="mon-lieu-chez-acceslibre",
@@ -604,10 +610,12 @@ class AcceslibreBackend(BaseBackend):
                         return matching_venue
         return None
 
-    def find_new_entries_by_activity(self, activity: AcceslibreActivity) -> list[AcceslibreResult] | None:
+    def find_new_entries_by_activity(
+        self, activity: AcceslibreActivity, n_days_to_fetch: int
+    ) -> list[AcceslibreResult] | None:
         query_params = {
             "activite": activity.value,
-            "created_or_updated_in_last_days": 7,
+            "created_or_updated_in_last_days": n_days_to_fetch,
             "page_size": 1,
         }
         response = self._send_request(query_params=query_params)
@@ -617,7 +625,7 @@ class AcceslibreBackend(BaseBackend):
             for i in range(num_pages):
                 query_params = {
                     "activite": activity.value,
-                    "created_or_updated_in_last_days": 7,
+                    "created_or_updated_in_last_days": n_days_to_fetch,
                     "page_size": REQUEST_PAGE_SIZE,
                     "page": i + 1,
                 }
