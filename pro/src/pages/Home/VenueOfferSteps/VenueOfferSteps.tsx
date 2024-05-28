@@ -192,7 +192,7 @@ export const VenueOfferSteps = ({
               variant={ButtonVariant.BOX}
               icon={fullNextIcon}
               link={{
-                to: `/structures/${offerer.id}/lieux/${venue.id}#venue-collective-data`,
+                to: `/structures/${offerer.id}/lieux/${venue.id}/collectif`,
               }}
               onClick={() => {
                 logEvent(Events.CLICKED_EAC_DMS_TIMELINE, {
