@@ -59,6 +59,7 @@ export const RadioGroup = ({
             value={item.value}
             withBorder={withBorder}
             hasError={meta.touched && !!meta.error}
+            fullWidth
           />
         </div>
       ))}
