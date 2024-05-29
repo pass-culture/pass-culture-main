@@ -25,7 +25,7 @@ jobs:
       api-changed: ${{ steps.check-api-changes.outputs.any_modified }}
       pro-changed: ${{ steps.check-pro-changes.outputs.any_modified }}
       maintenance-site-changed: ${{ steps.check-maintenance-site-changes.outputs.any_modified }}
-      db-migrations-changed: ${{ steps.check-db-migration-changes.outputs.any_modified }}
+      db-migrations-changed: ${{ steps.check-db-migrations-changes.outputs.any_modified }}
       dependencies-changed: ${{ steps.check-dependencies-changes.outputs.any_modified }}
       docker-image-tags: ${{ steps.define-image-tags.outputs.docker-image-tags }}
     steps:
@@ -49,7 +49,7 @@ jobs:
         with:
           files: maintenance-site/**
       - name: "Check db migration folder changes"
-        id: check-db-migration-changes
+        id: check-db-migrations-changes
         uses: tj-actions/changed-files@v44
         with:
           files: |-
