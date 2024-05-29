@@ -14,6 +14,7 @@ import sqlalchemy.exc as sqla_exc
 from werkzeug.exceptions import BadRequest
 
 from pcapi import settings
+from pcapi.connectors.ems import EMSAPIException
 from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.connectors.thumb_storage import remove_thumb
 from pcapi.connectors.titelive import get_new_product_from_ean13
@@ -1207,8 +1208,17 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer:
     )
     offer_current_stocks = offer.bookableStocks
 
-    shows_remaining_places = get_shows_remaining_places_from_provider(venue_provider.provider.localClass, offer)
-    if not shows_remaining_places:
+    try:
+        shows_remaining_places = get_shows_remaining_places_from_provider(venue_provider.provider.localClass, offer)
+    except EMSAPIException as e:
+        # If we can't retrieve the stocks from the provider, we stop here to avoid breaking the code following this function
+        # This is not ideal, I believe this function should be called on its own, or asynchronously
+        # However this means frontend code (probably) so this temporarily fixes crashes for end users
+        # TODO: (lixxday, 29/05/2024): remove this try/catch when th function is no longer called directly in GET /offer route
+        logger.exception(
+            "Failed to get shows remaining places from provider",
+            extra={"offer": offer.id, "provider": venue_provider.provider.localClass, "error": e},
+        )
         return
 
     offer_has_new_sold_out_stock = False
