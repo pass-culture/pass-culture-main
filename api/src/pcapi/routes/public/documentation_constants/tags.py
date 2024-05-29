@@ -31,7 +31,7 @@ OFFER_ATTRIBUTES = Tag(name="Offer attributes")
 # COLLECTIVE TAGS
 COLLECTIVE_OFFERS_TAG = Tag(
     name="Collective offers",
-    description='Endpoints to manage collective offers that are "bookable", not the one that are displayed in the showcase.',
+    description='Endpoints to manage collective offers that are "bookable", not those that are displayed in the showcase.',
 )
 COLLECTIVE_BOOKING_TAG = Tag(name="Collective booking")
 COLLECTIVE_CATEGORIES_TAG = Tag(name="Collective categories")
