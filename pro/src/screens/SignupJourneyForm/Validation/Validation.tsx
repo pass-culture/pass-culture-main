@@ -15,7 +15,7 @@ import { useSignupJourneyContext } from 'context/SignupJourneyContext/SignupJour
 import { Events } from 'core/FirebaseEvents/constants'
 import useCurrentUser from 'hooks/useCurrentUser'
 import { useInitReCaptcha } from 'hooks/useInitReCaptcha'
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 import fullEditIcon from 'icons/full-edit.svg'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
 import { updateUser } from 'store/user/reducer'

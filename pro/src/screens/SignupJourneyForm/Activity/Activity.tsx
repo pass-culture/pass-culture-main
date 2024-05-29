@@ -13,7 +13,7 @@ import {
   ActivityContext,
 } from 'context/SignupJourneyContext/SignupJourneyContext'
 import { FORM_ERROR_MESSAGE } from 'core/shared/constants'
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { ActionBar } from '../ActionBar/ActionBar'

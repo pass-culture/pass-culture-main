@@ -12,7 +12,7 @@ import {
 import { isCollectiveOfferTemplate, Mode } from 'core/OfferEducational/types'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 import { CollectiveOfferVisibilityScreen } from 'screens/CollectiveOfferVisibility/CollectiveOfferVisibility'
 import {
   MandatoryCollectiveOfferFromParamsProps,

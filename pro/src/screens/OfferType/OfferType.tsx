@@ -22,7 +22,7 @@ import {
 } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { serializeApiFilters } from 'core/Offers/utils/serializer'
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
 import strokeProfIcon from 'icons/stroke-prof.svg'
 import { RadioButtonWithImage } from 'ui-kit/RadioButtonWithImage/RadioButtonWithImage'

@@ -13,7 +13,7 @@ import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
 } from 'config/swrQueryKeys'
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 import { AdagePreviewLayout } from 'pages/AdageIframe/app/components/OfferInfos/AdagePreviewLayout/AdagePreviewLayout'
 import { RedirectToBankAccountDialog } from 'screens/Offers/RedirectToBankAccountDialog'
 import { Button } from 'ui-kit/Button/Button'

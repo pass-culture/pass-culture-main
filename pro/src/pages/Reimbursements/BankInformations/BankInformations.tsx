@@ -10,7 +10,7 @@ import {
 import useAnalytics from 'app/App/analytics/firebase'
 import { ReimbursementBankAccount } from 'components/ReimbursementBankAccount/ReimbursementBankAccount'
 import { BankAccountEvents } from 'core/FirebaseEvents/constants'
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullMoreIcon from 'icons/full-more.svg'
 import { LinkVenuesDialog } from 'pages/Reimbursements/BankInformations/LinkVenuesDialog'

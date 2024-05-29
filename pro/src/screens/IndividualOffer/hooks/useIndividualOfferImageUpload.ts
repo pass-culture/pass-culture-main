@@ -5,7 +5,7 @@ import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/Moda
 import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { IndividualOfferImage } from 'core/Offers/types'
 import { SENT_DATA_ERROR_MESSAGE } from 'core/shared/constants'
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 
 import { imageFileToDataUrl } from '../InformationsScreen/utils/files'
 import { getIndividualOfferImage } from '../utils/getIndividualOfferImage'

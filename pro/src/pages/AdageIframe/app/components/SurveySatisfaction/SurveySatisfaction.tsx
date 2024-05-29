@@ -2,7 +2,7 @@ import cn from 'classnames'
 import { useState } from 'react'
 
 import { apiAdage } from 'apiClient/api'
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 import fullLinkIcon from 'icons/full-link.svg'
 import strokeCloseIcon from 'icons/stroke-close.svg'
 import { Button } from 'ui-kit/Button/Button'

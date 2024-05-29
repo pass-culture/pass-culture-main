@@ -119,7 +119,7 @@ describe('CollectiveDataEdition', () => {
       ...defaultGetVenue,
     })
 
-    vi.spyOn(useNotification, 'default').mockImplementation(() => ({
+    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       success: notifySuccessMock,
       error: notifyErrorMock,
       information: vi.fn(),

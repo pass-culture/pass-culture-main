@@ -10,7 +10,7 @@ import { getUserOfferersFromOffer } from 'core/OfferEducational/utils/getUserOff
 import { serializeEducationalOfferers } from 'core/OfferEducational/utils/serializeEducationalOfferers'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import { SelectOption } from 'custom_types/form'
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 
 type OfferEducationalFormData = {
   domains: SelectOption[]

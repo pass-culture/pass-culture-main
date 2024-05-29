@@ -2,7 +2,7 @@ import type { FormikErrors } from 'formik'
 import { useEffect } from 'react'
 
 import { FORM_ERROR_MESSAGE } from 'core/shared/constants'
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 
 interface UseNotifyFormErrorProps {
   isSubmitting: boolean

@@ -19,7 +19,7 @@ interface Options {
   duration?: number
 }
 
-const useNotification = () => {
+export const useNotification = () => {
   const dispatch = useDispatch()
   const notify = (
     textMessage: string | null,
@@ -50,5 +50,3 @@ const useNotification = () => {
     [dispatch]
   )
 }
-
-export default useNotification

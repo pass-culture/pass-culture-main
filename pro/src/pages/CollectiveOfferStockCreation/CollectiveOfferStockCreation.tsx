@@ -28,7 +28,7 @@ import { createStockDataPayload } from 'core/OfferEducational/utils/createStockD
 import { extractInitialStockValues } from 'core/OfferEducational/utils/extractInitialStockValues'
 import { hasStatusCodeAndErrorsCode } from 'core/OfferEducational/utils/hasStatusCode'
 import { FORM_ERROR_MESSAGE } from 'core/shared/constants'
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
 import {
   MandatoryCollectiveOfferFromParamsProps,

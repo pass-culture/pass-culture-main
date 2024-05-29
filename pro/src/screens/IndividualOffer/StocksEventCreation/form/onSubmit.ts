@@ -2,7 +2,7 @@ import { format, sub } from 'date-fns'
 
 import { api } from 'apiClient/api'
 import { StocksEvent } from 'components/StocksEventList/StocksEventList'
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 import { serializeBeginningDateTime } from 'screens/IndividualOffer/StocksEventEdition/serializers'
 import {
   FORMAT_ISO_DATE_ONLY,

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { DialogBox } from 'components/DialogBox/DialogBox'
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 import fullMoreIcon from 'icons/full-more.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'

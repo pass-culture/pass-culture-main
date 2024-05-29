@@ -23,7 +23,7 @@ import {
   isCollectiveOfferTemplate,
   Mode,
 } from 'core/OfferEducational/types'
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 import fullHideIcon from 'icons/full-hide.svg'
 import fullNextIcon from 'icons/full-next.svg'
 import strokeCheckIcon from 'icons/stroke-check.svg'

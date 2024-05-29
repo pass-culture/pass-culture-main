@@ -18,7 +18,7 @@ import {
 import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeOffersUrl'
 import { SelectOption } from 'custom_types/form'
 import useActiveFeature from 'hooks/useActiveFeature'
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'

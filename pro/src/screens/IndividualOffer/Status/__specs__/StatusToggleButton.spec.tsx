@@ -30,7 +30,7 @@ describe('StatusToggleButton', () => {
     // given
     const toggle = vi.spyOn(api, 'patchOffersActiveStatus').mockResolvedValue()
     const notifySuccess = vi.fn()
-    vi.spyOn(useNotification, 'default').mockImplementation(() => ({
+    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       success: notifySuccess,
       error: vi.fn(),
       information: vi.fn(),
@@ -61,7 +61,7 @@ describe('StatusToggleButton', () => {
       .spyOn(api, 'patchOffersActiveStatus')
       .mockResolvedValue()
     const notifySuccess = vi.fn()
-    vi.spyOn(useNotification, 'default').mockImplementation(() => ({
+    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       success: notifySuccess,
       error: vi.fn(),
       information: vi.fn(),
@@ -95,7 +95,7 @@ describe('StatusToggleButton', () => {
       .spyOn(api, 'patchOffersActiveStatus')
       .mockRejectedValue({})
     const notifyError = vi.fn()
-    vi.spyOn(useNotification, 'default').mockImplementation(() => ({
+    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       error: notifyError,
       success: vi.fn(),
       information: vi.fn(),
