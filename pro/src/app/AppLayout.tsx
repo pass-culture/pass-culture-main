@@ -1,6 +1,6 @@
 import React from 'react'
 
-import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
+import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 
 import { Layout } from './App/layout/Layout'
 import { OldLayout } from './App/layout/OldLayout'

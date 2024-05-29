@@ -1,6 +1,6 @@
 import { cleanup, renderHook } from '@testing-library/react'
 
-import useLogEventOnUnload from 'hooks/useLogEventOnUnload'
+import { useLogEventOnUnload } from 'hooks/useLogEventOnUnload'
 
 describe('useBeforeUnload', () => {
   describe('When the hook is initialised', () => {

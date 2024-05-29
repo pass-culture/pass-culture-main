@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import { createRef } from 'react'
 
-import useIsElementVisible from 'hooks/useIsElementVisible'
+import { useIsElementVisible } from 'hooks/useIsElementVisible'
 import arrowLeftIcon from 'icons/full-arrow-left.svg'
 import arrowRightIcon from 'icons/full-arrow-right.svg'
 import { Button } from 'ui-kit/Button/Button'

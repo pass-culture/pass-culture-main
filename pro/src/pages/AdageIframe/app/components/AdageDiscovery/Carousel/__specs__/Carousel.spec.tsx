@@ -6,7 +6,7 @@ import * as useIsElementVisible from 'hooks/useIsElementVisible'
 import { Carousel } from '../Carousel'
 
 vi.mock('hooks/useIsElementVisible', () => ({
-  default: vi.fn(() => [false, false]),
+  useIsElementVisible: vi.fn(() => [false, false]),
 }))
 
 const mockCarouselElements = Array(20)
@@ -42,8 +42,14 @@ describe('Carousel', () => {
   })
 
   it('should have the left or right arrow disabled when respectively the first or last element is visible', () => {
-    vi.spyOn(useIsElementVisible, 'default').mockReturnValueOnce([true, false])
-    vi.spyOn(useIsElementVisible, 'default').mockReturnValueOnce([true, false])
+    vi.spyOn(useIsElementVisible, 'useIsElementVisible').mockReturnValueOnce([
+      true,
+      false,
+    ])
+    vi.spyOn(useIsElementVisible, 'useIsElementVisible').mockReturnValueOnce([
+      true,
+      false,
+    ])
 
     render(<Carousel elements={mockCarouselElements} />)
 
@@ -62,8 +68,14 @@ describe('Carousel', () => {
   })
 
   it('should emit an event when the last element is seen entirely', () => {
-    vi.spyOn(useIsElementVisible, 'default').mockReturnValueOnce([true, true])
-    vi.spyOn(useIsElementVisible, 'default').mockReturnValueOnce([true, true])
+    vi.spyOn(useIsElementVisible, 'useIsElementVisible').mockReturnValueOnce([
+      true,
+      true,
+    ])
+    vi.spyOn(useIsElementVisible, 'useIsElementVisible').mockReturnValueOnce([
+      true,
+      true,
+    ])
 
     const mockEmittedEnvent = vi.fn()
     render(

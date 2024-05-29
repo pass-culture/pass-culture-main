@@ -1,6 +1,6 @@
 import { useLocation } from 'react-router-dom'
 
-const useActiveStep = (steps?: string[]): string => {
+export const useActiveStep = (steps?: string[]): string => {
   const location = useLocation()
   const pathname = location.pathname
   const pathParts = pathname.split('/')
@@ -14,5 +14,3 @@ const useActiveStep = (steps?: string[]): string => {
 
   return newActiveStepName
 }
-
-export default useActiveStep

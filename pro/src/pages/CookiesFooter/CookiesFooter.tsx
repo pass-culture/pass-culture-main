@@ -2,7 +2,7 @@ import cn from 'classnames'
 import React from 'react'
 
 import { orejime } from 'app/App/analytics/orejime'
-import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
+import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'

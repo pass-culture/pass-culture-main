@@ -1,6 +1,6 @@
 import React from 'react'
 
-import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
+import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 
 import { Profile } from './Profile'
 import styles from './ProfileAndSupport.module.scss'

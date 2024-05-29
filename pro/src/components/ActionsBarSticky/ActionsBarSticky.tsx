@@ -2,7 +2,7 @@ import classnames from 'classnames'
 import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 
-import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
+import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import { setIsStickyBarOpen } from 'store/notifications/reducer'
 
 import style from './ActionsBarSticky.module.scss'

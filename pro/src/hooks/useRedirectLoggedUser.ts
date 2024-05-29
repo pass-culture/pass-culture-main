@@ -5,7 +5,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { selectCurrentUser } from 'store/user/selectors'
 
-const useRedirectLoggedUser = () => {
+export const useRedirectLoggedUser = () => {
   const navigate = useNavigate()
   const currentUser = useSelector(selectCurrentUser)
 
@@ -37,5 +37,3 @@ const useRedirectLoggedUser = () => {
     }
   }, [currentUser])
 }
-
-export default useRedirectLoggedUser
