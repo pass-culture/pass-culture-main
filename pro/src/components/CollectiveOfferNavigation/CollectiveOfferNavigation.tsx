@@ -9,7 +9,7 @@ import {
 } from 'core/FirebaseEvents/constants'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { createOfferFromTemplate } from 'core/OfferEducational/utils/createOfferFromTemplate'
-import useActiveFeature from 'hooks/useActiveFeature'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'
 import { useOfferStockEditionURL } from 'hooks/useOfferEditionURL'
 import fullEditIcon from 'icons/full-edit.svg'

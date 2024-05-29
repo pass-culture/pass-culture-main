@@ -5,6 +5,7 @@ import {
   GetOffererResponseModel,
   GetOffererVenueResponseModel,
 } from 'apiClient/v1'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import fullInfoIcon from 'icons/full-info.svg'
 import fullNextIcon from 'icons/full-next.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
@@ -16,7 +17,6 @@ import {
   OFFER_FORM_NAVIGATION_IN,
   VenueEvents,
 } from '../../../core/FirebaseEvents/constants'
-import useActiveFeature from '../../../hooks/useActiveFeature'
 import { UNAVAILABLE_ERROR_PAGE } from '../../../utils/routes'
 import { Card } from '../Card'
 import {

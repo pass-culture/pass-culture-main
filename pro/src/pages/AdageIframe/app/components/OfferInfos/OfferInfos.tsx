@@ -8,7 +8,7 @@ import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
 } from 'config/swrQueryKeys'
-import useActiveFeature from 'hooks/useActiveFeature'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import strokePassIcon from 'icons/stroke-pass.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import strokeStarIcon from 'icons/stroke-star.svg'

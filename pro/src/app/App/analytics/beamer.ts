@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 
-import useActiveFeature from 'hooks/useActiveFeature'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { selectCurrentUser } from 'store/user/selectors'
 
 export const useBeamer = (consentedToBeamer: boolean) => {

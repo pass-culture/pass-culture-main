@@ -12,7 +12,7 @@ import {
   DEFAULT_PRE_FILTERS,
   EMPTY_FILTER_VALUE,
 } from 'core/Bookings/constants'
-import useActiveFeature from 'hooks/useActiveFeature'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import strokeBookingHold from 'icons/stroke-booking-hold.svg'
 import { getFilteredIndividualBookingsAdapter } from 'pages/Bookings/adapters/getFilteredIndividualBookingsAdapter'
 import { IndividualBookingsTable } from 'screens/Bookings/BookingsRecapTable/BookingsTable/IndividualBookingsTable'

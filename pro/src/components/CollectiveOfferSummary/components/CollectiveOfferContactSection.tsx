@@ -10,7 +10,7 @@ import {
 } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 import { isCollectiveOfferTemplate } from 'core/OfferEducational/types'
-import useActiveFeature from 'hooks/useActiveFeature'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 
 interface CollectiveOfferContactSectionProps {
   offer:

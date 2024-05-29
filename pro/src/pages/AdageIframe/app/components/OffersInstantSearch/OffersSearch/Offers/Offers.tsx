@@ -16,7 +16,7 @@ import {
 } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import { GET_COLLECTIVE_OFFER_TEMPLATES_QUERY_KEY } from 'config/swrQueryKeys'
-import useActiveFeature from 'hooks/useActiveFeature'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useMediaQuery } from 'hooks/useMediaQuery'
 import fullGoTop from 'icons/full-go-top.svg'
 import fullGrid from 'icons/full-grid.svg'

@@ -17,7 +17,7 @@ import {
   OFFER_WIZARD_MODE,
 } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
-import useActiveFeature from 'hooks/useActiveFeature'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 

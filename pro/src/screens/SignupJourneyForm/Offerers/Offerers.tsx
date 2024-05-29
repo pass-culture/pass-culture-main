@@ -18,7 +18,7 @@ import {
 } from 'context/SignupJourneyContext/SignupJourneyContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import { getSirenData } from 'core/Offerers/getSirenData'
-import useActiveFeature from 'hooks/useActiveFeature'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import useCurrentUser from 'hooks/useCurrentUser'
 import { useNotification } from 'hooks/useNotification'
 import fullDownIcon from 'icons/full-down.svg'
