@@ -7,7 +7,7 @@ import { DialogBox } from 'components/DialogBox/DialogBox'
 import { TUTO_DIALOG_LABEL_ID } from 'components/Tutorial/constants'
 import { Tutorial } from 'components/Tutorial/Tutorial'
 import { Events } from 'core/FirebaseEvents/constants'
-import useCurrentUser from 'hooks/useCurrentUser'
+import { useCurrentUser } from 'hooks/useCurrentUser'
 import { updateUser } from 'store/user/reducer'
 
 import styles from './TutorialDialog.module.scss'

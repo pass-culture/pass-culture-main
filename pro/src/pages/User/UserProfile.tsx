@@ -1,5 +1,5 @@
 import { AppLayout } from 'app/AppLayout'
-import useCurrentUser from 'hooks/useCurrentUser'
+import { useCurrentUser } from 'hooks/useCurrentUser'
 import { UserProfile } from 'screens/UserProfile/UserProfile'
 
 const Profile = (): JSX.Element => {
