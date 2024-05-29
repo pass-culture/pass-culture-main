@@ -1,4 +1,11 @@
 class BaseBackend:
+    def __init__(
+        self,
+        project_id: str | None = None,
+        bucket_name: str = "",
+    ) -> None:
+        pass
+
     def store_public_object(self, folder: str, object_id: str, blob: bytes, content_type: str) -> None:
         raise NotImplementedError()
 
