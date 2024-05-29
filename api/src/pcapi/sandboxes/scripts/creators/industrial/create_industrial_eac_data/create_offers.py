@@ -5,6 +5,7 @@ from itertools import count
 from itertools import cycle
 import typing
 
+from pcapi import settings
 from pcapi.core import search
 from pcapi.core.categories.subcategories_v2 import EacFormat
 from pcapi.core.educational import factories as educational_factories
@@ -122,11 +123,12 @@ def create_offers_base_list(
     image_iterator = cycle(["collective_offer_1.png", "collective_offer_2.jpg"])
     institution_iterator = cycle(institutions)
     national_program_iterator = cycle(national_programs)
+    size = 5 if not settings.CREATE_ADAGE_TESTING_DATA else len(institutions)
     number_iterator = count()
     offers = []
     templates = []
     if basic_offers:
-        for _i in range(5):
+        for _i in range(size):
             stock = educational_factories.CollectiveStockFactory(
                 collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name}",
                 collectiveOffer__educational_domains=[next(domains_iterator)],
@@ -333,8 +335,9 @@ def create_booking_base_list(
     number_iterator = count()
     domains_iterator = cycle(domains)
     venue_iterator = cycle(offerer.managedVenues)
+    size = 5 if not settings.CREATE_ADAGE_TESTING_DATA else len(institutions)
     if pending_booking:
-        for _i in range(5):
+        for _i in range(size):
             educational_factories.CollectiveBookingFactory(
                 collectiveStock__collectiveOffer__name=f"PENDING offer {next(number_iterator)} pour {offerer.name}",
                 collectiveStock__collectiveOffer__venue=next(venue_iterator),
@@ -351,7 +354,7 @@ def create_booking_base_list(
             )
 
     if booked_booking:
-        for _i in range(5):
+        for _i in range(size):
             educational_factories.CollectiveBookingFactory(
                 collectiveStock__collectiveOffer__name=f"BOOKED offer {next(number_iterator)} pour {offerer.name}",
                 collectiveStock__collectiveOffer__venue=next(venue_iterator),
@@ -367,7 +370,7 @@ def create_booking_base_list(
                 dateCreated=datetime.utcnow() - timedelta(days=30),
             )
     if confirmed_booking:
-        for _i in range(5):
+        for _i in range(size):
             educational_factories.CollectiveBookingFactory(
                 collectiveStock__collectiveOffer__name=f"CONFIRMED offer {next(number_iterator)} pour {offerer.name}",
                 collectiveStock__collectiveOffer__venue=next(venue_iterator),
@@ -383,7 +386,7 @@ def create_booking_base_list(
                 dateCreated=datetime.utcnow() - timedelta(days=30),
             )
     if used_booking:
-        for i in range(5):
+        for i in range(size):
             booking = educational_factories.CollectiveBookingFactory(
                 collectiveStock__collectiveOffer__name=f"USED offer {next(number_iterator)} pour {offerer.name}",
                 collectiveStock__collectiveOffer__venue=next(venue_iterator),
@@ -401,7 +404,7 @@ def create_booking_base_list(
             )
             finance_factories.UsedBookingFinanceEventFactory(collectiveBooking=booking)
     if reimbursed_booking:
-        for _i in range(5):
+        for _i in range(size):
             booking = educational_factories.CollectiveBookingFactory(
                 collectiveStock__collectiveOffer__name=f"REIMBURSED offer {next(number_iterator)} pour {offerer.name}",
                 collectiveStock__collectiveOffer__venue=next(venue_iterator),
@@ -423,7 +426,7 @@ def create_booking_base_list(
                 status=finance_models.PricingStatus.INVOICED, collectiveBooking=booking
             )
     if cancelled_ac:
-        for _i in range(5):
+        for _i in range(size):
             educational_factories.CollectiveBookingFactory(
                 collectiveStock__collectiveOffer__name=f"CANCELLED BY AC offer {next(number_iterator)} pour {offerer.name}",
                 collectiveStock__collectiveOffer__venue=next(venue_iterator),
@@ -441,7 +444,7 @@ def create_booking_base_list(
                 confirmationLimitDate=datetime.utcnow() + timedelta(days=15),
             )
     if cancelled_institution:
-        for _i in range(5):
+        for _i in range(size):
             educational_factories.CollectiveBookingFactory(
                 collectiveStock__collectiveOffer__name=f"CANCELLED BY EPLE offer {next(number_iterator)} pour {offerer.name}",
                 collectiveStock__collectiveOffer__venue=next(venue_iterator),
@@ -460,7 +463,7 @@ def create_booking_base_list(
             )
 
     if cancelled_expired:
-        for _i in range(5):
+        for _i in range(size):
             educational_factories.CollectiveBookingFactory(
                 collectiveStock__collectiveOffer__name=f"CANCELLED AUTOMATICALLY offer {next(number_iterator)} pour {offerer.name}",
                 collectiveStock__collectiveOffer__venue=next(venue_iterator),
