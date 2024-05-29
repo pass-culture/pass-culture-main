@@ -1148,6 +1148,44 @@ def report_offer(
     transactional_mails.send_email_reported_offer_by_user(user, offer, reason, custom_reason)
 
 
+def get_shows_remaining_places_from_provider(provider_class: str | None, offer: models.Offer) -> dict[str, int]:
+    match provider_class:
+        case "CDSStocks":
+            if not FeatureToggle.ENABLE_CDS_IMPLEMENTATION.is_active():
+                raise feature.DisabledFeatureError("ENABLE_CDS_IMPLEMENTATION is inactive")
+            show_ids = [
+                cinema_providers_utils.get_cds_show_id_from_uuid(stock.idAtProviders)
+                for stock in offer.bookableStocks
+                if stock.idAtProviders
+            ]
+            cleaned_show_ids = [s for s in show_ids if s is not None]
+            if not cleaned_show_ids:
+                return {}
+            return external_bookings_api.get_shows_stock(offer.venueId, cleaned_show_ids)
+        case "BoostStocks":
+            if not FeatureToggle.ENABLE_BOOST_API_INTEGRATION.is_active():
+                raise feature.DisabledFeatureError("ENABLE_BOOST_API_INTEGRATION is inactive")
+            film_id = cinema_providers_utils.get_boost_or_cgr_or_ems_film_id_from_uuid(offer.idAtProvider)
+            if not film_id:
+                return {}
+            return external_bookings_api.get_movie_stocks(offer.venueId, film_id)
+        case "CGRStocks":
+            if not FeatureToggle.ENABLE_CGR_INTEGRATION.is_active():
+                raise feature.DisabledFeatureError("ENABLE_CGR_INTEGRATION is inactive")
+            cgr_allocine_film_id = cinema_providers_utils.get_boost_or_cgr_or_ems_film_id_from_uuid(offer.idAtProvider)
+            if not cgr_allocine_film_id:
+                return {}
+            return external_bookings_api.get_movie_stocks(offer.venueId, cgr_allocine_film_id)
+        case "EMSStocks":
+            if not FeatureToggle.ENABLE_EMS_INTEGRATION.is_active():
+                raise feature.DisabledFeatureError("ENABLE_EMS_INTEGRATION is inactive")
+            film_id = cinema_providers_utils.get_boost_or_cgr_or_ems_film_id_from_uuid(offer.idAtProvider)
+            if not film_id:
+                return {}
+            return external_bookings_api.get_movie_stocks(offer.venueId, film_id)
+    raise ValueError(f"Unknown Provider: {provider_class}")
+
+
 def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer: models.Offer) -> None:
     try:
         venue_provider = external_bookings_api.get_active_cinema_venue_provider(offer.venueId)
@@ -1169,42 +1207,9 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer:
     )
     offer_current_stocks = offer.bookableStocks
 
-    match venue_provider.provider.localClass:
-        case "CDSStocks":
-            if not FeatureToggle.ENABLE_CDS_IMPLEMENTATION.is_active():
-                raise feature.DisabledFeatureError("ENABLE_CDS_IMPLEMENTATION is inactive")
-            show_ids = [
-                cinema_providers_utils.get_cds_show_id_from_uuid(stock.idAtProviders)
-                for stock in offer.bookableStocks
-                if stock.idAtProviders
-            ]
-            cleaned_show_ids = [s for s in show_ids if s is not None]
-            if not cleaned_show_ids:
-                return
-            shows_remaining_places = external_bookings_api.get_shows_stock(offer.venueId, cleaned_show_ids)
-        case "BoostStocks":
-            if not FeatureToggle.ENABLE_BOOST_API_INTEGRATION.is_active():
-                raise feature.DisabledFeatureError("ENABLE_BOOST_API_INTEGRATION is inactive")
-            film_id = cinema_providers_utils.get_boost_or_cgr_or_ems_film_id_from_uuid(offer.idAtProvider)
-            if not film_id:
-                return
-            shows_remaining_places = external_bookings_api.get_movie_stocks(offer.venueId, film_id)
-        case "CGRStocks":
-            if not FeatureToggle.ENABLE_CGR_INTEGRATION.is_active():
-                raise feature.DisabledFeatureError("ENABLE_CGR_INTEGRATION is inactive")
-            cgr_allocine_film_id = cinema_providers_utils.get_boost_or_cgr_or_ems_film_id_from_uuid(offer.idAtProvider)
-            if not cgr_allocine_film_id:
-                return
-            shows_remaining_places = external_bookings_api.get_movie_stocks(offer.venueId, cgr_allocine_film_id)
-        case "EMSStocks":
-            if not FeatureToggle.ENABLE_EMS_INTEGRATION.is_active():
-                raise feature.DisabledFeatureError("ENABLE_EMS_INTEGRATION is inactive")
-            film_id = cinema_providers_utils.get_boost_or_cgr_or_ems_film_id_from_uuid(offer.idAtProvider)
-            if not film_id:
-                return
-            shows_remaining_places = external_bookings_api.get_movie_stocks(offer.venueId, film_id)
-        case _:
-            raise ValueError(f"Unknown Provider: {venue_provider.provider.localClass}")
+    shows_remaining_places = get_shows_remaining_places_from_provider(venue_provider.provider.localClass, offer)
+    if not shows_remaining_places:
+        return
 
     offer_has_new_sold_out_stock = False
     for stock in offer_current_stocks:
