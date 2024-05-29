@@ -51,7 +51,7 @@ export type GetCollectiveOfferResponseModel = {
   provider?: GetCollectiveOfferProviderResponseModel | null;
   status: OfferStatus;
   students: Array<StudentLevels>;
-  subcategoryId?: SubcategoryIdEnum | null;
+  subcategoryId?: (SubcategoryIdEnum | string) | null;
   teacher?: EducationalRedactorResponseModel | null;
   templateId?: number | null;
   venue: GetCollectiveOfferVenueResponseModel;

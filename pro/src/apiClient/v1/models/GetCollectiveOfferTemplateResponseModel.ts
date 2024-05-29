@@ -44,7 +44,7 @@ export type GetCollectiveOfferTemplateResponseModel = {
   offerVenue: CollectiveOfferOfferVenueResponseModel;
   status: OfferStatus;
   students: Array<StudentLevels>;
-  subcategoryId?: SubcategoryIdEnum | null;
+  subcategoryId?: (SubcategoryIdEnum | string) | null;
   venue: GetCollectiveOfferVenueResponseModel;
   visualDisabilityCompliant?: boolean | null;
 };
