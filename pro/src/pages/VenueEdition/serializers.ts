@@ -4,8 +4,7 @@ import { VenueEditionFormValues, Day } from './types'
 
 export const serializeEditVenueBodyModel = (
   formValues: VenueEditionFormValues,
-  hideSiret: boolean,
-  isOpeningHoursEnabled: boolean
+  hideSiret: boolean
 ): EditVenueBodyModel => {
   const payload: EditVenueBodyModel = {
     audioDisabilityCompliant: formValues.accessibility.audio,
@@ -22,9 +21,7 @@ export const serializeEditVenueBodyModel = (
     isEmailAppliedOnAllOffers: true,
     isAccessibilityAppliedOnAllOffers:
       formValues.isAccessibilityAppliedOnAllOffers,
-    openingHours: isOpeningHoursEnabled
-      ? serializeOpeningHours(formValues)
-      : undefined,
+    openingHours: serializeOpeningHours(formValues),
   }
 
   if (hideSiret) {
