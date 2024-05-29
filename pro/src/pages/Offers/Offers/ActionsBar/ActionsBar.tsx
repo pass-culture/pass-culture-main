@@ -185,7 +185,8 @@ function canDeactivateCollectiveOffers(
     return (
       offer.status === OfferStatus.ACTIVE ||
       (offer.status === OfferStatus.EXPIRED &&
-        offer.booking?.booking_status !== CollectiveBookingStatus.CANCELLED)
+        (!offer.booking?.booking_status ||
+          offer.booking.booking_status === CollectiveBookingStatus.CANCELLED))
     )
   })
 }
