@@ -88,6 +88,7 @@ module.exports = {
     eqeqeq: 'error',
     'require-await': 'error',
     'import/no-named-as-default': 'error',
+    'import/no-default-export': 'error',
     '@typescript-eslint/await-thenable': 'error',
     'react/prop-types': 'error',
     '@typescript-eslint/prefer-string-starts-ends-with': 'error',
@@ -108,4 +109,12 @@ module.exports = {
       },
     ],
   },
+  overrides: [
+    {
+      files: ['*.stories.tsx'],
+      rules: {
+        'import/no-default-export': 'off',
+      },
+    },
+  ],
 }
