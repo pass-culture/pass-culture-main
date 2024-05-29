@@ -5,7 +5,7 @@ import React, { useState } from 'react'
 
 import { api } from 'apiClient/api'
 import { BankAccountResponseModel, ManagedVenues } from 'apiClient/v1'
-import useAnalytics from 'app/App/analytics/firebase'
+import { useAnalytics } from 'app/App/analytics/firebase'
 import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'

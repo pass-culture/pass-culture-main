@@ -5,7 +5,7 @@ import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import { SaveNewOnboardingDataQueryModel, Target } from 'apiClient/v1'
-import useAnalytics from 'app/App/analytics/firebase'
+import { useAnalytics } from 'app/App/analytics/firebase'
 import { Callout } from 'components/Callout/Callout'
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'

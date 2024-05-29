@@ -16,7 +16,7 @@ const mockLogEvent = vi.fn()
 
 describe('VenueCrationLinks', () => {
   beforeEach(() => {
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
   })

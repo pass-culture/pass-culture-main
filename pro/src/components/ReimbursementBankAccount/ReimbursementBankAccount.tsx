@@ -7,7 +7,7 @@ import {
   BankAccountResponseModel,
   ManagedVenues,
 } from 'apiClient/v1'
-import useAnalytics from 'app/App/analytics/firebase'
+import { useAnalytics } from 'app/App/analytics/firebase'
 import { BankAccountEvents } from 'core/FirebaseEvents/constants'
 import fullErrorIcon from 'icons/full-error.svg'
 import fullLinkIcon from 'icons/full-link.svg'

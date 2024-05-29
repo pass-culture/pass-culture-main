@@ -1,7 +1,7 @@
 import React from 'react'
 import { useLocation } from 'react-router-dom'
 
-import useAnalytics from 'app/App/analytics/firebase'
+import { useAnalytics } from 'app/App/analytics/firebase'
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
 import { Step, Stepper } from 'components/Stepper/Stepper'
 import { DEFAULT_ACTIVITY_VALUES } from 'context/SignupJourneyContext/constants'

@@ -127,7 +127,7 @@ const mockLogEvent = vi.fn()
 
 describe('venue form trackers', () => {
   beforeEach(() => {
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
   })

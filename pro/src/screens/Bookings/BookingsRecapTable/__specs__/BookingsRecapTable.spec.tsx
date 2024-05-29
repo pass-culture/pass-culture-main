@@ -278,7 +278,7 @@ describe('components | BookingsRecapTable', () => {
     )
 
     const mockLogEvent = vi.fn()
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       ...vi.importActual('app/App/analytics/firebase'),
       logEvent: mockLogEvent,
     }))

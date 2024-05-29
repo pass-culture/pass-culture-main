@@ -120,7 +120,7 @@ describe('CollectiveOfferFromRequest', () => {
   })
 
   it('should create offer on button click', async () => {
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
 

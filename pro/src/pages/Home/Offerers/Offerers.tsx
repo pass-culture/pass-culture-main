@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useLocation, useSearchParams } from 'react-router-dom'
 
 import { GetOffererResponseModel, VenueTypeResponseModel } from 'apiClient/v1'
-import useAnalytics from 'app/App/analytics/firebase'
+import { useAnalytics } from 'app/App/analytics/firebase'
 import { RedirectDialog } from 'components/Dialog/RedirectDialog/RedirectDialog'
 import { SoftDeletedOffererWarning } from 'components/SoftDeletedOffererWarning/SoftDeletedOffererWarning'
 import { Events } from 'core/FirebaseEvents/constants'

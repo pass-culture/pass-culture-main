@@ -89,7 +89,7 @@ describe('OfferType', () => {
       isValidated: true,
     })
 
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
   })

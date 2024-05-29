@@ -1,6 +1,6 @@
 import React from 'react'
 
-import useAnalytics from 'app/App/analytics/firebase'
+import { useAnalytics } from 'app/App/analytics/firebase'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { Events } from 'core/FirebaseEvents/constants'
 import { computeOffersUrl } from 'core/Offers/utils/computeOffersUrl'

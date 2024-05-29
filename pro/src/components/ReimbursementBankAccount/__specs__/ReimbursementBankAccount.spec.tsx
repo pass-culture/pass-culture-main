@@ -236,13 +236,13 @@ describe('ReimbursementBankAccount', () => {
 
   describe('trackers', () => {
     beforeEach(() => {
-      vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
         logEvent: mockLogEvent,
       }))
     })
 
     it('should track attach venue button click', async () => {
-      vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
         logEvent: mockLogEvent,
       }))
 
@@ -297,7 +297,7 @@ describe('ReimbursementBankAccount', () => {
   })
 
   it('should call the onUpdateButtonClick function when clicking the action button', async () => {
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
 

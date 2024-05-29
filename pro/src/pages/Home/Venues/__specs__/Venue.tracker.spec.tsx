@@ -32,7 +32,7 @@ describe('venue create offer link', () => {
       },
       isFirstVenue: false,
     }
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
   })

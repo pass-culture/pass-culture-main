@@ -15,7 +15,7 @@ const renderDetailsButtonCell = (props: DetailsButtonCellProps) => {
 describe('DetailsButtonCell', () => {
   it('should log event when clicking on the button', async () => {
     const mockLogEvent = vi.fn()
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       ...vi.importActual('app/App/analytics/firebase'),
       logEvent: mockLogEvent,
     }))

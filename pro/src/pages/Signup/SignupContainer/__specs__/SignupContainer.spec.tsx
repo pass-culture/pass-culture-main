@@ -53,7 +53,7 @@ const renderSignUp = (options?: RenderWithProvidersOptions) =>
 describe('Signup', () => {
   beforeEach(() => {
     vi.spyOn(api, 'signupProV2').mockResolvedValue()
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
 

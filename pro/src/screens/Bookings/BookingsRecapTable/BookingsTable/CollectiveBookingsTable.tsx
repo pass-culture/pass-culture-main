@@ -2,7 +2,7 @@ import cn from 'classnames'
 import React, { useEffect } from 'react'
 
 import { CollectiveBookingResponseModel } from 'apiClient/v1'
-import useAnalytics from 'app/App/analytics/firebase'
+import { useAnalytics } from 'app/App/analytics/firebase'
 import { SortArrow } from 'components/StocksEventList/SortArrow'
 import { Events } from 'core/FirebaseEvents/constants'
 import { Audience } from 'core/shared/types'

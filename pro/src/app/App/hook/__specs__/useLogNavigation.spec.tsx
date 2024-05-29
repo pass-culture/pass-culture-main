@@ -46,7 +46,7 @@ const renderLogNavigation = (initialEntries: string = '') => {
 
 describe('useLogNavigation', () => {
   it('should log an event on page load', () => {
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
     renderLogNavigation()
@@ -62,7 +62,7 @@ describe('useLogNavigation', () => {
   })
 
   it('should log an event containing previous location on location changes', async () => {
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
     renderLogNavigation()
@@ -95,7 +95,7 @@ describe('useLogNavigation', () => {
   })
 
   it('should log an event containing query string and url parameters', () => {
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
     renderWithProviders(

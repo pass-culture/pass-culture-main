@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react'
 
-import useAnalytics from 'app/App/analytics/firebase'
+import { useAnalytics } from 'app/App/analytics/firebase'
 import { PreFiltersParams } from 'core/Bookings/types'
 import { Events } from 'core/FirebaseEvents/constants'
 import { useOnClickOrFocusOutside } from 'hooks/useOnClickOrFocusOutside'

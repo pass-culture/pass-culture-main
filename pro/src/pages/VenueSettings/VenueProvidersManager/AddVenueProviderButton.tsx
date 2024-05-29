@@ -3,7 +3,7 @@ import useSWR, { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import { GetVenueResponseModel } from 'apiClient/v1'
-import useAnalytics from 'app/App/analytics/firebase'
+import { useAnalytics } from 'app/App/analytics/firebase'
 import {
   GET_PROVIDERS_QUERY_KEY,
   GET_VENUE_PROVIDERS_QUERY_KEY,
