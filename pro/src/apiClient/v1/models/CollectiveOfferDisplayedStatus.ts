@@ -14,4 +14,6 @@ export enum CollectiveOfferDisplayedStatus {
   INACTIVE = 'INACTIVE',
   EXPIRED = 'EXPIRED',
   ENDED = 'ENDED',
+  CANCELLED = 'CANCELLED',
+  ARCHIVED = 'ARCHIVED',
 }

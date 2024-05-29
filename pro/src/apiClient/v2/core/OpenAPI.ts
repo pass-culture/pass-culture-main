@@ -20,7 +20,7 @@ export type OpenAPIConfig = {
 };
 
 export const OpenAPI: OpenAPIConfig = {
-  BASE: 'http://localhost:5001',
+  BASE: 'https://backend.integration.passculture.pro',
   VERSION: '0.1',
   WITH_CREDENTIALS: false,
   CREDENTIALS: 'include',
