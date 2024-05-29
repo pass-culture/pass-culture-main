@@ -2,7 +2,7 @@ import React, { useCallback } from 'react'
 
 import { ImagePreview } from 'components/ImagePreview/ImagePreview'
 import { ImagePreviewsWrapper } from 'components/ImagePreview/ImagePreviewsWrapper'
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 
 import homeShell from '../assets/venue-home-shell.png'
 import venueShell from '../assets/venue-shell.png'

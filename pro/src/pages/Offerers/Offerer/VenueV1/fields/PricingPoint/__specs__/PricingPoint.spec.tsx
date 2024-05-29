@@ -64,8 +64,8 @@ describe('PricingPoint', () => {
     const mockNotifyError = vi.fn()
     const notifsImport = (await vi.importActual(
       'hooks/useNotification'
-    )) as ReturnType<typeof useNotification.default>
-    vi.spyOn(useNotification, 'default').mockImplementation(() => ({
+    )) as ReturnType<typeof useNotification.useNotification>
+    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,
       error: mockNotifyError,
     }))

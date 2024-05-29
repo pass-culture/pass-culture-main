@@ -9,7 +9,7 @@ import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
 import { Events } from 'core/FirebaseEvents/constants'
 import { useInitReCaptcha } from 'hooks/useInitReCaptcha'
 import { useLogEventOnUnload } from 'hooks/useLogEventOnUnload'
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 import { useRedirectLoggedUser } from 'hooks/useRedirectLoggedUser'
 import { getReCaptchaToken } from 'utils/recaptcha'
 

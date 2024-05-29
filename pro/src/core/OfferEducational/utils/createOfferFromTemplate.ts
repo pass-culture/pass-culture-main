@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { serializeEducationalOfferers } from 'core/OfferEducational/utils/serializeEducationalOfferers'
 import { SENT_DATA_ERROR_MESSAGE } from 'core/shared/constants'
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 
 import { computeInitialValuesFromOffer } from './computeInitialValuesFromOffer'
 import { createCollectiveOfferPayload } from './createOfferPayload'

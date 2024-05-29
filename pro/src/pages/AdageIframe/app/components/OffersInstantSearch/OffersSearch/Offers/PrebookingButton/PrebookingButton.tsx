@@ -3,7 +3,7 @@ import React, { useCallback, useState } from 'react'
 
 import { OfferStockResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 import fullStockIcon from 'icons/full-stock.svg'
 import strokeHourglass from 'icons/stroke-hourglass.svg'
 import { logOfferConversion } from 'pages/AdageIframe/libs/initAlgoliaAnalytics'

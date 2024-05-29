@@ -1,5 +1,5 @@
 import { api } from 'apiClient/api'
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 
 import { OfferEducationalFormValues } from '../types'
 

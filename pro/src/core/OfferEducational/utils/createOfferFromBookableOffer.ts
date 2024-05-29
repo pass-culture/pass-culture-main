@@ -4,7 +4,7 @@ import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
 import { OfferEducationalFormValues } from 'core/OfferEducational/types'
 import { serializeEducationalOfferers } from 'core/OfferEducational/utils/serializeEducationalOfferers'
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 
 import { computeInitialValuesFromOffer } from './computeInitialValuesFromOffer'
 import { postCollectiveOfferImage } from './postCollectiveOfferImage'

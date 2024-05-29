@@ -9,7 +9,7 @@ import {
 } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import { LOG_CATALOG_VIEW_QUERY_KEY } from 'config/swrQueryKeys'
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 import { LOGS_DATA } from 'utils/config'
 
 import { initAlgoliaAnalytics } from '../libs/initAlgoliaAnalytics'

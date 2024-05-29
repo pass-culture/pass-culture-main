@@ -43,7 +43,7 @@ describe('src | components | pages | Signup | validation', () => {
   }
 
   beforeEach(() => {
-    vi.spyOn(useNotification, 'default').mockImplementation(() => ({
+    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...mockUseNotification,
     }))
     vi.spyOn(useCurrentUser, 'default').mockReturnValue({

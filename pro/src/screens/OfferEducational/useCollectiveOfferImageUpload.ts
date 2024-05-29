@@ -7,7 +7,7 @@ import {
 } from 'apiClient/v1'
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { OfferCollectiveImage } from 'core/Offers/types'
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 import { sendSentryCustomError } from 'utils/sendSentryCustomError'
 
 export const useCollectiveOfferImageUpload = (
