@@ -26,10 +26,14 @@ export const GET_EVENT_PRICE_CATEGORIES_AND_SCHEDULES_BY_DATE_QUERY_KEY =
   'getPriceCategoriesAndSchedulesByDate'
 export const GET_FEATURES_QUERY_KEY = 'getFeatures'
 export const GET_HAS_BOOKINGS_QUERY_KEY = 'getHasBookings'
+export const GET_HAS_INVOICE_QUERY_KEY = 'getHasInvoice'
+export const GET_INVOICES_QUERY_KEY = 'getInvoices'
 export const GET_LOCAL_OFFERERS_PLAYLIST_QUERY_KEY = 'getLocalOfferersPlaylist'
 export const GET_MUSIC_TYPES_QUERY_KEY = 'getMusicTypes'
 export const GET_NEW_OFFERERS_PLAYLIST_QUERY_KEY = 'getNewOfferersPlaylist'
 export const GET_OFFER_QUERY_KEY = 'getOffer'
+export const GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY =
+  'getOffererBankAccountsAndAttachedVenues'
 export const GET_OFFERER_QUERY_KEY = 'getOfferer'
 export const GET_OFFERER_NAMES_QUERY_KEY = 'getOffererNames'
 export const GET_PROVIDERS_QUERY_KEY = 'getProviders'
@@ -46,7 +50,3 @@ export const LOG_OFFER_DETAILS_CLICK_QUERY_KEY = 'logOfferDetailsButtonClick'
 export const LOG_OFFER_TEMPLATE_DETAILS_CLICK_QUERY_KEY =
   'logOfferTemplateDetailsButtonClick'
 export const LOG_TRACKING_FILTER_QUERY_KEY = 'logTrackingFilter'
-export const GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY =
-  'getOffererBankAccountsAndAttachedVenues'
-export const GET_HAS_INVOICE_QUERY_KEY = 'getHasInvoice'
-export const GET_INVOICES_QUERY_KEY = 'getInvoices'
