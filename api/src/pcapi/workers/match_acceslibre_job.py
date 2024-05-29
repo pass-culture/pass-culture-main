@@ -6,5 +6,5 @@ from pcapi.workers.decorators import job
 
 @job(worker.low_queue)
 def match_acceslibre_job(venue_id: int) -> None:
-    if venue := offerers_models.Venue.query.get(venue_id):
+    if venue := offerers_models.Venue.query.filter_by(id=venue_id).one_or_none():
         match_acceslibre(venue)

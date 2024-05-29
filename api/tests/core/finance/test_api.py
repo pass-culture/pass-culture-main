@@ -2122,7 +2122,7 @@ class GenerateInvoiceTest:
         cashflow_ids = [c.id for c in models.Cashflow.query.all()]
 
         bank_account_id = bank_account.id
-        with assert_num_queries(self.EXPECTED_NUM_QUERIES):
+        with assert_num_queries(self.EXPECTED_NUM_QUERIES + 2):
             invoice = api._generate_invoice(
                 bank_account_id=bank_account_id,
                 cashflow_ids=cashflow_ids,
@@ -2166,7 +2166,7 @@ class GenerateInvoiceTest:
         cashflow_ids = [c.id for c in models.Cashflow.query.all()]
 
         bank_account_id = bank_account.id
-        with assert_num_queries(self.EXPECTED_NUM_QUERIES):
+        with assert_num_queries(self.EXPECTED_NUM_QUERIES + 1):
             invoice = api._generate_invoice(
                 bank_account_id=bank_account_id,
                 cashflow_ids=cashflow_ids,
@@ -2206,7 +2206,7 @@ class GenerateInvoiceTest:
         cashflow_ids = [c.id for c in models.Cashflow.query.all()]
 
         bank_account_id = bank_account.id
-        with assert_num_queries(self.EXPECTED_NUM_QUERIES):
+        with assert_num_queries(self.EXPECTED_NUM_QUERIES + 1):
             invoice = api._generate_invoice(
                 bank_account_id=bank_account_id,
                 cashflow_ids=cashflow_ids,
@@ -2251,7 +2251,7 @@ class GenerateInvoiceTest:
         cashflow_ids = [c.id for c in models.Cashflow.query.all()]
 
         bank_account_id = bank_account.id
-        with assert_num_queries(self.EXPECTED_NUM_QUERIES):
+        with assert_num_queries(self.EXPECTED_NUM_QUERIES + 2):
             invoice = api._generate_invoice(
                 bank_account_id=bank_account_id,
                 cashflow_ids=cashflow_ids,
@@ -2433,7 +2433,7 @@ class PrepareInvoiceContextTest:
             bank_account_id=bank_account.id,
             cashflow_ids=cashflow_ids,
         )
-        batch = models.CashflowBatch.query.get(batch.id)
+        batch = models.CashflowBatch.query.filter_by(id=batch.id).one()
 
         context = api._prepare_invoice_context(invoice, batch)
 
@@ -2500,7 +2500,7 @@ class PrepareInvoiceContextTest:
             bank_account_id=bank_account.id,
             cashflow_ids=cashflow_ids,
         )
-        batch = models.CashflowBatch.query.get(batch.id)
+        batch = models.CashflowBatch.query.filter_by(id=batch.id).one()
 
         context = api._prepare_invoice_context(invoice, batch)
 
@@ -2575,7 +2575,7 @@ class GenerateDebitNoteHtmlTest:
             cashflow_ids=cashflow_ids,
             is_debit_note=True,
         )
-        batch = models.CashflowBatch.query.get(batch.id)
+        batch = models.CashflowBatch.query.filter_by(id=batch.id).one()
         invoice_html = api._generate_debit_note_html(invoice, batch)
         expected_generated_file_name = "rendered_debit_note.html"
 
@@ -2688,7 +2688,7 @@ class GenerateInvoiceHtmlTest:
             cashflow_ids=cashflow_ids,
         )
 
-        batch = models.CashflowBatch.query.get(batch.id)
+        batch = models.CashflowBatch.query.filter_by(id=batch.id).one()
         invoice_html = api._generate_invoice_html(invoice, batch)
         expected_generated_file_name = "rendered_invoice.html"
         with open(self.TEST_FILES_PATH / "invoice" / expected_generated_file_name, "r", encoding="utf-8") as f:
@@ -2717,7 +2717,7 @@ class GenerateInvoiceHtmlTest:
     @override_features(WIP_ENABLE_FINANCE_INCIDENT=True)
     def test_basics(self, invoice_data):
         bank_account, stocks, venue = invoice_data
-        pricing_point = offerers_models.Venue.query.get(venue.current_pricing_point_id)
+        pricing_point = offerers_models.Venue.query.filter_by(id=venue.current_pricing_point_id).one()
         only_educational_venue = offerers_factories.VenueFactory(
             name="Coiffeur collecTIF",
             pricing_point=pricing_point,

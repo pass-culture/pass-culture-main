@@ -884,16 +884,16 @@ class DeleteStockTest:
         db.session.expunge_all()
         stock = models.Stock.query.one()
         assert stock.isSoftDeleted
-        booking1 = bookings_models.Booking.query.get(booking1.id)
+        booking1 = bookings_models.Booking.query.filter_by(id=booking1.id).one_or_none()
         assert booking1.status == bookings_models.BookingStatus.CANCELLED
         assert booking1.cancellationReason == bookings_models.BookingCancellationReasons.OFFERER
-        booking2 = bookings_models.Booking.query.get(booking2.id)
+        booking2 = bookings_models.Booking.query.filter_by(id=booking2.id).one_or_none()
         assert booking2.status == bookings_models.BookingStatus.CANCELLED  # unchanged
         assert booking2.cancellationReason == bookings_models.BookingCancellationReasons.BENEFICIARY
-        booking3 = bookings_models.Booking.query.get(booking3.id)
+        booking3 = bookings_models.Booking.query.filter_by(id=booking3.id).one_or_none()
         assert booking3.status == bookings_models.BookingStatus.CANCELLED  # cancel used booking for event offer
         assert booking3.cancellationReason == bookings_models.BookingCancellationReasons.OFFERER
-        booking4 = bookings_models.Booking.query.get(booking4.id)
+        booking4 = bookings_models.Booking.query.filter_by(id=booking4.id).one_or_none()
         assert booking4.status == bookings_models.BookingStatus.USED  # unchanged
         assert booking4.cancellationDate is None
         assert booking4.pricings[0].status == finance_models.PricingStatus.PROCESSED  # unchanged
@@ -1305,7 +1305,7 @@ class BatchUpdateOffersTest:
         with caplog.at_level(logging.INFO):
             api.batch_update_offers(query, {"isActive": True})
 
-        assert not models.Offer.query.get(pending_offer.id).isActive
+        assert not models.Offer.query.filter_by(id=pending_offer.id).one().isActive
         mocked_async_index_offer_ids.assert_not_called()
 
         assert len(caplog.records) == 2
@@ -1335,11 +1335,11 @@ class BatchUpdateOffersTest:
         with caplog.at_level(logging.INFO):
             api.batch_update_offers(query, {"isActive": True})
 
-        assert models.Offer.query.get(offer1.id).isActive
-        assert models.Offer.query.get(offer2.id).isActive
-        assert not models.Offer.query.get(offer3.id).isActive
-        assert not models.Offer.query.get(rejected_offer.id).isActive
-        assert not models.Offer.query.get(pending_offer.id).isActive
+        assert models.Offer.query.filter_by(id=offer1.id).one().isActive
+        assert models.Offer.query.filter_by(id=offer2.id).one().isActive
+        assert not models.Offer.query.filter_by(id=offer3.id).one().isActive
+        assert not models.Offer.query.filter_by(id=rejected_offer.id).one().isActive
+        assert not models.Offer.query.filter_by(id=pending_offer.id).one().isActive
         mocked_async_index_offer_ids.assert_called_once()
         assert set(mocked_async_index_offer_ids.call_args[0][0]) == set([offer1.id, offer2.id])
 
@@ -1367,9 +1367,9 @@ class BatchUpdateOffersTest:
         with caplog.at_level(logging.INFO):
             api.batch_update_offers(query, {"isActive": False})
 
-        assert not models.Offer.query.get(offer1.id).isActive
-        assert not models.Offer.query.get(offer2.id).isActive
-        assert models.Offer.query.get(offer3.id).isActive
+        assert not models.Offer.query.filter_by(id=offer1.id).one().isActive
+        assert not models.Offer.query.filter_by(id=offer2.id).one().isActive
+        assert models.Offer.query.filter_by(id=offer3.id).one().isActive
 
         assert len(caplog.records) == 3
         first_record = caplog.records[0]

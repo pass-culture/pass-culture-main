@@ -331,7 +331,7 @@ def reset_password_with_token(new_password: str, encoded_reset_password_token: s
     token = None
     try:
         token = token_utils.Token.load_and_check(encoded_reset_password_token, token_utils.TokenType.RESET_PASSWORD)
-        user = models.User.query.get(token.user_id)
+        user = models.User.query.filter_by(id=token.user_id).one()
     except exceptions.InvalidToken:
         raise ApiErrors({"token": ["Le token de changement de mot de passe est invalide."]})
 

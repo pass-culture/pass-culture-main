@@ -1405,7 +1405,7 @@ class UpdateProfileTest:
 
         assert response.status_code == 204
 
-        user = users_models.User.query.get(user.id)
+        user = users_models.User.query.filter_by(id=user.id).one_or_none()
         assert not user.is_beneficiary
         assert user.firstName == "John"
         assert user.lastName == "Doe"
@@ -1592,7 +1592,7 @@ class UpdateProfileTest:
 
         assert response.status_code == 204
 
-        user = users_models.User.query.get(user.id)
+        user = users_models.User.query.filter_by(id=user.id).one_or_none()
         assert user.firstName == "Alexandra"
         assert user.lastName == "Stan"
         assert user.has_beneficiary_role

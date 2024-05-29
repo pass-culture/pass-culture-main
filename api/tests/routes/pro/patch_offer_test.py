@@ -43,7 +43,7 @@ class Returns200Test:
         assert response.json["id"] == offer.id
         assert response.json["venue"]["id"] == offer.venue.id
 
-        updated_offer = Offer.query.get(offer.id)
+        updated_offer = Offer.query.filter_by(id=offer.id).one()
         assert updated_offer.name == "New name"
         assert updated_offer.externalTicketOfficeUrl == "http://example.net"
         assert updated_offer.mentalDisabilityCompliant
@@ -65,7 +65,7 @@ class Returns200Test:
         response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
 
         assert response.status_code == 200
-        offer = Offer.query.get(offer.id)
+        offer = Offer.query.filter_by(id=offer.id).one()
         assert offer.withdrawalDetails == "Veuillez récuperer vos billets à l'accueil :)"
         assert offer.withdrawalType == WithdrawalTypeEnum.NO_TICKET
 
@@ -363,7 +363,7 @@ class Returns403Test:
         assert response.json["global"] == [
             "Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."
         ]
-        assert Offer.query.get(offer.id).name == "Old name"
+        assert Offer.query.filter_by(id=offer.id).one().name == "Old name"
 
 
 class Returns404Test:

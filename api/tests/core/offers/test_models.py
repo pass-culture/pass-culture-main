@@ -472,7 +472,7 @@ class StockQuantityTest:
         repository.save(stock)
 
         # Then
-        assert models.Stock.query.get(stock.id).quantity == 3
+        assert models.Stock.query.filter_by(id=stock.id).one().quantity == 3
 
     def test_quantity_update_with_more_than_sum_of_bookings(self):
         # Given
@@ -484,7 +484,7 @@ class StockQuantityTest:
         repository.save(stock)
 
         # Then
-        assert models.Stock.query.get(stock.id).quantity == 3
+        assert models.Stock.query.filter_by(id=stock.id).one().quantity == 3
 
     def test_cannot_update_if_less_than_sum_of_bookings(self):
         # Given

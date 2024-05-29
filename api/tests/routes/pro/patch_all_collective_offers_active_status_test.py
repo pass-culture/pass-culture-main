@@ -31,9 +31,9 @@ class Returns204Test:
 
         # Then
         assert response.status_code == 204
-        assert CollectiveOffer.query.get(offer1.id).isActive
-        assert CollectiveOffer.query.get(offer2.id).isActive
-        assert CollectiveOfferTemplate.query.get(offer3.id).isActive
+        assert CollectiveOffer.query.filter_by(id=offer1.id).one().isActive
+        assert CollectiveOffer.query.filter_by(id=offer2.id).one().isActive
+        assert CollectiveOfferTemplate.query.filter_by(id=offer3.id).one().isActive
 
     def when_deactivating_all_existing_offers(self, client):
         # Given
@@ -52,9 +52,9 @@ class Returns204Test:
 
         # Then
         assert response.status_code == 204
-        assert not CollectiveOffer.query.get(offer1.id).isActive
-        assert not CollectiveOffer.query.get(offer2.id).isActive
-        assert not CollectiveOfferTemplate.query.get(offer3.id).isActive
+        assert not CollectiveOffer.query.filter_by(id=offer1.id).one().isActive
+        assert not CollectiveOffer.query.filter_by(id=offer2.id).one().isActive
+        assert not CollectiveOfferTemplate.query.filter_by(id=offer3.id).one().isActive
 
     def should_update_offers_by_given_filters(self, client):
         # Given
@@ -89,11 +89,11 @@ class Returns204Test:
 
         # Then
         assert response.status_code == 204
-        assert not CollectiveOffer.query.get(matching_offer1.id).isActive
-        assert not CollectiveOffer.query.get(matching_offer2.id).isActive
-        assert CollectiveOffer.query.get(offer_out_of_date_range.id).isActive
-        assert CollectiveOffer.query.get(offer_on_other_venue.id).isActive
-        assert CollectiveOffer.query.get(offer_with_not_matching_name.id).isActive
+        assert not CollectiveOffer.query.filter_by(id=matching_offer1.id).one().isActive
+        assert not CollectiveOffer.query.filter_by(id=matching_offer2.id).one().isActive
+        assert CollectiveOffer.query.filter_by(id=offer_out_of_date_range.id).one().isActive
+        assert CollectiveOffer.query.filter_by(id=offer_on_other_venue.id).one().isActive
+        assert CollectiveOffer.query.filter_by(id=offer_with_not_matching_name.id).one().isActive
 
     def test_only_approved_offers_patch(self, client):
         approved_offer = CollectiveOfferFactory(isActive=False)

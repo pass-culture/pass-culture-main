@@ -162,7 +162,7 @@ def validate_user_email(body: serializers.ChangeBeneficiaryEmailBody) -> seriali
         # Returning an error message might help the end client find
         # existing email addresses through user enumeration attacks.
         token = token_utils.Token.load_without_checking(body.token)
-        user = users_models.User.query.get(token.user_id)
+        user = users_models.User.query.filter_by(id=token.user_id).one()
     return serializers.ChangeBeneficiaryEmailResponse(
         access_token=api.create_user_access_token(user),
         refresh_token=api.create_user_refresh_token(user, body.device_info),

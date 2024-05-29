@@ -88,7 +88,7 @@ class Returns200Test:
         assert response.json["nationalProgram"] == {"id": national_program.id, "name": national_program.name}
         assert not response.json["isTemplate"]
 
-        updated_offer = CollectiveOffer.query.get(offer.id)
+        updated_offer = CollectiveOffer.query.filter_by(id=offer.id).one()
         assert updated_offer.name == "New name"
         assert updated_offer.mentalDisabilityCompliant
         assert updated_offer.contactEmail == "toto@example.com"
@@ -479,7 +479,7 @@ class Returns403Test:
         assert response.json["global"] == [
             "Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."
         ]
-        assert CollectiveOffer.query.get(offer.id).name == "Old name"
+        assert CollectiveOffer.query.filter_by(id=offer.id).one().name == "Old name"
 
     def test_cannot_update_offer_with_used_booking(self, client):
         # Given

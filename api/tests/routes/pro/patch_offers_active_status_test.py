@@ -25,8 +25,8 @@ class Returns204Test:
 
         # Then
         assert response.status_code == 204
-        assert Offer.query.get(offer1.id).isActive
-        assert Offer.query.get(offer2.id).isActive
+        assert Offer.query.filter_by(id=offer1.id).one().isActive
+        assert Offer.query.filter_by(id=offer2.id).one().isActive
 
     def when_deactivating_existing_offers(self, client):
         # Given
@@ -45,8 +45,8 @@ class Returns204Test:
 
         # Then
         assert response.status_code == 204
-        assert not Offer.query.get(offer.id).isActive
-        assert not Offer.query.get(synchronized_offer.id).isActive
+        assert not Offer.query.filter_by(id=offer.id).one().isActive
+        assert not Offer.query.filter_by(id=synchronized_offer.id).one().isActive
 
     def test_only_approved_offers_patch(self, client):
         approved_offer = offers_factories.OfferFactory(isActive=False)

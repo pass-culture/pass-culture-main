@@ -44,7 +44,7 @@ def generate_and_store_invoice_task(payload: GenerateInvoicePayload) -> None:
             # When it's the last invoice, generate and upload the invoices file
             if current_app.redis_client.decr(finance_conf.REDIS_INVOICES_LEFT_TO_GENERATE) == 0:
                 try:
-                    batch = finance_models.CashflowBatch.query.get(payload.batch_id)
+                    batch = finance_models.CashflowBatch.query.filter_by(id=payload.batch_id).one()
                     path = finance_api.generate_invoice_file(batch)
                     logger.info("Generated CSV invoices file")
                     drive_folder_name = finance_api._get_drive_folder_name(batch)

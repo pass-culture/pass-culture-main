@@ -103,7 +103,7 @@ class Returns200Test:
         assert response.status_code == 201
 
         offer_id = response.json["id"]
-        offer = CollectiveOffer.query.get(offer_id)
+        offer = CollectiveOffer.query.filter_by(id=offer_id).one()
 
         assert_offer_values(offer, data, user, offerer)
 
@@ -122,7 +122,7 @@ class Returns200Test:
         assert response.status_code == 201
 
         offer_id = response.json["id"]
-        offer = CollectiveOffer.query.get(offer_id)
+        offer = CollectiveOffer.query.filter_by(id=offer_id).one()
 
         assert_offer_values(offer, data, user, offerer)
 
@@ -171,7 +171,7 @@ class Returns200Test:
         assert response.status_code == 201, response.json
 
         offer_id = response.json["id"]
-        offer = CollectiveOffer.query.get(offer_id)
+        offer = CollectiveOffer.query.filter_by(id=offer_id).one()
 
         assert_offer_values(offer, data, user, offerer)
 
@@ -202,7 +202,7 @@ class Returns200Test:
         assert response.status_code == 201, response.json
 
         offer_id = response.json["id"]
-        offer = CollectiveOffer.query.get(offer_id)
+        offer = CollectiveOffer.query.filter_by(id=offer_id).one()
 
         # Alter contactEmail because we expect None although we sent ""
         data["contactEmail"] = None
@@ -237,7 +237,7 @@ class Returns200Test:
         assert response.status_code == 201, response.json
 
         offer_id = response.json["id"]
-        offer = CollectiveOffer.query.get(offer_id)
+        offer = CollectiveOffer.query.filter_by(id=offer_id).one()
 
         # Alter contactEmail because we expect None although we sent ""
         data["contactEmail"] = None
@@ -255,7 +255,7 @@ class Returns200Test:
 
         assert response.status_code == 201
 
-        offer = CollectiveOffer.query.get(response.json["id"])
+        offer = CollectiveOffer.query.filter_by(id=response.json["id"]).one()
         assert offer.students == [models.StudentLevels.ECOLES_MARSEILLE_MATERNELLE]
 
     @override_features(WIP_ENABLE_MARSEILLE=False)

@@ -66,7 +66,7 @@ class Returns200Test:
 
         # then
         assert response.status_code == 200
-        venue = offerers_models.Venue.query.get(venue_id)
+        venue = offerers_models.Venue.query.filter_by(id=venue_id).one()
         assert venue.publicName == "Ma librairie"
         assert venue.venueTypeCode == offerers_models.VenueTypeCode.BOOKSTORE
         assert response.json["street"] == venue.street
@@ -285,7 +285,7 @@ class Returns200Test:
 
         # then
         assert response.status_code == 200
-        venue = offerers_models.Venue.query.get(venue_id)
+        venue = offerers_models.Venue.query.filter_by(id=venue_id).one()
         assert venue.publicName == "Ma librairie"
         assert venue.audioDisabilityCompliant == None
         assert venue.mentalDisabilityCompliant == None

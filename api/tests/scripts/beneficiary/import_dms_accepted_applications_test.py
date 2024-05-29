@@ -412,7 +412,7 @@ class RunIntegrationTest:
 
         assert users_models.User.query.count() == 2
 
-        user = users_models.User.query.get(user.id)
+        user = users_models.User.query.filter_by(user.id).one()
         assert len(user.beneficiaryFraudChecks) == 1
         fraud_check = user.beneficiaryFraudChecks[0]
         assert fraud_check.type == fraud_models.FraudCheckType.DMS

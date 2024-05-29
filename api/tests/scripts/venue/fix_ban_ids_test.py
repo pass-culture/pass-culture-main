@@ -59,31 +59,31 @@ class FixBanIdsTest:
         main(dry_run=False)
 
         # Matching ban_id:
-        venue = offerers_models.Venue.query.get(1)
+        venue = offerers_models.Venue.query.filter_by(1).one()
         assert venue.banId == "38185_1660_00033"
         assert venue.latitude == decimal.Decimal("48.87004")
         assert venue.longitude == decimal.Decimal("2.37850")
 
         # Mismatching ban_id / Wrong ban_id / Housenumber / Fixable:
-        venue = offerers_models.Venue.query.get(2)
+        venue = offerers_models.Venue.query.filter_by(2).one()
         assert venue.banId == "38185_1660_00033"
         assert venue.latitude == decimal.Decimal("45.18403")
         assert venue.longitude == decimal.Decimal("5.74029")
 
         # Mismatching ban_id / Missing ban_id / Housenumber / Fixable:
-        venue = offerers_models.Venue.query.get(3)
+        venue = offerers_models.Venue.query.filter_by(3).one()
         assert venue.banId == "38185_1660_00033"
         assert venue.latitude == decimal.Decimal("45.18403")
         assert venue.longitude == decimal.Decimal("5.74029")
 
         # Mismatching ban_id / Wrong ban_id / Street / Fixable:
-        venue = offerers_models.Venue.query.get(4)
+        venue = offerers_models.Venue.query.filter_by(4).one()
         assert venue.banId == "38185_1660"
         assert venue.latitude == decimal.Decimal("45.18381")
         assert venue.longitude == decimal.Decimal("5.73968")
 
         # Mismatching ban_id / Missing ban_id / Street / Non-fixable:
-        venue = offerers_models.Venue.query.get(5)
+        venue = offerers_models.Venue.query.filter_by(5).one()
         assert venue.banId is None
         assert venue.latitude == decimal.Decimal("48.87004")
         assert venue.longitude == decimal.Decimal("2.37850")

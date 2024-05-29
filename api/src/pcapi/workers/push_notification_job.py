@@ -39,6 +39,6 @@ def send_today_stock_notification(stock_id: int) -> None:
 
 @job(worker.default_queue)
 def send_offer_link_by_push_job(user_id: int, offer_id: int) -> None:
-    offer = Offer.query.get(offer_id)
+    offer = Offer.query.filter_by(id=offer_id).one()
     notification_data = get_offer_notification_data(user_id, offer)
     send_transactional_notification(notification_data)

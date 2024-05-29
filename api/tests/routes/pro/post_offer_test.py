@@ -27,7 +27,7 @@ class Returns200Test:
         }
         response = client.with_session_auth("user@example.com").post("/offers", json=data)
         offer_id = response.json["id"]
-        offer = Offer.query.get(offer_id)
+        offer = Offer.query.filter_by(id=offer_id).one()
         response_dict = response.json
         assert offer.isActive is False
         assert response_dict["venue"]["id"] == offer.venue.id
@@ -62,7 +62,7 @@ class Returns200Test:
         # Then
         assert response.status_code == 201
         offer_id = response.json["id"]
-        offer = Offer.query.get(offer_id)
+        offer = Offer.query.filter_by(id=offer_id).one()
         assert offer.bookingContact == "offer@example.com"
         assert offer.bookingEmail == "offer@example.com"
         assert offer.subcategoryId == subcategories.SPECTACLE_REPRESENTATION.id
@@ -101,7 +101,7 @@ class Returns200Test:
         # Then
         assert response.status_code == 201
         offer_id = response.json["id"]
-        offer = Offer.query.get(offer_id)
+        offer = Offer.query.filter_by(id=offer_id).one()
         assert offer.bookingEmail == "offer@example.com"
         assert offer.subcategoryId == subcategories.JEU_EN_LIGNE.id
         assert offer.venue == venue
@@ -136,7 +136,7 @@ class Returns200Test:
 
         assert response.status_code == 201
         offer_id = response.json["id"]
-        offer = Offer.query.get(offer_id)
+        offer = Offer.query.filter_by(id=offer_id).one()
         assert offer.subcategoryId == subcategories.LIVRE_PAPIER.id
         assert offer.venue == venue
         assert offer.extraData["ean"] == "1234567890112"
@@ -165,7 +165,7 @@ class Returns200Test:
 
         # Then
         offer_id = response.json["id"]
-        offer = Offer.query.get(offer_id)
+        offer = Offer.query.filter_by(id=offer_id).one()
         assert offer.withdrawalDetails == "Veuillez récuperer vos billets à l'accueil :)"
         assert offer.withdrawalType == WithdrawalTypeEnum.NO_TICKET
 

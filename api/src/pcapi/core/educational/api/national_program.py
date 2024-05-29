@@ -54,11 +54,11 @@ def get_national_program(program_id: int | None) -> models.NationalProgram | Non
     if not program_id:
         return None
 
-    return models.NationalProgram.query.get(program_id)
+    return models.NationalProgram.query.filter_by(id=program_id).one_or_none()
 
 
 def link_domain_to_national_program_by_ids(domain_id: int, program_id: int, commit: bool = True) -> None:
-    domain = models.EducationalDomain.query.get(domain_id)
+    domain = models.EducationalDomain.query.filter_by(id=domain_id).one_or_none()
     if not domain:
         raise exceptions.EducationalDomainNotFound()
 

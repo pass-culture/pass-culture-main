@@ -764,7 +764,7 @@ def get_offer_event_venue(offer: AnyCollectiveOffer) -> offerers_models.Venue:
 
     # the offer takes place in a specific venue
     if address_type == "offererVenue" and offerer_venue_id:
-        venue = offerers_models.Venue.query.get(offerer_venue_id)
+        venue = offerers_models.Venue.query.filter_by(id=offerer_venue_id).one_or_none()
     else:
         venue = None
 

@@ -93,7 +93,7 @@ class Returns204Test:
 
         # then
         assert response.status_code == 204
-        user = User.query.get(user.id)
+        user = User.query.filter_by(user.id).one()
 
     @patch("pcapi.routes.shared.passwords.check_web_recaptcha_token", return_value=None)
     def when_email_is_known(self, check_recaptcha_token_is_valid_mock, client, db_session):
@@ -106,7 +106,7 @@ class Returns204Test:
 
         # then
         assert response.status_code == 204
-        user = User.query.get(user.id)
+        user = User.query.filter_by(user.id).one()
         assert token_utils.Token.token_exists(token_utils.TokenType.RESET_PASSWORD, user.id)
         now = datetime.utcnow()
         assert (

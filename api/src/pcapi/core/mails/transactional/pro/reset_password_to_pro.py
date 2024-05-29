@@ -22,7 +22,7 @@ def get_reset_password_to_pro_email_data(token: token_utils.Token) -> models.Tra
 
 
 def send_reset_password_email_to_pro(token: token_utils.Token) -> None:
-    user = users_models.User.query.get(token.user_id)
+    user = users_models.User.query.filter_by(id=token.user_id).one()
     data = get_reset_password_to_pro_email_data(token)
     mails.send(recipients=[user.email], data=data)
 

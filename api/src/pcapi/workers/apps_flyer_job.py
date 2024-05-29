@@ -36,7 +36,7 @@ class AppsFlyerMissingError(Exception):
 
 @job(worker.default_queue)
 def log_user_becomes_beneficiary_event_job(user_id: int) -> None:
-    user = User.query.get(user_id)
+    user = User.query.filter_by(id=user_id).one()
 
     if "apps_flyer" not in user.externalIds:
         raise AppsFlyerMissingError("user has no apps flyer information")

@@ -768,8 +768,8 @@ class TiteliveThingsTest:
         run_titelive_things()
 
         # Then
-        refreshed_offer = offers_models.Offer.query.get(offer.id)
-        refreshed_product = offers_models.Product.query.get(product.id)
+        refreshed_offer = offers_models.Offer.query.filter_by(id=offer.id).one_or_none()
+        refreshed_product = offers_models.Product.query.filter_by(id=product.id).one_or_none()
         assert refreshed_product.name == "xxx"
         assert refreshed_offer.isActive is False
         assert refreshed_offer.name == "xxx"

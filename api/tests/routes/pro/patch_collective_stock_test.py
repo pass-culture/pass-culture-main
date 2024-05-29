@@ -50,7 +50,7 @@ class Return200Test:
 
         # Then
         assert response.status_code == 200
-        edited_stock = CollectiveStock.query.get(stock.id)
+        edited_stock = CollectiveStock.query.filter_by(id=stock.id).one()
         assert edited_stock.beginningDatetime == datetime(2022, 1, 17, 22)
         assert edited_stock.bookingLimitDatetime == datetime(2021, 12, 31, 20)
         assert edited_stock.price == 1500
@@ -94,7 +94,7 @@ class Return200Test:
 
         # Then
         assert response.status_code == 200
-        edited_stock = CollectiveStock.query.get(stock.id)
+        edited_stock = CollectiveStock.query.filter_by(id=stock.id).one()
         assert edited_stock.beginningDatetime == datetime(2021, 12, 18, 00)
         assert edited_stock.bookingLimitDatetime == datetime(2021, 12, 18, 00)
 
@@ -137,7 +137,7 @@ class Return200Test:
 
         # Then
         assert response.status_code == 200
-        edited_stock = CollectiveStock.query.get(stock.id)
+        edited_stock = CollectiveStock.query.filter_by(id=stock.id).one()
         assert edited_stock.beginningDatetime == datetime(2022, 1, 17, 22)
         assert edited_stock.bookingLimitDatetime == datetime(2021, 12, 1)
         assert edited_stock.price == 1500
@@ -175,8 +175,8 @@ class Return200Test:
 
         # Then
         assert response.status_code == 200
-        edited_stock = CollectiveStock.query.get(stock.id)
-        edited_booking = CollectiveBooking.query.get(booking.id)
+        edited_stock = CollectiveStock.query.filter_by(id=stock.id).one()
+        edited_booking = CollectiveBooking.query.filter_by(id=booking.id).one()
         assert edited_stock.beginningDatetime == datetime(2021, 12, 18)
         assert edited_stock.bookingLimitDatetime == datetime(2021, 12, 1)
         assert edited_stock.price == 1500
@@ -253,7 +253,7 @@ class Return200Test:
         client.patch(f"/collective/stocks/{collective_stock.id}", json=stock_edition_payload)
 
         # Then
-        edited_collective_booking = CollectiveBooking.query.get(collective_booking.id)
+        edited_collective_booking = CollectiveBooking.query.filter_by(id=collective_booking.id).one()
         assert edited_collective_booking.educationalYearId == educational_year_2022_2023.adageId
 
 
@@ -330,7 +330,7 @@ class Return400Test:
 
         # Then
         assert response.status_code == 400
-        edited_stock = CollectiveStock.query.get(stock.id)
+        edited_stock = CollectiveStock.query.filter_by(id=stock.id).one()
         assert edited_stock.numberOfTickets == 32
 
     @time_machine.travel("2020-11-17 15:00:00")
@@ -358,7 +358,7 @@ class Return400Test:
 
         # Then
         assert response.status_code == 400
-        edited_stock = CollectiveStock.query.get(stock.id)
+        edited_stock = CollectiveStock.query.filter_by(id=stock.id).one()
         assert edited_stock.price == 1200
 
     @time_machine.travel("2020-11-17 15:00:00")
@@ -386,7 +386,7 @@ class Return400Test:
 
         # Then
         assert response.status_code == 400
-        edited_stock = CollectiveStock.query.get(stock.id)
+        edited_stock = CollectiveStock.query.filter_by(id=stock.id).one()
         assert edited_stock.bookingLimitDatetime == stock.bookingLimitDatetime
 
     @time_machine.travel("2020-11-17 15:00:00")

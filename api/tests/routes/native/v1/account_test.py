@@ -1148,7 +1148,7 @@ class UpdateUserEmailTest:
         assert base_url_params_cancellation["token"] == base_url_params_confirmation["token"]
 
         # the email doesn't change yet
-        user = users_models.User.query.get(user.id)
+        user = users_models.User.query.filter_by(id=user.id).one_or_none()
         assert user.email == old_email
 
         # We record the email update request in the user's email history
@@ -1174,7 +1174,7 @@ class UpdateUserEmailTest:
         assert base_url_params_validation["new_email"] == [new_email]
 
         # the email doesn't change yet
-        user = users_models.User.query.get(user.id)
+        user = users_models.User.query.filter_by(id=user.id).one_or_none()
         assert user.email == old_email
 
         # We record the email update request in the user's email history
@@ -1201,7 +1201,7 @@ class UpdateUserEmailTest:
         assert refresh_response.status_code == 200
 
         # the email changes
-        user = users_models.User.query.get(user.id)
+        user = users_models.User.query.filter_by(id=user.id).one_or_none()
         assert user.email == new_email
 
         # The user receives an email on their new email address informing him of the email change
@@ -1245,7 +1245,7 @@ class UpdateUserEmailTest:
         assert base_url_params_cancellation["token"] == base_url_params_confirmation["token"]
 
         # the email doesn't change yet
-        user = users_models.User.query.get(user.id)
+        user = users_models.User.query.filter_by(id=user.id).one_or_none()
         assert user.email == old_email
 
         # We record the email update request in the user's email history
@@ -1262,7 +1262,7 @@ class UpdateUserEmailTest:
         assert response.status_code == 204
 
         # the email doesn't change
-        user = users_models.User.query.get(user.id)
+        user = users_models.User.query.filter_by(id=user.id).one_or_none()
         assert user.email == old_email
 
         # User account is suspended
@@ -1388,7 +1388,7 @@ class ValidateEmailTest:
         refresh_response = client.post("/native/v1/refresh_access_token", json={})
         assert refresh_response.status_code == 200
 
-        user = users_models.User.query.get(user.id)
+        user = users_models.User.query.filter_by(id=user.id).one_or_none()
         assert user.email == self.new_email
 
     def test_email_exists(self, app, client):
@@ -1414,7 +1414,7 @@ class ValidateEmailTest:
         refresh_response = client.post("/native/v1/refresh_access_token", json={})
         assert refresh_response.status_code == 200
 
-        user = users_models.User.query.get(user.id)
+        user = users_models.User.query.filter_by(id=user.id).one_or_none()
         assert user.email == self.old_email
 
     def test_expired_token(self, app, client):
@@ -1428,7 +1428,7 @@ class ValidateEmailTest:
                 assert response.status_code == 400
                 assert response.json["code"] == "INVALID_TOKEN"
 
-                user = users_models.User.query.get(user.id)
+                user = users_models.User.query.filter_by(id=user.id).one_or_none()
                 assert user.email == self.old_email
 
 
@@ -1664,7 +1664,7 @@ class SendPhoneValidationCodeTest:
         response = client.post("/native/v1/validate_phone_number", json={"code": token.encoded_token})
 
         assert response.status_code == 204
-        user = users_models.User.query.get(user.id)
+        user = users_models.User.query.filter_by(id=user.id).one_or_none()
         assert user.is_phone_validated
 
     @override_settings(MAX_SMS_SENT_FOR_PHONE_VALIDATION=1)
@@ -1865,7 +1865,7 @@ class ValidatePhoneNumberTest:
         response = client.post("/native/v1/validate_phone_number", {"code": token.encoded_token})
 
         assert response.status_code == 204
-        user = users_models.User.query.get(user.id)
+        user = users_models.User.query.filter_by(id=user.id).one_or_none()
         assert user.is_phone_validated
         assert not user.has_beneficiary_role
 
@@ -1890,7 +1890,7 @@ class ValidatePhoneNumberTest:
         response = client.post("/native/v1/validate_phone_number", {"code": first_token.encoded_token})
 
         assert response.status_code == 400
-        user = users_models.User.query.get(user.id)
+        user = users_models.User.query.filter_by(id=user.id).one_or_none()
         assert not user.is_phone_validated
 
         assert int(app.redis_client.get(f"phone_validation_attempts_user_{user.id}")) == 1
@@ -1916,7 +1916,7 @@ class ValidatePhoneNumberTest:
         response = client.post("/native/v1/validate_phone_number", {"code": token.encoded_token})
 
         assert response.status_code == 204
-        user = users_models.User.query.get(user.id)
+        user = users_models.User.query.filter_by(id=user.id).one_or_none()
         assert user.is_phone_validated
         assert user.has_beneficiary_role
 
@@ -2005,7 +2005,7 @@ class ValidatePhoneNumberTest:
         assert fraud_check.type == fraud_models.FraudCheckType.PHONE_VALIDATION
         assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED]
 
-        assert not users_models.User.query.get(user.id).is_phone_validated
+        assert not users_models.User.query.filter_by(id=user.id).one_or_none().is_phone_validated
         assert token_utils.SixDigitsToken.token_exists(token_utils.TokenType.PHONE_VALIDATION, user.id)
 
     def test_expired_code(self, client):
@@ -2020,7 +2020,7 @@ class ValidatePhoneNumberTest:
             assert response.status_code == 400
             assert response.json["code"] == "INVALID_VALIDATION_CODE"
 
-            assert not users_models.User.query.get(user.id).is_phone_validated
+            assert not users_models.User.query.filter_by(id=user.id).one_or_none().is_phone_validated
             assert token_utils.SixDigitsToken.token_exists(token_utils.TokenType.PHONE_VALIDATION, user.id)
 
     def test_validate_phone_number_with_already_validated_phone(self, client):
@@ -2037,7 +2037,7 @@ class ValidatePhoneNumberTest:
         response = client.post("/native/v1/validate_phone_number", {"code": token.encoded_token})
 
         assert response.status_code == 400
-        user = users_models.User.query.get(user.id)
+        user = users_models.User.query.filter_by(id=user.id).one_or_none()
         assert not user.is_phone_validated
 
 

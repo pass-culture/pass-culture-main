@@ -1413,7 +1413,7 @@ def find_reimbursement_rule(rule_reference: str | int) -> models.ReimbursementRu
             if rule_reference == regular_rule.description:
                 return regular_rule
     # CustomReimbursementRule.id
-    return models.CustomReimbursementRule.query.get(rule_reference)
+    return models.CustomReimbursementRule.query.filter_by(id=rule_reference).one()
 
 
 def _make_invoice_line(

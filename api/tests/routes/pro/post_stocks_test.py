@@ -427,7 +427,7 @@ class Returns201Test:
         created_stocks = Stock.query.all()
         for idx, result_stock_id in enumerate(created_stocks):
             expected_stock = stock_data["stocks"][idx]
-            result_stock = Stock.query.get(result_stock_id.id)
+            result_stock = Stock.query.filter_by(id=result_stock_id.id).one()
             assert result_stock.price == expected_stock["price"]
             assert result_stock.quantity == expected_stock["quantity"]
             assert result_stock.bookingLimitDatetime == booking_limit_datetime
@@ -553,7 +553,7 @@ class Returns201Test:
 
         # Then
         assert response.status_code == 201
-        updated_booking = bookings_models.Booking.query.get(booking.id)
+        updated_booking = bookings_models.Booking.query.filter_by(id=booking.id).one()
         assert updated_booking.status is not bookings_models.BookingStatus.USED
         assert updated_booking.dateUsed is None
         assert updated_booking.cancellationLimitDate == booking.cancellationLimitDate
@@ -597,7 +597,7 @@ class Returns201Test:
 
         # Then
         assert response.status_code == 201
-        updated_booking = bookings_models.Booking.query.get(booking.id)
+        updated_booking = bookings_models.Booking.query.filter_by(id=booking.id).one()
         assert updated_booking.status is bookings_models.BookingStatus.USED
         assert updated_booking.dateUsed == date_used_in_48_hours
 

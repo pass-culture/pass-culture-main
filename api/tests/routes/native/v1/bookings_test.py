@@ -897,7 +897,7 @@ class CancelBookingTest:
 
         assert response.status_code == 204
 
-        booking = Booking.query.get(booking.id)
+        booking = Booking.query.filter_by(id=booking.id).one_or_none()
         assert booking.status == BookingStatus.CANCELLED
         assert booking.cancellationReason == BookingCancellationReasons.BENEFICIARY
         assert len(mails_testing.outbox) == 1

@@ -46,7 +46,7 @@ class Returns200Test:
 
         assert response.status_code == 200
         content = response.json
-        offer = offers_models.Offer.query.get(stock.offer.id)
+        offer = offers_models.Offer.query.filter_by(id=stock.offer.id).one()
         assert offer.validation == OfferValidationStatus.APPROVED
         assert offer.lastValidationPrice == stock.price
         assert content["isActive"] is True
@@ -72,7 +72,7 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json["offer"] == "Cette offre n’a pas de stock réservable"
-        offer = offers_models.Offer.query.get(offer.id)
+        offer = offers_models.Offer.query.filter_by(id=offer.id).one()
         assert offer.validation == OfferValidationStatus.DRAFT
 
     def test_patch_publish_offer_with_non_bookable_stock(
@@ -94,5 +94,5 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json["offer"] == "Cette offre n’a pas de stock réservable"
-        offer = offers_models.Offer.query.get(stock.offerId)
+        offer = offers_models.Offer.query.filter_by(id=stock.offerId).one()
         assert offer.validation == OfferValidationStatus.DRAFT

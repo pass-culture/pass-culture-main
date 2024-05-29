@@ -299,7 +299,7 @@ class TopOffersResponseData(offerers_models.TopOffersData):
     @classmethod
     def build(cls, offer_id: int, number_of_views: int) -> "TopOffersResponseData":
         # This adds a call to the db for every offer, but it's not a big deal since we only get the top 3 offers
-        offer = offers_models.Offer.query.get(offer_id)
+        offer = offers_models.Offer.query.filter_by(id=offer_id).one_or_none()
         if not offer:
             raise ValueError(f"Offer with id {offer_id} does not exist")
         return cls(offerId=offer_id, offerName=offer.name, image=offer.image, numberOfViews=number_of_views)

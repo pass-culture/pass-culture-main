@@ -10,7 +10,7 @@ from pcapi.utils.urls import generate_firebase_dynamic_link
 def send_reset_password_email_to_user(
     token: token_utils.Token, reason: constants.SuspensionReason | None = None
 ) -> None:
-    user = users_models.User.query.get(token.user_id)
+    user = users_models.User.query.filter_by(id=token.user_id).one()
     email_template = (
         TransactionalEmail.NEW_PASSWORD_REQUEST_FOR_SUSPICIOUS_LOGIN
         if reason == constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER
@@ -21,7 +21,7 @@ def send_reset_password_email_to_user(
 
 
 def send_email_already_exists_email(token: token_utils.Token) -> None:
-    user = users_models.User.query.get(token.user_id)
+    user = users_models.User.query.filter_by(id=token.user_id).one()
     data = get_reset_password_email_data(user, token, TransactionalEmail.EMAIL_ALREADY_EXISTS.value)
     mails.send(recipients=[user.email], data=data)
 

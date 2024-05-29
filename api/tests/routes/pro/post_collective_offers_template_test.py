@@ -118,7 +118,7 @@ class Returns200Test:
         assert response.status_code == 201
 
         offer_id = response.json["id"]
-        offer = CollectiveOfferTemplate.query.get(offer_id)
+        offer = CollectiveOfferTemplate.query.filter_by(id=offer_id).one()
 
         assert offer.bookingEmails == ["offer1@example.com", "offer2@example.com"]
         assert offer.subcategoryId == subcategories.SPECTACLE_REPRESENTATION.id
@@ -158,7 +158,7 @@ class Returns200Test:
         assert response.status_code == 201
 
         offer_id = response.json["id"]
-        offer = CollectiveOfferTemplate.query.get(offer_id)
+        offer = CollectiveOfferTemplate.query.filter_by(id=offer_id).one()
 
         assert offer.contactEmail is None
         assert offer.contactPhone == "01 99 00 25 68"

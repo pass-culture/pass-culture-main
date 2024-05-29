@@ -67,7 +67,7 @@ def test_flush_inside_transaction():
     db.session.flush()
     venue_type_id = venue_type.id
     db.session.rollback()
-    assert offerers_models.VenueType.query.get(venue_type_id) is not None # the object is still present
+    assert offerers_models.VenueType.query.filter_by(id=venue_type_id).one() is not None # the object is still present
 
 
 @conftest.clean_database

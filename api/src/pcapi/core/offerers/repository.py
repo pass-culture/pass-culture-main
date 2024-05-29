@@ -372,7 +372,7 @@ def get_venues_educational_statuses() -> list[models.VenueEducationalStatus]:
 
 
 def get_venue_by_id(venue_id: int) -> models.Venue:
-    return models.Venue.query.get(venue_id)
+    return models.Venue.query.filter_by(id=venue_id).one()
 
 
 def get_venues_by_ids(ids: Collection[int]) -> Collection[models.Venue]:

@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 @job(worker.default_queue)
 def send_booking_cancellation_emails_to_user_and_offerer_job(booking_id: int) -> None:
-    booking = Booking.query.get(booking_id)
+    booking = Booking.query.filter_by(id=booking_id).one_or_none()
     if not booking:
         logger.error("Booking with id:%s not found", booking_id)
         return

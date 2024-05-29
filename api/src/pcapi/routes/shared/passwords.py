@@ -56,7 +56,7 @@ def post_new_password(body: NewPasswordBodyModel) -> None:
     try:
         token = token_utils.Token.load_and_check(token_value, token_utils.TokenType.RESET_PASSWORD)
         token.expire()
-        user = users_models.User.query.get(token.user_id)
+        user = users_models.User.query.filter_by(id=token.user_id).one()
     except users_exceptions.InvalidToken:
         errors = ApiErrors()
         errors.add_error("token", "Votre lien de changement de mot de passe est invalide.")

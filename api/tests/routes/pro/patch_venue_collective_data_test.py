@@ -50,7 +50,7 @@ class Returns200Test:
 
         # then
         assert response.status_code == 200
-        venue = offerers_models.Venue.query.get(venue_id)
+        venue = offerers_models.Venue.query.filter_by(id=venue_id).one_or_none()
         assert venue.collectiveDomains == [domain]
         assert venue.collectiveStudents == [educational_models.StudentLevels.COLLEGE4]
         assert venue.collectiveNetwork == ["network1", "network2"]
@@ -103,7 +103,7 @@ class Returns200Test:
 
         # then
         assert response.status_code == 200
-        venue = offerers_models.Venue.query.get(venue_id)
+        venue = offerers_models.Venue.query.filter_by(id=venue_id).one_or_none()
         assert venue.collectiveDomains == []
         assert venue.collectiveStudents == []
         assert venue.collectiveNetwork == []
@@ -148,7 +148,7 @@ class Returns200Test:
 
         # then
         assert response.status_code == 200
-        venue = offerers_models.Venue.query.get(venue_id)
+        venue = offerers_models.Venue.query.filter_by(id=venue_id).one_or_none()
         assert venue.collectiveDomains == [domain]
         assert venue.collectiveStudents == [educational_models.StudentLevels.COLLEGE4]
         assert venue.collectiveNetwork == ["network3"]

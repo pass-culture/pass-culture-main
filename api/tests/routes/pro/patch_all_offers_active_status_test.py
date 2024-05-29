@@ -26,8 +26,8 @@ class Returns204Test:
 
         # Then
         assert response.status_code == 202
-        assert Offer.query.get(offer1.id).isActive
-        assert Offer.query.get(offer2.id).isActive
+        assert Offer.query.filter_by(id=offer1.id).one_or_none().isActive
+        assert Offer.query.filter_by(id=offer2.id).one_or_none().isActive
 
     def when_deactivating_all_existing_offers(self, client):
         # Given
@@ -44,8 +44,8 @@ class Returns204Test:
 
         # Then
         assert response.status_code == 202
-        assert not Offer.query.get(offer1.id).isActive
-        assert not Offer.query.get(offer2.id).isActive
+        assert not Offer.query.filter_by(id=offer1.id).one_or_none().isActive
+        assert not Offer.query.filter_by(id=offer2.id).one_or_none().isActive
 
     def should_update_offers_by_given_filters(self, client):
         # Given
@@ -79,11 +79,11 @@ class Returns204Test:
 
         # Then
         assert response.status_code == 202
-        assert not Offer.query.get(matching_offer1.id).isActive
-        assert not Offer.query.get(matching_offer2.id).isActive
-        assert Offer.query.get(offer_out_of_date_range.id).isActive
-        assert Offer.query.get(offer_on_other_venue.id).isActive
-        assert Offer.query.get(offer_with_not_matching_name.id).isActive
+        assert not Offer.query.filter_by(id=matching_offer1.id).one_or_none().isActive
+        assert not Offer.query.filter_by(id=matching_offer2.id).one_or_none().isActive
+        assert Offer.query.filter_by(id=offer_out_of_date_range.id).one_or_none().isActive
+        assert Offer.query.filter_by(id=offer_on_other_venue.id).one_or_none().isActive
+        assert Offer.query.filter_by(id=offer_with_not_matching_name.id).one_or_none().isActive
 
     def test_only_approved_offers_patch(self, client):
         approved_offer = offers_factories.OfferFactory(isActive=False)

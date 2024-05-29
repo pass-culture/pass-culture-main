@@ -613,7 +613,7 @@ class EditVenueTest:
 
         offerers_api.update_venue(venue, author=user, **venue_data)
 
-        venue = offerers_models.Venue.query.get(venue.id)
+        venue = offerers_models.Venue.query.filter_by(id=venue.id).one_or_none()
         assert venue.audioDisabilityCompliant
         assert venue.mentalDisabilityCompliant
         assert venue.motorDisabilityCompliant is False
@@ -654,7 +654,7 @@ class EditVenueTest:
 
         offerers_api.update_venue(venue, contact_data=contact_data, author=user_offerer.user)
 
-        venue = offerers_models.Venue.query.get(venue.id)
+        venue = offerers_models.Venue.query.filter_by(id=venue.id).one_or_none()
         assert venue.contact
         assert venue.contact.phone_number == contact_data.phone_number
         assert venue.contact.email == contact_data.email
@@ -673,7 +673,7 @@ class EditVenueTest:
 
         offerers_api.update_venue(venue, contact_data=contact_data, author=user_offerer.user)
 
-        venue = offerers_models.Venue.query.get(venue.id)
+        venue = offerers_models.Venue.query.filter_by(id=venue.id).one_or_none()
         assert venue.contact.phone_number == "+33102030405"
         assert venue.contact.email == "contact@venue.com"
         assert venue.contact.website == "https://new.website.com"
@@ -1910,7 +1910,7 @@ class VenueBannerTest:
         with override_settings(OBJECT_STORAGE_URL=tmpdir.dirname, LOCAL_STORAGE_DIR=pathlib.Path(tmpdir.dirname)):
             offerers_api.save_venue_banner(user, venue, image_content, image_credit="none")
 
-            updated_venue = Venue.query.get(venue.id)
+            updated_venue = Venue.query.filter_by(id=venue.id).one_or_none()
             with open(updated_venue.bannerUrl, mode="rb") as f:
                 # test that image size has been reduced
                 assert len(f.read()) < len(image_content)
@@ -1939,7 +1939,7 @@ class VenueBannerTest:
         with override_settings(OBJECT_STORAGE_URL=tmpdir.dirname, LOCAL_STORAGE_DIR=pathlib.Path(tmpdir.dirname)):
             offerers_api.save_venue_banner(user, venue, image_content, image_credit="none")
 
-            updated_venue = Venue.query.get(venue.id)
+            updated_venue = Venue.query.filter_by(id=venue.id).one_or_none()
             with open(updated_venue.bannerUrl, mode="rb") as f:
                 # test that image size has been reduced
                 assert len(f.read()) < len(image_content)

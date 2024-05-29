@@ -30,8 +30,8 @@ class Returns204Test:
 
         # Then
         assert response.status_code == 204
-        assert CollectiveOffer.query.get(offer1.id).isActive
-        assert CollectiveOffer.query.get(offer2.id).isActive
+        assert CollectiveOffer.query.filter_by(id=offer1.id).one().isActive
+        assert CollectiveOffer.query.filter_by(id=offer2.id).one().isActive
 
     def when_deactivating_existing_offers(self, client):
         # Given
@@ -49,8 +49,8 @@ class Returns204Test:
 
         # Then
         assert response.status_code == 204
-        assert not CollectiveOffer.query.get(offer1.id).isActive
-        assert not CollectiveOffer.query.get(offer2.id).isActive
+        assert not CollectiveOffer.query.filter_by(id=offer1.id).one().isActive
+        assert not CollectiveOffer.query.filter_by(id=offer2.id).one().isActive
 
     def test_only_approved_offers_patch(self, client):
         approved_offer = CollectiveOfferFactory(isActive=False)

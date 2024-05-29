@@ -6,5 +6,5 @@ from pcapi.workers.decorators import job
 
 @job(worker.low_queue)
 def fully_sync_venue_job(venue_id: int) -> None:
-    venue = offerers_models.Venue.query.get(venue_id)
+    venue = offerers_models.Venue.query.filter_by(id=venue_id).one()
     fully_sync_venue(venue)

@@ -337,7 +337,7 @@ def test_get_user_attributes_underage_beneficiary_before_18(credit_spent: bool):
         BookingFactory(user=user, amount=finance_conf.GRANTED_DEPOSIT_AMOUNT_17, stock__offer=offer)
 
     # Before 18 years old
-    user = User.query.get(user.id)
+    user = User.query.filter_by(id=user.id).one_or_none()
     attributes = get_user_attributes(user)
 
     assert attributes.is_beneficiary
@@ -353,7 +353,7 @@ def test_get_user_attributes_ex_underage_beneficiary_who_did_not_claim_credit_18
         user = UnderageBeneficiaryFactory(subscription_age=17)
 
     # At 18 years old
-    user = User.query.get(user.id)
+    user = User.query.filter_by(id=user.id).one_or_none()
     attributes = get_user_attributes(user)
 
     assert attributes.is_beneficiary
@@ -369,7 +369,7 @@ def test_get_user_attributes_ex_underage_beneficiary_who_did_not_claim_credit_18
         user = UnderageBeneficiaryFactory(subscription_age=17)
 
     # At 19 years old
-    user = User.query.get(user.id)
+    user = User.query.filter_by(id=user.id).one_or_none()
     attributes = get_user_attributes(user)
 
     assert attributes.is_beneficiary
@@ -385,7 +385,7 @@ def test_get_user_attributes_double_beneficiary():
         user = UnderageBeneficiaryFactory(subscription_age=17)
 
     # At 18 years old
-    user = User.query.get(user.id)
+    user = User.query.filter_by(id=user.id).one_or_none()
     fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, status=fraud_models.FraudCheckStatus.OK)
     user = subscription_api.activate_beneficiary_for_eligibility(user, fraud_check, users_models.EligibilityType.AGE18)
     attributes = get_user_attributes(user)

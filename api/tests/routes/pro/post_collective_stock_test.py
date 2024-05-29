@@ -40,8 +40,8 @@ class Return200Test:
         # Then
         assert response.status_code == 201
         response_dict = response.json
-        created_stock: CollectiveStock = CollectiveStock.query.get(response_dict["id"])
-        offer = CollectiveOffer.query.get(offer.id)
+        created_stock: CollectiveStock = CollectiveStock.query.filter_by(id=response_dict["id"]).one()
+        offer = CollectiveOffer.query.filter_by(id=offer.id).one()
         assert offer.id == created_stock.collectiveOfferId
         assert created_stock.price == decimal.Decimal("1500.12")
         assert created_stock.priceDetail == "Détail du prix"

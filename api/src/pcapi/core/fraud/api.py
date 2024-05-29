@@ -442,7 +442,7 @@ def _handle_duplicate(fraud_items: list[models.FraudItem], fraud_check: models.B
     if not user.deposit or user.deposit.type != finance_models.DepositType.GRANT_15_17:
         return
 
-    duplicate_beneficiary = users_models.User.query.get(duplicate_beneficiary_id)
+    duplicate_beneficiary = users_models.User.query.filter_by(id=duplicate_beneficiary_id).one_or_none()
     if not duplicate_beneficiary:
         return
 
