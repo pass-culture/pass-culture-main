@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 
 import { initReCaptchaScript } from 'utils/recaptcha'
 
-const useInitReCaptcha = (): void => {
+export const useInitReCaptcha = (): void => {
   useEffect(() => {
     const gcaptchaScript = initReCaptchaScript()
 
@@ -11,5 +11,3 @@ const useInitReCaptcha = (): void => {
     }
   }, [])
 }
-
-export default useInitReCaptcha

@@ -14,7 +14,7 @@ import { UploadImageValues } from 'components/ImageUploader/ButtonImageEdit/type
 import { ImageUploader } from 'components/ImageUploader/ImageUploader'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { Events } from 'core/FirebaseEvents/constants'
-import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
+import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import useNotification from 'hooks/useNotification'
 import fullPlusIcon from 'icons/full-more.svg'
 import fullParametersIcon from 'icons/full-parameters.svg'

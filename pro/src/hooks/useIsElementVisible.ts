@@ -1,7 +1,7 @@
 import { RefObject, useEffect, useState } from 'react'
 
 // Hook that return whether an element is visible or not in viewport
-const useIsElementVisible = (
+export const useIsElementVisible = (
   elementWatched: RefObject<Element>,
   obeserverOptions?: IntersectionObserverInit
 ) => {
@@ -33,5 +33,3 @@ const useIsElementVisible = (
 
   return [isElementVisible, hasVisibilityChanged]
 }
-
-export default useIsElementVisible

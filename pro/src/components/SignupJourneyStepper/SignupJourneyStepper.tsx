@@ -7,7 +7,7 @@ import { Step, Stepper } from 'components/Stepper/Stepper'
 import { DEFAULT_ACTIVITY_VALUES } from 'context/SignupJourneyContext/constants'
 import { useSignupJourneyContext } from 'context/SignupJourneyContext/SignupJourneyContext'
 import { Events } from 'core/FirebaseEvents/constants'
-import useActiveStep from 'hooks/useActiveStep'
+import { useActiveStep } from 'hooks/useActiveStep'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
 
 import { SIGNUP_JOURNEY_STEP_IDS } from './constants'

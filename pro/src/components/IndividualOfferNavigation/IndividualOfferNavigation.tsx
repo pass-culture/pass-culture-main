@@ -5,7 +5,7 @@ import { Step, StepPattern, Stepper } from 'components/Stepper/Stepper'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
-import useActiveStep from 'hooks/useActiveStep'
+import { useActiveStep } from 'hooks/useActiveStep'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import {
   getOfferSubtypeFromParam,

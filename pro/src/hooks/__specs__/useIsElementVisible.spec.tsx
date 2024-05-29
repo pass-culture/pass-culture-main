@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { useRef } from 'react'
 
-import useIsElementVisible from '../useIsElementVisible'
+import { useIsElementVisible } from '../useIsElementVisible'
 
 const TestComponent = () => {
   const elementWatched = useRef(null)

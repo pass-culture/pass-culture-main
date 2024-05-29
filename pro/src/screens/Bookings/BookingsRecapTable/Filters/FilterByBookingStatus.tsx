@@ -8,7 +8,7 @@ import {
 import useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'core/FirebaseEvents/constants'
 import { Audience } from 'core/shared/types'
-import useOnClickOrFocusOutside from 'hooks/useOnClickOrFocusOutside'
+import { useOnClickOrFocusOutside } from 'hooks/useOnClickOrFocusOutside'
 import fullSortIcon from 'icons/full-sort.svg'
 import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'

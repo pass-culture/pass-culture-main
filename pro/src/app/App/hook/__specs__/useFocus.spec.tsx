@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 import { SkipLinks } from 'components/SkipLinks/SkipLinks'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import useFocus from '../useFocus'
+import { useFocus } from '../useFocus'
 
 const FocusTopPage = (): null => {
   useFocus()

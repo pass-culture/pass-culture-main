@@ -1,6 +1,6 @@
 import { useEffect, RefObject } from 'react'
 
-export default function useOnClickOrFocusOutside(
+export function useOnClickOrFocusOutside(
   ref: RefObject<HTMLElement>,
   handler: (event: Event) => void
 ) {
