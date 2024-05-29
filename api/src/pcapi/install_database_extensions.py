@@ -7,7 +7,6 @@ def install_database_extensions() -> None:
     _create_text_search_configuration_if_not_exists()
     _create_index_btree_gist_extension()
     _create_postgis_extension()
-    _create_pgcrypto_extension()
 
 
 def _create_text_search_configuration_if_not_exists() -> None:
@@ -35,9 +34,3 @@ def _create_index_btree_gist_extension() -> None:
 def _create_postgis_extension() -> None:
     with db.engine.begin() as connection:
         connection.execute(text("CREATE EXTENSION IF NOT EXISTS postgis;"))
-
-
-def _create_pgcrypto_extension() -> None:
-    # The `pgcrypto` is required to use `gen_random_uuid()` until PostgreSQL 13.
-    with db.engine.begin() as connection:
-        connection.execute(text("CREATE EXTENSION IF NOT EXISTS pgcrypto;"))
