@@ -10,7 +10,7 @@ import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 import { STOCK_THING_FORM_DEFAULT_VALUES } from '../constants'
 import { StockThingFormValues } from '../types'
 
-const buildInitialValues = (
+export const buildInitialValues = (
   offer: GetIndividualOfferResponseModel,
   stocks: GetOfferStockResponseModel[]
 ): StockThingFormValues => {
@@ -45,5 +45,3 @@ const buildInitialValues = (
     isDuo: offer.isDuo,
   }
 }
-
-export default buildInitialValues

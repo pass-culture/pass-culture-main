@@ -21,7 +21,7 @@ import {
   renderWithProviders,
 } from 'utils/renderWithProviders'
 
-import Offer, { OfferProps } from '../Offer'
+import { Offer, OfferProps } from '../Offer'
 
 vi.mock('apiClient/api', () => ({
   apiAdage: {

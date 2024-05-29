@@ -22,14 +22,14 @@ import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { serializeOfferSectionData } from './serializer'
-import humanizeDelay from './utils'
+import { humanizeDelay } from './utils'
 
 interface OfferSummaryProps {
   offer: GetIndividualOfferResponseModel
   conditionalFields: string[]
 }
 
-const OfferSummary = ({
+export const OfferSection = ({
   conditionalFields,
   offer,
 }: OfferSummaryProps): JSX.Element => {
@@ -233,5 +233,3 @@ const OfferSummary = ({
     </SummarySection>
   )
 }
-
-export default OfferSummary

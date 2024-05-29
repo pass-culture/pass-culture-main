@@ -6,7 +6,7 @@ import {
   renderWithProviders,
 } from 'utils/renderWithProviders'
 
-import Venues from '../Venues'
+import { Venues } from '../Venues'
 
 describe('Venues', () => {
   const offererId = 1

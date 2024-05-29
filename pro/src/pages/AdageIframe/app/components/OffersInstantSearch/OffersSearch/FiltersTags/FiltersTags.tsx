@@ -46,7 +46,7 @@ const createTag = (label: string, onClose: () => void) => {
   )
 }
 
-const FiltersTags = ({
+export const FiltersTags = ({
   domainsOptions,
   localisationFilterState,
   setLocalisationFilterState,
@@ -177,5 +177,3 @@ const FiltersTags = ({
     </div>
   )
 }
-
-export default FiltersTags

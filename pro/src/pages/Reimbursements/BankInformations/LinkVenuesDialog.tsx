@@ -20,7 +20,7 @@ import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { pluralize, pluralizeString } from 'utils/pluralize'
 
 import styles from './LinkVenuesDialog.module.scss'
-import PricingPointDialog from './PricingPointDialog/PricingPointDialog'
+import { PricingPointDialog } from './PricingPointDialog/PricingPointDialog'
 
 interface LinkVenuesDialogProps {
   offererId: number

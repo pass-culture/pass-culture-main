@@ -41,7 +41,7 @@ import {
 } from 'utils/searchPatternInOptions'
 
 import styles from './CollectiveOfferVisibility.module.scss'
-import validationSchema from './validationSchema'
+import { validationSchema } from './validationSchema'
 
 export interface CollectiveOfferVisibilityProps {
   mode: Mode

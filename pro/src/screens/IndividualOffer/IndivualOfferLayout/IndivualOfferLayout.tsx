@@ -5,7 +5,7 @@ import { IndividualOfferNavigation } from 'components/IndividualOfferNavigation/
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 
 import { Status } from '../Status/Status'
-import SynchronizedProviderInformation from '../SynchronisedProviderInfos/SynchronizedProviderInformation'
+import { SynchronizedProviderInformation } from '../SynchronisedProviderInfos/SynchronizedProviderInformation'
 
 import styles from './IndivualOfferLayout.module.scss'
 import { OfferStatusBanner } from './OfferStatusBanner/OfferStatusBanner'
@@ -18,7 +18,7 @@ export interface IndivualOfferLayoutProps {
   mode: OFFER_WIZARD_MODE
 }
 
-const IndivualOfferLayout = ({
+export const IndivualOfferLayout = ({
   title,
   children,
   withStepper = true,
@@ -63,5 +63,3 @@ const IndivualOfferLayout = ({
     </>
   )
 }
-
-export default IndivualOfferLayout

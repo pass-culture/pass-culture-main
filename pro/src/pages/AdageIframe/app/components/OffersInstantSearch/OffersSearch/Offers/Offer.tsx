@@ -32,11 +32,11 @@ import { LOGS_DATA } from 'utils/config'
 
 import { ContactButton } from './ContactButton/ContactButton'
 import style from './Offer.module.scss'
-import OfferDetails from './OfferDetails/OfferDetails'
-import OfferFavoriteButton from './OfferFavoriteButton/OfferFavoriteButton'
-import OfferShareLink from './OfferShareLink/OfferShareLink'
-import OfferSummary from './OfferSummary/OfferSummary'
-import PrebookingButton from './PrebookingButton/PrebookingButton'
+import { OfferDetails } from './OfferDetails/OfferDetails'
+import { OfferFavoriteButton } from './OfferFavoriteButton/OfferFavoriteButton'
+import { OfferShareLink } from './OfferShareLink/OfferShareLink'
+import { OfferSummary } from './OfferSummary/OfferSummary'
+import { PrebookingButton } from './PrebookingButton/PrebookingButton'
 import { getOfferVenueAndOffererName } from './utils/getOfferVenueAndOffererName'
 
 export interface OfferProps {
@@ -48,7 +48,7 @@ export interface OfferProps {
   openDetails?: boolean
 }
 
-const Offer = ({
+export const Offer = ({
   offer,
   queryId,
   position,
@@ -312,4 +312,3 @@ const Offer = ({
     </div>
   )
 }
-export default Offer

@@ -8,7 +8,7 @@ import useNotification from 'hooks/useNotification'
 import { isDateValid } from 'utils/date'
 
 import { createCollectiveRequestPayload } from './createCollectiveRequestPayload'
-import DefaultFormContact from './DefaultFormContact'
+import { DefaultFormContact } from './DefaultFormContact'
 import styles from './RequestFormDialog.module.scss'
 import { RequestFormValues } from './type'
 import { validationSchema } from './validationSchema'

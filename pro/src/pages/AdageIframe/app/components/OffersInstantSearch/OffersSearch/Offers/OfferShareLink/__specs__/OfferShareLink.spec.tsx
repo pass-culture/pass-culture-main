@@ -9,7 +9,7 @@ import {
 } from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import OfferShareLink, { OfferShareLinkProps } from '../OfferShareLink'
+import { OfferShareLink, OfferShareLinkProps } from '../OfferShareLink'
 
 vi.mock('apiClient/api', () => ({
   apiAdage: {

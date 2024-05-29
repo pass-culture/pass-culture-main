@@ -10,7 +10,7 @@ import { Hero } from 'ui-kit/Hero/Hero'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { parse } from 'utils/query-string'
 
-import ChangePasswordForm from './ChangePasswordForm/ChangePasswordForm'
+import { ChangePasswordForm } from './ChangePasswordForm/ChangePasswordForm'
 import styles from './ResetPassword.module.scss'
 import { validationSchema } from './validationSchema'
 

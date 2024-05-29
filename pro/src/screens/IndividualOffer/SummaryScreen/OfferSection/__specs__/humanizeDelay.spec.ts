@@ -1,4 +1,4 @@
-import humanizeDelay from '../utils'
+import { humanizeDelay } from '../utils'
 
 describe('humanizeDelay', () => {
   it('should render the correct delay', () => {

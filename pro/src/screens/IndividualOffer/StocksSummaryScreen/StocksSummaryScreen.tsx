@@ -14,7 +14,7 @@ import { serializeStockEvents } from 'pages/IndividualOfferWizard/Stocks/seriali
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { getStockWarningText } from '../SummaryScreen/StockSection/StockSection'
-import StockThingSection from '../SummaryScreen/StockSection/StockThingSection/StockThingSection'
+import { StockThingSection } from '../SummaryScreen/StockSection/StockThingSection/StockThingSection'
 
 import { RecurrenceSummary } from './RecurrenceSummary'
 import styles from './StocksSummary.module.scss'

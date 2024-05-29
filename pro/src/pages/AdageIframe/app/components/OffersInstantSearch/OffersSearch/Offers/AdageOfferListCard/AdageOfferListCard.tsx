@@ -20,9 +20,9 @@ import {
 } from 'pages/AdageIframe/app/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import OfferFavoriteButton from '../OfferFavoriteButton/OfferFavoriteButton'
-import OfferShareLink from '../OfferShareLink/OfferShareLink'
-import PrebookingButton from '../PrebookingButton/PrebookingButton'
+import { OfferFavoriteButton } from '../OfferFavoriteButton/OfferFavoriteButton'
+import { OfferShareLink } from '../OfferShareLink/OfferShareLink'
+import { PrebookingButton } from '../PrebookingButton/PrebookingButton'
 
 import styles from './AdageOfferListCard.module.scss'
 import { AdageOfferListCardContent } from './AdageOfferListCardContent/AdageOfferListCardContent'

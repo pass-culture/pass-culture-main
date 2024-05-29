@@ -1,6 +1,6 @@
 import styles from './AdageSkeleton.module.scss'
 
-const AdageSkeleton = ({ isGrid = false }: { isGrid?: boolean }) => {
+export const AdageSkeleton = ({ isGrid = false }: { isGrid?: boolean }) => {
   return (
     <>
       {isGrid ? (
@@ -41,5 +41,3 @@ const AdageSkeleton = ({ isGrid = false }: { isGrid?: boolean }) => {
     </>
   )
 }
-
-export default AdageSkeleton

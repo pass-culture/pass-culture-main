@@ -8,7 +8,7 @@ interface DialogStockDeleteConfirmProps {
   onCancel: () => void
 }
 
-const DialogStockThingDeleteConfirm = ({
+export const DialogStockThingDeleteConfirm = ({
   onConfirm,
   onCancel,
 }: DialogStockDeleteConfirmProps) => {
@@ -32,5 +32,3 @@ const DialogStockThingDeleteConfirm = ({
     </ConfirmDialog>
   )
 }
-
-export default DialogStockThingDeleteConfirm

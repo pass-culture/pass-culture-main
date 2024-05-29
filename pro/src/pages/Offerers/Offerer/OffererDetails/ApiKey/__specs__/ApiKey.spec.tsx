@@ -6,7 +6,7 @@ import { api } from 'apiClient/api'
 import * as notificationReducer from 'store/notifications/reducer'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import ApiKey from '../ApiKey'
+import { ApiKey } from '../ApiKey'
 
 const defaultProps = {
   maxAllowedApiKeys: 5,

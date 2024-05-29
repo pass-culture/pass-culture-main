@@ -2,7 +2,7 @@ import { bookingRecapFactory } from 'utils/individualApiFactories'
 
 import { EMPTY_FILTER_VALUE } from '../../Filters/constants'
 import { BookingsFilters } from '../../types'
-import filterBookingsRecap from '../filterBookingsRecap'
+import { filterBookingsRecap } from '../filterBookingsRecap'
 
 const filtersBuilder = ({
   bookingBeneficiary = EMPTY_FILTER_VALUE,

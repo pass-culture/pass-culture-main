@@ -8,7 +8,7 @@ import {
   renderWithProviders,
 } from 'utils/renderWithProviders'
 
-import OfferSummary, { OfferSummaryProps } from '../OfferSummary'
+import { OfferSummary, OfferSummaryProps } from '../OfferSummary'
 
 const renderOfferSummary = (
   props: OfferSummaryProps,

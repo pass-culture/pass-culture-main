@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import DomainsCard, { DomainsCardProps } from '../DomainsCard'
+import { DomainsCard, DomainsCardProps } from '../DomainsCard'
 
 const renderDomainsCardComponent = ({
   title,

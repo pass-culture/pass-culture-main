@@ -16,7 +16,7 @@ interface InvoicesNoResultsProps {
   setFilters: Dispatch<SetStateAction<FiltersType>>
 }
 
-const InvoicesNoResult = ({
+export const InvoicesNoResult = ({
   areFiltersDefault,
   initialFilters,
   loadInvoices,
@@ -54,5 +54,3 @@ const InvoicesNoResult = ({
     </div>
   )
 }
-
-export default InvoicesNoResult

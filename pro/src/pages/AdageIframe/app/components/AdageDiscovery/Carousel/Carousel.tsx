@@ -8,7 +8,7 @@ import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import AdageSkeleton from '../../Skeleton/AdageSkeleton'
+import { AdageSkeleton } from '../../Skeleton/AdageSkeleton'
 
 import styles from './Carousel.module.scss'
 

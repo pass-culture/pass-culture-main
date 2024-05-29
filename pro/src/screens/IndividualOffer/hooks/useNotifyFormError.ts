@@ -9,7 +9,7 @@ interface UseNotifyFormErrorProps {
   errors: FormikErrors<any>
 }
 
-const useNotifyFormError = ({
+export const useNotifyFormError = ({
   isSubmitting,
   errors,
 }: UseNotifyFormErrorProps): void => {
@@ -20,5 +20,3 @@ const useNotifyFormError = ({
     }
   }, [Object.keys(errors).length, isSubmitting])
 }
-
-export default useNotifyFormError

@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import usePageTitle from '../usePageTitle'
+import { usePageTitle } from '../usePageTitle'
 
 const PageTitle = (): null => {
   usePageTitle()

@@ -1,6 +1,6 @@
 import { matchPath, Location } from 'react-router-dom'
 
-import routes, { RouteConfig } from 'app/AppRouter/routesMap'
+import { RouteConfig, routes } from 'app/AppRouter/routesMap'
 import { routesIndividualOfferWizard } from 'app/AppRouter/subroutesIndividualOfferWizardMap'
 import { routesSignupJourney } from 'app/AppRouter/subroutesSignupJourneyMap'
 import { routesSignup } from 'app/AppRouter/subroutesSignupMap'

@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom'
 
 import { findCurrentRoute } from 'app/AppRouter/findCurrentRoute'
 
-const usePageTitle = (): LocationListener | void => {
+export const usePageTitle = (): LocationListener | void => {
   const location = useLocation()
 
   useEffect(() => {
@@ -15,5 +15,3 @@ const usePageTitle = (): LocationListener | void => {
       : 'pass Culture Pro'
   }, [location.pathname])
 }
-
-export default usePageTitle

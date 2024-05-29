@@ -8,8 +8,8 @@ import {
   fileReader,
 } from './ActivationCodeFileChecker'
 import styles from './ActivationCodeFormDialog.module.scss'
-import AddActivationCodeConfirmationForm from './AddActivationCodeConfirmationForm'
-import AddActivationCodeForm from './AddActivationCodeForm'
+import { AddActivationCodeConfirmationForm } from './AddActivationCodeConfirmationForm'
+import { AddActivationCodeForm } from './AddActivationCodeForm'
 
 interface ActivationCodeFormProps {
   onCancel: () => void
@@ -18,7 +18,7 @@ interface ActivationCodeFormProps {
   minExpirationDate: Date | null
 }
 
-const ActivationCodeFormDialog = ({
+export const ActivationCodeFormDialog = ({
   onCancel,
   onSubmit,
   today,
@@ -99,5 +99,3 @@ const ActivationCodeFormDialog = ({
     </Dialog>
   )
 }
-
-export default ActivationCodeFormDialog

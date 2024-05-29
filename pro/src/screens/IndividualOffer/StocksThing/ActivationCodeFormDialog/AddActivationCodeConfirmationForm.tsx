@@ -14,7 +14,7 @@ interface AddActivationCodeConfirmationFormProps {
   minExpirationDate: Date | null
 }
 
-const AddActivationCodeConfirmationForm = ({
+export const AddActivationCodeConfirmationForm = ({
   unsavedActivationCodes,
   clearActivationCodes,
   submitActivationCodes,
@@ -71,5 +71,3 @@ const AddActivationCodeConfirmationForm = ({
     </div>
   )
 }
-
-export default AddActivationCodeConfirmationForm

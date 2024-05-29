@@ -180,5 +180,3 @@ const _sanitize = (input: string): string => {
     .trim()
     .toLowerCase()
 }
-
-export default filterBookingsRecap

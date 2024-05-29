@@ -18,8 +18,8 @@ import { useOrejime } from './analytics/orejime'
 import { useSentry } from './analytics/sentry'
 import useFocus from './hook/useFocus'
 import { useLoadFeatureFlags } from './hook/useLoadFeatureFlags'
-import useLogNavigation from './hook/useLogNavigation'
-import usePageTitle from './hook/usePageTitle'
+import { useLogNavigation } from './hook/useLogNavigation'
+import { usePageTitle } from './hook/usePageTitle'
 
 window.beamer_config = { product_id: 'vjbiYuMS52566', lazy: true }
 

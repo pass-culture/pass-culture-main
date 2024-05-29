@@ -6,7 +6,7 @@ import { useIndividualOfferContext } from 'context/IndividualOfferContext/Indivi
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import { ActionBar } from 'screens/IndividualOffer/ActionBar/ActionBar'
 import { BookingsSummaryScreen } from 'screens/IndividualOffer/BookingsSummary/BookingsSummary'
-import IndivualOfferLayout from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
+import { IndivualOfferLayout } from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 const BookingsSummary = (): JSX.Element | null => {

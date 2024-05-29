@@ -14,8 +14,8 @@ import { sharedCurrentUserFactory } from 'utils/storeFactories'
 import { App } from '../App/App'
 
 vi.mock('app/App/analytics/firebase', () => ({ useFirebase: vi.fn() }))
-vi.mock('app/App/hook/useLogNavigation', () => ({ default: vi.fn() }))
-vi.mock('app/App/hook/usePageTitle', () => ({ default: vi.fn() }))
+vi.mock('app/App/hook/useLogNavigation', () => ({ useLogNavigation: vi.fn() }))
+vi.mock('app/App/hook/usePageTitle', () => ({ usePageTitle: vi.fn() }))
 vi.mock('@sentry/browser', () => ({ setUser: vi.fn() }))
 
 const renderApp = (options?: RenderWithProvidersOptions) =>

@@ -21,7 +21,7 @@ import { sendSentryCustomError } from 'utils/sendSentryCustomError'
 import { SearchFormValues } from '../../OffersInstantSearch'
 import { LocalisationFilterStates } from '../OffersSearch'
 
-import ModalFilterLayout from './ModalFilterLayout/ModalFilterLayout'
+import { ModalFilterLayout } from './ModalFilterLayout/ModalFilterLayout'
 import styles from './OfferFilters.module.scss'
 import { studentsOptions } from './studentsOptions'
 

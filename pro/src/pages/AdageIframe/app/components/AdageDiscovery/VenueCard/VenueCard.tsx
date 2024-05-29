@@ -11,7 +11,7 @@ export interface VenueCardProps {
   handlePlaylistElementTracking: () => void
 }
 
-const VenueCard = ({
+export const VenueCard = ({
   venue,
   handlePlaylistElementTracking,
 }: VenueCardProps) => {
@@ -53,5 +53,3 @@ const VenueCard = ({
     </Link>
   )
 }
-
-export default VenueCard

@@ -8,7 +8,7 @@ import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 
 import { serializeStockThingList } from './adapters/serializers'
 import { StockThingFormValues, StockThingFormik } from './types'
-import buildInitialValues from './utils/buildInitialValues'
+import { buildInitialValues } from './utils/buildInitialValues'
 
 export const submitToApi = async (
   values: StockThingFormValues,

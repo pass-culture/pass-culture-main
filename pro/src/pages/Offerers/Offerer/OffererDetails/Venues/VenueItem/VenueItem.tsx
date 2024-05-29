@@ -13,7 +13,7 @@ export interface VenueItemProps {
   offererId: number
 }
 
-const VenueItem = ({ venue, offererId }: VenueItemProps) => {
+export const VenueItem = ({ venue, offererId }: VenueItemProps) => {
   const { street, city, name, postalCode, publicName, id } = venue
 
   const showPath = `/structures/${offererId}/lieux/${id}`
@@ -52,5 +52,3 @@ const VenueItem = ({ venue, offererId }: VenueItemProps) => {
     </li>
   )
 }
-
-export default VenueItem

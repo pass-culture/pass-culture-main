@@ -12,7 +12,7 @@ import {
 } from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import OfferCardComponent, { CardComponentProps } from '../OfferCard'
+import { CardComponentProps, OfferCardComponent } from '../OfferCard'
 
 vi.mock('apiClient/api', () => ({
   apiAdage: {

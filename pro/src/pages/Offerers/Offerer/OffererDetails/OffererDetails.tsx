@@ -11,15 +11,15 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { hasProperty } from 'utils/types'
 
-import ApiKey from './ApiKey/ApiKey'
-import AttachmentInvitations from './AttachmentInvitations/AttachmentInvitations'
+import { ApiKey } from './ApiKey/ApiKey'
+import { AttachmentInvitations } from './AttachmentInvitations/AttachmentInvitations'
 import {
   formatSiren,
   Offerer,
   transformOffererResponseModelToOfferer,
 } from './Offerer'
 import styles from './OffererDetails.module.scss'
-import Venues from './Venues/Venues'
+import { Venues } from './Venues/Venues'
 
 export const OffererDetails = () => {
   const { offererId } = useParams()
