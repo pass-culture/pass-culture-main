@@ -2,7 +2,7 @@ import { useContext } from 'react'
 
 import { AdageUserContext } from '../providers/AdageUserContext'
 
-const useAdageUser = () => {
+export const useAdageUser = () => {
   const {
     adageUser,
     setFavoriteCount,
@@ -25,5 +25,3 @@ const useAdageUser = () => {
     setInstitutionOfferCount,
   }
 }
-
-export default useAdageUser

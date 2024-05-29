@@ -19,7 +19,7 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullUpIcon from 'icons/full-up.svg'
 import strokeOfferIcon from 'icons/stroke-offer.svg'
-import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
+import { useAdageUser } from 'pages/AdageIframe/app/hooks/useAdageUser'
 import {
   isCollectiveOfferBookable,
   isCollectiveOfferTemplate,

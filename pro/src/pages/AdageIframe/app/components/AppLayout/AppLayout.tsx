@@ -11,7 +11,7 @@ import { AdageFrontRoles } from 'apiClient/adage'
 import useActiveFeature from 'hooks/useActiveFeature'
 
 import { MARSEILLE_EN_GRAND } from '../../constants'
-import useAdageUser from '../../hooks/useAdageUser'
+import { useAdageUser } from '../../hooks/useAdageUser'
 import { AdageDiscovery } from '../AdageDiscovery/AdageDiscovery'
 import { AdageHeader } from '../AdageHeader/AdageHeader'
 import { OfferInfos } from '../OfferInfos/OfferInfos'

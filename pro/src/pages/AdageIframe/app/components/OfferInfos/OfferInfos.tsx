@@ -17,7 +17,7 @@ import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
-import useAdageUser from '../../hooks/useAdageUser'
+import { useAdageUser } from '../../hooks/useAdageUser'
 import { Offer } from '../OffersInstantSearch/OffersSearch/Offers/Offer'
 
 import { AdageOffer } from './AdageOffer/AdageOffer'

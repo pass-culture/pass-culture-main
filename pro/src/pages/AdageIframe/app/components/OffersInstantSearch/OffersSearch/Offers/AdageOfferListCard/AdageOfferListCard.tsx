@@ -13,7 +13,7 @@ import {
   CollectiveOfferTemplateResponseModel,
 } from 'apiClient/adage'
 import strokeOfferIcon from 'icons/stroke-offer.svg'
-import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
+import { useAdageUser } from 'pages/AdageIframe/app/hooks/useAdageUser'
 import {
   isCollectiveOfferBookable,
   isCollectiveOfferTemplate,
