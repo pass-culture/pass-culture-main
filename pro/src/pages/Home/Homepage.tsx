@@ -18,7 +18,7 @@ import {
 import { hasStatusCode } from 'core/OfferEducational/utils/hasStatusCode'
 import { SAVED_OFFERER_ID_KEY } from 'core/shared/constants'
 import { SelectOption } from 'custom_types/form'
-import useCurrentUser from 'hooks/useCurrentUser'
+import { useCurrentUser } from 'hooks/useCurrentUser'
 import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import { useNotification } from 'hooks/useNotification'
 import strokeCloseIcon from 'icons/stroke-close.svg'

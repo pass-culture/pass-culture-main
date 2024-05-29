@@ -2,7 +2,7 @@ import { useFormikContext } from 'formik'
 import { useEffect } from 'react'
 
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import useCurrentUser from 'hooks/useCurrentUser'
+import { useCurrentUser } from 'hooks/useCurrentUser'
 import { Checkbox } from 'ui-kit/form/Checkbox/Checkbox'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 

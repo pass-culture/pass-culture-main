@@ -46,7 +46,7 @@ describe('src | components | pages | Signup | validation', () => {
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...mockUseNotification,
     }))
-    vi.spyOn(useCurrentUser, 'default').mockReturnValue({
+    vi.spyOn(useCurrentUser, 'useCurrentUser').mockReturnValue({
       currentUser: sharedCurrentUserFactory(),
       selectedOffererId: null,
     })

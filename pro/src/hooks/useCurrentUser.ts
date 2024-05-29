@@ -8,7 +8,7 @@ export interface UseCurrentUserReturn {
   selectedOffererId: number | null
 }
 
-const useCurrentUser = (): UseCurrentUserReturn => {
+export const useCurrentUser = (): UseCurrentUserReturn => {
   const currentUser = useSelector(selectCurrentUser)
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
@@ -23,5 +23,3 @@ const useCurrentUser = (): UseCurrentUserReturn => {
     selectedOffererId,
   }
 }
-
-export default useCurrentUser

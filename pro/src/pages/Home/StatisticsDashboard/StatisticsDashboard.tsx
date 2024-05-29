@@ -7,7 +7,7 @@ import {
   GetOffererResponseModel,
   GetOffererStatsResponseModel,
 } from 'apiClient/v1'
-import useCurrentUser from 'hooks/useCurrentUser'
+import { useCurrentUser } from 'hooks/useCurrentUser'
 import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import fullMoreIcon from 'icons/full-more.svg'
 import strokeNoBookingIcon from 'icons/stroke-no-booking.svg'
