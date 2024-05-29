@@ -316,7 +316,7 @@ class AsymetricToken(AbstractToken):
 
     @classmethod
     def load_without_checking(
-        cls, encoded_token: str, public_key: str, *args: typing.Any, **kwargs: typing.Any
+        cls, encoded_token: str, public_key: bytes, *args: typing.Any, **kwargs: typing.Any
     ) -> "AsymetricToken":
         try:
             payload = utils.decode_jwt_token_rs256(
@@ -336,8 +336,8 @@ class AsymetricToken(AbstractToken):
     def create(
         cls,
         type_: TokenType,
-        private_key: str,
-        public_key: str,
+        private_key: bytes,
+        public_key: bytes,
         ttl: timedelta | None,
         data: dict | None = None,
     ) -> "AsymetricToken":
