@@ -263,6 +263,7 @@ const getResponseBody = async (response: Response): Promise<any> => {
           'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
           'application/vnd.ms-excel',
           'text/csv',
+          'application/pdf',
         ].some((downloadableMimeType) =>
           lowercaseContentType.includes(downloadableMimeType)
         )
@@ -362,7 +363,7 @@ export const request = <T>(
       }
     } catch (error) {
       if (error instanceof ApiError && error.status === 401) {
-        if(error.url.includes('/adage-iframe')) {
+        if (error.url.includes('/adage-iframe')) {
           window.location.href = '/adage-iframe/erreur'
           return
         }

@@ -61,6 +61,20 @@
   color: var(--color-error);
 }
 
+.download-actions {
+  display: flex;
+  gap: rem.torem(8px);
+  margin-top: rem.torem(32px);
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.download-button {
+  border-left: solid 1px var(--color-grey-semi-dark);
+  border-radius: 0;
+  padding-left: rem.torem(8px);
+}
+
 @media (min-width: size.$tablet) {
   .invoices-table {
     margin-top: 0;
@@ -104,6 +118,10 @@
   .data::before {
     content: none;
     display: none;
+  }
+
+  .date-header {
+    padding-left: rem.torem(20px);
   }
 
   .date-column {
@@ -152,4 +170,8 @@
   path {
     fill: var(--color-black);
   }
+}
+
+.download-actions {
+  flex-direction: row;
 }
