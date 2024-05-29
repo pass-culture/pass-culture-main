@@ -5,13 +5,13 @@ import {
   GetOffererResponseModel,
   GetOffererVenueResponseModel,
 } from 'apiClient/v1'
+import { useAnalytics } from 'app/App/analytics/firebase'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import fullInfoIcon from 'icons/full-info.svg'
 import fullNextIcon from 'icons/full-next.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
-import useAnalytics from '../../../app/App/analytics/firebase'
 import {
   Events,
   OFFER_FORM_NAVIGATION_IN,

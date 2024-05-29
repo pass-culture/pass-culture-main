@@ -213,7 +213,7 @@ describe('BankInformations page', () => {
   })
 
   it('should track add bank account button', async () => {
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
     renderBankInformations(offerer)

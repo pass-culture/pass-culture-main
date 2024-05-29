@@ -96,7 +96,7 @@ export const useFirebase = (consentedToFirebase: boolean) => {
   }, [selectedOffererId, isFirebaseInitialized])
 }
 
-const useAnalytics = () => {
+export const useAnalytics = () => {
   const utmParameters = useUtmQueryParams()
 
   const logEvent = useCallback(
@@ -122,5 +122,3 @@ const useAnalytics = () => {
 
   return { logEvent }
 }
-
-export default useAnalytics

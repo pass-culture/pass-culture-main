@@ -31,7 +31,7 @@ const mockLogEvent = vi.fn()
 
 describe('tutorial modal', () => {
   it('should trigger an event when the user arrive on /accueil for the first time', async () => {
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
 

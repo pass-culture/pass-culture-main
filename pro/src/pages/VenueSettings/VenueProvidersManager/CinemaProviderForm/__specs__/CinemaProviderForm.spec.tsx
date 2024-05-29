@@ -37,7 +37,7 @@ describe('CinemaProviderForm', () => {
       initialValues: { isDuo: true } as CinemaProviderFormValues,
     }
 
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       ...vi.importActual('app/App/analytics/firebase'),
       logEvent: mockLogEvent,
     }))

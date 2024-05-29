@@ -111,7 +111,7 @@ describe('DownloadBookingModal', () => {
 
   it('should download validated bookings as CSV', async () => {
     vi.spyOn(api, 'exportBookingsForOfferAsCsv').mockResolvedValueOnce('')
-    vi.spyOn(useAnalytics, 'default').mockReturnValue({
+    vi.spyOn(useAnalytics, 'useAnalytics').mockReturnValue({
       logEvent: mockLogEvent,
     })
 
@@ -168,7 +168,7 @@ describe('DownloadBookingModal', () => {
 
   it('should download all bookings as Excel', async () => {
     vi.spyOn(api, 'exportBookingsForOfferAsExcel').mockResolvedValueOnce({})
-    vi.spyOn(useAnalytics, 'default').mockReturnValue({
+    vi.spyOn(useAnalytics, 'useAnalytics').mockReturnValue({
       logEvent: mockLogEvent,
     })
 

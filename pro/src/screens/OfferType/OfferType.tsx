@@ -4,7 +4,7 @@ import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import { CollectiveOfferDisplayedStatus } from 'apiClient/v1'
-import useAnalytics from 'app/App/analytics/firebase'
+import { useAnalytics } from 'app/App/analytics/firebase'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { GET_OFFERER_QUERY_KEY } from 'config/swrQueryKeys'

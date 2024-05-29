@@ -5,7 +5,7 @@ import {
   GetOffererResponseModel,
   GetOffererV2StatsResponseModel,
 } from 'apiClient/v1'
-import useAnalytics from 'app/App/analytics/firebase'
+import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'core/FirebaseEvents/constants'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullShowIcon from 'icons/full-show.svg'

@@ -60,7 +60,7 @@ describe('ImageUploaderOffer::tracker', () => {
       onImageDelete: vi.fn().mockResolvedValue(undefined),
     }
 
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
   })

@@ -145,7 +145,7 @@ describe('Summary', () => {
       categories,
     }
 
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
     vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(

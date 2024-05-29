@@ -2,7 +2,7 @@ import cn from 'classnames'
 import { ForwardedRef, forwardRef } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 
-import useAnalytics from 'app/App/analytics/firebase'
+import { useAnalytics } from 'app/App/analytics/firebase'
 import { HeaderHelpDropdown } from 'components/Header/HeaderHelpDropdown/HeaderHelpDropdown'
 import { Events } from 'core/FirebaseEvents/constants'
 import fullBurgerIcon from 'icons/full-burger.svg'

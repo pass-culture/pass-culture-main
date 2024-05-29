@@ -2,7 +2,7 @@ import classNames from 'classnames'
 import isEqual from 'lodash.isequal'
 import React, { FormEvent, useCallback, useEffect, useState } from 'react'
 
-import useAnalytics from 'app/App/analytics/firebase'
+import { useAnalytics } from 'app/App/analytics/firebase'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { MultiDownloadButtonsModal } from 'components/MultiDownloadButtonsModal/MultiDownloadButtonsModal'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'

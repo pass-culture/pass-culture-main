@@ -166,7 +166,7 @@ describe('OfferEducationalActions', () => {
 
   it('should log event when clicked on booking link', async () => {
     const mockLogEvent = vi.fn()
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       ...vi.importActual('app/App/analytics/firebase'),
       logEvent: mockLogEvent,
     }))

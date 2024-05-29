@@ -130,7 +130,7 @@ describe('BankInformations', () => {
   })
 
   it('should display unlink venues dialog', async () => {
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
     renderBankInformations()

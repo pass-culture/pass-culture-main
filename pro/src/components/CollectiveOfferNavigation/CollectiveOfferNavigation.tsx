@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import { useLocation, useNavigate } from 'react-router-dom'
 
-import useAnalytics from 'app/App/analytics/firebase'
+import { useAnalytics } from 'app/App/analytics/firebase'
 import { Step, Stepper } from 'components/Stepper/Stepper'
 import {
   Events,

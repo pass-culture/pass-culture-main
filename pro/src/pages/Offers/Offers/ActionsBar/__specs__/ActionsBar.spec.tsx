@@ -50,7 +50,7 @@ describe('ActionsBar', () => {
       areAllOffersSelected: false,
       audience: Audience.INDIVIDUAL,
     }
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
   })

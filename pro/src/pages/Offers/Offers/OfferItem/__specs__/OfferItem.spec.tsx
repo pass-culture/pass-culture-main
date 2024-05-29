@@ -560,7 +560,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
     it('should log event when clicking booking link', async () => {
       const mockLogEvent = vi.fn()
-      vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
         ...vi.importActual('app/App/analytics/firebase'),
         logEvent: mockLogEvent,
       }))

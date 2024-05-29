@@ -49,7 +49,7 @@ describe('homepage: ProfileAndSupport: Support', () => {
     })
 
     it('should trigger events when clicking on link', async () => {
-      vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
         logEvent: mockLogEvent,
       }))
       renderSupport()

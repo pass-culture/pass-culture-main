@@ -59,7 +59,7 @@ describe('LinkVenueCallout', () => {
     })
 
     it('should log add venue bank to account', async () => {
-      vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
         logEvent: mockLogEvent,
       }))
 

@@ -1,6 +1,6 @@
 import React from 'react'
 
-import useAnalytics from 'app/App/analytics/firebase'
+import { useAnalytics } from 'app/App/analytics/firebase'
 import { Dialog } from 'components/Dialog/Dialog/Dialog'
 import { BankAccountEvents } from 'core/FirebaseEvents/constants'
 import fullLinkIcon from 'icons/full-link.svg'
