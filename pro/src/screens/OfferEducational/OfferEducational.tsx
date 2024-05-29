@@ -32,7 +32,7 @@ import {
   SENT_DATA_ERROR_MESSAGE,
 } from 'core/shared/constants'
 import { SelectOption } from 'custom_types/form'
-import useActiveFeature from 'hooks/useActiveFeature'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'
 import {
   createPatchOfferPayload,

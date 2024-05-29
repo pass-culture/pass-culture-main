@@ -14,7 +14,7 @@ import {
 import { venueInterventionOptions } from 'core/shared/interventionOptions'
 import { handleAllFranceDepartmentOptions } from 'core/shared/utils/handleAllFranceDepartmentOptions'
 import { SelectOption } from 'custom_types/form'
-import useActiveFeature from 'hooks/useActiveFeature'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'
 import { RouteLeavingGuardVenueEdition } from 'pages/VenueEdition/RouteLeavingGuardVenueEdition'
 import { Button } from 'ui-kit/Button/Button'

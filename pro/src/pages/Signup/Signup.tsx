@@ -2,7 +2,7 @@ import React from 'react'
 import { Outlet } from 'react-router-dom'
 
 import { AppLayout } from 'app/AppLayout'
-import useActiveFeature from 'hooks/useActiveFeature'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 

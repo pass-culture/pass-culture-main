@@ -8,7 +8,7 @@ import {
 } from 'core/FirebaseEvents/constants'
 import { createOfferFromBookableOffer } from 'core/OfferEducational/utils/createOfferFromBookableOffer'
 import { createOfferFromTemplate } from 'core/OfferEducational/utils/createOfferFromTemplate'
-import useActiveFeature from 'hooks/useActiveFeature'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'
 import copyIcon from 'icons/full-duplicate.svg'
 import fullPlusIcon from 'icons/full-plus.svg'

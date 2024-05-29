@@ -8,7 +8,7 @@ import {
 } from 'react-router-dom'
 
 import { AdageFrontRoles } from 'apiClient/adage'
-import useActiveFeature from 'hooks/useActiveFeature'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 
 import { MARSEILLE_EN_GRAND } from '../../constants'
 import { useAdageUser } from '../../hooks/useAdageUser'
