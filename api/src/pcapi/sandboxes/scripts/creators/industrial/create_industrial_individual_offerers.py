@@ -52,7 +52,7 @@ def create_industrial_individual_offerers() -> None:
         user__lastName="Autoentrepreneur",
         user__email="jack.autoentrepreneur@example.com",
     )
-    offerers_factories.IndividualOffererSubscription(offerer=offerer)
+    offerers_factories.IndividualOffererSubscriptionFactory(offerer=offerer)
     offerers_factories.VenueRegistrationFactory(venue=venue, webPresence="https://www.example.com/ae/jack")
 
     # individual offerer with Adage application submitted
@@ -74,7 +74,7 @@ def create_industrial_individual_offerers() -> None:
         user__lastName="Autoentrepreneur",
         user__email="william.autoentrepreneur@example.com",
     )
-    offerers_factories.IndividualOffererSubscription(offerer=offerer)
+    offerers_factories.IndividualOffererSubscriptionFactory(offerer=offerer, isCriminalRecordReceived=True)
     offerers_factories.VenueRegistrationFactory(venue=venue, webPresence="https://www.example.com/ae/william")
     educational_factories.CollectiveDmsApplicationFactory(venue=venue, state="en_instruction")
 
@@ -100,7 +100,7 @@ def create_industrial_individual_offerers() -> None:
         user__lastName="Autoentrepreneur",
         user__email="averell.autoentrepreneur@example.com",
     )
-    offerers_factories.IndividualOffererSubscription(
+    offerers_factories.IndividualOffererSubscriptionFactory(
         offerer=offerer,
         isCriminalRecordReceived=True,
         dateCriminalRecordReceived=datetime.date.today() - datetime.timedelta(days=1),

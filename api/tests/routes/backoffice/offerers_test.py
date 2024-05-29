@@ -266,7 +266,7 @@ class GetOffererTest(GetEndpointHelper):
     def test_offerer_with_individual_subscription_data(self, authenticated_client):
         tag = offerers_factories.OffererTagFactory(name="auto-entrepreneur")
         offerer = offerers_factories.NotValidatedOffererFactory(tags=[tag])
-        offerers_factories.IndividualOffererSubscription(offerer=offerer)
+        offerers_factories.IndividualOffererSubscriptionFactory(offerer=offerer)
         offerer_id = offerer.id
 
         with assert_num_queries(self.expected_num_queries):
@@ -1763,6 +1763,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             assert tag.label in rows[0]["Tags structure"]
             assert other_category_tag.label in rows[0]["Tags structure"]
             assert rows[0]["Date de la demande"] == "03/10/2022"
+            assert rows[0]["Documents reçus"] == ""
             assert rows[0]["Dernier commentaire"] == "Houlala"
             assert rows[0]["SIREN"] == user_offerer.offerer.siren
             assert rows[0]["Email"] == user_offerer.user.email
@@ -1795,6 +1796,39 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             assert rows[0]["État"] == "Nouvelle"
             assert rows[0]["Date de la demande"] == "03/10/2022"
             assert rows[0]["Dernier commentaire"] == ""
+
+        def test_payload_content_ae_documents_not_received(self, authenticated_client):
+            user_offerer = offerers_factories.UserNotValidatedOffererFactory()
+            offerers_factories.IndividualOffererSubscriptionFactory(
+                offerer=user_offerer.offerer, isEmailSent=True, isCriminalRecordReceived=True
+            )
+
+            with assert_num_queries(self.expected_num_queries):
+                response = authenticated_client.get(url_for("backoffice_web.validation.list_offerers_to_validate"))
+                assert response.status_code == 200
+
+            rows = html_parser.extract_table_rows(response.data)
+            assert len(rows) == 1
+            assert rows[0]["ID"] == str(user_offerer.offerer.id)
+            assert rows[0]["Documents reçus"] == "Non"
+
+        def test_payload_content_ae_documents_received(self, authenticated_client):
+            user_offerer = offerers_factories.UserNotValidatedOffererFactory()
+            offerers_factories.IndividualOffererSubscriptionFactory(
+                offerer=user_offerer.offerer,
+                isEmailSent=True,
+                isCriminalRecordReceived=True,
+                isCertificateReceived=True,
+            )
+
+            with assert_num_queries(self.expected_num_queries):
+                response = authenticated_client.get(url_for("backoffice_web.validation.list_offerers_to_validate"))
+                assert response.status_code == 200
+
+            rows = html_parser.extract_table_rows(response.data)
+            assert len(rows) == 1
+            assert rows[0]["ID"] == str(user_offerer.offerer.id)
+            assert rows[0]["Documents reçus"] == "Oui"
 
         def test_dms_adage_additional_data(self, authenticated_client):
             user_offerer = offerers_factories.UserNotValidatedOffererFactory()
@@ -3789,7 +3823,7 @@ class GetIndividualOffererSubscriptionTest(GetEndpointHelper):
         )
 
     def test_with_subscription_data(self, authenticated_client):
-        individual_subscription = offerers_factories.IndividualOffererSubscription(
+        individual_subscription = offerers_factories.IndividualOffererSubscriptionFactory(
             isCriminalRecordReceived=True, isExperienceReceived=True
         )
         offerer = individual_subscription.offerer
@@ -3810,7 +3844,7 @@ class GetIndividualOffererSubscriptionTest(GetEndpointHelper):
         )
 
     def test_with_adage_expected(self, authenticated_client, adage_tag):
-        individual_subscription = offerers_factories.IndividualOffererSubscription(
+        individual_subscription = offerers_factories.IndividualOffererSubscriptionFactory(
             offerer__tags=[adage_tag], isCertificateReceived=True
         )
         offerer = individual_subscription.offerer
@@ -3841,7 +3875,7 @@ class GetIndividualOffererSubscriptionTest(GetEndpointHelper):
         ],
     )
     def test_with_adage_application(self, authenticated_client, adage_tag, state, expected_adage_classes):
-        individual_subscription = offerers_factories.IndividualOffererSubscription(
+        individual_subscription = offerers_factories.IndividualOffererSubscriptionFactory(
             offerer__tags=[adage_tag],
             isCriminalRecordReceived=True,
             isCertificateReceived=True,
@@ -3873,7 +3907,7 @@ class SaveIndividualSubscriptionButtonTest(button_helpers.ButtonHelper):
 
     @property
     def path(self):
-        individual_subscription = offerers_factories.IndividualOffererSubscription()
+        individual_subscription = offerers_factories.IndividualOffererSubscriptionFactory()
         return url_for(
             "backoffice_web.offerer.get_individual_subscription", offerer_id=individual_subscription.offerer.id
         )
@@ -3933,7 +3967,7 @@ class UpdateIndividualOffererSubscriptionTest(PostEndpointHelper):
         self._assert_data(individual_subscription, form_data)
 
     def test_update(self, authenticated_client):
-        individual_subscription = offerers_factories.IndividualOffererSubscription()
+        individual_subscription = offerers_factories.IndividualOffererSubscriptionFactory()
         offerer = individual_subscription.offerer
 
         form_data = {
