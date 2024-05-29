@@ -21,7 +21,7 @@ export type OfferSummaryProps = {
   offer: CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
 }
 
-const OfferSummary = ({ offer }: OfferSummaryProps): JSX.Element => {
+export const OfferSummary = ({ offer }: OfferSummaryProps): JSX.Element => {
   const isOfferTemplate = isCollectiveOfferTemplate(offer)
   const { venue, offerVenue, students } = offer
   const { beginningDatetime, numberOfTickets, price } = isOfferTemplate
@@ -165,5 +165,3 @@ const OfferSummary = ({ offer }: OfferSummaryProps): JSX.Element => {
     </dl>
   )
 }
-
-export default OfferSummary

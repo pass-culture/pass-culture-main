@@ -5,7 +5,7 @@ import {
 } from 'utils/individualApiFactories'
 
 import { StockThingFormValues } from '../../types'
-import setFormReadOnlyFields from '../setFormReadOnlyFields'
+import { setFormReadOnlyFields } from '../setFormReadOnlyFields'
 
 describe('StockThingForm::utils::setFormReadOnlyFields', () => {
   let offer: GetIndividualOfferResponseModel

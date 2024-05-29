@@ -21,7 +21,7 @@ interface IndividualOfferConfirmationScreenProps {
   offer: GetIndividualOfferResponseModel
 }
 
-const IndividualOfferConfirmationScreen = ({
+export const IndividualOfferConfirmationScreen = ({
   offer,
 }: IndividualOfferConfirmationScreenProps): JSX.Element => {
   const { logEvent } = useAnalytics()
@@ -110,5 +110,3 @@ const IndividualOfferConfirmationScreen = ({
     </div>
   )
 }
-
-export default IndividualOfferConfirmationScreen

@@ -25,7 +25,7 @@ export interface RouteConfig {
   children?: RouteConfig[]
 }
 
-const routes: RouteConfig[] = [
+export const routes: RouteConfig[] = [
   {
     element: <Navigate to="/accueil" />,
     path: '/',
@@ -318,5 +318,3 @@ const routes: RouteConfig[] = [
     title: 'Plan du site',
   },
 ]
-
-export default routes

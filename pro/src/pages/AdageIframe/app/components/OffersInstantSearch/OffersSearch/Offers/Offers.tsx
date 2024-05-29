@@ -28,10 +28,10 @@ import { adageSearchViewSelector } from 'store/adageFilter/selectors'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { LOGS_DATA } from 'utils/config'
 
-import OfferCardComponent from '../../../AdageDiscovery/OfferCard/OfferCard'
+import { OfferCardComponent } from '../../../AdageDiscovery/OfferCard/OfferCard'
 import { DiffuseHelp } from '../../../DiffuseHelp/DiffuseHelp'
 import { CustomPagination } from '../../../Pagination/Pagination'
-import AdageSkeleton from '../../../Skeleton/AdageSkeleton'
+import { AdageSkeleton } from '../../../Skeleton/AdageSkeleton'
 import { SurveySatisfaction } from '../../../SurveySatisfaction/SurveySatisfaction'
 import {
   ToggleButtonGroup,
@@ -40,7 +40,7 @@ import {
 
 import { AdageOfferListCard } from './AdageOfferListCard/AdageOfferListCard'
 import { NoResultsPage } from './NoResultsPage/NoResultsPage'
-import Offer from './Offer'
+import { Offer } from './Offer'
 import styles from './Offers.module.scss'
 import { offerIsBookable } from './utils/offerIsBookable'
 

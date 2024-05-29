@@ -4,7 +4,7 @@ import { useLocation, useParams } from 'react-router-dom'
 import useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'core/FirebaseEvents/constants'
 
-const useLogNavigation = (): void => {
+export const useLogNavigation = (): void => {
   const location = useLocation()
   const params = useParams()
   const { logEvent } = useAnalytics()
@@ -30,5 +30,3 @@ const useLogNavigation = (): void => {
     return
   }, [location, logEvent])
 }
-
-export default useLogNavigation

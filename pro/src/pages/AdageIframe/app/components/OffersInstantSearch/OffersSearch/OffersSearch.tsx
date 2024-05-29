@@ -26,7 +26,7 @@ import {
 import { ADAGE_FILTERS_DEFAULT_VALUES, serializeFiltersForData } from '../utils'
 
 import { Autocomplete } from './Autocomplete/Autocomplete'
-import FiltersTags from './FiltersTags/FiltersTags'
+import { FiltersTags } from './FiltersTags/FiltersTags'
 import { OfferFilters } from './OfferFilters/OfferFilters'
 import { Offers } from './Offers/Offers'
 import styles from './OffersSearch.module.scss'

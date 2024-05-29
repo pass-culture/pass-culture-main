@@ -3,7 +3,7 @@ import React from 'react'
 
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import CookiesFooter from '../CookiesFooter'
+import { CookiesFooter } from '../CookiesFooter'
 
 const renderCookiesFooter = () => {
   renderWithProviders(<CookiesFooter />)

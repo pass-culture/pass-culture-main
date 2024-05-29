@@ -18,7 +18,7 @@ export interface OfferShareLinkProps {
   tooltipContentClassName?: string
 }
 
-const OfferShareLink = ({
+export const OfferShareLink = ({
   offer,
   className,
   tooltipContentClassName,
@@ -51,5 +51,3 @@ Bonjour, \n\nJe partage avec vous l’offre pass Culture “${offer.name}”. \n
     </ListIconButton>
   )
 }
-
-export default OfferShareLink

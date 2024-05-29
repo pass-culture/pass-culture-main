@@ -16,9 +16,9 @@ import useNotification from 'hooks/useNotification'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
-import RecurrenceSection from './RecurrenceSection/RecurrenceSection'
+import { RecurrenceSection } from './RecurrenceSection/RecurrenceSection'
 import styles from './StockSection.module.scss'
-import StockThingSection from './StockThingSection/StockThingSection'
+import { StockThingSection } from './StockThingSection/StockThingSection'
 
 export const getStockWarningText = (offer: GetIndividualOfferResponseModel) => {
   if (!offer.hasStocks) {
@@ -41,7 +41,10 @@ export interface StockSectionProps {
   canBeDuo?: boolean
 }
 
-const StockSection = ({ offer, canBeDuo }: StockSectionProps): JSX.Element => {
+export const StockSection = ({
+  offer,
+  canBeDuo,
+}: StockSectionProps): JSX.Element => {
   const mode = useOfferWizardMode()
   const [isLoading, setIsLoading] = useState(false)
   const [stocksEventsStats, setStocksEventsStats] = useState<
@@ -128,5 +131,3 @@ const StockSection = ({ offer, canBeDuo }: StockSectionProps): JSX.Element => {
     </>
   )
 }
-
-export default StockSection

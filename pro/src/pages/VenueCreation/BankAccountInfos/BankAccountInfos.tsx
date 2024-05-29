@@ -10,7 +10,9 @@ interface BankAccountInfosProps {
   venueBankAccount?: BankAccountResponseModel | null
 }
 
-const BankAccountInfos = ({ venueBankAccount }: BankAccountInfosProps) => {
+export const BankAccountInfos = ({
+  venueBankAccount,
+}: BankAccountInfosProps) => {
   return (
     <FormLayout.Section title="Compte bancaire">
       {venueBankAccount && (
@@ -39,5 +41,3 @@ const BankAccountInfos = ({ venueBankAccount }: BankAccountInfosProps) => {
     </FormLayout.Section>
   )
 }
-
-export default BankAccountInfos

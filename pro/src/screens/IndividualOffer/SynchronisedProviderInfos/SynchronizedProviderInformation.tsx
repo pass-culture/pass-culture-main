@@ -9,7 +9,7 @@ export interface SynchronizedProviderInformationProps {
   providerName: string
 }
 
-const SynchronizedProviderInformation = ({
+export const SynchronizedProviderInformation = ({
   providerName,
 }: SynchronizedProviderInformationProps): JSX.Element | null => {
   const providerInfo = getProviderInfo(providerName)
@@ -38,5 +38,3 @@ const SynchronizedProviderInformation = ({
     </Banner>
   )
 }
-
-export default SynchronizedProviderInformation

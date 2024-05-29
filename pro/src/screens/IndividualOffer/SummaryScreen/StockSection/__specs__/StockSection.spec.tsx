@@ -18,7 +18,7 @@ import {
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import StockSection, { StockSectionProps } from '../StockSection'
+import { StockSection, StockSectionProps } from '../StockSection'
 
 const renderStockSection = (
   props: StockSectionProps,

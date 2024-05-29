@@ -23,7 +23,7 @@ export interface OfferFavoriteButtonProps {
   viewType?: 'grid' | 'list'
 }
 
-const OfferFavoriteButton = ({
+export const OfferFavoriteButton = ({
   offer,
   queryId,
   afterFavoriteChange,
@@ -128,5 +128,3 @@ const OfferFavoriteButton = ({
     </ListIconButton>
   )
 }
-
-export default OfferFavoriteButton

@@ -11,7 +11,7 @@ interface RecurrenceSectionProps {
   departementCode: string
 }
 
-const RecurrenceSection = ({
+export const RecurrenceSection = ({
   stocksStats,
   departementCode,
 }: RecurrenceSectionProps) => {
@@ -60,5 +60,3 @@ const RecurrenceSection = ({
     />
   )
 }
-
-export default RecurrenceSection

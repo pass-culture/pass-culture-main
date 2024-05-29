@@ -9,7 +9,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './CookiesFooter.module.scss'
 
-const CookiesFooter = ({ className }: { className?: string }) => {
+export const CookiesFooter = ({ className }: { className?: string }) => {
   const isNewSideBarNavigation = useIsNewInterfaceActive()
 
   if (isNewSideBarNavigation) {
@@ -60,5 +60,3 @@ const CookiesFooter = ({ className }: { className?: string }) => {
     </footer>
   )
 }
-
-export default CookiesFooter

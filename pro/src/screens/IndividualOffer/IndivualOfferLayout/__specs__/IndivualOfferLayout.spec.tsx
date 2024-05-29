@@ -6,7 +6,8 @@ import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import IndivualOfferLayout, {
+import {
+  IndivualOfferLayout,
   IndivualOfferLayoutProps,
 } from '../IndivualOfferLayout'
 

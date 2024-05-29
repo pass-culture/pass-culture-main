@@ -36,7 +36,7 @@ import {
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { serializeThingBookingLimitDatetime } from '../adapters/serializers'
-import StocksThing, { StocksThingProps } from '../StocksThing'
+import { StocksThing, StocksThingProps } from '../StocksThing'
 
 vi.mock('utils/date', async () => {
   return {

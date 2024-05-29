@@ -15,7 +15,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import styles from './UserPhoneForm.module.scss'
-import validationSchema from './validationSchema'
+import { validationSchema } from './validationSchema'
 
 export interface UserPhoneFormProps {
   closeForm: () => void

@@ -9,7 +9,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { PasswordInput } from 'ui-kit/form/PasswordInput/PasswordInput'
 
 import styles from './UserPasswordForm.module.scss'
-import validationSchema from './validationSchema'
+import { validationSchema } from './validationSchema'
 
 export interface UserPasswordFormProps {
   closeForm: () => void

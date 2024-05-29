@@ -29,12 +29,12 @@ import { getOfferConditionalFields } from 'utils/getOfferConditionalFields'
 import { ActionBar } from '../ActionBar/ActionBar'
 
 import { DisplayOfferInAppLink } from './DisplayOfferInAppLink/DisplayOfferInAppLink'
-import OfferSection from './OfferSection/OfferSection'
+import { OfferSection } from './OfferSection/OfferSection'
 import { PriceCategoriesSection } from './PriceCategoriesSection/PriceCategoriesSection'
-import StockSection from './StockSection/StockSection'
+import { StockSection } from './StockSection/StockSection'
 import styles from './SummaryScreen.module.scss'
 
-const SummaryScreen = () => {
+export const SummaryScreen = () => {
   const [isDisabled, setIsDisabled] = useState(false)
   const [displayRedirectDialog, setDisplayRedirectDialog] = useState(false)
   const notification = useNotification()
@@ -197,5 +197,3 @@ const SummaryScreen = () => {
     </>
   )
 }
-
-export default SummaryScreen

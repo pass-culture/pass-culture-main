@@ -86,7 +86,7 @@ function sortInvoices(
   }
 }
 
-const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
+export const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
   const { currentSortingColumn, currentSortingMode, onColumnHeaderClick } =
     useColumnSorting<InvoicesOrderedBy>()
 
@@ -315,5 +315,3 @@ const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
     </table>
   )
 }
-
-export default InvoiceTable

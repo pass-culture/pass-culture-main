@@ -11,8 +11,8 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { AnalyticsContextProvider } from '../../providers/AnalyticsContextProvider'
 import { AdageOfferListCard } from '../OffersInstantSearch/OffersSearch/Offers/AdageOfferListCard/AdageOfferListCard'
-import Offer from '../OffersInstantSearch/OffersSearch/Offers/Offer'
-import AdageSkeleton from '../Skeleton/AdageSkeleton'
+import { Offer } from '../OffersInstantSearch/OffersSearch/Offers/Offer'
+import { AdageSkeleton } from '../Skeleton/AdageSkeleton'
 
 import styles from './OffersForMyInstitution.module.scss'
 

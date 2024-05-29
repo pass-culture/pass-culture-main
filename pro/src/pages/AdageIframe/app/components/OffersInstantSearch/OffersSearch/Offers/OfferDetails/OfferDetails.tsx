@@ -46,7 +46,7 @@ const computeDisabilityString = (
   return disabilityCompliance.join(', ') || 'Non accessible'
 }
 
-const OfferDetails = ({
+export const OfferDetails = ({
   offer,
 }: {
   offer: CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
@@ -112,5 +112,3 @@ const OfferDetails = ({
     </div>
   )
 }
-
-export default OfferDetails

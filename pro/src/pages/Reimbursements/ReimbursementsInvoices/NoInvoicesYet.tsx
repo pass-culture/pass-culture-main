@@ -5,7 +5,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './InvoicesNoResult.module.scss'
 
-const NoInvoicesYet = (): JSX.Element => {
+export const NoInvoicesYet = (): JSX.Element => {
   return (
     <div className={styles['no-refunds']}>
       <SvgIcon
@@ -21,5 +21,3 @@ const NoInvoicesYet = (): JSX.Element => {
     </div>
   )
 }
-
-export default NoInvoicesYet

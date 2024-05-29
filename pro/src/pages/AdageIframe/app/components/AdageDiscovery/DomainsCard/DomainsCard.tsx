@@ -11,7 +11,7 @@ export interface DomainsCardProps {
   handlePlaylistElementTracking: () => void
 }
 
-const DomainsCard = ({
+export const DomainsCard = ({
   title,
   color,
   src,
@@ -30,5 +30,3 @@ const DomainsCard = ({
     </Link>
   )
 }
-
-export default DomainsCard

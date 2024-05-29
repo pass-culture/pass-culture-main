@@ -3,7 +3,7 @@ import React from 'react'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { Audience } from 'core/shared/types'
 
-import StatusFiltersButton from './StatusFiltersButton'
+import { StatusFiltersButton } from './StatusFiltersButton'
 
 type OffersTableHeadProps = {
   applyFilters: () => void

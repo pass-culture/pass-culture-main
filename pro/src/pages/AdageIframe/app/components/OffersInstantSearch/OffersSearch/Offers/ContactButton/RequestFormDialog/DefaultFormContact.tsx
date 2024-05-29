@@ -18,7 +18,7 @@ type DefaultFormContactProps = {
   isPreview: boolean
 }
 
-const DefaultFormContact = ({
+export const DefaultFormContact = ({
   closeRequestFormDialog,
   formik,
   isPreview,
@@ -93,5 +93,3 @@ const DefaultFormContact = ({
     </FormikProvider>
   )
 }
-
-export default DefaultFormContact

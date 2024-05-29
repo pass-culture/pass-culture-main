@@ -9,7 +9,8 @@ import {
 } from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import OfferFavoriteButton, {
+import {
+  OfferFavoriteButton,
   OfferFavoriteButtonProps,
 } from '../OfferFavoriteButton'
 

@@ -5,7 +5,8 @@ import { CollectiveOfferStatus } from 'core/OfferEducational/types'
 import { ADMINS_DISABLED_FILTERS_MESSAGE } from 'core/Offers/constants'
 import { Audience } from 'core/shared/types'
 
-import StatusFiltersButton, {
+import {
+  StatusFiltersButton,
   StatusFiltersButtonProps,
 } from '../StatusFiltersButton'
 

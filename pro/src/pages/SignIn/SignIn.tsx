@@ -10,14 +10,14 @@ import useInitReCaptcha from 'hooks/useInitReCaptcha'
 import useNotification from 'hooks/useNotification'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
-import CookiesFooter from 'pages/CookiesFooter/CookiesFooter'
+import { CookiesFooter } from 'pages/CookiesFooter/CookiesFooter'
 import { updateUser } from 'store/user/reducer'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { getReCaptchaToken } from 'utils/recaptcha'
 
 import { SIGNIN_FORM_DEFAULT_VALUES } from './constants'
 import styles from './Signin.module.scss'
-import SigninForm from './SigninForm'
+import { SigninForm } from './SigninForm'
 import { validationSchema } from './validationSchema'
 
 interface SigninFormValues {

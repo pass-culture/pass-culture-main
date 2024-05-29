@@ -4,7 +4,8 @@ import strokeWipIcon from 'icons/stroke-wip.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './SignupUnavailable.module.scss'
-const SignupUnavailable: FunctionComponent = () => {
+
+export const SignupUnavailable: FunctionComponent = () => {
   return (
     <section className={styles['sign-up-unavailable-section']}>
       <div className={styles['content']}>
@@ -26,5 +27,3 @@ const SignupUnavailable: FunctionComponent = () => {
     </section>
   )
 }
-
-export default SignupUnavailable

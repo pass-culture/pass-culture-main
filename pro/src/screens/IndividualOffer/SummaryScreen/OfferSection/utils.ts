@@ -1,4 +1,4 @@
-const humanizeDelay = (delay: number): string => {
+export const humanizeDelay = (delay: number): string => {
   const timeInHour = delay / 60 / 60
 
   if (timeInHour < 1) {
@@ -10,5 +10,3 @@ const humanizeDelay = (delay: number): string => {
   }
   return `${timeInHour} heures`
 }
-
-export default humanizeDelay

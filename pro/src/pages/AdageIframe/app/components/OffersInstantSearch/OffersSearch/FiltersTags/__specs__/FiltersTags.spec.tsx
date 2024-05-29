@@ -8,7 +8,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import { SearchFormValues } from '../../../OffersInstantSearch'
 import { ADAGE_FILTERS_DEFAULT_VALUES } from '../../../utils'
 import { LocalisationFilterStates } from '../../OffersSearch'
-import FiltersTags from '../FiltersTags'
+import { FiltersTags } from '../FiltersTags'
 
 const domainsOptions = [
   { value: 1, label: 'Architecture' },

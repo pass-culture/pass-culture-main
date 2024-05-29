@@ -2,7 +2,7 @@ import React from 'react'
 
 import styles from './ActivationCodeFormDialog.module.scss'
 
-const ActivationCodesUploadInformationDescription = () => {
+export const ActivationCodesUploadInformationDescription = () => {
   return (
     <div className={styles['activation-codes-upload-description']}>
       <p>
@@ -16,5 +16,3 @@ const ActivationCodesUploadInformationDescription = () => {
     </div>
   )
 }
-
-export default ActivationCodesUploadInformationDescription

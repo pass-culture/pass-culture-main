@@ -7,7 +7,7 @@ import { BannerRGS } from 'components/Banner/BannerRGS'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { LegalInfos } from 'components/LegalInfos/LegalInfos'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
-import CookiesFooter from 'pages/CookiesFooter/CookiesFooter'
+import { CookiesFooter } from 'pages/CookiesFooter/CookiesFooter'
 import { MaybeAppUserDialog } from 'pages/Signup/SignupContainer/MaybeAppUserDialog/MaybeAppUserDialog'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -19,7 +19,7 @@ import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import styles from './SignupContainer.module.scss'
 
-const SignupForm = (): JSX.Element => {
+export const SignupForm = (): JSX.Element => {
   const navigate = useNavigate()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const { isSubmitting } = useFormikContext<ProUserCreationBodyV2Model>()
@@ -103,5 +103,3 @@ const SignupForm = (): JSX.Element => {
     </>
   )
 }
-
-export default SignupForm

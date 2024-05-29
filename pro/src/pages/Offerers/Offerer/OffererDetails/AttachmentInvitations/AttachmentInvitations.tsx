@@ -29,7 +29,9 @@ const SECTION_ID = '#attachment-invitations-section'
 const SUCCESS_MESSAGE = "L'invitation a bien été envoyée."
 const ERROR_MESSAGE = 'Une erreur est survenue lors de l’envoi de l’invitation.'
 
-const AttachmentInvitations = ({ offererId }: AttachmentInvitationsProps) => {
+export const AttachmentInvitations = ({
+  offererId,
+}: AttachmentInvitationsProps) => {
   const { logEvent } = useAnalytics()
   const location = useLocation()
   const notify = useNotification()
@@ -181,5 +183,3 @@ const AttachmentInvitations = ({ offererId }: AttachmentInvitationsProps) => {
     </section>
   )
 }
-
-export default AttachmentInvitations

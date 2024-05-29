@@ -6,7 +6,7 @@ import {
 } from 'utils/individualApiFactories'
 
 import { STOCK_THING_FORM_DEFAULT_VALUES } from '../../constants'
-import buildInitialValues from '../buildInitialValues'
+import { buildInitialValues } from '../buildInitialValues'
 
 describe('StockThingForm::utils::buildInitialValues', () => {
   let offer: GetIndividualOfferResponseModel

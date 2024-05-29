@@ -13,7 +13,7 @@ interface ModalFilterLayoutProps extends React.HTMLProps<HTMLButtonElement> {
   onSearch?: () => void
 }
 
-const ModalFilterLayout = ({
+export const ModalFilterLayout = ({
   title,
   hideFooter = false,
   children,
@@ -49,5 +49,3 @@ const ModalFilterLayout = ({
     </div>
   )
 }
-
-export default ModalFilterLayout

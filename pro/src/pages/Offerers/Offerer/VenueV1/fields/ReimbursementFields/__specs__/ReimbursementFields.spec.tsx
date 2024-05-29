@@ -9,7 +9,8 @@ import {
 import { defaultGetVenue } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import ReimbursementFields, {
+import {
+  ReimbursementFields,
   ReimbursementFieldsProps,
 } from '../ReimbursementFields'
 

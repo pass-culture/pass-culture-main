@@ -8,8 +8,8 @@ import strokeUserIcon from 'icons/stroke-user.svg'
 import { isCollectiveOfferBookable } from 'pages/AdageIframe/app/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import OfferFavoriteButton from '../../../OffersInstantSearch/OffersSearch/Offers/OfferFavoriteButton/OfferFavoriteButton'
-import OfferShareLink from '../../../OffersInstantSearch/OffersSearch/Offers/OfferShareLink/OfferShareLink'
+import { OfferFavoriteButton } from '../../../OffersInstantSearch/OffersSearch/Offers/OfferFavoriteButton/OfferFavoriteButton'
+import { OfferShareLink } from '../../../OffersInstantSearch/OffersSearch/Offers/OfferShareLink/OfferShareLink'
 import { getOfferVenueAndOffererName } from '../../../OffersInstantSearch/OffersSearch/Offers/utils/getOfferVenueAndOffererName'
 import { AdageOfferProps } from '../AdageOffer'
 import {

@@ -18,7 +18,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import useAdageUser from '../../hooks/useAdageUser'
-import Offer from '../OffersInstantSearch/OffersSearch/Offers/Offer'
+import { Offer } from '../OffersInstantSearch/OffersSearch/Offers/Offer'
 
 import { AdageOffer } from './AdageOffer/AdageOffer'
 import offerInfosFallback from './assets/offer-infos-fallback.svg'

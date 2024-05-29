@@ -8,8 +8,8 @@ import { apiAdage } from 'apiClient/api'
 import useActiveFeature from 'hooks/useActiveFeature'
 
 import { AdageOfferListCard } from '../OffersInstantSearch/OffersSearch/Offers/AdageOfferListCard/AdageOfferListCard'
-import Offer from '../OffersInstantSearch/OffersSearch/Offers/Offer'
-import AdageSkeleton from '../Skeleton/AdageSkeleton'
+import { Offer } from '../OffersInstantSearch/OffersSearch/Offers/Offer'
+import { AdageSkeleton } from '../Skeleton/AdageSkeleton'
 
 import styles from './OffersFavorites.module.scss'
 import { OffersFavoritesNoResult } from './OffersFavoritesNoResult/OffersFavoritesNoResult'

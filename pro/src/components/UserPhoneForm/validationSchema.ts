@@ -2,7 +2,7 @@ import * as yup from 'yup'
 
 import { parseAndValidateFrenchPhoneNumber } from 'core/shared/utils/parseAndValidateFrenchPhoneNumber'
 
-const validationSchema = yup.object().shape({
+export const validationSchema = yup.object().shape({
   phoneNumber: yup
     .string()
     .min(10, 'Veuillez renseigner au moins 10 chiffres')
@@ -29,5 +29,3 @@ const validationSchema = yup.object().shape({
       }
     ),
 })
-
-export default validationSchema

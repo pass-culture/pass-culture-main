@@ -26,7 +26,7 @@ import {
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import OfferItem, { OfferItemProps } from '../OfferItem'
+import { OfferItem, OfferItemProps } from '../OfferItem'
 
 vi.mock('apiClient/api', () => ({
   api: {

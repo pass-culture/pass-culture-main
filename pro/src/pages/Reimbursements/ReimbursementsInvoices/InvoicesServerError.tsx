@@ -5,7 +5,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './InvoicesNoResult.module.scss'
 
-const InvoicesServerError = (): JSX.Element => {
+export const InvoicesServerError = (): JSX.Element => {
   return (
     <div className={styles['no-refunds']}>
       <SvgIcon
@@ -20,5 +20,3 @@ const InvoicesServerError = (): JSX.Element => {
     </div>
   )
 }
-
-export default InvoicesServerError

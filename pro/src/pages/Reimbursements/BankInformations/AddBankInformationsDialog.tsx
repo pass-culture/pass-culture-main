@@ -16,7 +16,7 @@ interface ReimbursmentPointDialogProps {
   offererId?: number
 }
 
-const AddBankInformationsDialog = ({
+export const AddBankInformationsDialog = ({
   closeDialog,
   offererId,
 }: ReimbursmentPointDialogProps) => {
@@ -49,5 +49,3 @@ const AddBankInformationsDialog = ({
     </Dialog>
   )
 }
-
-export default AddBankInformationsDialog
