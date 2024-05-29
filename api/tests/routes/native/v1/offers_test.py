@@ -10,6 +10,7 @@ from pcapi import settings
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.offerers.factories import VenueFactory
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import OfferReport
 from pcapi.core.offers.models import TiteliveImageType
@@ -1101,6 +1102,38 @@ class OffersV2Test:
         assert response.status_code == 200
         assert still_scheduled_show_stock.remainingQuantity == 95
         assert descheduled_show_stock.remainingQuantity == 0
+
+    @override_features(ENABLE_EMS_INTEGRATION=True)
+    @patch("pcapi.connectors.ems.requests.post")
+    def test_offer_route_does_not_crash(self, requests_post, client):
+        requests_post.return_value = mock.MagicMock(status_code=500)
+
+        provider = get_provider_by_local_class("EMSStocks")
+        venue = VenueFactory(isPermanent=True)
+        venue_provider = providers_factories.VenueProviderFactory(provider=provider, venue=venue)
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue,
+            provider=provider,
+            idAtProvider=venue_provider.venueIdAtOfferProvider,
+        )
+        providers_factories.EMSCinemaProviderPivotFactory(cinemaProviderPivot=cinema_provider_pivot, venue=venue)
+
+        allocine_movie_id = 234099
+        offer_id_at_provider = f"{allocine_movie_id}%{venue.id}%EMS"
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id)
+        offer = offers_factories.OfferFactory(
+            product=product,
+            venue=venue,
+            lastProvider=provider,
+            idAtProvider=offer_id_at_provider,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+        )
+        offers_factories.EventStockFactory(offer=offer, quantity=1)
+
+        response = client.get(f"/native/v2/offer/{offer.id}")
+
+        assert response.status_code == 200
+        assert offer.stocks[0].remainingQuantity == 1
 
     @override_features(ENABLE_CDS_IMPLEMENTATION=True)
     def test_get_inactive_cinema_provider_offer(self, client):
