@@ -54,7 +54,9 @@ export const ReimbursementsInvoices = (): JSX.Element => {
     useOutletContext() ?? {}
 
   const getInvoicesQuery = useSWR(
-    [GET_INVOICES_QUERY_KEY, selectedOfferer?.id, searchParams.toString()],
+    selectedOfferer
+      ? [GET_INVOICES_QUERY_KEY, selectedOfferer.id, searchParams.toString()]
+      : null,
     async () => {
       const reimbursmentPoint = filters.reimbursementPoint
       const periodStart = filters.periodStart
@@ -75,29 +77,20 @@ export const ReimbursementsInvoices = (): JSX.Element => {
   )
 
   const hasInvoiceQuery = useSWR(
-    [GET_HAS_INVOICE_QUERY_KEY, selectedOfferer?.id],
-    async () => {
-      if (!selectedOfferer) {
-        return { hasInvoice: false }
-      }
-      return await api.hasInvoice(selectedOfferer.id)
-    }
+    selectedOfferer ? [GET_HAS_INVOICE_QUERY_KEY, selectedOfferer.id] : null,
+    ([, selectedOffererId]) => api.hasInvoice(selectedOffererId),
+    { fallbackData: { hasInvoice: false } }
   )
 
   const getOffererBankAccountsAndAttachedVenuesQuery = useSWR(
-    [
-      GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY,
-      selectedOfferer?.id,
-    ],
-    async () => {
-      if (!selectedOfferer) {
-        return { bankAccounts: [] }
-      }
-      return await api.getOffererBankAccountsAndAttachedVenues(
-        selectedOfferer.id
-      )
-    },
-    { fallbackData: { bankAccounts: [] } }
+    selectedOfferer
+      ? [
+          GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY,
+          selectedOfferer.id,
+        ]
+      : null,
+    ([, selectedOffererId]) =>
+      api.getOffererBankAccountsAndAttachedVenues(selectedOffererId)
   )
 
   if (
@@ -108,17 +101,18 @@ export const ReimbursementsInvoices = (): JSX.Element => {
     return <Spinner />
   }
 
+  const bankAccounts =
+    getOffererBankAccountsAndAttachedVenuesQuery.data?.bankAccounts ?? []
+
   const filterOptions = sortByLabel(
-    getOffererBankAccountsAndAttachedVenuesQuery.data.bankAccounts.map(
-      (item) => ({
-        value: String(item.id),
-        label: item.label,
-      })
-    )
+    bankAccounts.map((item) => ({
+      value: String(item.id),
+      label: item.label,
+    }))
   )
   const invoices = getInvoicesQuery.data
 
-  const hasInvoice = Boolean(hasInvoiceQuery.data?.hasInvoice)
+  const hasInvoice = Boolean(hasInvoiceQuery.data.hasInvoice)
 
   const hasNoSearchResult =
     (!getInvoicesQuery.error && !invoices.length && hasSearchedOnce) ||
