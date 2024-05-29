@@ -2,7 +2,7 @@ import classNames from 'classnames'
 import { useSelector } from 'react-redux'
 
 import { orejime } from 'app/App/analytics/orejime'
-import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
+import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import fullLinkIcon from 'icons/full-link.svg'
 import { selectCurrentUser } from 'store/user/selectors'
 import { Button } from 'ui-kit/Button/Button'

@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { AppLayout } from 'app/AppLayout'
-import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
+import { useRedirectLoggedUser } from 'hooks/useRedirectLoggedUser'
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
 import { Hero } from 'ui-kit/Hero/Hero'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'

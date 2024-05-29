@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { GetOffererResponseModel } from 'apiClient/v1'
-import useActiveStep from 'hooks/useActiveStep'
+import { useActiveStep } from 'hooks/useActiveStep'
 import fullErrorIcon from 'icons/full-error.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Tab, Tabs } from 'ui-kit/Tabs/Tabs'

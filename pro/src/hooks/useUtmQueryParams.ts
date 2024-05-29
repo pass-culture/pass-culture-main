@@ -2,7 +2,7 @@ import { useLocation } from 'react-router-dom'
 
 import { parse } from 'utils/query-string'
 
-const useUtmQueryParams = () => {
+export const useUtmQueryParams = () => {
   const location = useLocation()
   const parsedParams = parse(location.search)
   const hasUtmQueryParams =
@@ -17,5 +17,3 @@ const useUtmQueryParams = () => {
       }
     : {}
 }
-
-export default useUtmQueryParams

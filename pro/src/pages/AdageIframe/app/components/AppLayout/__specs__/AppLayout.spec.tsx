@@ -92,7 +92,7 @@ vi.mock('apiClient/api', () => ({
 }))
 
 vi.mock('hooks/useIsElementVisible', () => ({
-  default: vi.fn(() => [false, false]),
+  useIsElementVisible: vi.fn(() => [false, false]),
 }))
 
 window.scrollTo = vi.fn().mockImplementation(() => {})

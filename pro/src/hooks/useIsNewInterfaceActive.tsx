@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 import { selectCurrentUser } from 'store/user/selectors'
 import { formatBrowserTimezonedDateAsUTC } from 'utils/date'
 
-const useIsNewInterfaceActive = (): boolean => {
+export const useIsNewInterfaceActive = (): boolean => {
   const currentUser = useSelector(selectCurrentUser)
 
   return (
@@ -12,5 +12,3 @@ const useIsNewInterfaceActive = (): boolean => {
       new Date(formatBrowserTimezonedDateAsUTC(new Date()))
   )
 }
-
-export default useIsNewInterfaceActive
