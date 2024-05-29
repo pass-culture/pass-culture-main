@@ -125,7 +125,6 @@ class FeatureToggle(enum.Enum):
     WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS = (
         "Synchroniser les offres et stocks de cinéma avec les produits allociné"
     )
-    WIP_OPENING_HOURS = "Activer les horaires d'ouverture sur la page partenaire"
     WIP_ENABLE_ADAGE_VISUALIZATION = "Activer la nouvelle manière de visualiser les offres dans la recherche d'ADAGE."
     WIP_ENABLE_TITELIVE_API_FOR_BOOKS = "Activer l'utilisation de l'API Titelive pour les synchronisations produits pour les livres(désactive l'utilisation de l'utilisation de FTP pour la synchro)"
     ENABLE_PRO_NEW_NAV_MODIFICATION = "Activer la modification du statut de la navigation du portail pro"
@@ -193,7 +192,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_NEW_NAV_AB_TEST,
     FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY,
     FeatureToggle.WIP_ENABLE_TITELIVE_API_FOR_BOOKS,
-    FeatureToggle.WIP_OPENING_HOURS,
     FeatureToggle.WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS,
     FeatureToggle.WIP_ENABLE_DOWNLOAD_BOOKINGS,
     # Please keep alphabetic order

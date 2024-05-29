@@ -279,6 +279,14 @@ describe('route VenueEdition', () => {
     ).not.toBeInTheDocument()
   })
 
+  it('should display Opening hours details message', async () => {
+    renderVenueEdition()
+
+    await waitForElementToBeRemoved(screen.getByTestId('spinner'))
+
+    expect(await screen.findByText(/Horaires d'ouverture/)).toBeInTheDocument()
+  })
+
   it('should display the acces libre callout for permanent venues', async () => {
     vi.spyOn(api, 'getVenue').mockResolvedValueOnce({
       ...baseVenue,
