@@ -89,6 +89,9 @@ CREATE EXTENSION IF NOT EXISTS pg_trgm WITH SCHEMA public;
 COMMENT ON EXTENSION pg_trgm IS 'text similarity measurement and index searching based on trigrams';
 
 
+-- FIXME (dbaty, 2024-05-29), if you are squashing migrations, you may
+-- remove this statement and the next one. We don't need "pgcrypto"
+-- anymore (Alembic migration e77d24667815 drops it).
 --
 -- Name: pgcrypto; Type: EXTENSION; Schema: -; Owner: -
 --
