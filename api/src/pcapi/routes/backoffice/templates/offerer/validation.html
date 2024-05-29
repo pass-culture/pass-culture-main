@@ -44,6 +44,7 @@
     <div>
       {% if rows and rows.total > 0 %}
         {% set has_validate_permission = has_permission("VALIDATE_OFFERER") %}
+        {% set has_read_ae_permission = has_validate_permission or has_permission("READ_PRO_AE_INFO") %}
         <div class="d-flex justify-content-between">
           <p class="lead num-results">{{ rows.total }} résultat{{ "s" if rows.total > 1 else "" }}</p>
           {% if has_validate_permission %}
@@ -98,6 +99,7 @@
                   <i class="bi bi-sort-{{ 'up' if request.args.get("sort") == 'dateCreated' and request.args.get('order') == 'asc' else 'down' }}-alt"></i>
                 </a>
               </th>
+              <th scope="col">Documents reçus</th>
               <th scope="col">Dernier commentaire</th>
               <th scope="col">SIREN</th>
               <th scope="col">Email</th>
@@ -171,6 +173,16 @@
                 {% endif %}
                 <td>{{ item.tags | map(attribute="label") | format_as_badges | safe }}</td>
                 <td>{{ offerer.dateCreated | format_date("%d/%m/%Y") }}</td>
+                <td>
+                  {% if offerer.individualSubscription and offerer.individualSubscription.isEmailSent %}
+                    {% if has_read_ae_permission %}
+                      <a href="{{ url_for('backoffice_web.offerer.get', offerer_id=offerer.id, active_tab='subscription') }}"
+                         title="Parcours auto-entrepreneur">
+                      {% endif %}
+                      {{ (offerer.individualSubscription.isCriminalRecordReceived and offerer.individualSubscription.isCertificateReceived) | format_bool_badge }}
+                      {% if has_read_ae_permission %}</a>{% endif %}
+                  {% endif %}
+                </td>
                 <td>
                   {{ item.last_comment | empty_string_if_null | replace("\n", "
                                     <br />
