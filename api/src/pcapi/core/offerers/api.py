@@ -2510,7 +2510,7 @@ def get_or_create_offerer_address(offerer_id: int, address_id: int, label: str |
 def update_fraud_info(
     offerer: offerers_models.Offerer | None,
     venue: offerers_models.Venue | None,
-    author_user: users_models.User,
+    author_user: users_models.User | None,  # change will not be merged but it helps mypy, script has no author
     confidence_level: offerers_models.OffererConfidenceLevel | None,
     comment: str | None = None,
 ) -> bool:
