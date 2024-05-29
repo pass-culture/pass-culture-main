@@ -6,7 +6,7 @@ export type GetOffererAddressResponseModel = {
   city: string;
   id: number;
   isEditable: boolean;
-  label: string;
+  label?: string | null;
   postalCode: string;
   street: string;
 };

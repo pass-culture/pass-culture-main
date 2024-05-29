@@ -394,6 +394,7 @@ class IndividualOfferResponseGetterDict(GetterDict):
             if not self._obj.offererAddress:
                 return None
             offererAddress = GetOffererAddressResponseModel.from_orm(self._obj.offererAddress)
+            offererAddress.label = offererAddress.label or self._obj.venue.common_name
             return AddressResponseIsEditableModel(
                 id=self._obj.offererAddress.addressId,
                 banId=self._obj.offererAddress.address.banId,

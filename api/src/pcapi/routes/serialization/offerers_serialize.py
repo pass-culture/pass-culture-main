@@ -358,7 +358,7 @@ class GetOffererV2StatsResponseModel(BaseModel):
 
 class GetOffererAddressResponseModel(BaseModel):
     id: int
-    label: str
+    label: str | None
     street: str
     postalCode: str
     city: str
