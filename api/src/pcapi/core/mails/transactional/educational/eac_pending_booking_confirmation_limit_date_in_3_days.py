@@ -20,8 +20,8 @@ def send_eac_pending_booking_confirmation_limit_date_in_3_days(booking: educatio
 def get_data_pending_booking_confirmation_limit_date_in_3_days(
     booking: educational_models.CollectiveBooking,
 ) -> models.TransactionalEmailData:
-    stock: educational_models.CollectiveStock = booking.collectiveStock
-    offer: educational_models.CollectiveOffer = stock.collectiveOffer
+    stock = booking.collectiveStock
+    offer = stock.collectiveOffer
 
     return models.TransactionalEmailData(
         template=TransactionalEmail.EAC_PENDING_BOOKING_WITH_BOOKING_LIMIT_DATE_3_DAYS.value,
