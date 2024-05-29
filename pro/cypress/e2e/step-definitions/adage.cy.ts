@@ -11,11 +11,21 @@ When('I open adage iframe', () => {
   const adageToken = Cypress.env('adageToken')
   cy.intercept({
     method: 'GET',
-    url: '/adage-iframe/playlists/new_template_offers',
-  }).as('new_template_offers')
+    url: '/adage-iframe/playlists/local-offerers',
+  }).as('local_offerers')
+  cy.intercept({
+    method: 'GET',
+    url: '/features',
+  }).as('features')
   cy.visit(`/adage-iframe?token=${adageToken}`)
-  cy.wait('@new_template_offers').its('response.statusCode').should('eq', 200)
+  cy.wait(['@local_offerers', '@features']).then(
+    (interception) => {
+      expect(interception[0].response.statusCode).to.equal(200)
+      expect(interception[1].response.statusCode).to.equal(200)
+    }
+  )
   cy.findAllByTestId('spinner').should('not.exist')
+  cy.wait(500) // la liste des offres se réordonne, d'où cette attente
 })
 
 When('I open adage iframe with venue', () => {
@@ -71,22 +81,26 @@ When('I go back to search page', () => {
 })
 
 When('I add first offer to favorites', () => {
-  cy.findAllByTestId('card-offer')
+  cy.findAllByTestId('card-offer-link')
     .first()
-    .invoke('text')
-    .then((text: string) => {
-      offerText = text
+    .parent()
+    .within(() => {
+      cy.findAllByTestId('card-offer')
+        .invoke('text')
+        .then((text: string) => {
+          offerText = text
+        })
       cy.intercept({
         method: 'POST',
         url: '/adage-iframe/logs/fav-offer/',
       }).as('fav-offer')
-      cy.findAllByTestId('favorite-inactive').first().click()
+      cy.findAllByTestId('favorite-inactive').click()
       cy.wait('@fav-offer').its('response.statusCode').should('eq', 204)
-      cy.findByTestId('global-notification-success').should(
-        'contain',
-        'Ajouté à vos favoris'
-      )
     })
+  cy.findByTestId('global-notification-success').should(
+    'contain',
+    'Ajouté à vos favoris'
+  )
 })
 
 When('I chose grid view', () => {
