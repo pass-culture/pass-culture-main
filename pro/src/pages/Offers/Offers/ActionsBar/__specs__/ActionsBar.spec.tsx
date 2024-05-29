@@ -266,7 +266,7 @@ describe('ActionsBar', () => {
       )
     ).toBeInTheDocument()
   })
-  it('should not deactivate offers on click on "Désactiver" when at least one offer expired but with booking cancelled', async () => {
+  it('should not deactivate offers on click on "Désactiver" when at least one offer expired but with booking finished', async () => {
     const expiredOffer = collectiveOfferFactory({
       id: 1,
       status: OfferStatus.EXPIRED,
@@ -277,7 +277,10 @@ describe('ActionsBar', () => {
       selectedOffers: [
         {
           ...expiredOffer,
-          booking: { booking_status: CollectiveBookingStatus.CANCELLED, id: 3 },
+          booking: {
+            booking_status: CollectiveBookingStatus.REIMBURSED,
+            id: 3,
+          },
         },
         collectiveOfferFactory({ id: 2, status: OfferStatus.ACTIVE }),
       ],
