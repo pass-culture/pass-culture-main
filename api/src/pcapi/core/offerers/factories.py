@@ -418,7 +418,7 @@ class OffererInvitationFactory(BaseFactory):
     status = models.InvitationStatus.PENDING
 
 
-class IndividualOffererSubscription(BaseFactory):
+class IndividualOffererSubscriptionFactory(BaseFactory):
     class Meta:
         model = models.IndividualOffererSubscription
 

@@ -258,6 +258,13 @@ def list_offerers_to_be_validated(
         )
         .outerjoin(offerers_models.UserOfferer, offerers_models.UserOfferer.id == creator_user_offerer_id)
         .outerjoin(users_models.User, offerers_models.UserOfferer.user)
+        .options(
+            sa.orm.joinedload(offerers_models.Offerer.individualSubscription).load_only(
+                offerers_models.IndividualOffererSubscription.isEmailSent,
+                offerers_models.IndividualOffererSubscription.isCriminalRecordReceived,
+                offerers_models.IndividualOffererSubscription.isCertificateReceived,
+            ),
+        )
     )
 
     query = _apply_query_filters(
