@@ -114,11 +114,11 @@ export const FormOfferType = ({
               <InfoBox>
                 Vous pouvez modifier la mise en forme de votre texte.
                 <br />
-                Utilisez des astérisques pour mettre en <strong>gras</strong> :
-                **exemple** et des tirets bas pour l’<em>italique</em> :
-                _exemple_
+                Utilisez des doubles astérisques pour mettre en{' '}
+                <strong>gras</strong> : **exemple** et des tirets bas pour l’
+                <em>italique</em> : _exemple_
                 <br />
-                Vous pourrez vérifier l’affichage à l’étape 3.
+                Vous pourrez vérifier l’affichage à l’étape "Aperçu".
               </InfoBox>
             ) : null
           }
