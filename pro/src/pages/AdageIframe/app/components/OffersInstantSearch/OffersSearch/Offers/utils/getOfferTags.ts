@@ -97,11 +97,11 @@ export function getOfferTags(
       icon: '🕐',
       text: `${getFormattedDatesForTemplateOffer(offer, 'Disponible toute l’année')}`,
     })
-  } else if (offer.stock.beginningDatetime) {
+  } else if (offer.stock.startDatetime) {
     tags.push({
       icon: '🕐',
       text: `${formatLocalTimeDateString(
-        offer.stock.beginningDatetime,
+        offer.stock.startDatetime,
         offer.venue.departmentCode,
         'EEEE d MMM yyyy à HH:mm'
       )}`,

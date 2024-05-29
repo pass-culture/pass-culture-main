@@ -29,9 +29,9 @@ export const extractInitialStockValues = (
     return {
       ...DEFAULT_EAC_STOCK_FORM_VALUES,
       numberOfPlaces,
-      eventDate: requestedDate
+      startDatetime: requestedDate
         ? format(new Date(requestedDate), FORMAT_ISO_DATE_ONLY)
-        : DEFAULT_EAC_STOCK_FORM_VALUES.eventDate,
+        : DEFAULT_EAC_STOCK_FORM_VALUES.startDatetime,
     }
   }
 
@@ -45,24 +45,36 @@ export const extractInitialStockValues = (
     return DEFAULT_EAC_STOCK_FORM_VALUES
   }
 
-  const eventDate = collectiveStock.beginningDatetime
+  const startDatetime = collectiveStock.startDatetime
     ? format(
         getLocalDepartementDateTimeFromUtc(
-          collectiveStock.beginningDatetime,
+          collectiveStock.startDatetime,
           offer.venue.departementCode
         ),
         FORMAT_ISO_DATE_ONLY
       )
-    : DEFAULT_EAC_STOCK_FORM_VALUES.eventDate
-  const eventTime = collectiveStock.beginningDatetime
+    : DEFAULT_EAC_STOCK_FORM_VALUES.startDatetime
+
+  const endDatetime = collectiveStock.endDatetime
     ? format(
         getLocalDepartementDateTimeFromUtc(
-          collectiveStock.beginningDatetime,
+          collectiveStock.endDatetime,
+          offer.venue.departementCode
+        ),
+        FORMAT_ISO_DATE_ONLY
+      )
+    : DEFAULT_EAC_STOCK_FORM_VALUES.endDatetime
+
+  const eventTime = collectiveStock.startDatetime
+    ? format(
+        getLocalDepartementDateTimeFromUtc(
+          collectiveStock.startDatetime,
           offer.venue.departementCode
         ),
         FORMAT_HH_mm
       )
     : DEFAULT_EAC_STOCK_FORM_VALUES.eventTime
+
   const bookingLimitDatetime = collectiveStock.bookingLimitDatetime
     ? format(
         getLocalDepartementDateTimeFromUtc(
@@ -73,7 +85,8 @@ export const extractInitialStockValues = (
     : DEFAULT_EAC_STOCK_FORM_VALUES.bookingLimitDatetime
 
   return {
-    eventDate,
+    startDatetime,
+    endDatetime,
     eventTime,
     numberOfPlaces:
       collectiveStock.numberOfTickets ??

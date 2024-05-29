@@ -63,7 +63,7 @@ export const OfferEducationalActions = ({
   const getBookingLink = () => {
     const offerEventDate =
       isCollectiveOffer(offer) && offer.collectiveStock
-        ? offer.collectiveStock.beginningDatetime
+        ? offer.collectiveStock.startDatetime
         : null
     if (offerEventDate && lastBookingId) {
       const eventDateFormated = formatBrowserTimezonedDateAsUTC(

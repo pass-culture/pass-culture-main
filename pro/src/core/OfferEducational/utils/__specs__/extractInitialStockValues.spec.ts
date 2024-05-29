@@ -22,7 +22,8 @@ describe('extractInitialVisibilityValues', () => {
 
   it('should return stock details', () => {
     const stockValues: GetCollectiveOfferCollectiveStockResponseModel = {
-      beginningDatetime: '2023-02-23T10:46:20Z',
+      startDatetime: '2023-02-23T10:46:20Z',
+      endDatetime: '2023-02-23T10:46:20Z',
       bookingLimitDatetime: '2023-02-28T10:46:20Z',
       educationalPriceDetail: 'test',
       id: 1,
@@ -41,7 +42,8 @@ describe('extractInitialVisibilityValues', () => {
       )
     ).toStrictEqual({
       bookingLimitDatetime: '2023-02-28',
-      eventDate: '2023-02-23',
+      startDatetime: '2023-02-23',
+      endDatetime: '2023-02-23',
       eventTime: '11:46',
       educationalOfferType: 'CLASSIC',
       numberOfPlaces: 20,
@@ -82,7 +84,8 @@ describe('extractInitialVisibilityValues', () => {
       )
     ).toStrictEqual({
       bookingLimitDatetime: '',
-      eventDate: '2030-07-30',
+      startDatetime: '2030-07-30',
+      endDatetime: '',
       eventTime: '',
       educationalOfferType: 'CLASSIC',
       numberOfPlaces: 20,
@@ -109,7 +112,8 @@ describe('extractInitialVisibilityValues', () => {
       )
     ).toStrictEqual({
       bookingLimitDatetime: '',
-      eventDate: '',
+      startDatetime: '',
+      endDatetime: '',
       eventTime: '',
       educationalOfferType: 'CLASSIC',
       numberOfPlaces: '',
@@ -134,7 +138,8 @@ describe('extractInitialVisibilityValues', () => {
       )
     ).toStrictEqual({
       bookingLimitDatetime: '',
-      eventDate: '',
+      startDatetime: '',
+      endDatetime: '',
       eventTime: '',
       educationalOfferType: 'CLASSIC',
       numberOfPlaces: 8,
@@ -159,7 +164,8 @@ describe('extractInitialVisibilityValues', () => {
       )
     ).toStrictEqual({
       bookingLimitDatetime: '',
-      eventDate: '',
+      startDatetime: '',
+      endDatetime: '',
       eventTime: '',
       educationalOfferType: 'CLASSIC',
       numberOfPlaces: 6,

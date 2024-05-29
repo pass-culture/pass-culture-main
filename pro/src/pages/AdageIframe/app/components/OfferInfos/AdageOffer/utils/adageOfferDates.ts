@@ -29,10 +29,10 @@ export function getFormattedDatesForTemplateOffer(
 export function getFormattedDatesForBookableOffer(
   offer: CollectiveOfferResponseModel
 ) {
-  return offer.stock.beginningDatetime
+  return offer.stock.startDatetime
     ? `Le ${getDateTimeToFrenchText(
         getLocalDepartementDateTimeFromUtc(
-          offer.stock.beginningDatetime,
+          offer.stock.startDatetime,
           offer.venue.departmentCode
         ),
         { dateStyle: 'long', timeStyle: 'short' }

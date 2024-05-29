@@ -34,16 +34,15 @@ export const CollectiveOfferStockSection = ({
       descriptions={[
         {
           title: 'Date',
-          text:
-            (stock?.beginningDatetime &&
-              formatDateTime(stock.beginningDatetime, FORMAT_DD_MM_YYYY)) ||
-            DEFAULT_RECAP_VALUE,
+          text: stock?.startDatetime
+            ? formatDateTime(stock.startDatetime, FORMAT_DD_MM_YYYY)
+            : DEFAULT_RECAP_VALUE,
         },
         {
           title: 'Horaire',
           text:
-            (stock?.beginningDatetime &&
-              formatDateTime(stock.beginningDatetime, FORMAT_HH_mm)) ||
+            (stock?.startDatetime &&
+              formatDateTime(stock.startDatetime, FORMAT_HH_mm)) ||
             DEFAULT_RECAP_VALUE,
         },
         {

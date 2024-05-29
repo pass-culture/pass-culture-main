@@ -55,7 +55,8 @@ export enum Mode {
 }
 
 export type OfferEducationalStockFormValues = {
-  eventDate: string
+  startDatetime: string
+  endDatetime: string
   eventTime: string
   numberOfPlaces: number | ''
   totalPrice: number | ''

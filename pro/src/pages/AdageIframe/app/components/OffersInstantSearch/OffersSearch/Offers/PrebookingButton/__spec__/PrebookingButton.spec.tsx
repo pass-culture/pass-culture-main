@@ -45,7 +45,7 @@ describe('offer item', () => {
       queryId: 'aez',
       stock: {
         id: 117,
-        beginningDatetime: '03/01/2023',
+        startDatetime: '03/01/2023',
         bookingLimitDatetime: '01/01/2023',
         isBookable: true,
         price: 20,
