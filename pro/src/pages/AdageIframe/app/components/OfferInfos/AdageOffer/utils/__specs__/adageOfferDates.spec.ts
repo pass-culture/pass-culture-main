@@ -40,7 +40,7 @@ describe('adageOfferDates', () => {
         ...defaultCollectiveOffer,
         stock: {
           ...defaultCollectiveOffer.stock,
-          beginningDatetime: '2024-01-29T23:00:28.040559Z',
+          startDatetime: '2024-01-29T23:00:28.040559Z',
         },
       })
 
@@ -52,7 +52,7 @@ describe('adageOfferDates', () => {
         ...defaultCollectiveOffer,
         stock: {
           ...defaultCollectiveOffer.stock,
-          beginningDatetime: undefined,
+          startDatetime: undefined,
         },
       })
 

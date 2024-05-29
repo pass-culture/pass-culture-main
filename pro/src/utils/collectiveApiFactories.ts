@@ -123,7 +123,8 @@ export const getCollectiveOfferCollectiveStockFactory = (
   return {
     id: currentStockId,
     price: 100,
-    beginningDatetime: new Date('2021-10-15T12:00:00Z').toISOString(),
+    startDatetime: new Date('2021-10-15T12:00:00Z').toISOString(),
+    endDatetime: new Date('2021-10-15T12:00:00Z').toISOString(),
     bookingLimitDatetime: new Date('2021-09-15T12:00:00Z').toISOString(),
     isBooked: false,
     isCancellable: false,
