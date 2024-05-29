@@ -418,6 +418,16 @@ class UserFactory(BaseFactory):
         return instance
 
 
+class DiscordUserFactory(BaseFactory):
+
+    class Meta:
+        model = models.DiscordUser
+
+    discordId = factory.Sequence("discord_{}".format)
+    user = factory.SubFactory(UserFactory)
+    hasAccess = True
+
+
 class AnonymizedUserFactory(UserFactory):
     roles = [models.UserRole.ANONYMIZED]
     email = factory.Sequence("anonymous_{}@anonymized.passculture".format)
