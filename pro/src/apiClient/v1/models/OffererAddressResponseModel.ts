@@ -6,7 +6,7 @@ import type { AddressResponseModel } from './AddressResponseModel';
 export type OffererAddressResponseModel = {
   address: AddressResponseModel;
   id: number;
-  label: string;
+  label?: string | null;
   offererId: number;
 };
 
