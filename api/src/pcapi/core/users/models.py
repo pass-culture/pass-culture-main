@@ -674,6 +674,10 @@ class DiscordUser(PcObject, Base, Model):
     def is_active(self) -> bool:
         return bool(self.discordId) and not self.isBanned
 
+    @is_active.expression  # type: ignore[no-redef]
+    def is_active(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+        return cls.discordId.is_not(None) and cls.isBanned.is_(False)
+
 
 User.trig_ensure_password_or_sso_exists_ddl = sa.DDL(
     """
