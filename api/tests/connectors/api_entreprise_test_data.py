@@ -549,10 +549,10 @@ RESPONSE_SIREN_WITHOUT_APE = {
 RESPONSE_SIREN_ERROR_422 = {
     "errors": [
         {
-            "code": "00211",
-            "title": "Le param\u00e8tre recipient est identique au SIRET/SIREN appel\u00e9.",
-            "detail": "Le param\u00e8tre recipient est identique au SIRET/SIREN appel\u00e9, or ce param\u00e8tre de tra\u00e7abilit\u00e9 doit correspondre au SIRET de l'organisation publique habilit\u00e9e \u00e0 utiliser la donn\u00e9e. Si vous \u00eates une collectivit\u00e9 ou une administration, ce param\u00e8tre doit donc \u00eatre votre num\u00e9ro de SIRET ; si vous \u00eates un \u00e9diteur, il s'agit du SIRET de l'organisation publique cliente demandant la donn\u00e9e.",
-            "source": {"parameter": "recipient"},
+            "code": "00301",
+            "title": "Entit\u00e9 non traitable",
+            "detail": "Le num\u00e9ro de siren n'est pas correctement formatt\u00e9",
+            "source": {"parameter": "siren"},
             "meta": {},
         }
     ]

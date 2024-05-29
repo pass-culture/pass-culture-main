@@ -87,6 +87,12 @@ class EntrepriseBackend(BaseBackend):
             time.sleep(time_to_sleep)
             slept_time += time_to_sleep
 
+    def _check_siren_can_be_requested(self, siren: str) -> None:
+        # Pass Culture also acts as an offerer which organizes events.
+        # Avoid HTTP 422 Unprocessable Content "Le paramètre recipient est identique au SIRET/SIREN appelé."
+        if siren == settings.PASS_CULTURE_SIRET[:9]:
+            raise exceptions.EntrepriseException("Pass Culture")
+
     def _get(self, subpath: str) -> dict:
         if not settings.ENTREPRISE_API_URL:
             raise ValueError("ENTREPRISE_API_URL is not configured")
@@ -213,6 +219,7 @@ class EntrepriseBackend(BaseBackend):
         Documentation: https://entreprise.api.gouv.fr/catalogue/insee/unites_legales
                        https://entreprise.api.gouv.fr/catalogue/insee/siege_social
         """
+        self._check_siren_can_be_requested(siren)
         subpath = f"/v3/insee/sirene/unites_legales/{siren}"
         if with_address:
             # Also get head office SIRET data to avoid a second API call to get address
@@ -248,6 +255,7 @@ class EntrepriseBackend(BaseBackend):
         """
         Documentation: https://entreprise.api.gouv.fr/catalogue/insee/etablissements
         """
+        self._check_siren_can_be_requested(siret[:9])
         subpath = f"/v3/insee/sirene/etablissements/{siret}"
         data = self._cached_get(subpath)["data"]
 
@@ -270,6 +278,7 @@ class EntrepriseBackend(BaseBackend):
         """
         Documentation: https://entreprise.api.gouv.fr/catalogue/infogreffe/rcs/extrait
         """
+        self._check_siren_can_be_requested(siren)
         subpath = f"/v3/infogreffe/rcs/unites_legales/{siren}/extrait_kbis"
         try:
             data = self._cached_get(subpath)["data"]
@@ -297,6 +306,7 @@ class EntrepriseBackend(BaseBackend):
         """
         Documentation: https://entreprise.api.gouv.fr/catalogue/urssaf/attestation_vigilance
         """
+        self._check_siren_can_be_requested(siren)
         subpath = f"/v4/urssaf/unites_legales/{siren}/attestation_vigilance"
         data = self._cached_get(subpath)["data"]
         return models.UrssafInfo(
@@ -311,6 +321,7 @@ class EntrepriseBackend(BaseBackend):
         """
         Documentation: https://entreprise.api.gouv.fr/catalogue/dgfip/attestations_fiscales
         """
+        self._check_siren_can_be_requested(siren)
         subpath = f"/v4/dgfip/unites_legales/{siren}/attestation_fiscale"
         data = self._cached_get(subpath)["data"]
         return models.DgfipInfo(

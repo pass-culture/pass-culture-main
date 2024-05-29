@@ -157,7 +157,7 @@ def test_get_siren_without_ape():
 
 @override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_siren_invalid_parameter():
-    siren = settings.PASS_CULTURE_SIRET[:9]
+    siren = "111111111"
     with requests_mock.Mocker() as mock:
         mock.get(
             f"https://entreprise.api.gouv.fr/v3/insee/sirene/unites_legales/{siren}/siege_social",
@@ -166,18 +166,20 @@ def test_get_siren_invalid_parameter():
         )
         with pytest.raises(exceptions.ApiException) as error:
             api.get_siren(siren)
-        assert (
-            str(error.value)
-            == "Le paramètre recipient est identique au SIRET/SIREN appelé, or ce paramètre de traçabilité doit "
-            "correspondre au SIRET de l'organisation publique habilitée à utiliser la donnée. Si vous êtes une "
-            "collectivité ou une administration, ce paramètre doit donc être votre numéro de SIRET ; si vous êtes un "
-            "éditeur, il s'agit du SIRET de l'organisation publique cliente demandant la donnée."
-        )
+        assert str(error.value) == "Le numéro de siren n'est pas correctement formatté"
+
+
+@override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+def test_get_siren_pass_culture():
+    siren = settings.PASS_CULTURE_SIRET[:9]
+    with pytest.raises(exceptions.EntrepriseException) as error:
+        api.get_siren(siren)
+    assert str(error.value) == "Pass Culture"
 
 
 @override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_siren_reached_rate_limit():
-    siren = settings.PASS_CULTURE_SIRET[:9]
+    siren = "194700936"
     with requests_mock.Mocker() as mock:
         mock.get(
             f"https://entreprise.api.gouv.fr/v3/insee/sirene/unites_legales/{siren}/siege_social",
