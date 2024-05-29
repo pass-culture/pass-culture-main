@@ -322,12 +322,10 @@ describe('reimbursementsWithFilters', () => {
     expect(screen.getByLabelText('Fin de la période')).toBeEnabled()
   })
 
-  it('should render even without context', async () => {
+  it('should render even without context', () => {
     vi.spyOn(router, 'useOutletContext').mockReturnValue(undefined)
 
     renderReimbursementsInvoices()
-
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(screen.queryByLabelText('Compte bancaire')).toBeInTheDocument()
   })
