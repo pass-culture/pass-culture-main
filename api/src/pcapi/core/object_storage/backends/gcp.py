@@ -32,7 +32,7 @@ class GCPBackend(BaseBackend):
     def __init__(
         self,
         project_id: str | None = None,
-        bucket_name: str | None = None,
+        bucket_name: str = "",
     ) -> None:
         self.project_id = project_id or self.bucket_credentials.get("project_id")
         self.bucket_name = bucket_name or self.default_bucket_name

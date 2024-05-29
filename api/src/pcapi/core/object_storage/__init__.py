@@ -42,13 +42,13 @@ def _check_backend_setting() -> None:
 _check_backend_setting()
 
 
-def store_public_object(folder: str, object_id: str, blob: bytes, content_type: str) -> None:
+def store_public_object(folder: str, object_id: str, blob: bytes, content_type: str, *, bucket: str = "") -> None:
     for backend_path in _get_backends():
         backend = import_string(backend_path)
-        backend().store_public_object(folder, object_id, blob, content_type)
+        backend(bucket_name=bucket).store_public_object(folder, object_id, blob, content_type)
 
 
-def delete_public_object(folder: str, object_id: str) -> None:
+def delete_public_object(folder: str, object_id: str, *, bucket: str = "") -> None:
     for backend_path in _get_backends():
         backend = import_string(backend_path)
-        backend().delete_public_object(folder, object_id)
+        backend(bucket_name=bucket).delete_public_object(folder, object_id)
