@@ -20,7 +20,7 @@ interface ApiKeyProps {
 }
 
 /* @debt duplicated "Gaël: regroup buttons within one component"*/
-const ApiKey = ({
+export const ApiKey = ({
   savedApiKeys,
   maxAllowedApiKeys,
   offererId,
@@ -194,5 +194,3 @@ const ApiKey = ({
     </div>
   )
 }
-
-export default ApiKey

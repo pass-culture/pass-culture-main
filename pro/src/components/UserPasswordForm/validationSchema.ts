@@ -4,7 +4,7 @@ import { isPasswordValid } from 'core/shared/utils/validation'
 
 const passwordErrorMessage = 'Veuillez renseigner votre nouveau mot de passe'
 
-const validationSchema = yup.object().shape({
+export const validationSchema = yup.object().shape({
   oldPassword: yup
     .string()
     .required('Veuillez renseigner votre mot de passe actuel'),
@@ -20,5 +20,3 @@ const validationSchema = yup.object().shape({
     )
     .required('Veuillez confirmer votre nouveau mot de passe'),
 })
-
-export default validationSchema

@@ -11,7 +11,7 @@ import {
   isCollectiveOffer,
   isCollectiveOfferTemplate,
 } from 'core/OfferEducational/types'
-import SynchronizedProviderInformation from 'screens/IndividualOffer/SynchronisedProviderInfos/SynchronizedProviderInformation'
+import { SynchronizedProviderInformation } from 'screens/IndividualOffer/SynchronisedProviderInfos/SynchronizedProviderInformation'
 
 import { CollectiveOfferAccessibilitySection } from './components/CollectiveOfferAccessibilitySection'
 import { CollectiveOfferContactSection } from './components/CollectiveOfferContactSection'

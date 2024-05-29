@@ -14,7 +14,7 @@ import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import { UserIdentityFormValues } from './types'
 import styles from './UserIdentityForm.module.scss'
-import validationSchema from './validationSchema'
+import { validationSchema } from './validationSchema'
 
 export interface UserIdentityFormProps {
   closeForm: () => void

@@ -14,7 +14,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { isDateValid } from 'utils/date'
 
 import { createCollectiveRequestPayload } from './createCollectiveRequestPayload'
-import DefaultFormContact from './DefaultFormContact'
+import { DefaultFormContact } from './DefaultFormContact'
 import styles from './NewRequestFormDialog.module.scss'
 import { RequestFormValues } from './type'
 import { validationSchema } from './validationSchema'

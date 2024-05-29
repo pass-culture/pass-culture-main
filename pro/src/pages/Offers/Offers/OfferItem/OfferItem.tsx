@@ -26,7 +26,7 @@ export type OfferItemProps = {
   audience: Audience
 }
 
-const OfferItem = ({
+export const OfferItem = ({
   disabled = false,
   offer,
   isSelected = false,
@@ -87,5 +87,3 @@ const OfferItem = ({
     </tr>
   )
 }
-
-export default OfferItem

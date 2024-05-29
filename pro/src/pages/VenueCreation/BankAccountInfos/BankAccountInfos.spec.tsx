@@ -5,7 +5,7 @@ import { BankAccountResponseModel } from 'apiClient/v1'
 import { defaultBankAccount } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import BankAccountInfos from './BankAccountInfos'
+import { BankAccountInfos } from './BankAccountInfos'
 
 const renderBankAccountInfos = (
   bankAccount: BankAccountResponseModel | null = null

@@ -6,7 +6,7 @@ import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageU
 import { defaultAdageUser } from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import VenueCard, { VenueCardProps } from '../VenueCard'
+import { VenueCard, VenueCardProps } from '../VenueCard'
 
 const mockVenue: LocalOfferersPlaylistOffer = {
   imgUrl: 'testImageUrl.com',

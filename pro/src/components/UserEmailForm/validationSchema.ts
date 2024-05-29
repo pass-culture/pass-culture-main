@@ -1,6 +1,6 @@
 import * as yup from 'yup'
 
-const validationSchema = yup.object().shape({
+export const validationSchema = yup.object().shape({
   email: yup
     .string()
     .max(120)
@@ -11,5 +11,3 @@ const validationSchema = yup.object().shape({
     .max(128)
     .required('Veuillez renseigner votre mot de passe'),
 })
-
-export default validationSchema

@@ -20,7 +20,7 @@ import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
-import AddBankInformationsDialog from './AddBankInformationsDialog'
+import { AddBankInformationsDialog } from './AddBankInformationsDialog'
 import styles from './BankInformations.module.scss'
 
 export const BankInformations = (): JSX.Element => {

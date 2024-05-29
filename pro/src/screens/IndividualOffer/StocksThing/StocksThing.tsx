@@ -33,24 +33,24 @@ import { getToday, getYearMonthDay, isDateValid } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import { ActionBar } from '../ActionBar/ActionBar'
-import DialogStockThingDeleteConfirm from '../DialogStockDeleteConfirm/DialogStockThingDeleteConfirm'
-import useNotifyFormError from '../hooks/useNotifyFormError'
+import { DialogStockThingDeleteConfirm } from '../DialogStockDeleteConfirm/DialogStockThingDeleteConfirm'
+import { useNotifyFormError } from '../hooks/useNotifyFormError'
 import { getSuccessMessage } from '../utils/getSuccessMessage'
 
-import ActivationCodeFormDialog from './ActivationCodeFormDialog/ActivationCodeFormDialog'
+import { ActivationCodeFormDialog } from './ActivationCodeFormDialog/ActivationCodeFormDialog'
 import { STOCK_THING_FORM_DEFAULT_VALUES } from './constants'
 import styles from './StockThing.module.scss'
 import { submitToApi } from './submitToApi'
 import { StockThingFormValues } from './types'
-import buildInitialValues from './utils/buildInitialValues'
-import setFormReadOnlyFields from './utils/setFormReadOnlyFields'
+import { buildInitialValues } from './utils/buildInitialValues'
+import { setFormReadOnlyFields } from './utils/setFormReadOnlyFields'
 import { getValidationSchema } from './validationSchema'
 
 export interface StocksThingProps {
   offer: GetIndividualOfferResponseModel
 }
 
-const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
+export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   const mode = useOfferWizardMode()
   const navigate = useNavigate()
   const notify = useNotification()
@@ -454,5 +454,3 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     </FormikProvider>
   )
 }
-
-export default StocksThing

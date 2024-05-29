@@ -7,7 +7,7 @@ import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Signup.module.scss'
-import SignupUnavailable from './SignupUnavailable/SignupUnavailable'
+import { SignupUnavailable } from './SignupUnavailable/SignupUnavailable'
 
 export const Signup = () => {
   const isProAccountCreationEnabled = useActiveFeature(

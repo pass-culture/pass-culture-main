@@ -13,11 +13,11 @@ import { sortByLabel } from 'utils/strings'
 
 import { DEFAULT_INVOICES_FILTERS } from '../_constants'
 
-import InvoicesFilters from './InvoicesFilters'
-import InvoicesNoResult from './InvoicesNoResult'
-import InvoicesServerError from './InvoicesServerError'
-import InvoiceTable from './InvoiceTable/InvoiceTable'
-import NoInvoicesYet from './NoInvoicesYet'
+import { InvoicesFilters } from './InvoicesFilters'
+import { InvoicesNoResult } from './InvoicesNoResult'
+import { InvoicesServerError } from './InvoicesServerError'
+import { InvoiceTable } from './InvoiceTable/InvoiceTable'
+import { NoInvoicesYet } from './NoInvoicesYet'
 
 export const ReimbursementsInvoices = (): JSX.Element => {
   const INITIAL_FILTERS = useMemo(() => {

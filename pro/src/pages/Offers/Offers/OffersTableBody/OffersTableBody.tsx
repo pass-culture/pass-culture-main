@@ -4,7 +4,7 @@ import {
 } from 'apiClient/v1'
 import { Audience } from 'core/shared/types'
 
-import OfferItem from '../OfferItem/OfferItem'
+import { OfferItem } from '../OfferItem/OfferItem'
 
 type OffersTableBodyProps = {
   offers: CollectiveOfferResponseModel[] | ListOffersOfferResponseModel[]

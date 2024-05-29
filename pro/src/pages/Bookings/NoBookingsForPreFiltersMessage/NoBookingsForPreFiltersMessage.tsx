@@ -12,7 +12,7 @@ interface NoBookingsForPreFiltersMessageProps {
   resetPreFilters: () => void
 }
 
-const NoBookingsForPreFiltersMessage = ({
+export const NoBookingsForPreFiltersMessage = ({
   resetPreFilters,
 }: NoBookingsForPreFiltersMessageProps): JSX.Element => (
   <div className={styles['search-no-results']}>
@@ -37,5 +37,3 @@ const NoBookingsForPreFiltersMessage = ({
     </Button>
   </div>
 )
-
-export default NoBookingsForPreFiltersMessage

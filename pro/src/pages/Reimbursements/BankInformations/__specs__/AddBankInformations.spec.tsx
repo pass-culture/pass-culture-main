@@ -6,7 +6,7 @@ import * as useAnalytics from 'app/App/analytics/firebase'
 import { BankAccountEvents } from 'core/FirebaseEvents/constants'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import AddBankInformationsDialog from '../AddBankInformationsDialog'
+import { AddBankInformationsDialog } from '../AddBankInformationsDialog'
 
 const mockLogEvent = vi.fn()
 

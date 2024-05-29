@@ -8,7 +8,7 @@ import { PasswordInput } from 'ui-kit/form/PasswordInput/PasswordInput'
 
 import styles from './ChangePasswordForm.module.scss'
 
-const ChangePasswordForm = (): JSX.Element => {
+export const ChangePasswordForm = (): JSX.Element => {
   const { handleSubmit, isSubmitting } = useFormikContext()
 
   return (
@@ -34,5 +34,3 @@ const ChangePasswordForm = (): JSX.Element => {
     </Form>
   )
 }
-
-export default ChangePasswordForm

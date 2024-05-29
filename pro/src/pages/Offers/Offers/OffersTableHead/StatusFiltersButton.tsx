@@ -56,7 +56,7 @@ export type StatusFiltersButtonProps = {
   audience: Audience
 }
 
-const StatusFiltersButton = ({
+export const StatusFiltersButton = ({
   disabled = false,
   applyFilters,
   status,
@@ -120,5 +120,3 @@ const StatusFiltersButton = ({
     </Fragment>
   )
 }
-
-export default StatusFiltersButton

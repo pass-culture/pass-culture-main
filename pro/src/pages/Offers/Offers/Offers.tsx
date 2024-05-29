@@ -44,7 +44,7 @@ type OffersProps = {
   isAtLeastOneOfferChecked: boolean
 }
 
-const Offers = ({
+export const Offers = ({
   applyFilters,
   currentUser,
   areAllOffersSelected,
@@ -180,5 +180,3 @@ const Offers = ({
     </div>
   )
 }
-
-export default Offers

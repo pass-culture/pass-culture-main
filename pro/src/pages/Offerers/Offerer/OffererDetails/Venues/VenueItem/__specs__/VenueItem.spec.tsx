@@ -4,7 +4,7 @@ import React from 'react'
 import { defaultGetOffererVenueResponseModel } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import VenueItem, { VenueItemProps } from '../VenueItem'
+import { VenueItem, VenueItemProps } from '../VenueItem'
 
 describe('VenueItem', () => {
   let props: VenueItemProps

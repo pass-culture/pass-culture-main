@@ -8,7 +8,7 @@ import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageU
 import { defaultAdageUser } from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import PrebookingButton, { PrebookingButtonProps } from '../PrebookingButton'
+import { PrebookingButton, PrebookingButtonProps } from '../PrebookingButton'
 
 vi.mock('pages/AdageIframe/libs/initAlgoliaAnalytics')
 

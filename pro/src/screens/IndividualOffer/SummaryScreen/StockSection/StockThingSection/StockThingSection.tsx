@@ -12,7 +12,7 @@ interface StockThingSectionProps {
   isDuo: boolean
 }
 
-const StockThingSection = ({
+export const StockThingSection = ({
   stock,
   canBeDuo,
   isDuo,
@@ -51,5 +51,3 @@ const StockThingSection = ({
 
   return <SummaryDescriptionList descriptions={descriptions} />
 }
-
-export default StockThingSection

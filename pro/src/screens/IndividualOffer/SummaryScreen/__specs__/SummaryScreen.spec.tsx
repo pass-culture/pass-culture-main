@@ -37,7 +37,7 @@ import {
   renderWithProviders,
 } from 'utils/renderWithProviders'
 
-import SummaryScreen from '../SummaryScreen'
+import { SummaryScreen } from '../SummaryScreen'
 
 const mockLogEvent = vi.fn()
 

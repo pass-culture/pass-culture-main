@@ -13,7 +13,7 @@ import { LOGS_DATA } from 'utils/config'
 import { hasErrorCode } from 'utils/error'
 
 import styles from './PrebookingButton.module.scss'
-import PrebookingModal from './PrebookingModal'
+import { PrebookingModal } from './PrebookingModal'
 
 export interface PrebookingButtonProps {
   className?: string
@@ -30,7 +30,7 @@ export interface PrebookingButtonProps {
   setOfferPrebooked?: (value: boolean) => void
 }
 
-const PrebookingButton = ({
+export const PrebookingButton = ({
   className,
   stock,
   canPrebookOffers,
@@ -148,5 +148,3 @@ const PrebookingButton = ({
     </>
   ) : null
 }
-
-export default PrebookingButton

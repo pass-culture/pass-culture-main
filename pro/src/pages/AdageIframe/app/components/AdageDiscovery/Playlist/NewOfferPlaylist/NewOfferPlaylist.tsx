@@ -10,7 +10,7 @@ import useNotification from 'hooks/useNotification'
 import { TrackerElementArg } from '../../AdageDiscovery'
 import { Carousel } from '../../Carousel/Carousel'
 import { NEW_OFFER_PLAYLIST } from '../../constant'
-import OfferCardComponent from '../../OfferCard/OfferCard'
+import { OfferCardComponent } from '../../OfferCard/OfferCard'
 
 import styles from './NewOfferPlaylist.module.scss'
 

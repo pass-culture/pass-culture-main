@@ -12,7 +12,7 @@ export interface ReimbursementFieldsProps {
   venue: GetVenueResponseModel
 }
 
-const ReimbursementFields = ({
+export const ReimbursementFields = ({
   offerer,
   scrollToSection,
   venue,
@@ -56,5 +56,3 @@ const ReimbursementFields = ({
     </>
   )
 }
-
-export default ReimbursementFields

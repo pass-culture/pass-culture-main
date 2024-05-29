@@ -10,7 +10,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { Select } from 'ui-kit/form/Select/Select'
 
 import styles from './PricingPointDialog.module.scss'
-import validationSchema from './validationSchema'
+import { validationSchema } from './validationSchema'
 
 type PricingPointFormValues = {
   pricingPointId?: string
@@ -23,7 +23,7 @@ type PricingPointDialogProps = {
   updateVenuePricingPoint: (venueId: number) => void
 }
 
-const PricingPointDialog = ({
+export const PricingPointDialog = ({
   selectedVenue,
   venues,
   closeDialog,
@@ -108,5 +108,3 @@ const PricingPointDialog = ({
     </DialogBox>
   )
 }
-
-export default PricingPointDialog

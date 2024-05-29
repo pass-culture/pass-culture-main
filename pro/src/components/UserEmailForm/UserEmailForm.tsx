@@ -12,7 +12,7 @@ import { PasswordInput } from 'ui-kit/form/PasswordInput/PasswordInput'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import styles from './UserEmailForm.module.scss'
-import validationSchema from './validationSchema'
+import { validationSchema } from './validationSchema'
 
 export interface UserEmailFormProps {
   closeForm: () => void

@@ -25,7 +25,7 @@ interface ReimbursementsSectionHeaderProps {
   setHasSearchedOnce: Dispatch<SetStateAction<boolean>>
 }
 
-const InvoicesFilters = ({
+export const InvoicesFilters = ({
   areFiltersDefault,
   filters,
   disable,
@@ -141,5 +141,3 @@ const InvoicesFilters = ({
     </>
   )
 }
-
-export default InvoicesFilters

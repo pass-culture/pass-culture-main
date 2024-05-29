@@ -8,7 +8,7 @@ import fullMoreIcon from 'icons/full-more.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
-import VenueItem from './VenueItem/VenueItem'
+import { VenueItem } from './VenueItem/VenueItem'
 import styles from './Venues.module.scss'
 
 interface VenuesProps {
@@ -16,7 +16,7 @@ interface VenuesProps {
   offererId: number
 }
 
-const Venues = ({ venues, offererId }: VenuesProps) => {
+export const Venues = ({ venues, offererId }: VenuesProps) => {
   const isVenueCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
   const venueCreationUrl = isVenueCreationAvailable
     ? `/structures/${offererId}/lieux/creation`
@@ -53,5 +53,3 @@ const Venues = ({ venues, offererId }: VenuesProps) => {
     </div>
   )
 }
-
-export default Venues

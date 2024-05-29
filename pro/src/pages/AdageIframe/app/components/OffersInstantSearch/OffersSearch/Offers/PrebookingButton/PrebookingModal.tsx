@@ -8,7 +8,8 @@ interface PrebookingModal {
   preBookCurrentStock: () => Promise<void>
   isPreview?: boolean
 }
-const PrebookingModal = ({
+
+export const PrebookingModal = ({
   closeModal,
   preBookCurrentStock,
   isPreview = false,
@@ -41,5 +42,3 @@ const PrebookingModal = ({
     </ConfirmDialog>
   )
 }
-
-export default PrebookingModal

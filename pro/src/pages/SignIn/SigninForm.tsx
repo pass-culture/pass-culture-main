@@ -18,7 +18,7 @@ import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
 import styles from './Signin.module.scss'
 
-const SigninForm = (): JSX.Element => {
+export const SigninForm = (): JSX.Element => {
   const location = useLocation()
   const { logEvent } = useAnalytics()
   const isAccountCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
@@ -88,5 +88,3 @@ const SigninForm = (): JSX.Element => {
     </Form>
   )
 }
-
-export default SigninForm

@@ -3,11 +3,11 @@ import React from 'react'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
-import IndivualOfferLayout from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
+import { IndivualOfferLayout } from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
 import { getTitle } from 'screens/IndividualOffer/IndivualOfferLayout/utils/getTitle'
 import { StocksEventCreation } from 'screens/IndividualOffer/StocksEventCreation/StocksEventCreation'
 import { StocksEventEdition } from 'screens/IndividualOffer/StocksEventEdition/StocksEventEdition'
-import StocksThing from 'screens/IndividualOffer/StocksThing/StocksThing'
+import { StocksThing } from 'screens/IndividualOffer/StocksThing/StocksThing'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 export const Stocks = (): JSX.Element | null => {

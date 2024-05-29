@@ -12,7 +12,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 import { getHumanizeRelativeDistance } from 'utils/getDistance'
 
-import OfferFavoriteButton from '../../OffersInstantSearch/OffersSearch/Offers/OfferFavoriteButton/OfferFavoriteButton'
+import { OfferFavoriteButton } from '../../OffersInstantSearch/OffersSearch/Offers/OfferFavoriteButton/OfferFavoriteButton'
 import { getOfferTags } from '../../OffersInstantSearch/OffersSearch/Offers/utils/getOfferTags'
 
 import styles from './OfferCard.module.scss'
@@ -23,7 +23,7 @@ export interface CardComponentProps {
   viewType?: 'grid' | 'list'
 }
 
-const OfferCardComponent = ({
+export const OfferCardComponent = ({
   offer,
   onCardClicked,
   viewType,
@@ -127,5 +127,3 @@ const OfferCardComponent = ({
     </div>
   )
 }
-
-export default OfferCardComponent

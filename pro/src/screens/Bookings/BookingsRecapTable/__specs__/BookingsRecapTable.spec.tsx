@@ -164,7 +164,9 @@ describe('components | BookingsRecapTable', () => {
   it('should render the expected table with max given number of hits per page', () => {
     // Given
     const bookingsRecap = [bookingRecapFactory(), bookingRecapFactory()]
-    vi.spyOn(filterBookingsRecap, 'default').mockReturnValue(bookingsRecap)
+    vi.spyOn(filterBookingsRecap, 'filterBookingsRecap').mockReturnValue(
+      bookingsRecap
+    )
     const props: Props = {
       ...defaultProps,
       bookingsRecap: bookingsRecap,
@@ -188,7 +190,9 @@ describe('components | BookingsRecapTable', () => {
   it('should render the expected table for collective audience', () => {
     // Given
     const bookingRecap = collectiveBookingFactory(bookingInstitutionCustom)
-    vi.spyOn(filterBookingsRecap, 'default').mockReturnValue([bookingRecap])
+    vi.spyOn(filterBookingsRecap, 'filterBookingsRecap').mockReturnValue([
+      bookingRecap,
+    ])
     const props: Props = {
       ...defaultProps,
       audience: Audience.COLLECTIVE,
@@ -266,7 +270,9 @@ describe('components | BookingsRecapTable', () => {
     const bookingsRecap = [
       collectiveBookingFactory({ bookingId: 'mon booking id' }),
     ]
-    vi.spyOn(filterBookingsRecap, 'default').mockReturnValue(bookingsRecap)
+    vi.spyOn(filterBookingsRecap, 'filterBookingsRecap').mockReturnValue(
+      bookingsRecap
+    )
     vi.spyOn(api, 'getCollectiveBookingById').mockResolvedValue(
       collectiveBookingByIdFactory()
     )
