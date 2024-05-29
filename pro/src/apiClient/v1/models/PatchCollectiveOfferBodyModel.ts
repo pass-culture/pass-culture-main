@@ -22,7 +22,7 @@ export type PatchCollectiveOfferBodyModel = {
   nationalProgramId?: number | null;
   offerVenue?: CollectiveOfferVenueBodyModel | null;
   students?: Array<StudentLevels> | null;
-  subcategoryId?: SubcategoryIdEnum | null;
+  subcategoryId?: (SubcategoryIdEnum | string) | null;
   venueId?: number | null;
   visualDisabilityCompliant?: boolean | null;
 };

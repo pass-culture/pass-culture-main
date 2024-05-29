@@ -2,18 +2,25 @@ import cn from 'classnames'
 import { compareAsc, format } from 'date-fns'
 import { useState } from 'react'
 
+import { api } from 'apiClient/api'
 import { InvoiceResponseV2Model } from 'apiClient/v1'
 import { SortArrow } from 'components/StocksEventList/SortArrow'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import {
   SortingMode,
   giveSortingModeForAlly,
   useColumnSorting,
 } from 'hooks/useColumnSorting'
+import { useNotification } from 'hooks/useNotification'
+import fullDownloadIcon from 'icons/full-download.svg'
 import strokeLessIcon from 'icons/stroke-less.svg'
 import strokeMoreIcon from 'icons/stroke-more.svg'
+import { Button } from 'ui-kit/Button/Button'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { FORMAT_DD_MM_YYYY } from 'utils/date'
+import { downloadFile } from 'utils/downloadFile'
 import { formatPrice } from 'utils/formatPrice'
 
 import { InvoiceActions } from './InvoiceActions'
@@ -93,6 +100,8 @@ function sortInvoices(
 }
 
 export const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
+  const notify = useNotification()
+
   const [checkedInvoices, setCheckedInvoices] = useState<string[]>([])
   const { currentSortingColumn, currentSortingMode, onColumnHeaderClick } =
     useColumnSorting<InvoicesOrderedBy>()
@@ -134,14 +143,63 @@ export const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
     }
   }
 
+  async function downloadCSVFiles(references: string[]) {
+    try {
+      downloadFile(
+        await api.getReimbursementsCsvV2(references),
+        'remboursements_pass_culture.csv'
+      )
+    } catch {
+      notify.error(GET_DATA_ERROR_MESSAGE)
+    }
+  }
+
+  async function downloadInvoices(references: string[]) {
+    if (references.length > 24) {
+      notify.error(
+        'Vous ne pouvez pas télécharger plus de 24 documents en une fois.'
+      )
+      return
+    }
+    try {
+      downloadFile(
+        await api.getCombinedInvoices(references),
+        'justificatif_remboursement_pass_culture.pdf'
+      )
+    } catch {
+      notify.error(GET_DATA_ERROR_MESSAGE)
+    }
+  }
+
   return (
     <>
-      <BaseCheckbox
-        label="Tout sélectionner"
-        checked={allInvoicesChecked !== PartialCheck.UNCHECKED}
-        partialCheck={allInvoicesChecked === PartialCheck.PARTIAL}
-        onChange={onAllInvoicesCheckChange}
-      />
+      <div className={styles['download-actions']} aria-live="polite">
+        <BaseCheckbox
+          label="Tout sélectionner"
+          checked={allInvoicesChecked !== PartialCheck.UNCHECKED}
+          partialCheck={allInvoicesChecked === PartialCheck.PARTIAL}
+          onChange={onAllInvoicesCheckChange}
+        />
+        {checkedInvoices.length > 0 && (
+          <>
+            <Button
+              className={styles['download-button']}
+              variant={ButtonVariant.TERNARY}
+              icon={fullDownloadIcon}
+              onClick={() => downloadInvoices(checkedInvoices)}
+            >
+              Télécharger les justificatifs
+            </Button>
+            <Button
+              variant={ButtonVariant.TERNARY}
+              icon={fullDownloadIcon}
+              onClick={() => downloadCSVFiles(checkedInvoices)}
+            >
+              Télécharger les détails
+            </Button>
+          </>
+        )}
+      </div>
       <table role="table" className={styles['invoices-table']}>
         <caption className="visually-hidden">
           Justificatif de remboursement ou de trop perçu
@@ -151,7 +209,11 @@ export const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
             <th
               role="columnheader"
               scope="col"
-              className={cn(styles['header-cell'], styles['date-column'])}
+              className={cn(
+                styles['header-cell'],
+                styles['date-column'],
+                styles['date-header']
+              )}
             >
               Date du justificatif
               <SortArrow

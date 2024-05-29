@@ -111,21 +111,21 @@ describe('reimbursementsWithFilters', () => {
     expect(screen.queryAllByRole('columnheader').length).toEqual(5)
 
     const firstLine = [
-      '02/11/2022',
+      '<label class="base-checkbox"><span class="base-checkbox-label-row"><input type="checkbox" class="base-checkbox-input"><span class="base-checkbox-label"></span></span></label>02/11/2022',
       '<span class="document-type-content"><svg class="more-icon" viewBox="0 0 48 48" aria-hidden="true" width="16"><use xlink:href="/icons/stroke-more.svg#icon"></use></svg>Remboursement</span>',
       'First bank account',
       'VIR7',
       '+100,00&nbsp;€',
     ]
     const secondLine = [
-      '03/11/2022',
+      '<label class="base-checkbox"><span class="base-checkbox-label-row"><input type="checkbox" class="base-checkbox-input"><span class="base-checkbox-label"></span></span></label>03/11/2022',
       '<span class="document-type-content"><svg class="less-icon" viewBox="0 0 48 48" aria-hidden="true" width="16"><use xlink:href="/icons/stroke-less.svg#icon"></use></svg>Trop&nbsp;perçu</span>',
       'Second bank account',
       'N/A',
       '-50,00&nbsp;€',
     ]
     const thirdLine = [
-      '02/10/2023',
+      '<label class="base-checkbox"><span class="base-checkbox-label-row"><input type="checkbox" class="base-checkbox-input"><span class="base-checkbox-label"></span></span></label>02/10/2023',
       '<span class="document-type-content"><svg class="more-icon" viewBox="0 0 48 48" aria-hidden="true" width="16"><use xlink:href="/icons/stroke-more.svg#icon"></use></svg>Remboursement</span>',
       'First bank account',
       'VIR9, VIR12',
@@ -336,5 +336,71 @@ describe('reimbursementsWithFilters', () => {
       screen.getByText('Télécharger le détail des réservations (.csv)')
     )
     expect(api.getReimbursementsCsvV2).toHaveBeenCalledWith(['J123456789'])
+  })
+
+  it('should let download several invoices at same time', async () => {
+    vi.spyOn(api, 'getCombinedInvoices').mockResolvedValue({})
+    renderReimbursementsInvoices()
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    await userEvent.click(
+      screen.getByRole('checkbox', { name: 'Tout sélectionner' })
+    )
+
+    await userEvent.click(screen.getByText('Télécharger les justificatifs'))
+
+    expect(api.getCombinedInvoices).toHaveBeenCalledTimes(1)
+    expect(api.getCombinedInvoices).toHaveBeenNthCalledWith(1, [
+      'J123456789',
+      'J666666666',
+      'J987654321',
+    ])
+  })
+
+  it('should block download several invoices at same time for more than 24 invoices', async () => {
+    vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(
+      new Array(25).fill(null).map((_, i) => ({
+        reference: `J${i + 1}`,
+        date: '2022-11-02',
+        amount: 100,
+        url: 'J123456789.invoice',
+        bankAccountLabel: 'First bank account',
+        cashflowLabels: [`VIR${i + 1}`],
+      }))
+    )
+
+    vi.spyOn(api, 'getCombinedInvoices').mockResolvedValueOnce({})
+    renderReimbursementsInvoices()
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    await userEvent.click(
+      screen.getByRole('checkbox', { name: 'Tout sélectionner' })
+    )
+
+    await userEvent.click(screen.getByText('Télécharger les justificatifs'))
+
+    expect(api.getCombinedInvoices).not.toHaveBeenCalled()
+  })
+
+  it('should let download several reimbursment csv at same time', async () => {
+    vi.spyOn(api, 'getReimbursementsCsvV2').mockResolvedValueOnce({})
+    renderReimbursementsInvoices()
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    await userEvent.click(
+      screen.getByRole('checkbox', { name: 'Tout sélectionner' })
+    )
+
+    await userEvent.click(screen.getByText('Télécharger les détails'))
+
+    expect(api.getReimbursementsCsvV2).toHaveBeenCalledTimes(1)
+    expect(api.getReimbursementsCsvV2).toHaveBeenNthCalledWith(1, [
+      'J123456789',
+      'J666666666',
+      'J987654321',
+    ])
   })
 })
