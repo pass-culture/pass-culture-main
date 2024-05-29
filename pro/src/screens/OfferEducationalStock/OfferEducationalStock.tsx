@@ -28,9 +28,15 @@ import { NBSP } from 'core/shared/constants'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
+import { isDateValid } from 'utils/date'
 
-import { DETAILS_PRICE_LABEL } from './constants/labels'
+import {
+  BOOKING_LIMIT_DATETIME_LABEL,
+  DETAILS_PRICE_LABEL,
+  PRICE_DETAIL_PLACEHOLDER,
+} from './constants/labels'
 import { FormStock } from './FormStock/FormStock'
 import styles from './OfferEducationalStock.module.scss'
 import {
@@ -61,15 +67,15 @@ export const OfferEducationalStock = <
 }: OfferEducationalStockProps<T>): JSX.Element => {
   const offerIsDisabled = isOfferDisabled(offer.status)
   const [isLoading, setIsLoading] = useState(false)
-  const beginningDatetime =
-    isCollectiveOffer(offer) && offer.collectiveStock?.beginningDatetime
+  const startDatetime =
+    isCollectiveOffer(offer) && offer.collectiveStock?.startDatetime
 
   const preventPriceIncrease = Boolean(
     isCollectiveOffer(offer) &&
       (offer.lastBookingStatus === CollectiveBookingStatus.CONFIRMED ||
         (offer.lastBookingStatus === CollectiveBookingStatus.USED &&
-          beginningDatetime &&
-          isBefore(new Date(), addDays(new Date(beginningDatetime), 2))))
+          startDatetime &&
+          isBefore(new Date(), addDays(new Date(startDatetime), 2))))
   )
 
   const disablePriceAndParticipantInputs =
@@ -78,8 +84,8 @@ export const OfferEducationalStock = <
     Boolean(
       offer.lastBookingStatus === CollectiveBookingStatus.REIMBURSED ||
         (offer.lastBookingStatus === CollectiveBookingStatus.USED &&
-          beginningDatetime &&
-          isAfter(new Date(), addDays(new Date(beginningDatetime), 2)))
+          startDatetime &&
+          isAfter(new Date(), addDays(new Date(startDatetime), 2)))
     )
 
   const postForm = async (values: OfferEducationalStockFormValues) => {
@@ -155,7 +161,7 @@ export const OfferEducationalStock = <
                   <br />
                   <span className={styles['description-text-italic']}>
                     (Exemple : j’accueille 30 élèves à 5{NBSP}€ la place, le
-                    prix total global de mon offre s’élève à 150{NBSP}€ TTC.)
+                    prix total de mon offre s’élève à 150{NBSP}€ TTC.)
                   </span>
                 </p>
                 <FormStock
@@ -164,10 +170,9 @@ export const OfferEducationalStock = <
                     disablePriceAndParticipantInputs
                   }
                   preventPriceIncrease={preventPriceIncrease}
-                  offerDateCreated={offer.dateCreated}
                 />
               </>
-              )
+
               <FormLayout.Row>
                 <TextArea
                   className={styles['price-details']}
@@ -176,9 +181,33 @@ export const OfferEducationalStock = <
                   label={DETAILS_PRICE_LABEL}
                   maxLength={MAX_DETAILS_LENGTH}
                   name="priceDetail"
-                  placeholder="Détaillez ici des informations complémentaires."
+                  placeholder={PRICE_DETAIL_PLACEHOLDER}
                 />
               </FormLayout.Row>
+            </FormLayout.Section>
+            <FormLayout.Section title="Conditions de réservation">
+              <>
+                <p className={styles['description-text']}>
+                  Indiquez la date limite avant laquelle l’offre doit être
+                  réservée par l’enseignant puis par le chef d’établissement. À
+                  défaut, l’offre expirera et ne sera plus visible sur ADAGE.
+                </p>
+                <FormLayout.Row>
+                  <DatePicker
+                    disabled={mode === Mode.READ_ONLY}
+                    label={BOOKING_LIMIT_DATETIME_LABEL}
+                    hasLabelLineBreak={false}
+                    minDate={new Date(offer.dateCreated)}
+                    maxDate={
+                      isDateValid(new Date(formik.values.startDatetime))
+                        ? new Date(formik.values.startDatetime)
+                        : undefined
+                    }
+                    name="bookingLimitDatetime"
+                    className={styles['input-date']}
+                  />
+                </FormLayout.Row>
+              </>
             </FormLayout.Section>
             <ActionsBarSticky>
               <ActionsBarSticky.Left>
