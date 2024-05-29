@@ -29,7 +29,7 @@ const mockUseNotification = {
   success: vi.fn(),
 }
 
-vi.spyOn(useNotification, 'default').mockImplementation(
+vi.spyOn(useNotification, 'useNotification').mockImplementation(
   () => mockUseNotification
 )
 

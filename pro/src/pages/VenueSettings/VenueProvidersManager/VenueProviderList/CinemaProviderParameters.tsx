@@ -4,7 +4,7 @@ import { useSWRConfig } from 'swr'
 import { api } from 'apiClient/api'
 import { GetVenueResponseModel, VenueProviderResponse } from 'apiClient/v1'
 import { GET_VENUE_PROVIDERS_QUERY_KEY } from 'config/swrQueryKeys'
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 

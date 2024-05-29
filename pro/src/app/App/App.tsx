@@ -8,7 +8,7 @@ import { findCurrentRoute } from 'app/AppRouter/findCurrentRoute'
 import { Notification } from 'components/Notification/Notification'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 import { updateUser } from 'store/user/reducer'
 import { selectCurrentUser } from 'store/user/selectors'
 

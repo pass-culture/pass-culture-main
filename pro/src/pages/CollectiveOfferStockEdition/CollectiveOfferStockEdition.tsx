@@ -19,7 +19,7 @@ import {
   FORM_ERROR_MESSAGE,
   PATCH_SUCCESS_MESSAGE,
 } from 'core/shared/constants'
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 import {
   MandatoryCollectiveOfferFromParamsProps,
   withCollectiveOfferFromParams,

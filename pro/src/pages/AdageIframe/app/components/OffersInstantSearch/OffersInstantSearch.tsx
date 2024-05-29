@@ -7,7 +7,7 @@ import { VenueResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import { DEFAULT_MARSEILLE_STUDENTS } from 'core/shared/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 import { adageFilterSelector } from 'store/adageFilter/selectors'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 import {

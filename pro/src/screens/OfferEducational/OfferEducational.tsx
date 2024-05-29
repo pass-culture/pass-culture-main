@@ -33,7 +33,7 @@ import {
 } from 'core/shared/constants'
 import { SelectOption } from 'custom_types/form'
 import useActiveFeature from 'hooks/useActiveFeature'
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 import {
   createPatchOfferPayload,
   createPatchOfferTemplatePayload,

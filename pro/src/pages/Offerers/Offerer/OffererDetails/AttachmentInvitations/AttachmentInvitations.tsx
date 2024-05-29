@@ -11,7 +11,7 @@ import {
 import useAnalytics from 'app/App/analytics/firebase'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OffererLinkEvents } from 'core/FirebaseEvents/constants'
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 import fullDownIcon from 'icons/full-down.svg'
 import fullUpIcon from 'icons/full-up.svg'
 import { Button } from 'ui-kit/Button/Button'

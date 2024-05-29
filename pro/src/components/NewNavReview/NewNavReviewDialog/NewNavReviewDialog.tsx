@@ -5,7 +5,7 @@ import { useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { DialogBox } from 'components/DialogBox/DialogBox'
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 import strokeValidIcon from 'icons/stroke-valid.svg'
 import { selectCurrentOffererId } from 'store/user/selectors'
 import { Button } from 'ui-kit/Button/Button'

@@ -12,7 +12,7 @@ import {
 } from 'core/FirebaseEvents/constants'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 import fullTrashIcon from 'icons/full-trash.svg'
 import strokeTrashIcon from 'icons/stroke-trash.svg'
 import { GET_OFFERS_QUERY_KEY } from 'pages/Offers/OffersRoute'

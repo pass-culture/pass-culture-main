@@ -8,7 +8,7 @@ import { CancelCollectiveBookingModal } from 'components/CancelCollectiveBooking
 import { GET_BOOKINGS_QUERY_KEY } from 'config/swrQueryKeys'
 import { BOOKING_STATUS } from 'core/Bookings/constants'
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'core/Notification/constants'
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 import { useOfferEditionURL } from 'hooks/useOfferEditionURL'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'

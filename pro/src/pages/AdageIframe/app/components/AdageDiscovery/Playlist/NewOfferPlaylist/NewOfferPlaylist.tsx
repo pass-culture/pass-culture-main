@@ -5,7 +5,7 @@ import { CollectiveOfferTemplateResponseModel } from 'apiClient/adage'
 import { AdagePlaylistType } from 'apiClient/adage/models/AdagePlaylistType'
 import { apiAdage } from 'apiClient/api'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 
 import { TrackerElementArg } from '../../AdageDiscovery'
 import { Carousel } from '../../Carousel/Carousel'

@@ -17,7 +17,7 @@ import {
   GET_DATA_ERROR_MESSAGE,
 } from 'core/shared/constants'
 import { getSiretData } from 'core/Venue/getSiretData'
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 import { MAYBE_APP_USER_APE_CODE } from 'pages/Signup/SignupContainer/constants'
 import { MaybeAppUserDialog } from 'pages/Signup/SignupContainer/MaybeAppUserDialog/MaybeAppUserDialog'
 

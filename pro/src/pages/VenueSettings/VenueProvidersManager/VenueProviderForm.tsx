@@ -11,7 +11,7 @@ import {
   isAllocineProvider,
   isCinemaProvider,
 } from 'core/Providers/utils/utils'
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 
 import { AllocineProviderForm } from './AllocineProviderForm/AllocineProviderForm'
 import { CinemaProviderForm } from './CinemaProviderForm/CinemaProviderForm'

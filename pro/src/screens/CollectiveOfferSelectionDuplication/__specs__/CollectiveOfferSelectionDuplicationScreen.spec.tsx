@@ -52,7 +52,7 @@ describe('CollectiveOfferConfirmation', () => {
       collectiveOfferFactory(),
     ]
 
-    vi.spyOn(useNotification, 'default').mockImplementation(() => ({
+    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       success: vi.fn(),
       error: notifyError,
       information: vi.fn(),

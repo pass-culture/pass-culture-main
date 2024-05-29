@@ -41,7 +41,7 @@ describe('RequestFormDialog', () => {
   it('should submit valid form and close modal on submit', async () => {
     const notifySuccess = vi.fn()
     const mockCloseModal = vi.fn()
-    vi.spyOn(useNotification, 'default').mockImplementation(() => ({
+    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       success: notifySuccess,
       error: vi.fn(),
       information: vi.fn(),
@@ -80,7 +80,7 @@ describe('RequestFormDialog', () => {
     vi.spyOn(apiAdage, 'createCollectiveRequest').mockRejectedValueOnce({})
     const notifyError = vi.fn()
     const mockCloseModal = vi.fn()
-    vi.spyOn(useNotification, 'default').mockImplementation(() => ({
+    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       success: vi.fn(),
       error: notifyError,
       information: vi.fn(),

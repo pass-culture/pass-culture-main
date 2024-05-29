@@ -27,7 +27,7 @@ import {
   SENT_DATA_ERROR_MESSAGE,
 } from 'core/shared/constants'
 import { SelectOption } from 'custom_types/form'
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 import strokeSearch from 'icons/stroke-search.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'

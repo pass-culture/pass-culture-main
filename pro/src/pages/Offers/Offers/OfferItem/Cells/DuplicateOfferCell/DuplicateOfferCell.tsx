@@ -9,7 +9,7 @@ import {
 import { createOfferFromBookableOffer } from 'core/OfferEducational/utils/createOfferFromBookableOffer'
 import { createOfferFromTemplate } from 'core/OfferEducational/utils/createOfferFromTemplate'
 import useActiveFeature from 'hooks/useActiveFeature'
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 import copyIcon from 'icons/full-duplicate.svg'
 import fullPlusIcon from 'icons/full-plus.svg'
 import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'

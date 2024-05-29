@@ -76,7 +76,7 @@ describe('OfferEducationalActions', () => {
   it('should failed active status value', async () => {
     const notifyError = vi.fn()
     // @ts-expect-error
-    vi.spyOn(useNotification, 'default').mockImplementation(() => ({
+    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       success: vi.fn(),
       error: notifyError,
     }))
@@ -196,8 +196,8 @@ describe('OfferEducationalActions', () => {
     const notifyError = vi.fn()
     const notifsImport = (await vi.importActual(
       'hooks/useNotification'
-    )) as ReturnType<typeof useNotification.default>
-    vi.spyOn(useNotification, 'default').mockImplementation(() => ({
+    )) as ReturnType<typeof useNotification.useNotification>
+    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,
       error: notifyError,
     }))
@@ -224,8 +224,8 @@ describe('OfferEducationalActions', () => {
 
     const notifsImport = (await vi.importActual(
       'hooks/useNotification'
-    )) as ReturnType<typeof useNotification.default>
-    vi.spyOn(useNotification, 'default').mockImplementation(() => ({
+    )) as ReturnType<typeof useNotification.useNotification>
+    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,
       success: vi.fn(),
       error: notifyError,

@@ -1,6 +1,6 @@
 import React from 'react'
 
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 import * as notificationReducer from 'store/notifications/reducer'
 import { renderWithProviders } from 'utils/renderWithProviders'
 

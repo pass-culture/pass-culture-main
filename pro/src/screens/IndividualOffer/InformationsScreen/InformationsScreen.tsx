@@ -33,7 +33,7 @@ import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useCurrentUser from 'hooks/useCurrentUser'
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import strokeMailIcon from 'icons/stroke-mail.svg'
 

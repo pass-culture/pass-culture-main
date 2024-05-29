@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import { NOTIFICATION_TRANSITION_DURATION } from 'core/Notification/constants'
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 import {
   isStickyBarOpenSelector,
   notificationSelector,

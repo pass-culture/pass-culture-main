@@ -5,7 +5,7 @@ import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { StocksEventList } from 'components/StocksEventList/StocksEventList'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
-import useNotification from 'hooks/useNotification'
+import { useNotification } from 'hooks/useNotification'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 
 import { ActionBar } from '../ActionBar/ActionBar'
