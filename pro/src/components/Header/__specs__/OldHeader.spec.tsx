@@ -37,7 +37,7 @@ describe('navigation menu', () => {
 
   describe('trackers should have been called 1 time with pathname', () => {
     beforeEach(() => {
-      vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
         logEvent: mockLogEvent,
         setLogEvent: vi.fn(),
       }))

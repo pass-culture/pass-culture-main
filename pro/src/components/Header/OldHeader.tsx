@@ -2,7 +2,7 @@ import cn from 'classnames'
 import { forwardRef } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 
-import useAnalytics from 'app/App/analytics/firebase'
+import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'core/FirebaseEvents/constants'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import logoPassCultureProIcon from 'icons/logo-pass-culture-pro.svg'

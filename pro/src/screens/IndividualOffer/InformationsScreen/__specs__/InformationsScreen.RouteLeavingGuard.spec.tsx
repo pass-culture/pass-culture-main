@@ -167,7 +167,7 @@ describe('screens:IndividualOffer::Informations::creation', () => {
     vi.spyOn(api, 'patchOffer').mockResolvedValue({
       id: offerId,
     } as GetIndividualOfferResponseModel)
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
   })

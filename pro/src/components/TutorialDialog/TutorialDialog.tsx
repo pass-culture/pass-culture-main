@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react'
 import { useDispatch } from 'react-redux'
 
 import { api } from 'apiClient/api'
-import useAnalytics from 'app/App/analytics/firebase'
+import { useAnalytics } from 'app/App/analytics/firebase'
 import { DialogBox } from 'components/DialogBox/DialogBox'
 import { TUTO_DIALOG_LABEL_ID } from 'components/Tutorial/constants'
 import { Tutorial } from 'components/Tutorial/Tutorial'

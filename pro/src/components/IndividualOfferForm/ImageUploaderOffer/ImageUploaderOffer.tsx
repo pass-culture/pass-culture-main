@@ -1,6 +1,6 @@
 import React from 'react'
 
-import useAnalytics from 'app/App/analytics/firebase'
+import { useAnalytics } from 'app/App/analytics/firebase'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { ImageUploader } from 'components/ImageUploader/ImageUploader'

@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { Link, Outlet, useLocation } from 'react-router-dom'
 
-import useAnalytics from 'app/App/analytics/firebase'
+import { useAnalytics } from 'app/App/analytics/firebase'
 import { AppLayout } from 'app/AppLayout'
 import { Header } from 'components/Header/Header'
 import { SignupJourneyFormLayout } from 'components/SignupJourneyFormLayout/SignupJourneyFormLayout'

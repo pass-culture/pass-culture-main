@@ -62,7 +62,7 @@ const renderSignupJourneyStepper = (
 describe('test renderSignupJourneyStepper', () => {
   let contextValue: SignupJourneyContextValues
   beforeEach(() => {
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
     contextValue = {

@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { GetOffererVenueResponseModel } from 'apiClient/v1'
-import useAnalytics from 'app/App/analytics/firebase'
+import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'core/FirebaseEvents/constants'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import fullMoreIcon from 'icons/full-more.svg'

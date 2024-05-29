@@ -8,7 +8,7 @@ import {
   BookingStatusFilter,
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
-import useAnalytics from 'app/App/analytics/firebase'
+import { useAnalytics } from 'app/App/analytics/firebase'
 import { NoData } from 'components/NoData/NoData'
 import {
   GET_BOOKINGS_QUERY_KEY,

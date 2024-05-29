@@ -2,7 +2,7 @@ import { FormikProvider, useFormik } from 'formik'
 import React, { useState } from 'react'
 
 import { PostVenueProviderBody } from 'apiClient/v1'
-import useAnalytics from 'app/App/analytics/firebase'
+import { useAnalytics } from 'app/App/analytics/firebase'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
 import { validationSchema } from 'pages/VenueSettings/VenueProvidersManager/AllocineProviderForm/validationSchema'

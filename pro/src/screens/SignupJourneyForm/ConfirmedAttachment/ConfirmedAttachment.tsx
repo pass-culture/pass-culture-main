@@ -1,6 +1,6 @@
 import React from 'react'
 
-import useAnalytics from 'app/App/analytics/firebase'
+import { useAnalytics } from 'app/App/analytics/firebase'
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
 import { useSignupJourneyContext } from 'context/SignupJourneyContext/SignupJourneyContext'

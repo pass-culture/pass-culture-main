@@ -31,7 +31,7 @@ const renderActionBar = (props: ActionBarProps) => {
 describe('screens:SignupJourney::ActionBar', () => {
   let props: ActionBarProps
   beforeEach(() => {
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
     vi.spyOn(api, 'getVenueTypes').mockResolvedValue([])

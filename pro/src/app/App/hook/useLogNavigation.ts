@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
-import useAnalytics from 'app/App/analytics/firebase'
+import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'core/FirebaseEvents/constants'
 
 export const useLogNavigation = (): void => {

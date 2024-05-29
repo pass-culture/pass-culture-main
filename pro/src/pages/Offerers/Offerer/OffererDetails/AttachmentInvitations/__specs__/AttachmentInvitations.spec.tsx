@@ -35,7 +35,7 @@ const renderAttachmentInvitations = async () => {
 describe('AttachmentInvitations', () => {
   beforeEach(() => {
     vi.spyOn(api, 'getOffererMembers').mockResolvedValueOnce({ members: [] })
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
   })

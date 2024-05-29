@@ -2,7 +2,7 @@ import React from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { GetOffererResponseModel } from 'apiClient/v1'
-import useAnalytics from 'app/App/analytics/firebase'
+import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'core/FirebaseEvents/constants'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'

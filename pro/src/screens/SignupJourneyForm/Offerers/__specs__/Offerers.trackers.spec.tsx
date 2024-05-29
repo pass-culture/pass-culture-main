@@ -59,7 +59,7 @@ describe('Offerers trackers', () => {
       ],
     })
 
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
   })

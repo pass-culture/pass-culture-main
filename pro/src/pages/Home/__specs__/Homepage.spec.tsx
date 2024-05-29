@@ -99,7 +99,7 @@ describe('Homepage', () => {
       offerersNames: baseOfferersNames,
     })
     vi.spyOn(api, 'getOfferer').mockResolvedValue(baseOfferers[0])
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
     vi.spyOn(api, 'getOffererStats').mockResolvedValueOnce({

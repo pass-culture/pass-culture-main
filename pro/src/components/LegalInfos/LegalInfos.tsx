@@ -2,7 +2,7 @@ import cn from 'classnames'
 import React from 'react'
 import { useLocation } from 'react-router-dom'
 
-import useAnalytics from 'app/App/analytics/firebase'
+import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'core/FirebaseEvents/constants'
 import fullLink from 'icons/full-link.svg'
 import fullMailIcon from 'icons/full-mail.svg'

@@ -7,7 +7,7 @@ import {
   GetVenueResponseModel,
   VenueTypeResponseModel,
 } from 'apiClient/v1'
-import useAnalytics from 'app/App/analytics/firebase'
+import { useAnalytics } from 'app/App/analytics/firebase'
 import { ButtonImageEdit } from 'components/ImageUploader/ButtonImageEdit/ButtonImageEdit'
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { UploadImageValues } from 'components/ImageUploader/ButtonImageEdit/types'

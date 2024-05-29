@@ -68,7 +68,7 @@ const renderLinkVenuesDialog = () => {
 describe('LinkVenueDialog', () => {
   beforeEach(() => {
     vi.spyOn(api, 'linkVenueToBankAccount').mockResolvedValue()
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
   })

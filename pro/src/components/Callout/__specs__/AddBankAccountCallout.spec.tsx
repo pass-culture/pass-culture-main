@@ -89,7 +89,7 @@ describe('AddBankAccountCallout', () => {
   })
 
   it('should log add bank account on click add bank account link', async () => {
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
 

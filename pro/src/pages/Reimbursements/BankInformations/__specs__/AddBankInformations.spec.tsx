@@ -32,7 +32,7 @@ describe('AddBankInformations', () => {
   })
 
   it('should track continue to ds', async () => {
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
 

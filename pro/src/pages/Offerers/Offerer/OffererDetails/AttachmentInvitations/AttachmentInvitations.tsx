@@ -8,7 +8,7 @@ import {
   GetOffererMemberResponseModel,
   OffererMemberStatus,
 } from 'apiClient/v1'
-import useAnalytics from 'app/App/analytics/firebase'
+import { useAnalytics } from 'app/App/analytics/firebase'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OffererLinkEvents } from 'core/FirebaseEvents/constants'
 import { useNotification } from 'hooks/useNotification'

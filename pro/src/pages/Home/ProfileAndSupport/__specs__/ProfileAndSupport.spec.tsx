@@ -25,7 +25,7 @@ const renderProfileAndSupport = () => {
 describe('ProfileAndSupport', () => {
   it('should redirect to /profil page when the user click on Modifier', async () => {
     // When
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
     renderProfileAndSupport()
