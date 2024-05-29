@@ -73,6 +73,10 @@ export const ButtonLink = forwardRef(
         ) : (
           <>{children}</>
         )}
+        {
+          /* istanbul ignore next: graphic variation */
+          iconPosition === IconPositionEnum.RIGHT && svgIcon
+        }
       </>
     )
 
