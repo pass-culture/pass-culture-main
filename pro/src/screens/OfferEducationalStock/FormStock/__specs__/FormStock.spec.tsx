@@ -43,7 +43,7 @@ const renderFormStock = ({
   )
 }
 
-describe('TimePicker', () => {
+describe('FormStock', () => {
   let initialValues: OfferEducationalStockFormValues
   const onSubmit = vi.fn()
   let props: FormStockProps
@@ -53,10 +53,10 @@ describe('TimePicker', () => {
       mode: Mode.CREATION,
       disablePriceAndParticipantInputs: false,
       preventPriceIncrease: false,
-      offerDateCreated: '2023-04-06T13:48:36.304896Z',
     }
     initialValues = {
-      eventDate: '',
+      startDatetime: '',
+      endDatetime: '',
       eventTime: '',
       numberOfPlaces: '',
       totalPrice: '',
@@ -73,32 +73,29 @@ describe('TimePicker', () => {
 
     await userEvent.click(saveButton)
     const requiredField = await screen.findAllByText('Champ requis')
-    expect(requiredField).toHaveLength(4)
+    expect(requiredField).toHaveLength(5)
   })
 
-  it('should automatically update bookingLimitDatetime when the user edits the event date', async () => {
+  it('should automatically update end date input when the user edits the start date', async () => {
     renderFormStock({
       initialValues: {
         ...initialValues,
-        eventDate: format(new Date(), FORMAT_ISO_DATE_ONLY),
+        startDatetime: format(new Date(), FORMAT_ISO_DATE_ONLY),
       },
       onSubmit,
       props: {
         mode: Mode.EDITION,
         disablePriceAndParticipantInputs: false,
         preventPriceIncrease: false,
-        offerDateCreated: '2023-04-06T13:48:36.304896Z',
       },
     })
     const userDateInput = format(addDays(new Date(), 1), FORMAT_ISO_DATE_ONLY)
-    const dateInput = screen.getByLabelText('Date *')
-    await userEvent.click(dateInput)
-    await userEvent.clear(dateInput)
-    await waitFor(() => userEvent.type(dateInput, userDateInput))
-    const bookingLimitDatetimeInput = screen.getByLabelText(
-      'Date limite de réservation'
-    )
-    expect(bookingLimitDatetimeInput).toHaveValue(userDateInput)
+    const startDatetimeInput = screen.getByLabelText('Date de début *')
+    await userEvent.click(startDatetimeInput)
+    await userEvent.clear(startDatetimeInput)
+    await waitFor(() => userEvent.type(startDatetimeInput, userDateInput))
+    const endDatetimeInput = screen.getByLabelText('Date de fin *')
+    expect(endDatetimeInput).toHaveValue(userDateInput)
   })
 
   it('should not disable price and place when offer status is reimbursment', () => {
@@ -109,11 +106,10 @@ describe('TimePicker', () => {
         mode: Mode.READ_ONLY,
         disablePriceAndParticipantInputs: true,
         preventPriceIncrease: true,
-        offerDateCreated: '2023-04-06T13:48:36.304896Z',
       },
     })
 
-    const priceInput = screen.getByLabelText('Prix global TTC *')
+    const priceInput = screen.getByLabelText('Prix total TTC *')
     const placeInput = screen.getByLabelText('Nombre de participants *')
 
     expect(priceInput).toBeDisabled()
@@ -128,11 +124,10 @@ describe('TimePicker', () => {
         mode: Mode.READ_ONLY,
         disablePriceAndParticipantInputs: false,
         preventPriceIncrease: true,
-        offerDateCreated: '2023-04-06T13:48:36.304896Z',
       },
     })
 
-    const priceInput = screen.getByLabelText('Prix global TTC *')
+    const priceInput = screen.getByLabelText('Prix total TTC *')
     await userEvent.clear(priceInput)
     await userEvent.type(priceInput, '10000')
     const saveButton = screen.getByText('Enregistrer')

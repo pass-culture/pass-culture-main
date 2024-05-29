@@ -45,7 +45,19 @@ export const generateValidationSchema = (
   }
 
   return yup.object().shape({
-    eventDate: yup
+    startDatetime: yup
+      .date()
+      .nullable()
+      .required('Champ requis')
+      .when([], {
+        is: () => !preventPriceIncrease,
+        then: (schema) =>
+          schema.min(
+            todayAtMidnight(),
+            "La date de l’évènement doit être supérieure à aujourd'hui"
+          ),
+      }),
+    endDatetime: yup
       .date()
       .nullable()
       .required('Champ requis')
@@ -61,9 +73,10 @@ export const generateValidationSchema = (
       .string()
       .nullable()
       .required('Champ requis')
-      .when('eventDate', {
-        is: (eventDate: string) =>
-          isSameDay(new Date(eventDate), new Date()) && !preventPriceIncrease,
+      .when('startDatetime', {
+        is: (startDatetime: string) =>
+          isSameDay(new Date(startDatetime), new Date()) &&
+          !preventPriceIncrease,
         then: (schema) =>
           schema.test({
             name: 'is-before-current-time',
@@ -87,7 +100,7 @@ export const generateValidationSchema = (
     totalPrice: totalPriceValidation,
     bookingLimitDatetime: yup
       .date()
-      .notRequired()
+      .required('La date limite de réservation est obligatoire')
       .test({
         name: 'is-one-true',
         message:

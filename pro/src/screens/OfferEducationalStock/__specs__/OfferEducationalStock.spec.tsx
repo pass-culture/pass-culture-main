@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { addDays, addMinutes, format, subDays } from 'date-fns'
 import React from 'react'
@@ -14,6 +14,7 @@ import {
 import { FORMAT_HH_mm, FORMAT_ISO_DATE_ONLY } from 'utils/date'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
+import { PRICE_DETAIL_PLACEHOLDER } from '../constants/labels'
 import {
   OfferEducationalStock,
   OfferEducationalStockProps,
@@ -29,7 +30,8 @@ const defaultProps: OfferEducationalStockProps = {
 const tomorrow = addDays(new Date(), 1)
 const initialValuesNotEmpty = {
   ...DEFAULT_EAC_STOCK_FORM_VALUES,
-  eventDate: format(tomorrow, FORMAT_ISO_DATE_ONLY),
+  startDatetime: format(tomorrow, FORMAT_ISO_DATE_ONLY),
+  endDatetime: format(tomorrow, FORMAT_ISO_DATE_ONLY),
   eventTime: format(addMinutes(tomorrow, 15), FORMAT_HH_mm),
   bookingLimitDatetime: '2023-03-30',
   numberOfPlaces: 10,
@@ -53,7 +55,8 @@ describe('OfferEducationalStock', () => {
       ...defaultProps,
       offer,
       initialValues: {
-        eventDate: '2022-02-10',
+        startDatetime: '2022-02-10',
+        endDatetime: '2022-02-10',
         eventTime: '00:00',
         bookingLimitDatetime: '2022-02-10',
         numberOfPlaces: 10,
@@ -68,7 +71,7 @@ describe('OfferEducationalStock', () => {
     screen.getByText('Date et prix')
   })
 
-  it('should render for offer with a stock', () => {
+  it('should render for offer imported with a public api', () => {
     const offer = getCollectiveOfferFactory({ isPublicApi: true })
     const testProps: OfferEducationalStockProps = {
       ...defaultProps,
@@ -89,11 +92,11 @@ describe('OfferEducationalStock', () => {
     getCollectiveOfferFactory({
       lastBookingStatus: CollectiveBookingStatus.USED,
       collectiveStock: getCollectiveOfferCollectiveStockFactory({
-        beginningDatetime: subDays(new Date(), 1).toDateString(),
+        startDatetime: subDays(new Date(), 1).toDateString(),
       }),
     }),
   ])(
-    'should not disable description, price and places when offer is confirmed or used since less than 2 days',
+    'should not disable description, price and places when offer is $lastBookingStatus since less than 2 days',
     (offer) => {
       const testProps: OfferEducationalStockProps = {
         ...defaultProps,
@@ -103,9 +106,9 @@ describe('OfferEducationalStock', () => {
       renderWithProviders(<OfferEducationalStock {...testProps} />)
 
       const descriptionInput = screen.getByPlaceholderText(
-        'Détaillez ici des informations complémentaires.'
+        PRICE_DETAIL_PLACEHOLDER
       )
-      const priceInput = screen.getByLabelText('Prix global TTC *')
+      const priceInput = screen.getByLabelText('Prix total TTC *')
       const placeInput = screen.getByLabelText('Nombre de participants *')
 
       expect(descriptionInput).not.toBeDisabled()
@@ -121,7 +124,7 @@ describe('OfferEducationalStock', () => {
     getCollectiveOfferFactory({
       lastBookingStatus: CollectiveBookingStatus.USED,
       collectiveStock: getCollectiveOfferCollectiveStockFactory({
-        beginningDatetime: subDays(new Date(), 3).toDateString(),
+        startDatetime: subDays(new Date(), 3).toDateString(),
       }),
     }),
   ])(
@@ -135,9 +138,9 @@ describe('OfferEducationalStock', () => {
       renderWithProviders(<OfferEducationalStock {...testProps} />)
 
       const descriptionInput = screen.getByPlaceholderText(
-        'Détaillez ici des informations complémentaires.'
+        PRICE_DETAIL_PLACEHOLDER
       )
-      const priceInput = screen.getByLabelText('Prix global TTC *')
+      const priceInput = screen.getByLabelText('Prix total TTC *')
       const placeInput = screen.getByLabelText('Nombre de participants *')
 
       expect(descriptionInput).toBeDisabled()
@@ -186,14 +189,14 @@ describe('OfferEducationalStock', () => {
     ).toBeInTheDocument()
   })
 
-  it('should display error message when price and participants are too high', async () => {
+  it('should display error message when selected event time is less than current time', async () => {
     const offer = getCollectiveOfferFactory({ isPublicApi: false })
     const testProps: OfferEducationalStockProps = {
       ...defaultProps,
       offer,
       initialValues: {
         ...initialValuesNotEmpty,
-        eventDate: String(new Date()),
+        startDatetime: String(new Date()),
         eventTime: '02:00',
       },
       mode: Mode.CREATION,
@@ -223,4 +226,23 @@ describe('OfferEducationalStock', () => {
       screen.queryByRole('button', { name: 'Annuler et quitter' })
     ).not.toBeInTheDocument()
   })
+})
+
+it('should automatically update bookingLimitDatetime when the user edits the start date', async () => {
+  const testProps: OfferEducationalStockProps = {
+    ...defaultProps,
+    mode: Mode.CREATION,
+  }
+
+  renderWithProviders(<OfferEducationalStock {...testProps} />)
+
+  const userDateInput = format(addDays(new Date(), 1), FORMAT_ISO_DATE_ONLY)
+  const dateInput = screen.getByLabelText('Date de début *')
+  await userEvent.click(dateInput)
+  await userEvent.clear(dateInput)
+  await waitFor(() => userEvent.type(dateInput, userDateInput))
+  const bookingLimitDatetimeInput = screen.getByLabelText(
+    'Date limite de réservation *'
+  )
+  expect(bookingLimitDatetimeInput).toHaveValue(userDateInput)
 })
