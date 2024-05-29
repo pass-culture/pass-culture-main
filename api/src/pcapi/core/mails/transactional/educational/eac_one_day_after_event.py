@@ -20,8 +20,8 @@ def send_eac_alert_one_day_after_event(booking: educational_models.CollectiveBoo
 def get_eac_one_day_after_event_data(
     booking: educational_models.CollectiveBooking,
 ) -> models.TransactionalEmailData:
-    stock: educational_models.CollectiveStock = booking.collectiveStock
-    offer: educational_models.CollectiveOffer = stock.collectiveOffer
+    stock = booking.collectiveStock
+    offer = stock.collectiveOffer
 
     return models.TransactionalEmailData(
         template=TransactionalEmail.EAC_ONE_DAY_AFTER_EVENT.value,
