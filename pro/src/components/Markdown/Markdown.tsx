@@ -1,6 +1,6 @@
 import DOMPurify from 'dompurify'
 
-import useActiveFeature from 'hooks/useActiveFeature'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 
 const BOLD_REGEXP = /\*\*(.*)\*\*/gim
 const ITALIC_REGEXP = /_(.*)_/gim

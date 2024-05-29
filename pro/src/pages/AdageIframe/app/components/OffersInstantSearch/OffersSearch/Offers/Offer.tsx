@@ -15,7 +15,7 @@ import {
   LOG_OFFER_DETAILS_CLICK_QUERY_KEY,
   LOG_OFFER_TEMPLATE_DETAILS_CLICK_QUERY_KEY,
 } from 'config/swrQueryKeys'
-import useActiveFeature from 'hooks/useActiveFeature'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullUpIcon from 'icons/full-up.svg'
 import strokeOfferIcon from 'icons/stroke-offer.svg'

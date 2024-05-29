@@ -5,7 +5,7 @@ import {
   CollectiveOfferTemplateResponseModel,
 } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import useActiveFeature from 'hooks/useActiveFeature'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 
 import { AdageOfferListCard } from '../OffersInstantSearch/OffersSearch/Offers/AdageOfferListCard/AdageOfferListCard'
 import { Offer } from '../OffersInstantSearch/OffersSearch/Offers/Offer'
