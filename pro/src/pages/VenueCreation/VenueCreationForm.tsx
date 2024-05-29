@@ -14,6 +14,7 @@ import {
   BlockerFunction,
 } from 'components/RouteLeavingGuard/RouteLeavingGuard'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { useCurrentUser } from 'hooks/useCurrentUser'
 import { Banner } from 'ui-kit/Banners/Banner/Banner'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
@@ -21,8 +22,6 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { Select } from 'ui-kit/form/Select/Select'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
-
-import useCurrentUser from '../../hooks/useCurrentUser'
 
 import { Accessibility } from './Accessibility/Accessibility'
 import { buildVenueTypesOptions } from './buildVenueTypesOptions'

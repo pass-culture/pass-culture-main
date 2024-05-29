@@ -15,7 +15,7 @@ import {
   INDIVIDUAL_OFFER_SUBTYPE,
 } from 'core/Offers/constants'
 import { IndividualOfferImage } from 'core/Offers/types'
-import useCurrentUser from 'hooks/useCurrentUser'
+import { useCurrentUser } from 'hooks/useCurrentUser'
 
 import { Accessibility } from './Accessibility/Accessibility'
 import { Categories } from './Categories/Categories'
