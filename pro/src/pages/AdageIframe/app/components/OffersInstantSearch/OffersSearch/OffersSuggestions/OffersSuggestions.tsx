@@ -2,7 +2,7 @@ import { ReactNode } from 'react'
 import { Configure, Index, useInstantSearch } from 'react-instantsearch'
 
 import { OfferAddressType } from 'apiClient/adage'
-import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
+import { useAdageUser } from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { ALGOLIA_COLLECTIVE_OFFERS_INDEX } from 'utils/config'
 import { isNumber } from 'utils/types'
 

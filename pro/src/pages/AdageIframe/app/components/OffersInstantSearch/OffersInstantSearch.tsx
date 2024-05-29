@@ -18,7 +18,7 @@ import {
 import { isNumber } from 'utils/types'
 
 import { MARSEILLE_EN_GRAND } from '../../constants'
-import useAdageUser from '../../hooks/useAdageUser'
+import { useAdageUser } from '../../hooks/useAdageUser'
 import { AnalyticsContextProvider } from '../../providers/AnalyticsContextProvider'
 
 import { OffersSearch } from './OffersSearch/OffersSearch'

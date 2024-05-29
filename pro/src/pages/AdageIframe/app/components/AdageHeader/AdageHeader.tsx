@@ -11,7 +11,7 @@ import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import useAdageUser from '../../hooks/useAdageUser'
+import { useAdageUser } from '../../hooks/useAdageUser'
 
 import styles from './AdageHeader.module.scss'
 import { AdageHeaderBudget } from './AdageHeaderBudget/AdageHeaderBudget'

@@ -6,7 +6,7 @@ import strokePassIcon from 'icons/stroke-pass.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import strokeStarIcon from 'icons/stroke-star.svg'
 import strokeVenueIcon from 'icons/stroke-venue.svg'
-import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
+import { useAdageUser } from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './AdageHeaderMenu.module.scss'

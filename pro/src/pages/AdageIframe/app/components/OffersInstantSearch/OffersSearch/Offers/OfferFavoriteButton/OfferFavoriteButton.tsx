@@ -8,7 +8,7 @@ import { apiAdage } from 'apiClient/api'
 import { useNotification } from 'hooks/useNotification'
 import fullStarIcon from 'icons/full-star.svg'
 import strokeStarIcon from 'icons/stroke-star.svg'
-import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
+import { useAdageUser } from 'pages/AdageIframe/app/hooks/useAdageUser'
 import {
   ListIconButton,
   ListIconButtonVariant,
