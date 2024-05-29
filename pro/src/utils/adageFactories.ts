@@ -59,7 +59,7 @@ export const defaultCollectiveOffer: CollectiveOfferResponseModel = {
   description: 'Une offre vraiment chouette',
   stock: {
     id: 825,
-    beginningDatetime: new Date('2022-09-16T00:00:00Z').toISOString(),
+    startDatetime: new Date('2022-09-16T00:00:00Z').toISOString(),
     bookingLimitDatetime: new Date('2022-09-16T00:00:00Z').toISOString(),
     isBookable: true,
     price: 140000,

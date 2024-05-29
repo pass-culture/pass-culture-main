@@ -24,9 +24,9 @@ export type OfferSummaryProps = {
 export const OfferSummary = ({ offer }: OfferSummaryProps): JSX.Element => {
   const isOfferTemplate = isCollectiveOfferTemplate(offer)
   const { venue, offerVenue, students } = offer
-  const { beginningDatetime, numberOfTickets, price } = isOfferTemplate
+  const { startDatetime, numberOfTickets, price } = isOfferTemplate
     ? {
-        beginningDatetime: undefined,
+        startDatetime: undefined,
         numberOfTickets: undefined,
         price: undefined,
       }
@@ -98,7 +98,7 @@ export const OfferSummary = ({ offer }: OfferSummaryProps): JSX.Element => {
           <dd>{formattedDates}</dd>
         </div>
       )}
-      {beginningDatetime && (
+      {startDatetime && (
         <div className={styles['offer-summary-item']}>
           <dt>
             <SvgIcon
@@ -110,7 +110,7 @@ export const OfferSummary = ({ offer }: OfferSummaryProps): JSX.Element => {
           </dt>
           <dd>
             {formatLocalTimeDateString(
-              beginningDatetime,
+              startDatetime,
               venue.departmentCode,
               'dd/MM/yyyy à HH:mm'
             )}

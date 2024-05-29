@@ -180,7 +180,7 @@ describe('offers', () => {
       name: 'Coco channel',
       stock: {
         id: 826,
-        beginningDatetime: new Date('2021-09-25T22:00:00Z').toISOString(),
+        startDatetime: new Date('2021-09-25T22:00:00Z').toISOString(),
         bookingLimitDatetime: new Date('2021-09-25T22:00:00Z').toISOString(),
         isBookable: true,
         price: 80000,
@@ -225,7 +225,7 @@ describe('offers', () => {
       name: 'Un autre titre',
       stock: {
         id: 827,
-        beginningDatetime: new Date('2021-09-25T22:00:00Z').toISOString(),
+        startDatetime: new Date('2021-09-25T22:00:00Z').toISOString(),
         bookingLimitDatetime: new Date('2021-09-25T22:00:00Z').toISOString(),
         isBookable: true,
         price: 3000,
