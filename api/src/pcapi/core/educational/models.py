@@ -113,6 +113,8 @@ class CollectiveOfferDisplayedStatus(enum.Enum):
     INACTIVE = "INACTIVE"
     EXPIRED = "EXPIRED"
     ENDED = "ENDED"
+    CANCELLED = "CANCELLED"
+    ARCHIVED = "ARCHIVED"
 
 
 class EducationalBookingStatus(enum.Enum):

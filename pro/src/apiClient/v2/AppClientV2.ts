@@ -14,7 +14,7 @@ export class AppClientV2 {
   public readonly request: BaseHttpRequest;
   constructor(config?: Partial<OpenAPIConfig>, HttpRequest: HttpRequestConstructor = FetchHttpRequest) {
     this.request = new HttpRequest({
-      BASE: config?.BASE ?? 'http://localhost:5001',
+      BASE: config?.BASE ?? 'https://backend.integration.passculture.pro',
       VERSION: config?.VERSION ?? '0.1',
       WITH_CREDENTIALS: config?.WITH_CREDENTIALS ?? false,
       CREDENTIALS: config?.CREDENTIALS ?? 'include',
