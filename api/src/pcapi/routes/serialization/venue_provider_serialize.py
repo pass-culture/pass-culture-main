@@ -3,8 +3,8 @@ import decimal
 from typing import Any
 
 import pydantic.v1
+from pydantic.v1.utils import GetterDict
 
-from pcapi.core.providers.models import VenueProvider
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
@@ -39,6 +39,20 @@ class ProviderResponse(BaseModel):
         orm_mode = True
 
 
+class VenueProviderGetterDict(GetterDict):
+    def get(self, key: str, default: Any | None = None) -> Any:
+        venue_provider = self._obj
+        if key == "price" and venue_provider.isFromAllocineProvider:
+            for price_rule in venue_provider.priceRules:
+                if price_rule.priceRule():
+                    return price_rule.price
+            return None
+        if key == "isDuo" and not venue_provider.isFromAllocineProvider:
+            return venue_provider.isDuoOffers
+
+        return super().get(key, default)
+
+
 class VenueProviderResponse(BaseModel):
     id: int
     isActive: bool
@@ -51,17 +65,9 @@ class VenueProviderResponse(BaseModel):
     venueId: int
     venueIdAtOfferProvider: str | None
 
-    @classmethod
-    def from_orm(cls: Any, venue_provider: VenueProvider) -> "VenueProviderResponse":
-        result = super().from_orm(venue_provider)
-
-        if not venue_provider.isFromAllocineProvider:
-            result.isDuo = venue_provider.isDuoOffers
-
-        return result
-
     class Config:
         orm_mode = True
+        getter_dict = VenueProviderGetterDict
 
 
 class ListVenueProviderResponse(BaseModel):
