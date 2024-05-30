@@ -22,7 +22,7 @@ To be able to manage an offer, the providers need to be given access by the offe
 
 ### Prerequisite : Getting your API keys
 
-**All our endpoints require you to be authenticated**. Authentication is done thanks to an **API key**. To get your API key, please see the **[Request a provider account documentation](/docs/request-a-provider-account)**.
+**All our endpoints require you to be authenticated**. Authentication is done thanks to an **API key**. To get your API key, please see the **[Request a provider account documentation](/docs/mandatory-steps/request-a-provider-account)**.
 
 :::warning
 You will be given **a pair of API keys** by our support team :
