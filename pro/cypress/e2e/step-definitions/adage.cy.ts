@@ -121,7 +121,6 @@ Then('the first offer should be added to favorites', () => {
 When('the first favorite is unselected', () => {
   // à part de là c'est du afterScenario : on désélectionne le favori
   cy.findByRole('link', { name: 'Découvrir' }).click()
-  // cy.reload()
   cy.intercept({
     method: 'DELETE',
     url: '/adage-iframe/collective/template/**/favorites',
