@@ -48,6 +48,7 @@ from pcapi.utils.phone_number import ParsedPhoneNumber
 
 if typing.TYPE_CHECKING:
     from pcapi.core.offerers.models import Offerer
+    from pcapi.core.offerers.models import OffererAddress
     from pcapi.core.offerers.models import Venue
     from pcapi.core.offers.models import OfferValidationRule
     from pcapi.core.providers.models import Provider
@@ -430,6 +431,11 @@ class CollectiveOffer(
     )
 
     isNonFreeOffer: sa_orm.Mapped["bool | None"] = sa.orm.query_expression()
+
+    offererAddressId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offerer_address.id"), nullable=True)
+    offererAddress: sa_orm.Mapped["OffererAddress"] = relationship(
+        "OffererAddress", foreign_keys=offererAddressId, uselist=False
+    )
 
     # TODO(jeremieb): remove this property once the front end client
     # does not need this field anymore.
