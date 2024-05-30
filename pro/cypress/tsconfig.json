@@ -3,7 +3,9 @@
     "target": "es5",
     "lib": ["es5", "dom"],
     "types": ["cypress", "@testing-library/cypress", "node"],
-    "module": "nodenext"
+    "module": "nodenext",
+    "strict": true,
+    "strictNullChecks": true
   },
   "include": ["**/*.ts"]
 }

@@ -41,5 +41,5 @@ export default defineConfig({
   viewportWidth: 1920,
   video: true,
   videoCompression: true,
-  watchForFileChanges: false
+  watchForFileChanges: false,
 })

@@ -116,5 +116,14 @@ module.exports = {
         'import/no-default-export': 'off',
       },
     },
+    {
+      files: ['cypress/**/*.ts'],
+      parserOptions: {
+        project: ['cypress/tsconfig.json'],
+        tsconfigRootDir: __dirname,
+        sourceType: 'module',
+        ecmaVersion: 6,
+      },
+    },
   ],
 }
