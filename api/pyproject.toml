@@ -71,7 +71,7 @@ spectree = "1.2.1"
 sqlalchemy = { version = "1.4.45", extras = ["mypy"] }
 time-machine = "^2.14.1"
 weasyprint = "62.1"
-werkzeug = "2.0.3"
+werkzeug = "3.0.3"
 wtforms = "3.1.2"
 wtforms-sqlalchemy = "0.4.1"
 xlsxwriter = "^3.2.0"
