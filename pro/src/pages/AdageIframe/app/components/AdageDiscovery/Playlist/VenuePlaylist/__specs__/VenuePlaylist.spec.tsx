@@ -65,7 +65,7 @@ describe('VenuePlaylist', () => {
 
     expect(
       await screen.findByText(
-        'À environ 30 minutes de transport de mon établissement'
+        'À environ 30 minutes en transport de mon établissement'
       )
     ).toBeInTheDocument()
   })
@@ -91,11 +91,11 @@ describe('VenuePlaylist', () => {
     },
     {
       distance: 15,
-      title: 'À environ 30 minutes de transport de mon établissement',
+      title: 'À environ 30 minutes en transport de mon établissement',
     },
     {
       distance: 30,
-      title: 'À environ 1h de transport de mon établissement',
+      title: 'À environ 1h en transport de mon établissement',
     },
   ])(
     'should display the playlist title based on the maximum venue distance',

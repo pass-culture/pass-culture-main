@@ -27,9 +27,9 @@ function getPlaylistTitle(distanceMax: number) {
     return 'À moins de 30 minutes à pieds de mon établissement'
   }
   if (distanceMax <= 15) {
-    return 'À environ 30 minutes de transport de mon établissement'
+    return 'À environ 30 minutes en transport de mon établissement'
   }
-  return 'À environ 1h de transport de mon établissement'
+  return 'À environ 1h en transport de mon établissement'
 }
 
 export const VenuePlaylist = ({
