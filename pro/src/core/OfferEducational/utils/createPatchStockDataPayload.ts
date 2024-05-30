@@ -5,9 +5,8 @@ import { CollectiveStockEditionBodyModel } from 'apiClient/v1'
 import { OfferEducationalStockFormValues } from '../types'
 
 import {
-  buildStartDatetimeForStockPayload,
   buildBookingLimitDatetimeForStockPayload,
-  buildEndDatetimeForStockPayload,
+  buildDatetimeForStockPayload,
 } from './buildDatetimesForStockPayload'
 
 type OfferEducationalStockFormValuesForSerializer = {
@@ -27,7 +26,7 @@ const serializer = {
     departmentCode: string
   ) => ({
     ...changedValues,
-    startDatetime: buildStartDatetimeForStockPayload(
+    startDatetime: buildDatetimeForStockPayload(
       values.startDatetime,
       values.eventTime,
       departmentCode
@@ -39,8 +38,8 @@ const serializer = {
     departmentCode: string
   ) => ({
     ...changedValues,
-    endDatetime: buildEndDatetimeForStockPayload(
-      values.startDatetime,
+    endDatetime: buildDatetimeForStockPayload(
+      values.endDatetime,
       values.eventTime,
       departmentCode
     ),
@@ -51,7 +50,7 @@ const serializer = {
     departmentCode: string
   ) => ({
     ...changedValues,
-    startDatetime: buildStartDatetimeForStockPayload(
+    startDatetime: buildDatetimeForStockPayload(
       values.startDatetime,
       values.eventTime,
       departmentCode

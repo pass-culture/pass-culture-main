@@ -3,9 +3,8 @@ import { CollectiveStockCreationBodyModel } from 'apiClient/v1'
 import { OfferEducationalStockFormValues } from '../types'
 
 import {
-  buildStartDatetimeForStockPayload,
   buildBookingLimitDatetimeForStockPayload,
-  buildEndDatetimeForStockPayload,
+  buildDatetimeForStockPayload,
 } from './buildDatetimesForStockPayload'
 
 export const createStockDataPayload = (
@@ -23,12 +22,12 @@ export const createStockDataPayload = (
   }
 
   return {
-    startDatetime: buildStartDatetimeForStockPayload(
+    startDatetime: buildDatetimeForStockPayload(
       values.startDatetime,
       values.eventTime,
       departmentCode
     ),
-    endDatetime: buildEndDatetimeForStockPayload(
+    endDatetime: buildDatetimeForStockPayload(
       values.endDatetime,
       values.eventTime,
       departmentCode
