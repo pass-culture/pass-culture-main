@@ -336,8 +336,8 @@ class PostTest:
         # Given
         user = users_factories.UserFactory()
         offer = offers_factories.EventOfferFactory()
-        stock = offers_factories.EventStockFactory(offer=offer, price=Decimal("10.1"))
-        offers_factories.EventStockFactory(beginningDatetime=stock.beginningDatetime + timedelta(days=30))
+        earliest_stock = offers_factories.EventStockFactory(offer=offer, price=Decimal("10.1"), quantity=None)
+        offers_factories.EventStockFactory(beginningDatetime=earliest_stock.beginningDatetime + timedelta(days=30))
 
         # When
         response = client.with_token(user.email).post(FAVORITES_URL, json={"offerId": offer.id})
@@ -361,15 +361,14 @@ class PostTest:
         sendinblue_data = users_testing.sendinblue_requests[0]
         assert sendinblue_data["attributes"]["LAST_FAVORITE_CREATION_DATE"] is not None
 
-        # The earliest bookable stock should be tracked
         favorite_creation_tracking_event = next(
             event
             for event in push_testing.requests
             if event.get("event_name") == push_notifications.BatchEvent.HAS_ADDED_OFFER_TO_FAVORITES.value
         )
-        assert favorite_creation_tracking_event["event_payload"]["event_date"] == stock.beginningDatetime.isoformat(
-            timespec="seconds"
-        )
+        event_payload = favorite_creation_tracking_event["event_payload"]
+        assert event_payload["event_date"] == earliest_stock.beginningDatetime.isoformat(timespec="seconds")
+        assert all(value is not None for value in event_payload.values())
 
     def when_user_creates_a_favorite_twice(self, client):
         # Given
