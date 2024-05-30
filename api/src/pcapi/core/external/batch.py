@@ -136,7 +136,7 @@ def format_offer_attributes(offer: offers_models.Offer) -> dict:
         event_date = _format_date(stock.beginningDatetime)
         expiry_date = _format_date(stock.bookingLimitDatetime)
 
-    return {
+    offer_attributes = {
         "offer_id": offer.id,
         "offer_name": offer.name,
         "offer_category": offer.categoryId,
@@ -146,3 +146,4 @@ def format_offer_attributes(offer: offers_models.Offer) -> dict:
         "event_date": event_date,
         "expiry_date": expiry_date,
     }
+    return {key: value for key, value in offer_attributes.items() if value is not None}
