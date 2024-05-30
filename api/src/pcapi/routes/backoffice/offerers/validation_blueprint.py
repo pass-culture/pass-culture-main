@@ -68,6 +68,7 @@ def list_offerers_to_validate() -> utils.BackofficeResponse:
         form.regions.data,
         form.tags.data,
         form.status.data,
+        form.ae_documents_received.data,
         form.instructors.data,
         form.dms_adage_status.data,
         date_utils.date_to_localized_datetime(form.from_date.data, datetime.datetime.min.time()),
