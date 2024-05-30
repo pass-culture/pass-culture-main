@@ -30,5 +30,6 @@
     @include fonts.body;
 
     margin-top: rem.torem(16px);
+    display: flex;
   }
 }
