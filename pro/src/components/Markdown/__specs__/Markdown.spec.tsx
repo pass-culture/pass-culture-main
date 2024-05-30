@@ -38,6 +38,20 @@ describe('Markdown', () => {
         '<span><a href="mailto:test@example.com">test@example.com</a></span>'
       )
     })
+
+    it('should render multiple strong tags when multiple words are surrounded with double asterisks', () => {
+      const component = renderMarkdown('**texte** en **gras**')
+      expect(component.container.innerHTML).toContain(
+        '<span><strong>texte</strong> en <strong>gras</strong></span>'
+      )
+    })
+
+    it('should render multiple em tags when multiple words are surrounded with underscores', () => {
+      const component = renderMarkdown('_texte_ en _italique_')
+      expect(component.container.innerHTML).toContain(
+        '<span><em>texte</em> en <em>italique</em></span>'
+      )
+    })
   })
 
   it('should render unformatted text when feature flag WIP_ENABLE_OFFER_MARKDOWN_DESCRIPTION is off', () => {
