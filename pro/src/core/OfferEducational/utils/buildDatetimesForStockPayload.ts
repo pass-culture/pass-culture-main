@@ -10,47 +10,28 @@ import { getUtcDateTimeFromLocalDepartement } from '../../../utils/timezone'
 
 const getBookingLimitDatetime = (
   bookingLimitDatetime: string,
-  beginningDateTimeInDepartmentTimezone: Date
+  startDateTimeInUserTimezone: Date
 ): Date => {
   if (!isDateValid(bookingLimitDatetime)) {
-    return beginningDateTimeInDepartmentTimezone
+    return startDateTimeInUserTimezone
   }
-  if (
-    isSameDay(
-      new Date(bookingLimitDatetime),
-      beginningDateTimeInDepartmentTimezone
-    )
-  ) {
-    return beginningDateTimeInDepartmentTimezone
-  } else {
-    return endOfDay(new Date(bookingLimitDatetime))
+  if (isSameDay(new Date(bookingLimitDatetime), startDateTimeInUserTimezone)) {
+    return startDateTimeInUserTimezone
   }
+  return endOfDay(new Date(bookingLimitDatetime))
 }
 
-export const buildStartDatetimeForStockPayload = (
-  startDatetime: string,
+export const buildDatetimeForStockPayload = (
+  datetime: string,
   eventTime: string,
   departmentCode: string
 ): string => {
-  const startDatetimeInUserTimezone = buildDateTime(startDatetime, eventTime)
-  const beginningDateTimeInUTCTimezone = getUtcDateTimeFromLocalDepartement(
-    startDatetimeInUserTimezone,
+  const datetimeInUserTimezone = buildDateTime(datetime, eventTime)
+  const dateTimeInUTCTimezone = getUtcDateTimeFromLocalDepartement(
+    datetimeInUserTimezone,
     departmentCode
   )
-  return toISOStringWithoutMilliseconds(beginningDateTimeInUTCTimezone)
-}
-
-export const buildEndDatetimeForStockPayload = (
-  endDatetime: string,
-  eventTime: string,
-  departmentCode: string
-) => {
-  const endDatetimeInUserTimezone = buildDateTime(endDatetime, eventTime)
-  const endDateTimeInUTCTimezone = getUtcDateTimeFromLocalDepartement(
-    endDatetimeInUserTimezone,
-    departmentCode
-  )
-  return toISOStringWithoutMilliseconds(endDateTimeInUTCTimezone)
+  return toISOStringWithoutMilliseconds(dateTimeInUTCTimezone)
 }
 
 export const buildBookingLimitDatetimeForStockPayload = (
@@ -59,15 +40,9 @@ export const buildBookingLimitDatetimeForStockPayload = (
   bookingLimitDatetime: string,
   departmentCode: string
 ): string => {
-  const beginningDateTimeInUserTimezone = buildDateTime(
-    startDatetime,
-    eventTime
-  )
+  const startDateTimeInUserTimezone = buildDateTime(startDatetime, eventTime)
   const bookingLimitDatetimeUtc = getUtcDateTimeFromLocalDepartement(
-    getBookingLimitDatetime(
-      bookingLimitDatetime,
-      beginningDateTimeInUserTimezone
-    ),
+    getBookingLimitDatetime(bookingLimitDatetime, startDateTimeInUserTimezone),
     departmentCode
   )
   return toISOStringWithoutMilliseconds(bookingLimitDatetimeUtc)
