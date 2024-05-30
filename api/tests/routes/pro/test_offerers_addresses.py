@@ -38,8 +38,8 @@ class CreateOffererAddressesTest:
         # Fetch the user
         # Check permissions
         # Insert address
-        # Check if offererAddress exists
         # Insert OffererAddress
+        # Select OffererAddress & address
         with assert_num_queries(6):
             response = http_client.post(
                 f"/offerers/{offerer_id}/addresses/",
@@ -87,8 +87,8 @@ class CreateOffererAddressesTest:
         # Check permissions
         # Try to insert address & rollback
         # Select address
-        # Check if offererAddress exists
         # Insert OffererAddress
+        # Select OffererAddress & address
         with assert_num_queries(7):
             response = http_client.post(
                 f"/offerers/{offerer_id}/addresses/",
@@ -136,10 +136,10 @@ class CreateOffererAddressesTest:
         # Fetch the session
         # Fetch the user
         # Check permissions
-        # rollback
+        # Try to insert address & rollback
         # Select address
-        # Select offererAddress if exists
-        # Insert offererAddress
+        # Try to insert OffererAddress & rollback
+        # Select OffererAddress & address
         with assert_num_queries(7):
             with caplog.at_level(logging.ERROR):
                 response = http_client.post(
@@ -206,6 +206,59 @@ class CreateOffererAddressesTest:
                 )
 
         assert "Unique constraint over street and inseeCode matched different coordinates" == caplog.records[0].message
+
+    @pytest.mark.usefixtures("db_session")
+    def test_create_offerer_address_with_existing_offerer_address_and_without_label(self, client):
+        pro_user = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        offerer_id = offerer.id
+        expected_data = {
+            "banId": "75101_9575_00003",
+            "postalCode": "75001",
+            "inseeCode": "75056",
+            "city": "Paris",
+            "street": "3 Rue de Valois",
+            "latitude": 48.87171,
+            "longitude": 2.30829,
+        }
+
+        address = geography_factories.AddressFactory(**expected_data)
+        expected_data["label"] = None
+        pre_existing_oa = offerers_factories.OffererAddressFactory(address=address, offerer=offerer, label=None)
+        http_client = client.with_session_auth(pro_user.email)
+
+        # Fetch the session
+        # Fetch the user
+        # Check permissions
+        # Try to insert address & rollback
+        # Select address
+        # Try to insert OffererAddress & rollback
+        # Select OffererAddress & address
+        with assert_num_queries(7):
+            response = http_client.post(
+                f"/offerers/{offerer_id}/addresses/",
+                json={
+                    "label": expected_data["label"],
+                    "street": expected_data["street"],
+                    "inseeCode": expected_data["inseeCode"],
+                },
+            )
+
+        assert response.status_code == 201
+        content = response.json
+        address = geography_models.Address.query.one()
+        offerer_address = offerers_models.OffererAddress.query.one()
+        assert offerer_address.id == pre_existing_oa.id
+        assert content["label"] == expected_data["label"] == None
+        assert content["offererId"] == offerer_id
+        assert content["address"]["id"] == address.id
+        assert content["address"]["inseeCode"] == expected_data["inseeCode"] == address.inseeCode
+        assert content["address"]["street"] == expected_data["street"] == address.street
+        assert content["address"]["postalCode"] == expected_data["postalCode"] == address.postalCode
+        assert content["address"]["city"] == expected_data["city"] == address.city
+        assert content["address"]["latitude"] == expected_data["latitude"] == float(address.latitude)
+        assert content["address"]["longitude"] == expected_data["longitude"] == float(address.longitude)
 
     @pytest.mark.usefixtures("db_session")
     def test_user_cant_create_offerer_address_on_foreign_offerer(self, client):
@@ -279,8 +332,8 @@ class CreateOffererAddressesTest:
         # Fetch the user
         # Check permissions
         # Insert address
-        # Check if offererAddress exists
         # Insert OffererAddress
+        # Select OffererAddress & address
         with assert_num_queries(6):
             response = http_client.post(
                 f"/offerers/{offerer_id}/addresses/",
@@ -373,7 +426,7 @@ class CreateOffererAddressesTest:
         # Fetch the user
         # Check permissions
         # Insert address
-        # Select offererAddress if exists
+        # Select OffererAddress if exists
         # Insert offererAddress
         with assert_num_queries(6):
             response = http_client.post(

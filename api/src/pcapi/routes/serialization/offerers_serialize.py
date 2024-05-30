@@ -395,7 +395,7 @@ class GetOffererAddressWithIsEditableResponseModel(GetOffererAddressResponseMode
 
 
 class OffererAddressRequestModel(BaseModel):
-    label: str
+    label: str | None
     inseeCode: str
     street: str
 
