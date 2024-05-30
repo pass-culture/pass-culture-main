@@ -11,11 +11,10 @@ When('I fill required information in create account form', () => {
 When('I submit', () => {
   cy.intercept({ method: 'POST', url: '/v2/users/signup/pro' }).as('signupUser')
   cy.findByText('Créer mon compte').click()
-  cy.wait('@signupUser')
 })
 
 Then('my account should be created', () => {
-    cy.url().should('contain', '/inscription/confirmation')
-    // TODO: ajouter vérification sur le contenu de la page (et sur le retour API?)
-    // on ne vérifie pas que le compte est bien créé
-});
+  cy.wait('@signupUser').its('response.statusCode').should('eq', 204)
+  cy.url().should('contain', '/inscription/confirmation')
+  cy.contains('Votre compte est en cours de création')
+})
