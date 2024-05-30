@@ -117,6 +117,10 @@ class OffererValidationListForm(utils.PCForm):
             ValidationStatus, formatter=filters.format_validation_status, exclude_opts=(ValidationStatus.DELETED,)
         ),
     )
+    ae_documents_received = fields.PCSelectMultipleField(
+        "Documents reçus",
+        choices=[("yes", "Oui"), ("no", "Non")],
+    )
     instructors = fields.PCTomSelectField(
         "Auteur de la dernière action",
         multiple=True,
