@@ -1239,7 +1239,16 @@ class OffererAddress(PcObject, Base, Model):
     offererId = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), index=True)
     offerer: sa.orm.Mapped["Offerer"] = sa.orm.relationship("Offerer", foreign_keys=[offererId])
 
-    __table_args__ = (sa.Index("ix_unique_offerer_address_per_label", "offererId", "addressId", "label", unique=True),)
+    __table_args__ = (
+        sa.Index("ix_unique_offerer_address_per_label", "offererId", "addressId", "label", unique=True),
+        # FIXME (dramelet, 04-06-2024)
+        # Our current version of sqlalchemy (1.4) doesn't handle
+        # the option `nulls_not_distinct` from postgresql dialect
+        # Hence this declaration and the raw query in the suitable migration
+        sa.Index(
+            "ix_unique_offerer_address_per_label_even_with_nulls_values", "offererId", "addressId", "label", unique=True
+        ),
+    )
 
     _isEditable: sa.orm.Mapped["bool|None"] = sa.orm.query_expression()
 
