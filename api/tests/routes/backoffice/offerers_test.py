@@ -2126,6 +2126,30 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             else:
                 assert html_parser.count_table_rows(response.data) == 0
 
+        def test_list_filtering_by_ae_documents_received(self, authenticated_client, offerers_to_be_validated):
+            _, yes, no1, no2, _, _ = offerers_to_be_validated
+
+            offerers_factories.IndividualOffererSubscriptionFactory(
+                offerer=yes, isEmailSent=True, isCriminalRecordReceived=True, isCertificateReceived=True
+            )
+            offerers_factories.IndividualOffererSubscriptionFactory(
+                offerer=no1, isEmailSent=True, isCertificateReceived=True
+            )
+            offerers_factories.IndividualOffererSubscriptionFactory(offerer=no2, isEmailSent=True)
+
+            with assert_num_queries(self.expected_num_queries):
+                response = authenticated_client.get(
+                    url_for(
+                        "backoffice_web.validation.list_offerers_to_validate",
+                        status=["NEW", "PENDING"],
+                        ae_documents_received="no",
+                    )
+                )
+                assert response.status_code == 200
+
+            rows = html_parser.extract_table_rows(response.data)
+            assert {int(row["ID"]) for row in rows} == {no1.id, no2.id}
+
         def test_list_filtering_by_instructor(self, authenticated_client, offerers_to_be_validated):
             _, pending1, _, pending2, _, pending3 = offerers_to_be_validated
 

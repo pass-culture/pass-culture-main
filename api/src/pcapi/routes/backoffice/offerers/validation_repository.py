@@ -176,6 +176,7 @@ def list_offerers_to_be_validated(
     regions: list[str] | None = None,
     tags: list[offerers_models.OffererTag] | None = None,
     status: list[ValidationStatus] | None = None,
+    ae_documents_received: list[bool] | None = None,
     last_instructor_ids: list[int] | None = None,
     dms_adage_status: list[GraphQLApplicationStates] | None = None,
     from_datetime: datetime | None = None,
@@ -258,13 +259,6 @@ def list_offerers_to_be_validated(
         )
         .outerjoin(offerers_models.UserOfferer, offerers_models.UserOfferer.id == creator_user_offerer_id)
         .outerjoin(users_models.User, offerers_models.UserOfferer.user)
-        .options(
-            sa.orm.joinedload(offerers_models.Offerer.individualSubscription).load_only(
-                offerers_models.IndividualOffererSubscription.isEmailSent,
-                offerers_models.IndividualOffererSubscription.isCriminalRecordReceived,
-                offerers_models.IndividualOffererSubscription.isCertificateReceived,
-            ),
-        )
     )
 
     query = _apply_query_filters(
@@ -279,6 +273,27 @@ def list_offerers_to_be_validated(
         offerers_models.Offerer,
         offerers_models.Offerer.id,
     )
+
+    # after _apply_query_filters so that outerjoin below is after union (not required for filters),
+    # otherwise sqlalchemy raises "cartesian product" error in case of free text search.
+    query = query.outerjoin(
+        offerers_models.IndividualOffererSubscription, offerers_models.Offerer.individualSubscription
+    ).options(
+        sa.orm.contains_eager(offerers_models.Offerer.individualSubscription).load_only(
+            offerers_models.IndividualOffererSubscription.isEmailSent,
+            offerers_models.IndividualOffererSubscription.isCriminalRecordReceived,
+            offerers_models.IndividualOffererSubscription.isCertificateReceived,
+        ),
+    )
+
+    if ae_documents_received:
+        query = query.filter(
+            offerers_models.IndividualOffererSubscription.isEmailSent.is_(True),
+            sa.and_(
+                offerers_models.IndividualOffererSubscription.isCriminalRecordReceived.is_(True),
+                offerers_models.IndividualOffererSubscription.isCertificateReceived.is_(True),
+            ).in_(ae_documents_received),
+        )
 
     if last_instructor_ids:
         query = query.filter(
