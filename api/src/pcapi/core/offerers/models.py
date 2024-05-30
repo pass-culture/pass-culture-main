@@ -1240,7 +1240,6 @@ class OffererAddress(PcObject, Base, Model):
     offerer: sa.orm.Mapped["Offerer"] = sa.orm.relationship("Offerer", foreign_keys=[offererId])
 
     __table_args__ = (
-        sa.Index("ix_unique_offerer_address_per_label", "offererId", "addressId", "label", unique=True),
         # FIXME (dramelet, 04-06-2024)
         # Our current version of sqlalchemy (1.4) doesn't handle
         # the option `nulls_not_distinct` from postgresql dialect
