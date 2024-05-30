@@ -1,11 +1,13 @@
 import classnames from 'classnames'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { NavLink, useLocation } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
+import { HTTP_STATUS } from 'apiClient/helpers'
 import { GET_OFFERER_QUERY_KEY } from 'config/swrQueryKeys'
+import { hasStatusCode } from 'core/OfferEducational/utils/hasStatusCode'
 import { SAVED_OFFERER_ID_KEY } from 'core/shared/constants'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import fullDownIcon from 'icons/full-down.svg'
@@ -49,21 +51,25 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   const isIndividualSectionOpen = useSelector(selectIsIndividualSectionOpen)
   const isCollectiveSectionOpen = useSelector(selectIsCollectiveSectionOpen)
   const selectedOffererId = useSelector(selectCurrentOffererId)
-  const [isUserOffererValidated, setIsUserOffererValidated] = useState(false)
 
   const selectedOffererQuery = useSWR(
     [GET_OFFERER_QUERY_KEY, selectedOffererId],
     async ([, offererId]) => {
       try {
-        const response = await api.getOfferer(Number(offererId))
-        setIsUserOffererValidated(true)
-        return response
+        const offerer = await api.getOfferer(Number(offererId))
+
+        return offerer
       } catch (error) {
-        setIsUserOffererValidated(false)
+        if (hasStatusCode(error) && error.status === HTTP_STATUS.FORBIDDEN) {
+          throw error
+        }
         return null
       }
-    }
+    },
+    { fallbackData: null, shouldRetryOnError: false, onError: () => {} }
   )
+
+  const isUserOffererValidated = !selectedOffererQuery.error
 
   const selectedOfferer = selectedOffererQuery.data
   const permanentVenues =
@@ -93,7 +99,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
       })}
     >
       <div className={styles['nav-links-first-group']}>
-        {!selectedOffererQuery.isLoading && isUserOffererValidated && (
+        {selectedOffererQuery.data && isUserOffererValidated && (
           <li className={styles['nav-links-create-offer-wrapper']}>
             <ButtonLink
               variant={ButtonVariant.PRIMARY}
