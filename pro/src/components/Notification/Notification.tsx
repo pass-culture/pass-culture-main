@@ -11,7 +11,6 @@ import { NotificationToaster } from 'ui-kit/NotificationToaster/NotificationToas
 
 export const Notification = (): JSX.Element | null => {
   const [isVisible, setIsVisible] = useState(false)
-  const [isInDom, setIsInDom] = useState(false)
   const notification = useSelector(notificationSelector)
   const isStickyBarOpen = useSelector(isStickyBarOpenSelector)
   const notificationHook = useNotification()
@@ -22,14 +21,12 @@ export const Notification = (): JSX.Element | null => {
     }
 
     setIsVisible(true)
-    setIsInDom(true)
 
     const hideNotificationTimer = setTimeout(() => {
       setIsVisible(false)
     }, notification.duration)
 
     const removeNotificationFromDOMTimer = setTimeout(() => {
-      setIsInDom(false)
       notificationHook.close()
     }, notification.duration + NOTIFICATION_TRANSITION_DURATION)
 
@@ -37,11 +34,7 @@ export const Notification = (): JSX.Element | null => {
       clearTimeout(hideNotificationTimer)
       clearTimeout(removeNotificationFromDOMTimer)
     }
-  }, [notification])
-
-  if (!notification || !isInDom) {
-    return null
-  }
+  }, [notification, notificationHook])
 
   return (
     <NotificationToaster
