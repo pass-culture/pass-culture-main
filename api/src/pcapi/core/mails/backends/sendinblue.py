@@ -133,6 +133,26 @@ class SendinblueBackend(BaseBackend):
 
         return f"https://app.brevo.com/contact/index/{contact_info.id}"
 
+    def get_raw_contact_data(self, contact_email: str) -> dict:
+        try:
+            return self.contacts_api.get_contact_info(contact_email)
+
+        except SendinblueApiException as exception:
+            if exception.status == 404:
+                return {}
+            if exception.status >= 500:
+                raise ExternalAPIException(is_retryable=True) from exception
+            logger.exception(
+                "Exception when calling Sendinblue get_contact_info API",
+                extra={
+                    "email": contact_email,
+                },
+            )
+            raise ExternalAPIException(is_retryable=False) from exception
+
+        except Exception as exception:
+            raise ExternalAPIException(is_retryable=True) from exception
+
     def _handle_sendinblue_exception(
         self, exception: SendinblueApiException, payload: serializers.UpdateSendinblueContactRequest
     ) -> None:

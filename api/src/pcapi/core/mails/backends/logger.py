@@ -49,3 +49,10 @@ class LoggerBackend(BaseBackend):
             contact_email,
         )
         return None
+
+    def get_raw_contact_data(self, contact_email: str) -> dict:
+        logger.info(
+            "A request to Sendinblue Contact API would be sent for user %s to to get their raw info.",
+            contact_email,
+        )
+        return {}
