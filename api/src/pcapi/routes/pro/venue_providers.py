@@ -6,7 +6,6 @@ import pcapi.core.offerers.models as offerers_models
 from pcapi.core.providers import api
 from pcapi.core.providers import exceptions
 from pcapi.core.providers import repository
-from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import VenueProviderCreationPayload
 from pcapi.core.providers.repository import get_venue_provider_by_venue_and_provider_ids
 from pcapi.models.api_errors import ApiErrors
@@ -37,9 +36,6 @@ def list_venue_providers(query: ListVenueProviderQuery) -> ListVenueProviderResp
     rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 
     venue_provider_list = repository.get_venue_provider_list(query.venue_id)
-    for venue_provider in venue_provider_list:
-        if venue_provider.isFromAllocineProvider:
-            venue_provider.price = _allocine_venue_provider_price(venue_provider)
     return ListVenueProviderResponse(
         venue_providers=[VenueProviderResponse.from_orm(venue_provider) for venue_provider in venue_provider_list]
     )
@@ -109,9 +105,6 @@ def create_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
     if not new_venue_provider.provider.hasOffererProvider:
         venue_provider_job.delay(new_venue_provider.id)
 
-    if new_venue_provider.isFromAllocineProvider:
-        new_venue_provider.price = _allocine_venue_provider_price(new_venue_provider)
-
     return VenueProviderResponse.from_orm(new_venue_provider)
 
 
@@ -125,9 +118,6 @@ def update_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
     venue_provider = get_venue_provider_by_venue_and_provider_ids(body.venueId, body.providerId)
 
     updated = api.update_venue_provider(venue_provider, body)
-    if updated.isFromAllocineProvider:
-        updated.price = _allocine_venue_provider_price(updated)
-
     return VenueProviderResponse.from_orm(updated)
 
 
@@ -141,10 +131,3 @@ def delete_venue_provider(venue_provider_id: int) -> None:
     rest.check_user_has_access_to_offerer(current_user, venue_provider.venue.managingOffererId)
 
     api.delete_venue_provider(venue_provider, author=current_user)
-
-
-def _allocine_venue_provider_price(venue_provider: AllocineVenueProvider) -> float | None:
-    for price_rule in venue_provider.priceRules:
-        if price_rule.priceRule():
-            return price_rule.price
-    return None
