@@ -4,6 +4,7 @@ import React from 'react'
 import { Notification } from 'components/Notification/Notification'
 import { NotificationTypeEnum } from 'hooks/useNotification'
 import { Notification as NotificationType } from 'store/notifications/reducer'
+import { notificationAdditionalAttributes } from 'ui-kit/NotificationToaster/NotificationToaster'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 describe('Notification', () => {
@@ -14,30 +15,33 @@ describe('Notification', () => {
       },
     })
 
-  const notificationTypes = [
-    { type: NotificationTypeEnum.SUCCESS, role: 'status' },
-    { type: NotificationTypeEnum.ERROR, role: 'alert' },
-    { type: NotificationTypeEnum.INFORMATION, role: 'status' },
-    { type: NotificationTypeEnum.PENDING, role: 'progressbar' },
-  ]
-  it.each(notificationTypes)(
-    'should display given %s text with icon',
-    (notificationType) => {
-      const notification = {
-        text: 'Mon petit succès',
-        type: notificationType.type,
-        duration: 100,
-      } satisfies NotificationType
+  const types = Object.keys(
+    notificationAdditionalAttributes
+  ) as NotificationTypeEnum[]
 
-      renderNotification(notification)
+  it.each(types)('should display given %s text with icon', (type) => {
+    const notification = {
+      text: 'Mon petit succès',
+      type: type,
+      duration: 100,
+    } satisfies NotificationType
 
-      const notificationElement = screen.getByText(notification.text)
-      expect(notificationElement).toBeInTheDocument()
-      expect(notificationElement).toHaveClass('show')
-      expect(notificationElement).toHaveClass(`is-${notificationType.type}`)
-      expect(notificationElement).toHaveAttribute('role', notificationType.role)
-    }
-  )
+    renderNotification(notification)
+
+    const notificationElement = screen.getByTestId(
+      `global-notification-${type}`
+    )
+
+    expect(notificationElement).toHaveProperty(
+      'role',
+      notificationAdditionalAttributes[type].role ?? null
+    )
+
+    const notificationContentElement = screen.getByText(notification.text)
+    expect(notificationContentElement).toBeInTheDocument()
+    expect(notificationContentElement).toHaveClass('show')
+    expect(notificationContentElement).toHaveClass(`is-${type}`)
+  })
 
   it('should remove notification after fixed show and transition duration', async () => {
     const notification = {
