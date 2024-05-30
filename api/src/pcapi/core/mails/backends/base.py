@@ -22,3 +22,6 @@ class BaseBackend:
 
     def get_contact_url(self, contact_email: str) -> str | None:
         raise NotImplementedError()
+
+    def get_raw_contact_data(self, contact_email: str) -> dict:
+        raise NotImplementedError()
