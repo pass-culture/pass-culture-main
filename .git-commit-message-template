@@ -1,3 +1,3 @@
 (PC-XXXX|BSR)[API|BO|PRO|ADAGE] <type>: <commit_message>
 
-type: build|ci|docs|feat|fix|perf|refactor|style|test|chore|revert|bump
+type: build|ci|docs|feat|fix|perf|refactor|script|style|test|chore|revert|bump
