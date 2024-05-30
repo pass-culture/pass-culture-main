@@ -47,7 +47,7 @@ When('I choose a venue which already has a Siret', () => {
 When('I add a valid Siret', () => {
   cy.findByLabelText('SIRET du lieu *').type(siret)
   cy.wait('@getSiret').its('response.statusCode').should('eq', 200)
-  // TODO vérifier aussi dans le body de la réponse si le Siret est valide?
+  cy.findByTestId('error-siret').should('not.exist')
 })
 
 When('I add venue without Siret details', () => {
