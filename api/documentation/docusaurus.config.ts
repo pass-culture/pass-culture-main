@@ -77,8 +77,7 @@ const config: Config = {
   ],
 
   themeConfig: {
-    // Replace with your project's social card
-    image: 'img/docusaurus-social-card.jpg',
+    image: 'img/pass-culture-social-card.jpg',
     colorMode: {
       disableSwitch: true,
     },
