@@ -61,9 +61,10 @@ export const App = (): JSX.Element | null => {
   const currentRoute = findCurrentRoute(location)
   if (!currentRoute?.meta?.public && currentUser === null) {
     const fromUrl = encodeURIComponent(`${location.pathname}${location.search}`)
-    const loginUrl = fromUrl.includes('logout')
-      ? '/connexion'
-      : `/connexion?de=${fromUrl}`
+    const loginUrl =
+      fromUrl.includes('logout') || location.pathname === '/'
+        ? '/connexion'
+        : `/connexion?de=${fromUrl}`
 
     return <Navigate to={loginUrl} replace />
   }
