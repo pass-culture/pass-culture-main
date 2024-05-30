@@ -14,7 +14,7 @@ To be able to use our **[REST API](/rest-api/)**, you need two things:
 2. to have **your provider account linked to the venues** for which you are supposed to manage offers, products and/or events **(for authorization)**
 
 :::note
-For more information on **how authentication and authorization work on our API**, please take a look at **[this documentation page](/docs/understanding-our-apis/authentication-authorization)**.
+For more information on **how authentication and authorization work on our API**, please take a look at **[this documentation page](/docs/understanding-our-api/authentication-authorization)**.
 :::
 
 ## How to get a provider account 

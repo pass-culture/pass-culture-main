@@ -6,16 +6,9 @@ import type * as Redocusaurus from 'redocusaurus';
 const getOpenAPIJsonUrlFromEnv = (): string => {
   const env = process.env['ENV'];
 
-  if (env === 'testing') {
+  // TO DO: update once the proper devops config is available.
+  if (env === 'deploy') {
     return 'https://backend.testing.passculture.team/openapi.json';
-  }
-
-  if (env === 'staging') {
-    return 'https://backend.staging.passculture.team/openapi.json';
-  }
-
-  if (env === 'production') {
-    return 'https://backend.passculture.pro/openapi.json';
   }
 
   return 'http://localhost/openapi.json';
@@ -25,36 +18,30 @@ const getOpenAPIJsonUrlFromEnv = (): string => {
 const getDocumentationBaseUrlFromEnv = (): string => {
   const env = process.env['ENV'];
 
-  if (env === 'testing') {
-    return 'https://developers.testing.passculture.team';
-  }
-
-  if (env === 'staging') {
-    return 'https://developers.staging.passculture.team';
-  }
-
-  if (env === 'production') {
-    return 'https://developers.passculture.pro';
+  // TO DO: update once the proper devops config is available.
+  if (env === 'deploy') {
+    return 'https://pass-culture.github.io';
   }
 
   return 'http://localhost:3000';
 }
 
 const config: Config = {
-  title: 'Pass culture documentation',
+  title: 'Pass Culture documentation',
   tagline: '',
   favicon: 'img/favicon.ico',
 
-
+  // TO DO: update once the proper devops config is available.
   url: getDocumentationBaseUrlFromEnv(),
-  baseUrl: '/',
-
-  organizationName: 'Pass Culture',
-  projectName: 'pass-culture-main',
+  baseUrl: '/pass-culture-api-documentation/',
+  organizationName: 'pass-culture',
+  projectName: 'pass-culture-api-documentation',
+  deploymentBranch: 'gh-pages',
+  // End TODO
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
-
+  trailingSlash: false,
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],
@@ -135,7 +122,7 @@ const config: Config = {
           items: [
             {
               label: 'Documentation',
-              to: '/docs',
+              to: '/docs/category/mandatory-steps',
             },
             {
               label: 'REST API',
