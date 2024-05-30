@@ -39,6 +39,12 @@ def get_contact_url(contact_email: str) -> str | None:
     return backend().get_contact_url(contact_email)
 
 
+def get_raw_contact_data(contact_email: str) -> dict:
+    """Returns all data stored by the email provider on the given contact as a raw dict"""
+    backend = import_string(settings.EMAIL_BACKEND)
+    return backend().get_raw_contact_data(contact_email)
+
+
 def _get_backend(data: models.TransactionalEmailData | models.TransactionalWithoutTemplateEmailData) -> type:
     # Do not send unnecessary transactional emails through Sendinblue in EHP
     if (
