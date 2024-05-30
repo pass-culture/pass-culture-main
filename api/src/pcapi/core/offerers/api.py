@@ -2485,13 +2485,13 @@ def get_or_create_address(address_info: AddressInfo) -> geography_models.Address
 
 
 def get_or_create_offerer_address(offerer_id: int, address_id: int, label: str | None = None) -> models.OffererAddress:
-    # FIXME (dramelet, 23/05/2024)
-    # Change to try/except block over IntegrityError
-    # when postgres15 is available on production
-    # so we can use `NULLS NOT DISTINCT` in OffererAddress
-    # unique constraint. Otherwise we will try to create
-    # same offererAddress over and over because actual postgres12
-    # consider null values distinct over different rows
+    try:
+        offerer_address = models.OffererAddress(offererId=offerer_id, addressId=address_id, label=label)
+        db.session.add(offerer_address)
+        db.session.flush()
+    except sa.exc.IntegrityError:
+        db.session.rollback()
+
     offerer_address = (
         models.OffererAddress.query.filter(
             models.OffererAddress.offererId == offerer_id,
@@ -2499,14 +2499,8 @@ def get_or_create_offerer_address(offerer_id: int, address_id: int, label: str |
             models.OffererAddress.addressId == address_id,
         )
         .options(sa_orm.joinedload(models.OffererAddress.address))
-        .one_or_none()
+        .one()
     )
-    if offerer_address:
-        return offerer_address
-
-    offerer_address = models.OffererAddress(offererId=offerer_id, addressId=address_id, label=label)
-    db.session.add(offerer_address)
-    db.session.flush()
 
     return offerer_address
 
