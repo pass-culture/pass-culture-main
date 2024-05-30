@@ -20,6 +20,7 @@ import {
 import { SAVED_OFFERER_ID_KEY } from 'core/shared/constants'
 import { SelectOption } from 'custom_types/form'
 import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
+import { getPhysicalVenuesFromOfferer } from 'pages/Home/venueUtils'
 import { CollectiveDataEdition } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/CollectiveDataEdition'
 import { updateSelectedOffererId } from 'store/user/reducer'
 import { SelectInput } from 'ui-kit/form/Select/SelectInput'
@@ -102,10 +103,17 @@ export const VenueEdition = (): JSX.Element | null => {
     ? 'collective'
     : 'individual'
 
-  const permanentVenues =
-    offerer.managedVenues?.filter((venue) => venue.isPermanent) ?? []
+  const permanentVenuesOptions: SelectOption[] =
+    offerer.managedVenues
+      ?.filter((venue) => venue.isPermanent)
+      .map((venue) => ({
+        label: venue.publicName || venue.name,
+        value: venue.id.toString(),
+      })) ?? []
 
-  const venuesOptions: SelectOption[] = permanentVenues.map((venue) => ({
+  const physicalVenuesOptions: SelectOption[] = getPhysicalVenuesFromOfferer(
+    offerer
+  ).map((venue) => ({
     label: venue.publicName || venue.name,
     value: venue.id.toString(),
   }))
@@ -123,28 +131,55 @@ export const VenueEdition = (): JSX.Element | null => {
         {isNewSideBarNavigation && (
           <FormLayout>
             <h1 className={styles['header']}>{titleText}</h1>
-            {venuesOptions.length > 1 && venue.isPermanent && (
-              <>
-                <FormLayout.Row>
-                  <FieldLayout
-                    label={`Sélectionnez votre page ${activeStep === 'individual' ? 'partenaire' : 'sur ADAGE'}`}
-                    name="venues"
-                    isOptional
-                    className={styles['select-partner-page']}
-                  >
-                    <SelectInput
+
+            {activeStep === 'individual' &&
+              permanentVenuesOptions.length > 1 &&
+              venue.isPermanent && (
+                <>
+                  <FormLayout.Row>
+                    <FieldLayout
+                      label="Sélectionnez votre page partenaire"
                       name="venues"
-                      options={venuesOptions}
-                      value={selectedVenueId}
-                      onChange={(e) => {
-                        setSelectedVenueId(e.target.value)
-                      }}
-                    />
-                  </FieldLayout>
-                </FormLayout.Row>
-                <hr className={styles['separator']} />
-              </>
-            )}
+                      isOptional
+                      className={styles['select-partner-page']}
+                    >
+                      <SelectInput
+                        name="venues"
+                        options={permanentVenuesOptions}
+                        value={selectedVenueId}
+                        onChange={(e) => {
+                          setSelectedVenueId(e.target.value)
+                        }}
+                      />
+                    </FieldLayout>
+                  </FormLayout.Row>
+                  <hr className={styles['separator']} />
+                </>
+              )}
+
+            {activeStep === 'collective' &&
+              physicalVenuesOptions.length > 1 && (
+                <>
+                  <FormLayout.Row>
+                    <FieldLayout
+                      label="Sélectionnez votre page sur ADAGE"
+                      name="venues"
+                      isOptional
+                      className={styles['select-partner-page']}
+                    >
+                      <SelectInput
+                        name="venues"
+                        options={physicalVenuesOptions}
+                        value={selectedVenueId}
+                        onChange={(e) => {
+                          setSelectedVenueId(e.target.value)
+                        }}
+                      />
+                    </FieldLayout>
+                  </FormLayout.Row>
+                  <hr className={styles['separator']} />
+                </>
+              )}
           </FormLayout>
         )}
         <VenueEditionHeader

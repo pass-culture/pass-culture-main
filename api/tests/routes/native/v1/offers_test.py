@@ -10,6 +10,7 @@ from pcapi import settings
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.offerers.factories import VenueFactory
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import OfferReport
 from pcapi.core.offers.models import TiteliveImageType
@@ -1101,6 +1102,130 @@ class OffersV2Test:
         assert response.status_code == 200
         assert still_scheduled_show_stock.remainingQuantity == 95
         assert descheduled_show_stock.remainingQuantity == 0
+
+    @override_features(ENABLE_EMS_INTEGRATION=True)
+    @patch("pcapi.connectors.ems.requests.post")
+    def test_offer_route_does_not_crash_when_ems_errors(self, requests_post, client):
+        requests_post.return_value = mock.MagicMock(status_code=500)
+
+        provider = get_provider_by_local_class("EMSStocks")
+        venue = VenueFactory(isPermanent=True)
+        venue_provider = providers_factories.VenueProviderFactory(provider=provider, venue=venue)
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue,
+            provider=provider,
+            idAtProvider=venue_provider.venueIdAtOfferProvider,
+        )
+        providers_factories.EMSCinemaProviderPivotFactory(cinemaProviderPivot=cinema_provider_pivot, venue=venue)
+
+        allocine_movie_id = 234099
+        offer_id_at_provider = f"{allocine_movie_id}%{venue.id}%EMS"
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id)
+        offer = offers_factories.OfferFactory(
+            product=product,
+            venue=venue,
+            lastProvider=provider,
+            idAtProvider=offer_id_at_provider,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+        )
+        offers_factories.EventStockFactory(offer=offer, quantity=1)
+
+        response = client.get(f"/native/v2/offer/{offer.id}")
+
+        assert response.status_code == 200
+        assert offer.stocks[0].remainingQuantity == 1
+
+    @override_features(ENABLE_CGR_INTEGRATION=True)
+    def test_offer_route_does_not_crash_when_cgr_errors(self, requests_mock, client):
+        requests_mock.get("https://cgr-cinema-0.example.com/?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION)
+        requests_mock.post("https://cgr-cinema-0.example.com/", text="", status_code=500)
+
+        provider = get_provider_by_local_class("CGRStocks")
+        venue = VenueFactory(isPermanent=True)
+        venue_provider = providers_factories.VenueProviderFactory(provider=provider, venue=venue)
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue,
+            provider=provider,
+            idAtProvider=venue_provider.venueIdAtOfferProvider,
+        )
+        providers_factories.CGRCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
+
+        allocine_movie_id = 234099
+        offer_id_at_provider = f"{allocine_movie_id}%{venue.id}%CGR"
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id)
+        offer = offers_factories.OfferFactory(
+            product=product,
+            venue=venue,
+            lastProvider=provider,
+            idAtProvider=offer_id_at_provider,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+        )
+        offers_factories.EventStockFactory(offer=offer, quantity=1)
+
+        response = client.get(f"/native/v2/offer/{offer.id}")
+
+        assert response.status_code == 200
+        assert offer.stocks[0].remainingQuantity == 1
+
+    @override_features(ENABLE_CDS_IMPLEMENTATION=True)
+    @patch("pcapi.connectors.cine_digital_service.requests.get")
+    def test_offer_route_does_not_crash_when_cds_errors(self, requests_get, client):
+        requests_get.return_value = mock.MagicMock(status_code=500)
+
+        cds_provider = get_provider_by_local_class("CDSStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider, isActive=False)
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            idAtProvider=venue_provider.venueIdAtOfferProvider,
+        )
+        providers_factories.CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            idAtProvider="toto",
+            lastProviderId=venue_provider.providerId,
+            venue=venue_provider.venue,
+        )
+        offers_factories.EventStockFactory(offer=offer, idAtProviders="toto", quantity=1)
+
+        response = client.get(f"/native/v2/offer/{offer.id}")
+
+        assert response.status_code == 200
+        assert offer.stocks[0].remainingQuantity == 1
+
+    @override_features(ENABLE_BOOST_API_INTEGRATION=True)
+    @patch("pcapi.connectors.boost.requests.get")
+    def test_offer_route_does_not_crash_when_boost_errors(self, requests_get, client):
+        requests_get.return_value = mock.MagicMock(status_code=500)
+
+        movie_id = 207
+        first_show_id = 36683
+
+        boost_provider = get_provider_by_local_class("BoostStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=boost_provider)
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            idAtProvider=venue_provider.venueIdAtOfferProvider,
+        )
+        providers_factories.BoostCinemaDetailsFactory(
+            cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/"
+        )
+        offer_id_at_provider = f"{movie_id}%{venue_provider.venueId}%Boost"
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            idAtProvider=offer_id_at_provider,
+            lastProviderId=venue_provider.providerId,
+            venue=venue_provider.venue,
+        )
+        offers_factories.EventStockFactory(
+            offer=offer, idAtProviders=f"{offer_id_at_provider}#{first_show_id}", quantity=1
+        )
+
+        response = client.get(f"/native/v2/offer/{offer.id}")
+
+        assert response.status_code == 200
+        assert offer.stocks[0].remainingQuantity == 1
 
     @override_features(ENABLE_CDS_IMPLEMENTATION=True)
     def test_get_inactive_cinema_provider_offer(self, client):

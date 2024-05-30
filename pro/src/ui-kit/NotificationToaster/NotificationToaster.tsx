@@ -17,24 +17,22 @@ interface Notification {
 }
 
 interface NotificationToasterProps {
-  notification: Notification
+  notification: Notification | null
   isVisible: boolean
   isStickyBarOpen: boolean
 }
 
-export const NotificationToaster = ({
-  notification,
-  isVisible,
-  isStickyBarOpen,
-}: NotificationToasterProps): JSX.Element => {
-  const { text, type } = notification
+export const notificationAdditionalAttributes: {
+  [key in NotificationTypeEnum]: Partial<React.HTMLAttributes<HTMLDivElement>>
+} = {
+  [NotificationTypeEnum.ERROR]: { role: 'alert' },
+  [NotificationTypeEnum.SUCCESS]: { role: 'status' },
+  [NotificationTypeEnum.PENDING]: { ['aria-live']: 'polite' },
+  [NotificationTypeEnum.INFORMATION]: { role: 'status' },
+}
 
-  const notificationAttribute = {
-    [NotificationTypeEnum.ERROR]: 'alert',
-    [NotificationTypeEnum.SUCCESS]: 'status',
-    [NotificationTypeEnum.PENDING]: 'progressbar',
-    [NotificationTypeEnum.INFORMATION]: 'status',
-  }[type]
+function getNotificationContent(notification: Notification) {
+  const type = notification.type
 
   let icon = fullValidateIcon
   /* istanbul ignore next: DEBT, TO FIX */
@@ -47,27 +45,49 @@ export const NotificationToaster = ({
   }
 
   return (
-    <div
-      data-testid={`global-notification-${type}`}
-      className={
-        /* istanbul ignore next */
-        cn(
-          styles['notification'],
-          styles[
-            //graphic variation
-            /* istanbul ignore next */ `is-${type}`
-          ],
-          /* istanbul ignore next: DEBT, TO FIX */ isVisible
-            ? styles['show']
-            : styles['hide'],
-          /* istanbul ignore next: DEBT, TO FIX */ isStickyBarOpen &&
-            styles['with-sticky-action-bar']
-        )
-      }
-      role={notificationAttribute}
-    >
+    <>
       <SvgIcon className={styles['icon']} src={icon} alt="" />
-      {text}
-    </div>
+      {notification.text}
+    </>
+  )
+}
+
+export const NotificationToaster = ({
+  notification,
+  isVisible,
+  isStickyBarOpen,
+}: NotificationToasterProps): JSX.Element => {
+  const notificationTypes = Object.values(NotificationTypeEnum)
+
+  const notifContent = notification
+    ? getNotificationContent(notification)
+    : null
+
+  return (
+    <>
+      {notificationTypes.map((type) => {
+        const isCurrentNotifType = type === notification?.type
+        return (
+          <div
+            key={type}
+            data-testid={`global-notification-${type}`}
+            {...notificationAdditionalAttributes[type]}
+          >
+            <div
+              className={cn(
+                styles['notification'],
+                styles[`is-${type}`],
+                isVisible && isCurrentNotifType
+                  ? styles['show']
+                  : styles['hide'],
+                isStickyBarOpen && styles['with-sticky-action-bar']
+              )}
+            >
+              {isCurrentNotifType ? notifContent : null}
+            </div>
+          </div>
+        )
+      })}
+    </>
   )
 }

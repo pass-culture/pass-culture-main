@@ -54,7 +54,7 @@ def get_ems_showtime_id_from_uuid(stock_uuid: str | None) -> int | None:
     return None
 
 
-def get_showtime_id_from_uuid(stock_uuid: str | None, provider_name: str) -> int | None:
+def get_showtime_id_from_uuid(stock_uuid: str | None, provider_name: str | None) -> int | None:
     match provider_name:
         case "CDSStocks":
             return get_cds_show_id_from_uuid(stock_uuid)

@@ -14,6 +14,7 @@ import sqlalchemy.exc as sqla_exc
 from werkzeug.exceptions import BadRequest
 
 from pcapi import settings
+from pcapi.connectors.ems import EMSAPIException
 from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.connectors.thumb_storage import remove_thumb
 from pcapi.connectors.titelive import get_new_product_from_ean13
@@ -32,6 +33,9 @@ import pcapi.core.educational.api.national_program as national_program_api
 from pcapi.core.external import compliance
 from pcapi.core.external.attributes.api import update_external_pro
 import pcapi.core.external_bookings.api as external_bookings_api
+from pcapi.core.external_bookings.boost.exceptions import BoostAPIException
+from pcapi.core.external_bookings.cds.exceptions import CineDigitalServiceAPIException
+from pcapi.core.external_bookings.cgr.exceptions import CGRAPIException
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import models as finance_models
 import pcapi.core.finance.conf as finance_conf
@@ -1146,6 +1150,44 @@ def report_offer(
     transactional_mails.send_email_reported_offer_by_user(user, offer, reason, custom_reason)
 
 
+def get_shows_remaining_places_from_provider(provider_class: str | None, offer: models.Offer) -> dict[str, int]:
+    match provider_class:
+        case "CDSStocks":
+            if not FeatureToggle.ENABLE_CDS_IMPLEMENTATION.is_active():
+                raise feature.DisabledFeatureError("ENABLE_CDS_IMPLEMENTATION is inactive")
+            show_ids = [
+                cinema_providers_utils.get_cds_show_id_from_uuid(stock.idAtProviders)
+                for stock in offer.bookableStocks
+                if stock.idAtProviders
+            ]
+            cleaned_show_ids = [s for s in show_ids if s is not None]
+            if not cleaned_show_ids:
+                return {}
+            return external_bookings_api.get_shows_stock(offer.venueId, cleaned_show_ids)
+        case "BoostStocks":
+            if not FeatureToggle.ENABLE_BOOST_API_INTEGRATION.is_active():
+                raise feature.DisabledFeatureError("ENABLE_BOOST_API_INTEGRATION is inactive")
+            film_id = cinema_providers_utils.get_boost_or_cgr_or_ems_film_id_from_uuid(offer.idAtProvider)
+            if not film_id:
+                return {}
+            return external_bookings_api.get_movie_stocks(offer.venueId, film_id)
+        case "CGRStocks":
+            if not FeatureToggle.ENABLE_CGR_INTEGRATION.is_active():
+                raise feature.DisabledFeatureError("ENABLE_CGR_INTEGRATION is inactive")
+            cgr_allocine_film_id = cinema_providers_utils.get_boost_or_cgr_or_ems_film_id_from_uuid(offer.idAtProvider)
+            if not cgr_allocine_film_id:
+                return {}
+            return external_bookings_api.get_movie_stocks(offer.venueId, cgr_allocine_film_id)
+        case "EMSStocks":
+            if not FeatureToggle.ENABLE_EMS_INTEGRATION.is_active():
+                raise feature.DisabledFeatureError("ENABLE_EMS_INTEGRATION is inactive")
+            film_id = cinema_providers_utils.get_boost_or_cgr_or_ems_film_id_from_uuid(offer.idAtProvider)
+            if not film_id:
+                return {}
+            return external_bookings_api.get_movie_stocks(offer.venueId, film_id)
+    raise ValueError(f"Unknown Provider: {provider_class}")
+
+
 def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer: models.Offer) -> None:
     try:
         venue_provider = external_bookings_api.get_active_cinema_venue_provider(offer.venueId)
@@ -1167,42 +1209,24 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer:
     )
     offer_current_stocks = offer.bookableStocks
 
-    match venue_provider.provider.localClass:
-        case "CDSStocks":
-            if not FeatureToggle.ENABLE_CDS_IMPLEMENTATION.is_active():
-                raise feature.DisabledFeatureError("ENABLE_CDS_IMPLEMENTATION is inactive")
-            show_ids = [
-                cinema_providers_utils.get_cds_show_id_from_uuid(stock.idAtProviders)
-                for stock in offer.bookableStocks
-                if stock.idAtProviders
-            ]
-            cleaned_show_ids = [s for s in show_ids if s is not None]
-            if not cleaned_show_ids:
-                return
-            shows_remaining_places = external_bookings_api.get_shows_stock(offer.venueId, cleaned_show_ids)
-        case "BoostStocks":
-            if not FeatureToggle.ENABLE_BOOST_API_INTEGRATION.is_active():
-                raise feature.DisabledFeatureError("ENABLE_BOOST_API_INTEGRATION is inactive")
-            film_id = cinema_providers_utils.get_boost_or_cgr_or_ems_film_id_from_uuid(offer.idAtProvider)
-            if not film_id:
-                return
-            shows_remaining_places = external_bookings_api.get_movie_stocks(offer.venueId, film_id)
-        case "CGRStocks":
-            if not FeatureToggle.ENABLE_CGR_INTEGRATION.is_active():
-                raise feature.DisabledFeatureError("ENABLE_CGR_INTEGRATION is inactive")
-            cgr_allocine_film_id = cinema_providers_utils.get_boost_or_cgr_or_ems_film_id_from_uuid(offer.idAtProvider)
-            if not cgr_allocine_film_id:
-                return
-            shows_remaining_places = external_bookings_api.get_movie_stocks(offer.venueId, cgr_allocine_film_id)
-        case "EMSStocks":
-            if not FeatureToggle.ENABLE_EMS_INTEGRATION.is_active():
-                raise feature.DisabledFeatureError("ENABLE_EMS_INTEGRATION is inactive")
-            film_id = cinema_providers_utils.get_boost_or_cgr_or_ems_film_id_from_uuid(offer.idAtProvider)
-            if not film_id:
-                return
-            shows_remaining_places = external_bookings_api.get_movie_stocks(offer.venueId, film_id)
-        case _:
-            raise ValueError(f"Unknown Provider: {venue_provider.provider.localClass}")
+    try:
+        shows_remaining_places = get_shows_remaining_places_from_provider(venue_provider.provider.localClass, offer)
+    except (EMSAPIException, BoostAPIException, CineDigitalServiceAPIException, CGRAPIException) as e:
+        # If we can't retrieve the stocks from the provider, we stop here to avoid breaking the code following this function
+        # This is not ideal, I believe this function should be called on its own, or asynchronously
+        # However this means frontend code (probably) so this temporarily fixes crashes for end users
+        # TODO: (lixxday, 29/05/2024): remove this try/catch when th function is no longer called directly in GET /offer route
+        logger.exception(
+            "Failed to get shows remaining places from provider",
+            extra={"offer": offer.id, "provider": venue_provider.provider.localClass, "error": e},
+        )
+        return
+    except Exception as e:  # pylint: disable=broad-except
+        logger.exception(
+            "Unknown error when getting shows remaining places from provider",
+            extra={"offer": offer.id, "provider": venue_provider.provider.localClass, "error": e},
+        )
+        return
 
     offer_has_new_sold_out_stock = False
     for stock in offer_current_stocks:

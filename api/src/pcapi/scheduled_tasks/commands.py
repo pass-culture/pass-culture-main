@@ -171,7 +171,7 @@ def notify_soon_to_be_expired_individual_bookings() -> None:
 @blueprint.cli.command("notify_newly_eligible_age_18_users")
 @log_cron_with_transaction
 def notify_newly_eligible_age_18_users() -> None:
-    if not settings.IS_PROD and not settings.IS_TESTING:
+    if not settings.NOTIFY_NEWLY_ELIGIBLE_USERS:
         return
     yesterday = datetime.date.today() - datetime.timedelta(days=1)
     for user in get_newly_eligible_age_18_users(yesterday):
@@ -389,10 +389,12 @@ def notify_users_bookings_not_retrieved_command() -> None:
 @log_cron_with_transaction
 def handle_inactive_dms_applications_cron() -> None:
     dms_script.handle_inactive_dms_applications(
-        settings.DMS_ENROLLMENT_PROCEDURE_ID_FR, with_never_eligible_applicant_rule=settings.IS_TESTING
+        settings.DMS_ENROLLMENT_PROCEDURE_ID_FR,
+        with_never_eligible_applicant_rule=settings.DMS_NEVER_ELIGIBLE_APPLICANT,
     )
     dms_script.handle_inactive_dms_applications(
-        settings.DMS_ENROLLMENT_PROCEDURE_ID_ET, with_never_eligible_applicant_rule=settings.IS_TESTING
+        settings.DMS_ENROLLMENT_PROCEDURE_ID_ET,
+        with_never_eligible_applicant_rule=settings.DMS_NEVER_ELIGIBLE_APPLICANT,
     )
 
 
