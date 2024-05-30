@@ -219,9 +219,9 @@ Si la base de données n'a pas été initialisée, vous devez suivre les étapes
   pc start-backoffice-no-docker
   # Nettoyer les DB, reconstruire la sandbox et jouer les migrations
   pc restart-api-no-docker
-  # Supprimer et recréé les DB (test et data)
+  # Supprimer et recréer les DB (test et data)
   pc reset-db-no-docker
-  # Supprimer et recréé la DB de test
+  # Supprimer et recréer la DB de test
   pc reset-db-test-no-docker
   ```
 
