@@ -27,7 +27,7 @@ Essayez, autant que possible, de vérifier une seule chose par scénario. Cela p
 
 exemple de tests qui respectent bien ces deux règles : les scénarios Adage.
 
-### seule et unique exception aux deux moins précédents
+### seule et unique exception aux deux points précédents
 
 la seule exception tolérée dans le contexte Pass Culture sera le cas des parcours (workflow) nominaux (happy path) et critiques: ce que souhaite faire l'utilisateur et qui ne doit jamais casser. Dans ces cas spécifiques, il vaut mieux un parcours de bout en bout que des petits scénarios découpés de façon artificielle et couteuse en préconditions (mocks par exemple).
 

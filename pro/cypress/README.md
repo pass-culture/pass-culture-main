@@ -22,7 +22,7 @@ TODO: parler des tags?
 ### comment nommer votre Feature et Scenario
 
 La "feature" doit décrire où vous êtes dans l'application et l'objectif d'un point de vue utilisateur. On reprend souvent juste en dessous le modèle "En tant que ... j'aimerais ... afin de...", sur trois lignes distinctes.
-Le scénario devrait entrer plus dans les ddétails et décribre brièvement ce qu'il vérifie. Le titre du scénario doit être unique.
+Le scénario devrait entrer plus dans les détails et décrire brièvement ce qu'il vérifie. Le titre du scénario doit être unique.
 
 _Ex:_
 Feature: Create and update venue
