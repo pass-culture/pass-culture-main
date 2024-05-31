@@ -59,10 +59,6 @@ jobs:
           token: github-token
           certificate-ttl: 1h
           kubernetes-cluster: ${{ inputs.teleport_kubernetes_cluster }}
-      - name: "Setup helmfile"
-        uses: mamezou-tech/setup-helmfile@v1.3.0
-        with:
-          helmfile-version: "v0.147.0"
       - name: "Play pre-migrations"
         run: |
           set -e
@@ -88,8 +84,21 @@ jobs:
           #Transform list into helm readable parameter list (pattern: --set secrets={item1,item2,item3})
           PCAPI_SECRETS=secrets={$(echo $PCAPI_SECRETS | sed -r 's/ /,/g')}
           echo "PCAPI_SECRETS=$PCAPI_SECRETS" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v4.1.5
+        with:
+          repository: pass-culture/pass-culture-deployment
+          token: ${{ steps.get-github-token.outputs.API_TOKEN_GITHUB }}
+          path: ./pass-culture-deployment
+      - name: "Update image.tag in pass-culture-deployment repository"
+        run: |
+          git config --global user.email "PassCulture-SA@passculture.team"
+          git config --global user.name "PassCulture-SA"
+          cd ./pass-culture-deployment/helm/pcapi/${{ inputs.environment }}
+          sed -i '/^image:/,/^  tag:/{s/^  tag: .*/  tag: ${{ inputs.app_version }}/}' values.${{ inputs.environment }}.yaml
+          git commit -m "Update image tag by Github Actions Job : ${{ github.run_number }}"
+          git push origin master
       - name: "Generate and push rendered manifests"
-        uses: pass-culture/common-workflows/actions/render-push-manifests@v1.0.0
+        uses: pass-culture/common-workflows/actions/render-push-manifests@v1.1.0
         with:
           environment: ${{ inputs.environment }}
           app_name: pcapi
@@ -99,7 +108,7 @@ jobs:
           registry_service_account_secret_name: passculture-metier-ehp/passculture-main-artifact-registry-service-account
           api_token_github_secret_name: passculture-metier-ehp/passculture-main-sa-access-token  
           chart_values_repository: pass-culture/pass-culture-deployment
-          chart_values_destination: ./pass-culture-deployment
+          helmfile_path: "./pass-culture-deployment/helm/pcapi"
       - name: "Install argocd cli"
         id: install_argocd_cli
         run: |
