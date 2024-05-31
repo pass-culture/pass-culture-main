@@ -371,7 +371,7 @@ class UpdateProductBookingCountTest:
 
 class ReadProductBookingCountTest:
     def test_is_reindexed(self):
-        product = offers_factories.ProductFactory(extraData={"ean": "1234567890987"}, last_30_days_booking=1)
+        product = offers_factories.ProductFactory(last_30_days_booking=1)
         stock = offers_factories.StockFactory(offer__product=product)
 
         search.reindex_offer_ids([stock.offer.id])
