@@ -17,7 +17,7 @@ const mockLogEvent = vi.fn()
 const renderCinemaProviderForm = async (props: CinemaProviderFormProps) => {
   renderWithProviders(<CinemaProviderForm {...props} />)
 
-  await waitFor(() => screen.getByText('Accepter les réservations DUO'))
+  await waitFor(() => screen.getByText('Accepter les réservations duo'))
 }
 
 describe('CinemaProviderForm', () => {
@@ -48,7 +48,7 @@ describe('CinemaProviderForm', () => {
       await renderCinemaProviderForm(props)
 
       const isDuoCheckbox = screen.getByLabelText(
-        'Accepter les réservations DUO'
+        /Accepter les réservations duo/
       )
       expect(isDuoCheckbox).toBeInTheDocument()
       expect(isDuoCheckbox).toBeChecked()
@@ -108,7 +108,7 @@ describe('CinemaProviderForm', () => {
       await renderCinemaProviderForm(props)
 
       const isDuoCheckbox = screen.getByLabelText(
-        'Accepter les réservations DUO'
+        /Accepter les réservations duo/
       )
       expect(isDuoCheckbox).not.toBeChecked()
     })

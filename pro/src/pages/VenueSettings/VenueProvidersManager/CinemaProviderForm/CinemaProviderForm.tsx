@@ -7,8 +7,8 @@ import { FormLayout } from 'components/FormLayout/FormLayout'
 import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { Checkbox } from 'ui-kit/form/Checkbox/Checkbox'
-import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
+
+import { DuoCheckbox } from '../DuoCheckbox/DuoCheckbox'
 
 import styles from './CinemaProviderForm.module.scss'
 import { DEFAULT_CINEMA_PROVIDER_FORM_VALUES } from './constants'
@@ -64,57 +64,41 @@ export const CinemaProviderForm = ({
   return (
     <FormikProvider value={formik}>
       <Form>
-        <FormLayout>
-          {!isLoading && (
-            <div className={styles['cinema-provider-form']}>
-              <FormLayout.Row
-                inline
-                sideComponent={
-                  isCreatedEntity ? (
-                    <InfoBox>
-                      En activant cette option, vous permettez au bénéficiaire
-                      du pass Culture de venir accompagné. La seconde place sera
-                      délivrée au même tarif que la première, quel que soit
-                      l’accompagnateur.
-                    </InfoBox>
-                  ) : (
-                    <></>
-                  )
-                }
-              >
-                <Checkbox name="isDuo" label="Accepter les réservations DUO" />
-              </FormLayout.Row>
+        {!isLoading && (
+          <div className={styles['cinema-provider-form']}>
+            <FormLayout.Row>
+              <DuoCheckbox isChecked={formik.values.isDuo} />
+            </FormLayout.Row>
 
-              {isCreatedEntity ? (
+            {isCreatedEntity ? (
+              <Button
+                type="button"
+                variant={ButtonVariant.PRIMARY}
+                isLoading={formik.isSubmitting}
+                onClick={() => handleFormSubmit(formik.values)}
+              >
+                Lancer la synchronisation
+              </Button>
+            ) : (
+              <div>
                 <Button
+                  variant={ButtonVariant.SECONDARY}
+                  onClick={onCancel}
                   type="button"
+                >
+                  Annuler
+                </Button>
+                <Button
+                  type="submit"
                   variant={ButtonVariant.PRIMARY}
                   isLoading={formik.isSubmitting}
-                  onClick={() => handleFormSubmit(formik.values)}
                 >
-                  Lancer la synchronisation
+                  Modifier
                 </Button>
-              ) : (
-                <div>
-                  <Button
-                    variant={ButtonVariant.SECONDARY}
-                    onClick={onCancel}
-                    type="button"
-                  >
-                    Annuler
-                  </Button>
-                  <Button
-                    type="submit"
-                    variant={ButtonVariant.PRIMARY}
-                    isLoading={formik.isSubmitting}
-                  >
-                    Modifier
-                  </Button>
-                </div>
-              )}
-            </div>
-          )}
-        </FormLayout>
+              </div>
+            )}
+          </div>
+        )}
       </Form>
     </FormikProvider>
   )

@@ -2,9 +2,13 @@
 
 .allocine-provider-form-banner {
   margin-top: rem.torem(25px);
-  margin-bottom: rem.torem(32px);
 }
 
 .allocine-provider-form-actions {
   justify-content: center;
+}
+
+.price-input,
+.nb-places-input {
+  max-width: rem.torem(276px);
 }
