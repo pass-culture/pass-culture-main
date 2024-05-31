@@ -1,3 +1,5 @@
+import logging
+
 import pytest
 
 import pcapi.core.geography.factories as geography_factories
@@ -111,7 +113,7 @@ class CreateOffererAddressesTest:
         assert content["address"]["longitude"] == expected_data["longitude"] == float(address.longitude)
 
     @pytest.mark.usefixtures("db_session")
-    def test_create_offerer_address_with_existing_offerer_address(self, client):
+    def test_create_offerer_address_with_existing_offerer_address(self, client, caplog):
         pro_user = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
@@ -139,14 +141,17 @@ class CreateOffererAddressesTest:
         # Select offererAddress if exists
         # Insert offererAddress
         with assert_num_queries(7):
-            response = http_client.post(
-                f"/offerers/{offerer_id}/addresses/",
-                json={
-                    "label": expected_data["label"],
-                    "street": expected_data["street"],
-                    "inseeCode": expected_data["inseeCode"],
-                },
-            )
+            with caplog.at_level(logging.ERROR):
+                response = http_client.post(
+                    f"/offerers/{offerer_id}/addresses/",
+                    json={
+                        "label": expected_data["label"],
+                        "street": expected_data["street"],
+                        "inseeCode": expected_data["inseeCode"],
+                    },
+                )
+
+        assert not caplog.records
 
         assert response.status_code == 201
         content = response.json
@@ -160,6 +165,47 @@ class CreateOffererAddressesTest:
         assert content["address"]["city"] == expected_data["city"] == address.city
         assert content["address"]["latitude"] == expected_data["latitude"] == float(address.latitude)
         assert content["address"]["longitude"] == expected_data["longitude"] == float(address.longitude)
+
+    @pytest.mark.usefixtures("db_session")
+    def test_we_are_aware_of_mismatch_coordinates_between_our_data_and_api_addresses_ones(self, client, caplog):
+        pro_user = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        offerer_id = offerer.id
+        expected_data = {
+            "banId": "75101_9575_00003",
+            "postalCode": "75001",
+            "inseeCode": "75056",
+            "city": "Paris",
+            "street": "3 Rue de Valois",
+            "latitude": 1,
+            "longitude": 1,
+        }
+
+        address = geography_factories.AddressFactory(**expected_data)
+        expected_data["label"] = "Ministère de la Culture"
+        offerers_factories.OffererAddressFactory(address=address, offerer=offerer, label="Pass Culture")
+        http_client = client.with_session_auth(pro_user.email)
+
+        # Fetch the session
+        # Fetch the user
+        # Check permissions
+        # rollback
+        # Select address
+        # Select offererAddress if exists
+        # Insert offererAddress
+        with assert_num_queries(7):
+            with caplog.at_level(logging.ERROR):
+                http_client.post(
+                    f"/offerers/{offerer_id}/addresses/",
+                    json={
+                        "label": expected_data["label"],
+                        "street": expected_data["street"],
+                        "inseeCode": expected_data["inseeCode"],
+                    },
+                )
+
+        assert "Unique constraint over street and inseeCode matched different coordinates" == caplog.records[0].message
 
     @pytest.mark.usefixtures("db_session")
     def test_user_cant_create_offerer_address_on_foreign_offerer(self, client):
