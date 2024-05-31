@@ -89,7 +89,7 @@ jobs:
           PCAPI_SECRETS=secrets={$(echo $PCAPI_SECRETS | sed -r 's/ /,/g')}
           echo "PCAPI_SECRETS=$PCAPI_SECRETS" >> "$GITHUB_OUTPUT"
       - name: "Generate and push rendered manifests"
-        uses: pass-culture/common-workflows/actions/render-push-manifests@v1.0.0
+        uses: pass-culture/common-workflows/actions/render-push-manifests@v1.1.0
         with:
           environment: ${{ inputs.environment }}
           app_name: pcapi
