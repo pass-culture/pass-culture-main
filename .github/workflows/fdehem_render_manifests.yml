@@ -52,7 +52,7 @@ jobs:
         run: |
           git config --global user.email "PassCulture-SA@passculture.team"
           git config --global user.name "PassCulture-SA"
-          cd ./pass-culture-deployment/helm/pcapi
+          cd ./pass-culture-deployment/helm/pcapi/testing
           cp values.yaml values.fdehem.yaml
           sed -i '/^image:/,/^  tag:/{s/^  tag: .*/  tag: mytag/}' values.fdehem.yaml
           git add values.fdehem.yaml
