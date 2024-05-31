@@ -159,11 +159,12 @@ class BookOfferTest:
 
         booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
 
-        # One request should have been sent to Batch with the user's
-        # updated attributes
-        assert len(push_testing.requests) == 2
+        # One request should have been sent to Batch to trigger the event
+        # HAS_BOOKED_OFFER, and another one with the user's
+        # updated attributes (iOS + Android)
+        assert len(push_testing.requests) == 3
 
-        data = push_testing.requests[0]
+        data = push_testing.requests[1]
         assert data["attribute_values"]["u.credit"] == 29_000  # values in cents
         assert data["attribute_values"]["ut.booking_categories"] == ["FILM"]
 
@@ -237,11 +238,12 @@ class BookOfferTest:
 
         booking = api.book_offer(beneficiary=beneficiary, stock_id=stock1.id, quantity=1)
 
-        # One request should have been sent to Batch with the user's
-        # updated attributes
-        assert len(push_testing.requests) == 2
+        # One request should have been sent to Batch to trigger the event
+        # HAS_BOOKED_OFFER, and another one with the user's
+        # updated attributes (iOS + Android)
+        assert len(push_testing.requests) == 3
 
-        data = push_testing.requests[0]
+        data = push_testing.requests[1]
         expected_date = booking.dateCreated.strftime(BATCH_DATETIME_FORMAT)
         assert data["attribute_values"]["date(u.last_booking_date)"] == expected_date
 
@@ -277,11 +279,12 @@ class BookOfferTest:
 
         booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
 
-        # One request should have been sent to Batch with the user's
-        # updated attributes
-        assert len(push_testing.requests) == 2
+        # One request should have been sent to Batch to trigger the event
+        # HAS_BOOKED_OFFER, and another one with the user's
+        # updated attributes (iOS + Android)
+        assert len(push_testing.requests) == 3
 
-        data = push_testing.requests[0]
+        data = push_testing.requests[1]
         assert data["attribute_values"]["u.credit"] == 29_000  # values in cents
 
         expected_date = booking.dateCreated.strftime(BATCH_DATETIME_FORMAT)
@@ -355,7 +358,7 @@ class BookOfferTest:
                 quantity=2,
             )
 
-    def test_logs_event_to_amplitude(self):
+    def test_logs_event_to_amplitude_and_batch(self):
         # Given
         stock = offers_factories.StockFactory(price=10)
         beneficiary = users_factories.BeneficiaryGrant18Factory()
@@ -373,6 +376,19 @@ class BookOfferTest:
                 "offer_id": stock.offer.id,
                 "price": 10.00,
                 "subcategory": "SUPPORT_PHYSIQUE_FILM",
+            },
+            "user_id": beneficiary.id,
+        }
+        assert push_testing.requests[0] == {
+            "can_be_asynchronously_retried": True,
+            "event_name": "has_booked_offer",
+            "event_payload": {
+                "offer_category": "FILM",
+                "offer_id": stock.offer.id,
+                "offer_name": stock.offer.name,
+                "offer_subcategory": "SUPPORT_PHYSIQUE_FILM",
+                "offer_type": "solo",
+                "stock": 999,
             },
             "user_id": beneficiary.id,
         }
