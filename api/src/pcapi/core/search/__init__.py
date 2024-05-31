@@ -476,21 +476,21 @@ def get_offers_booking_count_by_id(
 
 
 def get_last_x_days_booking_count_by_offer(offers: Iterable[offers_models.Offer]) -> dict[int, int]:
-    offers_with_ean = []
-    offers_without_ean = []
+    offers_with_product = []
+    offers_without_product = []
 
     if not FeatureToggle.ALGOLIA_BOOKINGS_NUMBER_COMPUTATION.is_active():
         return {}
 
     for offer in offers:
-        if offer.product and offer.product.extraData and offer.product.extraData.get("ean"):
-            offers_with_ean.append(offer)
+        if offer.product:
+            offers_with_product.append(offer)
         else:
-            offers_without_ean.append(offer)
+            offers_without_product.append(offer)
 
-    default_dict = get_offers_booking_count_by_id([offer.id for offer in offers_without_ean])
+    default_dict = get_offers_booking_count_by_id([offer.id for offer in offers_without_product])
 
-    for offer in offers_with_ean:
+    for offer in offers_with_product:
         default_dict[offer.id] = offer.product.last_30_days_booking if offer.product.last_30_days_booking else 0
 
     return default_dict
