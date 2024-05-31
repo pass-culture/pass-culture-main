@@ -2471,10 +2471,20 @@ def get_or_create_address(address_info: AddressInfo) -> geography_models.Address
             geography_models.Address.street == address_info.street,
             geography_models.Address.inseeCode == address_info.citycode,
         ).one()
-        if (address.latitude, address.longitude) != (round(address_info.latitude, 5), round(address_info.longitude, 5)):
+        if (float(address.latitude), float(address.longitude)) != (
+            round(address_info.latitude, 5),
+            round(address_info.longitude, 5),
+        ):
             logger.error(
                 "Unique constraint over street and inseeCode matched different coordinates",
-                extra={"address_id": address.id, "address_info_banId": address_info.id},
+                extra={
+                    "address_id": address.id,
+                    "address_info_banId": address_info.id,
+                    "address_latitude": address.latitude,
+                    "address_longitude": address.longitude,
+                    "address_info_latitude": address_info.latitude,
+                    "address_info_longitude": address_info.longitude,
+                },
             )
 
     return address
