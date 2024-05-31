@@ -78,6 +78,11 @@ export const initializeSentry = () => {
       // Error when Outlook scans a link
       // https://github.com/getsentry/sentry-javascript/issues/3440
       'Non-Error promise rejection captured with value: Object Not Found Matching Id',
+      // Network errors, we already handle them in the SWR config by retrying and
+      // showing a toaster message
+      'Failed to fetch', // Chrome
+      'NetworkError when attempting to fetch resource', // Firefox
+      'Load failed', // Safari
     ],
     denyUrls: [
       // Facebook flakiness
