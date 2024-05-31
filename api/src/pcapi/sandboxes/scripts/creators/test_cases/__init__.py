@@ -55,6 +55,7 @@ def save_test_cases_sandbox() -> None:
     create_venues_with_practical_info_graphical_edge_cases()
     create_institutional_website_offer_playlist()
     create_product_with_multiple_images()
+    create_discord_users()
 
 
 def create_offers_with_gtls() -> None:
@@ -606,3 +607,11 @@ def create_product_with_multiple_images() -> None:
         url="https://storage.googleapis.com/passculture-metier-ehp-testing-assets-fine-grained/thumbs/products/222A_1",
         imageType=TiteliveImageType.VERSO,
     )
+
+
+def create_discord_users() -> None:
+    for i in range(10):
+        user = users_factories.UserFactory(
+            email=f"discordUser{i}@test.com", firstName=f"discord{i}", lastName=f"user{i}"
+        )
+        users_factories.DiscordUserFactory(userId=user.id, discordId=None, hasAccess=True)
