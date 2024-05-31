@@ -5267,17 +5267,26 @@
                 "additionalProperties": false,
                 "properties": {
                     "audioDisabilityCompliant": {
+                        "description": "Is accessible for people with hearing disability",
+                        "example": true,
                         "nullable": true,
                         "title": "Audiodisabilitycompliant",
                         "type": "boolean"
                     },
                     "beginningDatetime": {
+                        "description": "Collective offer beginning datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "example": "2024-06-30T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Beginningdatetime",
                         "type": "string"
                     },
                     "bookingEmails": {
+                        "description": "Recipient emails for notifications about bookings, cancellations, etc.",
+                        "example": [
+                            "some@email.com",
+                            "some.other@email.com"
+                        ],
                         "items": {
                             "type": "string"
                         },
@@ -5286,27 +5295,43 @@
                         "type": "array"
                     },
                     "bookingLimitDatetime": {
+                        "description": "Recipient emails for notifications about bookings, cancellations, etc.",
+                        "example": [
+                            "some@email.com",
+                            "some.other@email.com"
+                        ],
                         "format": "date-time",
                         "nullable": true,
                         "title": "Bookinglimitdatetime",
                         "type": "string"
                     },
                     "contactEmail": {
+                        "description": "Email of the person to contact if there is an issue with the offer.",
+                        "example": "somebody.tocontact@gmail.com",
                         "nullable": true,
                         "title": "Contactemail",
                         "type": "string"
                     },
                     "contactPhone": {
+                        "description": "Phone of the person to contact if there is an issue with the offer.",
+                        "example": "somebody.tocontact@gmail.com",
                         "nullable": true,
                         "title": "Contactphone",
                         "type": "string"
                     },
                     "description": {
+                        "description": "Collective offer description",
+                        "example": "Atelier de peinture \u00e0 la gouache pour \u00e9l\u00e8ves de 5\u00e8me",
                         "nullable": true,
                         "title": "Description",
                         "type": "string"
                     },
                     "domains": {
+                        "description": "Educational domains ids linked to the offer. Those domains are available on **[this endpoint (`Get the eductional domains`)](#tag/Collective-educational-data/operation/ListEducationalDomains)**",
+                        "example": [
+                            1,
+                            2
+                        ],
                         "items": {
                             "type": "integer"
                         },
@@ -5315,26 +5340,38 @@
                         "type": "array"
                     },
                     "durationMinutes": {
+                        "description": "Event duration in minutes",
+                        "example": 60,
                         "nullable": true,
                         "title": "Durationminutes",
                         "type": "integer"
                     },
                     "educationalInstitution": {
+                        "description": "Institution id of the educational institution using this offer. The institions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
+                        "example": "uai",
                         "nullable": true,
                         "title": "Educationalinstitution",
                         "type": "string"
                     },
                     "educationalInstitutionId": {
+                        "description": "Pass Culture id of the educational institution using this offer. The institions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
+                        "example": 1234,
                         "nullable": true,
                         "title": "Educationalinstitutionid",
                         "type": "integer"
                     },
                     "educationalPriceDetail": {
+                        "description": "The explanation of the offer price",
+                        "example": "10 tickets x 10 \u20ac = 100 \u20ac",
                         "nullable": true,
                         "title": "Educationalpricedetail",
                         "type": "string"
                     },
                     "formats": {
+                        "description": "Educational Formats",
+                        "example": [
+                            "Atelier de pratique"
+                        ],
                         "items": {
                             "$ref": "#/components/schemas/EacFormat"
                         },
@@ -5342,11 +5379,15 @@
                         "type": "array"
                     },
                     "imageCredit": {
+                        "description": "Image owner or author",
+                        "example": "Jane Doe",
                         "nullable": true,
                         "title": "Imagecredit",
                         "type": "string"
                     },
                     "imageFile": {
+                        "description": "Image file encoded in base64 string. Image format must be PNG or JPEG. Size must be between 400x600 and 800x1200 pixels. Aspect ratio must be 2:3 (portrait format).",
+                        "example": "iVBORw0KGgoAAAANSUhEUgAAAhUAAAMgCAAAAACxT88IAAABImlDQ1BJQ0MgcHJvZmlsZQAAKJGdkLFKw1AUhr+0oiKKg6IgDhlcO5pFB6tCKCjEWMHqlCYpFpMYkpTiG/gm+jAdBMFXcFdw9r/RwcEs3nD4Pw7n/P+9gZadhGk5dwBpVhWu3x1cDq7shTfa+lbZZC8Iy7zreSc0ns9XLKMvHePVPPfnmY/iMpTOVFmYFxVY+2JnWuWGVazf9v0j8YPYjtIsEj+Jd6I0Mmx2/TSZhD+e5jbLcXZxbvqqbVx6nOJhM2TCmISKjjRT5xiHXalLQcA9JaE0IVZvqpmKG1EpJ5dDUV+k2zTkbdV5nlKG8hjLyyTckcrT5GH+7/fax1m9aW3M8qAI6lZb1RqN4P0RVgaw9gxL1w1Zi7/f1jDj1DP/fOMXG7hQfuNVil0AAAAJcEhZcwAALiMAAC4jAXilP3YAAAAHdElNRQfnAwMPGDrdy1JyAAABtElEQVR42u3BAQ0AAADCoPdPbQ8HFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8GaFGgABH6N7kwAAAABJRU5ErkJggg==",
                         "nullable": true,
                         "title": "Imagefile",
                         "type": "string"
@@ -5360,31 +5401,43 @@
                         "type": "array"
                     },
                     "isActive": {
+                        "description": "Is your offer active",
+                        "example": true,
                         "nullable": true,
                         "title": "Isactive",
                         "type": "boolean"
                     },
                     "mentalDisabilityCompliant": {
+                        "description": "Is accessible for people with mental disability",
+                        "example": true,
                         "nullable": true,
                         "title": "Mentaldisabilitycompliant",
                         "type": "boolean"
                     },
                     "motorDisabilityCompliant": {
+                        "description": "Is accessible for people with motor disability",
+                        "example": true,
                         "nullable": true,
                         "title": "Motordisabilitycompliant",
                         "type": "boolean"
                     },
                     "name": {
+                        "description": "Collective offer name",
+                        "example": "Atelier de peinture",
                         "nullable": true,
                         "title": "Name",
                         "type": "string"
                     },
                     "nationalProgramId": {
+                        "description": "Id of the national program linked to your offer. The national programs list can be found on **[this endpoint (`Get all known national programs`)](#tag/Collective-educational-data/operation/GetNationalPrograms)**",
+                        "example": 123456,
                         "nullable": true,
                         "title": "Nationalprogramid",
                         "type": "integer"
                     },
                     "numberOfTickets": {
+                        "description": "Number of tickets for your collective offer",
+                        "example": 10,
                         "nullable": true,
                         "title": "Numberoftickets",
                         "type": "integer"
@@ -5399,6 +5452,12 @@
                         "title": "OfferVenueModel"
                     },
                     "students": {
+                        "description": "Student levels that can take pat to the collective offer. The student levels are available on [**this endpoint (`Get student levels eligible for collective offers`)**](#tag/Collective-educational-data/operation/ListStudentsLevels)",
+                        "example": [
+                            "GENERAL2",
+                            "GENERAL1",
+                            "GENERAL0"
+                        ],
                         "items": {
                             "type": "string"
                         },
@@ -5407,21 +5466,29 @@
                         "type": "array"
                     },
                     "subcategoryId": {
+                        "description": "Event subcategory id",
+                        "example": "FESTIVAL_MUSIQUE",
                         "nullable": true,
                         "title": "Subcategoryid",
                         "type": "string"
                     },
                     "totalPrice": {
+                        "description": "Collective offer price (in \u20ac)",
+                        "example": 100.0,
                         "nullable": true,
                         "title": "Totalprice",
                         "type": "number"
                     },
                     "venueId": {
+                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
+                        "example": 1234,
                         "nullable": true,
                         "title": "Venueid",
                         "type": "integer"
                     },
                     "visualDisabilityCompliant": {
+                        "description": "Is accessible for people with visual disability",
+                        "example": true,
                         "nullable": true,
                         "title": "Visualdisabilitycompliant",
                         "type": "boolean"
@@ -5615,7 +5682,7 @@
                         "$ref": "#/components/schemas/OfferVenueModel"
                     },
                     "students": {
-                        "description": "Student levels that can take part to the collective offer. The student levels are available on [**this endpoint (`Get student levels eligible for collective offers`)**](#tag/Collective-educational-data/operation/ListStudentsLevels)",
+                        "description": "Student levels that can take pat to the collective offer. The student levels are available on [**this endpoint (`Get student levels eligible for collective offers`)**](#tag/Collective-educational-data/operation/ListStudentsLevels)",
                         "example": [
                             "GENERAL2",
                             "GENERAL1",
