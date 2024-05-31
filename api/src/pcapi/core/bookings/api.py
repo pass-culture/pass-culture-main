@@ -24,6 +24,7 @@ from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.external.attributes.api import update_external_pro
 from pcapi.core.external.attributes.api import update_external_user
+from pcapi.core.external.batch import track_offer_booked_event
 import pcapi.core.external_bookings.api as external_bookings_api
 from pcapi.core.external_bookings.ems import constants as ems_constants
 from pcapi.core.external_bookings.ems.client import EMSClientAPI
@@ -340,6 +341,7 @@ def book_offer(
         },
     )
     amplitude_events.track_book_offer_event(booking)
+    track_offer_booked_event(beneficiary.id, stock.offer)
     _send_external_booking_notification_if_necessary(booking, BookingAction.BOOK)
 
     transactional_mails.send_user_new_booking_to_pro_email(booking, first_venue_booking)
