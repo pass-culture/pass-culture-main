@@ -271,6 +271,27 @@ jobs:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
+  deploy-to-ops:
+    name: "Deploy to ops"
+    needs: [test-api, test-pro]
+    if: |
+      always() &&
+      github.ref == 'refs/heads/master' &&
+      contains(fromJSON('["success", "skipped"]'), needs.test-api.result) &&
+      contains(fromJSON('["success", "skipped"]'), needs.test-pro.result)
+    uses: ./.github/workflows/dev_on_workflow_deploy.yml
+    with:
+      environment: ops
+      app_version: ${{ github.sha }}
+      teleport_version: 15.2.5
+      teleport_proxy: teleport.ops.passculture.team:443
+      teleport_kubernetes_cluster: passculture-metier-ops
+      deploy_api: ${{ needs.test-api.result == 'success' }}
+      deploy_pro: ${{ needs.test-pro.result == 'success' }}
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
   deploy-maintenance-site:
     name: "Deploy maintenance site"
     needs: check-folders-changes
