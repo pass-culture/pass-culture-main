@@ -1,4 +1,5 @@
 import { FormikProvider, useFormik } from 'formik'
+import { useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
 
@@ -22,9 +23,11 @@ import {
 } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { serializeApiFilters } from 'core/Offers/utils/serializer'
+import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import { useNotification } from 'hooks/useNotification'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
 import strokeProfIcon from 'icons/stroke-prof.svg'
+import { selectCurrentOffererId } from 'store/user/selectors'
 import { RadioButtonWithImage } from 'ui-kit/RadioButtonWithImage/RadioButtonWithImage'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
@@ -35,10 +38,14 @@ import styles from './OfferType.module.scss'
 import { OfferTypeFormValues } from './types'
 
 export const OfferTypeScreen = (): JSX.Element => {
+  const isNewInterfaceActive = useIsNewInterfaceActive()
   const navigate = useNavigate()
   const location = useLocation()
   const queryParams = new URLSearchParams(location.search)
-  const queryOffererId = queryParams.get('structure')
+  const selectedOfferId = useSelector(selectCurrentOffererId)
+  const queryOffererId = isNewInterfaceActive
+    ? selectedOfferId?.toString()
+    : queryParams.get('structure')
   const queryVenueId = queryParams.get('lieu')
 
   const notify = useNotification()

@@ -5,8 +5,37 @@
 @use "styles/variables/_z-index.scss" as zIndex;
 
 $profil-button-size: rem.torem(34px);
+$sub-popin-full-width-breakpoint: rem.torem(673px);
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
 
 .pop-in {
+  &[data-state='open']{
+    animation: fade-in 150ms ease-out;
+  }
+
+  &[data-state='closed'] {
+    animation: fade-out 150ms ease-in;
+  }
+
   z-index: zIndex.$profil-pop-in-z-index;
   width: 100dvw;
   height: 100dvh;
@@ -55,6 +84,51 @@ $profil-button-size: rem.torem(34px);
   }
 }
 
+.sub-popin {
+  &[data-state='open']{
+    animation: fade-in 150ms ease-out;
+  }
+
+  z-index: zIndex.$venues-pop-in-z-index;
+  width: 100dvw;
+  height: 100dvh;
+  padding: rem.torem(16px);
+  background-color: var(--color-white);
+  margin-top: calc((100vh - var(--radix-popper-available-height)) * -1);
+  overflow-y: scroll;
+
+  @media (min-width: $sub-popin-full-width-breakpoint) {
+    height: rem.torem(310px);
+    width: rem.torem(320px);
+    margin-left: 0;
+    margin-top: 0;
+    padding: rem.torem(8px) rem.torem(16px);
+    border-radius: rem.torem(6px);
+    border: solid rem.torem(1px) var(--color-grey-medium);
+  }
+}
+
+
+.sub-menu {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: rem.torem(8px);
+  width: 100%;
+  height: auto;
+  z-index: 17;
+
+  &-title {
+    @include fonts.caption;
+
+    color: var(--color-grey-dark);
+
+    &.tablet-only {
+      margin-top: rem.torem(8px);
+    }
+  }
+}
+
 .menu {
   display: flex;
   flex-direction: column;
@@ -77,6 +151,8 @@ $profil-button-size: rem.torem(34px);
   }
 
   &-title {
+    margin-top: rem.torem(8px);
+
     @include fonts.caption;
 
     color: var(--color-grey-dark);
@@ -88,14 +164,36 @@ $profil-button-size: rem.torem(34px);
 }
 
 .dropdown-button {
+  $button-width: rem.torem(200px);
+
   color: var(--color-secondary-light);
   background-color: var(--color-grey-light);
   outline: none;
   border: none;
   border-radius: rem.torem(8px);
   padding: rem.torem(8px);
-  width: $profil-button-size;
+  max-width: rem.torem($button-width);
   height: $profil-button-size;
+  text-align: left;
+  display: flex;
+  flex-flow: row wrap;
+  place-content: center flex-start;
+  align-items: center;
+  gap: rem.torem(8px);
+
+  &-name {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: #{$button-width - $profil-button-size - rem.torem(8px)};
+    display: none;
+
+    @include fonts.caption;
+
+    @media (min-width: size.$mobile) {
+      display: block;
+    }
+  }
 
   &[data-state="open"] {
     background-color: var(--color-secondary-light);
@@ -134,6 +232,37 @@ $profil-button-size: rem.torem(34px);
   &:hover {
     outline: none;
   }
+
+  &[data-state="checked"] {
+    @include fonts.bold
+  }
+
+  &-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+  }
+
+  &-check {
+    flex-shrink: 0;
+  }
+
+  &-sub {
+    justify-content: space-between;
+    padding: rem.torem(8px);
+
+    &[data-state="checked"] {
+      border-radius: 6px;
+      border: 1px solid var(--color-grey-dark);
+
+
+
+      @media (min-width: $sub-popin-full-width-breakpoint) {
+        border: none;
+      }
+    }
+  }
 }
 
 .tablet-only {
@@ -142,4 +271,27 @@ $profil-button-size: rem.torem(34px);
   @media (min-width: size.$tablet) {
     display: none;
   }
+}
+
+.sub-popin-header {
+  display: block;
+
+  &-text {
+    margin-top: rem.torem(8px);
+    margin-bottom: rem.torem(16px);
+
+    @include fonts.title4
+  }
+
+  @media (min-width: $sub-popin-full-width-breakpoint) {
+    display: none;
+  }
+}
+
+.offerer-link {
+  @include fonts.body-important;
+}
+
+.menu-group {
+  width: 100%;
 }

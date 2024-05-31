@@ -17,7 +17,6 @@ import {
 } from 'config/swrQueryKeys'
 import { hasStatusCode } from 'core/OfferEducational/utils/hasStatusCode'
 import { SAVED_OFFERER_ID_KEY } from 'core/shared/constants'
-import { SelectOption } from 'custom_types/form'
 import { useCurrentUser } from 'hooks/useCurrentUser'
 import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import { useNotification } from 'hooks/useNotification'
@@ -30,6 +29,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { formatBrowserTimezonedDateAsUTC, isDateValid } from 'utils/date'
+import { getSavedOffererId } from 'utils/getSavedOffererId'
 import { localStorageAvailable } from 'utils/localStorageAvailable'
 import { sortByLabel } from 'utils/strings'
 
@@ -44,23 +44,6 @@ import {
   getPhysicalVenuesFromOfferer,
   getVirtualVenueFromOfferer,
 } from './venueUtils'
-
-const getSavedOffererId = (offererOptions: SelectOption[]): string | null => {
-  const isLocalStorageAvailable = localStorageAvailable()
-  if (!isLocalStorageAvailable) {
-    return null
-  }
-
-  const savedOffererId = localStorage.getItem(SAVED_OFFERER_ID_KEY)
-  if (
-    savedOffererId &&
-    !offererOptions.map((option) => option.value).includes(savedOffererId)
-  ) {
-    return null
-  }
-
-  return savedOffererId
-}
 
 const HAS_CLOSED_BETA_TEST_BANNER = 'HAS_CLOSED_BETA_TEST_BANNER'
 
@@ -127,7 +110,11 @@ export const Homepage = (): JSX.Element => {
         return null
       }
     },
-    { fallbackData: null, shouldRetryOnError: false, onError: () => {} }
+    {
+      fallbackData: null,
+      shouldRetryOnError: false,
+      onError: () => {},
+    }
   )
   const selectedOfferer = selectedOffererQuery.data
   const isUserOffererValidated = !selectedOffererQuery.error

@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Outlet, useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -7,9 +7,10 @@ import { GetOffererResponseModel } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import { ReimbursementsTabs } from 'components/ReimbursementsTabs/ReimbursementsTabs'
 import { SAVED_OFFERER_ID_KEY } from 'core/shared/constants'
-import { useCurrentUser } from 'hooks/useCurrentUser'
+import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
 import { updateSelectedOffererId } from 'store/user/reducer'
+import { selectCurrentOffererId } from 'store/user/selectors'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import styles from './Reimbursement.module.scss'
@@ -20,10 +21,12 @@ export interface ReimbursementsContextProps {
 }
 
 export const Reimbursements = (): JSX.Element => {
-  const { selectedOffererId } = useCurrentUser()
+  const isNewInterfaceActive = useIsNewInterfaceActive()
+  const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const location = useLocation()
-  const { structure: paramOffererId } = queryParamsFromOfferer(location)
+  const { structure } = queryParamsFromOfferer(location)
+  const paramOffererId = isNewInterfaceActive ? selectedOffererId : structure
 
   const [isOfferersLoading, setIsOfferersLoading] = useState<boolean>(false)
   const [selectedOfferer, setSelectedOfferer] =
@@ -53,7 +56,7 @@ export const Reimbursements = (): JSX.Element => {
     }
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     fetchData()
-  }, [])
+  }, [paramOffererId])
 
   if (isOfferersLoading) {
     return <Spinner />

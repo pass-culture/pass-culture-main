@@ -1,5 +1,6 @@
 import { useFormikContext } from 'formik'
 import { useState } from 'react'
+import { useSelector } from 'react-redux'
 
 import {
   GetOffererResponseModel,
@@ -10,11 +11,12 @@ import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { AddressSelect } from 'components/Address/Address'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import {
-  RouteLeavingGuard,
   BlockerFunction,
+  RouteLeavingGuard,
 } from 'components/RouteLeavingGuard/RouteLeavingGuard'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { useCurrentUser } from 'hooks/useCurrentUser'
+import { selectCurrentOffererId } from 'store/user/selectors'
 import { Banner } from 'ui-kit/Banners/Banner/Banner'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
@@ -38,6 +40,7 @@ type VenueFormProps = {
 
 type ShouldBlockVenueNavigationProps = {
   offererId: number
+  selectedOffererId: number | null
   user: SharedCurrentUserResponseModel
 }
 
@@ -46,12 +49,16 @@ type ShouldBlockVenueNavigation = (
 ) => BlockerFunction
 
 export const shouldBlockVenueNavigation: ShouldBlockVenueNavigation =
-  ({ offererId, user }: ShouldBlockVenueNavigationProps): BlockerFunction =>
+  ({
+    offererId,
+    user,
+    selectedOffererId,
+  }: ShouldBlockVenueNavigationProps): BlockerFunction =>
   ({ nextLocation }) => {
     const url = venueSubmitRedirectUrl(offererId, user)
     const nextUrl = nextLocation.pathname + nextLocation.search
 
-    return !nextUrl.startsWith(url)
+    return selectedOffererId === offererId && !nextUrl.startsWith(url)
   }
 
 export const VenueCreationForm = ({
@@ -62,6 +69,7 @@ export const VenueCreationForm = ({
   const { initialValues, isSubmitting } =
     useFormikContext<VenueCreationFormValues>()
   const user = useCurrentUser()
+  const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const [isFieldNameFrozen, setIsFieldNameFrozen] = useState(false)
   const [isSiretValued, setIsSiretValued] = useState(true)
@@ -179,6 +187,7 @@ export const VenueCreationForm = ({
           shouldBlockNavigation={shouldBlockVenueNavigation({
             offererId: offerer.id,
             user: user.currentUser,
+            selectedOffererId,
           })}
           dialogTitle="Voulez-vous quitter la création de lieu ?"
         >
