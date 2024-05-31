@@ -7,6 +7,7 @@ import { RedirectDialog } from 'components/Dialog/RedirectDialog/RedirectDialog'
 import { SoftDeletedOffererWarning } from 'components/SoftDeletedOffererWarning/SoftDeletedOffererWarning'
 import { Events } from 'core/FirebaseEvents/constants'
 import { SelectOption } from 'custom_types/form'
+import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import fullWaitIcon from 'icons/full-wait.svg'
 import strokePartyIcon from 'icons/stroke-party.svg'
 import { VenueList } from 'pages/Home/Venues/VenueList'
@@ -36,6 +37,8 @@ export const Offerers = ({
   venueTypes,
 }: OfferersProps) => {
   const [openSuccessDialog, setOpenSuccessDialog] = useState(false)
+
+  const isNewInterfaceActive = useIsNewInterfaceActive()
 
   const location = useLocation()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -100,12 +103,16 @@ export const Offerers = ({
             </RedirectDialog>
           )}
 
-          <h2 className={styles['title']}>Structure</h2>
+          {!isNewInterfaceActive && (
+            <>
+              <h2 className={styles['title']}>Structure</h2>
 
-          <OffererDetails
-            isUserOffererValidated={isUserOffererValidated}
-            offererOptions={offererOptions}
-          />
+              <OffererDetails
+                isUserOffererValidated={isUserOffererValidated}
+                offererOptions={offererOptions}
+              />
+            </>
+          )}
 
           {selectedOfferer && permanentVenues.length > 0 && (
             <PartnerPages

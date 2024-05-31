@@ -1,4 +1,4 @@
-import { Given, Then, When } from '@badeball/cypress-cucumber-preprocessor'
+import { Then, When } from '@badeball/cypress-cucumber-preprocessor'
 
 When('I download reimbursement details', () => {
   cy.findByTestId('dropdown-menu-trigger').click()

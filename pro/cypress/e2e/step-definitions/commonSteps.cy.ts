@@ -1,4 +1,9 @@
-import { When, Given, Then, DataTable } from '@badeball/cypress-cucumber-preprocessor'
+import {
+  DataTable,
+  Given,
+  Then,
+  When,
+} from '@badeball/cypress-cucumber-preprocessor'
 
 Given('I open the {string} page', (page: string) => {
   cy.visit('/' + page)
@@ -36,26 +41,31 @@ When('I want to create {string} offer', (offerType: string) => {
 })
 
 When('I select offerer {string}', (offererName: string) => {
-  cy.findByLabelText('Structure').select(offererName)
+  cy.findByTestId('offerer-select').click()
+  cy.findByText(/Changer de structure/).click()
+  cy.findByTestId('offerers-selection-menu').findByText(offererName).click()
 })
 
 Then('These results should be displayed', (dataTable: DataTable) => {
   const numRows = dataTable.rows().length
   const numColumns = dataTable.raw()[0].length
   const data = dataTable.raw()
-  var reLAbelCount = new RegExp(numRows + " " + "(offre|réservation)" + (numRows > 1 ? "s" : ""), "g");
+  const reLAbelCount = new RegExp(
+    numRows + ' ' + '(offre|réservation)' + (numRows > 1 ? 's' : ''),
+    'g'
+  )
 
   cy.findAllByTestId('offer-item-row').should('have.length', numRows)
   cy.contains(reLAbelCount)
 
-  for (var rowLine = 0; rowLine < numRows; rowLine++) {
+  for (let rowLine = 0; rowLine < numRows; rowLine++) {
     const bookLineArray = data[rowLine + 1]
 
     cy.findAllByTestId('offer-item-row')
       .eq(rowLine)
       .within(() => {
         cy.get('td').then(($elt) => {
-          for (var column = 0; column < numColumns; column++) {
+          for (let column = 0; column < numColumns; column++) {
             cy.wrap($elt).eq(column).should('contain', bookLineArray[column])
           }
         })

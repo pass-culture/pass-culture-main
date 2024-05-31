@@ -1,5 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
@@ -10,6 +11,13 @@ import {
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { AppLayout, AppLayoutProps } from '../AppLayout'
+
+vi.mock('apiClient/api', () => ({
+  api: {
+    listOfferersNames: vi.fn(),
+    getOfferer: vi.fn(),
+  },
+}))
 
 const renderApp = async (
   props: AppLayoutProps,
@@ -38,6 +46,14 @@ describe('src | AppLayout', () => {
       ...defaultGetOffererResponseModel,
       isValidated: true,
     })
+
+    vi.spyOn(router, 'useSearchParams').mockReturnValue([
+      new URLSearchParams({ structure: '1' }),
+      vi.fn(),
+    ])
+
+    window.addEventListener = vi.fn()
+    window.removeEventListener = vi.fn()
   })
 
   describe('side navigation', () => {
