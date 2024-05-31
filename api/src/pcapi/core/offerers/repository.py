@@ -382,28 +382,43 @@ def get_venues_by_ids(ids: Collection[int]) -> Collection[models.Venue]:
 
 
 def find_offerers_validated_3_days_ago_with_no_venues() -> list[models.Offerer]:
-    subquery_get_physical_venues = db.session.query(models.Venue.managingOffererId).where(
-        sqla.not_(models.Venue.isVirtual)
+    offerer_ids_recently_validated_subquery = models.Offerer.query.filter(
+        models.Offerer.isActive,
+        sqla.cast(models.Offerer.dateValidated, sqla.Date) == (date.today() - timedelta(days=3)),
+    ).with_entities(models.Offerer.id)
+
+    has_venues_with_offers_subquery = (
+        sqla.select(1)
+        .select_from(models.Venue)
+        .join(offers_models.Offer)
+        .where(models.Venue.managingOffererId == models.Offerer.id)
+        .correlate(models.Offerer)
+        .exists()
     )
 
-    subquery_get_digital_venues_with_offers = (
-        db.session.query(models.Venue.managingOffererId)
-        .join(Offer)
-        .where(models.Venue.isVirtual, Offer.venueId == models.Venue.id)
+    has_physical_venues_subquery = (
+        sqla.select(1)
+        .select_from(models.Venue)
+        .where(models.Venue.managingOffererId == models.Offerer.id, sqla.not_(models.Venue.isVirtual))
+        .correlate(models.Offerer)
+        .exists()
     )
-    # when offerer is created, a digital venue is created by default
-    # query should return all offerers validated 3 days ago with only digital venue without offers
 
-    return (
-        db.session.query(models.Offerer)
-        .filter(models.Offerer.id.not_in(subquery_get_physical_venues))
-        .filter(models.Offerer.id.not_in(subquery_get_digital_venues_with_offers))
-        .filter(
-            models.Offerer.isActive.is_(True),
-            sqla.cast(models.Offerer.dateValidated, sqla.Date) == (date.today() - timedelta(days=3)),
+    offerer_recently_validated_with_offers = (
+        db.session.query(
+            models.Offerer,
+            has_venues_with_offers_subquery.label("hasVenuesWithOffers"),
+            has_physical_venues_subquery.label("hasPhysicalVenues"),
         )
+        .filter(models.Offerer.id.in_(offerer_ids_recently_validated_subquery))
         .all()
     )
+
+    return [
+        row.Offerer
+        for row in offerer_recently_validated_with_offers
+        if row.hasVenuesWithOffers is False and row.hasPhysicalVenues is False
+    ]
 
 
 def get_emails_by_venue(venue: models.Venue) -> set[str]:
