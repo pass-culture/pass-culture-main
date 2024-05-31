@@ -12,6 +12,7 @@ class BatchEvent(enum.Enum):
     USER_IDENTITY_CHECK_STARTED = "user_identity_check_started"
     HAS_ADDED_OFFER_TO_FAVORITES = "has_added_offer_to_favorites"
     HAS_UBBLE_KO_STATUS = "has_ubble_ko_status"
+    HAS_BOOKED_OFFER = "has_booked_offer"
 
 
 def update_user_attributes(

@@ -122,6 +122,15 @@ def track_offer_added_to_favorites_event(user_id: int, offer: offers_models.Offe
     batch_tasks.track_event_task.delay(payload)
 
 
+def track_offer_booked_event(user_id: int, offer: offers_models.Offer) -> None:
+    event_name = push_notifications.BatchEvent.HAS_BOOKED_OFFER
+    formatted_offer_attributes = format_offer_attributes(offer)
+    payload = batch_tasks.TrackBatchEventRequest(
+        event_name=event_name, event_payload=formatted_offer_attributes, user_id=user_id
+    )
+    batch_tasks.track_event_task.delay(payload)
+
+
 def format_offer_attributes(offer: offers_models.Offer) -> dict:
     stock = min(
         offer.bookableStocks,
