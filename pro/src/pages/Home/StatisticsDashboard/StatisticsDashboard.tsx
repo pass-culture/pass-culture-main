@@ -34,6 +34,7 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
   const { currentUser } = useCurrentUser()
 
   const isNewSideBarNavigation = useIsNewInterfaceActive()
+  const createOfferLink = `/offre/creation${!isNewSideBarNavigation ? `?structure=${offerer.id}` : ''}`
 
   const displayCreateOfferButton =
     (isNewSideBarNavigation && currentUser.isAdmin) || !isNewSideBarNavigation
@@ -60,7 +61,7 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
             variant={ButtonVariant.PRIMARY}
             link={{
               isExternal: false,
-              to: `/offre/creation?structure=${offerer.id}`,
+              to: createOfferLink,
             }}
             icon={fullMoreIcon}
           >

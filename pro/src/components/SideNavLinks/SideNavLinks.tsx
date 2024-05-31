@@ -10,6 +10,7 @@ import { GET_OFFERER_QUERY_KEY } from 'config/swrQueryKeys'
 import { hasStatusCode } from 'core/OfferEducational/utils/hasStatusCode'
 import { SAVED_OFFERER_ID_KEY } from 'core/shared/constants'
 import { useActiveFeature } from 'hooks/useActiveFeature'
+import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import fullDownIcon from 'icons/full-down.svg'
 import fullUpIcon from 'icons/full-up.svg'
 import strokeCollaboratorIcon from 'icons/stroke-collaborator.svg'
@@ -45,6 +46,7 @@ const COLLECTIVE_LINKS = ['/offres/collectives']
 
 export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   const isOffererStatsActive = useActiveFeature('ENABLE_OFFERER_STATS')
+  const isNewInterfaceActive = useIsNewInterfaceActive()
   const currentUser = useSelector(selectCurrentUser)
 
   const location = useLocation()
@@ -67,7 +69,11 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
         return null
       }
     },
-    { fallbackData: null, shouldRetryOnError: false, onError: () => {} }
+    {
+      fallbackData: null,
+      shouldRetryOnError: false,
+      onError: () => {},
+    }
   )
 
   const isUserOffererValidated = !selectedOffererQuery.error
@@ -90,7 +96,8 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
     ? localStorage.getItem(SAVED_OFFERER_ID_KEY)
     : null
   const createOfferPageUrl =
-    '/offre/creation' + (offererId ? `?structure=${offererId}` : '')
+    '/offre/creation' +
+    (!isNewInterfaceActive && offererId ? `?structure=${offererId}` : '')
 
   return (
     <ul

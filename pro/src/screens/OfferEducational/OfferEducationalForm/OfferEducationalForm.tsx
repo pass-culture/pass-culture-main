@@ -121,15 +121,21 @@ export const OfferEducationalForm = ({
         } else {
           await setFieldValue('venueId', initialValues.venueId)
         }
+      } else {
+        setIsEligible(false)
+        setCurrentOfferer(null)
+        setVenuesOptions([])
       }
     },
     [values.offererId, userOfferers, notify, mode]
   )
 
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    onOffererChange(values.offererId)
-  }, [])
+    if (values.offererId) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      onOffererChange(values.offererId)
+    }
+  }, [values.offererId, userOfferers])
 
   return (
     <>

@@ -24,6 +24,7 @@ const defaultShouldBlockNavigationInVenueProps = {
   isNewOfferCreationJourney: true,
   offererId: offererId,
   user: userAdmin,
+  selectedOffererId: offererId,
 }
 
 describe('shouldBlockNavigation', () => {

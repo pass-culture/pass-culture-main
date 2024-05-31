@@ -15,13 +15,19 @@ const renderVenueCreation = () => {
     initialRouterEntries: [
       `/structures/${defaultGetOffererResponseModel.id}/lieux/creation`,
     ],
+    storeOverrides: {
+      user: {
+        currentUser: sharedCurrentUserFactory(),
+        selectedOffererId: defaultGetOffererResponseModel.id,
+      },
+    },
   })
 }
 
 vi.mock('react-router-dom', async () => ({
   ...(await vi.importActual('react-router-dom')),
   useParams: () => ({
-    offererId: '1234',
+    offererId: defaultGetOffererResponseModel.id.toString(),
   }),
 }))
 vi.mock('utils/windowMatchMedia', () => ({
@@ -82,6 +88,7 @@ describe('route VenueCreation', () => {
     const homeNavBarButton = await screen.findByText(
       'Enregistrer et créer le lieu'
     )
+
     await userEvent.click(homeNavBarButton)
     const modal = screen.queryByText(
       'Voulez-vous quitter la création de lieu ?'

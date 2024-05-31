@@ -42,6 +42,7 @@ import fullRightIcon from 'icons/full-right.svg'
 import fullShowIcon from 'icons/full-show.svg'
 import fullSortIcon from 'icons/full-sort.svg'
 import fullStarIcon from 'icons/full-star.svg'
+import fullSwitchIcon from 'icons/full-switch.svg'
 import fullThreeDotsIcon from 'icons/full-three-dots.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import fullUpIcon from 'icons/full-up.svg'
@@ -186,6 +187,7 @@ export const fullIcons: IconListItem[] = [
   { src: fullProfilIcon },
   { src: fullCloseIcon },
   { src: fullThreeDotsIcon },
+  { src: fullSwitchIcon },
 ]
 
 export const strokeIcons: IconListItem[] = [
