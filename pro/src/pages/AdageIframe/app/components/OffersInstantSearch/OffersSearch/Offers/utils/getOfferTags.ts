@@ -101,7 +101,7 @@ export function getOfferTags(
     tags.push({
       icon: '🕐',
       text: `${formatLocalTimeDateString(
-        '2024-06-13T08:33:26.210795Z',
+        offer.stock.beginningDatetime,
         offer.venue.departmentCode,
         'EEEE d MMM yyyy à HH:mm'
       )}`,
