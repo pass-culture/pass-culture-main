@@ -10,18 +10,27 @@
   &-label-row {
     display: inline-flex;
     align-items: flex-start;
+
+    &-with-description {
+      align-items: center;
+    }
+  }
+
+  &-label {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    &-with-description {
+      margin-left: rem.torem(4px);
+    }
   }
 
   &-description {
     @include fonts.caption;
 
-    margin-left: rem.torem(28px);
     color: var(--color-grey-dark);
-  }
-
-  &-label {
-    display: flex;
-    width: 100%;
+    margin-top: rem.torem(4px);
   }
 
   &-icon {

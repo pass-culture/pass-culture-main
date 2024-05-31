@@ -1,0 +1,36 @@
+@use "styles/variables/_forms.scss" as forms;
+@use "styles/mixins/_rem.scss" as rem;
+
+.duo-checkbox {
+  display: flex;
+  align-items: center;
+  gap: rem.torem(12px);
+  padding: rem.torem(16px);
+  border: rem.torem(1px) solid var(--color-grey-dark);
+  border-radius: rem.torem(8px);
+  margin-bottom: rem.torem(32px);
+
+  &:hover {
+    box-shadow: forms.$input-hover-shadow;
+    cursor: pointer;
+  }
+
+  &:focus-within {
+    outline: rem.torem(1px) solid var(--color-black);
+    outline-offset: rem.torem(4px);
+  }
+
+  &-selected {
+    border-color: var(--color-secondary-light);
+    border: rem.torem(2px) solid var(--color-secondary-light);
+    font-weight: 700;
+    background-color: var(--color-background-secondary);
+  }
+
+  &-icon {
+    flex-shrink: 0;
+    width: rem.torem(40px);
+    height: rem.torem(40px);
+    color: var(--color-secondary-light);
+  }
+}
