@@ -15,6 +15,7 @@ interface BaseCheckboxProps
   ref?: React.Ref<HTMLInputElement>
   partialCheck?: boolean
   exceptionnallyHideLabelDespiteA11y?: boolean
+  description?: string
 }
 
 export const BaseCheckbox = ({
@@ -25,6 +26,7 @@ export const BaseCheckbox = ({
   withBorder,
   partialCheck,
   exceptionnallyHideLabelDespiteA11y,
+  description,
   ...props
 }: BaseCheckboxProps): JSX.Element => {
   const checkboxRef = useRef<HTMLInputElement>(null)
@@ -47,7 +49,12 @@ export const BaseCheckbox = ({
         className
       )}
     >
-      <span className={styles['base-checkbox-label-row']}>
+      <span
+        className={cn(styles['base-checkbox-label-row'], {
+          [styles['base-checkbox-label-row-with-description']]:
+            Boolean(description),
+        })}
+      >
         <input
           ref={checkboxRef}
           aria-invalid={hasError}
@@ -67,9 +74,16 @@ export const BaseCheckbox = ({
         <span
           className={cn(styles['base-checkbox-label'], {
             ['visually-hidden']: Boolean(exceptionnallyHideLabelDespiteA11y),
+            [styles['base-checkbox-label-with-description']]:
+              Boolean(description),
           })}
         >
           {label}
+          {description && (
+            <span className={styles['base-checkbox-description']}>
+              {description}
+            </span>
+          )}
         </span>
       </span>
     </label>

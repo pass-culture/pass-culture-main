@@ -79,7 +79,7 @@ describe('AllocineProviderForm', () => {
   it('should display the isDuo checkbox checked by default on creation', async () => {
     await renderAllocineProviderForm(props)
 
-    const isDuoCheckbox = screen.getByLabelText(`Accepter les réservations DUO`)
+    const isDuoCheckbox = screen.getByLabelText(/Accepter les réservations duo/)
     expect(isDuoCheckbox).toBeInTheDocument()
     expect(isDuoCheckbox).toBeChecked()
   })
@@ -104,7 +104,7 @@ describe('AllocineProviderForm', () => {
       exact: false,
     })
     const quantityField = screen.getByLabelText(/Nombre de places\/séance/)
-    const isDuoCheckbox = screen.getByLabelText(`Accepter les réservations DUO`)
+    const isDuoCheckbox = screen.getByLabelText(/Accepter les réservations duo/)
 
     await userEvent.type(priceField, '10')
     await userEvent.type(quantityField, '5')
@@ -228,9 +228,7 @@ describe('AllocineProviderForm', () => {
     })
     expect(quantityField).toHaveValue(50)
 
-    const isDuoField = screen.getByLabelText('Accepter les réservations DUO', {
-      exact: false,
-    })
+    const isDuoField = screen.getByLabelText(/Accepter les réservations duo/)
     expect(isDuoField).not.toBeChecked()
   })
 
@@ -305,7 +303,7 @@ describe('AllocineProviderForm', () => {
       exact: false,
     })
     const quantityField = screen.getByLabelText(/Nombre de places\/séance/)
-    const isDuoCheckbox = screen.getByLabelText(`Accepter les réservations DUO`)
+    const isDuoCheckbox = screen.getByLabelText(/Accepter les réservations duo/)
 
     await userEvent.clear(priceField)
     await userEvent.clear(quantityField)
