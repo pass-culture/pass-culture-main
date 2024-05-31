@@ -91,7 +91,7 @@ export const Offers = ({
     !adageUser.preferences?.feedback_form_closed &&
     adageUser.role !== AdageFrontRoles.READONLY
 
-  const hitsIds = hits.map((hit) => Number(hit.objectID.split('-')[1]))
+  const hitsIds = hits.map((hit) => Number(hit.objectID.replace('T-', '')))
   const { data, isLoading } = useSWR(
     hitsIds.length > 0
       ? [GET_COLLECTIVE_OFFER_TEMPLATES_QUERY_KEY, ...hitsIds]
