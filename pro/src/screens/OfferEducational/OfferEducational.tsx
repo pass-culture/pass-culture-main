@@ -1,13 +1,14 @@
 import { FormikProvider, useFormik } from 'formik'
+import { useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
 import {
-  GetEducationalOffererResponseModel,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
+  GetEducationalOffererResponseModel,
 } from 'apiClient/v1'
 import { OfferEducationalActions } from 'components/OfferEducationalActions/OfferEducationalActions'
 import {
@@ -15,10 +16,10 @@ import {
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
 } from 'config/swrQueryKeys'
 import {
-  Mode,
-  OfferEducationalFormValues,
   isCollectiveOffer,
   isCollectiveOfferTemplate,
+  Mode,
+  OfferEducationalFormValues,
 } from 'core/OfferEducational/types'
 import { applyVenueDefaultsToFormValues } from 'core/OfferEducational/utils/applyVenueDefaultsToFormValues'
 import { computeInitialValuesFromOffer } from 'core/OfferEducational/utils/computeInitialValuesFromOffer'
@@ -33,12 +34,14 @@ import {
 } from 'core/shared/constants'
 import { SelectOption } from 'custom_types/form'
 import { useActiveFeature } from 'hooks/useActiveFeature'
+import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import { useNotification } from 'hooks/useNotification'
 import {
   createPatchOfferPayload,
   createPatchOfferTemplatePayload,
 } from 'pages/CollectiveOfferEdition/utils/createPatchOfferPayload'
 import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
+import { selectCurrentOffererId } from 'store/user/selectors'
 
 import styles from './OfferEducational.module.scss'
 import { OfferEducationalForm } from './OfferEducationalForm/OfferEducationalForm'
@@ -69,11 +72,14 @@ export const OfferEducational = ({
   isOfferBooked = false,
   isTemplate,
 }: OfferEducationalProps): JSX.Element => {
+  const isNewInterfaceActive = useIsNewInterfaceActive()
   const notify = useNotification()
   const navigate = useNavigate()
   const location = useLocation()
   const { imageOffer, onImageDelete, onImageUpload, handleImageOnSubmit } =
     useCollectiveOfferImageUpload(offer, isTemplate)
+
+  const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const isMarseilleEnabled = useActiveFeature('WIP_ENABLE_MARSEILLE')
   const isCustomContactActive = useActiveFeature(
@@ -187,6 +193,15 @@ export const OfferEducational = ({
       isCustomContactActive
     ),
   })
+
+  if (
+    isNewInterfaceActive &&
+    mode === Mode.CREATION &&
+    formik.values.offererId !== selectedOffererId?.toString()
+  ) {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    formik.setFieldValue('offererId', selectedOffererId?.toString())
+  }
 
   return (
     <>

@@ -15,7 +15,7 @@ export const HeaderHelpDropdown = () => {
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
         <Button
-          variant={ButtonVariant.TERNARY}
+          variant={ButtonVariant.QUATERNARY}
           title="Centre d'aide"
           className={styles['dropdown-button']}
           icon={fullDownIcon}
@@ -28,6 +28,7 @@ export const HeaderHelpDropdown = () => {
         <DropdownMenu.Content
           className={cn(dropdownStyles['pop-in'], styles['pop-in'])}
           align="end"
+          sideOffset={16}
         >
           <div className={cn(dropdownStyles['menu'], styles['menu'])}>
             <HelpDropdownMenu />

@@ -1,15 +1,14 @@
 import { Form, FormikProvider, useFormik } from 'formik'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { useLocation } from 'react-router-dom'
+import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
-import {
-  GetOffererMemberResponseModel,
-  OffererMemberStatus,
-} from 'apiClient/v1'
+import { OffererMemberStatus } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import { GET_MEMBERS_QUERY_KEY } from 'config/swrQueryKeys'
 import { OffererLinkEvents } from 'core/FirebaseEvents/constants'
 import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import { useNotification } from 'hooks/useNotification'
@@ -38,10 +37,16 @@ export const AttachmentInvitations = ({
   const notify = useNotification()
   const [isLoading, setIsLoading] = useState(false)
   const [displayAllMembers, setDisplayAllMembers] = useState(false)
-  const [members, setMembers] = useState<Array<GetOffererMemberResponseModel>>(
-    []
-  )
+
   const [showInvitationForm, setShowInvitationForm] = useState(false)
+
+  const { data } = useSWR(
+    [GET_MEMBERS_QUERY_KEY, offererId],
+    ([, offererIdParam]) =>
+      !offererIdParam ? null : api.getOffererMembers(offererId),
+    { fallbackData: null }
+  )
+  const members = data?.members ?? []
 
   const onSubmit = async ({ email }: { email: string }) => {
     try {
@@ -73,15 +78,6 @@ export const AttachmentInvitations = ({
     validationSchema,
     validateOnChange: false,
   })
-
-  useEffect(() => {
-    const fetchOffererMembers = async () => {
-      const { members } = await api.getOffererMembers(offererId)
-      setMembers(members)
-    }
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    fetchOffererMembers()
-  }, [])
 
   const shouldScrollToSection = location.hash === SECTION_ID
   const scrollToSection = useCallback((node: HTMLElement) => {
