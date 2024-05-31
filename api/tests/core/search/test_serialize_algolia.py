@@ -59,7 +59,6 @@ def test_serialize_offer():
         "distinct": "2221001648",
         "objectID": offer.id,
         "offer": {
-            "allocineId": None,
             "artist": "Author Performer Speaker Stage Director",
             "bookMacroSection": macro_section,
             "dateCreated": offer.dateCreated.timestamp(),
@@ -74,29 +73,16 @@ def test_serialize_offer():
             "isThing": True,
             "last30DaysBookings": 0,
             "last30DaysBookingsRange": algolia.Last30DaysBookingsRange.VERY_LOW.value,
-            "movieGenres": None,
-            "musicType": None,
             "name": "Titre formidable",
             "nativeCategoryId": offer.subcategory.native_category_id,
             "prices": [decimal.Decimal("10.00")],
             "rankingWeight": 2,
             "searchGroupName": "LIVRES",
             "searchGroupNamev2": "LIVRES",
-            "showType": None,
             "students": [],
             "subcategoryId": offer.subcategory.id,
-            "thumbUrl": None,
             "tags": [],
             "times": [],
-            "gtl_level1": None,
-            "gtl_level2": None,
-            "gtl_level3": None,
-            "gtl_level4": None,
-            "gtlCodeLevel1": None,
-            "gtlCodeLevel2": None,
-            "gtlCodeLevel3": None,
-            "gtlCodeLevel4": None,
-            "visa": None,
         },
         "offerer": {
             "name": "Les Librairies Associées",
@@ -149,10 +135,10 @@ def test_serialize_offer_extra_data(
     serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
 
     # then
-    assert serialized["offer"]["musicType"] == expected_music_style
-    assert serialized["offer"]["showType"] == expected_show_type
-    assert serialized["offer"]["movieGenres"] == expected_movie_genres
-    assert serialized["offer"]["bookMacroSection"] == expected_macro_section
+    assert serialized["offer"].get("musicType") == expected_music_style
+    assert serialized["offer"].get("showType") == expected_show_type
+    assert serialized["offer"].get("movieGenres") == expected_movie_genres
+    assert serialized["offer"].get("bookMacroSection") == expected_macro_section
 
 
 @override_settings(ALGOLIA_LAST_30_DAYS_BOOKINGS_RANGE_THRESHOLDS=[1, 2, 3, 4])
@@ -241,7 +227,7 @@ def test_serialize_offer_gtl():
     assert serialized["offer"]["gtl_level1"] == "Littérature"
     assert serialized["offer"]["gtl_level2"] == "Œuvres classiques"
     assert serialized["offer"]["gtl_level3"] == "Antiquité"
-    assert serialized["offer"]["gtl_level4"] is None
+    assert "gtl_level4" not in serialized["offer"]
     assert serialized["offer"]["gtlCodeLevel1"] == "01000000"
     assert serialized["offer"]["gtlCodeLevel2"] == "01030000"
     assert serialized["offer"]["gtlCodeLevel3"] == "01030100"
