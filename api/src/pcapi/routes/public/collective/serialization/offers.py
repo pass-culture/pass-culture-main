@@ -48,7 +48,7 @@ class ListCollectiveOffersQueryModel(BaseModel):
 
 class OfferVenueModel(BaseModel):
     venueId: int | None = Field(
-        None, description=fields.VENUE_ID_FIELD_DATA["description"], example=fields.VENUE_ID_FIELD_DATA["example"]  # type: ignore[arg-type]
+        None, description=fields.VENUE_ID_FIELD_DATA.description, example=fields.VENUE_ID_FIELD_DATA.example
     )
     otherAddress: str | None
     addressType: collective_offers_serialize.OfferAddressType
@@ -338,134 +338,134 @@ class GetCollectiveFormatListModel(BaseModel):
 
 class PostCollectiveOfferBodyModel(BaseModel):
     # offer part
-    venue_id: int = Field(..., description=fields.VENUE_ID_FIELD_DATA["description"])  # type: ignore[arg-type]
+    venue_id: int = Field(..., description=fields.VENUE_ID_FIELD_DATA.description)
     name: str = Field(
         ...,
-        description=fields.COLLECTIVE_OFFER_NAME_DESCRIPTION,
-        example=fields.COLLECTIVE_OFFER_NAME_EXAMPLE,
+        description=fields.COLLECTIVE_OFFER_NAME.description,
+        example=fields.COLLECTIVE_OFFER_NAME.example,
     )
     description: str = Field(
         ...,
-        description=fields.COLLECTIVE_OFFER_DESCRIPTION_DESCRIPTION,
-        example=fields.COLLECTIVE_OFFER_DESCRIPTION_EXAMPLE,
+        description=fields.COLLECTIVE_OFFER_DESCRIPTION.description,
+        example=fields.COLLECTIVE_OFFER_DESCRIPTION.example,
     )
     subcategory_id: str | None = Field(
         None,
-        description=fields.COLLECTIVE_OFFER_SUBCATEGORY_ID_FIELD_DATA["description"],
-        example=fields.COLLECTIVE_OFFER_SUBCATEGORY_ID_FIELD_DATA["example"],
+        description=fields.COLLECTIVE_OFFER_SUBCATEGORY_ID_FIELD_DATA.description,
+        example=fields.COLLECTIVE_OFFER_SUBCATEGORY_ID_FIELD_DATA.example,
     )
     formats: list[subcategories.EacFormat] | None = Field(
         None,
-        description=fields.COLLECTIVE_OFFER_FORMATS_FIELD_DATA["description"],  # type: ignore[arg-type]
-        example=fields.COLLECTIVE_OFFER_FORMATS_FIELD_DATA["example"],
+        description=fields.COLLECTIVE_OFFER_FORMATS_FIELD_DATA.description,
+        example=fields.COLLECTIVE_OFFER_FORMATS_FIELD_DATA.example,
     )
     booking_emails: list[str] = Field(
         ...,
-        description=fields.COLLECTIVE_OFFER_BOOKING_EMAILS_FIELD_DATA["description"],  # type: ignore[arg-type]
-        example=fields.COLLECTIVE_OFFER_BOOKING_EMAILS_FIELD_DATA["example"],
+        description=fields.COLLECTIVE_OFFER_BOOKING_EMAILS_FIELD_DATA.description,
+        example=fields.COLLECTIVE_OFFER_BOOKING_EMAILS_FIELD_DATA.example,
     )
     contact_email: str = Field(
         ...,
-        description=fields.COLLECTIVE_OFFER_CONTACT_EMAIL_FIELD_DATA["description"],
-        example=fields.COLLECTIVE_OFFER_CONTACT_EMAIL_FIELD_DATA["example"],
+        description=fields.COLLECTIVE_OFFER_CONTACT_EMAIL_FIELD_DATA.description,
+        example=fields.COLLECTIVE_OFFER_CONTACT_EMAIL_FIELD_DATA.example,
     )
     contact_phone: str = Field(
         ...,
-        description=fields.COLLECTIVE_OFFER_CONTACT_PHONE_FIELD_DATA["description"],
-        example=fields.COLLECTIVE_OFFER_CONTACT_PHONE_FIELD_DATA["example"],
+        description=fields.COLLECTIVE_OFFER_CONTACT_PHONE_FIELD_DATA.description,
+        example=fields.COLLECTIVE_OFFER_CONTACT_PHONE_FIELD_DATA.example,
     )
     domains: list[int] = Field(
         ...,
-        description=fields.COLLECTIVE_OFFER_EDUCATIONAL_DOMAINS_FIELD_DATA["description"],  # type: ignore[arg-type]
-        example=fields.COLLECTIVE_OFFER_EDUCATIONAL_DOMAINS_FIELD_DATA["example"],
+        description=fields.COLLECTIVE_OFFER_EDUCATIONAL_DOMAINS_FIELD_DATA.description,
+        example=fields.COLLECTIVE_OFFER_EDUCATIONAL_DOMAINS_FIELD_DATA.example,
     )
     duration_minutes: int | None = Field(
         None,
-        description=fields.DURATION_MINUTES_FIELD_DATA["description"],  # type: ignore[arg-type]
-        example=fields.DURATION_MINUTES_FIELD_DATA["example"],
+        description=fields.DURATION_MINUTES_FIELD_DATA.description,
+        example=fields.DURATION_MINUTES_FIELD_DATA.example,
     )
     students: list[str] = Field(
         ...,
-        description=fields.COLLECTIVE_OFFER_STUDENT_LEVELS_FIELD_DATA["description"],  # type: ignore[arg-type]
-        example=fields.COLLECTIVE_OFFER_STUDENT_LEVELS_FIELD_DATA["example"],
+        description=fields.COLLECTIVE_OFFER_STUDENT_LEVELS_FIELD_DATA.description,
+        example=fields.COLLECTIVE_OFFER_STUDENT_LEVELS_FIELD_DATA.example,
     )
     audio_disability_compliant: bool = Field(
         False,
-        description=fields.AUDIO_DISABILITY_FIELD_DATA["description"],  # type: ignore[arg-type]
-        example=fields.AUDIO_DISABILITY_FIELD_DATA["example"],
+        description=fields.AUDIO_DISABILITY_FIELD_DATA.description,
+        example=fields.AUDIO_DISABILITY_FIELD_DATA.example,
     )
     mental_disability_compliant: bool = Field(
         False,
-        description=fields.MENTAL_DISABILITY_FIELD_DATA["description"],  # type: ignore[arg-type]
-        example=fields.MENTAL_DISABILITY_FIELD_DATA["example"],
+        description=fields.MENTAL_DISABILITY_FIELD_DATA.description,
+        example=fields.MENTAL_DISABILITY_FIELD_DATA.example,
     )
     motor_disability_compliant: bool = Field(
         False,
-        description=fields.MOTOR_DISABILITY_FIELD_DATA["description"],  # type: ignore[arg-type]
-        example=fields.MOTOR_DISABILITY_FIELD_DATA["example"],
+        description=fields.MOTOR_DISABILITY_FIELD_DATA.description,
+        example=fields.MOTOR_DISABILITY_FIELD_DATA.example,
     )
     visual_disability_compliant: bool = Field(
         False,
-        description=fields.VISUAL_DISABILITY_FIELD_DATA["description"],  # type: ignore[arg-type]
-        example=fields.VISUAL_DISABILITY_FIELD_DATA["example"],
+        description=fields.VISUAL_DISABILITY_FIELD_DATA.description,
+        example=fields.VISUAL_DISABILITY_FIELD_DATA.example,
     )
     offer_venue: OfferVenueModel
     isActive: bool = Field(
         ...,
-        description=fields.COLLECTIVE_OFFER_IS_ACTIVE_FIELD_DATA["description"],  # type: ignore[arg-type]
-        example=fields.COLLECTIVE_OFFER_IS_ACTIVE_FIELD_DATA["example"],
+        description=fields.COLLECTIVE_OFFER_IS_ACTIVE_FIELD_DATA.description,
+        example=fields.COLLECTIVE_OFFER_IS_ACTIVE_FIELD_DATA.example,
     )
     image_file: str | None = Field(
         None,
-        description=fields.IMAGE_FILE_FIELD_DATA["description"],
-        example=fields.IMAGE_FILE_FIELD_DATA["example"],
+        description=fields.IMAGE_FILE_FIELD_DATA.description,
+        example=fields.IMAGE_FILE_FIELD_DATA.example,
     )
     image_credit: str | None = Field(
         None,
-        description=fields.IMAGE_CREDIT_FIELD_DATA["description"],
-        example=fields.IMAGE_CREDIT_FIELD_DATA["example"],
+        description=fields.IMAGE_CREDIT_FIELD_DATA.description,
+        example=fields.IMAGE_CREDIT_FIELD_DATA.example,
     )
     nationalProgramId: int | None = Field(
         None,
-        description=fields.COLLECTIVE_OFFER_NATIONAL_PROGRAM_ID_FIELD_DATA["description"],  # type: ignore[arg-type]
-        example=fields.COLLECTIVE_OFFER_NATIONAL_PROGRAM_ID_FIELD_DATA["example"],
+        description=fields.COLLECTIVE_OFFER_NATIONAL_PROGRAM_ID_FIELD_DATA.description,
+        example=fields.COLLECTIVE_OFFER_NATIONAL_PROGRAM_ID_FIELD_DATA.example,
     )
     # stock part
     beginning_datetime: datetime = Field(
         ...,
-        description=fields.COLLECTIVE_OFFER_BEGINNING_DATETIME_FIELD_DATA["description"],
-        example=fields.COLLECTIVE_OFFER_BEGINNING_DATETIME_FIELD_DATA["example"],
+        description=fields.COLLECTIVE_OFFER_BEGINNING_DATETIME_FIELD_DATA.description,
+        example=fields.COLLECTIVE_OFFER_BEGINNING_DATETIME_FIELD_DATA.example,
     )
     booking_limit_datetime: datetime = Field(
         ...,
-        description=fields.COLLECTIVE_OFFER_BOOKING_LIMIT_DATETIME_FIELD_DATA["description"],
-        example=fields.COLLECTIVE_OFFER_BOOKING_LIMIT_DATETIME_FIELD_DATA["example"],
+        description=fields.COLLECTIVE_OFFER_BOOKING_LIMIT_DATETIME_FIELD_DATA.description,
+        example=fields.COLLECTIVE_OFFER_BOOKING_LIMIT_DATETIME_FIELD_DATA.example,
     )
     total_price: decimal.Decimal = Field(
         ...,
-        description=fields.COLLECTIVE_OFFER_TOTAL_PRICE_FIELD_DATA["description"],  # type: ignore[arg-type]
-        example=fields.COLLECTIVE_OFFER_TOTAL_PRICE_FIELD_DATA["example"],
+        description=fields.COLLECTIVE_OFFER_TOTAL_PRICE_FIELD_DATA.description,
+        example=fields.COLLECTIVE_OFFER_TOTAL_PRICE_FIELD_DATA.example,
     )
     number_of_tickets: int = Field(
         ...,
-        description=fields.COLLECTIVE_OFFER_NB_OF_TICKETS_FIELD_DATA["description"],  # type: ignore[arg-type]
-        example=fields.COLLECTIVE_OFFER_NB_OF_TICKETS_FIELD_DATA["example"],
+        description=fields.COLLECTIVE_OFFER_NB_OF_TICKETS_FIELD_DATA.description,
+        example=fields.COLLECTIVE_OFFER_NB_OF_TICKETS_FIELD_DATA.example,
     )
     educational_price_detail: str | None = Field(
         None,
-        description=fields.COLLECTIVE_OFFER_EDUCATIONAL_PRICE_DETAIL_FIELD_DATA["description"],
-        example=fields.COLLECTIVE_OFFER_EDUCATIONAL_PRICE_DETAIL_FIELD_DATA["example"],
+        description=fields.COLLECTIVE_OFFER_EDUCATIONAL_PRICE_DETAIL_FIELD_DATA.description,
+        example=fields.COLLECTIVE_OFFER_EDUCATIONAL_PRICE_DETAIL_FIELD_DATA.example,
     )
     # link to educational institution
     educational_institution_id: int | None = Field(
         None,
-        description=fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_ID_FIELD_DATA["description"],  # type: ignore[arg-type]
-        example=fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_ID_FIELD_DATA["example"],
+        description=fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_ID_FIELD_DATA.description,
+        example=fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_ID_FIELD_DATA.example,
     )
     educational_institution: str | None = Field(
         None,
-        description=fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_FIELD_DATA["description"],
-        example=fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_FIELD_DATA["example"],
+        description=fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_FIELD_DATA.description,
+        example=fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_FIELD_DATA.example,
     )
 
     _validate_number_of_tickets = number_of_tickets_validator("number_of_tickets")
