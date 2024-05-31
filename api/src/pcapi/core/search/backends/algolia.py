@@ -5,6 +5,7 @@ import decimal
 import enum
 import logging
 import re
+import typing
 import urllib.parse
 
 import algoliasearch.http.requester
@@ -507,7 +508,7 @@ class AlgoliaBackend(base.SearchBackend):
 
         # If you update this dictionary, please check whether you need to
         # also update `core.offerers.api.VENUE_ALGOLIA_INDEXED_FIELDS`.
-        object_to_index = {
+        object_to_index: dict[str, typing.Any] = {
             "distinct": distinct,
             "objectID": offer.id,
             "offer": {
@@ -571,6 +572,11 @@ class AlgoliaBackend(base.SearchBackend):
             },
             "_geoloc": position(venue),
         }
+
+        for section in ("offer", "offerer", "venue"):
+            object_to_index[section] = {
+                key: value for key, value in object_to_index[section].items() if value is not None
+            }
 
         return object_to_index
 
