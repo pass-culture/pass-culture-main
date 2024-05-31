@@ -33,7 +33,7 @@ const config: Config = {
 
   // TO DO: update once the proper devops config is available.
   url: getDocumentationBaseUrlFromEnv(),
-  baseUrl: '/pass-culture-api-documentation/',
+  baseUrl: '/',
   organizationName: 'pass-culture',
   projectName: 'pass-culture-api-documentation',
   deploymentBranch: 'gh-pages',
