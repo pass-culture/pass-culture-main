@@ -40,6 +40,7 @@ from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 from pcapi.models import db
+import pcapi.notifications.push.testing as push_testing
 from pcapi.utils import human_ids
 import pcapi.utils.db as db_utils
 
@@ -4009,6 +4010,27 @@ class UserRecreditTest:
             api.recredit_underage_users()
             assert user.deposit.amount == 30
             assert user.recreditAmountToShow is None
+
+    def test_notify_user_on_recredit(self):
+        with time_machine.travel("2020-05-01"):
+            user = users_factories.UnderageBeneficiaryFactory(subscription_age=15)
+            assert user.deposit.amount == 20
+
+        with time_machine.travel("2021-05-01"):
+            api.recredit_underage_users()
+            assert user.deposit.amount == 50
+
+        assert push_testing.requests[-1] == {
+            "can_be_asynchronously_retried": True,
+            "event_name": "recredited_account",
+            "event_payload": {
+                "deposit_amount": 50,
+                "deposit_type": "GRANT_15_17",
+                "deposits_count": 1,
+                "deposit_expiration_date": "2022-12-01T00:00:00",
+            },
+            "user_id": user.id,
+        }
 
 
 class ValidateFinanceIncidentTest:

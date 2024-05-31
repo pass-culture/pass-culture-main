@@ -97,6 +97,18 @@ def track_deposit_activated_event(user_id: int, deposit: finance_models.Deposit)
     batch_tasks.track_event_task.delay(payload)
 
 
+def track_account_recredited(user_id: int, deposit: finance_models.Deposit, deposit_count: int) -> None:
+    event_name = push_notifications.BatchEvent.RECREDITED_ACCOUNT
+    event_payload = {
+        "deposit_amount": round(deposit.amount),
+        "deposit_type": deposit.type.value,
+        "deposits_count": deposit_count,
+        "deposit_expiration_date": _format_date(deposit.expirationDate),
+    }
+    payload = batch_tasks.TrackBatchEventRequest(event_name=event_name, event_payload=event_payload, user_id=user_id)
+    batch_tasks.track_event_task.delay(payload)
+
+
 def track_identity_check_started_event(user_id: int, fraud_check_type: fraud_models.FraudCheckType) -> None:
     event_name = push_notifications.BatchEvent.USER_IDENTITY_CHECK_STARTED
     payload = batch_tasks.TrackBatchEventRequest(
