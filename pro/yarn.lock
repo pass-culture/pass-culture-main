@@ -8519,10 +8519,10 @@ levn@^0.4.1:
     prelude-ls "^1.2.1"
     type-check "~0.4.0"
 
-libphonenumber-js@1.10.62:
-  version "1.10.62"
-  resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.10.62.tgz#21bce1bb869514fa3c749de1f1caf121c4c63232"
-  integrity sha512-zbLf2yhgrs+TN4rHT7ral38WQEXjS4TWKp8QD3P5fJmHh3lCtTiPyr8XDPGaA7T41HDz2qxR7x3uwr+aNbShJQ==
+libphonenumber-js@1.11.2:
+  version "1.11.2"
+  resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.11.2.tgz#9ddd7d1a1e1be0e7c596c7e09487c362b4f1210c"
+  integrity sha512-V9mGLlaXN1WETzqQvSu6qf6XVAr3nFuJvWsHcuzCCCo6xUKawwSxOPTpan5CGOSKTn5w/bQuCZcLPJkyysgC3w==
 
 line-height@^0.3.1:
   version "0.3.1"
