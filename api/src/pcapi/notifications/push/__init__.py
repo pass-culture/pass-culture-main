@@ -8,6 +8,7 @@ from pcapi.utils.module_loading import import_string
 
 
 class BatchEvent(enum.Enum):
+    RECREDITED_ACCOUNT = "recredited_account"
     USER_DEPOSIT_ACTIVATED = "user_deposit_activated"
     USER_IDENTITY_CHECK_STARTED = "user_identity_check_started"
     HAS_ADDED_OFFER_TO_FAVORITES = "has_added_offer_to_favorites"

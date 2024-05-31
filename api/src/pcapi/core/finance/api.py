@@ -51,6 +51,7 @@ from pcapi.connectors import googledrive
 import pcapi.core.bookings.models as bookings_models
 from pcapi.core.educational.api import booking as educational_api_booking
 import pcapi.core.educational.models as educational_models
+from pcapi.core.external import batch as push_notifications
 import pcapi.core.external.attributes.api as external_attributes_api
 from pcapi.core.history import api as history_api
 import pcapi.core.history.models as history_models
@@ -2699,6 +2700,7 @@ def recredit_underage_users() -> None:
             external_attributes_api.update_external_user(user)
             domains_credit = users_api.get_domains_credit(user)
             transactional_mails.send_recredit_email_to_underage_beneficiary(user, recredit_amount, domains_credit)
+            push_notifications.track_account_recredited(user.id, user.deposit, len(user.deposits))
 
         start_index += RECREDIT_UNDERAGE_USERS_BATCH_SIZE
     logger.info("Recredited %s users successfully", total_users_recredited)
