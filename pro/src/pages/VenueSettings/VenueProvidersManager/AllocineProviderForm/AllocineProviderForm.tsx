@@ -9,9 +9,9 @@ import { validationSchema } from 'pages/VenueSettings/VenueProvidersManager/Allo
 import { Banner } from 'ui-kit/Banners/Banner/Banner'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { Checkbox } from 'ui-kit/form/Checkbox/Checkbox'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
-import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
+
+import { DuoCheckbox } from '../DuoCheckbox/DuoCheckbox'
 
 import styles from './AllocineProviderForm.module.scss'
 
@@ -82,101 +82,79 @@ export const AllocineProviderForm = ({
 
   return (
     <FormikProvider value={formik}>
-      <FormLayout>
-        {!isLoading && (
-          <>
-            <FormLayout.Row
-              sideComponent={
-                isCreatedEntity ? (
-                  <InfoBox>Prix auquel la place de cinéma sera vendue.</InfoBox>
-                ) : (
-                  <></>
-                )
-              }
-            >
-              <TextInput
-                name="price"
-                type="number"
-                label="Prix de vente/place"
-                min="0"
-                placeholder="Ex : 12€"
-                step={0.01}
-                required
-              />
-            </FormLayout.Row>
-            <FormLayout.Row>
-              <TextInput
-                type="number"
-                label="Nombre de places/séance"
-                min="0"
-                name="quantity"
-                placeholder="Illimité"
-                step={1}
-                isOptional
-                hasDecimal={false}
-              />
-            </FormLayout.Row>
-            <FormLayout.Row
-              sideComponent={
-                isCreatedEntity ? (
-                  <InfoBox>
-                    En activant cette option, vous permettez au bénéficiaire du
-                    pass Culture de venir accompagné. La seconde place sera
-                    délivrée au même tarif que la première, quel que soit
-                    l’accompagnateur.
-                  </InfoBox>
-                ) : (
-                  <></>
-                )
-              }
-            >
-              <Checkbox name="isDuo" label="Accepter les réservations DUO" />
-            </FormLayout.Row>
-            <FormLayout.Row className={styles['allocine-provider-form-banner']}>
-              <Banner type="notification-info">
-                <p>
-                  Pour le moment, seules les séances "classiques" peuvent être
-                  importées.
-                </p>
-                <p>
-                  Les séances spécifiques (3D, Dolby Atmos, 4DX...) ne
-                  génèreront pas d’offres.
-                </p>
-                <p>
-                  Nous travaillons actuellement à l’ajout de séances
-                  spécifiques.
-                </p>
-              </Banner>
-            </FormLayout.Row>
-            <FormLayout.Actions
-              className={styles['allocine-provider-form-actions']}
-            >
-              {!isCreatedEntity ? (
-                <Button
-                  variant={ButtonVariant.SECONDARY}
-                  onClick={onCancel}
-                  type="button"
-                >
-                  Annuler
-                </Button>
-              ) : (
-                <></>
-              )}
-
+      {!isLoading && (
+        <>
+          <FormLayout.Row>
+            <TextInput
+              name="price"
+              type="number"
+              label="Prix de vente/place"
+              min="0"
+              placeholder="Ex : 12€"
+              step={0.01}
+              className={styles['price-input']}
+              required
+            />
+          </FormLayout.Row>
+          <FormLayout.Row>
+            <TextInput
+              type="number"
+              label="Nombre de places/séance"
+              min="0"
+              name="quantity"
+              placeholder="Illimité"
+              step={1}
+              isOptional
+              hasDecimal={false}
+              className={styles['nb-places-input']}
+            />
+          </FormLayout.Row>
+          <FormLayout.Row>
+            <DuoCheckbox isChecked={formik.values.isDuo} />
+          </FormLayout.Row>
+          <FormLayout.Row className={styles['allocine-provider-form-banner']}>
+            <Banner type="notification-info">
+              <p>
+                Pour le moment, seules les séances "classiques" peuvent être
+                importées.
+              </p>
+              <p>
+                Les séances spécifiques (3D, Dolby Atmos, 4DX...) ne génèreront
+                pas d’offres.
+              </p>
+              <p>
+                Nous travaillons actuellement à l’ajout de séances spécifiques.
+              </p>
+            </Banner>
+          </FormLayout.Row>
+          <FormLayout.Actions
+            className={styles['allocine-provider-form-actions']}
+          >
+            {!isCreatedEntity ? (
               <Button
-                onClick={() => handleSubmit(formik.values)}
+                variant={ButtonVariant.SECONDARY}
+                onClick={onCancel}
                 type="button"
-                isLoading={isLoading}
-                disabled={
-                  !formik.isValid || typeof formik.values.price !== 'number'
-                }
               >
-                {isCreatedEntity ? 'Lancer la synchronisation' : 'Modifier'}
+                Annuler
               </Button>
-            </FormLayout.Actions>
-          </>
-        )}
-      </FormLayout>
+            ) : (
+              <></>
+            )}
+
+            <Button
+              onClick={() => handleSubmit(formik.values)}
+              type="button"
+              isLoading={isLoading}
+              disabled={
+                !formik.isValid || typeof formik.values.price !== 'number'
+              }
+            >
+              {isCreatedEntity ? 'Lancer la synchronisation' : 'Modifier'}
+            </Button>
+          </FormLayout.Actions>
+        </>
+      )}
     </FormikProvider>
   )
 }
