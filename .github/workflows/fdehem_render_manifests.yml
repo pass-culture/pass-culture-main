@@ -58,7 +58,7 @@ jobs:
           git commit -m "Update image tag by Github Actions Job : ${{ github.run_number }}"
           git push origin master
       - name: "Generate and push rendered manifests"
-        uses: pass-culture/common-workflows/actions/render-push-manifests@fdehem_branch_testing
+        uses: pass-culture/common-workflows/actions/render-push-manifests@v1.1.0
         with:
           environment: 'testing'
           app_name: 'pcapi'
@@ -68,6 +68,8 @@ jobs:
           api_token_github_secret_name: passculture-metier-ehp/passculture-main-sa-access-token
           chart_values_repository: pass-culture/pass-culture-deployment
           chart_values_destination: ./pass-culture-deployment
+          helmfile_path: "./pass-culture-deployment/helm/pcapi"
+          rendered_manifests_target_branch: 'fdehem'
       - name: "Install argocd cli"
         id: install_argocd_cli
         run: |
