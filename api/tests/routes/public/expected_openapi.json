@@ -1742,14 +1742,14 @@
                 "properties": {
                     "beginningDatetime": {
                         "description": "Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-06-29T14:00:00+02:00",
+                        "example": "2024-07-02T14:00:00+02:00",
                         "format": "date-time",
                         "title": "Beginningdatetime",
                         "type": "string"
                     },
                     "bookingLimitDatetime": {
                         "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-06-29T14:00:00+02:00",
+                        "example": "2024-07-02T14:00:00+02:00",
                         "format": "date-time",
                         "title": "Bookinglimitdatetime",
                         "type": "string"
@@ -1789,7 +1789,7 @@
                 "properties": {
                     "beginningDatetime": {
                         "description": "Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-06-29T14:00:00+02:00",
+                        "example": "2024-07-02T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Beginningdatetime",
@@ -1797,7 +1797,7 @@
                     },
                     "bookingLimitDatetime": {
                         "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-06-29T14:00:00+02:00",
+                        "example": "2024-07-02T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Bookinglimitdatetime",
@@ -1833,7 +1833,7 @@
                 "properties": {
                     "beginningDatetime": {
                         "description": "Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-06-29T14:00:00+02:00",
+                        "example": "2024-07-02T14:00:00+02:00",
                         "format": "date-time",
                         "title": "Beginningdatetime",
                         "type": "string"
@@ -1846,7 +1846,7 @@
                     },
                     "bookingLimitDatetime": {
                         "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-06-29T14:00:00+02:00",
+                        "example": "2024-07-02T14:00:00+02:00",
                         "format": "date-time",
                         "title": "Bookinglimitdatetime",
                         "type": "string"
@@ -4589,24 +4589,32 @@
                 "additionalProperties": false,
                 "properties": {
                     "periodBeginningDate": {
+                        "description": "Period beginning date. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "example": "2024-03-03T13:00:00+02:00",
                         "nullable": true,
                         "title": "Periodbeginningdate",
                         "type": "string"
                     },
                     "periodEndingDate": {
+                        "description": "Period ending date. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "example": "2024-05-10T15:00:00+02:00",
                         "nullable": true,
                         "title": "Periodendingdate",
                         "type": "string"
                     },
                     "status": {
-                        "anyOf": [
+                        "allOf": [
                             {
                                 "$ref": "#/components/schemas/OfferStatus"
                             }
                         ],
+                        "description": "\n**Offer status:**\n\n- `ACTIVE`: offer is validated and active. \n\n\n- `DRAFT`: offer is still a draft and not yet submitted for validation. This status is not applicable to offers created via this API.\n\n\n- `EXPIRED`: offer is validated but the booking limit datetime has passed.\n\n\n- `INACTIVE`: offer is not active and cannot be booked.\n\n\n- `PENDING`: offer is pending for pass Culture rules compliance validation. This step may take up to 72 hours.\n\n\n- `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n\n- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.\n",
+                        "example": "ACTIVE",
                         "nullable": true
                     },
                     "venueId": {
+                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
+                        "example": 1234,
                         "nullable": true,
                         "title": "Venueid",
                         "type": "integer"
@@ -5275,7 +5283,7 @@
                     },
                     "beginningDatetime": {
                         "description": "Collective offer beginning datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-06-30T14:00:00+02:00",
+                        "example": "2024-07-02T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Beginningdatetime",
@@ -5532,7 +5540,7 @@
                     },
                     "beginningDatetime": {
                         "description": "Collective offer beginning datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-06-30T14:00:00+02:00",
+                        "example": "2024-07-02T14:00:00+02:00",
                         "format": "date-time",
                         "title": "Beginningdatetime",
                         "type": "string"
@@ -5551,7 +5559,7 @@
                     },
                     "bookingLimitDatetime": {
                         "description": "Booking limit datetime. It must be anterior to the `beginning_datetime`. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-06-30T14:00:00+02:00",
+                        "example": "2024-07-02T14:00:00+02:00",
                         "format": "date-time",
                         "title": "Bookinglimitdatetime",
                         "type": "string"
@@ -6633,7 +6641,7 @@
                     },
                     "bookingLimitDatetime": {
                         "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-06-29T14:00:00+02:00",
+                        "example": "2024-07-02T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Bookinglimitdatetime",
@@ -7582,7 +7590,7 @@
                 "properties": {
                     "bookingLimitDatetime": {
                         "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-06-29T14:00:00+02:00",
+                        "example": "2024-07-02T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Bookinglimitdatetime",
@@ -7625,7 +7633,7 @@
                 "properties": {
                     "bookingLimitDatetime": {
                         "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-06-29T14:00:00+02:00",
+                        "example": "2024-07-02T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Bookinglimitdatetime",
@@ -10853,51 +10861,59 @@
         },
         "/v2/collective/offers/": {
             "get": {
-                "description": "Return collective offers linker to the venue. It doesn't return the showcase offers or the collective offers that have been started on the pro interface and that are in the draft status.",
+                "description": "Return filtered collective offers. It doesn't return the showcase offers or the collective offers that have been started on the pro interface and that are in the draft status.",
                 "operationId": "GetCollectiveOffersPublic",
                 "parameters": [
                     {
-                        "description": "",
+                        "description": "\n**Offer status:**\n\n- `ACTIVE`: offer is validated and active. \n\n\n- `DRAFT`: offer is still a draft and not yet submitted for validation. This status is not applicable to offers created via this API.\n\n\n- `EXPIRED`: offer is validated but the booking limit datetime has passed.\n\n\n- `INACTIVE`: offer is not active and cannot be booked.\n\n\n- `PENDING`: offer is pending for pass Culture rules compliance validation. This step may take up to 72 hours.\n\n\n- `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n\n- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.\n",
                         "in": "query",
                         "name": "status",
                         "required": false,
                         "schema": {
-                            "anyOf": [
+                            "allOf": [
                                 {
                                     "$ref": "#/components/schemas/OfferStatus"
                                 }
                             ],
+                            "description": "\n**Offer status:**\n\n- `ACTIVE`: offer is validated and active. \n\n\n- `DRAFT`: offer is still a draft and not yet submitted for validation. This status is not applicable to offers created via this API.\n\n\n- `EXPIRED`: offer is validated but the booking limit datetime has passed.\n\n\n- `INACTIVE`: offer is not active and cannot be booked.\n\n\n- `PENDING`: offer is pending for pass Culture rules compliance validation. This step may take up to 72 hours.\n\n\n- `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n\n- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.\n",
+                            "example": "ACTIVE",
                             "nullable": true
                         }
                     },
                     {
-                        "description": "",
+                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
                         "in": "query",
                         "name": "venueId",
                         "required": false,
                         "schema": {
+                            "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
+                            "example": 1234,
                             "nullable": true,
                             "title": "Venueid",
                             "type": "integer"
                         }
                     },
                     {
-                        "description": "",
+                        "description": "Period beginning date. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
                         "in": "query",
                         "name": "periodBeginningDate",
                         "required": false,
                         "schema": {
+                            "description": "Period beginning date. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                            "example": "2024-03-03T13:00:00+02:00",
                             "nullable": true,
                             "title": "Periodbeginningdate",
                             "type": "string"
                         }
                     },
                     {
-                        "description": "",
+                        "description": "Period ending date. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
                         "in": "query",
                         "name": "periodEndingDate",
                         "required": false,
                         "schema": {
+                            "description": "Period ending date. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                            "example": "2024-05-10T15:00:00+02:00",
                             "nullable": true,
                             "title": "Periodendingdate",
                             "type": "string"

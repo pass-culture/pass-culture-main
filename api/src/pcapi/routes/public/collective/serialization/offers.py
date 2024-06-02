@@ -26,10 +26,26 @@ from pcapi.validation.routes.offers import check_collective_offer_name_length_is
 
 
 class ListCollectiveOffersQueryModel(BaseModel):
-    status: OfferStatus | None
-    venue_id: int | None
-    period_beginning_date: str | None
-    period_ending_date: str | None
+    status: OfferStatus | None = Field(
+        None,
+        description=fields.OFFER_STATUS_FIELD_DATA.description,
+        example=fields.OFFER_STATUS_FIELD_DATA.example,
+    )
+    venue_id: int | None = Field(
+        None,
+        description=fields.VENUE_ID_FIELD_DATA.description,
+        example=fields.VENUE_ID_FIELD_DATA.example,
+    )
+    period_beginning_date: str | None = Field(
+        None,
+        description=fields.PERIOD_BEGINNING_DATE_FIELD_DATA.description,
+        example=fields.PERIOD_BEGINNING_DATE_FIELD_DATA.example,
+    )
+    period_ending_date: str | None = Field(
+        None,
+        description=fields.PERIOD_ENDING_DATE_FIELD_DATA.description,
+        example=fields.PERIOD_ENDING_DATE_FIELD_DATA.example,
+    )
 
     class Config:
         alias_generator = to_camel
