@@ -2,6 +2,7 @@ import datetime
 
 from dateutil import relativedelta
 
+from pcapi.routes.public.documentation_constants import descriptions
 from pcapi.utils import date as date_utils
 
 
@@ -18,6 +19,21 @@ class DURATION_MINUTES_FIELD_DATA:
     description = "Event duration in minutes"
     example = 60
     alias = "eventDuration"
+
+
+class OFFER_STATUS_FIELD_DATA:
+    description = descriptions.OFFER_STATUS_FIELD_DESCRIPTION
+    example = "ACTIVE"
+
+
+class PERIOD_BEGINNING_DATE_FIELD_DATA:
+    description = "Period beginning date. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime)."
+    example = "2024-03-03T13:00:00+02:00"
+
+
+class PERIOD_ENDING_DATE_FIELD_DATA:
+    description = "Period ending date. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime)."
+    example = "2024-05-10T15:00:00+02:00"
 
 
 # Image Fields

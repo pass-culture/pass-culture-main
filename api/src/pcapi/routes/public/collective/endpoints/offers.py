@@ -48,7 +48,7 @@ def get_collective_offers_public(
     """
     Get collective offers
 
-    Return collective offers linker to the venue.
+    Return filtered collective offers.
     It doesn't return the showcase offers or the collective offers that have been started on the pro interface and that are in the draft status.
     """
 
