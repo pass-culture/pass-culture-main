@@ -25,16 +25,6 @@ from pcapi.utils import email as email_utils
 from pcapi.validation.routes.offers import check_collective_offer_name_length_is_valid
 
 
-class AuthErrorResponseModel(BaseModel):
-    # only used as documentation for openapi
-    errors: dict[str, str]
-
-
-class ErrorResponseModel(BaseModel):
-    # only used as documentation for openapi
-    errors: dict[str, list[str]]
-
-
 class ListCollectiveOffersQueryModel(BaseModel):
     status: OfferStatus | None
     venue_id: int | None
