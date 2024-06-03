@@ -1,13 +1,12 @@
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
-
 import { api } from 'apiClient/api'
 import { InvoiceResponseV2Model } from 'apiClient/v1'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import { useNotification } from 'hooks/useNotification'
 import fullDownloadIcon from 'icons/full-download.svg'
-import fullOtherIcon from 'icons/full-other.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { DropdownItem } from 'ui-kit/DropdownMenuWrapper/DropdownItem'
+import { DropdownMenuWrapper } from 'ui-kit/DropdownMenuWrapper/DropdownMenuWrapper'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { downloadFile } from 'utils/downloadFile'
 
@@ -32,53 +31,36 @@ export function InvoiceActions({ invoice }: InvoiceActionsProps) {
   }
 
   return (
-    <DropdownMenu.Root>
-      <DropdownMenu.Trigger
-        className={styles['menu-button']}
-        title="Téléchargment des justificatifs"
-        data-testid="invoice-actions-button"
-      >
-        <SvgIcon
-          src={fullOtherIcon}
-          alt="Téléchargment des justificatifs"
-          className={styles['menu-button-icon']}
-        />
-      </DropdownMenu.Trigger>
-      <DropdownMenu.Portal>
-        <DropdownMenu.Content className={styles['menu-list']} align="end">
-          <DropdownMenu.Item
-            className={styles['menu-item']}
-            title={'Télécharger le justificatif comptable (.pdf)'}
+    <DropdownMenuWrapper title="Téléchargment des justificatifs">
+      <>
+        <DropdownItem title="Télécharger le justificatif comptable (.pdf)">
+          <ButtonLink
+            link={{
+              isExternal: true,
+              to: invoice.url,
+              target: '_blank',
+              download: true,
+            }}
+            icon={fullDownloadIcon}
+            svgAlt=""
+            variant={ButtonVariant.TERNARY}
           >
-            <ButtonLink
-              link={{
-                isExternal: true,
-                to: invoice.url,
-                target: '_blank',
-                download: true,
-              }}
-              icon={fullDownloadIcon}
-              svgAlt=""
-              variant={ButtonVariant.TERNARY}
-            >
-              Télécharger le justificatif comptable (.pdf)
-            </ButtonLink>
-          </DropdownMenu.Item>
-          <DropdownMenu.Item
-            className={styles['menu-item']}
-            onSelect={() => downloadCSVFile(invoice.reference)}
-            title={'Télécharger le détail des réservations (.csv)'}
-          >
-            <SvgIcon
-              src={fullDownloadIcon}
-              alt=""
-              className={styles['menu-item-icon']}
-              width="20"
-            />
-            <span>{'Télécharger le détail des réservations (.csv)'}</span>
-          </DropdownMenu.Item>
-        </DropdownMenu.Content>
-      </DropdownMenu.Portal>
-    </DropdownMenu.Root>
+            Télécharger le justificatif comptable (.pdf)
+          </ButtonLink>
+        </DropdownItem>
+        <DropdownItem
+          title="Télécharger le détail des réservations (.csv)"
+          onSelect={() => downloadCSVFile(invoice.reference)}
+        >
+          <SvgIcon
+            src={fullDownloadIcon}
+            alt=""
+            className={styles['menu-item-icon']}
+            width="20"
+          />
+          <span>Télécharger le détail des réservations (.csv)</span>
+        </DropdownItem>
+      </>
+    </DropdownMenuWrapper>
   )
 }
