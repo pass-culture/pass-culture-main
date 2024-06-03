@@ -111,7 +111,7 @@ def build_new_offer_from_product(
     id_at_provider: str | None,
     provider_id: int | None,
 ) -> models.Offer:
-    return models.Offer(
+    return models.Offer(  # type: ignore [call-arg]
         bookingEmail=venue.bookingEmail,
         description=product.description,
         extraData=product.extraData,
@@ -309,7 +309,7 @@ def create_offer(
 
     is_national = True if url else bool(is_national)
 
-    offer = models.Offer(
+    offer = models.Offer(  # type: ignore [call-arg]
         audioDisabilityCompliant=audio_disability_compliant,
         bookingContact=booking_contact,
         bookingEmail=booking_email,

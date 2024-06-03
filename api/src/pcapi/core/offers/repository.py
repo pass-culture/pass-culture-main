@@ -210,7 +210,12 @@ def get_offers_details(offer_ids: list[int]) -> BaseQuery:
         .options(sa_orm.joinedload(models.Offer.reactions))
         .options(
             sa_orm.joinedload(models.Offer.product)
-            .load_only(models.Product.id, models.Product.last_30_days_booking, models.Product.thumbCount)
+            .load_only(
+                models.Product.id,
+                models.Product.description,
+                models.Product.last_30_days_booking,
+                models.Product.thumbCount,
+            )
             .joinedload(models.Product.productMediations)
         )
         .options(sa_orm.joinedload(models.Offer.product).joinedload(models.Product.reactions))

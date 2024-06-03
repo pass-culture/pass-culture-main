@@ -952,7 +952,6 @@ class TiteliveThingsTest:
         offer = offers_models.Offer.query.one()
 
         assert offer.name == "Secret wars : marvel zombies n.1"
-        assert offer.description.startswith("A passionate description of offer")
         assert offer.extraData["gtl_id"] == "03030400"
         assert offer.extraData["csr_id"] == "1901"
         assert offer.extraData["code_clil"] == "4300"

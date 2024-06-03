@@ -84,7 +84,8 @@ class Returns200Test:
     def test_performance(self, client):
         # Given
         user_offerer = offerers_factories.UserOffererFactory()
-        offer = offers_factories.ThingOfferFactory(venue__managingOfferer=user_offerer.offerer)
+        product = offers_factories.ProductFactory()
+        offer = offers_factories.ThingOfferFactory(venue__managingOfferer=user_offerer.offerer, product=product)
         offers_factories.EventStockFactory.create_batch(5, offer=offer)
 
         # When
