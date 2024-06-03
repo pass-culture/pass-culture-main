@@ -596,7 +596,7 @@ def _get_filtered_booking_pro(
 
 
 def _duplicate_booking_when_quantity_is_two(bookings_recap_query: BaseQuery) -> BaseQuery:
-    return bookings_recap_query.union_all(bookings_recap_query.filter(Booking.quantity == 2))
+    return bookings_recap_query.union_all(bookings_recap_query.filter(Booking.quantity == DUO_QUANTITY))
 
 
 def _get_booking_status(status: BookingStatus, is_confirmed: bool) -> str:
