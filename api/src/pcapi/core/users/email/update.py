@@ -348,17 +348,20 @@ def full_email_update_by_admin(user: models.User, email: str, commit: bool = Fal
 
 
 def get_active_token_expiration(user: models.User) -> datetime | None:
-    """returns the expiration date of the active token (confirmation or validation) or none if no ttl or no token exists"""
-    confirmation_token_expiration = token_utils.Token.get_expiration_date(
-        token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION, user.id
+    """
+    Returns the expiration date of the active token
+    (confirmation, new email selection or validation)
+    or None if no ttl or no token exists.
+    """
+    token_types = (
+        token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION,
+        token_utils.TokenType.EMAIL_CHANGE_NEW_EMAIL_SELECTION,
+        token_utils.TokenType.EMAIL_CHANGE_VALIDATION,
     )
-    new_email_selection_token_expiration = token_utils.Token.get_expiration_date(
-        token_utils.TokenType.EMAIL_CHANGE_NEW_EMAIL_SELECTION, user.id
-    )
-    validation_token_expiration = token_utils.Token.get_expiration_date(
-        token_utils.TokenType.EMAIL_CHANGE_VALIDATION, user.id
-    )
-    return confirmation_token_expiration or new_email_selection_token_expiration or validation_token_expiration
+    for token_type in token_types:
+        if expiration_date := token_utils.Token.get_expiration_date(token_type, user.id):
+            return expiration_date
+    return None
 
 
 def generate_email_change_token_expiration_date() -> datetime:
