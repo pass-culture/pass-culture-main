@@ -60,6 +60,8 @@ export enum Events {
   CLICKED_DELETE_STOCK = 'hasClickedDeleteStock',
   CLICKED_BULK_DELETE_STOCK = 'hasClickedBulkDeleteStock',
   CLICKED_DOWNLOAD_OFFER_BOOKINGS = 'hasDownloadedBookings',
+  CLICKED_PAGE_FOR_APP_HOME = 'hasClickedPageForAppHome',
+  CLICKED_PAGE_FOR_ADAGE_HOME = 'hasClickedPageForAdageHome',
 }
 
 export enum VenueEvents {
