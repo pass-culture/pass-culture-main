@@ -58,6 +58,8 @@ export const AddressSelect = ({
 
   // TODO we should not use useEffect for this but an event handler on the input
   useEffect(() => {
+    // False positive, eslint disable can be removed when noUncheckedIndexedAccess is enabled in TS config
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (addressesMap[searchField.value] !== undefined) {
       handleAddressSelect(
         setFieldValue,

@@ -46,9 +46,11 @@ export const CollectiveDataEditionReadOnly = ({
             {
               title: 'Domaine artistique et culturel',
               text:
-                venue.collectiveDomains
-                  .map((domain) => domain.name)
-                  .join(', ') ?? 'Non renseigné',
+                venue.collectiveDomains.length > 0
+                  ? venue.collectiveDomains
+                      .map((domain) => domain.name)
+                      .join(', ')
+                  : 'Non renseigné',
             },
             {
               title: 'Zone de mobilité',
