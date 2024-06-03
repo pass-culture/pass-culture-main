@@ -1,4 +1,4 @@
-# pass-culture-api
+# PASS-CULTURE-API
 
 Voici le backend de l'application pass Culture; il est lancé via `docker-compose` en utilisant le fichier
 `docker-compose-backend.yml` du répertoire parent de `api`: `pass-culture-main`.
@@ -6,7 +6,7 @@ Voici le backend de l'application pass Culture; il est lancé via `docker-compos
 Plus de détails sur le lancement de l'infra docker-compose sont accessibles dans le
 [README de pass-culture-main](https://github.com/pass-culture/pass-culture-main#readme)
 
-## OpenAPI
+## I. OpenAPI
 
 Une documentation Swagger des APIs est générée selon l'OpenAPI Specification (OAS3) grâce à un schéma généré par
 Spectree :
@@ -19,10 +19,25 @@ Spectree :
 * [API pro privée](https://backend.passculture.app/pro/swagger)
 * [API publique d'offres individuelles](https://backend.passculture.app/public/offers/v1/swagger)
 
-## Liens des mocks API:
+## II. Liens des mocks API
 * [API "Charlie" billeterie](https://mock-api-billeterie.ehp.passculture.team/)
 
-## Installation des dépendances
+## III. Démarrage du serveur back api
+
+### III.1 Pré-requis
+
+On utilise Poetry pour gérer nos dépendances. Par défaut, Poetry crée l'environnement virtuel dans un dossier
+qui dépend du système d'exploitation.
+
+La méthode d'activation de l'environnement virtuel recommandée est l'utilisation de la commande `poetry shell`.
+
+Pour un usage avancé comme avoir plusieurs environnements virtuels, il existe [d'autres manières d'activer son
+environnement virtuel](https://python-poetry.org/docs/basic-usage#activating-the-virtual-environment).
+
+Une gestion plus fine de l'environnement virtuel utilisé par `poetry` peut être trouvée sur ce lien : [Managing environments | Documentation | Poetry](https://python-poetry.org/docs/managing-environments/)
+
+*NOTE* : Poetry n'est pas utilisé dans les conteneurs Docker, i.e. la commande `flask` est directement accessible.
+*NOTE* : L'ajout de dépendance doit se faire par Poetry pour mettre à jour le fichier lock.
 
 Avec `poetry` et Python **3.11** :
 
@@ -44,89 +59,197 @@ Le lint des migrations, effectué lors du [hook de precommit](../.githooks/pre-c
 npm install --global squawk-cli
 ```
 
-### Poetry
+### III.2 Lancement de l'api
 
-On utilise Poetry pour gérer nos dépendances. Par défaut, Poetry crée l'environnement virtuel dans un dossier
-qui dépend du système d'exploitation.
+Il y a deux options pour lancer l'application Flask.
+La première consiste en l'utilisation d'un utilitaire dédié (`pc`) qui utilise docker-compose. Cette méthode permet d'avoir le plus simplement un server capable de répondre et s'adresse essentiellement aux developpeurs front.
 
-La méthode recommandée d'activer son environnement virtuel est avec la commande `poetry shell`.
+La seconde méthode consiste à créer en local les différents constituant logiciel afin d'avoir une maitrise plus fine des traitements (debugger, se connecter à la DB) et un temps de setup plus court.
+ 
+#### III.2.1 Option 1 : Lancement via le script `pc` présent dans pass-culture-main
 
-Pour un usage avancé comme avoir plusieurs environnements virtuels, il existe [d'autres manières d'activer son
-environnement virtuel](https://python-poetry.org/docs/basic-usage#activating-the-virtual-environment).
+```shell
+#Start api and backoffice
+pc start-backend
+#Restart after removing the database and file
+pc restart-backend
+```
+#### III.2.2 Option 2 : Lancement manuel
 
-Une gestion plus fine de l'environnement virtuel utilisé par `poetry` peut être trouvée sur ce lien : [Managing environments | Documentation | Poetry](https://python-poetry.org/docs/managing-environments/)
+Les dépendances suivantes doivent également être installées: 
+- Postgresql
+- PostGis
+- Redis
 
-*NOTE* : Poetry n'est pas utilisé dans les conteneurs Docker, i.e. la commande `flask` est directement accessible.
-*NOTE* : L'ajout de dépendance doit se faire par Poetry pour mettre à jour le fichier lock.
 
-### PostGIS (nécessaire hors docker)
+#### III.2.2.a Postgresql
+Les informations générales sur les étapes d"installation sont disponible sur le lien https://www.postgresql.org/download/
+  - Linux : 
+    * Ubuntu : 
+     Il est préférable de cibler la version utilisé en production. Celle-ci peut se retrouver dans le fichier doker-compose-backend.
+     A la date de rédaction postgres 15 est utilisé. 
+     Configuration du repos apt
+     ```shell
+     sudo apt install -y postgresql-common
+     sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh
 
-- Verifier que `PostGIS` est bien installé. Si ce n'est pas le cas: pour installer `PostGIS` dans les systèmes d'exploitation qui ne le fournissent pas avec `PostgreSQL`:
-  - Linux : `apt install postgis` pour Ubuntu ou `pacman -S postgis` pour Arch Linux
+     ```
+     install version 15
+     ```shell
+    # Update the package lists:
+    sudo apt update
+
+    # Install the latest version of PostgreSQL:
+    # If you want a specific version, use 'postgresql-16' or similar instead of 'postgresql'
+    sudo apt -y install postgresql-15
+    ```
+     `apt install postgis` pour Ubuntu ou `pacman -S postgis` pour Arch Linux
+  
+  - Macos :
+
+    Installer postgres.app depuis ce lien [Postgres.app](https://postgresapp.com/), choisir la version iso à la prod (à date postgresql 15)
+    
+
+#### III.2.2.b PostGIS
+
+- Verifier que `PostGIS` est bien installé. Si ce n'est pas le cas: 
+  <br>pour installer `PostGIS` dans les systèmes d'exploitation qui ne le fournissent pas avec `PostgreSQL`:
+
+  - Ubuntu:
+    * Configurer le repo apt de postgresql( conf chapitre précédent)
+    * installer postgis-15
+   ```
+    sudo apt install postgresql-15-postgis-3
+   ```
   - Windows : après l'installation de `PostgreSQL`, [Stackbuilder](https://www.bostongis.com/PrinterFriendly.aspx?content_name=postgis_tut01)
     permet d'installer `PostGIS`
   - MacOS : `PostGIS` est fourni avec la distribution [Postgres.app](https://postgresapp.com/). Si une autre manière
-    d'installer `PostgreSQL` a été choisie, alors la commande d'installation est `brew install postgis`
+    d'installer `PostgreSQL` a été choisie, alors la commande d'installation est `brew install postgis`.
 
-### Redis et Postgresql (nécessaire hors docker)
+#### III.2.2.c Redis
+Le lien officiel pour l'installation: https://redis.io/docs/latest/operate/oss_and_stack/install/install-redis/
 
-- Démarrer les services postgresql et redis, par exemple lorsqu'ils ont été installés via _Homebrew_ :
+### III.2.2.d Initialisation de l'application
+Pour initialiser l'application, vous devez suivre les étapes suivantes :
+
+* Soit en lançant la commande suivante qui va créer les bases de données pour l'api et pour les tests, installer les extensions postgres et jouer les migrations. Il est nécessaire de rendre l'utilisateur qui execute cette ligne de commande soit `sudoer`
+
+
   ```shell
-  brew services start postgresql
-  brew services start redis
+  pc setup-no-docker
   ```
 
-## Tests
+* Soit en réalisant les étapes suivantes une par une:
+  - créer les _users_ suivants:
+  <br>il faut pour cela changer d'utilisateur par afin de se connecter au server postgresql.
+  <br> A l'installation un utilisateur système est crée et doit être utilisé pour se connecter à la base de données.
+    ```shell 
+    >sudo su postgres
+    >psql
+    ```
+    il faut ensuite créer les utilisateurs:
 
-### Lancement des tests
+    ```sql
+    CREATE ROLE pass_culture SUPERUSER LOGIN PASSWORD 'passq';
+    CREATE ROLE pytest SUPERUSER LOGIN PASSWORD 'pytest';
+    FLASK_BACKOFFICE_PORT=5002
+    ```
+  - créer les _databases_ associés (cf. les commandes `recreate_database` `recreate_database_test` dans le fichier `start_backend_no_docker`)
 
+  - Ajouter ces variables au fichier `.env.local.secret` à la racine du dossier `api/` (en complétant par le port de
+    votre serveur postgresql, habituellement `5432`):
+
+    ```dotenv
+    DATABASE_URL=postgresql://pass_culture:passq@localhost:<port>/pass_culture
+    DATABASE_URL_TEST=postgresql://pytest:pytest@localhost:<port>/pass_culture_test
+    "FLASK_BACKOFFICE_PORT=5002"
+    ```
+
+  - Installer les extensions et jouer les migrations en ayant dans le `poetry shell` :
+
+    ```shell
+    flask install_postgres_extensions
+    alembic upgrade pre@head
+    alembic upgrade post@head
+    ```
+### III.2.2.e Lancement de l'application
+Vous pouvez maintenant lancer l'application back
+ - Par le script python
+   * pour l'API
+    ```shell
+    python src/pcapi/app.py
+    ```
+    * pour le Backoffice
+    ```shell
+    python src/pcapi/backofficeapp.py
+    ```
+ - Par pc 
+  <br>Cette methode relance les migrations et s'assure de l'existance des composants logiciel(redis, extension postgres)
+  ```
+  # Lancer l'API
+  pc start-api-no-docker
+  # Lancer le Backoffice
+  pc start-backoffice-no-docker
+  # Nettoyer les DB, reconstruire la sandbox et jouer les migrations
+  pc restart-api-no-docker
+  # Supprimer et recréer les DB (test et data)
+  pc reset-db-no-docker
+  # Supprimer et recréer la DB de test
+  pc reset-db-test-no-docker
+  ```
+
+Si vous souhaitez (ré)utiliser docker par la suite, n'oubliez pas de commenter `DATABASE_URL`, `DATABASE_URL_TEST`et `FLASK_BACKOFFICE_PORT` dans `.env.local.secret`, et d'arrêter le service redis-server
+
+
+## IV. Tests
 **Prérequis au lancement des tests**
 
-Une base de données de test et un cache redis sont nécessaires à l'exécution des tests.
+Une base de données de test et un cache redis sont nécessaires à l'exécution des tests. 
+### IV.1 Test avec Docker
 
-* Soit en démarrant les conteneurs de la base de données _pc-postgres-test_ (spécifique aux tests) et du cache
-  _redis_ via docker-compose
-
-```shell
-    docker-compose -f ../docker-compose-backend.yml up -d postgres-test redis
- ```
-
-* Soit en démarrant ces conteneurs via docker
-
-```shell
-docker run -d --name postgres -p 5434:5432 \
---env-file ../env_file \
--v postgres_local_data:/var/lib/postgresql/data \
-postgis/postgis:15-3.4-alpine
-
-docker run -d --name redis -p 6379:6379 \
-    -v redis_local_data:/data \
-    redis redis-server
+Pour lancer les tests il faut d'abord lancer l'api
   ```
-
-Les tests pourront ensuite être exécutés avec ou sans docker-compose
-
-* Lancement des tests via docker-compose
+  pc start-backend
+  ```
+Et lancer les tests 
   ```shell
-  pc test-backend # Pour lancer tous les tests
+  pc test-backend # Pour lancer tous les tests backend
+  pc test-backoffice # pour lancer tout les tests du backoffice
   pc test-backend tests/core/offers/test_api.py::CreateOfferTest::test_create_offer_from_scratch # Pour lancer un test en particulier
+
   ```
 
-* Lancement des tests depuis la ligne de commande dans un `poetry shell`. Il est ainsi très simple d'accéder à
+### IV.2 Test dans l'environnement poetry
+Suite à l'initialisation de l'application il existe déjà un server redis et une base de données test.
+<br>Il suffit alors de :
+* Lancer les tests depuis la ligne de commande dans un `poetry shell`. Il est ainsi très simple d'accéder à
   `stdin`/`stdout` via le paramètre  `-s`, par exemple pour utiliser des breakpoints.
   ```shell
   pytest # Pour lancer tous les tests
   pytest tests/core/offers/test_api.py::CreateOfferTest::test_create_offer_from_scratch # Pour lancer un test en particulier
   ```
+Il est également possible d'utiliser le serveur redis et la base de données test conteneurisée depuis le shell flask
 
-* Les tests du backoffice ne peuvent pas être exécutés en même temps que le reste. Pour jouer tous les tests en une commande, il est possible
-  d'utiliser dans un `poetry shell`
+* Soit en démarrant les conteneurs de la base de données _pc-postgres-test_ (spécifique aux tests) et du cache
+  _redis_ via docker-compose
+
   ```shell
-  pytest -m 'not backoffice' && \
-  pytest -m 'backoffice'
+    docker-compose -f ../docker-compose-backend.yml up -d postgres-test redis
   ```
+* Soit en démarrant ces conteneurs via docker
 
-### Écriture des tests
+  ```shell
+  docker run -d --name postgres -p 5434:5432 \
+  --env-file ../env_file \
+  -v postgres_local_data:/var/lib/postgresql/data \
+  postgis/postgis:15-3.4-alpine
+
+  docker run -d --name redis -p 6379:6379 \
+      -v redis_local_data:/data \
+      redis redis-server
+    ```
+Il suffit alors d'éxecuter les tests comme présenté précedemment.
+### IV.3. Écriture des tests
 
 Les tests utilisent leur propre base de données. Si un test a besoin d'accéder à la base de données, il faut décorer la
 fonction ou la classe avec :
@@ -144,91 +267,20 @@ pytestmark = pytest.mark.usefixtures("db_session")
 Les différentes fixtures utilisées dans les tests sont définies dans `tests/conftest.py`
 
 
-## Secrets et variables d'environnement
+## V. Secrets et variables d'environnement
 
 Les variables d'environnement nécessaires au bon fonctionnement mais qui porte des données sensibles (identifiants, clés d'API, ...)
 ne sont pas enregistrés dans les fichiers d'environnement du dépôt.
 Il faut les ajouter dans le fichier `api/.env.local.secret` .
 
-
-### Scan du repo par GitGuardian
+## VI. Scan du repo par GitGuardian
 
 Une Github Action est lancée à chaque push sur le repo, lançant un scan de fuites de secrets GitGuardian.
 Pour ignorer un faux positif, il convient d'ajouter un commentaire _inline_ dans le code: `# ggignore`
 cf https://github.com/GitGuardian/ggshield#in-code
 
-## Démarrage du serveur back api
 
-### Option 1 : Lancement via le script `pc` présent dans pass-culture-main
-
-```shell
-pc start-backend
-```
-
-### Option 2 : Lancement manuel (sans docker) pour pouvoir débugger, se connecter à la DB etc...
-
-Si la base de données n'a pas été initialisée, vous devez suivre les étapes suivantes :
-
-* Soit en lançant la commande suivante qui va créer les bases de données pour l'api et pour les tests, installer les extensions postgres et jouer les migrations
-
-  ```shell
-  pc setup-no-docker
-  ```
-
-* Soit en réalisant les étapes suivantes une par une:
-
-  - créer les _users_ suivants:
-
-    ```sql
-    CREATE ROLE pass_culture SUPERUSER LOGIN PASSWORD 'passq';
-    CREATE ROLE pytest SUPERUSER LOGIN PASSWORD 'pytest';
-    ```
-
-  - Ajouter ces variables au fichier `.env.local.secret` à la racine du dossier `api/` (en complétant par le port de
-    votre serveur postgresql, habituellement `5432`):
-
-    ```dotenv
-    DATABASE_URL=postgresql://pass_culture:passq@localhost:<port>/pass_culture
-    DATABASE_URL_TEST=postgresql://pytest:pytest@localhost:<port>/pass_culture_test
-    FLASK_BACKOFFICE_PORT=5002
-    ```
-
-  - créer les _databases_ associés (cf. les commandes `recreate_database` `recreate_database_test` dans le fichier `start_backend_no_docker`)
-
-  - Installer les extensions et jouer les migrations en ayant dans le `poetry shell` :
-
-    ```shell
-    flask install_postgres_extensions
-    alembic upgrade pre@head
-    alembic upgrade post@head
-    ```
-
-- Vous pouvez maintenant lancer l'application Flask
-
-  ```shell
-  python src/pcapi/app.py
-  ```
-
-- Vous pouvez également lancer les tests sans docker depuis un `poetry shell` avec `pytest` de la même façon qu'expliqué précédemment
-
-- Vous pouvez également utiliser les commandes suivantes
-
-  ```shell
-  # Lancer l'API
-  pc start-api-no-docker
-  # Lancer le Backoffice
-  pc start-backoffice-no-docker
-  # Nettoyer les DB, reconstruire la sandbox et jouer les migrations
-  pc restart-api-no-docker
-  # Supprimer et recréer les DB (test et data)
-  pc reset-db-no-docker
-  # Supprimer et recréer la DB de test
-  pc reset-db-test-no-docker
-  ```
-
-Si vous souhaitez (ré)utiliser docker par la suite, n'oubliez pas de commenter `DATABASE_URL` et `DATABASE_URL_TEST` dans `.env.local.secret`, et d'arrêter le service redis-server
-
-### Database de jeu
+## Database de jeu
 
 Afin de naviguer/tester différentes situations de données, il existe dans api des scripts permettant d'engendrer des
 bases de données "sandbox".
@@ -274,7 +326,6 @@ Il est possible de se connecter aux bases de données lancées via docker compos
     - password : pytest
     - port : 5433
     - database : pass_culture
-
 
 ## Ajout de données avec les factories
 
