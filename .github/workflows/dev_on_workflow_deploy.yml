@@ -111,7 +111,7 @@ jobs:
           cd ./pass-culture-deployment/helm/pcapi/${{ inputs.environment }}
           sed -i '/^image:/,/^  tag:/{s/^  tag: .*/  tag: ${{ inputs.app_version }}/}' values.yaml
           git add values.yaml
-          git commit -m "[${{ inputs.environment }}] Update pcapi image.tag (${{ inputs.app_version }}) (Github Actions Job : ${{ github.run_number }})"
+          git diff-index --quiet HEAD || git commit -m "[${{ inputs.environment }}] Update pcapi image.tag (${{ inputs.app_version }}) (Github Actions Job : ${{ github.run_number }})"
           git push origin master
 
       # Executes helmfile templating and push results to render-manifests repository
