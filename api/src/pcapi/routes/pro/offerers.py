@@ -164,7 +164,7 @@ def create_offerer(body: offerers_serialize.CreateOffererQueryModel) -> offerers
     body.postalCode = siren_info.address.postal_code
     if api.is_user_offerer_already_exist(current_user, body.siren):
         # As this endpoint does not only allow to create an offerer, but also handles
-        # a large part of `user_offerer` buisness logic (see `api.create_offerer` below)
+        # a large part of `user_offerer` business logic (see `api.create_offerer` below)
         # That check is needed here. Otherwise, we might try to create an already existing user_offerer
         raise ApiErrors(errors={"user_offerer": ["This user already belongs to this offerer"]})
     user_offerer = api.create_offerer(current_user, body)

@@ -153,7 +153,7 @@ def get_ems_oldest_sync_version() -> int:
 
     EMS use a versioned synchronization.
     It means we can pass a version number (actually a timestamp) in our call to their API and within the response
-    we get all ressources that have been added since that point.
+    we get all resources that have been added since that point.
     """
     version = (
         db.session.query(func.min(models.EMSCinemaDetails.lastVersion))

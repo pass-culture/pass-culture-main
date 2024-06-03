@@ -115,7 +115,7 @@ class InseeBackend(BaseBackend):
 
         # Until Sirene API return postalCode of Saint-Martin
         # we need to do this hacky thing, otherwise Saint-Martin
-        # users wont be able to create offerers.
+        # users won't be able to create offerers.
         postal_code = block["codePostalEtablissement"] or ""
         if not postal_code and block["codeCommuneEtablissement"] == "97801":
             postal_code = "97150"

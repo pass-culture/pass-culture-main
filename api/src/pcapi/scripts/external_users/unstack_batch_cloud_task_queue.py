@@ -114,7 +114,7 @@ def unstack_batch_queue(queue_name: str, chunk_size: int = 1_000, sleep_time: fl
 
     Returns:
         2-item tuple: 1) set of extracted tasks names, 2) set of deleted
-        tasks names. If nothing went wront both should be equal.
+        tasks names. If nothing went wrong both should be equal.
     """
     print("Starting...")
 

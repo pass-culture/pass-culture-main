@@ -1,5 +1,5 @@
 """
-Fetch users from database and update their informations on Batch.
+Fetch users from database and update their information on Batch.
 Goal: some users do not have all the expected attributes, this script should
 fix this issue.
 """

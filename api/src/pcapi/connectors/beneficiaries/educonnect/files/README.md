@@ -1,6 +1,6 @@
 # Educonnect, SAML2 and metadata
 
-Educonnect is an an Identity Provider using SAML2 protocol, allowing pass Culture (the Service Provider) to verify young users identity.
+Educonnect is an Identity Provider using SAML2 protocol, allowing pass Culture (the Service Provider) to verify young users identity.
 
 ## Educonnect metadata
 
@@ -14,7 +14,7 @@ The files `PC-{env}-metadata.xml` are public and were transmitted to Educonnect.
 - a certificate public key: ending on october 2121. The certificates were issued with the following command :
   `openssl req -nodes -new -x509 -keyout PC-testing.key -out PC-testing.cert -days 36500`
 
-These files are commited for information but are not used by our code.
+These files are committed for information but are not used by our code.
 
 The `settings.EDUCONNECT_SP_CERTIFICATE` variable corresponds to the public key written in the `X509Certificate` tag of the XML.
 
