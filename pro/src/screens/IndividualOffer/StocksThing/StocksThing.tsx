@@ -123,6 +123,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
       return
     }
 
+    await mutate([GET_OFFER_QUERY_KEY, offer.id])
     navigate(nextStepUrl)
     if (mode === OFFER_WIZARD_MODE.EDITION) {
       notify.success(getSuccessMessage(mode))
