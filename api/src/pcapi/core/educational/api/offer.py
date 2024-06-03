@@ -443,7 +443,7 @@ def create_collective_offer_public(
     if feature.FeatureToggle.WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API.is_active():
         offer_validation.validate_national_program(body.nationalProgramId, educational_domains)
 
-    if not len(educational_domains) == len(body.domains):
+    if len(educational_domains) != len(body.domains):
         raise exceptions.EducationalDomainsNotFound()
 
     institution = educational_repository.get_educational_institution_public(
