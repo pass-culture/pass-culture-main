@@ -16,7 +16,7 @@ class UpdateZendeskAttributesRequest(BaseModel):
     phone_number: str | None
 
 
-@task(GCP_ZENDESK_ATTRIBUTES_QUEUE_NAME, "/zendesk/update_user_attributes")  # type: ignore [arg-type]
+@task(GCP_ZENDESK_ATTRIBUTES_QUEUE_NAME, "/zendesk/update_user_attributes")  # type: ignore[arg-type]
 def update_zendesk_attributes_task(payload: UpdateZendeskAttributesRequest) -> None:
     from pcapi.core.external.zendesk import update_contact_attributes
 

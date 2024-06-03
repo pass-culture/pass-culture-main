@@ -5,7 +5,7 @@ from pcapi.tasks.serialization.mails_tasks import WithdrawalChangedMailRequest
 
 
 @task(
-    GCP_SENDINBLUE_TRANSACTIONAL_EMAILS_WITHDRAWAL_UPDATED_QUEUE_NAME,  # type: ignore [arg-type]
+    GCP_SENDINBLUE_TRANSACTIONAL_EMAILS_WITHDRAWAL_UPDATED_QUEUE_NAME,  # type: ignore[arg-type]
     "/sendinblue/send-withdrawal-updated-emails",
 )
 def send_withdrawal_detail_changed_emails(payload: WithdrawalChangedMailRequest) -> None:

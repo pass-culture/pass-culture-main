@@ -68,7 +68,7 @@ class CDSStocks(LocalProvider):
         movie_infos = next(self.movies)
         if movie_infos:
             self.movie_information = movie_infos
-            self.filtered_movie_showtimes = _find_showtimes_by_movie_id(self.shows, int(self.movie_information.id))  # type: ignore [assignment]
+            self.filtered_movie_showtimes = _find_showtimes_by_movie_id(self.shows, int(self.movie_information.id))  # type: ignore[assignment]
             if not self.filtered_movie_showtimes:
                 return []
 
@@ -91,7 +91,7 @@ class CDSStocks(LocalProvider):
         )
         providable_information_list.append(offer_providable_info)
 
-        for show in self.filtered_movie_showtimes:  # type: ignore [attr-defined]
+        for show in self.filtered_movie_showtimes:  # type: ignore[attr-defined]
             stock_showtime_unique_id = _build_stock_uuid(
                 self.movie_information.id, self.venue, show["show_information"]
             )
@@ -203,7 +203,7 @@ class CDSStocks(LocalProvider):
         # have any remaining up-to-date stocks using old construct `idAtProviders`
         cds_stock.idAtProviders = _clean_cds_id_at_providers(cds_stock.idAtProviders)
 
-        showtime = _find_showtime_by_showtime_uuid(self.filtered_movie_showtimes, showtime_uuid)  # type: ignore [arg-type]
+        showtime = _find_showtime_by_showtime_uuid(self.filtered_movie_showtimes, showtime_uuid)  # type: ignore[arg-type]
 
         if showtime:
             price_label = showtime["price_label"]

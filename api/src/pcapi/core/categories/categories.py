@@ -92,8 +92,8 @@ ALL_CATEGORIES = (
     TECHNIQUE,
 )
 ALL_CATEGORIES_DICT = {category.id: category for category in ALL_CATEGORIES}
-CategoryIdEnum = Enum("CategoryIdEnum", {category.id: category.id for category in ALL_CATEGORIES})  # type: ignore [misc]
-CategoryIdLabelEnum = Enum("CategoryIdLabelEnum", {category.id: category.pro_label for category in ALL_CATEGORIES})  # type: ignore [misc]
+CategoryIdEnum = Enum("CategoryIdEnum", {category.id: category.id for category in ALL_CATEGORIES})  # type: ignore[misc]
+CategoryIdLabelEnum = Enum("CategoryIdLabelEnum", {category.id: category.pro_label for category in ALL_CATEGORIES})  # type: ignore[misc]
 
 assert set(ALL_CATEGORIES) == set(category for category in locals().values() if isinstance(category, Category))
 

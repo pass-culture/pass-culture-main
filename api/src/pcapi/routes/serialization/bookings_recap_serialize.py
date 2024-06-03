@@ -93,7 +93,7 @@ def _serialize_booking_status_info(
 
     return BookingRecapResponseBookingStatusHistoryModel(
         status=booking_status,
-        date=serialized_booking_status_date,  # type: ignore [arg-type]
+        date=serialized_booking_status_date,  # type: ignore[arg-type]
     )
 
 
@@ -137,8 +137,8 @@ def serialize_booking_status_history(
 
 def serialize_bookings(booking: Booking) -> BookingRecapResponseModel:
     stock_beginning_datetime = _apply_departement_timezone(booking.stockBeginningDatetime, booking.venueDepartmentCode)
-    serialized_booking_recap = BookingRecapResponseModel(  # type: ignore [call-arg]
-        stock={  # type: ignore [arg-type]
+    serialized_booking_recap = BookingRecapResponseModel(  # type: ignore[call-arg]
+        stock={  # type: ignore[arg-type]
             "stockIdentifier": booking.stockId,
             "offerName": booking.offerName,
             "offerId": booking.offerId,
@@ -146,7 +146,7 @@ def serialize_bookings(booking: Booking) -> BookingRecapResponseModel:
             "offerIsbn": booking.offerEan,
             "offerIsEducational": False,
         },
-        beneficiary={  # type: ignore [arg-type]
+        beneficiary={  # type: ignore[arg-type]
             "lastname": booking.beneficiaryLastname,
             "firstname": booking.beneficiaryFirstname,
             "email": booking.beneficiaryEmail,

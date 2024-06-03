@@ -30,9 +30,9 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
 @public_api.route("/webhooks/ubble/application_status", methods=["POST"])
 @ubble_validation.require_ubble_signature
 @spectree_serialize(
-    headers=ubble_validation.WebhookRequestHeaders,  # type: ignore [arg-type]
+    headers=ubble_validation.WebhookRequestHeaders,  # type: ignore[arg-type]
     on_success_status=200,
-    response_model=ubble_validation.WebhookDummyReponse,  # type: ignore [arg-type]
+    response_model=ubble_validation.WebhookDummyReponse,  # type: ignore[arg-type]
 )
 def ubble_webhook_update_application_status(
     body: ubble_validation.WebhookRequest,
@@ -66,7 +66,7 @@ def ubble_webhook_update_application_status(
 @public_api.route("/webhooks/ubble/store_id_pictures", methods=["POST"])
 @spectree_serialize(
     on_success_status=200,
-    response_model=ubble_validation.WebhookDummyReponse,  # type: ignore [arg-type]
+    response_model=ubble_validation.WebhookDummyReponse,  # type: ignore[arg-type]
 )
 def ubble_webhook_store_id_pictures(
     body: ubble_validation.WebhookStoreIdPicturesRequest,

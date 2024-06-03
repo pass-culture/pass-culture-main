@@ -42,7 +42,7 @@ class BookingFactory(BaseFactory):
         else:
             self.cancellationLimitDate = api.compute_booking_cancellation_limit_date(
                 self.stock.beginningDatetime, self.dateCreated
-            )  # type: ignore [assignment]
+            )  # type: ignore[assignment]
         db.session.add(self)
         db.session.commit()
 

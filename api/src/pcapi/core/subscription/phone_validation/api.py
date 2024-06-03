@@ -150,7 +150,7 @@ def send_phone_validation_code(
         _check_sms_sending_is_allowed(user)
     _ensure_phone_number_unicity(user, phone_data.phone_number, change_owner=False)
 
-    user.phoneNumber = phone_data.phone_number  # type: ignore [method-assign]
+    user.phoneNumber = phone_data.phone_number  # type: ignore[method-assign]
     repository.save(user)
 
     phone_validation_token = users_api.create_phone_validation_token(
@@ -184,7 +184,7 @@ def validate_phone_number(user: users_models.User, code: str) -> None:
 
     _ensure_phone_number_unicity(user, phone_number, change_owner=True)
 
-    user.phoneNumber = phone_number  # type: ignore [method-assign]
+    user.phoneNumber = phone_number  # type: ignore[method-assign]
     user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
 
     fraud_check = fraud_models.BeneficiaryFraudCheck(
@@ -192,7 +192,7 @@ def validate_phone_number(user: users_models.User, code: str) -> None:
         type=fraud_models.FraudCheckType.PHONE_VALIDATION,
         status=fraud_models.FraudCheckStatus.OK,
         eligibilityType=user.eligibility,
-        resultContent=fraud_models.PhoneValidationFraudData(phone_number=phone_number),  # type: ignore [arg-type]
+        resultContent=fraud_models.PhoneValidationFraudData(phone_number=phone_number),  # type: ignore[arg-type]
         thirdPartyId=f"PC-{user.id}",
     )
 

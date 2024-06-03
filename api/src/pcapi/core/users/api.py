@@ -153,10 +153,10 @@ def create_account(
         user.externalIds = {}
 
     if apps_flyer_user_id and apps_flyer_platform:
-        user.externalIds["apps_flyer"] = {"user": apps_flyer_user_id, "platform": apps_flyer_platform.upper()}  # type: ignore [index, call-overload]
+        user.externalIds["apps_flyer"] = {"user": apps_flyer_user_id, "platform": apps_flyer_platform.upper()}  # type: ignore[index, call-overload]
 
     if firebase_pseudo_id:
-        user.externalIds["firebase_pseudo_id"] = firebase_pseudo_id  # type: ignore [index, call-overload]
+        user.externalIds["firebase_pseudo_id"] = firebase_pseudo_id  # type: ignore[index, call-overload]
 
     repository.save(user)
     logger.info("Created user account", extra={"user": user.id})
@@ -640,7 +640,7 @@ def update_user_info(
         user_phone_number = typing.cast(str, user.phoneNumber)
         if user_phone_number != phone_number:
             snapshot.set("phoneNumber", old=user_phone_number, new=phone_number)
-        user.phoneNumber = phone_number  # type: ignore [method-assign]
+        user.phoneNumber = phone_number  # type: ignore[method-assign]
     if address is not UNCHANGED:
         if address != user.address:
             snapshot.set("address", old=user.address, new=address)
@@ -1037,7 +1037,7 @@ def get_eligibility_at_date(
     eligibility_start = get_eligibility_start_datetime(date_of_birth)
     eligibility_end = get_eligibility_end_datetime(date_of_birth)
 
-    if not date_of_birth or not (eligibility_start <= specified_datetime < eligibility_end):  # type: ignore [operator]
+    if not date_of_birth or not (eligibility_start <= specified_datetime < eligibility_end):  # type: ignore[operator]
         return None
 
     age = users_utils.get_age_at_date(date_of_birth, specified_datetime)
@@ -1047,7 +1047,7 @@ def get_eligibility_at_date(
     if age in constants.ELIGIBILITY_UNDERAGE_RANGE:
         return models.EligibilityType.UNDERAGE
     # If the user is older than 18 in UTC timezone, we consider them eligible until they reach eligibility_end
-    if constants.ELIGIBILITY_AGE_18 <= age and specified_datetime < eligibility_end:  # type: ignore [operator]
+    if constants.ELIGIBILITY_AGE_18 <= age and specified_datetime < eligibility_end:  # type: ignore[operator]
         return models.EligibilityType.AGE18
 
     return None
@@ -1083,7 +1083,7 @@ def _filter_user_accounts(accounts: BaseQuery, search_term: str) -> BaseQuery:
     except phone_validation_exceptions.InvalidPhoneNumber:
         pass  # term can't be a phone number
     else:
-        term_filters.append(models.User.phoneNumber == term_as_phone_number)  # type: ignore [arg-type]
+        term_filters.append(models.User.phoneNumber == term_as_phone_number)  # type: ignore[arg-type]
 
     # numeric (single id or multiple ids)
     split_terms = re.split(r"[,;\s]+", search_term)
@@ -1167,7 +1167,7 @@ def get_public_account_base_query() -> BaseQuery:
     # using the same email as their personal account. So let's include "pro" users who are beneficiaries (doesn't
     # include those who are only in the subscription process).
     public_accounts = models.User.query.outerjoin(users_models.User.backoffice_profile).filter(
-        sa.or_(  # type: ignore [type-var]
+        sa.or_(  # type: ignore[type-var]
             sa.and_(
                 sa.not_(models.User.has_pro_role),
                 sa.not_(models.User.has_non_attached_pro_role),
@@ -1182,7 +1182,7 @@ def get_public_account_base_query() -> BaseQuery:
 # TODO (prouzet, 2023-11-02) This function should be moved in backoffice and use common _join_suspension_history()
 def search_pro_account(search_query: str, *_: typing.Any) -> BaseQuery:
     pro_accounts = models.User.query.filter(
-        sa.or_(  # type: ignore [type-var]
+        sa.or_(  # type: ignore[type-var]
             models.User.has_non_attached_pro_role,
             models.User.has_pro_role,
         )
@@ -1210,7 +1210,7 @@ def search_pro_account(search_query: str, *_: typing.Any) -> BaseQuery:
 def get_pro_account_base_query(pro_id: int) -> BaseQuery:
     return models.User.query.filter(
         models.User.id == pro_id,
-        sa.or_(  # type: ignore [type-var]
+        sa.or_(  # type: ignore[type-var]
             models.User.has_non_attached_pro_role,
             models.User.has_pro_role,
         ),
@@ -1544,7 +1544,7 @@ def anonymize_user(user: users_models.User, *, author: users_models.User | None 
     user.lastName = f"Anonymous_{user.id}"
     user.married_name = None
     user.postalCode = None
-    user.phoneNumber = None  # type: ignore [method-assign]
+    user.phoneNumber = None  # type: ignore[method-assign]
     user.dateOfBirth = user.dateOfBirth.replace(day=1, month=1) if user.dateOfBirth else None
     user.address = None
     user.city = None

@@ -221,7 +221,7 @@ def delete_draft_offers(body: offers_serialize.DeleteOfferRequestBody) -> None:
             },
             status_code=404,
         )
-    query = offers_repository.get_offers_by_ids(current_user, body.ids)  # type: ignore [arg-type]
+    query = offers_repository.get_offers_by_ids(current_user, body.ids)  # type: ignore[arg-type]
     offers_api.batch_delete_draft_offers(query)
 
 
@@ -425,7 +425,7 @@ def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseM
             crop_params=form.crop_params,
         )
 
-    return CreateThumbnailResponseModel(id=thumbnail.id, url=thumbnail.thumbUrl, credit=thumbnail.credit)  # type: ignore [arg-type]
+    return CreateThumbnailResponseModel(id=thumbnail.id, url=thumbnail.thumbUrl, credit=thumbnail.credit)  # type: ignore[arg-type]
 
 
 @private_api.route("/offers/thumbnails/<int:offer_id>", methods=["DELETE"])

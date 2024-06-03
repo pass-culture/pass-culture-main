@@ -165,18 +165,18 @@ def _serialize_offer_paginated(offer: CollectiveOffer | CollectiveOfferTemplate)
     institution = getattr(offer, "institution", None)
     templateId = getattr(offer, "templateId", None)
 
-    return CollectiveOfferResponseModel(  # type: ignore [call-arg]
+    return CollectiveOfferResponseModel(  # type: ignore[call-arg]
         hasBookingLimitDatetimesPassed=offer.hasBookingLimitDatetimesPassed if not is_offer_template else False,
         id=offer.id,
         isActive=False if offer.status == OfferStatus.INACTIVE else offer.isActive,
         isEditable=offer.isEditable,
         isEducational=True,
         name=offer.name,
-        stocks=serialized_stocks,  # type: ignore [arg-type]
+        stocks=serialized_stocks,  # type: ignore[arg-type]
         booking=last_booking,
         thumbUrl=None,
-        subcategoryId=offer.subcategoryId,  # type: ignore [arg-type]
-        venue=_serialize_venue(offer.venue),  # type: ignore [arg-type]
+        subcategoryId=offer.subcategoryId,  # type: ignore[arg-type]
+        venue=_serialize_venue(offer.venue),  # type: ignore[arg-type]
         status=offer.status.name,
         isShowcase=is_offer_template,
         educationalInstitution=EducationalInstitutionResponseModel.from_orm(institution) if institution else None,
@@ -595,7 +595,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
 
 class PostCollectiveOfferTemplateBodyModel(PostCollectiveOfferBodyModel):
     price_detail: PriceDetail | None
-    contact_email: EmailStr | None  # type: ignore [assignment]
+    contact_email: EmailStr | None  # type: ignore[assignment]
     contact_url: AnyHttpUrl | None
     contact_form: OfferContactFormEnum | None
 

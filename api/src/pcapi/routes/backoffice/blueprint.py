@@ -22,7 +22,7 @@ COOKIE_AUTH = "SessionAuth"
 
 
 SECURITY_SCHEMES = [
-    SecurityScheme(name=COOKIE_AUTH, data={"type": "apiKey", "in": "cookie", "name": "session"}),  # type: ignore [arg-type]
+    SecurityScheme(name=COOKIE_AUTH, data={"type": "apiKey", "in": "cookie", "name": "session"}),  # type: ignore[arg-type]
 ]
 
 

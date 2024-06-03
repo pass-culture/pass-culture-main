@@ -24,7 +24,7 @@ class ValidationStatusMixin:
     def isNew(self) -> bool:
         return self.validationStatus == ValidationStatus.NEW
 
-    @isNew.expression  # type: ignore [no-redef]
+    @isNew.expression  # type: ignore[no-redef]
     def isNew(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.validationStatus == ValidationStatus.NEW
 
@@ -32,7 +32,7 @@ class ValidationStatusMixin:
     def isPending(self) -> bool:
         return self.validationStatus == ValidationStatus.PENDING
 
-    @isPending.expression  # type: ignore [no-redef]
+    @isPending.expression  # type: ignore[no-redef]
     def isPending(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.validationStatus == ValidationStatus.PENDING
 
@@ -40,7 +40,7 @@ class ValidationStatusMixin:
     def isWaitingForValidation(self) -> bool:
         return self.validationStatus in (ValidationStatus.NEW, ValidationStatus.PENDING)
 
-    @isWaitingForValidation.expression  # type: ignore [no-redef]
+    @isWaitingForValidation.expression  # type: ignore[no-redef]
     def isWaitingForValidation(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.validationStatus.in_([ValidationStatus.NEW, ValidationStatus.PENDING])
 
@@ -48,7 +48,7 @@ class ValidationStatusMixin:
     def isValidated(self) -> bool:
         return self.validationStatus == ValidationStatus.VALIDATED
 
-    @isValidated.expression  # type: ignore [no-redef]
+    @isValidated.expression  # type: ignore[no-redef]
     def isValidated(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.validationStatus == ValidationStatus.VALIDATED
 
@@ -56,7 +56,7 @@ class ValidationStatusMixin:
     def isRejected(self) -> bool:
         return self.validationStatus == ValidationStatus.REJECTED
 
-    @isRejected.expression  # type: ignore [no-redef]
+    @isRejected.expression  # type: ignore[no-redef]
     def isRejected(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         # sqla.not_(isRejected) works only if we check None separately.
         return cls.validationStatus == ValidationStatus.REJECTED
@@ -65,7 +65,7 @@ class ValidationStatusMixin:
     def isDeleted(self) -> bool:
         return self.validationStatus == ValidationStatus.DELETED
 
-    @isDeleted.expression  # type: ignore [no-redef]
+    @isDeleted.expression  # type: ignore[no-redef]
     def isDeleted(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         # sqla.not_(isDeleted) works only if we check None separately.
         return cls.validationStatus == ValidationStatus.DELETED

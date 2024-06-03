@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 def _toggle_marketing_email_subscription(subscribe: bool) -> None:
-    user_email = request.json.get("email")  # type: ignore [union-attr]
+    user_email = request.json.get("email")  # type: ignore[union-attr]
     if not user_email:
         raise ApiErrors(
             {"email": "Email missing in request payload"},

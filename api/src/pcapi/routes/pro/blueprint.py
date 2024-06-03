@@ -19,10 +19,10 @@ CORS(
 SECURITY_SCHEMES = [
     SecurityScheme(
         name=users_authentifications.API_KEY_AUTH_NAME,
-        data={"type": "http", "scheme": "bearer", "description": "Api key issued by passculture"},  # type: ignore [arg-type]
+        data={"type": "http", "scheme": "bearer", "description": "Api key issued by passculture"},  # type: ignore[arg-type]
     ),
     SecurityScheme(
-        name=users_authentifications.COOKIE_AUTH_NAME, data={"type": "apiKey", "in": "cookie", "name": "session"}  # type: ignore [arg-type]
+        name=users_authentifications.COOKIE_AUTH_NAME, data={"type": "apiKey", "in": "cookie", "name": "session"}  # type: ignore[arg-type]
     ),
 ]
 

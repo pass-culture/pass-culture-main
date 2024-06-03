@@ -13,7 +13,7 @@ def random_password() -> str:
     special_chars = [secrets.choice("#~|=;:,+><?!@$%^&*_.-")]
 
     password_chars = uppercase + lowercase + special_chars + number
-    secrets._sysrand.shuffle(password_chars)  # type: ignore [attr-defined]
+    secrets._sysrand.shuffle(password_chars)  # type: ignore[attr-defined]
 
     return "".join(password_chars)
 
