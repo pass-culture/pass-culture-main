@@ -83,7 +83,6 @@ class CGRStocks(LocalProvider):
         offer.extraData = offer.extraData or offers_models.OfferExtraData()
         if self.product:
             offer.name = self.product.name
-            offer.description = self.product.description
             offer.durationMinutes = self.product.durationMinutes
             if self.product.extraData:
                 offer.extraData.update(self.product.extraData)

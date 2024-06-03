@@ -291,7 +291,7 @@ class SynchronizeStocksTest:
         assert len(new_offers) == 1
         new_offer = new_offers[0]
         assert new_offer.bookingEmail == "booking_email"
-        assert new_offer.description == "product_desc"
+        assert new_offer.description == None
         assert new_offer.extraData == {"extra": "data"}
         assert new_offer.idAtProvider == "ean_product_ref"
         assert new_offer.lastProviderId == provider.id
