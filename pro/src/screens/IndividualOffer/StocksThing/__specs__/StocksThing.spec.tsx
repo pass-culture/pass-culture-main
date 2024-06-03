@@ -300,9 +300,7 @@ describe('screens:StocksThing', () => {
       }
       await renderStockThingScreen([], props, contextValue)
 
-      await userEvent.click(
-        screen.getByTestId('stock-form-actions-button-open')
-      )
+      await userEvent.click(screen.getByTestId('dropdown-menu-trigger'))
 
       await userEvent.click(screen.getByTitle("Ajouter des codes d'activation"))
 
@@ -368,9 +366,7 @@ describe('screens:StocksThing', () => {
       }
       await renderStockThingScreen([], props, contextValue)
 
-      await userEvent.click(
-        screen.getByTestId('stock-form-actions-button-open')
-      )
+      await userEvent.click(screen.getByTestId('dropdown-menu-trigger'))
       await userEvent.dblClick(
         screen.getByText("Ajouter des codes d'activation")
       )

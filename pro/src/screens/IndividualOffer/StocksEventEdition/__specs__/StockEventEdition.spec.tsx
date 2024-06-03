@@ -210,9 +210,7 @@ describe('screens:StocksEventEdition', () => {
 
     expect(screen.getAllByText('Réservations *')[0]).toBeInTheDocument()
 
-    expect(
-      screen.getByTestId('stock-form-actions-button-open')
-    ).toBeInTheDocument()
+    expect(screen.getByTestId('dropdown-menu-trigger')).toBeInTheDocument()
   })
 
   it('should allow user to delete a stock', async () => {
@@ -223,9 +221,7 @@ describe('screens:StocksEventEdition', () => {
     vi.clearAllMocks()
     vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
 
-    await userEvent.click(
-      screen.getAllByTestId('stock-form-actions-button-open')[0]
-    )
+    await userEvent.click(screen.getAllByTestId('dropdown-menu-trigger')[0])
     await userEvent.click(screen.getByTitle('Supprimer le stock'))
 
     expect(
@@ -250,9 +246,7 @@ describe('screens:StocksEventEdition', () => {
     )
     vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
 
-    await userEvent.click(
-      screen.getAllByTestId('stock-form-actions-button-open')[0]
-    )
+    await userEvent.click(screen.getAllByTestId('dropdown-menu-trigger')[0])
     await userEvent.click(screen.getByTitle('Supprimer le stock'))
 
     await waitFor(() => {
@@ -278,9 +272,7 @@ describe('screens:StocksEventEdition', () => {
     )
     vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
 
-    await userEvent.click(
-      screen.getAllByTestId('stock-form-actions-button-open')[0]
-    )
+    await userEvent.click(screen.getAllByTestId('dropdown-menu-trigger')[0])
     await userEvent.click(screen.getByTitle('Supprimer le stock'))
 
     await waitFor(() => {
@@ -303,7 +295,7 @@ describe('screens:StocksEventEdition', () => {
     ])
 
     vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
-    await userEvent.click(screen.getByTestId('stock-form-actions-button-open'))
+    await userEvent.click(screen.getByTestId('dropdown-menu-trigger'))
     const deleteButton = screen.getByTitle('Supprimer le stock')
     expect(deleteButton).toHaveAttribute('aria-disabled', 'true')
     await userEvent.click(deleteButton)
@@ -319,7 +311,7 @@ describe('screens:StocksEventEdition', () => {
     await renderStockEventScreen(apiOffer, apiStocks)
     vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
 
-    await userEvent.click(screen.getByTestId('stock-form-actions-button-open'))
+    await userEvent.click(screen.getByTestId('dropdown-menu-trigger'))
     await userEvent.click(screen.getByTitle('Supprimer le stock'))
     expect(
       screen.getByText('Voulez-vous supprimer cette date ?')
@@ -352,12 +344,8 @@ describe('screens:StocksEventEdition', () => {
       )
     )
 
-    await userEvent.click(
-      screen.getAllByTestId('stock-form-actions-button-open')[1]
-    )
-    await userEvent.click(
-      screen.getAllByTestId('stock-form-actions-button-open')[0]
-    )
+    await userEvent.click(screen.getAllByTestId('dropdown-menu-trigger')[1])
+    await userEvent.click(screen.getAllByTestId('dropdown-menu-trigger')[0])
     await userEvent.click(screen.getByTitle('Supprimer le stock'))
     expect(
       screen.getByText('Voulez-vous supprimer cette date ?')
@@ -440,7 +428,7 @@ describe('screens:StocksEventEdition', () => {
     )
     await renderStockEventScreen(apiOffer, apiStocks)
 
-    await userEvent.click(screen.getByTestId('stock-form-actions-button-open'))
+    await userEvent.click(screen.getByTestId('dropdown-menu-trigger'))
     await userEvent.click(await screen.findByText('Supprimer le stock'))
 
     await userEvent.click(
@@ -519,7 +507,7 @@ describe('screens:StocksEventEdition', () => {
     vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
     await renderStockEventScreen(apiOffer, apiStocks)
 
-    await userEvent.click(screen.getByTestId('stock-form-actions-button-open'))
+    await userEvent.click(screen.getByTestId('dropdown-menu-trigger'))
     await userEvent.click(screen.getByTitle('Supprimer le stock'))
     expect(
       screen.queryByText('Voulez-vous supprimer ce stock ?')

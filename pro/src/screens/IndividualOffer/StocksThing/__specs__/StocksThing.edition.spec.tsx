@@ -197,7 +197,7 @@ describe('screens:StocksThing', () => {
     vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
     renderStockThingScreen()
     await screen.findByTestId('stock-thing-form')
-    await userEvent.click(screen.getByTestId('stock-form-actions-button-open'))
+    await userEvent.click(screen.getByTestId('dropdown-menu-trigger'))
     await userEvent.click(await screen.findByText('Supprimer le stock'))
     expect(
       screen.getByText('Voulez-vous supprimer ce stock ?')
@@ -231,12 +231,8 @@ describe('screens:StocksThing', () => {
     renderStockThingScreen()
     await screen.findByTestId('stock-thing-form')
 
-    await userEvent.click(
-      screen.getAllByTestId('stock-form-actions-button-open')[1]
-    )
-    await userEvent.click(
-      screen.getAllByTestId('stock-form-actions-button-open')[0]
-    )
+    await userEvent.click(screen.getAllByTestId('dropdown-menu-trigger')[1])
+    await userEvent.click(screen.getAllByTestId('dropdown-menu-trigger')[0])
     await userEvent.dblClick(screen.getAllByText('Supprimer le stock')[0])
     expect(
       screen.getByText('Voulez-vous supprimer ce stock ?')
@@ -263,7 +259,7 @@ describe('screens:StocksThing', () => {
     renderStockThingScreen()
     await screen.findByTestId('stock-thing-form')
 
-    await userEvent.click(screen.getByTestId('stock-form-actions-button-open'))
+    await userEvent.click(screen.getByTestId('dropdown-menu-trigger'))
     await userEvent.dblClick(screen.getByText('Supprimer le stock'))
     await userEvent.click(
       await screen.findByText('Supprimer', { selector: 'button' })
@@ -300,7 +296,7 @@ describe('screens:StocksThing', () => {
     })
     renderStockThingScreen()
     await screen.findByTestId('stock-thing-form')
-    await userEvent.click(screen.getByTestId('stock-form-actions-button-open'))
+    await userEvent.click(screen.getByTestId('dropdown-menu-trigger'))
     await userEvent.click(await screen.findByTitle('Supprimer le stock'))
     expect(
       screen.queryByText('Voulez-vous supprimer ce stock ?')
