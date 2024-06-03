@@ -652,9 +652,6 @@ def attach_image(
     db.session.commit()
 
 
-# PRIVATE
-
-
 def _get_expired_collective_offer_template_ids(
     page: int,
     limit: int,
