@@ -393,7 +393,8 @@ def offerer_expired_collective_offers(offerer, venue_with_accepted_bank_account)
     stocks = educational_factories.CollectiveStockFactory.create_batch(
         size=4,
         price=1337,
-        beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=10),
+        startDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=10),
+        endDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=10),
     )
     return educational_factories.CollectiveOfferFactory.create_batch(
         size=4,

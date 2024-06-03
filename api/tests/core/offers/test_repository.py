@@ -1413,7 +1413,9 @@ class GetFilteredCollectiveOffersTest:
             venue__managingOfferer=user_offerer.offerer
         )
         collective_stock_ended = educational_factories.CollectiveStockFactory(
-            collectiveOffer=collective_offer_ended, beginningDatetime=datetime.datetime(year=2000, month=1, day=1)
+            collectiveOffer=collective_offer_ended,
+            startDatetime=datetime.datetime(year=2000, month=1, day=1),
+            endDatetime=datetime.datetime(year=2000, month=1, day=1),
         )
         educational_factories.CollectiveBookingFactory(
             collectiveStock=collective_stock_ended, status=educational_models.CollectiveBookingStatus.USED.value

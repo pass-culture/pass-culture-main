@@ -340,8 +340,8 @@ class DownloadReimbursementDetailsTest(PostEndpointHelper):
 
         # Create total overpayment on collective booking
         collective_booking_finance_incident = finance_factories.CollectiveBookingFinanceIncidentFactory(
-            collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime.utcnow()
-            - datetime.timedelta(days=5),
+            collectiveBooking__collectiveStock__startDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=5),
+            collectiveBooking__collectiveStock__endDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=5),
             collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
             collectiveBooking__collectiveStock__price=7,
             newTotalAmount=0,

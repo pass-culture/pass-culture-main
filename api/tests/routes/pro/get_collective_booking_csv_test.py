@@ -22,7 +22,8 @@ class Returns200Test:
         user_offerer = offerers_factories.UserOffererFactory()
         booking = educational_factories.CollectiveBookingFactory(
             dateCreated=datetime(2020, 8, 11, 12, 0, 0),
-            collectiveStock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
+            collectiveStock__startDatetime=datetime(2020, 8, 13, 12, 0, 0),
+            collectiveStock__endDatetime=datetime(2020, 8, 13, 12, 0, 0),
             reimbursementDate=datetime(2021, 8, 11, 12, 0, 0),
             dateUsed=datetime(2020, 8, 15, 12, 0, 0),
             collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
@@ -58,7 +59,8 @@ class Returns200Test:
         user_offerer = offerers_factories.UserOffererFactory()
         booking = educational_factories.CollectiveBookingFactory(
             dateCreated=datetime(2020, 8, 11, 12, 0, 0),
-            collectiveStock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
+            collectiveStock__startDatetime=datetime(2020, 8, 13, 12, 0, 0),
+            collectiveStock__endDatetime=datetime(2020, 8, 13, 12, 0, 0),
             reimbursementDate=None,
             dateUsed=None,
             collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
@@ -93,7 +95,8 @@ class Returns200Test:
         user_offerer = offerers_factories.UserOffererFactory()
         booking = educational_factories.CollectiveBookingFactory(
             dateCreated=datetime(2020, 8, 11, 12, 0, 0),
-            collectiveStock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
+            collectiveStock__startDatetime=datetime(2020, 8, 13, 12, 0, 0),
+            collectiveStock__endDatetime=datetime(2020, 8, 13, 12, 0, 0),
             reimbursementDate=datetime(2021, 8, 11, 12, 0, 0),
             dateUsed=datetime(2020, 8, 15, 12, 0, 0),
             collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
@@ -129,7 +132,8 @@ class Returns200Test:
         user_offerer = offerers_factories.UserOffererFactory()
         booking = educational_factories.CollectiveBookingFactory(
             dateCreated=datetime(2020, 8, 11, 12, 0, 0),
-            collectiveStock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
+            collectiveStock__startDatetime=datetime(2020, 8, 13, 12, 0, 0),
+            collectiveStock__endDatetime=datetime(2020, 8, 13, 12, 0, 0),
             reimbursementDate=datetime(2021, 8, 11, 12, 0, 0),
             dateUsed=datetime(2020, 8, 15, 12, 0, 0),
             collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
@@ -160,7 +164,8 @@ class Returns200Test:
         bookings = [
             educational_factories.CollectiveBookingFactory(
                 dateCreated=datetime(2020, 8, 11, 12, 0, 0),
-                collectiveStock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
+                collectiveStock__startDatetime=datetime(2020, 8, 13, 12, 0, 0),
+                collectiveStock__endDatetime=datetime(2020, 8, 13, 12, 0, 0),
                 reimbursementDate=datetime(2021, 8, 11, 12, 0, 0),
                 dateUsed=datetime(2020, 8, 15, 12, 0, 0),
                 collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
@@ -170,7 +175,8 @@ class Returns200Test:
             ),
             educational_factories.CollectiveBookingFactory(
                 dateCreated=datetime(2020, 8, 11, 12, 0, 0),
-                collectiveStock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
+                collectiveStock__startDatetime=datetime(2020, 8, 13, 12, 0, 0),
+                collectiveStock__endDatetime=datetime(2020, 8, 13, 12, 0, 0),
                 reimbursementDate=datetime(2021, 8, 11, 12, 0, 0),
                 dateUsed=datetime(2020, 8, 15, 12, 0, 0),
                 collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
@@ -180,7 +186,8 @@ class Returns200Test:
             ),
             educational_factories.CollectiveBookingFactory(
                 dateCreated=datetime(2020, 8, 11, 12, 0, 0),
-                collectiveStock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
+                collectiveStock__startDatetime=datetime(2020, 8, 13, 12, 0, 0),
+                collectiveStock__endDatetime=datetime(2020, 8, 13, 12, 0, 0),
                 reimbursementDate=datetime(2021, 8, 11, 12, 0, 0),
                 dateUsed=datetime(2020, 8, 15, 12, 0, 0),
                 collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,

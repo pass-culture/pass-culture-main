@@ -79,7 +79,9 @@ class CollectiveOffersPublicPatchOfferTest:
             "imageCredit": "a great artist",
             "nationalProgramId": national_program.id,
             # stock part
-            "beginningDatetime": stock.beginningDatetime.isoformat(timespec="seconds"),
+            # "beginningDatetime": stock.beginningDatetime.isoformat(timespec="seconds"),
+            "startDatetime": stock.startDatetime.isoformat(timespec="seconds"),
+            "endDatetime": stock.endDatetime.isoformat(timespec="seconds"),
             "bookingLimitDatetime": stock.bookingLimitDatetime.isoformat(timespec="seconds"),
             "totalPrice": 96.25,
             "numberOfTickets": 30,
@@ -123,7 +125,7 @@ class CollectiveOffersPublicPatchOfferTest:
         assert offer.imageCredit == "a great artist"
         assert offer.nationalProgramId == national_program.id
 
-        assert offer.collectiveStock.beginningDatetime == datetime.fromisoformat(payload["beginningDatetime"])
+        assert offer.collectiveStock.startDatetime == datetime.fromisoformat(payload["startDatetime"])
         assert offer.collectiveStock.bookingLimitDatetime == datetime.fromisoformat(payload["bookingLimitDatetime"])
         assert offer.collectiveStock.price == Decimal(payload["totalPrice"])
         assert offer.collectiveStock.priceDetail == payload["educationalPriceDetail"]
@@ -344,7 +346,9 @@ class CollectiveOffersPublicPatchOfferTest:
                 "otherAddress": None,
             },
             # stock part
-            "beginningDatetime": stock.beginningDatetime.isoformat(timespec="seconds"),
+            # "beginningDatetime": stock.beginningDatetime.isoformat(timespec="seconds"),
+            "startDatetime": stock.startDatetime.isoformat(timespec="seconds"),
+            "endDatetime": stock.endDatetime.isoformat(timespec="seconds"),
             "bookingLimitDatetime": stock.bookingLimitDatetime.isoformat(timespec="seconds"),
             "totalPrice": 21,
             "numberOfTickets": 30,
@@ -392,7 +396,9 @@ class CollectiveOffersPublicPatchOfferTest:
                 "otherAddress": None,
             },
             # stock part
-            "beginningDatetime": stock.beginningDatetime.isoformat(timespec="seconds"),
+            # "beginningDatetime": stock.beginningDatetime.isoformat(timespec="seconds"),
+            "startDatetime": stock.startDatetime.isoformat(timespec="seconds"),
+            "endDatetime": stock.endDatetime.isoformat(timespec="seconds"),
             "bookingLimitDatetime": stock.bookingLimitDatetime.isoformat(timespec="seconds"),
             "totalPrice": 35621,
             "numberOfTickets": 30,
@@ -439,7 +445,9 @@ class CollectiveOffersPublicPatchOfferTest:
                 "otherAddress": None,
             },
             # stock part
-            "beginningDatetime": stock.beginningDatetime.isoformat(timespec="seconds"),
+            # "beginningDatetime": stock.beginningDatetime.isoformat(timespec="seconds"),
+            "startDatetime": stock.startDatetime.isoformat(timespec="seconds"),
+            "endDatetime": stock.endDatetime.isoformat(timespec="seconds"),
             "bookingLimitDatetime": stock.bookingLimitDatetime.isoformat(timespec="seconds"),
             "totalPrice": 35621,
             "numberOfTickets": 30,
@@ -798,7 +806,9 @@ class CollectiveOffersPublicPatchOfferTest:
             "isActive": False,
             "imageCredit": "a great artist",
             # stock part
-            "beginningDatetime": stock.beginningDatetime.isoformat(timespec="seconds"),
+            # "beginningDatetime": stock.beginningDatetime.isoformat(timespec="seconds"),
+            "startDatetime": stock.startDatetime.isoformat(timespec="seconds"),
+            "endDatetime": stock.endDatetime.isoformat(timespec="seconds"),
             "bookingLimitDatetime": stock.bookingLimitDatetime.isoformat(timespec="seconds"),
             "totalPrice": 96.25,
             "numberOfTickets": 30,

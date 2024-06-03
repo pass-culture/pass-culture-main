@@ -1368,7 +1368,7 @@ class GetCollectiveBookingOverpaymentFormTest(PostEndpointHelper):
         assert "Statut de la réservation : Remboursée" in additional_data_text
         assert f"Nom de l'offre : {collective_booking.collectiveStock.collectiveOffer.name}" in additional_data_text
         assert (
-            f"Date de l'offre : {format_date_time(collective_booking.collectiveStock.beginningDatetime)}"
+            f"Date de l'offre : {format_date_time(collective_booking.collectiveStock.startDatetime)}"
             in additional_data_text
         )
         assert f"Établissement : {collective_booking.educationalInstitution.name}" in additional_data_text

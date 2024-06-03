@@ -28,7 +28,8 @@ class GetFavoriteOfferTest:
         educational_institution = educational_factories.EducationalInstitutionFactory()
         national_program = educational_factories.NationalProgramFactory()
         stock = educational_factories.CollectiveStockFactory(
-            beginningDatetime=datetime(2021, 5, 15),
+            startDatetime=datetime(2021, 5, 15),
+            endDatetime=datetime(2021, 5, 15),
             collectiveOffer__subcategoryId=subcategories.SEANCE_CINE.id,
             collectiveOffer__name="offer name",
             collectiveOffer__description="offer description",
@@ -73,7 +74,8 @@ class GetFavoriteOfferTest:
                     "name": "offer name",
                     "stock": {
                         "id": stock.id,
-                        "beginningDatetime": format_into_utc_date(stock.beginningDatetime),
+                        "startDatetime": format_into_utc_date(stock.startDatetime),
+                        "endDatetime": format_into_utc_date(stock.endDatetime),
                         "bookingLimitDatetime": format_into_utc_date(stock.bookingLimitDatetime),
                         "isBookable": True,
                         "price": 1000,
@@ -207,7 +209,8 @@ class GetFavoriteOfferTest:
         educational_institution = educational_factories.EducationalInstitutionFactory()
         national_program = educational_factories.NationalProgramFactory()
         stock1 = educational_factories.CollectiveStockFactory(
-            beginningDatetime=datetime(2021, 5, 15),
+            startDatetime=datetime(2021, 5, 15),
+            endDatetime=datetime(2021, 5, 15),
             collectiveOffer__name="offer name",
             collectiveOffer__description="offer description",
             price=10,
@@ -218,7 +221,8 @@ class GetFavoriteOfferTest:
             collectiveOffer__nationalProgramId=national_program.id,
         )
         stock2 = educational_factories.CollectiveStockFactory(
-            beginningDatetime=datetime(2021, 5, 15),
+            startDatetime=datetime(2021, 5, 15),
+            endDatetime=datetime(2021, 5, 15),
             collectiveOffer__name="offer name",
             collectiveOffer__description="offer description",
             price=10,

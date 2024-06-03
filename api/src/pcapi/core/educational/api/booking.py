@@ -49,7 +49,7 @@ def book_collective_offer(
         stock = educational_repository.get_and_lock_collective_stock(stock_id=stock_id)
         validation.check_collective_stock_is_bookable(stock)
 
-        educational_year = educational_repository.find_educational_year_by_date(stock.beginningDatetime)
+        educational_year = educational_repository.find_educational_year_by_date(stock.startDatetime)
         if not educational_year:
             raise exceptions.EducationalYearNotFound()
         validation.check_user_can_prebook_collective_stock(redactor_informations.uai, stock)
@@ -66,7 +66,7 @@ def book_collective_offer(
             status=educational_models.CollectiveBookingStatus.PENDING,
             dateCreated=utcnow,
             cancellationLimitDate=educational_utils.compute_educational_booking_cancellation_limit_date(
-                stock.beginningDatetime, utcnow
+                stock.startDatetime, utcnow
             ),
         )
         repository.save(booking)
@@ -144,7 +144,8 @@ def confirm_collective_booking(educational_booking_id: int) -> educational_model
             validation.check_ministry_fund(
                 educational_year_id=educational_year_id,
                 booking_amount=decimal.Decimal(collective_booking.collectiveStock.price),
-                booking_date=collective_booking.collectiveStock.beginningDatetime,
+                # TODO(EAC): not sure, should it be endDatetime ?
+                booking_date=collective_booking.collectiveStock.startDatetime,
                 ministry=deposit.ministry,
             )
 
@@ -249,7 +250,8 @@ def get_collective_booking_by_id(booking_id: int) -> educational_models.Collecti
         .options(
             sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock).load_only(
                 educational_models.CollectiveStock.price,
-                educational_models.CollectiveStock.beginningDatetime,
+                educational_models.CollectiveStock.startDatetime,
+                educational_models.CollectiveStock.endDatetime,
                 educational_models.CollectiveStock.numberOfTickets,
             ),
             sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock)

@@ -37,7 +37,8 @@ class CollectiveOfferTest:
         venue = offerers_factories.VenueFactory()
         institution = educational_factories.EducationalInstitutionFactory(institutionId="12890AI")
         stock = educational_factories.CollectiveStockFactory(
-            beginningDatetime=datetime(2021, 5, 15),
+            startDatetime=datetime(2021, 5, 15),
+            endDatetime=datetime(2021, 5, 15),
             collectiveOffer__subcategoryId=subcategories.SEANCE_CINE.id,
             collectiveOffer__name="offer name",
             collectiveOffer__description="offer description",
@@ -74,7 +75,8 @@ class CollectiveOfferTest:
             "isSoldOut": False,
             "name": "offer name",
             "stock": {
-                "beginningDatetime": "2021-05-15T00:00:00Z",
+                "startDatetime": "2021-05-15T00:00:00Z",
+                "endDatetime": "2021-05-15T00:00:00Z",
                 "bookingLimitDatetime": "2021-05-14T23:00:00Z",
                 "id": stock.id,
                 "isBookable": True,

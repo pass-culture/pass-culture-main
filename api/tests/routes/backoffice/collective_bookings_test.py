@@ -37,7 +37,8 @@ def collective_bookings_fixture() -> tuple:
         educationalInstitution=institution2,
         collectiveStock__collectiveOffer__name="Offer n°1",
         collectiveStock__collectiveOffer__formats=[subcategories.EacFormat.CONFERENCE_RENCONTRE],
-        collectiveStock__beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=6),
+        collectiveStock__startDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=6),
+        collectiveStock__endDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=6),
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=4),
         venue=venue,
     )
@@ -50,7 +51,8 @@ def collective_bookings_fixture() -> tuple:
         collectiveStock__collectiveOffer__name="Visite des locaux primitifs du pass Culture",
         collectiveStock__collectiveOffer__formats=[subcategories.EacFormat.VISITE_GUIDEE],
         collectiveStock__bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=2),
-        collectiveStock__beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=3),
+        collectiveStock__startDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=3),
+        collectiveStock__endDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=3),
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=3),
     )
     # 2
@@ -61,7 +63,8 @@ def collective_bookings_fixture() -> tuple:
         collectiveStock__collectiveOffer__name="Offer n°2",
         collectiveStock__collectiveOffer__formats=[subcategories.EacFormat.CONCERT],
         collectiveStock__bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=3),
-        collectiveStock__beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=7),
+        collectiveStock__startDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=7),
+        collectiveStock__endDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=7),
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=2),
         venue=venue,
     )
@@ -70,7 +73,8 @@ def collective_bookings_fixture() -> tuple:
         educationalInstitution=institution3,
         collectiveStock__collectiveOffer__name="Offer n°3",
         collectiveStock__collectiveOffer__formats=[subcategories.EacFormat.PROJECTION_AUDIOVISUELLE],
-        collectiveStock__beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=5),
+        collectiveStock__startDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=5),
+        collectiveStock__endDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=5),
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1),
     )
     # 4

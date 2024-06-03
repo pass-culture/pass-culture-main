@@ -397,7 +397,7 @@ def get_collective_offers_by_filters(
             subquery = subquery.filter(
                 sa.func.timezone(
                     offerers_models.Venue.timezone,
-                    sa.func.timezone("UTC", educational_models.CollectiveStock.beginningDatetime),
+                    sa.func.timezone("UTC", educational_models.CollectiveStock.startDatetime),
                 )
                 >= period_beginning_date
             )
@@ -405,7 +405,7 @@ def get_collective_offers_by_filters(
             subquery = subquery.filter(
                 sa.func.timezone(
                     offerers_models.Venue.timezone,
-                    sa.func.timezone("UTC", educational_models.CollectiveStock.beginningDatetime),
+                    sa.func.timezone("UTC", educational_models.CollectiveStock.startDatetime),
                 )
                 <= datetime.datetime.combine(period_ending_date, datetime.time.max),
             )

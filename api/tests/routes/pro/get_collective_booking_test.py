@@ -36,7 +36,7 @@ class Returns200Test:
         assert response.json == {
             "id": booking.id,
             "offerVenue": {"addressType": "other", "otherAddress": "1 rue des polissons, Paris 75017", "venueId": None},
-            "beginningDatetime": booking.collectiveStock.beginningDatetime.isoformat(),
+            "beginningDatetime": booking.collectiveStock.startDatetime.isoformat(),
             "students": ["Lycée - Seconde"],
             "bankAccountStatus": "MISSING",
             "venueDMSApplicationId": None,
@@ -88,7 +88,7 @@ class Returns200Test:
         assert response.json == {
             "id": booking.id,
             "offerVenue": {"addressType": "other", "otherAddress": "1 rue des polissons, Paris 75017", "venueId": None},
-            "beginningDatetime": booking.collectiveStock.beginningDatetime.isoformat(),
+            "beginningDatetime": booking.collectiveStock.startDatetime.isoformat(),
             "students": ["Lycée - Seconde"],
             "bankAccountStatus": "ACCEPTED",
             "venueDMSApplicationId": bank_account.dsApplicationId,

@@ -51,7 +51,8 @@ class Returns200Test:
         user = users_factories.UserFactory()
 
         stock = educational_factories.CollectiveStockFactory(
-            beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=125),
+            startDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=125),
+            endDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=125),
             bookingLimitDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=125),
         )
         offer = educational_factories.CollectiveOfferFactory(
@@ -80,7 +81,8 @@ class Returns200Test:
         offerer_factories.UserOffererFactory(user=user, offerer=offerer)
         venue = offerer_factories.VenueFactory(managingOfferer=offerer)
         stock = educational_factories.CollectiveStockFactory(
-            beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=5),
+            startDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=5),
+            endDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=5),
             bookingLimitDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=5),
             collectiveOffer__venue=venue,
         )
@@ -271,7 +273,8 @@ class Returns200Test:
             collectiveOffer__venue=venue,
             collectiveOffer__dateCreated=datetime.datetime.utcnow(),
             collectiveOffer__offerId=2,
-            beginningDatetime=datetime.datetime(2022, 8, 10),
+            startDatetime=datetime.datetime(2022, 8, 10),
+            endDatetime=datetime.datetime(2022, 8, 10),
         )
         educational_factories.CollectiveOfferTemplateFactory(
             venue=venue, dateCreated=datetime.datetime.utcnow(), offerId=2
@@ -279,7 +282,8 @@ class Returns200Test:
         educational_factories.CollectiveStockFactory(
             collectiveOffer=offer,
             stockId=1,
-            beginningDatetime=datetime.datetime(2022, 10, 10),
+            startDatetime=datetime.datetime(2022, 10, 10),
+            endDatetime=datetime.datetime(2022, 10, 10),
         )
 
         # When

@@ -96,14 +96,15 @@ CASHFLOW_BATCH_LABEL_PREFIX = "VIR"
 def get_pricing_ordering_date(
     booking: bookings_models.Booking | educational_models.CollectiveBooking,
 ) -> datetime.datetime:
-    stock: offers_models.Stock | educational_models.CollectiveStock = (
-        booking.stock if isinstance(booking, bookings_models.Booking) else booking.collectiveStock
-    )
+    if isinstance(booking, bookings_models.Booking):
+        beginningDatetime = booking.stock.beginningDatetime
+    else:
+        beginningDatetime = booking.collectiveStock.endDatetime
     # IMPORTANT: if you change this, you must also adapt the SQL query
     # in `core.offerers.api.link_venue_to_pricing_point()`
     return max(
         get_pricing_point_link(booking).timespan.lower,
-        stock.beginningDatetime or booking.dateUsed,
+        beginningDatetime or booking.dateUsed,
         booking.dateUsed,
     )
 
@@ -885,7 +886,7 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
             ),
             sqla.and_(
                 models.Pricing.collectiveBookingId.is_not(None),
-                educational_models.CollectiveStock.beginningDatetime < batch.cutoff,
+                educational_models.CollectiveStock.endDatetime < batch.cutoff,
             ),
             models.FinanceEvent.bookingFinanceIncidentId.is_not(None),
         ),

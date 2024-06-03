@@ -65,7 +65,7 @@ class CollectiveStockIsBookableTest:
 
     def test_not_bookable_if_offer_is_event_with_passed_begining_datetime(self) -> None:
         past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
-        collective_stock = factories.CollectiveStockFactory(beginningDatetime=past)
+        collective_stock = factories.CollectiveStockFactory(startDatetime=past, endDatetime=past)
         assert not collective_stock.isBookable
 
     def test_not_bookable_if_no_remaining_stock(self) -> None:

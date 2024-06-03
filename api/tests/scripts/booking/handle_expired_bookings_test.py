@@ -333,7 +333,8 @@ class NotifyOfferersOfExpiredBookingsTest:
         )
         stock_one = educational_factories.CollectiveStockFactory(
             collectiveOffer__bookingEmails=["test@mail.com", "test2@mail.com"],
-            beginningDatetime=date_event_1,
+            startDatetime=date_event_1,
+            endDatetime=date_event_1,
             collectiveOffer__name="Ma première offre expirée",
         )
         first_expired_booking = educational_factories.CancelledCollectiveBookingFactory(
@@ -346,7 +347,8 @@ class NotifyOfferersOfExpiredBookingsTest:
 
         stock_two = educational_factories.CollectiveStockFactory(
             collectiveOffer__bookingEmails=["new_test@mail.com", "newer_test@mail.com"],
-            beginningDatetime=date_event_2,
+            startDatetime=date_event_2,
+            endDatetime=date_event_2,
             collectiveOffer__name="Ma deuxième offre expirée",
         )
         second_expired_booking = educational_factories.CancelledCollectiveBookingFactory(

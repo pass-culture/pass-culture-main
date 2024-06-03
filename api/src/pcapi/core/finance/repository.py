@@ -141,7 +141,7 @@ def _get_sent_pricings_for_collective_bookings(
         educational_models.EducationalInstitution.name.label("institution_name"),
         _truncate_milliseconds(educational_models.CollectiveBooking.dateUsed).label("booking_used_date"),
         educational_models.CollectiveStock.price.label("booking_amount"),
-        educational_models.CollectiveStock.beginningDatetime.label("event_date"),
+        educational_models.CollectiveStock.startDatetime.label("event_date"),
         educational_models.CollectiveOffer.name.label("offer_name"),
         sqla.true().label("offer_is_educational"),
         offerers_models.Venue.name.label("venue_name"),
@@ -346,7 +346,8 @@ def _get_collective_booking_reimbursement_data(query: BaseQuery) -> list[tuple]:
             educational_models.EducationalInstitution.name.label("institution_name"),
             _truncate_milliseconds(educational_models.CollectiveBooking.dateUsed).label("booking_used_date"),
             educational_models.CollectiveStock.price.label("booking_amount"),
-            educational_models.CollectiveStock.beginningDatetime.label("event_date"),
+            educational_models.CollectiveStock.startDatetime.label("event_date"),
+            educational_models.CollectiveStock.endDatetime.label("event_date"),
             educational_models.CollectiveOffer.name.label("offer_name"),
             offerers_models.Venue.name.label("venue_name"),
             offerers_models.Venue.common_name.label("venue_common_name"),  # type: ignore[attr-defined]
