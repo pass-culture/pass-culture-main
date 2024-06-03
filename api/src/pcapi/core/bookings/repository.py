@@ -192,7 +192,7 @@ def find_soon_to_be_expiring_individual_bookings_ordered_by_user(given_date: dat
 
 
 def generate_booking_token() -> str:
-    for _i in range(100):
+    for _ in range(100):
         token = random_token()
         if not token_exists(token):
             return token
