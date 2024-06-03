@@ -42,9 +42,9 @@ def assert_no_duplicated_queries() -> collections.abc.Generator[None, None, None
                 function_under_test()
     """
     # We record queries with _record_end_of_query and register_event_for_query_logger
-    flask._app_ctx_stack._query_logger = []  # type: ignore [attr-defined]
+    flask._app_ctx_stack._query_logger = []  # type: ignore[attr-defined]
     yield
-    queries = flask._app_ctx_stack._query_logger.copy()  # type: ignore [attr-defined]
+    queries = flask._app_ctx_stack._query_logger.copy()  # type: ignore[attr-defined]
 
     statements = [query["statement"] for query in queries if "from feature" not in query["statement"].lower()]
 
@@ -77,16 +77,16 @@ def assert_num_queries(expected_n_queries: int) -> collections.abc.Generator[Non
     """
     # Flask gracefully provides a global. Flask-SQLAlchemy uses it for
     # the same purpose. Let's do the same.
-    flask._app_ctx_stack._query_logger = []  # type: ignore [attr-defined]
+    flask._app_ctx_stack._query_logger = []  # type: ignore[attr-defined]
     yield
-    queries = flask._app_ctx_stack._query_logger.copy()  # type: ignore [attr-defined]
+    queries = flask._app_ctx_stack._query_logger.copy()  # type: ignore[attr-defined]
 
     if len(queries) != expected_n_queries:
         details = "\n".join(_format_sql_query(query, i, len(queries)) for i, query in enumerate(queries, start=1))
         pytest.fail(
             f"{len(queries)} queries executed, {expected_n_queries} expected\n" f"Captured queries were:\n{details}"
         )
-    del flask._app_ctx_stack._query_logger  # type: ignore [attr-defined]
+    del flask._app_ctx_stack._query_logger  # type: ignore[attr-defined]
 
 
 def _format_sql_query(query: dict, i: int, total: int) -> str:
@@ -173,8 +173,8 @@ class TestContextDecorator:
             if decorated_teardown_method:
                 decorated_teardown_method(inner_self)
 
-        cls.setup_method = setup_method  # type: ignore [attr-defined]
-        cls.teardown_method = teardown_method  # type: ignore [attr-defined]
+        cls.setup_method = setup_method  # type: ignore[attr-defined]
+        cls.teardown_method = teardown_method  # type: ignore[attr-defined]
         return cls
 
     def decorate_callable(self, func: typing.Callable) -> typing.Callable:

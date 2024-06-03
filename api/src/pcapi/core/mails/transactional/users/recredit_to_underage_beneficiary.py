@@ -16,7 +16,7 @@ def get_recredit_to_underage_beneficiary_email_data(
         params={
             "FIRSTNAME": user.firstName,
             "NEW_CREDIT": recredit_amount,
-            "CREDIT": int(domains_credit.all.remaining),  # type: ignore [union-attr]
+            "CREDIT": int(domains_credit.all.remaining),  # type: ignore[union-attr]
         },
     )
 

@@ -177,7 +177,7 @@ SEARCH_FIELD_TO_PYTHON = {
         "field": "price",
         "column": offers_models.Stock.price,
         "subquery_join": "stock",
-        "custom_filter_all_operators": sa.and_(  # type: ignore [type-var]
+        "custom_filter_all_operators": sa.and_(  # type: ignore[type-var]
             offers_models.Stock._bookable,
             offers_models.Offer._released,
         ),
@@ -292,7 +292,7 @@ def _get_offers(form: forms.GetOfferAdvancedSearchForm) -> list[offers_models.Of
         remaining_quantity_case = sa.case(
             (
                 # Same as Offer.isReleased which is not an hybrid property
-                sa.and_(  # type: ignore [type-var]
+                sa.and_(  # type: ignore[type-var]
                     offers_models.Offer._released,
                     offerers_models.Offerer.isActive,
                     offerers_models.Offerer.isValidated,
@@ -302,7 +302,7 @@ def _get_offers(form: forms.GetOfferAdvancedSearchForm) -> list[offers_models.Of
                         sa.case(
                             (
                                 sa.func.coalesce(
-                                    sa.func.max(sa.case((offers_models.Stock.remainingStock.is_(None), 1), else_=0)), 0  # type: ignore [attr-defined]
+                                    sa.func.max(sa.case((offers_models.Stock.remainingStock.is_(None), 1), else_=0)), 0  # type: ignore[attr-defined]
                                 )
                                 == 0,
                                 sa.func.coalesce(sa.func.sum(offers_models.Stock.remainingStock), 0).cast(sa.String),

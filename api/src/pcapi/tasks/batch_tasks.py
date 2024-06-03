@@ -32,17 +32,17 @@ class TrackBatchEventRequest(BaseModel):
     event_payload: dict
 
 
-@task(settings.GCP_BATCH_CUSTOM_DATA_ANDROID_QUEUE_NAME, "/batch/android/update_user_attributes")  # type: ignore [arg-type]
+@task(settings.GCP_BATCH_CUSTOM_DATA_ANDROID_QUEUE_NAME, "/batch/android/update_user_attributes")  # type: ignore[arg-type]
 def update_user_attributes_android_task(payload: UpdateBatchAttributesRequest) -> None:
     update_user_attributes(BatchAPI.ANDROID, payload.user_id, payload.attributes, can_be_asynchronously_retried=True)
 
 
-@task(settings.GCP_BATCH_CUSTOM_DATA_IOS_QUEUE_NAME, "/batch/ios/update_user_attributes")  # type: ignore [arg-type]
+@task(settings.GCP_BATCH_CUSTOM_DATA_IOS_QUEUE_NAME, "/batch/ios/update_user_attributes")  # type: ignore[arg-type]
 def update_user_attributes_ios_task(payload: UpdateBatchAttributesRequest) -> None:
     update_user_attributes(BatchAPI.IOS, payload.user_id, payload.attributes, can_be_asynchronously_retried=True)
 
 
-@task(settings.GCP_BATCH_CUSTOM_DATA_QUEUE_NAME, "/batch/delete_user_attributes")  # type: ignore [arg-type]
+@task(settings.GCP_BATCH_CUSTOM_DATA_QUEUE_NAME, "/batch/delete_user_attributes")  # type: ignore[arg-type]
 def delete_user_attributes_task(payload: DeleteBatchUserAttributesRequest) -> None:
     delete_user_attributes(payload.user_id, can_be_asynchronously_retried=True)
 

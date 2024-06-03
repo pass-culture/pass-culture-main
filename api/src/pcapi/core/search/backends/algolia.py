@@ -165,7 +165,7 @@ class AlgoliaBackend(base.SearchBackend):
                     "currently_indexed_offers": currently_indexed_offers,
                     "offers_in_indexing_queue": offers_in_indexing_queue,
                     "partial_ids": list(offer_ids)[:50],
-                    "count": len(offer_ids),  # type: ignore [arg-type]
+                    "count": len(offer_ids),  # type: ignore[arg-type]
                     "limit": limit,
                 },
             )

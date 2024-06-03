@@ -396,7 +396,7 @@ class TiteLiveThings(LocalProvider):
 
         self.data_lines = get_lines_from_thing_file(str(self.products_file))
 
-    def get_remaining_files_to_check(self, ordered_thing_files: list) -> iter:  # type: ignore [valid-type]
+    def get_remaining_files_to_check(self, ordered_thing_files: list) -> iter:  # type: ignore[valid-type]
         latest_sync_part_end_event = providers_repository.find_latest_sync_part_end_event(self.provider)
         if latest_sync_part_end_event is None:
             logger.info(
@@ -405,7 +405,7 @@ class TiteLiveThings(LocalProvider):
             )
             return iter(ordered_thing_files)
         for index, filename in enumerate(ordered_thing_files):
-            if get_date_from_filename(filename, DATE_REGEXP) == int(latest_sync_part_end_event.payload):  # type: ignore [arg-type]
+            if get_date_from_filename(filename, DATE_REGEXP) == int(latest_sync_part_end_event.payload):  # type: ignore[arg-type]
                 ordered_thing_files_from_date = ordered_thing_files[index + 1 :]
                 logger.info(
                     "get_remaining_files_to_check: %s",

@@ -749,7 +749,7 @@ def delete_api_key_by_user(user: users_models.User, api_key_prefix: str) -> None
 def _fill_in_offerer(
     offerer: offerers_models.Offerer, offerer_informations: offerers_serialize.CreateOffererQueryModel
 ) -> None:
-    offerer.street = offerer_informations.street  # type: ignore [method-assign]
+    offerer.street = offerer_informations.street  # type: ignore[method-assign]
     offerer.city = offerer_informations.city
     offerer.name = offerer_informations.name
     offerer.postalCode = offerer_informations.postalCode
@@ -835,7 +835,7 @@ def create_offerer(
         # in this case it is passed to NEW if the structure is not rejected
         user_offerer = (
             offerers_models.UserOfferer.query.filter_by(userId=user.id, offererId=offerer.id)
-            .filter(sa.or_(offerers_models.UserOfferer.isRejected, offerers_models.UserOfferer.isDeleted))  # type: ignore [type-var]
+            .filter(sa.or_(offerers_models.UserOfferer.isRejected, offerers_models.UserOfferer.isDeleted))  # type: ignore[type-var]
             .first()
         )
         if user_offerer:
@@ -941,7 +941,7 @@ def update_offerer(
         offerer.postalCode = postal_code
     if street is not offerers_constants.UNCHANGED and offerer.street != street:
         modified_info["street"] = {"old_info": offerer.street, "new_info": street}
-        offerer.street = street  # type: ignore [method-assign]
+        offerer.street = street  # type: ignore[method-assign]
     if tags is not offerers_constants.UNCHANGED:
         if set(offerer.tags) != set(tags):
             modified_info["tags"] = {
@@ -1240,8 +1240,8 @@ def rm_previous_venue_thumbs(venue: models.Venue) -> None:
         original_image_timestamp = get_timestamp_from_url(original_image_url)
         storage.remove_thumb(venue, storage_id_suffix=original_image_timestamp)
 
-    venue.bannerUrl = None  # type: ignore [method-assign]
-    venue.bannerMeta = None  # type: ignore [method-assign]
+    venue.bannerUrl = None  # type: ignore[method-assign]
+    venue.bannerMeta = None  # type: ignore[method-assign]
     venue.thumbCount = 1
 
 
@@ -1279,8 +1279,8 @@ def save_venue_banner(
         model_with_thumb=venue, image_as_bytes=content, storage_id_suffix_str=original_image_timestamp, keep_ratio=True
     )
 
-    venue.bannerUrl = f"{venue.thumbUrl}_{banner_timestamp}"  # type: ignore [method-assign]
-    venue.bannerMeta = {  # type: ignore [method-assign]
+    venue.bannerUrl = f"{venue.thumbUrl}_{banner_timestamp}"  # type: ignore[method-assign]
+    venue.bannerMeta = {  # type: ignore[method-assign]
         "image_credit": image_credit,
         "author_id": user.id,
         "original_image_url": f"{venue.thumbUrl}_{original_image_timestamp}",
@@ -1414,7 +1414,7 @@ def search_offerer(search_query: str, departments: typing.Iterable[str] = ()) ->
         return offerers.filter(False)
 
     if departments:
-        offerers = offerers.filter(models.Offerer.departementCode.in_(departments))  # type: ignore [attr-defined]
+        offerers = offerers.filter(models.Offerer.departementCode.in_(departments))  # type: ignore[attr-defined]
 
     if search_query.isnumeric():
         if len(search_query) == 9:
@@ -1621,7 +1621,7 @@ def get_offerer_offers_stats(offerer_id: int, max_offer_count: int = 0) -> dict:
                     ),
                     sa.and_(
                         sa.not_(offer_class.isActive),
-                        offer_class.validation.in_(  # type: ignore [attr-defined]
+                        offer_class.validation.in_(  # type: ignore[attr-defined]
                             [
                                 offers_models.OfferValidationStatus.APPROVED.value,
                                 offers_models.OfferValidationStatus.PENDING.value,
@@ -1718,7 +1718,7 @@ def get_venue_offers_stats(venue_id: int, max_offer_count: int = 0) -> dict:
                     sa.and_(
                         sa.not_(offer_class.isActive),
                         offer_class.venueId == venue_id,
-                        offer_class.validation.in_(  # type: ignore [attr-defined]
+                        offer_class.validation.in_(  # type: ignore[attr-defined]
                             [
                                 offers_models.OfferValidationStatus.APPROVED.value,
                                 offers_models.OfferValidationStatus.PENDING.value,
@@ -1886,7 +1886,7 @@ def create_from_onboarding_data(
                 siret=onboarding_data.siret,
             )
         venue_kwargs = common_kwargs | comment_and_siret
-        venue_creation_info = venues_serialize.PostVenueBodyModel(**venue_kwargs)  # type: ignore [arg-type]
+        venue_creation_info = venues_serialize.PostVenueBodyModel(**venue_kwargs)  # type: ignore[arg-type]
         venue = create_venue(venue_creation_info)
         create_venue_registration(venue.id, new_onboarding_info.target, new_onboarding_info.webPresence)
 

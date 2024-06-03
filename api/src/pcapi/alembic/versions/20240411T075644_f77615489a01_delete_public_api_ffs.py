@@ -8,7 +8,7 @@ branch_labels: tuple[str] | None = None
 depends_on: list[str] | None = None
 
 
-def get_features():  # type: ignore [no-untyped-def]
+def get_features():  # type: ignore[no-untyped-def]
     from pcapi.models import feature
 
     return [

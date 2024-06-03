@@ -114,7 +114,7 @@ class LocalProvider(Iterator):
         pc_object = providable_info.type()
         pc_object.idAtProviders = providable_info.id_at_providers
         pc_object.idAtProvider = providable_info.new_id_at_provider
-        pc_object.lastProviderId = self.provider.id  # type: ignore [assignment]
+        pc_object.lastProviderId = self.provider.id  # type: ignore[assignment]
 
         self.fill_object_attributes(pc_object)
         pc_object.dateModifiedAtLastProvider = providable_info.date_modified_at_provider

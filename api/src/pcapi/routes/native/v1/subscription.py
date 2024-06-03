@@ -49,7 +49,7 @@ def next_subscription_step(
         allowed_identity_check_methods=subscription_api.get_allowed_identity_check_methods(user),
         maintenance_page_type=subscription_api.get_maintenance_page_type(user),
         has_identity_check_pending=fraud_api.has_user_pending_identity_check(user),
-        subscription_message=user_subscription_state.subscription_message,  # type: ignore [arg-type]
+        subscription_message=user_subscription_state.subscription_message,  # type: ignore[arg-type]
     )
 
 
@@ -116,7 +116,7 @@ def get_subscription_stepper(user: users_models.User) -> serializers.Subscriptio
         next_subscription_step=user_subscription_state.next_step,
         title=stepper_header.title,
         subtitle=stepper_header.subtitle,
-        subscription_message=user_subscription_state.subscription_message,  # type: ignore [arg-type]
+        subscription_message=user_subscription_state.subscription_message,  # type: ignore[arg-type]
     )
 
 
@@ -129,7 +129,7 @@ def get_profile(user: users_models.User) -> serializers.ProfileResponse | None:
             return serializers.ProfileResponse(profile=serializers.ProfileContent(**profile_data.dict()))
         except ValidationError as e:
             logger.error("Invalid profile data for user %s: %s", user.id, e)
-            return serializers.ProfileResponse()  # type: ignore [call-arg]
+            return serializers.ProfileResponse()  # type: ignore[call-arg]
 
     raise api_errors.ResourceNotFoundError()
 
@@ -223,7 +223,7 @@ def start_identification_session(
         identification_url = ubble_subscription_api.start_ubble_workflow(
             user, declared_names[0], declared_names[1], body.redirectUrl
         )
-        return serializers.IdentificationSessionResponse(identificationUrl=identification_url)  # type: ignore [arg-type]
+        return serializers.IdentificationSessionResponse(identificationUrl=identification_url)  # type: ignore[arg-type]
 
     except requests_utils.ExternalAPIException as exception:
         if exception.is_retryable:

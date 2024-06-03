@@ -100,8 +100,8 @@ def add_custom_offer_reimbursement_rule(
     force: bool = False,
 ) -> None:
     """Add a custom reimbursement rule that is linked to an offer."""
-    offer_original_amount = decimal.Decimal(offer_original_amount.replace(",", "."))  # type: ignore [assignment]
-    reimbursed_amount = decimal.Decimal(reimbursed_amount.replace(",", "."))  # type: ignore [assignment]
+    offer_original_amount = decimal.Decimal(offer_original_amount.replace(",", "."))  # type: ignore[assignment]
+    reimbursed_amount = decimal.Decimal(reimbursed_amount.replace(",", "."))  # type: ignore[assignment]
 
     offer = (
         offers_models.Offer.query.options(
@@ -151,7 +151,7 @@ def add_custom_offer_reimbursement_rule(
 
     rule = finance_api.create_offer_reimbursement_rule(
         offer_id=offer.id,
-        amount=reimbursed_amount,  # type: ignore [arg-type]
+        amount=reimbursed_amount,  # type: ignore[arg-type]
         start_date=valid_from_dt,
         end_date=valid_until_dt,
     )

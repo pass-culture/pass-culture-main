@@ -178,13 +178,13 @@ def add_event(
     assert value_date is not None
 
     event = models.FinanceEvent(
-        booking=booking if isinstance(booking, bookings_models.Booking) and not booking_incident else None,  # type: ignore [arg-type]
+        booking=booking if isinstance(booking, bookings_models.Booking) and not booking_incident else None,  # type: ignore[arg-type]
         collectiveBooking=(
-            booking  # type: ignore [arg-type]
+            booking  # type: ignore[arg-type]
             if isinstance(booking, educational_models.CollectiveBooking) and not booking_incident
             else None
         ),
-        bookingFinanceIncident=booking_incident,  # type: ignore [arg-type]
+        bookingFinanceIncident=booking_incident,  # type: ignore[arg-type]
         status=status,
         motive=motive,
         valueDate=value_date,
@@ -1837,7 +1837,7 @@ def _generate_invoice(
         if isinstance(rule, models.CustomReimbursementRule):
             pricings_by_custom_rule[rule].append(pricing)
         else:
-            pricings_and_rates_by_rule_group[rule.group].append((pricing, rule.rate))  # type: ignore [attr-defined]
+            pricings_and_rates_by_rule_group[rule.group].append((pricing, rule.rate))  # type: ignore[attr-defined]
 
     invoice_lines = []
     for rule_group, pricings_and_rates in pricings_and_rates_by_rule_group.items():

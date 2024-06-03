@@ -61,7 +61,7 @@ class GetBookingResponse(serialization.ConfiguredBaseModel):
             price=finance_utils.to_eurocents(booking.amount),
             status=booking.status,
             price_category_id=booking.stock.priceCategory.id if booking.stock.priceCategory else None,
-            price_category_label=booking.stock.priceCategory.label if booking.stock.priceCategory else None,  # type: ignore [arg-type]
+            price_category_label=booking.stock.priceCategory.label if booking.stock.priceCategory else None,  # type: ignore[arg-type]
             offer_id=booking.stock.offer.id,
             stock_id=booking.stock.id,
             offer_name=booking.stock.offer.name,
@@ -69,7 +69,7 @@ class GetBookingResponse(serialization.ConfiguredBaseModel):
             venue_id=booking.venue.id,
             venue_name=booking.venue.name,
             venue_address=booking.venue.street,
-            venue_departement_code=booking.venue.departementCode,  # type: ignore [arg-type]
+            venue_departement_code=booking.venue.departementCode,  # type: ignore[arg-type]
             user_email=booking.email,
             user_birth_date=birth_date,
             user_first_name=booking.user.firstName,

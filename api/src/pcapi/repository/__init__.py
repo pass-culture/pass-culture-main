@@ -88,7 +88,7 @@ class atomic:
     # decorator part
     def __call__(self, func: typing.Callable) -> typing.Callable:
         @functools.wraps(func)
-        def wrapper(*args, **kwargs):  # type: ignore [no-untyped-def]
+        def wrapper(*args, **kwargs):  # type: ignore[no-untyped-def]
             if _is_managed_session():
                 # use the context manager part to make the decorator reeantrant.
                 with type(self):

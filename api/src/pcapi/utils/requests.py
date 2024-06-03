@@ -142,7 +142,7 @@ class CustomGqlTransport(gql.transport.requests.RequestsHTTPTransport):
         # says that `session` has type `None` (because of the
         # constructor of the parent class) and that triggers an error
         # in `connect()` when setting the attribute.
-        self.session: requests.Session | None = None  # type: ignore [assignment]
+        self.session: requests.Session | None = None  # type: ignore[assignment]
         super().__init__(*args, **kwargs)
 
     def connect(self) -> None:
