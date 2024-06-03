@@ -1,5 +1,5 @@
 from pcapi.core import mails
-import pcapi.core.bookings.api as bookings_api
+from pcapi.core.bookings import utils as bookings_utils
 from pcapi.core.bookings.models import Booking
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.bookings import common as bookings_common
@@ -54,7 +54,7 @@ def get_booking_event_reminder_to_beneficiary_email_data(
             "OFFER_WITHDRAWAL_DELAY": bookings_common.get_offer_withdrawal_delay(booking),
             "OFFER_WITHDRAWAL_DETAILS": bookings_common.get_offer_withdrawal_details(booking),
             "OFFER_WITHDRAWAL_TYPE": bookings_common.get_offer_withdrawal_type(booking),
-            "QR_CODE": bookings_api.get_qr_code_data(booking.token),
+            "QR_CODE": bookings_utils.get_qr_code_data(booking.token),
             "SUBCATEGORY": booking.stock.offer.subcategoryId,
             "USER_FIRST_NAME": booking.user.firstName,
             "VENUE_ADDRESS": bookings_common.get_venue_street(booking),

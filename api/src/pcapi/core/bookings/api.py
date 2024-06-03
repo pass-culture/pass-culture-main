@@ -72,8 +72,6 @@ from .exceptions import BookingIsAlreadyUsed
 
 logger = logging.getLogger(__name__)
 
-QR_CODE_PASS_CULTURE_VERSION = "v3"
-
 
 def _is_ended_booking(booking: Booking) -> bool:
     if (
@@ -165,7 +163,7 @@ def classify_and_sort_bookings(
             ended_bookings.append(booking)
         else:
             ongoing_bookings.append(booking)
-            booking.qrCodeData = get_qr_code_data(booking.token)
+            booking.qrCodeData = utils.get_qr_code_data(booking.token)
 
     sorted_ended_bookings = sorted(
         ended_bookings,
@@ -798,10 +796,6 @@ def mark_as_unused(booking: Booking) -> None:
 
     update_external_user(booking.user)
     update_external_pro(booking.venue.bookingEmail)
-
-
-def get_qr_code_data(booking_token: str) -> str:
-    return f"PASSCULTURE:{QR_CODE_PASS_CULTURE_VERSION};TOKEN:{booking_token}"
 
 
 def compute_booking_cancellation_limit_date(
