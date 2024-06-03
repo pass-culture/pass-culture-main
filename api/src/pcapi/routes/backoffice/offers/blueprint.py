@@ -799,7 +799,9 @@ def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
         sa.orm.joinedload(offers_models.Offer.flaggingValidationRules),
         sa.orm.joinedload(offers_models.Offer.mediations),
         sa.orm.joinedload(offers_models.Offer.product)
-        .load_only(offers_models.Product.thumbCount, offers_models.Product.description)
+        .load_only(
+            offers_models.Product.thumbCount, offers_models.Product.description, offers_models.Product.durationMinutes
+        )
         .joinedload(offers_models.Product.productMediations),
         sa.orm.joinedload(offers_models.Offer.lastProvider).load_only(providers_models.Provider.name),
         sa.orm.joinedload(offers_models.Offer.offererAddress)

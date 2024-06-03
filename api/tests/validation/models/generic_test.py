@@ -15,9 +15,9 @@ def test_should_return_error_when_information_requires_a_string_type():
 
 
 def test_should_return_error_when_information_requires_an_integer_type():
-    offer = offers_factories.OfferFactory.build(durationMinutes="not a number")
+    offer = offers_factories.OfferFactory.build(rankingWeight="not a number")
     api_error = validate_generic(offer)
-    assert api_error.errors == {"durationMinutes": ["doit être un entier"]}
+    assert api_error.errors == {"rankingWeight": ["doit être un entier"]}
 
 
 def test_should_return_error_when_information_exceeds_column_size():
