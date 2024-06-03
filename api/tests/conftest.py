@@ -63,12 +63,9 @@ def build_backoffice_app():
     from pcapi.backoffice_app import csrf
     from pcapi.flask_app import remove_db_session
 
-    # FIXME: some tests fail without this, for example:
-    #   - pytest tests/admin/custom_views/offer_view_test.py
-    #   - pytest tests/core/fraud/test_api.py
-    # Leave an XXX note about why we need that.
+    # Some tests fail without this. It's probably because of
+    # pytest_flask_sqlalchemy.
     app.teardown_request_funcs[None].remove(remove_db_session)
-
     # Since sqla1.4, in tests teardown, all nested transactions (the way to handle 'savepoints') are closed recursively.
     # But in some tests, there are more recursions than the default accepted number (1000)
     sys.setrecursionlimit(3000)
@@ -106,12 +103,9 @@ def build_main_app():
     from pcapi.app import app
     from pcapi.flask_app import remove_db_session
 
-    # FIXME: some tests fail without this, for example:
-    #   - pytest tests/admin/custom_views/offer_view_test.py
-    #   - pytest tests/core/fraud/test_api.py
-    # Leave an XXX note about why we need that.
+    # Some tests fail without this. It's probably because of
+    # pytest_flask_sqlalchemy.
     app.teardown_request_funcs[None].remove(remove_db_session)
-
     # Since sqla1.4, in tests teardown, all nested transactions (the way to handle 'savepoints') are closed recursively.
     # But in some tests, there are more recursions than the default accepted number (1000)
     sys.setrecursionlimit(3000)
