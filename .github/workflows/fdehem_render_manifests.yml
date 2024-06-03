@@ -47,7 +47,6 @@ jobs:
           repository: pass-culture/pass-culture-deployment
           token: ${{ steps.get-github-token.outputs.API_TOKEN_GITHUB }}
           path: ./pass-culture-deployment
-          ref: 'PC-29754-ci-pour-la-chart-values-pass-culture-main'
       - name: "Update image.tag in pass-culture-deployment repository"
         run: |
           git config --global user.email "PassCulture-SA@passculture.team"
