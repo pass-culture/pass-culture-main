@@ -70,6 +70,7 @@ export const AdagePreviewLayout = ({ offer }: AdagePreviewLayoutProps) => {
       postalCode: venue.postalCode,
       city: venue.city,
       address: venue.street,
+      departmentCode: venue.departementCode,
     },
   }
 
