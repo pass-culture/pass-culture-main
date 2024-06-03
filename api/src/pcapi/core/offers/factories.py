@@ -102,7 +102,7 @@ def build_extra_data_from_subcategory(
             continue
         match field:
             case item if item in name_fields:
-                extradata[field] = fake.name()  # type: ignore [literal-required]
+                extradata[field] = fake.name()  # type: ignore[literal-required]
             case subcategories.ExtraDataFieldEnum.EAN.value:
                 extradata[field] = fake.ean13()
             case subcategories.ExtraDataFieldEnum.GTL_ID.value:

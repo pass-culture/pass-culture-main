@@ -23,7 +23,7 @@ def get_request_authorization() -> werkzeug.datastructures.Authorization | None:
         return None
 
 
-@app.login_manager.user_loader  # type: ignore [attr-defined]
+@app.login_manager.user_loader  # type: ignore[attr-defined]
 def get_user_with_id(user_id: str) -> users_models.User | None:
     flask.session.permanent = True
     session_uuid = flask.session.get("session_uuid")
@@ -31,7 +31,7 @@ def get_user_with_id(user_id: str) -> users_models.User | None:
         return None
 
     try:
-        if flask.request.blueprint.startswith(backoffice_web.name):  # type: ignore [union-attr]
+        if flask.request.blueprint.startswith(backoffice_web.name):  # type: ignore[union-attr]
             return backoffice_api.fetch_user_with_profile(int(user_id))
     except AttributeError:
         pass
@@ -45,7 +45,7 @@ def get_user_with_id(user_id: str) -> users_models.User | None:
     return user
 
 
-@app.login_manager.unauthorized_handler  # type: ignore [attr-defined]
+@app.login_manager.unauthorized_handler  # type: ignore[attr-defined]
 def send_401() -> tuple[flask.Response, int]:
     e = ApiErrors()
     e.add_error("global", "Authentification nécessaire")

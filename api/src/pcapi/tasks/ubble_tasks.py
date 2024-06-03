@@ -17,7 +17,7 @@ class StoreIdPictureRequest(BaseModel):
     identification_id: str
 
 
-@task(UBBLE_ARCHIVE_ID_PICTURES_QUEUE_NAME, "/ubble/store_id_pictures")  # type: ignore [arg-type]
+@task(UBBLE_ARCHIVE_ID_PICTURES_QUEUE_NAME, "/ubble/store_id_pictures")  # type: ignore[arg-type]
 def store_id_pictures_task(payload: StoreIdPictureRequest) -> None:
     try:
         ubble_subscription_api.archive_ubble_user_id_pictures(payload.identification_id)

@@ -243,7 +243,7 @@ class Booking(PcObject, Base, Model):
     def isConfirmed(self) -> bool:
         return self.cancellationLimitDate is not None and self.cancellationLimitDate <= datetime.utcnow()
 
-    @isConfirmed.expression  # type: ignore [no-redef]
+    @isConfirmed.expression  # type: ignore[no-redef]
     def isConfirmed(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
         return and_(cls.cancellationLimitDate.is_not(None), cls.cancellationLimitDate <= datetime.utcnow())
 
@@ -251,7 +251,7 @@ class Booking(PcObject, Base, Model):
     def is_used_or_reimbursed(self) -> bool:
         return self.status in [BookingStatus.USED, BookingStatus.REIMBURSED]
 
-    @is_used_or_reimbursed.expression  # type: ignore [no-redef]
+    @is_used_or_reimbursed.expression  # type: ignore[no-redef]
     def is_used_or_reimbursed(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.status.in_([BookingStatus.USED, BookingStatus.REIMBURSED])
 
@@ -259,7 +259,7 @@ class Booking(PcObject, Base, Model):
     def isReimbursed(self) -> bool:
         return self.status == BookingStatus.REIMBURSED
 
-    @isReimbursed.expression  # type: ignore [no-redef]
+    @isReimbursed.expression  # type: ignore[no-redef]
     def isReimbursed(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.status == BookingStatus.REIMBURSED
 
@@ -267,7 +267,7 @@ class Booking(PcObject, Base, Model):
     def isCancelled(self) -> bool:
         return self.status == BookingStatus.CANCELLED
 
-    @isCancelled.expression  # type: ignore [no-redef]
+    @isCancelled.expression  # type: ignore[no-redef]
     def isCancelled(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.status == BookingStatus.CANCELLED
 
@@ -291,7 +291,7 @@ class Booking(PcObject, Base, Model):
     def isExternal(self) -> bool:
         return any(externalBooking.id for externalBooking in self.externalBookings)
 
-    @isExternal.expression  # type: ignore [no-redef]
+    @isExternal.expression  # type: ignore[no-redef]
     def isExternal(cls) -> Label:  # pylint: disable=no-self-argument
         return select(
             [
@@ -361,7 +361,7 @@ class Booking(PcObject, Base, Model):
             self.stock.offer.subcategoryId in offers_models.Stock.AUTOMATICALLY_USED_SUBCATEGORIES and self.amount == 0
         )
 
-    @display_even_if_used.expression  # type: ignore [no-redef]
+    @display_even_if_used.expression  # type: ignore[no-redef]
     def display_even_if_used(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
         return and_(
             offers_models.Offer.subcategoryId.in_(offers_models.Stock.AUTOMATICALLY_USED_SUBCATEGORIES),

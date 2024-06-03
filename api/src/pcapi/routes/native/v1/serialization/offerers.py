@@ -45,7 +45,7 @@ class VenueTypeCode(enum.Enum):
         return value
 
 
-VenueTypeCodeKey = enum.Enum(  # type: ignore [misc]
+VenueTypeCodeKey = enum.Enum(  # type: ignore[misc]
     "VenueTypeCodeKey",
     {code.name: code.name for code in VenueTypeCode},
 )

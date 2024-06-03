@@ -97,7 +97,7 @@ class GenreType(Enum):
             type(self).MOVIE.name: movie_types,
         }[
             self.name
-        ]  # type: ignore [return-value]
+        ]  # type: ignore[return-value]
 
     def book_values(self) -> list[GenreTypeContent]:
         return [GenreTypeContent(name=value, value=value) for value in sorted(BOOK_MACRO_SECTIONS)]
@@ -1993,21 +1993,21 @@ assert set(subcategory.id for subcategory in ALL_SUBCATEGORIES) == set(
 )
 
 
-SubcategoryIdEnumv2 = Enum("SubcategoryIdEnumv2", {subcategory.id: subcategory.id for subcategory in ALL_SUBCATEGORIES})  # type: ignore [misc]
-SubcategoryProLabelEnumv2 = Enum("SubcategoryProLabelEnumv2", {subcategory.id: subcategory.pro_label for subcategory in ALL_SUBCATEGORIES})  # type: ignore [misc]
-SearchGroupNameEnumv2 = Enum(  # type: ignore [misc]
+SubcategoryIdEnumv2 = Enum("SubcategoryIdEnumv2", {subcategory.id: subcategory.id for subcategory in ALL_SUBCATEGORIES})  # type: ignore[misc]
+SubcategoryProLabelEnumv2 = Enum("SubcategoryProLabelEnumv2", {subcategory.id: subcategory.pro_label for subcategory in ALL_SUBCATEGORIES})  # type: ignore[misc]
+SearchGroupNameEnumv2 = Enum(  # type: ignore[misc]
     "SearchGroupNameEnumv2",
     {search_group_name: search_group_name for search_group_name in [c.name for c in SearchGroups]},
 )
-HomepageLabelNameEnumv2 = Enum(  # type: ignore [misc]
+HomepageLabelNameEnumv2 = Enum(  # type: ignore[misc]
     "(HomepageLabelNameEnumv2",
     {homepage_label_name: homepage_label_name for homepage_label_name in [h.name for h in HomepageLabels]},
 )
-OnlineOfflinePlatformChoicesEnumv2 = Enum(  # type: ignore [misc]
+OnlineOfflinePlatformChoicesEnumv2 = Enum(  # type: ignore[misc]
     "OnlineOfflinePlatformChoicesEnumv2",
     {choice: choice for choice in [c.value for c in OnlineOfflinePlatformChoices]},
 )
-NativeCategoryIdEnumv2 = Enum(  # type: ignore [misc]
+NativeCategoryIdEnumv2 = Enum(  # type: ignore[misc]
     "NativeCategoryIdEnumv2",
     {native_category.name: native_category.name for native_category in NativeCategory},
 )
@@ -2015,4 +2015,4 @@ NativeCategoryIdEnumv2 = Enum(  # type: ignore [misc]
 # Support for old enum names serializers
 # TODO: remove when old enum names are not used in the app anymore, and after a forced update
 # Jira: https://passculture.atlassian.net/browse/PC-25049
-SubcategoryIdEnum = Enum("SubcategoryIdEnum", {subcategory.id: subcategory.id for subcategory in ALL_SUBCATEGORIES})  # type: ignore [misc]
+SubcategoryIdEnum = Enum("SubcategoryIdEnum", {subcategory.id: subcategory.id for subcategory in ALL_SUBCATEGORIES})  # type: ignore[misc]

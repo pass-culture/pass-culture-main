@@ -87,7 +87,7 @@ def post_create_venue(body: venues_serialize.PostVenueBodyModel) -> venues_seria
         siret_info = sirene.get_siret(body.siret)
         if not siret_info.active:
             raise ApiErrors(errors={"siret": ["SIRET is no longer active"]})
-        body.name = siret_info.name  # type: ignore [assignment]
+        body.name = siret_info.name  # type: ignore[assignment]
     validation.check_accessibility_compliance(body)
     venue = offerers_api.create_venue(body)
 
@@ -197,7 +197,7 @@ def upsert_venue_banner(venue_id: int) -> venues_serialize.GetVenueResponseModel
         user=current_user,
         venue=venue,
         content=venue_banner.content,
-        image_credit=venue_banner.image_credit,  # type: ignore [arg-type]
+        image_credit=venue_banner.image_credit,  # type: ignore[arg-type]
         crop_params=venue_banner.crop_params,
     )
 
@@ -247,7 +247,7 @@ def get_venue_stats(venue_id: int) -> venues_serialize.VenueStatsResponseModel:
 )
 def get_venues_educational_statuses() -> venues_serialize.VenuesEducationalStatusesResponseModel:
     statuses = offerers_api.get_venues_educational_statuses()
-    return venues_serialize.VenuesEducationalStatusesResponseModel(statuses=statuses)  # type: ignore [arg-type]
+    return venues_serialize.VenuesEducationalStatusesResponseModel(statuses=statuses)  # type: ignore[arg-type]
 
 
 @private_api.route("/venues/<int:venue_id>/dashboard", methods=["GET"])

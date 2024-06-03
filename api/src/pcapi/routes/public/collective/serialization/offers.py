@@ -289,8 +289,8 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
             description=offer.description,
             subcategoryId=offer.subcategoryId,
             bookingEmails=offer.bookingEmails,
-            contactEmail=offer.contactEmail,  # type: ignore [arg-type]
-            contactPhone=offer.contactPhone,  # type: ignore [arg-type]
+            contactEmail=offer.contactEmail,  # type: ignore[arg-type]
+            contactPhone=offer.contactPhone,  # type: ignore[arg-type]
             domains=[domain.id for domain in offer.domains],
             durationMinutes=offer.durationMinutes,
             interventionArea=offer.interventionArea,
@@ -311,7 +311,7 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
             educationalPriceDetail=offer.collectiveStock.priceDetail,
             educationalInstitution=offer.institution.institutionId if offer.institutionId else None,
             educationalInstitutionId=offer.institution.id if offer.institutionId else None,
-            offerVenue={  # type: ignore [arg-type]
+            offerVenue={  # type: ignore[arg-type]
                 "venueId": offer.offerVenue.get("venueId"),
                 "addressType": offer.offerVenue["addressType"],
                 "otherAddress": offer.offerVenue["otherAddress"] or None,

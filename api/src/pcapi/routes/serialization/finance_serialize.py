@@ -54,7 +54,7 @@ class InvoiceResponseV2Model(BaseModel):
         invoice.bankAccountLabel = invoice.bankAccount.label
         invoice.cashflowLabels = [cashflow.batch.label for cashflow in invoice.cashflows]
         res = super().from_orm(invoice)
-        res.amount = -finance_utils.to_euros(res.amount)  # type: ignore [assignment, arg-type]
+        res.amount = -finance_utils.to_euros(res.amount)  # type: ignore[assignment, arg-type]
         return res
 
 

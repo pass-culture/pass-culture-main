@@ -93,7 +93,7 @@ class Provider(PcObject, Base, Model, DeactivableMixin):
 
     def getProviderAPI(self) -> ProviderAPI:
         return ProviderAPI(
-            api_url=self.apiUrl,  # type: ignore [arg-type]
+            api_url=self.apiUrl,  # type: ignore[arg-type]
             name=self.name,
             authentication_token=self.authToken,
         )
@@ -102,7 +102,7 @@ class Provider(PcObject, Base, Model, DeactivableMixin):
     def allow_bo_sync(self) -> bool:
         return self.isActive and self.apiUrl != None and "praxiel" not in self.name.lower()
 
-    @allow_bo_sync.expression  # type: ignore [no-redef]
+    @allow_bo_sync.expression  # type: ignore[no-redef]
     def allow_bo_sync(cls) -> sa_sql.elements.BooleanClauseList:  # pylint: disable=no-self-argument
         # Praxiel API is very slow (with response times up to 30 seconds) and unstable (with frequent 50x
         # error responses). Full synchronization very rarely succeeds, don't bother trying.
@@ -132,7 +132,7 @@ class VenueProvider(PcObject, Base, Model, DeactivableMixin):
     # describe if synchronised offers are available for duo booking or not
     isDuoOffers = sa.Column(sa.Boolean, nullable=True)
 
-    isFromAllocineProvider = sa_orm.column_property(  # type: ignore [misc]
+    isFromAllocineProvider = sa_orm.column_property(  # type: ignore[misc]
         sa.exists(
             sa.select(Provider.id)
             .where(sa.and_(Provider.id == providerId, Provider.localClass == "AllocineStocks"))
@@ -140,7 +140,7 @@ class VenueProvider(PcObject, Base, Model, DeactivableMixin):
         )
     )
 
-    isFromCinemaProvider = sa_orm.column_property(  # type: ignore [misc]
+    isFromCinemaProvider = sa_orm.column_property(  # type: ignore[misc]
         sa.exists(sa.select(Provider.id))
         .where(
             sa.and_(

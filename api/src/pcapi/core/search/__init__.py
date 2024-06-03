@@ -79,7 +79,7 @@ def _log_async_request(
             "resource_type": resource_type,
             "reason": reason.value,
             # FIXME (dbaty, 2023-11-24) change `ids` to be a `Sequence[int]`
-            "count": len(ids),  # type: ignore [arg-type]
+            "count": len(ids),  # type: ignore[arg-type]
             "partial_ids": list(ids)[:50],  # avoid huge log
         }
         | extra,

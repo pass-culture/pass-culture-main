@@ -12,7 +12,7 @@ from . import blueprint
 @blueprint.pro_private_api.route("/venueProviders/<int:venue_id>", methods=["GET"])
 @login_required
 @spectree_serialize(
-    response_model=ListProviderResponse,  # type: ignore [arg-type]
+    response_model=ListProviderResponse,  # type: ignore[arg-type]
     on_success_status=200,
     on_error_statuses=[401, 404],
     api=blueprint.pro_private_schema,

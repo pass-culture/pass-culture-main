@@ -94,7 +94,7 @@ def get_api_key_offerer_id() -> int | None:
 
 
 def monkey_patch_logger_makeRecord() -> None:
-    def makeRecord(self, name, level, fn, lno, msg, args, exc_info, func=None, extra=None, sinfo=None):  # type: ignore [no-untyped-def]
+    def makeRecord(self, name, level, fn, lno, msg, args, exc_info, func=None, extra=None, sinfo=None):  # type: ignore[no-untyped-def]
         """Make a record but store ``extra`` arguments in an ``extra``
         attribute (not only as direct attributes of the object itself,
         like the original method does).
@@ -118,12 +118,12 @@ def monkey_patch_logger_makeRecord() -> None:
         record.extra = _extra
         return record
 
-    logging.Logger.__original_makeRecord = logging.Logger.makeRecord  # type: ignore [attr-defined]
-    logging.Logger.makeRecord = makeRecord  # type: ignore [method-assign]
+    logging.Logger.__original_makeRecord = logging.Logger.makeRecord  # type: ignore[attr-defined]
+    logging.Logger.makeRecord = makeRecord  # type: ignore[method-assign]
 
 
 def monkey_patch_logger_log() -> None:
-    def _log(  # type: ignore [no-untyped-def]
+    def _log(  # type: ignore[no-untyped-def]
         self,
         level,
         msg,
@@ -150,8 +150,8 @@ def monkey_patch_logger_log() -> None:
             stacklevel=stacklevel,
         )
 
-    logging.Logger.__original_log = logging.Logger._log  # type: ignore [attr-defined]
-    logging.Logger._log = _log  # type: ignore [method-assign]
+    logging.Logger.__original_log = logging.Logger._log  # type: ignore[attr-defined]
+    logging.Logger._log = _log  # type: ignore[method-assign]
 
 
 class JsonLogEncoder(json.JSONEncoder):
@@ -257,7 +257,7 @@ def install_logging() -> None:
         # pylint: disable=consider-using-with
         handler2 = logging.StreamHandler(stream=open("/proc/1/fd/1", "w", encoding="utf-8"))
         handler2.setFormatter(JsonFormatter())
-        handlers.append(handler2)  # type: ignore [arg-type]
+        handlers.append(handler2)  # type: ignore[arg-type]
     logging.basicConfig(level=settings.LOG_LEVEL, handlers=handlers, force=True)
 
     _internal_logger = logging.getLogger(__name__)

@@ -93,7 +93,7 @@ def _get_collective_offer_templates(
         )
 
     if form.status.data:
-        base_query = base_query.filter(educational_models.CollectiveOfferTemplate.validation.in_(form.status.data))  # type: ignore [attr-defined]
+        base_query = base_query.filter(educational_models.CollectiveOfferTemplate.validation.in_(form.status.data))  # type: ignore[attr-defined]
 
     if form.only_validated_offerers.data:
         base_query = (

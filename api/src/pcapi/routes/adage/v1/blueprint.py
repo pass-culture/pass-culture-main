@@ -13,7 +13,7 @@ EAC_API_KEY_AUTH = "ApiKeyAuth"
 SECURITY_SCHEMES = [
     SecurityScheme(
         name=EAC_API_KEY_AUTH,
-        data={"type": "http", "scheme": "bearer", "description": "API key shared by Adage and pass Culture"},  # type: ignore [arg-type]
+        data={"type": "http", "scheme": "bearer", "description": "API key shared by Adage and pass Culture"},  # type: ignore[arg-type]
     ),
 ]
 

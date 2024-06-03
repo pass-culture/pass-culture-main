@@ -533,7 +533,7 @@ def create_stock(
         quantity=quantity,
         beginningDatetime=beginning_datetime,
         bookingLimitDatetime=booking_limit_datetime,
-        priceCategory=price_category,  # type: ignore [arg-type]
+        priceCategory=price_category,  # type: ignore[arg-type]
     )
     created_activation_codes = []
 

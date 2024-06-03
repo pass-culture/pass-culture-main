@@ -281,7 +281,7 @@ class StatusMixin:
 
         return offer_mixin.OfferStatus.ACTIVE
 
-    @status.expression  # type: ignore [no-redef]
+    @status.expression  # type: ignore[no-redef]
     def status(cls) -> sa.sql.elements.Case:  # pylint: disable=no-self-argument
         return sa.case(
             (
@@ -571,7 +571,7 @@ class CollectiveOffer(
     def isEvent(self) -> bool:
         return self.subcategory.is_event
 
-    @isEvent.expression  # type: ignore [no-redef]
+    @isEvent.expression  # type: ignore[no-redef]
     def isEvent(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.subcategoryId.in_(subcategories.EVENT_SUBCATEGORIES)
 
@@ -604,7 +604,7 @@ class CollectiveOffer(
     def is_expired(self) -> bool:
         return self.hasBeginningDatetimePassed
 
-    @is_expired.expression  # type: ignore [no-redef]
+    @is_expired.expression  # type: ignore[no-redef]
     def is_expired(cls) -> UnaryExpression:  # pylint: disable=no-self-argument
         return cls.hasBeginningDatetimePassed
 
@@ -856,7 +856,7 @@ class CollectiveOfferTemplate(
     def isEvent(self) -> bool:
         return self.subcategory.is_event
 
-    @isEvent.expression  # type: ignore [no-redef]
+    @isEvent.expression  # type: ignore[no-redef]
     def isEvent(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.subcategoryId.in_(subcategories.EVENT_SUBCATEGORIES)
 
@@ -905,7 +905,7 @@ class CollectiveOfferTemplate(
     def is_expired(self) -> bool:
         return self.hasBeginningDatetimePassed
 
-    @is_expired.expression  # type: ignore [no-redef]
+    @is_expired.expression  # type: ignore[no-redef]
     def is_expired(cls) -> UnaryExpression:  # pylint: disable=no-self-argument
         return cls.hasBeginningDatetimePassed
 
@@ -1295,7 +1295,7 @@ class CollectiveBooking(PcObject, Base, Model):
     def isReimbursed(self) -> bool:
         return self.status == CollectiveBookingStatus.REIMBURSED
 
-    @isReimbursed.expression  # type: ignore [no-redef]
+    @isReimbursed.expression  # type: ignore[no-redef]
     def isReimbursed(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.status == CollectiveBookingStatus.REIMBURSED
 
@@ -1303,7 +1303,7 @@ class CollectiveBooking(PcObject, Base, Model):
     def isCancelled(self) -> bool:
         return self.status == CollectiveBookingStatus.CANCELLED
 
-    @isCancelled.expression  # type: ignore [no-redef]
+    @isCancelled.expression  # type: ignore[no-redef]
     def isCancelled(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.status == CollectiveBookingStatus.CANCELLED
 
@@ -1545,14 +1545,14 @@ class CollectiveOfferRequest(PcObject, Base, Model):
     def phoneNumber(self) -> str | None:
         return self._phoneNumber
 
-    @phoneNumber.setter  # type: ignore [no-redef]
+    @phoneNumber.setter  # type: ignore[no-redef]
     def phoneNumber(self, value: str | None) -> None:
         if not value:
             self._phoneNumber = None
         else:
             self._phoneNumber = ParsedPhoneNumber(value).phone_number
 
-    @phoneNumber.expression  # type: ignore [no-redef]
+    @phoneNumber.expression  # type: ignore[no-redef]
     def phoneNumber(cls) -> str | None:  # pylint: disable=no-self-argument
         return cls._phoneNumber
 

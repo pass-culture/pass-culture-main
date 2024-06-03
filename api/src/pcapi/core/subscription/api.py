@@ -91,7 +91,7 @@ def activate_beneficiary_for_eligibility(
     batch.track_deposit_activated_event(user.id, deposit)
     amplitude_events.track_deposit_activation_event(user.id, deposit, fraud_check)
 
-    if "apps_flyer" in user.externalIds:  # type: ignore [operator]
+    if "apps_flyer" in user.externalIds:  # type: ignore[operator]
         apps_flyer_job.log_user_becomes_beneficiary_event_job.delay(user.id)
 
     return user
@@ -324,7 +324,7 @@ def get_identity_check_subscription_item(
 def get_honor_statement_subscription_item(
     user: users_models.User, eligibility: users_models.EligibilityType | None
 ) -> models.SubscriptionItem:
-    if fraud_api.has_performed_honor_statement(user, eligibility):  # type: ignore [arg-type]
+    if fraud_api.has_performed_honor_statement(user, eligibility):  # type: ignore[arg-type]
         status = models.SubscriptionItemStatus.OK
     else:
         if is_eligibility_activable(user, eligibility):
@@ -586,11 +586,11 @@ def _is_ubble_allowed_if_subscription_overflow(user: users_models.User) -> bool:
 
     future_age = users_utils.get_age_at_date(
         user.birth_date,
-        datetime.datetime.utcnow() + datetime.timedelta(days=settings.UBBLE_SUBSCRIPTION_LIMITATION_DAYS),  # type: ignore [arg-type]
+        datetime.datetime.utcnow() + datetime.timedelta(days=settings.UBBLE_SUBSCRIPTION_LIMITATION_DAYS),  # type: ignore[arg-type]
     )
     eligibility_ranges = users_constants.ELIGIBILITY_UNDERAGE_RANGE + [users_constants.ELIGIBILITY_AGE_18]
     eligibility_ranges = [age + 1 for age in eligibility_ranges]
-    if future_age > user.age and future_age in eligibility_ranges:  # type: ignore [operator]
+    if future_age > user.age and future_age in eligibility_ranges:  # type: ignore[operator]
         return True
 
     return False

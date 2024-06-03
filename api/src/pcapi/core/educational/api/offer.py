@@ -736,7 +736,7 @@ def create_offer_request(
     redactor: educational_models.EducationalRedactor,
 ) -> educational_models.CollectiveOfferRequest:
     request = educational_models.CollectiveOfferRequest(
-        phoneNumber=body.phone_number,  # type: ignore [call-arg]
+        phoneNumber=body.phone_number,  # type: ignore[call-arg]
         requestedDate=body.requested_date,
         totalStudents=body.total_students,
         totalTeachers=body.total_teachers,

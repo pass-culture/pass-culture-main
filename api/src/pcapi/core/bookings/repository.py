@@ -277,7 +277,7 @@ def get_validated_bookings_quantity_for_venue(venue_id: int) -> int:
     validated_bookings_quantity_query = Booking.query.filter(
         Booking.venueId == venue_id,
         Booking.status != BookingStatus.CANCELLED,
-        or_(Booking.is_used_or_reimbursed, Booking.isConfirmed),  # type: ignore [type-var]
+        or_(Booking.is_used_or_reimbursed, Booking.isConfirmed),  # type: ignore[type-var]
     )
 
     n_validated_bookings_quantity = validated_bookings_quantity_query.with_entities(
@@ -289,7 +289,7 @@ def get_validated_bookings_quantity_for_venue(venue_id: int) -> int:
             educational_models.CollectiveBooking.venueId == venue_id,
             educational_models.CollectiveBooking.status != educational_models.CollectiveBookingStatus.CANCELLED,
             educational_models.CollectiveBooking.status != educational_models.CollectiveBookingStatus.PENDING,
-            or_(  # type: ignore [type-var]
+            or_(  # type: ignore[type-var]
                 educational_models.CollectiveBooking.is_used_or_reimbursed,
                 educational_models.CollectiveBooking.isConfirmed,
             ),
@@ -352,7 +352,7 @@ def _create_export_query(offer_id: int, event_beginning_date: date) -> BaseQuery
             Booking.dateUsed.label("usedAt"),
             Booking.reimbursementDate.label("reimbursedAt"),
             Booking.cancellationDate.label("cancelledAt"),
-            Booking.isExternal.label("isExternal"),  # type: ignore [attr-defined]
+            Booking.isExternal.label("isExternal"),  # type: ignore[attr-defined]
             Booking.isConfirmed,
             # `get_batch` function needs a field called exactly `id` to work,
             # the label prevents SA from using a bad (prefixed) label for this field
@@ -528,7 +528,7 @@ def _get_filtered_booking_report(
             Booking.dateUsed.label("usedAt"),
             Booking.reimbursementDate.label("reimbursedAt"),
             Booking.cancellationDate.label("cancelledAt"),
-            Booking.isExternal.label("isExternal"),  # type: ignore [attr-defined]
+            Booking.isExternal.label("isExternal"),  # type: ignore[attr-defined]
             Booking.isConfirmed,
             # `get_batch` function needs a field called exactly `id` to work,
             # the label prevents SA from using a bad (prefixed) label for this field
@@ -575,7 +575,7 @@ def _get_filtered_booking_pro(
             Booking.cancellationLimitDate,
             Booking.status,
             Booking.reimbursementDate.label("reimbursedAt"),
-            Booking.isExternal.label("isExternal"),  # type: ignore [attr-defined]
+            Booking.isExternal.label("isExternal"),  # type: ignore[attr-defined]
             Booking.isConfirmed,
             Offer.name.label("offerName"),
             Offer.id.label("offerId"),
@@ -583,7 +583,7 @@ def _get_filtered_booking_pro(
             User.firstName.label("beneficiaryFirstname"),
             User.lastName.label("beneficiaryLastname"),
             User.email.label("beneficiaryEmail"),
-            User.phoneNumber.label("beneficiaryPhoneNumber"),  # type: ignore [attr-defined]
+            User.phoneNumber.label("beneficiaryPhoneNumber"),  # type: ignore[attr-defined]
             Stock.beginningDatetime.label("stockBeginningDatetime"),
             Booking.stockId,
             Venue.departementCode.label("venueDepartmentCode"),

@@ -15,7 +15,7 @@ def process_batch(offer_ids: list[str]) -> None:
     offer_ids = [offer_id for offer_id, in offers.with_entities(Offer.id)]
     offers.update({"isActive": False}, synchronize_session=False)
     db.session.commit()
-    search.unindex_offer_ids(offer_ids)  # type: ignore [arg-type]
+    search.unindex_offer_ids(offer_ids)  # type: ignore[arg-type]
 
 
 def bulk_inactivate_offers(iterable: Iterable[str], batch_size: int) -> None:

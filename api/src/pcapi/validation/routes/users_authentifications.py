@@ -91,7 +91,7 @@ def _get_current_api_key() -> ApiKey | None:
     return g.current_api_key
 
 
-current_api_key: ApiKey = LocalProxy(_get_current_api_key)  # type: ignore [assignment]
+current_api_key: ApiKey = LocalProxy(_get_current_api_key)  # type: ignore[assignment]
 
 
 def basic_authentication() -> User | None:

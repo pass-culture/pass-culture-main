@@ -12,7 +12,7 @@ BEAMER_PRO_QUEUE_NAME = settings.GCP_BEAMER_PRO_QUEUE_NAME
 
 # Deduplicate and delay by 12 hours.
 # See api/src/pcapi/tasks/sendinblue_tasks.py comment for more details
-@task(BEAMER_PRO_QUEUE_NAME, "/beamer/update_pro_attributes", True, 43_200)  # type: ignore [arg-type]
+@task(BEAMER_PRO_QUEUE_NAME, "/beamer/update_pro_attributes", True, 43_200)  # type: ignore[arg-type]
 def update_beamer_pro_attributes_task(payload: UpdateProAttributesRequest) -> None:
     from pcapi.connectors import beamer
     from pcapi.core.external.attributes.api import get_pro_attributes

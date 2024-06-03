@@ -135,7 +135,7 @@ def get_collective_bookings_per_year_response(
         EducationalBookingPerYearResponse(
             id=booking.id,
             UAICode=booking.educationalInstitution.institutionId,
-            status=get_collective_booking_status(booking),  # type: ignore [arg-type]
+            status=get_collective_booking_status(booking),  # type: ignore[arg-type]
             confirmationLimitDate=booking.confirmationLimitDate,
             totalAmount=booking.collectiveStock.price,
             beginningDatetime=booking.collectiveStock.beginningDatetime,
@@ -190,7 +190,7 @@ def serialize_collective_booking(collective_booking: CollectiveBooking) -> Educa
         confirmationDate=collective_booking.confirmationDate,
         confirmationLimitDate=collective_booking.confirmationLimitDate,
         contact=_get_collective_offer_contact(offer),
-        coordinates={  # type: ignore [arg-type]
+        coordinates={  # type: ignore[arg-type]
             "latitude": venue.latitude,
             "longitude": venue.longitude,
         },
@@ -208,16 +208,16 @@ def serialize_collective_booking(collective_booking: CollectiveBooking) -> Educa
         postalCode=venue.postalCode,
         price=stock.price,
         quantity=1,
-        redactor={  # type: ignore [arg-type]
+        redactor={  # type: ignore[arg-type]
             "email": collective_booking.educationalRedactor.email,
             "redactorFirstName": collective_booking.educationalRedactor.firstName,
             "redactorLastName": collective_booking.educationalRedactor.lastName,
             "redactorCivility": collective_booking.educationalRedactor.civility,
         },
         UAICode=collective_booking.educationalInstitution.institutionId,
-        yearId=collective_booking.educationalYearId,  # type: ignore [arg-type]
-        status=get_collective_booking_status(collective_booking),  # type: ignore [arg-type]
-        venueTimezone=venue.timezone,  # type: ignore [arg-type]
+        yearId=collective_booking.educationalYearId,  # type: ignore[arg-type]
+        status=get_collective_booking_status(collective_booking),  # type: ignore[arg-type]
+        venueTimezone=venue.timezone,  # type: ignore[arg-type]
         subcategoryLabel=offer.subcategory.app_label if offer.subcategory else "",
         totalAmount=stock.price,
         url=offer_app_link(offer),
@@ -315,7 +315,7 @@ def serialize_reimbursement_notification(
         confirmationDate=collective_booking.confirmationDate,
         confirmationLimitDate=collective_booking.confirmationLimitDate,
         contact=_get_collective_offer_contact(offer),
-        coordinates={  # type: ignore [arg-type]
+        coordinates={  # type: ignore[arg-type]
             "latitude": venue.latitude,
             "longitude": venue.longitude,
         },
@@ -333,16 +333,16 @@ def serialize_reimbursement_notification(
         postalCode=venue.postalCode,
         price=stock.price,
         quantity=1,
-        redactor={  # type: ignore [arg-type]
+        redactor={  # type: ignore[arg-type]
             "email": collective_booking.educationalRedactor.email,
             "redactorFirstName": collective_booking.educationalRedactor.firstName,
             "redactorLastName": collective_booking.educationalRedactor.lastName,
             "redactorCivility": collective_booking.educationalRedactor.civility,
         },
         UAICode=collective_booking.educationalInstitution.institutionId,
-        yearId=collective_booking.educationalYearId,  # type: ignore [arg-type]
-        status=get_collective_booking_status(collective_booking),  # type: ignore [arg-type]
-        venueTimezone=venue.timezone,  # type: ignore [arg-type]
+        yearId=collective_booking.educationalYearId,  # type: ignore[arg-type]
+        status=get_collective_booking_status(collective_booking),  # type: ignore[arg-type]
+        venueTimezone=venue.timezone,  # type: ignore[arg-type]
         subcategoryLabel=offer.subcategory.app_label if offer.subcategory else "",
         totalAmount=stock.price,
         url=offer_app_link(offer),

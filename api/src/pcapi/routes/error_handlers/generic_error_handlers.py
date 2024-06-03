@@ -113,8 +113,8 @@ def ratelimit_handler(error: Exception) -> ApiErrorResponse:
     mark_transaction_as_invalid()
     identifier = None
     try:
-        if request.is_json and "identifier" in request.json:  # type: ignore [operator]
-            identifier = request.json["identifier"]  # type: ignore [index]
+        if request.is_json and "identifier" in request.json:  # type: ignore[operator]
+            identifier = request.json["identifier"]  # type: ignore[index]
     except (json.JSONDecodeError, werkzeug_exceptions.BadRequest) as e:
         logger.info("Could not extract user identifier from request: %s", e)
     auth = get_request_authorization()

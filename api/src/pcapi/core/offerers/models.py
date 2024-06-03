@@ -405,19 +405,19 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
 
     def __init__(self, street: str | None = None, **kwargs: typing.Any) -> None:
         if street:
-            self.street = street  # type: ignore [method-assign]
+            self.street = street  # type: ignore[method-assign]
         super().__init__(**kwargs)
 
     @hybrid_property
     def street(self) -> str | None:
         return self._address
 
-    @street.setter  # type: ignore [no-redef]
+    @street.setter  # type: ignore[no-redef]
     def street(self, value: str | None) -> None:
         self._address = value
         self._street = value
 
-    @street.expression  # type: ignore [no-redef]
+    @street.expression  # type: ignore[no-redef]
     def street(cls):  # pylint: disable=no-self-argument
         return cls._address
 
@@ -441,11 +441,11 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
             return self.googlePlacesInfo.bannerUrl
         return self._get_type_banner_url()
 
-    @bannerUrl.setter  # type: ignore [no-redef]
+    @bannerUrl.setter  # type: ignore[no-redef]
     def bannerUrl(self, value: str | None) -> None:
         self._bannerUrl = value
 
-    @bannerUrl.expression  # type: ignore [no-redef]
+    @bannerUrl.expression  # type: ignore[no-redef]
     def bannerUrl(cls):  # pylint: disable=no-self-argument
         return cls._bannerUrl
 
@@ -472,11 +472,11 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
                 return BannerMetaModel(image_credit=credit, image_credit_url=url, is_from_google=True)
         return None
 
-    @bannerMeta.setter  # type: ignore [no-redef]
+    @bannerMeta.setter  # type: ignore[no-redef]
     def bannerMeta(self, value: str | None) -> None:
         self._bannerMeta = value
 
-    @bannerMeta.expression  # type: ignore [no-redef]
+    @bannerMeta.expression  # type: ignore[no-redef]
     def bannerMeta(cls):  # pylint: disable=no-self-argument
         return cls._bannerMeta
 
@@ -530,7 +530,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     def dms_adage_status(self) -> str | None:
         return self.last_collective_dms_application.state if self.last_collective_dms_application else None
 
-    @dms_adage_status.expression  # type: ignore [no-redef]
+    @dms_adage_status.expression  # type: ignore[no-redef]
     def dms_adage_status(cls) -> str | None:  # pylint: disable=no-self-argument
         return (
             db.session.query(educational_models.CollectiveDmsApplication.state)
@@ -644,7 +644,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
             .scalar()
         )
 
-    @current_reimbursement_point_id.expression  # type: ignore [no-redef]
+    @current_reimbursement_point_id.expression  # type: ignore[no-redef]
     def current_reimbursement_point_id(cls) -> int | None:  # pylint: disable=no-self-argument # type: ignore[no-redef]
         now = datetime.utcnow()
 
@@ -718,7 +718,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     def common_name(self) -> str:
         return self.publicName or self.name
 
-    @common_name.expression  # type: ignore [no-redef]
+    @common_name.expression  # type: ignore[no-redef]
     def common_name(cls) -> str:  # pylint: disable=no-self-argument
         return sqla_func.coalesce(func.nullif(cls.publicName, ""), cls.name)
 
@@ -1030,19 +1030,19 @@ class Offerer(
 
     def __init__(self, street: str | None = None, **kwargs: typing.Any) -> None:
         if street:
-            self.street = street  # type: ignore [method-assign]
+            self.street = street  # type: ignore[method-assign]
         super().__init__(**kwargs)
 
     @hybrid_property
     def street(self) -> str | None:
         return self._address
 
-    @street.setter  # type: ignore [no-redef]
+    @street.setter  # type: ignore[no-redef]
     def street(self, value: str | None) -> None:
         self._address = value
         self._street = value
 
-    @street.expression  # type: ignore [no-redef]
+    @street.expression  # type: ignore[no-redef]
     def street(cls):  # pylint: disable=no-self-argument
         return cls._address
 
@@ -1071,7 +1071,7 @@ class Offerer(
     def departementCode(self) -> str:
         return postal_code_utils.PostalCode(self.postalCode).get_departement_code()
 
-    @departementCode.expression  # type: ignore [no-redef]
+    @departementCode.expression  # type: ignore[no-redef]
     def departementCode(cls) -> Case:  # pylint: disable=no-self-argument
         return case(
             (
@@ -1287,7 +1287,7 @@ class OffererAddress(PcObject, Base, Model):
     def isEditable(self) -> bool:
         return db.session.query(~sa.select(1).exists().where(Venue.offererAddressId == self.id)).scalar()
 
-    @isEditable.expression  # type: ignore [no-redef]
+    @isEditable.expression  # type: ignore[no-redef]
     def isEditable(cls) -> sa.sql.elements.BooleanClauseList:  # pylint: disable=no-self-argument
         return ~sa.select(1).where(Venue.offererAddressId == cls.id).exists()
 

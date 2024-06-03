@@ -30,7 +30,7 @@ def get_all_pro_users_emails() -> set[str]:
         db.session.query(User.email)
         .filter(
             User.isActive,
-            sa.or_(User.has_pro_role, User.has_non_attached_pro_role),  # type: ignore [type-var]
+            sa.or_(User.has_pro_role, User.has_non_attached_pro_role),  # type: ignore[type-var]
             sa.not_(User.has_admin_role),
         )
         .all()
