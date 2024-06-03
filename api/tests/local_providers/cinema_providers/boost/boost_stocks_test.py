@@ -158,46 +158,6 @@ class BoostStocksTest:
 
         assert get_cinema_attr_adapter.call_count == 1
 
-    @override_features(WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS=True)
-    def should_not_create_offers_and_stocks_if_products_dont_exist(self, requests_mock):
-        venue_provider = self._create_cinema_and_pivot()
-
-        requests_mock.get(
-            "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
-        )
-        requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
-            json=fixtures.ShowtimesEndpointResponse.PAGE_1_JSON_DATA,
-        )
-        requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=2&per_page=30",
-            json=fixtures.ShowtimesEndpointResponse.PAGE_2_JSON_DATA,
-        )
-        requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/36683",
-            json=fixtures.ShowtimeDetailsEndpointResponse.THREE_PRICINGS_SHOWTIME_36683_DATA,
-        )
-        requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/36848",
-            json=fixtures.ShowtimeDetailsEndpointResponse.ONE_PCU_PRICING_SHOWTIME_36848_DATA,
-        )
-        requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/36932",
-            json=fixtures.ShowtimeDetailsEndpointResponse.SHOWTIME_36932_DATA_NO_PC_PRICING,
-        )
-        requests_mock.get("http://example.com/images/158026.jpg", content=bytes())
-        requests_mock.get("http://example.com/images/149489.jpg", content=bytes())
-
-        assert Product.query.count() == 0
-
-        boost_stocks = BoostStocks(venue_provider=venue_provider)
-        boost_stocks.updateObjects()
-
-        assert Offer.query.count() == 0
-        assert Stock.query.count() == 0
-        assert PriceCategory.query.count() == 0
-
-    @override_features(WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS=False)
     @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=False)
     def should_create_offers_with_allocine_id_and_visa_if_products_dont_exist(self, requests_mock):
         venue_provider = self._create_cinema_and_pivot()

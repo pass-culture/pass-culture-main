@@ -60,8 +60,6 @@ class BoostStocks(LocalProvider):
                 extra={"allocineId": showtime.film.idFilmAllocine, "venueId": self.venue.id},
                 technical_message_id="allocineId.not_found",
             )
-            if FeatureToggle.WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS.is_active():
-                return []
 
         if self.showtimes_filter_ff_is_active:
             self.showtime_details = showtime
