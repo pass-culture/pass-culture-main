@@ -22,7 +22,7 @@ class ReferenceSchemeFactory(BaseFactory):
     ) -> models.ReferenceScheme:
         # We need to set the prefix ourselves, because it's not part
         # of the "key" of `sqlalchemy_get_or_create, and there are two
-        # UNIQUE contraints on both `(name, year)` and `(prefix, year)`.
+        # UNIQUE constraints on both `(name, year)` and `(prefix, year)`.
         if "prefix" not in kwargs:
             if kwargs["name"] == "invoice.reference":
                 kwargs["prefix"] = "F"

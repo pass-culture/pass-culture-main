@@ -16,7 +16,7 @@ def retry(
 
     Args:
         exception (Exception): Which exception should be catched
-        exception_handler (Callable): Handler to encapsulate whatever logic you want in case exception is catched. Optionnal.
+        exception_handler (Callable): Handler to encapsulate whatever logic you want in case exception is catched. Optional.
         max_attempts (int): How many times do you want to call `func`. Default to 1
         logger (Logger): Log the tries, if provided
     """

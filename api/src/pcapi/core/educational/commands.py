@@ -90,7 +90,7 @@ def import_deposit_csv(path: str, year: int, ministry: str, conflict: str, final
             print("\033[91mERROR: UAICode or depositAmount missing in CSV headers\033[0m")
             return
         data: dict[str, Decimal] = {}
-        # sometime we get 1 row per institution and somtime 1 row per class.
+        # sometimes we get 1 row per institution and sometimes 1 row per class.
         for row in csv_rows:
             # try to get the UAI
             uai_header = "UAI" if "UAI" in headers else "UAICode"

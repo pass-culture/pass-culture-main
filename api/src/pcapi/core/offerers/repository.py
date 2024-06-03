@@ -53,7 +53,7 @@ def get_all_offerers_for_user(
     `distinct` and `order by` clauses must match).
 
     **WARNING:** ``include_non_validated_user_offerers`` should only
-    be used to return very restrictive informations (that the
+    be used to return very restrictive information (that the
     requesting user already knows), such as the name of the offerer.
     """
     query = models.Offerer.query.filter(models.Offerer.isActive.is_(True))
@@ -213,7 +213,7 @@ def find_relative_venue_by_id(venue_id: int, permanent_only: bool = False) -> li
     query = query.filter(
         # constraint on retrieved venues
         sqla.not_(models.Venue.isVirtual),
-        # constraint on seached venue
+        # constraint on searched venue
         sqla.not_(aliased_venue.isVirtual),
         aliased_venue.id == venue_id,
     )

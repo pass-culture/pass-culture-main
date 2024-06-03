@@ -30,7 +30,7 @@ def invalid_token_handler(
     params: dict | None = None,
 ) -> None:
     """
-    `retry` decorator handler. Get rid of the Boost API token if not valide anymore.
+    `retry` decorator handler. Get rid of the Boost API token if not valid anymore.
     """
     cinema_details.token = None
     repository.save(cinema_details)

@@ -13,7 +13,7 @@ def get_movie_label(code: str) -> str | None:
             return movie_type.label
         # TODO: (lixxday, 26/01/2024) This is a workaround
         # When this function is used in a pydantic validator, it will be called twice
-        # To avoid always retunrning empty responses, we check if the code is the label
+        # To avoid always returning empty responses, we check if the code is the label
         if movie_type.label == code:
             return movie_type.label
     return None

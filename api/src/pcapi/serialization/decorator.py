@@ -95,7 +95,7 @@ def spectree_serialize(
         json_format: JSON format response if true, else text format response. Defaults to True.
         raw_response: transmit the route response without touching it. Defaults to False.
         response_headers: a dict of headers to be added to the response. defaults to {}.
-        resp: a Spectree.Response explicitely listing the possible responses.
+        resp: a Spectree.Response explicitly listing the possible responses.
 
     Returns:
         Callable[[Any], Any]: [description]

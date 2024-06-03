@@ -702,7 +702,7 @@ def mark_as_used_with_uncancelling(booking: Booking, validation_author_type: Boo
     it as used).
     """
     # I'm not 100% sure the transaction is required here
-    # It is not clear to me wether or not Flask-SQLAlchemy will make
+    # It is not clear to me whether or not Flask-SQLAlchemy will make
     # a rollback if we raise a validation exception.
     # Since I lock the stock, I really want to make sure the lock is
     # removed ASAP.
@@ -840,7 +840,7 @@ def _compute_edition_cancellation_limit_date(
 
 def recompute_dnBookedQuantity(stock_ids: list[int]) -> None:
     """
-    Changes are not commited within this function, use db.session.commit() if necessary.
+    Changes are not committed within this function, use db.session.commit() if necessary.
     """
     query = f"""
       WITH bookings_per_stock AS (
