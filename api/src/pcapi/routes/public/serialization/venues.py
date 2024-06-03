@@ -12,7 +12,7 @@ from .accessibility import PartialAccessibility
 from .utils import StrEnum
 
 
-VenueTypeEnum = StrEnum(  # type: ignore [call-overload]
+VenueTypeEnum = StrEnum(  # type: ignore[call-overload]
     "VenueTypeEnum", {venue_type.name: venue_type.name for venue_type in offerers_models.VenueTypeCode}
 )
 
@@ -44,12 +44,12 @@ class VenueResponse(serialization.ConfiguredBaseModel):
     siret: str | None = pydantic_v1.Field(
         description="Null when venue is digital or when siretComment field is not null.", example="12345678901234"
     )
-    venueTypeCode: VenueTypeEnum = pydantic_v1.Field(alias="activityDomain")  # type: ignore [valid-type]
+    venueTypeCode: VenueTypeEnum = pydantic_v1.Field(alias="activityDomain")  # type: ignore[valid-type]
     accessibility: PartialAccessibility
 
     @classmethod
     def build_model(cls, venue: offerers_models.Venue) -> "VenueResponse":
-        return cls(  # type: ignore [call-arg]
+        return cls(  # type: ignore[call-arg]
             comment=venue.comment,
             dateCreated=venue.dateCreated,
             id=venue.id,

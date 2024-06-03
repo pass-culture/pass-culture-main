@@ -254,7 +254,7 @@ class BaseOfferResponse(BaseModel):
                 if gtl_id is not None:
                     result.extraData.gtlLabels = get_gtl_labels(gtl_id)
         else:
-            result.extraData = OfferExtraData(durationMinutes=offer.durationMinutes)  # type: ignore [call-arg]
+            result.extraData = OfferExtraData(durationMinutes=offer.durationMinutes)  # type: ignore[call-arg]
 
         if offer.product:
             result.last30DaysBookings = offer.product.last_30_days_booking

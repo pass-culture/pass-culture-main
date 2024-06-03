@@ -349,7 +349,7 @@ class User(PcObject, Base, Model, DeactivableMixin):
             return self.dateOfBirth.date()
         return None
 
-    @birth_date.expression  # type: ignore [no-redef]
+    @birth_date.expression  # type: ignore[no-redef]
     def birth_date(cls) -> date | None:  # pylint: disable=no-self-argument
         return sa.case(
             (cls.validatedBirthDate.is_not(None), cls.validatedBirthDate),
@@ -399,7 +399,7 @@ class User(PcObject, Base, Model, DeactivableMixin):
         # We use the email as a fallback because it is the most human-readable way to identify a single user
         return (f"{self.firstName or ''} {self.lastName or ''}".strip()) or self.email
 
-    @full_name.expression  # type: ignore [no-redef]
+    @full_name.expression  # type: ignore[no-redef]
     def full_name(cls) -> str:  # pylint: disable=no-self-argument
         return sa.func.coalesce(
             sa.func.nullif(
@@ -417,7 +417,7 @@ class User(PcObject, Base, Model, DeactivableMixin):
 
     @property
     def has_active_deposit(self) -> bool:
-        return self.deposit.expirationDate > datetime.utcnow() if self.deposit else False  # type: ignore [operator]
+        return self.deposit.expirationDate > datetime.utcnow() if self.deposit else False  # type: ignore[operator]
 
     @property
     def is_eligible(self) -> bool:
@@ -526,7 +526,7 @@ class User(PcObject, Base, Model, DeactivableMixin):
     def is_beneficiary(self) -> bool:
         return self.has_beneficiary_role or self.has_underage_beneficiary_role
 
-    @is_beneficiary.expression  # type: ignore [no-redef]
+    @is_beneficiary.expression  # type: ignore[no-redef]
     def is_beneficiary(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
         return expression.or_(
             cls.roles.contains([UserRole.BENEFICIARY]), cls.roles.contains([UserRole.UNDERAGE_BENEFICIARY])
@@ -549,14 +549,14 @@ class User(PcObject, Base, Model, DeactivableMixin):
     def phoneNumber(self) -> str | None:
         return self._phoneNumber
 
-    @phoneNumber.setter  # type: ignore [no-redef]
+    @phoneNumber.setter  # type: ignore[no-redef]
     def phoneNumber(self, value: str | None) -> None:
         if not value:
             self._phoneNumber = None
         else:
             self._phoneNumber = ParsedPhoneNumber(value).phone_number
 
-    @phoneNumber.expression  # type: ignore [no-redef]
+    @phoneNumber.expression  # type: ignore[no-redef]
     def phoneNumber(cls) -> str | None:  # pylint: disable=no-self-argument
         return cls._phoneNumber
 
@@ -564,7 +564,7 @@ class User(PcObject, Base, Model, DeactivableMixin):
     def is_phone_validated(self) -> bool:
         return self.phoneValidationStatus == PhoneValidationStatusType.VALIDATED
 
-    @is_phone_validated.expression  # type: ignore [no-redef]
+    @is_phone_validated.expression  # type: ignore[no-redef]
     def is_phone_validated(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.phoneValidationStatus == PhoneValidationStatusType.VALIDATED
 
@@ -572,7 +572,7 @@ class User(PcObject, Base, Model, DeactivableMixin):
     def is_phone_validation_skipped(self) -> bool:
         return self.phoneValidationStatus == PhoneValidationStatusType.SKIPPED_BY_SUPPORT
 
-    @is_phone_validation_skipped.expression  # type: ignore [no-redef]
+    @is_phone_validation_skipped.expression  # type: ignore[no-redef]
     def is_phone_validation_skipped(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.phoneValidationStatus == PhoneValidationStatusType.SKIPPED_BY_SUPPORT
 
@@ -580,7 +580,7 @@ class User(PcObject, Base, Model, DeactivableMixin):
     def has_admin_role(self) -> bool:
         return UserRole.ADMIN in self.roles
 
-    @has_admin_role.expression  # type: ignore [no-redef]
+    @has_admin_role.expression  # type: ignore[no-redef]
     def has_admin_role(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.roles.contains([UserRole.ADMIN])
 
@@ -588,7 +588,7 @@ class User(PcObject, Base, Model, DeactivableMixin):
     def has_beneficiary_role(self) -> bool:
         return UserRole.BENEFICIARY in self.roles
 
-    @has_beneficiary_role.expression  # type: ignore [no-redef]
+    @has_beneficiary_role.expression  # type: ignore[no-redef]
     def has_beneficiary_role(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.roles.contains([UserRole.BENEFICIARY])
 
@@ -596,7 +596,7 @@ class User(PcObject, Base, Model, DeactivableMixin):
     def has_pro_role(self) -> bool:
         return UserRole.PRO in self.roles
 
-    @has_pro_role.expression  # type: ignore [no-redef]
+    @has_pro_role.expression  # type: ignore[no-redef]
     def has_pro_role(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.roles.contains([UserRole.PRO])
 
@@ -604,7 +604,7 @@ class User(PcObject, Base, Model, DeactivableMixin):
     def has_non_attached_pro_role(self) -> bool:
         return UserRole.NON_ATTACHED_PRO in self.roles
 
-    @has_non_attached_pro_role.expression  # type: ignore [no-redef]
+    @has_non_attached_pro_role.expression  # type: ignore[no-redef]
     def has_non_attached_pro_role(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.roles.contains([UserRole.NON_ATTACHED_PRO])
 
@@ -612,7 +612,7 @@ class User(PcObject, Base, Model, DeactivableMixin):
     def has_underage_beneficiary_role(self) -> bool:
         return UserRole.UNDERAGE_BENEFICIARY in self.roles
 
-    @has_underage_beneficiary_role.expression  # type: ignore [no-redef]
+    @has_underage_beneficiary_role.expression  # type: ignore[no-redef]
     def has_underage_beneficiary_role(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.roles.contains([UserRole.UNDERAGE_BENEFICIARY])
 
@@ -620,7 +620,7 @@ class User(PcObject, Base, Model, DeactivableMixin):
     def has_test_role(self) -> bool:
         return UserRole.TEST in self.roles
 
-    @has_test_role.expression  # type: ignore [no-redef]
+    @has_test_role.expression  # type: ignore[no-redef]
     def has_test_role(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.roles.contains([UserRole.TEST])
 
@@ -628,7 +628,7 @@ class User(PcObject, Base, Model, DeactivableMixin):
     def has_anonymized_role(self) -> bool:
         return UserRole.ANONYMIZED in self.roles
 
-    @has_anonymized_role.expression  # type: ignore [no-redef]
+    @has_anonymized_role.expression  # type: ignore[no-redef]
     def has_anonymized_role(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.roles.contains([UserRole.ANONYMIZED])
 
@@ -830,7 +830,7 @@ class UserEmailHistory(PcObject, Base, Model):
     def oldEmail(self) -> str:
         return f"{self.oldUserEmail}@{self.oldDomainEmail}"
 
-    @oldEmail.expression  # type: ignore [no-redef]
+    @oldEmail.expression  # type: ignore[no-redef]
     def oldEmail(cls):  # pylint: disable=no-self-argument
         return cls.oldUserEmail + "@" + cls.oldDomainEmail
 
@@ -840,7 +840,7 @@ class UserEmailHistory(PcObject, Base, Model):
             return f"{self.newUserEmail}@{self.newDomainEmail}"
         return None
 
-    @newEmail.expression  # type: ignore [no-redef]
+    @newEmail.expression  # type: ignore[no-redef]
     def newEmail(cls):  # pylint: disable=no-self-argument
         return sa.case(
             (

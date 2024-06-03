@@ -19,7 +19,7 @@ class _CacheProxy:
     def __getattr__(self, name: str) -> Any:
         if self._data is None:
             self._data = json.loads(self._json)
-        return self._data.get(name)  # type: ignore [attr-defined]
+        return self._data.get(name)  # type: ignore[attr-defined]
 
     def json(self, *args: Iterable[Any], **kwargs: dict[str, Any]) -> str:
         return self._json

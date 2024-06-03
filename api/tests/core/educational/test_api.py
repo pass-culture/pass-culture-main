@@ -136,7 +136,7 @@ class UnindexExpiredOffersTest:
 class GetCulturalPartnersTest:
     def test_cultural_partners_no_cache(self) -> None:
         # given
-        redis_client = current_app.redis_client  # type: ignore [attr-defined]
+        redis_client = current_app.redis_client  # type: ignore[attr-defined]
         redis_client.delete("api:adage_cultural_partner:cache")
 
         # when
@@ -208,7 +208,7 @@ class GetCulturalPartnersTest:
 
     def test_cultural_partners_get_cache(self) -> None:
         # given
-        redis_client = current_app.redis_client  # type: ignore [attr-defined]
+        redis_client = current_app.redis_client  # type: ignore[attr-defined]
         data = [
             {
                 "id": 23,
@@ -282,7 +282,7 @@ class GetCulturalPartnersTest:
 
     def test_cultural_partners_force_update(self) -> None:
         # given
-        redis_client = current_app.redis_client  # type: ignore [attr-defined]
+        redis_client = current_app.redis_client  # type: ignore[attr-defined]
         data = [
             {
                 "id": 23,

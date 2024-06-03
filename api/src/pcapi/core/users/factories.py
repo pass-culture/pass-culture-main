@@ -134,7 +134,7 @@ class PhoneValidatedUserFactory(EmailValidatedUserFactory):
 
         fraud_checks = super().beneficiary_fraud_checks(obj, **kwargs)
         if obj.age == users_constants.ELIGIBILITY_AGE_18:
-            obj.phoneNumber = f"+336{obj.id:08}"  # type: ignore [method-assign]
+            obj.phoneNumber = f"+336{obj.id:08}"  # type: ignore[method-assign]
             obj.phoneValidationStatus = models.PhoneValidationStatusType.VALIDATED
             fraud_checks.append(fraud_factories.PhoneValidationFraudCheckFactory(user=obj))
         return fraud_checks

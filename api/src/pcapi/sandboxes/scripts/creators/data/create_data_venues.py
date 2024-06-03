@@ -76,8 +76,8 @@ def create_data_venues(offerers_by_name: dict) -> dict[str, Venue]:
         venue = offerers_factories.VenueFactory(
             managingOfferer=offerer,
             bookingEmail="data@example.com",
-            latitude=float(geoloc_match.group(2)),  # type: ignore [union-attr]
-            longitude=float(geoloc_match.group(3)),  # type: ignore [union-attr]
+            latitude=float(geoloc_match.group(2)),  # type: ignore[union-attr]
+            longitude=float(geoloc_match.group(3)),  # type: ignore[union-attr]
             comment=comment,
             name=venue_name,
             siret=siret,

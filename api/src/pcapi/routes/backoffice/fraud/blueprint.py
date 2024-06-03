@@ -85,7 +85,7 @@ def _list_non_pro_suspensions(domain_name: str) -> list[str]:
 
 def _list_untouched_pro_accounts(domain_name: str) -> list[str]:
     query = users_models.User.query.filter(
-        sa.or_(  # type: ignore [type-var]
+        sa.or_(  # type: ignore[type-var]
             users_models.User.has_pro_role,
             users_models.User.has_non_attached_pro_role,
         ),

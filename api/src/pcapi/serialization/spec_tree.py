@@ -23,8 +23,8 @@ def add_security_scheme(route_function: Callable, auth_key: str, scopes: list[st
     the SpecTree initialization of the route's BluePrint.
     """
     if not hasattr(route_function, "requires_authentication"):
-        route_function.requires_authentication = []  # type: ignore [attr-defined]
-    route_function.requires_authentication.append({auth_key: scopes or []})  # type: ignore [attr-defined]
+        route_function.requires_authentication = []  # type: ignore[attr-defined]
+    route_function.requires_authentication.append({auth_key: scopes or []})  # type: ignore[attr-defined]
 
 
 def build_operation_id(func: Callable) -> str:

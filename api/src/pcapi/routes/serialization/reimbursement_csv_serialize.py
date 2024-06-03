@@ -233,7 +233,7 @@ def find_offerer_reimbursement_details(
     reimbursements_period: tuple[datetime.date | None, datetime.date | None],
     bank_account_id: int | None = None,
 ) -> list[ReimbursementDetails]:
-    offerer_payments = finance_repository.find_offerer_payments(offerer_id, reimbursements_period, bank_account_id)  # type: ignore [arg-type]
+    offerer_payments = finance_repository.find_offerer_payments(offerer_id, reimbursements_period, bank_account_id)  # type: ignore[arg-type]
     reimbursement_details = [ReimbursementDetails(offerer_payment) for offerer_payment in offerer_payments]
 
     return reimbursement_details

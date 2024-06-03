@@ -300,8 +300,8 @@ def _create_or_update_ean_offers(serialized_products_stocks: dict, venue_id: int
     offer_to_update_by_ean = {}
     ean_list_to_update = set()
     for offer in offers_to_update:
-        ean_list_to_update.add(offer.extraData["ean"])  # type: ignore [index]
-        offer_to_update_by_ean[offer.extraData["ean"]] = offer  # type: ignore [index]
+        ean_list_to_update.add(offer.extraData["ean"])  # type: ignore[index]
+        offer_to_update_by_ean[offer.extraData["ean"]] = offer  # type: ignore[index]
 
     ean_list_to_create = ean_to_create_or_update - ean_list_to_update
     offers_to_index = []
@@ -309,7 +309,7 @@ def _create_or_update_ean_offers(serialized_products_stocks: dict, venue_id: int
         if ean_list_to_create:
             created_offers = []
             existing_products = _get_existing_products(ean_list_to_create)
-            product_by_ean = {product.extraData["ean"]: product for product in existing_products}  # type: ignore [index]
+            product_by_ean = {product.extraData["ean"]: product for product in existing_products}  # type: ignore[index]
             not_found_eans = [ean for ean in ean_list_to_create if ean not in product_by_ean.keys()]
             if not_found_eans:
                 logger.warning(
@@ -347,7 +347,7 @@ def _create_or_update_ean_offers(serialized_products_stocks: dict, venue_id: int
             reloaded_offers = _get_existing_offers(ean_list_to_create, venue)
             for offer in reloaded_offers:
                 try:
-                    ean = offer.extraData["ean"]  # type: ignore [index]
+                    ean = offer.extraData["ean"]  # type: ignore[index]
                     stock_data = serialized_products_stocks[ean]
                     # FIXME (mageoffray, 2023-05-26): stock saving optimisation
                     # Stocks are inserted one by one for now, we need to improve create_stock to remove the repository.session.add()
@@ -378,7 +378,7 @@ def _create_or_update_ean_offers(serialized_products_stocks: dict, venue_id: int
                 offer.lastProvider = provider
                 offer.isActive = True
 
-                ean = offer.extraData["ean"]  # type: ignore [index]
+                ean = offer.extraData["ean"]  # type: ignore[index]
                 stock_data = serialized_products_stocks[ean]
                 # FIXME (mageoffray, 2023-05-26): stock upserting optimisation
                 # Stocks are edited one by one for now, we need to improve edit_stock to remove the repository.session.add()
@@ -547,7 +547,7 @@ def get_product_by_ean(
     """
     utils.check_venue_id_is_tied_to_api_key(query.venueId)
     offers: list[offers_models.Offer] | None = (
-        utils.retrieve_offer_relations_query(_retrieve_offer_by_eans_query(query.eans, query.venueId))  # type: ignore [arg-type]
+        utils.retrieve_offer_relations_query(_retrieve_offer_by_eans_query(query.eans, query.venueId))  # type: ignore[arg-type]
         .filter(sqla.not_(offers_models.Offer.isEvent))
         .all()
     )

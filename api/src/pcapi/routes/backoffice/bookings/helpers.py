@@ -78,7 +78,7 @@ def get_bookings(
             for status in form.status.data:
                 if status == BookingStatus.CONFIRMED.name:
                     status_filters.append(
-                        and_(  # type: ignore [type-var]
+                        and_(  # type: ignore[type-var]
                             booking_class.isConfirmed,
                             booking_class.status == BookingStatus.CONFIRMED.name,
                         )
@@ -86,7 +86,7 @@ def get_bookings(
                 elif status == BookingStatus.BOOKED.name:
                     status_filters.append(
                         and_(
-                            ~booking_class.isConfirmed,  # type: ignore [operator]
+                            ~booking_class.isConfirmed,  # type: ignore[operator]
                             booking_class.status == BookingStatus.CONFIRMED.name,
                         )
                     )
@@ -94,7 +94,7 @@ def get_bookings(
                     status_in.append(status)
 
             if status_in:
-                status_filters.append(booking_class.status.in_(status_in))  # type: ignore [arg-type]
+                status_filters.append(booking_class.status.in_(status_in))  # type: ignore[arg-type]
 
             if len(status_filters) > 1:
                 base_query = base_query.filter(or_(*status_filters))

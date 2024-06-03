@@ -309,7 +309,7 @@ class PaymentFactory(BaseFactory):
     recipientSiren = factory.SelfAttribute("booking.stock.offer.venue.managingOfferer.siren")
     reimbursementRule = factory.Iterator(REIMBURSEMENT_RULE_DESCRIPTIONS)
     reimbursementRate = factory.LazyAttribute(
-        lambda payment: reimbursement.get_reimbursement_rule(  # type: ignore [attr-defined]
+        lambda payment: reimbursement.get_reimbursement_rule(  # type: ignore[attr-defined]
             payment.collectiveBooking or payment.booking, reimbursement.CustomRuleFinder(), 0
         ).rate
     )

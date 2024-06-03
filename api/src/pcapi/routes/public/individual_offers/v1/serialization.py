@@ -65,25 +65,25 @@ ALLOWED_PRODUCT_SUBCATEGORIES = [
 ]
 
 
-MusicTypeEnum = StrEnum(  # type: ignore [call-overload]
+MusicTypeEnum = StrEnum(  # type: ignore[call-overload]
     "MusicTypeEnum",
     {music_sub_type_slug: music_sub_type_slug for music_sub_type_slug in music_types.MUSIC_SUB_TYPES_BY_SLUG},
 )
 
-TiteliveMusicTypeEnum = StrEnum(  # type: ignore [call-overload]
+TiteliveMusicTypeEnum = StrEnum(  # type: ignore[call-overload]
     "TiteliveMusicTypeEnum", {music_type: music_type for music_type in constants.GTL_ID_BY_TITELIVE_MUSIC_GENRE}
 )
 
-ShowTypeEnum = StrEnum(  # type: ignore [call-overload]
+ShowTypeEnum = StrEnum(  # type: ignore[call-overload]
     "ShowTypeEnum",
     {show_sub_type_slug: show_sub_type_slug for show_sub_type_slug in show_types.SHOW_SUB_TYPES_BY_SLUG},
 )
 
-EventCategoryEnum = StrEnum(  # type:ignore [call-overload]
+EventCategoryEnum = StrEnum(  # type: ignore[call-overload]
     "CategoryEnum", {subcategory_id: subcategory_id for subcategory_id in subcategories.EVENT_SUBCATEGORIES}
 )
 
-ProductCategoryEnum = StrEnum(  # type:ignore [call-overload]
+ProductCategoryEnum = StrEnum(  # type: ignore[call-overload]
     "CategoryEnum", {subcategory.id: subcategory.id for subcategory in ALLOWED_PRODUCT_SUBCATEGORIES}
 )
 
@@ -132,10 +132,10 @@ EAN_FIELD = pydantic_v1.Field(example="1234567890123", description="European Art
 class ExtraDataModel(serialization.ConfiguredBaseModel):
     author: str | None = pydantic_v1.Field(example="Jane Doe")
     ean: str | None = EAN_FIELD
-    musicType: TiteliveMusicTypeEnum | MusicTypeEnum | None  # type: ignore [valid-type]
+    musicType: TiteliveMusicTypeEnum | MusicTypeEnum | None  # type: ignore[valid-type]
     performer: str | None = pydantic_v1.Field(example="Jane Doe")
     stageDirector: str | None = pydantic_v1.Field(example="Jane Doe")
-    showType: ShowTypeEnum | None  # type: ignore [valid-type]
+    showType: ShowTypeEnum | None  # type: ignore[valid-type]
     speaker: str | None = pydantic_v1.Field(example="Jane Doe")
     visa: str | None = pydantic_v1.Field(example="140843")
 
@@ -300,7 +300,7 @@ def serialize_extra_data(offer: offers_models.Offer) -> CategoryRelatedFields:
             constants.TITELIVE_MUSIC_GENRES_BY_GTL_ID[gtl_id[:2] + "0" * 6]
         )  # Only take the first level of the GTL ID
 
-    return category_fields_model(**serialized_data, subcategory_id=offer.subcategory.id)  # type: ignore [misc, call-arg]
+    return category_fields_model(**serialized_data, subcategory_id=offer.subcategory.id)  # type: ignore[misc, call-arg]
 
 
 def deserialize_extra_data(
@@ -671,7 +671,7 @@ class BaseStockResponse(serialization.ConfiguredBaseModel):
 
     @classmethod
     def build_stock(cls, stock: offers_models.Stock) -> "BaseStockResponse":
-        return cls(  # type: ignore [call-arg]
+        return cls(  # type: ignore[call-arg]
             booking_limit_datetime=stock.bookingLimitDatetime,
             dnBookedQuantity=stock.dnBookedQuantity,
             quantity=stock.quantity if stock.quantity is not None else "unlimited",
@@ -689,7 +689,7 @@ class DateResponse(BaseStockResponse):
         stock_response = BaseStockResponse.build_stock(stock)
         return cls(
             id=stock.id,
-            beginning_datetime=stock.beginningDatetime,  # type: ignore [arg-type]
+            beginning_datetime=stock.beginningDatetime,  # type: ignore[arg-type]
             price_category=PriceCategoryResponse.from_orm(stock.priceCategory),
             **stock_response.dict(),
         )
@@ -729,7 +729,7 @@ class OfferResponse(serialization.ConfiguredBaseModel):
             description=offer.description,
             accessibility=AccessibilityResponse.from_orm(offer),
             external_ticket_office_url=offer.externalTicketOfficeUrl,
-            image=offer.image,  # type: ignore [arg-type]
+            image=offer.image,  # type: ignore[arg-type]
             is_duo=offer.isDuo,
             location=DigitalLocation.from_orm(offer) if offer.isDigital else PhysicalLocation.from_orm(offer),
             name=offer.name,
@@ -838,7 +838,7 @@ class GetProductsListByEansQuery(serialization.ConfiguredBaseModel):
 
 
 class EventCategoryResponse(serialization.ConfiguredBaseModel):
-    id: EventCategoryEnum  # type: ignore [valid-type]
+    id: EventCategoryEnum  # type: ignore[valid-type]
     conditional_fields: dict[str, bool] = pydantic_v1.Field(
         description="The keys are fields that should be set in the category_related_fields of an event. The values indicate whether their associated field is mandatory during event creation."
     )
@@ -860,7 +860,7 @@ class LocationTypeEnum(str, enum.Enum):
 
 
 class ProductCategoryResponse(serialization.ConfiguredBaseModel):
-    id: ProductCategoryEnum  # type: ignore [valid-type]
+    id: ProductCategoryEnum  # type: ignore[valid-type]
     conditional_fields: dict[str, bool] = pydantic_v1.Field(
         description="The keys are fields that should be set in the category_related_fields of a product. The values indicate whether their associated field is mandatory during product creation."
     )
@@ -894,7 +894,7 @@ class GetProductCategoriesResponse(serialization.ConfiguredBaseModel):
 
 
 class ShowTypeResponse(serialization.ConfiguredBaseModel):
-    id: ShowTypeEnum  # type: ignore [valid-type]
+    id: ShowTypeEnum  # type: ignore[valid-type]
     label: str
 
 
@@ -903,12 +903,12 @@ class GetShowTypesResponse(serialization.ConfiguredBaseModel):
 
 
 class MusicTypeResponse(serialization.ConfiguredBaseModel):
-    id: MusicTypeEnum  # type: ignore [valid-type]
+    id: MusicTypeEnum  # type: ignore[valid-type]
     label: str
 
 
 class TiteliveMusicTypeResponse(serialization.ConfiguredBaseModel):
-    id: TiteliveMusicTypeEnum  # type: ignore [valid-type]
+    id: TiteliveMusicTypeEnum  # type: ignore[valid-type]
     label: str
 
 

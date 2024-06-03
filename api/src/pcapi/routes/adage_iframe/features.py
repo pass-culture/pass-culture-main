@@ -15,4 +15,4 @@ def list_features(authenticated_information: AuthenticatedInformation) -> featur
     features = feature_queries.find_all()
     # Pydantic manages to convert a list of Feature to a list of FeatureResponseModel, with orm_mode=True
     # This apparently confuses mypy
-    return features_serialize.ListFeatureResponseModel(__root__=features)  # type: ignore [arg-type]
+    return features_serialize.ListFeatureResponseModel(__root__=features)  # type: ignore[arg-type]

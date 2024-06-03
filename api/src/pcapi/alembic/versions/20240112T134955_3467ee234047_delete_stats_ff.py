@@ -10,7 +10,7 @@ branch_labels = None
 depends_on = None
 
 
-def get_stats_flag():  # type: ignore [no-untyped-def]
+def get_stats_flag():  # type: ignore[no-untyped-def]
     from pcapi.models import feature
 
     return feature.Feature(
@@ -20,7 +20,7 @@ def get_stats_flag():  # type: ignore [no-untyped-def]
     )
 
 
-def get_stats_v2_flag():  # type: ignore [no-untyped-def]
+def get_stats_v2_flag():  # type: ignore[no-untyped-def]
     from pcapi.models import feature
 
     return feature.Feature(

@@ -85,7 +85,7 @@ def _apply_query_filters(
         department_codes: list[str] = []
         for region in regions:
             department_codes += get_department_codes_for_region(region)
-        query = query.filter(offerers_models.Offerer.departementCode.in_(department_codes))  # type: ignore [attr-defined]
+        query = query.filter(offerers_models.Offerer.departementCode.in_(department_codes))  # type: ignore[attr-defined]
 
     if q:
         sanitized_q = email_utils.sanitize_email(q)
@@ -240,7 +240,7 @@ def list_offerers_to_be_validated(
         .select_from(offerers_models.Venue)
         .filter(
             offerers_models.Venue.managingOffererId == offerers_models.Offerer.id,
-            offerers_models.Venue.dms_adage_status.is_not(None),  # type: ignore [attr-defined]
+            offerers_models.Venue.dms_adage_status.is_not(None),  # type: ignore[attr-defined]
         )
         .correlate(offerers_models.Offerer)
         .scalar_subquery()
@@ -252,7 +252,7 @@ def list_offerers_to_be_validated(
             _get_tags_subquery().label("tags"),
             last_comment_subquery.label("last_comment"),
             users_models.User.id.label("creator_id"),
-            users_models.User.full_name.label("creator_name"),  # type: ignore [attr-defined]
+            users_models.User.full_name.label("creator_name"),  # type: ignore[attr-defined]
             users_models.User.email.label("creator_email"),
             dms_applications_subquery.label("dms_venues"),
         )

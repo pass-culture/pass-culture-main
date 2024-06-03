@@ -263,7 +263,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
     def _bookable(self) -> bool:
         return not self.isExpired and not self.isSoldOut
 
-    @_bookable.expression  # type: ignore [no-redef]
+    @_bookable.expression  # type: ignore[no-redef]
     def _bookable(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
         return sa.and_(sa.not_(cls.isExpired), sa.not_(cls.isSoldOut))
 
@@ -277,7 +277,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
     def hasBookingLimitDatetimePassed(self) -> bool:
         return bool(self.bookingLimitDatetime and self.bookingLimitDatetime <= datetime.datetime.utcnow())
 
-    @hasBookingLimitDatetimePassed.expression  # type: ignore [no-redef]
+    @hasBookingLimitDatetimePassed.expression  # type: ignore[no-redef]
     def hasBookingLimitDatetimePassed(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
         return sa.and_(cls.bookingLimitDatetime.is_not(None), cls.bookingLimitDatetime <= sa.func.now())
 
@@ -286,7 +286,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
     def remainingQuantity(self) -> int | str:
         return "unlimited" if self.quantity is None else self.quantity - self.dnBookedQuantity
 
-    @remainingQuantity.expression  # type: ignore [no-redef]
+    @remainingQuantity.expression  # type: ignore[no-redef]
     def remainingQuantity(cls) -> Case:  # pylint: disable=no-self-argument
         return sa.case((cls.quantity.is_(None), None), else_=(cls.quantity - cls.dnBookedQuantity))
 
@@ -304,7 +304,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
     def isEventExpired(self) -> bool:
         return bool(self.beginningDatetime and self.beginningDatetime <= datetime.datetime.utcnow())
 
-    @isEventExpired.expression  # type: ignore [no-redef]
+    @isEventExpired.expression  # type: ignore[no-redef]
     def isEventExpired(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
         return sa.and_(cls.beginningDatetime.is_not(None), cls.beginningDatetime <= sa.func.now())
 
@@ -312,7 +312,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
     def isExpired(self) -> bool:
         return self.isEventExpired or self.hasBookingLimitDatetimePassed
 
-    @isExpired.expression  # type: ignore [no-redef]
+    @isExpired.expression  # type: ignore[no-redef]
     def isExpired(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
         return sa.or_(cls.isEventExpired, cls.hasBookingLimitDatetimePassed)
 
@@ -332,7 +332,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
             or (self.remainingQuantity != "unlimited" and self.remainingQuantity <= 0)
         )
 
-    @isSoldOut.expression  # type: ignore [no-redef]
+    @isSoldOut.expression  # type: ignore[no-redef]
     def isSoldOut(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
         return sa.or_(
             cls.isSoftDeleted,
@@ -370,7 +370,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
             return None if self.remainingQuantity == "unlimited" else self.remainingQuantity
         return 0
 
-    @remainingStock.expression  # type: ignore [no-redef]
+    @remainingStock.expression  # type: ignore[no-redef]
     def remainingStock(cls) -> Case:  # pylint: disable=no-self-argument
         return sa.case((cls._bookable, cls.remainingQuantity), else_=0)
 
@@ -560,7 +560,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
                 return False
         return True
 
-    @isSoldOut.expression  # type: ignore [no-redef]
+    @isSoldOut.expression  # type: ignore[no-redef]
     def isSoldOut(cls) -> UnaryExpression:  # pylint: disable=no-self-argument
         return (
             ~sa.exists()
@@ -580,7 +580,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     def canExpire(self) -> bool:
         return self.subcategoryId in subcategories_v2.EXPIRABLE_SUBCATEGORIES
 
-    @canExpire.expression  # type: ignore [no-redef]
+    @canExpire.expression  # type: ignore[no-redef]
     def canExpire(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.subcategoryId.in_(subcategories_v2.EXPIRABLE_SUBCATEGORIES)
 
@@ -593,7 +593,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     def _released(self) -> bool:
         return self.isActive and self.validation == OfferValidationStatus.APPROVED
 
-    @_released.expression  # type: ignore [no-redef]
+    @_released.expression  # type: ignore[no-redef]
     def _released(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
         return sa.and_(cls.isActive, cls.validation == OfferValidationStatus.APPROVED)
 
@@ -601,7 +601,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     def isPermanent(self) -> bool:
         return self.subcategoryId in subcategories_v2.PERMANENT_SUBCATEGORIES
 
-    @isPermanent.expression  # type: ignore [no-redef]
+    @isPermanent.expression  # type: ignore[no-redef]
     def isPermanent(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.subcategoryId.in_(subcategories_v2.PERMANENT_SUBCATEGORIES)
 
@@ -609,7 +609,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     def isEvent(self) -> bool:
         return self.subcategory.is_event
 
-    @isEvent.expression  # type: ignore [no-redef]
+    @isEvent.expression  # type: ignore[no-redef]
     def isEvent(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.subcategoryId.in_(subcategories_v2.EVENT_SUBCATEGORIES)
 
@@ -621,7 +621,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     def isDigital(self) -> bool:
         return self.url is not None and self.url != ""
 
-    @isDigital.expression  # type: ignore [no-redef]
+    @isDigital.expression  # type: ignore[no-redef]
     def isDigital(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
         return sa.and_(cls.url.is_not(None), cls.url != "")
 
@@ -655,7 +655,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     def is_eligible_for_search(self) -> bool:
         return self.isReleased and self.isBookable
 
-    @is_eligible_for_search.expression  # type: ignore [no-redef]
+    @is_eligible_for_search.expression  # type: ignore[no-redef]
     def is_eligible_for_search(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
         return sa.and_(cls._released, Stock._bookable)
 
@@ -663,7 +663,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     def is_offer_released_with_bookable_stock(self) -> bool:
         return self.isReleased and self.isBookable
 
-    @is_offer_released_with_bookable_stock.expression  # type: ignore [no-redef]
+    @is_offer_released_with_bookable_stock.expression  # type: ignore[no-redef]
     def is_offer_released_with_bookable_stock(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
         return sa.and_(cls._released, sa.exists().where(Stock.offerId == cls.id).where(Stock._bookable))
 
@@ -673,7 +673,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
             return all(stock.hasBookingLimitDatetimePassed for stock in self.activeStocks)
         return False
 
-    @hasBookingLimitDatetimesPassed.expression  # type: ignore [no-redef]
+    @hasBookingLimitDatetimesPassed.expression  # type: ignore[no-redef]
     def hasBookingLimitDatetimesPassed(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
         return sa.and_(
             sa.exists().where(Stock.offerId == cls.id).where(Stock.isSoftDeleted.is_(False)),
@@ -690,7 +690,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         ]
         return min(stocks_with_date) if stocks_with_date else None
 
-    @firstBeginningDatetime.expression  # type: ignore [no-redef]
+    @firstBeginningDatetime.expression  # type: ignore[no-redef]
     def firstBeginningDatetime(cls) -> datetime.datetime | None:  # pylint: disable=no-self-argument
         return (
             sa.select(sa.func.min(Stock.beginningDatetime))
@@ -792,7 +792,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     def is_expired(self) -> bool:
         return self.hasBookingLimitDatetimesPassed
 
-    @is_expired.expression  # type: ignore [no-redef]
+    @is_expired.expression  # type: ignore[no-redef]
     def is_expired(cls) -> UnaryExpression:  # pylint: disable=no-self-argument
         return cls.hasBookingLimitDatetimesPassed
 
@@ -818,7 +818,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
 
         return OfferStatus.ACTIVE
 
-    @status.expression  # type: ignore [no-redef]
+    @status.expression  # type: ignore[no-redef]
     def status(cls) -> Case:  # pylint: disable=no-self-argument
         return sa.case(
             (cls.validation == OfferValidationStatus.REJECTED.name, OfferStatus.REJECTED.name),

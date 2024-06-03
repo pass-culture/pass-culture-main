@@ -544,7 +544,7 @@ class ReimbursementRule:
         custom_total_amount: int | None = None,
     ) -> int:
         base = custom_total_amount or utils.to_eurocents(booking.total_amount)
-        return utils.round_to_integer(base * self.rate)  # type: ignore [attr-defined]
+        return utils.round_to_integer(base * self.rate)  # type: ignore[attr-defined]
 
     @property
     def group(self) -> RuleGroup:
@@ -1047,7 +1047,7 @@ class FinanceIncident(Base, Model):
             for booking_incident in self.booking_finance_incidents
         )
 
-    @isClosed.expression  # type: ignore [no-redef]
+    @isClosed.expression  # type: ignore[no-redef]
     def isClosed(cls) -> Exists:  # pylint: disable=no-self-argument
         return (
             sqla.exists()

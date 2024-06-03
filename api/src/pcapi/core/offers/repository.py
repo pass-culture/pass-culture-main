@@ -690,7 +690,7 @@ def get_expired_offers(interval: list[datetime.datetime]) -> flask_sqlalchemy.Ba
             models.Stock.isSoftDeleted.is_(False),
             models.Stock.bookingLimitDatetime.is_not(None),
         )
-        .having(sa.func.max(models.Stock.bookingLimitDatetime).between(*interval))  # type: ignore [arg-type]
+        .having(sa.func.max(models.Stock.bookingLimitDatetime).between(*interval))  # type: ignore[arg-type]
         .group_by(models.Offer.id)
         .order_by(models.Offer.id)
     )
@@ -864,7 +864,7 @@ def _order_stocks_by(
         case StocksOrderedBy.BOOKING_LIMIT_DATETIME:
             column = models.Stock.bookingLimitDatetime
         case StocksOrderedBy.REMAINING_QUANTITY:
-            column = models.Stock.remainingQuantity  # type: ignore [assignment]
+            column = models.Stock.remainingQuantity  # type: ignore[assignment]
         case StocksOrderedBy.DN_BOOKED_QUANTITY:
             column = models.Stock.dnBookedQuantity
     if order_by_desc:
@@ -896,7 +896,7 @@ def get_filtered_stocks(
     if time is not None:
         # Transform user time input into the venue timezone
         dt = datetime.datetime.combine(datetime.datetime.today(), time)
-        venue_timezone = pytz.timezone(venue.timezone)  # type: ignore [arg-type]
+        venue_timezone = pytz.timezone(venue.timezone)  # type: ignore[arg-type]
         venue_time = dt.replace(tzinfo=pytz.utc).astimezone(venue_timezone).time()
 
         query = query.filter(

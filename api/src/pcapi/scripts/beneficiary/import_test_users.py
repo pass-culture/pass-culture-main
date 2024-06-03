@@ -85,7 +85,7 @@ def _create_beneficiary(row: dict, role: UserRole | None) -> User:
 
 def _create_pro_user(row: dict) -> User:
     user = users_api.create_pro_user(
-        ProUserCreationBodyV2Model(  # type: ignore [call-arg]
+        ProUserCreationBodyV2Model(  # type: ignore[call-arg]
             email=row["Mail"],
             firstName=row["Prénom"],
             lastName=row["Nom"],
@@ -195,7 +195,7 @@ def _add_or_update_user_from_row(row: dict, update_if_exists: bool) -> User | No
 
     user.lastName = row["Nom"]
     user.firstName = row["Prénom"]
-    user.phoneNumber = row["Téléphone"]  # type: ignore [method-assign]
+    user.phoneNumber = row["Téléphone"]  # type: ignore[method-assign]
     user.departementCode = row["Département"]
     user.postalCode = row["Code postal"]
     user.comment = row["Type"]

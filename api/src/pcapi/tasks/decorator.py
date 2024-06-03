@@ -53,7 +53,7 @@ def task(
                 task_request_timeout=task_request_timeout,
             )
 
-        f.delay = delay  # type: ignore [attr-defined]
+        f.delay = delay  # type: ignore[attr-defined]
         return f
 
     return decorator
@@ -66,7 +66,7 @@ def _define_handler(
 ) -> None:
     @cloud_task_api.route(path, methods=["POST"], endpoint=path)
     @spectree_serialize(on_success_status=204)
-    def handle_task(body: payload_type) -> None:  # type: ignore [valid-type]
+    def handle_task(body: payload_type) -> None:  # type: ignore[valid-type]
         queue_name = request.headers.get("HTTP_X_CLOUDTASKS_QUEUENAME")
         task_id = request.headers.get("HTTP_X_CLOUDTASKS_TASKNAME")
         retry_attempt = request.headers.get("X-CloudTasks-TaskRetryCount")
@@ -82,7 +82,7 @@ def _define_handler(
 
         if request.headers.get(cloud_task.AUTHORIZATION_HEADER_KEY) != cloud_task.AUTHORIZATION_HEADER_VALUE:
             logger.info("Unauthorized request on cloud task %s", path, extra=job_details)
-            raise ApiErrors("Unauthorized", status_code=299)  # type: ignore [arg-type] # status code 2xx to prevent retry
+            raise ApiErrors("Unauthorized", status_code=299)  # type: ignore[arg-type] # status code 2xx to prevent retry
 
         try:
             f(body)

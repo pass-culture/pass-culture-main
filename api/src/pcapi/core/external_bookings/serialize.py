@@ -66,7 +66,7 @@ class ExternalEventBookingRequest(pydantic_v1.BaseModel):
             venue_department_code=stock.offer.venue.departementCode,
             venue_id=stock.offer.venue.id,
             venue_name=stock.offer.venue.name,
-            **price_data,  # type: ignore [arg-type]
+            **price_data,  # type: ignore[arg-type]
         )
 
 

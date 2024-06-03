@@ -75,7 +75,7 @@ def find_pro_user_by_email_query(email: str) -> BaseQuery:
 
 
 def find_pro_or_non_attached_pro_user_by_email_query(email: str) -> BaseQuery:
-    return _find_user_by_email_query(email).filter(sa.or_(models.User.has_pro_role, models.User.has_non_attached_pro_role))  # type: ignore [type-var]
+    return _find_user_by_email_query(email).filter(sa.or_(models.User.has_pro_role, models.User.has_non_attached_pro_role))  # type: ignore[type-var]
 
 
 def get_newly_eligible_age_18_users(since: date) -> list[models.User]:
@@ -100,11 +100,11 @@ def get_newly_eligible_age_18_users(since: date) -> list[models.User]:
             sa.not_(models.User.has_admin_role),  # not an admin
             offerers_models.UserOfferer.userId.is_(None),  # not a pro
             # less than 19yo
-            models.User.birth_date > today - relativedelta(years=(constants.ELIGIBILITY_AGE_18 + 1)),  # type: ignore [operator]
+            models.User.birth_date > today - relativedelta(years=(constants.ELIGIBILITY_AGE_18 + 1)),  # type: ignore[operator]
             # more than or 18yo
-            models.User.birth_date <= today - relativedelta(years=constants.ELIGIBILITY_AGE_18),  # type: ignore [operator]
+            models.User.birth_date <= today - relativedelta(years=constants.ELIGIBILITY_AGE_18),  # type: ignore[operator]
             # less than 18yo at since
-            models.User.birth_date > since - relativedelta(years=constants.ELIGIBILITY_AGE_18),  # type: ignore [operator]
+            models.User.birth_date > since - relativedelta(years=constants.ELIGIBILITY_AGE_18),  # type: ignore[operator]
             models.User.dateCreated < today,
         )
         .all()

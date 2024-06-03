@@ -569,7 +569,7 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):
             return min(self.dateCreated, registration_datetime)
         return self.dateCreated
 
-    def source_data(self) -> FraudCheckContent:  # type: ignore [type-var]
+    def source_data(self) -> FraudCheckContent:  # type: ignore[type-var]
         cls = FRAUD_CHECK_CONTENT_MAPPING[self.type]
         if not cls:
             raise NotImplementedError(f"Cannot unserialize type {self.type}")
