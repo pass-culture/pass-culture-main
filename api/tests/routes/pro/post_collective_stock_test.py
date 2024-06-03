@@ -1,3 +1,4 @@
+import datetime
 import decimal
 
 import pytest
@@ -46,6 +47,45 @@ class Return200Test:
         assert created_stock.price == decimal.Decimal("1500.12")
         assert created_stock.priceDetail == "Détail du prix"
         assert offer.validation == OfferValidationStatus.DRAFT
+        assert created_stock.beginningDatetime == datetime.datetime(2022, 1, 17, 22, 0, 0)
+        assert created_stock.startDatetime == datetime.datetime(2022, 1, 17, 22, 0, 0)
+        assert created_stock.endDatetime == datetime.datetime(2022, 1, 17, 22, 0, 0)
+
+    @time_machine.travel("2020-11-17 15:00:00")
+    def test_create_valid_stock_for_collective_offe_with_start_end_datetime(self, client):
+        # Given
+        offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.DRAFT)
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        stock_payload = {
+            "offerId": offer.id,
+            "startDatetime": "2022-01-17T22:00:00Z",
+            "endDatetime": "2022-01-18T18:00:00Z",
+            "bookingLimitDatetime": "2021-12-31T20:00:00Z",
+            "totalPrice": 1500.12,
+            "numberOfTickets": 38,
+            "educationalPriceDetail": "Détail du prix",
+        }
+
+        client.with_session_auth("user@example.com")
+        response = client.post("/collective/stocks/", json=stock_payload)
+
+        # Then
+        assert response.status_code == 201
+        response_dict = response.json
+        created_stock: CollectiveStock = CollectiveStock.query.get(response_dict["id"])
+        offer = CollectiveOffer.query.get(offer.id)
+        assert offer.id == created_stock.collectiveOfferId
+        assert created_stock.price == decimal.Decimal("1500.12")
+        assert created_stock.priceDetail == "Détail du prix"
+        assert offer.validation == OfferValidationStatus.DRAFT
+        assert created_stock.beginningDatetime == datetime.datetime(2022, 1, 17, 22, 0, 0)
+        assert created_stock.startDatetime == datetime.datetime(2022, 1, 17, 22, 0, 0)
+        assert created_stock.endDatetime == datetime.datetime(2022, 1, 18, 18, 0, 0)
 
 
 class Return400Test:
@@ -280,3 +320,29 @@ class Return400Test:
         # Then
         assert response.status_code == 400
         assert response.json == {"beginningDatetime": ["L'évènement ne peut commencer dans le passé."]}
+
+    @time_machine.travel("2020-11-17 15:00:00")
+    def should_not_accept_payload_with_startDatetime_after_endDatetime(self, client):
+        # Given
+        offer = educational_factories.CollectiveOfferFactory()
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        stock_payload = {
+            "offerId": offer.id,
+            "startDatetime": "2022-01-18T22:00:00Z",
+            "endDatetime": "2022-01-17T22:00:00Z",
+            "bookingLimitDatetime": "2022-01-16T20:00:00Z",
+            "totalPrice": 1500,
+            "numberOfTickets": 30,
+        }
+
+        client.with_session_auth("user@example.com")
+        response = client.post("/collective/stocks/", json=stock_payload)
+
+        # Then
+        assert response.status_code == 400
+        assert response.json == {"endDatetime": ["La date de fin de l'évènement ne peut précéder la date de début."]}

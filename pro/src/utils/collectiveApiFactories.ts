@@ -224,6 +224,8 @@ export const collectiveBookingByIdFactory = (
   return {
     bankAccountStatus: CollectiveBookingBankAccountStatus.ACCEPTED,
     beginningDatetime: new Date().toISOString(),
+    startDatetime: new Date().toISOString(),
+    endDatetime: new Date().toISOString(),
     educationalInstitution: {
       city: 'Paris',
       id: 1,
