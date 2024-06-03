@@ -14,6 +14,8 @@ def expected_serialized_prebooking(booking: models.CollectiveBooking) -> dict:
         "address": offer.offerVenue["otherAddress"],
         "accessibility": _get_educational_offer_accessibility(offer),
         "beginningDatetime": format_into_utc_date(stock.beginningDatetime),
+        "startDatetime": format_into_utc_date(stock.startDatetime),
+        "endDatetime": format_into_utc_date(stock.endDatetime),
         "cancellationDate": None,
         "cancellationLimitDate": format_into_utc_date(booking.cancellationLimitDate),
         "city": venue.city,

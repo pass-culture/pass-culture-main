@@ -250,6 +250,8 @@ def get_collective_booking_by_id(booking_id: int) -> educational_models.Collecti
             sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock).load_only(
                 educational_models.CollectiveStock.price,
                 educational_models.CollectiveStock.beginningDatetime,
+                educational_models.CollectiveStock.startDatetime,
+                educational_models.CollectiveStock.endDatetime,
                 educational_models.CollectiveStock.numberOfTickets,
             ),
             sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock)

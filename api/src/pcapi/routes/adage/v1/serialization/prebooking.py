@@ -52,6 +52,8 @@ class EducationalBookingBaseResponse(AdageBaseResponseModel):
     accessibility: str = Field(description="Accessibility of the offer")
     address: str = Field(description="Adresse of event")
     beginningDatetime: datetime = Field(description="Beginnning date of event")
+    startDatetime: datetime = Field(description="Start date of event")
+    endDatetime: datetime = Field(description="End date of event")
     cancellationDate: datetime | None = Field(description="Date of cancellation if prebooking is cancelled")
     cancellationLimitDate: datetime | None = Field(description="Limit date to cancel the prebooking")
     city: str | None
@@ -184,6 +186,8 @@ def serialize_collective_booking(collective_booking: CollectiveBooking) -> Educa
         accessibility=_get_educational_offer_accessibility(offer),
         address=_get_collective_offer_address(offer),
         beginningDatetime=stock.beginningDatetime,
+        startDatetime=stock.startDatetime,
+        endDatetime=stock.endDatetime,
         cancellationDate=collective_booking.cancellationDate,
         cancellationLimitDate=collective_booking.cancellationLimitDate,
         city=venue.city,
@@ -309,6 +313,8 @@ def serialize_reimbursement_notification(
         accessibility=_get_educational_offer_accessibility(offer),
         address=_get_collective_offer_address(offer),
         beginningDatetime=stock.beginningDatetime,
+        startDatetime=stock.startDatetime,
+        endDatetime=stock.endDatetime,
         cancellationDate=collective_booking.cancellationDate,
         cancellationLimitDate=collective_booking.cancellationLimitDate,
         city=venue.city,

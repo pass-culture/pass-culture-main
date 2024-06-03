@@ -40,18 +40,37 @@ def validate_price(price: float | None) -> float:
 def validate_booking_limit_datetime(booking_limit_datetime: datetime | None, values: dict[str, Any]) -> datetime | None:
     if (
         booking_limit_datetime
-        and "beginning_datetime" in values
+        and values.get("beginning_datetime")
         and booking_limit_datetime > values["beginning_datetime"]
     ):
+        raise ValueError("La date limite de réservation ne peut être postérieure à la date de début de l'évènement")
+    if booking_limit_datetime and values["start_datetime"] and booking_limit_datetime > values["start_datetime"]:
         raise ValueError("La date limite de réservation ne peut être postérieure à la date de début de l'évènement")
     return booking_limit_datetime
 
 
 def validate_beginning_datetime(beginning_datetime: datetime, values: dict[str, Any], field: ModelField) -> datetime:
     # we need a datetime with timezone information which is not provided by datetime.utcnow.
-    if beginning_datetime < datetime.now(timezone.utc):  # pylint: disable=datetime-now
+    if beginning_datetime and beginning_datetime < datetime.now(timezone.utc):  # pylint: disable=datetime-now
         raise ValueError("L'évènement ne peut commencer dans le passé.")
     return beginning_datetime
+
+
+def validate_start_datetime(start_datetime: datetime, values: dict[str, Any], field: ModelField) -> datetime:
+    # we need a datetime with timezone information which is not provided by datetime.utcnow.
+    if start_datetime and start_datetime < datetime.now(timezone.utc):  # pylint: disable=datetime-now
+        raise ValueError("L'évènement ne peut commencer dans le passé.")
+    return start_datetime
+
+
+def validate_end_datetime(end_datetime: datetime, values: dict[str, Any], field: ModelField) -> datetime:
+    # we need a datetime with timezone information which is not provided by datetime.utcnow.
+    start_datetime = values.get("start_datetime")
+    if end_datetime and end_datetime < datetime.now(timezone.utc):  # pylint: disable=datetime-now
+        raise ValueError("L'évènement ne peut se terminer dans le passé.")
+    if start_datetime and end_datetime < start_datetime:
+        raise ValueError("La date de fin de l'évènement ne peut précéder la date de début.")
+    return end_datetime
 
 
 def validate_price_detail(educational_price_detail: str | None) -> str | None:
@@ -62,6 +81,14 @@ def validate_price_detail(educational_price_detail: str | None) -> str | None:
 
 def number_of_tickets_validator(field_name: str) -> classmethod:
     return validator(field_name, allow_reuse=True, pre=True)(validate_number_of_tickets)
+
+
+def start_datetime_validator(field_name: str) -> classmethod:
+    return validator(field_name, allow_reuse=True)(validate_start_datetime)
+
+
+def end_datetime_validator(field_name: str) -> classmethod:
+    return validator(field_name, allow_reuse=True)(validate_end_datetime)
 
 
 def price_validator(field_name: str) -> classmethod:
@@ -82,7 +109,9 @@ def price_detail_validator(field_name: str) -> classmethod:
 
 class CollectiveStockCreationBodyModel(BaseModel):
     offer_id: int
-    beginning_datetime: datetime
+    beginning_datetime: datetime | None
+    start_datetime: datetime | None
+    end_datetime: datetime | None
     booking_limit_datetime: datetime | None
     total_price: decimal.Decimal
     number_of_tickets: int
@@ -91,6 +120,8 @@ class CollectiveStockCreationBodyModel(BaseModel):
     _validate_number_of_tickets = number_of_tickets_validator("number_of_tickets")
     _validate_total_price = price_validator("total_price")
     _validate_beginning_datetime = beginning_datetime_validator("beginning_datetime")
+    _validate_start_datetime = start_datetime_validator("start_datetime")
+    _validate_end_datetime = end_datetime_validator("end_datetime")
     _validate_booking_limit_datetime = booking_limit_datetime_validator("booking_limit_datetime")
     _validate_educational_price_detail = price_detail_validator("educational_price_detail")
 
@@ -101,6 +132,8 @@ class CollectiveStockCreationBodyModel(BaseModel):
 
 class CollectiveStockEditionBodyModel(BaseModel):
     beginningDatetime: datetime | None
+    startDatetime: datetime | None
+    endDatetime: datetime | None
     bookingLimitDatetime: datetime | None
     price: float | None = Field(alias="totalPrice")
     numberOfTickets: int | None
@@ -110,6 +143,8 @@ class CollectiveStockEditionBodyModel(BaseModel):
     _validate_total_price = price_validator("price")
     _validate_educational_price_detail = price_detail_validator("educationalPriceDetail")
     _validate_beginning_datetime = beginning_datetime_validator("beginningDatetime")
+    _validate_start_datetime = start_datetime_validator("startDatetime")
+    _validate_end_datetime = end_datetime_validator("endDatetime")
 
     # FIXME (cgaunet, 2022-04-28): Once edit_collective_stock is not used by legacy code,
     # we can use the same interface as for creation and thus reuse the validator defined above.
@@ -132,6 +167,25 @@ class CollectiveStockEditionBodyModel(BaseModel):
         if beginningDatetime is None:
             raise ValueError("La date de début de l'évènement ne peut pas être nulle.")
         return beginningDatetime
+
+    # FIXME (cgaunet, 2022-04-28): Once edit_collective_stock is not used by legacy code,
+    # we can use the same interface as for creation and thus reuse the validator defined above.
+    @validator("endDatetime")
+    def validate_end_limit_datetime(cls, endDatetime: datetime | None, values: dict[str, Any]) -> datetime | None:
+        startDatetime = values.get("startDatetime")
+        if endDatetime is None:
+            raise ValueError("La date de fin de l'évènement ne peut pas être nulle.")
+        if startDatetime and endDatetime < startDatetime:
+            raise ValueError("La date de fin de l'évènement ne peut précéder la date de début.")
+        return endDatetime
+
+    # FIXME (cgaunet, 2022-04-28): Once edit_collective_stock is not used by legacy code,
+    # we can use the same interface as for creation and thus reuse the validator defined above.
+    @validator("startDatetime", pre=True)
+    def validate_start_limit_datetime(cls, startDatetime: datetime | None) -> datetime | None:
+        if startDatetime is None:
+            raise ValueError("La date de début de l'évènement ne peut pas être nulle.")
+        return startDatetime
 
     class Config:
         alias_generator = to_camel

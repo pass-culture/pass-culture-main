@@ -202,6 +202,8 @@ def _get_bookings_for_adage_base_query() -> BaseQuery:
         sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True)
         .load_only(
             educational_models.CollectiveStock.beginningDatetime,
+            educational_models.CollectiveStock.startDatetime,
+            educational_models.CollectiveStock.endDatetime,
             educational_models.CollectiveStock.numberOfTickets,
             educational_models.CollectiveStock.priceDetail,
             educational_models.CollectiveStock.price,
@@ -353,6 +355,8 @@ def get_paginated_collective_bookings_for_educational_year(
         sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True)
         .load_only(
             educational_models.CollectiveStock.beginningDatetime,
+            educational_models.CollectiveStock.startDatetime,
+            educational_models.CollectiveStock.endDatetime,
             educational_models.CollectiveStock.collectiveOfferId,
             educational_models.CollectiveStock.price,
         )
@@ -429,6 +433,8 @@ def find_expired_collective_bookings() -> list[educational_models.CollectiveBook
             sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True)
             .load_only(
                 educational_models.CollectiveStock.beginningDatetime,
+                educational_models.CollectiveStock.startDatetime,
+                educational_models.CollectiveStock.endDatetime,
                 educational_models.CollectiveStock.collectiveOfferId,
             )
             .joinedload(educational_models.CollectiveStock.collectiveOffer, innerjoin=True)
@@ -654,6 +660,8 @@ def list_public_collective_offers(
         .load_only(
             educational_models.CollectiveStock.bookingLimitDatetime,
             educational_models.CollectiveStock.beginningDatetime,
+            educational_models.CollectiveStock.startDatetime,
+            educational_models.CollectiveStock.endDatetime,
         )
         .joinedload(educational_models.CollectiveStock.collectiveBookings)
         .load_only(
