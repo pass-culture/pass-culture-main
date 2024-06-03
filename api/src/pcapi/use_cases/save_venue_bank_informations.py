@@ -68,7 +68,7 @@ class ImportBankAccountMixin:
     def validate_bic_and_iban(self) -> bool:
         """
         We can't do this checks inside a pydantic validator
-        because some buisness logic is tied to weither or not
+        because some business logic is tied to whether or not
         the IBAN/BIC are valid.
         If not, we need to annotate the application
         for the compliance.

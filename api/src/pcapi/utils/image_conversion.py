@@ -120,7 +120,7 @@ def process_original_image(content: bytes, resize: bool = True) -> bytes:
 def _pre_process_image(content: bytes) -> PIL.Image.Image:
     raw_image = PIL.Image.open(io.BytesIO(content))
 
-    # Remove exif orientation so that it doesnt rotate after upload
+    # Remove exif orientation so that it doesn't rotate after upload
     try:
         transposed_image = ImageOps.exif_transpose(raw_image)
     except SyntaxError as exc:

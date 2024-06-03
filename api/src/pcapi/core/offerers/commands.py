@@ -103,7 +103,7 @@ def synchronize_accessibility_with_acceslibre(
 ) -> None:
     """
     For all venues synchronized with acceslibre, we fetch on a weekly basis the
-    last_update_at and update their accessibility informations.
+    last_update_at and update their accessibility information.
 
     If we use the --force_sync flag, it will not check for last_update_at
 

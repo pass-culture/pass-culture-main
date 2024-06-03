@@ -166,7 +166,7 @@ def synchronize_ems_venue_provider(venue_provider: provider_models.VenueProvider
 
 def collect_elligible_venues_and_activate_ems_sync() -> None:
     """
-    Switch Allocine synchonization to EMS synchronization
+    Switch Allocine synchronization to EMS synchronization
 
     Also write into a file all cinemas available for synchronization
     that don't have one yet.

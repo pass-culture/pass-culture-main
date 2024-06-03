@@ -53,7 +53,7 @@ def get_department_code_from_city_code(city_code: str) -> str:
         return "2A"
 
     # Use a fake but distinguishable code for Monaco, used in
-    # `core.educational.academis.ACADEMIES`.
+    # `core.educational.academies.ACADEMIES`.
     if city_code[:3] == "980":
         return "98"
 

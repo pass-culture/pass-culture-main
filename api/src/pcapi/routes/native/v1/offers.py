@@ -28,7 +28,7 @@ from .serialization import offers as serializers
 from .serialization import subcategories_v2 as subcategories_v2_serializers
 
 
-# WebApp v2 proxy expects endpoint to be at "/offer/<int:offer_id>". This path MUST NOT be changed. Its reponse can be changed, though.
+# WebApp v2 proxy expects endpoint to be at "/offer/<int:offer_id>". This path MUST NOT be changed. Its response can be changed, though.
 @blueprint.native_route("/offer/<int:offer_id>", methods=["GET"])
 @blueprint.api.validate(deprecated=True)
 @spectree_serialize(response_model=serializers.OfferResponse, api=blueprint.api, on_error_statuses=[404])

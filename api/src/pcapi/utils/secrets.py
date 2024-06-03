@@ -11,15 +11,15 @@ SECRET_KEYS: list[str] = []
 
 def get(key: str, default: str | None = None) -> str:
     """
-    Request a secret by it's key.
+    Request a secret by its key.
 
-    This function add the key to the SECRET_KEYS list so that the secret will be requested and injected as an environnement variable.
-    It's value is then extracted from environnement variables.
+    This function adds the key to the SECRET_KEYS list so that the secret will be requested and injected as an environment variable.
+    Its value is then extracted from environment variables.
 
-    Note that a secret is mandatory in all cloud environnement.
+    Note that a secret is mandatory in all cloud environments.
 
-    A default value can still be provided, only for non deployed environnement (dev and test).
-    If not specified, default is "" because string are enforced.
+    A default value can still be provided, only for non deployed environments (dev and test).
+    If not specified, default is "" because strings are enforced.
     """
     SECRET_KEYS.append(key)
     return os.environ.get(key, default or "").strip()

@@ -14,7 +14,7 @@ def send_internal_message(channel: str, blocks: list[dict], icon_emoji: str) -> 
     Args:
         channel: Slack's channel name as a string. Is typically different in EHP than in production.
         blocks: List of message blocks. Possible format can be found on the slack's documentation (https://api.slack.com/reference/block-kit/blocks)
-        icon_emoji: emoji name as a string, for exemple ":rubber-duck:". Can be used to easily identify the origin of the message. Beware that messages from the same bot are sometimes aggregated in a way that a chage of emoji is not visible.
+        icon_emoji: emoji name as a string, for example ":rubber-duck:". Can be used to easily identify the origin of the message. Beware that messages from the same bot are sometimes aggregated in a way that a change of emoji is not visible.
     """
     backend = import_string(settings.INTERNAL_NOTIFICATION_BACKEND)
     backend().send_internal_message(channel, blocks, icon_emoji)

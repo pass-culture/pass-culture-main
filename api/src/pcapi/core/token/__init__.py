@@ -280,7 +280,7 @@ class SecureToken:
         - If no token is provided this class will dump data in json, generate a token and store the data with the
         ttl (in seconds) in redis.
 
-        Once the object has been instanciated you can retrieve the data with token.data and the token with
+        Once the object has been instantiated you can retrieve the data with token.data and the token with
         token.token.
         """
         if token:
