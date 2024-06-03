@@ -34,7 +34,7 @@ def _deserialize_has_ticket(
             return offers_models.WithdrawalTypeEnum.NO_TICKET
         return None
 
-    if not (current_api_key.provider.hasProviderEnableCharlie):
+    if not current_api_key.provider.hasProviderEnableCharlie:
         raise api_errors.ApiErrors(
             {"global": "You must support the pass culture ticketting interface to use the in_app value."},
             status_code=400,
