@@ -1,13 +1,13 @@
 # Bonnes pratiques
 
-## les couches d'implémentations
+## Les couches d'implémentations
 
 features (Gherkin) -> step-definitions (TS) (et c'est tout !)
 
 -   [Gherkin](#writing-your-first-scenario-with-gherkin) : c'est le fichier `.feature`. C'est ici que vous décrivez le cas d'usage fonctionnel comme si vous étiez un utilisateur sans connaissance technique. Tout le monde dans l'entreprise devrait être capable de comprendre et de reproduire le cas de test. Ici, vous éviterez de parler de la façon dont le test est implémenté, par exemple "l'utlisateur se connecte" plutôt que "l'utilisateur remplit le champ ..."
 -   [Step definition](#step-definition) : ici vous collez à l'interface et décrivez chaque interaction. Chaque personne qui lit le code devrait être capable de reproduire le cas de test comme si c'était un script. Pour faciliter la lecture du code, on a utilisé Testing Library (voir plus bas). 
 
-## les fichiers .feature
+## Les fichiers .feature
 
 Gherkin est un langage non technique et compréhensible par les humains pour écrire un scénario de test. Il est interprété par Cucumber pour faire le lien avec les step definitions dans Typescript. Regardez ce que vous pouvez faire avec Gherkin dans cette [documentation](https://cucumber.io/docs/gherkin/reference/), il faut absolument savoir comment utiliser ces mots clé avant d'écrire votre premier scénario :
 
@@ -19,7 +19,7 @@ Gherkin est un langage non technique et compréhensible par les humains pour éc
 
 TODO: parler des tags?
 
-### comment nommer votre Feature et Scenario
+### Comment nommer votre Feature et Scenario
 
 La "feature" doit décrire où vous êtes dans l'application et l'objectif d'un point de vue utilisateur. On reprend souvent juste en dessous le modèle "En tant que ... j'aimerais ... afin de...", sur trois lignes distinctes.
 Le scénario devrait entrer plus dans les détails et décrire brièvement ce qu'il vérifie. Le titre du scénario doit être unique.
@@ -92,12 +92,12 @@ Then('Paramètres généraux data should be updated', () => {
 })
 ```
 
-## comment attendre
+## Comment attendre
 
 Les mauvaises implémentations de codes d'attentes sont les principales sources d'instabilité (flakiness) dans les tests E2E, soyez vigilants ! Les mauvaises pratiques sont :
 
 -   [les tests conditionnels sur un DOM instable](https://docs.cypress.io/guides/core-concepts/conditional-testing)
--   attendre qu'un élément disparaisse en utilisant "cet élément ne devrait pas être visible" alors que l'élément n'est pas encore apapru : le test passe mais trop tôt, c'est un faux positif.
+-   attendre qu'un élément disparaisse en utilisant "cet élément ne devrait pas être visible" alors que l'élément n'est pas encore apparu : le test passe mais trop tôt, c'est un faux positif.
 -   utiliser `cy.wait(1000)` pour un élément qui doit apparaitre : vous ne savez pas vraiment quand l'élément va arriver, donc ça va échouer si l'app est un peut trop lente ou alors vous allez attendre plus longtemps que néccessaire et ralentir l'exécution des tests.
 
 **à la place :**
