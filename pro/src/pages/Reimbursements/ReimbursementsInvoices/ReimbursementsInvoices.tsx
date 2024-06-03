@@ -51,7 +51,7 @@ export const ReimbursementsInvoices = (): JSX.Element => {
   const [areFiltersDefault, setAreFiltersDefault] = useState(true)
   const [hasSearchedOnce, setHasSearchedOnce] = useState(false)
   const { selectedOfferer = null }: ReimbursementsContextProps =
-    useOutletContext() ?? {}
+    useOutletContext()
 
   const getInvoicesQuery = useSWR(
     selectedOfferer

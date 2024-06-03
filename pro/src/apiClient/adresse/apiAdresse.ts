@@ -44,13 +44,9 @@ export const apiAdresse = {
     if (response.features.length > 0) {
       return formatAdressApiResponse(response)
     } else {
-      if (city !== null && postalCode !== null) {
-        const url = `${API_ADRESSE_BASE_URL}/search/?q=${city}&postcode=${postalCode}&type=municipality&autocomplete=0&limit=1`
-        const response = await handleApiError(await fetch(url), 'GET', url)
-        return formatAdressApiResponse(response)
-      } else {
-        return []
-      }
+      const url = `${API_ADRESSE_BASE_URL}/search/?q=${city}&postcode=${postalCode}&type=municipality&autocomplete=0&limit=1`
+      const response = await handleApiError(await fetch(url), 'GET', url)
+      return formatAdressApiResponse(response)
     }
   },
   getDataFromAddress: async (
