@@ -47,6 +47,14 @@ jobs:
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
+      # Get github api token that will be used to commit and push app_version to pass-culture-deployment repository
+      - name: "Get secrets (github)"
+        id: 'get-github-token'
+        uses: 'google-github-actions/get-secretmanager-secrets@v2'
+        with:
+          secrets: |-
+            API_TOKEN_GITHUB:passculture-metier-ehp/passculture-main-sa-access-token
       - name: "Install Teleport"
         uses: teleport-actions/setup@v1
         with:
@@ -59,10 +67,7 @@ jobs:
           token: github-token
           certificate-ttl: 1h
           kubernetes-cluster: ${{ inputs.teleport_kubernetes_cluster }}
-      - name: "Setup helmfile"
-        uses: mamezou-tech/setup-helmfile@v1.3.0
-        with:
-          helmfile-version: "v0.147.0"
+
       - name: "Play pre-migrations"
         run: |
           set -e
@@ -77,6 +82,8 @@ jobs:
           kubectl logs -n ${{ inputs.environment }} -f jobs/pre-upgrade-${DATE} && break
           done
           kubectl wait --for=condition=complete --timeout=10900s -n ${{ inputs.environment }} jobs/pre-upgrade-${DATE}
+
+      # Get pcapi secrets from source code, to be passed later as a helmfile parameter.
       - name: "Generate pcapi secrets list"
         id: generate-pcapi-secrets-list
         run: |
@@ -88,18 +95,37 @@ jobs:
           #Transform list into helm readable parameter list (pattern: --set secrets={item1,item2,item3})
           PCAPI_SECRETS=secrets={$(echo $PCAPI_SECRETS | sed -r 's/ /,/g')}
           echo "PCAPI_SECRETS=$PCAPI_SECRETS" >> "$GITHUB_OUTPUT"
+
+      # Checkout pass-culture-deployment repository containing pcapi helm value files
+      - uses: actions/checkout@v4.1.5
+        with:
+          repository: pass-culture/pass-culture-deployment
+          token: ${{ steps.get-github-token.outputs.API_TOKEN_GITHUB }}
+          path: ./pass-culture-deployment
+
+      # Commit and push app_version to matching pcapi environment helm value file.
+      - name: "Update image.tag in pass-culture-deployment repository"
+        run: |
+          git config --global user.email "PassCulture-SA@passculture.team"
+          git config --global user.name "PassCulture-SA"
+          cd ./pass-culture-deployment/helm/pcapi/${{ inputs.environment }}
+          sed -i '/^image:/,/^  tag:/{s/^  tag: .*/  tag: ${{ inputs.app_version }}/}' values.yaml
+          git add values.yaml
+          git commit -m "[${{ inputs.environment }}] Update pcapi image.tag (${{ inputs.app_version }}) (Github Actions Job : ${{ github.run_number }})"
+          git push origin master
+
+      # Executes helmfile templating and push results to render-manifests repository
       - name: "Generate and push rendered manifests"
-        uses: pass-culture/common-workflows/actions/render-push-manifests@v1.0.0
+        uses: pass-culture/common-workflows/actions/render-push-manifests@v1.1.0
         with:
           environment: ${{ inputs.environment }}
           app_name: pcapi
-          app_version: ${{ inputs.app_version }}
           additional_args: ${{ steps.generate-pcapi-secrets-list.outputs.PCAPI_SECRETS }}
           registry_workload_identity_secret_name: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
           registry_service_account_secret_name: passculture-metier-ehp/passculture-main-artifact-registry-service-account
           api_token_github_secret_name: passculture-metier-ehp/passculture-main-sa-access-token  
           chart_values_repository: pass-culture/pass-culture-deployment
-          chart_values_destination: ./pass-culture-deployment
+          helmfile_path: "./pass-culture-deployment/helm/pcapi"
       - name: "Install argocd cli"
         id: install_argocd_cli
         run: |
