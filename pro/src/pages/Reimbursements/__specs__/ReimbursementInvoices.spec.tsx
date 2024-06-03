@@ -346,7 +346,7 @@ describe('reimbursementsWithFilters', () => {
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
-    await userEvent.click(screen.getByTestId('invoice-actions-button'))
+    await userEvent.click(screen.getAllByTestId('dropdown-menu-trigger')[0])
     expect(
       screen.getByText('Télécharger le justificatif comptable (.pdf)')
     ).toBeInTheDocument()
