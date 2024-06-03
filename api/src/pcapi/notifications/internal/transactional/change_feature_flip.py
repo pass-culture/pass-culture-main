@@ -8,7 +8,6 @@ from pcapi.utils import urls
 def send(feature: Feature, current_user: User) -> None:
     env_prefix = "" if settings.IS_PROD else """[{}] """.format(settings.ENV)
     status_icon = ":white_check_mark:" if feature.isActive else ":x:"
-    # TODO use url_for("backoffice_web.list_feature_flags") when bo and FA are on the same flask app
     edit_link = urls.build_backoffice_feature_flipping_link()
 
     text = """{env}{status} *{name}* est passé à *{is_active}*\nPar le user_email {email}. <{link}|Modifier>""".format(
