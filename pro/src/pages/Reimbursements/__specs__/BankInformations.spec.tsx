@@ -77,18 +77,6 @@ describe('BankInformations', () => {
     ])
   })
 
-  it('should display the bank account section even without context', async () => {
-    vi.spyOn(router, 'useOutletContext').mockReturnValue(undefined)
-
-    renderBankInformations()
-
-    expect(
-      await screen.findByRole('button', {
-        name: /Ajouter un compte bancaire/i,
-      })
-    ).toBeInTheDocument()
-  })
-
   it('should display the bank account section', async () => {
     renderBankInformations()
 

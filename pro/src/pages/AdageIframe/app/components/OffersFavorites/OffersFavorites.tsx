@@ -25,11 +25,11 @@ export const OffersFavorites = () => {
     'WIP_ENABLE_ADAGE_VISUALIZATION'
   )
 
+  // TODO use SWR
   useEffect(() => {
     const fetchFavorites = async () => {
       setIsLoading(true)
-      const offers =
-        (await apiAdage.getCollectiveFavorites()).favoritesTemplate ?? []
+      const offers = (await apiAdage.getCollectiveFavorites()).favoritesTemplate
       setFavoriteOffers(offers)
       setIsLoading(false)
     }

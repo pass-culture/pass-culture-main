@@ -15,7 +15,7 @@ export type AdageOfferDetailsSectionProps = {
 export function AdageOfferDetailsSection({
   offer,
 }: AdageOfferDetailsSectionProps) {
-  const domains = offer.domains || []
+  const domains = offer.domains
   const formats = offer.formats || []
   const duration = computeDurationString(offer.durationMinutes)
 

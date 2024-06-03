@@ -94,11 +94,10 @@ export const OfferDetails = ({
       {educationalPriceDetail && (
         <OfferSection title="Détails">{educationalPriceDetail}</OfferSection>
       )}
-      {offerVenue && (
-        <OfferSection title="Adresse où se déroulera l’évènement">
-          <OfferVenue offerVenue={offerVenue} />
-        </OfferSection>
-      )}
+
+      <OfferSection title="Adresse où se déroulera l’évènement">
+        <OfferVenue offerVenue={offerVenue} />
+      </OfferSection>
 
       {interventionArea.length > 0 && (
         <OfferSection title="Zone de Mobilité">

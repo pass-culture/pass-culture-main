@@ -47,7 +47,7 @@ export const AdageOfferInfoSection = ({
 
   const location = getLocationForOfferVenue(offerVenue)
 
-  const interventionArea = offer.interventionArea ?? []
+  const interventionArea = offer.interventionArea
 
   const isOfferBookable = isCollectiveOfferBookable(offer)
 

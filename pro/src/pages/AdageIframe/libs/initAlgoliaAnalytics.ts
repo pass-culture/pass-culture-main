@@ -15,14 +15,10 @@ export const initAlgoliaAnalytics = (uniqueId: string) => {
 }
 
 export const logOfferConversion = (objectID: string, queryID: string) => {
-  if (queryID === undefined) {
-    return
-  }
-
   AlgoliaSearchInsights('convertedObjectIDsAfterSearch', {
     eventName: 'Offer booked on adage',
     index: ALGOLIA_COLLECTIVE_OFFERS_INDEX,
-    queryID: queryID,
+    queryID,
     objectIDs: [objectID],
   })
 }

@@ -345,19 +345,16 @@ export const Autocomplete = ({
 
   const shouldDisplayRecentSearch =
     recentSearchesSource &&
-    recentSearchesItems &&
     recentSearchesItems.length > 0 &&
     Boolean(!instantSearchUiState.query)
 
   const shouldDisplayVenueSuggestions =
     venuesSuggestionsSource &&
-    venuesSuggestionsItems &&
     venuesSuggestionsItems.length > 0 &&
     Boolean(instantSearchUiState.query)
 
   const shouldDisplayKeywordSuggestions =
     keywordSuggestionsSource &&
-    keywordSuggestionsItems &&
     keywordSuggestionsItems.length > 0 &&
     Boolean(instantSearchUiState.query)
 
@@ -533,7 +530,7 @@ export const Autocomplete = ({
                       {keywordSuggestionsItems.map((item, index) => {
                         let displayValue = null
                         const shouldDisplayFormats =
-                          index <= 2 && item.formats && item.formats.length > 0
+                          index <= 2 && item.formats.length > 0
 
                         if (shouldDisplayFormats) {
                           displayValue = item.formats[0]
