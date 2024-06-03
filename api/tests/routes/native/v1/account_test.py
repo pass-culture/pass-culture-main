@@ -499,6 +499,20 @@ class AccountCreationTest:
 
         assert users_models.TrustedDevice.query.count() == 0
 
+    def test_account_creation_with_weak_password(self, client):
+        data = {
+            "email": "John.doe@example.com",
+            "password": "simple_password",
+            "birthdate": "1960-12-31",
+            "notifications": False,
+            "token": "dummy token",
+            "marketingEmailSubscription": False,
+        }
+        response = client.post("/native/v1/account", json=data)
+
+        assert response.status_code == 400, response.json
+        assert "password" in response.json
+
 
 class AccountCreationEmailExistsTest:
     identifier = "email@example.com"
@@ -2334,7 +2348,7 @@ class AccountSecurityTest:
             "birthdate": "2004-01-01",
             "email": "patrick@example.com",
             "marketingEmailSubscription": True,
-            "password": "User@1234",
+            "password": "User@AZERTY1234",
             "postalCode": "",
             "token": "usertoken",
         }
@@ -2352,7 +2366,7 @@ class AccountSecurityTest:
         hacker_data = data.copy()
         hacker_data.update(
             {
-                "password": "Hacker@5678",
+                "password": "Hacker@AZERTY5678",
                 "token": "hackertoken",
             }
         )
