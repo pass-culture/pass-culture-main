@@ -22,6 +22,7 @@ from pcapi.core.users import exceptions
 from pcapi.core.users.email import repository as email_repository
 import pcapi.core.users.models as users_models
 from pcapi.core.users.repository import find_user_by_email
+from pcapi.domain import password
 from pcapi.models import api_errors
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import transaction
@@ -184,6 +185,8 @@ def create_account(body: serializers.AccountRequest) -> None:
             api_recaptcha.check_native_app_recaptcha_token(body.token)
         except api_recaptcha.ReCaptchaException:
             raise api_errors.ApiErrors({"token": "The given token is not valid"})
+
+    password.check_password_strength("password", body.password)
 
     try:
         created_user = api.create_account(
