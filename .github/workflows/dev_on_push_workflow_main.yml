@@ -287,7 +287,7 @@ jobs:
       teleport_proxy: teleport.ops.passculture.team:443
       teleport_kubernetes_cluster: passculture-metier-ops
       deploy_api: ${{ needs.test-api.result == 'success' }}
-      deploy_pro: ${{ needs.test-pro.result == 'success' }}
+      deploy_pro: false
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
