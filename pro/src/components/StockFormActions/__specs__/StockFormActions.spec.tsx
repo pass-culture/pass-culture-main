@@ -29,9 +29,7 @@ describe('StockFormActions', () => {
       actions,
     })
 
-    expect(
-      screen.getByTestId('stock-form-actions-button-open')
-    ).toBeInTheDocument()
+    expect(screen.getByTestId('dropdown-menu-trigger')).toBeInTheDocument()
     expect(screen.queryByText('Action label')).not.toBeInTheDocument()
   })
 
@@ -39,7 +37,7 @@ describe('StockFormActions', () => {
     renderStockFormActions({
       actions,
     })
-    await userEvent.click(screen.getByTestId('stock-form-actions-button-open'))
+    await userEvent.click(screen.getByTestId('dropdown-menu-trigger'))
     expect(screen.getByText('Action label')).toBeInTheDocument()
   })
 })
