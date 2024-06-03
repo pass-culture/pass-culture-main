@@ -1,6 +1,7 @@
 import { DMSApplicationForEAC, DMSApplicationstatus } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'core/FirebaseEvents/constants'
+import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import fullInfoIcon from 'icons/full-info.svg'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullNextIcon from 'icons/full-next.svg'
@@ -175,6 +176,8 @@ function AdageInformations({
   venueId,
   venueName,
 }: AdageInformationsProps) {
+  const { logEvent } = useAnalytics()
+  const isNewInterfaceActive = useIsNewInterfaceActive()
   return (
     <section className={styles['details']}>
       <div>
@@ -201,6 +204,12 @@ function AdageInformations({
             'aria-label': `Gérer la page pour les enseignants ${venueName}`,
           }}
           icon={fullNextIcon}
+          onClick={() =>
+            logEvent(Events.CLICKED_PAGE_FOR_ADAGE_HOME, {
+              from: location.pathname,
+              isNewInterfaceActive,
+            })
+          }
         >
           Gérer votre page pour les enseignants
         </ButtonLink>

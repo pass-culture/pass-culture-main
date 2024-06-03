@@ -1,5 +1,6 @@
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'core/FirebaseEvents/constants'
+import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import { useNotification } from 'hooks/useNotification'
 import fullDuplicateIcon from 'icons/full-duplicate.svg'
 import fullLinkIcon from 'icons/full-link.svg'
@@ -30,7 +31,7 @@ export function PartnerPageIndividualSection({
 }: PartnerPageIndividualSectionProps) {
   const notify = useNotification()
   const { logEvent } = useAnalytics()
-
+  const isNewInterfaceActive = useIsNewInterfaceActive()
   const venuePreviewLink = `${WEBAPP_URL}/lieu/${venueId}`
   const logVenueLinkClick = () => {
     logEvent(Events.CLICKED_PARTNER_BLOCK_PREVIEW_VENUE_LINK, {
@@ -82,6 +83,12 @@ export function PartnerPageIndividualSection({
             'aria-label': `Gérer la page ${venueName}`,
           }}
           icon={fullNextIcon}
+          onClick={() =>
+            logEvent(Events.CLICKED_PAGE_FOR_APP_HOME, {
+              from: location.pathname,
+              isNewInterfaceActive,
+            })
+          }
         >
           Gérer votre page pour le grand public
         </ButtonLink>
