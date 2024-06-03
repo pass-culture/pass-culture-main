@@ -3,10 +3,10 @@ import React, { useState } from 'react'
 
 import { PostVenueProviderBody } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
+import { Callout } from 'components/Callout/Callout'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
 import { validationSchema } from 'pages/VenueSettings/VenueProvidersManager/AllocineProviderForm/validationSchema'
-import { Banner } from 'ui-kit/Banners/Banner/Banner'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
@@ -112,21 +112,12 @@ export const AllocineProviderForm = ({
           <FormLayout.Row>
             <DuoCheckbox isChecked={formik.values.isDuo} />
           </FormLayout.Row>
-          <FormLayout.Row className={styles['allocine-provider-form-banner']}>
-            <Banner type="notification-info">
-              <p>
-                Pour le moment, seules les séances "classiques" peuvent être
-                importées.
-              </p>
-              <p>
-                Les séances spécifiques (3D, Dolby Atmos, 4DX...) ne génèreront
-                pas d’offres.
-              </p>
-              <p>
-                Nous travaillons actuellement à l’ajout de séances spécifiques.
-              </p>
-            </Banner>
-          </FormLayout.Row>
+          <Callout className={styles['allocine-provider-form-banner']}>
+            Pour le moment, seules les séances "classiques" peuvent être
+            importées. Les séances spécifiques (3D, Dolby Atmos, 4DX...) ne
+            génèreront pas d’offres. Nous travaillons actuellement à l’ajout de
+            séances spécifiques.
+          </Callout>
           <FormLayout.Actions
             className={styles['allocine-provider-form-actions']}
           >
