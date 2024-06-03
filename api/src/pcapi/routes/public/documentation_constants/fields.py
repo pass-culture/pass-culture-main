@@ -135,6 +135,14 @@ class _FIELDS:
         description="Collective offer beginning datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
         example=_paris_tz_next_month.isoformat(timespec="seconds"),
     )
+    COLLECTIVE_OFFER_START_DATETIME = Field(
+        description="Collective offer start datetime. Replaces beginning dateime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+        example=_paris_tz_next_month.isoformat(timespec="seconds"),
+    )
+    COLLECTIVE_OFFER_END_DATETIME = Field(
+        description="Collective offer end datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+        example=_paris_tz_next_month.isoformat(timespec="seconds"),
+    )
     COLLECTIVE_OFFER_BOOKING_LIMIT_DATETIME = Field(
         description="Booking limit datetime. It must be anterior to the `beginning_datetime`. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
         example=_paris_tz_next_month.isoformat(timespec="seconds"),
