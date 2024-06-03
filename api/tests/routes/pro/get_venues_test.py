@@ -138,7 +138,28 @@ def test_admin_call(client):
 
     # then
     assert response.status_code == 200
-    assert len(response.json["venues"]) == 3
+    assert len(response.json["venues"]) == 0
+
+
+def test_admin_call_with_offerer_id(client):
+    admin_user = users_factories.AdminFactory(email="admin.pro@test.com")
+
+    user_offerers = offerers_factories.UserOffererFactory.create_batch(3)
+
+    offerers_factories.VenueFactory(managingOfferer=user_offerers[0].offerer)
+    offerers_factories.VenueFactory(managingOfferer=user_offerers[1].offerer)
+    offerers_factories.VenueFactory(managingOfferer=user_offerers[2].offerer)
+
+    # when
+    params = {"offererId": str(user_offerers[1].offerer.id)}
+    client = client.with_session_auth(admin_user.email)
+    with assert_no_duplicated_queries():
+        response = client.get("/venues", params)
+
+    # then
+    assert response.status_code == 200
+    assert len(response.json["venues"]) == 1
+    assert response.json["venues"][0]["id"] == user_offerers[1].offerer.managedVenues[0].id
 
 
 def test_invalid_offerer_id(client):
