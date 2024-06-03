@@ -9,7 +9,7 @@ branch_labels: tuple[str] | None = None
 depends_on: list[str] | None = None
 
 
-def get_flag():  # type:ignore[no-untyped-def]
+def get_flag():  # type: ignore[no-untyped-def]
     # Do not import `pcapi.models.feature` at module-level. It breaks
     # `alembic history` with a SQLAlchemy error that complains about
     # an unknown table name while initializing the ORM mapper.
