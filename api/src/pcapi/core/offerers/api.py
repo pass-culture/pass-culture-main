@@ -1226,7 +1226,7 @@ def get_timestamp_from_url(image_url: str) -> str:
 
 
 def rm_previous_venue_thumbs(venue: models.Venue) -> None:
-    if not venue._bannerUrl:  # bannerUrl (with no undescore) always returns an url (potentially a default one)
+    if not venue._bannerUrl:  # bannerUrl (with no underscore) always returns an url (potentially a default one)
         return
 
     # handle old banner urls that did not have a timestamp
@@ -1808,7 +1808,7 @@ def get_metabase_stats_iframe_url(
         "params": {"siren": [offerer.siren], "venueid": [str(venue.id) for venue in venues]},
         # The dashboard token expires after 10 min. After that delay,
         # the user has to refresh their page to interact with the
-        # dashbord (e.g to export content).
+        # dashboard (e.g. to export content).
         "exp": round(time.time()) + (60 * 10),
     }
     token = jwt.encode(payload, settings.METABASE_SECRET_KEY, algorithm="HS256")
@@ -2497,7 +2497,7 @@ def get_or_create_offerer_address(offerer_id: int, address_id: int, label: str |
     # so we can use `NULLS NOT DISTINCT` in OffererAddress
     # unique constraint. Otherwise we will try to create
     # same offererAddress over and over because actual postgres12
-    # consider null values distinct over differents rows
+    # consider null values distinct over different rows
     offerer_address = (
         models.OffererAddress.query.filter(
             models.OffererAddress.offererId == offerer_id,

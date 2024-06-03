@@ -82,7 +82,7 @@ def check_string_is_not_empty(string: str) -> str:
     return string
 
 
-# No functools.partial here as it has no __name__ and threfore is not compatible with pydantic
+# No functools.partial here as it has no __name__ and therefore is not compatible with pydantic
 def check_string_length_wrapper(length: int) -> typing.Callable:
     def check_string_length(string: str) -> str:
         if string and len(string) > length:

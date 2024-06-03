@@ -140,7 +140,7 @@ class CollectiveStockEditionBodyModel(BaseModel):
 
 class CollectiveStockResponseModel(BaseModel):
     id: int
-    # beginningDatetime is deprectated and replaced with
+    # beginningDatetime is deprecated and replaced with
     # startDatetime and endDatetime
     beginningDatetime: datetime | None
     startDatetime: datetime | None

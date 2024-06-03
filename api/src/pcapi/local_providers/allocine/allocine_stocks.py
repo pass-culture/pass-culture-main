@@ -70,7 +70,7 @@ class AllocineStocks(LocalProvider):
         # the completion of our product table with allocine movies until we are
         # confident that almost all scheduled movies are already known.
         # On the long term, this line should only be `get_movie_product`.
-        # This can be measured with the occurences of the logs with
+        # This can be measured with the occurrences of the logs with
         # `technical_message_id=allocineId.not_found`
         self.product = self.get_or_create_movie_product(self.movie)
 

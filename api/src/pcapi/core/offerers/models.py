@@ -932,7 +932,7 @@ class VenueReimbursementPointLink(Base, Model):
 
 class VenueBankAccountLink(PcObject, Base, Model):
     """
-    Professionnal users can link as many venues as they want to a given bank account.
+    Professional users can link as many venues as they want to a given bank account.
     However, we want to keep tracks of the history, hence that table.
     """
 
@@ -1127,7 +1127,7 @@ class ApiKey(PcObject, Base, Model):
         if crypto.check_password(clear_text, self.secret):
             if FeatureToggle.WIP_ENABLE_NEW_HASHING_ALGORITHM.is_active():
                 self.secret = crypto.hash_public_api_key(clear_text)
-                db.session.flush()  # it may not be commited but the hash recompute cost is low
+                db.session.flush()  # it may not be committed but the hash recompute cost is low
                 logger.info("Switched hash of API key from bcrypt to SHA3-512", extra={"key_id": self.id})
             return True
         return False
@@ -1155,7 +1155,7 @@ class OffererTag(PcObject, Base, Model):
 
 class OffererTagCategory(PcObject, Base, Model):
     """
-    Tag categories can be considered as "tags on tags", which aims at filtering tags depending on the projet:
+    Tag categories can be considered as "tags on tags", which aims at filtering tags depending on the project:
     tags used for partners counting, tags used for offerer validation, etc.
     The same OffererTag can be used in one or several project.
     """

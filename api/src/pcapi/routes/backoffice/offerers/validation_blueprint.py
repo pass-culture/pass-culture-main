@@ -59,7 +59,7 @@ def list_offerers_to_validate() -> utils.BackofficeResponse:
     if not form.validate():
         return render_template("offerer/validation.html", rows=[], form=form, stats=stats), 400
 
-    # new and pending attachements by default
+    # new and pending attachments by default
     if not form.status.data:
         form.status.data = [ValidationStatus.NEW.value]
 
@@ -440,7 +440,7 @@ def list_offerers_attachments_to_validate() -> utils.BackofficeResponse:
     if not form.validate():
         return render_template("offerer/user_offerer_validation.html", rows=[], form=form), 400
 
-    # new and pending attachements by default
+    # new and pending attachments by default
     if not form.status.data:
         form.status.data = [ValidationStatus.NEW.value]
 

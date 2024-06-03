@@ -284,7 +284,7 @@ class GetCollectiveOfferCollectiveStockResponseModel(BaseModel):
     id: int
     isSoldOut: bool = Field(alias="isBooked")
     is_cancellable_from_offerer: bool = Field(alias="isCancellable")
-    # beginningDatetime is deprectated and replaced with
+    # beginningDatetime is deprecated and replaced with
     # startDatetime and endDatetime
     beginningDatetime: datetime | None
     startDatetime: datetime | None

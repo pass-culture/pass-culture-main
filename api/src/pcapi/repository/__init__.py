@@ -82,7 +82,7 @@ class atomic:
         else:
             db.session.commit()
 
-        # do not supress the exception
+        # do not suppress the exception
         return False
 
     # decorator part
@@ -157,7 +157,7 @@ def on_commit(func: typing.Callable[[], typing.Any], *, robust: bool = False) ->
     sql transaction.
 
     func: a function taking no arguments to call. If your function takes argument you can use the
-        function `patial` from `functools` to add the arguments.
+        function `partial` from `functools` to add the arguments.
     robust: whether or not we should continue to call the other functions after this one failed.
 
     example
@@ -168,7 +168,7 @@ def on_commit(func: typing.Callable[[], typing.Any], *, robust: bool = False) ->
     def function(argument1, argument2):
         ...
 
-    # inside the atomic bloc:
+    # inside the atomic block:
     on_commit(
         func=partial(function, argument1=1, argument2='foo'),
         robust=False,

@@ -88,7 +88,7 @@ class AnnulationPassCultureRequest(BaseModel):
 
 
 class ReservationPassCultureResponse(ReservationPassCultureRequest):
-    """EMS simply return our payload with additionnal fields."""
+    """EMS simply return our payload with additional fields."""
 
     statut: int
     billets: list[Ticket]

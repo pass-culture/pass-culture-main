@@ -33,7 +33,7 @@ def get_seances_pass_culture(
 ) -> cgr_serializers.GetSancesPassCultureResponse:
     """
     if allocine_film_id is 0 CGR API will return all future shows
-    if allocine_film_id is not 0 CGR API wil return only shows for concerned movie
+    if allocine_film_id is not 0 CGR API will return only shows for concerned movie
     """
     user = settings.CGR_API_USER
     password = decrypt(cinema_details.password)

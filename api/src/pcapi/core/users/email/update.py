@@ -290,7 +290,7 @@ def check_email_update_attempts_count(user: models.User) -> None:
 
 def increment_email_update_attempts_count(user: models.User) -> None:
     """
-    increment or intitiate the number of attempts
+    increment or initiate the number of attempts
     """
     update_email_attempts_key = f"update_email_attemps_user_{user.id}"
 

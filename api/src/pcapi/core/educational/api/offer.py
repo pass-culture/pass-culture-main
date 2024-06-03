@@ -143,7 +143,7 @@ def list_collective_offers_for_pro_user(
     # merge two ordered lists to one shorter than OFFERS_RECAP_LIMIT items
     for _ in range(min(OFFERS_RECAP_LIMIT, (len(offers) + len(templates)))):
         if offer_index >= len(offers) and template_index >= len(templates):
-            # this should never hapen. Only there as defensive mesure.
+            # this should never happen. Only there as defensive measure.
             break
 
         if offer_index >= len(offers):

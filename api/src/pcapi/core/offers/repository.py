@@ -630,9 +630,9 @@ def get_and_lock_stock(stock_id: int) -> models.Stock:
     WARNING: MAKE SURE YOU FREE THE LOCK (with COMMIT or ROLLBACK) and don't hold it longer than
     strictly necessary.
     """
-    # Use `with_for_update()` to make sure we lock the stock while perfoming
+    # Use `with_for_update()` to make sure we lock the stock while performing
     # the booking checks and update the `dnBookedQuantity`
-    # This is required to prevent bugs due to concurent acces
+    # This is required to prevent bugs due to concurrent access
     # Also call `populate_existing()` to make sure we don't use something
     # older from the SQLAlchemy's session.
     stock = models.Stock.query.filter_by(id=stock_id).populate_existing().with_for_update().one_or_none()

@@ -2524,7 +2524,7 @@ def create_deposit(
     )
     db.session.add(deposit)
 
-    # Edge-cases: Validation of the registration occured over a birthday
+    # Edge-cases: Validation of the registration occurred over a birthday
     # Then we need to add recredit to compensate
     if (
         eligibility == users_models.EligibilityType.UNDERAGE
