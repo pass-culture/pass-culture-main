@@ -81,8 +81,7 @@ export const App = (): JSX.Element => {
 
   return (
     <AdageUserContextProvider adageUser={user}>
-      {user.role &&
-      [AdageFrontRoles.READONLY, AdageFrontRoles.REDACTOR].includes(
+      {[AdageFrontRoles.READONLY, AdageFrontRoles.REDACTOR].includes(
         user.role
       ) ? (
         <AppLayout />

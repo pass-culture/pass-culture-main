@@ -47,6 +47,13 @@ describe('OffersFavorites', () => {
     institutionCity: 'ALES',
   }
 
+  beforeEach(() => {
+    vi.spyOn(apiAdage, 'getCollectiveFavorites').mockResolvedValue({
+      favoritesOffer: [],
+      favoritesTemplate: [],
+    })
+  })
+
   it('should render favorites title', async () => {
     renderAdageFavoritesOffers(user)
 
