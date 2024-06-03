@@ -2245,10 +2245,10 @@ def merge_cashflow_batches(
 ) -> None:
     """Merge multiple cashflow batches into a single (existing) one.
 
-    This function is to be used if multiple batches have been wrongly
-    generated (for example because the cutoff of the first batch was
-    wrong). The target batch must hence be the one with the right
-    cutoff.
+    This function is to be used in a script if multiple batches have
+    been wrongly generated (for example because the cutoff of the
+    first batch was wrong). The target batch must hence be the one
+    with the right cutoff.
     """
     assert len(batches_to_remove) >= 1
     assert target_batch not in batches_to_remove
