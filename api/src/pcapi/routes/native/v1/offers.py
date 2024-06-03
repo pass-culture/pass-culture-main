@@ -46,7 +46,7 @@ def get_offer(offer_id: str) -> serializers.OfferResponse:
         .options(joinedload(Offer.mediations))
         .options(
             joinedload(Offer.product)
-            .load_only(Product.id, Product.last_30_days_booking, Product.thumbCount)
+            .load_only(Product.id, Product.description, Product.last_30_days_booking, Product.thumbCount)
             .joinedload(Product.productMediations)
         )
         .outerjoin(Offer.lastProvider)

@@ -25,12 +25,14 @@ class GetEventTest:
 
     def test_get_event(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
-        product = offers_factories.ProductFactory(thumbCount=1)
-        event_offer = offers_factories.EventOfferFactory(
-            subcategoryId=subcategories.SEANCE_CINE.id,
-            venue=venue,
-            extraData=None,
+        product = offers_factories.ProductFactory(
+            thumbCount=1,
             description="Un livre de contrepèterie",
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            extraData=None,
+        )
+        event_offer = offers_factories.EventOfferFactory(
+            venue=venue,
             name="Vieux motard que jamais",
             product=product,
         )
