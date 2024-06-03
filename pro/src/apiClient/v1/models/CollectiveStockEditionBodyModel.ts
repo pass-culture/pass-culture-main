@@ -6,7 +6,9 @@ export type CollectiveStockEditionBodyModel = {
   beginningDatetime?: string | null;
   bookingLimitDatetime?: string | null;
   educationalPriceDetail?: string | null;
+  endDatetime?: string | null;
   numberOfTickets?: number | null;
+  startDatetime?: string | null;
   totalPrice?: number | null;
 };
 

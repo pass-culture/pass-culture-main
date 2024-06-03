@@ -29,10 +29,22 @@ def create_collective_stock(
 ) -> educational_models.CollectiveStock | None:
     offer_id = offer_id or stock_data.offer_id
     beginning = stock_data.beginning_datetime
+    start = stock_data.start_datetime
+    end = stock_data.end_datetime
     booking_limit_datetime = stock_data.booking_limit_datetime
     total_price = stock_data.total_price
     number_of_tickets = stock_data.number_of_tickets
     educational_price_detail = stock_data.educational_price_detail
+
+    assert beginning or (start and end)
+
+    if not beginning:
+        assert start and end  # helps mypy
+        beginning = start
+
+    if not start or not end:
+        assert beginning  # helps mypy
+        start, end = beginning, beginning
 
     collective_offer = (
         educational_models.CollectiveOffer.query.filter_by(id=offer_id)
@@ -48,6 +60,8 @@ def create_collective_stock(
     collective_stock = educational_models.CollectiveStock(
         collectiveOffer=collective_offer,
         beginningDatetime=beginning,
+        startDatetime=start,
+        endDatetime=end,
         bookingLimitDatetime=booking_limit_datetime,
         price=total_price,
         numberOfTickets=number_of_tickets,
@@ -69,10 +83,28 @@ def edit_collective_stock(
     validation.check_if_offer_is_not_public_api(stock.collectiveOffer)
     beginning = stock_data.get("beginningDatetime")
     beginning = serialization_utils.as_utc_without_timezone(beginning) if beginning else None
+    start_datetime = stock_data.get("startDatetime")
+    start_datetime = serialization_utils.as_utc_without_timezone(start_datetime) if start_datetime else None
+    end_datetime = stock_data.get("endDatetime")
+    end_datetime = serialization_utils.as_utc_without_timezone(end_datetime) if end_datetime else None
+
+    assert not (beginning and start_datetime)
+
+    if not beginning and start_datetime:
+        beginning = start_datetime
+
+    if not start_datetime and beginning:
+        start_datetime = beginning
+
+    if not end_datetime and beginning:
+        end_datetime = beginning
+
     booking_limit = stock_data.get("bookingLimitDatetime")
     booking_limit = serialization_utils.as_utc_without_timezone(booking_limit) if booking_limit else None
 
-    updatable_fields = _extract_updatable_fields_from_stock_data(stock, stock_data, beginning, booking_limit)
+    updatable_fields = _extract_updatable_fields_from_stock_data(
+        stock, stock_data, beginning, start_datetime, end_datetime, booking_limit
+    )
 
     check_beginning = beginning
     check_booking_limit_datetime = booking_limit
@@ -89,7 +121,11 @@ def edit_collective_stock(
         ),
     ).one_or_none()
 
-    if "beginningDatetime" not in stock_data and "bookingLimitDatetime" not in stock_data:
+    if (
+        "beginningDatetime" not in stock_data
+        and "startDatetime" not in stock_data
+        and "bookingLimitDatetime" not in stock_data
+    ):
         price = updatable_fields.get("price")
         if current_booking and current_booking.status == CollectiveBookingStatus.CONFIRMED:
             if price is not None:
@@ -146,6 +182,8 @@ def _extract_updatable_fields_from_stock_data(
     stock: educational_models.CollectiveStock,
     stock_data: dict,
     beginning: datetime.datetime | None,
+    start_datetime: datetime.datetime | None,
+    end_datetime: datetime.datetime | None,
     booking_limit_datetime: datetime.datetime | None,
 ) -> dict:
     # if booking_limit_datetime is provided but null, set it to default value which is event datetime
@@ -157,6 +195,8 @@ def _extract_updatable_fields_from_stock_data(
 
     updatable_fields = {
         "beginningDatetime": beginning,
+        "startDatetime": start_datetime,
+        "endDatetime": end_datetime,
         "bookingLimitDatetime": booking_limit_datetime,
         "price": stock_data.get("price"),
         "numberOfTickets": stock_data.get("numberOfTickets"),

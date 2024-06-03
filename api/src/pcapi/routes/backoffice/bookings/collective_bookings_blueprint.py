@@ -49,6 +49,8 @@ def _get_collective_bookings(
             .load_only(
                 educational_models.CollectiveStock.collectiveOfferId,
                 educational_models.CollectiveStock.beginningDatetime,
+                educational_models.CollectiveStock.startDatetime,
+                educational_models.CollectiveStock.endDatetime,
                 educational_models.CollectiveStock.bookingLimitDatetime,
                 # needed by total_amount:
                 educational_models.CollectiveStock.price,

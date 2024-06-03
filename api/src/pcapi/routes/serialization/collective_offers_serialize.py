@@ -197,12 +197,16 @@ def _serialize_stock(stock: CollectiveStock | None = None) -> dict:
             "hasBookingLimitDatetimePassed": stock.hasBookingLimitDatetimePassed,
             "remainingQuantity": 0 if stock.isSoldOut else 1,
             "beginningDatetime": stock.beginningDatetime,
+            "startDatetime": stock.startDatetime,
+            "endDatetime": stock.endDatetime,
             "bookingLimitDatetime": stock.bookingLimitDatetime,
         }
     return {
         "hasBookingLimitDatetimePassed": False,
         "remainingQuantity": 1,
         "beginningDatetime": datetime(year=2030, month=1, day=1),
+        "startDatetime": datetime(year=2030, month=1, day=1),
+        "endDatetime": datetime(year=2030, month=1, day=1),
         "bookingLimitDatetime": datetime(year=2030, month=1, day=1),
     }
 

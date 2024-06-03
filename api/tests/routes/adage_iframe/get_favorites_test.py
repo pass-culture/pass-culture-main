@@ -74,6 +74,8 @@ class GetFavoriteOfferTest:
                     "stock": {
                         "id": stock.id,
                         "beginningDatetime": format_into_utc_date(stock.beginningDatetime),
+                        "startDatetime": format_into_utc_date(stock.startDatetime),
+                        "endDatetime": format_into_utc_date(stock.endDatetime),
                         "bookingLimitDatetime": format_into_utc_date(stock.bookingLimitDatetime),
                         "isBookable": True,
                         "price": 1000,

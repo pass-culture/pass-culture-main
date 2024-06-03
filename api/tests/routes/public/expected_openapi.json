@@ -1664,9 +1664,17 @@
                         "title": "Bookings",
                         "type": "array"
                     },
+                    "endDatetime": {
+                        "title": "Enddatetime",
+                        "type": "string"
+                    },
                     "id": {
                         "title": "Id",
                         "type": "integer"
+                    },
+                    "startDatetime": {
+                        "title": "Startdatetime",
+                        "type": "string"
                     },
                     "status": {
                         "title": "Status",
@@ -1680,6 +1688,8 @@
                 "required": [
                     "id",
                     "beginningDatetime",
+                    "startDatetime",
+                    "endDatetime",
                     "status",
                     "venueId",
                     "bookings"
@@ -1762,14 +1772,14 @@
                 "properties": {
                     "beginningDatetime": {
                         "description": "Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-06T14:00:00+02:00",
+                        "example": "2024-07-10T14:00:00+02:00",
                         "format": "date-time",
                         "title": "Beginningdatetime",
                         "type": "string"
                     },
                     "bookingLimitDatetime": {
                         "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-06T14:00:00+02:00",
+                        "example": "2024-07-10T14:00:00+02:00",
                         "format": "date-time",
                         "title": "Bookinglimitdatetime",
                         "type": "string"
@@ -1809,7 +1819,7 @@
                 "properties": {
                     "beginningDatetime": {
                         "description": "Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-06T14:00:00+02:00",
+                        "example": "2024-07-10T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Beginningdatetime",
@@ -1817,7 +1827,7 @@
                     },
                     "bookingLimitDatetime": {
                         "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-06T14:00:00+02:00",
+                        "example": "2024-07-10T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Bookinglimitdatetime",
@@ -1853,7 +1863,7 @@
                 "properties": {
                     "beginningDatetime": {
                         "description": "Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-06T14:00:00+02:00",
+                        "example": "2024-07-10T14:00:00+02:00",
                         "format": "date-time",
                         "title": "Beginningdatetime",
                         "type": "string"
@@ -1866,7 +1876,7 @@
                     },
                     "bookingLimitDatetime": {
                         "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-06T14:00:00+02:00",
+                        "example": "2024-07-10T14:00:00+02:00",
                         "format": "date-time",
                         "title": "Bookinglimitdatetime",
                         "type": "string"
@@ -3911,6 +3921,10 @@
                         "title": "Educationalpricedetail",
                         "type": "string"
                     },
+                    "endDatetime": {
+                        "title": "Enddatetime",
+                        "type": "string"
+                    },
                     "formats": {
                         "items": {
                             "$ref": "#/components/schemas/EacFormat"
@@ -3982,6 +3996,10 @@
                     "offerVenue": {
                         "$ref": "#/components/schemas/OfferVenueModel"
                     },
+                    "startDatetime": {
+                        "title": "Startdatetime",
+                        "type": "string"
+                    },
                     "status": {
                         "title": "Status",
                         "type": "string"
@@ -4026,6 +4044,8 @@
                     "isSoldOut",
                     "venueId",
                     "beginningDatetime",
+                    "startDatetime",
+                    "endDatetime",
                     "bookingLimitDatetime",
                     "totalPrice",
                     "numberOfTickets",
@@ -5343,7 +5363,7 @@
                     },
                     "beginningDatetime": {
                         "description": "Collective offer beginning datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-06T14:00:00+02:00",
+                        "example": "2024-07-10T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Beginningdatetime",
@@ -5364,7 +5384,7 @@
                     },
                     "bookingLimitDatetime": {
                         "description": "Booking limit datetime. It must be anterior to the `beginning_datetime`. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-06T14:00:00+02:00",
+                        "example": "2024-07-10T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Bookinglimitdatetime",
@@ -5430,6 +5450,14 @@
                         "example": "10 tickets x 10 \u20ac = 100 \u20ac",
                         "nullable": true,
                         "title": "Educationalpricedetail",
+                        "type": "string"
+                    },
+                    "endDatetime": {
+                        "description": "Collective offer end datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "example": "2024-07-10T14:00:00+02:00",
+                        "format": "date-time",
+                        "nullable": true,
+                        "title": "Enddatetime",
                         "type": "string"
                     },
                     "formats": {
@@ -5516,6 +5544,14 @@
                         "nullable": true,
                         "title": "OfferVenueModel"
                     },
+                    "startDatetime": {
+                        "description": "Collective offer start datetime. Replaces beginning dateime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "example": "2024-07-10T14:00:00+02:00",
+                        "format": "date-time",
+                        "nullable": true,
+                        "title": "Startdatetime",
+                        "type": "string"
+                    },
                     "students": {
                         "description": "Student levels that can take pat to the collective offer. The student levels are available on [**this endpoint (`Get student levels eligible for collective offers`)**](#tag/Collective-educational-data/operation/ListStudentsLevels)",
                         "example": [
@@ -5597,7 +5633,7 @@
                     },
                     "beginningDatetime": {
                         "description": "Collective offer beginning datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-06T14:00:00+02:00",
+                        "example": "2024-07-10T14:00:00+02:00",
                         "format": "date-time",
                         "title": "Beginningdatetime",
                         "type": "string"
@@ -5616,7 +5652,7 @@
                     },
                     "bookingLimitDatetime": {
                         "description": "Booking limit datetime. It must be anterior to the `beginning_datetime`. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-06T14:00:00+02:00",
+                        "example": "2024-07-10T14:00:00+02:00",
                         "format": "date-time",
                         "title": "Bookinglimitdatetime",
                         "type": "string"
@@ -5677,6 +5713,13 @@
                         "example": "10 tickets x 10 \u20ac = 100 \u20ac",
                         "nullable": true,
                         "title": "Educationalpricedetail",
+                        "type": "string"
+                    },
+                    "endDatetime": {
+                        "description": "Collective offer end datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "example": "2024-07-10T14:00:00+02:00",
+                        "format": "date-time",
+                        "title": "Enddatetime",
                         "type": "string"
                     },
                     "formats": {
@@ -5746,6 +5789,13 @@
                     "offerVenue": {
                         "$ref": "#/components/schemas/OfferVenueModel"
                     },
+                    "startDatetime": {
+                        "description": "Collective offer start datetime. Replaces beginning dateime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "example": "2024-07-10T14:00:00+02:00",
+                        "format": "date-time",
+                        "title": "Startdatetime",
+                        "type": "string"
+                    },
                     "students": {
                         "description": "Student levels that can take pat to the collective offer. The student levels are available on [**this endpoint (`Get student levels eligible for collective offers`)**](#tag/Collective-educational-data/operation/ListStudentsLevels)",
                         "example": [
@@ -5798,6 +5848,8 @@
                     "offerVenue",
                     "isActive",
                     "beginningDatetime",
+                    "startDatetime",
+                    "endDatetime",
                     "bookingLimitDatetime",
                     "totalPrice",
                     "numberOfTickets"
@@ -6721,7 +6773,7 @@
                     },
                     "bookingLimitDatetime": {
                         "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-06T14:00:00+02:00",
+                        "example": "2024-07-10T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Bookinglimitdatetime",
@@ -7670,7 +7722,7 @@
                 "properties": {
                     "bookingLimitDatetime": {
                         "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-06T14:00:00+02:00",
+                        "example": "2024-07-10T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Bookinglimitdatetime",
@@ -7713,7 +7765,7 @@
                 "properties": {
                     "bookingLimitDatetime": {
                         "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-06T14:00:00+02:00",
+                        "example": "2024-07-10T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Bookinglimitdatetime",

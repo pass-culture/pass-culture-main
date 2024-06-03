@@ -12,12 +12,14 @@ export type CollectiveBookingByIdResponseModel = {
   beginningDatetime: string;
   educationalInstitution: EducationalInstitutionResponseModel;
   educationalRedactor: CollectiveBookingEducationalRedactorResponseModel;
+  endDatetime: string;
   id: number;
   isCancellable: boolean;
   numberOfTickets: number;
   offerVenue: CollectiveOfferOfferVenueResponseModel;
   offererId: number;
   price: number;
+  startDatetime: string;
   students: Array<StudentLevels>;
   venueDMSApplicationId?: number | null;
   venueId: number;

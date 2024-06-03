@@ -59,8 +59,8 @@ class Return200Test:
 
         assert response.json == {
             "beginningDatetime": "2022-01-17T22:00:00Z",
-            "startDatetime": None,
-            "endDatetime": None,
+            "startDatetime": "2022-01-17T22:00:00Z",
+            "endDatetime": "2022-01-17T22:00:00Z",
             "bookingLimitDatetime": "2021-12-31T20:00:00Z",
             "id": stock.id,
             "price": 1500.0,
@@ -100,8 +100,8 @@ class Return200Test:
 
         assert response.json == {
             "beginningDatetime": "2021-12-18T00:00:00Z",
-            "startDatetime": None,
-            "endDatetime": None,
+            "startDatetime": "2021-12-18T00:00:00Z",
+            "endDatetime": "2021-12-18T00:00:00Z",
             "bookingLimitDatetime": "2021-12-18T00:00:00Z",
             "id": stock.id,
             "price": 1200.0,
@@ -547,3 +547,36 @@ class Return400Test:
 
         assert response.status_code == 400
         assert response.json["global"][0] == "Les offres refusées ou en attente de validation ne sont pas modifiables"
+
+    @time_machine.travel("2020-11-17 15:00:00")
+    def should_not_accept_payload_with_startDatetime_after_endDatetime(self, client):
+        # Given
+        startDatetime = datetime(2021, 12, 18)
+        endDatetime = datetime(2021, 12, 19)
+        stock = educational_factories.CollectiveStockFactory(
+            beginningDatetime=datetime(2021, 12, 18),
+            startDatetime=startDatetime,
+            endDatetime=endDatetime,
+            price=1200,
+            numberOfTickets=32,
+            bookingLimitDatetime=datetime(2021, 12, 1),
+        )
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=stock.collectiveOffer.venue.managingOfferer,
+        )
+
+        # When
+        stock_edition_payload = {
+            "startDatetime": "2021-12-20T22:00:00Z",
+            "endDatetime": "2021-12-19T22:00:00Z",
+        }
+
+        client.with_session_auth("user@example.com")
+        response = client.patch(f"/collective/stocks/{stock.id}", json=stock_edition_payload)
+
+        # Then
+        assert response.status_code == 400
+        edited_stock = CollectiveStock.query.get(stock.id)
+        assert edited_stock.startDatetime == startDatetime
+        assert edited_stock.endDatetime == endDatetime
