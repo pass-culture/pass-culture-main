@@ -405,7 +405,7 @@ def update_collective_offer_educational_institution(
             if teacher["mail"] == teacher_email:
                 redactor = educational_repository.find_redactor_by_email(teacher["mail"])
                 if not redactor:
-                    redactor = redactor = educational_models.EducationalRedactor(
+                    redactor = educational_models.EducationalRedactor(
                         email=teacher["mail"],
                         firstName=teacher["prenom"],
                         lastName=teacher["nom"],
@@ -555,7 +555,7 @@ def edit_collective_offer_public(
             offer.domains = domains
         elif key in ("educationalInstitutionId", "educationalInstitution"):
             if value is not None:
-                institution = institution = educational_repository.get_educational_institution_public(
+                institution = educational_repository.get_educational_institution_public(
                     institution_id=new_values.get("educationalInstitutionId"),
                     uai=new_values.get("educationalInstitution"),
                 )
