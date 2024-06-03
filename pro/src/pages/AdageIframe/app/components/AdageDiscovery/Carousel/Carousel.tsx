@@ -37,11 +37,13 @@ export function Carousel({
     rootMargin: '100% 0px 100% 0px',
   }
 
-  const [firstElementVisible] =
-    useIsElementVisible(firstElementRef, observerOptions) ?? []
+  const [firstElementVisible] = useIsElementVisible(
+    firstElementRef,
+    observerOptions
+  )
 
   const [lastElementVisible, hasLastElementVisibilityChanged] =
-    useIsElementVisible(lastElementRef, observerOptions) ?? []
+    useIsElementVisible(lastElementRef, observerOptions)
 
   if (lastElementVisible && hasLastElementVisibilityChanged) {
     onLastCarouselElementVisible?.()

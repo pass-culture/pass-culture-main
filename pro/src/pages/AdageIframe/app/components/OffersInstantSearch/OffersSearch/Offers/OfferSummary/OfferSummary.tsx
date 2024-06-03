@@ -37,22 +37,16 @@ export const OfferSummary = ({ offer }: OfferSummaryProps): JSX.Element => {
   const formattedDates =
     isOfferTemplate && getFormattedDatesForTemplateOffer(offer)
 
-  if (offerVenue) {
-    if (offerVenue.addressType === OfferAddressType.OTHER) {
-      offerVenueLabel = offerVenue.otherAddress
-    } else if (offerVenue.addressType === OfferAddressType.SCHOOL) {
-      offerVenueLabel = 'Dans l’établissement scolaire'
-    }
+  if (offerVenue.addressType === OfferAddressType.OTHER) {
+    offerVenueLabel = offerVenue.otherAddress
+  } else if (offerVenue.addressType === OfferAddressType.SCHOOL) {
+    offerVenueLabel = 'Dans l’établissement scolaire'
   }
 
-  const studentsLabel = students
-    ? students.length > 1
-      ? 'Multi niveaux'
-      : students[0]
-    : ''
+  const studentsLabel = students.length > 1 ? 'Multi niveaux' : students[0]
 
   const getFormattedPrice = (price?: number) => {
-    if (price === undefined || price === null) {
+    if (price === undefined) {
       return undefined
     }
 
@@ -149,19 +143,18 @@ export const OfferSummary = ({ offer }: OfferSummaryProps): JSX.Element => {
           <dd>{formattedPrice}</dd>
         </div>
       )}
-      {studentsLabel && (
-        <div className={styles['offer-summary-item']}>
-          <dt>
-            <SvgIcon
-              src={buildingStrokeIcon}
-              alt="Niveau scolaire"
-              className={styles['offer-summary-item-icon']}
-              width="20"
-            />
-          </dt>
-          <dd>{studentsLabel}</dd>
-        </div>
-      )}
+
+      <div className={styles['offer-summary-item']}>
+        <dt>
+          <SvgIcon
+            src={buildingStrokeIcon}
+            alt="Niveau scolaire"
+            className={styles['offer-summary-item-icon']}
+            width="20"
+          />
+        </dt>
+        <dd>{studentsLabel}</dd>
+      </div>
     </dl>
   )
 }

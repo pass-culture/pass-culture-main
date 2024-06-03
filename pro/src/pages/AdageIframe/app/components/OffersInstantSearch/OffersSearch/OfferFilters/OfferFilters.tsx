@@ -53,9 +53,6 @@ export const OfferFilters = ({
     (adageUser.lon || adageUser.lon === 0)
 
   const getActiveLocalisationFilterCount = () => {
-    if (!formik.values) {
-      return 0
-    }
     if (localisationFilterState === LocalisationFilterStates.DEPARTMENTS) {
       return formik.values.departments.length
     }
