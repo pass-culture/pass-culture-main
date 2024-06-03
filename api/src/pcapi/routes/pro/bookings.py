@@ -80,7 +80,7 @@ def get_user_has_bookings() -> UserHasBookingResponse:
     },
     api=blueprint.pro_private_schema,
 )
-def export_bookings_for_offer_as_csv(offer_id: int, query: BookingsExportQueryModel) -> bytes | api_errors.ApiErrors:
+def export_bookings_for_offer_as_csv(offer_id: int, query: BookingsExportQueryModel) -> bytes:
     user = current_user._get_current_object()
     offer = Offer.query.get(int(offer_id))
 
@@ -112,7 +112,7 @@ def export_bookings_for_offer_as_csv(offer_id: int, query: BookingsExportQueryMo
     },
     api=blueprint.pro_private_schema,
 )
-def export_bookings_for_offer_as_excel(offer_id: int, query: BookingsExportQueryModel) -> bytes | api_errors.ApiErrors:
+def export_bookings_for_offer_as_excel(offer_id: int, query: BookingsExportQueryModel) -> bytes:
     user = current_user._get_current_object()
     offer = Offer.query.get(int(offer_id))
 

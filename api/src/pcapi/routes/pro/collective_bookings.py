@@ -92,7 +92,7 @@ def get_collective_booking_by_id(booking_id: int) -> collective_bookings_seriali
 )
 def get_collective_bookings_csv(
     query: collective_bookings_serialize.ListCollectiveBookingsQueryModel,
-) -> str | bytes:
+) -> bytes:
     return _create_collective_bookings_export_file(query, BookingExportType.CSV)
 
 
@@ -108,13 +108,13 @@ def get_collective_bookings_csv(
 )
 def get_collective_bookings_excel(
     query: collective_bookings_serialize.ListCollectiveBookingsQueryModel,
-) -> str | bytes:
+) -> bytes:
     return _create_collective_bookings_export_file(query, BookingExportType.EXCEL)
 
 
 def _create_collective_bookings_export_file(
     query: collective_bookings_serialize.ListCollectiveBookingsQueryModel, export_type: BookingExportType
-) -> str | bytes:
+) -> bytes:
     venue_id = query.venue_id
     event_date = parser.parse(query.event_date) if query.event_date else None
     booking_period = None
