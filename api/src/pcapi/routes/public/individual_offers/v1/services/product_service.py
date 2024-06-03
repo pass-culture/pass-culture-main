@@ -40,108 +40,11 @@ def create_or_update_ean_offers(serialized_products_stocks: dict, venue_id: int,
         offer_to_update_by_ean[offer.extraData["ean"]] = offer  # type: ignore[index]
 
     ean_list_to_create = ean_to_create_or_update - ean_list_to_update
-    offers_to_index = []
-    with repository.transaction():
-        if ean_list_to_create:
-            created_offers = []
-            existing_products = _get_existing_products(ean_list_to_create)
-            product_by_ean = {product.extraData["ean"]: product for product in existing_products}  # type: ignore[index]
-            not_found_eans = [ean for ean in ean_list_to_create if ean not in product_by_ean.keys()]
-            if not_found_eans:
-                logger.warning(
-                    "Some provided eans were not found",
-                    extra={"eans": ",".join(not_found_eans), "venue": venue_id},
-                    technical_message_id="ean.not_found",
-                )
-            for product in existing_products:
-                try:
-                    ean = product.extraData["ean"] if product.extraData else None
-                    stock_data = serialized_products_stocks[ean]
-                    created_offer = _create_offer_from_product(
-                        venue,
-                        product_by_ean[ean],
-                        provider,
-                    )
-                    created_offers.append(created_offer)
 
-                except (
-                    offers_exceptions.OfferCreationBaseException,
-                    offers_exceptions.OfferEditionBaseException,
-                ) as exc:
-                    logger.info(
-                        "Error while creating offer by ean",
-                        extra={
-                            "ean": ean,
-                            "venue_id": venue_id,
-                            "provider_id": provider_id,
-                            "exc": exc.__class__.__name__,
-                        },
-                    )
+    if ean_list_to_create:
+        _create_ean_offers(ean_list_to_create, serialized_products_stocks, venue, provider)
 
-            db.session.bulk_save_objects(created_offers)
-
-            reloaded_offers = _get_existing_offers(ean_list_to_create, venue)
-            for offer in reloaded_offers:
-                try:
-                    ean = offer.extraData["ean"]  # type: ignore[index]
-                    stock_data = serialized_products_stocks[ean]
-                    # FIXME (mageoffray, 2023-05-26): stock saving optimisation
-                    # Stocks are inserted one by one for now, we need to improve create_stock to remove the repository.session.add()
-                    # It will be done before the release of this API
-                    offers_api.create_stock(
-                        offer=offer,
-                        price=finance_utils.to_euros(stock_data["price"]),
-                        quantity=serialization.deserialize_quantity(stock_data["quantity"]),
-                        booking_limit_datetime=stock_data["booking_limit_datetime"],
-                        creating_provider=provider,
-                    )
-                except (
-                    offers_exceptions.OfferCreationBaseException,
-                    offers_exceptions.OfferEditionBaseException,
-                ) as exc:
-                    logger.info(
-                        "Error while creating offer by ean",
-                        extra={
-                            "ean": ean,
-                            "venue_id": venue_id,
-                            "provider_id": provider_id,
-                            "exc": exc.__class__.__name__,
-                        },
-                    )
-
-        for offer in offers_to_update:
-            try:
-                offer.lastProvider = provider
-                offer.isActive = True
-
-                ean = offer.extraData["ean"]  # type: ignore[index]
-                stock_data = serialized_products_stocks[ean]
-                # FIXME (mageoffray, 2023-05-26): stock upserting optimisation
-                # Stocks are edited one by one for now, we need to improve edit_stock to remove the repository.session.add()
-                # It will be done before the release of this API
-                upsert_product_stock(
-                    offer_to_update_by_ean[ean],
-                    serialization.StockEdition(
-                        **{
-                            "price": stock_data["price"],
-                            "quantity": stock_data["quantity"],
-                            "booking_limit_datetime": stock_data["booking_limit_datetime"],
-                        }
-                    ),
-                    provider,
-                )
-                offers_to_index.append(offer_to_update_by_ean[ean].id)
-            except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as exc:
-                logger.info(
-                    "Error while creating offer by ean",
-                    extra={"ean": ean, "venue_id": venue_id, "provider_id": provider_id, "exc": exc.__class__.__name__},
-                )
-
-    search.async_index_offer_ids(
-        offers_to_index,
-        reason=search.IndexationReason.OFFER_UPDATE,
-        log_extra={"venue_id": venue_id, "source": "offers_public_api"},
-    )
+    _update_ean_offers(offers_to_update, offer_to_update_by_ean, serialized_products_stocks, venue, provider)
 
 
 def serialize_products_from_body(
@@ -192,6 +95,97 @@ def upsert_product_stock(
     )
 
 
+def _create_ean_offers(
+    ean_list_to_create: set,
+    serialized_products_stocks: dict,
+    venue: offerers_models.Venue,
+    provider: providers_models.Provider,
+) -> None:
+    with repository.transaction():
+        created_offers = []
+        existing_products = _get_existing_products(ean_list_to_create)
+        existing_products_eans = set()
+
+        # Create and save offers
+        for product in existing_products:
+            ean = product.extraData["ean"]  # type: ignore[index]
+            existing_products_eans.add(ean)
+
+            created_offer = _create_offer_by_ean_product(
+                ean,  # type: ignore[arg-type]
+                venue,
+                product,
+                provider,
+            )
+
+            if created_offer:
+                created_offers.append(created_offer)
+
+        db.session.bulk_save_objects(created_offers)
+
+        # Compute missing EANs and warn
+        not_found_eans = ean_list_to_create - existing_products_eans
+        if not_found_eans:
+            logger.warning(
+                "Some provided eans were not found",
+                extra={"eans": ",".join(not_found_eans), "venue": venue.id},
+                technical_message_id="ean.not_found",
+            )
+
+        # Create and save stocks
+        reloaded_offers = _get_existing_offers(ean_list_to_create, venue)
+        for offer in reloaded_offers:
+            ean = offer.extraData["ean"]  # type: ignore[index]
+            stock_data = serialized_products_stocks[ean]
+            # TODO (tcoudray, 2024-06-03): Sub-optimal, should only create.
+            # The save should be done using `db.session.bulk_save_objects` like previously for the offer
+            _create_and_save_ean_offer_stock(ean, stock_data, offer, provider, venue.id)  # type: ignore[arg-type]
+
+
+def _update_ean_offers(
+    offers_to_update: list[offers_models.Offer],
+    offer_to_update_by_ean: dict,
+    serialized_products_stocks: dict,
+    venue: offerers_models.Venue,
+    provider: providers_models.Provider,
+) -> None:
+    offers_to_index = []
+    with repository.transaction():
+        for offer in offers_to_update:
+            try:
+                offer.lastProvider = provider
+                offer.isActive = True
+
+                ean = offer.extraData["ean"]  # type: ignore[index]
+                stock_data = serialized_products_stocks[ean]
+                # FIXME (mageoffray, 2023-05-26): stock upserting optimisation
+                # Stocks are edited one by one for now, we need to improve edit_stock to remove the repository.session.add()
+                # It will be done before the release of this API
+                upsert_product_stock(
+                    offer_to_update_by_ean[ean],
+                    serialization.StockEdition(
+                        **{
+                            "price": stock_data["price"],
+                            "quantity": stock_data["quantity"],
+                            "booking_limit_datetime": stock_data["booking_limit_datetime"],
+                        }
+                    ),
+                    provider,
+                )
+                offers_to_index.append(offer_to_update_by_ean[ean].id)
+            except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as exc:
+                logger.info(
+                    "Error while creating offer by ean",
+                    extra={"ean": ean, "venue_id": venue.id, "provider_id": provider.id, "exc": exc.__class__.__name__},
+                )
+
+    search.async_index_offer_ids(
+        offers_to_index,
+        reason=search.IndexationReason.OFFER_UPDATE,
+        log_extra={"venue_id": venue.id, "source": "offers_public_api"},
+    )
+
+
 def _get_existing_products(ean_to_create: set[str]) -> list[offers_models.Product]:
     allowed_product_subcategories = [
         subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
@@ -230,33 +224,80 @@ def _get_existing_offers(
     )
 
 
-def _create_offer_from_product(
+def _create_offer_by_ean_product(
+    ean: str,
     venue: offerers_models.Venue,
     product: offers_models.Product,
     provider: providers_models.Provider,
-) -> offers_models.Offer:
-    ean = product.extraData.get("ean") if product.extraData else None
+) -> offers_models.Offer | None:
+    try:
+        offer = offers_api.build_new_offer_from_product(venue, product, ean, provider.id)
 
-    offer = offers_api.build_new_offer_from_product(venue, product, ean, provider.id)
+        offer.audioDisabilityCompliant = venue.audioDisabilityCompliant
+        offer.mentalDisabilityCompliant = venue.mentalDisabilityCompliant
+        offer.motorDisabilityCompliant = venue.motorDisabilityCompliant
+        offer.visualDisabilityCompliant = venue.visualDisabilityCompliant
 
-    offer.audioDisabilityCompliant = venue.audioDisabilityCompliant
-    offer.mentalDisabilityCompliant = venue.mentalDisabilityCompliant
-    offer.motorDisabilityCompliant = venue.motorDisabilityCompliant
-    offer.visualDisabilityCompliant = venue.visualDisabilityCompliant
+        offer.isActive = True
+        offer.lastValidationDate = datetime.datetime.utcnow()
+        offer.lastValidationType = OfferValidationType.AUTO
+        offer.lastValidationAuthorUserId = None
 
-    offer.isActive = True
-    offer.lastValidationDate = datetime.datetime.utcnow()
-    offer.lastValidationType = OfferValidationType.AUTO
-    offer.lastValidationAuthorUserId = None
+        logger.info(
+            "models.Offer has been created",
+            extra={
+                "offer_id": offer.id,
+                "venue_id": venue.id,
+                "product_id": offer.productId,
+            },
+            technical_message_id="offer.created",
+        )
 
-    logger.info(
-        "models.Offer has been created",
-        extra={
-            "offer_id": offer.id,
-            "venue_id": venue.id,
-            "product_id": offer.productId,
-        },
-        technical_message_id="offer.created",
-    )
+        return offer
+    except (
+        offers_exceptions.OfferCreationBaseException,
+        offers_exceptions.OfferEditionBaseException,
+    ) as exc:
+        logger.info(
+            "Error while creating offer by ean",
+            extra={
+                "ean": ean,
+                "venue_id": venue.id,
+                "provider_id": provider.id,
+                "exc": exc.__class__.__name__,
+            },
+        )
+        return None
 
-    return offer
+
+def _create_and_save_ean_offer_stock(
+    ean: str,
+    stock_data: dict,
+    offer: offers_models.Offer,
+    provider: providers_models.Provider,
+    venue_id: int,
+) -> None:
+    try:
+        # FIXME (mageoffray, 2023-05-26): stock saving optimisation
+        # Stocks are inserted one by one for now, we need to improve create_stock to remove the repository.session.add()
+        # It will be done before the release of this API
+        offers_api.create_stock(
+            offer=offer,
+            price=finance_utils.to_euros(stock_data["price"]),
+            quantity=serialization.deserialize_quantity(stock_data["quantity"]),
+            booking_limit_datetime=stock_data["booking_limit_datetime"],
+            creating_provider=provider,
+        )
+    except (
+        offers_exceptions.OfferCreationBaseException,
+        offers_exceptions.OfferEditionBaseException,
+    ) as exc:
+        logger.info(
+            "Error while creating offer stock by ean",
+            extra={
+                "ean": ean,
+                "venue_id": venue_id,
+                "provider_id": provider.id,
+                "exc": exc.__class__.__name__,
+            },
+        )
