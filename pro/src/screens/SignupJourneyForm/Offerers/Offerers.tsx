@@ -56,7 +56,7 @@ export const Offerers = (): JSX.Element => {
   } = useSWR(
     [GET_VENUES_OF_OFFERER_FROM_SIRET_QUERY_KEY, offerer?.siret ?? ''],
     ([, offererSiret]) =>
-      api.getVenuesOfOffererFromSiret(offererSiret.replaceAll(' ', '') ?? '')
+      api.getVenuesOfOffererFromSiret(offererSiret.replaceAll(' ', ''))
   )
 
   const permanentVenues =
