@@ -113,21 +113,19 @@ export const CollectiveOfferStockCreation = ({
           response = await api.createCollectiveStock(stockPayload)
         }
 
-        if (response !== null) {
-          await mutate<GetCollectiveOfferResponseModel>(
-            [GET_COLLECTIVE_OFFER_QUERY_KEY],
-            {
-              ...offer,
-              collectiveStock: {
-                ...offer.collectiveStock,
-                ...response,
-                isBooked: false,
-                isCancellable: offer.isCancellable,
-              },
+        await mutate<GetCollectiveOfferResponseModel>(
+          [GET_COLLECTIVE_OFFER_QUERY_KEY],
+          {
+            ...offer,
+            collectiveStock: {
+              ...offer.collectiveStock,
+              ...response,
+              isBooked: false,
+              isCancellable: offer.isCancellable,
             },
-            { revalidate: false }
-          )
-        }
+          },
+          { revalidate: false }
+        )
       }
     } catch (e) {
       if (

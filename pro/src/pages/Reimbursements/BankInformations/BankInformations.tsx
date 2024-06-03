@@ -33,7 +33,7 @@ export const BankInformations = (): JSX.Element => {
   const {
     selectedOfferer = null,
     setSelectedOfferer = () => {},
-  }: ReimbursementsContextProps = useOutletContext() || {}
+  }: ReimbursementsContextProps = useOutletContext()
 
   const [isOffererBankAccountsLoading, setIsOffererBankAccountsLoading] =
     useState<boolean>(false)
