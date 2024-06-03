@@ -125,7 +125,11 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_OFFER_MARKDOWN_DESCRIPTION = "Activer la description des offres collectives en markdown."
     WIP_FUTURE_OFFER = "Activer la publication d'offres dans le futur"
     USE_END_DATE_FOR_COLLECTIVE_PRICING = "Utiliser la date de fin du stock collectif comme date de valorisation."
+<<<<<<< HEAD
     WIP_ENABLE_OFFER_ADDRESS = "Activer l'association des offres à des adresses."
+=======
+    WIP_ENABLE_PRO_WITHOUT_FRAME = "Active la version du portail pro sans frame autour du contenue principal"
+>>>>>>> 1dab3f295b ((PC-30011)[API] feat: add ff for pc pro without frame)
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -183,6 +187,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_CONNECT_AS,
     FeatureToggle.WIP_ENABLE_MOCK_UBBLE,
     FeatureToggle.WIP_ENABLE_OFFER_ADDRESS,
+    FeatureToggle.WIP_ENABLE_PRO_WITHOUT_FRAME,
     FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY,
     FeatureToggle.WIP_ENABLE_TITELIVE_API_FOR_BOOKS,
     FeatureToggle.WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS,
