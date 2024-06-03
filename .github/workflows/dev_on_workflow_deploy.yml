@@ -230,7 +230,7 @@ jobs:
       contents: 'read'
       id-token: 'write'
     uses: ./.github/workflows/dev_on_workflow_deploy_app_engine_image_resizing.yml
-    if: ${{ inputs.environment != 'production' }}
+    if: ${{ inputs.environment != 'production' && inputs.environment != 'ops' }}
     with:
       workload_identity_provider_secret_name: passculture-metier-ehp/gcp_metier_ehp_workload_identity_provider
       service_account_secret_name: passculture-metier-ehp/app_engine_image_resizing_service_account
