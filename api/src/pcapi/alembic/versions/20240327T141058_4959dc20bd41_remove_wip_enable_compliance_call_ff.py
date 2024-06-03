@@ -7,7 +7,7 @@ revision = "4959dc20bd41"
 down_revision = "c7d04bd67054"
 
 
-def get_flag():  # type:ignore[no-untyped-def]
+def get_flag():  # type: ignore[no-untyped-def]
     # Do not import `pcapi.models.feature` at module-level. It breaks
     # `alembic history` with a SQLAlchemy error that complains about
     # an unknown table name while initializing the ORM mapper.
