@@ -35,7 +35,7 @@ const getAccessibilityLevels = ({
 export function AdageOfferPublicSection({
   offer,
 }: AdageOfferPublicSectionProps) {
-  const studentLevels = offer.students || []
+  const studentLevels = offer.students
 
   const a11yLevels = getAccessibilityLevels(offer)
 

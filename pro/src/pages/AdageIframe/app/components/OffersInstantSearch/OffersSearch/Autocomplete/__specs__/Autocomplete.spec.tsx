@@ -81,6 +81,7 @@ const mockKeywordSuggestions = [
     querySuggestionName: {
       exact_nb_hits: 5,
     },
+    formats: [],
   },
 ]
 

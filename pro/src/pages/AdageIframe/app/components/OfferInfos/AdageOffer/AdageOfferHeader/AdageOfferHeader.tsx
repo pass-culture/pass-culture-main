@@ -34,12 +34,10 @@ export function AdageOfferHeader({
     offer.students.length > 1 ? 'Multiniveaux' : offer.students[0]
 
   let offerVenueLabel = `${offer.venue.postalCode}, ${offer.venue.city}`
-  if (offer.offerVenue) {
-    if (offer.offerVenue.addressType === OfferAddressType.OTHER) {
-      offerVenueLabel = offer.offerVenue.otherAddress
-    } else if (offer.offerVenue.addressType === OfferAddressType.SCHOOL) {
-      offerVenueLabel = 'Dans l’établissement scolaire'
-    }
+  if (offer.offerVenue.addressType === OfferAddressType.OTHER) {
+    offerVenueLabel = offer.offerVenue.otherAddress
+  } else if (offer.offerVenue.addressType === OfferAddressType.SCHOOL) {
+    offerVenueLabel = 'Dans l’établissement scolaire'
   }
 
   return (
