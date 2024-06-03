@@ -94,7 +94,7 @@ jobs:
           git config --global user.email "PassCulture-SA@passculture.team"
           git config --global user.name "PassCulture-SA"
           cd ./pass-culture-deployment/helm/pcapi/${{ inputs.environment }}
-          sed -i '/^image:/,/^  tag:/{s/^  tag: .*/  tag: ${{ inputs.app_version }}/}' values.${{ inputs.environment }}.yaml
+          sed -i '/^image:/,/^  tag:/{s/^  tag: .*/  tag: ${{ inputs.app_version }}/}' values.yaml
           git commit -m "Update image tag by Github Actions Job : ${{ github.run_number }}"
           git push origin master
       - name: "Generate and push rendered manifests"
