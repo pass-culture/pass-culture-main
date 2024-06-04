@@ -1974,6 +1974,10 @@ class MoveOfferVenueButtonTest(button_helpers.ButtonHelper):
         venue = offerers_factories.VenueFactory()
         offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer, pricing_point=venue)
         offer = offers_factories.EventOfferFactory(venue=venue)
+        offers_factories.EventStockFactory(offer=offer)
+        offers_factories.EventStockFactory(
+            offer=offer, beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=3), isSoftDeleted=True
+        )
         return url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id)
 
 
@@ -2038,6 +2042,9 @@ class EditOfferVenueTest(PostEndpointHelper):
         booking2_2 = bookings_factories.CancelledBookingFactory(stock=stock2)
 
         # other objects to validate queries filters
+        offers_factories.EventStockFactory(
+            offer=offer, beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=7), isSoftDeleted=True
+        )
         offers_factories.EventStockFactory(beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=7))
         bookings_factories.ReimbursedBookingFactory()
 
