@@ -126,7 +126,6 @@ export const ReimbursementsInvoices = (): JSX.Element => {
       <InvoicesFilters
         areFiltersDefault={areFiltersDefault}
         filters={filters}
-        disable={!invoices.length}
         initialFilters={INITIAL_FILTERS}
         selectableOptions={filterOptions}
         setAreFiltersDefault={setAreFiltersDefault}

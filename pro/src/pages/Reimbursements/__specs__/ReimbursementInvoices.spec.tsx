@@ -296,19 +296,6 @@ describe('reimbursementsWithFilters', () => {
     expect(screen.getByText('Tous les comptes bancaires')).toBeInTheDocument()
   })
 
-  it('should disable filter if no invoices', async () => {
-    vi.spyOn(api, 'getInvoicesV2').mockResolvedValue([])
-
-    vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: false })
-    renderReimbursementsInvoices()
-
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
-    expect(screen.getByLabelText('Compte bancaire')).toBeDisabled()
-    expect(screen.getByLabelText('Début de la période')).toBeDisabled()
-    expect(screen.getByLabelText('Fin de la période')).toBeDisabled()
-  })
-
   it('should not disable filter if has invoices', async () => {
     renderReimbursementsInvoices()
 
