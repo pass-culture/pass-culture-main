@@ -41,7 +41,9 @@ class OfferCriterion(PcObject, Base, Model):
     offerId: int = sqla.Column(
         sqla.BigInteger, sqla.ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False
     )
-    criterionId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("criterion.id", ondelete="CASCADE"), nullable=False)
+    criterionId: int = sqla.Column(
+        sqla.BigInteger, sqla.ForeignKey("criterion.id", ondelete="CASCADE"), index=True, nullable=False
+    )
 
     __table_args__ = (
         sqla.UniqueConstraint(
