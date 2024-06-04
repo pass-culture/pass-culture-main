@@ -176,7 +176,7 @@ Si la base de données n'a pas été initialisée, vous devez suivre les étapes
   ```
 
 * Soit en réalisant les étapes suivantes une par une:
-
+  #TODO : du coup comment on lance la session avant 
   - créer les _users_ suivants:
 
     ```sql
