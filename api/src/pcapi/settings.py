@@ -566,3 +566,6 @@ MAKE_PROS_BENEFICIARIES_IN_APP = bool(int(os.environ.get("MAKE_PROS_BENEFICIARIE
 # VIRUSTOTAL
 VIRUSTOTAL_BACKEND = os.environ.get("VIRUSTOTAL_BACKEND", "pcapi.connectors.virustotal.LoggerBackend")
 VIRUSTOTAL_API_KEY = secrets_utils.get("VIRUSTOTAL_API_KEY")
+
+# DB STATS CSV EXPORT TO DRIVE
+PG_STAT_FOLDER_ID = secrets_utils.get("PG_STAT_FOLDER_ID", "")
