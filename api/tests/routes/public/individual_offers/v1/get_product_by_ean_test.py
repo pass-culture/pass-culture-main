@@ -49,6 +49,7 @@ class GetProductByEanTest:
                     "name": "Vieux motard que jamais",
                     "status": "SOLD_OUT",
                     "stock": None,
+                    "idAtProvider": None,
                 }
             ]
         }
@@ -109,6 +110,7 @@ class GetProductByEanTest:
                     "name": "Pump it",
                     "status": "SOLD_OUT",
                     "stock": None,
+                    "idAtProvider": None,
                 },
                 {
                     "bookingContact": None,
@@ -133,6 +135,7 @@ class GetProductByEanTest:
                     "name": "Poterie pour les nuls",
                     "status": "SOLD_OUT",
                     "stock": None,
+                    "idAtProvider": None,
                 },
                 {
                     "bookingContact": None,
@@ -157,6 +160,7 @@ class GetProductByEanTest:
                     "name": "Vieux motard que jamais",
                     "status": "SOLD_OUT",
                     "stock": None,
+                    "idAtProvider": None,
                 },
             ]
         }
@@ -283,6 +287,7 @@ class GetProductByEanTest:
                     "name": "Vieux motard que jamais",
                     "status": "SOLD_OUT",
                     "stock": None,
+                    "idAtProvider": None,
                 }
             ]
         }

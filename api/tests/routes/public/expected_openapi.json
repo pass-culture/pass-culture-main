@@ -2899,6 +2899,13 @@
                         "title": "Id",
                         "type": "integer"
                     },
+                    "idAtProvider": {
+                        "description": "Id of the object (product, event...) on your side. It should not be more than 70 characters long.",
+                        "example": "Your own id",
+                        "nullable": true,
+                        "title": "Idatprovider",
+                        "type": "string"
+                    },
                     "image": {
                         "anyOf": [
                             {
@@ -6561,6 +6568,13 @@
                     "id": {
                         "title": "Id",
                         "type": "integer"
+                    },
+                    "idAtProvider": {
+                        "description": "Id of the object (product, event...) on your side. It should not be more than 70 characters long.",
+                        "example": "Your own id",
+                        "nullable": true,
+                        "title": "Idatprovider",
+                        "type": "string"
                     },
                     "image": {
                         "anyOf": [
