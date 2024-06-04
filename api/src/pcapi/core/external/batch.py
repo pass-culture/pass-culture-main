@@ -1,5 +1,6 @@
 from datetime import datetime
 import logging
+import textwrap
 
 from pcapi.core.cultural_survey import models as cultural_survey_models
 from pcapi.core.external.attributes import models as attributes_models
@@ -138,7 +139,7 @@ def format_offer_attributes(offer: offers_models.Offer) -> dict:
 
     offer_attributes = {
         "offer_id": offer.id,
-        "offer_name": offer.name,
+        "offer_name": textwrap.shorten(offer.name, width=64, placeholder="..."),
         "offer_category": offer.categoryId,
         "offer_subcategory": offer.subcategoryId,
         "offer_type": "duo" if offer.isDuo else "solo",
