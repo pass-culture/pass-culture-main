@@ -21,6 +21,7 @@ from pcapi.domain import show_types
 from pcapi.models import offer_mixin
 from pcapi.routes import serialization
 from pcapi.routes.public.documentation_constants import descriptions
+from pcapi.routes.public.documentation_constants.fields import fields
 from pcapi.routes.public.individual_offers.v1.base_serialization import IndexPaginationQueryParams
 import pcapi.routes.public.serialization.accessibility as accessibility_serialization
 from pcapi.routes.public.serialization.utils import StrEnum
@@ -716,6 +717,7 @@ class OfferResponse(serialization.ConfiguredBaseModel):
         example=offer_mixin.OfferStatus.ACTIVE.name,
     )
     withdrawal_details: str | None = WITHDRAWAL_DETAILS_FIELD
+    id_at_provider: str | None = fields.ID_AT_PROVIDER
 
     class Config:
         json_encoders = {datetime.datetime: date_utils.format_into_utc_date}
@@ -735,6 +737,7 @@ class OfferResponse(serialization.ConfiguredBaseModel):
             name=offer.name,
             status=offer.status,
             withdrawal_details=offer.withdrawalDetails,
+            id_at_provider=offer.idAtProvider,
         )
 
 

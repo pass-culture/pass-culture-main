@@ -21,6 +21,7 @@ class GetProductTest:
             venue=venue,
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
+            idAtProvider="provider_id_at_provider",
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
@@ -48,6 +49,7 @@ class GetProductTest:
             "name": "Vieux motard que jamais",
             "status": "SOLD_OUT",
             "stock": None,
+            "idAtProvider": "provider_id_at_provider",
         }
 
     def test_books_can_be_retrieved(self, client):

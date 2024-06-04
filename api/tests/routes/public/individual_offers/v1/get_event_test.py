@@ -33,6 +33,7 @@ class GetEventTest:
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
             product=product,
+            idAtProvider="Oh le bel id <3",
         )
         event_offer_id = event_offer.id
 
@@ -71,6 +72,7 @@ class GetEventTest:
             "status": "SOLD_OUT",
             "hasTicket": False,
             "priceCategories": [],
+            "idAtProvider": "Oh le bel id <3",
         }
 
     def test_event_with_not_selectable_category_can_be_retrieved(self, client):
