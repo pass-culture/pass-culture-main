@@ -97,7 +97,7 @@ jobs:
           echo "PCAPI_SECRETS=$PCAPI_SECRETS" >> "$GITHUB_OUTPUT"
 
       # Checkout pass-culture-deployment repository containing pcapi helm value files
-      - uses: actions/checkout@v4.1.5
+      - uses: actions/checkout@v4.1.6
         with:
           repository: pass-culture/pass-culture-deployment
           token: ${{ steps.get-github-token.outputs.API_TOKEN_GITHUB }}
