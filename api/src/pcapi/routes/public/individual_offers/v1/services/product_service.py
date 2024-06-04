@@ -1,5 +1,6 @@
 import datetime
 import logging
+from typing import cast
 
 import sqlalchemy as sqla
 
@@ -25,31 +26,53 @@ logger = logging.getLogger(__name__)
 
 
 @job(worker.low_queue)
-def create_or_update_ean_offers(serialized_products_stocks: dict, venue_id: int, provider_id: int) -> None:
-    provider = providers_models.Provider.query.filter_by(id=provider_id).one()
-    venue = offerers_models.Venue.query.filter_by(id=venue_id).one()
+def bulk_upsert_ean_offers(
+    stocks_details_by_eans: dict, venue: offerers_models.Venue, provider: providers_models.Provider
+) -> None:
+    """
+    Upsert (i.e. update if existing otherwise create) offers & their stocks using eans.
 
-    ean_to_create_or_update = set(serialized_products_stocks.keys())
+    :stocks_details_by_eans: Stock details organized by eans.
+                stocks_details_by_eans has the following structure:
+                {
+                    [ean] : {
+                        "quantity": 29,
+                        "price": 1234,
+                        "booking_limit_datetime": "2024-06-30T14:00:00+02:00"
+                    }
+                }
+    :venue:    Venue for which the offers & stocks are upserted
+    :provider: Provider upserting the offers & stocks
+    """
+    offers_to_upsert_eans = set(stocks_details_by_eans.keys())
 
-    offers_to_update = _get_existing_offers(ean_to_create_or_update, venue)
+    # Update existing offers
+    offers_to_update = _get_existing_offers(offers_to_upsert_eans, venue)
+    updated_offers_eans = _update_ean_offers(offers_to_update, stocks_details_by_eans, venue, provider)
 
-    offer_to_update_by_ean = {}
-    ean_list_to_update = set()
-    for offer in offers_to_update:
-        ean_list_to_update.add(offer.extraData["ean"])  # type: ignore[index]
-        offer_to_update_by_ean[offer.extraData["ean"]] = offer  # type: ignore[index]
+    # Compute missing offers to create
+    offers_to_create_eans = offers_to_upsert_eans - updated_offers_eans
 
-    ean_list_to_create = ean_to_create_or_update - ean_list_to_update
-
-    if ean_list_to_create:
-        _create_ean_offers(ean_list_to_create, serialized_products_stocks, venue, provider)
-
-    _update_ean_offers(offers_to_update, offer_to_update_by_ean, serialized_products_stocks, venue, provider)
+    # Creating missing offers
+    if offers_to_create_eans:
+        _create_ean_offers(offers_to_create_eans, stocks_details_by_eans, venue, provider)
 
 
 def serialize_products_from_body(
     products: list[serialization.ProductOfferByEanCreation],
 ) -> dict:
+    """
+    Take the serialized JSON to format it into a dict giving the stocks details by eans
+
+    :return: A dict with the following structure:
+        {
+            [ean] : {
+                "quantity": 29,
+                "price": 1234,
+                "booking_limit_datetime": "2024-06-30T14:00:00+02:00"
+            }
+        }
+    """
     stock_details = {}
     for product in products:
         stock_details[product.ean] = {
@@ -60,11 +83,18 @@ def serialize_products_from_body(
     return stock_details
 
 
-def upsert_product_stock(
+def upsert_offer_stock(
     offer: offers_models.Offer,
     stock_body: serialization.StockEdition | None,
     provider: providers_models.Provider,
 ) -> None:
+    """
+    Upsert a an offer stock
+
+    :offer:      Offer for which the stock is upserted
+    :stock_body: Stock details
+    :provider:   Provider doing the upsert
+    """
     existing_stock = next((stock for stock in offer.activeStocks), None)
     if not stock_body:
         if existing_stock:
@@ -96,14 +126,14 @@ def upsert_product_stock(
 
 
 def _create_ean_offers(
-    ean_list_to_create: set,
-    serialized_products_stocks: dict,
+    offers_to_create_eans: set[str],
+    stocks_details_by_eans: dict,
     venue: offerers_models.Venue,
     provider: providers_models.Provider,
 ) -> None:
     with repository.transaction():
         created_offers = []
-        existing_products = _get_existing_products(ean_list_to_create)
+        existing_products = _get_existing_products(offers_to_create_eans)
         existing_products_eans = set()
 
         # Create and save offers
@@ -124,7 +154,7 @@ def _create_ean_offers(
         db.session.bulk_save_objects(created_offers)
 
         # Compute missing EANs and warn
-        not_found_eans = ean_list_to_create - existing_products_eans
+        not_found_eans = offers_to_create_eans - existing_products_eans
         if not_found_eans:
             logger.warning(
                 "Some provided eans were not found",
@@ -133,10 +163,10 @@ def _create_ean_offers(
             )
 
         # Create and save stocks
-        reloaded_offers = _get_existing_offers(ean_list_to_create, venue)
+        reloaded_offers = _get_existing_offers(offers_to_create_eans, venue)
         for offer in reloaded_offers:
             ean = offer.extraData["ean"]  # type: ignore[index]
-            stock_data = serialized_products_stocks[ean]
+            stock_data = stocks_details_by_eans[ean]
             # TODO (tcoudray, 2024-06-03): Sub-optimal, should only create.
             # The save should be done using `db.session.bulk_save_objects` like previously for the offer
             _create_and_save_ean_offer_stock(ean, stock_data, offer, provider, venue.id)  # type: ignore[arg-type]
@@ -144,25 +174,26 @@ def _create_ean_offers(
 
 def _update_ean_offers(
     offers_to_update: list[offers_models.Offer],
-    offer_to_update_by_ean: dict,
-    serialized_products_stocks: dict,
+    stocks_details_by_eans: dict,
     venue: offerers_models.Venue,
     provider: providers_models.Provider,
-) -> None:
+) -> set[str]:
     offers_to_index = []
+    updated_offers_eans = set()
+
     with repository.transaction():
         for offer in offers_to_update:
             try:
                 offer.lastProvider = provider
                 offer.isActive = True
 
-                ean = offer.extraData["ean"]  # type: ignore[index]
-                stock_data = serialized_products_stocks[ean]
+                ean = cast(str, offer.extraData["ean"])  # type: ignore[index]
+                stock_data = stocks_details_by_eans[ean]
                 # FIXME (mageoffray, 2023-05-26): stock upserting optimisation
                 # Stocks are edited one by one for now, we need to improve edit_stock to remove the repository.session.add()
                 # It will be done before the release of this API
-                upsert_product_stock(
-                    offer_to_update_by_ean[ean],
+                upsert_offer_stock(
+                    offer,
                     serialization.StockEdition(
                         **{
                             "price": stock_data["price"],
@@ -172,7 +203,8 @@ def _update_ean_offers(
                     ),
                     provider,
                 )
-                offers_to_index.append(offer_to_update_by_ean[ean].id)
+                offers_to_index.append(offer.id)
+                updated_offers_eans.add(ean)
             except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as exc:
                 logger.info(
                     "Error while creating offer by ean",
@@ -184,6 +216,8 @@ def _update_ean_offers(
         reason=search.IndexationReason.OFFER_UPDATE,
         log_extra={"venue_id": venue.id, "source": "offers_public_api"},
     )
+
+    return updated_offers_eans
 
 
 def _get_existing_products(ean_to_create: set[str]) -> list[offers_models.Product]:

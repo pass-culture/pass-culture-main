@@ -12,6 +12,7 @@ from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import validation as offers_validation
+from pcapi.core.providers import models as providers_models
 from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
 from pcapi.domain import music_types
 from pcapi.domain import show_types
@@ -277,8 +278,9 @@ def post_product_offer_by_ean(body: serialization.ProductsOfferByEanCreation) ->
     venue = utils.retrieve_venue_from_location(body.location)
     if venue.isVirtual:
         raise api_errors.ApiErrors({"location": ["Cannot create product offer for virtual venues"]})
-    serialized_products_stocks = product_service.serialize_products_from_body(body.products)
-    product_service.create_or_update_ean_offers.delay(serialized_products_stocks, venue.id, current_api_key.provider.id)
+    provider = providers_models.Provider.query.filter_by(id=current_api_key.provider.id).one()
+    stocks_details_by_eans = product_service.serialize_products_from_body(body.products)
+    product_service.bulk_upsert_ean_offers.delay(stocks_details_by_eans, venue, provider)
 
 
 @blueprint.v1_offers_blueprint.route("/products/<int:product_id>", methods=["GET"])
@@ -462,7 +464,7 @@ def edit_product(body: serialization.ProductOfferEdition) -> serialization.Produ
             if body.image:
                 utils.save_image(body.image, updated_offer)
             if "stock" in updated_offer_from_body:
-                product_service.upsert_product_stock(updated_offer, body.stock, current_api_key.provider)
+                product_service.upsert_offer_stock(updated_offer, body.stock, current_api_key.provider)
     except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as e:
         raise api_errors.ApiErrors(e.errors, status_code=400)
 
