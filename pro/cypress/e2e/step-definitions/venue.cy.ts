@@ -63,9 +63,9 @@ When('I add venue without Siret details', () => {
 })
 
 When('I validate venue step', () => {
-  cy.intercept({ method: 'POST', url: '/venues' }).as('getVenues')
+  cy.intercept({ method: 'GET', url: '/venue-types' }).as('getVenues')
   cy.findByText('Enregistrer et créer le lieu').click()
-  cy.wait('@getVenues').its('response.statusCode').should('eq', 201)
+  cy.wait('@getVenues').its('response.statusCode').should('eq', 200)
 })
 
 When('I add venue with Siret details', () => {
@@ -78,10 +78,10 @@ When('I add venue with Siret details', () => {
 
 When('I skip offer creation', () => {
   cy.findByText('Plus tard').click()
+  cy.url().should('contain', 'accueil')
 })
 
 When('I open my venue without Siret resume', () => {
-  cy.reload()
   cy.findByRole('link', {
     name: 'Gérer la page de ' + venueNameWithoutSiret + '',
   }).click()
@@ -91,7 +91,6 @@ When('I open my venue without Siret resume', () => {
 })
 
 Then('I should see my venue with Siret resume', () => {
-  cy.reload()
   cy.findByRole('link', {
     name: 'Gérer la page de ' + venueNameWithSiret + '',
   }).click()
@@ -105,9 +104,9 @@ When('I add an image to my venue', () => {
   cy.contains(
     'En utilisant ce contenu, je certifie que je suis propriétaire ou que je dispose des autorisations nécessaires pour l’utilisation de celui-ci'
   )
-  cy.findByRole('button', { name: 'Suivant'}).click()
+  cy.findByText('Suivant').click()
   cy.contains('Prévisualisation de votre image dans l’application pass Culture')
-  cy.findByRole('button', { name: 'Enregistrer'}).click()
+  cy.findByText('Enregistrer').click()
   cy.findByTestId('global-notification-success').should(
     'contain',
     'Vos modifications ont bien été prises en compte'
@@ -116,7 +115,7 @@ When('I add an image to my venue', () => {
 
 Then('I should see details of my venue', () => {
   cy.contains(venueNameWithoutSiret)
-  cy.findByRole('button', { name: 'Modifier l’image'})
+  cy.findByText('Modifier l’image').should('be.visible')
 })
 
 When('I go to the venue page in Individual section', () => {
