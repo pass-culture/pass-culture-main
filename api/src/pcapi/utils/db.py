@@ -1,7 +1,10 @@
+import csv
 import datetime
 import enum
 import hashlib
 import logging
+import pathlib
+import tempfile
 import typing
 
 import psycopg2.extras
@@ -10,6 +13,8 @@ import sqlalchemy as sqla
 import sqlalchemy.engine as sqla_engine
 import sqlalchemy.types as sqla_types
 
+from pcapi import settings
+from pcapi.connectors import googledrive
 from pcapi.core.logging import log_elapsed
 from pcapi.models import db
 import pcapi.scheduled_tasks.decorators as cron_decorators
@@ -163,3 +168,75 @@ def detect_not_valid_constraints() -> None:
         return
     names = sorted(row[0] for row in rows)
     logger.error("Found PostgreSQL constraints that are NOT VALID: %s", names)
+
+
+@blueprint.cli.command("export_pg_stat_user_indexes")
+@cron_decorators.log_cron_with_transaction
+def export_pg_stat_user_indexes() -> None:
+    """Export statistics about indexes usage."""
+    statement = """
+        SELECT
+            now() :: date,
+            relname,
+            indexrelname,
+            idx_scan,
+            idx_tup_read,
+            idx_tup_fetch
+        FROM
+            pg_stat_user_indexes
+        WHERE schemaname='public'
+        ORDER BY
+            relname,
+            indexrelname DESC;
+    """
+    res = db.session.execute(statement)
+    rows = res.fetchall()
+    _upload_as_csv_to_google_drive(
+        "pg_stat_user_indexes", ("date", "relname", "idx_scan", "idx_tup_read", "idx_tup_fetch"), rows
+    )
+    logger.info("Exported data from pg_stat_user_indexes")
+
+
+@blueprint.cli.command("export_pg_stat_user_tables")
+@cron_decorators.log_cron_with_transaction
+def export_pg_stat_user_tables() -> None:
+    """Export statistics about tables scan."""
+    statement = """
+        SELECT
+            now() :: date,
+            relname,
+            seq_scan,
+            idx_scan
+        FROM
+            pg_stat_user_tables
+        WHERE
+            schemaname = 'public'
+        ORDER BY
+            relname;
+    """
+    res = db.session.execute(statement)
+    rows = res.fetchall()
+    _upload_as_csv_to_google_drive("pg_stat_user_tables", ("date", "relname", "seq_scan", "idx_scan"), rows)
+    logger.info("Exported data from pg_stat_user_tables")
+
+
+def _upload_as_csv_to_google_drive(filename_base: str, header: typing.Iterable, rows: typing.Iterable) -> None:
+    """Write data to CSV file and upload to Google Drive."""
+    if not settings.PG_STAT_FOLDER_ID:
+        logger.error("PG_STAT_FOLDER_ID is not set")
+        return
+
+    filename = filename_base + datetime.date.today().strftime("_%Y%m%d") + ".csv"
+    local_path = pathlib.Path(tempfile.mkdtemp()) / filename
+    with open(local_path, "w+", encoding="utf-8") as fp:
+        writer = csv.writer(fp, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
+        writer.writerow(header)
+        writer.writerows(rows)
+
+    gdrive_api = googledrive.get_backend()
+    try:
+        gdrive_api.create_file(settings.PG_STAT_FOLDER_ID, local_path.name, local_path)
+    except Exception as exc:  # pylint: disable=broad-except
+        logger.exception("Could not upload stat file to Google Drive", extra={"path": str(local_path), "exc": str(exc)})
+    else:
+        logger.info("Stat file has been uploaded to Google Drive", extra={"path": str(local_path)})
