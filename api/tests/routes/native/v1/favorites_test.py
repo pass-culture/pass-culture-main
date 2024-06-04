@@ -335,7 +335,9 @@ class PostTest:
     def when_user_creates_a_favorite(self, client):
         # Given
         user = users_factories.UserFactory()
-        offer = offers_factories.EventOfferFactory()
+        offer = offers_factories.EventOfferFactory(
+            name="This is a long event name that has a space at the sixty-first character"
+        )
         earliest_stock = offers_factories.EventStockFactory(offer=offer, price=Decimal("10.1"), quantity=None)
         offers_factories.EventStockFactory(beginningDatetime=earliest_stock.beginningDatetime + timedelta(days=30))
 
@@ -368,6 +370,7 @@ class PostTest:
         )
         event_payload = favorite_creation_tracking_event["event_payload"]
         assert event_payload["event_date"] == earliest_stock.beginningDatetime.isoformat(timespec="seconds")
+        assert event_payload["offer_name"] == "This is a long event name that has a space at the sixty-first..."
         assert all(value is not None for value in event_payload.values())
 
     def when_user_creates_a_favorite_twice(self, client):
