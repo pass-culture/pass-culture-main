@@ -1057,6 +1057,30 @@ class CreateOfferTest:
         assert not offer.bookingEmail
         assert models.Offer.query.count() == 1
 
+    def test_create_offer_with_id_at_provider(self):
+        venue = offerers_factories.VenueFactory()
+        provider = providers_factories.APIProviderFactory()
+
+        offer = api.create_offer(
+            venue=venue,
+            name="A pretty good offer",
+            subcategory_id=subcategories.SEANCE_CINE.id,
+            provider=provider,
+            id_at_provider="coucou",
+            audio_disability_compliant=True,
+            mental_disability_compliant=True,
+            motor_disability_compliant=True,
+            visual_disability_compliant=True,
+        )
+
+        assert offer.name == "A pretty good offer"
+        assert offer.venue == venue
+        assert offer.subcategoryId == subcategories.SEANCE_CINE.id
+        assert offer.validation == models.OfferValidationStatus.DRAFT
+        assert offer.extraData == {}
+        assert offer.idAtProvider == "coucou"
+        assert models.Offer.query.count() == 1
+
     def test_cannot_create_activation_offer(self):
         venue = offerers_factories.VenueFactory()
         with pytest.raises(exceptions.SubCategoryIsInactive) as error:
