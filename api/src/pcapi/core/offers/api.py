@@ -148,6 +148,7 @@ def create_offer(
     withdrawal_details: str | None = None,
     withdrawal_type: models.WithdrawalTypeEnum | None = None,
     is_from_private_api: bool = False,
+    id_at_provider: str | None = None,
 ) -> models.Offer:
     validation.check_offer_withdrawal(withdrawal_type, withdrawal_delay, subcategory_id, booking_contact, provider)
     validation.check_offer_subcategory_is_valid(subcategory_id)
@@ -155,6 +156,7 @@ def create_offer(
     validation.check_offer_extra_data(subcategory_id, formatted_extra_data, venue, is_from_private_api)
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id]
     validation.check_is_duo_compliance(is_duo, subcategory)
+    validation.check_can_input_id_at_provider(provider, id_at_provider)
 
     is_national = True if url else bool(is_national)
 
@@ -182,6 +184,7 @@ def create_offer(
         withdrawalDetails=withdrawal_details,
         withdrawalType=withdrawal_type,
         offererAddress=venue.offererAddress,
+        idAtProvider=id_at_provider,
     )
 
     repository.add_to_session(offer)

@@ -270,6 +270,11 @@ def check_stock_is_deletable(stock: models.Stock) -> None:
         raise exceptions.TooLateToDeleteStock()
 
 
+def check_can_input_id_at_provider(provider: providers_models.Provider | None, id_at_provider: str | None) -> None:
+    if id_at_provider and not provider:
+        raise exceptions.CannotSetIdAtProviderWithoutAProvider()
+
+
 def check_update_only_allowed_stock_fields_for_allocine_offer(updated_fields: set) -> None:
     if not updated_fields.issubset(EDITABLE_FIELDS_FOR_ALLOCINE_STOCK):
         errors = api_errors.ApiErrors()
