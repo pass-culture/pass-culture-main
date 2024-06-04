@@ -10,7 +10,9 @@ Feature: Create and update venue
     And I add venue without Siret details
     And I validate venue step
     And I skip offer creation
-    Then I should see my venue without Siret resume
+    And I open my venue without Siret resume
+    And I add an image to my venue
+    Then I should see details of my venue
 
   Scenario: A pro user can add a venue with SIRET
     When I want to add a venue
