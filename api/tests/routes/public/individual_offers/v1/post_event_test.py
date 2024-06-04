@@ -144,6 +144,7 @@ class PostEventTest:
             "eventDuration": 120,
             "externalTicketOfficeUrl": "https://maposaic.com",
             "id": created_offer.id,
+            "idAtProvider": None,
             "image": {
                 "credit": "Jean-Crédit Photo",
                 "url": f"http://localhost/storage/thumbs/mediations/{human_ids.humanize(created_mediation.id)}",

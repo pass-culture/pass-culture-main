@@ -50,6 +50,11 @@ class _FIELDS:
         description="Event duration in minutes",
         example=60,
     )
+    ID_AT_PROVIDER = Field(
+        description="Id of the object (product, event...) on your side. It should not be more than 70 characters long.",
+        example="Your own id",
+    )
+
     OFFER_STATUS = Field(description=descriptions.OFFER_STATUS_FIELD_DESCRIPTION, example="ACTIVE")
 
     PERIOD_BEGINNING_DATE = Field(

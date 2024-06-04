@@ -78,6 +78,7 @@ class PostProductTest:
             "name": "Le champ des possibles",
             "status": "SOLD_OUT",
             "stock": None,
+            "idAtProvider": None,
         }
 
     @pytest.mark.usefixtures("db_session")
@@ -169,6 +170,7 @@ class PostProductTest:
             "enableDoubleBookings": False,
             "externalTicketOfficeUrl": "https://maposaic.com",
             "id": created_offer.id,
+            "idAtProvider": None,
             "image": {
                 "credit": "Jean-Crédit Photo",
                 "url": f"http://localhost/storage/thumbs/mediations/{human_ids.humanize(created_mediation.id)}",

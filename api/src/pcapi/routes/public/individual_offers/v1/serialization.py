@@ -717,6 +717,7 @@ class OfferResponse(serialization.ConfiguredBaseModel):
         example=offer_mixin.OfferStatus.ACTIVE.name,
     )
     withdrawal_details: str | None = WITHDRAWAL_DETAILS_FIELD
+    id_at_provider: str | None = fields.ID_AT_PROVIDER
 
     class Config:
         json_encoders = {datetime.datetime: date_utils.format_into_utc_date}
@@ -736,6 +737,7 @@ class OfferResponse(serialization.ConfiguredBaseModel):
             name=offer.name,
             status=offer.status,
             withdrawal_details=offer.withdrawalDetails,
+            id_at_provider=offer.idAtProvider,
         )
 
 
