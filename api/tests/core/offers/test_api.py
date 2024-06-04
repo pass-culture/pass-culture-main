@@ -1318,6 +1318,40 @@ class UpdateOfferTest:
         pending_offer = models.Offer.query.one()
         assert pending_offer.name == "Soliloquy"
 
+    def test_success_on_updating_id_at_provider(self):
+        provider = providers_factories.PublicApiProviderFactory()
+        offerer = offerers_factories.OffererFactory()
+        providers_factories.OffererProviderFactory(offerer=offerer, provider=provider)
+        offer = factories.OfferFactory(
+            lastProvider=provider,
+            name="Offer linked to a provider",
+        )
+
+        api.update_offer(
+            offer,
+            idAtProvider="some_id_at_provider",
+        )
+
+        offer = models.Offer.query.one()
+        assert offer.name == "Offer linked to a provider"
+        assert offer.idAtProvider == "some_id_at_provider"
+
+    def test_raise_error_on_updating_id_at_provider(self):
+        offer = factories.OfferFactory(
+            lastProvider=None,
+            name="Offer linked to a provider",
+        )
+
+        with pytest.raises(exceptions.CannotSetIdAtProviderWithoutAProvider) as error:
+            api.update_offer(
+                offer,
+                idAtProvider="some_id_at_provider",
+            )
+
+        assert error.value.errors["idAtProvider"] == [
+            "Une offre ne peut être créée ou éditée avec un idAtProvider si elle n'a pas de provider"
+        ]
+
 
 @pytest.mark.usefixtures("db_session")
 class BatchUpdateOffersTest:
