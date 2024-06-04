@@ -234,6 +234,7 @@ def post_product_offer(body: serialization.ProductOfferCreation) -> serializatio
                 venue=venue,
                 visual_disability_compliant=body.accessibility.visual_disability_compliant,
                 withdrawal_details=body.withdrawal_details,
+                id_at_provider=body.id_at_provider,
             )
 
             if body.image:
@@ -667,6 +668,7 @@ def edit_product(body: serialization.ProductOfferEdition) -> serialization.Produ
                 isActive=updated_offer_from_body.get("is_active", offers_api.UNCHANGED),
                 isDuo=updated_offer_from_body.get("is_duo", offers_api.UNCHANGED),
                 withdrawalDetails=updated_offer_from_body.get("withdrawal_details", offers_api.UNCHANGED),
+                idAtProvider=updated_offer_from_body.get("id_at_provider", offers_api.UNCHANGED),
                 **utils.compute_accessibility_edition_fields(updated_offer_from_body.get("accessibility")),
             )
             if body.image:

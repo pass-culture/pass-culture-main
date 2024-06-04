@@ -117,6 +117,7 @@ class PostProductTest:
                     "price": 1234,
                     "quantity": 3,
                 },
+                "id_at_provider": "l'id du provider",
             },
         )
 
@@ -134,6 +135,7 @@ class PostProductTest:
         assert created_offer.isDuo is False
         assert created_offer.bookingEmail == "spam@example.com"
         assert created_offer.description == "Enregistrement pour la nuit des temps"
+        assert created_offer.idAtProvider == "l'id du provider"
         assert created_offer.externalTicketOfficeUrl == "https://maposaic.com"
         assert created_offer.status == offer_mixin.OfferStatus.ACTIVE
         assert created_offer.withdrawalDetails == "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2"
@@ -170,7 +172,7 @@ class PostProductTest:
             "enableDoubleBookings": False,
             "externalTicketOfficeUrl": "https://maposaic.com",
             "id": created_offer.id,
-            "idAtProvider": None,
+            "idAtProvider": "l'id du provider",
             "image": {
                 "credit": "Jean-Crédit Photo",
                 "url": f"http://localhost/storage/thumbs/mediations/{human_ids.humanize(created_mediation.id)}",

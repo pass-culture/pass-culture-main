@@ -54,7 +54,11 @@ class _FIELDS:
         description="Id of the object (product, event...) on your side. It should not be more than 70 characters long.",
         example="Your own id",
     )
-
+    ID_AT_PROVIDER_WITH_MAX_LENGTH = Field(
+        description="Id of the object (product, event...) on your side. It should not be more than 70 characters long.",
+        example="Your own id",
+        max_length=70,
+    )
     OFFER_STATUS = Field(description=descriptions.OFFER_STATUS_FIELD_DESCRIPTION, example="ACTIVE")
 
     PERIOD_BEGINNING_DATE = Field(

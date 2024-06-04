@@ -229,6 +229,7 @@ class OfferCreationBase(serialization.ConfiguredBaseModel):
     is_duo: bool | None = IS_DUO_BOOKINGS_FIELD
     name: str = fields.OFFER_NAME_WITH_MAX_LENGTH
     withdrawal_details: str | None = WITHDRAWAL_DETAILS_FIELD
+    id_at_provider: str | None = fields.ID_AT_PROVIDER_WITH_MAX_LENGTH
 
 
 class Method(enum.Enum):
@@ -575,6 +576,7 @@ class OfferEditionBase(serialization.ConfiguredBaseModel):
     withdrawal_details: str | None = WITHDRAWAL_DETAILS_FIELD
     image: ImageBody | None
     description: str | None = DESCRIPTION_FIELD_MODEL
+    id_at_provider: str | None = fields.ID_AT_PROVIDER_WITH_MAX_LENGTH
 
     class Config:
         extra = "forbid"
