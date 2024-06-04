@@ -222,6 +222,7 @@ def update_offer(
     withdrawalType: models.WithdrawalTypeEnum | None | T_UNCHANGED = UNCHANGED,
     shouldSendMail: bool = False,
     is_from_private_api: bool = False,
+    idAtProvider: str | None | T_UNCHANGED = UNCHANGED,
 ) -> models.Offer:
     modifications = {
         field: new_value
@@ -241,6 +242,9 @@ def update_offer(
         )
     if isDuo is not UNCHANGED:
         validation.check_is_duo_compliance(isDuo, offer.subcategory)
+
+    if idAtProvider is not UNCHANGED:
+        validation.check_can_input_id_at_provider(offer.lastProvider, idAtProvider)
 
     withdrawal_updated = not (
         withdrawalType is UNCHANGED
