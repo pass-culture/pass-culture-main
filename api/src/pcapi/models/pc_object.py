@@ -10,6 +10,8 @@ import sqlalchemy.orm as sa_orm
 from sqlalchemy.sql.schema import Column
 from werkzeug.exceptions import NotFound
 
+from pcapi.models import db
+
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +26,11 @@ class BaseQuery(FlaskSQLAlchemyBaseQuery):
         obj = self.filter_by(id=obj_id).one_or_none()
         if not obj:
             raise NotFound()
+        return obj
+
+    def get(self, pk: int) -> typing.Any:
+        mapper = self._raw_columns[0]._annotations["parententity"]
+        obj = db.session.get(mapper, pk)
         return obj
 
 
