@@ -142,6 +142,7 @@ class PatchEventTest:
                 "itemCollectionDetails": "Here !",
                 "description": "A new description",
                 "image": {"file": image_data.GOOD_IMAGE},
+                "idAtProvider": "oh it has been updated",
             },
         )
 
@@ -153,6 +154,7 @@ class PatchEventTest:
         assert event_offer.bookingEmail == "test@myemail.com"
         assert event_offer.withdrawalDetails == "Here !"
         assert event_offer.description == "A new description"
+        assert event_offer.idAtProvider == "oh it has been updated"
 
         assert offers_models.Mediation.query.one()
         assert (

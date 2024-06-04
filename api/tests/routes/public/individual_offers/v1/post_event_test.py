@@ -83,6 +83,7 @@ class PostEventTest:
                 "name": "Nicolas Jaar dans ton salon",
                 "priceCategories": [{"price": 30000, "label": "triangle or"}],
                 "hasTicket": True,
+                "idAtProvider": "T'as un bel id tu sais",
             },
         )
 
@@ -111,6 +112,7 @@ class PostEventTest:
         assert created_offer.withdrawalDetails == "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2"
         assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP
         assert created_offer.withdrawalDelay == None
+        assert created_offer.idAtProvider == "T'as un bel id tu sais"
 
         created_mediation = offers_models.Mediation.query.one()
         assert created_mediation.offer == created_offer
@@ -144,7 +146,7 @@ class PostEventTest:
             "eventDuration": 120,
             "externalTicketOfficeUrl": "https://maposaic.com",
             "id": created_offer.id,
-            "idAtProvider": None,
+            "idAtProvider": "T'as un bel id tu sais",
             "image": {
                 "credit": "Jean-Crédit Photo",
                 "url": f"http://localhost/storage/thumbs/mediations/{human_ids.humanize(created_mediation.id)}",
