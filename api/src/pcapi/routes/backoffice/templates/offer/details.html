@@ -80,36 +80,42 @@
                   <span class="fw-bold">Sous-catégorie :</span> {{ offer.subcategoryId | format_offer_subcategory }}
                 </p>
                 {% if offer.extraData.musicType or offer.extraData.musicSubType %}
-                  <span class="fw-bold">Type de musique :</span>
-                  {% if offer.extraData.musicType %}
-                    {{ offer.extraData.musicType | format_music_type }}
-                  {% else %}
-                    [Non renseigné]
-                  {% endif %}
-                  -
-                  {% if offer.extraData.musicSubType %}
-                    {{ offer.extraData.musicSubType | format_music_subtype }}
-                  {% else %}
-                    [Non renseigné]
-                  {% endif %}
+                  <p class="mb-1">
+                    <span class="fw-bold">Type de musique :</span>
+                    {% if offer.extraData.musicType %}
+                      {{ offer.extraData.musicType | format_music_type }}
+                    {% else %}
+                      [Non renseigné]
+                    {% endif %}
+                    -
+                    {% if offer.extraData.musicSubType %}
+                      {{ offer.extraData.musicSubType | format_music_subtype }}
+                    {% else %}
+                      [Non renseigné]
+                    {% endif %}
+                  </p>
                 {% endif %}
                 {% if offer.extraData.showType or offer.extraData.showSubType %}
-                  <span class="fw-bold">Type de musique :</span>
-                  {% if offer.extraData.showType %}
-                    {{ offer.extraData.showType | format_show_type }}
-                  {% else %}
-                    [Non renseigné]
-                  {% endif %}
-                  -
-                  {% if offer.extraData.showSubType %}
-                    {{ offer.extraData.showSubType | format_show_subtype }}
-                  {% else %}
-                    [Non renseigné]
-                  {% endif %}
+                  <p class="mb-1">
+                    <span class="fw-bold">Type de spectacle :</span>
+                    {% if offer.extraData.showType %}
+                      {{ offer.extraData.showType | format_show_type }}
+                    {% else %}
+                      [Non renseigné]
+                    {% endif %}
+                    -
+                    {% if offer.extraData.showSubType %}
+                      {{ offer.extraData.showSubType | format_show_subtype }}
+                    {% else %}
+                      [Non renseigné]
+                    {% endif %}
+                  </p>
                 {% endif %}
                 {% if offer.extraData.genres %}<span class="fw-bold">Genres :</span> {{ offer.extraData.genres | format_string_list }}{% endif %}
                 {% if offer.withdrawalDetails %}
-                  <span class="fw-bold">Modalités de retrait :</span> {{ offer.withdrawalDetails | replace("\n", "<br />"|safe) }}
+                  <p class="mb-1">
+                    <span class="fw-bold">Modalités de retrait :</span> {{ offer.withdrawalDetails | replace("\n", "<br />"|safe) }}
+                  </p>
                 {% endif %}
               </div>
             </div>
