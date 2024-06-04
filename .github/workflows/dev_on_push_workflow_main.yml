@@ -278,7 +278,8 @@ jobs:
       always() &&
       github.ref == 'refs/heads/master' &&
       contains(fromJSON('["success", "skipped"]'), needs.test-api.result) &&
-      contains(fromJSON('["success", "skipped"]'), needs.test-pro.result)
+      contains(fromJSON('["success", "skipped"]'), needs.test-pro.result) &&
+      vars.DISABLE_PCAPI_OPS_DEPLOY == 'false'
     uses: ./.github/workflows/dev_on_workflow_deploy.yml
     with:
       environment: ops
