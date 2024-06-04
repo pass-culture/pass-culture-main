@@ -1571,7 +1571,11 @@ def check_can_move_event_offer(offer: models.Offer) -> list[offerers_models.Venu
 
     count_past_stocks = (
         models.Stock.query.with_entities(models.Stock.id)
-        .filter(models.Stock.offerId == offer.id, models.Stock.beginningDatetime < datetime.datetime.utcnow())
+        .filter(
+            models.Stock.offerId == offer.id,
+            models.Stock.beginningDatetime < datetime.datetime.utcnow(),
+            models.Stock.isSoftDeleted.is_(False),
+        )
         .count()
     )
     if count_past_stocks > 0:
