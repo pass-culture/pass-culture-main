@@ -18,8 +18,7 @@ const render = (priceCategoryAndScheduleCountByDate: EventDatesInfos) => {
       offerId={MOCK_OFFER_ID}
       priceCategoryAndScheduleCountByDate={priceCategoryAndScheduleCountByDate}
       onDimiss={() => {}}
-    />,
-    { features: ['WIP_ENABLE_DOWNLOAD_BOOKINGS'] }
+    />
   )
 }
 
