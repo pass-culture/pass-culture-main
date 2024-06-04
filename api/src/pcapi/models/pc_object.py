@@ -41,7 +41,7 @@ class DeletedRecordException(Exception):
 class PcObject:
     query_class = BaseQuery
 
-    id: sa_orm.Mapped[int] = Column(BigInteger, primary_key=True, autoincrement=True)  # type: ignore[assignment]
+    id: sa_orm.Mapped[int] = Column(BigInteger, primary_key=True, autoincrement=True)
 
     def __init__(self, **kwargs: typing.Any) -> None:
         from_dict = kwargs.pop("from_dict", None)
