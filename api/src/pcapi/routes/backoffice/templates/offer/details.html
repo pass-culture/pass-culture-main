@@ -212,7 +212,7 @@
                 </tr>
               </thead>
               <tbody>
-                {% for stock in offer.stocks | sort(attribute='id') %}
+                {% for stock in offer.stocks | sort(attribute='id', reverse=True) | sort(attribute='isSoftDeleted') | sort(attribute='beginningDatetime', reverse=True) %}
                   <tr>
                     <td>
                       {% if stock.id in editable_stock_ids and has_permission("MANAGE_OFFERS") %}
