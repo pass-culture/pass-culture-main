@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction } from 'react'
+import { Dispatch, SetStateAction } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
@@ -19,7 +19,6 @@ import { FiltersType } from './types'
 interface ReimbursementsSectionHeaderProps {
   areFiltersDefault: boolean
   filters: FiltersType
-  disable: boolean
   initialFilters: FiltersType
   selectableOptions: SelectOption[]
   setAreFiltersDefault: Dispatch<SetStateAction<boolean>>
@@ -30,7 +29,6 @@ interface ReimbursementsSectionHeaderProps {
 export const InvoicesFilters = ({
   areFiltersDefault,
   filters,
-  disable,
   initialFilters,
   selectableOptions,
   setAreFiltersDefault,
@@ -109,7 +107,6 @@ export const InvoicesFilters = ({
               value: 'all',
             }}
             onChange={setReimbursementPointFilter}
-            disabled={disable}
             name="reimbursementPoint"
             options={selectableOptions}
             value={selectedReimbursementPoint}
@@ -121,7 +118,6 @@ export const InvoicesFilters = ({
           <PeriodSelector
             onBeginningDateChange={setStartDateFilter}
             onEndingDateChange={setEndDateFilter}
-            isDisabled={disable}
             maxDateEnding={getToday()}
             periodBeginningDate={selectedPeriodStart}
             periodEndingDate={selectedPeriodEnd}
@@ -135,7 +131,7 @@ export const InvoicesFilters = ({
           <Button
             variant={ButtonVariant.PRIMARY}
             className={styles['button-group-search-button']}
-            disabled={!filters.periodStart || !filters.periodEnd || disable}
+            disabled={!filters.periodStart || !filters.periodEnd}
             onClick={async () => {
               setHasSearchedOnce(true)
               searchParams.set('reimbursementPoint', filters.reimbursementPoint)
