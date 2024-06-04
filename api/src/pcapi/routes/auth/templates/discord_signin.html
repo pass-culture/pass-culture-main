@@ -13,10 +13,10 @@
                 <hr class="my-5" />
                 <h1>Associer un compte Discord au pass Culture</h1>
                 <div>
-                    <div>
-                        {{ form.error_message }}
+                    <div class="text-warning ">
+                        {{ form.error_message}}
                     </div>
-                    <form action="" name="" method="post" data-turbo="false">
+                    <form action="{{ url_for('.discord_signin_post') }}" name="{{ url_for('.discord_signin_post') }}" method="post" data-turbo="false">
                         {{ form.redirect_url }}
                         <div class=" col-10 gap-2 w-2  items-center">
                             <div>
