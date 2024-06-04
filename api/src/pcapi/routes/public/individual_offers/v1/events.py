@@ -86,6 +86,7 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
                 visual_disability_compliant=body.accessibility.visual_disability_compliant,
                 withdrawal_details=body.withdrawal_details,
                 withdrawal_type=withdrawal_type,
+                id_at_provider=body.id_at_provider,
             )
             # To create the priceCategories, the offer needs to have an id
             db.session.flush()
@@ -220,6 +221,7 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
                 isDuo=update_body.get("is_duo", offers_api.UNCHANGED),
                 withdrawalDetails=update_body.get("withdrawal_details", offers_api.UNCHANGED),
                 description=update_body.get("description", offers_api.UNCHANGED),
+                idAtProvider=update_body.get("id_at_provider", offers_api.UNCHANGED),
                 **utils.compute_accessibility_edition_fields(update_body.get("accessibility")),
             )
             if body.image:

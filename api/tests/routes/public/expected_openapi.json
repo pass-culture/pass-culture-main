@@ -2499,6 +2499,14 @@
                         "title": "Hasticket",
                         "type": "boolean"
                     },
+                    "idAtProvider": {
+                        "description": "Id of the object (product, event...) on your side. It should not be more than 70 characters long.",
+                        "example": "Your own id",
+                        "maxLength": 70,
+                        "nullable": true,
+                        "title": "Idatprovider",
+                        "type": "string"
+                    },
                     "image": {
                         "anyOf": [
                             {
@@ -2694,6 +2702,14 @@
                         "nullable": true,
                         "title": "Eventduration",
                         "type": "integer"
+                    },
+                    "idAtProvider": {
+                        "description": "Id of the object (product, event...) on your side. It should not be more than 70 characters long.",
+                        "example": "Your own id",
+                        "maxLength": 70,
+                        "nullable": true,
+                        "title": "Idatprovider",
+                        "type": "string"
                     },
                     "image": {
                         "anyOf": [
@@ -6102,6 +6118,14 @@
                         "title": "Externalticketofficeurl",
                         "type": "string"
                     },
+                    "idAtProvider": {
+                        "description": "Id of the object (product, event...) on your side. It should not be more than 70 characters long.",
+                        "example": "Your own id",
+                        "maxLength": 70,
+                        "nullable": true,
+                        "title": "Idatprovider",
+                        "type": "string"
+                    },
                     "image": {
                         "anyOf": [
                             {
@@ -6292,6 +6316,14 @@
                         "nullable": true,
                         "title": "Enabledoublebookings",
                         "type": "boolean"
+                    },
+                    "idAtProvider": {
+                        "description": "Id of the object (product, event...) on your side. It should not be more than 70 characters long.",
+                        "example": "Your own id",
+                        "maxLength": 70,
+                        "nullable": true,
+                        "title": "Idatprovider",
+                        "type": "string"
                     },
                     "image": {
                         "anyOf": [
