@@ -47,6 +47,25 @@ class CheckProviderCanEditStockTest:
 
 
 @pytest.mark.usefixtures("db_session")
+class CheckCanInputIdAtProviderTest:
+    def test_without_id_at_provider(self):
+        validation.check_can_input_id_at_provider(None, None)
+
+    def test_with_id_at_provider(self):
+        provider = providers_factories.APIProviderFactory()
+        validation.check_can_input_id_at_provider(provider, "an id at provider")
+
+    def test_raise_when_id_at_provider_given_without_a_provider(self):
+
+        with pytest.raises(exceptions.CannotSetIdAtProviderWithoutAProvider) as error:
+            validation.check_can_input_id_at_provider(None, "an id at provider")
+
+        assert error.value.errors["idAtProvider"] == [
+            "Une offre ne peut être créée avec un idAtProvider si elle n'a pas de provider"
+        ]
+
+
+@pytest.mark.usefixtures("db_session")
 class CheckPricesForStockTest:
     def test_event_prices(self):
         offer = offers_factories.EventOfferFactory()

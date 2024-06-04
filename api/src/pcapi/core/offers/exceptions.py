@@ -128,6 +128,14 @@ class SubCategoryIsInactive(OfferCreationBaseException):
         )
 
 
+class CannotSetIdAtProviderWithoutAProvider(OfferCreationBaseException):
+    def __init__(self) -> None:
+        super().__init__(
+            "idAtProvider",
+            "Une offre ne peut être créée avec un idAtProvider si elle n'a pas de provider",
+        )
+
+
 class NoDelayWhenEventWithdrawalTypeHasNoTicket(OfferCreationBaseException):
     def __init__(self) -> None:
         super().__init__(
