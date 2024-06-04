@@ -1551,33 +1551,45 @@
             "CollectiveOffersEducationalInstitutionResponseModel": {
                 "properties": {
                     "city": {
+                        "description": "City where the educational institution is located",
+                        "example": "Chalon-sur-Sa\u00f4ne",
                         "title": "City",
                         "type": "string"
                     },
-                    "id": {
-                        "title": "Id",
+                    "educationalInstitution": {
+                        "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
+                        "example": "0010008D",
+                        "title": "Educationalinstitution",
+                        "type": "string"
+                    },
+                    "educationalInstitutionId": {
+                        "description": "Educational institution id in the pass Culture application. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
+                        "example": 1234,
+                        "title": "Educationalinstitutionid",
                         "type": "integer"
                     },
                     "institutionType": {
+                        "description": "Educational institution type",
+                        "example": "LYCEE GENERAL",
                         "title": "Institutiontype",
                         "type": "string"
                     },
                     "name": {
+                        "description": "Educational institution name",
+                        "example": "Lyc\u00e9e Pontus de Tyard",
                         "title": "Name",
                         "type": "string"
                     },
                     "postalCode": {
+                        "description": "Educational institution postal code",
+                        "example": "71100",
                         "title": "Postalcode",
-                        "type": "string"
-                    },
-                    "uai": {
-                        "title": "Uai",
                         "type": "string"
                     }
                 },
                 "required": [
-                    "id",
-                    "uai",
+                    "educationalInstitutionId",
+                    "educationalInstitution",
                     "name",
                     "institutionType",
                     "city",
@@ -3626,38 +3638,52 @@
                 "additionalProperties": false,
                 "properties": {
                     "city": {
+                        "description": "City where the educational institution is located",
+                        "example": "Chalon-sur-Sa\u00f4ne",
                         "nullable": true,
                         "title": "City",
                         "type": "string"
                     },
-                    "id": {
+                    "educationalInstitution": {
+                        "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
+                        "example": "0010008D",
                         "nullable": true,
-                        "title": "Id",
+                        "title": "Educationalinstitution",
+                        "type": "string"
+                    },
+                    "educationalInstitutionId": {
+                        "description": "Educational institution id in the pass Culture application. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
+                        "example": 1234,
+                        "nullable": true,
+                        "title": "Educationalinstitutionid",
                         "type": "integer"
                     },
                     "institutionType": {
+                        "description": "Educational institution type",
+                        "example": "LYCEE GENERAL",
                         "nullable": true,
                         "title": "Institutiontype",
                         "type": "string"
                     },
                     "limit": {
                         "default": 20,
+                        "description": "Number of items per page",
+                        "example": 10,
                         "title": "Limit",
                         "type": "integer"
                     },
                     "name": {
+                        "description": "Educational institution name",
+                        "example": "Lyc\u00e9e Pontus de Tyard",
                         "nullable": true,
                         "title": "Name",
                         "type": "string"
                     },
                     "postalCode": {
+                        "description": "Educational institution postal code",
+                        "example": "71100",
                         "nullable": true,
                         "title": "Postalcode",
-                        "type": "string"
-                    },
-                    "uai": {
-                        "nullable": true,
-                        "title": "Uai",
                         "type": "string"
                     }
                 },
@@ -5352,14 +5378,14 @@
                         "type": "integer"
                     },
                     "educationalInstitution": {
-                        "description": "Institution id of the educational institution using this offer. The institions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
-                        "example": "uai",
+                        "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
+                        "example": "0010008D",
                         "nullable": true,
                         "title": "Educationalinstitution",
                         "type": "string"
                     },
                     "educationalInstitutionId": {
-                        "description": "Pass Culture id of the educational institution using this offer. The institions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
+                        "description": "Educational institution id in the pass Culture application. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
                         "example": 1234,
                         "nullable": true,
                         "title": "Educationalinstitutionid",
@@ -5599,14 +5625,14 @@
                         "type": "integer"
                     },
                     "educationalInstitution": {
-                        "description": "Institution id of the educational institution using this offer. The institions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
-                        "example": "uai",
+                        "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
+                        "example": "0010008D",
                         "nullable": true,
                         "title": "Educationalinstitution",
                         "type": "string"
                     },
                     "educationalInstitutionId": {
-                        "description": "Pass Culture id of the educational institution using this offer. The institions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
+                        "description": "Educational institution id in the pass Culture application. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
                         "example": 1234,
                         "nullable": true,
                         "title": "Educationalinstitutionid",
@@ -10607,78 +10633,92 @@
                 "operationId": "ListEducationalInstitutions",
                 "parameters": [
                     {
-                        "description": "",
+                        "description": "Educational institution id in the pass Culture application. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
                         "in": "query",
-                        "name": "id",
+                        "name": "educationalInstitutionId",
                         "required": false,
                         "schema": {
+                            "description": "Educational institution id in the pass Culture application. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
+                            "example": 1234,
                             "nullable": true,
-                            "title": "Id",
+                            "title": "Educationalinstitutionid",
                             "type": "integer"
                         }
                     },
                     {
-                        "description": "",
+                        "description": "Educational institution name",
                         "in": "query",
                         "name": "name",
                         "required": false,
                         "schema": {
+                            "description": "Educational institution name",
+                            "example": "Lyc\u00e9e Pontus de Tyard",
                             "nullable": true,
                             "title": "Name",
                             "type": "string"
                         }
                     },
                     {
-                        "description": "",
+                        "description": "Educational institution type",
                         "in": "query",
                         "name": "institutionType",
                         "required": false,
                         "schema": {
+                            "description": "Educational institution type",
+                            "example": "LYCEE GENERAL",
                             "nullable": true,
                             "title": "Institutiontype",
                             "type": "string"
                         }
                     },
                     {
-                        "description": "",
+                        "description": "City where the educational institution is located",
                         "in": "query",
                         "name": "city",
                         "required": false,
                         "schema": {
+                            "description": "City where the educational institution is located",
+                            "example": "Chalon-sur-Sa\u00f4ne",
                             "nullable": true,
                             "title": "City",
                             "type": "string"
                         }
                     },
                     {
-                        "description": "",
+                        "description": "Educational institution postal code",
                         "in": "query",
                         "name": "postalCode",
                         "required": false,
                         "schema": {
+                            "description": "Educational institution postal code",
+                            "example": "71100",
                             "nullable": true,
                             "title": "Postalcode",
                             "type": "string"
                         }
                     },
                     {
-                        "description": "",
+                        "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
                         "in": "query",
-                        "name": "uai",
+                        "name": "educationalInstitution",
                         "required": false,
                         "schema": {
+                            "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
+                            "example": "0010008D",
                             "nullable": true,
-                            "title": "Uai",
+                            "title": "Educationalinstitution",
                             "type": "string"
                         }
                     },
                     {
-                        "description": "",
+                        "description": "Number of items per page",
                         "in": "query",
                         "name": "limit",
                         "required": false,
                         "schema": {
                             "default": 20,
+                            "description": "Number of items per page",
+                            "example": 10,
                             "title": "Limit",
                             "type": "integer"
                         }

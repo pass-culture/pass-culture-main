@@ -10,6 +10,7 @@ from pcapi.utils import date as date_utils
 _next_month = datetime.datetime.utcnow().replace(hour=12, minute=0, second=0) + relativedelta.relativedelta(months=1)
 _paris_tz_next_month = date_utils.utc_datetime_to_department_timezone(_next_month, "75")
 
+LIMIT_DESCRIPTION = "Number of items per page"
 
 VENUE_ID = Field(
     example=1234,
@@ -97,14 +98,30 @@ COLLECTIVE_OFFER_BOOKING_LIMIT_DATETIME = Field(
 )
 COLLECTIVE_OFFER_TOTAL_PRICE = Field(example=100.00, description="Collective offer price (in €)")
 COLLECTIVE_OFFER_NB_OF_TICKETS_FIELD = Field(example=10, description="Number of tickets for your collective offer")
-COLLECTIVE_OFFER_EDUCATIONAL_PRICE_DETAIL_FIELD = Field(
+COLLECTIVE_OFFER_EDUCATIONAL_PRICE_DETAIL = Field(
     description="The explanation of the offer price", example="10 tickets x 10 € = 100 €"
 )
-COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_ID_FIELD = Field(
-    description="Pass Culture id of the educational institution using this offer. The institions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
+COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_ID = Field(
+    description="Educational institution id in the pass Culture application. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
     example=1234,
 )
-COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_FIELD = Field(
-    description="Institution id of the educational institution using this offer. The institions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
-    example="uai",
+COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_UAI = Field(
+    description='Educational institution UAI ("Unité Administrative Immatriculée") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**',
+    example="0010008D",
+)
+COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_NAME = Field(
+    description="Educational institution name",
+    example="Lycée Pontus de Tyard",
+)
+COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_TYPE = Field(
+    description="Educational institution type",
+    example="LYCEE GENERAL",
+)
+COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_CITY = Field(
+    description="City where the educational institution is located",
+    example="Chalon-sur-Saône",
+)
+COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_POSTAL_CODE = Field(
+    description="Educational institution postal code",
+    example="71100",
 )
