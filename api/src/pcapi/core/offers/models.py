@@ -845,6 +845,10 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
             return False
         return True
 
+    @property
+    def addressName(self) -> str:
+        return self.offererAddress.label if self.offererAddress else self.venue.common_name
+
 
 class ActivationCode(PcObject, Base, Model):
     __tablename__ = "activation_code"

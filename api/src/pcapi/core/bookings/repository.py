@@ -37,6 +37,7 @@ from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezon
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offerers.models import OffererAddress
 from pcapi.core.offerers.models import UserOfferer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
@@ -859,6 +860,7 @@ def find_individual_bookings_event_happening_tomorrow_query() -> list[Booking]:
         .join(Offer.venue)
         .outerjoin(Booking.activationCode)
         .outerjoin(Offer.criteria)
+        .outerjoin(Offer.offererAddress)
         .filter(Stock.beginningDatetime >= tomorrow_min, Stock.beginningDatetime <= tomorrow_max)
         .filter(Offer.isEvent)
         .filter(not_(Offer.isDigital))
@@ -871,6 +873,7 @@ def find_individual_bookings_event_happening_tomorrow_query() -> list[Booking]:
             .options(
                 contains_eager(Offer.venue),
                 contains_eager(Offer.criteria),
+                contains_eager(Offer.offererAddress).load_only(OffererAddress.label),
             )
         )
         .all()
