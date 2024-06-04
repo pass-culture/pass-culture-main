@@ -132,7 +132,7 @@ class CannotSetIdAtProviderWithoutAProvider(OfferCreationBaseException):
     def __init__(self) -> None:
         super().__init__(
             "idAtProvider",
-            "Une offre ne peut être créée avec un idAtProvider si elle n'a pas de provider",
+            "Une offre ne peut être créée ou éditée avec un idAtProvider si elle n'a pas de provider",
         )
 
 

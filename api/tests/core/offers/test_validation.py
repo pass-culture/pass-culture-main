@@ -61,7 +61,7 @@ class CheckCanInputIdAtProviderTest:
             validation.check_can_input_id_at_provider(None, "an id at provider")
 
         assert error.value.errors["idAtProvider"] == [
-            "Une offre ne peut être créée avec un idAtProvider si elle n'a pas de provider"
+            "Une offre ne peut être créée ou éditée avec un idAtProvider si elle n'a pas de provider"
         ]
 
 
