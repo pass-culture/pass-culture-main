@@ -1027,6 +1027,7 @@ class EducationalInstitution(PcObject, Base, Model):
 
     id: sa_orm.Mapped[int] = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
 
+    # this institutionId corresponds to the UAI ("Unité Administrative Immatriculée") code
     institutionId: str = sa.Column(sa.String(30), nullable=False, unique=True, index=True)
 
     institutionType: str = sa.Column(sa.String(80), nullable=False)
