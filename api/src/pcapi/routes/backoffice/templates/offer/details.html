@@ -236,7 +236,9 @@
                     <td>{{ stock.id }}</td>
                     <td>{{ stock.dnBookedQuantity }}</td>
                     <td>
-                      {% if stock.remainingStock is none %}
+                      {% if stock.isSoftDeleted %}
+                        <span class="badge text-bg-light shadow-sm">supprimé</span>
+                      {% elif stock.remainingStock is none %}
                         Illimité
                       {% else %}
                         {{ stock.remainingStock }}

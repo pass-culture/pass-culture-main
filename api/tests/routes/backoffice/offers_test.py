@@ -1871,6 +1871,26 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert stocks_rows[0]["Prix"] == "10,10 €"
         assert stocks_rows[0]["Date / Heure"] == format_date(stock.beginningDatetime, "%d/%m/%Y à %Hh%M")
 
+    def test_get_offer_details_with_soft_deleted_stock(self, authenticated_client):
+        stock = offers_factories.EventStockFactory(quantity=0, dnBookedQuantity=0, isSoftDeleted=True)
+
+        query_count = self.expected_num_queries
+        query_count += 1  # _get_editable_stock
+        query_count += 3  # check_can_move_event_offer
+
+        url = url_for(self.endpoint, offer_id=stock.offer.id)
+        with assert_num_queries(query_count):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        stocks_rows = html_parser.extract_table_rows(response.data, parent_class="stock-tab-pane")
+        assert len(stocks_rows) == 1
+        assert stocks_rows[0]["Stock ID"] == str(stock.id)
+        assert stocks_rows[0]["Stock réservé"] == "0"
+        assert stocks_rows[0]["Stock restant"] == "supprimé"
+        assert stocks_rows[0]["Prix"] == "10,10 €"
+        assert stocks_rows[0]["Date / Heure"] == format_date(stock.beginningDatetime, "%d/%m/%Y à %Hh%M")
+
     def test_get_event_offer(self, legit_user, authenticated_client):
         venue = offerers_factories.VenueFactory()
         offerers_factories.VenueFactory.create_batch(2, managingOfferer=venue.managingOfferer, pricing_point=venue)
