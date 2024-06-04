@@ -189,6 +189,7 @@ def create_offer(
     )
 
     repository.add_to_session(offer)
+    db.session.flush()
 
     logger.info(
         "models.Offer has been created",
