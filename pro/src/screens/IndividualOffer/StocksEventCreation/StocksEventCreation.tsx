@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useSWRConfig } from 'swr'
 
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { StocksEventList } from 'components/StocksEventList/StocksEventList'
+import { GET_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { useNotification } from 'hooks/useNotification'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
@@ -22,6 +24,7 @@ export const StocksEventCreation = ({
 }: StocksEventCreationProps): JSX.Element => {
   const navigate = useNavigate()
   const mode = useOfferWizardMode()
+  const { mutate } = useSWRConfig()
   const notify = useNotification()
 
   const [hasStocks, setHasStocks] = useState<boolean | null>(null)
@@ -37,13 +40,14 @@ export const StocksEventCreation = ({
     )
   }
 
-  const handleNextStep = () => {
+  const handleNextStep = async () => {
     // Check that there is at least one stock left
     if (!hasStocks) {
       notify.error('Veuillez renseigner au moins une date')
       return
     }
 
+    await mutate([GET_OFFER_QUERY_KEY, offer.id])
     navigate(
       getIndividualOfferUrl({
         offerId: offer.id,

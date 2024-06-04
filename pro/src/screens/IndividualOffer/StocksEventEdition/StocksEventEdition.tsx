@@ -3,6 +3,7 @@ import { FieldArray, FormikProvider, useFormik } from 'formik'
 import isEqual from 'lodash/isEqual'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import {
@@ -21,6 +22,7 @@ import { FilterResultsRow } from 'components/StocksEventList/FilterResultsRow'
 import { NoResultsRow } from 'components/StocksEventList/NoResultsRow'
 import { SortArrow } from 'components/StocksEventList/SortArrow'
 import { STOCKS_PER_PAGE } from 'components/StocksEventList/StocksEventList'
+import { GET_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
@@ -123,6 +125,7 @@ export const StocksEventEdition = ({
   // utilities
   const mode = useOfferWizardMode()
   const navigate = useNavigate()
+  const { mutate } = useSWRConfig()
   const notify = useNotification()
   const [searchParams, setSearchParams] = useSearchParams()
   const priceCategoriesOptions = useMemo(
@@ -311,6 +314,7 @@ export const StocksEventEdition = ({
       return
     }
 
+    await mutate([GET_OFFER_QUERY_KEY, offer.id])
     navigate(nextStepUrl)
     notify.success(getSuccessMessage(mode))
     setIsStocksEventConfirmModal(false)
