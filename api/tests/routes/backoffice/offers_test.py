@@ -1826,17 +1826,17 @@ class GetOfferDetailsTest(GetEndpointHelper):
 
         stocks_rows = html_parser.extract_table_rows(response.data)
         assert len(stocks_rows) == 2
-        assert stocks_rows[0]["Stock ID"] == str(expired_stock_1.id)
-        assert stocks_rows[0]["Stock réservé"] == "70"
-        assert stocks_rows[0]["Stock restant"] == "0"
-        assert stocks_rows[0]["Prix"] == "10,10 €"
-        assert stocks_rows[0]["Date / Heure"] == format_date(expired_stock_1.beginningDatetime, "%d/%m/%Y à %Hh%M")
-
-        assert stocks_rows[1]["Stock ID"] == str(expired_stock_2.id)
-        assert stocks_rows[1]["Stock réservé"] == "25"
+        assert stocks_rows[1]["Stock ID"] == str(expired_stock_1.id)
+        assert stocks_rows[1]["Stock réservé"] == "70"
         assert stocks_rows[1]["Stock restant"] == "0"
         assert stocks_rows[1]["Prix"] == "10,10 €"
-        assert stocks_rows[1]["Date / Heure"] == format_date(expired_stock_2.beginningDatetime, "%d/%m/%Y à %Hh%M")
+        assert stocks_rows[1]["Date / Heure"] == format_date(expired_stock_1.beginningDatetime, "%d/%m/%Y à %Hh%M")
+
+        assert stocks_rows[0]["Stock ID"] == str(expired_stock_2.id)
+        assert stocks_rows[0]["Stock réservé"] == "25"
+        assert stocks_rows[0]["Stock restant"] == "0"
+        assert stocks_rows[0]["Prix"] == "10,10 €"
+        assert stocks_rows[0]["Date / Heure"] == format_date(expired_stock_2.beginningDatetime, "%d/%m/%Y à %Hh%M")
 
     @pytest.mark.parametrize(
         "quantity,booked_quantity,expected_remaining",
@@ -1890,6 +1890,27 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert stocks_rows[0]["Stock restant"] == "supprimé"
         assert stocks_rows[0]["Prix"] == "10,10 €"
         assert stocks_rows[0]["Date / Heure"] == format_date(stock.beginningDatetime, "%d/%m/%Y à %Hh%M")
+
+    def test_get_offer_details_stocks_sorted_by_event_date_desc(self, authenticated_client):
+        now = datetime.datetime.utcnow()
+        offer = offers_factories.EventOfferFactory()
+        stock1 = offers_factories.EventStockFactory(offer=offer, beginningDatetime=now + datetime.timedelta(days=5))
+        stock2 = offers_factories.EventStockFactory(offer=offer, beginningDatetime=now + datetime.timedelta(days=9))
+        stock3 = offers_factories.EventStockFactory(
+            offer=offer, beginningDatetime=now + datetime.timedelta(days=7), isSoftDeleted=True
+        )
+
+        query_count = self.expected_num_queries
+        query_count += 1  # _get_editable_stock
+        query_count += 3  # check_can_move_event_offer
+
+        url = url_for(self.endpoint, offer_id=offer.id)
+        with assert_num_queries(query_count):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        stocks_rows = html_parser.extract_table_rows(response.data, parent_class="stock-tab-pane")
+        assert [row["Stock ID"] for row in stocks_rows] == [str(stock2.id), str(stock3.id), str(stock1.id)]
 
     def test_get_event_offer(self, legit_user, authenticated_client):
         venue = offerers_factories.VenueFactory()
