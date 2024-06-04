@@ -1,6 +1,7 @@
 from datetime import date
 from datetime import datetime
 from datetime import time
+from datetime import timedelta
 import random
 import string
 import typing
@@ -1045,3 +1046,12 @@ class UserProNewNavStateFactory(BaseFactory):
     user = factory.SubFactory(ProFactory)
     eligibilityDate = LazyAttribute(lambda _: datetime.utcnow())
     newNavDate = LazyAttribute(lambda _: datetime.utcnow())
+
+
+class GdprUserDataExtractBeneficiary(BaseFactory):
+    class Meta:
+        model = models.GdprUserDataExtract
+
+    dateCreated = LazyAttribute(lambda _: datetime.utcnow() - timedelta(days=8))
+    user = factory.SubFactory(BeneficiaryFactory)
+    authorUser = factory.SubFactory(AdminFactory)

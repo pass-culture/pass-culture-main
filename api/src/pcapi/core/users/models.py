@@ -937,7 +937,7 @@ class UserProNewNavState(PcObject, Base, Model):
     newNavDate: datetime = sa.Column(sa.DateTime, nullable=True)
 
 
-class GdprUserDataExtract(PcObject, Base):
+class GdprUserDataExtract(PcObject, Base, Model):
     __tablename__ = "gdpr_user_data_extract"
 
     dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
