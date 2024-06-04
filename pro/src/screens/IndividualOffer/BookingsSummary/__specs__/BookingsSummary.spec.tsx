@@ -21,8 +21,7 @@ const render = (offer: GetIndividualOfferResponseModel) => {
   renderWithProviders(
     <IndividualOfferContext.Provider value={contextValue}>
       <BookingsSummaryScreen offer={offer} />
-    </IndividualOfferContext.Provider>,
-    { features: ['WIP_ENABLE_DOWNLOAD_BOOKINGS'] }
+    </IndividualOfferContext.Provider>
   )
 }
 
