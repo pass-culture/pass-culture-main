@@ -21,8 +21,9 @@ IS_INTEGRATION = ENV == "integration"
 IS_STAGING = ENV == "staging"
 IS_PROD = ENV == "production"
 IS_TESTING = ENV == "testing"
+IS_OPS = ENV == "ops"
 
-if ENV not in ("development", "integration", "staging", "production", "testing"):
+if ENV not in ("development", "integration", "staging", "production", "testing", "ops"):
     raise RuntimeError("Unknown environment")
 
 IS_RUNNING_TESTS = os.environ.get("RUN_ENV") == "tests"
@@ -31,7 +32,7 @@ IS_PERFORMANCE_TESTS = bool(int(os.environ.get("IS_PERFORMANCE_TESTS", "0")))
 IS_E2E_TESTS = bool(int(os.environ.get("IS_E2E_TESTS", "0")))
 assert not (IS_PROD and IS_PERFORMANCE_TESTS)
 
-RUNS_ON_KUBERNETES = IS_TESTING or IS_STAGING or IS_PROD or IS_INTEGRATION
+RUNS_ON_KUBERNETES = IS_TESTING or IS_STAGING or IS_PROD or IS_INTEGRATION or IS_OPS
 
 # Load configuration files
 env_path = Path(f"./.env.{ENV}")
