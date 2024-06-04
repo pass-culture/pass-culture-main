@@ -351,10 +351,10 @@ class PostCollectiveOfferBodyModel(BaseModel):
     booking_limit_datetime: datetime = fields.COLLECTIVE_OFFER_BOOKING_LIMIT_DATETIME
     total_price: decimal.Decimal = fields.COLLECTIVE_OFFER_TOTAL_PRICE
     number_of_tickets: int = fields.COLLECTIVE_OFFER_NB_OF_TICKETS_FIELD
-    educational_price_detail: str | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_PRICE_DETAIL_FIELD
+    educational_price_detail: str | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_PRICE_DETAIL
     # link to educational institution
-    educational_institution_id: int | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_ID_FIELD
-    educational_institution: str | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_FIELD
+    educational_institution_id: int | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_ID
+    educational_institution: str | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_UAI
 
     _validate_number_of_tickets = number_of_tickets_validator("number_of_tickets")
     _validate_total_price = price_validator("total_price")
@@ -463,11 +463,11 @@ class PatchCollectiveOfferBodyModel(BaseModel):
         example=100.00,
         alias="totalPrice",
     )
-    educationalPriceDetail: str | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_PRICE_DETAIL_FIELD
+    educationalPriceDetail: str | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_PRICE_DETAIL
     numberOfTickets: int | None = fields.COLLECTIVE_OFFER_NB_OF_TICKETS_FIELD
     # educational_institution
-    educationalInstitutionId: int | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_ID_FIELD
-    educationalInstitution: str | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_FIELD
+    educationalInstitutionId: int | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_ID
+    educationalInstitution: str | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_UAI
 
     _validate_number_of_tickets = number_of_tickets_validator("numberOfTickets")
     _validate_total_price = price_validator("price")
