@@ -1,6 +1,8 @@
+from pydantic.v1 import Field
 from pydantic.v1 import validator
 
 from pcapi.core.educational.models import EducationalInstitution
+from pcapi.routes.public.documentation_constants import fields
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 
@@ -9,12 +11,12 @@ MAX_LIMIT_EDUCATIONAL_INSTITUTION = 20
 
 
 class CollectiveOffersEducationalInstitutionResponseModel(BaseModel):
-    id: int
-    uai: str
-    name: str
-    institutionType: str
-    city: str
-    postalCode: str
+    id: int = fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_ID
+    uai: str = fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_UAI
+    name: str = fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_NAME
+    institutionType: str = fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_TYPE
+    city: str = fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_CITY
+    postalCode: str = fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_POSTAL_CODE
 
     class Config:
         orm_mode = True
@@ -30,13 +32,13 @@ class CollectiveOffersListEducationalInstitutionResponseModel(BaseModel):
 
 
 class GetListEducationalInstitutionsQueryModel(BaseModel):
-    id: int | None
-    name: str | None
-    institution_type: str | None
-    city: str | None
-    postal_code: str | None
-    uai: str | None
-    limit: int = MAX_LIMIT_EDUCATIONAL_INSTITUTION
+    id: int | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_ID
+    name: str | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_NAME
+    institution_type: str | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_TYPE
+    city: str | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_CITY
+    postal_code: str | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_POSTAL_CODE
+    uai: str | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_UAI
+    limit: int = Field(MAX_LIMIT_EDUCATIONAL_INSTITUTION, description=fields.LIMIT_DESCRIPTION, example=10)
 
     @validator("limit")
     def validate_limit(cls, limit: int) -> int:
