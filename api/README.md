@@ -70,7 +70,7 @@ Une gestion plus fine de l'environnement virtuel utilisé par `poetry` peut êtr
 
 ### Redis et Postgresql (nécessaire hors docker)
 
-- Démarrer les services postgresql et redis, par exemple lorsqu'ils ont été installés via _Homebrew_:
+- Démarrer les services postgresql et redis, par exemple lorsqu'ils ont été installés via _Homebrew_ :
   ```shell
   brew services start postgresql
   brew services start redis
