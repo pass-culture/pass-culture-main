@@ -206,6 +206,15 @@ class GetProUserTest(GetEndpointHelper):
         content = html_parser.extract_input_value(response.data, name="eligibility_date")
         assert content == "2029-04-25T10:18"
 
+    def test_get_pro_user_with_null_names(self, authenticated_client, db_session):
+        pro_user = users_factories.ProFactory(firstName=None, lastName=None)
+        url = url_for("backoffice_web.pro_user.get", user_id=pro_user.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+            # does not crash
+
 
 class UpdateProUserTest(PostEndpointHelper):
     endpoint = "backoffice_web.pro_user.update_pro_user"
