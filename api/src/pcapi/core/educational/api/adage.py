@@ -235,12 +235,20 @@ def synchronize_adage_ids_on_venues(debug: bool = False, timestamp: int | None =
                     send_eac_offerer_activation_email(venue, list(emails))
                 venue.adageInscriptionDate = datetime.utcnow()
 
-            adage_id = venue_to_adage_id[venue.id]
-            if venue.adageId != adage_id:
-                adage_id_updates[venue.id] = adage_id
+            new_adage_id = venue_to_adage_id.get(venue.id)
+            if new_adage_id:
+                if venue.adageId != new_adage_id:
+                    adage_id_updates[venue.id] = new_adage_id
 
-            venue.adageId = adage_id
-            db.session.add(venue)
+                venue.adageId = str(new_adage_id)
+                db.session.add(venue)
+            else:
+                logger.warning(
+                    "Venue %s is not present in Adage. We could add it to the partner with adage_id %s",
+                    venue.id,
+                    venue.adageId,
+                    extra={"venue.id": venue.id, "adageId": venue.adageId},
+                )
 
         # filter adage_cps rows that are linked to an unexisting
         # venue. This can happen since the base data comes from an

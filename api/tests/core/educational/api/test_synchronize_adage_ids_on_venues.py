@@ -1,6 +1,8 @@
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
+import logging
+import sys
 from unittest.mock import patch
 
 from pydantic.v1 import parse_obj_as
@@ -152,7 +154,7 @@ def test_synchronize_adage_ids_on_venues(db_session):
     ADAGE_API_KEY="adage-api-key",
     ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient",
 )
-def test_synchronize_adage_ids_on_venues_with_unknon_venue(db_session):
+def test_synchronize_adage_ids_on_venues_with_unknown_venue(db_session):
     """Test the synchronization is not blocked (no error) if the adage
     client returns an unknown venue id.
     """
@@ -182,12 +184,49 @@ def test_synchronize_adage_ids_on_venues_with_unknon_venue(db_session):
 
     db.session.refresh(venue)
 
-    # venue had not adageId and obtained two after synchronization
+    # venue had no adageId and obtained two after synchronization
     # (venues merged)
     # -> two new AdageVenueAddress must have been created
     # -> the last adageId received is saved inside the Venue
     assert venue.adageId == str(adage_id3)
     assert {ava.adageId for ava in venue.adage_addresses} == {str(adage_id1), str(adage_id3)}
+
+
+@override_settings(
+    ADAGE_API_URL="https://adage-api-url",
+    ADAGE_API_KEY="adage-api-key",
+    ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient",
+)
+def test_synchronize_adage_ids_on_venues_with_venue_id_missing(db_session, caplog):
+    """Test the synchronization is not blocked (no error) if the adage
+    client returns venue with no venue id.
+    """
+    adage_id1 = 128028
+    adage_id_with_missing_venue_id = 128030
+
+    venue = offerers_factories.VenueFactory()
+    _venue_with_adage = offerers_factories.VenueFactory(adageId=str(adage_id_with_missing_venue_id))
+
+    venue_data = {**BASE_DATA, "id": adage_id1, "venueId": venue.id}
+    venue_data_without_venueId = {**BASE_DATA, "id": adage_id_with_missing_venue_id, "venueId": sys.maxsize}
+
+    with requests_mock.Mocker() as request_mock:
+        request_mock.get(
+            "https://adage-api-url/v1/partenaire-culturel",
+            request_headers={
+                "X-omogen-api-key": "adage-api-key",
+            },
+            status_code=200,
+            json=[venue_data, venue_data_without_venueId],
+        )
+        with patch("pcapi.core.educational.api.adage.send_eac_offerer_activation_email"):
+            with caplog.at_level(logging.WARNING):
+                educational_api_adage.synchronize_adage_ids_on_venues()
+
+                assert "is not present in Adage" in caplog.records[0].message
+
+    # venue had venue_id
+    assert venue.adageId == str(adage_id1)
 
 
 @override_settings(
