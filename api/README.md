@@ -129,7 +129,7 @@ Les tests pourront ensuite être exécutés avec ou sans docker-compose
 ### Écriture des tests
 
 Les tests utilisent leur propre base de données. Si un test a besoin d'accéder à la base de données, il faut décorer la
-fonction ou la classe avec:
+fonction ou la classe avec :
 
 ```python
 @pytest.mark.usefixtures("db_session")
