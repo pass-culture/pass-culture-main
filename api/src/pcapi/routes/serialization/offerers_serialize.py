@@ -359,7 +359,7 @@ class GetOffererV2StatsResponseModel(BaseModel):
 class GetOffererAddressResponseModel(BaseModel):
     id: int
     label: str | None
-    street: str
+    street: str | None
     postalCode: str
     city: str
     isEditable: bool
