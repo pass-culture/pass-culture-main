@@ -432,7 +432,7 @@ class CollectiveOffer(
 
     isNonFreeOffer: sa_orm.Mapped["bool | None"] = sa.orm.query_expression()
 
-    offererAddressId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offerer_address.id"), nullable=True)
+    offererAddressId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offerer_address.id"), nullable=True, index=True)
     offererAddress: sa_orm.Mapped["OffererAddress"] = relationship(
         "OffererAddress", foreign_keys=offererAddressId, uselist=False
     )
