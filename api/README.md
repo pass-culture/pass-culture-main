@@ -135,7 +135,7 @@ fonction ou la classe avec:
 @pytest.mark.usefixtures("db_session")
 ```
 
-pour encapsuler le test dans une transaction. On peut aussi marquer le module entier en ajoutant sous les imports:
+pour encapsuler le test dans une transaction. On peut aussi marquer le module entier en ajoutant sous les imports :
 
 ```python
 pytestmark = pytest.mark.usefixtures("db_session")
