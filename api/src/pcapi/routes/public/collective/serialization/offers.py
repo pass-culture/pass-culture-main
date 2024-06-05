@@ -13,7 +13,7 @@ from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import StudentLevels
 from pcapi.models.offer_mixin import OfferStatus
-from pcapi.routes.public.documentation_constants import fields
+from pcapi.routes.public.documentation_constants.fields import get_fields
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.routes.serialization.collective_offers_serialize import validate_venue_id
@@ -23,6 +23,9 @@ from pcapi.routes.shared.validation import phone_number_validator
 from pcapi.serialization.utils import to_camel
 from pcapi.utils import email as email_utils
 from pcapi.validation.routes.offers import check_collective_offer_name_length_is_valid
+
+
+fields = get_fields()
 
 
 class ListCollectiveOffersQueryModel(BaseModel):
