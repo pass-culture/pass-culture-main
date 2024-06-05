@@ -20,6 +20,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as user_models
+from pcapi.core.users import repository as users_repository
 from pcapi.core.users.exceptions import InvalidUserRoleException
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
@@ -361,27 +362,27 @@ class HasAccessTest:
         offerer = offerers_factories.OffererFactory()
         user = users_factories.UserFactory()
 
-        assert not user.has_access(offerer.id)
+        assert not users_repository.has_access(user, offerer.id)
 
     def test_does_not_have_access_if_not_validated(self):
         user_offerer = offerers_factories.NotValidatedUserOffererFactory()
         offerer = user_offerer.offerer
         user = user_offerer.user
 
-        assert not user.has_access(offerer.id)
+        assert not users_repository.has_access(user, offerer.id)
 
     def test_has_access(self):
         user_offerer = offerers_factories.UserOffererFactory()
         offerer = user_offerer.offerer
         user = user_offerer.user
 
-        assert user.has_access(offerer.id)
+        assert users_repository.has_access(user, offerer.id)
 
     def test_has_access_if_admin(self):
         offerer = offerers_factories.OffererFactory()
         admin = users_factories.AdminFactory()
 
-        assert admin.has_access(offerer.id)
+        assert users_repository.has_access(admin, offerer.id)
 
 
 @pytest.mark.usefixtures("db_session")

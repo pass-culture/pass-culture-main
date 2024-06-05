@@ -78,6 +78,19 @@ def find_pro_or_non_attached_pro_user_by_email_query(email: str) -> BaseQuery:
     return _find_user_by_email_query(email).filter(sa.or_(models.User.has_pro_role, models.User.has_non_attached_pro_role))  # type: ignore[type-var]
 
 
+def has_access(user: models.User, offerer_id: int) -> bool:
+    """Return whether the user has access to the requested offerer's data."""
+    if user.has_admin_role:
+        return True
+    return db.session.query(
+        offerers_models.UserOfferer.query.filter(
+            offerers_models.UserOfferer.offererId == offerer_id,
+            offerers_models.UserOfferer.userId == user.id,
+            offerers_models.UserOfferer.isValidated,
+        ).exists()
+    ).scalar()
+
+
 def get_newly_eligible_age_18_users(since: date) -> list[models.User]:
     """
     Get users that are eligible between `since` (excluded) and now (included) and that have
