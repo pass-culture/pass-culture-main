@@ -10,6 +10,7 @@ from pcapi.core.bookings.models import BookingExportType
 import pcapi.core.bookings.repository as booking_repository
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
+from pcapi.core.users import repository as users_repository
 from pcapi.models import api_errors
 from pcapi.routes.serialization.bookings_recap_serialize import BookingsExportQueryModel
 from pcapi.routes.serialization.bookings_recap_serialize import BookingsExportStatusFilter
@@ -84,7 +85,7 @@ def export_bookings_for_offer_as_csv(offer_id: int, query: BookingsExportQueryMo
     user = current_user._get_current_object()
     offer = Offer.query.get(int(offer_id))
 
-    if not user.has_access(offer.venue.managingOffererId):
+    if not users_repository.has_access(user, offer.venue.managingOffererId):
         raise api_errors.ForbiddenError({"global": "You are not allowed to access this offer"})
 
     if query.status == BookingsExportStatusFilter.VALIDATED:
@@ -116,7 +117,7 @@ def export_bookings_for_offer_as_excel(offer_id: int, query: BookingsExportQuery
     user = current_user._get_current_object()
     offer = Offer.query.get(int(offer_id))
 
-    if not user.has_access(offer.venue.managingOffererId):
+    if not users_repository.has_access(user, offer.venue.managingOffererId):
         raise api_errors.ForbiddenError({"global": "You are not allowed to access this offer"})
 
     if query.status == BookingsExportStatusFilter.VALIDATED:
@@ -169,7 +170,7 @@ def get_offer_price_categories_and_schedules_by_dates(offer_id: int) -> EventDat
     user = current_user._get_current_object()
     offer = Offer.query.get(offer_id)
 
-    if not user.has_access(offer.venue.managingOffererId):
+    if not users_repository.has_access(user, offer.venue.managingOffererId):
         raise api_errors.ForbiddenError({"global": "You are not allowed to access this offer"})
 
     stocks = (

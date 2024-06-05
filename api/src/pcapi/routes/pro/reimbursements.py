@@ -3,6 +3,7 @@ from flask_login import login_required
 
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerer_models
+from pcapi.core.users import repository as users_repository
 from pcapi.core.users.models import User
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
@@ -34,7 +35,7 @@ def get_reimbursements_csv(query: ReimbursementCsvQueryModel) -> bytes:
 
 def _get_reimbursements_csv_filter(user: User, query: ReimbursementCsvQueryModel) -> str:
     if not user.has_admin_role:
-        if not user.has_access(query.offererId):
+        if not users_repository.has_access(user, query.offererId):
             raise ApiErrors({"offererId": ["Cet utilisateur ne peut pas accèder à cette structure"]})
     elif not query.bankAccountId:
         raise ApiErrors({"bankAccountId": ["Le filtre par compte bancaire est obligatoire pour les administrateurs"]})
@@ -84,7 +85,7 @@ def _get_reimbursments_csv_filter_by_invoices(user: User, query: ReimbursementCs
         raise ApiErrors({"invoicesReferences": ["Aucune structure trouvée pour les factures fournies"]})
     if not user.has_admin_role:
         for offerer_id in offerer_ids:
-            if not user.has_access(offerer_id):
+            if not users_repository.has_access(user, offerer_id):
                 raise ApiErrors({"offererId": ["Cet utilisateur ne peut pas accèder à cette structure"]})
 
     reimbursement_details = find_reimbursement_details_by_invoices(query.invoicesReferences)
