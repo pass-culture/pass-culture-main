@@ -5348,13 +5348,13 @@ files = [
 
 [[package]]
 name = "weasyprint"
-version = "62.1"
+version = "62.2"
 description = "The Awesome Document Factory"
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "weasyprint-62.1-py3-none-any.whl", hash = "sha256:654d4c266336cbf9acc4da118c7778ef5839717e6055d5b8f995cf50be200c46"},
-    {file = "weasyprint-62.1.tar.gz", hash = "sha256:bf3c1a9ac4194271a7cf117229c093744105b50ac2fa64c0a6e44e68ae742992"},
+    {file = "weasyprint-62.2-py3-none-any.whl", hash = "sha256:6fd84e9f55ac239c5657845eae117fd43916c3c5986fe98f69ea13fdab8ec9ad"},
+    {file = "weasyprint-62.2.tar.gz", hash = "sha256:a08ac400e11919d996d76becaa33160d7c1ac55ba160628c42ce7586574c1a51"},
 ]
 
 [package.dependencies]
@@ -5663,4 +5663,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "2bdeab341847d885ee594ec6e1825ffce94c2a380592dc6ea63c4884c71dae78"
+content-hash = "df01421a82302ec94407e7ac19ae4b1c2b0cc11e368e2d5308658be4e105076f"
