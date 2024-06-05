@@ -1556,16 +1556,10 @@
                         "title": "City",
                         "type": "string"
                     },
-                    "educationalInstitution": {
-                        "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
-                        "example": "0010008D",
-                        "title": "Educationalinstitution",
-                        "type": "string"
-                    },
-                    "educationalInstitutionId": {
+                    "id": {
                         "description": "Educational institution id in the pass Culture application. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
                         "example": 1234,
-                        "title": "Educationalinstitutionid",
+                        "title": "Id",
                         "type": "integer"
                     },
                     "institutionType": {
@@ -1585,11 +1579,17 @@
                         "example": "71100",
                         "title": "Postalcode",
                         "type": "string"
+                    },
+                    "uai": {
+                        "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
+                        "example": "0010008D",
+                        "title": "Uai",
+                        "type": "string"
                     }
                 },
                 "required": [
-                    "educationalInstitutionId",
-                    "educationalInstitution",
+                    "id",
+                    "uai",
                     "name",
                     "institutionType",
                     "city",
@@ -1754,14 +1754,14 @@
                 "properties": {
                     "beginningDatetime": {
                         "description": "Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-03T14:00:00+02:00",
+                        "example": "2024-07-05T14:00:00+02:00",
                         "format": "date-time",
                         "title": "Beginningdatetime",
                         "type": "string"
                     },
                     "bookingLimitDatetime": {
                         "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-03T14:00:00+02:00",
+                        "example": "2024-07-05T14:00:00+02:00",
                         "format": "date-time",
                         "title": "Bookinglimitdatetime",
                         "type": "string"
@@ -1801,7 +1801,7 @@
                 "properties": {
                     "beginningDatetime": {
                         "description": "Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-03T14:00:00+02:00",
+                        "example": "2024-07-05T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Beginningdatetime",
@@ -1809,7 +1809,7 @@
                     },
                     "bookingLimitDatetime": {
                         "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-03T14:00:00+02:00",
+                        "example": "2024-07-05T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Bookinglimitdatetime",
@@ -1845,7 +1845,7 @@
                 "properties": {
                     "beginningDatetime": {
                         "description": "Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-03T14:00:00+02:00",
+                        "example": "2024-07-05T14:00:00+02:00",
                         "format": "date-time",
                         "title": "Beginningdatetime",
                         "type": "string"
@@ -1858,7 +1858,7 @@
                     },
                     "bookingLimitDatetime": {
                         "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-03T14:00:00+02:00",
+                        "example": "2024-07-05T14:00:00+02:00",
                         "format": "date-time",
                         "title": "Bookinglimitdatetime",
                         "type": "string"
@@ -3644,18 +3644,11 @@
                         "title": "City",
                         "type": "string"
                     },
-                    "educationalInstitution": {
-                        "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
-                        "example": "0010008D",
-                        "nullable": true,
-                        "title": "Educationalinstitution",
-                        "type": "string"
-                    },
-                    "educationalInstitutionId": {
+                    "id": {
                         "description": "Educational institution id in the pass Culture application. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
                         "example": 1234,
                         "nullable": true,
-                        "title": "Educationalinstitutionid",
+                        "title": "Id",
                         "type": "integer"
                     },
                     "institutionType": {
@@ -3684,6 +3677,13 @@
                         "example": "71100",
                         "nullable": true,
                         "title": "Postalcode",
+                        "type": "string"
+                    },
+                    "uai": {
+                        "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
+                        "example": "0010008D",
+                        "nullable": true,
+                        "title": "Uai",
                         "type": "string"
                     }
                 },
@@ -5309,7 +5309,7 @@
                     },
                     "beginningDatetime": {
                         "description": "Collective offer beginning datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-03T14:00:00+02:00",
+                        "example": "2024-07-05T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Beginningdatetime",
@@ -5330,7 +5330,7 @@
                     },
                     "bookingLimitDatetime": {
                         "description": "Booking limit datetime. It must be anterior to the `beginning_datetime`. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-03T14:00:00+02:00",
+                        "example": "2024-07-05T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Bookinglimitdatetime",
@@ -5563,7 +5563,7 @@
                     },
                     "beginningDatetime": {
                         "description": "Collective offer beginning datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-03T14:00:00+02:00",
+                        "example": "2024-07-05T14:00:00+02:00",
                         "format": "date-time",
                         "title": "Beginningdatetime",
                         "type": "string"
@@ -5582,7 +5582,7 @@
                     },
                     "bookingLimitDatetime": {
                         "description": "Booking limit datetime. It must be anterior to the `beginning_datetime`. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-03T14:00:00+02:00",
+                        "example": "2024-07-05T14:00:00+02:00",
                         "format": "date-time",
                         "title": "Bookinglimitdatetime",
                         "type": "string"
@@ -6665,7 +6665,7 @@
                     },
                     "bookingLimitDatetime": {
                         "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-03T14:00:00+02:00",
+                        "example": "2024-07-05T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Bookinglimitdatetime",
@@ -7614,7 +7614,7 @@
                 "properties": {
                     "bookingLimitDatetime": {
                         "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-03T14:00:00+02:00",
+                        "example": "2024-07-05T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Bookinglimitdatetime",
@@ -7657,7 +7657,7 @@
                 "properties": {
                     "bookingLimitDatetime": {
                         "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-03T14:00:00+02:00",
+                        "example": "2024-07-05T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Bookinglimitdatetime",
@@ -10635,13 +10635,13 @@
                     {
                         "description": "Educational institution id in the pass Culture application. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
                         "in": "query",
-                        "name": "educationalInstitutionId",
+                        "name": "id",
                         "required": false,
                         "schema": {
                             "description": "Educational institution id in the pass Culture application. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
                             "example": 1234,
                             "nullable": true,
-                            "title": "Educationalinstitutionid",
+                            "title": "Id",
                             "type": "integer"
                         }
                     },
@@ -10700,13 +10700,13 @@
                     {
                         "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
                         "in": "query",
-                        "name": "educationalInstitution",
+                        "name": "uai",
                         "required": false,
                         "schema": {
                             "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
                             "example": "0010008D",
                             "nullable": true,
-                            "title": "Educationalinstitution",
+                            "title": "Uai",
                             "type": "string"
                         }
                     },
