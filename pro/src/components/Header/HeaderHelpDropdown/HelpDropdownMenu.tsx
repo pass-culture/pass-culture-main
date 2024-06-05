@@ -33,6 +33,24 @@ export const HelpDropdownMenu = () => {
         <ButtonLink
           icon={fullLinkIcon}
           link={{
+            to: 'https://aide.passculture.app/hc/fr/articles/13155602579356--Acteurs-Culturels-Quelle-%C3%A9quipe-contacter-selon-votre-demande',
+            isExternal: true,
+            target: '_blank',
+          }}
+          onClick={() =>
+            logEvent(Events.CLICKED_BEST_PRACTICES_STUDIES, {
+              from: location.pathname,
+            })
+          }
+          svgAlt="Nouvelle fenêtre"
+        >
+          Contacter nos équipes
+        </ButtonLink>
+      </DropdownMenu.Item>
+      <DropdownMenu.Item className={dropdownStyles['menu-item']} asChild>
+        <ButtonLink
+          icon={fullLinkIcon}
+          link={{
             to: 'https://passcultureapp.notion.site/pass-Culture-Documentation-323b1a0ec309406192d772e7d803fbd0',
             isExternal: true,
             target: '_blank',
