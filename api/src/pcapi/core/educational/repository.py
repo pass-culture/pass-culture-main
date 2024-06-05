@@ -394,26 +394,6 @@ def get_paginated_collective_bookings_for_educational_year(
     return query.all()
 
 
-def get_expired_collective_offers(interval: tuple[datetime, datetime]) -> BaseQuery:
-    """Return a query of collective offers whose latest booking limit occurs within
-    the given interval.
-
-    Inactive or deleted offers are ignored.
-    """
-
-    # FIXME (cgaunet, 2022-03-08): This query could be optimized by returning offers
-    # that do not have bookings because booking a collective offer will unindex it.
-    return (
-        educational_models.CollectiveOffer.query.join(educational_models.CollectiveStock)
-        .filter(
-            educational_models.CollectiveOffer.isActive.is_(True),
-        )
-        .having(sa.func.max(educational_models.CollectiveStock.bookingLimitDatetime).between(*interval))
-        .group_by(educational_models.CollectiveOffer.id)
-        .order_by(educational_models.CollectiveOffer.id)
-    )
-
-
 def get_expired_collective_offers_template() -> BaseQuery:
     """Return a query of collective offers template whose latest booking limit occurs within
     the given interval.
