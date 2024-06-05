@@ -9,7 +9,7 @@ Plus de détails sur le lancement de l'infra docker-compose sont accessibles dan
 ## OpenAPI
 
 Une documentation Swagger des APIs est générée selon l'OpenAPI Specification (OAS3) grâce à un schéma généré par
-Spectree:
+Spectree :
 
 * [API Contremarque](https://backend.passculture.app/v2/swagger)
 * [App Native](https://backend.passculture.app/native/swagger)
