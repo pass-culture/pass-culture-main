@@ -55,8 +55,13 @@ When('I add venue without Siret details', () => {
   )
   cy.findByLabelText('Raison sociale *').type(venueNameWithoutSiret)
   cy.findByLabelText('Adresse postale *')
-    .type('89 Rue la Boétie 75008 Paris')
-    .type('{downarrow}{enter}')
+  cy.intercept({
+    method: 'GET',
+    url: 'https://api-adresse.data.gouv.fr/search/?limit=5&q=89%20Rue%20la%20Bo%C3%A9tie%2075008%20Paris',
+  }).as('searchAddress')
+  cy.findByLabelText('Adresse postale *').type('89 Rue la Boétie 75008 Paris')
+  cy.wait('@searchAddress').its('response.statusCode').should('eq', 200)
+  cy.findByTestId('list').contains('89 Rue la Boétie 75008 Paris').click()
   cy.findByLabelText('Activité principale *').select('Centre culturel')
   cy.findByText('Visuel').click()
   cy.findByLabelText('Adresse email *').type('email@example.com')
