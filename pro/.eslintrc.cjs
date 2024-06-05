@@ -97,17 +97,10 @@ module.exports = {
     '@typescript-eslint/no-unnecessary-type-arguments': 'error',
     '@typescript-eslint/no-unnecessary-boolean-literal-compare': 'error',
     '@typescript-eslint/no-floating-promises': 'error',
+    '@typescript-eslint/no-unnecessary-condition': 'error',
+    'react/self-closing-comp': ['error', { component: true, html: true }],
 
-    // TODO turn into errors
-    '@typescript-eslint/no-unnecessary-condition': 'warn',
-    'react-hooks/exhaustive-deps': 'warn',
-    'react/self-closing-comp': [
-      'error',
-      {
-        component: true,
-        html: true,
-      },
-    ],
+    'react-hooks/exhaustive-deps': 'warn', // TODO turn into error
   },
   overrides: [
     {
