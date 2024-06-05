@@ -1,6 +1,5 @@
-import { setUser, init } from '@sentry/browser'
-import { reactRouterV6Instrumentation } from '@sentry/react'
-import { Integrations as TracingIntegrations } from '@sentry/tracing'
+import * as Sentry from '@sentry/browser'
+import { reactRouterV6BrowserTracingIntegration } from '@sentry/react'
 import React, { useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import {
@@ -20,19 +19,17 @@ import {
 import config from '../../../../package.json'
 
 export const initializeSentry = () => {
-  init({
+  Sentry.init({
     dsn: SENTRY_SERVER_URL,
     environment: ENVIRONMENT_NAME,
     release: config.version,
     integrations: [
-      new TracingIntegrations.BrowserTracing({
-        routingInstrumentation: reactRouterV6Instrumentation(
-          React.useEffect,
-          useLocation,
-          useNavigationType,
-          createRoutesFromChildren,
-          matchRoutes
-        ),
+      reactRouterV6BrowserTracingIntegration({
+        useEffect: React.useEffect,
+        useLocation,
+        useNavigationType,
+        createRoutesFromChildren,
+        matchRoutes,
       }),
     ],
     tracesSampleRate: parseFloat(SENTRY_SAMPLE_RATE),
@@ -112,7 +109,7 @@ export const useSentry = () => {
 
   useEffect(() => {
     if (currentUser !== null) {
-      setUser({ id: currentUser.id.toString() })
+      Sentry.setUser({ id: currentUser.id.toString() })
     }
   }, [currentUser])
 }
