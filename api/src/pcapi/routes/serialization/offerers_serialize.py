@@ -186,7 +186,10 @@ class GetOfferersNamesResponseModel(BaseModel):
 
 class GetOfferersNamesQueryModel(BaseModel):
     validated: bool | None
-    # FIXME (dbaty, 2022-05-04): rename to something clearer, e.g. `include_non_validated_user_offerers`
+    # If `validated_for_user` is true, we only return offerers with
+    # which the user has a _validated_ `UserOfferer`. Otherwise, we
+    # return all offerers with which the user has a `UserOfferer`, be
+    # it validated or not.
     validated_for_user: bool | None
     offerer_id: int | None
 
