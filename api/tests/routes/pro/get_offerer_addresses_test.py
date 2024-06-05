@@ -25,6 +25,14 @@ def test_get_offerer_addresses_success(client):
         address__city="Paris",
         address__banId="75107_7560_00001",
     )
+    offerer_address_3 = offerers_factories.OffererAddressFactory(
+        offerer=offerer,
+        label="3eme adresse",
+        address__street=None,
+        address__postalCode="75008",
+        address__city="Paris",
+        address__banId="75108_7560_00000",
+    )
     offerers_factories.OffererAddressFactory(
         label="1ere adresse différent offerer",
         address__street="8 Boulevard du Port",
@@ -52,6 +60,14 @@ def test_get_offerer_addresses_success(client):
             "label": "2eme adresse",
             "postalCode": "75007",
             "street": "20 Avenue de Ségur",
+        },
+        {
+            "city": "Paris",
+            "id": offerer_address_3.id,
+            "isEditable": True,
+            "label": "3eme adresse",
+            "postalCode": "75008",
+            "street": None,
         },
     ]
 
