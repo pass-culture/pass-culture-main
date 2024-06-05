@@ -1944,10 +1944,10 @@ def delete_offerer(offerer_id: int) -> None:
     if offerer_has_bookings or offerer_has_collective_bookings:
         raise exceptions.CannotDeleteOffererWithBookingsException()
 
-    venue_ids_subquery = offerers_models.Venue.query.filter_by(managingOffererId=offerer_id).with_entities(
+    venue_ids_query = offerers_models.Venue.query.filter_by(managingOffererId=offerer_id).with_entities(
         offerers_models.Venue.id
     )
-    venue_ids = [venue_id[0] for venue_id in venue_ids_subquery.all()]
+    venue_ids = [venue_id[0] for venue_id in venue_ids_query.all()]
 
     offer_ids_to_delete: dict = {
         "individual_offer_ids_to_delete": [],
@@ -1968,12 +1968,12 @@ def delete_offerer(offerer_id: int) -> None:
     )
 
     offerers_models.VenuePricingPointLink.query.filter(
-        offerers_models.VenuePricingPointLink.venueId.in_(venue_ids_subquery)
-        | offerers_models.VenuePricingPointLink.pricingPointId.in_(venue_ids_subquery),
+        offerers_models.VenuePricingPointLink.venueId.in_(venue_ids)
+        | offerers_models.VenuePricingPointLink.pricingPointId.in_(venue_ids),
     ).delete(synchronize_session=False)
     offerers_models.VenueReimbursementPointLink.query.filter(
-        offerers_models.VenueReimbursementPointLink.venueId.in_(venue_ids_subquery)
-        | offerers_models.VenueReimbursementPointLink.reimbursementPointId.in_(venue_ids_subquery),
+        offerers_models.VenueReimbursementPointLink.venueId.in_(venue_ids)
+        | offerers_models.VenueReimbursementPointLink.reimbursementPointId.in_(venue_ids),
     ).delete(synchronize_session=False)
     offerers_models.Venue.query.filter(offerers_models.Venue.managingOffererId == offerer_id).delete(
         synchronize_session=False
