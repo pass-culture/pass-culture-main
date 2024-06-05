@@ -156,9 +156,6 @@ class LocalProvider(Iterator):
         db.session.commit()
 
     def _print_objects_summary(self) -> None:
-        # FIXME (dbaty, 2020-02-05): I don't know how we could end up
-        # here with no venue_provider, but there are checks elsewhere
-        # so I do the same here.
         venue_id = self.venue_provider.venueId if self.venue_provider else "none"
         logger.info(
             "Synchronization of objects of venue=%s, checked=%d, created=%d, updated=%d, errors=%s",
