@@ -73,7 +73,7 @@ jobs:
           set -e
           VERSION="${{ inputs.app_version }}"
           export ENVIRONMENT="${{ inputs.environment }}"
-          IMAGE=$(kubectl get -n ${{ inputs.environment }} po -l role=api -o json |jq -r '.items[0].spec.containers[0].image'|awk -F':' '{print $1}')
+          IMAGE="europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi"
           export IMAGE="${IMAGE}:${VERSION}"
           export DATE=$(date +"%Y-%m-%d--%H-%M-%S")
           envsubst < .github/workflows/templates/pre-upgrade-job.yaml | kubectl -n ${{ inputs.environment }} apply -f -
@@ -143,7 +143,7 @@ jobs:
           set -e
           VERSION="${{ inputs.app_version }}"
           export ENVIRONMENT="${{ inputs.environment }}"
-          IMAGE=$(kubectl get -n ${{ inputs.environment }} po -l role=api -o json |jq -r '.items[0].spec.containers[0].image'|awk -F':' '{print $1}')
+          IMAGE="europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi"
           export IMAGE="${IMAGE}:${VERSION}"
           export DATE=$(date +"%Y-%m-%d--%H-%M-%S")
           envsubst < .github/workflows/templates/post-upgrade-job.yaml | kubectl -n ${{ inputs.environment }} apply -f -
