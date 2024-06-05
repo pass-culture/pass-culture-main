@@ -280,20 +280,6 @@ class User(PcObject, Base, Model, DeactivableMixin):
     def set_marketing_email_subscription(self, subscribe: bool) -> None:
         self.notificationSubscriptions = (self.notificationSubscriptions or {}) | {"marketing_email": subscribe}
 
-    def has_access(self, offerer_id: int) -> bool:
-        # FIXME (dbaty, 2021-11-26): consider moving to a function in `core.users.api`?
-        from pcapi.core.offerers.models import UserOfferer
-
-        if self.has_admin_role:
-            return True
-        return db.session.query(
-            UserOfferer.query.filter(
-                UserOfferer.offererId == offerer_id,
-                UserOfferer.userId == self.id,
-                UserOfferer.isValidated,
-            ).exists()
-        ).scalar()
-
     @property
     def is_authenticated(self) -> bool:  # required by flask-login
         return True

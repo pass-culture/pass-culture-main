@@ -1,10 +1,11 @@
 from pcapi.core.offerers.models import ApiKey
 from pcapi.core.users.models import User
+import pcapi.core.users.repository as users_repository
 from pcapi.models.api_errors import ForbiddenError
 
 
 def check_user_can_validate_bookings_v2(user: User, offerer_id: int) -> None:
-    if not user.has_access(offerer_id):
+    if not users_repository.has_access(user, offerer_id):
         api_errors = ForbiddenError()
         api_errors.add_error(
             "user",

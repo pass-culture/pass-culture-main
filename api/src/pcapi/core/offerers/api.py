@@ -742,7 +742,7 @@ def _create_prefix(env: str, prefix_identifier: str) -> str:
 def delete_api_key_by_user(user: users_models.User, api_key_prefix: str) -> None:
     api_key = models.ApiKey.query.filter_by(prefix=api_key_prefix).one()
 
-    if not user.has_access(api_key.offererId):
+    if not users_repository.has_access(user, api_key.offererId):
         raise exceptions.ApiKeyDeletionDenied()
 
     db.session.delete(api_key)
