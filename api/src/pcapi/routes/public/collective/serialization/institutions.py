@@ -3,14 +3,12 @@ from pydantic.v1 import validator
 
 from pcapi.core.educational.models import EducationalInstitution
 from pcapi.routes.public.documentation_constants.fields import LIMIT_DESCRIPTION
-from pcapi.routes.public.documentation_constants.fields import get_fields
+from pcapi.routes.public.documentation_constants.fields import fields
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 
 
 MAX_LIMIT_EDUCATIONAL_INSTITUTION = 20
-
-fields = get_fields()
 
 
 class CollectiveOffersEducationalInstitutionResponseModel(BaseModel):
