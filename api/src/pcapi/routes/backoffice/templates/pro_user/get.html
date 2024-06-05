@@ -29,7 +29,7 @@
                 {% if has_permission("MANAGE_PRO_ENTITY") %}
                   {% set edit_pro_user_information_label_id = random_hash() %}
                   {{ build_modal_form("edit-pro-user", dst, form, "Modifier les informations", "Modification des informations
-                                    de " + user.firstName + " " + user.lastName|upper, "Enregistrer") }}
+                                    de " + user.firstName | empty_string_if_null + " " + user.lastName | empty_string_if_null | upper, "Enregistrer") }}
                 {% endif %}
                 {% if has_permission("PRO_FRAUD_ACTIONS") and user.isActive %}
                   {{ build_modal_form("suspend-pro-user", suspension_dst, suspension_form, "Suspendre le compte", "Suspendre le compte", "Confirmer la suspension") }}
