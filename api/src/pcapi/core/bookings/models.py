@@ -214,9 +214,6 @@ class Booking(PcObject, Base, Model):
     def total_amount(self) -> Decimal:
         return self.amount * self.quantity
 
-    # FIXME: many functions here are only used when serializing
-    # bookings in the web API. They can be moved elsewhere once we
-    # have replaced the auto-magic serialization ("includes").
     @property
     def completedUrl(self) -> str | None:
         offer = self.stock.offer
