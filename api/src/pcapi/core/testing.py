@@ -106,9 +106,8 @@ def _record_end_of_query(statement: str, parameters: dict, **kwargs: dict) -> No
     """Event handler that records SQL queries for assert_num_queries
     fixture.
     """
-    # FIXME (dbaty, 2020-10-23): SQLAlchemy issues savepoints. This is
-    # probably due to the way we configure it, which should probably
-    # be changed.
+    # SQLAlchemy issues savepoints, which we do not want to count in
+    # `assert_num_queries`.
     if statement.startswith("SAVEPOINT") or statement.startswith("RELEASE SAVEPOINT"):
         return
     # Do not record the query if we're not within the
