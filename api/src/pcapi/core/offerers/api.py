@@ -1996,7 +1996,7 @@ def delete_offerer(offerer_id: int) -> None:
 
     search.unindex_offer_ids(offer_ids_to_delete["individual_offer_ids_to_delete"])
     search.unindex_collective_offer_template_ids(offer_ids_to_delete["collective_offer_template_ids_to_delete"])
-    search.unindex_venue_ids(venue_ids_subquery)
+    search.unindex_venue_ids(venue_ids)
 
 
 def invite_member(offerer: models.Offerer, email: str, current_user: users_models.User) -> None:
