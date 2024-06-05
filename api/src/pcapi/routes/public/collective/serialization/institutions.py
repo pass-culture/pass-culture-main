@@ -2,12 +2,15 @@ from pydantic.v1 import Field
 from pydantic.v1 import validator
 
 from pcapi.core.educational.models import EducationalInstitution
-from pcapi.routes.public.documentation_constants import fields
+from pcapi.routes.public.documentation_constants.fields import LIMIT_DESCRIPTION
+from pcapi.routes.public.documentation_constants.fields import get_fields
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 
 
 MAX_LIMIT_EDUCATIONAL_INSTITUTION = 20
+
+fields = get_fields()
 
 
 class CollectiveOffersEducationalInstitutionResponseModel(BaseModel):
@@ -38,7 +41,7 @@ class GetListEducationalInstitutionsQueryModel(BaseModel):
     city: str | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_CITY
     postal_code: str | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_POSTAL_CODE
     uai: str | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_UAI
-    limit: int = Field(MAX_LIMIT_EDUCATIONAL_INSTITUTION, description=fields.LIMIT_DESCRIPTION, example=10)
+    limit: int = Field(MAX_LIMIT_EDUCATIONAL_INSTITUTION, description=LIMIT_DESCRIPTION, example=10)
 
     @validator("limit")
     def validate_limit(cls, limit: int) -> int:
