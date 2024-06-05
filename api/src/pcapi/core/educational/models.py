@@ -728,7 +728,7 @@ class CollectiveOfferTemplate(
         server_default=None,
         default=None,
     )
-    offererAddressId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offerer_address.id"), nullable=True)
+    offererAddressId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offerer_address.id"), nullable=True, index=True)
     offererAddress: sa_orm.Mapped["OffererAddress | None"] = relationship(
         "OffererAddress", foreign_keys=[offererAddressId], uselist=False
     )
