@@ -1,4 +1,5 @@
 import datetime
+import os
 from random import randbytes
 
 from flask import url_for
@@ -9,6 +10,7 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users import models as users_models
 from pcapi.routes.backoffice.filters import format_date
 
 from tests.test_utils import StorageFolderManager
@@ -186,3 +188,62 @@ class DownloadPublicAccountExtractTest(PostEndpointHelper, StorageFolderManager)
         assert "L'extraction demandée existe mais aucune archive ne lui est associée" in html_parser.extract_alerts(
             redirection.data
         )
+
+
+class DeleteGdprUserExtractTest(PostEndpointHelper, StorageFolderManager):
+    endpoint = "backoffice_web.gdpr_extract.delete_gdpr_user_data_extract"
+    endpoint_kwargs = {"gdpr_id": 1}
+    needed_permission = perm_models.Permissions.EXTRACT_PUBLIC_ACCOUNT
+    storage_folder = settings.LOCAL_STORAGE_DIR / settings.GCP_GDPR_EXTRACT_BUCKET / settings.GCP_GDPR_EXTRACT_FOLDER
+
+    def test_delete_gdpr_user_extract(self, authenticated_client):
+        extract = users_factories.GdprUserDataExtractBeneficiaryFactory(dateProcessed=datetime.datetime.utcnow())
+        with open(self.storage_folder / f"{extract.id}.zip", "wb"):
+            pass
+
+        response = self.post_to_endpoint(authenticated_client, gdpr_id=extract.id)
+        assert response.status_code == 302
+
+        expected_url = url_for("backoffice_web.gdpr_extract.list_gdpr_user_data_extract", _external=True)
+        assert response.location == expected_url
+
+        assert users_models.GdprUserDataExtract.query.count() == 0
+        assert len(os.listdir(self.storage_folder)) == 0
+
+        response = authenticated_client.get(response.location)
+        assert "L'extraction de données a bien été effacée." in html_parser.extract_alert(response.data)
+
+    def test_delete_gdpr_user_extract_still_processing(self, authenticated_client):
+        extract = users_factories.GdprUserDataExtractBeneficiaryFactory()
+
+        response = self.post_to_endpoint(authenticated_client, gdpr_id=extract.id)
+        expected_url = url_for("backoffice_web.gdpr_extract.list_gdpr_user_data_extract", _external=True)
+        assert response.location == expected_url
+
+        response = authenticated_client.get(response.location)
+        assert "L'extraction de données est toujours en cours pour cet utilisateur." in html_parser.extract_alert(
+            response.data
+        )
+
+    def test_delete_gdpr_user_extract_id_gdpr_does_not_exist(self, authenticated_client):
+        response = self.post_to_endpoint(authenticated_client, gdpr_id=0)
+
+        expected_url = url_for("backoffice_web.gdpr_extract.list_gdpr_user_data_extract", _external=True)
+        assert response.location == expected_url
+
+        response = authenticated_client.get(response.location)
+        assert "L'extrait demandé n'existe pas." in html_parser.extract_alert(response.data)
+
+    def test_delete_gdpr_user_extract_ready_but_without_zip_file(self, authenticated_client):
+        extract = users_factories.GdprUserDataExtractBeneficiaryFactory(dateProcessed=datetime.datetime.utcnow())
+
+        response = self.post_to_endpoint(authenticated_client, gdpr_id=extract.id)
+        assert response.status_code == 302
+
+        expected_url = url_for("backoffice_web.gdpr_extract.list_gdpr_user_data_extract", _external=True)
+        assert response.location == expected_url
+
+        assert users_models.GdprUserDataExtract.query.count() == 0
+
+        response = authenticated_client.get(response.location)
+        assert "L'extraction de données a bien été effacée." in html_parser.extract_alert(response.data)

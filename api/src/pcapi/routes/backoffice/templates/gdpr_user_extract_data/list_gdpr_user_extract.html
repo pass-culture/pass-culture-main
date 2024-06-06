@@ -1,7 +1,7 @@
+{% extends "layouts/connected.html" %}
 {% from "components/forms.html" import build_filters_form with context %}
 {% import "components/links.html" as links %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
-{% extends "layouts/connected.html" %}
 {% block page %}
   <div class="pt-3 px-5 table-container-gdpr_extract">
     <h2 class="fw-light">Extraction des données jeunes</h2>
@@ -23,6 +23,7 @@
               <th scope="col">Auteur de la demande</th>
               <th scope="col">
               </td>
+              <th scope="col"></th>
             </tr>
           </thead>
           <tbody>
@@ -49,6 +50,23 @@
                        class="bi bi-cloud-download-fill"></i>
                   {% endif %}
                 </td>
+                {% if gdpr_data.dateProcessed %}
+                  <td>
+                    <form id="delete-extract-{{ gdpr_data.id }}"
+                          action="{{ url_for('backoffice_web.gdpr_extract.delete_gdpr_user_data_extract', gdpr_id=gdpr_data.id) }}"
+                          method="post">
+                      {{ csrf_token }}
+                      <a class="nonblock"
+                         href=""
+                         onclick="document.getElementById('delete-extract-{{ gdpr_data.id }}').submit(); return false;"><i class="bi bi-trash"></i></a>
+                    </form>
+                  </td>
+                {% else %}
+                  <td>
+                    <i class="bi bi-trash"
+                       style="opacity: 0.5"></i>
+                  </td>
+                {% endif %}
               </tr>
             {% endfor %}
           </tbody>
