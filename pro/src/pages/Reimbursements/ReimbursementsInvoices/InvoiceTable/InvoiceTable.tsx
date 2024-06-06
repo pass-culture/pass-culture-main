@@ -17,7 +17,10 @@ import strokeLessIcon from 'icons/stroke-less.svg'
 import strokeMoreIcon from 'icons/stroke-more.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
+import {
+  BaseCheckbox,
+  PartialCheck,
+} from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { FORMAT_DD_MM_YYYY } from 'utils/date'
 import { downloadFile } from 'utils/downloadFile'
@@ -25,12 +28,6 @@ import { formatPrice } from 'utils/formatPrice'
 
 import { InvoiceActions } from './InvoiceActions'
 import styles from './InvoiceTable.module.scss'
-
-enum PartialCheck {
-  CHECKED = 'checked',
-  PARTIAL = 'partial',
-  UNCHECKED = 'unchecked',
-}
 
 type InvoiceTableProps = {
   invoices: InvoiceResponseV2Model[]
