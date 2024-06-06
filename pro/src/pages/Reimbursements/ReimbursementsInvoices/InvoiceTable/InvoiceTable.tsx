@@ -4,7 +4,9 @@ import { useState } from 'react'
 
 import { api } from 'apiClient/api'
 import { InvoiceResponseV2Model } from 'apiClient/v1'
+import { useAnalytics } from 'app/App/analytics/firebase'
 import { SortArrow } from 'components/StocksEventList/SortArrow'
+import { Events } from 'core/FirebaseEvents/constants'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import {
   SortingMode,
@@ -98,6 +100,7 @@ function sortInvoices(
 
 export const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
   const notify = useNotification()
+  const { logEvent } = useAnalytics()
 
   const [checkedInvoices, setCheckedInvoices] = useState<string[]>([])
   const { currentSortingColumn, currentSortingMode, onColumnHeaderClick } =
@@ -142,11 +145,16 @@ export const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
 
   async function downloadCSVFiles(references: string[]) {
     try {
+      logEvent(Events.CLICKED_INVOICES_DOWNLOAD, {
+        fileType: 'details',
+        filesCount: references.length,
+        buttonType: 'multiple',
+      })
       downloadFile(
         await api.getReimbursementsCsvV2(references),
         'remboursements_pass_culture.csv'
       )
-    } catch {
+    } catch (error) {
       notify.error(GET_DATA_ERROR_MESSAGE)
     }
   }
@@ -159,6 +167,11 @@ export const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
       return
     }
     try {
+      logEvent(Events.CLICKED_INVOICES_DOWNLOAD, {
+        fileType: 'justificatif',
+        filesCount: references.length,
+        buttonType: 'multiple',
+      })
       downloadFile(
         await api.getCombinedInvoices(references),
         'justificatif_remboursement_pass_culture.pdf'
