@@ -386,6 +386,8 @@ def render_public_account_details(
         reverse=True,
     )
 
+    is_gdpr_extract_valid = is_valid_gdpr_user_extract(user=user)
+
     kwargs.update(user_forms.get_toggle_suspension_args(user, suspension_type=user_forms.SuspensionUserType.PUBLIC))
     return render_template(
         "accounts/get.html",
