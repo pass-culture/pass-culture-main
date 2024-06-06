@@ -12,13 +12,12 @@ import { SAVED_OFFERER_ID_KEY } from 'core/shared/constants'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import fullDownIcon from 'icons/full-down.svg'
 import fullUpIcon from 'icons/full-up.svg'
+import strokeCollaboratorIcon from 'icons/stroke-collaborator.svg'
 import strokeEuroIcon from 'icons/stroke-euro.svg'
 import strokeHomeIcon from 'icons/stroke-home.svg'
 import strokePhoneIcon from 'icons/stroke-phone.svg'
 import strokePieIcon from 'icons/stroke-pie.svg'
 import strokeTeacherIcon from 'icons/stroke-teacher.svg'
-import strokeCollaboratorIcon from 'icons/stroke-collaborator.svg'
-
 import {
   setIsCollectiveSectionOpen,
   setIsIndividualSectionOpen,
@@ -305,7 +304,11 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
               })
             }
           >
-            <SvgIcon src={strokeCollaboratorIcon} alt="" width={NAV_ITEM_ICON_SIZE} />
+            <SvgIcon
+              src={strokeCollaboratorIcon}
+              alt=""
+              width={NAV_ITEM_ICON_SIZE}
+            />
             Collaborateurs
           </NavLink>
         </li>
