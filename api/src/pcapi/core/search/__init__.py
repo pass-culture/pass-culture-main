@@ -1,8 +1,7 @@
-from collections.abc import Collection
+from collections import abc
 import datetime
 import enum
 import logging
-from typing import Iterable
 
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
@@ -68,7 +67,7 @@ def _get_backend() -> base.SearchBackend:
 
 def _log_async_request(
     resource_type: str,
-    ids: Iterable[int],
+    ids: abc.Collection[int],
     reason: IndexationReason,
     extra: dict | None,
 ) -> None:
@@ -79,8 +78,7 @@ def _log_async_request(
         extra={
             "resource_type": resource_type,
             "reason": reason.value,
-            # FIXME (dbaty, 2023-11-24) change `ids` to be a `Sequence[int]`
-            "count": len(ids),  # type: ignore[arg-type]
+            "count": len(ids),
             "partial_ids": list(ids)[:50],  # avoid huge log
         }
         | extra,
@@ -89,7 +87,7 @@ def _log_async_request(
 
 def _log_indexation_error(
     resource_type: str,
-    ids: Iterable[int],
+    ids: abc.Collection[int],
     exc: Exception,
     from_error_queue: bool,
 ) -> None:
@@ -117,7 +115,7 @@ def _log_indexation_error(
 
 
 def async_index_offer_ids(
-    offer_ids: Iterable[int],
+    offer_ids: abc.Collection[int],
     reason: IndexationReason,
     log_extra: dict | None = None,
 ) -> None:
@@ -138,7 +136,7 @@ def async_index_offer_ids(
 
 
 def async_index_collective_offer_template_ids(
-    collective_offer_template_ids: Iterable[int],
+    collective_offer_template_ids: abc.Collection[int],
     reason: IndexationReason,
     log_extra: dict | None = None,
 ) -> None:
@@ -164,7 +162,7 @@ def async_index_collective_offer_template_ids(
 
 
 def async_index_venue_ids(
-    venue_ids: Iterable[int],
+    venue_ids: abc.Collection[int],
     reason: IndexationReason,
     log_extra: dict | None = None,
 ) -> None:
@@ -185,7 +183,7 @@ def async_index_venue_ids(
 
 
 def async_index_offers_of_venue_ids(
-    venue_ids: Iterable[int],
+    venue_ids: abc.Collection[int],
     reason: IndexationReason,
     log_extra: dict | None = None,
 ) -> None:
@@ -313,7 +311,7 @@ def index_venues_in_queue(from_error_queue: bool = False) -> None:
 
 def _reindex_venue_ids(
     backend: base.SearchBackend,
-    venue_ids: Collection[int],
+    venue_ids: abc.Collection[int],
     from_error_queue: bool = False,
 ) -> None:
     logger.info("Starting to index venues", extra={"count": len(venue_ids)})
@@ -356,7 +354,7 @@ def _reindex_venue_ids(
 
 def _reindex_collective_offer_template_ids(
     backend: base.SearchBackend,
-    collective_offer_template_ids: Collection[int],
+    collective_offer_template_ids: abc.Collection[int],
     from_error_queue: bool = False,
 ) -> None:
     logger.info("Starting to index collective offers templates", extra={"count": len(collective_offer_template_ids)})
@@ -457,7 +455,7 @@ DEFAULT_DAYS_FOR_LAST_BOOKINGS = 30
 
 
 def get_offers_booking_count_by_id(
-    offer_ids: Iterable[int], days: int = DEFAULT_DAYS_FOR_LAST_BOOKINGS
+    offer_ids: abc.Collection[int], days: int = DEFAULT_DAYS_FOR_LAST_BOOKINGS
 ) -> dict[int, int]:
     offer_booked_since_x_days = (
         offers_models.Offer.query.join(offers_models.Offer.stocks)
@@ -475,7 +473,7 @@ def get_offers_booking_count_by_id(
     return dict(offer_booked_since_x_days)
 
 
-def get_last_x_days_booking_count_by_offer(offers: Iterable[offers_models.Offer]) -> dict[int, int]:
+def get_last_x_days_booking_count_by_offer(offers: abc.Iterable[offers_models.Offer]) -> dict[int, int]:
     offers_with_product = []
     offers_without_product = []
 
@@ -496,7 +494,7 @@ def get_last_x_days_booking_count_by_offer(offers: Iterable[offers_models.Offer]
     return default_dict
 
 
-def reindex_offer_ids(offer_ids: Iterable[int], from_error_queue: bool = False) -> None:
+def reindex_offer_ids(offer_ids: abc.Collection[int], from_error_queue: bool = False) -> None:
     """Given a list of `Offer.id`, reindex or unindex each offer
     (i.e. request the external indexation service an update or a
     removal).
@@ -559,7 +557,7 @@ def reindex_offer_ids(offer_ids: Iterable[int], from_error_queue: bool = False) 
     _reindex_venues_from_offers(offer_ids)
 
 
-def unindex_offer_ids(offer_ids: Iterable[int]) -> None:
+def unindex_offer_ids(offer_ids: abc.Collection[int]) -> None:
     backend = _get_backend()
     try:
         backend.unindex_offer_ids(offer_ids)
@@ -584,7 +582,7 @@ def unindex_all_offers() -> None:
         logger.exception("Could not unindex all offers")
 
 
-def _reindex_venues_from_offers(offer_ids: Iterable[int]) -> None:
+def _reindex_venues_from_offers(offer_ids: abc.Collection[int]) -> None:
     """
     Get the offers' venue ids and reindex them
     """
@@ -602,7 +600,7 @@ def _reindex_venues_from_offers(offer_ids: Iterable[int]) -> None:
     async_index_venue_ids(venue_ids, reason=IndexationReason.OFFER_REINDEXATION)
 
 
-def reindex_venue_ids(venue_ids: Collection[int]) -> None:
+def reindex_venue_ids(venue_ids: abc.Collection[int]) -> None:
     """Given a list of `Venue.id`, reindex or unindex each venue
     (i.e. request the external indexation service an update or a
     removal).
@@ -620,7 +618,7 @@ def reindex_venue_ids(venue_ids: Collection[int]) -> None:
         logger.exception("Could not reindex venues", extra={"venues": venue_ids})
 
 
-def unindex_venue_ids(venue_ids: Iterable[int]) -> None:
+def unindex_venue_ids(venue_ids: abc.Collection[int]) -> None:
     if not venue_ids:
         return
     backend = _get_backend()
@@ -644,7 +642,7 @@ def unindex_all_collective_offer_templates() -> None:
         logger.exception("Could not unindex all offers")
 
 
-def unindex_collective_offer_template_ids(collective_offer_template_ids: Iterable[int]) -> None:
+def unindex_collective_offer_template_ids(collective_offer_template_ids: abc.Collection[int]) -> None:
     if not collective_offer_template_ids:
         return
     backend = _get_backend()
@@ -673,7 +671,7 @@ def unindex_all_venues() -> None:
 
 def get_last_30_days_bookings_for_eans() -> dict[str, int]:
     logger.info("Getting eans with bookings in the last 30 days")
-    rows: Iterable[Last30DaysBookingsModel] = big_query_queries.Last30DaysBookings().execute()
+    rows: abc.Iterable[Last30DaysBookingsModel] = big_query_queries.Last30DaysBookings().execute()
     ean_booking_count = {row.ean: row.booking_count for row in rows if row.ean}
     logger.info("Got %s eans with bookings in the last 30 days", len(ean_booking_count))
     return ean_booking_count
@@ -707,7 +705,7 @@ def update_products_last_30_days_booking_count(batch_size: int = 1000) -> None:
 
     logger.info("Starting to reindex offers with product booked recently. Product count: %s", len(updated_products))
 
-    offer_ids_to_reindex = set()
+    offer_ids_to_reindex: set[int] = set()
     for (offer_id,) in offer_ids_to_reindex_query.yield_per(batch_size):
         offer_ids_to_reindex.add(offer_id)
         if len(offer_ids_to_reindex) == batch_size:

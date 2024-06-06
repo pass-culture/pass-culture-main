@@ -1,11 +1,10 @@
-import collections.abc
+from collections import abc
 import contextlib
 import datetime
 import decimal
 import enum
 import logging
 import re
-from typing import Iterable
 import urllib.parse
 
 import algoliasearch.http.requester
@@ -150,7 +149,7 @@ class AlgoliaBackend(base.SearchBackend):
         self.algolia_venues_client = client.init_index(settings.ALGOLIA_VENUES_INDEX_NAME)
         self.redis_client = current_app.redis_client
 
-    def _can_enqueue_offer_ids(self, offer_ids: Iterable[int]) -> bool:
+    def _can_enqueue_offer_ids(self, offer_ids: abc.Collection[int]) -> bool:
         if settings.ALGOLIA_OFFERS_INDEX_MAX_SIZE < 0:
             return True
 
@@ -165,24 +164,24 @@ class AlgoliaBackend(base.SearchBackend):
                     "currently_indexed_offers": currently_indexed_offers,
                     "offers_in_indexing_queue": offers_in_indexing_queue,
                     "partial_ids": list(offer_ids)[:50],
-                    "count": len(offer_ids),  # type: ignore[arg-type]
+                    "count": len(offer_ids),
                     "limit": limit,
                 },
             )
         return can_enqueue
 
-    def enqueue_offer_ids(self, offer_ids: Iterable[int]) -> None:
+    def enqueue_offer_ids(self, offer_ids: abc.Collection[int]) -> None:
         if not self._can_enqueue_offer_ids(offer_ids):
             return
 
         self._enqueue_ids(offer_ids, REDIS_OFFER_IDS_NAME)
 
-    def enqueue_offer_ids_in_error(self, offer_ids: Iterable[int]) -> None:
+    def enqueue_offer_ids_in_error(self, offer_ids: abc.Collection[int]) -> None:
         self._enqueue_ids(offer_ids, REDIS_OFFER_IDS_IN_ERROR_NAME)
 
     def enqueue_collective_offer_template_ids(
         self,
-        collective_offer_template_ids: Iterable[int],
+        collective_offer_template_ids: abc.Collection[int],
     ) -> None:
         self._enqueue_ids(
             collective_offer_template_ids,
@@ -191,23 +190,23 @@ class AlgoliaBackend(base.SearchBackend):
 
     def enqueue_collective_offer_template_ids_in_error(
         self,
-        collective_offer_template_ids: Iterable[int],
+        collective_offer_template_ids: abc.Collection[int],
     ) -> None:
         self._enqueue_ids(
             collective_offer_template_ids,
             REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_IN_ERROR_TO_INDEX,
         )
 
-    def enqueue_venue_ids(self, venue_ids: Iterable[int]) -> None:
+    def enqueue_venue_ids(self, venue_ids: abc.Collection[int]) -> None:
         return self._enqueue_ids(venue_ids, REDIS_VENUE_IDS_TO_INDEX)
 
-    def enqueue_venue_ids_in_error(self, venue_ids: Iterable[int]) -> None:
+    def enqueue_venue_ids_in_error(self, venue_ids: abc.Collection[int]) -> None:
         return self._enqueue_ids(venue_ids, REDIS_VENUE_IDS_IN_ERROR_TO_INDEX)
 
-    def enqueue_venue_ids_for_offers(self, venue_ids: Iterable[int]) -> None:
+    def enqueue_venue_ids_for_offers(self, venue_ids: abc.Collection[int]) -> None:
         return self._enqueue_ids(venue_ids, REDIS_VENUE_IDS_FOR_OFFERS_NAME)
 
-    def _enqueue_ids(self, ids: Iterable[int], queue: str) -> None:
+    def _enqueue_ids(self, ids: abc.Collection[int], queue: str) -> None:
         if not ids:
             return
 
@@ -260,7 +259,7 @@ class AlgoliaBackend(base.SearchBackend):
         self,
         queue: str,
         count: int,
-    ) -> collections.abc.Generator[set[int], None, None]:
+    ) -> abc.Generator[set[int], None, None]:
         """Return a set of int identifiers from the queue, as a
         context manager.
 
@@ -352,7 +351,7 @@ class AlgoliaBackend(base.SearchBackend):
             # cache so that we do perform a request to Algolia.
             return True
 
-    def index_offers(self, offers: Iterable[offers_models.Offer], last_30_days_bookings: dict[int, int]) -> None:
+    def index_offers(self, offers: abc.Collection[offers_models.Offer], last_30_days_bookings: dict[int, int]) -> None:
         if not offers:
             return
         objects = [self.serialize_offer(offer, last_30_days_bookings.get(offer.id) or 0) for offer in offers]
@@ -377,7 +376,7 @@ class AlgoliaBackend(base.SearchBackend):
 
     def index_collective_offer_templates(
         self,
-        collective_offer_templates: Iterable[educational_models.CollectiveOfferTemplate],
+        collective_offer_templates: abc.Collection[educational_models.CollectiveOfferTemplate],
     ) -> None:
         if not collective_offer_templates:
             return
@@ -387,13 +386,13 @@ class AlgoliaBackend(base.SearchBackend):
         ]
         self.algolia_collective_offers_templates_client.save_objects(objects)
 
-    def index_venues(self, venues: Iterable[offerers_models.Venue]) -> None:
+    def index_venues(self, venues: abc.Collection[offerers_models.Venue]) -> None:
         if not venues:
             return
         objects = [self.serialize_venue(venue) for venue in venues]
         self.algolia_venues_client.save_objects(objects)
 
-    def unindex_offer_ids(self, offer_ids: Iterable[int]) -> None:
+    def unindex_offer_ids(self, offer_ids: abc.Collection[int]) -> None:
         if not offer_ids:
             return
         self.algolia_offers_client.delete_objects(offer_ids)
@@ -418,12 +417,12 @@ class AlgoliaBackend(base.SearchBackend):
                 "Could not clear indexed offers cache",
             )
 
-    def unindex_venue_ids(self, venue_ids: Iterable[int]) -> None:
+    def unindex_venue_ids(self, venue_ids: abc.Collection[int]) -> None:
         if not venue_ids:
             return
         self.algolia_venues_client.delete_objects(venue_ids)
 
-    def unindex_collective_offer_template_ids(self, collective_offer_template_ids: Iterable[int]) -> None:
+    def unindex_collective_offer_template_ids(self, collective_offer_template_ids: abc.Collection[int]) -> None:
         if not collective_offer_template_ids:
             return
         self.algolia_collective_offers_templates_client.delete_objects(
