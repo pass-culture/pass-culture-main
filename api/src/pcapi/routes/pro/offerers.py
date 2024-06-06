@@ -313,26 +313,6 @@ def get_offerer_addresses(offerer_id: int) -> offerers_serialize.GetOffererAddre
     )
 
 
-@private_api.route("/offerers/<int:offerer_id>/address/<int:offerer_address_id>", methods=["PATCH"])
-@login_required
-@spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
-def patch_offerer_address(
-    offerer_id: int, offerer_address_id: int, body: offerers_serialize.PatchOffererAddressRequest
-) -> None:
-    with transaction():
-        with db.session.no_autoflush:
-            check_user_has_access_to_offerer(current_user, offerer_id)
-            offerer_address = repository.get_offerer_address_of_offerer(offerer_id, offerer_address_id)
-            if offerer_address is None:
-                raise ResourceNotFoundError()
-            if offerer_address._isEditable is False:
-                raise ApiErrors({"label": "Le libellé de cette adresse n'est pas modifiable"}, status_code=400)
-            try:
-                api.update_offerer_address_label(offerer_address_id, body.label)
-            except offerers_exceptions.OffererAddressLabelAlreadyUsed:
-                raise ApiErrors({"label": "Une adresse identique utilise déjà ce libellé"}, status_code=400)
-
-
 @private_api.route("/offerers/<int:offerer_id>/addresses", methods=["POST"])
 @login_required
 @spectree_serialize(

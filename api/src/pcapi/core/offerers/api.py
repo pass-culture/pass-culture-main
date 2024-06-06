@@ -2442,14 +2442,6 @@ def acceslibre_matching(batch_size: int, dry_run: bool, start_from_batch: int, n
             db.session.rollback()
 
 
-def update_offerer_address_label(offerer_address_id: int, new_label: str) -> None:
-    try:
-        models.OffererAddress.query.filter_by(id=offerer_address_id).update({"label": new_label})
-        db.session.flush()
-    except sa.exc.IntegrityError:
-        raise exceptions.OffererAddressLabelAlreadyUsed()
-
-
 def get_or_create_address(address_info: AddressInfo) -> geography_models.Address:
     departmentCode = utils_regions.get_department_code_from_city_code(address_info.citycode)
     timezone = date_utils.get_department_timezone(departmentCode)

@@ -83,7 +83,6 @@ import type { PatchCollectiveOfferEducationalInstitution } from '../models/Patch
 import type { PatchCollectiveOfferTemplateBodyModel } from '../models/PatchCollectiveOfferTemplateBodyModel';
 import type { PatchOfferActiveStatusBodyModel } from '../models/PatchOfferActiveStatusBodyModel';
 import type { PatchOfferBodyModel } from '../models/PatchOfferBodyModel';
-import type { PatchOffererAddressRequest } from '../models/PatchOffererAddressRequest';
 import type { PatchOfferPublishBodyModel } from '../models/PatchOfferPublishBodyModel';
 import type { PostCollectiveOfferBodyModel } from '../models/PostCollectiveOfferBodyModel';
 import type { PostCollectiveOfferTemplateBodyModel } from '../models/PostCollectiveOfferTemplateBodyModel';
@@ -1308,34 +1307,6 @@ export class DefaultService {
       path: {
         'offerer_id': offererId,
       },
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-  /**
-   * patch_offerer_address <PATCH>
-   * @param offererId
-   * @param offererAddressId
-   * @param requestBody
-   * @returns void
-   * @throws ApiError
-   */
-  public patchOffererAddress(
-    offererId: number,
-    offererAddressId: number,
-    requestBody?: PatchOffererAddressRequest,
-  ): CancelablePromise<void> {
-    return this.httpRequest.request({
-      method: 'PATCH',
-      url: '/offerers/{offerer_id}/address/{offerer_address_id}',
-      path: {
-        'offerer_id': offererId,
-        'offerer_address_id': offererAddressId,
-      },
-      body: requestBody,
-      mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,

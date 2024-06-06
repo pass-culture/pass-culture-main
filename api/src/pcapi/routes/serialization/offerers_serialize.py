@@ -422,10 +422,6 @@ class GetOffererAddressesResponseModel(BaseModel):
     __root__: list[GetOffererAddressResponseModel]
 
 
-class PatchOffererAddressRequest(BaseModel):
-    label: str
-
-
 class OffererAddressResponseModel(BaseModel):
     id: int
     label: str | None
