@@ -2387,7 +2387,7 @@ class GenerateInvoiceTest:
         + 1  # insert invoice
         + 1  # insert invoice lines
         + 1  # insert invoice_cashflows
-        + 1  # update Cashflow.status
+        + 1  # update Cashflow.status and add CashflowLog
         + 1  # update Pricing.status
         + 1  # update Booking.status
         + 1  # FF is cached in all test due to generate_cashflows call
@@ -2799,16 +2799,23 @@ class GenerateInvoiceTest:
         for e in (collective_finance_event1, collective_finance_event2, indiv_finance_event1, indiv_finance_event2):
             api.price_event(e)
         batch = api.generate_cashflows(datetime.datetime.utcnow())
-        api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
-        cashflow_ids = {cf.id for cf in models.Cashflow.query.all()}
+        api.generate_payment_files(batch)  # mark cashflow as UNDER_REVIEW
+        cashflow = models.Cashflow.query.one()
+        assert cashflow.status == models.CashflowStatus.UNDER_REVIEW
+        assert cashflow.logs[0].statusBefore == models.CashflowStatus.PENDING
+        assert cashflow.logs[0].statusAfter == models.CashflowStatus.UNDER_REVIEW
         indiv_booking2.status = bookings_models.BookingStatus.CANCELLED
         collective_booking2.status = educational_models.CollectiveBookingStatus.CANCELLED
         db.session.flush()
 
         invoice = api._generate_invoice(
             bank_account_id=bank_account.id,
-            cashflow_ids=cashflow_ids,
+            cashflow_ids=[cashflow.id],
         )
+
+        assert cashflow.status == models.CashflowStatus.ACCEPTED
+        assert cashflow.logs[1].statusBefore == models.CashflowStatus.UNDER_REVIEW
+        assert cashflow.logs[1].statusAfter == models.CashflowStatus.ACCEPTED
 
         get_statuses = lambda model: {s for s, in model.query.with_entities(getattr(model, "status"))}
         cashflow_statuses = get_statuses(models.Cashflow)
