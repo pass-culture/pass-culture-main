@@ -17,6 +17,8 @@ import strokeHomeIcon from 'icons/stroke-home.svg'
 import strokePhoneIcon from 'icons/stroke-phone.svg'
 import strokePieIcon from 'icons/stroke-pie.svg'
 import strokeTeacherIcon from 'icons/stroke-teacher.svg'
+import strokeCollaboratorIcon from 'icons/stroke-collaborator.svg'
+
 import {
   setIsCollectiveSectionOpen,
   setIsIndividualSectionOpen,
@@ -292,6 +294,19 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
           >
             <SvgIcon src={strokeEuroIcon} alt="" width={NAV_ITEM_ICON_SIZE} />
             Gestion financière
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
+            to="/collaborateurs"
+            className={({ isActive }) =>
+              classnames(styles['nav-links-item'], {
+                [styles['nav-links-item-active']]: isActive,
+              })
+            }
+          >
+            <SvgIcon src={strokeCollaboratorIcon} alt="" width={NAV_ITEM_ICON_SIZE} />
+            Collaborateurs
           </NavLink>
         </li>
       </div>

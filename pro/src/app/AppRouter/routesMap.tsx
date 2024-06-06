@@ -337,4 +337,9 @@ export const routes: RouteConfig[] = [
     path: '/accessibilite/schema-pluriannuel',
     title: 'Schéma pluriannuel',
   },
+  {
+    lazy: () => import('pages/Collaborators/Collaborators'),
+    path: '/collaborateurs',
+    title: 'Collaborateurs',
+  },
 ]
