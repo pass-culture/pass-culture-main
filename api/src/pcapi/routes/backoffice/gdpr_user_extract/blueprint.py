@@ -12,6 +12,7 @@ from sqlalchemy.orm import joinedload
 from pcapi import settings
 from pcapi.core import object_storage
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import atomic
@@ -120,3 +121,19 @@ def download_gdpr_extract(extract_id: int) -> utils.BackofficeResponse:
     )
 
     return response
+
+
+@gdpr_extract_blueprint.route("<int:gdpr_id>/extract", methods=["POST"])
+@atomic()
+def delete_gdpr_user_data_extract(gdpr_id: int) -> utils.BackofficeResponse:
+    extract = users_models.GdprUserDataExtract.query.filter_by(id=gdpr_id).one_or_none()
+    if not extract:
+        flash("L'extrait demandé n'existe pas.", "warning")
+        return redirect(url_for("backoffice_web.gdpr_extract.list_gdpr_user_data_extract"))
+    if not extract.dateProcessed and not extract.is_expired:
+        flash("L'extraction de données est toujours en cours pour cet utilisateur.", "warning")
+        return redirect(url_for("backoffice_web.gdpr_extract.list_gdpr_user_data_extract"))
+
+    users_api.delete_gdpr_extract(extract.id)
+    flash("L'extraction de données a bien été effacée.", "success")
+    return redirect(url_for("backoffice_web.gdpr_extract.list_gdpr_user_data_extract"))
