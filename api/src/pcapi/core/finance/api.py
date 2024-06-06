@@ -1900,11 +1900,29 @@ def _generate_invoice(
     db.session.bulk_save_objects(invoice_lines)
     cf_links = [models.InvoiceCashflow(invoiceId=invoice.id, cashflowId=cashflow.id) for cashflow in cashflows]
     db.session.bulk_save_objects(cf_links)
+
     # Cashflow.status: UNDER_REVIEW -> ACCEPTED
-    models.Cashflow.query.filter(models.Cashflow.id.in_(cashflow_ids)).update(
-        {"status": models.CashflowStatus.ACCEPTED},
-        synchronize_session=False,
-    )
+    with log_elapsed(logger, "Updating status of cashflows"):
+        db.session.execute(
+            sqla.text(
+                """
+                WITH updated AS (
+                  UPDATE cashflow
+                  SET status = :accepted
+                  WHERE id IN :cashflow_ids
+                  RETURNING id AS cashflow_id
+                )
+                INSERT INTO cashflow_log
+                ("cashflowId", "statusBefore", "statusAfter")
+                SELECT updated.cashflow_id, :under_review, :accepted FROM updated
+                """
+            ),
+            params={
+                "cashflow_ids": tuple(cashflow_ids),
+                "accepted": models.CashflowStatus.ACCEPTED.value,
+                "under_review": models.CashflowStatus.UNDER_REVIEW.value,
+            },
+        )
 
     # Pricing.status: PROCESSED -> INVOICED
     # SQLAlchemy ORM cannot call `update()` if a query has been JOINed.
