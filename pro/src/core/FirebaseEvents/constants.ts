@@ -46,6 +46,7 @@ export enum Events {
   CLICKED_OMNI_SEARCH_CRITERIA = 'hasClickedOmniSearchCriteria',
   CLICKED_PAGINATION_NEXT_PAGE = 'hasClickedPaginationNextPage',
   CLICKED_PAGINATION_PREVIOUS_PAGE = 'hasClickedPaginationPreviousPage',
+  CLICKED_CONTACT_OUR_TEAMS = 'hasClickedContactOurTeams',
   FIRST_LOGIN = 'firstLogin',
   PAGE_VIEW = 'page_view',
   SIGNUP_FORM_ABORT = 'signupFormAbort',
