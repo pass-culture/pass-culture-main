@@ -5,7 +5,6 @@ from flask_login import login_required
 import sqlalchemy.orm as sqla_orm
 
 from pcapi import settings
-from pcapi.connectors import api_adresse
 from pcapi.connectors.api_recaptcha import ReCaptchaException
 from pcapi.connectors.api_recaptcha import check_web_recaptcha_token
 from pcapi.connectors.big_query.queries.offerer_stats import DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
@@ -18,7 +17,6 @@ from pcapi.core.offerers import api
 from pcapi.core.offerers import repository
 import pcapi.core.offerers.exceptions as offerers_exceptions
 import pcapi.core.offerers.models as offerers_models
-from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.repository import transaction
@@ -311,26 +309,3 @@ def get_offerer_addresses(offerer_id: int) -> offerers_serialize.GetOffererAddre
             for offerer_address in offerer_addresses
         ]
     )
-
-
-@private_api.route("/offerers/<int:offerer_id>/addresses", methods=["POST"])
-@login_required
-@spectree_serialize(
-    on_success_status=201,
-    api=blueprint.pro_private_schema,
-    response_model=offerers_serialize.OffererAddressResponseModel,
-)
-def create_offerer_address(
-    offerer_id: int, body: offerers_serialize.OffererAddressRequestModel
-) -> offerers_serialize.OffererAddressResponseModel:
-    check_user_has_access_to_offerer(current_user, offerer_id)
-    try:
-        address_info = api_adresse.get_address(address=body.street, citycode=body.inseeCode)
-    except api_adresse.NoResultException:
-        raise ApiErrors({"address": "Cette adresse n'existe pas"})
-
-    with transaction():
-        with db.session.no_autoflush:
-            address = api.get_or_create_address(address_info)
-            offerer_address = api.get_or_create_offerer_address(offerer_id, address.id, body.label)
-            return offerers_serialize.OffererAddressResponseModel.from_orm(offerer_address)
