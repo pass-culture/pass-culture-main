@@ -1532,7 +1532,7 @@
                     },
                     "name": {
                         "description": "Educational domain name",
-                        "example": "Architecture",
+                        "example": "Cin\u00e9ma, audiovisuel",
                         "title": "Name",
                         "type": "string"
                     },
@@ -1690,10 +1690,14 @@
             "CollectiveOffersStudentLevelResponseModel": {
                 "properties": {
                     "id": {
+                        "description": "Student level id",
+                        "example": "COLLEGE6",
                         "title": "Id",
                         "type": "string"
                     },
                     "name": {
+                        "description": "Student level name",
+                        "example": "Coll\u00e8ge - 6e",
                         "title": "Name",
                         "type": "string"
                     }
