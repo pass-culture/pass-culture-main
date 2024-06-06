@@ -38,7 +38,7 @@ export const HelpDropdownMenu = () => {
             target: '_blank',
           }}
           onClick={() =>
-            logEvent(Events.CLICKED_BEST_PRACTICES_STUDIES, {
+            logEvent(Events.CLICKED_CONTACT_OUR_TEAMS, {
               from: location.pathname,
             })
           }
