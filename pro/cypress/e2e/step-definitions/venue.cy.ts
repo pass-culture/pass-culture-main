@@ -1,4 +1,9 @@
-import { When, Then, Given } from '@badeball/cypress-cucumber-preprocessor'
+import {
+  When,
+  Then,
+  Given,
+  DataTable,
+} from '@badeball/cypress-cucumber-preprocessor'
 
 // siret of Bar des amis
 let siret: string
@@ -178,4 +183,17 @@ Then('Individual section data should be updated', () => {
 
 Then('Paramètres généraux data should be updated', () => {
   cy.findByText('Musée de France').should('be.visible')
+})
+
+When('I select offerer {string}', (offererName: string) => {
+  cy.findByTestId('offererId').select(offererName)
+})
+
+Then('I should only see these venues', (venues: DataTable) => {
+  cy.findAllByTestId('venue-name')
+    .then(($element) => Cypress._.map($element, (el) => el.innerText))
+    .should('be.an', 'array')
+    .then((list: string[]) => {
+      expect(list).to.have.members(Object.values(venues.raw()[0]))
+    })
 })
