@@ -1,5 +1,7 @@
 import { api } from 'apiClient/api'
 import { InvoiceResponseV2Model } from 'apiClient/v1'
+import { useAnalytics } from 'app/App/analytics/firebase'
+import { Events } from 'core/FirebaseEvents/constants'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import { useNotification } from 'hooks/useNotification'
 import fullDownloadIcon from 'icons/full-download.svg'
@@ -18,9 +20,15 @@ type InvoiceActionsProps = {
 
 export function InvoiceActions({ invoice }: InvoiceActionsProps) {
   const notify = useNotification()
+  const { logEvent } = useAnalytics()
 
   async function downloadCSVFile(reference: string) {
     try {
+      logEvent(Events.CLICKED_INVOICES_DOWNLOAD, {
+        fileType: 'details',
+        filesCount: 1,
+        buttonType: 'unique',
+      })
       downloadFile(
         await api.getReimbursementsCsvV2([reference]),
         'remboursements_pass_culture'
@@ -44,6 +52,13 @@ export function InvoiceActions({ invoice }: InvoiceActionsProps) {
             icon={fullDownloadIcon}
             svgAlt=""
             variant={ButtonVariant.TERNARY}
+            onClick={() =>
+              logEvent(Events.CLICKED_INVOICES_DOWNLOAD, {
+                fileType: 'justificatif',
+                filesCount: 1,
+                buttonType: 'unique',
+              })
+            }
           >
             Télécharger le justificatif comptable (.pdf)
           </ButtonLink>
