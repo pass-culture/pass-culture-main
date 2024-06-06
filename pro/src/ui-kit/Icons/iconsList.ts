@@ -263,6 +263,7 @@ export const strokeIcons: IconListItem[] = [
   { src: strokeBookingHold, viewBox: '0 0 200 156' }, // TODO standardize viewbox
   { src: stroke404Icon, viewBox: '0 0 308 194' }, // TODO standardize viewbox
   { src: strokeShoutIcon },
+  { src: strokeCollaboratorIcon },
 ]
 
 export const shadowIcons: IconListItem[] = [
