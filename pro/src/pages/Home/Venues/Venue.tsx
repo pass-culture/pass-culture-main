@@ -81,10 +81,12 @@ export const Venue = ({ offerer, venue, isFirstVenue }: VenueProps) => {
                 viewBox="0 0 16 16"
                 src={isToggleOpen ? fullDisclosureOpen : fullDisclosureClose}
               />
-              <span>{venueDisplayName}</span>
+              <span data-testid="venue-name">{venueDisplayName}</span>
             </button>
           ) : (
-            <div className={styles['venue-name']}>{venueDisplayName}</div>
+            <div className={styles['venue-name']} data-testid="venue-name">
+              {venueDisplayName}
+            </div>
           )}
 
           {shouldShowVenueOfferSteps && !venue.isVirtual && (

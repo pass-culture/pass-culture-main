@@ -15,7 +15,7 @@ Given('I am logged in', () => {
   })
 })
 
-Given('I am logged in with financial informations', () => {
+Given('I am logged in with new interface', () => {
   cy.login({
     email: 'activation_new_nav@example.com',
     password: 'user@AZERTY123',
