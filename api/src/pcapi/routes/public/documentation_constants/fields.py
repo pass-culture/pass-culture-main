@@ -158,10 +158,13 @@ class _FIELDS:
     )
     # Educational domain fields
     EDUCATIONAL_DOMAIN_ID = Field(description="Educational domain id", example=123456)
-    EDUCATIONAL_DOMAIN_NAME = Field(description="Educational domain name", example="Architecture")
+    EDUCATIONAL_DOMAIN_NAME = Field(description="Educational domain name", example="Cinéma, audiovisuel")
     # National program fields
     NATIONAL_PROGRAM_ID = Field(description="National program id", example=1223456)
     NATIONAL_PROGRAM_NAME = Field(description="National program name", example="Collège au cinéma")
+    # Student level fields
+    STUDENT_LEVEL_ID = Field(description="Student level id", example="COLLEGE6")
+    STUDENT_LEVEL_NAME = Field(description="Student level name", example="Collège - 6e")
 
 
 fields = _FIELDS()
