@@ -1,9 +1,10 @@
+from pcapi.routes.public.documentation_constants.fields import fields
 from pcapi.routes.serialization import BaseModel
 
 
 class CollectiveOffersStudentLevelResponseModel(BaseModel):
-    id: str
-    name: str
+    id: str = fields.STUDENT_LEVEL_ID
+    name: str = fields.STUDENT_LEVEL_NAME
 
 
 class CollectiveOffersListStudentLevelsResponseModel(BaseModel):
