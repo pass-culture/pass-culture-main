@@ -352,9 +352,10 @@ class OffererBookingRecapTest:
         assert email_data.params["USER_PHONENUMBER"] == "+33123456789"
 
     @pytest.mark.usefixtures("db_session")
-    def test_when_venue_with_reimbursement_point(self):
-        venue_reimbursement_point_link = offerers_factories.VenueReimbursementPointLinkFactory()
-        booking = make_booking(stock__offer__venue=venue_reimbursement_point_link.venue)
+    def test_when_venue_with_validated_bank_account(self):
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.VenueBankAccountLinkFactory(venue=venue)
+        booking = make_booking(stock__offer__venue=venue)
         with assert_num_queries(7):
             email_data = get_new_booking_to_pro_email_data(booking)
 
