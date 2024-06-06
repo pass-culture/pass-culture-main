@@ -11,6 +11,7 @@ import {
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OffererLinkEvents } from 'core/FirebaseEvents/constants'
+import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import { useNotification } from 'hooks/useNotification'
 import fullDownIcon from 'icons/full-down.svg'
 import fullUpIcon from 'icons/full-up.svg'
@@ -91,9 +92,19 @@ export const AttachmentInvitations = ({
     }
   }, [])
 
+  const isNewInterface = useIsNewInterfaceActive()
+
+  const MAX_COLLABORATORS = isNewInterface ? 10 : 5
+
   return (
     <section className={styles['section']} ref={scrollToSection}>
-      <h2 className={styles['main-list-title']}>Collaborateurs</h2>
+      <h2
+        className={
+          styles[isNewInterface ? 'main-list-title-new' : 'main-list-title']
+        }
+      >
+        {isNewInterface ? 'Liste des collaborateurs' : 'Collaborateurs'}
+      </h2>
 
       {members.length > 0 && (
         <div className={styles['members-container']}>
@@ -107,7 +118,7 @@ export const AttachmentInvitations = ({
             <tbody>
               {members.map(
                 ({ email, status }, index) =>
-                  !(!displayAllMembers && index > 4) && (
+                  !(!displayAllMembers && index > MAX_COLLABORATORS - 1) && (
                     <tr key={email}>
                       <td className={styles['member-email']}>{email}</td>
                       <td className={styles['member-status']}>
@@ -120,7 +131,7 @@ export const AttachmentInvitations = ({
               )}
             </tbody>
           </table>
-          {members.length > 5 && (
+          {members.length > MAX_COLLABORATORS && (
             <Button
               onClick={() => setDisplayAllMembers(!displayAllMembers)}
               variant={ButtonVariant.TERNARY}

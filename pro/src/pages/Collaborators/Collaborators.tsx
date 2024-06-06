@@ -1,9 +1,23 @@
-import { AppLayout } from "app/AppLayout"
+import { useSelector } from 'react-redux'
 
-const Collaborators = (): JSX.Element => {
-  return <AppLayout>
-    <h1>Collaborateurs</h1>
-  </AppLayout>
+import { AppLayout } from 'app/AppLayout'
+import { AttachmentInvitations } from 'pages/Offerers/Offerer/OffererDetails/AttachmentInvitations/AttachmentInvitations'
+import { selectCurrentOffererId } from 'store/user/selectors'
+
+const Collaborators = (): JSX.Element | null => {
+  const currentOffererId = useSelector(selectCurrentOffererId)
+
+  if (!currentOffererId) {
+    return null
+  }
+
+  return (
+    <AppLayout>
+      <h1>Collaborateurs</h1>
+
+      <AttachmentInvitations offererId={currentOffererId} />
+    </AppLayout>
+  )
 }
 
 export const Component = Collaborators
