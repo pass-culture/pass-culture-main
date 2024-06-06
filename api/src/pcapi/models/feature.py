@@ -130,6 +130,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_NEW_HASHING_ALGORITHM = "Activer le nouveau système de hachage des clés publiques d'API"
     WIP_ENABLE_BOOST_TWO_STAGES_BOOKING = "Activer la réservation Boost en 2 étapes."
     WIP_ENABLE_OFFER_MARKDOWN_DESCRIPTION = "Activer la description des offres collectives en markdown."
+    WIP_FUTURE_OFFER = "Activer la publication d'offres dans le futur"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -192,6 +193,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY,
     FeatureToggle.WIP_ENABLE_TITELIVE_API_FOR_BOOKS,
     FeatureToggle.WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS,
+    FeatureToggle.WIP_FUTURE_OFFER,
     # Please keep alphabetic order
 )
 
