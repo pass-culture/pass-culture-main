@@ -190,9 +190,8 @@ When('I select offerer {string}', (offererName: string) => {
 })
 
 Then('I should only see these venues', (venues: DataTable) => {
-  cy.findAllByTestId('venue-name')
+  cy.findAllByTestId(/^venue-name-(span|div)/)
     .then(($element) => Cypress._.map($element, (el) => el.innerText))
-    .should('be.an', 'array')
     .then((list: string[]) => {
       expect(list).to.have.members(Object.values(venues.raw()[0]))
     })
