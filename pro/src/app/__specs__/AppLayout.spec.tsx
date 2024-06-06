@@ -112,7 +112,7 @@ describe('src | AppLayout', () => {
         await userEvent.click(screen.getByLabelText('Menu'))
 
         expect(screen.getByLabelText('Fermer')).toHaveFocus()
-        const NB_ITEMS_IN_NAV = 11
+        const NB_ITEMS_IN_NAV = 12
         for (let i = 0; i < NB_ITEMS_IN_NAV; i++) {
           await userEvent.tab()
         }
