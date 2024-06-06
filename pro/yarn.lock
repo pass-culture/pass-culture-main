@@ -8554,10 +8554,10 @@ levn@^0.4.1:
     prelude-ls "^1.2.1"
     type-check "~0.4.0"
 
-libphonenumber-js@1.10.62:
-  version "1.10.62"
-  resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.10.62.tgz#21bce1bb869514fa3c749de1f1caf121c4c63232"
-  integrity sha512-zbLf2yhgrs+TN4rHT7ral38WQEXjS4TWKp8QD3P5fJmHh3lCtTiPyr8XDPGaA7T41HDz2qxR7x3uwr+aNbShJQ==
+libphonenumber-js@1.11.3:
+  version "1.11.3"
+  resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.11.3.tgz#18126a2eec754eacd36f1f0d58590077fa5539ff"
+  integrity sha512-RU0CTsLCu2v6VEzdP+W6UU2n5+jEpMDRkGxUeBgsAJgre3vKgm17eApISH9OQY4G0jZYJVIc8qXmz6CJFueAFg==
 
 line-height@^0.3.1:
   version "0.3.1"
