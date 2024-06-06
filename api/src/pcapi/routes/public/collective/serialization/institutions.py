@@ -12,12 +12,12 @@ MAX_LIMIT_EDUCATIONAL_INSTITUTION = 20
 
 
 class CollectiveOffersEducationalInstitutionResponseModel(BaseModel):
-    id: int = fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_ID
-    uai: str = fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_UAI
-    name: str = fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_NAME
-    institutionType: str = fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_TYPE
-    city: str = fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_CITY
-    postalCode: str = fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_POSTAL_CODE
+    id: int = fields.EDUCATIONAL_INSTITUTION_ID
+    uai: str = fields.EDUCATIONAL_INSTITUTION_UAI
+    name: str = fields.EDUCATIONAL_INSTITUTION_NAME
+    institutionType: str = fields.EDUCATIONAL_INSTITUTION_TYPE
+    city: str = fields.EDUCATIONAL_INSTITUTION_CITY
+    postalCode: str = fields.EDUCATIONAL_INSTITUTION_POSTAL_CODE
 
     class Config:
         orm_mode = True
@@ -33,12 +33,12 @@ class CollectiveOffersListEducationalInstitutionResponseModel(BaseModel):
 
 
 class GetListEducationalInstitutionsQueryModel(BaseModel):
-    id: int | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_ID
-    name: str | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_NAME
-    institution_type: str | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_TYPE
-    city: str | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_CITY
-    postal_code: str | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_POSTAL_CODE
-    uai: str | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_UAI
+    id: int | None = fields.EDUCATIONAL_INSTITUTION_ID
+    name: str | None = fields.EDUCATIONAL_INSTITUTION_NAME
+    institution_type: str | None = fields.EDUCATIONAL_INSTITUTION_TYPE
+    city: str | None = fields.EDUCATIONAL_INSTITUTION_CITY
+    postal_code: str | None = fields.EDUCATIONAL_INSTITUTION_POSTAL_CODE
+    uai: str | None = fields.EDUCATIONAL_INSTITUTION_UAI
     limit: int = Field(MAX_LIMIT_EDUCATIONAL_INSTITUTION, description=LIMIT_DESCRIPTION, example=10)
 
     @validator("limit")

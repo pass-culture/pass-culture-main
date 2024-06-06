@@ -131,27 +131,28 @@ class _FIELDS:
     COLLECTIVE_OFFER_EDUCATIONAL_PRICE_DETAIL = Field(
         description="The explanation of the offer price", example="10 tickets x 10 € = 100 €"
     )
-    COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_ID = Field(
+    # Educational institution fields
+    EDUCATIONAL_INSTITUTION_ID = Field(
         description="Educational institution id in the pass Culture application. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
         example=1234,
     )
-    COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_UAI = Field(
+    EDUCATIONAL_INSTITUTION_UAI = Field(
         description='Educational institution UAI ("Unité Administrative Immatriculée") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**',
         example="0010008D",
     )
-    COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_NAME = Field(
+    EDUCATIONAL_INSTITUTION_NAME = Field(
         description="Educational institution name",
         example="Lycée Pontus de Tyard",
     )
-    COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_TYPE = Field(
+    EDUCATIONAL_INSTITUTION_TYPE = Field(
         description="Educational institution type",
         example="LYCEE GENERAL",
     )
-    COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_CITY = Field(
+    EDUCATIONAL_INSTITUTION_CITY = Field(
         description="City where the educational institution is located",
         example="Chalon-sur-Saône",
     )
-    COLLECTIVE_OFFER_EDUCATIONAL_INSTITUTION_POSTAL_CODE = Field(
+    EDUCATIONAL_INSTITUTION_POSTAL_CODE = Field(
         description="Educational institution postal code",
         example="71100",
     )
