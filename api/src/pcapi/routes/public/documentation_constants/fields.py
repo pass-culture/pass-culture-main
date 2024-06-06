@@ -156,6 +156,12 @@ class _FIELDS:
         description="Educational institution postal code",
         example="71100",
     )
+    # Educational domain fields
+    EDUCATIONAL_DOMAIN_ID = Field(description="Educational domain id", example=123456)
+    EDUCATIONAL_DOMAIN_NAME = Field(description="Educational domain name", example="Architecture")
+    # National program fields
+    NATIONAL_PROGRAM_ID = Field(description="National program id", example=1223456)
+    NATIONAL_PROGRAM_NAME = Field(description="National program name", example="Collège au cinéma")
 
 
 fields = _FIELDS()
