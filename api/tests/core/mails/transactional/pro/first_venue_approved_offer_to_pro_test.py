@@ -65,9 +65,9 @@ class SendinblueSendFirstVenueOfferEmailTest:
             "NEEDS_BANK_INFORMATION_REMINDER": True,
         }
 
-    def test_get_first_venue_with_reimbursement_point_approved_offer_correct_email_metadata(self):
+    def test_get_first_venue_with_bank_account_validated_correct_email_metadata(self):
         venue = offerers_factories.VenueFactory(name="Mon stade")
-        offerers_factories.VenueReimbursementPointLinkFactory(venue=venue)
+        offerers_factories.VenueBankAccountLinkFactory(venue=venue)
         offer = offers_factories.OfferFactory(name="Ma première offre", venue=venue)
 
         with assert_num_queries(2):
