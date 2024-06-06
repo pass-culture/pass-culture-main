@@ -43,7 +43,6 @@ from flask import render_template
 from flask_sqlalchemy import BaseQuery
 import pytz
 import sqlalchemy as sqla
-from sqlalchemy import text
 import sqlalchemy.orm as sqla_orm
 import sqlalchemy.sql.functions as sqla_func
 
@@ -1125,7 +1124,7 @@ def generate_payment_files(batch: models.CashflowBatch) -> None:
 
     logger.info("Updating cashflow status")
     db.session.execute(
-        text(
+        sqla.text(
             """
         WITH updated AS (
           UPDATE cashflow
@@ -1911,7 +1910,7 @@ def _generate_invoice(
     # SQLAlchemy ORM cannot call `update()` if a query has been JOINed.
     with log_elapsed(logger, "Updating status of pricings"):
         db.session.execute(
-            text(
+            sqla.text(
                 """
             UPDATE pricing
             SET status = :status
@@ -1927,7 +1926,7 @@ def _generate_invoice(
     # Booking.status: USED -> REIMBURSED (but keep CANCELLED as is)
     with log_elapsed(logger, "Updating status of individual bookings"):
         db.session.execute(
-            text(
+            sqla.text(
                 """
             UPDATE booking
             SET
@@ -1955,7 +1954,7 @@ def _generate_invoice(
     # CollectiveBooking.status: USED -> REIMBURSED (but keep CANCELLED as is)
     with log_elapsed(logger, "Updating status of collective bookings"):
         db.session.execute(
-            text(
+            sqla.text(
                 """
             UPDATE collective_booking
             SET
