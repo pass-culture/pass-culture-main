@@ -714,6 +714,12 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
 
         return None
 
+    @property
+    def current_bank_account(self) -> "finance_models.BankAccount | None":
+        if self.current_bank_account_link:
+            return self.current_bank_account_link.bankAccount
+        return None
+
     @hybrid_property
     def common_name(self) -> str:
         return self.publicName or self.name
