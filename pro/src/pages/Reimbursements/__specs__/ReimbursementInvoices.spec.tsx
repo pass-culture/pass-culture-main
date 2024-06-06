@@ -1,8 +1,11 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { expect } from 'vitest'
 
 import { api } from 'apiClient/api'
 import { BankAccountResponseModel } from 'apiClient/v1'
+import * as useAnalytics from 'app/App/analytics/firebase'
+import { Events } from 'core/FirebaseEvents/constants'
 import { ReimbursementsContextProps } from 'pages/Reimbursements/Reimbursements'
 import {
   defaultBankAccount,
@@ -15,6 +18,8 @@ import {
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { ReimbursementsInvoices } from '../ReimbursementsInvoices/ReimbursementsInvoices'
+
+const mockLogEvent = vi.fn()
 
 vi.mock('utils/date', async () => ({
   ...(await vi.importActual('utils/date')),
@@ -83,6 +88,9 @@ const BASE_BANK_ACCOUNTS: Array<BankAccountResponseModel> = [
 
 describe('reimbursementsWithFilters', () => {
   beforeEach(() => {
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
     vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
     vi.spyOn(
       api,
@@ -325,17 +333,34 @@ describe('reimbursementsWithFilters', () => {
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     await userEvent.click(screen.getAllByTestId('dropdown-menu-trigger')[0])
-    expect(
+    await userEvent.click(
       screen.getByText('Télécharger le justificatif comptable (.pdf)')
-    ).toBeInTheDocument()
-    expect(
-      screen.getByText('Télécharger le détail des réservations (.csv)')
-    ).toBeInTheDocument()
+    )
 
+    await userEvent.click(screen.getAllByTestId('dropdown-menu-trigger')[0])
     await userEvent.click(
       screen.getByText('Télécharger le détail des réservations (.csv)')
     )
     expect(api.getReimbursementsCsvV2).toHaveBeenCalledWith(['J123456789'])
+    expect(mockLogEvent).toHaveBeenCalledTimes(2)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      1,
+      Events.CLICKED_INVOICES_DOWNLOAD,
+      expect.objectContaining({
+        fileType: 'justificatif',
+        filesCount: 1,
+        buttonType: 'unique',
+      })
+    )
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      2,
+      Events.CLICKED_INVOICES_DOWNLOAD,
+      expect.objectContaining({
+        fileType: 'details',
+        filesCount: 1,
+        buttonType: 'unique',
+      })
+    )
   })
 
   it('should let download several invoices at same time', async () => {
@@ -356,6 +381,16 @@ describe('reimbursementsWithFilters', () => {
       'J666666666',
       'J987654321',
     ])
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      1,
+      Events.CLICKED_INVOICES_DOWNLOAD,
+      expect.objectContaining({
+        fileType: 'justificatif',
+        filesCount: 3,
+        buttonType: 'multiple',
+      })
+    )
   })
 
   it('should block download several invoices at same time for more than 24 invoices', async () => {
@@ -385,7 +420,7 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should let download several reimbursment csv at same time', async () => {
-    vi.spyOn(api, 'getReimbursementsCsvV2').mockResolvedValueOnce({})
+    vi.spyOn(api, 'getReimbursementsCsvV2').mockResolvedValueOnce('data')
     renderReimbursementsInvoices()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
@@ -402,5 +437,15 @@ describe('reimbursementsWithFilters', () => {
       'J666666666',
       'J987654321',
     ])
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      1,
+      Events.CLICKED_INVOICES_DOWNLOAD,
+      expect.objectContaining({
+        fileType: 'details',
+        filesCount: 3,
+        buttonType: 'multiple',
+      })
+    )
   })
 })
