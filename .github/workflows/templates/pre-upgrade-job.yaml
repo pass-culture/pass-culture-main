@@ -12,6 +12,12 @@ spec:
       - name: pcapi
         image: ${IMAGE}
         imagePullPolicy: Always
+        resources:
+          requests:
+            memory: 1024Mi
+            cpu: 0.5
+          limits:
+            memory: 1024Mi
         envFrom:
         - configMapRef:
             name: ${ENVIRONMENT}-pcapi
