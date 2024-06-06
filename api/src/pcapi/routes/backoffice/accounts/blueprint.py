@@ -43,11 +43,15 @@ from pcapi.core.users.models import EligibilityType
 from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
+from pcapi.models.feature import FeatureToggle
 from pcapi.repository import atomic
+from pcapi.repository import on_commit
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.users import forms as user_forms
+from pcapi.tasks.gdpr_tasks import extract_beneficiary_data
+from pcapi.tasks.serialization import gdpr_tasks
 from pcapi.utils import email as email_utils
 
 from . import forms as account_forms
@@ -280,6 +284,7 @@ def render_public_account_details(
             .joinedload(history_models.ActionHistory.authorUser)
             .load_only(users_models.User.firstName, users_models.User.lastName),
             sa.orm.joinedload(users_models.User.email_history),
+            sa.orm.joinedload(users_models.User.gdprUserDataExtract),
         )
         .one_or_none()
     )
@@ -346,6 +351,7 @@ def render_public_account_details(
                 "manual_review_dst": url_for(".review_public_account", user_id=user.id),
                 "send_validation_code_form": empty_forms.EmptyForm(),
                 "manual_phone_validation_form": empty_forms.EmptyForm(),
+                "extract_user_form": empty_forms.EmptyForm(),
                 "anonymize_form": (
                     empty_forms.EmptyForm()
                     if is_beneficiary_anonymizable(user)
@@ -389,6 +395,7 @@ def render_public_account_details(
         bookings=sorted(user.userBookings, key=lambda booking: booking.dateCreated, reverse=True),
         active_tab=request.args.get("active_tab", "registration"),
         show_personal_info=True,
+        has_gdpr_extract=has_gdpr_extract(user=user),
         **kwargs,
     )
 
@@ -1228,3 +1235,52 @@ def get_public_account_history(
     history = sorted(history, key=lambda item: item.actionDate or datetime.datetime.min, reverse=True)
 
     return history
+
+
+@public_accounts_blueprint.route("/<int:user_id>/gdpr-extract", methods=["POST"])
+@atomic()
+@utils.permission_required(perm_models.Permissions.EXTRACT_PUBLIC_ACCOUNT)
+def create_extract_user_gdpr_data(user_id: int) -> utils.BackofficeResponse:
+    if not FeatureToggle.WIP_BENEFICIARY_EXTRACT_TOOL.is_active():
+        return redirect(url_for(".get_public_account", user_id=user_id))
+
+    user = (
+        users_models.User.query.filter(
+            users_models.User.id == user_id,
+            users_models.User.is_beneficiary,
+        )
+        .options(
+            sa.orm.load_only(users_models.User.firstName, users_models.User.lastName),
+            sa.orm.joinedload(users_models.User.gdprUserDataExtract),
+        )
+        .one_or_none()
+    )
+    if not user:
+        raise NotFound()
+
+    if has_gdpr_extract(user=user):
+        flash("Une extraction de données est déjà en cours pour cet utilisateur.", "error")
+        return redirect(url_for(".get_public_account", user_id=user_id))
+
+    gdpr_data = users_models.GdprUserDataExtract(
+        userId=user_id,
+        authorUserId=current_user.id,
+    )
+    db.session.add(gdpr_data)
+    db.session.flush()
+
+    on_commit(
+        partial(
+            extract_beneficiary_data.delay,
+            payload=gdpr_tasks.ExtractBeneficiaryDataRequest(extract_id=gdpr_data.id),
+        )
+    )
+    flash(f"L'extraction des données de l'utilisateur {user.full_name} a été demandée.", "success")
+
+    return redirect(url_for(".get_public_account", user_id=user_id))
+
+
+def has_gdpr_extract(user: users_models.User) -> bool:
+    if not user.gdprUserDataExtract:
+        return False
+    return any(not extract.is_expired for extract in user.gdprUserDataExtract)

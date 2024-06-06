@@ -132,6 +132,23 @@
             {% if suspension_form %}
               {% if user.isActive %}
                 <div>
+                {% if is_feature_active("WIP_BENEFICIARY_EXTRACT_TOOL") %}
+                  {% if has_permission("EXTRACT_PUBLIC_ACCOUNT") %}
+                    {% if not has_gdpr_extract %}
+                      <form action="{{ url_for('.create_extract_user_gdpr_data', user_id=user.id) }}"
+                            name="{{ url_for('.create_extract_user_gdpr_data', user_id=user.id) | action_to_name }}"
+                            method="post">
+                        {{ extract_user_form.csrf_token }}
+                        <button class="btn btn-outline-primary mt-2 lead fw-bold">Extraire les données</button>
+                      </form>
+                    {% else %}
+                      <button class="btn btn-outline-primary mt-2 lead fw-bold"
+                              disabled>Extraire les données</button>
+                    {% endif %}
+                  {% endif %}
+                {% endif %}
+                </div>
+                <div>
                   {{ build_modal_form("suspend-public-account", suspension_dst, suspension_form, "Suspendre le compte", "Suspendre le compte", "Confirmer la suspension") }}
                 </div>
               {% else %}
