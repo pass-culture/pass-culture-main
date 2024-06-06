@@ -631,32 +631,6 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
             .scalar()
         )
 
-    @hybrid_property
-    def current_reimbursement_point_id(self) -> int | None:
-        now = datetime.utcnow()
-
-        return (
-            db.session.query(VenueReimbursementPointLink.reimbursementPointId)
-            .filter(
-                VenueReimbursementPointLink.venueId == self.id,
-                VenueReimbursementPointLink.timespan.contains(now),
-            )
-            .scalar()
-        )
-
-    @current_reimbursement_point_id.expression  # type: ignore[no-redef]
-    def current_reimbursement_point_id(cls) -> int | None:  # pylint: disable=no-self-argument # type: ignore[no-redef]
-        now = datetime.utcnow()
-
-        return (
-            db.session.query(VenueReimbursementPointLink.reimbursementPointId)
-            .filter(
-                VenueReimbursementPointLink.venueId == cls.id,
-                VenueReimbursementPointLink.timespan.contains(now),
-            )
-            .scalar()
-        )
-
     @property
     def current_pricing_point_link(self) -> "VenuePricingPointLink | None":
         # Unlike current_pricing_point_id, this property uses pricing_point_links joinedloaded with the venue, which
@@ -678,28 +652,6 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
         # avoids additional SQL query
         link = self.current_pricing_point_link
         return link.pricingPoint if link else None
-
-    @property
-    def current_reimbursement_point_link(self) -> "VenueReimbursementPointLink | None":
-        # Unlike current_reimbursement_point_id, this property uses reimbursement_point_links joinedloaded with the
-        # venue, which avoids additional SQL query
-        now = datetime.utcnow()
-
-        for link in self.reimbursement_point_links:
-            lower = link.timespan.lower
-            upper = link.timespan.upper
-
-            if lower <= now and (not upper or now <= upper):
-                return link
-
-        return None
-
-    @property
-    def current_reimbursement_point(self) -> "Venue | None":
-        # Unlike current_reimbursement_point_id, this property uses reimbursement_point_links joinedloaded with the
-        # venue, which avoids additional SQL query
-        link = self.current_reimbursement_point_link
-        return link.reimbursementPoint if link else None
 
     @property
     def current_bank_account_link(self) -> "VenueBankAccountLink | None":
