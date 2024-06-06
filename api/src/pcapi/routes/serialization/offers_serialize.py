@@ -26,8 +26,6 @@ from pcapi.routes.native.v1.serialization.common_models import AccessibilityComp
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.serialization import base as base_serializers
-from pcapi.routes.serialization.offerers_serialize import AddressResponseModel
-from pcapi.routes.serialization.offerers_serialize import GetOffererAddressWithIsEditableResponseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 from pcapi.validation.routes.offers import check_offer_name_length_is_valid
@@ -388,29 +386,6 @@ class PriceCategoryResponseModel(BaseModel):
         orm_mode = True
 
 
-class IndividualOfferResponseGetterDict(GetterDict):
-    def get(self, key: str, default: Any | None = None) -> Any:
-        if key == "address":
-            if not self._obj.offererAddress:
-                return None
-            offererAddress = GetOffererAddressWithIsEditableResponseModel.from_orm(self._obj.offererAddress)
-            offererAddress.label = offererAddress.label or self._obj.venue.common_name
-            return AddressResponseIsEditableModel(
-                id=self._obj.offererAddress.addressId,
-                banId=self._obj.offererAddress.address.banId,
-                inseeCode=self._obj.offererAddress.address.inseeCode,
-                longitude=self._obj.offererAddress.address.longitude,
-                latitude=self._obj.offererAddress.address.latitude,
-                **offererAddress.dict(exclude={"id"}),
-            )
-        return super().get(key, default)
-
-
-class AddressResponseIsEditableModel(AddressResponseModel):
-    label: str
-    isEditable: bool
-
-
 class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     activeMediation: GetOfferMediationResponseModel | None
     bookingContact: str | None
@@ -449,16 +424,6 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
         orm_mode = True
         json_encoders = {datetime.datetime: format_into_utc_date}
         use_enum_values = True
-
-
-class GetIndividualOfferWithAddressResponseModel(GetIndividualOfferResponseModel):
-    address: AddressResponseIsEditableModel | None
-
-    class Config:
-        orm_mode = True
-        json_encoders = {datetime.datetime: format_into_utc_date}
-        use_enum_values = True
-        getter_dict = IndividualOfferResponseGetterDict
 
 
 class GetStocksResponseModel(ConfiguredBaseModel):

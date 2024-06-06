@@ -1283,8 +1283,6 @@ class OffererAddress(PcObject, Base, Model):
 
     __table_args__ = (sa.Index("ix_unique_offerer_address_per_label", "offererId", "addressId", "label", unique=True),)
 
-    _isEditable: sa.orm.Mapped["bool|None"] = sa.orm.query_expression()
-
     @hybrid_property
     def isEditable(self) -> bool:
         return db.session.query(~sa.select(1).exists().where(Venue.offererAddressId == self.id)).scalar()

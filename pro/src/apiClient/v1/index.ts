@@ -12,7 +12,6 @@ export type { OpenAPIConfig } from './core/OpenAPI';
 
 export type { AdageCulturalPartnersResponseModel } from './models/AdageCulturalPartnersResponseModel';
 export type { Address } from './models/Address';
-export type { AddressResponseIsEditableModel } from './models/AddressResponseIsEditableModel';
 export type { AttachImageFormModel } from './models/AttachImageFormModel';
 export type { AttachImageResponseModel } from './models/AttachImageResponseModel';
 export type { AudioDisabilityModel } from './models/AudioDisabilityModel';
@@ -105,7 +104,6 @@ export type { GetEducationalOfferersQueryModel } from './models/GetEducationalOf
 export type { GetEducationalOfferersResponseModel } from './models/GetEducationalOfferersResponseModel';
 export type { GetEducationalOffererVenueResponseModel } from './models/GetEducationalOffererVenueResponseModel';
 export type { GetIndividualOfferResponseModel } from './models/GetIndividualOfferResponseModel';
-export type { GetIndividualOfferWithAddressResponseModel } from './models/GetIndividualOfferWithAddressResponseModel';
 export type { GetMusicTypesResponse } from './models/GetMusicTypesResponse';
 export type { GetOffererAddressesResponseModel } from './models/GetOffererAddressesResponseModel';
 export type { GetOffererAddressResponseModel } from './models/GetOffererAddressResponseModel';

@@ -204,7 +204,6 @@ class Returns200Test:
             "subcategoryId": "SEANCE_CINE",
             "thumbUrl": None,
             "url": None,
-            "address": None,
             "venue": {
                 "street": "1 boulevard Poissonnière",
                 "audioDisabilityCompliant": False,
@@ -304,32 +303,3 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json["bookingsCount"] == 2
         assert response.json["hasStocks"] == True
-
-    def test_return_offerer_address(self, client):
-        # Given
-        user_offerer = offerers_factories.UserOffererFactory()
-        offerer_address = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer)
-        offer = offers_factories.ThingOfferFactory(
-            venue__managingOfferer=user_offerer.offerer, offererAddress=offerer_address
-        )
-
-        # When
-        auth_client = client.with_session_auth(email=user_offerer.user.email)
-        offer_id = offer.id
-        with testing.assert_num_queries(self.num_queries):
-            response = auth_client.get(f"/offers/{offer_id}")
-
-        # Then
-        assert response.status_code == 200
-        assert response.json["address"] == {
-            "label": offerer_address.label,
-            "id": offerer_address.address.id,
-            "banId": offerer_address.address.banId,
-            "inseeCode": offerer_address.address.inseeCode,
-            "city": offerer_address.address.city,
-            "latitude": float(offerer_address.address.latitude),
-            "longitude": float(offerer_address.address.longitude),
-            "postalCode": offerer_address.address.postalCode,
-            "street": offerer_address.address.street,
-            "isEditable": offerer_address.isEditable,
-        }

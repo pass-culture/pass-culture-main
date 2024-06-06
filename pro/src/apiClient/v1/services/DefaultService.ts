@@ -42,7 +42,6 @@ import type { GetCollectiveOfferResponseModel } from '../models/GetCollectiveOff
 import type { GetCollectiveOfferTemplateResponseModel } from '../models/GetCollectiveOfferTemplateResponseModel';
 import type { GetEducationalOfferersResponseModel } from '../models/GetEducationalOfferersResponseModel';
 import type { GetIndividualOfferResponseModel } from '../models/GetIndividualOfferResponseModel';
-import type { GetIndividualOfferWithAddressResponseModel } from '../models/GetIndividualOfferWithAddressResponseModel';
 import type { GetMusicTypesResponse } from '../models/GetMusicTypesResponse';
 import type { GetOffererAddressesResponseModel } from '../models/GetOffererAddressesResponseModel';
 import type { GetOffererBankAccountsResponseModel } from '../models/GetOffererBankAccountsResponseModel';
@@ -1734,12 +1733,12 @@ export class DefaultService {
   /**
    * get_offer <GET>
    * @param offerId
-   * @returns GetIndividualOfferWithAddressResponseModel OK
+   * @returns GetIndividualOfferResponseModel OK
    * @throws ApiError
    */
   public getOffer(
     offerId: number,
-  ): CancelablePromise<GetIndividualOfferWithAddressResponseModel> {
+  ): CancelablePromise<GetIndividualOfferResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/offers/{offer_id}',

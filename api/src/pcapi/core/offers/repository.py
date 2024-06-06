@@ -812,13 +812,6 @@ def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> mod
             query = query.options(
                 sa_orm.with_expression(models.Offer.bookingsCount, get_bookings_count_subquery(offer_id))
             )
-        if "offerer_address" in load_options:
-            query = query.options(
-                sa_orm.joinedload(models.Offer.offererAddress).joinedload(offerers_models.OffererAddress.address),
-                sa_orm.joinedload(models.Offer.offererAddress).with_expression(
-                    offerers_models.OffererAddress._isEditable, offerers_models.OffererAddress.isEditable.expression  # type: ignore [attr-defined]
-                ),
-            )
 
         return query.one()
     except sa_orm.exc.NoResultFound:

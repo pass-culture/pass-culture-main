@@ -1,10 +1,8 @@
 from datetime import datetime
 import enum
-from typing import Any
 from typing import Iterable
 
 import pydantic.v1 as pydantic_v1
-from pydantic.v1.utils import GetterDict
 from sqlalchemy.engine import Row
 import sqlalchemy.orm as sqla_orm
 
@@ -396,20 +394,6 @@ class GetOffererAddressResponseModel(BaseModel):
 
     class Config:
         orm_mode = True
-
-
-class OffererAddressWithIsEditableGetterDict(GetterDict):
-    def get(self, key: str, default: Any | None = None) -> Any:
-        if key == "isEditable":
-            return self.get("_isEditable", default)
-        return super().get(key, default)
-
-
-class GetOffererAddressWithIsEditableResponseModel(GetOffererAddressResponseModel):
-    isEditable: bool
-
-    class Config:
-        getter_dict = OffererAddressWithIsEditableGetterDict
 
 
 class GetOffererAddressesResponseModel(BaseModel):

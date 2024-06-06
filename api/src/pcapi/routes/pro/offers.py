@@ -62,10 +62,10 @@ def list_offers(query: offers_serialize.ListOffersQueryModel) -> offers_serializ
 @private_api.route("/offers/<int:offer_id>", methods=["GET"])
 @login_required
 @spectree_serialize(
-    response_model=offers_serialize.GetIndividualOfferWithAddressResponseModel,
+    response_model=offers_serialize.GetIndividualOfferResponseModel,
     api=blueprint.pro_private_schema,
 )
-def get_offer(offer_id: int) -> offers_serialize.GetIndividualOfferWithAddressResponseModel:
+def get_offer(offer_id: int) -> offers_serialize.GetIndividualOfferResponseModel:
 
     load_all: offers_repository.OFFER_LOAD_OPTIONS = [
         "mediations",
@@ -86,7 +86,7 @@ def get_offer(offer_id: int) -> offers_serialize.GetIndividualOfferWithAddressRe
         )
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
-    return offers_serialize.GetIndividualOfferWithAddressResponseModel.from_orm(offer)
+    return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
 
 @private_api.route("/offers/<int:offer_id>/stocks/", methods=["GET"])
