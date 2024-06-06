@@ -1,6 +1,6 @@
+from collections import abc
 import contextlib
 import typing
-from typing import Iterable
 
 
 if typing.TYPE_CHECKING:
@@ -13,25 +13,27 @@ class SearchBackend:
     def __str__(self) -> str:  # useful in logs
         return str(self.__class__.__name__)
 
-    def enqueue_offer_ids(self, offer_ids: Iterable[int]) -> None:
+    def enqueue_offer_ids(self, offer_ids: abc.Collection[int]) -> None:
         raise NotImplementedError()
 
-    def enqueue_collective_offer_template_ids(self, collective_offer_template_ids: Iterable[int]) -> None:
+    def enqueue_collective_offer_template_ids(self, collective_offer_template_ids: abc.Collection[int]) -> None:
         raise NotImplementedError()
 
-    def enqueue_offer_ids_in_error(self, offer_ids: Iterable[int]) -> None:
+    def enqueue_offer_ids_in_error(self, offer_ids: abc.Collection[int]) -> None:
         raise NotImplementedError()
 
-    def enqueue_venue_ids_in_error(self, venue_ids: Iterable[int]) -> None:
+    def enqueue_venue_ids_in_error(self, venue_ids: abc.Collection[int]) -> None:
         raise NotImplementedError()
 
-    def enqueue_collective_offer_template_ids_in_error(self, collective_offer_template_ids: Iterable[int]) -> None:
+    def enqueue_collective_offer_template_ids_in_error(
+        self, collective_offer_template_ids: abc.Collection[int]
+    ) -> None:
         raise NotImplementedError()
 
-    def enqueue_venue_ids(self, venue_ids: Iterable[int]) -> None:
+    def enqueue_venue_ids(self, venue_ids: abc.Collection[int]) -> None:
         raise NotImplementedError()
 
-    def enqueue_venue_ids_for_offers(self, venue_ids: Iterable[int]) -> None:
+    def enqueue_venue_ids_for_offers(self, venue_ids: abc.Collection[int]) -> None:
         raise NotImplementedError()
 
     def pop_offer_ids_from_queue(self, count: int, from_error_queue: bool = False) -> contextlib.AbstractContextManager:
@@ -46,30 +48,32 @@ class SearchBackend:
     def check_offer_is_indexed(self, offer: "offers_models.Offer") -> bool:
         raise NotImplementedError()
 
-    def index_offers(self, offers: "Iterable[offers_models.Offer]", last_30_days_bookings: dict[int, int]) -> None:
-        raise NotImplementedError()
-
-    def index_collective_offer_templates(
-        self, collective_offer_templates: "Iterable[educational_models.CollectiveOfferTemplate]"
+    def index_offers(
+        self, offers: "abc.Collection[offers_models.Offer]", last_30_days_bookings: dict[int, int]
     ) -> None:
         raise NotImplementedError()
 
-    def index_venues(self, venues: "Iterable[offerers_models.Venue]") -> None:
+    def index_collective_offer_templates(
+        self, collective_offer_templates: "abc.Collection[educational_models.CollectiveOfferTemplate]"
+    ) -> None:
         raise NotImplementedError()
 
-    def unindex_offer_ids(self, offer_ids: Iterable[int]) -> None:
+    def index_venues(self, venues: "abc.Collection[offerers_models.Venue]") -> None:
+        raise NotImplementedError()
+
+    def unindex_offer_ids(self, offer_ids: abc.Collection[int]) -> None:
         raise NotImplementedError()
 
     def unindex_all_offers(self) -> None:
         raise NotImplementedError()
 
-    def unindex_venue_ids(self, venue_ids: Iterable[int]) -> None:
+    def unindex_venue_ids(self, venue_ids: abc.Collection[int]) -> None:
         raise NotImplementedError()
 
     def unindex_all_collective_offer_templates(self) -> None:
         raise NotImplementedError()
 
-    def unindex_collective_offer_template_ids(self, collective_offer_template_ids: Iterable[int]) -> None:
+    def unindex_collective_offer_template_ids(self, collective_offer_template_ids: abc.Collection[int]) -> None:
         raise NotImplementedError()
 
     def unindex_all_venues(self) -> None:
