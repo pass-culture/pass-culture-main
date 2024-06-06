@@ -81,10 +81,15 @@ export const Venue = ({ offerer, venue, isFirstVenue }: VenueProps) => {
                 viewBox="0 0 16 16"
                 src={isToggleOpen ? fullDisclosureOpen : fullDisclosureClose}
               />
-              <span data-testid="venue-name">{venueDisplayName}</span>
+              <span data-testid={'venue-name-span-' + venue.id}>
+                {venueDisplayName}
+              </span>
             </button>
           ) : (
-            <div className={styles['venue-name']} data-testid="venue-name">
+            <div
+              className={styles['venue-name']}
+              data-testid={'venue-name-div-' + venue.id}
+            >
               {venueDisplayName}
             </div>
           )}
