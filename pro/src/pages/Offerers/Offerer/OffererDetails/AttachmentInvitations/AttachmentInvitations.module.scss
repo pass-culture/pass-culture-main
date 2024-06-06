@@ -14,6 +14,15 @@
     padding-bottom: rem.torem(8px);
   }
 
+  .main-list-title-new {
+    @include fonts.title2;
+
+    margin-top: rem.torem(26px);
+    margin-bottom: rem.torem(24px);
+    padding-bottom: rem.torem(8px);
+    font-weight: bold;
+  }
+
   .subtitle {
     @include fonts.button;
 
