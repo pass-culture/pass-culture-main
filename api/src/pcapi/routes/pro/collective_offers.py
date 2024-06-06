@@ -35,6 +35,7 @@ logger = logging.getLogger(__name__)
 @spectree_serialize(
     response_model=collective_offers_serialize.ListCollectiveOffersResponseModel,
     api=blueprint.pro_private_schema,
+    flatten=True,
 )
 def get_collective_offers(
     query: collective_offers_serialize.ListCollectiveOffersQueryModel,
@@ -46,7 +47,7 @@ def get_collective_offers(
         offerer_id=query.offerer_id,
         venue_id=query.venue_id,
         name_keywords=query.nameOrIsbn,
-        status=query.status.value if query.status else None,
+        statuses=[status.value for status in query.status] if query.status else None,
         period_beginning_date=query.period_beginning_date,
         period_ending_date=query.period_ending_date,
         offer_type=query.collective_offer_type,

@@ -9,6 +9,8 @@ import pytz
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 import sqlalchemy.orm as sa_orm
+from sqlalchemy.sql import and_
+from sqlalchemy.sql import or_
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories_v2 as subcategories
@@ -258,7 +260,7 @@ def get_collective_offers_by_filters(
     user_id: int,
     user_is_admin: bool,
     offerer_id: int | None = None,
-    status: str | None = None,
+    statuses: list[str] | None = None,
     venue_id: int | None = None,
     provider_id: int | None = None,
     category_id: str | None = None,
@@ -299,93 +301,117 @@ def get_collective_offers_by_filters(
         # 1. it's unlikely that a book will contain its EAN in its name
         # 2. we need to migrate models.Offer.extraData to JSONB in order to use `union`
         query = query.filter(educational_models.CollectiveOffer.name.ilike(search))
-    if status is not None:
-        match status:
+    if statuses:
+        # status_filters are a list of... statuses. They are not passed directly to the query.filter
+        # as we want an OR condition and not just an AND which would happen if query.filter are chained.
+        status_filters: list = []
+        if (
+            educational_models.CollectiveOfferDisplayedStatus.BOOKED.value in statuses
+            and educational_models.CollectiveOfferDisplayedStatus.PREBOOKED.value in statuses
+        ):
+            status_filters.append(educational_models.CollectiveOffer.status == offer_mixin.OfferStatus.SOLD_OUT.name)
+        elif educational_models.CollectiveOfferDisplayedStatus.BOOKED.value in statuses:
             # Status BOOKED == offer is sold out and last booking link to this reservation is not PENDING
-            case educational_models.CollectiveOfferDisplayedStatus.BOOKED.value:
-                booking_subquery = (
-                    educational_models.CollectiveStock.query.with_entities(
-                        educational_models.CollectiveStock.collectiveOfferId
-                    )
-                    .join(educational_models.CollectiveBooking, educational_models.CollectiveStock.collectiveBookings)
-                    .filter(
-                        educational_models.CollectiveBooking.status
-                        != educational_models.CollectiveBookingStatus.PENDING
-                    )
+            booking_subquery = (
+                educational_models.CollectiveStock.query.with_entities(
+                    educational_models.CollectiveStock.collectiveOfferId
                 )
-                query = query.filter(
+                .join(educational_models.CollectiveBooking, educational_models.CollectiveStock.collectiveBookings)
+                .filter(
+                    educational_models.CollectiveBooking.status != educational_models.CollectiveBookingStatus.PENDING
+                )
+            )
+            status_filters.append(
+                and_(
                     educational_models.CollectiveOffer.status == offer_mixin.OfferStatus.SOLD_OUT.name,
                     educational_models.CollectiveOffer.id.in_(booking_subquery),
                 )
+            )
+        elif educational_models.CollectiveOfferDisplayedStatus.PREBOOKED.value in statuses:
             # Status PREBOOKED == offer is sold out and last booking link to this reservation is PENDING
-            case educational_models.CollectiveOfferDisplayedStatus.PREBOOKED.value:
-                last_booking_query = (
-                    educational_models.CollectiveBooking.query.with_entities(
-                        educational_models.CollectiveBooking.collectiveStockId,
-                        sa.func.max(educational_models.CollectiveBooking.dateCreated).label("maxdate"),
-                    )
-                    .group_by(educational_models.CollectiveBooking.collectiveStockId)
-                    .subquery()
+            last_booking_query = (
+                educational_models.CollectiveBooking.query.with_entities(
+                    educational_models.CollectiveBooking.collectiveStockId,
+                    sa.func.max(educational_models.CollectiveBooking.dateCreated).label("maxdate"),
                 )
-                offer_id_query = (
-                    educational_models.CollectiveStock.query.with_entities(
-                        educational_models.CollectiveStock.collectiveOfferId,
-                        educational_models.CollectiveBooking.status,
-                    )
-                    .join(educational_models.CollectiveBooking, educational_models.CollectiveStock.collectiveBookings)
-                    .join(
-                        last_booking_query,
-                        sa.and_(
-                            educational_models.CollectiveStock.id == last_booking_query.c.collectiveStockId,
-                            educational_models.CollectiveBooking.dateCreated == last_booking_query.c.maxdate,
-                        ),
-                    )
-                    .subquery()
+                .group_by(educational_models.CollectiveBooking.collectiveStockId)
+                .subquery()
+            )
+            offer_id_query = (
+                educational_models.CollectiveStock.query.with_entities(
+                    educational_models.CollectiveStock.collectiveOfferId,
+                    educational_models.CollectiveBooking.status,
                 )
-                query = query.filter(
+                .join(educational_models.CollectiveBooking, educational_models.CollectiveStock.collectiveBookings)
+                .join(
+                    last_booking_query,
+                    sa.and_(
+                        educational_models.CollectiveStock.id == last_booking_query.c.collectiveStockId,
+                        educational_models.CollectiveBooking.dateCreated == last_booking_query.c.maxdate,
+                    ),
+                )
+                .subquery()
+            )
+            query = query.join(
+                offer_id_query, offer_id_query.c.collectiveOfferId == educational_models.CollectiveOffer.id
+            )
+            status_filters.append(
+                and_(
                     educational_models.CollectiveOffer.status == offer_mixin.OfferStatus.SOLD_OUT.name,
                     offer_id_query.c.status == educational_models.CollectiveBookingStatus.PENDING.name,
-                ).join(offer_id_query, offer_id_query.c.collectiveOfferId == educational_models.CollectiveOffer.id)
+                )
+            )
+
+        if educational_models.CollectiveOfferDisplayedStatus.ENDED.value in statuses:
             # Status ENDED == event is passed with a reservation not cancelled
-            case educational_models.CollectiveOfferDisplayedStatus.ENDED.value:
-                hasBookingQuery = (
-                    educational_models.CollectiveStock.query.with_entities(
-                        educational_models.CollectiveStock.collectiveOfferId
-                    )
-                    .join(educational_models.CollectiveBooking, educational_models.CollectiveStock.collectiveBookings)
-                    .filter(
-                        educational_models.CollectiveBooking.status
-                        != educational_models.CollectiveBookingStatus.CANCELLED
-                    )
-                    .subquery()
+            hasBookingQuery = (
+                educational_models.CollectiveStock.query.with_entities(
+                    educational_models.CollectiveStock.collectiveOfferId
                 )
-                query = query.join(
-                    hasBookingQuery, hasBookingQuery.c.collectiveOfferId == educational_models.CollectiveOffer.id
-                ).filter(educational_models.CollectiveOffer.status == offer_mixin.OfferStatus.EXPIRED.name)
+                .join(educational_models.CollectiveBooking, educational_models.CollectiveStock.collectiveBookings)
+                .filter(
+                    educational_models.CollectiveBooking.status != educational_models.CollectiveBookingStatus.CANCELLED
+                )
+                .subquery()
+            )
+            query = query.join(
+                hasBookingQuery, hasBookingQuery.c.collectiveOfferId == educational_models.CollectiveOffer.id
+            )
+            status_filters.append(educational_models.CollectiveOffer.status == offer_mixin.OfferStatus.EXPIRED.name)
+
+        if educational_models.CollectiveOfferDisplayedStatus.EXPIRED.value in statuses:
             # Status EXPIRED == event is passed without any reservation or cancelled ones
-            case educational_models.CollectiveOfferDisplayedStatus.EXPIRED.value:
-                hasNoBookingOrCancelledQuery = (
-                    educational_models.CollectiveStock.query.with_entities(
-                        educational_models.CollectiveStock.collectiveOfferId
-                    )
-                    .outerjoin(
-                        educational_models.CollectiveBooking, educational_models.CollectiveStock.collectiveBookings
-                    )
-                    .filter(
-                        (educational_models.CollectiveBooking.id.is_(None))
-                        | (
-                            educational_models.CollectiveBooking.status
-                            == educational_models.CollectiveBookingStatus.CANCELLED
-                        )
-                    )
-                    .subquery()
+            hasNoBookingOrCancelledQuery = (
+                educational_models.CollectiveStock.query.with_entities(
+                    educational_models.CollectiveStock.collectiveOfferId
                 )
-                query = query.join(
-                    hasNoBookingOrCancelledQuery,
-                    hasNoBookingOrCancelledQuery.c.collectiveOfferId == educational_models.CollectiveOffer.id,
-                ).filter(educational_models.CollectiveOffer.status == offer_mixin.OfferStatus.EXPIRED.name)
-            case _:
-                query = query.filter(educational_models.CollectiveOffer.status == offer_mixin.OfferStatus[status].name)
+                .outerjoin(educational_models.CollectiveBooking, educational_models.CollectiveStock.collectiveBookings)
+                .filter(
+                    (educational_models.CollectiveBooking.id.is_(None))
+                    | (
+                        educational_models.CollectiveBooking.status
+                        == educational_models.CollectiveBookingStatus.CANCELLED
+                    )
+                )
+                .subquery()
+            )
+            query = query.join(
+                hasNoBookingOrCancelledQuery,
+                hasNoBookingOrCancelledQuery.c.collectiveOfferId == educational_models.CollectiveOffer.id,
+            )
+            status_filters.append(educational_models.CollectiveOffer.status == offer_mixin.OfferStatus.EXPIRED.name)
+
+        for status in set(statuses) - {
+            educational_models.CollectiveOfferDisplayedStatus.BOOKED.value,
+            educational_models.CollectiveOfferDisplayedStatus.PREBOOKED.value,
+            educational_models.CollectiveOfferDisplayedStatus.ENDED.value,
+            educational_models.CollectiveOfferDisplayedStatus.EXPIRED.value,
+        }:
+            status_filters.append(educational_models.CollectiveOffer.status == status)
+
+        if status_filters:
+            query = query.filter(or_(*status_filters))
+
     if period_beginning_date is not None or period_ending_date is not None:
         subquery = (
             educational_models.CollectiveStock.query.with_entities(educational_models.CollectiveStock.collectiveOfferId)
@@ -432,7 +458,7 @@ def get_collective_offers_template_by_filters(
     user_id: int,
     user_is_admin: bool,
     offerer_id: int | None = None,
-    status: str | None = None,
+    statuses: list[str] | None = None,
     venue_id: int | None = None,
     provider_id: int | None = None,
     category_id: str | None = None,
@@ -476,25 +502,33 @@ def get_collective_offers_template_by_filters(
         # 1. it's unlikely that a book will contain its EAN in its name
         # 2. we need to migrate models.Offer.extraData to JSONB in order to use `union`
         query = query.filter(educational_models.CollectiveOfferTemplate.name.ilike(search))
-    if status is not None:
-        if status in (
-            educational_models.CollectiveOfferDisplayedStatus.BOOKED.value,
-            educational_models.CollectiveOfferDisplayedStatus.PREBOOKED.value,
+    if statuses:
+        query_filters: list = []
+        if (
+            educational_models.CollectiveOfferDisplayedStatus.BOOKED.value in statuses
+            or educational_models.CollectiveOfferDisplayedStatus.PREBOOKED.value in statuses
         ):
-            query = query.filter(
+            query_filters.append(
                 educational_models.CollectiveOfferTemplate.status == offer_mixin.OfferStatus.SOLD_OUT.name
             )
-        elif status in (
-            educational_models.CollectiveOfferDisplayedStatus.ENDED.value,
-            educational_models.CollectiveOfferDisplayedStatus.EXPIRED.value,
+        if (
+            educational_models.CollectiveOfferDisplayedStatus.ENDED.value in statuses
+            or educational_models.CollectiveOfferDisplayedStatus.EXPIRED.value in statuses
         ):
-            query = query.filter(
+            query_filters.append(
                 educational_models.CollectiveOfferTemplate.status == offer_mixin.OfferStatus.EXPIRED.name
             )
-        else:
-            query = query.filter(
+        for status in set(statuses) - {
+            educational_models.CollectiveOfferDisplayedStatus.BOOKED.value,
+            educational_models.CollectiveOfferDisplayedStatus.PREBOOKED.value,
+            educational_models.CollectiveOfferDisplayedStatus.ENDED.value,
+            educational_models.CollectiveOfferDisplayedStatus.EXPIRED.value,
+        }:
+            query_filters.append(
                 educational_models.CollectiveOfferTemplate.status == offer_mixin.OfferStatus[status].name
             )
+        if query_filters:
+            query = query.filter(or_(*query_filters))
     if formats:
         query = query.filter(
             educational_models.CollectiveOfferTemplate.formats.overlap(
