@@ -1012,3 +1012,7 @@ class GdprUserDataExtract(PcObject, Base, Model):
     @expirationDate.expression  # type: ignore [no-redef]
     def expirationDate(cls):  # pylint: disable=no-self-argument
         return cls.dateCreated + timedelta(days=7)
+
+    @property
+    def is_expired(self) -> bool:
+        return datetime.utcnow() > self.expirationDate

@@ -22,6 +22,7 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.subscription.models import SubscriptionItemStatus
 from pcapi.core.subscription.models import SubscriptionStep
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import override_features
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -51,6 +52,7 @@ from pcapi.routes.backoffice.accounts.blueprint import _get_tunnel_type
 from pcapi.routes.backoffice.accounts.blueprint import _set_steps_with_active_and_disabled
 from pcapi.routes.backoffice.accounts.blueprint import get_eligibility_history
 from pcapi.routes.backoffice.accounts.blueprint import get_public_account_history
+from pcapi.tasks.serialization import gdpr_tasks
 from pcapi.utils import email as email_utils
 
 from .helpers import button as button_helpers
@@ -543,8 +545,8 @@ class GetPublicAccountTest(GetEndpointHelper):
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.READ_PUBLIC_ACCOUNT
 
-    # session + current user + user data + bookings
-    expected_num_queries = 4
+    # session + current user + user data + bookings + Featureflag
+    expected_num_queries = 5
 
     class ReviewButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS
@@ -636,7 +638,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         )
 
         user_id = user.id
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries - 1):  # - FF
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -781,7 +783,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         bookings_factories.UsedBookingFactory()
 
         user_id = user.id
-        with assert_num_queries(self.expected_num_queries + 1):  # 1 FF
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -816,7 +818,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         bookings_factories.UsedBookingFactory()
 
         user_id = user.id
-        with assert_num_queries(self.expected_num_queries + 1):  # 1 FF
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -834,7 +836,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         )
 
         user_id = user.id
-        with assert_num_queries(self.expected_num_queries + 1):  # 1 FF
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -906,7 +908,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         repository.save(no_date_action)
 
         user_id = user.id
-        with assert_num_queries(self.expected_num_queries + 1):  # 1 FF
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -2496,3 +2498,86 @@ class AnonymizePublicAccountTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(authenticated_client, user_id=user.id)
         assert response.status_code == 400
+
+
+class ExtractPublicAccountTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.create_extract_user_gdpr_data"
+    endpoint_kwargs = {"user_id": 1}
+    needed_permission = perm_models.Permissions.EXTRACT_PUBLIC_ACCOUNT
+
+    expected_queries = 5  # session + user + targeted user with joined data + gdpr insert + featureflag
+
+    @override_features(WIP_BENEFICIARY_EXTRACT_TOOL=True)
+    @mock.patch("pcapi.routes.backoffice.accounts.blueprint.extract_beneficiary_data.delay")
+    def test_extract_public_account(self, _mock_extract, authenticated_client, legit_user):
+
+        user = users_factories.BeneficiaryFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client, user_id=user.id, expected_num_queries=self.expected_queries
+        )
+        assert response.status_code == 302
+
+        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id, _external=True)
+        assert response.location == expected_url
+
+        extract_data = users_models.GdprUserDataExtract.query.one()
+        assert extract_data.user.id == user.id
+        assert extract_data.authorUser == legit_user
+
+        response = authenticated_client.get(response.location)
+        assert (
+            f"L'extraction des données de l'utilisateur {user.full_name} a été demandée."
+            in html_parser.extract_alert(response.data)
+        )
+        _mock_extract.assert_called_once_with(
+            payload=gdpr_tasks.ExtractBeneficiaryDataRequest(extract_id=extract_data.id)
+        )
+
+    @override_features(WIP_BENEFICIARY_EXTRACT_TOOL=True)
+    def test_extract_public_account_extract_data_already_exists(self, authenticated_client):
+        gdpr_data_extract = users_factories.GdprUserDataExtractBeneficiaryFactory()
+
+        response = self.post_to_endpoint(authenticated_client, user_id=gdpr_data_extract.user.id)
+        assert response.status_code == 302
+
+        response = authenticated_client.get(response.location)
+        assert "Une extraction de données est déjà en cours pour cet utilisateur." in html_parser.extract_alert(
+            response.data
+        )
+
+        assert 1 == users_models.GdprUserDataExtract.query.count()
+
+    @override_features(WIP_BENEFICIARY_EXTRACT_TOOL=True)
+    def test_extract_public_account_with_existing_extract_data_expired(self, authenticated_client, legit_user):
+        expired_gdpr_data_extract = users_factories.GdprUserDataExtractBeneficiaryFactory(
+            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=8)
+        )
+
+        with mock.patch("pcapi.routes.backoffice.accounts.blueprint.extract_beneficiary_data"):
+            response = self.post_to_endpoint(authenticated_client, user_id=expired_gdpr_data_extract.user.id)
+            assert response.status_code == 302
+
+        expected_url = url_for(
+            "backoffice_web.public_accounts.get_public_account",
+            user_id=expired_gdpr_data_extract.user.id,
+            _external=True,
+        )
+        assert response.location == expected_url
+
+        extract_data = users_models.GdprUserDataExtract.query.all()
+        assert len(extract_data) == 2
+        assert extract_data[1].user.id == expired_gdpr_data_extract.user.id
+        assert extract_data[1].authorUser == legit_user
+
+        response = authenticated_client.get(response.location)
+        assert (
+            f"L'extraction des données de l'utilisateur {expired_gdpr_data_extract.user.full_name} a été demandée."
+            in html_parser.extract_alert(response.data)
+        )
+
+    @override_features(WIP_BENEFICIARY_EXTRACT_TOOL=True)
+    def test_extract_public_account_no_user_found(self, authenticated_client):
+
+        response = self.post_to_endpoint(authenticated_client, user_id=42)
+        assert response.status_code == 404

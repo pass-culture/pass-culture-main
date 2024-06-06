@@ -418,7 +418,7 @@ class GetBoUserTest(GetEndpointHelper):
         user = users_factories.AdminFactory()
 
         user_id = user.id
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries + 1):  # FF
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -483,7 +483,7 @@ class GetBoUserTest(GetEndpointHelper):
         )
 
         user_id = user.id
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries + 1):  # FF
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
