@@ -75,6 +75,17 @@
   padding-left: rem.torem(8px);
 }
 
+.menu-item-icon {
+  width: rem.torem(20px);
+  height: rem.torem(20px);
+  flex-shrink: 0;
+  margin-right: rem.torem(8px);
+
+  path {
+    fill: var(--color-black);
+  }
+}
+
 @media (min-width: size.$tablet) {
   .invoices-table {
     margin-top: 0;
@@ -159,19 +170,9 @@
   .invoice-data {
     justify-content: right;
   }
-}
 
-.menu-item-icon {
-  width: rem.torem(20px);
-  height: rem.torem(20px);
-  flex-shrink: 0;
-  margin-right: rem.torem(8px);
-
-  path {
-    fill: var(--color-black);
+  .download-actions {
+    flex-direction: row;
   }
 }
 
-.download-actions {
-  flex-direction: row;
-}

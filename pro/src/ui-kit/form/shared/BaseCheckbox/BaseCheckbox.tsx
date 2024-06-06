@@ -5,6 +5,12 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './BaseCheckbox.module.scss'
 
+export enum PartialCheck {
+  CHECKED = 'checked',
+  PARTIAL = 'partial',
+  UNCHECKED = 'unchecked',
+}
+
 interface BaseCheckboxProps
   extends Partial<React.InputHTMLAttributes<HTMLInputElement>> {
   label: string | React.ReactNode
