@@ -82,7 +82,7 @@
     "@bahmutov/cypress-esbuild-preprocessor": "^2.2.1",
     "@storybook/addon-controls": "^8.1.6",
     "@storybook/preset-scss": "^1.0.3",
-    "@storybook/react": "^8.1.4",
+    "@storybook/react": "^8.1.6",
     "@storybook/react-vite": "^8.1.1",
     "@testing-library/cypress": "^10.0.1",
     "@testing-library/jest-dom": "^5.17.0",
