@@ -1,14 +1,15 @@
 from datetime import datetime
 
-from sqlalchemy.orm import joinedload
+import sqlalchemy as sa
 
 from pcapi.core import mails
 from pcapi.core.bookings import constants as booking_constants
 from pcapi.core.bookings.models import Booking
 from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.finance import models as finance_models
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.core.offerers.models import Venue
+from pcapi.core.offerers import models as offerers_models
 from pcapi.utils.mailing import format_booking_date_for_email
 from pcapi.utils.mailing import format_booking_hours_for_email
 
@@ -17,20 +18,29 @@ def get_new_booking_to_pro_email_data(
     booking: Booking, first_venue_booking: bool = False
 ) -> models.TransactionalEmailData:
     offer = booking.stock.offer
+
     venue = (
-        Venue.query.filter(Venue.id == offer.venueId)
-        .options(joinedload(Venue.bankInformation))
-        .options(joinedload(Venue.reimbursement_point_links))
+        offerers_models.Venue.query.filter(offerers_models.Venue.id == offer.venueId)
+        .outerjoin(
+            offerers_models.VenueBankAccountLink,
+            sa.and_(
+                offerers_models.Venue.id == offerers_models.VenueBankAccountLink.venueId,
+                offerers_models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
+            ),
+        )
+        .outerjoin(
+            finance_models.BankAccount,
+            offerers_models.VenueBankAccountLink.bankAccountId == finance_models.BankAccount.id,
+        )
+        .options(
+            sa.orm.contains_eager(offerers_models.Venue.bankAccountLinks)
+            .load_only(offerers_models.VenueBankAccountLink.timespan)
+            .contains_eager(offerers_models.VenueBankAccountLink.bankAccount)
+            .load_only(finance_models.BankAccount.id, finance_models.BankAccount.status)
+        )
         .one()
     )
-    now = datetime.utcnow()
-    current_reimbursement_point = any(
-        (
-            reimbursement_point_link
-            for reimbursement_point_link in venue.reimbursement_point_links
-            if now in reimbursement_point_link.timespan
-        )
-    )
+
     if offer.isEvent:
         event_date = format_booking_date_for_email(booking)
         event_hour = format_booking_hours_for_email(booking)
@@ -84,9 +94,7 @@ def get_new_booking_to_pro_email_data(
             "USER_LASTNAME": booking.user.lastName,
             "USER_PHONENUMBER": booking.user.phoneNumber or "",
             "VENUE_NAME": venue.publicName if venue.publicName else venue.name,
-            "NEEDS_BANK_INFORMATION_REMINDER": not (
-                venue.hasPendingBankInformationApplication or current_reimbursement_point
-            ),
+            "NEEDS_BANK_INFORMATION_REMINDER": venue.current_bank_account is None,
             "MUST_USE_TOKEN_FOR_PAYMENT": not (
                 booking.stock.price == 0 or booking.activationCode or is_booking_autovalidated
             ),
