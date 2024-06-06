@@ -15,6 +15,13 @@ Given('I am logged in', () => {
   })
 })
 
+Given('I am logged in with financial informations', () => {
+  cy.login({
+    email: 'activation_new_nav@example.com',
+    password: 'user@AZERTY123',
+  })
+})
+
 // créer un seul scénario createOffers avec son step-def
 When('I want to create {string} offer', (offerType: string) => {
   cy.findByText('Au grand public').click()
