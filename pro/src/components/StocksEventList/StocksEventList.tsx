@@ -25,7 +25,10 @@ import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { BaseDatePicker } from 'ui-kit/form/DatePicker/BaseDatePicker'
 import { SelectInput } from 'ui-kit/form/Select/SelectInput'
-import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
+import {
+  BaseCheckbox,
+  PartialCheck,
+} from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { BaseTimePicker } from 'ui-kit/form/TimePicker/BaseTimePicker'
 import { Pagination } from 'ui-kit/Pagination/Pagination'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
@@ -67,12 +70,6 @@ function* chunks<T>(array: T[], n: number): Generator<T[], void> {
   for (let i = 0; i < array.length; i += n) {
     yield array.slice(i, i + n)
   }
-}
-
-enum PartialCheck {
-  CHECKED = 'checked',
-  PARTIAL = 'partial',
-  UNCHECKED = 'unchecked',
 }
 
 export const StocksEventList = ({
