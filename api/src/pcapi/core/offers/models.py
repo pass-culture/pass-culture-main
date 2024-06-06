@@ -35,6 +35,7 @@ from pcapi.models.offer_mixin import ValidationMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.providable_mixin import ProvidableMixin
 from pcapi.models.soft_deletable_mixin import SoftDeletableMixin
+from pcapi.utils.date import METROPOLE_TIMEZONE
 from pcapi.utils.db import MagicEnum
 
 
@@ -1185,3 +1186,35 @@ class TiteliveGtlMapping(PcObject, Base, Model):
     gtlLabelLevel4: str = sa.Column(sa.Text, nullable=True, unique=False)
 
     sa.Index("gtl_type_idx", gtlType, postgresql_using="hash")
+
+
+class OfferAddress(PcObject, Base, Model):
+    __tablename__ = "offer_address"
+
+    offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), nullable=False, index=True)
+    offer: sa_orm.Mapped["Offer"] = sa.orm.relationship("Offer", backref="address")
+    # address specific columns
+    banId: str | None = sa.Column(sa.Text(), nullable=True)
+    inseeCode: str | None = sa.Column(sa.Text(), nullable=True)
+    street: str | None = sa.Column(sa.Text(), nullable=True)
+    postalCode: str = sa.Column(sa.Text(), nullable=False)
+    city: str = sa.Column(sa.Text(), nullable=False)
+    latitude: float = sa.Column(sa.Numeric(8, 5), nullable=False)
+    longitude: float = sa.Column(sa.Numeric(8, 5), nullable=False)
+    departmentCode = sa.Column(sa.Text(), nullable=True, index=True)
+    timezone = sa.Column(sa.Text(), nullable=False, default=METROPOLE_TIMEZONE, server_default=METROPOLE_TIMEZONE)
+
+    __table_args__ = (
+        sa.Index(
+            "ix_partial_unique_address_per_street_and_insee_code_oa",
+            "street",
+            "inseeCode",
+            unique=True,
+            postgresql_where=sa.and_(street.is_not(None), inseeCode.is_not(None)),
+        ),
+        sa.CheckConstraint('length("postalCode") = 5'),
+        sa.CheckConstraint('length("inseeCode") = 5'),
+        sa.CheckConstraint('length("city") <= 50'),
+        sa.CheckConstraint('length("departmentCode") = 2 OR length("departmentCode") = 3'),
+        sa.CheckConstraint('length("timezone") <= 50'),
+    )
