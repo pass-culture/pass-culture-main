@@ -12,14 +12,7 @@
 <div>
   {% if rows %}
     <div>
-      <p class="lead">
-        {{ rows.total }}
-        {% if rows.total > 1 %}
-          résultats
-        {% else %}
-          résultat
-        {% endif %}
-      </p>
+      <p class="lead">{{ rows.total }} résultat{{ rows.total | pluralize }}</p>
       <div>
         <div class="row row-cols-sm-1 row-cols-md-2 row-cols-lg-3 g-4">
           {% set offset = (rows.page - 1) * rows.per_page %}
