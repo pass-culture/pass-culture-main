@@ -1949,15 +1949,26 @@ def _generate_invoice(
         db.session.execute(
             sqla.text(
                 """
-            UPDATE pricing
-            SET status = :status
-            FROM cashflow_pricing
-            WHERE
-              cashflow_pricing."pricingId" = pricing.id
-              AND cashflow_pricing."cashflowId" IN :cashflow_ids
+                WITH updated AS (
+                  UPDATE pricing
+                  SET status = :invoiced
+                  FROM cashflow_pricing
+                  WHERE
+                    cashflow_pricing."pricingId" = pricing.id
+                    AND cashflow_pricing."cashflowId" IN :cashflow_ids
+                  RETURNING id AS pricing_id
+                )
+                INSERT INTO pricing_log
+                ("pricingId", "statusBefore", "statusAfter", reason)
+                SELECT updated.pricing_id, :processed, :invoiced, :log_reason from updated
             """
             ),
-            {"status": models.PricingStatus.INVOICED.value, "cashflow_ids": tuple(cashflow_ids)},
+            {
+                "processed": models.PricingStatus.PROCESSED.value,
+                "invoiced": models.PricingStatus.INVOICED.value,
+                "log_reason": models.PricingLogReason.GENERATE_INVOICE.value,
+                "cashflow_ids": tuple(cashflow_ids),
+            },
         )
 
     # Booking.status: USED -> REIMBURSED (but keep CANCELLED as is)
