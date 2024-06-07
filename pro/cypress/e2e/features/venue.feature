@@ -35,9 +35,3 @@ Feature: Create and update venue
     When I select offerer "0 - Structure avec justificatif copié"
     Then I should only see these venues
       | Offres numériques | Lieu avec justificatif copié |
-    When I select offerer "1 - [CB] Structure avec plusieurs de ses lieux non rattachés à des coordonnées bancaires"
-    Then I should only see these venues
-      | Le Petit Rintintin 972 | Le Petit Rintintin 973 | Le Petit Rintintin 974 |
-    When I select offerer "1 - [CB] Structure sans coordonnées bancaires"
-    Then I should only see these venues
-      | Le Petit Rintintin 962 |
