@@ -890,11 +890,28 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
         ),
     )
 
-    def _mark_as_processed(pricing_ids: sqla_orm.Query) -> None:
-        pricings_to_update = models.Pricing.query.filter(models.Pricing.id.in_(pricing_ids))
-        pricings_to_update.update(
-            {"status": models.PricingStatus.PROCESSED},
-            synchronize_session=False,
+    def _mark_as_processed(pricing_ids: typing.Iterable[int]) -> None:
+        db.session.execute(
+            sqla.text(
+                """
+                WITH updated AS (
+                  UPDATE pricing
+                  SET status = :processed
+                  WHERE
+                    id in :pricing_ids
+                  RETURNING id AS pricing_id
+                )
+                INSERT INTO pricing_log
+                ("pricingId", "statusBefore", "statusAfter", reason)
+                SELECT updated.pricing_id, :validated, :processed, :log_reason from updated
+            """
+            ),
+            {
+                "validated": models.PricingStatus.VALIDATED.value,
+                "processed": models.PricingStatus.PROCESSED.value,
+                "log_reason": models.PricingLogReason.GENERATE_CASHFLOW.value,
+                "pricing_ids": tuple(pricing_ids),
+            },
         )
 
     bank_account_infos = (
@@ -1059,7 +1076,9 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
                 # pricings would then stay "processed" and never move
                 # to "invoiced".
                 cashflowed_pricings = models.CashflowPricing.query.filter_by(cashflowId=cashflow.id)
-                _mark_as_processed(cashflowed_pricings.with_entities(models.CashflowPricing.pricingId))
+                _mark_as_processed(
+                    {pricing_id for pricing_id, in cashflowed_pricings.with_entities(models.CashflowPricing.pricingId)}
+                )
                 total_from_pricings = (
                     cashflowed_pricings.join(models.Pricing)
                     .with_entities(sqla.func.sum(models.Pricing.amount))

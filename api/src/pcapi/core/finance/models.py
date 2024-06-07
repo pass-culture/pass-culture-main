@@ -181,6 +181,7 @@ class PricingLogReason(enum.Enum):
     MARK_AS_UNUSED = "mark as unused"
     CHANGE_AMOUNT = "change amount"
     CHANGE_DATE = "change date"
+    GENERATE_CASHFLOW = "generate cashflow"
 
 
 class Frequency(enum.Enum):
@@ -427,7 +428,9 @@ class Pricing(Base, Model):
     lines: list["PricingLine"] = sqla_orm.relationship(
         "PricingLine", back_populates="pricing", order_by="PricingLine.id"
     )
-    logs: list["PricingLog"] = sqla_orm.relationship("PricingLog", back_populates="pricing")
+    logs: list["PricingLog"] = sqla_orm.relationship(
+        "PricingLog", back_populates="pricing", order_by="PricingLog.timestamp"
+    )
 
     __table_args__ = (
         sqla.Index("idx_uniq_booking_id", bookingId, postgresql_where=status != PricingStatus.CANCELLED, unique=True),
