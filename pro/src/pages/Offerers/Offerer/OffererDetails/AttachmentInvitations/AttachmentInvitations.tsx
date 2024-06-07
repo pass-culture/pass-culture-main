@@ -108,29 +108,31 @@ export const AttachmentInvitations = ({
 
       {members.length > 0 && (
         <div className={styles['members-container']}>
-          <table className={styles['members-list']}>
-            <thead>
-              <tr>
-                <th scope="col">Email</th>
-                <th scope="col">Statut</th>
-              </tr>
-            </thead>
-            <tbody>
-              {members.map(
-                ({ email, status }, index) =>
-                  !(!displayAllMembers && index > MAX_COLLABORATORS - 1) && (
-                    <tr key={email}>
-                      <td className={styles['member-email']}>{email}</td>
-                      <td className={styles['member-status']}>
-                        {status === OffererMemberStatus.VALIDATED
-                          ? 'Validé'
-                          : 'En attente'}
-                      </td>
-                    </tr>
-                  )
-              )}
-            </tbody>
-          </table>
+          <div className={styles['members-inner']}>
+            <table className={styles['members-list']}>
+              <thead>
+                <tr>
+                  <th scope="col">Email</th>
+                  <th scope="col">Statut</th>
+                </tr>
+              </thead>
+              <tbody>
+                {members.map(
+                  ({ email, status }, index) =>
+                    !(!displayAllMembers && index > MAX_COLLABORATORS - 1) && (
+                      <tr key={email}>
+                        <td className={styles['member-email']}>{email}</td>
+                        <td className={styles['member-status']}>
+                          {status === OffererMemberStatus.VALIDATED
+                            ? 'Validé'
+                            : 'En attente'}
+                        </td>
+                      </tr>
+                    )
+                )}
+              </tbody>
+            </table>
+          </div>
           {members.length > MAX_COLLABORATORS && (
             <Button
               onClick={() => setDisplayAllMembers(!displayAllMembers)}
