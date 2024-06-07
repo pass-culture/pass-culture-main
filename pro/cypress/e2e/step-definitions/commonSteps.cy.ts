@@ -31,3 +31,7 @@ When('I want to create {string} offer', (offerType: string) => {
   cy.findByText('Étape suivante').click()
   cy.wait('@getCategories')
 })
+
+When('I select offerer {string}', (offererName: string) => {
+  cy.findByLabelText('Structure').select(offererName)
+})
