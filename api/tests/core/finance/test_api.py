@@ -1408,11 +1408,19 @@ class GenerateCashflowsTest:
         assert pricing11.cashflows[0].bankAccount == bank_account1
         assert pricing11.cashflows[0].bankAccountId == bank_account1.id
         assert pricing2.cashflows[0].amount == -3000
+        for pricing in pricing11, pricing12, pricing2:
+            assert pricing.logs[0].statusBefore == models.PricingStatus.VALIDATED
+            assert pricing.logs[0].statusAfter == models.PricingStatus.PROCESSED
+            assert pricing.logs[0].reason == models.PricingLogReason.GENERATE_CASHFLOW
 
         assert not pricing_future_event.cashflows
+        assert not pricing_future_event.logs
         assert not collective_pricing_future_event.cashflows
+        assert not collective_pricing_future_event.logs
         assert not pricing_pending.cashflows
+        assert not pricing_pending.logs
         assert not pricing_after_cutoff.cashflows
+        assert not pricing_after_cutoff.logs
 
     @pytest.mark.parametrize(
         "booking_pricing,incident_booking_amount",
@@ -1614,7 +1622,8 @@ class GenerateCashflowsTest:
                 1,  # insert Cashflow
                 1,  # select pricings to be linked to CashflowPricing's
                 1,  # insert CashflowPricing's
-                1,  # update Pricing.status
+                1,  # select pricings to be updated
+                1,  # update Pricing.status and insert PricingLog
                 1,  # check sum of pricings = cashflow.amount
             )
         )
