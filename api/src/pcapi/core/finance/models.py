@@ -182,6 +182,7 @@ class PricingLogReason(enum.Enum):
     CHANGE_AMOUNT = "change amount"
     CHANGE_DATE = "change date"
     GENERATE_CASHFLOW = "generate cashflow"
+    GENERATE_INVOICE = "generate invoice"
 
 
 class Frequency(enum.Enum):
