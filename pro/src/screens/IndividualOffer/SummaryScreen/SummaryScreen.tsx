@@ -1,3 +1,4 @@
+import { FormikProvider, useFormik } from 'formik'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -30,6 +31,9 @@ import { getOfferConditionalFields } from 'utils/getOfferConditionalFields'
 import { ActionBar } from '../ActionBar/ActionBar'
 
 import { DisplayOfferInAppLink } from './DisplayOfferInAppLink/DisplayOfferInAppLink'
+import { EventPublicationForm } from './EventPublicationForm/EventPublicationForm'
+import { EventPublicationFormValues } from './EventPublicationForm/types'
+import { validationSchema } from './EventPublicationForm/validationSchema'
 import { OfferSection } from './OfferSection/OfferSection'
 import { PriceCategoriesSection } from './PriceCategoriesSection/PriceCategoriesSection'
 import { StockSection } from './StockSection/StockSection'
@@ -44,6 +48,16 @@ export const SummaryScreen = () => {
   const navigate = useNavigate()
   const { offer, subCategories } = useIndividualOfferContext()
   const { logEvent } = useAnalytics()
+
+  const formik = useFormik<EventPublicationFormValues>({
+    initialValues: {
+      publicationMode: 'now',
+      publicationDate: '',
+      publicationTime: '',
+    },
+    onSubmit: () => {},
+    validationSchema,
+  })
 
   if (offer === null) {
     return null
@@ -120,6 +134,8 @@ export const SummaryScreen = () => {
     ...offerConditionalFields,
   ]
 
+  const showEventPublicationForm = isFutureOfferEnabled && offer.isEvent
+
   return (
     <>
       {mode === OFFER_WIZARD_MODE.CREATION && (
@@ -136,12 +152,22 @@ export const SummaryScreen = () => {
               </>
             )}
           </Callout>
+
+          {showEventPublicationForm && (
+            <FormikProvider value={formik}>
+              <EventPublicationForm />
+            </FormikProvider>
+          )}
         </div>
       )}
 
       <SummaryLayout>
         <SummaryContent>
-          <OfferSection conditionalFields={conditionalFields} offer={offer} />
+          <OfferSection
+            conditionalFields={conditionalFields}
+            offer={offer}
+            isEventPublicationFormShown={showEventPublicationForm}
+          />
 
           {mode === OFFER_WIZARD_MODE.CREATION && offer.isEvent && (
             <PriceCategoriesSection offer={offer} canBeDuo={canBeDuo} />
