@@ -21,6 +21,7 @@ from pcapi.domain import show_types
 from pcapi.models import offer_mixin
 from pcapi.routes import serialization
 from pcapi.routes.public.documentation_constants import descriptions
+from pcapi.routes.public.documentation_constants.fields import fields
 from pcapi.routes.public.individual_offers.v1.base_serialization import IndexPaginationQueryParams
 import pcapi.routes.public.serialization.accessibility as accessibility_serialization
 from pcapi.routes.public.serialization.utils import StrEnum
@@ -226,7 +227,7 @@ class OfferCreationBase(serialization.ConfiguredBaseModel):
     external_ticket_office_url: pydantic_v1.HttpUrl | None = EXTERNAL_TICKET_OFFICE_URL_FIELD
     image: ImageBody | None
     is_duo: bool | None = IS_DUO_BOOKINGS_FIELD
-    name: str = NAME_FIELD
+    name: str = fields.OFFER_NAME_WITH_MAX_LENGTH
     withdrawal_details: str | None = WITHDRAWAL_DETAILS_FIELD
 
 
@@ -709,7 +710,7 @@ class OfferResponse(serialization.ConfiguredBaseModel):
     image: ImageResponse | None
     is_duo: bool | None = IS_DUO_BOOKINGS_FIELD
     location: PhysicalLocation | DigitalLocation = LOCATION_FIELD
-    name: str = NAME_FIELD
+    name: str = fields.OFFER_NAME
     status: offer_mixin.OfferStatus = pydantic_v1.Field(
         ...,
         description=descriptions.OFFER_STATUS_FIELD_DESCRIPTION,

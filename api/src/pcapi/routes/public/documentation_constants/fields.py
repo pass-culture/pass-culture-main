@@ -86,6 +86,10 @@ class _FIELDS:
         False, description="Is accessible for people with visual disability", example=True
     )
 
+    # Offer fields
+    OFFER_NAME = Field(description="Offer title", example="Le Petit Prince")
+    OFFER_NAME_WITH_MAX_LENGTH = Field(description="Offer title", example="Le Petit Prince", max_length=90)
+
     # Collective offer specific fields
     COLLECTIVE_OFFER_NAME = Field(description="Collective offer name", example="Atelier de peinture")
     COLLECTIVE_OFFER_DESCRIPTION = Field(

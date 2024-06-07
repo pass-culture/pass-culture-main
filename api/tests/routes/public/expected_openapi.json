@@ -2937,7 +2937,6 @@
                     "name": {
                         "description": "Offer title",
                         "example": "Le Petit Prince",
-                        "maxLength": 90,
                         "title": "Name",
                         "type": "string"
                     },
@@ -6601,7 +6600,6 @@
                     "name": {
                         "description": "Offer title",
                         "example": "Le Petit Prince",
-                        "maxLength": 90,
                         "title": "Name",
                         "type": "string"
                     },
