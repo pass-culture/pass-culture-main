@@ -84,6 +84,40 @@ export const InvoicesFilters = ({
     <>
       <div className={styles['header']}>
         <h2 className={styles['header-title']}>Affichage des justificatifs</h2>
+      </div>
+
+      <div className={styles['filters']}>
+        <FormLayout.Row inline className={styles['selectors']}>
+          {selectableOptions.length > 1 && (
+            <FieldLayout
+              label="Compte bancaire"
+              name="reimbursementPoint"
+              isOptional
+            >
+              <SelectInput
+                defaultOption={{
+                  label: 'Tous les comptes bancaires',
+                  value: 'all',
+                }}
+                onChange={setReimbursementPointFilter}
+                name="reimbursementPoint"
+                options={selectableOptions}
+                value={selectedReimbursementPoint}
+              />
+            </FieldLayout>
+          )}
+
+          <fieldset>
+            <legend>Période</legend>
+            <PeriodSelector
+              onBeginningDateChange={setStartDateFilter}
+              onEndingDateChange={setEndDateFilter}
+              maxDateEnding={getToday()}
+              periodBeginningDate={selectedPeriodStart}
+              periodEndingDate={selectedPeriodEnd}
+            />
+          </fieldset>
+        </FormLayout.Row>
         <Button
           className={styles['reset-filters']}
           disabled={areFiltersDefault}
@@ -91,39 +125,11 @@ export const InvoicesFilters = ({
           variant={ButtonVariant.TERNARYPINK}
           icon={fullRefreshIcon}
         >
-          Réinitialiser les filtres
+          {selectableOptions.length === 1
+            ? 'Réinitialiser le filtre'
+            : 'Réinitialiser les filtres'}
         </Button>
       </div>
-
-      <FormLayout.Row inline>
-        <FieldLayout
-          label="Compte bancaire"
-          name="reimbursementPoint"
-          isOptional
-        >
-          <SelectInput
-            defaultOption={{
-              label: 'Tous les comptes bancaires',
-              value: 'all',
-            }}
-            onChange={setReimbursementPointFilter}
-            name="reimbursementPoint"
-            options={selectableOptions}
-            value={selectedReimbursementPoint}
-          />
-        </FieldLayout>
-
-        <fieldset>
-          <legend>Période</legend>
-          <PeriodSelector
-            onBeginningDateChange={setStartDateFilter}
-            onEndingDateChange={setEndDateFilter}
-            maxDateEnding={getToday()}
-            periodBeginningDate={selectedPeriodStart}
-            periodEndingDate={selectedPeriodEnd}
-          />
-        </fieldset>
-      </FormLayout.Row>
 
       <div className={styles['button-group']}>
         <div className={styles['button-group-separator']} />
