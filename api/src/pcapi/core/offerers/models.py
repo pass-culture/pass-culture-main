@@ -1283,14 +1283,6 @@ class OffererAddress(PcObject, Base, Model):
 
     __table_args__ = (sa.Index("ix_unique_offerer_address_per_label", "offererId", "addressId", "label", unique=True),)
 
-    @hybrid_property
-    def isEditable(self) -> bool:
-        return db.session.query(~sa.select(1).exists().where(Venue.offererAddressId == self.id)).scalar()
-
-    @isEditable.expression  # type: ignore[no-redef]
-    def isEditable(cls) -> sa.sql.elements.BooleanClauseList:  # pylint: disable=no-self-argument
-        return ~sa.select(1).where(Venue.offererAddressId == cls.id).exists()
-
 
 class OffererConfidenceLevel(enum.Enum):
     # No default value when offerer follows rules in offer_validation_rule table,

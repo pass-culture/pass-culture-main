@@ -36,7 +36,7 @@ LIMIT_STOCKS_PER_PAGE = 20
 STOCK_LIMIT_TO_DELETE = 50
 
 OFFER_LOAD_OPTIONS = typing.Iterable[
-    typing.Literal["stock", "mediations", "product", "price_category", "venue", "bookings_count", "offerer_address"]
+    typing.Literal["stock", "mediations", "product", "price_category", "venue", "bookings_count"]
 ]
 
 

@@ -473,24 +473,3 @@ class OffererConfidenceRuleTest:
     def test_strategy_cannot_be_null(self):
         with pytest.raises(IntegrityError):
             factories.OffererConfidenceRuleFactory(offerer=factories.OffererFactory(), confidenceLevel=None)
-
-
-class OffererAddressTest:
-    def test_offerer_address_is_not_editable_property(self):
-        offererAddress = factories.OffererAddressFactory()
-        factories.VenueFactory(offererAddress=offererAddress)
-        assert offererAddress.isEditable is False
-
-    def test_offerers_address_is_editable_property(self):
-        offererAddress = factories.OffererAddressFactory()
-        assert offererAddress.isEditable is True
-
-    def test_offerers_address_is_editable_expression(self):
-        offererAddress = factories.OffererAddressFactory()
-        assert models.OffererAddress.query.filter_by(id=offererAddress.id).one().isEditable is True
-        assert models.OffererAddress.query.filter(models.OffererAddress.isEditable == True).one()
-
-    def test_offerers_address_is_not_editable_expression(self):
-        offererAddress = factories.OffererAddressFactory()
-        factories.VenueFactory(offererAddress=offererAddress)
-        assert models.OffererAddress.query.filter(models.OffererAddress.isEditable == False).one()

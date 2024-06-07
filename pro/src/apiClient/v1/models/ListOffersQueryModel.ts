@@ -10,7 +10,6 @@ export type ListOffersQueryModel = {
   collectiveOfferType?: CollectiveOfferType | null;
   creationMode?: string | null;
   nameOrIsbn?: string | null;
-  offererAddressId?: number | null;
   offererId?: number | null;
   periodBeginningDate?: string | null;
   periodEndingDate?: string | null;

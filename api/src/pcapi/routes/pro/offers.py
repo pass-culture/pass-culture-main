@@ -72,7 +72,6 @@ def get_offer(offer_id: int) -> offers_serialize.GetIndividualOfferResponseModel
         "price_category",
         "venue",
         "bookings_count",
-        "offerer_address",
     ]
     try:
         offer = offers_repository.get_offer_by_id(offer_id, load_options=load_all)
