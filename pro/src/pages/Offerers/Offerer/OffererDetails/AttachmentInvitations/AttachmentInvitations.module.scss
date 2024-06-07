@@ -57,10 +57,31 @@
 
   .members-container {
     margin-bottom: rem.torem(24px);
+    max-width: 100%;
+    position: relative;
+
+    &::before {
+      content: "";
+      position: absolute;
+      display: block;
+      width: rem.torem(45px);
+      top: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 2;
+      box-shadow: inset rem.torem(-45px) 0 rem.torem(15px) rem.torem(-30px)
+        white;
+    }
+
+    .members-inner {
+      overflow-x: auto;
+    }
   }
 
   .members-list {
-    width: 100%;
+    border-collapse: separate;
+    border-spacing: rem.torem(16px) 0;
+    min-width: rem.torem(365px);
 
     th {
       @include fonts.caption;
@@ -85,12 +106,12 @@
 
 .member-email {
   display: flex;
-  width: rem.torem(380px);
-  word-break: break-word;
+  word-break: keep-all;
 }
 
 .member-status {
   width: rem.torem(90px);
+  word-break: keep-all;
 }
 
 .display-all-members-button {
