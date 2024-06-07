@@ -2,11 +2,7 @@
 {% from "components/search/result_form.html" import build_result_page_form %}
 {% macro build_has_tag(count, total_count, criterion) %}
   {{ count }}/{{ total_count }}
-  {% if count > 1 %}
-    offres actives ont
-  {% else %}
-    offre active a
-  {% endif %}
+  {{ count | pluralize('offre active a', 'offres actives ont') }}
   déjà le tag {{ [criterion] | format_criteria | safe }}
 {% endmacro %}
 {% extends "layouts/connected.html" %}

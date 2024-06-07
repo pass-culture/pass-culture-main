@@ -9,7 +9,7 @@
     <div class="card shadow">
       <div class="card-body">
         <div class="fs-2">{{ value }}</div>
-        <div class="text-muted">{{ text_many if value > 1 else text_one }}</div>
+        <div class="text-muted">{{ value | pluralize(text_one, text_many) }}</div>
       </div>
     </div>
   </div>
@@ -46,7 +46,7 @@
         {% set has_validate_permission = has_permission("VALIDATE_OFFERER") %}
         {% set has_read_ae_permission = has_validate_permission or has_permission("READ_PRO_AE_INFO") %}
         <div class="d-flex justify-content-between">
-          <p class="lead num-results">{{ rows.total }} résultat{{ "s" if rows.total > 1 else "" }}</p>
+          <p class="lead num-results">{{ rows.total }} résultat{{ rows.total | pluralize }}</p>
           {% if has_validate_permission %}
             <div class="btn-group btn-group-sm"
                  data-toggle="pc-batch-confirm-btn-group"

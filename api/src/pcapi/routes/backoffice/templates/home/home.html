@@ -3,7 +3,7 @@
     <div class="card shadow h-100">
       <div class="card-body py-0 pt-3">
         <div class="fs-2">{{ value }}</div>
-        <div class="text-muted">{{ text_many if value > 1 else text_one }}</div>
+        <div class="text-muted">{{ value | pluralize(text_one, text_many) }}</div>
       </div>
       <div class="card-footer bg-white border-0 py-0 pb-3">
         {% if link %}
