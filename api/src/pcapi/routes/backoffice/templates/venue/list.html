@@ -12,7 +12,7 @@
         <div class="d-flex justify-content-between">
           <p class="lead num-results">
             {{ rows | length }}
-            résultat{{ "s" if rows | length > 1 else "" }}
+            résultat{{ rows | length | pluralize }}
           </p>
           {% if can_edit %}
             <div class="btn-group btn-group-sm"

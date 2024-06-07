@@ -29,7 +29,7 @@
       {% if rows %}
         <div class="d-flex">
           <div>
-            <p class="lead num-results d-inline">{{ rows|length }} résultat{{ "s" if rows|length > 1 else "" }}</p>
+            <p class="lead num-results d-inline">{{ rows|length }} résultat{{ rows | length | pluralize }}</p>
             {% if form.is_single_venue_with_optional_dates %}
               <span class="mx-2 fs-3">
                 {% set from_to_date_formatted = (form.from_to_date.data[0].strftime("%d/%m/%Y") + ' - ' + form.from_to_date.data[1].strftime("%d/%m/%Y")) if form.from_to_date.data else None %}
