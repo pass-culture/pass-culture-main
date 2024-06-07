@@ -70,7 +70,7 @@ We will be calling your booking URL with the following payload :
 | :---------------- | :------ | :----: | :-------- |
 | **booking_confirmation_date** | Stringified datetime (format **`YYYY-MM-DDTHH:mm:ss`**) | **`false`** | The booking confirmation date |
 | **booking_creation_date** | Stringified datetime (format **`YYYY-MM-DDTHH:mm:ss`**) | **`false`** | The booking creation date |
-| **booking_quantity** | Integer | **`false`** | The number of tickets, either 1 or 2 (if you set **`enableDoubleBookings`** to true [**when creating the event**](/rest-api#tag/Event-offer/operation/PostEventOffer)) |
+| **booking_quantity** | Integer | **`false`** | The number of tickets, either 1 or 2 (if you set **`enableDoubleBookings`** to `true` [**when creating the event**](/rest-api#tag/Event-offer/operation/PostEventOffer)) |
 | **offer_ean** | String | `true` | Offer EAN code (relevant for product) |
 | **offer_id** | Integer | **`false`** | Offer id |
 | **offer_name** | String | **`false`** | Offer name |
@@ -124,7 +124,7 @@ There is two error cases we are expecting when we try to book a ticket on your s
 - the event date is **sold-out**
 - we are trying to book 2 tickets but **there is only one ticket left** 
 
-In those cases, **we expect from you a `HTTP 409 response` with the following payload** :
+In those cases, **we expect from you a `HTTP 409` response with the following payload** :
 
 #### JSON payload example
 
