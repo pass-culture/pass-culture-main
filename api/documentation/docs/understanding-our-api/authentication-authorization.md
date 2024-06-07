@@ -36,7 +36,7 @@ You will be given **a pair of API keys** by our support team :
 
 Once you have your API key, add it in your request headers to authenticate your request. The API key should be located in the **Authorization header**, using the **`Bearer` pattern** (see example below).
 
-```shell
+```bash
 # Example of an authenticated request using curl
 # Fetch event categories on the integration test environment
 
@@ -74,7 +74,7 @@ The access to the venue will be given to you either :
 If you want **to know which venues are linked to your provider account**, you can use this **[endpoint](/rest-api/#tag/Offerer-and-Venues/operation/GetOffererVenues)**. It is possible to filter by offerer, using the offerer's SIREN.
 
 
-```shell
+```bash
 # Example requests with curl
 
 # Return all the venues linked to your provider account
