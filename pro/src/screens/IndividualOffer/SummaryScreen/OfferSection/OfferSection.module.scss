@@ -1,0 +1,8 @@
+@use "styles/mixins/_rem.scss" as rem;
+
+// Cancels the margin-top of the title when we show the event publication form
+// A cleaner way to do this would be to remove the margin-top from the summary title component
+// but it would require to change all pages using this component
+.cancel-title-margin {
+  margin-top: rem.torem(-32px);
+}
