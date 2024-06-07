@@ -35,6 +35,21 @@ class GetProductsTest:
         assert response.status_code == 200
         assert [product["id"] for product in response.json["products"]] == [offer.id for offer in offers[10:12]]
 
+    def test_should_return_a_200_event_if_the_offer_name_is_longer_than_90_signs_long(self, client):
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        name_more_than_90_signs_long = (
+            "Bébé, apprends-moi à devenir ton parent : naissance, sommeil, attachement, pleurs, développement"
+        )
+        offers_factories.ThingOfferFactory(venue=venue, name=name_more_than_90_signs_long)
+
+        with testing.assert_no_duplicated_queries():
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+                f"/public/offers/v1/products?venueId={venue.id}"
+            )
+
+        assert response.status_code == 200
+        assert response.json["products"][0]["name"] == name_more_than_90_signs_long
+
     def test_404_when_the_page_is_too_high(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
 
