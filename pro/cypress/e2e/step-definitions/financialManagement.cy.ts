@@ -1,11 +1,5 @@
 import { Given, Then, When } from '@badeball/cypress-cucumber-preprocessor'
 
-Given('I choose an offerer with financial informations', () => {
-  cy.findByLabelText('Structure').select(
-    '0 - Structure avec justificatif et compte bancaire'
-  )
-})
-
 When('I download reimbursement details', () => {
   cy.findByTestId('dropdown-menu-trigger').click()
   cy.findByText(/Télécharger le détail des réservations/).click()
