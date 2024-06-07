@@ -1,10 +1,14 @@
+/* istanbul ignore file */
+
+// Component only for display (sub-components already tested)
+
 import { useSelector } from 'react-redux'
 
 import { AppLayout } from 'app/AppLayout'
 import { AttachmentInvitations } from 'pages/Offerers/Offerer/OffererDetails/AttachmentInvitations/AttachmentInvitations'
 import { selectCurrentOffererId } from 'store/user/selectors'
 
-const Collaborators = (): JSX.Element | null => {
+export const Collaborators = (): JSX.Element | null => {
   const currentOffererId = useSelector(selectCurrentOffererId)
 
   if (!currentOffererId) {
@@ -20,4 +24,6 @@ const Collaborators = (): JSX.Element | null => {
   )
 }
 
+// Lazy-loaded by react-router-dom
+// ts-unused-exports:disable-next-line
 export const Component = Collaborators
