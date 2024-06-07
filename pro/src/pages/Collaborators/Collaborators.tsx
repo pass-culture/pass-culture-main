@@ -8,7 +8,7 @@ import { AppLayout } from 'app/AppLayout'
 import { AttachmentInvitations } from 'pages/Offerers/Offerer/OffererDetails/AttachmentInvitations/AttachmentInvitations'
 import { selectCurrentOffererId } from 'store/user/selectors'
 
-export const Collaborators = (): JSX.Element | null => {
+const Collaborators = (): JSX.Element | null => {
   const currentOffererId = useSelector(selectCurrentOffererId)
 
   if (!currentOffererId) {
