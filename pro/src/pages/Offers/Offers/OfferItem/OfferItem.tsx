@@ -58,6 +58,7 @@ export const OfferItem = ({
       className={cn(styles['offer-item'], {
         [styles['inactive']]: isOfferInactiveOrExpiredOrDisabled,
       })}
+      data-testid="offer-item-row"
     >
       {/* TODO the audience prop could probably be removed in the future */}
       {/* as it is redundant with the offer.isEducational property */}
