@@ -26,7 +26,7 @@ For `Events` linked to a ticketing server, we will need **two URLs** :
 :::warning
 The notification URLs you give us ***must not* require authentication**.
 
-The notification authentication will be done by checking the request payload as described in the dedicated documentation section : [**Authenticating our notifications**](/docs/understanding-our-api/notification-system/authenticating-our-notifications).
+The notification authentication will be done by checking the request payload as described here : [**Authenticating our notifications**](/docs/understanding-our-api/notification-system/authenticating-our-notifications).
 :::
 
 ### How to set the URLs
