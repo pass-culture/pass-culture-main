@@ -62,7 +62,6 @@ def get_capped_offers_for_filters(
     creation_mode: str | None = None,
     period_beginning_date: datetime.date | None = None,
     period_ending_date: datetime.date | None = None,
-    offerer_address_id: int | None = None,
 ) -> list[models.Offer]:
     query = get_offers_by_filters(
         user_id=user_id,
@@ -71,7 +70,6 @@ def get_capped_offers_for_filters(
         status=status,
         venue_id=venue_id,
         category_id=category_id,
-        offerer_address_id=offerer_address_id,
         name_keywords_or_ean=name_keywords_or_ean,
         creation_mode=creation_mode,
         period_beginning_date=period_beginning_date,
@@ -186,7 +184,6 @@ def get_offers_by_filters(
     status: str | None = None,
     venue_id: int | None = None,
     category_id: str | None = None,
-    offerer_address_id: int | None = None,
     name_keywords_or_ean: str | None = None,
     creation_mode: str | None = None,
     period_beginning_date: datetime.date | None = None,
@@ -207,8 +204,6 @@ def get_offers_by_filters(
         query = query.filter(offerers_models.Venue.managingOffererId == offerer_id)
     if venue_id is not None:
         query = query.filter(models.Offer.venueId == venue_id)
-    if offerer_address_id is not None:
-        query = query.filter(models.Offer.offererAddressId == offerer_address_id)
     if creation_mode is not None:
         query = _filter_by_creation_mode(query, creation_mode)
     if category_id is not None:
