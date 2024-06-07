@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -21,17 +22,20 @@ import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
+import styles from './OfferSection.module.scss'
 import { serializeOfferSectionData } from './serializer'
 import { humanizeDelay } from './utils'
 
 interface OfferSummaryProps {
   offer: GetIndividualOfferResponseModel
   conditionalFields: string[]
+  isEventPublicationFormShown: boolean
 }
 
 export const OfferSection = ({
   conditionalFields,
   offer,
+  isEventPublicationFormShown,
 }: OfferSummaryProps): JSX.Element => {
   const mode = useOfferWizardMode()
   const { categories, subCategories } = useIndividualOfferContext()
@@ -189,6 +193,9 @@ export const OfferSection = ({
       title="Détails de l’offre"
       editLink={editLink}
       aria-label="Modifier les détails de l’offre"
+      className={cn({
+        [styles['cancel-title-margin']]: isEventPublicationFormShown,
+      })}
     >
       <SummarySubSection title="Type d’offre">
         <SummaryDescriptionList descriptions={offerTypeDescriptions} />
