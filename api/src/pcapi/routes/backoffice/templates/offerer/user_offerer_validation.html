@@ -27,7 +27,7 @@
       {% if rows and rows.total > 0 %}
         {% set has_validate_permission = has_permission("VALIDATE_OFFERER") %}
         <div class="d-flex justify-content-between">
-          <p class="lead num-results">{{ rows.total }} résultat{{ "s" if rows.total > 1 else "" }}</p>
+          <p class="lead num-results">{{ rows.total }} résultat{{ rows.total | pluralize }}</p>
           {% if has_validate_permission %}
             <div class="btn-group btn-group-sm"
                  data-toggle="pc-batch-confirm-btn-group"

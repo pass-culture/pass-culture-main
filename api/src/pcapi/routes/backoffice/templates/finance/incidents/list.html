@@ -11,7 +11,7 @@
         <div class="d-flex flex-column">
           <p class="lead num-results">
             {{ rows | length }}
-            résultat{{ "s" if rows | length > 1 else "" }}
+            résultat{{ rows | length | pluralize }}
           </p>
           <table class="table mb-4"
                  data-table-multi-select-id="table-individual-incidents-multiselect">

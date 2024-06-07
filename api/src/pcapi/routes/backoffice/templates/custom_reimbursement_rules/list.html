@@ -38,7 +38,7 @@
       {% endif %}
       {% if rows %}
         <div class="d-flex justify-content-between">
-          <p class="lead num-results">{{ rows|length }} résultat{{ "s" if rows|length > 1 else "" }}</p>
+          <p class="lead num-results">{{ rows|length }} résultat{{ rows | length | pluralize }}</p>
         </div>
         <table class="table mb-4">
           <thead>
