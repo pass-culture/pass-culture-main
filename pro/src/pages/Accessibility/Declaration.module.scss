@@ -1,6 +1,42 @@
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/mixins/_layout.scss" as layout;
 
-.title-accessibility {
+.heading1-declaration {
   margin-bottom: rem.torem(32px);
+}
+
+.heading2,
+.heading3,
+.paragraph,
+.list-item,
+.table,
+.td,
+.th,
+.link {
+  margin-bottom: rem.torem(16px);
+}
+
+.list-item {
+  list-style: disc;
+  margin-left: rem.torem(16px);
+}
+
+.link {
+  color: var(--color-grey-dark);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.table {
+  width: 100%;
+}
+
+.td,
+.th {
+  padding: rem.torem(12px);
+  text-align: left;
+  border: rem.torem(1px) solid var(--color-grey-medium);
+  word-break: break-all;
 }

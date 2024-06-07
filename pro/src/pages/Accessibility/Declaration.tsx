@@ -62,7 +62,7 @@ export const Declaration = () => {
       <p className={styles['paragraph']}>
         L’audit de conformité réalisé par la DINUM révèle que :
       </p>
-      <ul aria-label="Critères RGAA">
+      <ul>
         <li className={styles['list-item']}>
           48 % des critères RGAA version 4.1 sont respectés.
         </li>
@@ -166,7 +166,7 @@ export const Declaration = () => {
         </li>
         <li className={styles['list-item']}>
           Dans la page{' '}
-          <strong>Création d’une offre - Collective - Détail </strong> , le lien
+          <strong>Création d’une offre - Collective - Détail</strong>, le lien
           "Aide” ne donne pas l’information qu’il s’ouvre dans une nouvelle
           fenêtre. Dans cette même page, l’affichage de la liste de choix du
           sélecteur domaine artistique et culturel n’est pas annoncé aux
@@ -185,7 +185,13 @@ export const Declaration = () => {
       <h3 className={styles['heading3']}>
         Dérogations pour charge disproportionnée
       </h3>
-      <ul aria-label="Dérogations pour charge disproportionnée">
+      <ul>
+        <li className={styles['list-item']}>Aucune</li>
+      </ul>
+      <h3 className={styles['heading3']}>
+        Contenus non soumis à l’obligation d’accessibilité
+      </h3>
+      <ul>
         <li className={styles['list-item']}>Aucune</li>
       </ul>
       <h2 className={styles['heading2']}>
@@ -227,7 +233,7 @@ export const Declaration = () => {
       </p>
       <a
         className={styles['link']}
-        href="https://integration.passculture.pro/connexion?de=%2F"
+        href="https://accessibilite.numerique.gouv.fr/ressources/methodologie-de-test/"
       >
         <p className={styles['paragraph']}>
           Plus d’information sur les outils d’assistance
@@ -524,22 +530,24 @@ export const Declaration = () => {
       </p>
       <ul>
         <li className={styles['list-item']}>
-          Ouvrir le formulaire&nbsp;
+          Écrire un message au Défenseur des droits (
           <a
             className={styles['link']}
             href="https://formulaire.defenseurdesdroits.fr/"
           >
-            https://formulaire.defenseurdesdroits.fr/
+            Ouvrir le formulaire
           </a>
+          )
         </li>
         <li className={styles['list-item']}>
-          Consulter l’annuaire des délégués&nbsp;
+          Contacter le délégué du Défenseur des droits dans votre région (
           <a
             className={styles['link']}
             href="https://www.defenseurdesdroits.fr/saisir/delegues"
           >
-            https://www.defenseurdesdroits.fr/saisir/delegues
+            Consulter l’annuaire des délégués
           </a>
+          )
         </li>
         <li className={styles['list-item']}>
           Envoyer un courrier par la poste (gratuit, ne pas mettre de timbre)
