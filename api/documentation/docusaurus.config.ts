@@ -155,6 +155,7 @@ const config: Config = {
       copyright: `Copyright © ${new Date().getFullYear()} Pass Culture. Built with Docusaurus.`,
     },
     prism: {
+      additionalLanguages: ['php'],
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
     },
