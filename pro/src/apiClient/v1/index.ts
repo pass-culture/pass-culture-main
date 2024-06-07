@@ -105,8 +105,6 @@ export type { GetEducationalOfferersResponseModel } from './models/GetEducationa
 export type { GetEducationalOffererVenueResponseModel } from './models/GetEducationalOffererVenueResponseModel';
 export type { GetIndividualOfferResponseModel } from './models/GetIndividualOfferResponseModel';
 export type { GetMusicTypesResponse } from './models/GetMusicTypesResponse';
-export type { GetOffererAddressesResponseModel } from './models/GetOffererAddressesResponseModel';
-export type { GetOffererAddressResponseModel } from './models/GetOffererAddressResponseModel';
 export type { GetOffererBankAccountsResponseModel } from './models/GetOffererBankAccountsResponseModel';
 export type { GetOffererMemberResponseModel } from './models/GetOffererMemberResponseModel';
 export type { GetOffererMembersResponseModel } from './models/GetOffererMembersResponseModel';

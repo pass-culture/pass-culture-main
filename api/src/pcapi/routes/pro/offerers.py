@@ -291,21 +291,3 @@ def get_offerer_v2_stats(offerer_id: int) -> offerers_serialize.GetOffererV2Stat
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ResourceNotFoundError()
     return offerers_serialize.GetOffererV2StatsResponseModel.from_orm(stats)
-
-
-@private_api.route("/offerers/<int:offerer_id>/addresses", methods=["GET"])
-@login_required
-@spectree_serialize(
-    on_success_status=200,
-    api=blueprint.pro_private_schema,
-    response_model=offerers_serialize.GetOffererAddressesResponseModel,
-)
-def get_offerer_addresses(offerer_id: int) -> offerers_serialize.GetOffererAddressesResponseModel:
-    check_user_has_access_to_offerer(current_user, offerer_id)
-    offerer_addresses = repository.get_offerer_addresses(offerer_id)
-    return offerers_serialize.GetOffererAddressesResponseModel(
-        __root__=[
-            offerers_serialize.GetOffererAddressResponseModel.from_orm(offerer_address)
-            for offerer_address in offerer_addresses
-        ]
-    )

@@ -16,7 +16,6 @@ from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.finance import models as finance_models
-from pcapi.core.geography import models as geography_models
 import pcapi.core.offers.models as offers_models
 from pcapi.core.offers.models import Offer
 import pcapi.core.offers.repository as offers_repository
@@ -858,15 +857,3 @@ def get_revenues_per_year(
         }
         for year in years
     }
-
-
-def get_offerer_addresses(offerer_id: int) -> BaseQuery:
-    return (
-        models.OffererAddress.query.filter(models.OffererAddress.offererId == offerer_id)
-        .options(
-            sqla_orm.joinedload(models.OffererAddress.address).load_only(
-                geography_models.Address.street, geography_models.Address.postalCode, geography_models.Address.city
-            )
-        )
-        .order_by(models.OffererAddress.label)
-    )

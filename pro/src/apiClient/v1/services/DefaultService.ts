@@ -43,7 +43,6 @@ import type { GetCollectiveOfferTemplateResponseModel } from '../models/GetColle
 import type { GetEducationalOfferersResponseModel } from '../models/GetEducationalOfferersResponseModel';
 import type { GetIndividualOfferResponseModel } from '../models/GetIndividualOfferResponseModel';
 import type { GetMusicTypesResponse } from '../models/GetMusicTypesResponse';
-import type { GetOffererAddressesResponseModel } from '../models/GetOffererAddressesResponseModel';
 import type { GetOffererBankAccountsResponseModel } from '../models/GetOffererBankAccountsResponseModel';
 import type { GetOffererMembersResponseModel } from '../models/GetOffererMembersResponseModel';
 import type { GetOffererResponseModel } from '../models/GetOffererResponseModel';
@@ -1301,27 +1300,6 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'GET',
       url: '/offerers/{offerer_id}',
-      path: {
-        'offerer_id': offererId,
-      },
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-  /**
-   * get_offerer_addresses <GET>
-   * @param offererId
-   * @returns GetOffererAddressesResponseModel OK
-   * @throws ApiError
-   */
-  public getOffererAddresses(
-    offererId: number,
-  ): CancelablePromise<GetOffererAddressesResponseModel> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/offerers/{offerer_id}/addresses',
       path: {
         'offerer_id': offererId,
       },
