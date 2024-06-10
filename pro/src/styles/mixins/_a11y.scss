@@ -10,6 +10,25 @@
   border: 0;
 }
 
+@mixin visually-hidden-reset() {
+  // Proper reset of « a11y.visually-hidden »
+  position: static;
+  width: auto;
+  height: auto;
+  padding: 0;
+  margin: 0;
+  overflow: initial;
+  clip: auto;
+  white-space: normal;
+  border-style: none;
+  border-color: inherit;
+  border-width: medium;
+}
+
 .visually-hidden {
   @include visually-hidden;
+}
+
+.visually-hidden-reset {
+  @include visually-hidden-reset;
 }

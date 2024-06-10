@@ -13,11 +13,15 @@
 }
 
 .row {
-  display: block;
+  display: flex;
+  flex-direction: column;
+
+  td {
+    display: flex;
+  }
 }
 
 .data {
-  display: flex;
   justify-content: space-between;
   padding: rem.torem(12px) rem.torem(8px);
   align-items: center;
@@ -26,8 +30,9 @@
 .data::before {
   @include fonts.caption;
 
-  content: attr(data-label);
+  content: attr(data-label) " :";
   text-align: left;
+  margin-right: rem.torem(16px);
 }
 
 .body .row:nth-child(n + 1):nth-child(odd) {
@@ -36,15 +41,6 @@
 
 .date-data {
   @include fonts.bold;
-}
-
-.document-type-content {
-  display: flex;
-  gap: rem.torem(8px);
-}
-
-.bank-account-column {
-  text-align: right;
 }
 
 .more-icon {
@@ -63,16 +59,19 @@
 
 .download-actions {
   display: flex;
-  gap: rem.torem(8px);
   margin-top: rem.torem(32px);
   flex-direction: column;
   align-items: flex-start;
-}
 
-.download-button {
-  border-left: solid 1px var(--color-grey-semi-dark);
-  border-radius: 0;
-  padding-left: rem.torem(8px);
+  & label:first-child {
+    margin-bottom: rem.torem(8px);
+  }
+
+  & button {
+    border-left: solid 1px var(--color-grey-semi-dark);
+    border-radius: 0;
+    padding-left: rem.torem(8px);
+  }
 }
 
 .menu-item-icon {
@@ -86,44 +85,53 @@
   }
 }
 
+.invoice-column button {
+  display: inline-block;
+}
+
 @media (min-width: size.$tablet) {
   .invoices-table {
     margin-top: 0;
+
+    thead th {
+      padding-top: rem.torem(16px);
+      padding-bottom: rem.torem(16px);
+      padding-left: rem.torem(8px);
+      padding-right: rem.torem(8px);
+      // white-space: nowrap;
+    }
+
+    tbody td {
+      padding-left: rem.torem(8px);
+      padding-right: rem.torem(8px);
+    }
+
+    th {
+      text-align: left;
+    }
   }
 
   .row {
-    display: flex;
+    display: table-row;
     padding: rem.torem(16px);
+
+    td {
+      display: table-cell;
+    }
   }
 
   .header {
     @include fonts.caption;
 
-    // reset visually-hidden
-    position: unset;
-    width: unset;
-    height: unset;
-    margin: unset;
-    overflow: unset;
-    clip: unset;
-    white-space: unset;
-    border: unset;
-    cursor: pointer;
-    display: inline-flex;
-    padding: rem.torem(16px);
-    text-align: left;
+    @include a11y.visually-hidden-reset;
   }
 
   .header-cell {
-    display: inline-flex;
-    align-items: center;
     gap: rem.torem(8px);
-    margin-right: rem.torem(24px);
   }
 
   .data {
     padding: rem.torem(20px) 0;
-    margin-right: rem.torem(24px);
   }
 
   .data::before {
@@ -131,36 +139,19 @@
     display: none;
   }
 
-  .date-header {
-    padding-left: rem.torem(20px);
-  }
-
-  .date-column {
-    width: rem.torem(90px);
-  }
-
-  .document-type-column {
-    width: rem.torem(165px);
-  }
-
   .document-type-content {
     text-align: left;
+    white-space: nowrap;
   }
 
   .bank-account-column {
-    width: rem.torem(180px);
     text-align: left;
-  }
-
-  .label-column {
-    width: rem.torem(80px);
   }
 
   .amount-column {
     cursor: default;
     justify-content: right;
     text-align: right;
-    width: rem.torem(100px);
   }
 
   .invoice-column {
@@ -173,6 +164,10 @@
 
   .download-actions {
     flex-direction: row;
+    gap: rem.torem(8px);
+
+    button {
+      border: none;
+    }
   }
 }
-
