@@ -23,7 +23,6 @@ export const CookiesFooter = ({ className }: { className?: string }) => {
           <li>
             <ButtonLink
               variant={ButtonVariant.QUATERNARY}
-              className={styles['cookies-footer-link']}
               link={{
                 to: 'https://pass.culture.fr/cgu-professionnels/',
                 isExternal: true,
@@ -36,7 +35,16 @@ export const CookiesFooter = ({ className }: { className?: string }) => {
           <li>
             <ButtonLink
               variant={ButtonVariant.QUATERNARY}
-              className={styles['cookies-footer-link']}
+              link={{
+                to: '/accessibilite',
+              }}
+            >
+              Accessibilité : non conforme
+            </ButtonLink>
+          </li>
+          <li>
+            <ButtonLink
+              variant={ButtonVariant.QUATERNARY}
               link={{
                 to: 'https://pass.culture.fr/donnees-personnelles/',
                 isExternal: true,
@@ -49,7 +57,6 @@ export const CookiesFooter = ({ className }: { className?: string }) => {
           <li>
             <Button
               variant={ButtonVariant.QUATERNARY}
-              className={styles['cookies-footer-link']}
               onClick={() => orejime.show()}
             >
               Gestion des cookies
