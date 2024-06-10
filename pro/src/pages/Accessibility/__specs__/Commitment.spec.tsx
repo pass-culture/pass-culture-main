@@ -9,7 +9,9 @@ describe('Statement of Commitment page', () => {
   it('should display Commitment information message', () => {
     renderWithProviders(<Commitment />)
     expect(
-      screen.getByText('Les engagements du pass Culture')
+      screen.getByText(
+        'Les engagements du pass Culture pour l’accessibilité numérique'
+      )
     ).toBeInTheDocument()
   })
 })
