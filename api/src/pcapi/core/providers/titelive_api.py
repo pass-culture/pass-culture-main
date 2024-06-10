@@ -6,13 +6,13 @@ import typing
 import uuid
 
 import PIL
+import pydantic.v1 as pydantic
 
 from pcapi import repository
 from pcapi import settings
 from pcapi.connectors import thumb_storage
 from pcapi.connectors import titelive
-from pcapi.connectors.serialization.titelive_serializers import TiteliveProductSearchResponse
-from pcapi.connectors.serialization.titelive_serializers import TiteliveSearchResultType
+from pcapi.connectors.serialization.titelive_serializers import TiteliveWorkType
 from pcapi.core.offers import models as offers_models
 import pcapi.core.offers.api as offers_api
 from pcapi.core.offers.exceptions import NotUpdateProductOrOffers
@@ -44,7 +44,7 @@ def insert_local_provider_event_on_error(method: typing.Callable) -> typing.Call
     return method_with_local_provider_event
 
 
-class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
+class TiteliveSearch(abc.ABC, typing.Generic[TiteliveWorkType]):
     titelive_base: titelive.TiteliveBase
 
     def __init__(self) -> None:
@@ -112,57 +112,52 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
 
     def get_updated_titelive_pages(
         self, from_date: datetime.date, from_page: int
-    ) -> typing.Iterator[TiteliveProductSearchResponse[TiteliveSearchResultType]]:
+    ) -> typing.Iterator[list[TiteliveWorkType]]:
         page_index = from_page
         has_next_page = True
         while has_next_page:
             json_response = titelive.search_products(self.titelive_base, from_date, page_index)
-            product_page = self.deserialize_titelive_search_json(json_response)
-            recent_product_page = self.filter_recent_products(product_page, from_date)
+            product_page = self.deserialize_titelive_products(json_response)
+            recent_product_page = filter_recent_products(product_page, from_date)
             allowed_product_page, not_allowed_eans = self.partition_allowed_products(recent_product_page)
-            allowed_product_page.result = [oeuvre for oeuvre in allowed_product_page.result if oeuvre.article]
+            allowed_product_page = [work for work in allowed_product_page if work.article]
             offers_api.reject_inappropriate_products(not_allowed_eans, author=None)
 
             yield allowed_product_page
 
             # sometimes titelive returns a partially filled page while having a next page in store for us
-            has_next_page = bool(product_page.result)
+            has_next_page = bool(product_page)
             page_index += 1
 
+    def deserialize_titelive_products(self, titelive_json_response: list[dict]) -> list[TiteliveWorkType]:
+        deserialized_works = []
+        for work in titelive_json_response:
+            try:
+                deserialized_work = self.deserialize_titelive_product(work)
+            except pydantic.ValidationError as e:
+                title = work.get("titre")
+                logger.error("%s %s could not be deserialized: %s", self.titelive_base.value, title, e)
+            else:
+                deserialized_works.append(deserialized_work)
+
+        return deserialized_works
+
     @abc.abstractmethod
-    def partition_allowed_products(
-        self, titelive_product_page: TiteliveProductSearchResponse[TiteliveSearchResultType]
-    ) -> tuple[
-        TiteliveProductSearchResponse[TiteliveSearchResultType],
+    def deserialize_titelive_product(self, titelive_work: dict) -> TiteliveWorkType:
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def partition_allowed_products(self, titelive_product_page: list[TiteliveWorkType]) -> tuple[
+        list[TiteliveWorkType],
         list[str],
     ]:
         raise NotImplementedError()
 
-    @abc.abstractmethod
-    def deserialize_titelive_search_json(
-        self, titelive_json_response: dict[str, typing.Any]
-    ) -> TiteliveProductSearchResponse[TiteliveSearchResultType]:
-        raise NotImplementedError()
-
-    def filter_recent_products(
-        self,
-        titelive_product_page: TiteliveProductSearchResponse[TiteliveSearchResultType],
-        from_date: datetime.date,
-    ) -> TiteliveProductSearchResponse[TiteliveSearchResultType]:
-        """Filters out articles that were not updated since from_date."""
-        for oeuvre in titelive_product_page.result:
-            oeuvre.article = [
-                article
-                for article in oeuvre.article
-                if article.datemodification is None or article.datemodification >= from_date
-            ]
-        return titelive_product_page
-
     def upsert_titelive_page(
         self,
-        titelive_page: TiteliveProductSearchResponse[TiteliveSearchResultType],
+        titelive_page: list[TiteliveWorkType],
     ) -> list[offers_models.Product]:
-        titelive_eans = [article.gencod for result in titelive_page.result for article in result.article]
+        titelive_eans = [article.gencod for work in titelive_page for article in work.article]
 
         products = offers_models.Product.query.filter(
             offers_models.Product.extraData["ean"].astext.in_(titelive_eans),
@@ -173,16 +168,16 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
             titelive_page, products = self.dodge_sync_collision(titelive_page, products)
 
         products_by_ean: dict[str, offers_models.Product] = {p.extraData["ean"]: p for p in products}
-        for titelive_search_result in titelive_page.result:
+        for titelive_search_result in titelive_page:
             products_by_ean = self.upsert_titelive_result_in_dict(titelive_search_result, products_by_ean)
 
         return list(products_by_ean.values())
 
     def dodge_sync_collision(
         self,
-        titelive_page: TiteliveProductSearchResponse[TiteliveSearchResultType],
+        titelive_page: list[TiteliveWorkType],
         existing_products: list[offers_models.Product],
-    ) -> tuple[TiteliveProductSearchResponse[TiteliveSearchResultType], list[offers_models.Product]]:
+    ) -> tuple[list[TiteliveWorkType], list[offers_models.Product]]:
         """
         Returns the titelive search page and product list without products that were already imported
         by another provider, and logs as error the removed products EAN and their provider.
@@ -202,46 +197,31 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
         }
         logger.error("Conflicting products already exist: %s, skipping", other_provider_by_product_ean)
 
-        for oeuvre in titelive_page.result:
-            oeuvre.article = [
-                article for article in oeuvre.article if article.gencod not in other_provider_by_product_ean
-            ]
-        titelive_page.result = [oeuvre for oeuvre in titelive_page.result if oeuvre.article]
+        for work in titelive_page:
+            work.article = [article for article in work.article if article.gencod not in other_provider_by_product_ean]
+        titelive_page = [work for work in titelive_page if work.article]
 
         current_provider_managed_products = [p for p in existing_products if p.lastProvider == self.provider]
         return titelive_page, current_provider_managed_products
 
     @abc.abstractmethod
     def upsert_titelive_result_in_dict(
-        self, titelive_search_result: TiteliveSearchResultType, products_by_ean: dict[str, offers_models.Product]
+        self, titelive_search_result: TiteliveWorkType, products_by_ean: dict[str, offers_models.Product]
     ) -> dict[str, offers_models.Product]:
         raise NotImplementedError()
-
-    def activate_newly_eligible_product_and_offers(self, product: offers_models.Product) -> None:
-        is_product_newly_eligible = (
-            product.gcuCompatibilityType == offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE
-        )
-        ean = product.extraData.get("ean") if product.extraData else None
-        if ean is None:
-            return
-        if is_product_newly_eligible:
-            try:
-                offers_api.approves_provider_product_and_rejected_offers(ean)
-            except NotUpdateProductOrOffers as exception:
-                logger.error("Product with ean cannot be approved", extra={"ean": ean, "exc": str(exception)})
 
     def update_product_thumbnails(
         self,
         products: list[offers_models.Product],
-        titelive_page: TiteliveProductSearchResponse[TiteliveSearchResultType],
+        titelive_page: list[TiteliveWorkType],
     ) -> list[offers_models.Product]:
         thumbnail_url_by_ean: dict[str, dict[offers_models.TiteliveImageType, str | None]] = {
             article.gencod: {
                 offers_models.TiteliveImageType.RECTO: article.imagesUrl.recto,
                 offers_models.TiteliveImageType.VERSO: article.imagesUrl.verso,
             }
-            for result in titelive_page.result
-            for article in result.article
+            for work in titelive_page
+            for article in work.article
             if article.has_image
         }
         for product in products:
@@ -303,6 +283,32 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
         )
         for product_mediation in product_mediations:
             db.session.delete(product_mediation)
+
+
+def filter_recent_products(
+    titelive_product_page: list[TiteliveWorkType],
+    from_date: datetime.date,
+) -> list[TiteliveWorkType]:
+    """Filters out articles that were not updated since from_date."""
+    for work in titelive_product_page:
+        work.article = [
+            article
+            for article in work.article
+            if article.datemodification is None or article.datemodification >= from_date
+        ]
+    return titelive_product_page
+
+
+def activate_newly_eligible_product_and_offers(product: offers_models.Product) -> None:
+    is_product_newly_eligible = product.gcuCompatibilityType == offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE
+    ean = product.extraData.get("ean") if product.extraData else None
+    if ean is None:
+        return
+    if is_product_newly_eligible:
+        try:
+            offers_api.approves_provider_product_and_rejected_offers(ean)
+        except NotUpdateProductOrOffers as exception:
+            logger.error("Product with ean cannot be approved", extra={"ean": ean, "exc": str(exception)})
 
 
 class TiteliveDatabaseNotInitializedException(Exception):
