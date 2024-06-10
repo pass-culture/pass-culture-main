@@ -4,13 +4,11 @@ from pathlib import Path
 from unittest import mock
 
 import pytest
-import sqlalchemy as sa
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.external_bookings.boost import constants as boost_constants
 from pcapi.core.offers import models as offers_models
-from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import PriceCategory
@@ -23,7 +21,6 @@ from pcapi.core.providers.factories import VenueProviderFactory
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.testing import override_features
 from pcapi.local_providers import BoostStocks
-from pcapi.repository import transaction
 from pcapi.utils.human_ids import humanize
 
 import tests

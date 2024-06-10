@@ -92,6 +92,4 @@ class AllocineMovieListTest:
         new_catalogue = Product.query.order_by(Product.id).all()
 
         # Then
-        assert all(
-            [new_product.__dict__ == old_catalogue[idx].__dict__ for idx, new_product in enumerate(new_catalogue)]
-        )
+        assert all(new_product.__dict__ == old_catalogue[idx].__dict__ for idx, new_product in enumerate(new_catalogue))

@@ -18,7 +18,6 @@ import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.models as providers_models
 from pcapi.core.testing import override_features
 from pcapi.local_providers.cinema_providers.cds.cds_stocks import CDSStocks
-from pcapi.repository import transaction
 from pcapi.utils.human_ids import humanize
 
 import tests
