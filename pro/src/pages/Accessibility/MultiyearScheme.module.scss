@@ -1,5 +1,34 @@
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
 
-.title-accessibility {
+.heading1-scheme {
   margin-bottom: rem.torem(32px);
+}
+
+.heading2,
+.heading3,
+.paragraph,
+.downlist-item,
+.list-item,
+.link {
+  margin-bottom: rem.torem(16px);
+}
+
+.list-item {
+  list-style: disc;
+  margin-left: rem.torem(16px);
+}
+
+.downlist-item {
+  list-style: circle;
+  margin-left: rem.torem(32px);
+}
+
+.link {
+  color: var(--color-grey-dark);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
