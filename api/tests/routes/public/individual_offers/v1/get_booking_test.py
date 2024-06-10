@@ -3,6 +3,7 @@ import datetime
 from dateutil.relativedelta import relativedelta
 import pytest
 
+from pcapi.core import testing
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offerers import factories as offerers_factories
@@ -35,34 +36,36 @@ class GetBookingByTokenReturns200Test:
             stock=product_stock,
         )
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/bookings/v1/token/{booking.token.lower()}",
-        )
-        assert response.status_code == 200
-        assert response.json == {
-            "confirmationDate": date_utils.format_into_utc_date(booking.cancellationLimitDate),
-            "creationDate": date_utils.format_into_utc_date(booking.dateCreated),
-            "id": booking.id,
-            "offerEan": "1234567890123",
-            "offerId": product_offer.id,
-            "offerName": product_offer.name,
-            "price": finance_utils.to_eurocents(booking.amount),
-            "status": "CONFIRMED",
-            "priceCategoryId": None,
-            "priceCategoryLabel": None,
-            "quantity": booking.quantity,
-            "stockId": product_stock.id,
-            "userBirthDate": date_utils.isoformat(booking.user.birth_date),
-            "userEmail": booking.user.email,
-            "venueAddress": venue.street,
-            "venueDepartementCode": venue.departementCode,
-            "venueId": venue.id,
-            "venueName": venue.name,
-            "userFirstName": "Jeanne",
-            "userLastName": "Doux",
-            "userPhoneNumber": "+33101010101",
-            "userPostalCode": "75001",
-        }
+        client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
+        with testing.assert_num_queries(9):
+            response = client.get(
+                f"/public/bookings/v1/token/{booking.token.lower()}",
+            )
+            assert response.status_code == 200
+            assert response.json == {
+                "confirmationDate": date_utils.format_into_utc_date(booking.cancellationLimitDate),
+                "creationDate": date_utils.format_into_utc_date(booking.dateCreated),
+                "id": booking.id,
+                "offerEan": "1234567890123",
+                "offerId": product_offer.id,
+                "offerName": product_offer.name,
+                "price": finance_utils.to_eurocents(booking.amount),
+                "status": "CONFIRMED",
+                "priceCategoryId": None,
+                "priceCategoryLabel": None,
+                "quantity": booking.quantity,
+                "stockId": product_stock.id,
+                "userBirthDate": date_utils.isoformat(booking.user.birth_date),
+                "userEmail": booking.user.email,
+                "venueAddress": venue.street,
+                "venueDepartementCode": venue.departementCode,
+                "venueId": venue.id,
+                "venueName": venue.name,
+                "userFirstName": "Jeanne",
+                "userLastName": "Doux",
+                "userPhoneNumber": "+33101010101",
+                "userPostalCode": "75001",
+            }
 
     def test_key_has_rights_and_regular_event_offer(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
@@ -82,45 +85,53 @@ class GetBookingByTokenReturns200Test:
             stock=event_stock,
         )
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/bookings/v1/token/{booking.token.lower()}",
-        )
+        client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
+        with testing.assert_num_queries(11):
+            response = client.get(
+                f"/public/bookings/v1/token/{booking.token.lower()}",
+            )
 
-        assert response.status_code == 200
-        assert response.json == {
-            "confirmationDate": date_utils.format_into_utc_date(booking.cancellationLimitDate),
-            "creationDate": date_utils.format_into_utc_date(booking.dateCreated),
-            "id": booking.id,
-            "offerEan": None,
-            "offerId": event_offer.id,
-            "offerName": event_offer.name,
-            "price": finance_utils.to_eurocents(booking.amount),
-            "status": "CONFIRMED",
-            "priceCategoryId": booking.stock.priceCategory.id,
-            "priceCategoryLabel": booking.stock.priceCategory.label,
-            "quantity": booking.quantity,
-            "stockId": event_stock.id,
-            "userBirthDate": date_utils.isoformat(booking.user.birth_date),
-            "userEmail": booking.user.email,
-            "venueAddress": venue.street,
-            "venueDepartementCode": venue.departementCode,
-            "venueId": venue.id,
-            "venueName": venue.name,
-            "userFirstName": "Jeanne",
-            "userLastName": "Doux",
-            "userPhoneNumber": "+33101010101",
-            "userPostalCode": "69100",
-        }
+            assert response.status_code == 200
+            assert response.json == {
+                "confirmationDate": date_utils.format_into_utc_date(booking.cancellationLimitDate),
+                "creationDate": date_utils.format_into_utc_date(booking.dateCreated),
+                "id": booking.id,
+                "offerEan": None,
+                "offerId": event_offer.id,
+                "offerName": event_offer.name,
+                "price": finance_utils.to_eurocents(booking.amount),
+                "status": "CONFIRMED",
+                "priceCategoryId": booking.stock.priceCategory.id,
+                "priceCategoryLabel": booking.stock.priceCategory.label,
+                "quantity": booking.quantity,
+                "stockId": event_stock.id,
+                "userBirthDate": date_utils.isoformat(booking.user.birth_date),
+                "userEmail": booking.user.email,
+                "venueAddress": venue.street,
+                "venueDepartementCode": venue.departementCode,
+                "venueId": venue.id,
+                "venueName": venue.name,
+                "userFirstName": "Jeanne",
+                "userLastName": "Doux",
+                "userPhoneNumber": "+33101010101",
+                "userPostalCode": "69100",
+            }
 
 
 class GetBookingByTokenReturns401Test:
     def test_when_user_no_api_key(self, client):
-        response = client.get("/public/bookings/v1/token/TOKEN")
-        assert response.status_code == 401
+        client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
+        with testing.assert_num_queries(1):
+            response = client.get("/public/bookings/v1/token/TOKEN")
+
+            assert response.status_code == 401
 
     def test_when_user_wrong_api_key(self, client):
-        response = client.get("/public/bookings/v1/token/TOKEN", headers={"Authorization": "Bearer WrongApiKey1234567"})
-        assert response.status_code == 401
+        with testing.assert_num_queries(1):
+            response = client.get(
+                "/public/bookings/v1/token/TOKEN", headers={"Authorization": "Bearer WrongApiKey1234567"}
+            )
+            assert response.status_code == 401
 
 
 class GetBookingByTokenReturns403Test:
@@ -132,21 +143,23 @@ class GetBookingByTokenReturns403Test:
         stock = offers_factories.StockFactory(offer=offer, beginningDatetime=next_week)
         booking = bookings_factories.BookingFactory(stock=stock)
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/bookings/v1/token/{booking.token}",
-        )
+        client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
+        with testing.assert_num_queries(7):
+            response = client.get(
+                f"/public/bookings/v1/token/{booking.token}",
+            )
 
-        cancellation_limit_date = datetime.datetime.strftime(
-            date_utils.utc_datetime_to_department_timezone(
-                booking.cancellationLimitDate, booking.venue.departementCode
-            ),
-            "%d/%m/%Y à %H:%M",
-        )
+            cancellation_limit_date = datetime.datetime.strftime(
+                date_utils.utc_datetime_to_department_timezone(
+                    booking.cancellationLimitDate, booking.venue.departementCode
+                ),
+                "%d/%m/%Y à %H:%M",
+            )
 
-        assert response.json == {
-            "booking": f"Vous pourrez valider cette contremarque à partir du {cancellation_limit_date}, une fois le délai d’annulation passé."
-        }
-        assert response.status_code == 403
+            assert response.json == {
+                "booking": f"Vous pourrez valider cette contremarque à partir du {cancellation_limit_date}, une fois le délai d’annulation passé."
+            }
+            assert response.status_code == 403
 
     def test_when_booking_is_refunded(self, client):
         # Given
@@ -158,17 +171,19 @@ class GetBookingByTokenReturns403Test:
 
         # When
         client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
-        response = client.get(f"/public/bookings/v1/token/{booking.token}")
+        with testing.assert_num_queries(4):
+            response = client.get(f"/public/bookings/v1/token/{booking.token}")
 
-        # Then
-        assert response.status_code == 403
-        assert response.json == {"payment": "This booking has already been reimbursed"}
+            # Then
+            assert response.status_code == 403
+            assert response.json == {"payment": "This booking has already been reimbursed"}
 
 
 class GetBookingByTokenReturns404Test:
     def test_missing_token(self, client):
-        response = client.get("/public/bookings/v1/token/")
-        assert response.status_code == 404
+        with testing.assert_num_queries(0):
+            response = client.get("/public/bookings/v1/token/")
+            assert response.status_code == 404
 
     def test_inactive_venue_provider(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue(is_venue_provider_active=False)
@@ -177,11 +192,13 @@ class GetBookingByTokenReturns404Test:
         product_stock = offers_factories.StockFactory(offer=product_offer, beginningDatetime=past)
         booking = bookings_factories.BookingFactory(stock=product_stock)
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/bookings/v1/token/{booking.token.lower()}",
-        )
+        client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
+        with testing.assert_num_queries(4):
+            response = client.get(
+                f"/public/bookings/v1/token/{booking.token.lower()}",
+            )
 
-        assert response.status_code == 404
+            assert response.status_code == 404
 
     def test_key_has_no_rights_and_regular_offer(self, client):
         utils.create_offerer_provider_linked_to_venue()
@@ -201,11 +218,13 @@ class GetBookingByTokenReturns404Test:
             stock=product_stock,
         )
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/bookings/v1/token/{booking.token.lower()}",
-        )
-        assert response.status_code == 404
-        assert response.json == {"global": "This countermark cannot be found"}
+        client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
+        with testing.assert_num_queries(4):
+            response = client.get(
+                f"/public/bookings/v1/token/{booking.token.lower()}",
+            )
+            assert response.status_code == 404
+            assert response.json == {"global": "This countermark cannot be found"}
 
 
 class GetBookingByTokenReturns410Test:
@@ -215,12 +234,14 @@ class GetBookingByTokenReturns410Test:
         product_stock = offers_factories.StockFactory(offer=product_offer)
         booking = bookings_factories.UsedBookingFactory(stock=product_stock)
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/bookings/v1/token/{booking.token.lower()}",
-        )
+        client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
+        with testing.assert_num_queries(5):
+            response = client.get(
+                f"/public/bookings/v1/token/{booking.token.lower()}",
+            )
 
-        assert response.status_code == 410
-        assert response.json == {"booking": "This booking has already been validated"}
+            assert response.status_code == 410
+            assert response.json == {"booking": "This booking has already been validated"}
 
     def test_when_booking_is_cancelled(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
@@ -228,9 +249,11 @@ class GetBookingByTokenReturns410Test:
         product_stock = offers_factories.StockFactory(offer=product_offer)
         booking = bookings_factories.CancelledBookingFactory(stock=product_stock)
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/bookings/v1/token/{booking.token.lower()}",
-        )
+        client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
+        with testing.assert_num_queries(5):
+            response = client.get(
+                f"/public/bookings/v1/token/{booking.token.lower()}",
+            )
 
-        assert response.status_code == 410
-        assert response.json == {"booking": "This booking has been cancelled"}
+            assert response.status_code == 410
+            assert response.json == {"booking": "This booking has been cancelled"}

@@ -18,13 +18,13 @@ class GetEventsTest:
         offers = offers_factories.EventOfferFactory.create_batch(6, venue=venue)
         offers_factories.ThingOfferFactory.create_batch(3, venue=venue)  # not returned
 
-        with testing.assert_no_duplicated_queries():
-            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-                f"/public/offers/v1/events?limit=5&venueId={venue.id}"
-            )
+        client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
+        with testing.assert_num_queries(5):
+            with testing.assert_no_duplicated_queries():
+                response = client.get(f"/public/offers/v1/events?limit=5&venueId={venue.id}")
 
-        assert response.status_code == 200
-        assert [event["id"] for event in response.json["events"]] == [offer.id for offer in offers[0:5]]
+                assert response.status_code == 200
+                assert [event["id"] for event in response.json["events"]] == [offer.id for offer in offers[0:5]]
 
     # This test should be removed when our database has consistant data
     def test_get_offers_with_missing_fields(self, client):
@@ -45,12 +45,12 @@ class GetEventsTest:
             withdrawalType=offers_models.WithdrawalTypeEnum.ON_SITE,
         )
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/offers/v1/events?limit=5&venueId={venue.id}"
-        )
+        client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
+        with testing.assert_num_queries(5):
+            response = client.get(f"/public/offers/v1/events?limit=5&venueId={venue.id}")
 
-        assert response.status_code == 200
-        assert len(response.json["events"]) == 2
+            assert response.status_code == 200
+            assert len(response.json["events"]) == 2
 
     def test_get_events_without_sub_types(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
@@ -64,11 +64,11 @@ class GetEventsTest:
             venue=venue,
             extraData={"showType": "800"},
         )
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/offers/v1/events?limit=5&venueId={venue.id}"
-        )
-        assert response.status_code == 200
-        assert len(response.json["events"]) == 2
+        client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
+        with testing.assert_num_queries(5):
+            response = client.get(f"/public/offers/v1/events?limit=5&venueId={venue.id}")
+            assert response.status_code == 200
+            assert len(response.json["events"]) == 2
 
     def test_404_when_venue_id_not_tied_to_api_key(self, client):
         utils.create_offerer_provider_linked_to_venue()
@@ -83,9 +83,8 @@ class GetEventsTest:
     def test_404_when_inactive_venue_provider(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue(is_venue_provider_active=False)
         offers_factories.EventOfferFactory(venue=venue)
+        client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
+        with testing.assert_num_queries(4):
+            response = client.get(f"/public/offers/v1/events?limit=5&venueId={venue.id}")
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/offers/v1/events?limit=5&venueId={venue.id}"
-        )
-
-        assert response.status_code == 404
+            assert response.status_code == 404

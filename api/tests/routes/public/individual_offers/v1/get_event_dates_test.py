@@ -41,69 +41,74 @@ class GetEventDatesTest:
         offers_factories.EventStockFactory(offer=event_offer, isSoftDeleted=True)  # deleted stock, not returned
         bookings_factories.BookingFactory(stock=bookable_stock)
 
-        with testing.assert_no_duplicated_queries():
-            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-                f"/public/offers/v1/events/{event_offer.id}/dates"
-            )
+        client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
+        with testing.assert_num_queries(6):
+            with testing.assert_no_duplicated_queries():
+                response = client.get(f"/public/offers/v1/events/{event_offer.id}/dates")
 
-        assert response.status_code == 200
-        assert response.json["dates"] == [
-            {
-                "beginningDatetime": date_utils.format_into_utc_date(two_weeks_from_now),
-                "bookedQuantity": 1,
-                "bookingLimitDatetime": date_utils.format_into_utc_date(two_weeks_from_now),
-                "id": bookable_stock.id,
-                "priceCategory": {"id": price_category.id, "label": "carre or", "price": 1234},
-                "quantity": 10,
-            },
-            {
-                "beginningDatetime": date_utils.format_into_utc_date(two_weeks_from_now),
-                "bookedQuantity": 0,
-                "bookingLimitDatetime": date_utils.format_into_utc_date(two_weeks_from_now),
-                "id": stock_without_booking.id,
-                "priceCategory": {
-                    "id": not_booked_price_category.id,
-                    "label": not_booked_price_category.label,
-                    "price": not_booked_price_category.price * 100,
+            assert response.status_code == 200
+            assert response.json["dates"] == [
+                {
+                    "beginningDatetime": date_utils.format_into_utc_date(two_weeks_from_now),
+                    "bookedQuantity": 1,
+                    "bookingLimitDatetime": date_utils.format_into_utc_date(two_weeks_from_now),
+                    "id": bookable_stock.id,
+                    "priceCategory": {"id": price_category.id, "label": "carre or", "price": 1234},
+                    "quantity": 10,
                 },
-                "quantity": 2,
-            },
-        ]
+                {
+                    "beginningDatetime": date_utils.format_into_utc_date(two_weeks_from_now),
+                    "bookedQuantity": 0,
+                    "bookingLimitDatetime": date_utils.format_into_utc_date(two_weeks_from_now),
+                    "id": stock_without_booking.id,
+                    "priceCategory": {
+                        "id": not_booked_price_category.id,
+                        "label": not_booked_price_category.label,
+                        "price": not_booked_price_category.price * 100,
+                    },
+                    "quantity": 2,
+                },
+            ]
 
     def test_event_without_dates(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(venue=venue)
         offers_factories.EventStockFactory(offer=event_offer, isSoftDeleted=True)  # deleted stock, not returned
 
-        with testing.assert_no_duplicated_queries():
-            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-                f"/public/offers/v1/events/{event_offer.id}/dates"
-            )
+        client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
+        with testing.assert_num_queries(6):
+            with testing.assert_no_duplicated_queries():
+                response = client.get(f"/public/offers/v1/events/{event_offer.id}/dates")
 
-        assert response.status_code == 200
-        assert response.json == {
-            "dates": [],
-        }
+                assert response.status_code == 200
+                assert response.json == {
+                    "dates": [],
+                }
 
     def test_404_when_page_is_too_high(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(venue=venue)
         event_stock = offers_factories.EventStockFactory(offer=event_offer)
 
-        with testing.assert_no_duplicated_queries():
-            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-                f"/public/offers/v1/events/{event_offer.id}/dates?firstIndex={int(event_stock.id)+1}&limit=50"
-            )
+        client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
+        with testing.assert_num_queries(7):
+            with testing.assert_no_duplicated_queries():
+                response = client.get(
+                    f"/public/offers/v1/events/{event_offer.id}/dates?firstIndex={int(event_stock.id)+1}&limit=50"
+                )
 
-        assert response.status_code == 200
-        assert response.json == {"dates": []}
+                assert response.status_code == 200
+                assert response.json == {"dates": []}
 
     def test_404_inactive_venue_provider(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue(is_venue_provider_active=False)
         event_offer = offers_factories.EventOfferFactory(venue=venue)
         offers_factories.StockFactory(offer=event_offer, isSoftDeleted=True)
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/offers/v1/events/{event_offer.id}/dates"
-        )
 
-        assert response.status_code == 404
+        client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
+
+        with testing.assert_num_queries(4):
+            with testing.assert_no_duplicated_queries():
+                response = client.get(f"/public/offers/v1/events/{event_offer.id}/dates")
+
+                assert response.status_code == 404

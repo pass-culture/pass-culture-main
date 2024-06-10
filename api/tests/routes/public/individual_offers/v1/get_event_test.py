@@ -16,12 +16,12 @@ class GetEventTest:
         venue, _ = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.ThingOfferFactory(venue=venue)
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/offers/v1/events/{event_offer.id}"
-        )
+        client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
+        with testing.assert_num_queries(4):
+            response = client.get(f"/public/offers/v1/events/{event_offer.id}")
 
-        assert response.status_code == 404
-        assert response.json == {"event_id": ["The event offer could not be found"]}
+            assert response.status_code == 404
+            assert response.json == {"event_id": ["The event offer could not be found"]}
 
     def test_get_event(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
@@ -41,39 +41,43 @@ class GetEventTest:
         num_query += 1  # retrieve offer
         num_query += 1  # retrieve feature_flags for api key validation
 
+        client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
         with testing.assert_num_queries(num_query):
-            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-                f"/public/offers/v1/events/{event_offer_id}"
-            )
+            response = client.get(f"/public/offers/v1/events/{event_offer_id}")
 
-        assert response.status_code == 200
-        assert response.json == {
-            "accessibility": {
-                "audioDisabilityCompliant": False,
-                "mentalDisabilityCompliant": False,
-                "motorDisabilityCompliant": False,
-                "visualDisabilityCompliant": False,
-            },
-            "bookingContact": None,
-            "bookingEmail": None,
-            "categoryRelatedFields": {"author": None, "category": "SEANCE_CINE", "stageDirector": None, "visa": None},
-            "description": "Un livre de contrepèterie",
-            "enableDoubleBookings": False,
-            "externalTicketOfficeUrl": None,
-            "eventDuration": None,
-            "id": event_offer.id,
-            "image": {
-                "credit": None,
-                "url": f"http://localhost/storage/thumbs/products/{human_ids.humanize(product.id)}",
-            },
-            "itemCollectionDetails": None,
-            "location": {"type": "physical", "venueId": event_offer.venueId},
-            "name": "Vieux motard que jamais",
-            "status": "SOLD_OUT",
-            "hasTicket": False,
-            "priceCategories": [],
-            "idAtProvider": "Oh le bel id <3",
-        }
+            assert response.status_code == 200
+            assert response.json == {
+                "accessibility": {
+                    "audioDisabilityCompliant": False,
+                    "mentalDisabilityCompliant": False,
+                    "motorDisabilityCompliant": False,
+                    "visualDisabilityCompliant": False,
+                },
+                "bookingContact": None,
+                "bookingEmail": None,
+                "categoryRelatedFields": {
+                    "author": None,
+                    "category": "SEANCE_CINE",
+                    "stageDirector": None,
+                    "visa": None,
+                },
+                "description": "Un livre de contrepèterie",
+                "enableDoubleBookings": False,
+                "externalTicketOfficeUrl": None,
+                "eventDuration": None,
+                "id": event_offer.id,
+                "image": {
+                    "credit": None,
+                    "url": f"http://localhost/storage/thumbs/products/{human_ids.humanize(product.id)}",
+                },
+                "itemCollectionDetails": None,
+                "location": {"type": "physical", "venueId": event_offer.venueId},
+                "name": "Vieux motard que jamais",
+                "status": "SOLD_OUT",
+                "hasTicket": False,
+                "priceCategories": [],
+                "idAtProvider": "Oh le bel id <3",
+            }
 
     def test_event_with_not_selectable_category_can_be_retrieved(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
@@ -82,12 +86,12 @@ class GetEventTest:
             subcategoryId=subcategories.DECOUVERTE_METIERS.id,
         )
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/offers/v1/events/{event_offer.id}"
-        )
+        client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
+        with testing.assert_num_queries(4):
+            response = client.get(f"/public/offers/v1/events/{event_offer.id}")
 
-        assert response.status_code == 200
-        assert response.json["categoryRelatedFields"]["category"] == "DECOUVERTE_METIERS"
+            assert response.status_code == 200
+            assert response.json["categoryRelatedFields"]["category"] == "DECOUVERTE_METIERS"
 
     def test_get_event_without_ticket(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
@@ -97,11 +101,13 @@ class GetEventTest:
             withdrawalType=offers_models.WithdrawalTypeEnum.ON_SITE,
         )
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/offers/v1/events/{event_offer.id}"
-        )
-        assert response.status_code == 200
-        assert response.json["hasTicket"] is False
+        client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
+        with testing.assert_num_queries(4):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+                f"/public/offers/v1/events/{event_offer.id}"
+            )
+            assert response.status_code == 200
+            assert response.json["hasTicket"] is False
 
     def test_get_music_offer_without_music_type(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
@@ -110,17 +116,17 @@ class GetEventTest:
             extraData=None,
             venue=venue,
         )
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/offers/v1/events/{event_offer.id}"
-        )
-        assert response.status_code == 200
-        assert response.json["categoryRelatedFields"] == {
-            "author": None,
-            "category": "CONCERT",
-            "performer": None,
-            "musicType": None,
-        }
+        with testing.assert_num_queries(4):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+                f"/public/offers/v1/events/{event_offer.id}"
+            )
+            assert response.status_code == 200
+            assert response.json["categoryRelatedFields"] == {
+                "author": None,
+                "category": "CONCERT",
+                "performer": None,
+                "musicType": None,
+            }
 
     def test_ticket_collection_in_app(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
@@ -129,12 +135,12 @@ class GetEventTest:
             withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
         )
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/offers/v1/events/{event_offer.id}"
-        )
+        client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
+        with testing.assert_num_queries(4):
+            response = client.get(f"/public/offers/v1/events/{event_offer.id}")
 
-        assert response.status_code == 200
-        assert response.json["hasTicket"] == True
+            assert response.status_code == 200
+            assert response.json["hasTicket"] == True
 
     def test_ticket_collection_no_ticket(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
@@ -143,20 +149,24 @@ class GetEventTest:
             withdrawalType=offers_models.WithdrawalTypeEnum.NO_TICKET,
         )
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/offers/v1/events/{event_offer.id}"
-        )
+        client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
+        with testing.assert_num_queries(4):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+                f"/public/offers/v1/events/{event_offer.id}"
+            )
 
-        assert response.status_code == 200
-        assert response.json["hasTicket"] == False
+            assert response.status_code == 200
+            assert response.json["hasTicket"] == False
 
     def test_404_inactive_venue_provider(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue(is_venue_provider_active=False)
         event_offer = offers_factories.EventOfferFactory(
             venue=venue,
         )
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/offers/v1/events/{event_offer.id}"
-        )
+        client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
+        with testing.assert_num_queries(4):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+                f"/public/offers/v1/events/{event_offer.id}"
+            )
 
-        assert response.status_code == 404
+            assert response.status_code == 404

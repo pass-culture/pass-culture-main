@@ -2,6 +2,7 @@ import datetime
 
 import pytest
 
+from pcapi.core import testing
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import factories as providers_factories
@@ -59,98 +60,102 @@ class GetOffererVenuesTest:
             other_physical_venue,
         ) = self.create_multiple_venue_providers()
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            "/public/offers/v1/offerer_venues",
-        )
-        assert response.status_code == 200
-        assert len(response.json) == 2
-        assert response.json[0] == {
-            "offerer": {
-                "createdDatetime": "2022-02-22T22:22:22Z",
-                "id": offerer_with_two_venues.id,
-                "name": "Offreur de fleurs",
-                "siren": "123456789",
-            },
-            "venues": [
-                {
-                    "accessibility": {
-                        "audioDisabilityCompliant": None,
-                        "mentalDisabilityCompliant": None,
-                        "motorDisabilityCompliant": None,
-                        "visualDisabilityCompliant": None,
-                    },
-                    "activityDomain": "ARTISTIC_COURSE",
-                    "createdDatetime": "2023-01-16T00:00:00Z",
-                    "id": digital_venue.id,
-                    "legalName": "Do you diji",
-                    "location": {"type": "digital"},
-                    "publicName": "Diji",
-                    "siret": None,
-                    "siretComment": None,
+        client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
+        with testing.assert_num_queries(3):
+            response = client.get(
+                "/public/offers/v1/offerer_venues",
+            )
+            assert response.status_code == 200
+            assert len(response.json) == 2
+            assert response.json[0] == {
+                "offerer": {
+                    "createdDatetime": "2022-02-22T22:22:22Z",
+                    "id": offerer_with_two_venues.id,
+                    "name": "Offreur de fleurs",
+                    "siren": "123456789",
                 },
-                {
-                    "accessibility": {
-                        "audioDisabilityCompliant": False,
-                        "mentalDisabilityCompliant": False,
-                        "motorDisabilityCompliant": False,
-                        "visualDisabilityCompliant": False,
+                "venues": [
+                    {
+                        "accessibility": {
+                            "audioDisabilityCompliant": None,
+                            "mentalDisabilityCompliant": None,
+                            "motorDisabilityCompliant": None,
+                            "visualDisabilityCompliant": None,
+                        },
+                        "activityDomain": "ARTISTIC_COURSE",
+                        "createdDatetime": "2023-01-16T00:00:00Z",
+                        "id": digital_venue.id,
+                        "legalName": "Do you diji",
+                        "location": {"type": "digital"},
+                        "publicName": "Diji",
+                        "siret": None,
+                        "siretComment": None,
                     },
-                    "activityDomain": "BOOKSTORE",
-                    "createdDatetime": "2023-01-16T01:01:01Z",
-                    "id": physical_venue.id,
-                    "legalName": "Coiffeur Librairie",
-                    "location": {
-                        "address": "1 boulevard Poissonnière",
-                        "city": "Paris",
-                        "postalCode": "75000",
-                        "type": "physical",
+                    {
+                        "accessibility": {
+                            "audioDisabilityCompliant": False,
+                            "mentalDisabilityCompliant": False,
+                            "motorDisabilityCompliant": False,
+                            "visualDisabilityCompliant": False,
+                        },
+                        "activityDomain": "BOOKSTORE",
+                        "createdDatetime": "2023-01-16T01:01:01Z",
+                        "id": physical_venue.id,
+                        "legalName": "Coiffeur Librairie",
+                        "location": {
+                            "address": "1 boulevard Poissonnière",
+                            "city": "Paris",
+                            "postalCode": "75000",
+                            "type": "physical",
+                        },
+                        "publicName": "Tiff tuff",
+                        "siret": "12345678912345",
+                        "siretComment": None,
                     },
-                    "publicName": "Tiff tuff",
-                    "siret": "12345678912345",
-                    "siretComment": None,
+                ],
+            }
+            assert response.json[1] == {
+                "offerer": {
+                    "createdDatetime": "2022-02-22T22:22:22Z",
+                    "id": offerer_with_one_venue.id,
+                    "name": "Offreur de prune",
+                    "siren": "123456781",
                 },
-            ],
-        }
-        assert response.json[1] == {
-            "offerer": {
-                "createdDatetime": "2022-02-22T22:22:22Z",
-                "id": offerer_with_one_venue.id,
-                "name": "Offreur de prune",
-                "siren": "123456781",
-            },
-            "venues": [
-                {
-                    "accessibility": {
-                        "audioDisabilityCompliant": False,
-                        "mentalDisabilityCompliant": False,
-                        "motorDisabilityCompliant": False,
-                        "visualDisabilityCompliant": False,
-                    },
-                    "activityDomain": "BOOKSTORE",
-                    "createdDatetime": "2023-01-16T01:01:01Z",
-                    "id": other_physical_venue.id,
-                    "legalName": "Toiletteur Librairie",
-                    "location": {
-                        "address": "1 boulevard Poissonnière",
-                        "city": "Paris",
-                        "postalCode": "75000",
-                        "type": "physical",
-                    },
-                    "publicName": "wiff wuff",
-                    "siret": "12345678112345",
-                    "siretComment": None,
-                }
-            ],
-        }
+                "venues": [
+                    {
+                        "accessibility": {
+                            "audioDisabilityCompliant": False,
+                            "mentalDisabilityCompliant": False,
+                            "motorDisabilityCompliant": False,
+                            "visualDisabilityCompliant": False,
+                        },
+                        "activityDomain": "BOOKSTORE",
+                        "createdDatetime": "2023-01-16T01:01:01Z",
+                        "id": other_physical_venue.id,
+                        "legalName": "Toiletteur Librairie",
+                        "location": {
+                            "address": "1 boulevard Poissonnière",
+                            "city": "Paris",
+                            "postalCode": "75000",
+                            "type": "physical",
+                        },
+                        "publicName": "wiff wuff",
+                        "siret": "12345678112345",
+                        "siretComment": None,
+                    }
+                ],
+            }
 
     def test_does_not_return_inactive_venue_providers(self, client):
         utils.create_offerer_provider_linked_to_venue(is_venue_provider_active=False)
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            "/public/offers/v1/offerer_venues",
-        )
-        assert response == 200
-        assert response.json == []
+        client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
+        with testing.assert_num_queries(3):
+            response = client.get(
+                "/public/offers/v1/offerer_venues",
+            )
+            assert response == 200
+            assert response.json == []
 
     def test_get_filtered_offerer_venues(self, client):
         (
@@ -161,34 +166,35 @@ class GetOffererVenuesTest:
             _,
         ) = self.create_multiple_venue_providers()
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/offers/v1/offerer_venues?siren={offerer_with_two_venues.siren}",
-        )
-        assert response == 200
-        json_dict = response.json
-        assert len(json_dict) == 1
-        assert json_dict[0]["offerer"]["siren"] == offerer_with_two_venues.siren
-        assert len(json_dict[0]["venues"]) == 2
+        client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
+        with testing.assert_num_queries(4):
+            response = client.get(
+                f"/public/offers/v1/offerer_venues?siren={offerer_with_two_venues.siren}",
+            )
+            assert response == 200
+            json_dict = response.json
+            assert len(json_dict) == 1
+            assert json_dict[0]["offerer"]["siren"] == offerer_with_two_venues.siren
+            assert len(json_dict[0]["venues"]) == 2
 
     def test_get_filtered_offerer_venues_with_siren_more_than_9_characters(self, client):
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            "/public/offers/v1/offerer_venues?siren=1234567890",
-        )
-        assert response == 400
-        assert response.json == {"siren": ['string does not match regex "^\\d{9}$"']}
+        client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
+        with testing.assert_num_queries(0):
+            response = client.get("/public/offers/v1/offerer_venues?siren=1234567890")
+            assert response == 400
+            assert response.json == {"siren": ['string does not match regex "^\\d{9}$"']}
 
     def test_get_filtered_offerer_venues_with_siren_less_than_9_characters(self, client):
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            "/public/offers/v1/offerer_venues?siren=1234890",
-        )
-        assert response == 400
-        assert response.json == {"siren": ['string does not match regex "^\\d{9}$"']}
+        client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
+        with testing.assert_num_queries(0):
+            response = client.get("/public/offers/v1/offerer_venues?siren=1234890")
+            assert response == 400
+            assert response.json == {"siren": ['string does not match regex "^\\d{9}$"']}
 
     def test_when_no_venues(self, client):
         utils.create_offerer_provider()
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            "/public/offers/v1/offerer_venues",
-        )
-        assert response == 200
-        assert response.json == []
+        client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
+        with testing.assert_num_queries(3):
+            response = client.get("/public/offers/v1/offerer_venues")
+            assert response == 200
+            assert response.json == []
