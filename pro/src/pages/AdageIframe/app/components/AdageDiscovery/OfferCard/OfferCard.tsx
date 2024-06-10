@@ -66,6 +66,7 @@ export const OfferCardComponent = ({
               className={styles['offer-image']}
               loading="lazy"
               src={offer.imageUrl}
+              width={216}
             />
           ) : (
             <div
