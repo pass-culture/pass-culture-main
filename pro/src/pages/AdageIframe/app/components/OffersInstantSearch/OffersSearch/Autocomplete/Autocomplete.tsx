@@ -469,6 +469,7 @@ export const Autocomplete = ({
                           <SvgIcon
                             src={strokeClockIcon}
                             alt="Récente recherche"
+                            width="16"
                           />
                           {item.label}
                         </li>
@@ -501,6 +502,7 @@ export const Autocomplete = ({
                             className={
                               styles['dialog-panel-autocomplete-item-icon']
                             }
+                            width="16"
                           />
                           <div>
                             <Highlight
@@ -552,6 +554,7 @@ export const Autocomplete = ({
                               className={
                                 styles['dialog-panel-autocomplete-item-icon']
                               }
+                              width="16"
                             />
                             <div>
                               <Highlight

@@ -174,6 +174,7 @@ export const Offer = ({
               className={style['offer-image']}
               loading="lazy"
               src={offer.imageUrl}
+              width={216}
             />
           ) : (
             <div className={style['offer-image-default']}>
