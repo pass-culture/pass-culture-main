@@ -5,7 +5,7 @@
 .container {
   display: flex;
   flex-direction: column;
-  gap: rem.torem(24px);
+  gap: rem.torem(18px);
   height: rem.torem(250px);
 }
 
@@ -15,6 +15,7 @@
   gap: rem.torem(16px);
   max-height: rem.torem(400px);
   overflow-y: scroll;
+  padding: rem.torem(8px) 0 0 rem.torem(8px);
 
   li:last-child {
     margin-bottom: rem.torem(20px);
