@@ -61,7 +61,11 @@ export const CollectiveTableRow = ({
 
   return (
     <>
-      <tr className={styles['table-row']} onClick={onRowClick}>
+      <tr
+        className={styles['table-row']}
+        onClick={onRowClick}
+        data-testid="offer-item-row"
+      >
         <td className={cn(styles['table-cell'], styles['column-booking-id'])}>
           <BookingIdCell id={booking.bookingId} />
         </td>

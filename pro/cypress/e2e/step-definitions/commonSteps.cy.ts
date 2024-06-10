@@ -1,11 +1,14 @@
-import { When, Given } from '@badeball/cypress-cucumber-preprocessor'
+import { When, Given, Then, DataTable } from '@badeball/cypress-cucumber-preprocessor'
 
 Given('I open {string} page', (page: string) => {
   cy.visit('/' + page)
 })
 
 When('I go to {string} page', (page: string) => {
-  cy.findAllByText(page).first().click()
+  cy.url().then((urlSource) => {
+    cy.findAllByText(page).first().click()
+    cy.url().should('not.equal', urlSource)
+  })
 })
 
 Given('I am logged in', () => {
@@ -34,4 +37,28 @@ When('I want to create {string} offer', (offerType: string) => {
 
 When('I select offerer {string}', (offererName: string) => {
   cy.findByLabelText('Structure').select(offererName)
+})
+
+Then('These results should be displayed', (dataTable: DataTable) => {
+  const numRows = dataTable.rows().length
+  const numColumns = dataTable.raw()[0].length
+  const data = dataTable.raw()
+  var reLAbelCount = new RegExp(numRows + " " + "(offre|réservation)" + (numRows > 1 ? "s" : ""), "g");
+
+  cy.findAllByTestId('offer-item-row').should('have.length', numRows)
+  cy.contains(reLAbelCount)
+
+  for (var rowLine = 0; rowLine < numRows; rowLine++) {
+    const bookLineArray = data[rowLine + 1]
+
+    cy.findAllByTestId('offer-item-row')
+      .eq(rowLine)
+      .within(() => {
+        cy.get('td').then(($elt) => {
+          for (var column = 0; column < numColumns; column++) {
+            cy.wrap($elt).eq(column).should('contain', bookLineArray[column])
+          }
+        })
+      })
+  }
 })
