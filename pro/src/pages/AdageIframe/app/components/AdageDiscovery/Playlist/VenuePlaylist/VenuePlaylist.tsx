@@ -20,6 +20,7 @@ type VenuePlaylistProps = {
     elementId,
     index,
   }: TrackerElementArg) => void
+  observableRef?: React.RefObject<HTMLDivElement>
 }
 
 function getPlaylistTitle(distanceMax: number) {
@@ -35,6 +36,7 @@ function getPlaylistTitle(distanceMax: number) {
 export const VenuePlaylist = ({
   onWholePlaylistSeen,
   trackPlaylistElementClicked,
+  observableRef,
 }: VenuePlaylistProps) => {
   const { data: playlist, isLoading } = useSWR(
     [GET_LOCAL_OFFERERS_PLAYLIST_QUERY_KEY],
@@ -55,6 +57,7 @@ export const VenuePlaylist = ({
           {getPlaylistTitle(distanceMax)}
         </h2>
       }
+      observableRef={observableRef}
       className={classNames(styles['playlist-carousel'], {
         [styles['playlist-carousel-loading']]: isLoading,
       })}
