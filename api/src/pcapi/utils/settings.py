@@ -2,6 +2,7 @@
 # Please do not import other pcapi modules as it may lead to
 # circular imports resulting in environ variables not be loaded.
 import logging
+import os
 
 
 logger = logging.getLogger(__name__)
@@ -30,3 +31,12 @@ def parse_phone_numbers(phone_numbers: str | None) -> list[str]:
     except Exception as exception:  # pylint: disable=broad-except
         logger.exception("Error when parsing phone_numbers variable %s: %s", phone_numbers, exception)
         return []
+
+
+def env_get_list(key: str, separator: str = ",", type_: type = str) -> list:
+    """Return an environment variable as a (possibly empty) list."""
+
+    separated_values = os.environ.get(key, "").strip()
+    if not separated_values:
+        return []
+    return [type_(v) for v in separated_values.split(separator)]
