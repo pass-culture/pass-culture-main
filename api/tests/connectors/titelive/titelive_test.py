@@ -96,7 +96,7 @@ class TiteliveTest:
 
     def test_titelive_search_query_params(self, requests_mock):
         self._configure_mock(requests_mock)
-        requests_mock.get(f"{settings.TITELIVE_EPAGINE_API_URL}/search", json={})
+        requests_mock.get(f"{settings.TITELIVE_EPAGINE_API_URL}/search", json={"result": {}})
 
         titelive.search_products(titelive.TiteliveBase.MUSIC, datetime.date(2022, 12, 1), 2)
 

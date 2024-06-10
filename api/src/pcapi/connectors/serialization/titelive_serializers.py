@@ -144,7 +144,7 @@ class TiteliveMusicArticle(TiteliveArticle):
 TiteliveArticleType = typing.TypeVar("TiteliveArticleType", bound=TiteliveArticle)
 
 
-class BaseTiteliveOeuvre(generics.GenericModel, typing.Generic[TiteliveArticleType]):
+class BaseTiteliveWork(generics.GenericModel, typing.Generic[TiteliveArticleType]):
     article: list[TiteliveArticleType]
 
     @pydantic_v1.validator("article", pre=True)
@@ -154,7 +154,7 @@ class BaseTiteliveOeuvre(generics.GenericModel, typing.Generic[TiteliveArticleTy
         return article
 
 
-class TiteLiveBookOeuvre(BaseTiteliveOeuvre[TiteLiveBookArticle]):
+class TiteLiveBookWork(BaseTiteliveWork[TiteLiveBookArticle]):
     article: list[TiteLiveBookArticle]  # repeated without generics so mypy understands
     auteurs_multi: list[str]
     titre: str
@@ -171,16 +171,9 @@ class TiteLiveBookOeuvre(BaseTiteliveOeuvre[TiteLiveBookArticle]):
         return []
 
 
-class TiteliveMusicOeuvre(BaseTiteliveOeuvre[TiteliveMusicArticle]):
+class TiteliveMusicWork(BaseTiteliveWork[TiteliveMusicArticle]):
     article: list[TiteliveMusicArticle]  # repeated without generics so mypy understands
     titre: str
 
 
-TiteliveSearchResultType = typing.TypeVar("TiteliveSearchResultType", bound=BaseTiteliveOeuvre)
-
-
-class TiteliveProductSearchResponse(generics.GenericModel, typing.Generic[TiteliveSearchResultType]):
-    type: int
-    nombre: int
-    page: int
-    result: list[TiteliveSearchResultType]
+TiteliveWorkType = typing.TypeVar("TiteliveWorkType", bound=BaseTiteliveWork)
