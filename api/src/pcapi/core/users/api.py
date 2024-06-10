@@ -3,6 +3,7 @@ import datetime
 from decimal import Decimal
 import enum
 import logging
+from pathlib import Path
 import re
 import typing
 
@@ -21,6 +22,7 @@ from pcapi.connectors import api_adresse
 from pcapi.connectors.beamer import BeamerException
 from pcapi.connectors.beamer import delete_beamer_user
 from pcapi.core import mails as mails_api
+from pcapi.core import object_storage
 from pcapi.core import token as token_utils
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.bookings.repository as bookings_repository
@@ -1773,3 +1775,42 @@ def enable_new_pro_nav(user: models.User) -> None:
     pro_new_nav_state.newNavDate = datetime.datetime.utcnow()
     db.session.add(pro_new_nav_state)
     db.session.commit()
+
+
+def clean_gdpr_extracts() -> None:
+    files = object_storage.list_files(
+        folder=settings.GCP_GDPR_EXTRACT_FOLDER,
+        bucket=settings.GCP_GDPR_EXTRACT_BUCKET,
+    )
+    files_ids = set()
+    for file_path in files:
+        try:
+            extract_id = int(Path(file_path).stem)
+            files_ids.add(extract_id)
+        except ValueError:
+            continue
+
+    ids_in_db_query = models.GdprUserDataExtract.query.filter(
+        models.GdprUserDataExtract.id.in_(files_ids)
+    ).with_entities(models.GdprUserDataExtract.id)
+    ids_in_db = {r.id for r in ids_in_db_query}
+
+    # files in bucket and not in db
+    for extract_id in files_ids - ids_in_db:
+        delete_gdpr_extract(extract_id)
+
+    extracts_to_delete = models.GdprUserDataExtract.query.filter(
+        models.GdprUserDataExtract.expirationDate < datetime.datetime.utcnow()  # type: ignore [operator]
+    ).with_entities(models.GdprUserDataExtract.id)
+    for extract in extracts_to_delete:
+        # expired extract
+        delete_gdpr_extract(extract.id)
+
+
+def delete_gdpr_extract(extract_id: int) -> None:
+    object_storage.delete_public_object(
+        folder=settings.GCP_GDPR_EXTRACT_FOLDER,
+        object_id=f"{extract_id}.zip",
+        bucket=settings.GCP_GDPR_EXTRACT_BUCKET,
+    )
+    models.GdprUserDataExtract.query.filter(models.GdprUserDataExtract.id == extract_id).delete()
