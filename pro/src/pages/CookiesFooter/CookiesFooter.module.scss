@@ -15,12 +15,35 @@
   &-link {
     @include fonts.caption;
 
-    &, &:focus {
+    &,
+    &:focus {
       padding: 0;
     }
   }
 
   @media (min-width: size.$tablet) {
     flex-direction: row;
+  }
+
+  ul {
+    display: flex;
+    height: 100%;
+    flex-flow: column;
+    white-space: nowrap;
+    width: 100%;
+    margin: rem.torem(24px);
+    gap: rem.torem(16px);
+    justify-content: flex-start;
+    align-items: flex-start;
+
+    @media (min-width: size.$mobile) {
+      flex-direction: row;
+      align-items: center;
+      margin: 0 auto;
+    }
+  }
+
+  li {
+    white-space: nowrap;
   }
 }

@@ -39,6 +39,14 @@ describe('Footer', () => {
     ).not.toBeInTheDocument()
   })
 
+  it('should render footer accessibility link when the user has the new nav', () => {
+    renderFooter(true, true)
+
+    expect(
+      screen.queryByRole('link', { name: 'Accessibilité : non conforme' })
+    ).toBeInTheDocument()
+  })
+
   it('should not render sitemap if user is not connected', () => {
     renderFooter(false)
 
