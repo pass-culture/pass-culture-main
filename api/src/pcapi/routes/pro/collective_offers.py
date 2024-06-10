@@ -417,7 +417,7 @@ def patch_all_collective_offers_active_status(
 @login_required
 @spectree_serialize(
     on_success_status=204,
-    on_error=[400, 403],
+    on_error_statuses=[400, 403],
     api=blueprint.pro_private_schema,
 )
 def patch_collective_offers_active_status(
