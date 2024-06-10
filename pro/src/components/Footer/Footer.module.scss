@@ -28,7 +28,8 @@
   ul {
     display: flex;
     height: 100%;
-    flex-direction: column;
+    flex-flow: column;
+    white-space: nowrap;
     width: 100%;
     margin: rem.torem(24px);
     gap: rem.torem(16px);
@@ -40,5 +41,9 @@
       align-items: center;
       margin: 0 auto;
     }
+  }
+
+  li {
+    white-space: nowrap;
   }
 }
