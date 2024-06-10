@@ -97,6 +97,6 @@ jobs:
       # This is a cleanup step to avoid having too many versions(limit is 210)
         run: |
           gcloud app versions list --service=image-resizing --format="table[no-heading](id)" --project=${{ inputs.google_project }} \
-            | grep -v $(gcloud app versions list --service=image-resizing --hide-no-traffic --format="table[no-heading](id)") --project=${{ inputs.google_project }} \
+            | grep -v $(gcloud app versions list --service=image-resizing --hide-no-traffic --format="table[no-heading](id)" --project=${{ inputs.google_project }}) \
             | xargs gcloud app versions delete --service=image-resizing --project=${{ inputs.google_project }}
           
