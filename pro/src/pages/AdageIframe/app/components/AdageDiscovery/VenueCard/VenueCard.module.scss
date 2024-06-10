@@ -65,6 +65,7 @@ $venue-image-width: rem.torem(276px);
   flex-direction: column;
   align-items: flex-start;
   gap: rem.torem(4px);
+  word-break: break-word;
 
   &-name {
     @include fonts.button;
