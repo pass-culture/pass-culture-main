@@ -198,7 +198,7 @@ class TiteliveBase(enum.Enum):
 MAX_RESULTS_PER_PAGE = 25
 
 
-def search_products(titelive_base: TiteliveBase, from_date: datetime.date, page_index: int) -> dict[str, typing.Any]:
+def search_products(titelive_base: TiteliveBase, from_date: datetime.date, page_index: int) -> list[dict]:
     """Returns Titelive oeuvres for which an article has been modified since from_date.
     All the articles of an oeuvre are returned even if they have not been modified recently.
     """
@@ -243,7 +243,8 @@ def search_products(titelive_base: TiteliveBase, from_date: datetime.date, page_
         )
         raise requests.ExternalAPIException(True, {"status_code": response.status_code})
 
-    return response.json()
+    products = response.json()["result"]
+    return products
 
 
 def download_titelive_image(image_url: str) -> bytes:
