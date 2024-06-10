@@ -52,3 +52,11 @@ def delete_public_object(folder: str, object_id: str, *, bucket: str = "") -> No
     for backend_path in _get_backends():
         backend = import_string(backend_path)
         backend(bucket_name=bucket).delete_public_object(folder, object_id)
+
+
+def list_files(folder: str, *, bucket: str = "", max_results: int = 1000) -> list[str]:
+    files = []
+    for backend_path in _get_backends():
+        backend = import_string(backend_path)
+        files.extend(backend(bucket_name=bucket).list_files(folder, max_results=max_results))
+    return files
