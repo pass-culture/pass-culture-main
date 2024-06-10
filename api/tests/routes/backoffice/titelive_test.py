@@ -19,6 +19,7 @@ from pcapi.routes.backoffice.filters import format_titelive_id_lectorat
 
 from ...connectors.titelive import fixtures
 from ...connectors.titelive.fixtures import BOOK_BY_EAN_FIXTURE
+from .helpers import button as button_helpers
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
 from .helpers.post import PostEndpointHelper
@@ -33,7 +34,7 @@ pytestmark = [
 class SearchEanTest(GetEndpointHelper):
     endpoint = "backoffice_web.titelive.search_titelive"
     endpoint_kwargs = {"ean": "9782070455379"}
-    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+    needed_permission = perm_models.Permissions.READ_OFFERS
 
     # session + current user + query
     expected_num_queries = 3
@@ -102,6 +103,23 @@ class SearchEanTest(GetEndpointHelper):
         assert f"Date d'ajout : {datetime.datetime.utcnow().strftime('%d/%m/%Y')}" in card_text[0]
         assert "Auteur : Frank Columbo" in card_text[0]
         assert "Commentaire : Superbe livre !" in card_text[0]
+
+
+class WhitelistButtonTest(button_helpers.ButtonHelper):
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+    button_label = "Ajouter le livre dans la whitelist"
+
+    @property
+    def path(self):
+        return url_for("backoffice_web.titelive.search_titelive", ean="9782070455379")
+
+    def test_button_when_can_add_one(self, authenticated_client):
+        with patch("pcapi.routes.backoffice.titelive.blueprint.get_by_ean13", return_value=BOOK_BY_EAN_FIXTURE):
+            super().test_button_when_can_add_one(authenticated_client)
+
+    def test_no_button(self, client, roles_with_permissions):
+        with patch("pcapi.routes.backoffice.titelive.blueprint.get_by_ean13", return_value=BOOK_BY_EAN_FIXTURE):
+            super().test_no_button(client, roles_with_permissions)
 
 
 class ProductBlackListFormTest(GetEndpointHelper):
