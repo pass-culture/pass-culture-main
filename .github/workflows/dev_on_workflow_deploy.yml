@@ -136,7 +136,7 @@ jobs:
         id: check_status
         run: |
           kubectl config set-context --current --namespace=argocd
-          argocd app sync pcapi-${{ inputs.environment }} --core --async
+          argocd app sync pcapi-${{ inputs.environment }} --core --async --prune
           argocd app wait pcapi-${{ inputs.environment }} --core --timeout 600
       - name: "Play post-migrations"
         run: |
