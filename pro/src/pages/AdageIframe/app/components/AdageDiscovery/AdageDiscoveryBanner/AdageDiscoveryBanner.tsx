@@ -45,7 +45,7 @@ export function AdageDiscoveryBanner() {
         </span>{' '}
         du pass Culture
       </h1>
-      <div className={styles['discovery-banner-background']}>
+      <div className={styles['discovery-banner-background']} aria-hidden={true}>
         <svg height="100%" width="100%" xmlns="http://www.w3.org/2000/svg">
           <g ref={ovalsGroupRef} data-testid="banner-ovals-group">
             <path
