@@ -285,8 +285,7 @@ class BankAccountStatusHistory(PcObject, Base, Model):
         super().__init__(**kwargs)
 
 
-class FinanceEvent(Base, Model):
-    id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
+class FinanceEvent(PcObject, Base, Model):
 
     creationDate: datetime.datetime = sqla.Column(sqla.DateTime, nullable=False, server_default=sqla.func.now())
     # In most cases, `valueDate` is `Booking.dateUsed` but it's useful
@@ -370,8 +369,7 @@ class FinanceEvent(Base, Model):
     )
 
 
-class Pricing(Base, Model):
-    id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
+class Pricing(PcObject, Base, Model):
 
     status: PricingStatus = sqla.Column(db_utils.MagicEnum(PricingStatus), index=True, nullable=False)
 
@@ -462,8 +460,7 @@ class Pricing(Base, Model):
         return self.cashflows[0]
 
 
-class PricingLine(Base, Model):
-    id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
+class PricingLine(PcObject, Base, Model):
 
     pricingId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("pricing.id"), index=True, nullable=True)
     pricing: Pricing = sqla_orm.relationship("Pricing", foreign_keys=[pricingId], back_populates="lines")
@@ -474,12 +471,10 @@ class PricingLine(Base, Model):
     category: PricingLineCategory = sqla.Column(db_utils.MagicEnum(PricingLineCategory), nullable=False)
 
 
-class PricingLog(Base, Model):
+class PricingLog(PcObject, Base, Model):
     """A pricing log is created whenever the status of a pricing
     changes.
     """
-
-    id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
 
     pricingId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("pricing.id"), index=True, nullable=False)
     pricing: Pricing = sqla_orm.relationship("Pricing", foreign_keys=[pricingId], back_populates="logs")
@@ -555,15 +550,13 @@ class ReimbursementRule:
         raise NotImplementedError()
 
 
-class CustomReimbursementRule(ReimbursementRule, Base, Model):
+class CustomReimbursementRule(PcObject, ReimbursementRule, Base, Model):
     """Some offers are linked to custom reimbursement rules that overrides
     standard reimbursement rules.
 
     An offer may be linked to more than one reimbursement rules, but
     only one rule can be valid at a time.
     """
-
-    id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
 
     offerId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("offer.id"), nullable=True)
 
@@ -688,14 +681,13 @@ CustomReimbursementRule.trig_ddl = """
 sqla.event.listen(CustomReimbursementRule.__table__, "after_create", sqla.DDL(CustomReimbursementRule.trig_ddl))
 
 
-class Cashflow(Base, Model):
+class Cashflow(PcObject, Base, Model):
     """A cashflow represents a specific amount money that is transferred
     between us and a third party. It may be outgoing or incoming.
 
     Cashflows with zero amount are there to enable generating invoices lines with 100% offerer contribution
     """
 
-    id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     creationDate: datetime.datetime = sqla.Column(sqla.DateTime, nullable=False, server_default=sqla.func.now())
     status: CashflowStatus = sqla.Column(db_utils.MagicEnum(CashflowStatus), index=True, nullable=False)
 
@@ -733,12 +725,11 @@ class Cashflow(Base, Model):
     )
 
 
-class CashflowLog(Base, Model):
+class CashflowLog(PcObject, Base, Model):
     """A cashflow log is created whenever the status of a cashflow
     changes.
     """
 
-    id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     cashflowId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("cashflow.id"), index=True, nullable=False)
     cashflow: list[Cashflow] = sqla_orm.relationship("Cashflow", foreign_keys=[cashflowId], back_populates="logs")
     timestamp: datetime.datetime = sqla.Column(sqla.DateTime, nullable=False, server_default=sqla.func.now())
@@ -767,19 +758,17 @@ class CashflowPricing(Base, Model):
     pricingId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("pricing.id"), index=True, primary_key=True)
 
 
-class CashflowBatch(Base, Model):
+class CashflowBatch(PcObject, Base, Model):
     """A cashflow batch groups cashflows that are sent to the bank at the
     same time (in a single file).
     """
 
-    id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     creationDate: datetime.datetime = sqla.Column(sqla.DateTime, nullable=False, server_default=sqla.func.now())
     cutoff: datetime.datetime = sqla.Column(sqla.DateTime, nullable=False, unique=True)
     label: str = sqla.Column(sqla.Text, nullable=False, unique=True)
 
 
-class InvoiceLine(Base, Model):
-    id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
+class InvoiceLine(PcObject, Base, Model):
     invoiceId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("invoice.id"), index=True, nullable=False)
     invoice: "Invoice" = sqla_orm.relationship("Invoice", foreign_keys=[invoiceId], back_populates="lines")
     label: str = sqla.Column(sqla.Text, nullable=False)
@@ -814,12 +803,11 @@ class InvoiceLineGroup:
     reimbursed_amount_subtotal: float
 
 
-class Invoice(Base, Model):
+class Invoice(PcObject, Base, Model):
     """An invoice is linked to one or more cashflows and shows a summary
     of their related pricings.
     """
 
-    id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     date: datetime.datetime = sqla.Column(sqla.DateTime, nullable=False, server_default=sqla.func.now())
     reference: str = sqla.Column(sqla.Text, nullable=False, unique=True)
     reimbursementPointId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=True)
@@ -869,8 +857,7 @@ class InvoiceCashflow(Base, Model):
 # were used in the "old" reimbursement system. No new data is created
 # with these models since 2022-01-01. These models have been replaced
 # by `Pricing`, `Cashflow` and other models listed above.
-class Payment(Base, Model):
-    id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
+class Payment(PcObject, Base, Model):
     bookingId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("booking.id"), index=True, nullable=True)
     booking: "bookings_models.Booking" = sqla_orm.relationship("Booking", foreign_keys=[bookingId], backref="payments")
     collectiveBookingId = sqla.Column(
@@ -944,8 +931,7 @@ class TransactionStatus(enum.Enum):
 
 # `PaymentStatus` is deprecated. See comment above `Payment` model for
 # further details.
-class PaymentStatus(Base, Model):
-    id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
+class PaymentStatus(PcObject, Base, Model):
     paymentId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("payment.id"), index=True, nullable=False)
     payment: Payment = sqla_orm.relationship("Payment", foreign_keys=[paymentId], backref="statuses")
     date: datetime.datetime = sqla.Column(
@@ -957,8 +943,7 @@ class PaymentStatus(Base, Model):
 
 # `PaymentMessage` is deprecated. See comment above `Payment` model
 # for further details.
-class PaymentMessage(Base, Model):
-    id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
+class PaymentMessage(PcObject, Base, Model):
     name: str = sqla.Column(sqla.String(50), unique=True, nullable=False)
     checksum: bytes = sqla.Column(sqla.LargeBinary(32), unique=True, nullable=False)
 
@@ -979,8 +964,7 @@ class IncidentType(enum.Enum):
     FRAUD = "fraud"
 
 
-class FinanceIncident(Base, Model):
-    id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
+class FinanceIncident(PcObject, Base, Model):
     kind: IncidentType = sqla.Column(
         sqla.Enum(IncidentType, native_enum=False, create_contraint=False),
         nullable=False,
@@ -1064,8 +1048,7 @@ class FinanceIncident(Base, Model):
         )
 
 
-class BookingFinanceIncident(Base, Model):
-    id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
+class BookingFinanceIncident(PcObject, Base, Model):
 
     bookingId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("booking.id"), index=True, nullable=True)
     booking: sqla_orm.Mapped["bookings_models.Booking | None"] = sqla_orm.relationship(
