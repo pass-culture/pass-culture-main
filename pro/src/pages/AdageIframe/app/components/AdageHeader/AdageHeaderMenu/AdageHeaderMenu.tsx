@@ -41,10 +41,15 @@ export const AdageHeaderMenu = ({
               }}
               onClick={() => logAdageLinkClick(AdageHeaderLink.DISCOVERY)}
             >
-              <div className={styles['adage-header-link-focus']}>
-                <SvgIcon src={strokePassIcon} alt="" width="20" />
-                Découvrir
-              </div>
+              {({ isActive }) => (
+                <div className={styles['adage-header-link-focus']}>
+                  <SvgIcon src={strokePassIcon} alt="" width="20" />
+                  Découvrir
+                  <span className={styles['active-link-visually-hidden']}>
+                    {isActive ? ' (Onglet actif)' : null}
+                  </span>
+                </div>
+              )}
             </NavLink>
           </li>
           <li className={styles['adage-header-menu-item']}>
@@ -57,10 +62,15 @@ export const AdageHeaderMenu = ({
               }}
               onClick={() => logAdageLinkClick(AdageHeaderLink.SEARCH)}
             >
-              <div className={styles['adage-header-link-focus']}>
-                <SvgIcon src={strokeSearchIcon} alt="" width="20" />
-                Rechercher
-              </div>
+              {({ isActive }) => (
+                <div className={styles['adage-header-link-focus']}>
+                  <SvgIcon src={strokeSearchIcon} alt="" width="20" />
+                  Rechercher
+                  <span className={styles['active-link-visually-hidden']}>
+                    {isActive ? ' (Onglet actif)' : null}
+                  </span>
+                </div>
+              )}
             </NavLink>
           </li>
           <li className={styles['adage-header-menu-item']}>
@@ -75,17 +85,22 @@ export const AdageHeaderMenu = ({
                 logAdageLinkClick(AdageHeaderLink.MY_INSTITUTION_OFFERS)
               }
             >
-              <div className={styles['adage-header-link-focus']}>
-                <SvgIcon
-                  src={strokeVenueIcon}
-                  alt=""
-                  className={styles['adage-header-link-icon']}
-                />
-                Pour mon établissement
-                <div className={styles['adage-header-nb-hits']}>
-                  {institutionOfferCount ?? 0}
+              {({ isActive }) => (
+                <div className={styles['adage-header-link-focus']}>
+                  <SvgIcon
+                    src={strokeVenueIcon}
+                    alt=""
+                    className={styles['adage-header-link-icon']}
+                  />
+                  Pour mon établissement
+                  <span className={styles['active-link-visually-hidden']}>
+                    {isActive ? ' (Onglet actif)' : null}
+                  </span>
+                  <div className={styles['adage-header-nb-hits']}>
+                    {institutionOfferCount ?? 0}
+                  </div>
                 </div>
-              </div>
+              )}
             </NavLink>
           </li>
 
@@ -99,17 +114,22 @@ export const AdageHeaderMenu = ({
               }}
               onClick={() => logAdageLinkClick(AdageHeaderLink.MY_FAVORITES)}
             >
-              <div className={styles['adage-header-link-focus']}>
-                <SvgIcon
-                  src={strokeStarIcon}
-                  alt=""
-                  className={styles['adage-header-link-icon']}
-                />
-                Mes Favoris
-                <div className={styles['adage-header-nb-hits']}>
-                  {favoritesCount ?? 0}
+              {({ isActive }) => (
+                <div className={styles['adage-header-link-focus']}>
+                  <SvgIcon
+                    src={strokeStarIcon}
+                    alt=""
+                    className={styles['adage-header-link-icon']}
+                  />
+                  Mes Favoris
+                  <span className={styles['active-link-visually-hidden']}>
+                    {isActive ? ' (Onglet actif)' : null}
+                  </span>
+                  <div className={styles['adage-header-nb-hits']}>
+                    {favoritesCount ?? 0}
+                  </div>
                 </div>
-              </div>
+              )}
             </NavLink>
           </li>
         </>
