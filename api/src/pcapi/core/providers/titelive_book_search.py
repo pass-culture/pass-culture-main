@@ -1,12 +1,10 @@
 import logging
-import typing
 
 import pydantic.v1 as pydantic
 
 from pcapi.connectors.serialization.titelive_serializers import GenreTitelive
 from pcapi.connectors.serialization.titelive_serializers import TiteLiveBookArticle
-from pcapi.connectors.serialization.titelive_serializers import TiteLiveBookOeuvre
-from pcapi.connectors.serialization.titelive_serializers import TiteliveProductSearchResponse
+from pcapi.connectors.serialization.titelive_serializers import TiteLiveBookWork
 from pcapi.connectors.titelive import TiteliveBase
 from pcapi.core.categories.subcategories_v2 import LIVRE_PAPIER
 import pcapi.core.fraud.models as fraud_models
@@ -15,12 +13,13 @@ from pcapi.core.providers import constants
 from pcapi.utils.csr import get_closest_csr
 
 from .titelive_api import TiteliveSearch
+from .titelive_api import activate_newly_eligible_product_and_offers
 
 
 logger = logging.getLogger(__name__)
 
 
-class TiteliveBookSearch(TiteliveSearch[TiteLiveBookOeuvre]):
+class TiteliveBookSearch(TiteliveSearch[TiteLiveBookWork]):
     titelive_base = TiteliveBase.BOOK
 
     def __init__(self) -> None:
@@ -29,28 +28,26 @@ class TiteliveBookSearch(TiteliveSearch[TiteLiveBookOeuvre]):
             ean for ean, in fraud_models.ProductWhitelist.query.with_entities(fraud_models.ProductWhitelist.ean).all()
         }
 
-    def deserialize_titelive_search_json(
-        self, titelive_json_response: dict[str, typing.Any]
-    ) -> TiteliveProductSearchResponse[TiteLiveBookOeuvre]:
-        return pydantic.parse_obj_as(TiteliveProductSearchResponse[TiteLiveBookOeuvre], titelive_json_response)
+    def deserialize_titelive_product(self, titelive_work: dict) -> TiteLiveBookWork:
+        return pydantic.parse_obj_as(TiteLiveBookWork, titelive_work)
 
     def partition_allowed_products(
-        self, titelive_product_page: TiteliveProductSearchResponse[TiteLiveBookOeuvre]
-    ) -> tuple[TiteliveProductSearchResponse[TiteLiveBookOeuvre], list[str]]:
+        self, titelive_product_page: list[TiteLiveBookWork]
+    ) -> tuple[list[TiteLiveBookWork], list[str]]:
         non_allowed_eans = set()
-        for oeuvre in titelive_product_page.result:
+        for work in titelive_product_page:
             article_ok = []
-            for article in oeuvre.article:
-                if self.is_book_article_allowed(article, oeuvre.titre):
+            for article in work.article:
+                if self.is_book_article_allowed(article, work.titre):
                     article_ok.append(article)
                 else:
                     non_allowed_eans.add(article.gencod)
-            oeuvre.article = article_ok
+            work.article = article_ok
 
         return titelive_product_page, list(non_allowed_eans)
 
     def upsert_titelive_result_in_dict(
-        self, titelive_search_result: TiteLiveBookOeuvre, products_by_ean: dict[str, offers_models.Product]
+        self, titelive_search_result: TiteLiveBookWork, products_by_ean: dict[str, offers_models.Product]
     ) -> dict[str, offers_models.Product]:
         title = titelive_search_result.titre
         authors = titelive_search_result.auteurs_multi
@@ -89,7 +86,7 @@ class TiteliveBookSearch(TiteliveSearch[TiteLiveBookOeuvre]):
         product.name = title
         product.subcategoryId = LIVRE_PAPIER.id
 
-        self.activate_newly_eligible_product_and_offers(product)
+        activate_newly_eligible_product_and_offers(product)
 
         return product
 
