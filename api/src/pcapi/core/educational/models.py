@@ -472,6 +472,14 @@ class CollectiveOffer(
             offer_mixin.CollectiveOfferStatus.REJECTED,
         ]
 
+    @hybrid_property
+    def isCancellable(self) -> bool:
+        return self.status not in [offer_mixin.OfferStatus.PENDING, offer_mixin.OfferStatus.REJECTED]
+
+    @isCancellable.expression
+    def isCancellable(cls) -> BinaryExpression:
+        return cls.validation.in_([offer_mixin.OfferStatus.PENDING, offer_mixin.OfferStatus.REJECTED])
+
     @property
     def isVisibilityEditable(self) -> bool:
         is_editable = self.isEditable

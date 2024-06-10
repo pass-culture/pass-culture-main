@@ -417,11 +417,18 @@ def patch_all_collective_offers_active_status(
 @login_required
 @spectree_serialize(
     on_success_status=204,
+    on_error=[400, 403],
     api=blueprint.pro_private_schema,
 )
 def patch_collective_offers_active_status(
     body: collective_offers_serialize.PatchCollectiveOfferActiveStatusBodyModel,
 ) -> None:
+    if not body.ids:
+        raise ApiErrors({"ids": ["The attribute is mandatory"]}, status_code=400)
+
+    if not body.is_active:
+        raise ApiErrors({"is_active": ["The attribute is mandatory"]}, status_code=400)
+
     if body.is_active:
         offerers_ids = educational_repository.get_offerer_ids_from_collective_offers_ids(body.ids)
         for offerer_id in offerers_ids:
@@ -429,7 +436,10 @@ def patch_collective_offers_active_status(
                 raise ApiErrors({"Partner": ["User not in Adage can't edit the offer"]}, status_code=403)
 
     collective_query = educational_api_offer.get_query_for_collective_offers_by_ids_for_user(current_user, body.ids)
-    offers_api.batch_update_collective_offers(collective_query, {"isActive": body.is_active})
+    try:
+        offers_api.batch_update_collective_offers(collective_query, {"isActive": body.is_active})
+    except ValueError as error:
+        raise ApiErrors({"ids": [error]}, status_code=403)
 
 
 @private_api.route("/collective/offers/archive", methods=["PATCH"])

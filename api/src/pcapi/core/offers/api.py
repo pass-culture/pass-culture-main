@@ -445,6 +445,16 @@ def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notifi
 
 
 def batch_update_collective_offers(query: BaseQuery, update_fields: dict) -> None:
+    non_cancellable_collective_orders = query.filter(not educational_models.CollectiveOffer.isCancellable)
+
+    if non_cancellable_collective_orders.exists():
+        non_cancellable_collective_orders_ids = non_cancellable_collective_orders.with_entities(
+            educational_models.CollectiveOffer.id
+        )
+        raise ValueError(
+            f"All orders must be cancellables. Order non cancellable: {non_cancellable_collective_orders_ids}"
+        )
+
     collective_offer_ids_tuples = query.filter(
         educational_models.CollectiveOffer.validation == models.OfferValidationStatus.APPROVED
     ).with_entities(educational_models.CollectiveOffer.id)
