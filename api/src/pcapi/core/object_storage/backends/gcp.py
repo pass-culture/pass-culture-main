@@ -1,8 +1,8 @@
 import logging
 
 from google.cloud.exceptions import NotFound
-from google.cloud.storage import Client
 from google.cloud.storage.bucket import Bucket
+from google.cloud.storage.client import Client
 import google.cloud.storage.retry
 from google.oauth2.service_account import Credentials
 
@@ -37,9 +37,13 @@ class GCPBackend(BaseBackend):
         self.project_id = project_id or self.bucket_credentials.get("project_id")
         self.bucket_name = bucket_name or self.default_bucket_name
 
-    def get_gcp_storage_client_bucket(self) -> Bucket:
+    def get_gcp_storage_client(self) -> Client:
         credentials = Credentials.from_service_account_info(self.bucket_credentials)
-        storage_client = Client(credentials=credentials, project=self.project_id)
+        return Client(credentials=credentials, project=self.project_id)
+
+    def get_gcp_storage_client_bucket(self) -> Bucket:
+
+        storage_client = self.get_gcp_storage_client()
         return storage_client.bucket(self.bucket_name)
 
     def store_public_object(self, folder: str, object_id: str, blob: bytes, content_type: str) -> None:
@@ -55,7 +59,7 @@ class GCPBackend(BaseBackend):
             )
         except Exception as exc:
             logger.exception(
-                "An error has occured while trying to upload file on GCP bucket",
+                "An error has occurred while trying to upload file on GCP bucket",
                 extra={
                     "exc": exc,
                     "project_id": self.project_id,
@@ -75,12 +79,29 @@ class GCPBackend(BaseBackend):
             logger.info("File not found on deletion on GCP bucket: %s", storage_path)
         except Exception as exc:
             logger.exception(
-                "An error has occured while trying to delete file on GCP bucket",
+                "An error has occurred while trying to delete file on GCP bucket",
                 extra={
                     "exc": exc,
                     "project_id": self.project_id,
                     "bucket_name": self.bucket_name,
                     "storage_path": storage_path,
+                },
+            )
+            raise exc
+
+    def list_files(self, folder: str, *, max_results: int = 1000) -> list[str]:
+        try:
+            storage_client = self.get_gcp_storage_client()
+            blobs = storage_client.list_blobs(self.bucket_name, max_results=max_results, prefix=folder)
+            return [blob.name for blob in blobs]
+        except Exception as exc:
+            logger.exception(
+                "An error has occurred while trying to list files in GCP bucket",
+                extra={
+                    "exc": exc,
+                    "project_id": self.project_id,
+                    "bucket_name": self.bucket_name,
+                    "prefix": folder,
                 },
             )
             raise exc

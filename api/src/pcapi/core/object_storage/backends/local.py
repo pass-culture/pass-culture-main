@@ -1,3 +1,4 @@
+from itertools import chain
 import logging
 import os
 import pathlib
@@ -40,7 +41,7 @@ class LocalBackend(BaseBackend):
                 new_file.write(blob)
 
         except Exception as exc:
-            logger.exception("An error has occured while trying to upload file on local file storage: %s", exc)
+            logger.exception("An error has occurred while trying to upload file on local file storage: %s", exc)
             raise exc
 
     def delete_public_object(self, folder: str, object_id: str) -> None:
@@ -48,6 +49,19 @@ class LocalBackend(BaseBackend):
         try:
             os.remove(file_local_path)
             os.remove(str(file_local_path) + ".type")
+        except FileNotFoundError:
+            # replicate gpc backend behavior on file not found
+            logger.info("File not found on deletion on local storage: %s", file_local_path)
         except OSError as exc:
-            logger.exception("An error has occured while trying to delete file on local file storage: %s", exc)
+            logger.exception("An error has occurred while trying to delete file on local file storage: %s", exc)
             raise exc
+
+    def list_files(self, folder: str, *, max_results: int = 1000) -> list[str]:
+        results = []
+        local_dir_len = len(str(self.local_dir("", ""))) + 1
+        for root, dirs, files in os.walk(self.local_dir(folder, "")):
+            for item in chain(dirs, files):
+                results.append(f"{root}/{item}"[local_dir_len:])
+                if len(results) >= max_results:
+                    return results
+        return results
