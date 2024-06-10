@@ -8,6 +8,8 @@ from pcapi.core.educational.models import CollectiveOffer
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.models import OfferValidationStatus
 
+from tests.conftest import TestClient
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns204Test:
@@ -102,7 +104,9 @@ class Returns403Test:
         assert response.json == {"Partner": ["User not in Adage can't edit the offer"]}
         assert offer1.isActive is False
 
-    def test_when_activating_all_existing_offers_active_status_with_1_offer_not_cancellable(self, client):
+    def test_when_activating_all_existing_offers_active_status_with_1_offer_not_cancellable(
+        self, client: TestClient
+    ) -> None:
         # Given
         offer1 = CollectiveOfferFactory(isActive=False, validation=OfferValidationStatus.APPROVED)
         venue = offer1.venue
