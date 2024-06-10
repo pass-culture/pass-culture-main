@@ -331,6 +331,7 @@ export const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
               role="columnheader"
               scope="col"
               className={cn(styles['header-cell'], styles['amount-column'])}
+              colSpan={2}
             >
               Montant remboursé
             </th>
