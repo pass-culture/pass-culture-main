@@ -26,6 +26,7 @@ from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.workers.update_all_offers_active_status_job import update_all_collective_offers_active_status_job
 
 from . import blueprint
+from ...core.educational.exceptions import CollectiveOfferNotCancellable
 
 
 logger = logging.getLogger(__name__)
@@ -405,11 +406,13 @@ def patch_all_collective_offers_active_status(
                 if not offerers_api.can_offerer_create_educational_offer(offerer_id):
                     raise ApiErrors({"Partner": ["User not in Adage can't edit the offer"]}, status_code=403)
 
+    statuses = [body.status] if body.status is not None else []
+
     filters = {
         "user_id": current_user.id,
         "is_user_admin": current_user.has_admin_role,
         "offerer_id": body.offerer_id,
-        "status": body.status,
+        "statuses": statuses,
         "venue_id": body.venue_id,
         "provider_id": None,
         "category_id": body.category_id,
@@ -425,6 +428,7 @@ def patch_all_collective_offers_active_status(
 @login_required
 @spectree_serialize(
     on_success_status=204,
+    on_error_statuses=[400, 403],
     api=blueprint.pro_private_schema,
 )
 def patch_collective_offers_active_status(
@@ -437,7 +441,11 @@ def patch_collective_offers_active_status(
                 raise ApiErrors({"Partner": ["User not in Adage can't edit the offer"]}, status_code=403)
 
     collective_query = educational_api_offer.get_query_for_collective_offers_by_ids_for_user(current_user, body.ids)
-    offers_api.batch_update_collective_offers(collective_query, {"isActive": body.is_active})
+    try:
+        offers_api.batch_update_collective_offers(collective_query, {"isActive": body.is_active})
+    except CollectiveOfferNotCancellable as error:
+        message = error.args[0]
+        raise ApiErrors({"ids": [message]}, status_code=400)
 
 
 @private_api.route("/collective/offers/archive", methods=["PATCH"])
@@ -454,7 +462,11 @@ def patch_collective_offers_archive(
     if educational_api_offer.query_has_any_archived(collective_query):
         raise ApiErrors({"global": ["One of the offer is already archived"]}, status_code=422)
 
-    offers_api.batch_update_collective_offers(collective_query, {"dateArchived": datetime.utcnow()})
+    try:
+        offers_api.batch_update_collective_offers(collective_query, {"dateArchived": datetime.utcnow()})
+    except CollectiveOfferNotCancellable as error:
+        message = error.args[0]
+        raise ApiErrors({"ids": [message]}, status_code=400)
 
 
 @private_api.route("/collective/offers-template/active-status", methods=["PATCH"])

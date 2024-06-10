@@ -106,6 +106,7 @@ def list_collective_offers_for_pro_user(
     formats: list[subcategories.EacFormat] | None = None,
 ) -> list[educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate]:
     if offer_type != collective_offers_serialize.CollectiveOfferType.template:
+        statuses = [status] if status is not None else None
         offers = educational_repository.get_collective_offers_for_filters(
             user_id=user_id,
             user_is_admin=user_is_admin,

@@ -7,6 +7,7 @@ import typing
 
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
+from sqlalchemy import desc
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.sql.expression import extract
 
@@ -497,6 +498,9 @@ def get_collective_offers_for_filters(
     period_ending_date: date | None = None,
     formats: list[subcategories.EacFormat] | None = None,
 ) -> list[educational_models.CollectiveOffer]:
+    """
+    :param statuses: List all allowed status. statuses = None means no filter on status. statuses = [] filter all statuses (ie no results)
+    """
     query = offers_repository.get_collective_offers_by_filters(
         user_id=user_id,
         user_is_admin=user_is_admin,
@@ -510,7 +514,7 @@ def get_collective_offers_for_filters(
         formats=formats,
     )
 
-    query = query.order_by(educational_models.CollectiveOffer.id.desc())
+    query = query.order_by(desc(educational_models.CollectiveOffer.id))
     offers = (
         query.options(
             sa.orm.joinedload(educational_models.CollectiveOffer.venue).joinedload(

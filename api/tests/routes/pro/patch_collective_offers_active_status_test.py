@@ -52,30 +52,6 @@ class Returns204Test:
         assert not CollectiveOffer.query.get(offer1.id).isActive
         assert not CollectiveOffer.query.get(offer2.id).isActive
 
-    def test_only_approved_offers_patch(self, client):
-        approved_offer = CollectiveOfferFactory(isActive=False)
-        venue = approved_offer.venue
-        pending_offer = CollectiveOfferFactory(venue=venue, validation=OfferValidationStatus.PENDING)
-        rejected_offer = CollectiveOfferFactory(venue=venue, validation=OfferValidationStatus.REJECTED)
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
-
-        data = {
-            "ids": [approved_offer.id, pending_offer.id, rejected_offer.id],
-            "isActive": True,
-        }
-
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
-            client = client.with_session_auth("pro@example.com")
-            response = client.patch("/collective/offers/active-status", json=data)
-
-        assert response.status_code == 204
-        assert approved_offer.isActive
-        assert not pending_offer.isActive
-        assert not rejected_offer.isActive
-
 
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:
@@ -101,3 +77,31 @@ class Returns403Test:
         assert response.status_code == 403
         assert response.json == {"Partner": ["User not in Adage can't edit the offer"]}
         assert offer1.isActive is False
+
+
+@pytest.mark.usefixtures("db_session")
+class Returns400Test:
+    def test_when_activating_all_existing_offers_active_status_with_1_offer_not_cancellable(self, client) -> None:
+        # Given
+        offer1 = CollectiveOfferFactory(isActive=False, validation=OfferValidationStatus.PENDING)
+        venue = offer1.venue
+        offer2 = CollectiveOfferFactory(isActive=False, venue=venue)
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
+
+        # When
+        client = client.with_session_auth("pro@example.com")
+        data = {"ids": [offer1.id, offer2.id], "isActive": True}
+
+        with patch(
+            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
+        ):
+            response = client.with_session_auth("pro@example.com").patch("/collective/offers/active-status", json=data)
+
+        # Then
+        assert response.status_code == 400
+        assert "ids" in response.json.keys()
+        assert len(response.json["ids"]) > 0
+        assert "All orders must be cancellables." in response.json["ids"][0]
+        assert offer1.isActive is False
+        assert offer2.isActive is False
