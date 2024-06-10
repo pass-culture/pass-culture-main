@@ -417,18 +417,12 @@ def patch_all_collective_offers_active_status(
 @login_required
 @spectree_serialize(
     on_success_status=204,
-    on_error_statuses=[400, 403],
+    on_error_statuses=[403],
     api=blueprint.pro_private_schema,
 )
 def patch_collective_offers_active_status(
     body: collective_offers_serialize.PatchCollectiveOfferActiveStatusBodyModel,
 ) -> None:
-    if not body.ids:
-        raise ApiErrors({"ids": ["The attribute is mandatory"]}, status_code=400)
-
-    if not body.is_active:
-        raise ApiErrors({"is_active": ["The attribute is mandatory"]}, status_code=400)
-
     if body.is_active:
         offerers_ids = educational_repository.get_offerer_ids_from_collective_offers_ids(body.ids)
         for offerer_id in offerers_ids:
