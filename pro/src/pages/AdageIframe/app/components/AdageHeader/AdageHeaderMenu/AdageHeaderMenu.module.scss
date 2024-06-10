@@ -20,7 +20,6 @@
   display: flex;
   align-items: center;
   padding: rem.torem(16px) rem.torem(8px);
-  gap: rem.torem(8px);
 
   &-active {
     position: relative;
@@ -52,6 +51,22 @@
   &:hover {
     background-color: var(--color-grey-light);
   }
+
+  &:focus-visible {
+    outline: none;
+
+    .adage-header-link-focus {
+      outline: 1px solid var(--color-black);
+      outline-offset: rem.torem(4px);
+      border-radius: rem.torem(4px);
+    }
+  }
+}
+
+.adage-header-link-focus {
+  display: flex;
+  align-items: center;
+  gap: rem.torem(8px);
 }
 
 .adage-header-nb-hits {
