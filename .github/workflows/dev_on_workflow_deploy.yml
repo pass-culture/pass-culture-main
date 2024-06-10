@@ -124,7 +124,7 @@ jobs:
           registry_workload_identity_secret_name: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
           registry_service_account_secret_name: passculture-metier-ehp/passculture-main-artifact-registry-service-account
           api_token_github_secret_name: passculture-metier-ehp/passculture-main-sa-access-token  
-          chart_values_repository: pass-culture/pass-culture-deployment
+          chart_values_repository: ""
           helmfile_path: "./pass-culture-deployment/helm/pcapi"
       - name: "Install argocd cli"
         id: install_argocd_cli
