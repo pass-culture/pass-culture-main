@@ -113,14 +113,6 @@ class CannotDeleteVenueUsedAsReimbursementPointException(ClientError):
         )
 
 
-class CannotDeleteVenueThatHasBankAccountException(ClientError):
-    def __init__(self) -> None:
-        super().__init__(
-            "CannotDeleteVenueThatHasBankAccountException",
-            "Lieu non supprimable car il est associé à un compte bancaire",
-        )
-
-
 class EmailAlreadyInvitedException(ClientError):
     def __init__(self) -> None:
         super().__init__("EmailAlreadyInvitedException", "Une invitation a déjà été envoyée à ce collaborateur")
