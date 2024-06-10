@@ -352,7 +352,8 @@ export const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
                   <BaseCheckbox
                     checked={checkedInvoices.includes(invoice.reference)}
                     onChange={() => onInvoiceCheckChange(invoice.reference)}
-                    label=""
+                    label={`Sélection du ${invoice.amount >= 0 ? 'remboursement' : 'trop perçu'} du ${format(new Date(invoice.date), FORMAT_DD_MM_YYYY)}`}
+                    exceptionnallyHideLabelDespiteA11y
                   />
                   {format(new Date(invoice.date), FORMAT_DD_MM_YYYY)}
                 </td>
