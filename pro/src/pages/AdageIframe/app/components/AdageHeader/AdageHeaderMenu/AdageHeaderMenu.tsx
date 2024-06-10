@@ -41,8 +41,10 @@ export const AdageHeaderMenu = ({
               }}
               onClick={() => logAdageLinkClick(AdageHeaderLink.DISCOVERY)}
             >
-              <SvgIcon src={strokePassIcon} alt="" width="20" />
-              Découvrir
+              <div className={styles['adage-header-link-focus']}>
+                <SvgIcon src={strokePassIcon} alt="" width="20" />
+                Découvrir
+              </div>
             </NavLink>
           </li>
           <li className={styles['adage-header-menu-item']}>
@@ -55,8 +57,10 @@ export const AdageHeaderMenu = ({
               }}
               onClick={() => logAdageLinkClick(AdageHeaderLink.SEARCH)}
             >
-              <SvgIcon src={strokeSearchIcon} alt="" width="20" />
-              Rechercher
+              <div className={styles['adage-header-link-focus']}>
+                <SvgIcon src={strokeSearchIcon} alt="" width="20" />
+                Rechercher
+              </div>
             </NavLink>
           </li>
           <li className={styles['adage-header-menu-item']}>
@@ -71,14 +75,16 @@ export const AdageHeaderMenu = ({
                 logAdageLinkClick(AdageHeaderLink.MY_INSTITUTION_OFFERS)
               }
             >
-              <SvgIcon
-                src={strokeVenueIcon}
-                alt=""
-                className={styles['adage-header-link-icon']}
-              />
-              Pour mon établissement
-              <div className={styles['adage-header-nb-hits']}>
-                {institutionOfferCount ?? 0}
+              <div className={styles['adage-header-link-focus']}>
+                <SvgIcon
+                  src={strokeVenueIcon}
+                  alt=""
+                  className={styles['adage-header-link-icon']}
+                />
+                Pour mon établissement
+                <div className={styles['adage-header-nb-hits']}>
+                  {institutionOfferCount ?? 0}
+                </div>
               </div>
             </NavLink>
           </li>
@@ -93,14 +99,16 @@ export const AdageHeaderMenu = ({
               }}
               onClick={() => logAdageLinkClick(AdageHeaderLink.MY_FAVORITES)}
             >
-              <SvgIcon
-                src={strokeStarIcon}
-                alt=""
-                className={styles['adage-header-link-icon']}
-              />
-              Mes Favoris
-              <div className={styles['adage-header-nb-hits']}>
-                {favoritesCount ?? 0}
+              <div className={styles['adage-header-link-focus']}>
+                <SvgIcon
+                  src={strokeStarIcon}
+                  alt=""
+                  className={styles['adage-header-link-icon']}
+                />
+                Mes Favoris
+                <div className={styles['adage-header-nb-hits']}>
+                  {favoritesCount ?? 0}
+                </div>
               </div>
             </NavLink>
           </li>
