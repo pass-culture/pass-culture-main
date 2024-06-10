@@ -31,7 +31,7 @@
   grid-gap: rem.torem(48px) rem.torem(16px);
   padding: 0;
   margin: rem.torem(8px) 0 rem.torem(24px) 0;
-  grid-template-columns: repeat(auto-fill, minmax(216px, 0fr));
+  grid-template-columns: repeat(auto-fill, minmax(rem.torem(216px), 0fr));
   justify-content: space-around;
 }
 
