@@ -1,10 +1,12 @@
 @P0
 Feature: Search for collective bookings
 
-  Scenario: It should find collective bookings by offers
+  Background:
     Given I am logged in
     And I go to "Réservations" page
     And I go to "Réservations collectives" page
+
+  Scenario: It should find collective bookings by offers
     When I display offers
     And I search for "Offre" with text "offer 39"
     Then These results should be displayed
@@ -12,9 +14,6 @@ Feature: Search for collective bookings
       |          80 | offer 39       | ECOLE ELEMENTAIRE PUBLIQUE FRANCOIS MOISSON |  25 places100€ | annulée |
 
   Scenario: It should find collective bookings by establishments
-    Given I am logged in
-    And I go to "Réservations" page
-    And I go to "Réservations collectives" page
     When I display offers
     And I search for "Établissement" with text "LYCEE POLYVALENT METIER ROBERT DOISNEAU"
     Then These results should be displayed
@@ -27,9 +26,6 @@ Feature: Search for collective bookings
       |          44 | offer 3        | LYCEE POLYVALENT METIER ROBERT DOISNEAU |  25 places100€ | préréservée |
 
   Scenario: It should find collective bookings by booking number
-    Given I am logged in
-    And I go to "Réservations" page
-    And I go to "Réservations collectives" page
     When I display offers
     And I search for "Numéro de réservation" with text "66"
     Then These results should be displayed
@@ -37,9 +33,6 @@ Feature: Search for collective bookings
       |          66 | offer 25       | ECOLE ELEMENTAIRE PUBLIQUE FRANCOIS MOISSON |  25 places100€ | annulée |
 
   Scenario: It should find collective bookings with two filters
-    Given I am logged in
-    And I go to "Réservations" page
-    And I go to "Réservations collectives" page
     When I fill venue with "real_venue 1 eac_2_lieu [BON EAC]"
     And I display offers
     And I search for "Établissement" with text "ECOLE ELEMENTAIRE PUBLIQUE FRANCOIS MOISSON"
