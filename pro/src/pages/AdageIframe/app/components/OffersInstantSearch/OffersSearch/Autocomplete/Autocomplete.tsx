@@ -397,7 +397,7 @@ export const Autocomplete = ({
                   className={styles['form-input-span']}
                   {...autocomplete.getLabelProps({})}
                 >
-                  <SvgIcon src={strokeSearchIcon} alt="Rechercher" width="16" />
+                  <SvgIcon src={strokeSearchIcon} alt="" width="16" />
                 </span>
               </div>
 
