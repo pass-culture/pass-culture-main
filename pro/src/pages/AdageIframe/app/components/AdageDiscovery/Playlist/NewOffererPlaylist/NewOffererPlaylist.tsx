@@ -20,11 +20,13 @@ type NewOffererPlaylistProps = {
     elementId,
     index,
   }: TrackerElementArg) => void
+  observableRef?: React.RefObject<HTMLDivElement>
 }
 
 export const NewOffererPlaylist = ({
   onWholePlaylistSeen,
   trackPlaylistElementClicked,
+  observableRef,
 }: NewOffererPlaylistProps) => {
   const { data: playlist, isLoading } = useSWR(
     [GET_NEW_OFFERERS_PLAYLIST_QUERY_KEY],
@@ -42,6 +44,7 @@ export const NewOffererPlaylist = ({
       className={classNames(styles['playlist-carousel'], {
         [styles['playlist-carousel-loading']]: isLoading,
       })}
+      observableRef={observableRef}
       onLastCarouselElementVisible={() =>
         onWholePlaylistSeen({
           playlistId: VENUE_PLAYLIST,
