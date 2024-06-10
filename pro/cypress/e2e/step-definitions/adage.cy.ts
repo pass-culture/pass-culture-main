@@ -18,12 +18,10 @@ When('I open adage iframe', () => {
     url: '/features',
   }).as('features')
   cy.visit(`/adage-iframe?token=${adageToken}`)
-  cy.wait(['@local_offerers', '@features']).then(
-    (interception) => {
-      expect(interception[0].response.statusCode).to.equal(200)
-      expect(interception[1].response.statusCode).to.equal(200)
-    }
-  )
+  cy.wait(['@local_offerers', '@features']).then((interception) => {
+    expect(interception[0].response.statusCode).to.equal(200)
+    expect(interception[1].response.statusCode).to.equal(200)
+  })
   cy.findAllByTestId('spinner').should('not.exist')
   cy.wait(500) // la liste des offres se réordonne, d'où cette attente
 })
@@ -135,14 +133,14 @@ When('the first favorite is unselected', () => {
 
 Then('the iframe should be displayed correctly', () => {
   cy.url().should('include', '/decouverte')
-  cy.findAllByRole('link', { name: 'Découvrir' })
+  cy.findAllByRole('link', { name: 'Découvrir (Onglet actif)' })
     .first()
     .should('have.attr', 'aria-current', 'page')
 })
 
 Then('the iframe search page should be displayed correctly', () => {
   cy.url().should('include', '/recherche')
-  cy.findByRole('link', { name: 'Rechercher' }).should(
+  cy.findByRole('link', { name: 'Rechercher (Onglet actif)' }).should(
     'have.attr',
     'aria-current',
     'page'
