@@ -31,7 +31,7 @@ titelive_blueprint = utils.child_backoffice_blueprint(
     "titelive",
     __name__,
     url_prefix="/pro/titelive",
-    permission=perm_models.Permissions.PRO_FRAUD_ACTIONS,
+    permission=perm_models.Permissions.READ_OFFERS,
 )
 
 
@@ -87,6 +87,7 @@ def search_titelive() -> utils.BackofficeResponse:
 
 
 @titelive_blueprint.route("/<string:ean>/<string:title>/add-product-whitelist-confirmation-form", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_add_product_whitelist_confirmation_form(ean: str, title: str) -> utils.BackofficeResponse:
     form = forms.OptionalCommentForm()
     return render_template(
@@ -100,6 +101,7 @@ def get_add_product_whitelist_confirmation_form(ean: str, title: str) -> utils.B
 
 
 @titelive_blueprint.route("/<string:ean>/<string:title>/add", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def add_product_whitelist(ean: str, title: str) -> utils.BackofficeResponse:
     form = forms.OptionalCommentForm()
     try:
@@ -164,6 +166,7 @@ def add_product_whitelist(ean: str, title: str) -> utils.BackofficeResponse:
 
 
 @titelive_blueprint.route("/<string:ean>/delete", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def delete_product_whitelist(ean: str) -> utils.BackofficeResponse:
     try:
         product_whitelist = fraud_models.ProductWhitelist.query.filter(
