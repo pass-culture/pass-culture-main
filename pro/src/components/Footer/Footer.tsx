@@ -33,7 +33,6 @@ export const Footer = ({ layout }: FooterProps) => {
         <li>
           <ButtonLink
             variant={ButtonVariant.QUATERNARY}
-            className={styles['cookies-footer-link']}
             link={{
               to: 'https://pass.culture.fr/cgu-professionnels/',
               isExternal: true,
@@ -48,7 +47,6 @@ export const Footer = ({ layout }: FooterProps) => {
         <li>
           <ButtonLink
             variant={ButtonVariant.QUATERNARY}
-            className={styles['cookies-footer-link']}
             link={{
               to: 'https://pass.culture.fr/donnees-personnelles/',
               isExternal: true,
@@ -60,11 +58,20 @@ export const Footer = ({ layout }: FooterProps) => {
             Charte des Données Personnelles
           </ButtonLink>
         </li>
+        <li>
+          <ButtonLink
+            variant={ButtonVariant.QUATERNARY}
+            link={{
+              to: '/accessibilite',
+            }}
+          >
+            Accessibilité : non conforme
+          </ButtonLink>
+        </li>
         {currentUser && (
           <li>
             <ButtonLink
               variant={ButtonVariant.QUATERNARY}
-              className={styles['cookies-footer-link']}
               link={{
                 to: '/plan-du-site',
               }}
@@ -76,7 +83,6 @@ export const Footer = ({ layout }: FooterProps) => {
         <li>
           <Button
             variant={ButtonVariant.QUATERNARY}
-            className={styles['cookies-footer-link']}
             onClick={() => orejime.show()}
           >
             Gestion des cookies
