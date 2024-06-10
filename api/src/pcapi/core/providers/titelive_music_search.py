@@ -5,8 +5,7 @@ import pydantic.v1 as pydantic
 
 from pcapi.connectors.serialization.titelive_serializers import GenreTitelive
 from pcapi.connectors.serialization.titelive_serializers import TiteliveMusicArticle
-from pcapi.connectors.serialization.titelive_serializers import TiteliveMusicOeuvre
-from pcapi.connectors.serialization.titelive_serializers import TiteliveProductSearchResponse
+from pcapi.connectors.serialization.titelive_serializers import TiteliveMusicWork
 from pcapi.connectors.titelive import TiteliveBase
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offers import models as offers_models
@@ -16,6 +15,7 @@ from .constants import MUSIC_SLUG_BY_GTL_ID
 from .constants import NOT_CD_LIBELLES
 from .constants import TITELIVE_MUSIC_SUPPORTS_BY_CODE
 from .titelive_api import TiteliveSearch
+from .titelive_api import activate_newly_eligible_product_and_offers
 
 
 logger = logging.getLogger(__name__)
@@ -28,31 +28,29 @@ class CommonMusicArticleFields(typing.TypedDict):
     label: str | None
 
 
-class TiteliveMusicSearch(TiteliveSearch[TiteliveMusicOeuvre]):
+class TiteliveMusicSearch(TiteliveSearch[TiteliveMusicWork]):
     titelive_base = TiteliveBase.MUSIC
 
-    def deserialize_titelive_search_json(
-        self, titelive_json_response: dict[str, typing.Any]
-    ) -> TiteliveProductSearchResponse[TiteliveMusicOeuvre]:
-        return pydantic.parse_obj_as(TiteliveProductSearchResponse[TiteliveMusicOeuvre], titelive_json_response)
+    def deserialize_titelive_product(self, titelive_work: dict) -> TiteliveMusicWork:
+        return pydantic.parse_obj_as(TiteliveMusicWork, titelive_work)
 
     def partition_allowed_products(
-        self, titelive_product_page: TiteliveProductSearchResponse[TiteliveMusicOeuvre]
-    ) -> tuple[TiteliveProductSearchResponse[TiteliveMusicOeuvre], list[str]]:
+        self, titelive_product_page: list[TiteliveMusicWork]
+    ) -> tuple[list[TiteliveMusicWork], list[str]]:
         non_allowed_eans = set()
-        for oeuvre in titelive_product_page.result:
+        for work in titelive_product_page:
             article_ok = []
-            for article in oeuvre.article:
+            for article in work.article:
                 if is_music_codesupport_allowed(article.codesupport):
                     article_ok.append(article)
                 else:
                     non_allowed_eans.add(article.gencod)
-            oeuvre.article = article_ok
+            work.article = article_ok
 
         return titelive_product_page, list(non_allowed_eans)
 
     def upsert_titelive_result_in_dict(
-        self, titelive_search_result: TiteliveMusicOeuvre, products_by_ean: dict[str, offers_models.Product]
+        self, titelive_search_result: TiteliveMusicWork, products_by_ean: dict[str, offers_models.Product]
     ) -> dict[str, offers_models.Product]:
         common_article_fields = get_common_article_fields(titelive_search_result)
         for article in titelive_search_result.article:
@@ -91,11 +89,12 @@ class TiteliveMusicSearch(TiteliveSearch[TiteliveMusicOeuvre]):
         product.name = common_article_fields["titre"]
         product.subcategoryId = parse_titelive_music_codesupport(article.codesupport).id
 
-        self.activate_newly_eligible_product_and_offers(product)
+        activate_newly_eligible_product_and_offers(product)
+
         return product
 
 
-def get_common_article_fields(titelive_search_result: TiteliveMusicOeuvre) -> CommonMusicArticleFields:
+def get_common_article_fields(titelive_search_result: TiteliveMusicWork) -> CommonMusicArticleFields:
     titre = titelive_search_result.titre
     titelive_gtl = None
     artiste = None
