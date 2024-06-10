@@ -25,23 +25,20 @@ class OnlineEventReminderData:
     withdrawal_details: str
 
     def __init__(self, booking: booking_models.Booking) -> None:
-        event_hour_utc = booking.stock.beginningDatetime
-        event_hour_localized = (
-            date_utils.utc_datetime_to_department_timezone(
-                event_hour_utc,
-                booking.venue.departementCode,
+        offer = booking.stock.offer
+        if booking.stock.beginningDatetime:
+            self.event_hour = date_utils.utc_datetime_to_department_timezone(
+                booking.stock.beginningDatetime,
+                offer.departementCode,
             )
-            if event_hour_utc
-            else None
-        )
+        else:
+            self.event_hour = None
 
-        stock = booking.stock
-        self.event_hour = event_hour_localized
-        self.offer_name = stock.offer.name
-        self.offer_url = stock.offer.url
+        self.offer_name = offer.name
+        self.offer_url = offer.url
         self.recipients = []
         self.booking_id = booking.id
-        self.withdrawal_details = stock.offer.withdrawalDetails
+        self.withdrawal_details = offer.withdrawalDetails
 
     def add_recipient(self, email: str) -> None:
         self.recipients.append(email)

@@ -179,7 +179,7 @@
                 <td>{{ offer.validation | format_offer_validation_status }}</td>
                 <td>{{ offer.dateCreated | format_date("%d/%m/%Y") }}</td>
                 <td>{{ offer.lastValidationDate | format_date("%d/%m/%Y") }}</td>
-                <td>{{ offer.venue.departementCode | empty_string_if_null }}</td>
+                <td>{{ offer.departementCode | empty_string_if_null }}</td>
                 <td>
                   {{ links.build_offerer_name_to_details_link(offer.venue.managingOfferer) }}
                   {% if has_permission("PRO_FRAUD_ACTIONS") %}{{ offer.venue.managingOfferer.confidenceLevel | format_confidence_level_badge }}{% endif %}

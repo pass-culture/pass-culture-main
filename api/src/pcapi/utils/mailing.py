@@ -37,9 +37,9 @@ def format_booking_hours_for_email(booking: Booking | CollectiveBooking) -> str:
 
 def get_event_datetime(stock: CollectiveStock | Stock) -> datetime:
     if isinstance(stock, Stock):
-        departement_code = stock.offer.venue.departementCode
+        departement_code = stock.offer.departementCode
     else:
-        departement_code = stock.collectiveOffer.venue.departementCode
+        departement_code = stock.collectiveOffer.departementCode
     if departement_code is not None:
         date_in_utc = stock.beginningDatetime
         if date_in_utc is None:

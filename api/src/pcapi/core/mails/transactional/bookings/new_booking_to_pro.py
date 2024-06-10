@@ -76,7 +76,7 @@ def get_new_booking_to_pro_email_data(
         params={
             "CAN_EXPIRE": can_expire,
             "COUNTERMARK": booking.token,
-            "DEPARTMENT_CODE": venue.departementCode if not offer.isDigital else "numérique",
+            "DEPARTMENT_CODE": offer.departementCode if not offer.isDigital else "numérique",
             "EVENT_DATE": event_date,
             "EVENT_HOUR": event_hour,
             "IS_BOOKING_AUTOVALIDATED": is_booking_autovalidated,

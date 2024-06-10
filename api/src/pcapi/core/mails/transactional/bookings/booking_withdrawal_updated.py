@@ -26,15 +26,11 @@ def send_email_for_each_ongoing_booking(offer: Offer) -> None:
         )
         .options(
             sqla.orm.joinedload(bookings_models.Booking.user).load_only(User.firstName, User.email),
-            sqla.orm.joinedload(bookings_models.Booking.stock)
-            .joinedload(Stock.offer)
-            .joinedload(Offer.venue)
-            .load_only(Venue.street),
             sqla.orm.joinedload(bookings_models.Booking.activationCode).load_only(ActivationCode.code),
         )
     )
 
-    venue_address = " ".join(filter(None, (offer.venue.street, offer.venue.postalCode, offer.venue.city)))
+    venue_address = " ".join(filter(None, (offer.street, offer.postalCode, offer.city)))
     mails_request = WithdrawalChangedMailRequest(
         offer_withdrawal_delay=(
             format_time_in_second_to_human_readable(offer.withdrawalDelay) if offer.withdrawalDelay else None

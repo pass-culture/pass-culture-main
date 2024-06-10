@@ -38,7 +38,7 @@ def get_booking_confirmation_to_beneficiary_email_data(
     else:
         expiration_delay = None
 
-    department_code = venue.departementCode if not offer.isDigital else beneficiary.departementCode
+    department_code = offer.departementCode if not offer.isDigital else beneficiary.departementCode
     booking_date_in_tz = utc_datetime_to_department_timezone(booking.dateCreated, department_code)
     formatted_booking_date = get_date_formatted_for_email(booking_date_in_tz)
     formatted_booking_time = get_time_formatted_for_email(booking_date_in_tz)
@@ -87,8 +87,8 @@ def get_booking_confirmation_to_beneficiary_email_data(
             "CODE_EXPIRATION_DATE": code_expiration_date,
             "VENUE_NAME": venue.publicName if venue.publicName else venue.name,
             "VENUE_ADDRESS": bookings_common.get_venue_street(booking),
-            "VENUE_POSTAL_CODE": venue.postalCode,
-            "VENUE_CITY": venue.city,
+            "VENUE_POSTAL_CODE": offer.postalCode,
+            "VENUE_CITY": offer.city,
             "ALL_BUT_NOT_VIRTUAL_THING": offer.isEvent or (not offer.isEvent and not offer.isDigital),
             "ALL_THINGS_NOT_VIRTUAL_THING": not offer.isEvent and not offer.isDigital,
             "IS_EVENT": offer.isEvent,
