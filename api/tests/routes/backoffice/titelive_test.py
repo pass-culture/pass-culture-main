@@ -82,6 +82,7 @@ class SearchEanTest(GetEndpointHelper):
         assert "Code support : " + article["libellesupport"] + " (" + article["codesupport"] + ")" in card_text[0]
         assert "Code GTL : Littérature (01000000) Rayon (CSR): Littérature française (0100)" in card_text[0]
         assert "Récit (01050000) Rayon (CSR): Littérature française Récits, Aventures, Voyages (0105)" in card_text[0]
+        assert "Inéligible pass Culture :" not in card_text[0]
         assert "EAN white listé : Non" in card_text[0]
 
     @patch("pcapi.routes.backoffice.titelive.blueprint.get_by_ean13")
@@ -99,10 +100,23 @@ class SearchEanTest(GetEndpointHelper):
             assert response.status_code == 200
 
         card_text = html_parser.extract_cards_text(response.data)
+        assert "Inéligible pass Culture :" not in card_text[0]
         assert "EAN white listé : Oui" in card_text[0]
         assert f"Date d'ajout : {datetime.datetime.utcnow().strftime('%d/%m/%Y')}" in card_text[0]
         assert "Auteur : Frank Columbo" in card_text[0]
         assert "Commentaire : Superbe livre !" in card_text[0]
+
+    @patch(
+        "pcapi.routes.backoffice.titelive.blueprint.get_by_ean13", return_value=fixtures.INELIGIBLE_BOOK_BY_EAN_FIXTURE
+    )
+    def test_search_ean_with_ineligibility_reason(self, mock_get_by_ean13, authenticated_client):
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **self.endpoint_kwargs))
+            assert response.status_code == 200
+
+        card_text = html_parser.extract_cards_text(response.data)
+        assert "Inéligible pass Culture : extracurricular" in card_text[0]
+        assert "EAN white listé : Non" in card_text[0]
 
 
 class WhitelistButtonTest(button_helpers.ButtonHelper):

@@ -7,9 +7,11 @@ from flask import request
 from flask import url_for
 from flask_login import current_user
 from markupsafe import Markup
+import pydantic.v1 as pydantic_v1
 import sqlalchemy as sa
 from sqlalchemy import orm
 
+from pcapi.connectors.serialization import titelive_serializers
 from pcapi.connectors.titelive import GtlIdError
 from pcapi.connectors.titelive import get_by_ean13
 from pcapi.core import search
@@ -18,6 +20,7 @@ from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.providers.titelive_book_search import get_ineligibility_reason
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
@@ -62,6 +65,13 @@ def search_titelive() -> utils.BackofficeResponse:
         form.ean.errors.append(f"Erreur API Tite Live: {status_code}")
         return render_template("titelive/search_result.html", form=form, dst=url_for(".search_titelive")), 400
 
+    try:
+        data = pydantic_v1.parse_obj_as(titelive_serializers.TiteLiveBookOeuvre, json["oeuvre"])
+    except Exception:  # pylint: disable=broad-exception-caught
+        ineligibility_reason = None
+    else:
+        ineligibility_reason = get_ineligibility_reason(data.article[0], data.titre)
+
     product_whitelist = (
         fraud_models.ProductWhitelist.query.filter(fraud_models.ProductWhitelist.ean == ean)
         .options(
@@ -82,6 +92,7 @@ def search_titelive() -> utils.BackofficeResponse:
         form=form,
         dst=url_for(".search_titelive"),
         json=json,
+        ineligibility_reason=ineligibility_reason,
         product_whitelist=product_whitelist,
     )
 

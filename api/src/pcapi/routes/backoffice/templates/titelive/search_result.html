@@ -75,6 +75,11 @@
                     {% endfor %}
                   </ul>
                   <ul class="list-group list-group-flush">
+                    {% if ineligibility_reason %}
+                      <li class="list-group-item">
+                        <b>Inéligible pass Culture :</b> <span class="badge text-bg-danger shadow-sm">{{ ineligibility_reason }}</span>
+                      </li>
+                    {% endif %}
                     <li class="list-group-item">
                       <b>EAN white listé :</b> {{ 'Oui' if product_whitelist else 'Non' }}
                     </li>
