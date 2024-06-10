@@ -22,11 +22,13 @@ type NewOfferPlaylistProps = {
     elementId,
     index,
   }: TrackerElementArg) => void
+  observableRef?: React.RefObject<HTMLDivElement>
 }
 
 export const NewOfferPlaylist = ({
   onWholePlaylistSeen,
   trackPlaylistElementClicked,
+  observableRef,
 }: NewOfferPlaylistProps) => {
   const [offers, setOffers] = useState<CollectiveOfferTemplateResponseModel[]>(
     []
@@ -62,6 +64,7 @@ export const NewOfferPlaylist = ({
       className={classNames(styles['playlist-carousel'], {
         [styles['playlist-carousel-loading']]: loading,
       })}
+      observableRef={observableRef}
       loading={loading}
       onLastCarouselElementVisible={() =>
         onWholePlaylistSeen({

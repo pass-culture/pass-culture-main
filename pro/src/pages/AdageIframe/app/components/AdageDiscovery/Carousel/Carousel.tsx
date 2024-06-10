@@ -18,6 +18,7 @@ type CarouselProps = {
   onLastCarouselElementVisible?: () => void
   loading?: boolean
   className?: string
+  observableRef?: React.RefObject<HTMLDivElement> //  Reference for the  IntersectionObserver API
 }
 
 export function Carousel({
@@ -26,6 +27,7 @@ export function Carousel({
   onLastCarouselElementVisible,
   loading,
   className,
+  observableRef,
 }: CarouselProps) {
   const listRef = createRef<HTMLUListElement>()
   const firstElementRef = createRef<HTMLLIElement>()
@@ -35,6 +37,7 @@ export function Carousel({
     threshold: 0.99,
     //  Only the list-item's visibility on the x-axis must be considered
     rootMargin: '100% 0px 100% 0px',
+    root: observableRef?.current,
   }
 
   const [firstElementVisible] = useIsElementVisible(
