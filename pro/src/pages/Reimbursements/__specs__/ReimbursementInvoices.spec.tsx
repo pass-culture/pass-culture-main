@@ -119,21 +119,21 @@ describe('reimbursementsWithFilters', () => {
     expect(screen.queryAllByRole('columnheader').length).toEqual(5)
 
     const firstLine = [
-      '<label class="base-checkbox"><span class="base-checkbox-label-row"><input type="checkbox" class="base-checkbox-input"><span class="base-checkbox-label"></span></span></label>02/11/2022',
+      '<label class="base-checkbox"><span class="base-checkbox-label-row"><input type="checkbox" class="base-checkbox-input"><span class="base-checkbox-label visually-hidden">Sélection du remboursement du 02/11/2022</span></span></label>02/11/2022',
       '<span class="document-type-content"><svg class="more-icon" viewBox="0 0 48 48" aria-hidden="true" width="16"><use xlink:href="/icons/stroke-more.svg#icon"></use></svg>Remboursement</span>',
       'First bank account',
       'VIR7',
       '+100,00&nbsp;€',
     ]
     const secondLine = [
-      '<label class="base-checkbox"><span class="base-checkbox-label-row"><input type="checkbox" class="base-checkbox-input"><span class="base-checkbox-label"></span></span></label>03/11/2022',
+      '<label class="base-checkbox"><span class="base-checkbox-label-row"><input type="checkbox" class="base-checkbox-input"><span class="base-checkbox-label visually-hidden">Sélection du trop perçu du 03/11/2022</span></span></label>03/11/2022',
       '<span class="document-type-content"><svg class="less-icon" viewBox="0 0 48 48" aria-hidden="true" width="16"><use xlink:href="/icons/stroke-less.svg#icon"></use></svg>Trop&nbsp;perçu</span>',
       'Second bank account',
       'N/A',
       '-50,00&nbsp;€',
     ]
     const thirdLine = [
-      '<label class="base-checkbox"><span class="base-checkbox-label-row"><input type="checkbox" class="base-checkbox-input"><span class="base-checkbox-label"></span></span></label>02/10/2023',
+      '<label class="base-checkbox"><span class="base-checkbox-label-row"><input type="checkbox" class="base-checkbox-input"><span class="base-checkbox-label visually-hidden">Sélection du remboursement du 02/10/2023</span></span></label>02/10/2023',
       '<span class="document-type-content"><svg class="more-icon" viewBox="0 0 48 48" aria-hidden="true" width="16"><use xlink:href="/icons/stroke-more.svg#icon"></use></svg>Remboursement</span>',
       'First bank account',
       'VIR9, VIR12',
@@ -179,7 +179,14 @@ describe('reimbursementsWithFilters', () => {
       )
     ).not.toBeInTheDocument()
     expect(screen.getByText('Remboursement')).toBeInTheDocument()
+    expect(
+      screen.getByLabelText('Sélection du remboursement du 02/11/2022')
+    ).toBeInTheDocument()
+
     expect(screen.getByText('Trop perçu')).toBeInTheDocument()
+    expect(
+      screen.getByLabelText('Sélection du trop perçu du 03/11/2022')
+    ).toBeInTheDocument()
   })
 
   it('shoud render no invoice yet information block', async () => {
