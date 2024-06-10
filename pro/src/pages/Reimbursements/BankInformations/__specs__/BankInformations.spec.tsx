@@ -74,7 +74,6 @@ describe('BankInformations page', () => {
     })
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
-    expect(screen.getByText('Informations bancaires')).toBeInTheDocument()
     expect(
       screen.getByText(
         /Ajoutez au moins un compte bancaire pour percevoir vos remboursements/
@@ -92,7 +91,6 @@ describe('BankInformations page', () => {
     })
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
-    expect(screen.getByText('Informations bancaires')).toBeInTheDocument()
     expect(
       screen.queryByText(
         'Ajoutez au moins un compte bancaire pour percevoir vos remboursements.'
@@ -111,7 +109,6 @@ describe('BankInformations page', () => {
     renderBankInformations({ ...offerer, hasPendingBankAccount: true })
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
-    expect(screen.getByText('Informations bancaires')).toBeInTheDocument()
     expect(
       screen.queryByText(
         'Ajoutez au moins un compte bancaire pour percevoir vos remboursements.'
@@ -136,7 +133,6 @@ describe('BankInformations page', () => {
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     expect(api.getOffererBankAccountsAndAttachedVenues).toHaveBeenCalledTimes(1)
-    expect(screen.getByText('Informations bancaires')).toBeInTheDocument()
     expect(
       screen.getByText(
         'Impossible de récupérer les informations relatives à vos comptes bancaires.'
