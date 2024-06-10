@@ -27,22 +27,23 @@ export function ToggleButtonGroupButton({
       className={classNames(styles['button-group-button-container'])}
       key={button.label}
     >
-      <Tooltip content={button.label} visuallyHidden={isTooltipHidden}>
-        <button
-          className={classNames(styles['button-group-button'], {
-            [styles['button-group-button-active']]: isActive,
-          })}
-          {...tooltipProps}
-          {...buttonAttrs}
-          disabled={button.disabled}
-          onClick={(e) => button.onClick(button, e)}
-          type="button"
-          data-testid={`toggle-button${isActive ? '-active' : ''}`}
-        >
-          {isActive && <SvgIcon alt="" src={fullCheck} width="20" />}
+      <button
+        className={classNames(styles['button-group-button'], {
+          [styles['button-group-button-active']]: isActive,
+        })}
+        {...tooltipProps}
+        {...buttonAttrs}
+        disabled={button.disabled}
+        onClick={(e) => button.onClick(button, e)}
+        type="button"
+        data-testid={`toggle-button${isActive ? '-active' : ''}`}
+        aria-label={button.label}
+      >
+        {isActive && <SvgIcon alt="" src={fullCheck} width="20" />}
+        <Tooltip content={button.label} visuallyHidden={isTooltipHidden}>
           {button.content}
-        </button>
-      </Tooltip>
+        </Tooltip>
+      </button>
     </div>
   )
 }
