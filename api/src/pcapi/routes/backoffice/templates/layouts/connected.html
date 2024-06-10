@@ -81,8 +81,6 @@
                     {{ menu_section_item('Offres collectives', 'backoffice_web.collective_offer.list_collective_offers') }}
                     {{ menu_section_item('Offres collectives vitrine', 'backoffice_web.collective_offer_template.list_collective_offer_templates') }}
                     {{ menu_section_item('Opérations sur plusieurs offres', 'backoffice_web.multiple_offers.multiple_offers_home') }}
-                  {% endif %}
-                  {% if has_permission("PRO_FRAUD_ACTIONS") %}
                     {{ menu_section_item('Recherche EAN via Tite Live', 'backoffice_web.titelive.search_titelive') }}
                   {% endif %}
                   {% if has_permission("READ_TAGS") %}{{ menu_section_item('Tags des offres et lieux', 'backoffice_web.tags.list_tags') }}{% endif %}
