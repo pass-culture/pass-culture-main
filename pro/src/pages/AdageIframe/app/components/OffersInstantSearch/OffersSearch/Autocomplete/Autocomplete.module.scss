@@ -159,3 +159,7 @@
     margin-right: rem.torem(4px) !important;
   }
 }
+
+.form-search-button:focus-visible {
+  z-index: 3;
+}
