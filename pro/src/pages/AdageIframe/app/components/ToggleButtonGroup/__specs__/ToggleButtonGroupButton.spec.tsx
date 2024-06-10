@@ -25,10 +25,10 @@ describe('ToggleButtonGroup', () => {
       />
     )
 
-    expect(screen.getByRole('button', { name: 'test 1' })).not.toHaveClass(
+    expect(screen.getByRole('button', { name: 'label 1' })).not.toHaveClass(
       'button-group-button-active'
     )
-    expect(screen.getByRole('button', { name: 'test 2' })).toHaveClass(
+    expect(screen.getByRole('button', { name: 'label 2' })).toHaveClass(
       'button-group-button-active'
     )
   })
