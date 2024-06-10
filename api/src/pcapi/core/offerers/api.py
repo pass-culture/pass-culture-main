@@ -423,14 +423,6 @@ def delete_venue(venue_id: int) -> None:
     if venue_used_as_reimbursement_point:
         raise exceptions.CannotDeleteVenueUsedAsReimbursementPointException()
 
-    venue_has_a_bank_account = db.session.query(
-        offerers_models.VenueBankAccountLink.query.filter(
-            offerers_models.VenueBankAccountLink.venueId == venue_id,
-            offerers_models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
-        ).exists()
-    ).scalar()
-    if venue_has_a_bank_account:
-        raise exceptions.CannotDeleteVenueThatHasBankAccountException()
     offer_ids_to_delete = _delete_objects_linked_to_venue(venue_id)
 
     # Warning: we should only delete rows where the "venueId" is the
