@@ -113,10 +113,11 @@ export function AdageOfferListCard({
               className={styles['offer-card-image-img']}
               loading="lazy"
               src={offer.imageUrl}
+              width={216}
             />
           ) : (
             <div className={styles['offer-card-image-fallback']}>
-              <SvgIcon src={strokeOfferIcon} alt="" />
+              <SvgIcon src={strokeOfferIcon} alt="" width="216" />
             </div>
           )}
         </div>

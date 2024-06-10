@@ -91,6 +91,7 @@ export const AdageHeaderMenu = ({
                     src={strokeVenueIcon}
                     alt=""
                     className={styles['adage-header-link-icon']}
+                    width="20"
                   />
                   Pour mon établissement
                   <span className={styles['active-link-visually-hidden']}>
@@ -120,6 +121,7 @@ export const AdageHeaderMenu = ({
                     src={strokeStarIcon}
                     alt=""
                     className={styles['adage-header-link-icon']}
+                    width="20"
                   />
                   Mes Favoris
                   <span className={styles['active-link-visually-hidden']}>
