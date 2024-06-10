@@ -1,4 +1,3 @@
-@use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_size.scss" as size;
 
@@ -18,16 +17,6 @@
   margin-top: rem.torem(30px);
   margin-left: auto;
   align-items: center;
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  margin-top: rem.torem(32px);
-
-  &-title {
-    @include fonts.title3;
-  }
 }
 
 .button-group {

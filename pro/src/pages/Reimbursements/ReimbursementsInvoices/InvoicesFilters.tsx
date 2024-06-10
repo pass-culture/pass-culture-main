@@ -82,10 +82,6 @@ export const InvoicesFilters = ({
 
   return (
     <>
-      <div className={styles['header']}>
-        <h2 className={styles['header-title']}>Affichage des justificatifs</h2>
-      </div>
-
       <div className={styles['filters']}>
         <FormLayout.Row inline className={styles['selectors']}>
           {selectableOptions.length > 1 && (
