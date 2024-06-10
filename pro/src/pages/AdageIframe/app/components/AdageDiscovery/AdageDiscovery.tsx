@@ -41,6 +41,8 @@ export const AdageDiscovery = () => {
   const notification = useNotification()
   const adageAuthToken = params.get('token')
 
+  const discoveryRef = useRef<HTMLDivElement>(null)
+
   if (isFooterSuggestionVisible && !hasSeenAllPlaylist.current) {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     apiAdage.logHasSeenAllPlaylist({ iframeFrom: location.pathname })
@@ -107,7 +109,7 @@ export const AdageDiscovery = () => {
   }
 
   return (
-    <div className={styles['discovery']}>
+    <div className={styles['discovery']} ref={discoveryRef}>
       <AdageDiscoveryBanner />
 
       <div className={styles['discovery-playlists']}>
@@ -115,6 +117,7 @@ export const AdageDiscovery = () => {
           <NewOfferPlaylist
             onWholePlaylistSeen={onWholePlaylistSeen}
             trackPlaylistElementClicked={trackPlaylistElementClicked}
+            observableRef={discoveryRef}
           />
         </div>
         <div className={styles['discovery-playlist']}>
@@ -124,6 +127,7 @@ export const AdageDiscovery = () => {
                 Explorez les domaines artistiques et culturels
               </h2>
             }
+            observableRef={discoveryRef}
             onLastCarouselElementVisible={() =>
               onWholePlaylistSeen({
                 playlistId: DOMAINS_PLAYLIST,
@@ -158,12 +162,14 @@ export const AdageDiscovery = () => {
           <NewOffererPlaylist
             onWholePlaylistSeen={onWholePlaylistSeen}
             trackPlaylistElementClicked={trackPlaylistElementClicked}
+            observableRef={discoveryRef}
           />
         </div>
         <div className={styles['discovery-playlist']}>
           <ClassroomPlaylist
             onWholePlaylistSeen={onWholePlaylistSeen}
             trackPlaylistElementClicked={trackPlaylistElementClicked}
+            observableRef={discoveryRef}
           />
         </div>
 
@@ -171,6 +177,7 @@ export const AdageDiscovery = () => {
           <VenuePlaylist
             onWholePlaylistSeen={onWholePlaylistSeen}
             trackPlaylistElementClicked={trackPlaylistElementClicked}
+            observableRef={discoveryRef}
           />
         </div>
       </div>

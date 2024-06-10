@@ -20,11 +20,13 @@ type ClassroomPlaylistProps = {
     elementId,
     index,
   }: TrackerElementArg) => void
+  observableRef?: React.RefObject<HTMLDivElement>
 }
 
 export const ClassroomPlaylist = ({
   onWholePlaylistSeen,
   trackPlaylistElementClicked,
+  observableRef,
 }: ClassroomPlaylistProps) => {
   const { data: classRoomPlaylist, isLoading } = useSWR(
     [GET_CLASSROOM_PLAYLIST_QUERY_KEY],
@@ -42,6 +44,7 @@ export const ClassroomPlaylist = ({
           Ces interventions peuvent avoir lieu dans votre établissement
         </h2>
       }
+      observableRef={observableRef}
       onLastCarouselElementVisible={() =>
         onWholePlaylistSeen({
           playlistId: CLASSROOM_PLAYLIST,
