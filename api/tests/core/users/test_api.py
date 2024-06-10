@@ -2,6 +2,7 @@ import dataclasses
 import datetime
 from decimal import Decimal
 import logging
+import os
 import pathlib
 from unittest import mock
 
@@ -2229,3 +2230,107 @@ class EnableNewProNavTest:
         users_api.enable_new_pro_nav(pro_new_nav_state.user)
 
         assert pro_new_nav_state.newNavDate == yesterday_date
+
+
+STORAGE_FOLDER = settings.LOCAL_STORAGE_DIR / settings.GCP_GDPR_EXTRACT_BUCKET / settings.GCP_GDPR_EXTRACT_FOLDER
+
+
+class DeleteGdprExtractTest:
+    def teardown_method(self) -> None:
+        """clear extracts after each tests"""
+        try:
+            for child in STORAGE_FOLDER.iterdir():
+                if not child.is_file():
+                    continue
+                child.unlink()
+        except FileNotFoundError:
+            pass
+
+    def setup_method(self):
+        """Create the folder to work with"""
+        os.makedirs(STORAGE_FOLDER, exist_ok=True)
+
+    def test_nominal(self):
+        # given
+        extract = users_factories.GdprUserDataExtractBeneficiaryFactory(dateProcessed=datetime.datetime.utcnow())
+        with open(STORAGE_FOLDER / f"{extract.id}.zip", "wb") as fp:
+            fp.write(b"[personal data compressed with deflate]")
+        # when
+        users_api.delete_gdpr_extract(extract.id)
+
+        # then
+        assert users_models.GdprUserDataExtract.query.count() == 0
+        assert len(os.listdir(STORAGE_FOLDER)) == 0
+
+    def test_extract_file_does_not_exists(self):
+        # given
+        extract = users_factories.GdprUserDataExtractBeneficiaryFactory(dateProcessed=datetime.datetime.utcnow())
+        # when
+        users_api.delete_gdpr_extract(extract.id)
+
+        # then
+        assert users_models.GdprUserDataExtract.query.count() == 0
+
+
+class CleanGdprExtractTest:
+
+    def teardown_method(self) -> None:
+        """clear extracts after each tests"""
+        try:
+            for child in STORAGE_FOLDER.iterdir():
+                if not child.is_file():
+                    continue
+                child.unlink()
+        except FileNotFoundError:
+            pass
+
+    def setup_method(self):
+        """Create the folder to work with"""
+        os.makedirs(STORAGE_FOLDER, exist_ok=True)
+
+    def test_delete_expired_extracts(self):
+        # given
+        extract = users_factories.GdprUserDataExtractBeneficiaryFactory(
+            dateProcessed=datetime.datetime.utcnow() - datetime.timedelta(days=6),
+            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=8),
+        )
+        with open(STORAGE_FOLDER / f"{extract.id}.zip", "wb") as fp:
+            fp.write(b"[personal data compressed with deflate]")
+        # when
+        users_api.clean_gdpr_extracts()
+        # then
+        assert users_models.GdprUserDataExtract.query.count() == 0
+        assert len(os.listdir(STORAGE_FOLDER)) == 0
+
+    def test_delete_extracts_files_not_in_db(self):
+        # given
+        with open(STORAGE_FOLDER / "1.zip", "wb") as fp:
+            fp.write(b"[personal data compressed with deflate]")
+        # when
+        users_api.clean_gdpr_extracts()
+        # then
+        assert len(os.listdir(STORAGE_FOLDER)) == 0
+
+    def test_delete_expired_unprocessed_extracts(self):
+        # given
+        users_factories.GdprUserDataExtractBeneficiaryFactory(
+            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=8)
+        )
+        # when
+        users_api.clean_gdpr_extracts()
+        # then
+        assert users_models.GdprUserDataExtract.query.count() == 0
+
+    def test_keep_unexpired_extracts(self):
+        # given
+        extract = users_factories.GdprUserDataExtractBeneficiaryFactory(
+            dateProcessed=datetime.datetime.utcnow() - datetime.timedelta(days=5),
+            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=6),
+        )
+        with open(STORAGE_FOLDER / f"{extract.id}.zip", "wb") as fp:
+            fp.write(b"[personal data compressed with deflate]")
+        # when
+        users_api.clean_gdpr_extracts()
+        # then
+        assert users_models.GdprUserDataExtract.query.count() == 1
+        assert len(os.listdir(STORAGE_FOLDER)) == 1
