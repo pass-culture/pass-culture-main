@@ -105,8 +105,8 @@ Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: () => ({
     matches: false,
-    addListener: jest.fn(),
-    removeListener: jest.fn(),
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
   }),
 })
 

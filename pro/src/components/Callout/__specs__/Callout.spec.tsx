@@ -35,7 +35,7 @@ describe('Callout', () => {
   })
 
   it('should close the Callout', async () => {
-    const spyClose = jest.fn()
+    const spyClose = vi.fn()
     renderWithProviders(
       <Callout {...{ ...props, closable: true, onClose: spyClose }} />
     )
