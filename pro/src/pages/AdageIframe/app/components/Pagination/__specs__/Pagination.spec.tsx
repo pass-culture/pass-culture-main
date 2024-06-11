@@ -51,8 +51,8 @@ describe('AdagePagination', () => {
 
   it('should log on click next page and previous page', async () => {
     vi.spyOn(instantSearch, 'usePagination').mockImplementation(() => ({
-      createURL: jest.fn((page) => `/page=${page}`),
-      refine: jest.fn(),
+      createURL: vi.fn((page) => `/page=${page}`),
+      refine: vi.fn(),
       canRefine: true,
       currentRefinement: 1,
       nbHits: 10,
