@@ -102,7 +102,8 @@ export const ActionBar = ({
               >
                 Sauvegarder le brouillon et quitter
               </ButtonLink>
-              <Button onClick={onClickNext} disabled={isDisabled}>
+
+              <Button type="submit" disabled={isDisabled}>
                 Publier l’offre
               </Button>
             </>
