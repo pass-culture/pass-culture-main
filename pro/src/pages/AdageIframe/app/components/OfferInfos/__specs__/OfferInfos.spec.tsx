@@ -166,10 +166,8 @@ describe('OfferInfos', () => {
     expect(fetchOfferSpy).toHaveBeenCalledWith(1)
   })
 
-  it('should render the new offer info page sections if the ff is enabled', () => {
-    renderOfferInfos(defaultAdageUser, {
-      features: ['WIP_ENABLE_NEW_ADAGE_OFFER_DESIGN'],
-    })
+  it('should render the new offer info page sections', () => {
+    renderOfferInfos(defaultAdageUser)
 
     expect(screen.getByRole('heading', { name: 'Détails de l’offre' }))
     expect(screen.getByRole('heading', { name: 'Informations pratiques' }))
