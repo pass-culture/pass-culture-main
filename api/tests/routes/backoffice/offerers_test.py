@@ -1818,7 +1818,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
                 offerer=user_offerer.offerer,
                 isEmailSent=True,
                 isCriminalRecordReceived=True,
-                isCertificateReceived=True,
+                isExperienceReceived=True,
             )
 
             with assert_num_queries(self.expected_num_queries):
@@ -2130,7 +2130,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             _, yes, no1, no2, _, _ = offerers_to_be_validated
 
             offerers_factories.IndividualOffererSubscriptionFactory(
-                offerer=yes, isEmailSent=True, isCriminalRecordReceived=True, isCertificateReceived=True
+                offerer=yes, isEmailSent=True, isCriminalRecordReceived=True, isExperienceReceived=True
             )
             offerers_factories.IndividualOffererSubscriptionFactory(
                 offerer=no1, isEmailSent=True, isCertificateReceived=True
