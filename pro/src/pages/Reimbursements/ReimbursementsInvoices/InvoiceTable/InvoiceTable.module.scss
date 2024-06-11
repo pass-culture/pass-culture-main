@@ -15,13 +15,10 @@
 .row {
   display: flex;
   flex-direction: column;
-
-  td {
-    display: flex;
-  }
 }
 
 .data {
+  display: flex;
   justify-content: space-between;
   padding: rem.torem(12px) rem.torem(8px);
   align-items: center;
@@ -63,11 +60,11 @@
   flex-direction: column;
   align-items: flex-start;
 
-  & label:first-child {
+  label:first-child {
     margin-bottom: rem.torem(8px);
   }
 
-  & button {
+  button {
     border-left: solid 1px var(--color-grey-semi-dark);
     border-radius: 0;
     padding-left: rem.torem(8px);
@@ -92,28 +89,11 @@
 @media (min-width: size.$tablet) {
   .invoices-table {
     margin-top: 0;
-
-    thead th {
-      padding: rem.torem(16px) rem.torem(8px);
-    }
-
-    tbody td {
-      padding-left: rem.torem(8px);
-      padding-right: rem.torem(8px);
-    }
-
-    th {
-      text-align: left;
-    }
   }
 
   .row {
     display: table-row;
     padding: rem.torem(16px);
-
-    td {
-      display: table-cell;
-    }
   }
 
   .header {
@@ -122,11 +102,19 @@
   }
 
   .header-cell {
-    gap: rem.torem(8px);
+    text-align: left;
+    padding: rem.torem(16px) rem.torem(8px);
   }
 
   .data {
-    padding: rem.torem(20px) 0;
+    display: table-cell;
+    padding-left: rem.torem(8px);
+    padding-right: rem.torem(8px);
+    line-height: 1;
+
+    &:first-child {
+      white-space: nowrap;
+    }
   }
 
   .data::before {
