@@ -190,6 +190,7 @@ Si la base de données n'a pas été initialisée, vous devez suivre les étapes
     ```dotenv
     DATABASE_URL=postgresql://pass_culture:passq@localhost:<port>/pass_culture
     DATABASE_URL_TEST=postgresql://pytest:pytest@localhost:<port>/pass_culture_test
+    FLASK_BACKOFFICE_PORT=5002
     ```
 
   - créer les _databases_ associés (cf. les commandes `recreate_database` `recreate_database_test` dans le fichier `start_backend_no_docker`)
