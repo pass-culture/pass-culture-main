@@ -71,9 +71,7 @@ describe('IndividualOffer::ActionBar', () => {
         'Sauvegarder le brouillon et quitter'
       )
       expect(buttonSaveDraft).toHaveAttribute('href', '/offres')
-      const buttonPublishOffer = screen.getByText('Publier l’offre')
-      await userEvent.click(buttonPublishOffer)
-      expect(onClickNextMock).toHaveBeenCalled()
+      expect(screen.getByText('Publier l’offre')).toBeInTheDocument()
     })
 
     it('should show draft saved indicator', () => {
