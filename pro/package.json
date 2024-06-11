@@ -78,7 +78,7 @@
   },
   "devDependencies": {
     "@storybook/addon-a11y": "^8.1.6",
-    "@badeball/cypress-cucumber-preprocessor": "^20.0.3",
+    "@badeball/cypress-cucumber-preprocessor": "^20.0.6",
     "@bahmutov/cypress-esbuild-preprocessor": "^2.2.1",
     "@storybook/addon-controls": "^8.1.6",
     "@storybook/preset-scss": "^1.0.3",
