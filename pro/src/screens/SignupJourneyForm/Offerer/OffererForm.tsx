@@ -11,10 +11,17 @@ export interface OffererFormValues {
   siret: string
 }
 
-export const OffererForm = (): JSX.Element => {
+interface OffererFormProps {
+  setShowInvisibleBanner: (showBanner: boolean) => void
+}
+
+export const OffererForm = ({
+  setShowInvisibleBanner,
+}: OffererFormProps): JSX.Element => {
   const { setFieldValue } = useFormikContext<OffererFormValues>()
 
   const formatSiret = async (siret: string): Promise<void> => {
+    setShowInvisibleBanner(false)
     if ((siret && /^[0-9]+$/.test(unhumanizeSiret(siret))) || !siret) {
       await setFieldValue('siret', humanizeSiret(siret))
     }

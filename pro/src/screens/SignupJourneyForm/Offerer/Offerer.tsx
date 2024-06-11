@@ -16,7 +16,7 @@ import {
   FORM_ERROR_MESSAGE,
   GET_DATA_ERROR_MESSAGE,
 } from 'core/shared/constants'
-import { getSiretData } from 'core/Venue/getSiretData'
+import { getSiretData, GetSiretDataResponse } from 'core/Venue/getSiretData'
 import { useNotification } from 'hooks/useNotification'
 import { MAYBE_APP_USER_APE_CODE } from 'pages/Signup/SignupContainer/constants'
 import { MaybeAppUserDialog } from 'pages/Signup/SignupContainer/MaybeAppUserDialog/MaybeAppUserDialog'
@@ -51,44 +51,62 @@ export const Offerer = (): JSX.Element => {
     formValues: OffererFormValues
   ): Promise<void> => {
     const formattedSiret = formValues.siret.replaceAll(' ', '')
+    let offererSiretData: GetSiretDataResponse = {}
 
     try {
-      const response = await getSiretData(formattedSiret)
-
+      offererSiretData = await getSiretData(formattedSiret)
       if (
         !showIsAppUserDialog &&
-        response.values?.apeCode &&
-        MAYBE_APP_USER_APE_CODE.includes(response.values.apeCode)
+        offererSiretData.values?.apeCode &&
+        MAYBE_APP_USER_APE_CODE.includes(offererSiretData.values.apeCode)
       ) {
         setShowIsAppUserDialog(true)
         return
       }
-
       if (showIsAppUserDialog) {
         setShowIsAppUserDialog(false)
       }
-      const venueOfOffererProvidersResponse =
-        await api.getVenuesOfOffererFromSiret(formattedSiret)
-
-      if (!response.values) {
+      if (!offererSiretData.values) {
         notify.error('Une erreur est survenue')
         return
       }
+    } catch (error) {
+      if (error instanceof Error) {
+        if (
+          error.message ===
+          'Les informations relatives à ce SIREN ou SIRET ne sont pas accessibles.'
+        ) {
+          setShowInvisibleBanner(true)
+          formik.setErrors({
+            siret:
+              "Le propriétaire de ce SIRET s'oppose à la diffusion de ses données au public",
+          })
+        } else {
+          formik.setErrors({
+            siret: "Le SIRET n'existe pas",
+          })
+        }
+      }
+      return
+    }
+    try {
+      const venueOfOffererProvidersResponse =
+        await api.getVenuesOfOffererFromSiret(formattedSiret)
 
       setOfferer({
         ...formValues,
-        name: response.values.name,
-        street: response.values.address,
-        city: response.values.city,
-        latitude: response.values.latitude,
-        longitude: response.values.longitude,
-        postalCode: response.values.postalCode,
+        name: offererSiretData.values.name,
+        street: offererSiretData.values.address,
+        city: offererSiretData.values.city,
+        latitude: offererSiretData.values.latitude,
+        longitude: offererSiretData.values.longitude,
+        postalCode: offererSiretData.values.postalCode,
+        legalCategoryCode: offererSiretData.values.legalCategoryCode,
+        banId: offererSiretData.values.banId,
         hasVenueWithSiret:
           venueOfOffererProvidersResponse.venues.find(
             (venue) => venue.siret === formattedSiret
           ) !== undefined,
-        legalCategoryCode: response.values.legalCategoryCode,
-        banId: response.values.banId,
       })
     } catch (error) {
       notify.error(
@@ -123,9 +141,7 @@ export const Offerer = (): JSX.Element => {
   const formik = useFormik({
     initialValues,
     onSubmit: onSubmitOfferer,
-    validationSchema: validationSchema((showBanner) =>
-      setShowInvisibleBanner(showBanner)
-    ),
+    validationSchema: validationSchema,
     enableReinitialize: true,
   })
 
@@ -140,7 +156,7 @@ export const Offerer = (): JSX.Element => {
             onSubmit={formik.handleSubmit}
             data-testid="signup-offerer-form"
           >
-            <OffererForm />
+            <OffererForm setShowInvisibleBanner={setShowInvisibleBanner} />
             {showInvisibleBanner && (
               <BannerInvisibleSiren isNewOnboarding={true} />
             )}

@@ -167,7 +167,7 @@ describe('Offerer', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
 
-    expect(await screen.findByText('Le SIRET n’existe pas')).toBeInTheDocument()
+    expect(await screen.findByText("Le SIRET n'existe pas")).toBeInTheDocument()
     expect(api.getSiretInfo).toHaveBeenCalled()
     expect(screen.queryByText('Authentication screen')).not.toBeInTheDocument()
     expect(
@@ -259,8 +259,19 @@ describe('Offerer', () => {
   })
 
   it('should display BannerInvisibleSiren on error 400 with specific message', async () => {
-    vi.spyOn(siretApiValidate, 'siretApiValidate').mockResolvedValue(
-      'Les informations relatives à ce SIREN ou SIRET ne sont pas accessibles.'
+    vi.spyOn(api, 'getSiretInfo').mockRejectedValueOnce(
+      new ApiError(
+        {} as ApiRequestOptions,
+        {
+          status: 400,
+          body: {
+            global: [
+              'Les informations relatives à ce SIREN ou SIRET ne sont pas accessibles.',
+            ],
+          },
+        } as ApiResult,
+        ''
+      )
     )
     renderOffererScreen(contextValue)
 
@@ -280,7 +291,7 @@ describe('Offerer', () => {
     })
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
 
-    expect(siretApiValidate.siretApiValidate).toHaveBeenCalled()
+    expect(api.getSiretInfo).toHaveBeenCalled()
     expect(
       screen.getByText('Modifier la visibilité de mon SIRET')
     ).toBeInTheDocument()
@@ -378,5 +389,57 @@ describe('Offerer', () => {
         screen.queryByText('Il semblerait que tu ne sois pas')
       ).not.toBeInTheDocument()
     })
+  })
+
+  it("should render error message when siret doesn't exist", async () => {
+    vi.spyOn(api, 'getSiretInfo').mockRejectedValueOnce(
+      new ApiError(
+        {} as ApiRequestOptions,
+        {
+          status: 422,
+          body: [{ error: ['No SIRET'] }],
+        } as ApiResult,
+        ''
+      )
+    )
+
+    renderOffererScreen(contextValue)
+
+    await userEvent.type(
+      screen.getByLabelText('Numéro de SIRET à 14 chiffres *'),
+      '12345678999999'
+    )
+    await userEvent.click(screen.getByText('Continuer'))
+    expect(await screen.findByText("Le SIRET n'existe pas")).toBeInTheDocument()
+  })
+
+  it('should render error message when siret is not visible', async () => {
+    vi.spyOn(api, 'getSiretInfo').mockRejectedValueOnce(
+      new ApiError(
+        {} as ApiRequestOptions,
+        {
+          status: 400,
+          body: {
+            global: [
+              'Les informations relatives à ce SIREN ou SIRET ne sont pas accessibles.',
+            ],
+          },
+        } as ApiResult,
+        ''
+      )
+    )
+
+    renderOffererScreen(contextValue)
+
+    await userEvent.type(
+      screen.getByLabelText('Numéro de SIRET à 14 chiffres *'),
+      '12345678900001'
+    )
+    await userEvent.click(screen.getByText('Continuer'))
+    expect(
+      await screen.findByText(
+        "Le propriétaire de ce SIRET s'oppose à la diffusion de ses données au public"
+      )
+    ).toBeInTheDocument()
   })
 })
