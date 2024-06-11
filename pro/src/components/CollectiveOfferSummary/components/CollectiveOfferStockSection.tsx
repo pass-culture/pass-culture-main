@@ -1,13 +1,12 @@
-import { format } from 'date-fns'
 import React from 'react'
 
 import { GetCollectiveOfferCollectiveStockResponseModel } from 'apiClient/v1'
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { TOTAL_PRICE_LABEL } from 'screens/OfferEducationalStock/constants/labels'
 import { FORMAT_DD_MM_YYYY, FORMAT_HH_mm } from 'utils/date'
-import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import { DEFAULT_RECAP_VALUE } from './constants'
+import { formatDateTime } from './utils/formatDatetime'
 
 export interface CollectiveOfferStockSectionProps {
   stock?: GetCollectiveOfferCollectiveStockResponseModel | null
@@ -18,31 +17,38 @@ export const CollectiveOfferStockSection = ({
   stock,
   venueDepartmentCode,
 }: CollectiveOfferStockSectionProps) => {
-  /* istanbul ignore next: DEBT, TO FIX */
-  const formatDateTime = (date: string, dateFormat: string) => {
-    return format(
-      getLocalDepartementDateTimeFromUtc(
-        new Date(date),
-        venueDepartmentCode || undefined
-      ),
-      dateFormat
-    )
-  }
-  /* istanbul ignore next: DEBT, TO FIX */
   return (
     <SummaryDescriptionList
       descriptions={[
         {
-          title: 'Date',
+          title: 'Date de début',
           text: stock?.startDatetime
-            ? formatDateTime(stock.startDatetime, FORMAT_DD_MM_YYYY)
+            ? formatDateTime(
+                stock.startDatetime,
+                FORMAT_DD_MM_YYYY,
+                venueDepartmentCode
+              )
+            : DEFAULT_RECAP_VALUE,
+        },
+        {
+          title: 'Date de fin',
+          text: stock?.endDatetime
+            ? formatDateTime(
+                stock.endDatetime,
+                FORMAT_DD_MM_YYYY,
+                venueDepartmentCode
+              )
             : DEFAULT_RECAP_VALUE,
         },
         {
           title: 'Horaire',
           text:
             (stock?.startDatetime &&
-              formatDateTime(stock.startDatetime, FORMAT_HH_mm)) ||
+              formatDateTime(
+                stock.startDatetime,
+                FORMAT_HH_mm,
+                venueDepartmentCode
+              )) ||
             DEFAULT_RECAP_VALUE,
         },
         {
@@ -54,11 +60,15 @@ export const CollectiveOfferStockSection = ({
           title: 'Date limite de réservation',
           text:
             (stock?.bookingLimitDatetime &&
-              formatDateTime(stock.bookingLimitDatetime, FORMAT_DD_MM_YYYY)) ||
+              formatDateTime(
+                stock.bookingLimitDatetime,
+                FORMAT_DD_MM_YYYY,
+                venueDepartmentCode
+              )) ||
             DEFAULT_RECAP_VALUE,
         },
         {
-          title: 'Détails',
+          title: 'Informations sur le prix',
           text: stock?.educationalPriceDetail || DEFAULT_RECAP_VALUE,
         },
       ]}
