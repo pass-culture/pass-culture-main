@@ -192,7 +192,7 @@ def export_pg_stat_user_indexes() -> None:
     res = db.session.execute(statement)
     rows = res.fetchall()
     _upload_as_csv_to_google_drive(
-        "pg_stat_user_indexes", ("date", "relname", "idx_scan", "idx_tup_read", "idx_tup_fetch"), rows
+        "pg_stat_user_indexes", ("date", "relname", "indexrelname", "idx_scan", "idx_tup_read", "idx_tup_fetch"), rows
     )
     logger.info("Exported data from pg_stat_user_indexes")
 
