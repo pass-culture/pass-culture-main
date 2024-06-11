@@ -14,7 +14,9 @@ describe('CookiesFooter', () => {
     renderCookiesFooter()
 
     expect(screen.getByText(/CGU professionnels/)).toBeInTheDocument()
-    expect(screen.getByText(/Accessibilité : non conforme/)).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: 'Accessibilité : non conforme' })
+    ).toBeInTheDocument()
     expect(
       screen.getByText(/Charte des Données Personnelles/)
     ).toBeInTheDocument()

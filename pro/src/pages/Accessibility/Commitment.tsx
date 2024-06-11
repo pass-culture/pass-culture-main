@@ -1,12 +1,12 @@
-import { AppLayout } from 'app/AppLayout'
 import fullBackIcon from 'icons/full-back.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 
+import { AccessibilityLayout } from './AccessibilityLayout'
 import styles from './Commitment.module.scss'
 
 export const Commitment = () => {
   return (
-    <AppLayout>
+    <AccessibilityLayout>
       <ButtonLink
         link={{
           to: '/accessibilite/',
@@ -18,7 +18,7 @@ export const Commitment = () => {
       <h1 className={styles['title-accessibility']}>
         Les engagements du pass Culture
       </h1>
-    </AppLayout>
+    </AccessibilityLayout>
   )
 }
 // Lazy-loaded by react-router-dom
