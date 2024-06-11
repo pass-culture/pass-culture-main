@@ -179,7 +179,7 @@
                       <a href="{{ url_for('backoffice_web.offerer.get', offerer_id=offerer.id, active_tab='subscription') }}"
                          title="Parcours auto-entrepreneur">
                       {% endif %}
-                      {{ (offerer.individualSubscription.isCriminalRecordReceived and offerer.individualSubscription.isCertificateReceived) | format_bool_badge }}
+                      {{ (offerer.individualSubscription.isCriminalRecordReceived and offerer.individualSubscription.isExperienceReceived) | format_bool_badge }}
                       {% if has_read_ae_permission %}</a>{% endif %}
                   {% endif %}
                 </td>
