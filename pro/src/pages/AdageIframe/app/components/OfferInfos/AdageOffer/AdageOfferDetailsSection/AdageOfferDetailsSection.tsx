@@ -5,11 +5,24 @@ import {
 import { Markdown } from 'components/Markdown/Markdown'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 
-import { computeDurationString } from '../../../OffersInstantSearch/OffersSearch/Offers/OfferDetails/OfferDetails'
 import styles from '../AdageOffer.module.scss'
 
 export type AdageOfferDetailsSectionProps = {
   offer: CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel
+}
+
+const computeDurationString = (durationMinutes?: number | null) => {
+  if (!durationMinutes) {
+    return ''
+  }
+  const hours = Math.floor(durationMinutes / 60)
+  const minutes = durationMinutes % 60
+
+  if (hours === 0) {
+    return `${minutes}min`
+  }
+
+  return `${hours}h${minutes > 0 ? `${minutes}min` : ''}`
 }
 
 export function AdageOfferDetailsSection({

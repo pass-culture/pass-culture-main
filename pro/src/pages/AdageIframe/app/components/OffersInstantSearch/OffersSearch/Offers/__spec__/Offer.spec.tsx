@@ -1,4 +1,4 @@
-import { screen, waitFor, within } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
@@ -7,8 +7,6 @@ import {
   AuthenticatedResponse,
   CollectiveOfferResponseModel,
   EacFormat,
-  OfferAddressType,
-  StudentLevels,
 } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
@@ -25,8 +23,6 @@ import { Offer, OfferProps } from '../Offer'
 
 vi.mock('apiClient/api', () => ({
   apiAdage: {
-    logOfferDetailsButtonClick: vi.fn(),
-    logOfferTemplateDetailsButtonClick: vi.fn(),
     logFavOfferButtonClick: vi.fn(),
     logContactModalButtonClick: vi.fn(),
     logTrackingMap: vi.fn(),
@@ -70,59 +66,10 @@ const renderOffer = (
 
 describe('offer', () => {
   let offerInParis: CollectiveOfferResponseModel
-  let offerInCayenne: CollectiveOfferResponseModel
+
   let offerProps: OfferProps
   beforeEach(() => {
     offerInParis = { ...defaultCollectiveOffer, isTemplate: false }
-    offerInCayenne = {
-      id: 480,
-      description: 'Une offre vraiment chouette',
-      name: 'Une chouette à la mer',
-      stock: {
-        id: 825,
-        beginningDatetime: new Date('2021-09-25T22:00:00Z').toISOString(),
-        bookingLimitDatetime: new Date('2021-09-25T22:00:00Z').toISOString(),
-        isBookable: true,
-        price: 0,
-      },
-      educationalPriceDetail: 'Le détail de mon prix',
-      venue: {
-        id: 1,
-        address: '1 boulevard Poissonnière',
-        city: 'Paris',
-        name: 'Le Petit Rintintin 33',
-        postalCode: '97300',
-        publicName: 'Le Petit Rintintin 33',
-        managingOfferer: {
-          name: 'Le Petit Rintintin Management',
-        },
-        coordinates: {
-          latitude: 48.87004,
-          longitude: 2.3785,
-        },
-      },
-      offerVenue: {
-        venueId: null,
-        otherAddress: 'A la mairie',
-        addressType: OfferAddressType.OTHER,
-      },
-      students: [StudentLevels.COLL_GE_4E],
-      isSoldOut: false,
-      isExpired: false,
-      isFavorite: false,
-      audioDisabilityCompliant: false,
-      visualDisabilityCompliant: false,
-      mentalDisabilityCompliant: true,
-      motorDisabilityCompliant: true,
-      contactEmail: '',
-      contactPhone: '',
-      domains: [{ id: 1, name: 'Super domaine' }],
-      interventionArea: ['973'],
-      isTemplate: false,
-      nationalProgram: { name: 'Program Test', id: 123 },
-      imageUrl: 'url',
-      formats: [EacFormat.CONCERT],
-    }
 
     offerProps = {
       offer: offerInParis,
@@ -155,49 +102,6 @@ describe('offer', () => {
       // Info that are in offer details component
       expect(
         screen.queryByText('Moteur', { exact: false })
-      ).not.toBeInTheDocument()
-    })
-
-    it('should show all offer informations if user click on "en savoir plus"', async () => {
-      // When
-      renderOffer({ ...offerProps, offer: offerInCayenne })
-
-      const offerName = await screen.findByText(offerInCayenne.name)
-      expect(offerName).toBeInTheDocument()
-
-      expect(screen.getByText('Concert')).toBeInTheDocument()
-
-      expect(screen.getByText('A la mairie')).toBeInTheDocument()
-
-      expect(screen.getByText('26/09/2021 à 00:00')).toBeInTheDocument()
-      expect(
-        screen.queryByText('Jusqu’à', { exact: false })
-      ).not.toBeInTheDocument()
-      expect(screen.getByText('Gratuit')).toBeInTheDocument()
-      expect(screen.getByText('Collège - 4e')).toBeInTheDocument()
-
-      const seeMoreButton = await screen.findByRole('button', {
-        name: 'en savoir plus',
-      })
-      await userEvent.click(seeMoreButton)
-
-      await waitFor(() => {
-        expect(screen.queryByText('Le détail de mon prix')).toBeInTheDocument()
-      })
-
-      // Info that are in offer details component
-      expect(screen.queryByText('Dispositif National')).toBeInTheDocument()
-      expect(screen.queryByText('Le détail de mon prix')).toBeInTheDocument()
-      expect(screen.queryByText('Zone de Mobilité')).toBeInTheDocument()
-      expect(screen.queryByText('Moteur', { exact: false })).toBeInTheDocument()
-      expect(
-        screen.queryByText('Psychique ou cognitif', { exact: false })
-      ).toBeInTheDocument()
-      expect(
-        screen.queryByText('Auditif', { exact: false })
-      ).not.toBeInTheDocument()
-      expect(
-        screen.queryByText('Visuel', { exact: false })
       ).not.toBeInTheDocument()
     })
 
@@ -239,20 +143,6 @@ describe('offer', () => {
       expect((links[2] as HTMLLinkElement).href).toBe('https://lien3.com/')
       expect((links[3] as HTMLLinkElement).href).toBe('https://unlien/')
       expect((links[4] as HTMLLinkElement).href).toBe('mailto:toto@toto.com')
-    })
-
-    it('should display request form modal', async () => {
-      renderOffer({
-        ...offerProps,
-        offer: { ...defaultCollectiveTemplateOffer, isTemplate: true },
-      })
-
-      const contactButton = screen.getByRole('button', {
-        name: 'Contacter',
-      })
-      await userEvent.click(contactButton)
-
-      expect(screen.getByText('Contacter le partenaire culturel'))
     })
   })
 
@@ -419,42 +309,6 @@ describe('offer', () => {
     expect(screen.queryByText('Enregistrer en favoris')).not.toBeInTheDocument()
   })
 
-  it('should log event when clicking on "en savoir plus" button', async () => {
-    renderOffer({
-      ...offerProps,
-      isInSuggestions: false,
-      offer: { ...defaultCollectiveTemplateOffer, isTemplate: true },
-    })
-
-    const seeMoreButton = await screen.findByRole('button', {
-      name: 'en savoir plus',
-    })
-    await userEvent.click(seeMoreButton)
-
-    expect(apiAdage.logOfferTemplateDetailsButtonClick).toHaveBeenCalledWith({
-      iframeFrom: '/',
-      isFromNoResult: false,
-      queryId: '1',
-      offerId: 1,
-    })
-  })
-
-  it('should mention if the log is from a suggestion offer when clicking on "en savoir plus" button', async () => {
-    renderOffer({ ...offerProps, isInSuggestions: true })
-
-    const seeMoreButton = await screen.findByRole('button', {
-      name: 'en savoir plus',
-    })
-    await userEvent.click(seeMoreButton)
-
-    expect(apiAdage.logOfferDetailsButtonClick).toHaveBeenCalledWith({
-      iframeFrom: '/',
-      isFromNoResult: true,
-      queryId: '1',
-      stockId: 825,
-    })
-  })
-
   it('should display format', () => {
     renderOffer(
       {
@@ -531,40 +385,8 @@ describe('offer', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should show the redirect button instead of the expand button when the ff is enabled', () => {
-    renderOffer(
-      {
-        ...offerProps,
-        offer: {
-          ...defaultCollectiveTemplateOffer,
-          isTemplate: true,
-        },
-      },
-      undefined,
-      {
-        features: ['WIP_ENABLE_NEW_ADAGE_OFFER_DESIGN'],
-      }
-    )
-
-    expect(
-      screen.queryByRole('button', { name: 'en savoir plus' })
-    ).not.toBeInTheDocument()
-
-    const redirectLink = screen.getByRole('link', {
-      name: 'Nouvelle fenêtre Découvrir l’offre',
-    })
-
-    expect(redirectLink).toBeInTheDocument()
-
-    expect(redirectLink.getAttribute('href')).toContain(
-      `offerid/${defaultCollectiveTemplateOffer.id}`
-    )
-  })
-
   it('should redirect to the bookable offer url with the "B-" when the offer is bookable', () => {
-    renderOffer(offerProps, undefined, {
-      features: ['WIP_ENABLE_NEW_ADAGE_OFFER_DESIGN'],
-    })
+    renderOffer(offerProps, undefined)
 
     const redirectLink = screen.getByRole('link', {
       name: 'Nouvelle fenêtre Découvrir l’offre',
@@ -573,21 +395,5 @@ describe('offer', () => {
     expect(redirectLink.getAttribute('href')).toContain(
       `offerid/B-${offerProps.offer.id}`
     )
-  })
-
-  it('should not display contact button when FF is active', () => {
-    renderOffer(
-      {
-        ...offerProps,
-        offer: {
-          ...defaultCollectiveTemplateOffer,
-          isTemplate: true,
-        },
-      },
-      user,
-      { features: ['WIP_ENABLE_NEW_ADAGE_OFFER_DESIGN'] }
-    )
-
-    expect(screen.queryByText('Contacter')).not.toBeInTheDocument()
   })
 })
