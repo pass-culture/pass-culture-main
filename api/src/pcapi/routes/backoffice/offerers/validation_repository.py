@@ -282,7 +282,7 @@ def list_offerers_to_be_validated(
         sa.orm.contains_eager(offerers_models.Offerer.individualSubscription).load_only(
             offerers_models.IndividualOffererSubscription.isEmailSent,
             offerers_models.IndividualOffererSubscription.isCriminalRecordReceived,
-            offerers_models.IndividualOffererSubscription.isCertificateReceived,
+            offerers_models.IndividualOffererSubscription.isExperienceReceived,
         ),
     )
 
@@ -291,7 +291,7 @@ def list_offerers_to_be_validated(
             offerers_models.IndividualOffererSubscription.isEmailSent.is_(True),
             sa.and_(
                 offerers_models.IndividualOffererSubscription.isCriminalRecordReceived.is_(True),
-                offerers_models.IndividualOffererSubscription.isCertificateReceived.is_(True),
+                offerers_models.IndividualOffererSubscription.isExperienceReceived.is_(True),
             ).in_(ae_documents_received),
         )
 
