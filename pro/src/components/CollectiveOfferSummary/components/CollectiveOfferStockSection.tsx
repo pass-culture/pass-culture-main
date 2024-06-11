@@ -66,7 +66,10 @@ export const CollectiveOfferStockSection = ({
         ]}
       />
       <Divider size="large" />
-      <SummarySubSection title="Conditions de réservation">
+      <SummarySubSection
+        title="Conditions de réservation"
+        shouldShowDivider={false}
+      >
         <SummaryDescriptionList
           descriptions={[
             {
