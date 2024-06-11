@@ -1,4 +1,4 @@
-import { FormikProvider, useFormik } from 'formik'
+import { Form, FormikProvider, useFormik } from 'formik'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -41,7 +41,6 @@ import styles from './SummaryScreen.module.scss'
 
 export const SummaryScreen = () => {
   const isFutureOfferEnabled = useActiveFeature('WIP_FUTURE_OFFER')
-  const [isDisabled, setIsDisabled] = useState(false)
   const [displayRedirectDialog, setDisplayRedirectDialog] = useState(false)
   const notification = useNotification()
   const mode = useOfferWizardMode()
@@ -49,37 +48,16 @@ export const SummaryScreen = () => {
   const { offer, subCategories } = useIndividualOfferContext()
   const { logEvent } = useAnalytics()
 
-  const formik = useFormik<EventPublicationFormValues>({
-    initialValues: {
-      publicationMode: 'now',
-      publicationDate: '',
-      publicationTime: '',
-    },
-    onSubmit: () => {},
-    validationSchema,
-  })
+  const showEventPublicationForm = Boolean(
+    isFutureOfferEnabled && offer?.isEvent
+  )
 
-  if (offer === null) {
-    return null
-  }
-  const canBeDuo = subCategories.find(
-    (subCategory) => subCategory.id === offer.subcategoryId
-  )?.canBeDuo
-
-  const offerConfirmationStepUrl = getIndividualOfferUrl({
-    offerId: offer.id,
-    step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
-    mode,
-  })
-
-  const publishOffer = async () => {
-    // edition mode offers are already publish
+  const onPublish = async () => {
+    // Edition mode offers are already published
     /* istanbul ignore next: DEBT, TO FIX */
-    if (mode === OFFER_WIZARD_MODE.EDITION) {
+    if (mode === OFFER_WIZARD_MODE.EDITION || offer === null) {
       return
     }
-
-    setIsDisabled(true)
 
     try {
       const offererResponse = await api.getOfferer(
@@ -103,8 +81,31 @@ export const SummaryScreen = () => {
     } catch (error) {
       notification.error(getHumanReadableApiError(error))
     }
-    setIsDisabled(false)
   }
+
+  const formik = useFormik<EventPublicationFormValues>({
+    initialValues: {
+      publicationMode: 'now',
+      publicationDate: '',
+      publicationTime: '',
+    },
+    onSubmit: onPublish,
+    validationSchema: showEventPublicationForm ? validationSchema : undefined,
+  })
+
+  if (offer === null) {
+    return null
+  }
+
+  const canBeDuo = subCategories.find(
+    (subCategory) => subCategory.id === offer.subcategoryId
+  )?.canBeDuo
+
+  const offerConfirmationStepUrl = getIndividualOfferUrl({
+    offerId: offer.id,
+    step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
+    mode,
+  })
 
   /* istanbul ignore next: DEBT, TO FIX */
   const handlePreviousStep = () => {
@@ -134,31 +135,42 @@ export const SummaryScreen = () => {
     ...offerConditionalFields,
   ]
 
-  const showEventPublicationForm = isFutureOfferEnabled && offer.isEvent
-
   return (
     <>
-      {mode === OFFER_WIZARD_MODE.CREATION && (
-        <div className={styles['offer-preview-banners']}>
-          <Callout>
-            <strong>Vous y êtes presque !</strong>
-            <br />
-            Vérifiez les informations ci-dessous avant de publier votre offre.
-            {!isFutureOfferEnabled && (
-              <>
+      {mode === OFFER_WIZARD_MODE.CREATION ? (
+        <FormikProvider value={formik}>
+          <Form>
+            <div className={styles['offer-preview-banners']}>
+              <Callout>
+                <strong>Vous y êtes presque !</strong>
                 <br />
-                Si vous souhaitez la publier plus tard, vous pouvez retrouver
-                votre brouillon dans la liste de vos offres.
-              </>
-            )}
-          </Callout>
+                Vérifiez les informations ci-dessous avant de publier votre
+                offre.
+                {!isFutureOfferEnabled && (
+                  <>
+                    <br />
+                    Si vous souhaitez la publier plus tard, vous pouvez
+                    retrouver votre brouillon dans la liste de vos offres.
+                  </>
+                )}
+              </Callout>
 
-          {showEventPublicationForm && (
-            <FormikProvider value={formik}>
-              <EventPublicationForm />
-            </FormikProvider>
-          )}
-        </div>
+              {showEventPublicationForm && <EventPublicationForm />}
+            </div>
+
+            <ActionBar
+              onClickPrevious={handlePreviousStep}
+              step={OFFER_WIZARD_STEP_IDS.SUMMARY}
+              isDisabled={formik.isSubmitting}
+            />
+          </Form>
+        </FormikProvider>
+      ) : (
+        <ActionBar
+          onClickPrevious={handlePreviousStep}
+          step={OFFER_WIZARD_STEP_IDS.SUMMARY}
+          isDisabled={false}
+        />
       )}
 
       <SummaryLayout>
@@ -212,12 +224,6 @@ export const SummaryScreen = () => {
           )}
         </SummaryAside>
       </SummaryLayout>
-      <ActionBar
-        onClickNext={publishOffer}
-        onClickPrevious={handlePreviousStep}
-        step={OFFER_WIZARD_STEP_IDS.SUMMARY}
-        isDisabled={isDisabled}
-      />
 
       {displayRedirectDialog && (
         <RedirectToBankAccountDialog

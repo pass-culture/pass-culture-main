@@ -1,5 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { addDays, format } from 'date-fns'
 import { generatePath, Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -22,6 +23,7 @@ import {
 } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
+import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 import {
   defaultGetOffererResponseModel,
   getIndividualOfferFactory,
@@ -311,6 +313,66 @@ describe('Summary', () => {
       expect(
         screen.getByText('Confirmation page: creation')
       ).toBeInTheDocument()
+    })
+
+    it('should allow to publish offer later if the offer is an event', async () => {
+      vi.spyOn(api, 'getOfferer').mockResolvedValue(
+        defaultGetOffererResponseModel
+      )
+      customContext.offer = getIndividualOfferFactory({ isEvent: true })
+
+      renderSummary(
+        customContext,
+        generatePath(
+          getIndividualOfferPath({
+            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          }),
+          { offerId: 'AA' }
+        ),
+        { features: ['WIP_FUTURE_OFFER'] }
+      )
+
+      await userEvent.click(
+        screen.getByLabelText('À une date et heure précise')
+      )
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Publier l’offre' })
+      )
+
+      expect(
+        await screen.findByText('Veuillez sélectionner une date de publication')
+      ).toBeInTheDocument()
+      expect(
+        screen.getByText('Veuillez sélectionner une heure de publication')
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByText(/Confirmation page: creation/)
+      ).not.toBeInTheDocument()
+
+      const publicationDate = format(
+        addDays(new Date(), 1),
+        FORMAT_ISO_DATE_ONLY
+      )
+
+      await userEvent.type(
+        screen.getByLabelText('Date de publication *'),
+        publicationDate
+      )
+      await userEvent.selectOptions(
+        screen.getByLabelText('Heure de publication *'),
+        '11:00'
+      )
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Publier l’offre' })
+      )
+
+      expect(
+        await screen.findByText(/Confirmation page: creation/)
+      ).toBeInTheDocument()
+      expect(api.patchPublishOffer).toHaveBeenCalled()
     })
 
     it('should display notification on api error', async () => {

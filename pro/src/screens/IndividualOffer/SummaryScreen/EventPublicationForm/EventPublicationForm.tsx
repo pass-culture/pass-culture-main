@@ -1,4 +1,4 @@
-import { Form, useFormikContext } from 'formik'
+import { useFormikContext } from 'formik'
 
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { SelectOption } from 'custom_types/form'
@@ -43,8 +43,8 @@ export const EventPublicationForm = () => {
   const { values } = useFormikContext<EventPublicationFormValues>()
 
   return (
-    <Form className={styles['form']}>
-      <FormLayout fullWidthActions>
+    <>
+      <FormLayout fullWidthActions className={styles['form']}>
         <FormLayout.Section title="Date de publication">
           <FormLayout.Row
             sideComponent={
@@ -52,7 +52,7 @@ export const EventPublicationForm = () => {
                 <InfoBox>
                   Votre offre doit être validée, ce qui peut prendre jusqu’à
                   72h. Après validation elle sera automatiquement publiée à la
-                  date et heure indiqués.
+                  date et heure indiquées.
                 </InfoBox>
               ) : null
             }
@@ -93,6 +93,6 @@ export const EventPublicationForm = () => {
       </FormLayout>
 
       <Divider />
-    </Form>
+    </>
   )
 }
