@@ -1,10 +1,10 @@
 import { When, Given, Then, DataTable } from '@badeball/cypress-cucumber-preprocessor'
 
-Given('I open {string} page', (page: string) => {
+Given('I open the {string} page', (page: string) => {
   cy.visit('/' + page)
 })
 
-When('I go to {string} page', (page: string) => {
+When('I go to the {string} page', (page: string) => {
   cy.url().then((urlSource) => {
     cy.findAllByText(page).first().click()
     cy.url().should('not.equal', urlSource)
@@ -18,7 +18,7 @@ Given('I am logged in', () => {
   })
 })
 
-Given('I am logged in with new interface', () => {
+Given('I am logged in with the new interface', () => {
   cy.login({
     email: 'activation_new_nav@example.com',
     password: 'user@AZERTY123',

@@ -1,6 +1,6 @@
 import { Then, When } from '@badeball/cypress-cucumber-preprocessor'
 
-Then('Identity check message is displayed', () => {
+Then('The identity check message is displayed', () => {
   cy.findByTestId('desk-callout-message')
     .should(
       'contain',
@@ -12,7 +12,7 @@ Then('Identity check message is displayed', () => {
     )
 })
 
-When('I can click and open {string} page', (link: string) => {
+When('I can click and open the {string} page', (link: string) => {
   cy.findByText(link).invoke('removeAttr','target').click() // remove target to not open it in a new tab (not supported by cypress)
   cy.origin('https://aide.passculture.app/', () => {
     cy.url().should('include', 'Acteurs-Culturels-Modalit%C3%A9s-de-retrait-et-CGU')
@@ -31,7 +31,7 @@ When('I validate the countermark', () => {
     cy.findByText('Valider la contremarque').click()
 })
 
-Then('The countermark is refused because invalid', () => {
+Then('The countermark is rejected as invalid', () => {
   cy.findByTestId('desk-message').should('have.text', 'La contremarque n\'existe pas')
   cy.findByText('Valider la contremarque').should('be.disabled')
 })
