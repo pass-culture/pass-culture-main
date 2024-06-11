@@ -10,7 +10,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import { DownloadBookingsModal } from '../DownloadBookingsModal'
 
 const MOCK_OFFER_ID = 1
-const mockLogEvent = jest.fn()
+const mockLogEvent = vi.fn()
 
 const render = (priceCategoryAndScheduleCountByDate: EventDatesInfos) => {
   renderWithProviders(
