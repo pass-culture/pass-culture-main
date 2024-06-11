@@ -45,6 +45,7 @@ export const CookiesFooter = ({ className }: { className?: string }) => {
           <li>
             <ButtonLink
               variant={ButtonVariant.QUATERNARY}
+              className={styles['cookies-footer-link']}
               link={{
                 to: 'https://pass.culture.fr/donnees-personnelles/',
                 isExternal: true,

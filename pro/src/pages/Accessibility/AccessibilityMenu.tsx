@@ -1,13 +1,13 @@
-import { AppLayout } from 'app/AppLayout'
 import strokeRigthIcon from 'icons/stroke-right.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 
-import styles from './Accessibility.module.scss'
+import { AccessibilityLayout } from './AccessibilityLayout'
+import styles from './AccessibilityMenu.module.scss'
 
-export const Accessibility = () => {
+export function AccessibilityMenu() {
   return (
-    <AppLayout>
+    <AccessibilityLayout showBackToSignInButton>
       <h1 className={styles['title-accessibility']}>
         Informations d’accessibilité
       </h1>
@@ -15,7 +15,7 @@ export const Accessibility = () => {
       <div className={styles['menu-accessibility']}>
         <ButtonLink
           link={{
-            to: `accessibilite/engagements`,
+            to: `/accessibilite/engagements`,
           }}
           variant={ButtonVariant.BOX}
           icon={strokeRigthIcon}
@@ -37,7 +37,7 @@ export const Accessibility = () => {
         </ButtonLink>
         <ButtonLink
           link={{
-            to: `accessibilite/schema-pluriannuel`,
+            to: `/accessibilite/schema-pluriannuel`,
           }}
           variant={ButtonVariant.BOX}
           icon={strokeRigthIcon}
@@ -47,9 +47,10 @@ export const Accessibility = () => {
           Schéma pluriannuel
         </ButtonLink>
       </div>
-    </AppLayout>
+    </AccessibilityLayout>
   )
 }
+
 // Lazy-loaded by react-router-dom
 // ts-unused-exports:disable-next-line
-export const Component = Accessibility
+export const Component = AccessibilityMenu

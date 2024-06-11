@@ -318,24 +318,28 @@ export const routes: RouteConfig[] = [
     title: 'Plan du site',
   },
   {
-    lazy: () => import('pages/Accessibility/Accessibility'),
+    lazy: () => import('pages/Accessibility/AccessibilityMenu'),
     path: '/accessibilite',
     title: 'Informations d’accessibilité',
+    meta: { public: true },
   },
   {
     lazy: () => import('pages/Accessibility/Commitment'),
     path: '/accessibilite/engagements',
     title: 'Les engagements du pass Culture',
+    meta: { public: true },
   },
   {
     lazy: () => import('pages/Accessibility/Declaration'),
     path: '/accessibilite/declaration',
     title: "Déclaration d'accessibilité",
+    meta: { public: true },
   },
   {
     lazy: () => import('pages/Accessibility/MultiyearScheme'),
     path: '/accessibilite/schema-pluriannuel',
     title: 'Schéma pluriannuel',
+    meta: { public: true },
   },
   {
     lazy: () => import('pages/Collaborators/Collaborators'),
