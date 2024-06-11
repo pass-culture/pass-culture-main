@@ -5,7 +5,7 @@ import { isErrorAPIError } from 'apiClient/helpers'
 import { unhumanizeSiret } from 'core/Venue/utils'
 import { validateSiret } from 'core/Venue/validate'
 
-type GetSiretDataResponse = {
+export type GetSiretDataResponse = {
   values?: {
     address: string
     city: string
