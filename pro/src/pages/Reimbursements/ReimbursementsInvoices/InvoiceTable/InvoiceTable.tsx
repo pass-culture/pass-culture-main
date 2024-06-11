@@ -193,7 +193,6 @@ export const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
         {checkedInvoices.length > 0 && (
           <>
             <Button
-              className={styles['download-button']}
               variant={ButtonVariant.TERNARY}
               icon={fullDownloadIcon}
               onClick={() => downloadInvoices(checkedInvoices)}
@@ -219,11 +218,7 @@ export const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
             <th
               role="columnheader"
               scope="col"
-              className={cn(
-                styles['header-cell'],
-                styles['date-column'],
-                styles['date-header']
-              )}
+              className={styles['header-cell']}
             >
               Date du justificatif
               <SortArrow
@@ -248,10 +243,7 @@ export const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
             <th
               role="columnheader"
               scope="col"
-              className={cn(
-                styles['header-cell'],
-                styles['document-type-column']
-              )}
+              className={styles['header-cell']}
             >
               Type de document
               <SortArrow
@@ -306,7 +298,7 @@ export const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
             <th
               role="columnheader"
               scope="col"
-              className={cn(styles['header-cell'], styles['label-column'])}
+              className={styles['header-cell']}
             >
               N° de virement
               <SortArrow
@@ -343,11 +335,7 @@ export const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
               <tr role="row" key={invoice.reference} className={styles['row']}>
                 <td
                   role="cell"
-                  className={cn(
-                    styles['data'],
-                    styles['date-column'],
-                    styles['date-data']
-                  )}
+                  className={cn(styles['data'], styles['date-data'])}
                   data-label="Date du justificatif"
                 >
                   <BaseCheckbox
@@ -359,7 +347,7 @@ export const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
                 </td>
                 <td
                   role="cell"
-                  className={cn(styles['data'], styles['document-type-column'])}
+                  className={styles['data']}
                   data-label="Type de document"
                 >
                   {invoice.amount >= 0 ? (
@@ -394,7 +382,7 @@ export const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
                 {/* For now only one label is possible by invoice. */}
                 <td
                   role="cell"
-                  className={cn(styles['data'], styles['label-column'])}
+                  className={styles['data']}
                   data-label="N° de virement"
                 >
                   {invoice.amount >= 0 ? invoice.cashflowLabels[0] : 'N/A'}
