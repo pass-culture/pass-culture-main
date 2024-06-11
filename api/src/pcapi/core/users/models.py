@@ -42,6 +42,7 @@ if typing.TYPE_CHECKING:
     from pcapi.core.offers.models import Mediation
     from pcapi.core.offers.models import Offer
     from pcapi.core.permissions.models import BackOfficeUserProfile
+    from pcapi.core.reactions.models import Reaction
 
 
 VOID_FIRST_NAME = ""
@@ -211,7 +212,7 @@ class User(PcObject, Base, Model, DeactivableMixin):
     gdprUserDataExtract: orm.Mapped["GdprUserDataExtract"] = orm.relationship(
         "GdprUserDataExtract", back_populates="user", foreign_keys="GdprUserDataExtract.userId"
     )
-
+    reactions: list["Reaction"] = orm.relationship("Reaction", back_populates="user", uselist=True)
     # unaccent is not immutable, so it can't be used for an index.
     # Searching by sa.func.unaccent(something) does not use the index and causes a sequential scan.
     # immutable_unaccent is a wrapper so that index uses an immutable function.

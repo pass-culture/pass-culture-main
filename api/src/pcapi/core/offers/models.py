@@ -50,6 +50,7 @@ if typing.TYPE_CHECKING:
     from pcapi.core.offerers.models import OffererAddress
     from pcapi.core.offerers.models import Venue
     from pcapi.core.providers.models import Provider
+    from pcapi.core.reactions.models import Reaction
     from pcapi.core.users.models import User
 
 
@@ -157,6 +158,7 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
     name: str = sa.Column(sa.String(140), nullable=False)
     subcategoryId: str = sa.Column(sa.Text, nullable=False, index=True)
     thumb_path_component = "products"
+    reactions: list["Reaction"] = sa.orm.relationship("Reaction", back_populates="product", uselist=True)
     productMediations: sa_orm.Mapped[ProductMediation] = sa.orm.relationship(
         "ProductMediation",
         backref="product",
@@ -584,6 +586,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     futureOffer: sa_orm.Mapped["FutureOffer"] = sa_orm.relationship(
         "FutureOffer", back_populates="offer", uselist=False
     )
+    reactions: list["Reaction"] = sa.orm.relationship("Reaction", back_populates="offer", uselist=True)
 
     sa.Index("idx_offer_trgm_name", name, postgresql_using="gin")
     sa.Index("offer_idAtProvider", idAtProvider)
