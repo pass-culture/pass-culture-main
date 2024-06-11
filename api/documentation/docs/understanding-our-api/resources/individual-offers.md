@@ -28,24 +28,7 @@ There are **two methods to create a product offer** using the pass Culture API :
 :::info
 To be able to create a product offer using an EAN code, **this EAN code must exists in the pass Culture database**.
 
-**It should not be an issue in production**, since we are using a professional service to get EAN codes. In the test in the integration test environment however, we have only a few EAN codes available. 
-
-Here is a **list of EAN codes available in the integration test environment**:
-- **EAN codes that correspond to physical books:** 9782871429944, 9780500651209, 9782706715051, 9782706715051, 9782897511135, 9782842650391, 9782842650391, 9782020024280
-- **EAN codes that correspond to CDs or Vinyls:** 
-
-| Type | EAN |
-| --- | --- |
-| Unavailable CD | 0602438073177 |
-| Soon to be released CD | 0602435858395 |
-| French Hip-hop CD  | 3700187679323 |
-| Pop Vinyl | 0190296666964 |
-| French songs CD  | 0196587966423 |
-| French songs Vinyl | 0196587630317 |
-| French Rap / Hip Hop  CD | 3596974281424 |
-| Pop Vinyl  | 5054197199738 |
-| French songs CD | 0602448125309 |
-| French songs Vinyl | 3700187680923 |
+**It should not be an issue in production**, since we are using a professional service to get EAN codes. In the test in the integration test environment however, we have only a small set of EAN codes available. **[You can find the here](/docs/test-data)**.
 :::
 
 ### Update rule

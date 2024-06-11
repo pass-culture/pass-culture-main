@@ -82,7 +82,7 @@ Each time a beneficiary books a product (or an event not linked to a ticketing s
 - A booking has the status **`CANCELLED`** when :
   - **the beneficiary has cancelled his/her booking**
   - **the cultural partner has cancelled the booking**
-  - **the booking has automatically been cancelled** because the beneficiary has not retrieve his/her booking in time (10 days)
+  - **the booking has automatically been cancelled** because the beneficiary has not retrieve his/her booking in time (10 days for books offers, 30 days otherwise)
 
 ### Booking statuses lifecycle for `products`
 
