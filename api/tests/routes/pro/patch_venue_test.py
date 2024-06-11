@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.core import search
 from pcapi.core.external.zendesk_sell_backends import testing as zendesk_testing
 from pcapi.core.geography import factories as geography_factories
 from pcapi.core.geography import models as geography_models
@@ -10,6 +11,7 @@ from pcapi.core.history import models as history_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.testing import override_features
+from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as external_testing
 from pcapi.utils.date import timespan_str_to_numrange
 
@@ -578,6 +580,282 @@ class Returns200Test:
             }
         }
 
+    @patch("pcapi.core.search.async_index_offers_of_venue_ids")
+    def when_changes_on_public_name_algolia_indexing_is_triggered(self, mocked_async_index_offers_of_venue_ids, client):
+        # Given
+        user = users_factories.UserFactory()
+        venue = offerers_factories.VenueFactory(
+            name="old names",
+            publicName="old name",
+            city="old City",
+        )
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
+
+        # When
+        json_data = {"publicName": "my new name"}
+        http_client = client.with_session_auth(email=user.email)
+        http_client.patch(f"/venues/{venue.id}", json=json_data)
+
+        # Then
+        mocked_async_index_offers_of_venue_ids.assert_called_once_with(
+            [venue.id],
+            reason=search.IndexationReason.VENUE_UPDATE,
+            log_extra={"changes": {"publicName"}},
+        )
+
+    @patch("pcapi.core.search.async_index_offers_of_venue_ids")
+    def when_changes_on_city_algolia_indexing_is_triggered(self, mocked_async_index_offers_of_venue_ids, client):
+        # Given
+        user = users_factories.UserFactory()
+        venue = offerers_factories.VenueFactory(
+            name="old names",
+            publicName="old name",
+            city="old City",
+        )
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
+
+        # When
+        json_data = {"city": "My new city"}
+        http_client = client.with_session_auth(email=user.email)
+        http_client.patch(f"/venues/{venue.id}", json=json_data)
+
+        # Then
+        mocked_async_index_offers_of_venue_ids.assert_called_once_with(
+            [venue.id],
+            reason=search.IndexationReason.VENUE_UPDATE,
+            log_extra={"changes": {"city"}},
+        )
+
+    @patch("pcapi.core.search.async_index_offers_of_venue_ids")
+    def when_changes_are_not_on_algolia_fields_it_should_not_trigger_indexing(
+        self, mocked_async_index_offers_of_venue_ids, client
+    ):
+        # Given
+        user = users_factories.UserFactory()
+        venue = offerers_factories.VenueFactory(
+            name="old names",
+            publicName="old name",
+            city="old City",
+            bookingEmail="old@email.com",
+        )
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
+
+        # When
+        json_data = {"bookingEmail": "new@email.com"}
+        http_client = client.with_session_auth(email=user.email)
+        http_client.patch(f"/venues/{venue.id}", json=json_data)
+
+        # Then
+        mocked_async_index_offers_of_venue_ids.assert_not_called()
+
+    @patch("pcapi.core.search.async_index_offers_of_venue_ids")
+    def when_changes_in_payload_are_same_as_previous_it_should_not_trigger_indexing(
+        self, mocked_async_index_offers_of_venue_ids, client
+    ):
+        # Given
+        user = users_factories.UserFactory()
+        venue = offerers_factories.VenueFactory(
+            name="old names",
+            publicName="old name",
+            city="old City",
+        )
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
+
+        # When
+        json_data = {"city": "old City"}
+        http_client = client.with_session_auth(email=user.email)
+        http_client.patch(f"/venues/{venue.id}", json=json_data)
+
+        # Then
+        mocked_async_index_offers_of_venue_ids.assert_not_called()
+
+    def test_empty_siret_is_editable(self, app, client) -> None:
+        # Given
+        user = users_factories.UserFactory()
+        venue = offerers_factories.VenueWithoutSiretFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
+
+        # When
+        json_data = {
+            "siret": venue.managingOfferer.siren + "11111",
+        }
+        http_client = client.with_session_auth(email=user.email)
+        http_client.patch(f"/venues/{venue.id}", json=json_data)
+
+        # Then
+        assert venue.siret == json_data["siret"]
+
+    @pytest.mark.parametrize(
+        "venue_data", [{"siret": "12345678954321", "name": "newName"}, {"siret": None, "comment": "test"}]
+    )
+    def test_existing_siret_is_editable(self, venue_data, app, client) -> None:
+        # Given
+        user = users_factories.UserFactory()
+        venue = offerers_factories.VenueFactory(siret="12345678900001", managingOfferer__siren="123456789")
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
+
+        # When
+        http_client = client.with_session_auth(email=user.email)
+        http_client.patch(f"/venues/{venue.id}", json=venue_data)
+
+        # Then
+        assert venue.siret == venue_data["siret"]
+        if venue_data["siret"] is not None:
+            assert venue.name == venue_data["name"]
+
+    def test_accessibility_fields_are_updated(self, app, client) -> None:
+        # given
+        user = users_factories.UserFactory()
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
+
+        # When
+        venue_data = {
+            "audioDisabilityCompliant": True,
+            "mentalDisabilityCompliant": True,
+            "motorDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
+        }
+        http_client = client.with_session_auth(email=user.email)
+        http_client.patch(f"/venues/{venue.id}", json=venue_data)
+
+        venue = offerers_models.Venue.query.get(venue.id)
+        assert venue.audioDisabilityCompliant
+        assert venue.mentalDisabilityCompliant
+        assert venue.motorDisabilityCompliant is False
+        assert venue.visualDisabilityCompliant is False
+
+    def test_no_modifications(self, app, client) -> None:
+        # given
+        user = users_factories.UserFactory()
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
+
+        # when
+        venue_data = {
+            "departementCode": venue.departementCode,
+            "city": venue.city,
+            "motorDisabilityCompliant": venue.motorDisabilityCompliant,
+            "contact": {
+                "email": venue.contact.email,
+                "phone_number": venue.contact.phone_number,
+                "social_medias": venue.contact.social_medias,
+                "website": venue.contact.website,
+            },
+        }
+        http_client = client.with_session_auth(email=user.email)
+        venue_id = venue.id
+
+        response = http_client.patch(f"/venues/{venue_id}", json=venue_data)
+        assert response.status_code == 200
+
+        assert history_models.ActionHistory.query.count() == 0
+
+    @patch("pcapi.connectors.virustotal.request_url_scan")
+    def test_update_only_venue_contact(self, mock_request_url_scan, client):
+        user_offerer = offerers_factories.UserOffererFactory(
+            user__email="user.pro@test.com",
+        )
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, contact=None)
+
+        # When
+        venue_data = {"contact": {"email": "other.contact@venue.com", "phone_number": "0788888888"}}
+        http_client = client.with_session_auth(email=user_offerer.user.email)
+        http_client.patch(f"/venues/{venue.id}", json=venue_data)
+
+        venue = offerers_models.Venue.query.get(venue.id)
+        assert venue.contact
+        assert venue.contact.phone_number == "+33788888888"
+        assert venue.contact.email == venue_data["contact"]["email"]
+        mock_request_url_scan.assert_not_called()
+
+    @patch("pcapi.connectors.virustotal.request_url_scan")
+    def test_update_only_venue_website(self, mock_request_url_scan, client):
+        user_offerer = offerers_factories.UserOffererFactory(
+            user__email="user.pro@test.com",
+        )
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+
+        # When
+        venue_data = {"contact": {"website": "https://new.website.com"}}
+        http_client = client.with_session_auth(email=user_offerer.user.email)
+        http_client.patch(f"/venues/{venue.id}", json=venue_data)
+
+        venue = offerers_models.Venue.query.get(venue.id)
+        assert venue.contact.website == "https://new.website.com"
+        mock_request_url_scan.assert_called_once_with(venue_data["contact"]["website"], skip_if_recent_scan=True)
+
+    def test_no_venue_contact_created_if_no_data(self, app, client):
+        user_offerer = offerers_factories.UserOffererFactory(
+            user__email="user.pro@test.com",
+        )
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, contact=None)
+
+        # When
+        venue_data = {"contact": {}}
+        http_client = client.with_session_auth(email=user_offerer.user.email)
+        http_client.patch(f"/venues/{venue.id}", json=venue_data)
+
+        assert offerers_models.VenueContact.query.count() == 0
+
+    @patch("pcapi.connectors.virustotal.request_url_scan")
+    def test_no_venue_contact_no_modification(self, mock_request_url_scan, client) -> None:
+        # given
+        user = users_factories.UserFactory()
+        venue = offerers_factories.VenueFactory(contact=None)
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
+
+        # When
+        venue_data = {
+            "departmentCode": venue.departementCode,
+            "city": venue.city,
+            "contact": {"email": None, "phone_number": None, "social_medias": None, "website": None},
+        }
+        http_client = client.with_session_auth(email=user.email)
+        http_client.patch(f"/venues/{venue.id}", json=venue_data)
+
+        # then
+        # nothing has changed => nothing to save nor update
+        assert history_models.ActionHistory.query.count() == 0
+        mock_request_url_scan.assert_not_called()
+
+    @patch("pcapi.connectors.virustotal.request_url_scan")
+    def test_no_venue_contact_add_contact(self, mock_request_url_scan, client) -> None:
+        # given
+        user = users_factories.UserFactory()
+        venue = offerers_factories.VenueFactory(contact=None)
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
+
+        # When
+        venue_data = {
+            "departmentCode": venue.departementCode,
+            "city": venue.city,
+            "contact": {
+                "email": "added@venue.com",
+                "phone_number": None,
+                "social_medias": None,
+                "website": "https://www.venue.com",
+            },
+        }
+        http_client = client.with_session_auth(email=user.email)
+        http_client.patch(f"/venues/{venue.id}", json=venue_data)
+
+        # then
+        assert venue.contact
+        assert venue.contact.email == venue_data["contact"]["email"]
+        assert venue.contact.website == venue_data["contact"]["website"]
+
+        # contact info added => an action should be logged in history
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert action.authorUserId == user.id
+        assert action.venueId == venue.id
+        assert action.extraData["modified_info"] == {
+            "contact.email": {"new_info": venue_data["contact"]["email"], "old_info": None},
+            "contact.website": {"new_info": venue_data["contact"]["website"], "old_info": None},
+        }
+        mock_request_url_scan.assert_called_once_with(venue_data["contact"]["website"], skip_if_recent_scan=True)
+
 
 class Returns400Test:
     @pytest.mark.parametrize("data, key", venue_malformed_test_data)
@@ -644,3 +922,45 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json["siret"] == ["SIRET is no longer active"]
+
+    def test_cannot_update_virtual_venue_name(self, client):
+        user = users_factories.UserFactory()
+        offerer = offerers_factories.OffererFactory(siren="000000000")
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
+        virtual_venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
+
+        http_client = client.with_session_auth(email=user.email)
+
+        response = http_client.patch(f"/venues/{virtual_venue.id}", json={"name": "Toto"})
+
+        assert response.status_code == 400
+        assert response.json["venue"] == ["Vous ne pouvez pas modifier un lieu Offre Numérique."]
+
+    @pytest.mark.parametrize("venue_data", [{"name": "New name"}, {"name": None}])
+    def test_name_is_not_editable(self, venue_data, app, client) -> None:
+        # Given
+        user = users_factories.UserFactory()
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
+
+        http_client = client.with_session_auth(email=user.email)
+
+        response = http_client.patch(f"/venues/{venue.id}", json=venue_data)
+
+        # Then
+        assert response.status_code == 400
+        assert "Vous ne pouvez pas modifier la raison sociale d'un lieu" in response.json["name"]
+
+    def test_remove_siret(self, app, client) -> None:
+        user = users_factories.UserFactory()
+        venue = offerers_factories.VenueFactory(
+            siret="12345678900001",
+            managingOfferer__siren="123456789",
+        )
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
+        http_client = client.with_session_auth(email=user.email)
+
+        response = http_client.patch(f"/venues/{venue.id}", json={"siret": None})
+
+        assert response.status_code == 400
+        assert response.json["siret"] == ["Vous ne pouvez pas supprimer le siret d'un lieu"]

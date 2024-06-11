@@ -679,16 +679,16 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
         contact_data = None
 
     criteria = criteria_models.Criterion.query.filter(criteria_models.Criterion.id.in_(form.tags.data)).all()
+    modifications = {field: value for field, value in attrs.items() if venue.field_exists_and_has_changed(field, value)}
 
     try:
         offerers_api.update_venue(
             venue,
+            modifications,
             author=current_user,
             contact_data=contact_data,
             criteria=criteria,
             external_accessibility_url=form.acceslibre_url.data if hasattr(form, "acceslibre_url") else "",
-            admin_update=True,
-            **attrs,
         )
     except ApiErrors as api_errors:
         for error_key, error_details in api_errors.errors.items():

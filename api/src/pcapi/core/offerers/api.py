@@ -97,25 +97,17 @@ def create_digital_venue(offerer: models.Offerer) -> models.Venue:
 
 def update_venue(
     venue: models.Venue,
+    modifications: dict,
     author: users_models.User,
     opening_hours: list[serialize_base.OpeningHoursModel] | None = None,
     contact_data: serialize_base.VenueContactModel | None = None,
     criteria: list[criteria_models.Criterion] | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
     external_accessibility_url: str | None | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
-    admin_update: bool = False,
-    **attrs: typing.Any,
 ) -> models.Venue:
-    modifications = {field: value for field, value in attrs.items() if venue.field_exists_and_has_changed(field, value)}
-    new_permanent = not venue.isPermanent and attrs.get("isPermanent")
+    new_permanent = not venue.isPermanent and modifications.get("isPermanent")
 
     if feature.FeatureToggle.ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE.is_active():
         update_venue_location(venue, modifications)
-
-    if not admin_update:
-        # run validation when the venue update is triggered by a pro
-        # user. This can be bypassed when done by and admin/backoffice
-        # user.
-        validation.check_venue_edition(modifications, venue)
 
     venue_snapshot = history_api.ObjectUpdateSnapshot(venue, author)
 
