@@ -31,7 +31,7 @@ Feature: Create and update venue
     Then Paramètres généraux data should be updated
 
   Scenario: It should display venues of selected offerer
-    Given I am logged in with new interface
+    Given I am logged in with the new interface
     When I select offerer "0 - Structure avec justificatif copié"
     Then I should only see these venues
       | Offres numériques | Lieu avec justificatif copié |

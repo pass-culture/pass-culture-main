@@ -130,7 +130,7 @@ When('I publish my offer', () => {
   cy.wait(['@publishOffer', '@getOffer'])
 })
 
-When('I go to offers list', () => {
+When('I go to the offers list', () => {
   cy.intercept({ method: 'GET', url: '/offers' }).as('getOffers')
   cy.findByText('Voir la liste des offres').click()
   cy.wait('@getOffers')
