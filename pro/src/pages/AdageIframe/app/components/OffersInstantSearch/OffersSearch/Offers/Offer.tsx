@@ -1,23 +1,14 @@
 import cn from 'classnames'
 import { useState } from 'react'
-import useSWRMutation from 'swr/mutation'
 
 import {
   AdageFrontRoles,
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
-  OfferIdBody,
-  StockIdBody,
 } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import { Markdown } from 'components/Markdown/Markdown'
-import {
-  LOG_OFFER_DETAILS_CLICK_QUERY_KEY,
-  LOG_OFFER_TEMPLATE_DETAILS_CLICK_QUERY_KEY,
-} from 'config/swrQueryKeys'
-import { useActiveFeature } from 'hooks/useActiveFeature'
 import fullLinkIcon from 'icons/full-link.svg'
-import fullUpIcon from 'icons/full-up.svg'
 import strokeOfferIcon from 'icons/stroke-offer.svg'
 import { useAdageUser } from 'pages/AdageIframe/app/hooks/useAdageUser'
 import {
@@ -28,11 +19,8 @@ import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
-import { LOGS_DATA } from 'utils/config'
 
-import { ContactButton } from './ContactButton/ContactButton'
 import style from './Offer.module.scss'
-import { OfferDetails } from './OfferDetails/OfferDetails'
 import { OfferFavoriteButton } from './OfferFavoriteButton/OfferFavoriteButton'
 import { OfferShareLink } from './OfferShareLink/OfferShareLink'
 import { OfferSummary } from './OfferSummary/OfferSummary'
@@ -51,78 +39,15 @@ export interface OfferProps {
 export const Offer = ({
   offer,
   queryId,
-  position,
   afterFavoriteChange,
   isInSuggestions,
-  openDetails = false,
 }: OfferProps): JSX.Element => {
-  const [displayDetails, setDisplayDetails] = useState(openDetails)
   const [offerPrebooked, setOfferPrebooked] = useState(false)
   const { adageUser, setInstitutionOfferCount, institutionOfferCount } =
     useAdageUser()
 
-  const { trigger: logOfferDetailsButtonClick } = useSWRMutation(
-    LOG_OFFER_DETAILS_CLICK_QUERY_KEY,
-    (
-      _key: string,
-      options: {
-        arg: StockIdBody
-      }
-    ) => apiAdage.logOfferDetailsButtonClick(options.arg)
-  )
-
-  const { trigger: logOfferTemplateDetailsButtonClick } = useSWRMutation(
-    LOG_OFFER_TEMPLATE_DETAILS_CLICK_QUERY_KEY,
-    (
-      _key: string,
-      options: {
-        arg: OfferIdBody
-      }
-    ) => apiAdage.logOfferTemplateDetailsButtonClick(options.arg)
-  )
-
-  const isNewOfferInfoEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_ADAGE_OFFER_DESIGN'
-  )
-
   const canAddOfferToFavorites =
     offer.isTemplate && adageUser.role !== AdageFrontRoles.READONLY
-
-  const openOfferDetails = (
-    offer: CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
-  ) => {
-    setDisplayDetails(!displayDetails)
-
-    triggerOfferDetailClickLog(offer)
-  }
-
-  function triggerOfferDetailClickLog(
-    offer: CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
-  ) {
-    if (!LOGS_DATA) {
-      return
-    }
-
-    const isTemplate = isCollectiveOfferTemplate(offer)
-
-    if (!isTemplate) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      logOfferDetailsButtonClick({
-        iframeFrom: location.pathname,
-        stockId: offer.stock.id,
-        queryId,
-        isFromNoResult: isInSuggestions,
-      })
-    } else {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      logOfferTemplateDetailsButtonClick({
-        iframeFrom: location.pathname,
-        offerId: offer.id,
-        queryId: queryId,
-        isFromNoResult: isInSuggestions,
-      })
-    }
-  }
 
   function offerVenueLinkClicked() {
     void apiAdage.logTrackingMap({
@@ -197,21 +122,6 @@ export const Offer = ({
                 {isCollectiveOfferTemplate(offer) && (
                   <>
                     <OfferShareLink offer={offer} />
-                    {!isNewOfferInfoEnabled && (
-                      <ContactButton
-                        className={style['offer-prebooking-button']}
-                        contactEmail={offer.contactEmail}
-                        contactPhone={offer.contactPhone}
-                        contactUrl={offer.contactUrl}
-                        contactForm={offer.contactForm}
-                        offerId={offer.id}
-                        position={position}
-                        queryId={queryId}
-                        userEmail={adageUser.email}
-                        userRole={adageUser.role}
-                        isInSuggestions={isInSuggestions}
-                      />
-                    )}
                   </>
                 )}
               </div>
@@ -268,46 +178,20 @@ export const Offer = ({
               <Markdown markdownText={offer.description} />
             </p>
           )}
-          {isNewOfferInfoEnabled ? (
-            <ButtonLink
-              variant={
-                offer.isTemplate
-                  ? ButtonVariant.PRIMARY
-                  : ButtonVariant.SECONDARY
-              }
-              onClick={() => triggerOfferDetailClickLog(offer)}
-              link={{
-                isExternal: true,
-                to: `${document.referrer}adage/passculture/offres/offerid/${offer.isTemplate ? '' : 'B-'}${offer.id}`,
-                target: '_blank',
-              }}
-              icon={fullLinkIcon}
-              svgAlt="Nouvelle fenêtre"
-            >
-              Découvrir l’offre
-            </ButtonLink>
-          ) : (
-            <>
-              <div className={style['offer-footer']}>
-                <button
-                  className={style['offer-see-more']}
-                  onClick={() => openOfferDetails(offer)}
-                  type="button"
-                >
-                  <SvgIcon
-                    alt=""
-                    src={fullUpIcon}
-                    className={cn(style['offer-see-more-icon'], {
-                      [style['offer-see-more-icon-closed']]: !displayDetails,
-                    })}
-                    width="16"
-                  />
-                  en savoir plus
-                </button>
-              </div>
-              {displayDetails && <OfferDetails offer={offer} />}
-            </>
-          )}
+          <ButtonLink
+            variant={
+              offer.isTemplate ? ButtonVariant.PRIMARY : ButtonVariant.SECONDARY
+            }
+            link={{
+              isExternal: true,
+              to: `${document.referrer}adage/passculture/offres/offerid/${offer.isTemplate ? '' : 'B-'}${offer.id}`,
+              target: '_blank',
+            }}
+            icon={fullLinkIcon}
+            svgAlt="Nouvelle fenêtre"
+          >
+            Découvrir l’offre
+          </ButtonLink>
         </div>
       </div>
     </div>

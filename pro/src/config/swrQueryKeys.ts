@@ -48,7 +48,4 @@ export const GET_VENUE_PROVIDERS_QUERY_KEY = 'getVenueProviders'
 export const GET_VENUE_TYPES_QUERY_KEY = 'getVenueTypes'
 export const GET_VENUES_QUERY_KEY = 'getVenues'
 export const LOG_CATALOG_VIEW_QUERY_KEY = 'logCatalogView'
-export const LOG_OFFER_DETAILS_CLICK_QUERY_KEY = 'logOfferDetailsButtonClick'
-export const LOG_OFFER_TEMPLATE_DETAILS_CLICK_QUERY_KEY =
-  'logOfferTemplateDetailsButtonClick'
 export const LOG_TRACKING_FILTER_QUERY_KEY = 'logTrackingFilter'

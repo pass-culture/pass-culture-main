@@ -8,7 +8,6 @@ import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
 } from 'config/swrQueryKeys'
-import { useActiveFeature } from 'hooks/useActiveFeature'
 import strokePassIcon from 'icons/stroke-pass.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import strokeStarIcon from 'icons/stroke-star.svg'
@@ -18,7 +17,6 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { useAdageUser } from '../../hooks/useAdageUser'
-import { Offer } from '../OffersInstantSearch/OffersSearch/Offers/Offer'
 
 import { AdageOffer } from './AdageOffer/AdageOffer'
 import offerInfosFallback from './assets/offer-infos-fallback.svg'
@@ -38,10 +36,6 @@ export const OfferInfos = () => {
 
   const { adageUser, setInstitutionOfferCount, institutionOfferCount } =
     useAdageUser()
-
-  const isNewOfferInfoEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_ADAGE_OFFER_DESIGN'
-  )
 
   const shouldFetchTemplateOffer = isOfferTemplate && !state?.offer && offerId
   const { data: templateOffer, isLoading: isTemplateOfferLoading } = useSWR(
@@ -126,18 +120,12 @@ export const OfferInfos = () => {
               ]}
             />
           </div>
-          {isNewOfferInfoEnabled ? (
-            <AdageOffer
-              offer={offer}
-              adageUser={adageUser}
-              setInstitutionOfferCount={setInstitutionOfferCount}
-              institutionOfferCount={institutionOfferCount}
-            />
-          ) : (
-            <div className={styles['offer-container']}>
-              <Offer offer={offer} position={0} queryId="" openDetails={true} />
-            </div>
-          )}
+          <AdageOffer
+            offer={offer}
+            adageUser={adageUser}
+            setInstitutionOfferCount={setInstitutionOfferCount}
+            institutionOfferCount={institutionOfferCount}
+          />
         </>
       ) : (
         <div className={styles['offers-info-fallback']}>
