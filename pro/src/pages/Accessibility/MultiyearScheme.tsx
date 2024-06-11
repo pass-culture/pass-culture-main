@@ -1,12 +1,12 @@
-import { AppLayout } from 'app/AppLayout'
 import fullBackIcon from 'icons/full-back.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 
+import { AccessibilityLayout } from './AccessibilityLayout'
 import styles from './MultiyearScheme.module.scss'
 
 export const MultiyearScheme = () => {
   return (
-    <AppLayout>
+    <AccessibilityLayout>
       <ButtonLink
         link={{
           to: '/accessibilite/',
@@ -418,7 +418,7 @@ export const MultiyearScheme = () => {
           Réalisation d’un nouvel audit d’accessibilité
         </li>
       </ul>
-    </AppLayout>
+    </AccessibilityLayout>
   )
 }
 // Lazy-loaded by react-router-dom
