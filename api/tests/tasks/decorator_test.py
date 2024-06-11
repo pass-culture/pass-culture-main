@@ -70,7 +70,7 @@ class CloudTaskDecoratorTest:
         send_chouquettes.delay(payload)
         slow_chouquette_handler.assert_not_called()
         requests_post.assert_called_once_with(
-            "http://localhost:5001/cloud-tasks/send-chouquettes",
+            f"{settings.API_URL}/cloud-tasks/send-chouquettes",
             headers={
                 "HTTP_X_CLOUDTASKS_QUEUENAME": "chouquettes-test-queue",
                 "AUTHORIZATION": "Bearer secret-token",
