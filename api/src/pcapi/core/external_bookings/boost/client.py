@@ -72,8 +72,6 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
     def book_ticket(
         self, show_id: int, booking: bookings_models.Booking, beneficiary: users_models.User
     ) -> list[external_bookings_models.Ticket]:
-        if not FeatureToggle.WIP_ENABLE_BOOST_TWO_STAGES_BOOKING.is_active():
-            return self.book_ticket_legacy(show_id, booking, beneficiary)
         quantity = booking.quantity
         showtime = self.get_showtime(show_id)
         pcu_pricing = get_pcu_pricing_if_exists(showtime.showtimePricing)
@@ -88,51 +86,6 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         sale_preparation = parse_obj_as(boost_serializers.SalePreparationResponse, sale_preparation_response)
 
         sale_body.idsBeforeSale = str(sale_preparation.data[0].id)
-        sale_response = boost.post_resource(self.cinema_id, boost.ResourceBoost.COMPLETE_SALE, sale_body)
-        sale_confirmation_response = parse_obj_as(boost_serializers.SaleConfirmationResponse, sale_response)
-        add_to_queue(
-            bookings_constants.REDIS_EXTERNAL_BOOKINGS_NAME,
-            {
-                "barcode": sale_confirmation_response.data.code,
-                "venue_id": booking.venueId,
-                "timestamp": datetime.datetime.utcnow().timestamp(),
-                "booking_type": bookings_constants.RedisExternalBookingType.CINEMA,
-            },
-        )
-
-        tickets = []
-        for ticket_response in sale_confirmation_response.data.tickets:
-            # same barcode for each Ticket of the sale
-            barcode = sale_confirmation_response.data.code
-            seat_number = str(ticket_response.seat.id) if ticket_response.seat else None
-            extra_data = {
-                "barcode": barcode,
-                "seat_number": seat_number,
-                "ticketReference": ticket_response.ticketReference,
-                "total_amount": sale_confirmation_response.data.amountTaxesIncluded,
-            }
-            # This will be useful for customer support
-            logger.info("Booked Boost Ticket", extra=extra_data)
-            ticket = external_bookings_models.Ticket(barcode=barcode, seat_number=seat_number)
-            tickets.append(ticket)
-
-        return tickets
-
-    # TODO(yacine) Remove this method with WIP_ENABLE_BOOST_TWO_STAGES_BOOKING FF
-    def book_ticket_legacy(
-        self, show_id: int, booking: bookings_models.Booking, beneficiary: users_models.User
-    ) -> list[external_bookings_models.Ticket]:
-        quantity = booking.quantity
-        showtime = self.get_showtime(show_id)
-        pcu_pricing = get_pcu_pricing_if_exists(showtime.showtimePricing)
-        if not pcu_pricing:
-            raise exceptions.BoostAPIException("No Pass Culture pricing was found")
-
-        basket_items = [boost_serializers.BasketItem(idShowtimePricing=pcu_pricing.id, quantity=quantity)]
-        sale_body = boost_serializers.OneStepSaleRequest(
-            codePayment=constants.BOOST_PASS_CULTURE_CODE_PAYMENT,
-            basketItems=basket_items,
-        )
         sale_response = boost.post_resource(self.cinema_id, boost.ResourceBoost.COMPLETE_SALE, sale_body)
         sale_confirmation_response = parse_obj_as(boost_serializers.SaleConfirmationResponse, sale_response)
         add_to_queue(
