@@ -586,11 +586,10 @@ def _price_event(event: models.FinanceEvent) -> models.Pricing:
             ),
         ]
     elif event.motive == models.FinanceEventMotive.INCIDENT_COMMERCIAL_GESTURE:
-        original_pricing = models.Pricing.query.filter_by(
-            status=models.PricingStatus.CANCELLED,
-            booking=individual_booking,
-            collectiveBooking=collective_booking,
-        ).one()
+        original_pricing = [
+            pricing for pricing in booking.pricings if pricing.status == models.PricingStatus.CANCELLED
+        ][0]
+
         rule = find_reimbursement_rule(original_pricing.customRuleId or original_pricing.standardRule)
         amount = -rule.apply(booking, event.bookingFinanceIncident.commercial_gesture_amount)  # outgoing, thus negative
         offerer_revenue_amount = -event.bookingFinanceIncident.commercial_gesture_amount
@@ -2933,16 +2932,16 @@ def create_finance_commercial_gesture(
 
     booking_finance_incidents_to_create = []
     total_bookings_quantity = sum(booking.quantity for booking in bookings)
-    total_amount = sum(booking.total_amount for booking in bookings)
+    total_amount = sum(utils.to_eurocents(booking.total_amount) for booking in bookings)
     for booking in bookings:
         # all bookings in a commercial gesture must be from the same stock → they all have the same amount
-        new_total_amount = total_amount - ((amount / total_bookings_quantity) * booking.quantity)
+        new_total_amount = total_amount - ((utils.to_eurocents(amount) * booking.quantity) // total_bookings_quantity)
         booking_finance_incidents_to_create.append(
             models.BookingFinanceIncident(
                 bookingId=booking.id,
                 incidentId=incident.id,
                 beneficiaryId=booking.userId,
-                newTotalAmount=utils.to_eurocents(new_total_amount),
+                newTotalAmount=new_total_amount,
             )
         )
 

@@ -6,6 +6,9 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_admin_users i
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_app_users import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_bank_accounts import create_industrial_bank_accounts
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_bookings import *
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_commercial_gestures import (
+    create_industrial_commercial_gestures,
+)
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_complex_offers import create_complex_offers
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_criterion import (
     associate_criterion_to_one_offer_with_mediation,
@@ -152,3 +155,5 @@ def save_industrial_sandbox() -> None:
     create_new_caledonia_offerers()
 
     create_gdpr_user_extract_data()
+
+    create_industrial_commercial_gestures()
