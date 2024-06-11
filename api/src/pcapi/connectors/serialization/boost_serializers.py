@@ -96,12 +96,6 @@ class SaleRequest(BaseModel):
     idsBeforeSale: str | None
 
 
-# TODO(yacine) Remove this class with WIP_ENABLE_BOOST_TWO_STAGES_BOOKING FF
-class OneStepSaleRequest(BaseModel):
-    codePayment: str
-    basketItems: list[BasketItem]
-
-
 # FIXME(fseguin, 2022-11-08: waiting for the specs)
 class Seat(BaseModel):
     id: int | None

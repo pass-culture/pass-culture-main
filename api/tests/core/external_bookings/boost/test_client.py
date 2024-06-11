@@ -208,7 +208,6 @@ class GetShowtimesTest:
 
 
 class BookTicketTest:
-    @override_features(WIP_ENABLE_BOOST_TWO_STAGES_BOOKING=True)
     def test_should_book_duo_tickets(self, requests_mock, app):
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         booking = bookings_factories.BookingFactory(user=beneficiary, quantity=2)
@@ -258,44 +257,6 @@ class BookTicketTest:
         assert external_bookings_infos["barcode"] == "sale-133401"
         assert external_bookings_infos["timestamp"]
         assert external_bookings_infos["venue_id"] == booking.venueId
-
-    @override_features(WIP_ENABLE_BOOST_TWO_STAGES_BOOKING=False)
-    def test_should_book_duo_tickets_legacy(self, requests_mock, app):
-        beneficiary = users_factories.BeneficiaryGrant18Factory()
-        booking = bookings_factories.BookingFactory(user=beneficiary, quantity=2)
-        venue_id = booking.venueId
-        cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
-        cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
-        requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/36684",
-            json=fixtures.ShowtimeDetailsEndpointResponse.PC2_AND_FULL_PRICINGS_SHOWTIME_36684_DATA,
-        )
-        post_adapter = requests_mock.post(
-            "https://cinema-0.example.com/api/sale/complete",
-            json=fixtures.ConfirmedSaleEndpointResponse.DATA,
-            headers={"Content-Type": "application/json"},
-        )
-
-        boost = boost_client.BoostClientAPI(cinema_str_id)
-        tickets = boost.book_ticket(show_id=36684, booking=booking, beneficiary=beneficiary)
-
-        showtime_info = boost.get_showtime(showtime_id=36684)
-        assert showtime_info.showtimePricing == [FULL_PRICING, PC2_PRICING]
-        assert post_adapter.last_request.json() == {
-            "basketItems": [{"idShowtimePricing": 1114163, "quantity": 2}],
-            "codePayment": "PCU",
-        }
-        assert len(tickets) == 2
-        assert tickets == [
-            external_bookings_models.Ticket(barcode="sale-90474", seat_number=None),
-            external_bookings_models.Ticket(barcode="sale-90474", seat_number=None),
-        ]
-        redis_external_bookings = app.redis_client.lrange("api:external_bookings:barcodes", 0, -1)
-        assert len(redis_external_bookings) == 1
-        external_bookings_infos = json.loads(redis_external_bookings[0])
-        assert external_bookings_infos["barcode"] == "sale-90474"
-        assert external_bookings_infos["venue_id"] == venue_id
-        assert external_bookings_infos["timestamp"]
 
 
 class CancelBookingTest:
