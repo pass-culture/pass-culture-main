@@ -62,7 +62,7 @@ class TiteliveImage(BaseModel):
 class TiteliveArticle(BaseModel):
     codesupport: str | None
     commentaire: str | None
-    contenu_explicite: str
+    contenu_explicite: str | None
     dateparution: datetime.date | None
     distributeur: str | None
     editeur: str | None
@@ -138,7 +138,7 @@ class TiteliveMusicArticle(TiteliveArticle):
     compositeur: str | None
     interprete: str | None
     label: str | None
-    nb_galettes: str
+    nb_galettes: str | None
 
 
 TiteliveArticleType = typing.TypeVar("TiteliveArticleType", bound=TiteliveArticle)
