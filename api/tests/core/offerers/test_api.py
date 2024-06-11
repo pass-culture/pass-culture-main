@@ -337,6 +337,21 @@ class DeleteVenueTest:
         assert offers_models.Offer.query.count() == 1
         assert offers_models.Mediation.query.count() == 1
 
+    def test_delete_cascade_venue_should_remove_reports_of_managed_offers(self):
+        # Given
+        venue = offerers_factories.VenueFactory()
+        venue_to_delete = offerers_factories.VenueFactory()
+        offers_factories.OfferReportFactory(offer__venue=venue_to_delete)
+        offers_factories.OfferReportFactory(offer__venue=venue)
+
+        # When
+        offerers_api.delete_venue(venue_to_delete.id)
+
+        # Then
+        assert offerers_models.Venue.query.count() == 1
+        assert offers_models.Offer.query.count() == 1
+        assert offers_models.OfferReport.query.count() == 1
+
     def test_delete_cascade_venue_should_remove_favorites_of_managed_offers(self):
         # Given
         venue = offerers_factories.VenueFactory()
