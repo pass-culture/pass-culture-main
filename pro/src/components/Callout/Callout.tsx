@@ -70,7 +70,7 @@ export const Callout = ({
         className={styles['icon']}
         width="20"
       />
-      <div className={styles['content']}>
+      <div className={styles['content']} data-testid="desk-callout-message">
         {title && <div className={styles['title']}>{title}</div>}
         {children && <div className={styles['callout-text']}>{children}</div>}
         {links && <LinkNodes links={links} />}
