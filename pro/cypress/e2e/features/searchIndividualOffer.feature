@@ -3,7 +3,7 @@ Feature: Search individual offers
 
   Background:
     Given I am logged in
-    And I go to "Offres" page
+    And I go to the "Offres" page
 
   Scenario: A search with a name should display expected results
     When I search with the text "Offer 1643"

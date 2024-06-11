@@ -3,8 +3,8 @@ Feature: Search for collective bookings
 
   Background:
     Given I am logged in
-    And I go to "Réservations" page
-    And I go to "Réservations collectives" page
+    And I go to the "Réservations" page
+    And I go to the "Réservations collectives" page
 
   Scenario: It should find collective bookings by offers
     When I display offers
