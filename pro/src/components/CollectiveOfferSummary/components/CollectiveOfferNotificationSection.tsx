@@ -11,7 +11,10 @@ export const CollectiveOfferNotificationSection = ({
   bookingEmails,
 }: CollectiveOfferNotificationSectionProps) => {
   return (
-    <SummarySubSection title="Notifications des réservations">
+    <SummarySubSection
+      title="Notifications des réservations"
+      shouldShowDivider={false}
+    >
       <SummaryDescriptionList
         descriptions={bookingEmails.map((email) => ({ text: email }))}
       />
