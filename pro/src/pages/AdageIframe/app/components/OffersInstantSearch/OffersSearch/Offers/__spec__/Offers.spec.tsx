@@ -50,8 +50,8 @@ Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: () => ({
     matches: false,
-    addListener: jest.fn(),
-    removeListener: jest.fn(),
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
   }),
 })
 
@@ -620,8 +620,8 @@ describe('offers', () => {
       writable: true,
       value: () => ({
         matches: true,
-        addListener: jest.fn(),
-        removeListener: jest.fn(),
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
       }),
     })
 
@@ -642,8 +642,8 @@ describe('offers', () => {
       writable: true,
       value: () => ({
         matches: false,
-        addListener: jest.fn(),
-        removeListener: jest.fn(),
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
       }),
     })
   })
@@ -679,8 +679,8 @@ describe('offers', () => {
       writable: true,
       value: () => ({
         matches: true,
-        addListener: jest.fn(),
-        removeListener: jest.fn(),
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
       }),
     })
 
@@ -713,8 +713,8 @@ describe('offers', () => {
       writable: true,
       value: () => ({
         matches: false,
-        addListener: jest.fn(),
-        removeListener: jest.fn(),
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
       }),
     })
   })
@@ -724,8 +724,8 @@ describe('offers', () => {
       writable: true,
       value: () => ({
         matches: true,
-        addListener: jest.fn(),
-        removeListener: jest.fn(),
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
       }),
     })
     vi.spyOn(apiAdage, 'getCollectiveOfferTemplates').mockResolvedValueOnce({
@@ -747,8 +747,8 @@ describe('offers', () => {
       writable: true,
       value: () => ({
         matches: false,
-        addListener: jest.fn(),
-        removeListener: jest.fn(),
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
       }),
     })
   })

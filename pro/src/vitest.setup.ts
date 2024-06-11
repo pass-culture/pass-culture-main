@@ -1,12 +1,11 @@
 import 'regenerator-runtime/runtime'
-import { expect, vi } from 'vitest'
+import { vi, expect } from 'vitest'
+import '@testing-library/jest-dom/vitest'
 import * as matchers from 'vitest-axe/matchers'
-import '@testing-library/jest-dom'
 import createFetchMock from 'vitest-fetch-mock'
 import 'vitest-canvas-mock'
 
 expect.extend(matchers)
-
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
 fetchMock.mockResponse((req) => {
