@@ -48,5 +48,8 @@ export default defineConfig(({ mode }) => {
       maxThreads: 6,
       testTimeout: 30000,
     },
+    css: {
+      devSourcemap: true,
+    },
   }
 })
