@@ -5,9 +5,6 @@ import React from 'react'
 import createFetchMock from 'vitest-fetch-mock'
 
 import { api } from 'apiClient/api'
-import { ApiError } from 'apiClient/v1'
-import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
-import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import {
   SignupJourneyContextValues,
   SignupJourneyContext,
@@ -66,10 +63,10 @@ const renderOffererForm = ({
       <Formik
         initialValues={initialValues}
         onSubmit={onSubmit}
-        validationSchema={validationSchema(vi.fn())}
+        validationSchema={validationSchema}
       >
         <Form>
-          <OffererForm />
+          <OffererForm setShowInvisibleBanner={vi.fn()} />
           <Button type="submit" isLoading={false}>
             Submit
           </Button>
@@ -183,64 +180,6 @@ describe('screens:SignupJourney::OffererForm', () => {
     await userEvent.click(screen.getByText('Submit'))
     expect(
       await screen.findByText('Le SIRET doit comporter 14 caractères')
-    ).toBeInTheDocument()
-  })
-
-  it("should render error message when siret doesn't exist", async () => {
-    vi.spyOn(api, 'getSiretInfo').mockRejectedValueOnce(
-      new ApiError(
-        {} as ApiRequestOptions,
-        {
-          status: 422,
-          body: [{ error: ['No SIRET'] }],
-        } as ApiResult,
-        ''
-      )
-    )
-
-    renderOffererForm({
-      initialValues: initialValues,
-      contextValue,
-    })
-
-    await userEvent.type(
-      screen.getByLabelText('Numéro de SIRET à 14 chiffres *'),
-      '12345678999999'
-    )
-    await userEvent.click(screen.getByText('Submit'))
-    expect(await screen.findByText('Le SIRET n’existe pas')).toBeInTheDocument()
-  })
-
-  it('should render error message when siret is not visible', async () => {
-    vi.spyOn(api, 'getSiretInfo').mockRejectedValueOnce(
-      new ApiError(
-        {} as ApiRequestOptions,
-        {
-          status: 400,
-          body: {
-            global: [
-              'Les informations relatives à ce SIREN ou SIRET ne sont pas accessibles.',
-            ],
-          },
-        } as ApiResult,
-        ''
-      )
-    )
-
-    renderOffererForm({
-      initialValues: initialValues,
-      contextValue,
-    })
-
-    await userEvent.type(
-      screen.getByLabelText('Numéro de SIRET à 14 chiffres *'),
-      '12345678900001'
-    )
-    await userEvent.click(screen.getByText('Submit'))
-    expect(
-      await screen.findByText(
-        "Le propriétaire de ce SIRET s'oppose à la diffusion de ses données au public"
-      )
     ).toBeInTheDocument()
   })
 })
