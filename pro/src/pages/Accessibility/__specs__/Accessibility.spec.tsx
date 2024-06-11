@@ -3,11 +3,11 @@ import React from 'react'
 
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { Accessibility } from '../Accessibility'
+import { AccessibilityMenu } from '../AccessibilityMenu'
 
 describe('Statement of Accessibility page', () => {
   it('should display Accessibility information message', () => {
-    renderWithProviders(<Accessibility />)
+    renderWithProviders(<AccessibilityMenu />)
     expect(screen.getByText('Informations d’accessibilité')).toBeInTheDocument()
   })
 })

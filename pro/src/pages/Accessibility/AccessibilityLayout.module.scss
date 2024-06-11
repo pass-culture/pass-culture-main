@@ -1,0 +1,23 @@
+@use "styles/mixins/_layout.scss" as layout;
+@use "styles/mixins/_rem.scss" as rem;
+
+.logo-side {
+  @include layout.logo-side;
+}
+
+.layout {
+  @include layout.full-content-side;
+
+  margin: unset;
+  display: flex;
+  flex-direction: column;
+}
+
+.content {
+  flex: 1;
+}
+
+.back-to-signin-button {
+  margin-top: rem.torem(16px);
+  justify-content: flex-start;
+}
