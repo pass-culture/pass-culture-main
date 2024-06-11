@@ -104,9 +104,7 @@ class Returns403Test:
         assert response.json == {"Partner": ["User not in Adage can't edit the offer"]}
         assert offer1.isActive is False
 
-    def test_when_activating_all_existing_offers_active_status_with_1_offer_not_cancellable(
-        self, client: TestClient
-    ) -> None:
+    def test_when_activating_all_existing_offers_active_status_with_1_offer_not_cancellable(self, client) -> None:
         # Given
         offer1 = CollectiveOfferFactory(isActive=False, validation=OfferValidationStatus.APPROVED)
         venue = offer1.venue
@@ -120,12 +118,11 @@ class Returns403Test:
 
         with patch(
             "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-            return_value=False,
         ):
-            response = client.patch("/collective/offers/active-status", json=data)
+            response = client.with_session_auth("pro@example.com").patch("/collective/offers/active-status", json=data)
 
         # Then
-        assert response.status_code == 403
-        assert response.json == {"Partner": ["User not in Adage can't edit the offer"]}
+        assert response.status_code == 400
+        assert response.json == {"apis": ["User not in Adage can't edit the offer"]}
         assert offer1.isActive is False
         assert offer2.isActive is False

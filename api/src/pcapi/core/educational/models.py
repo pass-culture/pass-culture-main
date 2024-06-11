@@ -16,7 +16,7 @@ from sqlalchemy.ext.mutable import MutableList
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.orm import declared_attr
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql.elements import BinaryExpression
+from sqlalchemy.sql.elements import BinaryExpression, BooleanClauseList
 from sqlalchemy.sql.elements import False_
 from sqlalchemy.sql.elements import UnaryExpression
 from sqlalchemy.sql.functions import func
@@ -477,7 +477,7 @@ class CollectiveOffer(
         return self.status not in [offer_mixin.OfferStatus.PENDING, offer_mixin.OfferStatus.REJECTED]
 
     @is_cancellable.expression  # type: ignore[no-redef]
-    def is_cancellable(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+    def is_cancellable(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
         return cls.validation.not_in(
             [offer_mixin.OfferValidationStatus.PENDING, offer_mixin.OfferValidationStatus.REJECTED]
         )
