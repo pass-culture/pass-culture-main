@@ -4,7 +4,7 @@
 @use "styles/variables/_size.scss" as size;
 
 .base-checkbox {
-  display: flex;
+  display: inline-flex;
   cursor: pointer;
 
   &-label-row {
