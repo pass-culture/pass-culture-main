@@ -449,7 +449,7 @@ def batch_update_collective_offers(query: BaseQuery, update_fields: dict) -> Non
         not educational_models.CollectiveOffer.is_cancellable
     ).with_entities(educational_models.CollectiveOffer.id)
 
-    if non_cancellable_collective_orders_ids.count() > 0:
+    if non_cancellable_collective_orders_ids.exists():
         raise ValueError(
             f"All orders must be cancellables. Order non cancellable: {[id for order_id, in non_cancellable_collective_orders_ids]}"
         )

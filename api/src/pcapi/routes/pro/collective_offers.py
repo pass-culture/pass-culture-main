@@ -417,7 +417,7 @@ def patch_all_collective_offers_active_status(
 @login_required
 @spectree_serialize(
     on_success_status=204,
-    on_error_statuses=[403],
+    on_error_statuses=[400, 403],
     api=blueprint.pro_private_schema,
 )
 def patch_collective_offers_active_status(
@@ -433,7 +433,7 @@ def patch_collective_offers_active_status(
     try:
         offers_api.batch_update_collective_offers(collective_query, {"isActive": body.is_active})
     except ValueError as error:
-        raise ApiErrors({"ids": [error]}, status_code=403)
+        raise ApiErrors({"ids": [error]}, status_code=400)
 
 
 @private_api.route("/collective/offers/archive", methods=["PATCH"])
