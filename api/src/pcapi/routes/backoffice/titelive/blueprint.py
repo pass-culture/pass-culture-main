@@ -66,7 +66,7 @@ def search_titelive() -> utils.BackofficeResponse:
         return render_template("titelive/search_result.html", form=form, dst=url_for(".search_titelive")), 400
 
     try:
-        data = pydantic_v1.parse_obj_as(titelive_serializers.TiteLiveBookOeuvre, json["oeuvre"])
+        data = pydantic_v1.parse_obj_as(titelive_serializers.TiteLiveBookWork, json["oeuvre"])
     except Exception:  # pylint: disable=broad-exception-caught
         ineligibility_reason = None
     else:
