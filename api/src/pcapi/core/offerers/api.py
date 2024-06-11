@@ -488,6 +488,9 @@ def _delete_objects_linked_to_venue(venue_id: int) -> dict:
         offers_models.Mediation.query.filter(offers_models.Mediation.offerId.in_(offers_id_chunk)).delete(
             synchronize_session=False
         )
+        offers_models.OfferReport.query.filter(offers_models.OfferReport.offerId.in_(offers_id_chunk)).delete(
+            synchronize_session=False
+        )
     offers_models.Offer.query.filter(offers_models.Offer.venueId == venue_id).delete(synchronize_session=False)
 
     # delete all things providers related
