@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from flask_jwt_extended import JWTManager
+from flask_wtf.csrf import CSRFProtect
 from sentry_sdk import set_tag
 
 from pcapi import settings
@@ -21,6 +22,8 @@ app.config["JWT_ACCESS_TOKEN_EXPIRES"] = settings.JWT_ACCESS_TOKEN_EXPIRES
 app.config["WTF_CSRF_ENABLED"] = False
 
 jwt = JWTManager(app)
+csrf = CSRFProtect()
+csrf.init_app(app)
 
 
 with app.app_context():
