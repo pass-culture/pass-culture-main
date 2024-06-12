@@ -35,7 +35,7 @@ Utilisez `Given`, `When`, `Then`, `And`, `But` dans le bon ordre pour rendre vos
 -   `Given` donne les préconditions : que doit-on faire pour arriver à notre objet de test
 -   `When` décrit les actions : dans le contexte de ma fonctionalité, quelles sont les étapes à réaliser pour atteindre mon résultat
 -   `Then` attend un résultat et fait une assertion
--   `And`, `But` lie des étapes, ce sont des alias des trois motc clés précédents
+-   `And`, `But` lie des étapes, ce sont des alias des trois mots clés précédents
 
 **Réutilisez** des étapes: quand vous tapez un mot, votre IDE devrait vous donner des indices sur des steps proches ou existantes (il faut parfois installer un plugin gherkin ou cucumber).
 Vous pouvez aussi utiliser les paramètres de steps pour appeler la même step mais avec des données différentes.
