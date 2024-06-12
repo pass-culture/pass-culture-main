@@ -1,5 +1,6 @@
-import React, { Dispatch, SetStateAction } from 'react'
+import { Dispatch, SetStateAction } from 'react'
 
+import fullRefreshIcon from 'icons/full-refresh.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -44,6 +45,7 @@ export const InvoicesNoResult = ({
           disabled={areFiltersDefault}
           onClick={resetFilters}
           variant={ButtonVariant.TERNARYPINK}
+          icon={fullRefreshIcon}
         >
           Réinitialiser les filtres
         </Button>

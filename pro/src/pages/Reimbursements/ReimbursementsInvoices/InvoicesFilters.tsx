@@ -118,7 +118,7 @@ export const InvoicesFilters = ({
           className={styles['reset-filters']}
           disabled={areFiltersDefault}
           onClick={resetFilters}
-          variant={ButtonVariant.TERNARYPINK}
+          variant={ButtonVariant.TERNARY}
           icon={fullRefreshIcon}
         >
           {selectableOptions.length === 1
