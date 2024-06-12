@@ -1,16 +1,16 @@
 """
-remove_feature_flag_new_adage_offer_design
+delete ff WIP_ENABLE_NEW_ADAGE_OFFER_DESIGN
 """
 
 # pre/post deployment: post
 # revision identifiers, used by Alembic.
-revision = 'e4cd12df4552'
-down_revision = '06ecb5800626'
+revision = "e4cd12df4552"
+down_revision = "3f81e39451a0"
 branch_labels: tuple[str] | None = None
 depends_on: list[str] | None = None
 
 
-def get_flag():
+def get_flag():  # type: ignore[no-untyped-def]
     # Do not import `pcapi.models.feature` at module-level. It breaks
     # `alembic history` with a SQLAlchemy error that complains about
     # an unknown table name while initializing the ORM mapper.
