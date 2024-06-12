@@ -195,13 +195,11 @@ def update_products_booking_count_and_reindex_offers() -> None:
 
 @blueprint.cli.command("index_offers_staging")
 @click.option("--clear", help="Clear search index first", type=bool, default=False)
-def index_offers_staging(
-    clear: bool,
-) -> None:
+def index_offers_staging(clear: bool) -> None:
     """Index a subset of offers for staging.
     we do not index by batch because we only have 5000 offers to index
     """
-    if settings.ENV != "staging":
+    if not settings.ENABLE_INDEXATION_CHERRY_PICK_FOR_STAGING:
         raise RuntimeError("This script should only be run on staging")
     if clear:
         search.unindex_all_offers()
