@@ -9,7 +9,7 @@ import TabItem from '@theme/TabItem';
 
 ## Tutorial Goal
 
-The goal of this tutorial is to explain step by step how to **set-up**, **build**, **test** and **deploy** an **integration that connects the pass Culture application to your ticketing system**.
+The goal of this tutorial is to explain step by step how to **set-up**, **build**, **test** and **deploy** an integration that connects the pass Culture application to your ticketing system.
 
 Once your integration is up and running, you will receive ticket reservation/cancellation requests for the **events using your ticketing system**.
 
@@ -49,8 +49,8 @@ When building your integration, **you should pay attention** to two things:
 
 - **the two URLs (booking & cancellation) must be freely accessible** (i.e. not protected by a your own authentication system), the authentication of the notification being done following [**this strategy**](/docs/understanding-our-api/notification-system/authenticating-our-notifications)
 - **we expect specific response formats** : 
-  - for ticket creation, we expect this [**success response**](/docs/understanding-our-api/managing-bookings/connecting-ticketing-system#success-response) and those [**error responses**](/docs/understanding-our-api/managing-bookings/connecting-ticketing-system#error-responses)
-  - for ticket cancellation, we expect this [**success response**](/docs/understanding-our-api/managing-bookings/connecting-ticketing-system#expected-response)
+  - for ticket creation, we expect this [**success response**](/docs/understanding-our-api/managing-bookings/connection-with-ticketing-system#success-response) and those [**error responses**](/docs/understanding-our-api/managing-bookings/connection-with-ticketing-system#error-responses)
+  - for ticket cancellation, we expect this [**success response**](/docs/understanding-our-api/managing-bookings/connection-with-ticketing-system#expected-response)
 
 Here are some examples of what your integration could look like :
 
@@ -75,11 +75,11 @@ class PassCultureAuthenticationError(Exception):
 
 
 # Service responsible for authenticating the pass Culture notifications
-class PassCultureAuthenticationService():
+class PassCultureAuthenticationService:
     @staticmethod
     def _verify_signature(data: str, signature: str):
         # check that the signature of the body is matching the signature sent in the header
-        return hmac.new(PASSCULTURE_HMAC_KEY.encode(), data.encode(), sha256).hexdigest() ==  signature
+        return hmac.new(PASSCULTURE_HMAC_KEY.encode(), data.encode(), sha256).hexdigest() == signature
 
     @classmethod
     def authenticate_request(cls, request):

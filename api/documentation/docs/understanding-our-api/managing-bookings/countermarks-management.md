@@ -11,10 +11,11 @@ For **`Products`** (and **`Events`** not linked to a ticketing system), bookings
 
 ### Mandatory set-up
 
-To be notified when a beneficiary books (or cancels a booking) a product (or an event not linked to a ticketing system), you need :
+To be notified when a beneficiary books (or cancels a booking) a product (or an event not linked to a ticketing system), you need:
 
-- to have the notification URL set (**[as explained here](/docs/understanding-our-api/notification-system/setting-up-notifcations)**)
-- to have implemented the pass Culture notification authentication on your side (**[as explained here](/docs/understanding-our-api/notification-system/authenticating-our-notifications)**) 
+1. **To provide us with a notification URL** that we will request each time a beneficiary books your offer (or cancels a booking). You can find the process **[here](/docs/understanding-our-api/notification-system/setting-up-notifcations)**.
+2. **To implement the notification authentication process** described **[here](/docs/understanding-our-api/notification-system/authenticating-our-notifications)** on your side.
+
 
 ### Our request payload
 
@@ -72,9 +73,9 @@ Each time a beneficiary books a product (or an event not linked to a ticketing s
 | **venue_name** | String | **`false`** | Venue name |
 
 
-## Understanding booking statuses
+## Booking statuses for `📚 products`
 
-### Booking statuses for `products`
+### 🏷️ Statuses explanation
 
 - A booking has the status **`CONFIRMED`** when **a beneficiary has booked a product offer and has not yet retrieved his/her product**
 - A booking has the status **`USED`** when **the booking has been validated by the cultural partner** (meaning the beneficiary has retrieved the product)
@@ -84,7 +85,7 @@ Each time a beneficiary books a product (or an event not linked to a ticketing s
   - **the cultural partner has cancelled the booking**
   - **the booking has automatically been cancelled** because the beneficiary has not retrieve his/her booking in time (10 days for books offers, 30 days otherwise)
 
-### Booking statuses lifecycle for `products`
+### ♻️ Statuses lifecycle
 
 #### Step 1 : booking creation with the status **`CONFIRMED`**
 The beneficiary books a product. It creates a booking with the status **`CONFIRMED`**.
@@ -99,18 +100,20 @@ Here there are four possibilities :
 #### Step 3 : booking reimbursement (`USED` -> `REIMBURSED`)
 Every two weeks, the pass Culture reimbursed the used bookings. The booking status is then set to **`REIMBURSED`**.
 
-### Booking statuses for `events`
+## Booking statuses for `🎭 events`
+
+### 🏷️ Statuses explanation
 
 - A booking has the status **`CONFIRMED`** when **a beneficiary has booked a ticket for your event**
 - A booking has the status **`USED`** when :
   - **the ticket has been validated by you (at the event)**
-  - **the ticket has been automatically validated by the pass Culture 48 hours after your event date** 
+  - **or the ticket has been automatically validated by the pass Culture 48 hours after your event date**
 - A booking has the status **`REIMBURSED`** when **the pass Culture has reimbursed the cultural partner for the ticket**
 - A booking has the status **`CANCELLED`** when :
   - **the beneficiary has cancelled his/her ticket**
   - **the cultural partner (you) has cancelled the ticket**
 
-### Booking statuses lifecycle for `events`
+### ♻️ Statuses lifecycle
 
 #### Step 1 : booking creation with the status **`CONFIRMED`**
 The beneficiary books a ticket for your event. It creates a booking with the status **`CONFIRMED`**.
@@ -136,7 +139,7 @@ A booking is validated, i.e. its status set to **`USED`** :
 
 
 #### Step 3 : booking reimbursement (`USED` -> `REIMBURSED`)
-Every two weeks, the pass Culture reimbursed the used bookings. The booking status is then set to **`REIMBURSED`**.
+After a given period, the pass Culture reimbursed the used bookings. The booking status is then set to **`REIMBURSED`**.
 
 
 ## Countermark validation
