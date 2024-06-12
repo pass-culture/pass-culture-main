@@ -1163,6 +1163,12 @@ def format_legal_category_code(code: int | str) -> str:
     return offerers_constants.CODE_TO_CATEGORY_MAPPING.get(int(code), "Inconnu")
 
 
+def format_venue_provider_count(count: dict | None) -> str:
+    actives = count.get("active", 0) if count else 0
+    inactives = count.get("inactive", 0) if count else 0
+    return f"{actives} actif{'s' if actives>1 else ''} / {inactives} inactif{'s' if inactives>1 else ''}"
+
+
 def install_template_filters(app: Flask) -> None:
     app.jinja_env.trim_blocks = True
     app.jinja_env.lstrip_blocks = True
@@ -1242,6 +1248,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["pc_pro_venue_bookings_link"] = urls.build_pc_pro_venue_bookings_link
     app.jinja_env.filters["pc_pro_venue_offers_link"] = urls.build_pc_pro_venue_offers_link
     app.jinja_env.filters["pc_pro_venue_link"] = urls.build_pc_pro_venue_link
+    app.jinja_env.filters["pc_pro_venue_parameters_link"] = urls.build_pc_pro_venue_parameters_link
     app.jinja_env.filters["pc_backoffice_public_account_link"] = urls.build_backoffice_public_account_link
     app.jinja_env.filters["pc_backoffice_public_account_link_in_comment"] = (
         urls.build_backoffice_public_account_link_in_comment
@@ -1251,3 +1258,4 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_finance_incident_status_badge"] = format_finance_incident_status_badge
     app.jinja_env.filters["format_finance_incident_type"] = format_finance_incident_type
     app.jinja_env.filters["format_finance_incident_type_str"] = format_finance_incident_type_str
+    app.jinja_env.filters["format_venue_provider_count"] = format_venue_provider_count

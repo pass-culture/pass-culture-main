@@ -54,6 +54,10 @@ def build_pc_pro_venue_link(venue: offerers_models.Venue) -> str:
     return f"{settings.PRO_URL}/structures/{venue.managingOffererId}/lieux/{venue.id}"
 
 
+def build_pc_pro_venue_parameters_link(venue: offerers_models.Venue) -> str:
+    return build_pc_pro_venue_link(venue) + "/parametres"
+
+
 def build_pc_pro_venue_bookings_link(venue: offerers_models.Venue) -> str:
     return f"{settings.PRO_URL}/reservations?offerVenueId={venue.id}"
 
