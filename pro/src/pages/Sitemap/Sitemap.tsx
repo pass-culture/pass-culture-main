@@ -99,6 +99,11 @@ export const Sitemap = () => {
           </ul>
         </li>
         <li className={styles['sitemap-list-item']}>
+          <Link to="/collaborateurs" className={styles['sitemap-link']}>
+            Collaborateurs
+          </Link>
+        </li>
+        <li className={styles['sitemap-list-item']}>
           <Link
             to={`/structures/${selectedOffererId}`}
             className={styles['sitemap-link']}
