@@ -196,6 +196,7 @@ export const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
               variant={ButtonVariant.TERNARY}
               icon={fullDownloadIcon}
               onClick={() => downloadInvoices(checkedInvoices)}
+              className={styles['first-action']}
             >
               Télécharger les justificatifs
             </Button>
@@ -219,25 +220,28 @@ export const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
               role="columnheader"
               scope="col"
               className={styles['header-cell']}
+              colSpan={2}
             >
-              Date du justificatif
-              <SortArrow
-                sortingMode={
-                  currentSortingColumn === InvoicesOrderedBy.DATE
-                    ? currentSortingMode
-                    : SortingMode.NONE
-                }
-                onClick={() => {
-                  onColumnHeaderClick(InvoicesOrderedBy.DATE)
-                }}
-              >
-                {currentSortingColumn === InvoicesOrderedBy.DATE && (
-                  <span className="visually-hidden">
-                    Tri par date {giveSortingModeForAlly(currentSortingMode)}{' '}
-                    activé.
-                  </span>
-                )}
-              </SortArrow>
+              <div className={styles['header-sort']}>
+                Date du justificatif
+                <SortArrow
+                  sortingMode={
+                    currentSortingColumn === InvoicesOrderedBy.DATE
+                      ? currentSortingMode
+                      : SortingMode.NONE
+                  }
+                  onClick={() => {
+                    onColumnHeaderClick(InvoicesOrderedBy.DATE)
+                  }}
+                >
+                  {currentSortingColumn === InvoicesOrderedBy.DATE && (
+                    <span className="visually-hidden">
+                      Tri par date {giveSortingModeForAlly(currentSortingMode)}{' '}
+                      activé.
+                    </span>
+                  )}
+                </SortArrow>
+              </div>
             </th>
 
             <th
@@ -245,24 +249,26 @@ export const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
               scope="col"
               className={styles['header-cell']}
             >
-              Type de document
-              <SortArrow
-                sortingMode={
-                  currentSortingColumn === InvoicesOrderedBy.DOCUMENT_TYPE
-                    ? currentSortingMode
-                    : SortingMode.NONE
-                }
-                onClick={() => {
-                  onColumnHeaderClick(InvoicesOrderedBy.DOCUMENT_TYPE)
-                }}
-              >
-                {currentSortingColumn === InvoicesOrderedBy.DOCUMENT_TYPE && (
-                  <span className="visually-hidden">
-                    Tri par type de document{' '}
-                    {giveSortingModeForAlly(currentSortingMode)} activé.
-                  </span>
-                )}
-              </SortArrow>
+              <div className={styles['header-sort']}>
+                Type de document
+                <SortArrow
+                  sortingMode={
+                    currentSortingColumn === InvoicesOrderedBy.DOCUMENT_TYPE
+                      ? currentSortingMode
+                      : SortingMode.NONE
+                  }
+                  onClick={() => {
+                    onColumnHeaderClick(InvoicesOrderedBy.DOCUMENT_TYPE)
+                  }}
+                >
+                  {currentSortingColumn === InvoicesOrderedBy.DOCUMENT_TYPE && (
+                    <span className="visually-hidden">
+                      Tri par type de document{' '}
+                      {giveSortingModeForAlly(currentSortingMode)} activé.
+                    </span>
+                  )}
+                </SortArrow>
+              </div>
             </th>
             <th
               role="columnheader"
@@ -272,60 +278,71 @@ export const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
                 styles['bank-account-column']
               )}
             >
-              Compte bancaire
-              <SortArrow
-                sortingMode={
-                  currentSortingColumn ===
-                  InvoicesOrderedBy.REIMBURSEMENT_POINT_NAME
-                    ? currentSortingMode
-                    : SortingMode.NONE
-                }
-                onClick={() => {
-                  onColumnHeaderClick(
+              <div className={styles['header-sort']}>
+                Compte bancaire
+                <SortArrow
+                  sortingMode={
+                    currentSortingColumn ===
                     InvoicesOrderedBy.REIMBURSEMENT_POINT_NAME
-                  )
-                }}
-              >
-                {currentSortingColumn ===
-                  InvoicesOrderedBy.REIMBURSEMENT_POINT_NAME && (
-                  <span className="visually-hidden">
-                    Tri par compte bancaire
-                    {giveSortingModeForAlly(currentSortingMode)} activé.
-                  </span>
-                )}
-              </SortArrow>
+                      ? currentSortingMode
+                      : SortingMode.NONE
+                  }
+                  onClick={() => {
+                    onColumnHeaderClick(
+                      InvoicesOrderedBy.REIMBURSEMENT_POINT_NAME
+                    )
+                  }}
+                >
+                  {currentSortingColumn ===
+                    InvoicesOrderedBy.REIMBURSEMENT_POINT_NAME && (
+                    <span className="visually-hidden">
+                      Tri par compte bancaire
+                      {giveSortingModeForAlly(currentSortingMode)} activé.
+                    </span>
+                  )}
+                </SortArrow>
+              </div>
             </th>
             <th
               role="columnheader"
               scope="col"
               className={styles['header-cell']}
             >
-              N° de virement
-              <SortArrow
-                sortingMode={
-                  currentSortingColumn === InvoicesOrderedBy.CASHFLOW_LABELS
-                    ? currentSortingMode
-                    : SortingMode.NONE
-                }
-                onClick={() => {
-                  onColumnHeaderClick(InvoicesOrderedBy.CASHFLOW_LABELS)
-                }}
-              >
-                {currentSortingColumn === InvoicesOrderedBy.CASHFLOW_LABELS && (
-                  <span className="visually-hidden">
-                    Tri par n° de virement{' '}
-                    {giveSortingModeForAlly(currentSortingMode)} activé.
-                  </span>
-                )}
-              </SortArrow>
+              <div className={styles['header-sort']}>
+                N° de virement
+                <SortArrow
+                  sortingMode={
+                    currentSortingColumn === InvoicesOrderedBy.CASHFLOW_LABELS
+                      ? currentSortingMode
+                      : SortingMode.NONE
+                  }
+                  onClick={() => {
+                    onColumnHeaderClick(InvoicesOrderedBy.CASHFLOW_LABELS)
+                  }}
+                >
+                  {currentSortingColumn ===
+                    InvoicesOrderedBy.CASHFLOW_LABELS && (
+                    <span className="visually-hidden">
+                      Tri par n° de virement{' '}
+                      {giveSortingModeForAlly(currentSortingMode)} activé.
+                    </span>
+                  )}
+                </SortArrow>
+              </div>
             </th>
             <th
               role="columnheader"
               scope="col"
               className={cn(styles['header-cell'], styles['amount-column'])}
-              colSpan={2}
             >
               Montant remboursé
+            </th>
+            <th
+              role="columnheader"
+              scope="col"
+              className={styles['header-cell']}
+            >
+              Actions
             </th>
           </tr>
         </thead>
@@ -335,8 +352,8 @@ export const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
               <tr role="row" key={invoice.reference} className={styles['row']}>
                 <td
                   role="cell"
-                  className={cn(styles['data'], styles['date-data'])}
-                  data-label="Date du justificatif"
+                  className={styles['data']}
+                  data-label="Sélection du justificatif"
                 >
                   <BaseCheckbox
                     checked={checkedInvoices.includes(invoice.reference)}
@@ -344,6 +361,12 @@ export const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
                     label={`Sélection du ${invoice.amount >= 0 ? 'remboursement' : 'trop perçu'} du ${format(new Date(invoice.date), FORMAT_DD_MM_YYYY)}`}
                     exceptionnallyHideLabelDespiteA11y
                   />
+                </td>
+                <td
+                  role="cell"
+                  className={cn(styles['data'], styles['date-data'])}
+                  data-label="Date du justificatif"
+                >
                   {format(new Date(invoice.date), FORMAT_DD_MM_YYYY)}
                 </td>
                 <td
@@ -399,15 +422,7 @@ export const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
                     signDisplay: 'always',
                   })}
                 </td>
-                <td
-                  role="cell"
-                  className={cn(
-                    styles['data'],
-                    styles['invoice-column'],
-                    styles['invoice-data']
-                  )}
-                  data-label="Téléchargements"
-                >
+                <td role="cell" className={styles['data']} data-label="Actions">
                   <InvoiceActions invoice={invoice} />
                 </td>
               </tr>

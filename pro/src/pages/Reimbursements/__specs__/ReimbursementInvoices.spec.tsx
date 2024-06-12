@@ -116,24 +116,27 @@ describe('reimbursementsWithFilters', () => {
       1
     )
     expect((await screen.findAllByRole('row')).length).toEqual(4)
-    expect(screen.queryAllByRole('columnheader').length).toEqual(5)
+    expect(screen.queryAllByRole('columnheader').length).toEqual(6)
 
     const firstLine = [
-      '<label class="base-checkbox"><span class="base-checkbox-label-row"><input type="checkbox" class="base-checkbox-input"><span class="base-checkbox-label visually-hidden">Sélection du remboursement du 02/11/2022</span></span></label>02/11/2022',
+      '<label class="base-checkbox"><span class="base-checkbox-label-row"><input type="checkbox" class="base-checkbox-input"><span class="base-checkbox-label visually-hidden">Sélection du remboursement du 02/11/2022</span></span></label>',
+      '02/11/2022',
       '<span class="document-type-content"><svg class="more-icon" viewBox="0 0 48 48" aria-hidden="true" width="16"><use xlink:href="/icons/stroke-more.svg#icon"></use></svg>Remboursement</span>',
       'First bank account',
       'VIR7',
       '+100,00&nbsp;€',
     ]
     const secondLine = [
-      '<label class="base-checkbox"><span class="base-checkbox-label-row"><input type="checkbox" class="base-checkbox-input"><span class="base-checkbox-label visually-hidden">Sélection du trop perçu du 03/11/2022</span></span></label>03/11/2022',
+      '<label class="base-checkbox"><span class="base-checkbox-label-row"><input type="checkbox" class="base-checkbox-input"><span class="base-checkbox-label visually-hidden">Sélection du trop perçu du 03/11/2022</span></span></label>',
+      '03/11/2022',
       '<span class="document-type-content"><svg class="less-icon" viewBox="0 0 48 48" aria-hidden="true" width="16"><use xlink:href="/icons/stroke-less.svg#icon"></use></svg>Trop&nbsp;perçu</span>',
       'Second bank account',
       'N/A',
       '-50,00&nbsp;€',
     ]
     const thirdLine = [
-      '<label class="base-checkbox"><span class="base-checkbox-label-row"><input type="checkbox" class="base-checkbox-input"><span class="base-checkbox-label visually-hidden">Sélection du remboursement du 02/10/2023</span></span></label>02/10/2023',
+      '<label class="base-checkbox"><span class="base-checkbox-label-row"><input type="checkbox" class="base-checkbox-input"><span class="base-checkbox-label visually-hidden">Sélection du remboursement du 02/10/2023</span></span></label>',
+      '02/10/2023',
       '<span class="document-type-content"><svg class="more-icon" viewBox="0 0 48 48" aria-hidden="true" width="16"><use xlink:href="/icons/stroke-more.svg#icon"></use></svg>Remboursement</span>',
       'First bank account',
       'VIR9, VIR12',
@@ -143,9 +146,9 @@ describe('reimbursementsWithFilters', () => {
     const reimbursementCells = screen
       .getAllByRole('cell')
       .map((cell) => cell.innerHTML)
-    expect(reimbursementCells.slice(0, 5)).toEqual(firstLine)
-    expect(reimbursementCells.slice(6, 11)).toEqual(secondLine)
-    expect(reimbursementCells.slice(12, 17)).toEqual(thirdLine)
+    expect(reimbursementCells.slice(0, 6)).toEqual(firstLine)
+    expect(reimbursementCells.slice(7, 13)).toEqual(secondLine)
+    expect(reimbursementCells.slice(14, 20)).toEqual(thirdLine)
   })
 
   it('should display new invoice table if FF WIP_ENABLE_FINANCE_INCIDENT is enable', async () => {
@@ -224,24 +227,24 @@ describe('reimbursementsWithFilters', () => {
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     const reimbursementCells = await screen.findAllByRole('cell')
-    expect(reimbursementCells[3].innerHTML).toContain('VIR7')
-    expect(reimbursementCells[9].innerHTML).toContain('N/A')
-    expect(reimbursementCells[15].innerHTML).toContain('VIR9, VIR12')
+    expect(reimbursementCells[4].innerHTML).toContain('VIR7')
+    expect(reimbursementCells[11].innerHTML).toContain('N/A')
+    expect(reimbursementCells[18].innerHTML).toContain('VIR9, VIR12')
     const orderButton = screen.getAllByRole('img', {
       name: 'Trier par ordre croissant',
     })[3]
     await userEvent.click(orderButton)
 
     let refreshedCells = screen.getAllByRole('cell')
-    expect(refreshedCells[3].innerHTML).toContain('N/A')
-    expect(refreshedCells[9].innerHTML).toContain('VIR7')
-    expect(refreshedCells[15].innerHTML).toContain('VIR9, VIR12')
+    expect(refreshedCells[4].innerHTML).toContain('N/A')
+    expect(refreshedCells[11].innerHTML).toContain('VIR7')
+    expect(refreshedCells[18].innerHTML).toContain('VIR9, VIR12')
 
     await userEvent.click(orderButton)
     refreshedCells = screen.getAllByRole('cell')
-    expect(reimbursementCells[3].innerHTML).toContain('VIR7')
-    expect(reimbursementCells[9].innerHTML).toContain('N/A')
-    expect(reimbursementCells[15].innerHTML).toContain('VIR9, VIR12')
+    expect(reimbursementCells[4].innerHTML).toContain('VIR7')
+    expect(reimbursementCells[11].innerHTML).toContain('N/A')
+    expect(reimbursementCells[18].innerHTML).toContain('VIR9, VIR12')
   })
 
   it('should contain sort informations for a11y', async () => {
