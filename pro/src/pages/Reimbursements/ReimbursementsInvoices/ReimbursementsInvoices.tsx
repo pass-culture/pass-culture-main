@@ -134,7 +134,7 @@ export const ReimbursementsInvoices = (): JSX.Element => {
       />
       {getInvoicesQuery.error && <InvoicesServerError />}
       {hasNoInvoicesYet && <NoInvoicesYet />}
-      {hasNoSearchResult && (
+      {hasNoSearchResult && !getInvoicesQuery.error && (
         <InvoicesNoResult
           areFiltersDefault={areFiltersDefault}
           initialFilters={INITIAL_FILTERS}
