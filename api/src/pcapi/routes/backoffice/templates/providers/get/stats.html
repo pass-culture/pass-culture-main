@@ -1,0 +1,20 @@
+<turbo-frame data-turbo="false" id="venue_providers_count_frame">
+<div class="d-flex flex-row gap-2">
+  <div class="card h-100 shadow p-2 flex-grow-1">
+    <div class="card-body row">
+      <div class="col-6">
+        <h5 class="fs-2 card-title">{{ stats.active }}</h5>
+        <p class="card-text fw-light small mb-0">
+          lieu{{ stats.active | pluralize('', 'x') }} avec une synchronisation <b>active</b>
+        </p>
+      </div>
+      <div class="col-6">
+        <h5 class="fs-2 card-title">{{ stats.inactive }}</h5>
+        <p class="card-text fw-light small mb-0">
+          lieu{{ stats.inactive | pluralize('', 'x') }} avec une synchronisation <b>inactive</b>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+</turbo-frame>

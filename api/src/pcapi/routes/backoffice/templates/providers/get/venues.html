@@ -1,0 +1,27 @@
+{% import "components/links.html" as links %}
+<turbo-frame id="provider_venues_frame">
+<table class="table table-hover my-4">
+  <thead>
+    <tr>
+      <th scope="col"></th>
+      <th scope="col">ID</th>
+      <th scope="col">Nom</th>
+      <th scope="col">SIRET</th>
+      <th scope="col">État de synchronisation</th>
+      <th scope="col">Date de dernière synchronisation</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for venue in venues %}
+      <tr>
+        <th scope="row"></th>
+        <td class="fw-bolder">{{ links.build_venue_name_to_details_link(venue, text_attr="id") }}</td>
+        <td class="text-break">{{ links.build_venue_parameters_name_to_pc_pro_link(venue) }}</td>
+        <td>{{ venue.siret | empty_string_if_null }}</td>
+        <td>{{ "Activée" if venue.venueProviders[0].isActive else "Désactivée"}}</td>
+        <td>{{ venue.venueProviders[0].lastSyncDate | format_date_time }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</turbo-frame>

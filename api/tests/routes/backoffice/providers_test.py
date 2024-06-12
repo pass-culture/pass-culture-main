@@ -26,8 +26,8 @@ pytestmark = [
 ]
 
 
-class GetProvidersPageTest(GetEndpointHelper):
-    endpoint = "backoffice_web.providers.get_providers"
+class ListProvidersPageTest(GetEndpointHelper):
+    endpoint = "backoffice_web.providers.list_providers"
     needed_permission = perm_models.Permissions.MANAGE_TECH_PARTNERS
 
     # - fetch session (1 query)
@@ -35,27 +35,46 @@ class GetProvidersPageTest(GetEndpointHelper):
     # - fetch providers and associated api keys (1 query)
     expected_num_queries = 3
 
-    def test_get_providers(self, authenticated_client):
-        offerer = offerers_factories.OffererFactory(name="Individual Offer API consumer")
+    def test_list_providers(self, authenticated_client):
+        offerer = offerers_factories.OffererFactory(name="Aaaaaah je suis au début")
         provider = providers_factories.ProviderFactory(name=offerer.name)
         providers_factories.OffererProviderFactory(offerer=offerer, provider=provider)
         offerers_factories.ApiKeyFactory(offerer=offerer, provider=provider)
+
+        second_offerer = offerers_factories.OffererFactory(name="Zzzzz je dors à la fin")
+        second_provider = providers_factories.ProviderFactory(name=second_offerer.name)
+        providers_factories.OffererProviderFactory(offerer=second_offerer, provider=second_provider)
+        offerers_factories.ApiKeyFactory(offerer=second_offerer, provider=second_provider, prefix="other-prefix")
+        providers_factories.VenueProviderFactory(provider=second_provider)
+        providers_factories.VenueProviderFactory(provider=second_provider, isActive=False)
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint))
             assert response.status_code == 200
 
-        provider_rows = html_parser.extract_table_rows(response.data)
+        rows = html_parser.extract_table_rows(response.data)
 
-        provider_row = next((row for row in provider_rows if row["ID"] == str(provider.id)))
-        assert provider_row["Partenaire technique"] == provider.name
-        assert provider_row["SIREN"] == offerer.siren
-        assert provider_row["Ville"] == offerer.city
-        assert provider_row["Code postal"] == offerer.postalCode
-        assert provider_row["URL du logo"] == ""
-        assert provider_row["Nombre de clés d'API"] == str(1)
-        assert provider_row["Actif pour les pros"] == "Oui"
-        assert provider_row["Actif"] == "Oui"
+        assert rows[0]["ID"] == str(provider.id)
+        assert rows[0]["Partenaire technique"] == provider.name
+        assert rows[0]["Lieux synchronisés au partenaire"] == "0 actif / 0 inactif"
+        assert rows[0]["SIREN"] == offerer.siren
+        assert rows[0]["Ville"] == offerer.city
+        assert rows[0]["Code postal"] == offerer.postalCode
+        assert rows[0]["URL du logo"] == ""
+        assert rows[0]["Nombre de clés d'API"] == "1"
+        assert rows[0]["Actif pour les pros"] == "Oui"
+        assert rows[0]["Actif"] == "Oui"
+
+        assert rows[-1]["ID"] == str(second_provider.id)
+        assert rows[-1]["Partenaire technique"] == second_provider.name
+        assert rows[-1]["Lieux synchronisés au partenaire"] == "1 actif / 1 inactif"
+        assert rows[-1]["SIREN"] == second_offerer.siren
+        assert rows[-1]["Ville"] == second_offerer.city
+        assert rows[-1]["Code postal"] == second_offerer.postalCode
+        assert rows[-1]["URL du logo"] == ""
+        assert rows[-1]["Nombre de clés d'API"] == "1"
+        assert rows[-1]["Actif pour les pros"] == "Oui"
+        assert rows[-1]["Actif"] == "Oui"
 
 
 class CreateProviderTest(PostEndpointHelper):
@@ -185,6 +204,131 @@ class CreateProviderTest(PostEndpointHelper):
         assert created_api_key.offerer == offerer
 
 
+class GetProviderTest(GetEndpointHelper):
+    endpoint = "backoffice_web.providers.get_provider"
+    endpoint_kwargs = {"provider_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_TECH_PARTNERS
+
+    # get session (1 query)
+    # get user with profile and permissions (1 query)
+    # get provider (1 query)
+    expected_num_queries = 3
+
+    def test_get_provider(self, authenticated_client):
+        offerer = offerers_factories.OffererFactory(name="Le videur pro")
+        provider = providers_factories.ProviderFactory(
+            name=offerer.name,
+            logoUrl="www.logo.passculture.exemple.fr",
+            bookingExternalUrl="www.booking.passculture.exemple.fr",
+            cancelExternalUrl="www.cancel.passculture.exemple.fr",
+            notificationExternalUrl="www.notification.passculture.exemple.fr",
+        )
+        providers_factories.OffererProviderFactory(offerer=offerer, provider=provider)
+        offerers_factories.ApiKeyFactory(offerer=offerer, provider=provider)
+
+        url = url_for(self.endpoint, provider_id=provider.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        response_text = html_parser.content_as_text(response.data)
+        assert provider.name in response_text
+        assert f"Provider ID : {provider.id} " in response_text
+        assert f"SIREN : {offerer.siren} " in response_text
+        assert f"Ville : {offerer.city} " in response_text
+        assert f"Code postal : {offerer.postalCode} " in response_text
+        assert "Actif : Oui " in response_text
+        assert "Actif pour les pros : Oui " in response_text
+        assert f"Nombre de clés d'API : {len(provider.apiKeys)} " in response_text
+        assert f"URL du logo : {provider.logoUrl} " in response_text
+        assert f"URL de réservation : {provider.bookingExternalUrl}" in response_text
+        assert f"URL d'annulation : {provider.cancelExternalUrl}" in response_text
+        assert f"URL de notification : {provider.notificationExternalUrl}" in response_text
+
+
+class GetProviderStatsTest(GetEndpointHelper):
+    endpoint = "backoffice_web.providers.get_stats"
+    endpoint_kwargs = {"provider_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_TECH_PARTNERS
+
+    def test_get_stats(self, authenticated_client):
+        offerer = offerers_factories.OffererFactory(name="Le videur pro")
+        provider = providers_factories.ProviderFactory(name=offerer.name)
+        providers_factories.OffererProviderFactory(offerer=offerer, provider=provider)
+        offerers_factories.ApiKeyFactory(offerer=offerer, provider=provider)
+
+        providers_factories.VenueProviderFactory(provider=provider, isActive=False)
+        providers_factories.VenueProviderFactory(provider=provider, isActive=False)
+
+        url = url_for(self.endpoint, provider_id=provider.id)
+
+        # get session (1 query)
+        # get user with profile and permissions (1 query)
+        # get provider counts (1 query)
+        with assert_num_queries(3):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert "0 lieu avec une synchronisation active 2 lieux avec une synchronisation inactive" in cards_text
+
+        providers_factories.VenueProviderFactory(provider=provider, isActive=True)
+
+        url = url_for(self.endpoint, provider_id=provider.id)
+
+        # get session (1 query)
+        # get user with profile and permissions (1 query)
+        # get provider counts (1 query)
+        with assert_num_queries(3):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert "1 lieu avec une synchronisation active 2 lieux avec une synchronisation inactive" in cards_text
+
+
+class GetProviderVenuesTest(GetEndpointHelper):
+    endpoint = "backoffice_web.providers.get_venues"
+    endpoint_kwargs = {"provider_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_TECH_PARTNERS
+
+    # - session + authenticated user (2 queries)
+    # - venues with joined data (1 query)
+    expected_num_queries = 3
+
+    def test_get_linked_venues(self, authenticated_client):
+        offerer = offerers_factories.OffererFactory(name="Le videur pro")
+        provider = providers_factories.ProviderFactory(name=offerer.name)
+        providers_factories.OffererProviderFactory(offerer=offerer, provider=provider)
+        offerers_factories.ApiKeyFactory(offerer=offerer, provider=provider)
+
+        venue_1 = offerers_factories.VenueFactory(name="À la synchro active")
+        providers_factories.VenueProviderFactory(venue=venue_1, provider=provider, isActive=True)
+        venue_2 = offerers_factories.VenueFactory(name="À la synchro inactive")
+        providers_factories.VenueProviderFactory(venue=venue_2, provider=provider, isActive=False)
+        venue_with_other_provider = offerers_factories.VenueFactory(name="À la synchro perdue")
+        providers_factories.VenueProviderFactory(venue=venue_with_other_provider, isActive=True)
+
+        url = url_for(self.endpoint, provider_id=provider.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 2
+
+        # Sort before checking rows data to avoid flaky test
+        rows = sorted(rows, key=lambda row: row["Nom"])
+
+        assert rows[0]["ID"] == str(venue_1.id)
+        assert rows[0]["Nom"] == venue_1.name
+
+        assert rows[1]["ID"] == str(venue_2.id)
+        assert rows[1]["Nom"] == venue_2.name
+
+
 class UpdateProviderTest(PostEndpointHelper):
     endpoint = "backoffice_web.providers.update_provider"
     endpoint_kwargs = {"provider_id": 1}
@@ -209,7 +353,7 @@ class UpdateProviderTest(PostEndpointHelper):
         redirected_response = authenticated_client.get(response.headers["location"])
 
         created_provider_alert = html_parser.extract_alert(redirected_response.data)
-        assert created_provider_alert == f'Le partenaire {form_data["name"]} a été modifié.'
+        assert created_provider_alert == "Les informations ont été mises à jour"
 
         updated_provider = providers_models.Provider.query.filter_by(id=provider.id).one()
         assert updated_provider.name == form_data["name"]
@@ -238,7 +382,7 @@ class UpdateProviderTest(PostEndpointHelper):
         redirected_response = authenticated_client.get(response.headers["location"])
 
         created_provider_alert = html_parser.extract_alert(redirected_response.data)
-        assert created_provider_alert == f'Le partenaire {form_data["name"]} a été modifié.'
+        assert created_provider_alert == "Les informations ont été mises à jour"
 
         updated_provider = providers_models.Provider.query.filter_by(id=provider.id).one()
         assert updated_provider.name == form_data["name"]
@@ -286,7 +430,7 @@ class UpdateProviderTest(PostEndpointHelper):
         redirected_response = authenticated_client.get(response.headers["location"])
 
         created_provider_alert = html_parser.extract_alert(redirected_response.data)
-        assert created_provider_alert == f'Le partenaire {form_data["name"]} a été modifié.'
+        assert created_provider_alert == "Les informations ont été mises à jour"
 
         updated_provider = providers_models.Provider.query.filter_by(id=provider.id).one()
         assert updated_provider.isActive == False
