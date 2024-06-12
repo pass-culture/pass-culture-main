@@ -913,6 +913,62 @@ class AddEventTest:
         assert event.pricingPoint == pricing_point
         assert event.pricingOrderingDate == booking.dateUsed
 
+    @override_features(USE_END_DATE_FOR_COLLECTIVE_PRICING=False)
+    def test_used_using_collective_beginningDatetime(self):
+        motive = models.FinanceEventMotive.BOOKING_USED
+        pricing_point = offerers_factories.VenueFactory()
+        booking = educational_factories.UsedCollectiveBookingFactory(
+            collectiveStock__collectiveOffer__venue__pricing_point=pricing_point,
+            collectiveStock__beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=1),
+            collectiveStock__startDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=2),
+            collectiveStock__endDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=3),
+        )
+
+        # Ensures booking.dateUsed, stock.startDatetime, stock.endDatetime and stock.beginningDatetime
+        # are all different. In real life, startDatetime and beginningDatetime should be the same
+        # They are different here to make sure we use beginningDatetime and not startDatetime
+        assert booking.dateUsed != booking.collectiveStock.startDatetime
+        assert booking.dateUsed != booking.collectiveStock.endDatetime
+        assert booking.collectiveStock.startDatetime != booking.collectiveStock.endDatetime
+        assert booking.collectiveStock.startDatetime != booking.collectiveStock.beginningDatetime
+
+        event = api.add_event(motive=motive, booking=booking)
+        db.session.flush()  # setup relations
+
+        assert event.collectiveBooking == booking
+        assert event.status == models.FinanceEventStatus.READY
+        assert event.motive == motive
+        assert event.valueDate == booking.dateUsed
+        assert event.venue == booking.venue
+        assert event.pricingPoint == pricing_point
+        assert event.pricingOrderingDate == booking.collectiveStock.beginningDatetime
+
+    @override_features(USE_END_DATE_FOR_COLLECTIVE_PRICING=True)
+    def test_used_using_collective_endDatetime(self):
+        motive = models.FinanceEventMotive.BOOKING_USED
+        pricing_point = offerers_factories.VenueFactory()
+        booking = educational_factories.UsedCollectiveBookingFactory(
+            collectiveStock__collectiveOffer__venue__pricing_point=pricing_point,
+            collectiveStock__startDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=1),
+            collectiveStock__endDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=2),
+        )
+
+        # Ensures booking.dateUsed, stock.startDatetime and stock.endDatetime are all different
+        assert booking.dateUsed != booking.collectiveStock.startDatetime
+        assert booking.dateUsed != booking.collectiveStock.endDatetime
+        assert booking.collectiveStock.startDatetime != booking.collectiveStock.endDatetime
+
+        event = api.add_event(motive=motive, booking=booking)
+        db.session.flush()  # setup relations
+
+        assert event.collectiveBooking == booking
+        assert event.status == models.FinanceEventStatus.READY
+        assert event.motive == motive
+        assert event.valueDate == booking.dateUsed
+        assert event.venue == booking.venue
+        assert event.pricingPoint == pricing_point
+        assert event.pricingOrderingDate == booking.collectiveStock.endDatetime
+
     def test_used_after_cancellation(self):
         motive = models.FinanceEventMotive.BOOKING_USED_AFTER_CANCELLATION
         pricing_point = offerers_factories.VenueFactory()
@@ -1615,6 +1671,7 @@ class GenerateCashflowsTest:
         n_queries += 1  # compute next CashflowBatch.label
         n_queries += 1  # insert CashflowBatch
         n_queries += 1  # select CashflowBatch again after commit
+        n_queries += 1  # select feature flags
         n_queries += 1  # select reimbursement points and bank account ids to process
         n_queries += 2 * sum(  # 2 reimbursement points
             (

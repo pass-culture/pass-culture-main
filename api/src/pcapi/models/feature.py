@@ -129,6 +129,7 @@ class FeatureToggle(enum.Enum):
     WIP_BENEFICIARY_EXTRACT_TOOL = "Activer l'extraction de données personnelles (RGPD)"
     WIP_ENABLE_OFFER_MARKDOWN_DESCRIPTION = "Activer la description des offres collectives en markdown."
     WIP_FUTURE_OFFER = "Activer la publication d'offres dans le futur"
+    USE_END_DATE_FOR_COLLECTIVE_PRICING = "Utiliser la date de fin du stock collectif comme date de valorisation."
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -181,6 +182,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
     FeatureToggle.LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC,
     FeatureToggle.SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS,
+    FeatureToggle.USE_END_DATE_FOR_COLLECTIVE_PRICING,
     FeatureToggle.WIP_CONNECT_AS,
     FeatureToggle.WIP_ENABLE_ADAGE_PREVIEW_OFFER_IN_PRO,
     FeatureToggle.WIP_ENABLE_MOCK_UBBLE,
