@@ -567,6 +567,11 @@ def link_venue_to_pricing_point(
     Creates a VenuePricingPointLink if the venue had not been previously linked to a pricing point.
     If it had, then it will raise an error, unless the force_link parameter is True, in exceptional circumstances.
     """
+    if feature.FeatureToggle.USE_END_DATE_FOR_COLLECTIVE_PRICING.is_active():
+        collective_stock_datetime = "endDatetime"
+    else:
+        collective_stock_datetime = "beginningDatetime"
+
     validation.check_venue_can_be_linked_to_pricing_point(venue, pricing_point_id)
     if not timestamp:
         timestamp = datetime.utcnow()
@@ -589,12 +594,13 @@ def link_venue_to_pricing_point(
         pricingPointId=pricing_point_id, venueId=venue.id, timespan=(timestamp, None)
     )
     db.session.add(new_link)
-    for from_tables, where_clauses in (
+    for from_tables, where_clauses, stock_datetime in (
         (
             "booking, stock",
             'finance_event."bookingId" is not null '
             'and booking.id = finance_event."bookingId" '
             'and stock.id = booking."stockId"',
+            "beginningDatetime",
         ),
         (
             # use aliases to have the same `set` clause
@@ -602,6 +608,7 @@ def link_venue_to_pricing_point(
             'finance_event."collectiveBookingId" is not null '
             'and booking.id = finance_event."collectiveBookingId" '
             'and stock.id = booking."collectiveStockId"',
+            collective_stock_datetime,
         ),
     ):
         ppoint_update_result = db.session.execute(
@@ -613,7 +620,7 @@ def link_venue_to_pricing_point(
                 status = :finance_event_status_ready,
                 "pricingOrderingDate" = greatest(
                   booking."dateUsed",
-                  stock."beginningDatetime",
+                  stock."{stock_datetime}",
                   :new_link_start
                 )
               from {from_tables}

@@ -68,6 +68,7 @@ import pcapi.core.users.constants as users_constants
 import pcapi.core.users.models as users_models
 from pcapi.domain import reimbursement
 from pcapi.models import db
+from pcapi.models import feature
 from pcapi.repository import transaction
 from pcapi.tasks import finance_tasks
 from pcapi.utils import human_ids
@@ -96,14 +97,18 @@ CASHFLOW_BATCH_LABEL_PREFIX = "VIR"
 def get_pricing_ordering_date(
     booking: bookings_models.Booking | educational_models.CollectiveBooking,
 ) -> datetime.datetime:
-    stock: offers_models.Stock | educational_models.CollectiveStock = (
-        booking.stock if isinstance(booking, bookings_models.Booking) else booking.collectiveStock
-    )
+    if isinstance(booking, bookings_models.Booking):
+        eventDatetime = booking.stock.beginningDatetime
+    else:
+        if feature.FeatureToggle.USE_END_DATE_FOR_COLLECTIVE_PRICING.is_active():
+            eventDatetime = booking.collectiveStock.endDatetime
+        else:
+            eventDatetime = booking.collectiveStock.beginningDatetime
     # IMPORTANT: if you change this, you must also adapt the SQL query
     # in `core.offerers.api.link_venue_to_pricing_point()`
     return max(
         get_pricing_point_link(booking).timespan.lower,
-        stock.beginningDatetime or booking.dateUsed,
+        eventDatetime or booking.dateUsed,
         booking.dateUsed,
     )
 
@@ -863,6 +868,10 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
     # Store now otherwise SQLAlchemy will make a SELECT to fetch the
     # id again after each COMMIT.
     batch_id = batch.id
+    if feature.FeatureToggle.USE_END_DATE_FOR_COLLECTIVE_PRICING.is_active():
+        collective_cutoff_time = educational_models.CollectiveStock.endDatetime
+    else:
+        collective_cutoff_time = educational_models.CollectiveStock.beginningDatetime
     logger.info("Started to generate cashflows for batch %d", batch_id)
     filters = (
         models.Pricing.status == models.PricingStatus.VALIDATED,
@@ -885,7 +894,7 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
             ),
             sqla.and_(
                 models.Pricing.collectiveBookingId.is_not(None),
-                educational_models.CollectiveStock.beginningDatetime < batch.cutoff,
+                collective_cutoff_time < batch.cutoff,
             ),
             models.FinanceEvent.bookingFinanceIncidentId.is_not(None),
         ),
