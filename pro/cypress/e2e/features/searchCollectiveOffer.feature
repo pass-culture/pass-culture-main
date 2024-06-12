@@ -5,11 +5,11 @@ Feature: Search collective offers
     Given I am logged in
     And I go to "Offres" page
     And I go to "Offres collectives" view
-    When I search for "real_venue 1 eac_2_lieu [BON EAC]" in "Lieu"
-    And I search for "Projection audiovisuelle" in "Format"
+    When I select "real_venue 1 eac_2_lieu [BON EAC]" in "Lieu"
+    And I select "Projection audiovisuelle" in "Format"
     And I validate my filters
     Then These results should be displayed
-      |  |  |          | Lieu                              | Établissement           | Status  |
+      |  |  | Titre    | Lieu                              | Établissement           | Status  |
       |  |  | offer 49 | real_venue 1 eac_2_lieu [BON EAC] | Tous les établissements | publiée |
       |  |  | offer 47 | real_venue 1 eac_2_lieu [BON EAC] | Tous les établissements | publiée |
       |  |  | offer 45 | real_venue 1 eac_2_lieu [BON EAC] | Tous les établissements | publiée |
