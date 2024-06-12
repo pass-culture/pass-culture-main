@@ -3,7 +3,7 @@ Feature: Search collective offers
 
   Scenario: A search with several filters should display expected results
     Given I am logged in
-    And I go to "Offres" page
+    And I go to the "Offres" page
     And I go to "Offres collectives" view
     When I select "real_venue 1 eac_2_lieu [BON EAC]" in "Lieu"
     And I select "Projection audiovisuelle" in "Format"
