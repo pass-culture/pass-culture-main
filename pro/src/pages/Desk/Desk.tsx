@@ -195,8 +195,7 @@ export const Desk = (): JSX.Element => {
               },
             ]}
             className={`${styles['desk-callout']}`}
-            title=" N’oubliez pas de vérifier l’identité du bénéficiaire avant de
-            valider la contremarque."
+            title="N’oubliez pas de vérifier l’identité du bénéficiaire avant de valider la contremarque."
           >
             Les pièces d’identité doivent impérativement être présentées
             physiquement. Merci de ne pas accepter les pièces d’identité au
