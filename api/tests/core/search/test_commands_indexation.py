@@ -256,18 +256,6 @@ class StagingIndexationTest:
                 == 2
             )
 
-    def test_get_offers_with_visa_number(self):
-        stock_with_visa_number = offers_factories.StockFactory.create_batch(
-            size=20, offer__isActive=True, offer__extraData={"visa_number": str(random.randint(1, 100000))}
-        )
-        offers_factories.StockFactory.create_batch(size=20, offer__isActive=True)
-
-        offer_ids = search.staging_indexation.get_offers_with_visa_number(10)
-
-        assert len(offer_ids) == 10
-        offer_ids_with_visa_number = [stock.offer.id for stock in stock_with_visa_number]
-        assert all(offer_id in offer_ids_with_visa_number for offer_id in offer_ids)
-
     def test_get_random_offers(self):
         offers_factories.StockFactory.create_batch(size=20, offer__isActive=True)
 
