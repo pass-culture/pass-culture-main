@@ -75,7 +75,7 @@ def authorize() -> utils.BackofficeResponse:
         )
         return werkzeug.exceptions.Forbidden()
 
-    if settings.IS_TESTING or settings.IS_DEV or settings.IS_INTEGRATION:
+    if settings.IS_TESTING or settings.IS_DEV or settings.IS_INTEGRATION or settings.IS_OPS:
         roles = list(perm_models.Roles)
     else:
         roles = fetch_user_roles_from_google_workspace(google_email)
