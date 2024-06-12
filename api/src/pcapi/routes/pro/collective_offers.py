@@ -433,7 +433,8 @@ def patch_collective_offers_active_status(
     try:
         offers_api.batch_update_collective_offers(collective_query, {"isActive": body.is_active})
     except ValueError as error:
-        raise ApiErrors({"ids": [error]}, status_code=400)
+        message = error.args[0]
+        raise ApiErrors({"ids": [message]}, status_code=400)
 
 
 @private_api.route("/collective/offers/archive", methods=["PATCH"])
