@@ -1,15 +1,15 @@
 ---
 sidebar_position: 2
-title: Managing countermarks
+title: Countermarks management
 ---
 
-# Managing countermarks
+# Countermarks Management
 
 For **`Products`** (and **`Events`** not linked to a ticketing system), bookings are countermarks that you can validate or cancel by calling our API.
 
-## Notification
+## Notifications
 
-### Prerequisites
+### Mandatory set-up
 
 To be notified when a beneficiary books (or cancels a booking) a product (or an event not linked to a ticketing system), you need :
 
@@ -91,7 +91,7 @@ The beneficiary books a product. It creates a booking with the status **`CONFIRM
 
 #### Step 2 : booking validation (`CONFIRMED` -> `USED`) or booking cancellation (`CONFIRMED` -> `CANCELLED`) 
 Here there are four possibilities :
-- **The beneficiary retrieves its booking** within 10 days, **so you validate its booking** : the booking status is set to **`USED`**
+- **The beneficiary retrieves its booking** in time, **so you validate its booking** : the booking status is set to **`USED`**
 - **The beneficiary cancels its booking** : the booking status is set to **`CANCELLED`**
 - **You cancel the beneficiary's booking** : the booking status is set to  **`CANCELLED`**
 - **The pass Culture cancels the beneficiary's booking** because he/she does not retrieve its booking within 10 days : the booking status is set to  **`CANCELLED`**
