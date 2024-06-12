@@ -24,13 +24,15 @@ export const Commitment = () => {
         <i>Date de publication : 21 mai 2024</i>
       </p>
       <p className={styles['paragraph']}>
-        Au pass Culture, notre mission est de renforcer et de diversifier les
-        pratiques culturelles de tous les jeunes de 15 à 20 ans. En d’autres
-        termes, le pass Culture a pour vocation de rendre accessible la culture
-        à une population qui est souvent empêchée par de multiples freins. Le
-        pass Culture s’appuie sur la longue histoire des politiques françaises
-        de démocratisation de la culture pour rapprocher tous les usagers des
-        acteurs culturels, quelle que soit leur situation.
+        Le pass Culture est né de la volonté de mettre à disposition des jeunes
+        un nouveau dispositif favorisant l’accès à la culture afin de renforcer
+        et diversifier les pratiques culturelles, en révélant la richesse
+        culturelle des territoires. En d’autres termes, le pass Culture a pour
+        vocation de rendre accessible la culture à une population qui est
+        souvent empêchée par de multiples freins. Le pass Culture s’appuie sur
+        la longue histoire des politiques françaises de démocratisation de la
+        culture pour rapprocher tous les usagers des acteurs culturels, quelle
+        que soit leur situation.
       </p>
       <p className={styles['paragraph']}>
         Le choix d’une politique publique matérialisée par un produit numérique
