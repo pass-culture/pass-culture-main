@@ -75,21 +75,6 @@ def get_offers_for_each_gtl_level_1(size_per_gtl: int) -> set[int]:
     return result
 
 
-def get_offers_with_visa_number(size: int) -> set[int]:
-    logger.info("Fetching offers with visa number -- START")
-    query = (
-        offers_models.Offer.query.join(offers_models.Stock)
-        .filter(
-            offers_models.Offer.extraData["visa_number"].is_not(None),
-            offers_models.Offer.is_eligible_for_search,
-        )
-        .with_entities(offers_models.Offer.id)
-        .limit(size)
-    )
-    logger.info("Fetching offers with visa number -- END")
-    return {offer_id for offer_id, in query}
-
-
 def get_random_offers(size: int, excluded_offer_ids: set[int]) -> set[int]:
     query = (
         offers_models.Offer.query.join(offers_models.Stock)
