@@ -1,20 +1,19 @@
 ---
 sidebar_position: 1
-title: Connecting your ticketing system
 ---
 
-# Connecting your ticketing system to the pass Culture application
+# Connection with a ticketing system
 
 If you have a ticketing system to manage your events tickets, it is possible to connect your ticketing system with the pass Culture application.
 
-## Prerequisites 
+## Mandatory set-up
 
-To connect your ticketing system to the pass Culture application, you need first :
+To connect your ticketing system to the pass Culture application, you need first:
 
 1. **To provide us with a booking and a cancelling URL** that we will request each time a beneficiary book/cancel a ticket for the event. You can find the process **[here](/docs/understanding-our-api/notification-system/setting-up-notifcations)**.
-2. **To implement the notification authentication process** described **[here](/docs/understanding-our-api/notification-system/authenticating-our-notifications)**.
+2. **To implement the notification authentication process** described **[here](/docs/understanding-our-api/notification-system/authenticating-our-notifications)** on your side.
 
-## How to enable ticket booking for an event
+## Enable ticket booking for an event
 
 Once your provider account is properly set (with a booking URL and a cancellation URL), you can enable ticket booking for an event by **setting the `hasTicket` parameter to `true`** when **[creating the event](/rest-api#tag/Event-offer/operation/PostEventOffer)**.
 
@@ -26,7 +25,7 @@ Once the event is created, you cannot change the **`hasTicket`** attribute.
 
 ### General explanation
 
-If you enabled ticket booking for an event, we will call **your booking URL** whenever a beneficiary books a ticket on the pass Culture application.
+If you enabled ticket booking for an event, we will call **your booking URL** whenever a beneficiary books a ticket for this event on the pass Culture application.
 We will wait for your response, that must contain a barcode, and forward it to the beneficiary.
 
 :::warning
@@ -117,9 +116,9 @@ In case of success, here is the JSON we expect in return :
 | **tickets[].barcode** | String | **`false`** | Ticket barcode **(⚠️ mandatory)** |
 | **tickets[].seat** | String | `true` | Ticket seat |
 
-### Error response
+### Error responses
 
-There is two error cases we are expecting when we try to book a ticket on your server :
+There are two cases for which we are expecting an error when we try to book a ticket on your server :
 
 - the event date is **sold-out**
 - we are trying to book 2 tickets but **there is only one ticket left** 
