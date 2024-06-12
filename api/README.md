@@ -1,4 +1,4 @@
-# pass-culture-api
+# PASS-CULTURE-API
 
 Voici le backend de l'application pass Culture; il est lancé via `docker-compose` en utilisant le fichier
 `docker-compose-backend.yml` du répertoire parent de `api`: `pass-culture-main`.
@@ -6,7 +6,7 @@ Voici le backend de l'application pass Culture; il est lancé via `docker-compos
 Plus de détails sur le lancement de l'infra docker-compose sont accessibles dans le
 [README de pass-culture-main](https://github.com/pass-culture/pass-culture-main#readme)
 
-## OpenAPI
+## I. OpenAPI
 
 Une documentation Swagger des APIs est générée selon l'OpenAPI Specification (OAS3) grâce à un schéma généré par
 Spectree:
@@ -19,10 +19,39 @@ Spectree:
 * [API pro privée](https://backend.passculture.app/pro/swagger)
 * [API publique d'offres individuelles](https://backend.passculture.app/public/offers/v1/swagger)
 
-## Liens des mocks API:
+## II. Liens des mocks API:
 * [API "Charlie" billeterie](https://mock-api-billeterie.ehp.passculture.team/)
 
-## Installation des dépendances
+## III. Démarrage du serveur back api
+
+Il y a deux options pour lancer l'application Flask.
+La première consiste en l'utilisation d'un utilitaire dédié (`pc`) qui utilise docker-compose. Cette méthode permet d'avoir le plus simplement un server capable de répondre et s'adresse essentiellement aux developpeur front.
+La seconde méthode consiste à créer en local les différents constituant logiciel afin d'avoir une maitrise plus fine des traitements (debugger, se connecter à la DB) et un temps de setup plus court. 
+ 
+### III.1. Option 1 : Lancement via le script `pc` présent dans pass-culture-main
+
+```shell
+pc start-backend
+```
+
+### III.2. Option 2 : Lancement manuel
+
+#### III.2.1. Installation des dépendances
+
+#### III.4. Poetry
+
+On utilise Poetry pour gérer nos dépendances. Par défaut, Poetry crée l'environnement virtuel dans un dossier
+qui dépend du système d'exploitation.
+
+La méthode d'activation de l'environnement virtuel recommandée est avec la commande `poetry shell`.
+
+Pour un usage avancé comme avoir plusieurs environnements virtuels, il existe [d'autres manières d'activer son
+environnement virtuel](https://python-poetry.org/docs/basic-usage#activating-the-virtual-environment).
+
+Une gestion plus fine de l'environnement virtuel utilisé par `poetry` peut être trouvée sur ce lien : [Managing environments | Documentation | Poetry](https://python-poetry.org/docs/managing-environments/)
+
+*NOTE* : Poetry n'est pas utilisé dans les conteneurs Docker, i.e. la commande `flask` est directement accessible.
+*NOTE* : L'ajout de dépendance doit se faire par Poetry pour mettre à jour le fichier lock.
 
 Avec `poetry` et Python **3.11** :
 
@@ -44,22 +73,10 @@ Le lint des migrations, effectué lors du [hook de precommit](../.githooks/pre-c
 npm install --global squawk-cli
 ```
 
-### Poetry
+#### III.7. Postgresql
+Lien officiel pour l'installation https://www.postgresql.org/download/
 
-On utilise Poetry pour gérer nos dépendances. Par défaut, Poetry crée l'environnement virtuel dans un dossier
-qui dépend du système d'exploitation.
-
-La méthode recommandée d'activer son environnement virtuel est avec la commande `poetry shell`.
-
-Pour un usage avancé comme avoir plusieurs environnements virtuels, il existe [d'autres manières d'activer son
-environnement virtuel](https://python-poetry.org/docs/basic-usage#activating-the-virtual-environment).
-
-Une gestion plus fine de l'environnement virtuel utilisé par `poetry` peut être trouvée sur ce lien : [Managing environments | Documentation | Poetry](https://python-poetry.org/docs/managing-environments/)
-
-*NOTE* : Poetry n'est pas utilisé dans les conteneurs Docker, i.e. la commande `flask` est directement accessible.
-*NOTE* : L'ajout de dépendance doit se faire par Poetry pour mettre à jour le fichier lock.
-
-### PostGIS (nécessaire hors docker)
+#### III.5. PostGIS
 
 - Verifier que `PostGIS` est bien installé. Si ce n'est pas le cas: pour installer `PostGIS` dans les systèmes d'exploitation qui ne le fournissent pas avec `PostgreSQL`:
   - Linux : `apt install postgis` pour Ubuntu ou `pacman -S postgis` pour Arch Linux
@@ -68,13 +85,77 @@ Une gestion plus fine de l'environnement virtuel utilisé par `poetry` peut êtr
   - MacOS : `PostGIS` est fourni avec la distribution [Postgres.app](https://postgresapp.com/). Si une autre manière
     d'installer `PostgreSQL` a été choisie, alors la commande d'installation est `brew install postgis`
 
-### Redis et Postgresql (nécessaire hors docker)
+#### III.6. Redis
+Le lien officiel pour l'installation: https://redis.io/docs/latest/operate/oss_and_stack/install/install-redis/
 
-- Démarrer les services postgresql et redis, par exemple lorsqu'ils ont été installés via _Homebrew_:
+
+Si la base de données n'a pas été initialisée, vous devez suivre les étapes suivantes :
+
+* Soit en lançant la commande suivante qui va créer les bases de données pour l'api et pour les tests, installer les extensions postgres et jouer les migrations
+
   ```shell
-  brew services start postgresql
-  brew services start redis
+  pc setup-no-docker
   ```
+
+* Soit en réalisant les étapes suivantes une par une:
+  #TODO : du coup comment on lance la session avant 
+  On a un probleme de droit parce qu'en installant postgres on n'a que le superUser qui est configuré dans la bd on ne peut donc pas créer des role avec notre utilisateur courant
+  on ne peut pas lancer le script également avec le su car il n'a pas les variables d'environnement qu'il faut et qu'on n'a surtout pas le droit d'executer le fichier en tant qu'un autre user. ????
+  - créer les _users_ suivants:
+
+    ```sql
+    CREATE ROLE pass_culture SUPERUSER LOGIN PASSWORD 'passq';
+    CREATE ROLE pytest SUPERUSER LOGIN PASSWORD 'pytest';
+    ```
+
+  - Ajouter ces variables au fichier `.env.local.secret` à la racine du dossier `api/` (en complétant par le port de
+    votre serveur postgresql, habituellement `5432`):
+
+    ```dotenv
+    DATABASE_URL=postgresql://pass_culture:passq@localhost:<port>/pass_culture
+    DATABASE_URL_TEST=postgresql://pytest:pytest@localhost:<port>/pass_culture_test
+    ```
+
+  - créer les _databases_ associés (cf. les commandes `recreate_database` `recreate_database_test` dans le fichier `start_backend_no_docker`)
+
+  - Installer les extensions et jouer les migrations en ayant dans le `poetry shell` :
+
+    ```shell
+    flask install_postgres_extensions
+    alembic upgrade pre@head
+    alembic upgrade post@head
+    ```
+
+- Vous pouvez maintenant lancer l'application Flask
+
+  ```shell
+  python src/pcapi/app.py
+  ```
+#TODO: move this section later 
+- Vous pouvez également lancer les tests sans docker depuis un `poetry shell` avec `pytest` de la même façon qu'expliqué précédemment
+
+- Vous pouvez également utiliser les commandes suivantes
+
+  # Lancer l'API
+  pc start-api-no-docker
+  # Lancer le Backoffice
+  pc start-backoffice-no-docker
+  # Nettoyer les DB, reconstruire la sandbox et jouer les migrations
+  pc restart-api-no-docker
+  # Supprimer et recréer les DB (test et data)
+  pc reset-db-no-docker
+  # Supprimer et recréer la DB de test
+  pc reset-db-test-no-docker
+  ```
+
+Si vous souhaitez (ré)utiliser docker par la suite, n'oubliez pas de commenter `DATABASE_URL` et `DATABASE_URL_TEST` dans `.env.local.secret`, et d'arrêter le service redis-server
+
+
+
+
+
+
+
 
 ## Tests
 
@@ -149,6 +230,7 @@ Les différentes fixtures utilisées dans les tests sont définies dans `tests/c
 Les variables d'environnement nécessaires au bon fonctionnement mais qui porte des données sensibles (identifiants, clés d'API, ...)
 ne sont pas enregistrés dans les fichiers d'environnement du dépôt.
 Il faut les ajouter dans le fichier `api/.env.local.secret` .
+TODO maybe specify them in or make a list
 
 
 ### Scan du repo par GitGuardian
@@ -157,75 +239,6 @@ Une Github Action est lancée à chaque push sur le repo, lançant un scan de fu
 Pour ignorer un faux positif, il convient d'ajouter un commentaire _inline_ dans le code: `# ggignore`
 cf https://github.com/GitGuardian/ggshield#in-code
 
-## Démarrage du serveur back api
-
-### Option 1 : Lancement via le script `pc` présent dans pass-culture-main
-
-```shell
-pc start-backend
-```
-
-### Option 2 : Lancement manuel (sans docker) pour pouvoir débugger, se connecter à la DB etc...
-
-Si la base de données n'a pas été initialisée, vous devez suivre les étapes suivantes :
-
-* Soit en lançant la commande suivante qui va créer les bases de données pour l'api et pour les tests, installer les extensions postgres et jouer les migrations
-
-  ```shell
-  pc setup-no-docker
-  ```
-
-* Soit en réalisant les étapes suivantes une par une:
-  #TODO : du coup comment on lance la session avant 
-  - créer les _users_ suivants:
-
-    ```sql
-    CREATE ROLE pass_culture SUPERUSER LOGIN PASSWORD 'passq';
-    CREATE ROLE pytest SUPERUSER LOGIN PASSWORD 'pytest';
-    ```
-
-  - Ajouter ces variables au fichier `.env.local.secret` à la racine du dossier `api/` (en complétant par le port de
-    votre serveur postgresql, habituellement `5432`):
-
-    ```dotenv
-    DATABASE_URL=postgresql://pass_culture:passq@localhost:<port>/pass_culture
-    DATABASE_URL_TEST=postgresql://pytest:pytest@localhost:<port>/pass_culture_test
-    ```
-
-  - créer les _databases_ associés (cf. les commandes `recreate_database` `recreate_database_test` dans le fichier `start_backend_no_docker`)
-
-  - Installer les extensions et jouer les migrations en ayant dans le `poetry shell` :
-
-    ```shell
-    flask install_postgres_extensions
-    alembic upgrade pre@head
-    alembic upgrade post@head
-    ```
-
-- Vous pouvez maintenant lancer l'application Flask
-
-  ```shell
-  python src/pcapi/app.py
-  ```
-
-- Vous pouvez également lancer les tests sans docker depuis un `poetry shell` avec `pytest` de la même façon qu'expliqué précédemment
-
-- Vous pouvez également utiliser les commandes suivantes
-
-  ```shell
-  # Lancer l'API
-  pc start-api-no-docker
-  # Lancer le Backoffice
-  pc start-backoffice-no-docker
-  # Nettoyer les DB, reconstruire la sandbox et jouer les migrations
-  pc restart-api-no-docker
-  # Supprimer et recréer les DB (test et data)
-  pc reset-db-no-docker
-  # Supprimer et recréer la DB de test
-  pc reset-db-test-no-docker
-  ```
-
-Si vous souhaitez (ré)utiliser docker par la suite, n'oubliez pas de commenter `DATABASE_URL` et `DATABASE_URL_TEST` dans `.env.local.secret`, et d'arrêter le service redis-server
 
 ### Database de jeu
 

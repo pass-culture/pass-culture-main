@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_DIR="$PASS_CULTURE_DIR/pass-culture-main/api"
+API_DIR="$ROOT_PATH/api"
 RUN="${RUN:=''}" # avoid unbound variable error
 
 # Recreate databases
@@ -91,8 +91,18 @@ setup_no_docker() {
         echo "Requirements check failed. Exiting setup."
         return 1
     fi
-    echo "DATABASE_URL=postgresql://pass_culture:passq@localhost:5432/pass_culture" >> $API_DIR/.env.local.secret
-    echo "DATABASE_URL_TEST=postgresql://pytest:pytest@localhost:5432/pass_culture_test" >> $API_DIR/.env.local.secret
+    if [ ! -f "$API_DIR/.env.local.secret" ]; then
+        echo "$API_DIR/.env.local.secret does not exist, creating it."
+        touch "$API_DIR/.env.local.secret"
+        echo "DATABASE_URL=postgresql://pass_culture:passq@localhost:5432/pass_culture" >> $API_DIR/.env.local.secret
+        echo "DATABASE_URL_TEST=postgresql://pytest:pytest@localhost:5432/pass_culture_test" >> $API_DIR/.env.local.secret
+    elif ! grep -q "DATABASE_URL" "$API_DIR/.env.local.secret"; then
+        echo "DATABASE_URL is not in $API_DIR/.env.local.secret"
+        echo "DATABASE_URL=postgresql://pass_culture:passq@localhost:5432/pass_culture" >> $API_DIR/.env.local.secret
+        echo "DATABASE_URL_TEST=postgresql://pytest:pytest@localhost:5432/pass_culture_test" >> $API_DIR/.env.local.secret
+    else
+        echo "DATABASE_URL is in $API_DIR/.env.local.secret"
+    fi
     recreate_database
     recreate_database_test
     flask install_postgres_extensions
