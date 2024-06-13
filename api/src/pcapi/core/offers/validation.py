@@ -453,10 +453,10 @@ def check_booking_limit_datetime(
         else:
             offer = stock.offer
 
-        if beginning and booking_limit_datetime and offer and offer.venue.departementCode is not None:
-            beginning_tz = date.utc_datetime_to_department_timezone(beginning, offer.venue.departementCode)
+        if beginning and booking_limit_datetime and offer and offer.departementCode is not None:
+            beginning_tz = date.utc_datetime_to_department_timezone(beginning, offer.departementCode)
             booking_limit_datetime_tz = date.utc_datetime_to_department_timezone(
-                booking_limit_datetime, offer.venue.departementCode
+                booking_limit_datetime, offer.departementCode
             )
 
             same_date = beginning_tz.date() == booking_limit_datetime_tz.date()

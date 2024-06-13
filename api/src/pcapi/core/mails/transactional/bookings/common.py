@@ -27,4 +27,4 @@ def get_offerer_name(booking: Booking) -> str:
 
 
 def get_venue_street(booking: Booking) -> str:
-    return booking.stock.offer.venue.street
+    return booking.stock.offer.street

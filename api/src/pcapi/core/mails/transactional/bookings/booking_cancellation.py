@@ -79,6 +79,7 @@ def get_booking_cancellation_confirmation_by_pro_email_data(
         number_of_bookings=len(ongoing_stock_bookings),
         stock_bookings=ongoing_stock_bookings,
         stock_name=stock_name,
+        offer=booking.stock.offer,
         venue=venue,
     )
 
