@@ -6,6 +6,7 @@ import {
   OfferEducationalStockFormValues,
   Mode,
 } from 'core/OfferEducational/types'
+import strokeCollaborator from 'icons/stroke-collaborator.svg'
 import strokeEuroIcon from 'icons/stroke-euro.svg'
 import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
@@ -56,22 +57,20 @@ export const FormStock = ({
         disabled={mode === Mode.READ_ONLY}
         label={EVENT_TIME_LABEL}
         name="eventTime"
-        smallLabel
       />
       <TextInput
         disabled={disablePriceAndParticipantInputs}
         label={NUMBER_OF_PLACES_LABEL}
         name="numberOfPlaces"
         placeholder="Ex : 30"
-        smallLabel
         type="number"
         hasLabelLineBreak={false}
+        rightIcon={strokeCollaborator}
       />
       <TextInput
         disabled={disablePriceAndParticipantInputs}
         label={TOTAL_PRICE_LABEL}
         name="totalPrice"
-        smallLabel
         step={0.01} // allow user to enter a price with cents
         type="number"
         rightIcon={strokeEuroIcon}
