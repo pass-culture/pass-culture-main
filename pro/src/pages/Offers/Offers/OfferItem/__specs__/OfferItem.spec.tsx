@@ -619,7 +619,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       props.offer = collectiveOfferFactory({
         stocks,
         status: OfferStatus.SOLD_OUT,
-        booking: { booking_status: 'booked', id: 1 },
+        booking: { booking_status: CollectiveBookingStatus.PENDING, id: 1 },
       })
       renderOfferItem(props)
 
@@ -649,7 +649,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       props.offer = collectiveOfferFactory({
         stocks,
         status: OfferStatus.SOLD_OUT,
-        booking: { booking_status: 'NO_BOOKING', id: 0 },
+        booking: { booking_status: 'PENDING', id: 0 },
       })
 
       vi.spyOn(api, 'cancelCollectiveOfferBooking').mockRejectedValueOnce(
