@@ -84,7 +84,7 @@ jobs:
       MAINTENANCE_BRANCH: maint/v${{ github.event.inputs.releaseNumber }}
     steps:
       - name: "Checkout new tag"
-        uses: actions/checkout@v4.1.6
+        uses: actions/checkout@v4.1.7
         with:
           ref: v${{ github.event.inputs.releaseNumber }}.0.0
       - name: "Create maintenance branch"

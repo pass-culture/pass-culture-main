@@ -20,7 +20,7 @@ jobs:
     name: "Quality checks"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.6
+      - uses: actions/checkout@v4.1.7
       - name: "Authentification to Google"
         uses: "google-github-actions/auth@v2"
         with:
@@ -98,7 +98,7 @@ jobs:
     name: "Pylint"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.6
+      - uses: actions/checkout@v4.1.7
       - name: Authentification to Google
         uses: "google-github-actions/auth@v2"
         with:
@@ -184,7 +184,7 @@ jobs:
           POSTGRES_PASSWORD: pytest
           POSTGRES_DB: pass_culture
     steps:
-      - uses: actions/checkout@v4.1.6
+      - uses: actions/checkout@v4.1.7
         with:
           # On a feature branch, we must fetch the whole history to
           # find the common ancestor with master (see `git merge-base`
@@ -383,7 +383,7 @@ jobs:
           POSTGRES_PASSWORD: pytest
           POSTGRES_DB: pass_culture
     steps:
-      - uses: actions/checkout@v4.1.6
+      - uses: actions/checkout@v4.1.7
       - name: "Authentification to Google"
         uses: "google-github-actions/auth@v2"
         with:

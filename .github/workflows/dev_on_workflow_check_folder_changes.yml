@@ -24,7 +24,7 @@ jobs:
     outputs:
       folder_changed: ${{ steps.folder-check-changed-files.outputs.any_modified }}
     steps:
-      - uses: actions/checkout@v4.1.6
+      - uses: actions/checkout@v4.1.7
         with:
           fetch-depth: 0
           fetch-tags: ${{ inputs.fetch-tags }}

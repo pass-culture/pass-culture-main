@@ -25,7 +25,7 @@ jobs:
   build-and-push-docker-images:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.6
+      - uses: actions/checkout@v4.1.7
         with:
           ref: ${{ inputs.ref }}
       - name: "Authentification to Google"
