@@ -2355,6 +2355,43 @@ def synchronize_accessibility_provider(venue: models.Venue, force_sync: bool = F
         )
 
 
+def synchronize_accessibility_with_acceslibre(
+    dry_run: bool, force_sync: bool, batch_size: int, start_from_batch: int = 1
+) -> None:
+    """
+    For all venues synchronized with acceslibre, we fetch on a weekly basis the
+    last_update_at and update their accessibility information.
+
+    If we use the --force_sync flag, it will not check for last_update_at
+
+    If we use the --start-from-batch option, it will start synchronization from the given batch number
+    Use case: synchronization has failed with message "Could not update batch <n>"
+
+    If externalAccessibilityId can't be found at acceslibre, we try to find a new match, cf. synchronize_accessibility_provider()
+    """
+    venues_count = count_permanent_venues_with_accessibility_provider()
+    num_batches = ceil(venues_count / batch_size)
+    if start_from_batch > num_batches:
+        logger.error("Start from batch must be less than %d", num_batches)
+        return
+
+    start_batch_index = start_from_batch - 1
+    for i in range(start_batch_index, num_batches):
+        venues_list = get_permanent_venues_with_accessibility_provider(batch_size=batch_size, batch_num=i)
+        for venue in venues_list:
+            synchronize_accessibility_provider(venue, force_sync)
+
+        if not dry_run:
+            try:
+                db.session.commit()
+            except sa.exc.SQLAlchemyError:
+                logger.exception("Could not update batch %d", i + 1)
+                db.session.rollback()
+        else:
+            db.session.rollback()
+    logger.info("Accessibility data synchronization with acceslibre complete successfully")
+
+
 def synchronize_venues_with_acceslibre(venue_ids: list[int], dry_run: bool) -> None:
     """
     For venues in venue_ids list, we look for a match at acceslibre and synchronize the
