@@ -21,7 +21,7 @@ jobs:
     name: "Type check"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.6
+      - uses: actions/checkout@v4.1.7
       - uses: actions/setup-node@v3
         with:
           node-version-file: "pro/.nvmrc"
@@ -48,7 +48,7 @@ jobs:
     name: "Quality check"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.6
+      - uses: actions/checkout@v4.1.7
       - uses: actions/setup-node@v3
         with:
           node-version-file: "pro/.nvmrc"
@@ -76,7 +76,7 @@ jobs:
     name: "Style quality check"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.6
+      - uses: actions/checkout@v4.1.7
       - uses: actions/setup-node@v3
         with:
           node-version-file: "pro/.nvmrc"
@@ -103,7 +103,7 @@ jobs:
     name: "Unit tests"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.6
+      - uses: actions/checkout@v4.1.7
         with:
           fetch-depth: 0
       - run: |

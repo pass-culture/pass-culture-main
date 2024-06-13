@@ -50,7 +50,7 @@ jobs:
             ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/passculture-main-gcp-workload-identity-provider
             ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
       - name: "Checkout ref"
-        uses: actions/checkout@v4.1.6
+        uses: actions/checkout@v4.1.7
         with:
           ref: ${{ inputs.base_ref }}
           token: ${{ steps.secrets.outputs.PUSH_TOKEN }}

@@ -38,7 +38,7 @@ jobs:
       APP_VERSION: ${{ steps.app-version.outputs.APP_VERSION }}
     steps:
       - name: "Checkout Release"
-        uses: actions/checkout@v4.1.6
+        uses: actions/checkout@v4.1.7
         with:
           ref: "${{ github.ref }}"
           fetch-depth: 0
