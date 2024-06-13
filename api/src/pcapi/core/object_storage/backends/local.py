@@ -5,6 +5,7 @@ import pathlib
 
 from pcapi import settings
 
+from .. import FileNotFound
 from .base import BaseBackend
 
 
@@ -42,6 +43,17 @@ class LocalBackend(BaseBackend):
 
         except Exception as exc:
             logger.exception("An error has occurred while trying to upload file on local file storage: %s", exc)
+            raise exc
+
+    def get_public_object(self, folder: str, object_id: str) -> bytes:
+        file_local_path = self.local_path(folder, object_id)
+        try:
+            with open(file_local_path, "rb") as fp:
+                return fp.read()
+        except FileNotFoundError:
+            raise FileNotFound()
+        except OSError as exc:
+            logger.exception("An error has occurred while trying to retrieve file on local file storage: %s", exc)
             raise exc
 
     def delete_public_object(self, folder: str, object_id: str) -> None:
