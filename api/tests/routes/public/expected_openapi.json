@@ -3799,6 +3799,13 @@
                         "title": "Firstindex",
                         "type": "integer"
                     },
+                    "idsAtProvider": {
+                        "description": "List of your ids to filter on",
+                        "example": "5edd982915c2a74b9302e443,5edd982915e2a74vb9302e443",
+                        "nullable": true,
+                        "title": "Idsatprovider",
+                        "type": "string"
+                    },
                     "limit": {
                         "default": 50,
                         "description": "Maximum number of items per page.",
@@ -3808,7 +3815,8 @@
                         "type": "integer"
                     },
                     "venueId": {
-                        "description": "Venue id to filter offers on.",
+                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
+                        "example": 1234,
                         "title": "Venueid",
                         "type": "integer"
                     }
@@ -5363,7 +5371,7 @@
                     },
                     "beginningDatetime": {
                         "description": "Collective offer beginning datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-10T14:00:00+02:00",
+                        "example": "2024-07-13T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Beginningdatetime",
@@ -8883,14 +8891,28 @@
                         }
                     },
                     {
-                        "description": "Venue id to filter offers on.",
+                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
                         "in": "query",
                         "name": "venueId",
                         "required": true,
                         "schema": {
-                            "description": "Venue id to filter offers on.",
+                            "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
+                            "example": 1234,
                             "title": "Venueid",
                             "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "List of your ids to filter on",
+                        "in": "query",
+                        "name": "idsAtProvider",
+                        "required": false,
+                        "schema": {
+                            "description": "List of your ids to filter on",
+                            "example": "5edd982915c2a74b9302e443,5edd982915e2a74vb9302e443",
+                            "nullable": true,
+                            "title": "Idsatprovider",
+                            "type": "string"
                         }
                     }
                 ],
@@ -9996,14 +10018,28 @@
                         }
                     },
                     {
-                        "description": "Venue id to filter offers on.",
+                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
                         "in": "query",
                         "name": "venueId",
                         "required": true,
                         "schema": {
-                            "description": "Venue id to filter offers on.",
+                            "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
+                            "example": 1234,
                             "title": "Venueid",
                             "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "List of your ids to filter on",
+                        "in": "query",
+                        "name": "idsAtProvider",
+                        "required": false,
+                        "schema": {
+                            "description": "List of your ids to filter on",
+                            "example": "5edd982915c2a74b9302e443,5edd982915e2a74vb9302e443",
+                            "nullable": true,
+                            "title": "Idsatprovider",
+                            "type": "string"
                         }
                     }
                 ],
