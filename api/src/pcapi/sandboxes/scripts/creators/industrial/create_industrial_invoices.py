@@ -5,6 +5,8 @@ import random
 
 from pcapi.connectors.big_query.queries.offerer_stats import DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
 from pcapi.connectors.big_query.queries.offerer_stats import TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE
+from pcapi.core.bookings import api as bookings_api
+from pcapi.core.bookings import models as bookings_models
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.finance import api as finance_api
@@ -33,6 +35,48 @@ def create_industrial_invoices() -> None:
     logger.info("Created %s Invoices", finance_models.Invoice.query.count())
 
 
+def create_free_invoice() -> None:
+    logger.info("create_free_invoice")
+    offerer = offerers_factories.OffererFactory(name="0 - Structure avec compte bancaire et justificatif à 0€")
+    bank_account = finance_factories.BankAccountFactory(offerer=offerer)
+    offerers_factories.UserOffererFactory(offerer=offerer, user__email="activation_new_nav@example.com")
+    venue = offerers_factories.VirtualVenueFactory(
+        name="Lieu avec justificatif à 0€",
+        managingOfferer=offerer,
+        pricing_point="self",
+        bank_account=bank_account,
+    )
+    digital_offer1 = offers_factories.DigitalOfferFactory(name="Specific free invoice digital offer 1", venue=venue)
+    digital_offer2 = offers_factories.DigitalOfferFactory(name="Specific free invoice digital offer 2", venue=venue)
+    stocks = [
+        offers_factories.StockFactory(offer=digital_offer1, price=27),
+        offers_factories.StockFactory(offer=digital_offer2, price=31),
+    ]
+    for stock in stocks:
+        booking = bookings_factories.BookingFactory(
+            stock=stock,
+            user__deposit__source="create_free_invoice() in industrial sandbox",
+        )
+        bookings_api.mark_as_used(
+            booking=booking,
+            validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
+        )
+
+        for finance_event in booking.finance_events:
+            finance_api.price_event(finance_event)
+
+    finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
+
+    cashflows = finance_models.Cashflow.query.filter_by(bankAccount=bank_account).all()
+    cashflow_ids = [c.id for c in cashflows]
+
+    finance_api.generate_and_store_invoice(
+        bank_account_id=bank_account.id,
+        cashflow_ids=cashflow_ids,
+    )
+    logger.info("Created free Invoice")
+
+
 def create_specific_invoice() -> None:
     logger.info("create_specific_invoice")
     offerer = offerers_factories.OffererFactory(name="0 - Structure avec justificatif et compte bancaire")
@@ -43,13 +87,13 @@ def create_specific_invoice() -> None:
         name="Lieu avec justificatif",
         managingOfferer=offerer,
         pricing_point="self",
+        bank_account=bank_account,
     )
     virtual_venue = offerers_factories.VirtualVenueFactory(
         managingOfferer=offerer,
         name=f"{venue.name} (Offre numérique)",
         pricing_point=venue,
     )
-    offerers_factories.VenueBankAccountLinkFactory(venue=venue, bankAccount=bank_account)
 
     thing_offer1 = offers_factories.ThingOfferFactory(name="Specific invoice offer 1", venue=venue)
     thing_offer2 = offers_factories.ThingOfferFactory(name="Specific invoice offer 2", venue=venue)
