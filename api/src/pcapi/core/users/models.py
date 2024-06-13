@@ -159,6 +159,9 @@ class User(PcObject, Base, Model, DeactivableMixin):
     dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
     dateOfBirth = sa.Column(sa.DateTime, nullable=True)  # declared at signup
     departementCode = sa.Column(sa.String(3), nullable=True)
+    discordUser: DiscordUser = orm.relationship(
+        "DiscordUser", uselist=False, back_populates="user", cascade="all, delete-orphan", passive_deletes=True
+    )
     email: str = sa.Column(sa.String(120), nullable=False, unique=True)
     externalIds = sa.Column(postgresql.json.JSONB, nullable=True, default={}, server_default="{}")
     extraData: dict = sa.Column(
@@ -655,6 +658,21 @@ class User(PcObject, Base, Model, DeactivableMixin):
             .exists()
         ).scalar()
         return has_partner_page
+
+
+class DiscordUser(PcObject, Base, Model):
+    __tablename__ = "discord_user"
+
+    userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), primary_key=True)
+    user: orm.Mapped["User"] = orm.relationship("User", back_populates="discordUser")
+    discordId = sa.Column(sa.Text, nullable=True, unique=True)
+    hasAccess = sa.Column(sa.Boolean, nullable=False, server_default=expression.true())
+    isBanned = sa.Column(sa.Boolean, nullable=False, server_default=expression.false(), default=False)
+    lastUpdated = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now(), onupdate=sa.func.now())
+
+    @hybrid_property
+    def is_active(self) -> bool:
+        return bool(self.discordId) and not self.isBanned
 
 
 User.trig_ensure_password_or_sso_exists_ddl = sa.DDL(
