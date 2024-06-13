@@ -8,6 +8,7 @@ from google.oauth2.service_account import Credentials
 
 from pcapi import settings
 
+from .. import FileNotFound
 from .base import BaseBackend
 
 
@@ -102,6 +103,26 @@ class GCPBackend(BaseBackend):
                     "project_id": self.project_id,
                     "bucket_name": self.bucket_name,
                     "prefix": folder,
+                },
+            )
+            raise exc
+
+    def get_public_object(self, folder: str, object_id: str) -> bytes:
+        storage_path = folder + "/" + object_id
+        try:
+            bucket = self.get_gcp_storage_client_bucket()
+            gcp_cloud_blob = bucket.blob(storage_path)
+            return gcp_cloud_blob.download_as_bytes()
+        except NotFound:
+            raise FileNotFound()
+        except Exception as exc:
+            logger.exception(
+                "An error has occurred while trying to download file from GCP bucket",
+                extra={
+                    "exc": exc,
+                    "project_id": self.project_id,
+                    "bucket_name": self.bucket_name,
+                    "storage_path": storage_path,
                 },
             )
             raise exc
