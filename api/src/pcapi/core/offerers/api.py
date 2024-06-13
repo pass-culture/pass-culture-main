@@ -2356,6 +2356,10 @@ def synchronize_accessibility_provider(venue: models.Venue, force_sync: bool = F
 
 
 def synchronize_venues_with_acceslibre(venue_ids: list[int], dry_run: bool) -> None:
+    """
+    For venues in venue_ids list, we look for a match at acceslibre and synchronize the
+    accessibility data
+    """
     for venue_id in venue_ids:
         venue = offerers_models.Venue.query.filter_by(id=venue_id).one_or_none()
         if venue is None:
@@ -2373,10 +2377,12 @@ def synchronize_venues_with_acceslibre(venue_ids: list[int], dry_run: bool) -> N
     if not dry_run:
         try:
             db.session.commit()
+            logger.info("Synchronization complete for venues %s", venue_ids)
         except sa.exc.SQLAlchemyError:
             logger.exception("Could not update venues %s", venue_ids)
             db.session.rollback()
     else:
+        logger.info("Dry run complete successfully for synchronization")
         db.session.rollback()
 
 
@@ -2409,6 +2415,7 @@ def acceslibre_matching(batch_size: int, dry_run: bool, start_from_batch: int, n
     If we use the --start-from-batch option, it will start synchronization from the given batch number
     Use case: synchronization has failed with message "Could not update batch <n>"
     """
+    synchronized_venues_count_before_matching = count_permanent_venues_with_accessibility_provider()
     venues_list = get_permanent_venues_without_accessibility_provider()
     num_batches = ceil(len(venues_list) / batch_size)
     if start_from_batch > num_batches:
@@ -2433,8 +2440,13 @@ def acceslibre_matching(batch_size: int, dry_run: bool, start_from_batch: int, n
             except sa.exc.SQLAlchemyError:
                 logger.exception("Could not update batch %d", i + 1)
                 db.session.rollback()
-        else:
-            db.session.rollback()
+    new_match_found = count_permanent_venues_with_accessibility_provider() - synchronized_venues_count_before_matching
+    logger.info("%d new match found over last %d days", new_match_found, n_days_to_fetch)
+    if dry_run:
+        logger.info("Matching with acceslibre as dry run complete")
+        db.session.rollback()
+    else:
+        logger.info("Matching with acceslibre complete")
 
 
 def update_offerer_address_label(offerer_address_id: int, new_label: str) -> None:
