@@ -1,5 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import 'html-validate/jest'
 
 import { api } from 'apiClient/api'
 import {
@@ -15,7 +16,7 @@ import { sharedCurrentUserFactory } from 'utils/storeFactories'
 import { SideNavLinks } from '../SideNavLinks'
 
 const renderSideNavLinks = (options: RenderWithProvidersOptions = {}) => {
-  renderWithProviders(<SideNavLinks isLateralPanelOpen={true} />, {
+  return renderWithProviders(<SideNavLinks isLateralPanelOpen={true} />, {
     initialRouterEntries: ['/'],
     user: sharedCurrentUserFactory({ hasPartnerPage: true }),
     ...options,
@@ -23,6 +24,12 @@ const renderSideNavLinks = (options: RenderWithProvidersOptions = {}) => {
 }
 
 describe('SideNavLinks', () => {
+  it('should render a W3C-valid HTML markup', () => {
+    const { container } = renderSideNavLinks()
+
+    expect(container).toHTMLValidate()
+  })
+
   it('should toggle individual section on individual section button click', async () => {
     renderSideNavLinks()
 

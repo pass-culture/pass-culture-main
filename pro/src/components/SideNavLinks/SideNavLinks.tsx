@@ -93,226 +93,245 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
     '/offre/creation' + (offererId ? `?structure=${offererId}` : '')
 
   return (
-    <ul
+    <div
       className={classnames({
         [styles['nav-links']]: true,
         [styles['nav-links-open']]: isLateralPanelOpen,
       })}
     >
       <div className={styles['nav-links-first-group']}>
-        {selectedOffererQuery.data && isUserOffererValidated && (
-          <li className={styles['nav-links-create-offer-wrapper']}>
-            <ButtonLink
-              variant={ButtonVariant.PRIMARY}
-              link={{ isExternal: false, to: createOfferPageUrl }}
-            >
-              Créer une offre
-            </ButtonLink>
-          </li>
-        )}
-        <li>
-          <NavLink
-            to="/accueil"
-            className={({ isActive }) =>
-              classnames(styles['nav-links-item'], {
-                [styles['nav-links-item-active']]: isActive,
-              })
-            }
-          >
-            <SvgIcon src={strokeHomeIcon} alt="" width={NAV_ITEM_ICON_SIZE} />
-            <span className={styles['nav-links-item-title']}>Accueil</span>
-          </NavLink>
-        </li>
-        <li>
-          <button
-            onClick={() =>
-              dispatch(setIsIndividualSectionOpen(!isIndividualSectionOpen))
-            }
-            className={(styles['nav-links-item'], styles['nav-section-button'])}
-            aria-expanded={isIndividualSectionOpen}
-          >
-            <SvgIcon src={strokePhoneIcon} alt="" width={NAV_ITEM_ICON_SIZE} />
-            <span className={styles['nav-section-title']}>Individuel</span>
-            <SvgIcon
-              src={isIndividualSectionOpen ? fullUpIcon : fullDownIcon}
-              alt=""
-              width="18"
-              className={styles['nav-section-icon']}
-            />
-          </button>
-          {isIndividualSectionOpen && (
-            <>
-              <NavLink
-                to="/offres"
-                className={({ isActive }) =>
-                  classnames(styles['nav-links-item'], {
-                    [styles['nav-links-item-active']]: isActive,
-                  })
-                }
-                end
+        <ul>
+          {selectedOffererQuery.data && isUserOffererValidated && (
+            <li className={styles['nav-links-create-offer-wrapper']}>
+              <ButtonLink
+                type="button"
+                variant={ButtonVariant.PRIMARY}
+                link={{ isExternal: false, to: createOfferPageUrl }}
               >
-                <span className={styles['nav-links-item-without-icon']}>
-                  Offres
-                </span>
-              </NavLink>
-              <NavLink
-                to="/reservations"
-                end
-                className={({ isActive }) =>
-                  classnames(styles['nav-links-item'], {
-                    [styles['nav-links-item-active']]: isActive,
-                  })
-                }
-              >
-                <span className={styles['nav-links-item-without-icon']}>
-                  Réservations
-                </span>
-              </NavLink>
-              <NavLink
-                to="/guichet"
-                className={({ isActive }) =>
-                  classnames(styles['nav-links-item'], {
-                    [styles['nav-links-item-active']]: isActive,
-                  })
-                }
-              >
-                <span className={styles['nav-links-item-without-icon']}>
-                  Guichet
-                </span>
-              </NavLink>
-              {currentUser?.hasPartnerPage && venueId && (
-                <NavLink
-                  to={`/structures/${offererId}/lieux/${venueId}`}
-                  className={({ isActive }) =>
-                    classnames(styles['nav-links-item'], {
-                      [styles['nav-links-item-active']]: isActive,
-                    })
-                  }
-                  end
-                >
-                  <span className={styles['nav-links-item-without-icon']}>
-                    Page sur l’application
-                  </span>
-                </NavLink>
-              )}
-            </>
+                Créer une offre
+              </ButtonLink>
+            </li>
           )}
-        </li>
-        <li>
-          <button
-            onClick={() =>
-              dispatch(setIsCollectiveSectionOpen(!isCollectiveSectionOpen))
-            }
-            className={(styles['nav-links-item'], styles['nav-section-button'])}
-            aria-expanded={isCollectiveSectionOpen}
-          >
-            <SvgIcon
-              src={strokeTeacherIcon}
-              alt=""
-              width={NAV_ITEM_ICON_SIZE}
-            />
-            <span className={styles['nav-section-title']}>Collectif</span>
-            <SvgIcon
-              src={isCollectiveSectionOpen ? fullUpIcon : fullDownIcon}
-              alt=""
-              width="18"
-              className={styles['nav-section-icon']}
-            />
-          </button>
-          {isCollectiveSectionOpen && (
-            <>
-              <NavLink
-                to="/offres/collectives"
-                className={({ isActive }) =>
-                  classnames(styles['nav-links-item'], {
-                    [styles['nav-links-item-active']]: isActive,
-                  })
-                }
-              >
-                <span className={styles['nav-links-item-without-icon']}>
-                  Offres
-                </span>
-              </NavLink>
-              <NavLink
-                to="/reservations/collectives"
-                end
-                className={({ isActive }) =>
-                  classnames(styles['nav-links-item'], {
-                    [styles['nav-links-item-active']]: isActive,
-                  })
-                }
-              >
-                <span className={styles['nav-links-item-without-icon']}>
-                  Réservations
-                </span>
-              </NavLink>
-              {venueId && (
-                <NavLink
-                  to={`/structures/${offererId}/lieux/${venueId}/collectif`}
-                  className={({ isActive }) =>
-                    classnames(styles['nav-links-item'], {
-                      [styles['nav-links-item-active']]: isActive,
-                    })
-                  }
-                  end
-                >
-                  <span className={styles['nav-links-item-without-icon']}>
-                    Page dans ADAGE
-                  </span>
-                </NavLink>
-              )}
-            </>
-          )}
-        </li>
-        {isOffererStatsActive && (
           <li>
             <NavLink
-              to="/statistiques"
+              to="/accueil"
               className={({ isActive }) =>
                 classnames(styles['nav-links-item'], {
                   [styles['nav-links-item-active']]: isActive,
                 })
               }
             >
-              <SvgIcon src={strokePieIcon} alt="" width={NAV_ITEM_ICON_SIZE} />
-              Statistiques
+              <SvgIcon src={strokeHomeIcon} alt="" width={NAV_ITEM_ICON_SIZE} />
+              <span className={styles['nav-links-item-title']}>Accueil</span>
             </NavLink>
           </li>
-        )}
+          <li>
+            <button
+              type="button"
+              onClick={() =>
+                dispatch(setIsIndividualSectionOpen(!isIndividualSectionOpen))
+              }
+              className={
+                (styles['nav-links-item'], styles['nav-section-button'])
+              }
+              aria-expanded={isIndividualSectionOpen}
+            >
+              <SvgIcon
+                src={strokePhoneIcon}
+                alt=""
+                width={NAV_ITEM_ICON_SIZE}
+              />
+              <span className={styles['nav-section-title']}>Individuel</span>
+              <SvgIcon
+                src={isIndividualSectionOpen ? fullUpIcon : fullDownIcon}
+                alt=""
+                width="18"
+                className={styles['nav-section-icon']}
+              />
+            </button>
+            {isIndividualSectionOpen && (
+              <>
+                <NavLink
+                  to="/offres"
+                  className={({ isActive }) =>
+                    classnames(styles['nav-links-item'], {
+                      [styles['nav-links-item-active']]: isActive,
+                    })
+                  }
+                  end
+                >
+                  <span className={styles['nav-links-item-without-icon']}>
+                    Offres
+                  </span>
+                </NavLink>
+                <NavLink
+                  to="/reservations"
+                  end
+                  className={({ isActive }) =>
+                    classnames(styles['nav-links-item'], {
+                      [styles['nav-links-item-active']]: isActive,
+                    })
+                  }
+                >
+                  <span className={styles['nav-links-item-without-icon']}>
+                    Réservations
+                  </span>
+                </NavLink>
+                <NavLink
+                  to="/guichet"
+                  className={({ isActive }) =>
+                    classnames(styles['nav-links-item'], {
+                      [styles['nav-links-item-active']]: isActive,
+                    })
+                  }
+                >
+                  <span className={styles['nav-links-item-without-icon']}>
+                    Guichet
+                  </span>
+                </NavLink>
+                {currentUser?.hasPartnerPage && venueId && (
+                  <NavLink
+                    to={`/structures/${offererId}/lieux/${venueId}`}
+                    className={({ isActive }) =>
+                      classnames(styles['nav-links-item'], {
+                        [styles['nav-links-item-active']]: isActive,
+                      })
+                    }
+                    end
+                  >
+                    <span className={styles['nav-links-item-without-icon']}>
+                      Page sur l’application
+                    </span>
+                  </NavLink>
+                )}
+              </>
+            )}
+          </li>
+          <li>
+            <button
+              type="button"
+              onClick={() =>
+                dispatch(setIsCollectiveSectionOpen(!isCollectiveSectionOpen))
+              }
+              className={
+                (styles['nav-links-item'], styles['nav-section-button'])
+              }
+              aria-expanded={isCollectiveSectionOpen}
+            >
+              <SvgIcon
+                src={strokeTeacherIcon}
+                alt=""
+                width={NAV_ITEM_ICON_SIZE}
+              />
+              <span className={styles['nav-section-title']}>Collectif</span>
+              <SvgIcon
+                src={isCollectiveSectionOpen ? fullUpIcon : fullDownIcon}
+                alt=""
+                width="18"
+                className={styles['nav-section-icon']}
+              />
+            </button>
+            {isCollectiveSectionOpen && (
+              <>
+                <NavLink
+                  to="/offres/collectives"
+                  className={({ isActive }) =>
+                    classnames(styles['nav-links-item'], {
+                      [styles['nav-links-item-active']]: isActive,
+                    })
+                  }
+                >
+                  <span className={styles['nav-links-item-without-icon']}>
+                    Offres
+                  </span>
+                </NavLink>
+                <NavLink
+                  to="/reservations/collectives"
+                  end
+                  className={({ isActive }) =>
+                    classnames(styles['nav-links-item'], {
+                      [styles['nav-links-item-active']]: isActive,
+                    })
+                  }
+                >
+                  <span className={styles['nav-links-item-without-icon']}>
+                    Réservations
+                  </span>
+                </NavLink>
+                {venueId && (
+                  <NavLink
+                    to={`/structures/${offererId}/lieux/${venueId}/collectif`}
+                    className={({ isActive }) =>
+                      classnames(styles['nav-links-item'], {
+                        [styles['nav-links-item-active']]: isActive,
+                      })
+                    }
+                    end
+                  >
+                    <span className={styles['nav-links-item-without-icon']}>
+                      Page dans ADAGE
+                    </span>
+                  </NavLink>
+                )}
+              </>
+            )}
+          </li>
+          {isOffererStatsActive && (
+            <li>
+              <NavLink
+                to="/statistiques"
+                className={({ isActive }) =>
+                  classnames(styles['nav-links-item'], {
+                    [styles['nav-links-item-active']]: isActive,
+                  })
+                }
+              >
+                <SvgIcon
+                  src={strokePieIcon}
+                  alt=""
+                  width={NAV_ITEM_ICON_SIZE}
+                />
+                Statistiques
+              </NavLink>
+            </li>
+          )}
+        </ul>
       </div>
       <div className={styles['nav-links-last-group']}>
         <div className={styles['nav-links-last-group-separator']} />
-        <li>
-          <NavLink
-            to="/remboursements"
-            className={({ isActive }) =>
-              classnames(styles['nav-links-item'], {
-                [styles['nav-links-item-active']]: isActive,
-              })
-            }
-          >
-            <SvgIcon src={strokeEuroIcon} alt="" width={NAV_ITEM_ICON_SIZE} />
-            Gestion financière
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            to="/collaborateurs"
-            className={({ isActive }) =>
-              classnames(styles['nav-links-item'], {
-                [styles['nav-links-item-active']]: isActive,
-              })
-            }
-          >
-            <SvgIcon
-              src={strokeCollaboratorIcon}
-              alt=""
-              width={NAV_ITEM_ICON_SIZE}
-            />
-            Collaborateurs
-          </NavLink>
-        </li>
+        <ul>
+          <li>
+            <NavLink
+              to="/remboursements"
+              className={({ isActive }) =>
+                classnames(styles['nav-links-item'], {
+                  [styles['nav-links-item-active']]: isActive,
+                })
+              }
+            >
+              <SvgIcon src={strokeEuroIcon} alt="" width={NAV_ITEM_ICON_SIZE} />
+              Gestion financière
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/collaborateurs"
+              className={({ isActive }) =>
+                classnames(styles['nav-links-item'], {
+                  [styles['nav-links-item-active']]: isActive,
+                })
+              }
+            >
+              <SvgIcon
+                src={strokeCollaboratorIcon}
+                alt=""
+                width={NAV_ITEM_ICON_SIZE}
+              />
+              Collaborateurs
+            </NavLink>
+          </li>
+        </ul>
       </div>
-    </ul>
+    </div>
   )
 }
