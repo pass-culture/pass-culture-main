@@ -37,6 +37,8 @@ jobs:
           secrets: |-
             ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
             ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
+            CYPRESS_CLOUD_RECORD_KEY:passculture-metier-ehp/e2e-tests-pro-cypress-cloud-record-key
+            CYPRESS_CLOUD_PROJECT_ID:passculture-metier-ehp/e2e-tests-pro-cypress-cloud-project-id
       - uses: actions/setup-node@v3
         with:
           node-version-file: "pro/.nvmrc"
@@ -118,20 +120,46 @@ jobs:
         run: |
           timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:3001)" != "200" ]]; do sleep 5; done' || false
       # Doc : https://github.com/cypress-io/github-action
-      - name: "Cypress run"
-        if: always()
+      - name: "Cypress run with Cypress Cloud"
+        if: ${{ github.ref != 'refs/heads/master' }}
         uses: cypress-io/github-action@v6
         with:
           wait-on: "http://localhost:5001/health/api,http://localhost:5001/health/database"
           wait-on-timeout: 600
           working-directory: pro
-          command: yarn test:bdd
-      - name: "Move cypress videos"
+          browser: chrome
+          config-file: cypress/cypress.config.ts
+          tag: test-poc
+          env: TAGS="@P0"
+          # command: yarn test:bdd
+          record: true # Only on master
+        env:
+          # pass the Cypress Cloud record key as an environment variable - Only used on master
+          CYPRESS_RECORD_KEY: ${{ steps.secrets.outputs.CYPRESS_CLOUD_RECORD_KEY }}
+          # pass the project ID from the secrets through environment variable - Only used on master
+          CYPRESS_PROJECT_ID: ${{ steps.secrets.outputs.CYPRESS_CLOUD_PROJECT_ID }}
+          # pass GitHub token to allow accurately detecting a build vs a re-run build - Only used on master
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+           # Get the short ref name of the branch that triggered the workflow run - Only used on master
+          # COMMIT_INFO_BRANCH: ${{ github.ref_name }}
+      - name: "Cypress run"
+        if: ${{ github.ref == 'refs/heads/master' }}
+        uses: cypress-io/github-action@v6
+        with:
+          wait-on: "http://localhost:5001/health/api,http://localhost:5001/health/database"
+          wait-on-timeout: 600
+          working-directory: pro
+          browser: chrome
+          config-file: cypress/cypress.config.ts
+          env: TAGS="@P0"
+          record: false # No Cypress cloud
+      - name: "Move cypress videos if not sent to cypress cloud" # Useless on master because cypress cloud
+        if: ${{ github.ref == 'refs/heads/master' }}
         run: |
           mkdir -p cypress/videos/${{ github.ref }}/${{ github.sha }} && \
           mv cypress/videos/*.mp4 cypress/videos/${{ github.ref }}/${{ github.sha }}/
-      - name: "Archive E2E results"
-        if: always()
+      - name: "Archive E2E results if not sent to cypress cloud" # Useless on master because cypress cloud
+        if: ${{ github.ref == 'refs/heads/master' }}
         uses: google-github-actions/upload-cloud-storage@v2
         with:
           path: "pro/cypress/videos"
