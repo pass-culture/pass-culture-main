@@ -10,6 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 import sqlalchemy.exc as sa_exc
 from sqlalchemy.ext import mutable as sa_mutable
+from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
 import sqlalchemy.orm as sa_orm
@@ -18,7 +19,6 @@ from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.elements import BooleanClauseList
 from sqlalchemy.sql.elements import Case
 from sqlalchemy.sql.elements import UnaryExpression
-from sqlalchemy.ext.declarative import declared_attr
 
 import pcapi.core.bookings.constants as bookings_constants
 from pcapi.core.categories import categories
