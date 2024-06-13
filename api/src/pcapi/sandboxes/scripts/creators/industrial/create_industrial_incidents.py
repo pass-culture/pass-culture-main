@@ -1,24 +1,20 @@
 import datetime
+import decimal
 import logging
 import uuid
 
-import factory
-
+from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import factories as finance_factories
-from pcapi.core.finance import models as finance_models
-from pcapi.core.history import api as history_api
-from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.offers import factories as offers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
-from pcapi.models import db
+from pcapi.routes.backoffice.finance import validation
 
 
 logger = logging.getLogger(__name__)
@@ -102,35 +98,6 @@ COLLECTIVE_INCIDENT_PARAMS = [
 ]
 
 
-def _add_nearly_over_revenue_threshold_booking(
-    venue: offerers_models.Venue, is_collective: bool = False
-) -> bookings_models.Booking:
-    special_user = users_factories.BeneficiaryGrant18Factory(
-        firstName=factory.LazyFunction(lambda: f"martin.cident_{uuid.uuid4()}@example.com"),
-        deposit__source="create_industrial_incidents() in industrial sandbox",
-    )
-    special_user.deposit.amount = 20300
-    db.session.add(special_user)
-    db.session.commit()
-
-    if is_collective:
-        # TODO(jeremieb): find a better solution to avoid institution creation
-        # from UsedCollectiveBookingFactory
-        institution = educational_models.EducationalInstitution.query.first()
-
-        special_stock = educational_factories.CollectiveStockFactory(collectiveOffer__venue=venue, price=19990)
-        special_booking = educational_factories.UsedCollectiveBookingFactory(
-            collectiveStock=special_stock, educationalInstitution=institution
-        )
-    else:
-        special_stock = offers_factories.StockFactory(offer__venue=venue, price=19990)
-        special_booking = bookings_factories.UsedBookingFactory(
-            stock=special_stock,
-            user=special_user,
-        )
-    return special_booking
-
-
 def _create_one_individual_incident(
     offerer: offerers_models.Offerer,
     pro: users_models.User,
@@ -142,61 +109,101 @@ def _create_one_individual_incident(
     is_partial: bool,
     comment: str,
 ) -> None:
+    bank_account = finance_factories.BankAccountFactory(offerer=offerer)
+    name_suffix = " - note de débit" if force_debit_note else ""
     venue = offerers_factories.VenueFactory(
-        name=f"{iteration} - Lieu avec beaucoup d'incidents",
+        name=f"{iteration} - Lieu avec beaucoup d'incidents{name_suffix}",
         managingOfferer=offerer,
         pricing_point="self",
-    )
-    bank_account = finance_factories.BankAccountFactory(offerer=venue.managingOfferer)
-    offerers_factories.VenueBankAccountLinkFactory(bankAccount=bank_account, venue=venue)
-
-    # This is a quick way to have a Venue reach the revenue threshold to reach the next ReimbursementRule
-    special_bookings = (
-        [_add_nearly_over_revenue_threshold_booking(venue)] if with_over_revenue_threshold_booking else []
+        bank_account=bank_account,
     )
 
-    if with_other_venue:
-        venue = offerers_factories.VenueFactory(
-            name=f"{iteration} - Autre lieu avec beaucoup d'incidents", managingOfferer=offerer, pricing_point=venue
-        )
-    stocks = offers_factories.StockFactory.create_batch(
-        2 if multiple_bookings else 1,
-        offer__venue=venue,
-        price=30,
-    )
-    incident_bookings = []
-    for stock in stocks:
-        booking = bookings_factories.UsedBookingFactory(
-            stock=stock,
+    special_bookings = []
+    if with_over_revenue_threshold_booking:
+        # This is a quick way to have a Venue reach the revenue threshold to reach the next ReimbursementRule
+        special_bookings = bookings_factories.BookingFactory.create_batch(
+            1,
+            stock__offer__venue=venue,
+            stock__price=decimal.Decimal("19990"),  # 19.99k€
+            user__firstName=f"martin.cident_{uuid.uuid4()}@example.com",
             user__deposit__source="create_industrial_incidents() in industrial sandbox",
+            user__deposit__amount=decimal.Decimal("20300"),  # 20.3k€
         )
-        incident_bookings.append(booking)
+
+    other_venue = None
+    if with_other_venue:
+        other_venue = offerers_factories.VenueFactory(
+            name=f"{iteration} - Autre lieu avec beaucoup d'incidents",
+            managingOfferer=offerer,
+            pricing_point=venue,
+            bank_account=bank_account,
+        )
+
+    incident_bookings = bookings_factories.BookingFactory.create_batch(
+        size=2 if multiple_bookings else 1,
+        stock__offer__venue=other_venue or venue,
+        stock__price=decimal.Decimal("30"),
+        user__deposit__source="create_industrial_incidents() in industrial sandbox",
+    )
 
     bookings = special_bookings + incident_bookings
     for booking in bookings:
-        finance_factories.UsedBookingFinanceEventFactory(booking=booking)
-    for booking in bookings:
-        event = finance_models.FinanceEvent.query.filter_by(booking=booking).one()
-        finance_api.price_event(event)
-    finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
-
-    finance_incident = finance_factories.FinanceIncidentFactory(venue=venue, forceDebitNote=force_debit_note)
-    if is_partial and not multiple_bookings:
-        new_total_amount = (incident_bookings[0].amount * incident_bookings[0].quantity) * 100 - 1000
-    else:
-        new_total_amount = 0
-
-    for booking in incident_bookings:
-        finance_factories.IndividualBookingFinanceIncidentFactory(
-            booking=booking, incident=finance_incident, newTotalAmount=new_total_amount
+        bookings_api.mark_as_used(
+            booking=booking,
+            validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
         )
+        for finance_event in booking.finance_events:
+            finance_api.price_event(finance_event)
 
-    history_api.add_action(
-        history_models.ActionType.FINANCE_INCIDENT_CREATED,
+    # Mark incident bookings as `REIMBURSED`
+    batch = finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
+    finance_api.generate_invoices(batch)
+
+    assert {b.status for b in bookings} == {bookings_models.BookingStatus.REIMBURSED}, [
+        (b.id, b.status) for b in bookings
+    ]
+
+    if not force_debit_note:
+        # Generate new "used" booking to be visible on the invoice/payment files
+        new_bookings = bookings_factories.BookingFactory.create_batch(
+            size=3,
+            stock__offer__venue=venue,
+            stock__price=decimal.Decimal("20") + decimal.Decimal(iteration),
+            user__firstName=f"valent.incident_{uuid.uuid4()}@example.com",
+        )
+        for booking in new_bookings:
+            bookings_api.mark_as_used(
+                booking=booking,
+                validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
+            )
+            finance_api.price_event(booking.finance_events[0])
+
+    amount = None if len(bookings) > 1 else decimal.Decimal("10")
+    check_bookings = validation.check_incident_bookings(incident_bookings)
+    check_amount = True if amount is None else validation.check_total_amount(amount, incident_bookings)
+    if not (check_bookings and check_amount):
+        raise ValueError("Couldn't create overpayment incident, invalid parameters")
+
+    # Create the overpayment incidents and validate them
+    finance_incident = finance_api.create_overpayment_finance_incident(
+        bookings=incident_bookings,
         author=pro,
-        finance_incident=finance_incident,
-        comment=comment,
+        origin=comment,
+        amount=amount,
     )
+    finance_api.validate_finance_overpayment_incident(
+        finance_incident=finance_incident,
+        force_debit_note=force_debit_note,
+        author=pro,
+    )
+    for booking_finance_incident in finance_incident.booking_finance_incidents:
+        for finance_event in booking_finance_incident.finance_events:
+            finance_api.price_event(finance_event)
+
+    batch = finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
+    if not force_debit_note:
+        finance_api.generate_invoices(batch)
+    finance_api.generate_debit_notes(batch)
 
 
 def _create_one_collective_incident(
@@ -209,62 +216,103 @@ def _create_one_collective_incident(
     force_debit_note: bool,
     comment: str,
 ) -> None:
+    bank_account = finance_factories.BankAccountFactory(offerer=offerer)
     venue = offerers_factories.VenueFactory(
         name=f"{iteration} - Lieu avec beaucoup d'incidents collectifs",
         managingOfferer=offerer,
         pricing_point="self",
+        bank_account=bank_account,
     )
-    bank_account = finance_factories.BankAccountFactory(offerer=venue.managingOfferer)
-    offerers_factories.VenueBankAccountLinkFactory(bankAccount=bank_account, venue=venue)
-
-    # This is a quick way to have a Venue reach the revenue threshold to reach the next ReimbursementRule
-    special_bookings = (
-        [_add_nearly_over_revenue_threshold_booking(venue, True)] if with_over_revenue_threshold_booking else []
+    # TODO(jeremieb): find a better solution to avoid institution creation
+    # from UsedCollectiveBookingFactory
+    institution = (
+        educational_models.EducationalInstitution.query.first() or educational_factories.EducationalInstitutionFactory()
     )
-
+    year = educational_models.EducationalYear.query.first() or educational_factories.EducationalYearFactory()
+    deposit = (
+        institution.deposits[0]
+        if institution.deposits
+        else educational_factories.EducationalDepositFactory(educationalInstitution=institution, educationalYear=year)
+    )
+    other_venue = None
     if with_other_venue:
-        venue = offerers_factories.VenueFactory(
+        other_venue = offerers_factories.VenueFactory(
             name=f"{iteration} - Autre lieu avec beaucoup d'incidents collectifs",
             managingOfferer=offerer,
             pricing_point=venue,
+            bank_account=bank_account,
         )
-    stocks = educational_factories.CollectiveStockFactory.create_batch(
-        2 if multiple_bookings else 1,
-        collectiveOffer__venue=venue,
-        price=30,
+
+    special_bookings = []
+    if with_over_revenue_threshold_booking:
+        # This is a quick way to have a Venue reach the revenue threshold to reach the next ReimbursementRule
+        special_bookings = educational_factories.UsedCollectiveBookingFactory.create_batch(
+            1,
+            collectiveStock__collectiveOffer__venue=venue,
+            collectiveStock__price=decimal.Decimal("19990"),
+            collectiveStock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            educationalInstitution=deposit.educationalInstitution,
+            educationalYear=deposit.educationalYear,
+        )
+
+    incident_bookings = educational_factories.UsedCollectiveBookingFactory.create_batch(
+        size=2 if multiple_bookings else 1,
+        collectiveStock__collectiveOffer__venue=other_venue or venue,
+        collectiveStock__price=decimal.Decimal("30"),
+        collectiveStock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        educationalInstitution=deposit.educationalInstitution,
+        educationalYear=deposit.educationalYear,
     )
-
-    # TODO(jeremieb): find a better solution to avoid institution creation
-    # from UsedCollectiveBookingFactory
-    institution = educational_models.EducationalInstitution.query.first()
-
-    incident_bookings = []
-    for stock in stocks:
-        booking = educational_factories.UsedCollectiveBookingFactory(
-            collectiveStock=stock, educationalInstitution=institution
-        )
-        incident_bookings.append(booking)
 
     bookings = special_bookings + incident_bookings
     for booking in bookings:
-        finance_factories.UsedCollectiveBookingFinanceEventFactory(collectiveBooking=booking)
-    for booking in bookings:
-        event = finance_models.FinanceEvent.query.filter_by(collectiveBooking=booking).one()
-        finance_api.price_event(event)
-    finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
-
-    finance_incident = finance_factories.FinanceIncidentFactory(venue=venue, forceDebitNote=force_debit_note)
-    for booking in incident_bookings:
-        finance_factories.CollectiveBookingFinanceIncidentFactory(
-            collectiveBooking=booking, incident=finance_incident, newTotalAmount=0
+        finance_event = finance_factories.UsedCollectiveBookingFinanceEventFactory(
+            venue=venue,
+            collectiveBooking=booking,
         )
+        finance_api.price_event(finance_event)
 
-    history_api.add_action(
-        history_models.ActionType.FINANCE_INCIDENT_CREATED,
-        author=pro,
-        finance_incident=finance_incident,
-        comment="comment",
-    )
+    # Mark incident bookings as `REIMBURSED`
+    batch = finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
+    finance_api.generate_invoices(batch)
+
+    assert {booking.status for booking in bookings} == {educational_models.CollectiveBookingStatus.REIMBURSED}, [
+        (booking.id, booking.status) for booking in bookings
+    ]
+
+    # Generate new "used" booking to be visible on the invoice/payment files
+    for i in range(3):
+        new_booking = educational_factories.UsedCollectiveBookingFactory(
+            collectiveStock__collectiveOffer__venue=other_venue or venue,
+            collectiveStock__price=decimal.Decimal("20") + decimal.Decimal(i),
+            collectiveStock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            educationalInstitution=deposit.educationalInstitution,
+            educationalYear=deposit.educationalYear,
+        )
+        finance_event = finance_factories.UsedCollectiveBookingFinanceEventFactory(
+            venue=venue,
+            collectiveBooking=new_booking,
+        )
+        finance_api.price_event(finance_event)
+
+    for booking in incident_bookings:
+        finance_incident = finance_api.create_overpayment_finance_incident_collective_booking(
+            booking=booking,
+            author=pro,
+            origin=comment,
+        )
+        finance_api.validate_finance_overpayment_incident(
+            finance_incident=finance_incident,
+            force_debit_note=force_debit_note,
+            author=pro,
+        )
+        for booking_finance_incident in finance_incident.booking_finance_incidents:
+            for finance_event in booking_finance_incident.finance_events:
+                finance_api.price_event(finance_event)
+
+    batch = finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
+    finance_api.generate_invoices(batch)
+    finance_api.generate_debit_notes(batch)
 
 
 def create_industrial_incidents() -> None:
