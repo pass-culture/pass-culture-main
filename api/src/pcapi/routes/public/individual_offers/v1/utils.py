@@ -103,17 +103,21 @@ def _retrieve_offer_tied_to_user_query() -> sqla_orm.Query:
     )
 
 
-def retrieve_offers(is_event: bool, firstIndex: int, filtered_venue_id: int | None) -> sqla_orm.Query:
+def retrieve_offers(
+    is_event: bool, firstIndex: int, filtered_venue_id: int, ids_at_provider: list[str] | None
+) -> sqla_orm.Query:
     offers_query = (
         offers_models.Offer.query.join(offerers_models.Venue)
         .join(providers_models.VenueProvider)
         .filter(providers_models.VenueProvider.provider == current_api_key.provider)
+        .filter(offers_models.Offer.venueId == filtered_venue_id)
         .filter(offers_models.Offer.isEvent == is_event)
         .filter(offers_models.Offer.id >= firstIndex)
         .order_by(offers_models.Offer.id)
     )
-    if filtered_venue_id is not None:
-        offers_query = offers_query.filter(offers_models.Offer.venueId == filtered_venue_id)
+
+    if ids_at_provider:
+        offers_query = offers_query.filter(offers_models.Offer.idAtProvider.in_(ids_at_provider))
 
     return retrieve_offer_relations_query(offers_query)
 

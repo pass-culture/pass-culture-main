@@ -35,6 +35,24 @@ class GetProductsTest:
         assert response.status_code == 200
         assert [product["id"] for product in response.json["products"]] == [offer.id for offer in offers[10:12]]
 
+    def test_get_product_using_ids_at_provider(self, client):
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        id_at_provider_1 = "une"
+        id_at_provider_2 = "belle"
+        id_at_provider_3 = "têteDeVainqueur"
+
+        offer_1 = offers_factories.OfferFactory(idAtProvider=id_at_provider_1, venue=venue)
+        offer_2 = offers_factories.OfferFactory(idAtProvider=id_at_provider_2, venue=venue)
+        offers_factories.OfferFactory(idAtProvider=id_at_provider_3, venue=venue)
+
+        with testing.assert_no_duplicated_queries():
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+                f"/public/offers/v1/products?venueId={venue.id}&limit=5&idsAtProvider={id_at_provider_1},{id_at_provider_2}"
+            )
+
+        assert response.status_code == 200
+        assert [product["id"] for product in response.json["products"]] == [offer_1.id, offer_2.id]
+
     def test_should_return_a_200_event_if_the_offer_name_is_longer_than_90_signs_long(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
         name_more_than_90_signs_long = (
