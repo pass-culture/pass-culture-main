@@ -2839,20 +2839,20 @@
     process "^0.11.10"
     util "^0.12.4"
 
-"@storybook/builder-vite@8.1.6":
-  version "8.1.6"
-  resolved "https://registry.yarnpkg.com/@storybook/builder-vite/-/builder-vite-8.1.6.tgz#b498ebf515b6322545c7b9af0aaf018b467cb788"
-  integrity sha512-xbGxI7aVMNuLcAB41Z+Vjr+M1Kznvw/jJ8HP9cfmUl1cO7ysF8R9opVG1C+kMIXUIQAVeND+DUZgmUg2zGzH6A==
+"@storybook/builder-vite@8.1.8":
+  version "8.1.8"
+  resolved "https://registry.yarnpkg.com/@storybook/builder-vite/-/builder-vite-8.1.8.tgz#b696a7f44b123ee28616632cfcf265553fe44166"
+  integrity sha512-eZnHUyQ27A+Cm6UsCC+H2VMbeT+zjAQ8wBexZKhTXjFE0tlD/JWuezb3A2EVjfHrrVLHVc/DZBmxCWr9qddkUQ==
   dependencies:
-    "@storybook/channels" "8.1.6"
-    "@storybook/client-logger" "8.1.6"
-    "@storybook/core-common" "8.1.6"
-    "@storybook/core-events" "8.1.6"
-    "@storybook/csf-plugin" "8.1.6"
-    "@storybook/node-logger" "8.1.6"
-    "@storybook/preview" "8.1.6"
-    "@storybook/preview-api" "8.1.6"
-    "@storybook/types" "8.1.6"
+    "@storybook/channels" "8.1.8"
+    "@storybook/client-logger" "8.1.8"
+    "@storybook/core-common" "8.1.8"
+    "@storybook/core-events" "8.1.8"
+    "@storybook/csf-plugin" "8.1.8"
+    "@storybook/node-logger" "8.1.8"
+    "@storybook/preview" "8.1.8"
+    "@storybook/preview-api" "8.1.8"
+    "@storybook/types" "8.1.8"
     "@types/find-cache-dir" "^3.2.1"
     browser-assert "^1.2.1"
     es-module-lexer "^1.5.0"
@@ -3114,12 +3114,12 @@
     watchpack "^2.2.0"
     ws "^8.2.3"
 
-"@storybook/csf-plugin@8.1.6":
-  version "8.1.6"
-  resolved "https://registry.yarnpkg.com/@storybook/csf-plugin/-/csf-plugin-8.1.6.tgz#28fbf25fea36e755c3c59a6a8309774a5676fb87"
-  integrity sha512-y2OW84leoWsqfBXb7EoRy2QUmtsI3gpqYqpyD/d5K+vQ+E9CBel2WB8RPrwcYm2L88WPDaufQQDzqyB7aMx4fQ==
+"@storybook/csf-plugin@8.1.8":
+  version "8.1.8"
+  resolved "https://registry.yarnpkg.com/@storybook/csf-plugin/-/csf-plugin-8.1.8.tgz#47b10cb2775b4ebed29825dea203d0993c887533"
+  integrity sha512-5OxJlbedziDFdIGefPGSptEbfdGfuW9CViv9+eQ3g4AwG8HLdtSrcJtxYuUsK3vNTs7+Txy3Hm7fd9NSUcxOdg==
   dependencies:
-    "@storybook/csf-tools" "8.1.6"
+    "@storybook/csf-tools" "8.1.8"
     unplugin "^1.3.1"
 
 "@storybook/csf-tools@8.1.6":
@@ -3163,20 +3163,6 @@
   version "3.1.0-next.0"
   resolved "https://registry.yarnpkg.com/@storybook/docs-mdx/-/docs-mdx-3.1.0-next.0.tgz#9567c6eb621110dcf6554923a975238953d06305"
   integrity sha512-t4syFIeSyufieNovZbLruPt2DmRKpbwL4fERCZ1MifWDRIORCKLc4NCEHy+IqvIqd71/SJV2k4B51nF7vlJfmQ==
-
-"@storybook/docs-tools@8.1.6":
-  version "8.1.6"
-  resolved "https://registry.yarnpkg.com/@storybook/docs-tools/-/docs-tools-8.1.6.tgz#cb094620a55ff97f5498d74c1aca8bd90c1ca5e3"
-  integrity sha512-IhqQHSJ5nEBEJ162P/6/6c45toLinWpAkB7pwbAoP00djZSzfHNdQ4HfpZSGfD4GUJIvzsqMzUlyqCKLAoRPPA==
-  dependencies:
-    "@storybook/core-common" "8.1.6"
-    "@storybook/core-events" "8.1.6"
-    "@storybook/preview-api" "8.1.6"
-    "@storybook/types" "8.1.6"
-    "@types/doctrine" "^0.0.3"
-    assert "^2.1.0"
-    doctrine "^3.0.0"
-    lodash "^4.17.21"
 
 "@storybook/docs-tools@8.1.8":
   version "8.1.8"
@@ -3304,66 +3290,34 @@
     ts-dedent "^2.0.0"
     util-deprecate "^1.0.2"
 
-"@storybook/preview@8.1.6":
-  version "8.1.6"
-  resolved "https://registry.yarnpkg.com/@storybook/preview/-/preview-8.1.6.tgz#2905f36dc9b28c510f406db8cd3af284c4d95999"
-  integrity sha512-o9OgOmO10GyX1ZC7WiapYqGdst4TOCPLqWSu3H2nL4ZT7BQLUQfCy30kyoMO7KyxCgc5K5rcqG7qZ/N0tfUgRg==
-
-"@storybook/react-dom-shim@8.1.6":
-  version "8.1.6"
-  resolved "https://registry.yarnpkg.com/@storybook/react-dom-shim/-/react-dom-shim-8.1.6.tgz#7a1bd75b802a88538a8f8177c9ea074817fe608c"
-  integrity sha512-qP5nkAmpGFy/gshO+bVjRo1rgo/6UVDElgOd2dlUtYnfdPONiOfWko2XGYKKfxa6Cp7KU35JlZz/kHGqWG31zQ==
+"@storybook/preview@8.1.8":
+  version "8.1.8"
+  resolved "https://registry.yarnpkg.com/@storybook/preview/-/preview-8.1.8.tgz#5e59d06fb52b3a0d72094bb0abbf8dd5578b0a25"
+  integrity sha512-xUAV/7dLRXfCRp8j/Y4c9IG8YVZ3W+Ps6OAIXWoMjHRDNdEAItka2WnOlZWjDFNHSxOR7vOh0oraYPKgBV8edQ==
 
 "@storybook/react-dom-shim@8.1.8":
   version "8.1.8"
   resolved "https://registry.yarnpkg.com/@storybook/react-dom-shim/-/react-dom-shim-8.1.8.tgz#07ea18d5ee9676fe39bec1e28f050f1ab64be1c5"
   integrity sha512-6lzFv/H5szDCy4D7Ob7gDAS9hTfFH9Cds+LEB6dRAsCC7ZMF56hp79AZZWkT3XXTNGXcy8w4+bI7Ntk3l4+rrA==
 
-"@storybook/react-vite@^8.1.6":
-  version "8.1.6"
-  resolved "https://registry.yarnpkg.com/@storybook/react-vite/-/react-vite-8.1.6.tgz#e0465790e876d8ded2eef6587b573960896cc3ff"
-  integrity sha512-aUrSOVVG/11v5FBWjxyVVYtL1MhFcGFvkHcT2tTUK2lN/EMNFugL5t5YYPv0FIi/DXxg8RBdJIV9vdNCd6tNOA==
+"@storybook/react-vite@^8.1.8":
+  version "8.1.8"
+  resolved "https://registry.yarnpkg.com/@storybook/react-vite/-/react-vite-8.1.8.tgz#896c07e79012b48723da099849f7923ce39fe8ac"
+  integrity sha512-BdhCmxDY4EMTBFvA0SWdvJOcOc1cBkZ2Y4W44ltOq1KkqTsCgi5BFhB96HZTOMEM/yYyJb9+01iD5uY66xbCpg==
   dependencies:
     "@joshwooding/vite-plugin-react-docgen-typescript" "0.3.1"
     "@rollup/pluginutils" "^5.0.2"
-    "@storybook/builder-vite" "8.1.6"
-    "@storybook/node-logger" "8.1.6"
-    "@storybook/react" "8.1.6"
-    "@storybook/types" "8.1.6"
+    "@storybook/builder-vite" "8.1.8"
+    "@storybook/node-logger" "8.1.8"
+    "@storybook/react" "8.1.8"
+    "@storybook/types" "8.1.8"
     find-up "^5.0.0"
     magic-string "^0.30.0"
     react-docgen "^7.0.0"
     resolve "^1.22.8"
     tsconfig-paths "^4.2.0"
 
-"@storybook/react@8.1.6":
-  version "8.1.6"
-  resolved "https://registry.yarnpkg.com/@storybook/react/-/react-8.1.6.tgz#84312e1373d7b4adda543d80463c298b09fc9fa0"
-  integrity sha512-2CSc3MLeaY7QaYAQLwaXRboKkgQnWrSZAo/WTJcSHUr2YFxH5+iECB0Kci12GqaJklhhgmfTfVZ4Jo9ZJ6LQfg==
-  dependencies:
-    "@storybook/client-logger" "8.1.6"
-    "@storybook/docs-tools" "8.1.6"
-    "@storybook/global" "^5.0.0"
-    "@storybook/preview-api" "8.1.6"
-    "@storybook/react-dom-shim" "8.1.6"
-    "@storybook/types" "8.1.6"
-    "@types/escodegen" "^0.0.6"
-    "@types/estree" "^0.0.51"
-    "@types/node" "^18.0.0"
-    acorn "^7.4.1"
-    acorn-jsx "^5.3.1"
-    acorn-walk "^7.2.0"
-    escodegen "^2.1.0"
-    html-tags "^3.1.0"
-    lodash "^4.17.21"
-    prop-types "^15.7.2"
-    react-element-to-jsx-string "^15.0.0"
-    semver "^7.3.7"
-    ts-dedent "^2.0.0"
-    type-fest "~2.19"
-    util-deprecate "^1.0.2"
-
-"@storybook/react@^8.1.8":
+"@storybook/react@8.1.8", "@storybook/react@^8.1.8":
   version "8.1.8"
   resolved "https://registry.yarnpkg.com/@storybook/react/-/react-8.1.8.tgz#a1aa3af421a434251a913b98691ccc4f0891272c"
   integrity sha512-QFwyccbyZGcTpYk6BVChSSemeZ3mmnpp62Ca60j6JO+zbtZv3tTr4PFo79lkWwtz+jpfj0CX8hyYdT1p3r77YA==
