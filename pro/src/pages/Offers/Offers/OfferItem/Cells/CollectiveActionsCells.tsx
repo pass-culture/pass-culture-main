@@ -240,8 +240,10 @@ export const CollectiveActionsCells = ({
                 )}
                 {offer.status === OfferStatus.SOLD_OUT &&
                   offer.booking &&
-                  offer.booking.booking_status !==
-                    CollectiveBookingStatus.USED && (
+                  (offer.booking.booking_status ===
+                    CollectiveBookingStatus.PENDING ||
+                    offer.booking.booking_status ===
+                      CollectiveBookingStatus.CONFIRMED) && (
                     <>
                       <DropdownMenu.Separator
                         className={cn(
