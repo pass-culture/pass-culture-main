@@ -54,7 +54,7 @@
                 </p>
               {% endif %}
               <p class="mb-1">
-                <span class="fw-bold">Crédité le :</span> {{ user.deposit_activation_date | format_date }}
+                <span class="fw-bold">Crédité le :</span> {{ user.deposit_activation_date | format_date_time }}
               </p>
               {% if user.deposit %}
                 <p class="mb-1">

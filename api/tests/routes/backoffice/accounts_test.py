@@ -561,7 +561,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         assert "Date de naissance déclarée à l'inscription" not in content
         if user.deposit:
             assert (
-                f"Crédité le : {user.deposit.dateCreated.astimezone(tz=pytz.timezone('Europe/Paris')).strftime('%d/%m/%Y')}"
+                f"Crédité le : {user.deposit.dateCreated.astimezone(tz=pytz.timezone('Europe/Paris')).strftime('%d/%m/%Y à %Hh%M')}"
                 in content
             )
             assert (
