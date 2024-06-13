@@ -85,7 +85,7 @@ def update_external_pro(email: str | None) -> None:
             on_commit(
                 partial(
                     update_beamer_pro_attributes_task.delay,
-                    patload=UpdateProAttributesRequest(email=email, time_id=f"{now.hour // 12}"),
+                    payload=UpdateProAttributesRequest(email=email, time_id=f"{now.hour // 12}"),
                 ),
             )
 
