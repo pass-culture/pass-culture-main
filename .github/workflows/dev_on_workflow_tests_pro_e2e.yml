@@ -23,6 +23,10 @@ jobs:
   tests-pro-e2e-tests:
     name: "E2E tests"
     runs-on: ubuntu-latest
+    # strategy: # parallélisation pour Cypress Cloud
+    #   fail-fast: false
+    #   matrix:
+    #     containers: [1, 2, 3, 4]
     steps:
       - uses: actions/checkout@v4.1.7
       - name: "Authentification to Google"
@@ -37,6 +41,8 @@ jobs:
           secrets: |-
             ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
             ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
+            CYPRESS_CLOUD_RECORD_KEY:passculture-metier-ehp/e2e-tests-pro-cypress-cloud-record-key
+            CYPRESS_CLOUD_PROJECT_ID:passculture-metier-ehp/e2e-tests-pro-cypress-cloud-project-id
       - uses: actions/setup-node@v3
         with:
           node-version-file: "pro/.nvmrc"
@@ -125,7 +131,15 @@ jobs:
           wait-on: "http://localhost:5001/health/api,http://localhost:5001/health/database"
           wait-on-timeout: 600
           working-directory: pro
-          command: yarn test:bdd
+          browser: chrome
+          config-file: cypress/cypress.config.ts
+          env: TAGS="@P0"
+          # parallel: ${{ github.ref != 'refs/heads/master' }} # pour Cypress Cloud
+          record: ${{ github.ref == 'refs/heads/master' }} # pour Cypress Cloud
+        env:
+          CYPRESS_RECORD_KEY: ${{ steps.secrets.outputs.CYPRESS_CLOUD_RECORD_KEY }}
+          CYPRESS_PROJECT_ID: ${{ steps.secrets.outputs.CYPRESS_CLOUD_PROJECT_ID }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: "Move cypress videos"
         if: always()
         run: |
