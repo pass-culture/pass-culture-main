@@ -1,6 +1,5 @@
 import datetime
 import logging
-from math import ceil
 
 import click
 import sqlalchemy as sa
@@ -97,41 +96,14 @@ def synchronize_venues_banners_with_google_places(frequency: int = 1) -> None:
 @blueprint.cli.command("synchronize_accessibility_with_acceslibre")
 @click.option("--dry-run", type=bool, default=False)
 @click.option("--force-sync", type=bool, default=False)
+@click.option("--batch-size", type=int, default=BATCH_SIZE, help="Size of venues batches to synchronize")
 @click.option("--start-from-batch", type=int, default=1, help="Start synchronization from batch number")
 def synchronize_accessibility_with_acceslibre(
-    dry_run: bool = False, force_sync: bool = False, start_from_batch: int = 1
+    dry_run: bool = False, force_sync: bool = False, batch_size: int = BATCH_SIZE, start_from_batch: int = 1
 ) -> None:
-    """
-    For all venues synchronized with acceslibre, we fetch on a weekly basis the
-    last_update_at and update their accessibility information.
-
-    If we use the --force_sync flag, it will not check for last_update_at
-
-    If we use the --start-from-batch option, it will start synchronization from the given batch number
-    Use case: synchronization has failed with message "Could not update batch <n>"
-
-    If externalAccessibilityId can't be found at acceslibre, we try to find a new match, cf. synchronize_accessibility_provider()
-    """
-    venues_count = offerers_api.count_permanent_venues_with_accessibility_provider()
-    num_batches = ceil(venues_count / BATCH_SIZE)
-    if start_from_batch > num_batches:
-        click.echo(f"Start from batch must be less than {num_batches}")
-        return
-
-    start_batch_index = start_from_batch - 1
-    for i in range(start_batch_index, num_batches):
-        venues_list = offerers_api.get_permanent_venues_with_accessibility_provider(batch_size=BATCH_SIZE, batch_num=i)
-        for venue in venues_list:
-            offerers_api.synchronize_accessibility_provider(venue, force_sync)
-
-        if not dry_run:
-            try:
-                db.session.commit()
-            except sa.exc.SQLAlchemyError:
-                logger.exception("Could not update batch %d", i + 1)
-                db.session.rollback()
-        else:
-            db.session.rollback()
+    offerers_api.synchronize_accessibility_with_acceslibre(
+        dry_run=dry_run, force_sync=force_sync, batch_size=batch_size, start_from_batch=start_from_batch
+    )
 
 
 @blueprint.cli.command("synchronize_venues_with_acceslibre")
