@@ -18,6 +18,7 @@ from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.elements import BooleanClauseList
 from sqlalchemy.sql.elements import Case
 from sqlalchemy.sql.elements import UnaryExpression
+from sqlalchemy.ext.declarative import declared_attr
 
 import pcapi.core.bookings.constants as bookings_constants
 from pcapi.core.categories import categories
@@ -461,6 +462,23 @@ class WithdrawalTypeEnum(enum.Enum):
 class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, AccessibilityMixin):
     __tablename__ = "offer"
 
+    @declared_attr
+    def __table_args__(self):
+        parent_args = []
+
+        # Retrieves indexes from parent mixins defined in __table_args__
+        for base_class in self.__mro__:
+            try:
+                parent_args += super(base_class, self).__table_args__
+            except (AttributeError, TypeError):
+                pass
+
+        parent_args += [
+            sa.UniqueConstraint("idAtProvider", "venueId", name="unique_idAtProvider_venueId"),
+        ]
+
+        return tuple(parent_args)
+
     MAX_STOCKS_PER_OFFER = 2_500
 
     authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
@@ -536,10 +554,6 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     )
     sa.Index("offer_authorId_idx", authorId, postgresql_using="btree")
     sa.Index("ix_offer_lastProviderId", lastProviderId, postgresql_where=lastProviderId.is_not(None))
-
-    # FIXME: We should be able to remove the index on `venueId`, since this composite index
-    #  can be used by PostgreSQL when filtering on the `venueId` column only.
-    sa.Index("venueId_idAtProvider_index", venueId, idAtProvider, unique=True)
 
     sa.Index("ix_offer_offererAddressId", offererAddressId, postgresql_where=offererAddressId.is_not(None))
     isNonFreeOffer: sa_orm.Mapped["bool"] = sa_orm.query_expression()
