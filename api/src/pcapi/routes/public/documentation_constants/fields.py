@@ -69,6 +69,9 @@ class _FIELDS:
         description="Period ending date. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
         example="2024-05-10T15:00:00+02:00",
     )
+    IDS_AT_PROVIDER_FILTER = Field(
+        description="List of your ids to filter on", example="5edd982915c2a74b9302e443,5edd982915e2a74vb9302e443"
+    )
 
     # Image Fields
     IMAGE_CREDIT = Field(description="Image owner or author", example="Jane Doe")

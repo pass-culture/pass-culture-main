@@ -163,7 +163,10 @@ def get_events(query: serialization.GetOffersQueryParams) -> serialization.Event
     """
     utils.check_venue_id_is_tied_to_api_key(query.venue_id)
     total_offers_query = utils.retrieve_offers(
-        is_event=True, firstIndex=query.firstIndex, filtered_venue_id=query.venue_id
+        is_event=True,
+        firstIndex=query.firstIndex,
+        filtered_venue_id=query.venue_id,
+        ids_at_provider=query.ids_at_provider,  # type: ignore[arg-type]
     ).limit(query.limit)
 
     return serialization.EventOffersResponse(
