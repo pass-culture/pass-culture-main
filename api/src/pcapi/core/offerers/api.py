@@ -2545,8 +2545,8 @@ def get_or_create_address(location_data: LocationData) -> geography_models.Addre
     timezone = None
     insee_code = location_data.get("insee_code")
     postal_code = location_data["postal_code"]
-    latitude = location_data["latitude"]
-    longitude = location_data["longitude"]
+    latitude = typing.cast(decimal.Decimal, location_data["latitude"])
+    longitude = typing.cast(decimal.Decimal, location_data["longitude"])
     street = location_data.get("street")
     ban_id = location_data.get("ban_id")
     city_code = insee_code or postal_code
