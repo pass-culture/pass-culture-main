@@ -5,9 +5,6 @@ on:
     branches:
       - master
       - "maint/**"
-  pull_request:
-    branches-ignore:
-      - docs
 
 permissions: write-all
 
@@ -67,11 +64,7 @@ jobs:
         run: |
           DOCKER_REGISTRY="europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry"
           OUTPUT="docker-image-tags="
-          if [[ ${{ github.event_name }} == 'pull_request' ]]; then
-            OUTPUT+="$DOCKER_REGISTRY/DOCKER_IMAGE:${{ github.event.pull_request.head.sha }}"
-          else
-            OUTPUT+="$DOCKER_REGISTRY/DOCKER_IMAGE:${{ github.sha }}"
-          fi
+          OUTPUT+="$DOCKER_REGISTRY/DOCKER_IMAGE:${{ github.sha }}"
           if [[ ${{ github.ref }} == 'refs/heads/master' ]]; then
             OUTPUT+=",$DOCKER_REGISTRY/DOCKER_IMAGE:latest"
           fi
@@ -81,10 +74,7 @@ jobs:
   build-pcapi:
     name: "[pcapi] build and push docker image."
     needs: check-folders-changes
-    if: |
-      needs.check-folders-changes.outputs.api-changed == 'true' ||
-      github.ref == 'refs/heads/master' ||
-      startsWith(github.ref,'refs/heads/maint/v')
+    if: needs.check-folders-changes.outputs.api-changed == 'true'
     uses: ./.github/workflows/dev_on_workflow_build_and_push_docker_images.yml
     with:
       ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
@@ -113,10 +103,7 @@ jobs:
   build-pcapi-tests:
     name: "[pcapi-tests] build and push docker image."
     needs: check-folders-changes
-    if: |
-      needs.check-folders-changes.outputs.api-changed == 'true' ||
-      github.ref == 'refs/heads/master' ||
-      startsWith(github.ref,'refs/heads/maint/v')
+    if: needs.check-folders-changes.outputs.api-changed == 'true' 
     uses: ./.github/workflows/dev_on_workflow_build_and_push_docker_images.yml
     with:
       ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
@@ -125,31 +112,6 @@ jobs:
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-
-  run-mypy-cop:
-    name: "MyPy cop"
-    needs: check-folders-changes
-    if: |
-      github.event_name == 'pull_request' &&
-      needs.check-folders-changes.outputs.api-changed == 'true'
-    uses: ./.github/workflows/dev_on_workflow_mypy_cop.yml
-
-  update-api-client-template:  # for pull requests only
-    name: "Update api client template"
-    needs: [check-folders-changes, build-pcapi]
-    uses: ./.github/workflows/dev_on_workflow_update_api_client_template.yml
-    if: github.base_ref == 'master'
-    concurrency:
-      group: update-api-client-template-${{ github.ref }}
-      cancel-in-progress: true
-    with:
-      PCAPI_DOCKER_TAG: ${{ github.event.pull_request.head.sha }}
-      TRIGGER_ONLY_ON_API_CHANGE: true
-      TRIGGER_ONLY_ON_DEPENDENCY_CHANGE: true
-      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
-    secrets:
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
 
   prepare-cache-master:  # on "master" branch only
     name: "Reset cache on master on dependency update"
@@ -168,10 +130,7 @@ jobs:
   test-api:
     name: "Test api"
     needs: [check-folders-changes, build-pcapi-tests]
-    if: |
-      needs.check-folders-changes.outputs.api-changed == 'true' ||
-      github.ref == 'refs/heads/master' ||
-      startsWith(github.ref,'refs/heads/maint/v')
+    if: needs.check-folders-changes.outputs.api-changed == 'true'
     uses: ./.github/workflows/dev_on_workflow_tests_api.yml
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
@@ -180,10 +139,7 @@ jobs:
   test-pro:
     name: "Tests pro"
     needs: check-folders-changes
-    if: |
-      needs.check-folders-changes.outputs.pro-changed == 'true' ||
-      github.ref == 'refs/heads/master' ||
-      startsWith(github.ref,'refs/heads/maint/v')
+    if: needs.check-folders-changes.outputs.pro-changed == 'true'
     uses: ./.github/workflows/dev_on_workflow_tests_pro.yml
     with:
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
@@ -191,40 +147,18 @@ jobs:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
-  dependabot-auto-merge:
-    name: "Dependabot"
-    needs: test-pro
-    if: |
-      github.event_name == 'pull_request' &&
-      github.actor == 'dependabot[bot]'
-    uses: ./.github/workflows/dev_on_workflow_dependabot_auto_merge.yml
-
-  test-pro-e2e-latest:
-    name: "Tests pro E2E (pcapi:latest)"
-    needs: [check-folders-changes]
-    if: ${{ needs.check-folders-changes.outputs.pro-changed == 'true' && needs.check-folders-changes.outputs.api-changed == 'false' && github.event_name == 'pull_request'}}
-    uses: ./.github/workflows/dev_on_workflow_tests_pro_e2e.yml
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-    with:
-      TAG: 'latest'
-      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
-
   test-pro-e2e:
     name: "Tests pro E2E"
     needs: [check-folders-changes, build-pcapi]
     if: |
       needs.check-folders-changes.outputs.api-changed == 'true' ||
-      needs.check-folders-changes.outputs.pro-changed == 'true' ||
-      github.ref == 'refs/heads/master' ||
-      startsWith(github.ref,'refs/heads/maint/v')
+      needs.check-folders-changes.outputs.pro-changed == 'true'
     uses: ./.github/workflows/dev_on_workflow_tests_pro_e2e.yml
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
     with:
-      TAG: ${{ needs.check-folders-changes.outputs.api-changed == 'true' && (github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha) || 'latest' }}
+      TAG: ${{ needs.check-folders-changes.outputs.api-changed == 'true' && github.sha || 'latest' }}
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
 
   deploy-storybook:
@@ -232,23 +166,6 @@ jobs:
     needs: check-folders-changes
     if: ${{ github.ref == 'refs/heads/master' && needs.check-folders-changes.outputs.pro-changed == 'true' }}
     uses: ./.github/workflows/dev_on_workflow_deploy_storybook.yml
-
-  deploy-validation-env:
-    name: "[PRO] Deploy PR version for validation"
-    needs: check-folders-changes
-    uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
-    if: |
-      always() &&
-      github.base_ref == 'master' &&
-      needs.check-folders-changes.outputs.pro-changed == 'true'
-    secrets:
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-    with:
-      ENV: "testing"
-      CHANNEL: ""
-      REF: "${{ github.ref }}"
-      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
 
   deploy-to-testing:
     name: "Deploy to testing"

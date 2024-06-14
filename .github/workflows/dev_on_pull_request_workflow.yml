@@ -1,0 +1,195 @@
+name: "1 [on_pull_request] Initiate workflow"
+
+on:
+  pull_request:
+    branches-ignore:
+      - docs
+
+permissions: write-all
+
+jobs:
+  check-folders-changes:
+    # Perform all changes checks at once to remove the need for multiple checkouts accross jobs
+    name: "Check changes in folders"
+    runs-on: ubuntu-latest
+    outputs:
+      api-changed: ${{ steps.check-api-changes.outputs.any_modified }}
+      pro-changed: ${{ steps.check-pro-changes.outputs.any_modified }}
+      maintenance-site-changed: ${{ steps.check-maintenance-site-changes.outputs.any_modified }}
+      db-migrations-changed: ${{ steps.check-db-migrations-changes.outputs.any_modified }}
+      dependencies-changed: ${{ steps.check-dependencies-changes.outputs.any_modified }}
+      docker-image-tags: ${{ steps.define-image-tags.outputs.docker-image-tags }}
+    steps:
+      - uses: actions/checkout@v4.1.7
+        with:
+          fetch-depth: 0
+          fetch-tags: false
+      - name: "Check api folder changes"
+        id: check-api-changes
+        uses: tj-actions/changed-files@v44
+        with:
+          files: api/**
+      - name: "Check pro folder changes"
+        id: check-pro-changes
+        uses: tj-actions/changed-files@v44
+        with:
+          files: pro/**
+      - name: "Check maintenance-site folder changes"
+        id: check-maintenance-site-changes
+        uses: tj-actions/changed-files@v44
+        with:
+          files: maintenance-site/**
+      - name: "Check db migration folder changes"
+        id: check-db-migrations-changes
+        uses: tj-actions/changed-files@v44
+        with:
+          files: |-
+            api/src/pcapi/alembic/versions/**
+            api/src/pcapi/alembic/run_migrations.py
+      - name: "Check changes in dependencies (frontend + backend)"
+        id: check-dependencies-changes
+        uses: tj-actions/changed-files@v44
+        with:
+          files: |
+            api/poetry.lock
+            pro/yarn.lock
+      - name: "Define docker image tags."
+        id: define-image-tags
+        run: |
+          DOCKER_REGISTRY="europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry"
+          OUTPUT="docker-image-tags="
+          OUTPUT+="$DOCKER_REGISTRY/DOCKER_IMAGE:${{ github.event.pull_request.head.sha }}"
+          echo $OUTPUT
+          echo $OUTPUT >> "$GITHUB_OUTPUT"
+
+  build-pcapi:
+    name: "[pcapi] build and push docker image."
+    needs: check-folders-changes
+    if: needs.check-folders-changes.outputs.api-changed == 'true'
+    uses: ./.github/workflows/dev_on_workflow_build_and_push_docker_images.yml
+    with:
+      ref: ${{ github.event.pull_request.head.sha }}
+      image: pcapi
+      tags: ${{ needs.check-folders-changes.outputs.docker-image-tags }}
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
+  build-pcapi-console:
+    name: "[pcapi-console] build and push docker image."
+    needs: check-folders-changes
+    if: |
+      needs.check-folders-changes.outputs.api-changed == 'true' ||
+      needs.check-folders-changes.outputs.pro-changed == 'true'
+    uses: ./.github/workflows/dev_on_workflow_build_and_push_docker_images.yml
+    with:
+      ref: ${{ github.event.pull_request.head.sha }}
+      image: pcapi-console
+      tags: ${{ needs.check-folders-changes.outputs.docker-image-tags }}
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
+  build-pcapi-tests:
+    name: "[pcapi-tests] build and push docker image."
+    needs: check-folders-changes
+    if: |
+      needs.check-folders-changes.outputs.api-changed == 'true'
+    uses: ./.github/workflows/dev_on_workflow_build_and_push_docker_images.yml
+    with:
+      ref: ${{ github.event.pull_request.head.sha }}
+      image: pcapi-tests
+      tags: ${{ needs.check-folders-changes.outputs.docker-image-tags }}
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
+  run-mypy-cop:
+    name: "MyPy cop"
+    needs: check-folders-changes
+    if: |
+      github.event_name == 'pull_request' &&
+      needs.check-folders-changes.outputs.api-changed == 'true'
+    uses: ./.github/workflows/dev_on_workflow_mypy_cop.yml
+
+  update-api-client-template:
+    name: "Update api client template"
+    needs: [check-folders-changes, build-pcapi]
+    uses: ./.github/workflows/dev_on_workflow_update_api_client_template.yml
+    concurrency:
+      group: update-api-client-template-${{ github.ref }}
+      cancel-in-progress: true
+    with:
+      PCAPI_DOCKER_TAG: ${{ github.event.pull_request.head.sha }}
+      TRIGGER_ONLY_ON_API_CHANGE: true
+      TRIGGER_ONLY_ON_DEPENDENCY_CHANGE: true
+      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
+    secrets:
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+
+  test-api:
+    name: "Test api"
+    needs: [check-folders-changes, build-pcapi-tests]
+    if: needs.check-folders-changes.outputs.api-changed == 'true'
+    uses: ./.github/workflows/dev_on_workflow_tests_api.yml
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
+  test-pro:
+    name: "Tests pro"
+    needs: check-folders-changes
+    if: needs.check-folders-changes.outputs.pro-changed == 'true'
+    uses: ./.github/workflows/dev_on_workflow_tests_pro.yml
+    with:
+      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
+  dependabot-auto-merge:
+    name: "Dependabot"
+    needs: test-pro
+    if: github.actor == 'dependabot[bot]'
+    uses: ./.github/workflows/dev_on_workflow_dependabot_auto_merge.yml
+
+  test-pro-e2e-latest:
+    name: "Tests pro E2E (pcapi:latest)"
+    needs: [check-folders-changes]
+    if: ${{ needs.check-folders-changes.outputs.pro-changed == 'true' && needs.check-folders-changes.outputs.api-changed == 'false' }}
+    uses: ./.github/workflows/dev_on_workflow_tests_pro_e2e.yml
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+    with:
+      TAG: 'latest'
+      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
+
+  test-pro-e2e:
+    name: "Tests pro E2E"
+    needs: [check-folders-changes, build-pcapi]
+    if: ${{ needs.check-folders-changes.outputs.pro-changed == 'true' || needs.check-folders-changes.outputs.api-changed == 'true' }}
+    uses: ./.github/workflows/dev_on_workflow_tests_pro_e2e.yml
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+    with:
+      TAG: ${{ needs.check-folders-changes.outputs.api-changed == 'true' && github.event.pull_request.head.sha || 'latest' }}
+      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
+
+  deploy-validation-env:
+    name: "[PRO] Deploy PR version for validation"
+    needs: check-folders-changes
+    uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
+    if: |
+      always() &&
+      needs.check-folders-changes.outputs.pro-changed == 'true'
+    secrets:
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+    with:
+      ENV: "testing"
+      CHANNEL: ""
+      REF: "${{ github.ref }}"
+      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
