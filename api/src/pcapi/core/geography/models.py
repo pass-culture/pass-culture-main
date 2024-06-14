@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from geoalchemy2 import Geometry
 import sqlalchemy as sa
 
@@ -21,8 +23,8 @@ class Address(PcObject, Base, Model):
     street: str | None = sa.Column(sa.Text(), nullable=True)
     postalCode: str = sa.Column(sa.Text(), nullable=False)
     city: str = sa.Column(sa.Text(), nullable=False)
-    latitude: float = sa.Column(sa.Numeric(8, 5), nullable=False)
-    longitude: float = sa.Column(sa.Numeric(8, 5), nullable=False)
+    latitude: Decimal = sa.Column(sa.Numeric(8, 5), nullable=False)
+    longitude: Decimal = sa.Column(sa.Numeric(8, 5), nullable=False)
     departmentCode = sa.Column(sa.Text(), nullable=True, index=True)
     timezone = sa.Column(sa.Text(), nullable=False, default=METROPOLE_TIMEZONE, server_default=METROPOLE_TIMEZONE)
 
