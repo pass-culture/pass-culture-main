@@ -93,14 +93,3 @@ export type VisibilityFormValues = {
   'search-teacher': string | null
   teacher: string | null
 }
-
-export enum CollectiveOfferStatus {
-  ACTIVE = 'ACTIVE',
-  PENDING = 'PENDING',
-  REJECTED = 'REJECTED',
-  PREBOOKED = 'PREBOOKED',
-  BOOKED = 'BOOKED',
-  INACTIVE = 'INACTIVE',
-  EXPIRED = 'EXPIRED',
-  ENDED = 'ENDED',
-}

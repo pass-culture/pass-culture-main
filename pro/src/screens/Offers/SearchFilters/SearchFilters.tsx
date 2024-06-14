@@ -1,8 +1,12 @@
 import { Dispatch, FormEvent, SetStateAction } from 'react'
 
-import { EacFormat, GetOffererResponseModel, OfferStatus } from 'apiClient/v1'
+import {
+  CollectiveOfferDisplayedStatus,
+  EacFormat,
+  GetOffererResponseModel,
+  OfferStatus,
+} from 'apiClient/v1'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { CollectiveOfferStatus } from 'core/OfferEducational/types'
 import {
   ALL_CATEGORIES_OPTION,
   ALL_FORMATS_OPTION,
@@ -44,22 +48,22 @@ interface SearchFiltersProps {
 
 const collectiveFilterStatus = [
   { label: 'Tous', value: ALL_STATUS },
-  { label: 'Désactivée', value: CollectiveOfferStatus.INACTIVE },
-  { label: 'Expirée', value: CollectiveOfferStatus.EXPIRED },
-  { label: 'Préréservée', value: CollectiveOfferStatus.PREBOOKED },
-  { label: 'Publiée sur ADAGE', value: CollectiveOfferStatus.ACTIVE },
+  { label: 'Désactivée', value: CollectiveOfferDisplayedStatus.INACTIVE },
+  { label: 'Expirée', value: CollectiveOfferDisplayedStatus.EXPIRED },
+  { label: 'Préréservée', value: CollectiveOfferDisplayedStatus.PREBOOKED },
+  { label: 'Publiée sur ADAGE', value: CollectiveOfferDisplayedStatus.ACTIVE },
   {
     label: 'Refusée',
-    value: CollectiveOfferStatus.REJECTED,
+    value: CollectiveOfferDisplayedStatus.REJECTED,
   },
   {
     label: 'Réservée',
-    value: CollectiveOfferStatus.BOOKED,
+    value: CollectiveOfferDisplayedStatus.BOOKED,
   },
-  { label: 'Terminée', value: CollectiveOfferStatus.ENDED },
+  { label: 'Terminée', value: CollectiveOfferDisplayedStatus.ENDED },
   {
     label: 'Validation en attente',
-    value: CollectiveOfferStatus.PENDING,
+    value: CollectiveOfferDisplayedStatus.PENDING,
   },
 ]
 
