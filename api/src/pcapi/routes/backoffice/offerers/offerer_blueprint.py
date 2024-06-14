@@ -78,7 +78,7 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
     adage_query = (
         sa.select(
             sa.func.concat(
-                sa.func.coalesce(sa.func.sum(sa.case([(offerers_models.Venue.adageId.is_not(None), 1)], else_=0)), 0),
+                sa.func.coalesce(sa.func.sum(sa.case((offerers_models.Venue.adageId.is_not(None), 1), else_=0)), 0),
                 "/",
                 sa.func.count(offerers_models.Venue.id),
             )
