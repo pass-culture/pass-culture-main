@@ -347,6 +347,9 @@ jobs:
       RUN_ENV: tests
       DATABASE_URL_TEST: postgresql://pytest:pytest@postgres:5432/pass_culture
       REDIS_URL: redis://redis:6379
+      # Remove this environment variable when SQLAlchemy 2.0 
+      # is successfully bump
+      SQLALCHEMY_WARN_20: 1
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -437,7 +440,7 @@ jobs:
         with:
           image: ${{ env.tests_docker_image }}
           shell: bash
-          options: -e RUN_ENV -e DATABASE_URL_TEST -e REDIS_URL -v ${{ runner.workspace }}/pass-culture-main/api/tests/:/tests
+          options: -e RUN_ENV -e DATABASE_URL_TEST -e REDIS_URL -e SQLALCHEMY_WARN_20 -v ${{ runner.workspace }}/pass-culture-main/api/tests/:/tests
           run: |
             pytest ${{ matrix.pytest_args }} --durations=10 --junitxml='/tests/junit.xml' -vv
       - name: "Publish Test Report"
