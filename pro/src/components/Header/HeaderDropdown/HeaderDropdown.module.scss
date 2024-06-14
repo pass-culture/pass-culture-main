@@ -98,7 +98,8 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
   overflow-y: scroll;
 
   @media (min-width: $sub-popin-full-width-breakpoint) {
-    height: rem.torem(310px);
+    max-height: rem.torem(310px);
+    height: auto;
     width: rem.torem(320px);
     margin-left: 0;
     margin-top: 0;
