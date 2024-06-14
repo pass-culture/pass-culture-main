@@ -3,8 +3,6 @@ import decimal
 import logging
 from typing import Iterator
 
-import sqlalchemy as sqla
-
 from pcapi import settings
 from pcapi.connectors.serialization.cine_digital_service_serializers import ShowCDS
 from pcapi.core.categories import subcategories_v2 as subcategories
@@ -112,20 +110,8 @@ class CDSStocks(LocalProvider):
         if model_type == offers_models.Offer:
             query = model_type.query.filter_by(idAtProvider=id_at_providers)
         elif model_type == offers_models.Stock:
-            # Try to match both old and new idAtProviders
-            # We can't know if we have an existing Stock with an old or a new idAtProviders construct
-            # And we also want to try to clean old idAtProviders.
-            # So if a provider change the showtime in future, it won't create duplicates anymore
-
-            # TODO (dramelet, 2024-02-09): We can remove this in a few months when we won't
-            # have any remaining up-to-date stocks using old construct `idAtProviders`
-            old_id_at_providers, new_id_at_providers = _get_old_and_new_id_at_providers(id_at_providers)
             query = model_type.query.filter(
-                sqla.or_(
-                    offers_models.Stock.idAtProviders
-                    == old_id_at_providers,  # i.e. "51%123%CDS#2/2022-07-01 12:00:00+02:00"
-                    offers_models.Stock.idAtProviders == new_id_at_providers,  # i.e. "51%123%CDS#2"
-                )
+                offers_models.Stock.idAtProviders == id_at_providers,  # i.e. "51%123%CDS#2"
             ).with_for_update()
         else:
             query = model_type.query.filter_by(idAtProviders=id_at_providers)
@@ -198,10 +184,6 @@ class CDSStocks(LocalProvider):
         cds_stock.offer = self.last_offer
 
         showtime_uuid = _get_showtimes_uuid_by_idAtProvider(cds_stock.idAtProviders)
-
-        # TODO (dramelet, 2024-02-09): We can remove this in a few months when we won't
-        # have any remaining up-to-date stocks using old construct `idAtProviders`
-        cds_stock.idAtProviders = _clean_cds_id_at_providers(cds_stock.idAtProviders)
 
         showtime = _find_showtime_by_showtime_uuid(self.filtered_movie_showtimes, showtime_uuid)  # type: ignore[arg-type]
         if not showtime:
@@ -328,10 +310,7 @@ def _find_showtimes_by_movie_id(showtimes_information: list[dict], movie_id: int
 
 def _find_showtime_by_showtime_uuid(showtimes: list[dict], showtime_uuid: str) -> dict | None:
     for showtime in showtimes:
-        if showtime_uuid in (
-            _build_old_showtime_uuid(showtime["show_information"]),
-            _build_new_showtime_uuid(showtime["show_information"]),
-        ):
+        if showtime_uuid == _build_showtime_uuid(showtime["show_information"]):
             return showtime
     return None
 
@@ -345,33 +324,9 @@ def _build_movie_uuid(movie_information_id: str, venue: Venue) -> str:
     return f"{movie_information_id}%{venue.id}%CDS"
 
 
-def _build_new_showtime_uuid(showtime_details: ShowCDS) -> str:
+def _build_showtime_uuid(showtime_details: ShowCDS) -> str:
     return str(showtime_details.id)
 
 
-# TODO (dramelet, 2024-02-09) Remove this and rename the upper function
-# in a few months when we won't have any Stocks using the old construct
-# of the `idAtProviders`
-def _build_old_showtime_uuid(showtime_details: ShowCDS) -> str:
-    return f"{showtime_details.id}/{showtime_details.showtime}"
-
-
-def _get_old_and_new_id_at_providers(id_at_providers: str) -> tuple[str, str]:
-    return id_at_providers, id_at_providers.split("/")[0]
-
-
 def _build_stock_uuid(movie_information_id: str, venue: Venue, showtime_details: ShowCDS) -> str:
-    # TODO (dramelet, 2024-02-09): In a few months, we will be able to safely build
-    # `idAtProviders` without the showtime. But for now, we need to be able to match a stock
-    # in both ways.
-    return f"{_build_movie_uuid(movie_information_id, venue)}#{_build_old_showtime_uuid(showtime_details)}"
-
-
-def _clean_cds_id_at_providers(cds_stock_id_at_providers: str) -> str:
-    """We don't want to build `idAtProviders` using showtime anymore, like this:
-        51%547%CDS#2/2022-07-01 12:00:00+02:00"
-
-    The provider showtime.id is enough (as for any others providers), which look like this:
-        51%547%CDS#2
-    """
-    return cds_stock_id_at_providers.split("/")[0]
+    return f"{_build_movie_uuid(movie_information_id, venue)}#{_build_showtime_uuid(showtime_details)}"

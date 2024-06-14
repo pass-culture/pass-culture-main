@@ -18,7 +18,6 @@ import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.models as providers_models
 from pcapi.core.testing import override_features
 from pcapi.local_providers.cinema_providers.cds.cds_stocks import CDSStocks
-from pcapi.repository import transaction
 from pcapi.utils.human_ids import humanize
 
 import tests
@@ -117,8 +116,8 @@ class CDSStocksTest:
         assert offer_providable_info.new_id_at_provider == f"123%{venue_provider.venue.id}%CDS"
 
         assert stock_providable_info.type == Stock
-        assert stock_providable_info.id_at_providers == f"123%{venue_provider.venue.id}%CDS#1/2022-06-20 11:00:00"
-        assert stock_providable_info.new_id_at_provider == f"123%{venue_provider.venue.id}%CDS#1/2022-06-20 11:00:00"
+        assert stock_providable_info.id_at_providers == f"123%{venue_provider.venue.id}%CDS#1"
+        assert stock_providable_info.new_id_at_provider == f"123%{venue_provider.venue.id}%CDS#1"
 
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
@@ -439,78 +438,6 @@ class CDSStocksTest:
 
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
-    def test_synchronization_should_try_to_clean_old_idatproviders_if_using_showtime(
-        self, mock_get_venue_movies, requests_mock
-    ):
-        # Given
-        _cds_details, venue_provider = setup_cinema()
-
-        # Stock previously created with an idAtProviders built with the showtime, before the fix.
-        offers_factories.StockFactory(
-            beginningDatetime=datetime(2022, 6, 20, 9),
-            idAtProviders=f"123%{venue_provider.venueId}%CDS#1/2022-06-20 11:00:00+02:00",
-            offer__venue=venue_provider.venue,
-        )
-        offers_factories.StockFactory(
-            beginningDatetime=datetime(2022, 7, 1, 10),
-            idAtProviders=f"51%{venue_provider.venueId}%CDS#2/2022-07-01 12:00:00+02:00",
-            offer__venue=venue_provider.venue,
-        )
-
-        offers_factories.StockFactory(
-            beginningDatetime=datetime(2022, 6, 1, 10),
-            idAtProviders=f"51%{venue_provider.venueId}%CDS#2/2022-06-01 12:00:00+02:00",
-            offer__venue=venue_provider.venue,
-        )
-
-        get_cinemas_adapter = requests_mock.get(
-            "https://account_id.fakeurl/cinemas?api_token=token",
-            json=[fixtures.CINEMA_WITH_INTERNET_SALE_GAUGE_ACTIVE_FALSE],
-        )
-        requests_mock.get("https://account_id.fakeurl/mediaoptions?api_token=token", json=fixtures.MEDIA_OPTIONS)
-        mocked_movies = [fixtures.MOVIE_1, fixtures.MOVIE_2]
-        mock_get_venue_movies.return_value = mocked_movies
-
-        requests_mock.get("https://example.com/coupez.png", content=bytes())
-        requests_mock.get("https://example.com/topgun.png", content=bytes())
-
-        requests_mock.get("https://account_id.fakeurl/shows?api_token=token", json=[fixtures.SHOW_1, fixtures.SHOW_2])
-        get_voucher_types_adapter = requests_mock.get(
-            "https://account_id.fakeurl/vouchertype?api_token=token",
-            json=[fixtures.VOUCHER_TYPE_PC_1, fixtures.VOUCHER_TYPE_PC_2],
-        )
-
-        cds_stocks = CDSStocks(venue_provider=venue_provider)
-
-        cds_stocks.updateObjects()
-
-        # Then
-        stocks = Stock.query.order_by(Stock.id).all()
-        created_price_categories = PriceCategory.query.order_by(PriceCategory.id).all()
-        created_price_category_label = PriceCategoryLabel.query.one()
-        assert len(stocks) == 3
-        assert len(created_price_categories) == 2
-
-        assert stocks[0].idAtProviders == f"123%{venue_provider.venueId}%CDS#1"
-
-        assert stocks[1].idAtProviders == f"51%{venue_provider.venueId}%CDS#2"
-
-        # Others stocks for which the synchronization is not about, should be left as is
-        assert stocks[2].idAtProviders == f"51%{venue_provider.venueId}%CDS#2/2022-06-01 12:00:00+02:00"
-
-        assert all(
-            (category.priceCategoryLabel == created_price_category_label for category in created_price_categories)
-        )
-        assert created_price_category_label.label == "pass Culture"
-
-        assert cds_stocks.erroredObjects == 0
-        assert cds_stocks.erroredThumbs == 0
-
-        assert get_cinemas_adapter.call_count == 1
-        assert get_voucher_types_adapter.call_count == 1
-
-    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
-    @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
     def test_synchronization_shouldnt_build_idatproviders_using_showtime(self, mock_get_venue_movies, requests_mock):
         # Given
         _cds_details, venue_provider = setup_cinema()
@@ -575,7 +502,7 @@ class CDSStocksTest:
         )
         offers_factories.StockFactory(
             beginningDatetime=datetime(2022, 7, 1, 10),
-            idAtProviders=f"51%{venue_provider.venueId}%CDS#2/2022-07-01 12:00:00+02:00",
+            idAtProviders=f"51%{venue_provider.venueId}%CDS#2",
             offer__venue=venue_provider.venue,
         )
         get_cinemas_adapter = requests_mock.get(
