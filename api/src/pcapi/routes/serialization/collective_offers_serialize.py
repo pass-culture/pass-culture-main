@@ -742,6 +742,10 @@ class PatchCollectiveOfferActiveStatusBodyModel(BaseModel):
         alias_generator = to_camel
 
 
+class PatchCollectiveOfferArchiveBodyModel(BaseModel):
+    ids: list[int]
+
+
 class PatchAllCollectiveOffersActiveStatusBodyModel(BaseModel):
     is_active: bool
     offerer_id: int | None

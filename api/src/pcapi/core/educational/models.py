@@ -342,6 +342,8 @@ class CollectiveOffer(
 
     dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
 
+    dateArchived: datetime = sa.Column(sa.DateTime, nullable=True)
+
     subcategoryId: str | None = sa.Column(sa.Text, nullable=True)
 
     dateUpdated: datetime = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow, onupdate=datetime.utcnow)
@@ -489,6 +491,14 @@ class CollectiveOffer(
             .where(aliased_collective_booking.collectiveStockId == aliased_collective_stock.id)
             .where(aliased_collective_booking.status != CollectiveBookingStatus.CANCELLED)
         )
+
+    @hybrid_property
+    def isArchived(self) -> bool:
+        return self.dateArchived is not None
+
+    @isArchived.expression  # type: ignore[no-redef]
+    def isArchived(cls) -> Boolean:  # pylint: disable=no-self-argument
+        return cls.dateArchived.is_not(None)
 
     @property
     def isBookable(self) -> bool:
