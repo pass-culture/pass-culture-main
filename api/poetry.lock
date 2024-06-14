@@ -4793,13 +4793,13 @@ files = [
 
 [[package]]
 name = "slack-sdk"
-version = "3.28.0"
+version = "3.29.0"
 description = "The Slack API Platform SDK for Python"
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "slack_sdk-3.28.0-py2.py3-none-any.whl", hash = "sha256:1a47700ae20566575ce494d1d1b6f594b011d06aad28e3b8e28c052cad1d6c4c"},
-    {file = "slack_sdk-3.28.0.tar.gz", hash = "sha256:e6ece5cb70850492637e002e3b0d26d307939f4a33203b88cb274f7475c9a144"},
+    {file = "slack_sdk-3.29.0-py2.py3-none-any.whl", hash = "sha256:1857300b9bdd5cd43eb527a0dd8c6415aa0623cd76e153bf167e93968efd5121"},
+    {file = "slack_sdk-3.29.0.tar.gz", hash = "sha256:a6ad02fd23a7c70ded7e48e0fe317e269820e64e55069699cc75d64fb2ebf5a1"},
 ]
 
 [package.extras]
@@ -5663,4 +5663,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "8b571b9c08afc9252a91e8b2a6fbaaff2db2f379e9a4f4dddbb8d6f6393acf90"
+content-hash = "bdd41d05fe8898c205558cdf4935180edfa4a519e80a3813d2d48c57de1ab98d"
