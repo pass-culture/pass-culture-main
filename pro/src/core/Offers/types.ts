@@ -1,6 +1,9 @@
-import { EacFormat, OfferStatus } from 'apiClient/v1'
+import {
+  CollectiveOfferDisplayedStatus,
+  EacFormat,
+  OfferStatus,
+} from 'apiClient/v1'
 import { CropParams } from 'components/ImageUploader/ButtonImageEdit/types'
-import { CollectiveOfferStatus } from 'core/OfferEducational/types'
 
 import { ALL_FORMATS, ALL_STATUS } from './constants'
 
@@ -10,7 +13,7 @@ export type SearchFiltersParams = {
   venueId: string
   categoryId: string
   format: EacFormat | typeof ALL_FORMATS
-  status: OfferStatus | CollectiveOfferStatus | typeof ALL_STATUS
+  status: OfferStatus | CollectiveOfferDisplayedStatus | typeof ALL_STATUS
   creationMode: string
   collectiveOfferType: string
   periodBeginningDate: string

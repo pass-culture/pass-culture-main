@@ -1,7 +1,6 @@
 import invert from 'lodash/invert'
 
-import { OfferStatus } from 'apiClient/v1'
-import { CollectiveOfferStatus } from 'core/OfferEducational/types'
+import { CollectiveOfferDisplayedStatus, OfferStatus } from 'apiClient/v1'
 import { SearchFiltersParams } from 'core/Offers/types'
 
 const translateObjectKeysAndValues = (
@@ -25,19 +24,19 @@ const translateObjectKeysAndValues = (
 // This is a bit janky because for types used by both individual and collective offers,
 // we only declare one type here. It works but only because
 // the individual and collective types share the same values
-// (ie OfferStatus.ACTIVE === CollectiveOfferStatus.ACTIVE)
+// (ie OfferStatus.ACTIVE === CollectiveOfferDisplayedStatus.ACTIVE)
 // TODO refactor to split individual and collective behavior
 const mapBrowserStatusToApi: Record<
   string,
-  OfferStatus | CollectiveOfferStatus
+  OfferStatus | CollectiveOfferDisplayedStatus
 > = {
   active: OfferStatus.ACTIVE,
   inactive: OfferStatus.INACTIVE,
   epuisee: OfferStatus.SOLD_OUT,
-  prereservee: CollectiveOfferStatus.PREBOOKED,
-  reservee: CollectiveOfferStatus.BOOKED,
+  prereservee: CollectiveOfferDisplayedStatus.PREBOOKED,
+  reservee: CollectiveOfferDisplayedStatus.BOOKED,
   expiree: OfferStatus.EXPIRED,
-  terminee: CollectiveOfferStatus.ENDED,
+  terminee: CollectiveOfferDisplayedStatus.ENDED,
   'en-attente': OfferStatus.PENDING,
   refusee: OfferStatus.REJECTED,
   draft: OfferStatus.DRAFT,
