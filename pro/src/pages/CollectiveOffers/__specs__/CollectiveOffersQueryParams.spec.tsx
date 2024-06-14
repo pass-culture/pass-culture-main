@@ -154,9 +154,11 @@ describe('route CollectiveOffers', () => {
       const firstTypeOption = screen.getByRole('option', {
         name: 'Concert',
       })
-      const typeSelect = screen.getByDisplayValue('Tous')
+      const formatSelect = screen.getByRole('combobox', {
+        name: 'Format',
+      })
       // When
-      await userEvent.selectOptions(typeSelect, firstTypeOption)
+      await userEvent.selectOptions(formatSelect, firstTypeOption)
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
@@ -164,7 +166,7 @@ describe('route CollectiveOffers', () => {
       )
     })
 
-    it('should have status value when user filters by status', async () => {
+    it('should have the status in the url value when user filters by status', async () => {
       vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce([
         collectiveOfferFactory(
           {
@@ -178,14 +180,11 @@ describe('route CollectiveOffers', () => {
         ),
       ])
       await renderOffers()
-      await userEvent.click(
-        screen.getByRole('button', {
-          name: 'Statut Afficher ou masquer le filtre par statut',
-        })
-      )
-      await userEvent.click(screen.getByLabelText('Réservée'))
 
-      await userEvent.click(screen.getByText('Appliquer'))
+      const statusSelect = screen.getByLabelText('Statut')
+      await userEvent.selectOptions(statusSelect, 'Réservée')
+
+      await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
       expect(mockNavigate).toHaveBeenCalledWith(
         '/offres/collectives?statut=reservee'
@@ -206,14 +205,11 @@ describe('route CollectiveOffers', () => {
         ),
       ])
       await renderOffers()
-      await userEvent.click(
-        screen.getByRole('button', {
-          name: 'Statut Afficher ou masquer le filtre par statut',
-        })
-      )
-      await userEvent.click(screen.getByLabelText('Toutes'))
 
-      await userEvent.click(screen.getByText('Appliquer'))
+      const statusSelect = screen.getByLabelText('Statut')
+      await userEvent.selectOptions(statusSelect, 'Tous')
+
+      await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
       expect(mockNavigate).toHaveBeenCalledWith('/offres/collectives')
     })

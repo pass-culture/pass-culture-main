@@ -1,10 +1,12 @@
-import React, { FormEvent } from 'react'
+import { Dispatch, FormEvent, SetStateAction } from 'react'
 
-import { EacFormat, GetOffererResponseModel } from 'apiClient/v1'
+import { EacFormat, GetOffererResponseModel, OfferStatus } from 'apiClient/v1'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import { CollectiveOfferStatus } from 'core/OfferEducational/types'
 import {
   ALL_CATEGORIES_OPTION,
   ALL_FORMATS_OPTION,
+  ALL_STATUS,
   ALL_VENUES_OPTION,
   COLLECTIVE_OFFER_TYPES_OPTIONS,
   CREATION_MODES_OPTIONS,
@@ -27,33 +29,63 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import styles from './SearchFilters.module.scss'
 
 interface SearchFiltersProps {
-  applyFilters: () => void
+  applyFilters: (filters: SearchFiltersParams) => void
   offerer: GetOffererResponseModel | null
   removeOfferer: () => void
   selectedFilters: SearchFiltersParams
-  setSearchFilters: (
-    filters:
-      | SearchFiltersParams
-      | ((previousFilters: SearchFiltersParams) => SearchFiltersParams)
-  ) => void
+  setSelectedFilters: Dispatch<SetStateAction<SearchFiltersParams>>
   disableAllFilters: boolean
   resetFilters: () => void
   venues: SelectOption[]
   categories?: SelectOption[]
   audience: Audience
+  isRestrictedAsAdmin?: boolean
 }
+
+const collectiveFilterStatus = [
+  { label: 'Tous', value: ALL_STATUS },
+  { label: 'Désactivée', value: CollectiveOfferStatus.INACTIVE },
+  { label: 'Expirée', value: CollectiveOfferStatus.EXPIRED },
+  { label: 'Préréservée', value: CollectiveOfferStatus.PREBOOKED },
+  { label: 'Publiée sur ADAGE', value: CollectiveOfferStatus.ACTIVE },
+  {
+    label: 'Refusée',
+    value: CollectiveOfferStatus.REJECTED,
+  },
+  {
+    label: 'Réservée',
+    value: CollectiveOfferStatus.BOOKED,
+  },
+  { label: 'Terminée', value: CollectiveOfferStatus.ENDED },
+  {
+    label: 'Validation en attente',
+    value: CollectiveOfferStatus.PENDING,
+  },
+]
+
+const individualFilterStatus = [
+  { label: 'Tous', value: ALL_STATUS },
+  { label: 'Brouillon', value: OfferStatus.DRAFT },
+  { label: 'Publiée', value: OfferStatus.ACTIVE },
+  { label: 'Désactivée', value: OfferStatus.INACTIVE },
+  { label: 'Épuisée', value: OfferStatus.SOLD_OUT },
+  { label: 'Expirée', value: OfferStatus.EXPIRED },
+  { label: 'Validation en attente', value: OfferStatus.PENDING },
+  { label: 'Refusée', value: OfferStatus.REJECTED },
+]
 
 export const SearchFilters = ({
   applyFilters,
+  selectedFilters,
+  setSelectedFilters,
+  resetFilters,
   offerer,
   removeOfferer,
-  selectedFilters,
-  setSearchFilters,
   disableAllFilters,
-  resetFilters,
   venues,
   categories,
   audience,
+  isRestrictedAsAdmin = false,
 }: SearchFiltersProps): JSX.Element => {
   const formats: SelectOption[] = Object.values(EacFormat).map((format) => ({
     value: format,
@@ -63,7 +95,7 @@ export const SearchFilters = ({
   const updateSearchFilters = (
     newSearchFilters: Partial<SearchFiltersParams>
   ) => {
-    setSearchFilters((currentSearchFilters) => ({
+    setSelectedFilters((currentSearchFilters) => ({
       ...currentSearchFilters,
       ...newSearchFilters,
     }))
@@ -95,6 +127,10 @@ export const SearchFilters = ({
     updateSearchFilters({ collectiveOfferType: event.currentTarget.value })
   }
 
+  const storeOfferStatus = (event: FormEvent<HTMLSelectElement>) => {
+    updateSearchFilters({ status: event.currentTarget.value as OfferStatus })
+  }
+
   const onBeginningDateChange = (periodBeginningDate: string) => {
     const dateToFilter =
       periodBeginningDate !== ''
@@ -113,7 +149,7 @@ export const SearchFilters = ({
 
   const requestFilteredOffers = (event: FormEvent) => {
     event.preventDefault()
-    applyFilters()
+    applyFilters(selectedFilters)
   }
 
   const searchByOfferNameLabel =
@@ -159,7 +195,6 @@ export const SearchFilters = ({
             value={selectedFilters.nameOrIsbn}
           />
         </FieldLayout>
-
         <FormLayout.Row inline>
           <FieldLayout label="Lieu" name="lieu" isOptional>
             <SelectInput
@@ -241,6 +276,24 @@ export const SearchFilters = ({
             />
           </fieldset>
         </FormLayout.Row>
+        <FieldLayout
+          label="Statut"
+          name="status"
+          isOptional
+          className={styles['status-filter']}
+        >
+          <SelectInput
+            value={selectedFilters.status}
+            name="status"
+            onChange={storeOfferStatus}
+            disabled={disableAllFilters || isRestrictedAsAdmin}
+            options={
+              audience === Audience.COLLECTIVE
+                ? collectiveFilterStatus
+                : individualFilterStatus
+            }
+          />
+        </FieldLayout>
 
         <div className={styles['reset-filters']}>
           <Button

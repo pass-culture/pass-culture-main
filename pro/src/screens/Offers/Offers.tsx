@@ -61,6 +61,7 @@ export interface OffersProps {
   urlSearchFilters: SearchFiltersParams
   venues: SelectOption[]
   categories?: SelectOption[]
+  isRestrictedAsAdmin?: boolean
 }
 
 export const Offers = ({
@@ -75,13 +76,12 @@ export const Offers = ({
   urlSearchFilters,
   venues,
   categories,
+  isRestrictedAsAdmin,
 }: OffersProps): JSX.Element => {
-  const [searchFilters, setSearchFilters] =
-    useState<SearchFiltersParams>(initialSearchFilters)
-
   const [selectedOfferIds, setSelectedOfferIds] = useState<number[]>([])
   const isNewSideBarNavigation = useIsNewInterfaceActive()
   const selectedOffererId = useSelector(selectCurrentOffererId)
+  const [selectedFilters, setSelectedFilters] = useState(initialSearchFilters)
 
   const { isAdmin } = currentUser
   const currentPageOffersSubset = offers.slice(
@@ -141,7 +141,7 @@ export const Offers = ({
   }
 
   const resetFilters = () => {
-    setSearchFilters(DEFAULT_SEARCH_FILTERS)
+    setSelectedFilters(DEFAULT_SEARCH_FILTERS)
     applyUrlFiltersAndRedirect({
       ...DEFAULT_SEARCH_FILTERS,
     })
@@ -156,18 +156,18 @@ export const Offers = ({
     redirectWithUrlFilters(filters)
   }
 
-  const applyFilters = () => {
-    applyUrlFiltersAndRedirect({ ...searchFilters, page: DEFAULT_PAGE })
+  const applyFilters = (filters: SearchFiltersParams) => {
+    applyUrlFiltersAndRedirect({ ...filters, page: DEFAULT_PAGE })
   }
 
   const removeOfferer = () => {
     const updatedFilters = {
-      ...searchFilters,
+      ...initialSearchFilters,
       offererId: DEFAULT_SEARCH_FILTERS.offererId,
     }
     if (
-      searchFilters.venueId === DEFAULT_SEARCH_FILTERS.venueId &&
-      searchFilters.status !== DEFAULT_SEARCH_FILTERS.status
+      initialSearchFilters.venueId === DEFAULT_SEARCH_FILTERS.venueId &&
+      initialSearchFilters.status !== DEFAULT_SEARCH_FILTERS.status
     ) {
       updatedFilters.status = DEFAULT_SEARCH_FILTERS.status
     }
@@ -212,7 +212,7 @@ export const Offers = ({
             {
               label: 'Offres individuelles',
               url: computeOffersUrl({
-                ...searchFilters,
+                ...initialSearchFilters,
                 status: DEFAULT_SEARCH_FILTERS.status,
                 page: currentPageNumber,
               }),
@@ -222,7 +222,7 @@ export const Offers = ({
             {
               label: 'Offres collectives',
               url: computeCollectiveOffersUrl({
-                ...searchFilters,
+                ...initialSearchFilters,
                 status: DEFAULT_SEARCH_FILTERS.status,
                 page: currentPageNumber,
               }),
@@ -241,15 +241,15 @@ export const Offers = ({
         offerer={offerer}
         removeOfferer={removeOfferer}
         resetFilters={resetFilters}
-        selectedFilters={searchFilters}
-        setSearchFilters={setSearchFilters}
+        selectedFilters={selectedFilters}
+        setSelectedFilters={setSelectedFilters}
         venues={venues}
+        isRestrictedAsAdmin={isRestrictedAsAdmin}
       />
       {userHasNoOffers ? (
         <NoData page="offers" />
       ) : (
         <OffersContainer
-          applyFilters={applyFilters}
           applyUrlFiltersAndRedirect={applyUrlFiltersAndRedirect}
           areAllOffersSelected={areAllOffersSelected}
           audience={audience}
@@ -261,13 +261,12 @@ export const Offers = ({
           offersCount={offers.length}
           pageCount={pageCount}
           resetFilters={resetFilters}
-          searchFilters={searchFilters}
           selectedOfferIds={selectedOfferIds}
-          setSearchFilters={setSearchFilters}
           setSelectedOfferIds={setSelectedOfferIds}
           toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
           urlSearchFilters={urlSearchFilters}
           isAtLeastOneOfferChecked={selectedOfferIds.length > 0}
+          isRestrictedAsAdmin={isRestrictedAsAdmin}
         />
       )}
       {selectedOfferIds.length > 0 && (

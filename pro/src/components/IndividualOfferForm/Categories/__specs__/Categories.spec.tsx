@@ -154,7 +154,7 @@ describe('IndividualOffer section: Categories', () => {
     )
   })
 
-  it('should display subCategories select when a category is choosed', async () => {
+  it('should display subCategories select when a category is chosen', async () => {
     renderCategories({
       initialValues,
       onSubmit,
@@ -171,7 +171,7 @@ describe('IndividualOffer section: Categories', () => {
     expect(screen.queryByLabelText('Genre musical *')).not.toBeInTheDocument()
   })
 
-  it('should not display type select when a standard subCategory is choosed', async () => {
+  it('should not display type select when a standard subCategory is chosen', async () => {
     renderCategories({
       initialValues,
       onSubmit,
@@ -230,7 +230,7 @@ describe('IndividualOffer section: Categories', () => {
     expect(screen.queryByLabelText('Sous-type')).not.toBeInTheDocument()
   })
 
-  it('should display showType selects when a music subCategory is choosed', async () => {
+  it('should display showType selects when a music subCategory is chosen', async () => {
     renderCategories({
       initialValues,
       onSubmit,

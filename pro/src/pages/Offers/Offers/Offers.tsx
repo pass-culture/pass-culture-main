@@ -18,7 +18,6 @@ import { OffersTableBody } from './OffersTableBody/OffersTableBody'
 import { OffersTableHead } from './OffersTableHead/OffersTableHead'
 
 type OffersProps = {
-  applyFilters: () => void
   applyUrlFiltersAndRedirect: (
     filters: SearchFiltersParams,
     isRefreshing: boolean
@@ -35,18 +34,15 @@ type OffersProps = {
   offersCount: number
   pageCount: number
   resetFilters: () => void
-  searchFilters: SearchFiltersParams
   selectedOfferIds: number[]
-  setSearchFilters: React.Dispatch<React.SetStateAction<SearchFiltersParams>>
   setSelectedOfferIds: React.Dispatch<React.SetStateAction<number[]>>
   toggleSelectAllCheckboxes: () => void
   urlSearchFilters: SearchFiltersParams
   isAtLeastOneOfferChecked: boolean
+  isRestrictedAsAdmin?: boolean
 }
 
 export const Offers = ({
-  applyFilters,
-  currentUser,
   areAllOffersSelected,
   currentPageNumber,
   currentPageOffersSubset,
@@ -55,32 +51,15 @@ export const Offers = ({
   offersCount,
   pageCount,
   resetFilters,
-  searchFilters,
   selectedOfferIds,
   applyUrlFiltersAndRedirect,
-  setSearchFilters,
   setSelectedOfferIds,
   toggleSelectAllCheckboxes,
   urlSearchFilters,
   audience,
   isAtLeastOneOfferChecked,
+  isRestrictedAsAdmin = false,
 }: OffersProps) => {
-  const isAdminForbidden = (searchFilters: Partial<SearchFiltersParams>) => {
-    return (
-      currentUser.isAdmin &&
-      !hasSearchFilters(searchFilters, ['venueId', 'offererId'])
-    )
-  }
-
-  const updateStatusFilter = (
-    selectedStatus: SearchFiltersParams['status']
-  ) => {
-    setSearchFilters((currentSearchFilters) => ({
-      ...currentSearchFilters,
-      status: selectedStatus,
-    }))
-  }
-
   const onPreviousPageClick = () =>
     applyUrlFiltersAndRedirect(
       { ...urlSearchFilters, page: currentPageNumber - 1 },
@@ -133,7 +112,7 @@ export const Offers = ({
                   partialCheck={
                     !areAllOffersSelected && isAtLeastOneOfferChecked
                   }
-                  disabled={isAdminForbidden(searchFilters)}
+                  disabled={isRestrictedAsAdmin}
                   onChange={toggleSelectAllCheckboxes}
                   label={
                     areAllOffersSelected
@@ -143,16 +122,7 @@ export const Offers = ({
                 />
               </div>
               <table>
-                <OffersTableHead
-                  applyFilters={applyFilters}
-                  areAllOffersSelected={areAllOffersSelected}
-                  areOffersPresent={hasOffers}
-                  filters={searchFilters}
-                  isAdminForbidden={isAdminForbidden}
-                  updateStatusFilter={updateStatusFilter}
-                  audience={audience}
-                  isAtLeastOneOfferChecked={isAtLeastOneOfferChecked}
-                />
+                <OffersTableHead audience={audience} />
                 <OffersTableBody
                   offers={currentPageOffersSubset}
                   selectOffer={selectOffer}
