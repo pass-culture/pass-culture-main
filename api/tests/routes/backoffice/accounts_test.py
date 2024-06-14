@@ -422,6 +422,50 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         assert_user_equals(cards_text[0], underage)
         assert_user_equals(cards_text[1], grant_18)
 
+    def test_search_suspended_unsuspended_twice(self, authenticated_client):
+        user = users_factories.UserFactory(isActive=False)
+        email = user.email
+        now = datetime.datetime.utcnow()
+        history_factories.ActionHistoryFactory(
+            actionType=history_models.ActionType.USER_SUSPENDED,
+            actionDate=now - datetime.timedelta(days=4),
+            user=user,
+            extraData={"reason": users_constants.SuspensionReason.UPON_USER_REQUEST},
+        )
+        history_factories.ActionHistoryFactory(
+            actionType=history_models.ActionType.USER_UNSUSPENDED,
+            actionDate=now - datetime.timedelta(days=3),
+            user=user,
+        )
+        history_factories.ActionHistoryFactory(
+            actionType=history_models.ActionType.USER_SUSPENDED,
+            actionDate=now - datetime.timedelta(days=2),
+            user=user,
+            extraData={"reason": users_constants.SuspensionReason.UPON_USER_REQUEST},
+        )
+        history_factories.ActionHistoryFactory(
+            actionType=history_models.ActionType.USER_UNSUSPENDED,
+            actionDate=now - datetime.timedelta(days=1),
+            user=user,
+        )
+
+        db.session.flush()
+
+        # Ensure that search result is redirected, no single card result with "4 résultats"
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q=email))
+            assert response.status_code == 303
+
+        # Redirected to single result
+        assert_response_location(
+            response,
+            "backoffice_web.public_accounts.get_public_account",
+            user_id=user.id,
+            q=email,
+            search_rank=1,
+            total_items=1,
+        )
+
     def test_can_search_old_email(self, authenticated_client):
         event = users_factories.EmailValidationEntryFactory()
         event.user.email = event.newEmail

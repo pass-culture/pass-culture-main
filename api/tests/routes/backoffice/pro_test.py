@@ -9,12 +9,14 @@ import pytest
 
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.geography import models as geography_models
+from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
+from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
@@ -258,6 +260,47 @@ class SearchProUserTest:
             q=search_query,
             search_rank=1,
             total_items=1,
+        )
+
+    def test_search_suspended_public_account_data(self, authenticated_client):
+        common_name = "Pro"
+        users_factories.ProFactory(firstName=common_name)
+        suspended_user = users_factories.ProFactory(firstName=common_name, isActive=False)
+        now = datetime.datetime.utcnow()
+        history_factories.ActionHistoryFactory(
+            actionType=history_models.ActionType.USER_SUSPENDED,
+            actionDate=now - datetime.timedelta(days=4),
+            user=suspended_user,
+            extraData={"reason": users_constants.SuspensionReason.FRAUD_USURPATION_PRO},
+        )
+        history_factories.ActionHistoryFactory(
+            actionType=history_models.ActionType.USER_UNSUSPENDED,
+            actionDate=now - datetime.timedelta(days=3),
+            user=suspended_user,
+        )
+        history_factories.ActionHistoryFactory(
+            actionType=history_models.ActionType.USER_SUSPENDED,
+            actionDate=now - datetime.timedelta(days=2),
+            user=suspended_user,
+            extraData={"reason": users_constants.SuspensionReason.FRAUD_USURPATION_PRO},
+        )
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q=common_name, pro_type=TypeOptions.USER.name))
+            assert response.status_code == 200
+
+        assert "2 résultats" in html_parser.content_as_text(response.data)  # no multiple join
+
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert len(cards_text) == 2
+
+        assert "Suspendu" not in cards_text[0]
+        assert "Raison de suspension" not in cards_text[0]
+
+        assert "Suspendu" in cards_text[1]
+        assert (
+            f"Raison de suspension : Fraude PRO usurpation le {suspended_user.suspension_date.strftime('%d/%m/%Y')}"
+            in cards_text[1]
         )
 
     @pytest.mark.parametrize(
