@@ -619,6 +619,7 @@ class PriceCategoryEdition(serialization.ConfiguredBaseModel):
 class DateEdition(BaseStockEdition):
     beginning_datetime: datetime.datetime | None = BEGINNING_DATETIME_FIELD
     price_category_id: int | None
+    id_at_provider: str | None = fields.ID_AT_PROVIDER_WITH_MAX_LENGTH
 
 
 class EventOfferEdition(OfferEditionBase):
@@ -633,6 +634,7 @@ class DateCreation(BaseStockCreation):
     beginning_datetime: datetime.datetime = BEGINNING_DATETIME_FIELD
     booking_limit_datetime: datetime.datetime = BOOKING_LIMIT_DATETIME_FIELD
     price_category_id: int
+    id_at_provider: str | None = fields.ID_AT_PROVIDER_WITH_MAX_LENGTH
 
     _validate_beginning_datetime = serialization_utils.validate_datetime("beginning_datetime")
     _validate_booking_limit_datetime = serialization_utils.validate_datetime("booking_limit_datetime")
@@ -686,6 +688,7 @@ class DateResponse(BaseStockResponse):
     beginning_datetime: datetime.datetime = BEGINNING_DATETIME_FIELD
     booking_limit_datetime: datetime.datetime = BOOKING_LIMIT_DATETIME_FIELD
     price_category: PriceCategoryResponse
+    id_at_provider: str | None = fields.ID_AT_PROVIDER_WITH_MAX_LENGTH
 
     @classmethod
     def build_date(cls, stock: offers_models.Stock) -> "DateResponse":
@@ -694,6 +697,7 @@ class DateResponse(BaseStockResponse):
             id=stock.id,
             beginning_datetime=stock.beginningDatetime,  # type: ignore[arg-type]
             price_category=PriceCategoryResponse.from_orm(stock.priceCategory),
+            id_at_provider=stock.idAtProviders,
             **stock_response.dict(),
         )
 

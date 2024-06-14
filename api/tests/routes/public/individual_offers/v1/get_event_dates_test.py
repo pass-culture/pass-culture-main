@@ -27,6 +27,7 @@ class GetEventDatesTest:
             quantity=10,
             bookingLimitDatetime=two_weeks_from_now,
             beginningDatetime=two_weeks_from_now,
+            idAtProviders="Il y a deux types d'id",
         )
         not_booked_price_category = offers_factories.PriceCategoryFactory(
             offer=event_offer, price=299.99, priceCategoryLabel__label="ultra vip"
@@ -55,6 +56,7 @@ class GetEventDatesTest:
                 "id": bookable_stock.id,
                 "priceCategory": {"id": price_category.id, "label": "carre or", "price": 1234},
                 "quantity": 10,
+                "idAtProvider": "Il y a deux types d'id",
             },
             {
                 "beginningDatetime": date_utils.format_into_utc_date(two_weeks_from_now),
@@ -67,6 +69,7 @@ class GetEventDatesTest:
                     "price": not_booked_price_category.price * 100,
                 },
                 "quantity": 2,
+                "idAtProvider": None,
             },
         ]
 
