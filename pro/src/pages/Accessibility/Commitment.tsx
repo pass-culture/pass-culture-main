@@ -106,14 +106,14 @@ export const Commitment = () => {
         D’autres évolutions sont prévues dans les prochains mois et sont
         disponibles sur le {''}
         <Link className={styles['link']} to="/accessibilite/schema-pluriannuel">
-          [Acteurs culturels] Schéma pluriannuel d’accessibilité 2024 - 2025
+          Schéma pluriannuel d’accessibilité 2024 - 2025
         </Link>
         {''} et le {''}
         <a
           className={styles['link']}
           href="https://passculture.app/accessibilite/plan-d-actions"
         >
-          [Jeunes] Schéma pluriannuel d’accessibilité 2022 - 2024
+          Schéma pluriannuel d’accessibilité 2022 - 2024
         </a>
       </p>
       <p className={styles['paragraph']}>

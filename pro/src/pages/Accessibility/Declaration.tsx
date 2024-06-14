@@ -35,7 +35,7 @@ export const Declaration = () => {
             to="/accessibilite/schema-pluriannuel"
             className={styles['link']}
           >
-            [Acteurs culturels] Schéma pluriannuel d’accessibilité 2024 - 2025
+            Schéma pluriannuel d’accessibilité 2024 - 2025
           </Link>
         </li>
         <li className={styles['list-item']}>
