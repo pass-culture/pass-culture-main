@@ -107,7 +107,9 @@ describe('route Offers', () => {
       it('should filter on a given status filter', async () => {
         await renderOffers()
 
-        const statusSelect = screen.getByLabelText('Statut')
+        const statusSelect = screen.getByRole('combobox', {
+          name: 'Statut Nouveau',
+        })
         await userEvent.selectOptions(statusSelect, 'Expirée')
 
         await userEvent.click(
@@ -134,7 +136,9 @@ describe('route Offers', () => {
           .mockResolvedValueOnce([])
         await renderOffers()
 
-        const statusSelect = screen.getByLabelText('Statut')
+        const statusSelect = screen.getByRole('combobox', {
+          name: 'Statut Nouveau',
+        })
         await userEvent.selectOptions(statusSelect, 'Expirée')
 
         await userEvent.click(
@@ -434,7 +438,9 @@ describe('route Offers', () => {
       ])
 
       await renderOffers()
-      const statusSelect = screen.getByLabelText('Statut')
+      const statusSelect = screen.getByRole('combobox', {
+        name: 'Statut Nouveau',
+      })
       await userEvent.selectOptions(statusSelect, 'Épuisée')
 
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
@@ -461,7 +467,9 @@ describe('route Offers', () => {
         }),
       ])
       await renderOffers()
-      const statusSelect = screen.getByLabelText('Statut')
+      const statusSelect = screen.getByRole('combobox', {
+        name: 'Statut Nouveau',
+      })
       await userEvent.selectOptions(statusSelect, 'Tous')
 
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))

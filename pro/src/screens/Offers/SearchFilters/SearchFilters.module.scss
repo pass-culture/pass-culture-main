@@ -29,6 +29,12 @@
   margin-top: rem.torem(24px);
 }
 
+.status-filter-label {
+  display: flex;
+  align-items: center;
+  gap: rem.torem(8px);
+}
+
 @media (min-width: size.$tablet) {
   .reset-filters {
     justify-content: flex-end;

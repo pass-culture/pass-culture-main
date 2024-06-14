@@ -59,6 +59,13 @@
     color: var(--color-white);
   }
 
+  &.blue {
+    padding: 0 rem.torem(4px);
+    color: var(--color-accent);
+    border: 1px solid var(--color-accent);
+    line-height: rem.torem(20px);
+  }
+
   &.light-green {
     background-color: var(--color-background-valid);
   }

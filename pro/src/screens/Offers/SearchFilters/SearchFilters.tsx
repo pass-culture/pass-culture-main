@@ -29,6 +29,7 @@ import { SelectInput } from 'ui-kit/form/Select/SelectInput'
 import { BaseInput } from 'ui-kit/form/shared/BaseInput/BaseInput'
 import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 
 import styles from './SearchFilters.module.scss'
 
@@ -281,7 +282,11 @@ export const SearchFilters = ({
           </fieldset>
         </FormLayout.Row>
         <FieldLayout
-          label="Statut"
+          label={
+            <span className={styles['status-filter-label']}>
+              Statut<Tag variant={TagVariant.BLUE}>Nouveau</Tag>
+            </span>
+          }
           name="status"
           isOptional
           className={styles['status-filter']}
