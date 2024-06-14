@@ -145,8 +145,11 @@ def get_capped_offers_for_filters(
 def get_offers_by_ids(user: users_models.User, offer_ids: list[int]) -> flask_sqlalchemy.BaseQuery:
     query = models.Offer.query
     if not user.has_admin_role:
-        query = query.join(offerers_models.Venue, offerers_models.Offerer, offerers_models.UserOfferer).filter(
-            offerers_models.UserOfferer.userId == user.id, offerers_models.UserOfferer.isValidated
+        query = (
+            query.join(offerers_models.Venue)
+            .join(offerers_models.Offerer)
+            .join(offerers_models.UserOfferer)
+            .filter(offerers_models.UserOfferer.userId == user.id, offerers_models.UserOfferer.isValidated)
         )
     query = query.filter(models.Offer.id.in_(offer_ids))
     return query
