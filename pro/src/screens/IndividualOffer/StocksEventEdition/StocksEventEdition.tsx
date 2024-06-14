@@ -17,7 +17,6 @@ import { DialogBox } from 'components/DialogBox/DialogBox'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
-import { StockFormActions } from 'components/StockFormActions/StockFormActions'
 import { FilterResultsRow } from 'components/StocksEventList/FilterResultsRow'
 import { NoResultsRow } from 'components/StocksEventList/NoResultsRow'
 import { SortArrow } from 'components/StocksEventList/SortArrow'
@@ -63,6 +62,7 @@ import { getSuccessMessage } from '../utils/getSuccessMessage'
 import { EventCancellationBanner } from './EventCancellationBanner'
 import { getPriceCategoryOptions } from './getPriceCategoryOptions'
 import { hasChangesOnStockWithBookings } from './hasChangesOnStockWithBookings'
+import { StockEventFormActions } from './StockEventFormActions/StockEventFormActions'
 import { STOCK_EVENT_FORM_DEFAULT_VALUES } from './StockFormList/constants'
 import {
   StockEventFormValues,
@@ -818,7 +818,7 @@ export const StocksEventEdition = ({
 
                             {actions.length > 0 && (
                               <td className={styles['stock-actions']}>
-                                <StockFormActions actions={actions} />
+                                <StockEventFormActions actions={actions} />
                               </td>
                             )}
                           </tr>
