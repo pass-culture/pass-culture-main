@@ -1,14 +1,16 @@
 import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 
 import FullTrashIcon from 'icons/full-trash.svg'
 
-import { StockFormActions, StockFormActionsProps } from '../StockFormActions'
+import {
+  StockThingFormActions,
+  StockThingFormActionsProps,
+} from '../StockThingFormActions'
 import { StockFormRowAction } from '../types'
 
-const renderStockFormActions = (props: StockFormActionsProps) => {
-  return render(<StockFormActions {...props} />)
+const renderStockFormActions = (props: StockThingFormActionsProps) => {
+  return render(<StockThingFormActions {...props} />)
 }
 
 describe('StockFormActions', () => {
@@ -30,7 +32,7 @@ describe('StockFormActions', () => {
     })
 
     expect(screen.getByTestId('dropdown-menu-trigger')).toBeInTheDocument()
-    expect(screen.queryByText('Action label')).not.toBeInTheDocument()
+    expect(screen.getAllByText('Action label')).toHaveLength(1)
   })
 
   it('render actions list', async () => {
@@ -38,6 +40,6 @@ describe('StockFormActions', () => {
       actions,
     })
     await userEvent.click(screen.getByTestId('dropdown-menu-trigger'))
-    expect(screen.getByText('Action label')).toBeInTheDocument()
+    expect(screen.getAllByText('Action label')).toHaveLength(2)
   })
 })

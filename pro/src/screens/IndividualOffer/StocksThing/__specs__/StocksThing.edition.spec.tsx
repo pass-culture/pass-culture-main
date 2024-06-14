@@ -198,7 +198,7 @@ describe('screens:StocksThing', () => {
     renderStockThingScreen()
     await screen.findByTestId('stock-thing-form')
     await userEvent.click(screen.getByTestId('dropdown-menu-trigger'))
-    await userEvent.click(await screen.findByText('Supprimer le stock'))
+    await userEvent.click(await screen.findByTitle('Supprimer le stock'))
     expect(
       screen.getByText('Voulez-vous supprimer ce stock ?')
     ).toBeInTheDocument()
@@ -233,7 +233,7 @@ describe('screens:StocksThing', () => {
 
     await userEvent.click(screen.getAllByTestId('dropdown-menu-trigger')[1])
     await userEvent.click(screen.getAllByTestId('dropdown-menu-trigger')[0])
-    await userEvent.dblClick(screen.getAllByText('Supprimer le stock')[0])
+    await userEvent.click(await screen.findByTitle('Supprimer le stock'))
     expect(
       screen.getByText('Voulez-vous supprimer ce stock ?')
     ).toBeInTheDocument()
@@ -260,7 +260,7 @@ describe('screens:StocksThing', () => {
     await screen.findByTestId('stock-thing-form')
 
     await userEvent.click(screen.getByTestId('dropdown-menu-trigger'))
-    await userEvent.dblClick(screen.getByText('Supprimer le stock'))
+    await userEvent.click(await screen.findByTitle('Supprimer le stock'))
     await userEvent.click(
       await screen.findByText('Supprimer', { selector: 'button' })
     )

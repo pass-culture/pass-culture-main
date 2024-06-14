@@ -1,7 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { format } from 'date-fns'
-import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -367,10 +366,9 @@ describe('screens:StocksThing', () => {
       await renderStockThingScreen([], props, contextValue)
 
       await userEvent.click(screen.getByTestId('dropdown-menu-trigger'))
-      await userEvent.dblClick(
-        screen.getByText("Ajouter des codes d'activation")
-      )
-      const uploadButton = screen.getByText(
+      await userEvent.click(screen.getByTitle("Ajouter des codes d'activation"))
+
+      const uploadButton = await screen.findByText(
         'Importer un fichier .csv depuis l’ordinateur'
       )
       const title = screen.getByText(/Ajouter des codes d’activation/)
