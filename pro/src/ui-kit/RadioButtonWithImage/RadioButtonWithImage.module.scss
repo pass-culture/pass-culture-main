@@ -51,7 +51,6 @@ $radio-size: rem.torem(16px);
   }
 
   &.is-selected {
-    border-color: var(--color-secondary-light);
     border: $border-size-selected solid var(--color-secondary-light);
     font-weight: 700;
     background-color: var(--color-background-secondary);

@@ -21,7 +21,6 @@
   }
 
   &-selected {
-    border-color: var(--color-secondary-light);
     border: rem.torem(2px) solid var(--color-secondary-light);
     font-weight: 700;
     background-color: var(--color-background-secondary);
