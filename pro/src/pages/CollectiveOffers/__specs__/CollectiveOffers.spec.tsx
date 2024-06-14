@@ -73,7 +73,9 @@ describe('route CollectiveOffers', () => {
       it('should filter offers given status filter when clicking on "Appliquer"', async () => {
         await renderOffers()
 
-        const statusSelect = screen.getByLabelText('Statut')
+        const statusSelect = screen.getByRole('combobox', {
+          name: 'Statut Nouveau',
+        })
         await userEvent.selectOptions(statusSelect, 'Expirée')
 
         await userEvent.click(
@@ -102,7 +104,9 @@ describe('route CollectiveOffers', () => {
           .mockResolvedValueOnce([])
         await renderOffers()
 
-        const statusSelect = screen.getByLabelText('Statut')
+        const statusSelect = screen.getByRole('combobox', {
+          name: 'Statut Nouveau',
+        })
         await userEvent.selectOptions(statusSelect, 'Expirée')
 
         await userEvent.click(

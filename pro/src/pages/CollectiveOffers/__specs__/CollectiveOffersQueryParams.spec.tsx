@@ -181,7 +181,9 @@ describe('route CollectiveOffers', () => {
       ])
       await renderOffers()
 
-      const statusSelect = screen.getByLabelText('Statut')
+      const statusSelect = screen.getByRole('combobox', {
+        name: 'Statut Nouveau',
+      })
       await userEvent.selectOptions(statusSelect, 'Réservée')
 
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
@@ -206,7 +208,9 @@ describe('route CollectiveOffers', () => {
       ])
       await renderOffers()
 
-      const statusSelect = screen.getByLabelText('Statut')
+      const statusSelect = screen.getByRole('combobox', {
+        name: 'Statut Nouveau',
+      })
       await userEvent.selectOptions(statusSelect, 'Tous')
 
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))

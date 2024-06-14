@@ -278,7 +278,11 @@ describe('screen Offers', () => {
   it('should not display status filters modal', () => {
     renderOffers(props)
 
-    expect(screen.getByText('Statut')).toBeInTheDocument()
+    expect(
+      screen.getByRole('combobox', {
+        name: 'Statut Nouveau',
+      })
+    ).toBeInTheDocument()
     expect(screen.queryByText('Afficher les offres')).not.toBeInTheDocument()
     expect(screen.queryByLabelText('Tous')).not.toBeInTheDocument()
     expect(screen.queryByLabelText('Publiée')).not.toBeInTheDocument()
@@ -296,7 +300,7 @@ describe('screen Offers', () => {
     renderOffers(props)
     await userEvent.click(
       screen.getByRole('combobox', {
-        name: 'Statut',
+        name: 'Statut Nouveau',
       })
     )
 
