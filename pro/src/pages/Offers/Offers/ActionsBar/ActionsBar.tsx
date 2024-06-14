@@ -96,16 +96,19 @@ const handleCollectiveOffers = async (
         }
       }
 
-      await Promise.all([
-        api.patchCollectiveOffersActiveStatus({
+      if (collectiveOfferIds.length > 0) {
+        await api.patchCollectiveOffersActiveStatus({
           ids: collectiveOfferIds.map((id) => Number(id)),
           isActive,
-        }),
-        api.patchCollectiveOffersTemplateActiveStatus({
+        })
+      }
+
+      if (collectiveOfferTemplateIds.length > 0) {
+        await api.patchCollectiveOffersTemplateActiveStatus({
           ids: collectiveOfferTemplateIds.map((ids) => Number(ids)),
           isActive,
-        }),
-      ])
+        })
+      }
 
       notify.information(
         isActive

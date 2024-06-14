@@ -28,6 +28,8 @@ vi.mock('apiClient/api', () => ({
     patchOffersActiveStatus: vi.fn(),
     deleteDraftOffers: vi.fn(),
     patchAllOffersActiveStatus: vi.fn(),
+    patchCollectiveOffersActiveStatus: vi.fn(),
+    patchCollectiveOffersTemplateActiveStatus: vi.fn(),
   },
 }))
 
@@ -355,5 +357,106 @@ describe('ActionsBar', () => {
         has_selected_all_offers: false,
       }
     )
+  })
+
+  it('should only make one call if the ids all come from the bookable offer', async () => {
+    renderActionsBar({
+      ...props,
+      audience: Audience.COLLECTIVE,
+      areAllOffersSelected: false,
+      selectedOffers: [
+        collectiveOfferFactory({ id: 1, status: OfferStatus.ACTIVE }),
+        collectiveOfferFactory({ id: 2, status: OfferStatus.ACTIVE }),
+      ],
+      selectedOfferIds: [1, 2],
+    })
+
+    await userEvent.click(screen.getByText('Désactiver'))
+    const confirmDeactivateButton = screen.getAllByText('Désactiver')[1]
+    await userEvent.click(confirmDeactivateButton)
+
+    expect(api.patchCollectiveOffersActiveStatus).toHaveBeenLastCalledWith({
+      ids: [1, 2],
+      isActive: false,
+    })
+
+    expect(api.patchCollectiveOffersTemplateActiveStatus).toHaveBeenCalledTimes(
+      0
+    )
+  })
+
+  it('should only make one call if the ids all come from template offer', async () => {
+    renderActionsBar({
+      ...props,
+      audience: Audience.COLLECTIVE,
+      areAllOffersSelected: false,
+      selectedOffers: [
+        collectiveOfferFactory({
+          id: 1,
+          status: OfferStatus.ACTIVE,
+          isShowcase: true,
+        }),
+        collectiveOfferFactory({
+          id: 2,
+          status: OfferStatus.ACTIVE,
+          isShowcase: true,
+        }),
+      ],
+      selectedOfferIds: [1, 2],
+    })
+
+    await userEvent.click(screen.getByText('Désactiver'))
+    const confirmDeactivateButton = screen.getAllByText('Désactiver')[1]
+    await userEvent.click(confirmDeactivateButton)
+
+    expect(
+      api.patchCollectiveOffersTemplateActiveStatus
+    ).toHaveBeenLastCalledWith({
+      ids: [1, 2],
+      isActive: false,
+    })
+
+    expect(api.patchCollectiveOffersActiveStatus).toHaveBeenCalledTimes(0)
+  })
+
+  it('should make two calls if the ids come from template offer and bookable offer', async () => {
+    renderActionsBar({
+      ...props,
+      audience: Audience.COLLECTIVE,
+      areAllOffersSelected: false,
+      selectedOffers: [
+        collectiveOfferFactory({
+          id: 1,
+          status: OfferStatus.ACTIVE,
+          isShowcase: true,
+        }),
+        collectiveOfferFactory({
+          id: 2,
+          status: OfferStatus.ACTIVE,
+          isShowcase: true,
+        }),
+        collectiveOfferFactory({
+          id: 3,
+          status: OfferStatus.ACTIVE,
+        }),
+      ],
+      selectedOfferIds: [1, 2],
+    })
+
+    await userEvent.click(screen.getByText('Désactiver'))
+    const confirmDeactivateButton = screen.getAllByText('Désactiver')[1]
+    await userEvent.click(confirmDeactivateButton)
+
+    expect(
+      api.patchCollectiveOffersTemplateActiveStatus
+    ).toHaveBeenLastCalledWith({
+      ids: [1, 2],
+      isActive: false,
+    })
+
+    expect(api.patchCollectiveOffersActiveStatus).toHaveBeenLastCalledWith({
+      ids: [3],
+      isActive: false,
+    })
   })
 })
