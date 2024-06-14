@@ -2529,11 +2529,10 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         offer = factories.EventOfferFactory(
             venue=venue_provider.venue, idAtProvider=offer_id_at_provider, lastProviderId=cds_provider.id
         )
-        showtime = "2023-02-08"
         stock = factories.EventStockFactory(
             offer=offer,
             quantity=10,
-            idAtProviders=f"{offer_id_at_provider}#{show_id}/{showtime}",
+            idAtProviders=f"{offer_id_at_provider}#{show_id}",
             beginningDatetime=show_beginning_datetime,
         )
 
@@ -2574,11 +2573,10 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         offer = factories.EventOfferFactory(
             venue=venue_provider.venue, idAtProvider=offer_id_at_provider, lastProviderId=cds_provider.id
         )
-        show_time = "2023-02-08"
         stock = factories.EventStockFactory(
             offer=offer,
             quantity=10,
-            idAtProviders=f"{offer_id_at_provider}#{showtime_id}/{show_time}",
+            idAtProviders=f"{offer_id_at_provider}#{showtime_id}",
             beginningDatetime=self.DATETIME_10_DAYS_AFTER,
         )
 

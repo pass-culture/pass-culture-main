@@ -7,11 +7,7 @@ def get_cds_show_id_from_uuid(uuid: str | None) -> int | None:
     and returns the show_id as int, or None if it cannot
     """
     if uuid:
-        # TODO (dramelet, 2024-02-09): In a few months, we will be able to drop the name group `show_id_with_showtime`
-        # as we won't have any up-to-date stocks with an old idAtProviders construct
-        match = re_search(r"#(?P<show_id_with_showtime>\d*)/|#(?P<show_id_without_showtime>\d*)$", uuid)
-        if match and match["show_id_with_showtime"]:
-            return int(match["show_id_with_showtime"])
+        match = re_search(r"#(?P<show_id_without_showtime>\d*)$", uuid)
         if match and match["show_id_without_showtime"]:
             return int(match["show_id_without_showtime"])
 
