@@ -1,3 +1,4 @@
+from datetime import datetime
 import logging
 
 from PIL import UnidentifiedImageError
@@ -429,6 +430,25 @@ def patch_collective_offers_active_status(
 
     collective_query = educational_api_offer.get_query_for_collective_offers_by_ids_for_user(current_user, body.ids)
     offers_api.batch_update_collective_offers(collective_query, {"isActive": body.is_active})
+
+
+@private_api.route("/collective/offers/archive", methods=["PATCH"])
+@login_required
+@spectree_serialize(
+    on_success_status=204,
+    on_error_statuses=[403],
+    api=blueprint.pro_private_schema,
+)
+def patch_collective_offers_archive(
+    body: collective_offers_serialize.PatchCollectiveOfferArchiveBodyModel,
+) -> None:
+    offerers_ids = educational_repository.get_offerer_ids_from_collective_offers_ids(body.ids)
+    for offerer_id in offerers_ids:
+        if not offerers_api.can_offerer_create_educational_offer(offerer_id):
+            raise ApiErrors({"Partner": ["User not in Adage can't edit the offer"]}, status_code=403)
+
+    collective_query = educational_api_offer.get_query_for_collective_offers_by_ids_for_user(current_user, body.ids)
+    offers_api.batch_update_collective_offers(collective_query, {"dateArchived": datetime.utcnow()})
 
 
 @private_api.route("/collective/offers-template/active-status", methods=["PATCH"])
