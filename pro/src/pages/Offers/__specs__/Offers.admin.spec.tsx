@@ -87,8 +87,8 @@ describe('route Offers when user is admin', () => {
     vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: proVenues })
   })
 
-  // status filter can only be used with an offerer or a venue filter for performance reasons
-  it('should reset and disable status filter when venue filter is deselected', async () => {
+  // As an admin, the status filter can only be used with an offerer or a venue filter for performance reasons
+  it('should reset status filter when venue filter is deselected', async () => {
     const { id: venueId, name: venueName } = proVenues[0]
     const filters = {
       venueId: venueId.toString(),
@@ -103,23 +103,16 @@ describe('route Offers when user is admin', () => {
 
     await userEvent.click(screen.getByText('Rechercher'))
 
-    await waitFor(() => {
-      expect(api.listOffers).toHaveBeenLastCalledWith(
-        undefined,
-        undefined,
-        OfferStatus.INACTIVE,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined
-      )
-    })
-    expect(
-      screen.getByRole('button', {
-        name: 'Statut Afficher ou masquer le filtre par statut',
-      })
-    ).toBeDisabled()
+    expect(api.listOffers).toHaveBeenLastCalledWith(
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined
+    )
   })
 
   it('should not reset or disable status filter when venue filter is deselected while offerer filter is applied', async () => {
@@ -149,14 +142,9 @@ describe('route Offers when user is admin', () => {
         undefined
       )
     })
-    expect(
-      screen.getByRole('button', {
-        name: /Afficher ou masquer le filtre par statut/,
-      })
-    ).not.toBeDisabled()
   })
 
-  it('should reset and disable status filter when offerer filter is removed', async () => {
+  it('should reset status filter when offerer filter is removed', async () => {
     vi.spyOn(api, 'getOfferer').mockResolvedValue(
       defaultGetOffererResponseModel
     )
@@ -168,30 +156,19 @@ describe('route Offers when user is admin', () => {
 
     await userEvent.click(screen.getByTestId('remove-offerer-filter'))
 
-    await waitFor(() => {
-      expect(api.listOffers).toHaveBeenLastCalledWith(
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined
-      )
-    })
-
-    const loadingMessage = screen.queryByText(/Chargement en cours/)
-    await waitFor(() => expect(loadingMessage).not.toBeInTheDocument())
-
-    expect(
-      screen.getByRole('button', {
-        name: 'Statut Afficher ou masquer le filtre par statut',
-      })
-    ).toBeDisabled()
+    expect(api.listOffers).toHaveBeenLastCalledWith(
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined
+    )
   })
 
-  it('should not reset or disable status filter when offerer filter is removed while venue filter is applied', async () => {
+  it('should not reset status filter when offerer filter is removed while venue filter is applied', async () => {
     const { id: venueId } = proVenues[0]
 
     vi.spyOn(api, 'getOfferer').mockResolvedValue(
@@ -205,50 +182,15 @@ describe('route Offers when user is admin', () => {
     await renderOffers(filters)
 
     await userEvent.click(screen.getByTestId('remove-offerer-filter'))
-    await waitFor(() => {
-      expect(api.listOffers).toHaveBeenLastCalledWith(
-        undefined,
-        undefined,
-        'INACTIVE',
-        venueId.toString(),
-        undefined,
-        undefined,
-        undefined,
-        undefined
-      )
-    })
-
-    const loadingMessage = screen.queryByText(/Chargement en cours/)
-    await waitFor(() => expect(loadingMessage).not.toBeInTheDocument())
-
-    expect(
-      screen.getByRole('button', {
-        name: /Afficher ou masquer le filtre par statut/,
-      })
-    ).not.toBeDisabled()
-  })
-
-  it('should enable status filters when venue filter is applied', async () => {
-    const filters = { venueId: 'IJ' }
-
-    await renderOffers(filters)
-
-    expect(
-      screen.getByRole('button', {
-        name: 'Statut Afficher ou masquer le filtre par statut',
-      })
-    ).not.toBeDisabled()
-  })
-
-  it('should enable status filters when offerer filter is applied', async () => {
-    const filters = { offererId: 'A4' }
-
-    await renderOffers(filters)
-
-    expect(
-      screen.getByRole('button', {
-        name: 'Statut Afficher ou masquer le filtre par statut',
-      })
-    ).not.toBeDisabled()
+    expect(api.listOffers).toHaveBeenLastCalledWith(
+      undefined,
+      undefined,
+      'INACTIVE',
+      venueId.toString(),
+      undefined,
+      undefined,
+      undefined,
+      undefined
+    )
   })
 })

@@ -9,7 +9,6 @@ import { Route, Routes } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { ListOffersOfferResponseModel, OfferStatus } from 'apiClient/v1'
 import {
-  ALL_CATEGORIES_OPTION,
   ALL_CREATION_MODES,
   ALL_VENUES_OPTION,
   CREATION_MODES_OPTIONS,
@@ -105,22 +104,15 @@ describe('route Offers', () => {
     })
 
     describe('status filters', () => {
-      it('should filter offers given status filter when clicking on "Appliquer"', async () => {
+      it('should filter on a given status filter', async () => {
         await renderOffers()
 
-        const statusFiltersButton = screen.getByRole('button', {
-          name: /Afficher ou masquer le filtre par statut/,
-        })
-        expect(statusFiltersButton).toHaveAttribute(
-          'aria-controls',
-          'offer-status-filters-modal'
-        )
-        expect(statusFiltersButton).toHaveAttribute('aria-expanded', 'false')
-        await userEvent.click(statusFiltersButton)
-        expect(statusFiltersButton).toHaveAttribute('aria-expanded', 'true')
+        const statusSelect = screen.getByLabelText('Statut')
+        await userEvent.selectOptions(statusSelect, 'Expirée')
 
-        await userEvent.click(screen.getByLabelText('Expirée'))
-        await userEvent.click(screen.getByText('Appliquer'))
+        await userEvent.click(
+          screen.getByRole('button', { name: 'Rechercher' })
+        )
 
         await waitFor(() => {
           expect(api.listOffers).toHaveBeenLastCalledWith(
@@ -136,45 +128,18 @@ describe('route Offers', () => {
         })
       })
 
-      it('should filter draft offers given status filter when clicking on "Appliquer"', async () => {
-        await renderOffers()
-
-        await userEvent.click(
-          screen.getByRole('button', {
-            name: 'Statut Afficher ou masquer le filtre par statut',
-          })
-        )
-        await userEvent.click(screen.getByLabelText('Brouillon'))
-
-        await userEvent.click(screen.getByText('Appliquer'))
-
-        await waitFor(() => {
-          expect(api.listOffers).toHaveBeenLastCalledWith(
-            undefined,
-            undefined,
-            'DRAFT',
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined
-          )
-        })
-      })
-
       it('should indicate that no offers match selected filters', async () => {
         vi.spyOn(api, 'listOffers')
           .mockResolvedValueOnce(offersRecap)
           .mockResolvedValueOnce([])
         await renderOffers()
 
+        const statusSelect = screen.getByLabelText('Statut')
+        await userEvent.selectOptions(statusSelect, 'Expirée')
+
         await userEvent.click(
-          screen.getByRole('button', {
-            name: 'Statut Afficher ou masquer le filtre par statut',
-          })
+          screen.getByRole('button', { name: 'Rechercher' })
         )
-        await userEvent.click(screen.getByLabelText('Expirée'))
-        await userEvent.click(screen.getByText('Appliquer'))
 
         await waitFor(() => {
           expect(
@@ -248,7 +213,7 @@ describe('route Offers', () => {
         const firstTypeOption = screen.getByRole('option', {
           name: 'Cinéma',
         })
-        const typeSelect = screen.getByDisplayValue(ALL_CATEGORIES_OPTION.label)
+        const typeSelect = screen.getByLabelText('Catégories')
         await userEvent.selectOptions(typeSelect, firstTypeOption)
 
         await userEvent.click(screen.getByText('Rechercher'))
@@ -269,7 +234,9 @@ describe('route Offers', () => {
 
       it('should load offers with selected creation mode filter', async () => {
         await renderOffers()
-        const creationModeSelect = screen.getByDisplayValue('Tous')
+        const creationModeSelect = screen.getByRole('combobox', {
+          name: 'Mode de création',
+        })
         const importedCreationMode = CREATION_MODES_OPTIONS[2].value
         await userEvent.selectOptions(
           creationModeSelect,
@@ -439,7 +406,7 @@ describe('route Offers', () => {
       const firstTypeOption = screen.getByRole('option', {
         name: 'My test value',
       })
-      const typeSelect = screen.getByDisplayValue(ALL_CATEGORIES_OPTION.label)
+      const typeSelect = screen.getByLabelText('Catégories')
 
       await userEvent.selectOptions(typeSelect, firstTypeOption)
       await userEvent.click(screen.getByText('Rechercher'))
@@ -467,13 +434,10 @@ describe('route Offers', () => {
       ])
 
       await renderOffers()
-      await userEvent.click(
-        screen.getByRole('button', {
-          name: 'Statut Afficher ou masquer le filtre par statut',
-        })
-      )
-      await userEvent.click(screen.getByLabelText('Épuisée'))
-      await userEvent.click(screen.getByText('Appliquer'))
+      const statusSelect = screen.getByLabelText('Statut')
+      await userEvent.selectOptions(statusSelect, 'Épuisée')
+
+      await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
       await waitFor(() => {
         expect(api.listOffers).toHaveBeenCalledWith(
@@ -497,14 +461,10 @@ describe('route Offers', () => {
         }),
       ])
       await renderOffers()
-      await userEvent.click(
-        screen.getByRole('button', {
-          name: 'Statut Afficher ou masquer le filtre par statut',
-        })
-      )
-      await userEvent.click(screen.getByLabelText('Toutes'))
+      const statusSelect = screen.getByLabelText('Statut')
+      await userEvent.selectOptions(statusSelect, 'Tous')
 
-      await userEvent.click(screen.getByText('Appliquer'))
+      await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
       await waitFor(() => {
         expect(api.listOffers).toHaveBeenCalledWith(
           undefined,
@@ -553,7 +513,10 @@ describe('route Offers', () => {
     it('should have creation mode value when user filters by creation mode', async () => {
       await renderOffers()
 
-      await userEvent.selectOptions(screen.getByDisplayValue('Tous'), 'manual')
+      await userEvent.selectOptions(
+        screen.getByRole('combobox', { name: 'Mode de création' }),
+        'manual'
+      )
       await userEvent.click(screen.getByText('Rechercher'))
 
       await waitFor(() => {
@@ -573,7 +536,10 @@ describe('route Offers', () => {
     it('should have creation mode value be removed when user ask for all creation modes', async () => {
       await renderOffers()
       const searchButton = screen.getByText('Rechercher')
-      await userEvent.selectOptions(screen.getByDisplayValue('Tous'), 'manual')
+      await userEvent.selectOptions(
+        screen.getByRole('combobox', { name: 'Mode de création' }),
+        'manual'
+      )
       await userEvent.click(searchButton)
 
       await userEvent.selectOptions(

@@ -24,9 +24,18 @@
   color: var(--color-black);
 }
 
+.status-filter {
+  width: fit-content;
+  margin-top: rem.torem(24px);
+}
+
 @media (min-width: size.$tablet) {
   .reset-filters {
     justify-content: flex-end;
     margin-top: unset;
+  }
+
+  .status-filter {
+    margin-top: 0;
   }
 }

@@ -69,7 +69,7 @@ describe('route CollectiveOffers when user is admin', () => {
     vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: proVenues })
   })
 
-  it('should reset and disable status filter when venue filter is deselected', async () => {
+  it('should reset status filter when venue filter is deselected', async () => {
     const { id: venueId, name: venueName } = proVenues[0]
     const filters = {
       venueId: venueId.toString(),
@@ -87,7 +87,7 @@ describe('route CollectiveOffers when user is admin', () => {
       expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
         undefined,
         undefined,
-        OfferStatus.INACTIVE,
+        undefined,
         undefined,
         undefined,
         undefined,
@@ -97,11 +97,6 @@ describe('route CollectiveOffers when user is admin', () => {
         undefined
       )
     })
-    expect(
-      screen.getByRole('button', {
-        name: 'Statut Afficher ou masquer le filtre par statut',
-      })
-    ).toBeDisabled()
   })
 
   it('should not reset or disable status filter when venue filter is deselected while offerer filter is applied', async () => {
@@ -134,13 +129,13 @@ describe('route CollectiveOffers when user is admin', () => {
       )
     })
     expect(
-      screen.getByRole('button', {
-        name: /Afficher ou masquer le filtre par statut/,
+      screen.getByRole('combobox', {
+        name: 'Statut',
       })
     ).not.toBeDisabled()
   })
 
-  it('should reset and disable status filter when offerer filter is removed', async () => {
+  it('should reset and disable status filter for performance reasons when offerer filter is removed', async () => {
     const offerer = {
       ...defaultGetOffererResponseModel,
       name: 'La structure',
@@ -169,8 +164,8 @@ describe('route CollectiveOffers when user is admin', () => {
       )
     })
     expect(
-      screen.getByRole('button', {
-        name: 'Statut Afficher ou masquer le filtre par statut',
+      screen.getByRole('combobox', {
+        name: 'Statut',
       })
     ).toBeDisabled()
   })
@@ -206,8 +201,8 @@ describe('route CollectiveOffers when user is admin', () => {
       )
     })
     expect(
-      screen.getByRole('button', {
-        name: /Afficher ou masquer le filtre par statut/,
+      screen.getByRole('combobox', {
+        name: 'Statut',
       })
     ).not.toBeDisabled()
   })
@@ -218,8 +213,8 @@ describe('route CollectiveOffers when user is admin', () => {
     await renderOffers(filters)
 
     expect(
-      screen.getByRole('button', {
-        name: 'Statut Afficher ou masquer le filtre par statut',
+      screen.getByRole('combobox', {
+        name: 'Statut',
       })
     ).not.toBeDisabled()
   })
@@ -230,8 +225,8 @@ describe('route CollectiveOffers when user is admin', () => {
     await renderOffers(filters)
 
     expect(
-      screen.getByRole('button', {
-        name: 'Statut Afficher ou masquer le filtre par statut',
+      screen.getByRole('combobox', {
+        name: 'Statut',
       })
     ).not.toBeDisabled()
   })
