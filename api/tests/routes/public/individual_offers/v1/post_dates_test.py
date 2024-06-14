@@ -43,6 +43,7 @@ class PostDatesTest:
                         "bookingLimitDatetime": date_utils.format_into_utc_date(next_week),
                         "price_category_id": carre_or_price_category.id,
                         "quantity": 10,
+                        "id_at_provider": "id_143556",
                     },
                     {
                         "beginningDatetime": two_months_from_now_in_non_utc_tz.isoformat(),
@@ -60,9 +61,11 @@ class PostDatesTest:
         first_stock = next(stock for stock in created_stocks if stock.beginningDatetime == next_month)
         assert first_stock.price == decimal.Decimal("88.99")
         assert first_stock.quantity == 10
+        assert first_stock.idAtProviders == "id_143556"
         second_stock = next(stock for stock in created_stocks if stock.beginningDatetime == two_months_from_now)
         assert second_stock.price == decimal.Decimal("0")
         assert second_stock.quantity is None
+        assert second_stock.idAtProviders is None
 
         assert response.json == {
             "dates": [
@@ -77,6 +80,7 @@ class PostDatesTest:
                         "price": 8899,
                     },
                     "quantity": 10,
+                    "idAtProvider": "id_143556",
                 },
                 {
                     "beginningDatetime": two_months_from_now.isoformat(),
@@ -89,6 +93,7 @@ class PostDatesTest:
                         "price": 0,
                     },
                     "quantity": "unlimited",
+                    "idAtProvider": None,
                 },
             ],
         }

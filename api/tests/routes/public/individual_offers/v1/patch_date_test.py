@@ -45,6 +45,7 @@ class PatchDateTest:
                 ).isoformat(),
                 "priceCategoryId": price_category.id,
                 "quantity": 24,
+                "id_at_provider": "hey you !",
             },
         )
 
@@ -54,6 +55,7 @@ class PatchDateTest:
         assert event_stock.price == price_category.price
         assert event_stock.priceCategory == price_category
         assert event_stock.quantity == 24
+        assert event_stock.idAtProviders == "hey you !"
         mocked_async_index_offer_ids.assert_called_once()
 
     def test_sends_email_if_beginning_date_changes_on_edition(self, client):
@@ -151,6 +153,7 @@ class PatchDateTest:
             priceCategory=price_category,
             bookingLimitDatetime=next_year,
             beginningDatetime=next_year,
+            idAtProviders="hoho",
         )
 
         eight_days_from_now = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=8)
@@ -169,6 +172,7 @@ class PatchDateTest:
         assert event_stock.price == price_category.price
         assert event_stock.quantity == 10
         assert event_stock.priceCategory == price_category
+        assert event_stock.idAtProviders == "hoho"
 
     def test_update_with_error(self, client):
         venue, api_key = utils.create_offerer_provider_linked_to_venue()
