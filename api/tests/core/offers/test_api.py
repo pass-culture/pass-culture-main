@@ -74,6 +74,19 @@ class CreateStockTest:
         assert created_stock.price == 10
         assert created_stock.quantity == 7
 
+    def test_create_stock_with_id_at_provider(self):
+        # Given
+        offer = factories.ThingOfferFactory()
+
+        # When
+        created_stock = api.create_stock(offer=offer, price=10, quantity=7, id_at_provider="heyyyy!")
+
+        # Then
+        assert created_stock.offerId == offer.id
+        assert created_stock.price == 10
+        assert created_stock.quantity == 7
+        assert created_stock.idAtProviders == "heyyyy!"
+
     def test_create_first_stock_of_offer(self):
         # Given
         offer = factories.ThingOfferFactory()
@@ -343,6 +356,17 @@ class EditStockTest:
         assert edited_stock.price == 5
         assert edited_stock.quantity == 7
         assert update_info is False
+
+    def test_edit_stock_id_at_provider(self):
+        # Given
+        existing_stock = factories.StockFactory(price=10, idAtProviders="I have a secret")
+
+        # When
+        edited_stock, _ = api.edit_stock(stock=existing_stock, id_at_provider="I'm Batman !!!")
+
+        # Then
+        assert edited_stock == models.Stock.query.filter_by(id=existing_stock.id).first()
+        assert edited_stock.idAtProviders == "I'm Batman !!!"
 
     def test_edit_beginning_datetime(self):
         # Given

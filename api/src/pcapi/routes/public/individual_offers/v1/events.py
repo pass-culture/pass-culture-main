@@ -388,6 +388,7 @@ def post_event_dates(event_id: int, body: serialization.DatesCreation) -> serial
                         beginning_datetime=date.beginning_datetime,
                         booking_limit_datetime=date.booking_limit_datetime,
                         creating_provider=current_api_key.provider,
+                        id_at_provider=date.id_at_provider,
                     )
                 )
     except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as error:
@@ -546,6 +547,7 @@ def patch_event_date(
                 price_category=price_category,
                 booking_limit_datetime=update_body.get("booking_limit_datetime", offers_api.UNCHANGED),
                 beginning_datetime=update_body.get("beginning_datetime", offers_api.UNCHANGED),
+                id_at_provider=update_body.get("id_at_provider", offers_api.UNCHANGED),
                 editing_provider=current_api_key.provider,
             )
         offers_api.handle_stocks_edition([(stock_to_edit, is_beginning_updated)])

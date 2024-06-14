@@ -522,6 +522,7 @@ def create_stock(
     creating_provider: providers_models.Provider | None = None,
     price: decimal.Decimal | None = None,
     price_category: models.PriceCategory | None = None,
+    id_at_provider: str | None = None,
 ) -> models.Stock:
     validation.check_booking_limit_datetime(None, beginning_datetime, booking_limit_datetime)
 
@@ -557,6 +558,7 @@ def create_stock(
         beginningDatetime=beginning_datetime,
         bookingLimitDatetime=booking_limit_datetime,
         priceCategory=price_category,  # type: ignore[arg-type]
+        idAtProviders=id_at_provider,
     )
     created_activation_codes = []
 
@@ -589,6 +591,7 @@ def edit_stock(
     booking_limit_datetime: datetime.datetime | None | T_UNCHANGED = UNCHANGED,
     editing_provider: providers_models.Provider | None = None,
     price_category: models.PriceCategory | None | T_UNCHANGED = UNCHANGED,
+    id_at_provider: str | None | T_UNCHANGED = UNCHANGED,
 ) -> tuple[models.Stock | None, bool]:
     """If anything has changed, return the stock and whether the
     "beginning datetime" has changed. Otherwise, return `(None, False)`.
@@ -633,6 +636,9 @@ def edit_stock(
 
     if beginning_datetime not in (UNCHANGED, stock.beginningDatetime):
         modifications["beginningDatetime"] = beginning_datetime
+
+    if id_at_provider not in (UNCHANGED, stock.idAtProviders):
+        modifications["idAtProviders"] = id_at_provider
 
     if not modifications:
         logger.info(
