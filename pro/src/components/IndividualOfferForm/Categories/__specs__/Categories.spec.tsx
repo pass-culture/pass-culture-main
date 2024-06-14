@@ -1,7 +1,6 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Form, Formik } from 'formik'
-import React from 'react'
 import * as yup from 'yup'
 
 import { api } from 'apiClient/api'
@@ -92,14 +91,6 @@ describe('IndividualOffer section: Categories', () => {
       isEvent: true,
       showAddVenueBanner: true,
     }
-
-    vi.spyOn(api, 'getMusicTypes').mockResolvedValue([
-      {
-        gtl_id: '07000000',
-        label: 'Metal',
-        canBeEvent: true,
-      },
-    ])
   })
 
   it('should render the component', () => {
@@ -201,7 +192,15 @@ describe('IndividualOffer section: Categories', () => {
     expect(screen.queryByLabelText('Sous-genre *')).not.toBeInTheDocument()
   })
 
-  it('should display music genre selects when a music subCategory is choosed', async () => {
+  it('should display music genre selects when a music subCategory is chosen', async () => {
+    const musicTypeSpy = vi.spyOn(api, 'getMusicTypes').mockResolvedValue([
+      {
+        gtl_id: '07000000',
+        label: 'Metal',
+        canBeEvent: true,
+      },
+    ])
+
     renderCategories({
       initialValues,
       onSubmit,
@@ -220,6 +219,10 @@ describe('IndividualOffer section: Categories', () => {
 
     const musicSelect = screen.getByLabelText('Genre musical *')
     expect(musicSelect).toBeInTheDocument()
+
+    await waitFor(() => {
+      return expect(musicTypeSpy).toHaveBeenCalled()
+    })
 
     await userEvent.selectOptions(musicSelect, '07000000')
 
