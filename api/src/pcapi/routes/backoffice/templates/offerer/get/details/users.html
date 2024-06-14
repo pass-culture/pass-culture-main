@@ -118,7 +118,8 @@
     {% endfor %}
   </tbody>
 </table>
-{% for user_offerer in rows | map(attribute="UserOfferer") %}
+{% for row in rows %}
+  {% set user_offerer = row.UserOfferer %}
   {% if user_offerer %}
     {{ build_lazy_modal(url_for("backoffice_web.validation.get_reject_user_offerer_form", user_offerer_id=user_offerer.id) ,
     "reject-modal-" + user_offerer.id|string) }}
