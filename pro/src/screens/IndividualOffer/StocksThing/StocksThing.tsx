@@ -1,5 +1,5 @@
 import { FormikProvider, useFormik } from 'formik'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
@@ -13,8 +13,6 @@ import { FormLayout } from 'components/FormLayout/FormLayout'
 import { FormLayoutDescription } from 'components/FormLayout/FormLayoutDescription'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
-import { StockFormActions } from 'components/StockFormActions/StockFormActions'
-import { StockFormRowAction } from 'components/StockFormActions/types'
 import { GET_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
@@ -25,6 +23,7 @@ import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import fullCodeIcon from 'icons/full-code.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import strokeEuroIcon from 'icons/stroke-euro.svg'
+import { StockFormRowAction } from 'screens/IndividualOffer/StocksThing/StockThingFormActions/types'
 import { Checkbox } from 'ui-kit/form/Checkbox/Checkbox'
 import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
@@ -40,6 +39,7 @@ import { getSuccessMessage } from '../utils/getSuccessMessage'
 import { ActivationCodeFormDialog } from './ActivationCodeFormDialog/ActivationCodeFormDialog'
 import { STOCK_THING_FORM_DEFAULT_VALUES } from './constants'
 import styles from './StockThing.module.scss'
+import { StockThingFormActions } from './StockThingFormActions/StockThingFormActions'
 import { submitToApi } from './submitToApi'
 import { StockThingFormValues } from './types'
 import { buildInitialValues } from './utils/buildInitialValues'
@@ -331,58 +331,52 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
               className={styles['callout-area-margin']}
             />
 
-            <div className={styles['stock-form-row']}>
-              <div className={styles['stock-form']}>
-                <TextInput
-                  smallLabel
-                  name="price"
-                  label="Prix"
-                  className={styles['input-price']}
-                  classNameFooter={styles['field-layout-footer']}
-                  disabled={readOnlyFields.includes('price')}
-                  type="number"
-                  data-testid="input-price"
-                  rightIcon={strokeEuroIcon}
-                  step="0.01"
-                />
+            <div className={styles['row']}>
+              <TextInput
+                smallLabel
+                name="price"
+                label="Prix"
+                classNameFooter={styles['field-layout-footer']}
+                disabled={readOnlyFields.includes('price')}
+                type="number"
+                data-testid="input-price"
+                rightIcon={strokeEuroIcon}
+                step="0.01"
+              />
+              <DatePicker
+                smallLabel
+                name="bookingLimitDatetime"
+                label="Date limite de réservation"
+                isOptional
+                classNameFooter={styles['field-layout-footer']}
+                minDate={today}
+                maxDate={getMaximumBookingDatetime(maxDateTime)}
+                disabled={readOnlyFields.includes('bookingLimitDatetime')}
+              />
+
+              {showExpirationDate && (
                 <DatePicker
                   smallLabel
-                  name="bookingLimitDatetime"
-                  label="Date limite de réservation"
-                  isOptional
-                  className={styles['input-booking-limit-datetime']}
+                  name="activationCodesExpirationDatetime"
+                  label="Date d'expiration"
                   classNameFooter={styles['field-layout-footer']}
-                  minDate={today}
-                  maxDate={getMaximumBookingDatetime(maxDateTime)}
-                  disabled={readOnlyFields.includes('bookingLimitDatetime')}
+                  disabled={true}
                 />
-
-                {showExpirationDate && (
-                  <DatePicker
-                    smallLabel
-                    name="activationCodesExpirationDatetime"
-                    label="Date d'expiration"
-                    className={styles['input-activation-code']}
-                    classNameFooter={styles['field-layout-footer']}
-                    disabled={true}
-                  />
-                )}
-                <TextInput
-                  smallLabel
-                  name="quantity"
-                  label="Quantité"
-                  placeholder="Illimité"
-                  isOptional
-                  className={styles['input-quantity']}
-                  classNameFooter={styles['field-layout-footer']}
-                  disabled={readOnlyFields.includes('quantity')}
-                  type="number"
-                  hasDecimal={false}
-                  onChange={onChangeQuantity}
-                />
-              </div>
+              )}
+              <TextInput
+                smallLabel
+                name="quantity"
+                label="Quantité"
+                placeholder="Illimité"
+                isOptional
+                classNameFooter={styles['field-layout-footer']}
+                disabled={readOnlyFields.includes('quantity')}
+                type="number"
+                hasDecimal={false}
+                onChange={onChangeQuantity}
+              />
               {mode === OFFER_WIZARD_MODE.EDITION && stocks.length > 0 && (
-                <div className={styles['stock-form-info']}>
+                <>
                   <TextInput
                     name="availableStock"
                     value={
@@ -405,13 +399,11 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                     smallLabel
                     classNameFooter={styles['field-layout-footer']}
                   />
-                </div>
+                </>
               )}
 
               {actions.length > 0 && (
-                <div className={styles['stock-actions']}>
-                  <StockFormActions actions={actions} />
-                </div>
+                <StockThingFormActions actions={actions} />
               )}
             </div>
           </div>

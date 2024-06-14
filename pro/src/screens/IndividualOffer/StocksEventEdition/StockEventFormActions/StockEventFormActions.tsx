@@ -2,18 +2,21 @@ import { DropdownItem } from 'ui-kit/DropdownMenuWrapper/DropdownItem'
 import { DropdownMenuWrapper } from 'ui-kit/DropdownMenuWrapper/DropdownMenuWrapper'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import styles from './StockFormActions.module.scss'
+import styles from './StockEventFormActions.module.scss'
 import { StockFormRowAction } from './types'
 
-export interface StockFormActionsProps {
+export interface StockEventFormActionsProps {
   actions: StockFormRowAction[]
 }
 
-export const StockFormActions = ({
+export const StockEventFormActions = ({
   actions,
-}: StockFormActionsProps): JSX.Element => {
+}: StockEventFormActionsProps): JSX.Element => {
   return (
-    <DropdownMenuWrapper title="Opérations sur le stock">
+    <DropdownMenuWrapper
+      title="Opérations sur le stock"
+      className={styles['dropdown-actions']}
+    >
       {actions.map((action, i) => (
         <DropdownItem
           key={`action-${i}`}

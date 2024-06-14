@@ -1,5 +1,3 @@
-import React from 'react'
-
 import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
