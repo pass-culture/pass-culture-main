@@ -62,19 +62,15 @@ public_accounts_blueprint = utils.child_backoffice_blueprint(
 )
 
 
-def _join_suspension_history(query: BaseQuery) -> BaseQuery:
-    # Joinedload with ActionHistory avoids N+1 query to show suspension reason.
-    # Join only suspension actions to limit the number of fetched rows.
-    # It should be OK because per_page is 20 on this search page and can not be set to thousands
-    return query.outerjoin(
-        history_models.ActionHistory,
-        sa.and_(
-            history_models.ActionHistory.userId == users_models.User.id,
-            history_models.ActionHistory.actionType.in_(
-                [history_models.ActionType.USER_SUSPENDED, history_models.ActionType.USER_UNSUSPENDED]
-            ),
-        ),
-    ).options(sa.orm.contains_eager(users_models.User.action_history))
+def _load_suspension_info(query: BaseQuery) -> BaseQuery:
+    # Partial joined load with ActionHistory avoids N+1 query to show suspension reason, but the number of fetched rows
+    # would be greater than the number of results when a single user has several suspension actions.
+    # So these expressions use a subquery so that result count is accurate, and the redirection well forced when a
+    # single card would be displayed.
+    return query.options(
+        sa.orm.with_expression("suspension_reason_expression", users_models.User.suspension_reason.expression),  # type: ignore[attr-defined]
+        sa.orm.with_expression("suspension_date_expression", users_models.User.suspension_date.expression),  # type: ignore[attr-defined]
+    )
 
 
 def _apply_search_filters(query: BaseQuery, search_filters: list[str]) -> BaseQuery:
@@ -179,14 +175,14 @@ def search_public_accounts() -> utils.BackofficeResponse:
 
     users_query = users_api.search_public_account(form.q.data)
     users_query = _apply_search_filters(users_query, form.filter.data)
-    users_query = _join_suspension_history(users_query)
+    users_query = _load_suspension_info(users_query)
     paginated_rows = users_query.paginate(page=form.page.data, per_page=form.per_page.data)
 
     # Do NOT call users.count() after search_public_account, this would make one more request on all users every time
     # (so it would select count twice: in users.count() and in users.paginate)
     if paginated_rows.total == 0 and email_utils.is_valid_email(email_utils.sanitize_email(form.q.data)):
         users_query = users_api.search_public_account_in_history_email(form.q.data)
-        users_query = _join_suspension_history(users_query)
+        users_query = _load_suspension_info(users_query)
         paginated_rows = users_query.paginate(page=form.page.data, per_page=form.per_page.data)
 
     if paginated_rows.total == 1:

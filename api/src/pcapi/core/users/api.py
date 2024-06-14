@@ -1188,22 +1188,10 @@ def search_pro_account(search_query: str, *_: typing.Any) -> BaseQuery:
         )
     )
 
-    return (
-        _filter_user_accounts(pro_accounts, search_query)
-        .outerjoin(
-            # Join only suspension actions to limit the number of fetched rows
-            history_models.ActionHistory,
-            sa.and_(
-                history_models.ActionHistory.userId == models.User.id,
-                history_models.ActionHistory.actionType.in_(
-                    [history_models.ActionType.USER_SUSPENDED, history_models.ActionType.USER_UNSUSPENDED]
-                ),
-            ),
-        )
-        .options(
-            sa.orm.joinedload(users_models.User.UserOfferers).load_only(offerers_models.UserOfferer.validationStatus),
-            sa.orm.contains_eager(users_models.User.action_history),
-        )
+    return _filter_user_accounts(pro_accounts, search_query).options(
+        sa.orm.with_expression("suspension_reason_expression", users_models.User.suspension_reason.expression),  # type: ignore[attr-defined]
+        sa.orm.with_expression("suspension_date_expression", users_models.User.suspension_date.expression),  # type: ignore[attr-defined]
+        sa.orm.joinedload(users_models.User.UserOfferers).load_only(offerers_models.UserOfferer.validationStatus),
     )
 
 
@@ -1218,7 +1206,10 @@ def get_pro_account_base_query(pro_id: int) -> BaseQuery:
 
 
 def search_backoffice_accounts(search_query: str) -> BaseQuery:
-    bo_accounts = models.User.query.join(users_models.User.backoffice_profile)
+    bo_accounts = models.User.query.join(users_models.User.backoffice_profile).options(
+        sa.orm.with_expression("suspension_reason_expression", users_models.User.suspension_reason.expression),  # type: ignore[attr-defined]
+        sa.orm.with_expression("suspension_date_expression", users_models.User.suspension_date.expression),  # type: ignore[attr-defined]
+    )
 
     if not search_query:
         return bo_accounts
