@@ -3,6 +3,7 @@ from datetime import datetime
 import decimal
 import itertools
 import logging
+import math
 from math import ceil
 import re
 import secrets
@@ -2573,9 +2574,8 @@ def get_or_create_address(location_data: LocationData) -> geography_models.Addre
             geography_models.Address.street == street,
             geography_models.Address.inseeCode == insee_code,
         ).one()
-        if (float(address.latitude), float(address.longitude)) != (
-            round(latitude, 5),
-            round(longitude, 5),
+        if not math.isclose(float(address.latitude), latitude, rel_tol=0.00001) or not math.isclose(
+            float(address.longitude), longitude, rel_tol=0.00001
         ):
             logger.error(
                 "Unique constraint over street and inseeCode matched different coordinates",
