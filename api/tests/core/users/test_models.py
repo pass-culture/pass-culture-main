@@ -450,9 +450,9 @@ class SQLFunctionsTest:
         with time_machine.travel(datetime.utcnow() - relativedelta(years=2, days=2)):
             user = users_factories.UnderageBeneficiaryFactory(subscription_age=16)
             # disable trigger because deposit.expirationDate > now() is False in database time
-            db.session.execute("ALTER TABLE booking DISABLE TRIGGER booking_update;")
+            db.session.execute(sa.text("ALTER TABLE booking DISABLE TRIGGER booking_update;"))
             bookings_factories.BookingFactory(user=user, amount=18)
-            db.session.execute("ALTER TABLE booking ENABLE TRIGGER booking_update;")
+            db.session.execute(sa.text("ALTER TABLE booking ENABLE TRIGGER booking_update;"))
 
         finance_api.create_deposit(user, "test", user_models.EligibilityType.AGE18)
 
@@ -482,9 +482,9 @@ class SQLFunctionsTest:
         with time_machine.travel(datetime.utcnow() - relativedelta(years=2, days=2)):
             user = users_factories.UnderageBeneficiaryFactory(subscription_age=16)
             # disable trigger because deposit.expirationDate > now() is False in database time
-            db.session.execute("ALTER TABLE booking DISABLE TRIGGER booking_update;")
+            db.session.execute(sa.text("ALTER TABLE booking DISABLE TRIGGER booking_update;"))
             bookings_factories.BookingFactory(user=user, amount=18)
-            db.session.execute("ALTER TABLE booking ENABLE TRIGGER booking_update;")
+            db.session.execute(sa.text("ALTER TABLE booking ENABLE TRIGGER booking_update;"))
 
         assert db.session.query(sa.func.get_wallet_balance(user.id, False)).first()[0] == 0
 
