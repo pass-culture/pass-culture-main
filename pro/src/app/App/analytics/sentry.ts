@@ -80,6 +80,9 @@ export const initializeSentry = () => {
       'Failed to fetch', // Chrome
       'NetworkError when attempting to fetch resource', // Firefox
       'Load failed', // Safari
+      // Other network errors
+      'La connexion réseau a été perdue',
+      'A request was aborted',
     ],
     denyUrls: [
       // Facebook flakiness
