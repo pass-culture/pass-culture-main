@@ -5,9 +5,11 @@ import pathlib
 from unittest import mock
 
 import pytest
+import sqlalchemy.exc as sqla_exc
 
 from pcapi import settings
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.models import offer_mixin
 from pcapi.utils import date as date_utils
@@ -620,3 +622,47 @@ class PostProductTest:
         )
 
         assert response.status_code == 404
+
+
+def build_base_payload(venue, **extra):
+    return {
+        "location": {"type": "physical", "venueId": venue.id},
+        "categoryRelatedFields": {
+            "category": "SUPPORT_PHYSIQUE_FILM",
+            "ean": "1234567891234",
+        },
+        "accessibility": utils.ACCESSIBILITY_FIELDS,
+        "name": "Le champ des possibles",
+        **extra,
+    }
+
+
+@pytest.mark.usefixtures("db_session")
+class CreateProductDbErrorsHandlingTest:
+    product_url = "/public/offers/v1/products"
+
+    def test_unique_venue_and_id_at_provider_violation(self, client):
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        auth_client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
+
+        offer = offers_factories.OfferFactory(venue=venue, idAtProvider="some_id")
+
+        payload = build_base_payload(venue, idAtProvider=offer.idAtProvider)
+        response = auth_client.post(self.product_url, json=payload)
+
+        assert response.status_code == 400
+
+    def test_db_error(self, client):
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        auth_client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
+
+        patch_path = "pcapi.routes.public.individual_offers.v1.products.db"
+        with mock.patch(patch_path) as mocked_db:
+            orig = mock.MagicMock()
+            err = sqla_exc.IntegrityError(statement="oops", params="none", orig=orig)
+            mocked_db.session.flush.side_effect = err
+
+            payload = build_base_payload(venue)
+            response = auth_client.post(self.product_url, json=payload)
+
+            assert response.status_code == 400
