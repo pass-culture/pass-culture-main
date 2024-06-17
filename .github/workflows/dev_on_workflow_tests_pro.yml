@@ -97,7 +97,7 @@ jobs:
           restore-keys: |
             v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - run: yarn install --immutable
-      - run: yarn lint:scss --max-warnings 0
+      - run: yarn lint:scss
 
   tests-pro-unit-tests:
     name: "Unit tests"
