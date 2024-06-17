@@ -523,8 +523,8 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     dateUpdated: datetime.datetime = sa.Column(
         sa.DateTime, nullable=True, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
     )
-    description = sa.Column(sa.Text, nullable=True)
-    durationMinutes = sa.Column(sa.Integer, nullable=True)
+    _description = sa.Column("description", sa.Text, nullable=True)
+    _durationMinutes = sa.Column("durationMinutes", sa.Integer, nullable=True)
     externalTicketOfficeUrl = sa.Column(sa.String, nullable=True)
     extraData: OfferExtraData | None = sa.Column("jsonData", sa_mutable.MutableDict.as_mutable(postgresql.JSONB))
     fieldsUpdated: list[str] = sa.Column(
@@ -586,6 +586,26 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     sa.Index("ix_offer_offererAddressId", offererAddressId, postgresql_where=offererAddressId.is_not(None))
     isNonFreeOffer: sa_orm.Mapped["bool"] = sa_orm.query_expression()
     bookingsCount: sa_orm.Mapped["int"] = sa_orm.query_expression()
+
+    @property
+    def description(self) -> str | None:
+        if self.product:
+            return self.product.description
+        return self._description
+
+    @description.setter
+    def description(self, value: str | None) -> None:
+        self._description = value
+
+    @property
+    def durationMinutes(self) -> int | None:
+        if self.product:
+            return self.product.durationMinutes
+        return self._durationMinutes
+
+    @durationMinutes.setter
+    def durationMinutes(self, value: int | None) -> None:
+        self._durationMinutes = value
 
     @property
     def isEducational(self) -> bool:
@@ -828,7 +848,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
 
     @property
     def visibleText(self) -> str:  # used in validation rule, do not remove
-        return f"{self.name} {self.description}"
+        return f"{self.name} {self._description}"
 
     @hybrid_property
     def is_expired(self) -> bool:

@@ -116,8 +116,6 @@ class OffersTest:
 
         assert response.status_code == 200
 
-        print(response.json)
-
         assert response.json["id"] == offer.id
         assert response.json["accessibility"] == {
             "audioDisability": False,
