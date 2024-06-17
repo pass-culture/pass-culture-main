@@ -210,7 +210,7 @@ class Mediation(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Deactivab
     thumb_path_component = "mediations"
 
 
-class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
+class Stock(PcObject, Base, Model, SoftDeletableMixin):
     __tablename__ = "stock"
 
     MAX_STOCK_QUANTITY = 1_000_000
@@ -244,6 +244,34 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
         "OffererAddress", foreign_keys=[offererAddressId], uselist=False
     )
     sa.Index("ix_stock_offererAddressId", offererAddressId, postgresql_where=offererAddressId.is_not(None))
+
+    @declared_attr
+    def lastProviderId(cls) -> sa_orm.Mapped[int | None]:  # pylint: disable=no-self-argument
+        return sa.Column(sa.BigInteger, sa.ForeignKey("provider.id"), nullable=True)
+
+    @declared_attr
+    def lastProvider(cls) -> sa_orm.Mapped["Provider | None"]:  # pylint: disable=no-self-argument
+        return relationship("Provider", foreign_keys=[cls.lastProviderId])
+
+    idAtProviders = sa.Column(
+        sa.String(70),
+        sa.CheckConstraint(
+            '"lastProviderId" IS NULL OR "idAtProviders" IS NOT NULL',
+            name="check_providable_with_provider_has_idatproviders",
+        ),
+        nullable=True,
+        unique=True,  # to be replaced by unique constraint on `offerId`/`idAtProviders`
+    )
+
+    dateModifiedAtLastProvider = sa.Column(sa.DateTime, nullable=True, default=datetime.datetime.utcnow)
+
+    fieldsUpdated: sa_orm.Mapped[list[str]] = sa.Column(
+        postgresql.ARRAY(sa.String(100)), nullable=False, default=[], server_default="{}"
+    )
+
+    # First step : Create a unique index on offerId/idAtProviders
+    # Next step : Create a unicity constraint based on this index and to drop the unicity constraint on idAtProviders
+    sa.Index("unique_ix_offer_id_id_at_providers", offerId, idAtProviders, unique=True)
 
     __table_args__ = (
         sa.Index(
