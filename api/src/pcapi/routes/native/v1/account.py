@@ -13,6 +13,7 @@ from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.fraud.phone_validation import sending_limit
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.subscription import api as subscription_api
+from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.subscription.phone_validation import api as phone_validation_api
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
 from pcapi.core.users import api
@@ -164,6 +165,15 @@ def validate_user_email(body: serializers.ChangeBeneficiaryEmailBody) -> seriali
         # existing email addresses through user enumeration attacks.
         token = token_utils.Token.load_without_checking(body.token)
         user = users_models.User.query.get(token.user_id)
+
+    if user.is_eligible and not user.is_beneficiary:
+        try:
+            dms_subscription_api.try_dms_orphan_adoption(user)
+        except Exception:  # pylint: disable=broad-except
+            logger.exception(
+                "An unexpected error occurred while trying to link dms orphan to user", extra={"user_id": user.id}
+            )
+
     return serializers.ChangeBeneficiaryEmailResponse(
         access_token=api.create_user_access_token(user),
         refresh_token=api.create_user_refresh_token(user, body.device_info),
