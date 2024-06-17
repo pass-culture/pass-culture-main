@@ -1,5 +1,5 @@
 import { When, Then, Given } from '@badeball/cypress-cucumber-preprocessor'
-const mySiret = '44890182521127' // Math.random().toString().substring(2, 16)
+const mySiret = '44890182521127'
 const offererName = 'MINISTERE DE LA CULTURE'
 
 Given('I log in with a {string} new account', (nth: string) => {
@@ -19,7 +19,9 @@ Given('I log in with a {string} new account', (nth: string) => {
     password: 'user@AZERTY123',
     redirectUrl: '/parcours-inscription',
   })
+})
 
+When('I start offerer creation', () => {
   cy.intercept(
     'GET',
     `https://api-adresse.data.gouv.fr/search/?limit=1&q=3%20RUE%20DE%20VALOIS%20Paris%2075001`,
@@ -59,9 +61,6 @@ Given('I log in with a {string} new account', (nth: string) => {
         },
       })
   ).as('searchAddress')
-})
-
-When('I start offerer creation', () => {
   cy.findByText('Commencer').click()
 })
 
@@ -183,9 +182,6 @@ Then('the offerer is created', () => {
   cy.url().should('contain', '/accueil')
   cy.findAllByTestId('spinner').should('not.exist')
 
-  // check offerer list
-  // cy.intercept({ method: 'GET', url: '/offerers/*' }).as('getOfferer')
   cy.findByTestId('offerer-details-offerId').select(offererName)
-  // cy.wait('@getOfferer').its('response.statusCode').should('eq', 200)
   cy.findAllByTestId('spinner').should('not.exist')
 })
