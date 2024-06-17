@@ -8,6 +8,6 @@ export type GetOffererAddressResponseModel = {
   isEditable: boolean;
   label?: string | null;
   postalCode: string;
-  street: string;
+  street?: string | null;
 };
 

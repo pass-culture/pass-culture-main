@@ -3,7 +3,13 @@
 /* tslint:disable */
 /* eslint-disable */
 export type NationalProgramModel = {
+  /**
+   * National program id
+   */
   id: number;
+  /**
+   * National program name
+   */
   name: string;
 };
 
