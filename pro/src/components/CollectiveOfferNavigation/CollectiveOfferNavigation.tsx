@@ -83,7 +83,7 @@ export const CollectiveOfferNavigation = ({
       }
       stepList[CollectiveOfferStep.STOCKS] = {
         id: CollectiveOfferStep.STOCKS,
-        label: 'Date et prix',
+        label: 'Dates et prix',
         url: stockEditionUrl,
       }
       stepList[CollectiveOfferStep.VISIBILITY] = {
@@ -100,7 +100,7 @@ export const CollectiveOfferNavigation = ({
     if (!isTemplate) {
       stepList[CollectiveOfferStep.STOCKS] = {
         id: CollectiveOfferStep.STOCKS,
-        label: 'Date et prix',
+        label: 'Dates et prix',
         url: offerId ? `/offre/${offerId}/collectif/stocks${requestIdUrl}` : '',
       }
       stepList[CollectiveOfferStep.VISIBILITY] = {

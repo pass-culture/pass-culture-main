@@ -153,7 +153,7 @@ export const OfferEducationalStock = <
               avec l’établissement scolaire tant que le chef d’établissement n’a
               pas validé la réservation.
             </Callout>
-            <FormLayout.Section title="Date et prix">
+            <FormLayout.Section title="Dates et prix">
               <>
                 <p className={styles['description-text']}>
                   Indiquez le prix total TTC de l’évènement et le nombre de

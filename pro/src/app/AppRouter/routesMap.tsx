@@ -148,7 +148,7 @@ export const routes: RouteConfig[] = [
     lazy: () =>
       import('pages/CollectiveOfferStockCreation/CollectiveOfferStockCreation'),
     path: '/offre/:offerId/collectif/stocks',
-    title: 'Date et prix - Créer une offre réservable',
+    title: 'Dates et prix - Créer une offre réservable',
   },
   {
     lazy: () => import('pages/CollectiveOfferCreation/CollectiveOfferCreation'),
@@ -255,7 +255,7 @@ export const routes: RouteConfig[] = [
     lazy: () =>
       import('pages/CollectiveOfferStockEdition/CollectiveOfferStockEdition'),
     path: '/offre/:offerId/collectif/stocks/edition',
-    title: 'Date et prix - Modifier une offre collective réservable',
+    title: 'Dates et prix - Modifier une offre collective réservable',
   },
   {
     lazy: () =>
