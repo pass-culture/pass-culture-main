@@ -123,7 +123,7 @@ jobs:
           additional_args: ${{ steps.generate-pcapi-secrets-list.outputs.PCAPI_SECRETS }}
           registry_workload_identity_secret_name: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
           registry_service_account_secret_name: passculture-metier-ehp/passculture-main-artifact-registry-service-account
-          api_token_github_secret_name: passculture-metier-ehp/passculture-main-sa-access-token  
+          api_token_github_secret_name: passculture-metier-ehp/passculture-main-sa-access-token
           chart_values_repository: ""
           helmfile_path: "./pass-culture-deployment/helm/pcapi"
       - name: "Install argocd cli"
@@ -152,6 +152,18 @@ jobs:
           kubectl logs -n ${{ inputs.environment }} -f jobs/post-upgrade-${DATE} && break
           done
           kubectl wait --for=condition=complete --timeout=10900s -n ${{ inputs.environment }} jobs/post-upgrade-${DATE}
+      - name: "Deploy doc API to Firebase"
+        id: deploy-doc-api
+        uses: ./.github/workflows/actions/action_build_deploy_to_firebase.yml
+        with:
+          environment: ${{ inputs.environment }}
+          REF: ${{ github.ref }}
+          APPNAME: pc-doc-api
+          ENTRYPOINT: api/documentation
+          CHANNEL: ''
+          EXPIRES: '7d'
+          GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_TOKEN }}
+          GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
 
   deploy-pro-on-testing-on-firebase:
     name: "Deploy pro on testing live channel"

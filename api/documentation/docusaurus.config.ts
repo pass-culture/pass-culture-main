@@ -3,20 +3,19 @@ import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 import type * as Redocusaurus from 'redocusaurus';
 
+const env = process.env['ENV'];
+console.log(`Environment is ${env}`);
+
 const getOpenAPIJsonUrlFromEnv = (): string => {
-  const env = process.env['ENV'];
-
-  // TO DO: update once the proper devops config is available.
-  if (env === 'deploy') {
-    return 'https://backend.testing.passculture.team/openapi.json';
+  console.log(`HERE is ${env}`);
+  if (env === 'testing' || env === 'staging') {
+    return `https://backend.${env}.passculture.team/openapi.json`;
   }
-
-  return 'http://localhost/openapi.json';
+return 'https://backend.passculture.pro/openapi.json';
 }
 
 
 const getDocumentationBaseUrlFromEnv = (): string => {
-  const env = process.env['ENV'];
 
   // TO DO: update once the proper devops config is available.
   if (env === 'deploy') {
