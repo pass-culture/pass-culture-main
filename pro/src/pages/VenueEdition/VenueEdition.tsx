@@ -127,7 +127,7 @@ export const VenueEdition = (): JSX.Element | null => {
               <>
                 <FormLayout.Row>
                   <FieldLayout
-                    label={`Sélectionnez votre page ${activeStep === 'individual' ? 'partenaire' : 'sur ADAGE'}`}
+                    label={`Sélectionnez votre page ${activeStep === 'individual' ? 'partenaire' : 'dans ADAGE'}`}
                     name="venues"
                     isOptional
                     className={styles['select-partner-page']}
