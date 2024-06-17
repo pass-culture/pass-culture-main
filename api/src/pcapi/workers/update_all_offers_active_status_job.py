@@ -1,5 +1,7 @@
+from pcapi.core.educational.exceptions import CollectiveOfferStatusFilterNotCancellable
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.repository as offers_repository
+from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.workers import worker
 from pcapi.workers.decorators import job
 
@@ -24,11 +26,24 @@ def update_all_offers_active_status_job(filters: dict, is_active: bool) -> None:
 
 @job(worker.low_queue)
 def update_all_collective_offers_active_status_job(filters: dict, is_active: bool) -> None:
+    status = filters.get("status")
+
+    statuses: list[str] | None
+
+    if status is None:
+        statuses = [OfferValidationStatus.PENDING.value, OfferValidationStatus.REJECTED.value]
+    elif status not in [OfferValidationStatus.PENDING, OfferValidationStatus.REJECTED]:
+        raise CollectiveOfferStatusFilterNotCancellable(
+            f"Can't use filter the status {status}, to deactivate a collective offer"
+        )
+    else:
+        statuses = [status]
+
     collective_offer_query = offers_repository.get_collective_offers_by_filters(
         user_id=filters["user_id"],
         user_is_admin=filters["is_user_admin"],
         offerer_id=filters["offerer_id"],
-        status=filters["status"],
+        statuses=statuses,
         venue_id=filters["venue_id"],
         provider_id=filters["provider_id"],
         category_id=filters["category_id"],
@@ -36,6 +51,7 @@ def update_all_collective_offers_active_status_job(filters: dict, is_active: boo
         period_beginning_date=filters["period_beginning_date"],
         period_ending_date=filters["period_ending_date"],
     )
+
     collective_offer_template_query = offers_repository.get_collective_offers_template_by_filters(
         user_id=filters["user_id"],
         user_is_admin=filters["is_user_admin"],

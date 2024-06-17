@@ -68,6 +68,7 @@ from . import models
 from . import repository as offers_repository
 from . import serialize as offers_serialize
 from . import validation
+from ..educational.exceptions import CollectiveOfferNotCancellable
 
 
 logger = logging.getLogger(__name__)
@@ -451,7 +452,7 @@ def batch_update_collective_offers(query: BaseQuery, update_fields: dict) -> Non
         non_cancellable_collective_orders_ids = non_cancellable_collective_orders.with_entities(
             educational_models.CollectiveOffer.id
         )
-        raise ValueError(
+        raise CollectiveOfferNotCancellable(
             f"All orders must be cancellables. Order(s) non cancellable: {[order_id for order_id, in non_cancellable_collective_orders_ids]}"
         )
 

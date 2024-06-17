@@ -16,7 +16,8 @@ from sqlalchemy.ext.mutable import MutableList
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.orm import declared_attr
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql.elements import BinaryExpression, BooleanClauseList
+from sqlalchemy.sql.elements import BinaryExpression
+from sqlalchemy.sql.elements import BooleanClauseList
 from sqlalchemy.sql.elements import False_
 from sqlalchemy.sql.elements import UnaryExpression
 from sqlalchemy.sql.functions import func

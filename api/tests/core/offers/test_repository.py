@@ -1430,7 +1430,7 @@ class GetFilteredCollectiveOffersTest:
         offers = repository.get_collective_offers_by_filters(
             user_offerer.userId,
             user_is_admin=False,
-            status=educational_models.CollectiveOfferDisplayedStatus.PREBOOKED.value,
+            statuses=[educational_models.CollectiveOfferDisplayedStatus.PREBOOKED.value],
         )
         assert offers.all() == [collective_offer_prebooked]
 
@@ -1449,7 +1449,7 @@ class GetFilteredCollectiveOffersTest:
         offers = repository.get_collective_offers_by_filters(
             user_offerer.userId,
             user_is_admin=False,
-            status=educational_models.CollectiveOfferDisplayedStatus.ENDED.value,
+            statuses=[educational_models.CollectiveOfferDisplayedStatus.ENDED.value],
         )
         assert offers.all() == [collective_offer_ended]
 
