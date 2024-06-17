@@ -22,7 +22,8 @@ export const CollectiveOfferPreviewEdition = ({
       <div>
         <h1>Aperçu de l’offre</h1>
         <p className={styles['preview-info']}>
-          Voici à quoi ressemble votre offre une fois publiée sur ADAGE.
+          Voici à quoi ressemble votre offre une fois publiée sur la plateforme
+          ADAGE.
         </p>
         <AdagePreviewLayout offer={offer} />
         <ActionsBarSticky>
