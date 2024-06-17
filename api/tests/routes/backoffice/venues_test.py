@@ -894,43 +894,8 @@ class UpdateVenueTest(PostEndpointHelper):
             "venue_type_code": venue.venueTypeCode.name,
         }
 
-    @override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
     @override_features(ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE=True)
-    def test_update_venue(self, authenticated_client, offerer, requests_mock):
-        requests_mock.get(
-            "https://api-adresse.data.gouv.fr/search?q=23+Boulevard+de+la+Madeleine&postcode=75001&autocomplete=0&limit=1",
-            json={
-                "type": "FeatureCollection",
-                "version": "draft",
-                "features": [
-                    {
-                        "type": "Feature",
-                        "geometry": {"type": "Point", "coordinates": [2.325463, 48.869311]},
-                        "properties": {
-                            "label": "23 Boulevard de la Madeleine 75001 Paris",
-                            "score": 0.7555272727272727,
-                            "housenumber": "23",
-                            "id": "75101_5888_00023",
-                            "name": "23 Boulevard de la Madeleine",
-                            "postcode": "75001",
-                            "citycode": "75101",
-                            "x": 650519.37,
-                            "y": 6863465.04,
-                            "city": "Paris",
-                            "district": "Paris 1er Arrondissement",
-                            "context": "75, Paris, Île-de-France",
-                            "type": "housenumber",
-                            "importance": 0.5608,
-                            "street": "Boulevard de la Madeleine",
-                        },
-                    }
-                ],
-                "attribution": "BAN",
-                "licence": "ETALAB-2.0",
-                "query": "23 Bd de la madeleine, 75001 Paris",
-                "filters": {"postcode": "75001"},
-            },
-        )
+    def test_update_venue(self, authenticated_client, offerer):
         contact_email = "contact.venue@example.com"
         website = "update.venue@example.com"
         social_medias = {"instagram": "https://instagram.com/update.venue"}
@@ -949,6 +914,7 @@ class UpdateVenueTest(PostEndpointHelper):
             "city": "Paris",
             "postal_code": "75001",
             "street": "23 Boulevard de la Madeleine",
+            "ban_id": "75101_5888_00023",
             "booking_email": venue.bookingEmail + ".update",
             "phone_number": "+33102030456",
             "is_permanent": True,
@@ -973,6 +939,7 @@ class UpdateVenueTest(PostEndpointHelper):
         assert venue.city == address.city == data["city"]
         assert venue.postalCode == address.postalCode == data["postal_code"]
         assert venue.street == address.street == data["street"]
+        assert venue.banId == address.banId == data["ban_id"]
         assert venue.bookingEmail == data["booking_email"]
         assert venue.contact.phone_number == data["phone_number"]
         assert venue.isPermanent == data["is_permanent"]
@@ -997,6 +964,65 @@ class UpdateVenueTest(PostEndpointHelper):
         assert update_snapshot["latitude"]["new_info"] == data["latitude"]
         assert update_snapshot["longitude"]["new_info"] == data["longitude"]
         assert update_snapshot["venueTypeCode"]["new_info"] == data["venue_type_code"]
+
+        assert len(mails_testing.outbox) == 1
+        # check that email is sent when venue is set to permanent and has no image
+        assert mails_testing.outbox[0]["To"] == venue.bookingEmail
+        assert mails_testing.outbox[0]["template"] == TransactionalEmail.VENUE_NEEDS_PICTURE.value.__dict__
+        assert mails_testing.outbox[0]["params"]["VENUE_NAME"] == venue.common_name
+        assert mails_testing.outbox[0]["params"]["VENUE_FORM_URL"] == urls.build_pc_pro_venue_link(venue)
+
+    @override_features(ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE=True)
+    def test_updating_venue_without_insee_code_fill_appropriate_timezone(self, authenticated_client, offerer):
+        contact_email = "contact.venue@example.com"
+        website = "update.venue@example.com"
+        social_medias = {"instagram": "https://instagram.com/update.venue"}
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=offerer,
+            contact__email=contact_email,
+            contact__website=website,
+            contact__social_medias=social_medias,
+            offererAddress=None,
+        )
+
+        data = {
+            "name": "Musée du Rhum",
+            "public_name": "Musée du Rhum",
+            "siret": venue.managingOfferer.siren + "98765",
+            "city": "Sainte-Rose",
+            "postal_code": "97115",
+            "street": "Chemin de Bellevue",
+            "ban_id": "97129_hz0hwa_00044",
+            "booking_email": venue.bookingEmail + ".update",
+            "phone_number": "+33102030456",
+            "is_permanent": True,
+            "latitude": "16.306774",
+            "longitude": "-61.703636",
+            "venue_type_code": offerers_models.VenueTypeCode.CULTURAL_CENTRE.name,
+            "acceslibre_url": "https://acceslibre.beta.gouv.fr/app/slug/",
+        }
+
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
+
+        db.session.refresh(venue)
+        address = geography_models.Address.query.one()
+        offerer_address = offerers_models.OffererAddress.query.one()
+
+        assert venue.timezone == "America/Guadeloupe"
+
+        assert venue.offererAddressId == offerer_address.id
+        assert offerer_address.addressId == address.id
+        assert address.timezone == "America/Guadeloupe"
+
+        # should not have been updated or erased
+        assert venue.contact.email == contact_email
+        assert venue.contact.website == website
+        assert venue.contact.social_medias == social_medias
+
+        assert len(venue.action_history) == 1
 
         assert len(mails_testing.outbox) == 1
         # check that email is sent when venue is set to permanent and has no image
@@ -1047,6 +1073,7 @@ class UpdateVenueTest(PostEndpointHelper):
         assert venue.siret == data["siret"]
         assert venue.city == data["city"]
         assert venue.postalCode == data["postal_code"]
+        assert venue.banId is None
         assert venue.street == data["street"]
         assert venue.bookingEmail == data["booking_email"]
         assert venue.contact.phone_number == data["phone_number"]

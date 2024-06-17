@@ -474,7 +474,7 @@ class Returns200Test:
             "audioDisabilityCompliant": {"new_info": True, "old_info": False},
         }
 
-    def when_siret_does_not_change(self, client) -> None:
+    def test_when_siret_does_not_change(self, client) -> None:
         # Given
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(
@@ -581,7 +581,9 @@ class Returns200Test:
         }
 
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
-    def when_changes_on_public_name_algolia_indexing_is_triggered(self, mocked_async_index_offers_of_venue_ids, client):
+    def test_when_changes_on_public_name_algolia_indexing_is_triggered(
+        self, mocked_async_index_offers_of_venue_ids, client
+    ):
         # Given
         user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory(
@@ -604,7 +606,7 @@ class Returns200Test:
         )
 
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
-    def when_changes_on_city_algolia_indexing_is_triggered(self, mocked_async_index_offers_of_venue_ids, client):
+    def test_when_changes_on_city_algolia_indexing_is_triggered(self, mocked_async_index_offers_of_venue_ids, client):
         # Given
         user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory(
@@ -627,7 +629,7 @@ class Returns200Test:
         )
 
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
-    def when_changes_are_not_on_algolia_fields_it_should_not_trigger_indexing(
+    def test_when_changes_are_not_on_algolia_fields_it_should_not_trigger_indexing(
         self, mocked_async_index_offers_of_venue_ids, client
     ):
         # Given
@@ -649,7 +651,7 @@ class Returns200Test:
         mocked_async_index_offers_of_venue_ids.assert_not_called()
 
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
-    def when_changes_in_payload_are_same_as_previous_it_should_not_trigger_indexing(
+    def test_when_changes_in_payload_are_same_as_previous_it_should_not_trigger_indexing(
         self, mocked_async_index_offers_of_venue_ids, client
     ):
         # Given

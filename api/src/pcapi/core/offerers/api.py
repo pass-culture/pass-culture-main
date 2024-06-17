@@ -105,9 +105,6 @@ def update_venue(
 ) -> models.Venue:
     new_permanent = not venue.isPermanent and modifications.get("isPermanent")
 
-    if feature.FeatureToggle.ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE.is_active():
-        update_venue_location(venue, modifications)
-
     venue_snapshot = history_api.ObjectUpdateSnapshot(venue, author)
 
     if contact_data:
@@ -199,18 +196,30 @@ def update_venue(
     return venue
 
 
-def update_venue_location(venue: models.Venue, modifications: dict) -> None:
+def update_venue_location(venue: models.Venue, modifications: dict, write_only: bool = False) -> None:
+    """
+    Update the venue location and also populate the newly created Address & OffererAddress.
+    You might want to skip the API Adresse call and force the location update with incoming data.
+    If we receive untrusted user input, we want to double check data consistency using the API Adresse.
+    On the other side, BO users might want to force a location to a venue, for example if the address is unknown
+    for the API.
+    """
+
     if any(field in modifications for field in ("street", "city", "postalCode")):
         street = modifications.get("street") or venue.street
         city = modifications.get("city") or venue.city
         postalCode = modifications.get("postalCode") or venue.postalCode
+        latitude = modifications.get("latitude") or venue.latitude
+        longitude = modifications.get("longitude") or venue.longitude
+        ban_id = modifications.get("banId") or venue.banId
         logger.info(
             "Updating venue location",
             extra={"venue_id": venue.id, "venue_street": street, "venue_city": city, "venue_postalCode": postalCode},
         )
-        address_info = get_address(street, postalCode, city)
-        address = get_or_create_address(
-            LocationData(
+
+        if not write_only:
+            address_info = get_address(street, postalCode, city)
+            location_data = LocationData(
                 city=address_info.city,
                 postal_code=address_info.postcode,
                 latitude=address_info.latitude,
@@ -219,7 +228,19 @@ def update_venue_location(venue: models.Venue, modifications: dict) -> None:
                 insee_code=address_info.citycode,
                 ban_id=address_info.id,
             )
-        )
+        else:
+            location_data = LocationData(
+                city=typing.cast(str, city),
+                postal_code=typing.cast(str, postalCode),
+                latitude=typing.cast(float, latitude),
+                longitude=typing.cast(float, longitude),
+                street=street,
+                ban_id=ban_id,
+                insee_code=None,
+            )
+
+        address = get_or_create_address(location_data)
+
         if not venue.offererAddressId:
             offerer_address = get_or_create_offerer_address(venue.managingOffererId, address.id)
             venue.offererAddress = offerer_address
@@ -2523,19 +2544,21 @@ def get_or_create_address(location_data: LocationData) -> geography_models.Addre
     department_code = None
     timezone = None
     insee_code = location_data.get("insee_code")
+    postal_code = location_data["postal_code"]
     latitude = location_data["latitude"]
     longitude = location_data["longitude"]
     street = location_data.get("street")
     ban_id = location_data.get("ban_id")
-    if insee_code:
-        department_code = utils_regions.get_department_code_from_city_code(insee_code)
+    city_code = insee_code or postal_code
+    if city_code:
+        department_code = utils_regions.get_department_code_from_city_code(city_code)
         timezone = date_utils.get_department_timezone(department_code)
     try:
         address = geography_models.Address(
             banId=ban_id,
             inseeCode=insee_code,
             street=street,
-            postalCode=location_data["postal_code"],
+            postalCode=postal_code,
             city=location_data["city"],
             latitude=latitude,
             longitude=longitude,
