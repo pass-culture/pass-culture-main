@@ -4,6 +4,7 @@ import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
+import { AccessibilitySummarySection } from 'components/AccessibilitySummarySection/AccessibilitySummarySection'
 import { SummaryContent } from 'components/SummaryLayout/SummaryContent'
 import { SummaryLayout } from 'components/SummaryLayout/SummaryLayout'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
@@ -13,7 +14,6 @@ import {
 } from 'core/OfferEducational/types'
 import { SynchronizedProviderInformation } from 'screens/IndividualOffer/SynchronisedProviderInfos/SynchronizedProviderInformation'
 
-import { CollectiveOfferAccessibilitySection } from './components/CollectiveOfferAccessibilitySection'
 import { CollectiveOfferContactSection } from './components/CollectiveOfferContactSection'
 import { CollectiveOfferDateSection } from './components/CollectiveOfferDateSection'
 import { CollectiveOfferImagePreview } from './components/CollectiveOfferImagePreview'
@@ -66,7 +66,10 @@ export const CollectiveOfferSummary = ({
             <CollectiveOfferLocationSection offer={offer} />
             {offer.isTemplate && <CollectiveOfferPriceSection offer={offer} />}
             <CollectiveOfferParticipantSection students={offer.students} />
-            <CollectiveOfferAccessibilitySection offer={offer} />
+            <AccessibilitySummarySection
+              accessibleItem={offer}
+              accessibleWording="Votre offre est accessible aux publics en situation de handicap :"
+            />
             <CollectiveOfferContactSection offer={offer} />
             {offer.bookingEmails.length > 0 && (
               <CollectiveOfferNotificationSection
