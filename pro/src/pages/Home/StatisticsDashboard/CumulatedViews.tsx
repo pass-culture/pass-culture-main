@@ -65,7 +65,6 @@ export const CumulatedViews = ({ dailyViews }: CumulatedViewsProps) => {
             src={strokeBookingHoldIcon}
             alt=""
             width="128"
-            viewBox="0 0 200 156"
           />
 
           <div className={styles['no-data-caption']}>
