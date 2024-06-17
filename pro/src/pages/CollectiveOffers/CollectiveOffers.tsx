@@ -1,3 +1,4 @@
+import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
 
@@ -21,8 +22,10 @@ import { hasSearchFilters } from 'core/Offers/utils/hasSearchFilters'
 import { serializeApiFilters } from 'core/Offers/utils/serializer'
 import { Audience } from 'core/shared/types'
 import { useCurrentUser } from 'hooks/useCurrentUser'
+import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import { formatAndOrderVenues } from 'repository/venuesService'
 import { Offers } from 'screens/Offers/Offers'
+import { selectCurrentOffererId } from 'store/user/selectors'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 export const CollectiveOffers = (): JSX.Element => {
@@ -30,11 +33,16 @@ export const CollectiveOffers = (): JSX.Element => {
   const currentPageNumber = urlSearchFilters.page ?? DEFAULT_PAGE
   const navigate = useNavigate()
   const { currentUser } = useCurrentUser()
+  const isNewInterfaceActive = useIsNewInterfaceActive()
+  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const offererId = isNewInterfaceActive
+    ? selectedOffererId
+    : urlSearchFilters.offererId
 
   const offererQuery = useSWR(
-    [GET_OFFERER_QUERY_KEY, urlSearchFilters.offererId],
+    [GET_OFFERER_QUERY_KEY, offererId],
     ([, offererIdParam]) =>
-      urlSearchFilters.offererId === DEFAULT_SEARCH_FILTERS.offererId
+      offererId === DEFAULT_SEARCH_FILTERS.offererId
         ? null
         : api.getOfferer(Number(offererIdParam)),
     { fallbackData: null }
@@ -67,6 +75,9 @@ export const CollectiveOffers = (): JSX.Element => {
     ...(isRestrictedAsAdmin ? { status: ALL_STATUS } : {}),
   }
   delete apiFilters.page
+  if (isNewInterfaceActive) {
+    apiFilters.offererId = selectedOffererId?.toString() ?? ''
+  }
 
   const offersQuery = useSWR(
     [GET_COLLECTIVE_OFFERS_QUERY_KEY, apiFilters],
