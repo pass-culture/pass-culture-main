@@ -14,6 +14,7 @@ import {
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { SideNavLinks } from '../SideNavLinks'
+import { axe } from 'vitest-axe'
 
 const renderSideNavLinks = (options: RenderWithProvidersOptions = {}) => {
   return renderWithProviders(<SideNavLinks isLateralPanelOpen={true} />, {
@@ -28,6 +29,18 @@ describe('SideNavLinks', () => {
     const { container } = renderSideNavLinks()
 
     expect(container).toHTMLValidate()
+  })
+
+  it('should be a11y compliant', async () => {
+    vi.spyOn(api, 'getOfferer').mockRejectedValueOnce({})
+
+    const { container } = renderSideNavLinks()
+
+    await waitFor(() => {
+      expect(api.getOfferer).toHaveBeenCalled()
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should toggle individual section on individual section button click', async () => {
