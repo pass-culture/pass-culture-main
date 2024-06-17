@@ -4,13 +4,15 @@ import {
   CollectiveOfferTemplateResponseModel,
 } from 'apiClient/adage'
 import { OfferAddressType } from 'apiClient/v1'
-import { getFormattedDatesForTemplateOffer } from 'pages/AdageIframe/app/components/OfferInfos/AdageOffer/utils/adageOfferDates'
+import {
+  getFormattedDatesForBookableOffer,
+  getFormattedDatesForTemplateOffer,
+} from 'pages/AdageIframe/app/components/OfferInfos/AdageOffer/utils/adageOfferDates'
 import { isCollectiveOfferTemplate } from 'pages/AdageIframe/app/types'
 import {
   getHumanizeRelativeDistance,
   humanizeDistance,
 } from 'utils/getDistance'
-import { formatLocalTimeDateString } from 'utils/timezone'
 
 type OfferTag = {
   icon: string
@@ -100,11 +102,7 @@ export function getOfferTags(
   } else if (offer.stock.startDatetime) {
     tags.push({
       icon: '🕐',
-      text: `${formatLocalTimeDateString(
-        offer.stock.startDatetime,
-        offer.venue.departmentCode,
-        'EEEE d MMM yyyy à HH:mm'
-      )}`,
+      text: `${getFormattedDatesForBookableOffer(offer)}`,
     })
   }
 
