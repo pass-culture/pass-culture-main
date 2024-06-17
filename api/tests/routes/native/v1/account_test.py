@@ -800,6 +800,31 @@ class AccountCreationWithSSOTest:
             token_utils.TokenType.ACCOUNT_CREATION, account_creation_token.key_suffix
         )
 
+    @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
+    @patch("pcapi.core.subscription.dms.api.try_dms_orphan_adoption")
+    def test_adopt_dms_application(self, try_dms_orphan_adoption_mock, mocked_check_recaptcha_token_is_valid, client):
+        account_creation_token = token_utils.UUIDToken.create(
+            token_utils.TokenType.ACCOUNT_CREATION,
+            users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME,
+            data=self.google_user.model_dump(),
+        )
+
+        response = client.post(
+            "/native/v1/oauth/google/account",
+            json={
+                "accountCreationToken": account_creation_token.encoded_token,
+                "birthdate": "1960-12-31",
+                "notifications": True,
+                "token": "gnagna",
+                "marketingEmailSubscription": True,
+            },
+        )
+
+        user = users_models.User.query.one()
+
+        assert response.status_code == 200, response.json
+        try_dms_orphan_adoption_mock.assert_called_once_with(user)
+
 
 class UserProfileUpdateTest:
     identifier = "email@example.com"

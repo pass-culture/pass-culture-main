@@ -278,6 +278,13 @@ def create_account_with_google_sso(body: serializers.GoogleAccountRequest) -> au
     except exceptions.UnderAgeUserException:
         raise api_errors.ApiErrors({"dateOfBirth": "The birthdate is invalid"})
 
+    try:
+        dms_subscription_api.try_dms_orphan_adoption(created_user)
+    except Exception:  # pylint: disable=broad-except
+        logger.exception(
+            "An unexpected error occurred while trying to link dms orphan to user", extra={"user_id": created_user.id}
+        )
+
     return auth_serializers.SigninResponse(
         access_token=api.create_user_access_token(created_user),
         refresh_token=api.create_user_refresh_token(created_user, body.trusted_device),
