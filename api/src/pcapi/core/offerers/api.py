@@ -21,7 +21,6 @@ import sqlalchemy.orm as sa_orm
 from pcapi import settings
 from pcapi.connectors import virustotal
 import pcapi.connectors.acceslibre as accessibility_provider
-from pcapi.connectors.api_adresse import AddressInfo
 from pcapi.connectors.api_adresse import get_address
 from pcapi.connectors.api_adresse import get_municipality_centroid
 from pcapi.connectors.entreprise import exceptions as sirene_exceptions
@@ -210,7 +209,17 @@ def update_venue_location(venue: models.Venue, modifications: dict) -> None:
             extra={"venue_id": venue.id, "venue_street": street, "venue_city": city, "venue_postalCode": postalCode},
         )
         address_info = get_address(street, postalCode, city)
-        address = get_or_create_address(address_info)
+        address = get_or_create_address(
+            LocationData(
+                city=address_info.city,
+                postal_code=address_info.postcode,
+                latitude=address_info.latitude,
+                longitude=address_info.longitude,
+                street=address_info.street,
+                insee_code=address_info.citycode,
+                ban_id=address_info.id,
+            )
+        )
         if not venue.offererAddressId:
             offerer_address = get_or_create_offerer_address(venue.managingOffererId, address.id)
             venue.offererAddress = offerer_address
@@ -322,7 +331,17 @@ def create_venue(venue_data: venues_serialize.PostVenueBodyModel) -> models.Venu
         else:
             address_info = get_address(venue_data.street, venue_data.postalCode, venue_data.city)
 
-        address = get_or_create_address(address_info)
+        address = get_or_create_address(
+            LocationData(
+                city=address_info.city,
+                postal_code=address_info.postcode,
+                latitude=address_info.latitude,
+                longitude=address_info.longitude,
+                street=address_info.street,
+                insee_code=address_info.citycode,
+                ban_id=address_info.id,
+            )
+        )
         offerer_address = get_or_create_offerer_address(venue_data.managingOffererId, address.id)
         venue.offererAddressId = offerer_address.id
 
@@ -2486,19 +2505,41 @@ def update_offerer_address_label(offerer_address_id: int, new_label: str) -> Non
         raise exceptions.OffererAddressLabelAlreadyUsed()
 
 
-def get_or_create_address(address_info: AddressInfo) -> geography_models.Address:
-    departmentCode = utils_regions.get_department_code_from_city_code(address_info.citycode)
-    timezone = date_utils.get_department_timezone(departmentCode)
+LocationData = typing.TypedDict(
+    "LocationData",
+    {
+        "street": str | None,
+        "city": str,
+        "postal_code": str,
+        "insee_code": str | None,
+        "latitude": float,
+        "longitude": float,
+        "ban_id": str | None,
+    },
+)
+
+
+def get_or_create_address(location_data: LocationData) -> geography_models.Address:
+    department_code = None
+    timezone = None
+    insee_code = location_data.get("insee_code")
+    latitude = location_data["latitude"]
+    longitude = location_data["longitude"]
+    street = location_data.get("street")
+    ban_id = location_data.get("ban_id")
+    if insee_code:
+        department_code = utils_regions.get_department_code_from_city_code(insee_code)
+        timezone = date_utils.get_department_timezone(department_code)
     try:
         address = geography_models.Address(
-            banId=address_info.id,
-            inseeCode=address_info.citycode,
-            street=address_info.street,
-            postalCode=address_info.postcode,
-            city=address_info.city,
-            latitude=address_info.latitude,
-            longitude=address_info.longitude,
-            departmentCode=departmentCode,
+            banId=ban_id,
+            inseeCode=insee_code,
+            street=street,
+            postalCode=location_data["postal_code"],
+            city=location_data["city"],
+            latitude=latitude,
+            longitude=longitude,
+            departmentCode=department_code,
             timezone=timezone,
         )
         db.session.add(address)
@@ -2506,22 +2547,22 @@ def get_or_create_address(address_info: AddressInfo) -> geography_models.Address
     except sa.exc.IntegrityError:
         db.session.rollback()
         address = geography_models.Address.query.filter(
-            geography_models.Address.street == address_info.street,
-            geography_models.Address.inseeCode == address_info.citycode,
+            geography_models.Address.street == street,
+            geography_models.Address.inseeCode == insee_code,
         ).one()
         if (float(address.latitude), float(address.longitude)) != (
-            round(address_info.latitude, 5),
-            round(address_info.longitude, 5),
+            round(latitude, 5),
+            round(longitude, 5),
         ):
             logger.error(
                 "Unique constraint over street and inseeCode matched different coordinates",
                 extra={
                     "address_id": address.id,
-                    "address_info_banId": address_info.id,
+                    "incoming_banId": ban_id,
                     "address_latitude": address.latitude,
                     "address_longitude": address.longitude,
-                    "address_info_latitude": address_info.latitude,
-                    "address_info_longitude": address_info.longitude,
+                    "incoming_latitude": latitude,
+                    "incoming_longitude": longitude,
                 },
             )
 
