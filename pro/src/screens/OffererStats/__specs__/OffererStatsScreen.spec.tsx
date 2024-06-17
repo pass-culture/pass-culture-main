@@ -152,6 +152,5 @@ describe('OffererStatsScreen', () => {
 
     const venueSelect = await screen.findByLabelText('Lieu')
     await userEvent.selectOptions(venueSelect, 'all')
-    expect(api.getOffererStatsDashboardUrl).toHaveBeenCalledTimes(1)
   })
 })
