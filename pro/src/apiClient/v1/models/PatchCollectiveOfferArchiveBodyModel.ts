@@ -2,9 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type OffererAddressRequestModel = {
-  inseeCode: string;
-  label?: string | null;
-  street: string;
+export type PatchCollectiveOfferArchiveBodyModel = {
+  ids: Array<number>;
 };
 
