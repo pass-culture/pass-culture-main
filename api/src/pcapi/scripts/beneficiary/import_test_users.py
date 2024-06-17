@@ -18,6 +18,7 @@ from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.providers import models as providers_models
 from pcapi.core.users import api as users_api
 from pcapi.core.users.models import EligibilityType
 from pcapi.core.users.models import User
@@ -31,6 +32,7 @@ from pcapi.routes.serialization import base as base_serialize
 from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization import venues_serialize
 from pcapi.routes.serialization.users import ProUserCreationBodyV2Model
+from pcapi.utils import crypto
 from pcapi.utils.email import anonymize_email
 from pcapi.utils.email import sanitize_email
 from pcapi.utils.siren import complete_siren_or_siret
@@ -172,6 +174,9 @@ def _create_pro_user(row: dict) -> User:
                 )
             )
 
+    if row["Type"] == "externe:bug-bounty":
+        _create_provider(venue, row)
+
     user.isEmailValidated = True
     user.add_pro_role()
 
@@ -235,6 +240,18 @@ def _add_or_update_admin(update_if_exists: bool) -> None:
     admin.lastName = "Admin"
     repository.save(admin)
     logger.info("Created or updated admin user=%s", admin.id)
+
+
+def _create_provider(venue: offerers_models.Venue, row: dict) -> None:
+    provider = providers_models.Provider(name=row["Prénom"])
+    offerer_provider = offerers_models.OffererProvider(offerer=venue.managingOfferer, provider=provider)
+    prefix = f"staging_{row['Prénom']}"
+    key = offerers_models.ApiKey(
+        offerer=venue.managingOfferer, provider=provider, prefix=prefix, secret=crypto.hash_public_api_key(row["Mail"])
+    )
+    venue_provider = providers_models.VenueProvider(venue=venue, provider=provider)
+
+    db.session.add_all([provider, offerer_provider, key, venue_provider])
 
 
 def create_or_update_users(rows: Iterable[dict], update_if_exists: bool = False) -> list[User]:
