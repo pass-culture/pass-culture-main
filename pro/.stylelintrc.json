@@ -5,7 +5,14 @@
     "no-descending-specificity": null,
     "scss/at-extend-no-missing-placeholder": null,
     "scss/operator-no-newline-after": null,
-    "font-family-no-missing-generic-family-keyword": null
+    "font-family-no-missing-generic-family-keyword": null,
+    "selector-max-type": [
+      0,
+      {
+        "message": "Tag selectors are global code. Use a class instead.",
+        "severity": "warning"
+      }
+    ]
   },
   "ignoreFiles": [
     "src/pages/AdageIframe/app/ui-kit/MultiSelectAutoComplete/MultiSelectAutocomplete.scss",
