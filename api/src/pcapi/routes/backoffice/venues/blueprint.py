@@ -34,6 +34,7 @@ from pcapi.core.providers import models as providers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import filters
@@ -680,6 +681,9 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
 
     criteria = criteria_models.Criterion.query.filter(criteria_models.Criterion.id.in_(form.tags.data)).all()
     modifications = {field: value for field, value in attrs.items() if venue.field_exists_and_has_changed(field, value)}
+
+    if FeatureToggle.ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE.is_active():
+        offerers_api.update_venue_location(venue, modifications, write_only=True)
 
     try:
         offerers_api.update_venue(
