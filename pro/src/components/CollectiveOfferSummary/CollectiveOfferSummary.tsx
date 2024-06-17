@@ -80,7 +80,7 @@ export const CollectiveOfferSummary = ({
 
           {!isOfferTemplate && (
             <SummarySection
-              title="Date & Prix"
+              title="Dates & Prix"
               editLink={
                 offerManuallyCreated || offer.isTemplate ? stockEditLink : null
               }

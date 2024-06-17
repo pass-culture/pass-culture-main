@@ -134,7 +134,7 @@ export const CollectiveOfferStockCreation = ({
         e.errors.code === 'EDUCATIONAL_STOCK_ALREADY_EXISTS'
       ) {
         notify.error(
-          'Une erreur s’est produite. Les informations date et prix existent déjà pour cette offre.'
+          'Une erreur s’est produite. Les informations dates et prix existent déjà pour cette offre.'
         )
       }
       if (
