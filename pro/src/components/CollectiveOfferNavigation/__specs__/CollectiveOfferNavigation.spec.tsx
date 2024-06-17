@@ -92,7 +92,7 @@ describe('CollectiveOfferNavigation', () => {
 
     expect(listItems).toHaveLength(6)
     expect(listItems[0]).toHaveTextContent('Détails de l’offre')
-    expect(listItems[1]).toHaveTextContent('Date et prix')
+    expect(listItems[1]).toHaveTextContent('Dates et prix')
     expect(listItems[2]).toHaveTextContent('Établissement et enseignant')
     expect(listItems[3]).toHaveTextContent('Récapitulatif')
     expect(listItems[4]).toHaveTextContent('Aperçu')
@@ -109,7 +109,7 @@ describe('CollectiveOfferNavigation', () => {
 
     const listItems = await screen.findAllByRole('listitem')
     expect(listItems).toHaveLength(4)
-    expect(screen.queryByText('Date et prix')).not.toBeInTheDocument()
+    expect(screen.queryByText('Dates et prix')).not.toBeInTheDocument()
     expect(screen.queryByText('Visibilité')).not.toBeInTheDocument()
 
     const links = screen.queryAllByRole('link')
@@ -192,7 +192,7 @@ describe('CollectiveOfferNavigation', () => {
     renderCollectiveOfferNavigation(props)
 
     expect(
-      screen.getByRole('link', { name: 'Date et prix' })
+      screen.getByRole('link', { name: 'Dates et prix' })
     ).toBeInTheDocument()
 
     const linkItems = await screen.findAllByRole('link')

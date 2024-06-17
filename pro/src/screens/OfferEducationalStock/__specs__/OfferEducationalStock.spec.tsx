@@ -68,7 +68,7 @@ describe('OfferEducationalStock', () => {
     }
     renderWithProviders(<OfferEducationalStock {...testProps} />)
 
-    screen.getByText('Date et prix')
+    screen.getByText('Dates et prix')
   })
 
   it('should render for offer imported with a public api', () => {

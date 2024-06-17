@@ -61,7 +61,12 @@ export const AdageOfferInfoSection = ({
       </div>
 
       <div className={styles['offer-section-group-item']}>
-        <h3 className={styles['offer-section-group-item-subtitle']}>Date</h3>
+        <h3 className={styles['offer-section-group-item-subtitle']}>
+          {isOfferBookable &&
+          offer.stock.startDatetime === offer.stock.endDatetime
+            ? 'Date'
+            : 'Dates'}
+        </h3>
         {isOfferBookable
           ? getFormattedDatesForBookableOffer(offer)
           : getFormattedDatesForTemplateOffer(offer)}
