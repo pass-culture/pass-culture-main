@@ -50,7 +50,8 @@ def _get_gdpr_data() -> list[users_models.GdprUserDataExtract]:
     return query.all()
 
 
-@gdpr_extract_blueprint.route("/extract", methods=["GET"])
+@gdpr_extract_blueprint.route("", methods=["GET"])
+@atomic()
 def list_gdpr_user_data_extract() -> utils.BackofficeResponse:
     if not FeatureToggle.WIP_BENEFICIARY_EXTRACT_TOOL.is_active():
         list_gdpr_data = []

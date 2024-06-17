@@ -1,5 +1,4 @@
 import datetime
-import os
 from random import randbytes
 
 from flask import url_for
@@ -12,6 +11,8 @@ from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.routes.backoffice.filters import format_date
 
+from tests.test_utils import StorageFolderManager
+
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
 from .helpers.post import PostEndpointHelper
@@ -21,9 +22,6 @@ pytestmark = [
     pytest.mark.usefixtures("db_session"),
     pytest.mark.backoffice,
 ]
-
-
-STORAGE_FOLDER = settings.LOCAL_STORAGE_DIR / settings.GCP_GDPR_EXTRACT_BUCKET / settings.GCP_GDPR_EXTRACT_FOLDER
 
 
 @pytest.fixture(scope="function", name="list_of_gdpr_user_extract_data")
@@ -115,35 +113,21 @@ class ListGdprUserExtractDataTest(GetEndpointHelper):
         assert len(rows) == 0
 
 
-class DownloadPublicAccountExtractTest(PostEndpointHelper):
+class DownloadPublicAccountExtractTest(PostEndpointHelper, StorageFolderManager):
     endpoint = "backoffice_web.gdpr_extract.download_gdpr_extract"
     endpoint_kwargs = {"extract_id": 1}
     needed_permission = perm_models.Permissions.EXTRACT_PUBLIC_ACCOUNT
-
+    storage_folder = settings.LOCAL_STORAGE_DIR / settings.GCP_GDPR_EXTRACT_BUCKET / settings.GCP_GDPR_EXTRACT_FOLDER
     # - session
     # - current user
     # - get extract + user
     expected_num_queries = 3
 
-    def teardown_method(self):
-        """clear extracts after each tests"""
-        try:
-            for child in STORAGE_FOLDER.iterdir():
-                if not child.is_file():
-                    continue
-                child.unlink()
-        except FileNotFoundError:
-            pass
-
-    def setup_method(self):
-        """Create the folder to work with"""
-        os.makedirs(STORAGE_FOLDER, exist_ok=True)
-
     def test_download_public_account_extract(self, authenticated_client):
         extract = users_factories.GdprUserDataExtractBeneficiaryFactory(dateProcessed=datetime.datetime.utcnow())
 
         expected_data = randbytes(4096)
-        with open(STORAGE_FOLDER / f"{extract.id}.zip", "wb") as fp:
+        with open(self.storage_folder / f"{extract.id}.zip", "wb") as fp:
             fp.write(expected_data)
 
         response = self.post_to_endpoint(
@@ -176,7 +160,7 @@ class DownloadPublicAccountExtractTest(PostEndpointHelper):
 
         expected_url = url_for("backoffice_web.gdpr_extract.list_gdpr_user_data_extract", _external=True)
         expected_data = randbytes(4096)
-        with open(STORAGE_FOLDER / f"{extract.id}.zip", "wb") as fp:
+        with open(self.storage_folder / f"{extract.id}.zip", "wb") as fp:
             fp.write(expected_data)
 
         response = self.post_to_endpoint(

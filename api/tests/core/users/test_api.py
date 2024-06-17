@@ -2233,9 +2233,6 @@ class EnableNewProNavTest:
         assert pro_new_nav_state.newNavDate == yesterday_date
 
 
-STORAGE_FOLDER = settings.LOCAL_STORAGE_DIR / settings.GCP_GDPR_EXTRACT_BUCKET / settings.GCP_GDPR_EXTRACT_FOLDER
-
-
 class DeleteGdprExtractTest(StorageFolderManager):
     storage_folder = settings.LOCAL_STORAGE_DIR / settings.GCP_GDPR_EXTRACT_BUCKET / settings.GCP_GDPR_EXTRACT_FOLDER
 
