@@ -7,11 +7,11 @@
   display: grid;
   grid-template-columns: rem.torem(22px) repeat(3, 1fr);
   grid-template-areas:
-    "c t h h"
-    ". t d d"
-    ". v n n"
-    ". e s a"
-    ". m m b";
+    "check thumb   head    head"
+    ".     thumb   desc    desc"
+    ".     desc2   desc3   desc3"
+    ".     desc4   desc4   desc4"
+    ".     actions actions status";
 
   &.inactive {
     .offer-thumb {
@@ -20,7 +20,7 @@
   }
 
   td:first-of-type {
-    grid-area: c;
+    grid-area: check;
     padding-top: rem.torem(8px);
 
     input[type="checkbox"] {
@@ -33,7 +33,7 @@
   }
 
   .thumb-column {
-    grid-area: t;
+    grid-area: thumb;
     padding: rem.torem(8px);
     display: flex;
     justify-content: center;
@@ -53,8 +53,8 @@
   }
 
   .title-column {
-    grid-column: h;
-    grid-row: h / d;
+    grid-column: head;
+    grid-row: head / desc;
     align-self: center;
     font-weight: 600;
     padding-top: rem.torem(4px);
@@ -69,7 +69,7 @@
   }
 
   .status-column {
-    grid-area: b;
+    grid-area: status;
     padding-top: 0.25rem;
     padding-bottom: 0.25rem;
     justify-self: flex-end;
@@ -82,20 +82,20 @@
   }
 
   .venue-column {
-    grid-column: v / n;
+    grid-column: desc2 / desc3;
     padding-top: 0.25rem;
     padding-bottom: 0.25rem;
   }
 
   .institution-column,
   .stock-column {
-    grid-column: e / a;
+    grid-area: desc4;
     padding-top: 0.25rem;
     padding-bottom: 0.25rem;
   }
 
   .actions-column {
-    grid-area: m;
+    grid-area: actions;
     padding: 0;
     justify-self: end;
 
@@ -164,16 +164,16 @@
     }
 
     .title-column {
-      grid-area: h;
+      grid-area: head;
     }
 
     .venue-column {
-      grid-area: d;
+      grid-area: desc;
     }
 
     .institution-column,
     .stock-column {
-      grid-area: n;
+      grid-area: desc3;
     }
   }
 }
