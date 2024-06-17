@@ -118,9 +118,9 @@
 
     tbody > tr {
       border-bottom: rem.torem(1px) solid var(--color-grey-medium);
+      margin-top: 1rem;
 
       td {
-        padding: rem.torem(16px) rem.torem(10px);
         vertical-align: middle;
       }
 
