@@ -8,12 +8,7 @@ import styles from './Unavailable.module.scss'
 export const Unavailable = () => {
   return (
     <main className={styles['unavailable-page']} id="content">
-      <SvgIcon
-        className={styles['error-icon']}
-        src={strokeWipIcon}
-        alt=""
-        viewBox="0 0 200 156"
-      />
+      <SvgIcon className={styles['error-icon']} src={strokeWipIcon} alt="" />
       <h1>Page indisponible</h1>
       <p>Veuillez rééssayer plus tard</p>
     </main>
