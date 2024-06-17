@@ -62,6 +62,7 @@ class GetBookingEventReminderToBeneficiaryEmailDataTest:
                 offer__venue__name="Le Petit Rintintin",
                 offer__name="Product",
                 beginningDatetime=datetime.datetime(2032, 1, 1, 10, 30),
+                offer__offererAddress=None,
             ),
             token="N2XPV5",
         )
@@ -123,6 +124,7 @@ class GetBookingEventReminderToBeneficiaryEmailDataTest:
             stock=offers_factories.EventStockFactory(
                 offer__venue__publicName="Cinéma du bout de la rue",
                 offer__venue__name="Nom administratif du cinéma",
+                offer__offererAddress=None,
             )
         )
 
@@ -135,6 +137,7 @@ class GetBookingEventReminderToBeneficiaryEmailDataTest:
             stock=offers_factories.EventStockFactory(
                 offer__venue__publicName=None,
                 offer__venue__name="Cinéma du bout de la rue",
+                offer__offererAddress=None,
             )
         )
 

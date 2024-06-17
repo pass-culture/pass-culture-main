@@ -59,11 +59,7 @@ def get_booking_event_reminder_to_beneficiary_email_data(
             "USER_FIRST_NAME": booking.user.firstName,
             "VENUE_ADDRESS": bookings_common.get_venue_street(booking),
             "VENUE_CITY": booking.stock.offer.venue.city,
-            "VENUE_NAME": (
-                booking.stock.offer.venue.publicName
-                if booking.stock.offer.venue.publicName
-                else booking.stock.offer.venue.name
-            ),
+            "VENUE_NAME": booking.stock.offer.addressName,
             "VENUE_POSTAL_CODE": booking.stock.offer.venue.postalCode,
         },
     )

@@ -11,8 +11,10 @@ import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.bookings.booking_event_reminder_to_beneficiary import (
     get_booking_event_reminder_to_beneficiary_email_data,
 )
+from pcapi.core.offerers.factories import OffererAddressFactory
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import assert_no_duplicated_queries
+from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_settings
 import pcapi.notifications.push.testing as notifications_testing
 from pcapi.scheduled_tasks.commands import _send_notification_favorites_not_booked
@@ -62,7 +64,6 @@ class SendEmailReminderTomorrowEventToBeneficiariesTest:
             RuntimeError("error should be caught"),
             get_booking_event_reminder_to_beneficiary_email_data(individual_bookings[2]),
         ]
-
         send_email_reminder_tomorrow_event_to_beneficiaries()
 
         assert len(mails_testing.outbox) == 2
@@ -94,6 +95,51 @@ class SendEmailReminderTomorrowEventToBeneficiariesTest:
             send_email_reminder_tomorrow_event_to_beneficiaries()
 
             assert len(mails_testing.outbox) == 3
+
+    def should_send_an_email_to_user_using_venue_name_if_localized_at_same_address(
+        self,
+    ):
+        tomorrow = datetime.utcnow() + timedelta(days=1)
+        stock = offers_factories.EventStockFactory(beginningDatetime=tomorrow, offer__offererAddress=None)
+        bookings_factories.BookingFactory.create_batch(2, stock=stock)
+
+        # select booking and extradata
+        # check FF metadata
+        with assert_num_queries(2):
+            send_email_reminder_tomorrow_event_to_beneficiaries()
+
+        assert len(mails_testing.outbox) == 2
+        assert (
+            mails_testing.outbox[0]["params"]["VENUE_NAME"] == stock.offer.addressName == stock.offer.venue.common_name
+        )
+        assert (
+            mails_testing.outbox[1]["params"]["VENUE_NAME"] == stock.offer.addressName == stock.offer.venue.common_name
+        )
+
+    def should_send_an_email_to_user_using_offer_address_label_if_localized_elsewhere(
+        self,
+    ):
+        tomorrow = datetime.utcnow() + timedelta(days=1)
+        offerer_address = OffererAddressFactory(label="Ma super librairie")
+        stock = offers_factories.EventStockFactory(beginningDatetime=tomorrow, offer__offererAddress=offerer_address)
+        bookings_factories.BookingFactory.create_batch(2, stock=stock)
+
+        # select booking and extradata
+        # check FF metadata
+        with assert_num_queries(2):
+            send_email_reminder_tomorrow_event_to_beneficiaries()
+
+        assert len(mails_testing.outbox) == 2
+        assert (
+            mails_testing.outbox[0]["params"]["VENUE_NAME"]
+            == stock.offer.addressName
+            == stock.offer.offererAddress.label
+        )
+        assert (
+            mails_testing.outbox[1]["params"]["VENUE_NAME"]
+            == stock.offer.addressName
+            == stock.offer.offererAddress.label
+        )
 
 
 class SendNotificationFavoritesNotBookedTest:
