@@ -37,10 +37,8 @@ export const ActivityForm = ({
   const venueTypesOptions = buildVenueTypesOptions(venueTypes)
 
   return (
-    <FormLayout.Section
-      title="Activité"
-      className={styles['activity-form-wrapper']}
-    >
+    <FormLayout.Section>
+      <h1 className={styles['activity-form-wrapper']}>Activité</h1>
       <FormLayout.Row className={styles['input-gap']}>
         <Select
           options={[
