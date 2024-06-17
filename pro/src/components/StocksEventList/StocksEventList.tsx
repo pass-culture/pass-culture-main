@@ -364,302 +364,305 @@ export const StocksEventList = ({
             </div>
           </div>
 
-          <div className={styles['stock-event-table-container']}>
-            <table className={styles['stock-event-table']}>
-              <caption className="visually-hidden">
-                Liste des dates et capacités
-              </caption>
+          <table className={styles['stock-event-table']}>
+            <caption className="visually-hidden">
+              Liste des dates et capacités
+            </caption>
 
-              <thead>
-                <tr>
-                  <th
-                    scope="col"
-                    className={cn(styles['date-column'], styles['header'])}
-                  >
-                    <span className={styles['header-name']}>Date</span>
+            <thead>
+              <tr className={styles['row-head']}>
+                <th
+                  scope="col"
+                  className={cn(styles['date-column'], styles['header'])}
+                  colSpan={2}
+                >
+                  <span className={styles['header-name']}>Date</span>
 
-                    <SortArrow
-                      onClick={() => onColumnHeaderClick(StocksOrderedBy.DATE)}
-                      sortingMode={
-                        currentSortingColumn === StocksOrderedBy.DATE
-                          ? currentSortingMode
-                          : SortingMode.NONE
-                      }
+                  <SortArrow
+                    onClick={() => onColumnHeaderClick(StocksOrderedBy.DATE)}
+                    sortingMode={
+                      currentSortingColumn === StocksOrderedBy.DATE
+                        ? currentSortingMode
+                        : SortingMode.NONE
+                    }
+                  />
+
+                  <div className={cn(styles['filter-input'])}>
+                    <BaseDatePicker
+                      onChange={(event) => {
+                        setDateFilter(event.target.value)
+                        onFilterChange()
+                      }}
+                      value={dateFilter ?? ''}
+                      filterVariant
+                      aria-label="Filtrer par date"
                     />
+                  </div>
+                </th>
 
-                    <div className={cn(styles['filter-input'])}>
-                      <BaseDatePicker
-                        onChange={(event) => {
-                          setDateFilter(event.target.value)
-                          onFilterChange()
-                        }}
-                        value={dateFilter ?? ''}
-                        filterVariant
-                        aria-label="Filtrer par date"
-                      />
-                    </div>
-                  </th>
+                <th
+                  scope="col"
+                  className={cn(styles['time-column'], styles['header'])}
+                >
+                  <span className={styles['header-name']}>Horaire</span>
 
-                  <th
-                    scope="col"
-                    className={cn(styles['time-column'], styles['header'])}
-                  >
-                    <span className={styles['header-name']}>Horaire</span>
-
-                    <SortArrow
-                      onClick={() => onColumnHeaderClick(StocksOrderedBy.TIME)}
-                      sortingMode={
-                        currentSortingColumn === StocksOrderedBy.TIME
-                          ? currentSortingMode
-                          : SortingMode.NONE
-                      }
+                  <SortArrow
+                    onClick={() => onColumnHeaderClick(StocksOrderedBy.TIME)}
+                    sortingMode={
+                      currentSortingColumn === StocksOrderedBy.TIME
+                        ? currentSortingMode
+                        : SortingMode.NONE
+                    }
+                  />
+                  <div className={cn(styles['filter-input'])}>
+                    <BaseTimePicker
+                      onChange={(event) => {
+                        setTimeFilter(event.target.value)
+                        onFilterChange()
+                      }}
+                      value={timeFilter ?? ''}
+                      filterVariant
+                      aria-label="Filtrer par horaire"
                     />
-                    <div className={cn(styles['filter-input'])}>
-                      <BaseTimePicker
-                        onChange={(event) => {
-                          setTimeFilter(event.target.value)
-                          onFilterChange()
-                        }}
-                        value={timeFilter ?? ''}
-                        filterVariant
-                        aria-label="Filtrer par horaire"
-                      />
-                    </div>
-                  </th>
+                  </div>
+                </th>
 
-                  <th
-                    scope="col"
-                    className={cn(styles['price-column'], styles['header'])}
-                  >
-                    <span className={styles['header-name']}>Tarif</span>
+                <th
+                  scope="col"
+                  className={cn(styles['price-column'], styles['header'])}
+                >
+                  <span className={styles['header-name']}>Tarif</span>
 
-                    <SortArrow
-                      onClick={() =>
-                        onColumnHeaderClick(StocksOrderedBy.PRICE_CATEGORY_ID)
-                      }
-                      sortingMode={
-                        currentSortingColumn ===
-                        StocksOrderedBy.PRICE_CATEGORY_ID
-                          ? currentSortingMode
-                          : SortingMode.NONE
-                      }
+                  <SortArrow
+                    onClick={() =>
+                      onColumnHeaderClick(StocksOrderedBy.PRICE_CATEGORY_ID)
+                    }
+                    sortingMode={
+                      currentSortingColumn === StocksOrderedBy.PRICE_CATEGORY_ID
+                        ? currentSortingMode
+                        : SortingMode.NONE
+                    }
+                  />
+                  <div className={cn(styles['filter-input'])}>
+                    <SelectInput
+                      name="priceCategoryFilter"
+                      defaultOption={{ label: '', value: '' }}
+                      options={priceCategoryOptions}
+                      value={priceCategoryIdFilter ?? ''}
+                      onChange={(event) => {
+                        setPriceCategoryIdFilter(event.target.value)
+                        onFilterChange()
+                      }}
+                      filterVariant
+                      aria-label="Filtrer par tarif"
                     />
-                    <div className={cn(styles['filter-input'])}>
-                      <SelectInput
-                        name="priceCategoryFilter"
-                        defaultOption={{ label: '', value: '' }}
-                        options={priceCategoryOptions}
-                        value={priceCategoryIdFilter ?? ''}
-                        onChange={(event) => {
-                          setPriceCategoryIdFilter(event.target.value)
-                          onFilterChange()
-                        }}
-                        filterVariant
-                        aria-label="Filtrer par tarif"
-                      />
-                    </div>
-                  </th>
+                  </div>
+                </th>
 
+                <th
+                  scope="col"
+                  className={cn(
+                    styles['booking-limit-date-column'],
+                    styles['header']
+                  )}
+                >
+                  <span className={styles['header-name']}>
+                    Date limite
+                    <br />
+                    de réservation
+                  </span>
+
+                  <SortArrow
+                    onClick={() =>
+                      onColumnHeaderClick(
+                        StocksOrderedBy.BOOKING_LIMIT_DATETIME
+                      )
+                    }
+                    sortingMode={
+                      currentSortingColumn ===
+                      StocksOrderedBy.BOOKING_LIMIT_DATETIME
+                        ? currentSortingMode
+                        : SortingMode.NONE
+                    }
+                  />
+                  <div className={cn(styles['filter-input'])}>&nbsp;</div>
+                </th>
+
+                <th
+                  scope="col"
+                  className={cn(styles['quantity-column'], styles['header'])}
+                >
+                  <span className={styles['header-name']}>Places</span>
+
+                  <SortArrow
+                    onClick={() =>
+                      onColumnHeaderClick(StocksOrderedBy.REMAINING_QUANTITY)
+                    }
+                    sortingMode={
+                      currentSortingColumn ===
+                      StocksOrderedBy.REMAINING_QUANTITY
+                        ? currentSortingMode
+                        : SortingMode.NONE
+                    }
+                  />
+                  <div className={cn(styles['filter-input'])}>&nbsp;</div>
+                </th>
+
+                {readonly ? (
                   <th
-                    scope="col"
                     className={cn(
-                      styles['booking-limit-date-column'],
+                      styles['bookings-quantity-column'],
                       styles['header']
                     )}
                   >
-                    <span className={styles['header-name']}>
-                      Date limite
-                      <br />
-                      de réservation
-                    </span>
+                    <span className={styles['header-name']}>Réservations</span>
 
                     <SortArrow
                       onClick={() =>
-                        onColumnHeaderClick(
-                          StocksOrderedBy.BOOKING_LIMIT_DATETIME
-                        )
+                        onColumnHeaderClick(StocksOrderedBy.DN_BOOKED_QUANTITY)
                       }
                       sortingMode={
                         currentSortingColumn ===
-                        StocksOrderedBy.BOOKING_LIMIT_DATETIME
+                        StocksOrderedBy.DN_BOOKED_QUANTITY
                           ? currentSortingMode
                           : SortingMode.NONE
                       }
                     />
                     <div className={cn(styles['filter-input'])}>&nbsp;</div>
                   </th>
-
+                ) : (
                   <th
-                    scope="col"
-                    className={cn(styles['quantity-column'], styles['header'])}
-                  >
-                    <span className={styles['header-name']}>Places</span>
-
-                    <SortArrow
-                      onClick={() =>
-                        onColumnHeaderClick(StocksOrderedBy.REMAINING_QUANTITY)
-                      }
-                      sortingMode={
-                        currentSortingColumn ===
-                        StocksOrderedBy.REMAINING_QUANTITY
-                          ? currentSortingMode
-                          : SortingMode.NONE
-                      }
-                    />
-                    <div className={cn(styles['filter-input'])}>&nbsp;</div>
-                  </th>
-
-                  {readonly ? (
-                    <th
-                      className={cn(
-                        styles['bookings-quantity-column'],
-                        styles['header']
-                      )}
-                    >
-                      <span className={styles['header-name']}>
-                        Réservations
-                      </span>
-
-                      <SortArrow
-                        onClick={() =>
-                          onColumnHeaderClick(
-                            StocksOrderedBy.DN_BOOKED_QUANTITY
-                          )
-                        }
-                        sortingMode={
-                          currentSortingColumn ===
-                          StocksOrderedBy.DN_BOOKED_QUANTITY
-                            ? currentSortingMode
-                            : SortingMode.NONE
-                        }
-                      />
-                      <div className={cn(styles['filter-input'])}>&nbsp;</div>
-                    </th>
-                  ) : (
-                    <th
-                      className={cn(styles['actions-column'], styles['header'])}
-                    />
-                  )}
-                </tr>
-              </thead>
-
-              <tbody>
-                {areFiltersActive && (
-                  <FilterResultsRow
-                    colSpan={6}
-                    onFiltersReset={() => {
-                      setDateFilter('')
-                      setTimeFilter('')
-                      setPriceCategoryIdFilter('')
-                      onFilterChange()
-                    }}
+                    className={cn(styles['actions-column'], styles['header'])}
                   />
                 )}
+              </tr>
+            </thead>
 
-                {stocks.map((stock) => {
-                  const beginningDay = formatLocalTimeDateString(
-                    stock.beginningDatetime,
-                    departmentCode,
-                    'eee'
-                  ).replace('.', '')
+            <tbody className={styles['body']}>
+              {areFiltersActive && (
+                <FilterResultsRow
+                  colSpan={6}
+                  onFiltersReset={() => {
+                    setDateFilter('')
+                    setTimeFilter('')
+                    setPriceCategoryIdFilter('')
+                    onFilterChange()
+                  }}
+                />
+              )}
 
-                  const beginningDate = formatLocalTimeDateString(
-                    stock.beginningDatetime,
-                    departmentCode,
-                    'dd/MM/yyyy'
-                  )
+              {stocks.map((stock) => {
+                const beginningDay = formatLocalTimeDateString(
+                  stock.beginningDatetime,
+                  departmentCode,
+                  'eee'
+                ).replace('.', '')
 
-                  const beginningHour = formatLocalTimeDateString(
-                    stock.beginningDatetime,
-                    departmentCode,
-                    'HH:mm'
-                  )
-                  const bookingLimitDate = formatLocalTimeDateString(
-                    stock.bookingLimitDatetime,
-                    departmentCode,
-                    'dd/MM/yyyy'
-                  )
-                  const priceCategory = priceCategories.find(
-                    (pC) => pC.id === stock.priceCategoryId
-                  )
+                const beginningDate = formatLocalTimeDateString(
+                  stock.beginningDatetime,
+                  departmentCode,
+                  'dd/MM/yyyy'
+                )
 
-                  let price = ''
-                  /* istanbul ignore next priceCategory would never be null */
-                  if (priceCategory) {
-                    price = `${formatPrice(
-                      priceCategory.price
-                    )} - ${priceCategory.label}`
-                  }
+                const beginningHour = formatLocalTimeDateString(
+                  stock.beginningDatetime,
+                  departmentCode,
+                  'HH:mm'
+                )
+                const bookingLimitDate = formatLocalTimeDateString(
+                  stock.bookingLimitDatetime,
+                  departmentCode,
+                  'dd/MM/yyyy'
+                )
+                const priceCategory = priceCategories.find(
+                  (pC) => pC.id === stock.priceCategoryId
+                )
 
-                  const stockIndex = stocks.findIndex((s) => s.id === stock.id)
-                  return (
-                    <tr key={stock.id} className={styles['row']}>
-                      <td className={styles['data']}>
-                        <div
-                          className={cn(
-                            styles['date-cell-wrapper'],
-                            styles['capitalize']
-                          )}
-                        >
-                          {!readonly && (
-                            <BaseCheckbox
-                              checked={checkedStocks[stockIndex]}
-                              onChange={() => onStockCheckChange(stockIndex)}
-                              label=""
-                            />
-                          )}
+                let price = ''
+                /* istanbul ignore next priceCategory would never be null */
+                if (priceCategory) {
+                  price = `${formatPrice(
+                    priceCategory.price
+                  )} - ${priceCategory.label}`
+                }
 
-                          <div className={styles['day']}>
-                            <strong>{beginningDay}</strong>
-                          </div>
-                          <div>{beginningDate}</div>
-                        </div>
-                      </td>
-
-                      <td className={styles['data']}>{beginningHour}</td>
-
-                      <td className={styles['data']}>{price}</td>
-
-                      <td className={styles['data']}>{bookingLimitDate}</td>
-
-                      <td className={styles['data']}>
-                        {stock.quantity === null
-                          ? 'Illimité'
-                          : new Intl.NumberFormat('fr-FR').format(
-                              stock.quantity
-                            )}
-                      </td>
-
-                      {readonly ? (
-                        <td className={styles['data']}>
-                          {stock.bookingsQuantity}
-                        </td>
-                      ) : (
-                        <td
-                          className={cn(styles['data'], styles['clear-icon'])}
-                        >
-                          <Button
-                            variant={ButtonVariant.TERNARY}
-                            onClick={async () => {
-                              if (stock.id.toString()) {
-                                await onDeleteStock(stockIndex, stock.id)
-                              }
-                            }}
-                            icon={fullTrashIcon}
-                            hasTooltip
-                          >
-                            Supprimer
-                          </Button>
-                        </td>
+                const stockIndex = stocks.findIndex((s) => s.id === stock.id)
+                return (
+                  <tr key={stock.id} className={styles['row']}>
+                    <td
+                      className={styles['data']}
+                      data-label="Sélection du stock"
+                    >
+                      {!readonly && (
+                        <BaseCheckbox
+                          checked={checkedStocks[stockIndex]}
+                          onChange={() => onStockCheckChange(stockIndex)}
+                          label=""
+                        />
                       )}
-                    </tr>
-                  )
-                })}
+                    </td>
+                    <td className={styles['data']} data-label="Date">
+                      <div
+                        className={cn(
+                          styles['date-cell-wrapper'],
+                          styles['capitalize']
+                        )}
+                      >
+                        <div className={styles['day']}>
+                          <strong>{beginningDay}</strong>
+                        </div>
+                        <div>{beginningDate}</div>
+                      </div>
+                    </td>
 
-                {stocks.length === 0 && <NoResultsRow colSpan={6} />}
-              </tbody>
-            </table>
-          </div>
+                    <td className={styles['data']} data-label="Horaire">
+                      {beginningHour}
+                    </td>
+
+                    <td className={styles['data']} data-label="Tarif">
+                      {price}
+                    </td>
+
+                    <td className={styles['data']} data-label="Date limite">
+                      {bookingLimitDate}
+                    </td>
+
+                    <td className={styles['data']} data-label="Places">
+                      {stock.quantity === null
+                        ? 'Illimité'
+                        : new Intl.NumberFormat('fr-FR').format(stock.quantity)}
+                    </td>
+
+                    {readonly ? (
+                      <td className={styles['data']} data-label="Réservations">
+                        {stock.bookingsQuantity}
+                      </td>
+                    ) : (
+                      <td
+                        className={cn(styles['data'], styles['clear-icon'])}
+                        data-label="Supprimer"
+                      >
+                        <Button
+                          variant={ButtonVariant.TERNARY}
+                          onClick={async () => {
+                            if (stock.id.toString()) {
+                              await onDeleteStock(stockIndex, stock.id)
+                            }
+                          }}
+                          icon={fullTrashIcon}
+                          hasTooltip
+                        >
+                          Supprimer
+                        </Button>
+                      </td>
+                    )}
+                  </tr>
+                )
+              })}
+
+              {stocks.length === 0 && <NoResultsRow colSpan={6} />}
+            </tbody>
+          </table>
 
           <Pagination
             currentPage={page}

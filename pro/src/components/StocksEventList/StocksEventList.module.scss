@@ -1,16 +1,14 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/variables/_z-index.scss" as zIndex;
-
-.stock-event-table-container {
-  overflow-x: scroll;
-}
+@use "styles/variables/_size.scss" as size;
 
 .stock-event-table {
   width: 100%;
-  table-layout: fixed;
   margin-top: rem.torem(16px);
   margin-bottom: rem.torem(32px);
+  display: flex;
+  flex-direction: column;
 }
 
 .select-all-container {
@@ -29,87 +27,152 @@
 .header {
   vertical-align: bottom;
   text-align: left;
-  padding-bottom: rem.torem(4px);
-  padding-right: rem.torem(16px);
+  padding-bottom: rem.torem(16px);
+}
+
+.row-head {
+  display: flex;
+  flex-direction: column;
 }
 
 .header-name {
   @include fonts.caption;
 }
 
-.data {
-  padding: rem.torem(12px) 0;
-  line-height: 1;
+.row {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: rem.torem(16px);
 }
 
-.row:not(:last-child) {
-  border-bottom: 1px solid var(--color-grey-medium);
+.data{
+  display: flex;
+  justify-content: space-between;
+  padding: rem.torem(12px) rem.torem(8px);
+  align-items: center;
 }
 
-$icon-size: rem.torem(20px);
+.data::before {
+  @include fonts.caption;
 
-.clear-icon {
-  svg {
-    width: $icon-size;
-    fill: var(--color-black);
-  }
+  content: attr(data-label) " :";
+  text-align: left;
+  margin-right: rem.torem(16px);
 }
 
-.actions {
-  z-index: zIndex.$recurrence-sticky-bar;
+
+.body .row:nth-child(n + 1):nth-child(odd) {
+  background-color: var(--color-grey-light);
+}
+
+.date-cell-wrapper {
+  display: flex;
+  flex-direction: row;
+  gap: rem.torem(8px);
 }
 
 .capitalize {
   text-transform: capitalize;
 }
 
-.checkbox-column {
-  width: rem.torem(32px);
+.actions {
+  z-index: zIndex.$recurrence-sticky-bar;
 }
 
-.date-column {
-  width: rem.torem(192px);
-}
+@media (min-width: size.$tablet) {
+  .stock-event-table {
+    margin-top: rem.torem(16px);
+    margin-bottom: rem.torem(32px);
+    display: table;
+  }
 
-.price-column {
-  width: rem.torem(174px);
-}
+  .body .row:nth-child(n + 1):nth-child(odd) {
+    background-color: var(--color-white);
+  }
 
-.filter-input {
-  margin-top: rem.torem(4px);
-  min-height: rem.torem(24px);
+  .row-head {
+    display: table-row;
+    padding: rem.torem(16px);
+  }
 
-  // Resets the cascading style of <th> otherwise
-  // the font-weight is applied to the datepicker dropdown
-  font-weight: initial;
-}
+  .row {
+    display: table-row;
+    padding: rem.torem(16px);
+  }
 
-.date-cell-wrapper {
-  display: flex;
-  align-items: center;
-}
+  .header {
+    @include fonts.caption;
 
-.day {
-  width: rem.torem(40px);
-  margin-right: rem.torem(8px);
-}
+    padding-right: rem.torem(16px);
+  }
 
-.time-column {
-  width: rem.torem(88px);
-}
+  .data {
+    display: table-cell;
+    padding: rem.torem(12px) 0;
+    line-height: 1;
 
-.booking-limit-date-column {
-  width: rem.torem(136px);
-}
+    &::before {
+      content: none;
+      display: none;
+    }
+  }
 
-.quantity-column {
-  width: rem.torem(116px);
-}
+  .row:not(:last-child) {
+    border-bottom: 1px solid var(--color-grey-medium);
+  }
 
-.bookings-quantity-column {
-  width: rem.torem(120px);
-}
+  $icon-size: rem.torem(20px);
 
-.actions-column {
-  width: $icon-size;
+  .clear-icon {
+    svg {
+      width: $icon-size;
+      fill: var(--color-black);
+    }
+  }
+
+  .checkbox-column {
+    width: rem.torem(32px);
+  }
+
+  .date-column {
+    width: rem.torem(192px);
+  }
+
+  .price-column {
+    width: rem.torem(174px);
+  }
+
+  .filter-input {
+    margin-top: rem.torem(4px);
+    min-height: rem.torem(24px);
+
+    // Resets the cascading style of <th> otherwise
+    // the font-weight is applied to the datepicker dropdown
+    font-weight: initial;
+  }
+
+  .day {
+    width: rem.torem(40px);
+    margin-right: rem.torem(8px);
+  }
+
+  .time-column {
+    width: rem.torem(88px);
+  }
+
+  .booking-limit-date-column {
+    width: rem.torem(136px);
+  }
+
+  .quantity-column {
+    width: rem.torem(116px);
+  }
+
+  .bookings-quantity-column {
+    width: rem.torem(120px);
+  }
+
+  .actions-column {
+    width: $icon-size;
+  }
 }
