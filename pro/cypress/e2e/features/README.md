@@ -17,7 +17,7 @@ Comme dit dans le titre, ne réécrivez pas un test (ou une assertion) qui exist
 En lisant votre feature et votre scénario on devrait savoir immédiatement ce que ça teste.
 Pour trouver l'inspiration, on pourra par exemple utiliser une tournure à la Friends : "Celui où..."
 
-### Faite le plus court possible
+### Faites le plus court possible
 
 Evitez au maximum d'avoir des scénarios longs, complexes à lire. Peut-être que si c'est trop long c'est que vous voulez tester trop de choses à la fois? Ensuite, lisez le point suivant :
 
