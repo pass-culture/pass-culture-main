@@ -78,6 +78,7 @@ import type { OfferType } from '../models/OfferType';
 import type { PatchAllCollectiveOffersActiveStatusBodyModel } from '../models/PatchAllCollectiveOffersActiveStatusBodyModel';
 import type { PatchAllOffersActiveStatusBodyModel } from '../models/PatchAllOffersActiveStatusBodyModel';
 import type { PatchCollectiveOfferActiveStatusBodyModel } from '../models/PatchCollectiveOfferActiveStatusBodyModel';
+import type { PatchCollectiveOfferArchiveBodyModel } from '../models/PatchCollectiveOfferArchiveBodyModel';
 import type { PatchCollectiveOfferBodyModel } from '../models/PatchCollectiveOfferBodyModel';
 import type { PatchCollectiveOfferEducationalInstitution } from '../models/PatchCollectiveOfferEducationalInstitution';
 import type { PatchCollectiveOfferTemplateBodyModel } from '../models/PatchCollectiveOfferTemplateBodyModel';
@@ -813,6 +814,26 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'PATCH',
       url: '/collective/offers/all-active-status',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * patch_collective_offers_archive <PATCH>
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public patchCollectiveOffersArchive(
+    requestBody?: PatchCollectiveOfferArchiveBodyModel,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'PATCH',
+      url: '/collective/offers/archive',
       body: requestBody,
       mediaType: 'application/json',
       errors: {

@@ -183,6 +183,7 @@ export type { OpeningHoursModel } from './models/OpeningHoursModel';
 export type { PatchAllCollectiveOffersActiveStatusBodyModel } from './models/PatchAllCollectiveOffersActiveStatusBodyModel';
 export type { PatchAllOffersActiveStatusBodyModel } from './models/PatchAllOffersActiveStatusBodyModel';
 export type { PatchCollectiveOfferActiveStatusBodyModel } from './models/PatchCollectiveOfferActiveStatusBodyModel';
+export type { PatchCollectiveOfferArchiveBodyModel } from './models/PatchCollectiveOfferArchiveBodyModel';
 export type { PatchCollectiveOfferBodyModel } from './models/PatchCollectiveOfferBodyModel';
 export type { PatchCollectiveOfferEducationalInstitution } from './models/PatchCollectiveOfferEducationalInstitution';
 export type { PatchCollectiveOfferTemplateBodyModel } from './models/PatchCollectiveOfferTemplateBodyModel';
