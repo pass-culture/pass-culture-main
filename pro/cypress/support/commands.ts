@@ -45,7 +45,7 @@ Cypress.on('uncaught:exception', () => {
 
 Cypress.Commands.add(
   'login',
-  ({ email, password, redirectUrl/*, acceptCookies = true */}) => {
+  ({ email, password, redirectUrl}) => {
     cy.intercept({ method: 'POST', url: '/users/signin' }).as('signinUser')
 
     cy.visit('/connexion')
