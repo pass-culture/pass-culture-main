@@ -1405,6 +1405,26 @@ class ValidateEmailTest:
         user = users_models.User.query.get(user.id)
         assert user.email == self.new_email
 
+    @patch("pcapi.core.subscription.dms.api.try_dms_orphan_adoption")
+    def test_dms_adoption_on_email_validation_for_eligible_user(self, try_dms_orphan_adoption_mock, app, client):
+        user = users_factories.UserFactory(
+            email=self.old_email, dateOfBirth=datetime.utcnow() - relativedelta(years=18)
+        )
+        token = self._initialize_token(user, app, self.new_email)
+        response = client.put("/native/v1/profile/email_update/validate", json={"token": token})
+
+        assert response.status_code == 200
+        try_dms_orphan_adoption_mock.assert_called_once_with(user)
+
+    @patch("pcapi.core.subscription.dms.api.try_dms_orphan_adoption")
+    def test_no_dms_adoption_on_email_validation_for_beneficiary_user(self, try_dms_orphan_adoption_mock, app, client):
+        user = users_factories.UserFactory(email=self.old_email, roles=[users_models.UserRole.BENEFICIARY])
+        token = self._initialize_token(user, app, self.new_email)
+        response = client.put("/native/v1/profile/email_update/validate", json={"token": token})
+
+        assert response.status_code == 200
+        try_dms_orphan_adoption_mock.assert_not_called()
+
     def test_email_exists(self, app, client):
         """
         Test that if the email already exists, an OK response is sent
