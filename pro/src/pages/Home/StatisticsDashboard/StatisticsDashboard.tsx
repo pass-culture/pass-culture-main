@@ -93,7 +93,6 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
               <SvgIcon
                 src={strokeNoBookingIcon}
                 alt=""
-                viewBox="0 0 200 156"
                 className={styles['no-data-icon']}
                 width="42"
               />

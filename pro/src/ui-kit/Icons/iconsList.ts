@@ -182,8 +182,8 @@ export const fullIcons: IconListItem[] = [
   { src: fullGridIcon },
   { src: fullListIcon },
   { src: fullCheckIcon },
-  { src: fullDisclosureCloseIcon, viewBox: '0 0 16 16' }, // TODO clean viewbox
-  { src: fullDisclosureOpenIcon, viewBox: '0 0 16 16' }, // TODO clean viewbox
+  { src: fullDisclosureCloseIcon },
+  { src: fullDisclosureOpenIcon },
   { src: fullProfilIcon },
   { src: fullCloseIcon },
   { src: fullThreeDotsIcon },
@@ -260,10 +260,10 @@ export const strokeIcons: IconListItem[] = [
   { src: strokeStarIcon },
   { src: strokeArticleIcon },
   { src: strokeInstitutionIcon },
-  { src: strokeWipIcon, viewBox: '0 0 200 156' }, // TODO standardize viewbox
-  { src: strokeNoBookingIcon, viewBox: '0 0 200 156' }, // TODO standardize viewbox
-  { src: strokeBookingHold, viewBox: '0 0 200 156' }, // TODO standardize viewbox
-  { src: stroke404Icon, viewBox: '0 0 308 194' }, // TODO standardize viewbox
+  { src: strokeWipIcon },
+  { src: strokeNoBookingIcon },
+  { src: strokeBookingHold },
+  { src: stroke404Icon },
   { src: strokeShoutIcon },
   { src: strokeCollaboratorIcon },
 ]

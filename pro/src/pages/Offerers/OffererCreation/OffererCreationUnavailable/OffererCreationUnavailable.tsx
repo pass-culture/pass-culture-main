@@ -11,7 +11,6 @@ export const OffererCreationUnavailable: FunctionComponent = () => {
       <SvgIcon
         alt=""
         src={strokeWipIcon}
-        viewBox="0 0 200 156"
         className={styles['unavailable-offerer-creation-icon']}
       />
       <h2 className={styles['heading-2']}>

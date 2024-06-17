@@ -17,7 +17,6 @@ export const NoData = ({ page }: NoDataProps): JSX.Element => {
         src={page === 'offers' ? strokeNoBookingIcon : strokeBookingHold}
         alt=""
         className={styles['no-data-icon']}
-        viewBox="0 0 200 156"
       />
       <p>
         {page === 'offers'
