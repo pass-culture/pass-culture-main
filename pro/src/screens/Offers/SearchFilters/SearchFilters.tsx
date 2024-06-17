@@ -20,6 +20,7 @@ import { SearchFiltersParams } from 'core/Offers/types'
 import { hasSearchFilters } from 'core/Offers/utils/hasSearchFilters'
 import { Audience } from 'core/shared/types'
 import { SelectOption } from 'custom_types/form'
+import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import fullRefreshIcon from 'icons/full-refresh.svg'
 import strokeCloseIcon from 'icons/stroke-close.svg'
 import { Button } from 'ui-kit/Button/Button'
@@ -92,6 +93,7 @@ export const SearchFilters = ({
   audience,
   isRestrictedAsAdmin = false,
 }: SearchFiltersProps): JSX.Element => {
+  const isNewInterfaceActive = useIsNewInterfaceActive()
   const formats: SelectOption[] = Object.values(EacFormat).map((format) => ({
     value: format,
     label: format,
@@ -175,17 +177,19 @@ export const SearchFilters = ({
       {offerer && (
         <span className="offerer-filter">
           {offerer.name}
-          <button
-            onClick={removeOfferer}
-            type="button"
-            data-testid="remove-offerer-filter"
-          >
-            <SvgIcon
-              src={strokeCloseIcon}
-              alt="Supprimer le filtre par structure"
-              className={styles['offerer-close-icon']}
-            />
-          </button>
+          {!isNewInterfaceActive && (
+            <button
+              onClick={removeOfferer}
+              type="button"
+              data-testid="remove-offerer-filter"
+            >
+              <SvgIcon
+                src={strokeCloseIcon}
+                alt="Supprimer le filtre par structure"
+                className={styles['offerer-close-icon']}
+              />
+            </button>
+          )}
         </span>
       )}
 
