@@ -60,6 +60,7 @@ from pcapi.repository import transaction
 from pcapi.utils import image_conversion
 import pcapi.utils.cinema_providers as cinema_providers_utils
 from pcapi.utils.custom_logic import OPERATIONS
+from pcapi.utils.date import local_datetime_to_default_timezone
 from pcapi.workers import push_notification_job
 
 from . import exceptions
@@ -187,7 +188,6 @@ def create_offer(
         offererAddress=venue.offererAddress,
         idAtProvider=id_at_provider,
     )
-
     repository.add_to_session(offer)
     db.session.flush()
 
@@ -693,17 +693,47 @@ def handle_stocks_edition(edited_stocks: list[tuple[models.Stock, bool]]) -> Non
             _notify_beneficiaries_upon_stock_edit(stock, bookings)
 
 
-def publish_offer(offer: models.Offer, user: users_models.User | None) -> models.Offer:
+def _format_publication_date(publication_date: datetime.datetime | None, timezone: str) -> datetime.datetime | None:
+    if publication_date is None:
+        return None
+
+    minute = publication_date.minute
+    publication_date = local_datetime_to_default_timezone(publication_date, timezone)
+    # Some UTC offsets may change minute (like Pacific/Marquesas UTC-09:30),
+    # in this case publication_date is rounded to the next hour
+    if publication_date.minute != minute:
+        publication_date += datetime.timedelta(hours=1)
+        publication_date = publication_date.replace(minute=0)
+
+    publication_date = publication_date.replace(second=0, microsecond=0, tzinfo=None)
+    return publication_date
+
+
+def publish_offer(
+    offer: models.Offer,
+    user: users_models.User | None,
+    publication_date: datetime.datetime | None = None,
+) -> models.Offer:
+    publication_date = _format_publication_date(publication_date, offer.venue.timezone)  # type: ignore[arg-type]
+    validation.check_publication_date(offer, publication_date)
+
     update_offer_fraud_information(offer, user)
-    search.async_index_offer_ids(
-        [offer.id],
-        reason=search.IndexationReason.OFFER_PUBLICATION,
-    )
-    logger.info(
-        "Offer has been published",
-        extra={"offer_id": offer.id, "venue_id": offer.venueId, "offer_status": offer.status},
-        technical_message_id="offer.published",
-    )
+
+    if publication_date is not None:
+        offer.isActive = False
+        future_offer = models.FutureOffer(offerId=offer.id, publicationDate=publication_date)
+        db.session.add(future_offer)
+        db.session.flush()
+    else:
+        search.async_index_offer_ids(
+            [offer.id],
+            reason=search.IndexationReason.OFFER_PUBLICATION,
+        )
+        logger.info(
+            "Offer has been published",
+            extra={"offer_id": offer.id, "venue_id": offer.venueId, "offer_status": offer.status},
+            technical_message_id="offer.published",
+        )
     return offer
 
 

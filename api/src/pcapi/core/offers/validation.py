@@ -6,6 +6,7 @@ import typing
 
 from PIL import Image
 from PIL import UnidentifiedImageError
+from dateutil.relativedelta import relativedelta
 import flask
 import sqlalchemy as sqla
 
@@ -556,6 +557,33 @@ def check_offer_is_from_current_cinema_provider(offer: models.Offer) -> None:
 def check_is_duo_compliance(is_duo: bool | None, subcategory: subcategories.Subcategory) -> None:
     if is_duo and not subcategory.can_be_duo:
         raise exceptions.OfferCannotBeDuo()
+
+
+def check_publication_date(offer: models.Offer, publication_date: datetime.datetime | None) -> None:
+    if publication_date is None:
+        return
+
+    if offer.publicationDate is not None:
+        msg = "Cette offre est déjà programmée pour être publiée dans le futur"
+        raise exceptions.FutureOfferException("publication_date", msg)
+
+    if not offer.subcategory.is_event:
+        msg = "Seules les offres d’événements peuvent avoir une date de publication"
+        raise exceptions.FutureOfferException("publication_date", msg)
+
+    if publication_date.minute != 0:
+        msg = "L’heure de publication doit être une heure pile"
+        raise exceptions.FutureOfferException("publication_date", msg)
+
+    now = datetime.datetime.utcnow()
+    if publication_date < now:
+        msg = "Impossible de sélectionner une date de publication dans le passé"
+        raise exceptions.FutureOfferException("publication_date", msg)
+
+    years = 2
+    if publication_date > now + relativedelta(years=years):
+        msg = f"Impossible sélectionner une date de publication plus de {years} ans en avance"
+        raise exceptions.FutureOfferException("publication_date", msg)
 
 
 def check_price_categories_deletable(offer: models.Offer) -> None:
