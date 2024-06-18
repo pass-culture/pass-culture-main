@@ -258,6 +258,9 @@ class HasImageMixin:
 class StatusMixin:
     @hybrid_property
     def status(self) -> offer_mixin.OfferStatus:
+        if self.isArchived:
+            return offer_mixin.OfferStatus.ARCHIVED
+
         if self.validation == offer_mixin.OfferValidationStatus.REJECTED:
             return offer_mixin.OfferStatus.REJECTED
 
@@ -285,6 +288,10 @@ class StatusMixin:
     @status.expression  # type: ignore[no-redef]
     def status(cls) -> sa.sql.elements.Case:  # pylint: disable=no-self-argument
         return sa.case(
+            (
+                cls.isArchived.is_(True),
+                offer_mixin.OfferStatus.ARCHIVED,
+            ),
             (
                 cls.validation == offer_mixin.OfferValidationStatus.REJECTED.name,
                 offer_mixin.OfferStatus.REJECTED.name,
@@ -342,7 +349,7 @@ class CollectiveOffer(
 
     dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
 
-    dateArchived: datetime = sa.Column(sa.DateTime, nullable=True)
+    dateArchived: datetime | None = sa.Column(sa.DateTime, nullable=True)
 
     subcategoryId: str | None = sa.Column(sa.Text, nullable=True)
 
@@ -498,7 +505,7 @@ class CollectiveOffer(
 
     @isArchived.expression  # type: ignore[no-redef]
     def isArchived(cls) -> Boolean:  # pylint: disable=no-self-argument
-        return cls.dateArchived.is_not(None)
+        return cls.dateArchived.is_not(sa.null())
 
     @property
     def isBookable(self) -> bool:
@@ -743,7 +750,7 @@ class CollectiveOfferTemplate(
         "OffererAddress", foreign_keys=[offererAddressId], uselist=False
     )
 
-    dateArchived: datetime = sa.Column(sa.DateTime, nullable=True)
+    dateArchived: datetime | None = sa.Column(sa.DateTime, nullable=True)
 
     @declared_attr
     def __table_args__(self):
@@ -834,7 +841,7 @@ class CollectiveOfferTemplate(
 
     @isArchived.expression  # type: ignore[no-redef]
     def isArchived(cls) -> Boolean:  # pylint: disable=no-self-argument
-        return cls.dateArchived.is_not(None)
+        return cls.dateArchived.is_not(sa.null())
 
     @hybrid_property
     def isSoldOut(self) -> bool:

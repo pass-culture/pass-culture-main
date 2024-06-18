@@ -28,7 +28,8 @@ OFFER_STATUS_FIELD_DESCRIPTION = """
 - `INACTIVE`: offer is not active and cannot be booked.\n\n
 - `PENDING`: offer is pending for pass Culture rules compliance validation. This step may take up to 72 hours.\n\n
 - `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n
-- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.
+- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.\n\n
+- `ARCHIVED`: offer is archived by pro.
 """
 
 BOOKING_STATUS_DESCRIPTION = """

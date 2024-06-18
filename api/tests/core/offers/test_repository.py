@@ -1442,6 +1442,23 @@ class GetFilteredCollectiveOffersTest:
         )
         assert offers.one() == collective_offer
 
+    def test_get_collective_offers_archived(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+
+        _collective_offer_unarchived = educational_factories.CollectiveOfferFactory(
+            venue__managingOfferer=user_offerer.offerer
+        )
+        collective_offer_archived = educational_factories.CollectiveOfferFactory(
+            venue__managingOfferer=user_offerer.offerer, dateArchived=datetime.datetime(year=2000, month=1, day=1)
+        )
+
+        offers = repository.get_collective_offers_by_filters(
+            user_offerer.userId,
+            user_is_admin=False,
+            status=educational_models.CollectiveOfferDisplayedStatus.ARCHIVED.value,
+        )
+        assert offers.one() == collective_offer_archived
+
 
 @pytest.mark.usefixtures("db_session")
 class ExcludeOffersFromInactiveVenueProviderTest:
