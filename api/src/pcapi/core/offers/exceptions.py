@@ -191,6 +191,10 @@ class EanFormatException(OfferCreationBaseException):
     pass
 
 
+class FutureOfferException(OfferCreationBaseException):
+    pass
+
+
 class ThumbnailStorageError(ApiErrors):
     status_code = 500
 

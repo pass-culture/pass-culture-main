@@ -2488,6 +2488,16 @@ class FormatExtraDataTest:
         }
 
 
+class FormatPublicationDateTest:
+    def test_format_publication_date(self):
+        assert api._format_publication_date(None, "UTC") is None
+        publication_date = datetime(2024, 3, 20, 9, 0, 0)
+        assert api._format_publication_date(publication_date, "Europe/Paris") == datetime(2024, 3, 20, 8, 0, 0)
+        # Pacific/Marquesas: UTC-09:30
+        # 9:00 Pacific/Marquesas -> 18:30 UTC -> rounded to next hour = 19:00 UTC
+        assert api._format_publication_date(publication_date, "Pacific/Marquesas") == datetime(2024, 3, 20, 19, 0)
+
+
 @pytest.mark.usefixtures("db_session")
 class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
     DATETIME_10_DAYS_AFTER = datetime.today() + timedelta(days=10)
