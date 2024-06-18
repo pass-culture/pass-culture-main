@@ -99,9 +99,13 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
             if body.image:
                 utils.save_image(body.image, created_offer)
 
-            offers_api.publish_offer(created_offer, user=None)
+            offers_api.publish_offer(created_offer, user=None, publication_date=body.publication_date)
 
-    except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as error:
+    except (
+        offers_exceptions.OfferCreationBaseException,
+        offers_exceptions.OfferEditionBaseException,
+        offers_exceptions.FutureOfferException,
+    ) as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
     return serialization.EventOfferResponse.build_event_offer(created_offer)

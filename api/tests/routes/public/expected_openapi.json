@@ -2591,6 +2591,13 @@
                         "nullable": true,
                         "title": "Pricecategories",
                         "type": "array"
+                    },
+                    "publicationDate": {
+                        "description": "Publication date",
+                        "format": "date-time",
+                        "nullable": true,
+                        "title": "Publicationdate",
+                        "type": "string"
                     }
                 },
                 "required": [
@@ -3004,6 +3011,13 @@
                         },
                         "title": "Pricecategories",
                         "type": "array"
+                    },
+                    "publicationDate": {
+                        "description": "Publication date",
+                        "format": "date-time",
+                        "nullable": true,
+                        "title": "Publicationdate",
+                        "type": "string"
                     },
                     "status": {
                         "allOf": [

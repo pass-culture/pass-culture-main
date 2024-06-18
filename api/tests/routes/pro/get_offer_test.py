@@ -48,7 +48,8 @@ class Returns200Test:
     # payload (joined query)
     # user offerer
     # stocks of offer (a backref)
-    num_queries = 5
+    # future_offer (a backref)
+    num_queries = 6
 
     def test_access_by_pro_user(self, client):
         # Given
@@ -177,6 +178,7 @@ class Returns200Test:
             "bookingsCount": 0,
             "bookingEmail": "offer.booking.email@example.com",
             "dateCreated": "2020-10-15T00:00:00Z",
+            "publicationDate": None,
             "description": "Tatort, but slower",
             "durationMinutes": 60,
             "extraData": None,
@@ -333,3 +335,49 @@ class Returns200Test:
             "street": offerer_address.address.street,
             "isEditable": offerer_address.isEditable,
         }
+
+    @time_machine.travel("2020-10-15 00:00:00")
+    def test_future_offer(self, client):
+        # Given
+        now = datetime.utcnow()
+        user_offerer = offerers_factories.UserOffererFactory(
+            offerer__dateCreated=now,
+            offerer__siren="123456789",
+            offerer__name="Test Offerer",
+        )
+        publication_date = now.replace(minute=0, second=0, microsecond=0) + timedelta(days=30)
+        offer = offers_factories.EventOfferFactory(
+            dateCreated=now,
+            dateModifiedAtLastProvider=now,
+            bookingEmail="offer.booking.email@example.com",
+            name="Derrick",
+            description="Tatort, but slower",
+            durationMinutes=60,
+            extraData=None,
+            mentalDisabilityCompliant=True,
+            externalTicketOfficeUrl="http://example.net",
+            withdrawalDetails="Veuillez chercher votre billet au guichet",
+            withdrawalType=WithdrawalTypeEnum.ON_SITE,
+            withdrawalDelay=60 * 30,
+            venue__siret="12345678912345",
+            venue__name="La petite librairie",
+            venue__dateCreated=now,
+            venue__bookingEmail="test@test.com",
+            venue__managingOfferer=user_offerer.offerer,
+            offererAddress=None,
+        )
+        offer_id = offer.id
+        offers_factories.FutureOfferFactory(
+            offerId=offer_id,
+            publicationDate=publication_date,
+        )
+
+        # When
+        auth_client = client.with_session_auth(email=user_offerer.user.email)
+        with testing.assert_num_queries(self.num_queries):
+            response = auth_client.get(f"/offers/{offer_id}")
+
+        # Then
+        assert response.status_code == 200
+
+        assert response.json["publicationDate"] == publication_date.strftime("%Y-%m-%dT%H:%M:%SZ")

@@ -1,3 +1,5 @@
+from datetime import datetime
+from datetime import timedelta
 import decimal
 
 import pytest
@@ -8,6 +10,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.testing import override_features
 from pcapi.models import offer_mixin
 from pcapi.utils import human_ids
+from pcapi.utils.date import local_datetime_to_default_timezone
 
 from tests.routes import image_data
 
@@ -43,11 +46,36 @@ class PostEventTest:
         assert not created_offer.isDuo
         assert created_offer.extraData == {}
         assert created_offer.bookingEmail is None
+        assert created_offer.publicationDate is None
         assert created_offer.description is None
         assert created_offer.status == offer_mixin.OfferStatus.SOLD_OUT
         assert created_offer.withdrawalDetails is None
         assert created_offer.withdrawalType is None
         assert created_offer.withdrawalDelay is None
+        assert not created_offer.futureOffer
+
+    def test_future_event(self, client):
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
+
+        publication_date = datetime.utcnow().replace(minute=0, second=0) + timedelta(days=30)
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/events",
+            json={
+                "categoryRelatedFields": {"category": "RENCONTRE"},
+                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "location": {"type": "physical", "venueId": venue.id},
+                "name": "Le champ des possibles",
+                "hasTicket": False,
+                "publicationDate": publication_date.isoformat(),
+            },
+        )
+
+        assert response.status_code == 200
+        created_offer = offers_models.Offer.query.one()
+        assert created_offer.publicationDate == local_datetime_to_default_timezone(
+            publication_date, "Europe/Paris"
+        ).replace(microsecond=0, tzinfo=None)
+        assert created_offer.futureOffer.isWaitingForPublication
 
     def test_event_creation_with_full_body(self, client, clear_tests_assets_bucket):
         venue, _ = utils.create_offerer_provider_linked_to_venue(with_charlie=True)
@@ -106,6 +134,7 @@ class PostEventTest:
             "performer": "Nicolas Jaar",
         }
         assert created_offer.bookingEmail == "nicoj@example.com"
+        assert created_offer.publicationDate is None
         assert created_offer.description == "Space is only noise if you can see"
         assert created_offer.externalTicketOfficeUrl == "https://maposaic.com"
         assert created_offer.status == offer_mixin.OfferStatus.SOLD_OUT
@@ -141,6 +170,7 @@ class PostEventTest:
                 "musicType": "ELECTRO-HOUSE",
                 "performer": "Nicolas Jaar",
             },
+            "publicationDate": None,
             "description": "Space is only noise if you can see",
             "enableDoubleBookings": True,
             "eventDuration": 120,
@@ -385,3 +415,22 @@ class PostEventTest:
         )
 
         assert response.status_code == 404
+
+    def test_future_event_400(self, client):
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
+
+        publication_date = datetime.utcnow().replace(minute=0, second=0) - timedelta(days=30)
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/events",
+            json={
+                "categoryRelatedFields": {"category": "RENCONTRE"},
+                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "location": {"type": "physical", "venueId": venue.id},
+                "name": "Le champ des possibles",
+                "hasTicket": False,
+                "publicationDate": publication_date.isoformat(),
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json["publication_date"] == ["Impossible de sélectionner une date de publication dans le passé"]

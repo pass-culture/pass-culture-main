@@ -157,6 +157,7 @@ CATEGORY_RELATED_FIELD_DESCRIPTION = (
     "Cultural category the offer belongs to. According to the category, some fields may or must be specified."
 )
 CATEGORY_RELATED_FIELD = pydantic_v1.Field(..., description=CATEGORY_RELATED_FIELD_DESCRIPTION)
+PUBLICATION_DATE_FIELD = pydantic_v1.Field(None, description="Publication date")
 DESCRIPTION_FIELD_MODEL = pydantic_v1.Field(
     None, description="Offer description", example="A great book for kids and old kids.", max_length=1000
 )
@@ -546,6 +547,7 @@ class EventOfferCreation(OfferCreationBase):
     location: PhysicalLocation | DigitalLocation = LOCATION_FIELD
     has_ticket: bool = HAS_TICKET_FIELD
     price_categories: list[PriceCategoryCreation] | None = PRICE_CATEGORIES_FIELD
+    publication_date: datetime.datetime | None = PUBLICATION_DATE_FIELD
 
     @pydantic_v1.validator("price_categories")
     def get_unique_price_categories(
@@ -781,6 +783,7 @@ class EventOfferResponse(OfferResponse, PriceCategoriesResponse):
     category_related_fields: event_category_reading_fields
     duration_minutes: int | None = DURATION_MINUTES_FIELD
     has_ticket: bool = HAS_TICKET_FIELD
+    publication_date: datetime.datetime | None = PUBLICATION_DATE_FIELD
 
     @classmethod
     def build_event_offer(cls, offer: offers_models.Offer) -> "EventOfferResponse":
@@ -792,6 +795,7 @@ class EventOfferResponse(OfferResponse, PriceCategoriesResponse):
             price_categories=[
                 PriceCategoryResponse.from_orm(price_category) for price_category in offer.priceCategories
             ],
+            publication_date=offer.publicationDate,
             **base_offer_response.dict(),
         )
 
