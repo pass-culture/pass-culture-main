@@ -114,7 +114,6 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API = (
         "Activer les nouvelles règles de création et d'édition d'offres collecrives pour l'API publique (collective)"
     )
-    WIP_ENABLE_COLLECTIVE_CUSTOM_CONTACT = "Activer le contact personnalisé pour les offres collectives"
     WIP_ENABLE_ADAGE_PREVIEW_OFFER_IN_PRO = (
         "Activer la prévisualisation d'une offre adage lors de la création/édition sur le portail pro"
     )
