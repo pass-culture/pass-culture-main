@@ -163,7 +163,7 @@ class User(PcObject, Base, Model, DeactivableMixin):
         "DiscordUser", uselist=False, back_populates="user", cascade="all, delete-orphan", passive_deletes=True
     )
     email: str = sa.Column(sa.String(120), nullable=False, unique=True)
-    externalIds = sa.Column(postgresql.json.JSONB, nullable=True, default={}, server_default="{}")
+    externalIds: dict = sa.Column(postgresql.json.JSONB, nullable=True, default={}, server_default="{}")
     extraData: dict = sa.Column(
         MutableDict.as_mutable(postgresql.json.JSONB), nullable=True, default={}, server_default="{}"
     )
