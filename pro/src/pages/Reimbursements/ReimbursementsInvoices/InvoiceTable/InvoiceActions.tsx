@@ -5,14 +5,12 @@ import { Events } from 'core/FirebaseEvents/constants'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import { useNotification } from 'hooks/useNotification'
 import fullDownloadIcon from 'icons/full-download.svg'
+import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { DropdownItem } from 'ui-kit/DropdownMenuWrapper/DropdownItem'
 import { DropdownMenuWrapper } from 'ui-kit/DropdownMenuWrapper/DropdownMenuWrapper'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { downloadFile } from 'utils/downloadFile'
-
-import styles from './InvoiceTable.module.scss'
 
 type InvoiceActionsProps = {
   invoice: InvoiceResponseV2Model
@@ -67,13 +65,9 @@ export function InvoiceActions({ invoice }: InvoiceActionsProps) {
           title="Télécharger le détail des réservations (.csv)"
           onSelect={() => downloadCSVFile(invoice.reference)}
         >
-          <SvgIcon
-            src={fullDownloadIcon}
-            alt=""
-            className={styles['menu-item-icon']}
-            width="20"
-          />
-          <span>Télécharger le détail des réservations (.csv)</span>
+          <Button icon={fullDownloadIcon} variant={ButtonVariant.TERNARY}>
+            Télécharger le détail des réservations (.csv)
+          </Button>
         </DropdownItem>
       </>
     </DropdownMenuWrapper>
