@@ -19,6 +19,7 @@ class OfferStatus(str, enum.Enum):
     SOLD_OUT = "SOLD_OUT"
     INACTIVE = "INACTIVE"
     DRAFT = "DRAFT"
+    ARCHIVED = "ARCHIVED"
 
 
 class OfferValidationStatus(enum.Enum):

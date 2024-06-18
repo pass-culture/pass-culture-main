@@ -13,4 +13,5 @@ export enum OfferStatus {
   SOLD_OUT = 'SOLD_OUT',
   INACTIVE = 'INACTIVE',
   DRAFT = 'DRAFT',
+  ARCHIVED = 'ARCHIVED',
 }

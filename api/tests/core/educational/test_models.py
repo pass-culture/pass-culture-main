@@ -14,6 +14,7 @@ from pcapi.core.educational.models import EducationalDeposit
 from pcapi.core.educational.models import HasImageMixin
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.models import db
+from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils.image_conversion import CropParams
@@ -266,10 +267,49 @@ class CollectiveOfferIsEditableTest:
             if line.name in ("PENDING", "REJECTED"):
                 expected = False
 
-            offer = factories.CollectiveOfferFactory(validation=getattr(OfferValidationStatus, line.name))
+            offer = factories.CollectiveOfferFactory(validation=line.name)
             factories.CollectiveStockFactory(collectiveOffer=offer)
 
             assert offer.isEditable == expected
+
+
+class CollectiveOfferIsArchiveTest:
+    def test_date_archive_for_all_status(self) -> None:
+        for line in OfferValidationStatus:
+            offer = factories.CollectiveOfferFactory.build(validation=line.name)
+
+            assert offer.isArchived == False
+
+            offer.dateArchived = datetime.datetime.utcnow()
+
+            assert offer.isArchived == True
+            assert offer.status == OfferStatus.ARCHIVED.value
+
+    def test_query_is_archived(self) -> None:
+        offer_archived = factories.CollectiveOfferFactory(dateArchived=datetime.datetime.utcnow())
+        offer_not_archived = factories.CollectiveOfferFactory(dateArchived=None)
+
+        results = db.session.query(CollectiveOffer.id).filter(CollectiveOffer.isArchived).all()
+        results_ids = {id for (id,) in results}
+
+        assert len(results) == 1
+        assert offer_archived.id in results_ids
+        assert offer_not_archived.id not in results_ids
+
+    def test_query_status_for_archived(self) -> None:
+        offer_archived = factories.CollectiveOfferFactory(dateArchived=datetime.datetime.utcnow())
+        offer_not_archived = factories.CollectiveOfferFactory(dateArchived=None)
+
+        results = db.session.query(CollectiveOffer.id, CollectiveOffer.status).all()
+        status_by_id = dict(results)
+
+        assert status_by_id[offer_archived.id] == "ARCHIVED"
+        assert status_by_id[offer_not_archived.id] == "ACTIVE"
+
+        results_archived = db.session.query(CollectiveOffer.id).filter(CollectiveOffer.status == "ARCHIVED").all()
+        results_archived_ids = {id for (id,) in results_archived}
+        assert len(results_archived_ids) == 1
+        assert offer_archived.id in results_archived_ids
 
 
 class CollectiveOfferTemplateIsEditableTest:
@@ -279,7 +319,7 @@ class CollectiveOfferTemplateIsEditableTest:
             if line.name in ("PENDING", "REJECTED"):
                 expected = False
 
-            offer = factories.CollectiveOfferTemplateFactory(validation=getattr(OfferValidationStatus, line.name))
+            offer = factories.CollectiveOfferTemplateFactory(validation=line.name)
 
             assert offer.isEditable == expected
 
