@@ -5,7 +5,7 @@ import { apiAdage } from 'apiClient/api'
 import { logClickOnOffer } from 'pages/AdageIframe/libs/initAlgoliaAnalytics'
 import { Button } from 'ui-kit/Button/Button'
 
-import { NewRequestFormDialog } from './RequestFormDialog/NewRequestFormDialog'
+import { RequestFormDialog } from './RequestFormDialog/RequestFormDialog'
 
 export interface ContactButtonProps {
   className?: string
@@ -68,7 +68,7 @@ export const ContactButton = ({
         </Button>
       </div>
       {isModalOpen && (
-        <NewRequestFormDialog
+        <RequestFormDialog
           closeModal={closeModal}
           offerId={offerId}
           userEmail={userEmail}
