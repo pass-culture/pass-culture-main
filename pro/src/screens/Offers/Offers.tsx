@@ -123,8 +123,9 @@ export const Offers = ({
   )
 
   const areAllOffersSelected =
+    selectedOffers.length > 0 &&
     selectedOffers.length ===
-    offers.filter((offer) => !isOfferDisabled(offer.status)).length
+      offers.filter((offer) => !isOfferDisabled(offer.status)).length
 
   function clearSelectedOfferIds() {
     setSelectedOfferIds([])
