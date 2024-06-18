@@ -180,13 +180,14 @@ jobs:
         #CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
 
   deploy:
-    name: "Deploy to testing"
+    name: "Deploy PullRequest to testing"
     #needs: [test-api, test-pro]
     #if: |
     #  always() &&
     #  contains(fromJSON('["success", "skipped"]'), needs.test-api.result) &&
     #  contains(fromJSON('["success", "skipped"]'), needs.test-pro.result)
     needs: build-pcapi
+    if: always()
     uses: ./.github/workflows/dev_on_workflow_deploy_pullrequests.yml
     with:
       environment: pullrequests
