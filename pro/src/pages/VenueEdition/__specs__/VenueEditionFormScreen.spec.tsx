@@ -187,7 +187,7 @@ describe('VenueFormScreen', () => {
     renderForm(baseVenue)
 
     await userEvent.type(screen.getByLabelText('Description'), 'test')
-    await userEvent.click(screen.getByText('Annuler et quitter'))
+    await userEvent.click(screen.getByText('Annuler'))
 
     await waitFor(() => {
       expect(

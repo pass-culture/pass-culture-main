@@ -35,6 +35,7 @@ $checkbox-size: rem.torem(40px);
   &:not(:checked) {
     &:focus {
       border-color: var(--color-grey-dark);
+      border-radius: 50%;
     }
 
     &:hover {
@@ -55,6 +56,7 @@ $checkbox-size: rem.torem(40px);
 
     &:focus {
       border: rem.torem(2px) solid var(--color-secondary-light);
+      border-radius: 50%;
       background-color: var(--color-background-secondary);
     }
   }
