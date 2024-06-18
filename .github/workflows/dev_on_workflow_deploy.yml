@@ -116,7 +116,7 @@ jobs:
 
       # Executes helmfile templating and push results to render-manifests repository
       - name: "Generate and push rendered manifests"
-        uses: pass-culture/common-workflows/actions/render-push-manifests@render-push-manifests/v2.0.0
+        uses: pass-culture/common-workflows/actions/render-push-manifests@render-push-manifests/v2.1.0
         with:
           environment: ${{ inputs.environment }}
           app_name: pcapi
