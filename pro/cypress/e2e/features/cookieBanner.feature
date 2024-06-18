@@ -4,10 +4,10 @@ Feature: Cookie management
   Background:
     Given I open the "connexion" page
 
-  Scenario: The cookie banner should be displayed on cookie deletion
+  Scenario: The cookie banner should remain displayed when opening a new page
     When I decline all cookies
     And I clear all cookies in Browser
-    And I open the "connexion" page
+    And I click on the "Accessibilité : non conforme" link
     Then The cookie banner should be displayed
 
   Scenario: The user can accept all, and all the cookies are checked in the dialog
