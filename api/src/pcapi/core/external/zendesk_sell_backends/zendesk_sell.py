@@ -96,30 +96,42 @@ class ZendeskSellReadOnlyBackend(BaseBackend):
                                             {
                                                 "filter": {
                                                     "attribute": {
-                                                        "name": "custom_fields."
-                                                        + ZendeskCustomFieldsShort.PRODUCT_VENUE_ID.value
+                                                        "name": "custom_fields." + ZendeskCustomFieldsShort.TYPAGE.value
                                                     },
-                                                    "parameter": {"is_null": True},
+                                                    "parameter": {"eq": "Structure"},
                                                 }
+                                            },
+                                            {
+                                                "or": [
+                                                    {
+                                                        "filter": {
+                                                            "attribute": {
+                                                                "name": "custom_fields."
+                                                                + ZendeskCustomFieldsShort.PRODUCT_VENUE_ID.value
+                                                            },
+                                                            "parameter": {"is_null": True},
+                                                        }
+                                                    },
+                                                    {
+                                                        "filter": {
+                                                            "attribute": {
+                                                                "name": "custom_fields."
+                                                                + ZendeskCustomFieldsShort.PRODUCT_VENUE_ID.value
+                                                            },
+                                                            "parameter": {"eq": "0"},
+                                                        }
+                                                    },
+                                                ]
                                             },
                                             {
                                                 "filter": {
                                                     "attribute": {
-                                                        "name": "custom_fields."
-                                                        + ZendeskCustomFieldsShort.PRODUCT_VENUE_ID.value
+                                                        "name": "custom_fields." + ZendeskCustomFieldsShort.SIRET.value
                                                     },
-                                                    "parameter": {"eq": "0"},
+                                                    "parameter": {"is_null": True},
                                                 }
                                             },
                                         ]
-                                    },
-                                    {
-                                        "filter": {
-                                            "attribute": {
-                                                "name": "custom_fields." + ZendeskCustomFieldsShort.SIRET.value
-                                            },
-                                            "parameter": {"is_null": True},
-                                        }
                                     },
                                 ]
                             },
