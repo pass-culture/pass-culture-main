@@ -65,6 +65,8 @@ When('I start offerer creation', () => {
 })
 
 When('I specify an offerer with a SIRET', () => {
+  cy.url().should('contain', '/parcours-inscription/structure')
+  cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(mySiret)
   cy.intercept('GET', `/sirene/siret/${mySiret}`, (req) =>
     req.reply({
       statusCode: 200,
@@ -82,15 +84,12 @@ When('I specify an offerer with a SIRET', () => {
       },
     })
   ).as('getSiret')
-  cy.url().should('contain', '/parcours-inscription/structure')
-  cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(mySiret)
-  cy.wait('@getSiret').its('response.statusCode').should('eq', 200)
   cy.intercept({
     method: 'GET',
     url: `/venues/siret/${mySiret}`,
-  }).as('venues-siret')
+  }).as('venuesSiret')
   cy.findByText('Continuer').click()
-  cy.wait(['@getSiret', '@venues-siret']).then((interception) => {
+  cy.wait(['@getSiret', '@venuesSiret']).then((interception) => {
     if (interception[0].response)
       expect(interception[0].response.statusCode).to.equal(200)
     if (interception[1].response)
