@@ -153,10 +153,10 @@ def create_account(
         user.externalIds = {}
 
     if apps_flyer_user_id and apps_flyer_platform:
-        user.externalIds["apps_flyer"] = {"user": apps_flyer_user_id, "platform": apps_flyer_platform.upper()}  # type: ignore[index, call-overload]
+        user.externalIds["apps_flyer"] = {"user": apps_flyer_user_id, "platform": apps_flyer_platform.upper()}
 
     if firebase_pseudo_id:
-        user.externalIds["firebase_pseudo_id"] = firebase_pseudo_id  # type: ignore[index, call-overload]
+        user.externalIds["firebase_pseudo_id"] = firebase_pseudo_id
 
     repository.save(user)
     logger.info("Created user account", extra={"user": user.id})
