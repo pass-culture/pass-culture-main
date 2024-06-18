@@ -5719,6 +5719,7 @@
                         "description": "Collective offer end datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
                         "example": "2024-07-10T14:00:00+02:00",
                         "format": "date-time",
+                        "nullable": true,
                         "title": "Enddatetime",
                         "type": "string"
                     },
@@ -5793,6 +5794,7 @@
                         "description": "Collective offer start datetime. Replaces beginning dateime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
                         "example": "2024-07-10T14:00:00+02:00",
                         "format": "date-time",
+                        "nullable": true,
                         "title": "Startdatetime",
                         "type": "string"
                     },
@@ -5848,8 +5850,6 @@
                     "offerVenue",
                     "isActive",
                     "beginningDatetime",
-                    "startDatetime",
-                    "endDatetime",
                     "bookingLimitDatetime",
                     "totalPrice",
                     "numberOfTickets"
