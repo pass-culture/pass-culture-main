@@ -75,9 +75,6 @@ def _get_individual_bookings(
                 offers_models.Offer.isDuo,
                 offers_models.Offer.subcategoryId,
             ),
-            sa.orm.joinedload(bookings_models.Booking.deposit).load_only(
-                finance_models.Deposit.expirationDate,
-            ),
             sa.orm.joinedload(bookings_models.Booking.user).load_only(
                 users_models.User.id, users_models.User.firstName, users_models.User.lastName
             ),
@@ -105,6 +102,21 @@ def _get_individual_bookings(
             .load_only(finance_models.FinanceIncident.id, finance_models.FinanceIncident.status),
         )
     )
+
+    if form.deposit.data:
+        base_query = base_query.join(finance_models.Deposit, bookings_models.Booking.deposit).options(
+            sa.orm.contains_eager(bookings_models.Booking.deposit).load_only(
+                finance_models.Deposit.expirationDate,
+            )
+        )
+        if form.deposit.data == "active":
+            base_query = base_query.filter(finance_models.Deposit.expirationDate > sa.func.now())
+        elif form.deposit.data == "expired":
+            base_query = base_query.filter(finance_models.Deposit.expirationDate <= sa.func.now())
+    else:
+        base_query = base_query.options(
+            sa.orm.joinedload(bookings_models.Booking.deposit).load_only(finance_models.Deposit.expirationDate),
+        )
 
     or_filters = []
     if form.q.data:
