@@ -384,8 +384,8 @@ class PostCollectiveOfferBodyModel(BaseModel):
     nationalProgramId: int | None = fields.COLLECTIVE_OFFER_NATIONAL_PROGRAM_ID
     # stock part
     beginning_datetime: datetime = fields.COLLECTIVE_OFFER_BEGINNING_DATETIME
-    start_datetime: datetime = fields.COLLECTIVE_OFFER_START_DATETIME
-    end_datetime: datetime = fields.COLLECTIVE_OFFER_END_DATETIME
+    start_datetime: datetime | None = fields.COLLECTIVE_OFFER_START_DATETIME
+    end_datetime: datetime | None = fields.COLLECTIVE_OFFER_END_DATETIME
     booking_limit_datetime: datetime = fields.COLLECTIVE_OFFER_BOOKING_LIMIT_DATETIME
     total_price: decimal.Decimal = fields.COLLECTIVE_OFFER_TOTAL_PRICE
     number_of_tickets: int = fields.COLLECTIVE_OFFER_NB_OF_TICKETS_FIELD
