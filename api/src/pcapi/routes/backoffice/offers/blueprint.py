@@ -679,12 +679,14 @@ def _batch_validate_offers(offer_ids: list[int]) -> None:
             offers_models.Offer,
             max_price_subquery.label("max_price"),
         )
+        .outerjoin(offers_models.Offer.futureOffer)
         .filter(offers_models.Offer.id.in_(offer_ids))
         .options(
             sa.orm.joinedload(offers_models.Offer.venue).load_only(
                 offerers_models.Venue.bookingEmail, offerers_models.Venue.name, offerers_models.Venue.publicName
             ),
         )
+        .options(sa.orm.contains_eager(offers_models.Offer.futureOffer))
     ).all()
 
     for offer, max_price in offers:
@@ -694,7 +696,8 @@ def _batch_validate_offers(offer_ids: list[int]) -> None:
             offer.lastValidationDate = datetime.datetime.utcnow()
             offer.lastValidationType = OfferValidationType.MANUAL
             offer.lastValidationAuthorUserId = current_user.id
-            offer.isActive = True
+            if not (offer.futureOffer and offer.futureOffer.isWaitingForPublication):
+                offer.isActive = True
             if offer.isThing:
                 offer.lastValidationPrice = max_price
 
