@@ -32,12 +32,15 @@ describe('ContactButton', () => {
     position: 1,
     queryId: 'test',
     userRole: AdageFrontRoles.REDACTOR,
+    contactForm: 'form',
   }
 
-  it('should call tracking on close modal', async () => {
+  it('should call the tracking function when the contact dialog is closed', async () => {
     renderContactButton(defaultProps)
 
-    const contactButton = screen.getByRole('button', { name: 'Contacter' })
+    const contactButton = screen.getByRole('button', {
+      name: 'Contacter',
+    })
     await userEvent.click(contactButton)
 
     const closeButton = screen.getByRole('button', { name: 'Annuler' })
@@ -49,23 +52,13 @@ describe('ContactButton', () => {
       screen.queryByText('Contacter le partenaire culturel')
     ).not.toBeInTheDocument()
   })
-  it('should display request form on click', async () => {
+
+  it('should display the contact form when the contact modal is opened', async () => {
     renderContactButton(defaultProps)
 
-    const contactButton = screen.getByRole('button', { name: 'Contacter' })
-    await userEvent.click(contactButton)
-
-    expect(
-      screen.getByText('Contacter le partenaire culturel')
-    ).toBeInTheDocument()
-  })
-
-  it('should render new request form modal when ff is active', async () => {
-    renderContactButton(defaultProps, {
-      features: ['WIP_ENABLE_COLLECTIVE_CUSTOM_CONTACT'],
+    const contactButton = screen.getByRole('button', {
+      name: 'Contacter',
     })
-
-    const contactButton = screen.getByRole('button', { name: 'Contacter' })
     await userEvent.click(contactButton)
 
     expect(

@@ -89,8 +89,7 @@ export const computeInitialValuesFromOffer = (
     | GetCollectiveOfferTemplateResponseModel,
   offererIdQueryParam?: string | null,
   venueIdQueryParam?: string | null,
-  isMarseilleEnabled?: boolean,
-  isCustomContactEnabled?: boolean
+  isMarseilleEnabled?: boolean
 ): OfferEducationalFormValues => {
   const initialOffererId = getInitialOffererId(
     offerers,
@@ -121,7 +120,7 @@ export const computeInitialValuesFromOffer = (
         phone: false,
       },
       contactFormType: 'form',
-      contactUrl: isTemplate && isCustomContactEnabled ? '' : undefined, //  If the field is not given an intial value, a submit would not set it as touched and the error would not appear the first time
+      contactUrl: isTemplate ? '' : undefined, //  If the field is not given an intial value, a submit would not set it as touched and the error would not appear the first time
     }
   }
 
@@ -192,24 +191,20 @@ export const computeInitialValuesFromOffer = (
         ? formatTimeForInput(toDateStrippedOfTimezone(offer.dates.start))
         : DEFAULT_EAC_FORM_VALUES.hour,
     formats: offer.formats ?? DEFAULT_EAC_FORM_VALUES.formats,
-    contactOptions:
-      isCustomContactEnabled && isCollectiveOfferTemplate(offer)
-        ? {
-            email: Boolean(offer.contactEmail),
-            phone: Boolean(offer.contactPhone),
-            form: Boolean(offer.contactForm || offer.contactUrl),
-          }
-        : undefined,
-    contactFormType:
-      isCustomContactEnabled && isCollectiveOfferTemplate(offer)
-        ? offer.contactUrl
-          ? 'url'
-          : 'form'
-        : undefined,
+    contactOptions: isCollectiveOfferTemplate(offer)
+      ? {
+          email: Boolean(offer.contactEmail),
+          phone: Boolean(offer.contactPhone),
+          form: Boolean(offer.contactForm || offer.contactUrl),
+        }
+      : undefined,
+    contactFormType: isCollectiveOfferTemplate(offer)
+      ? offer.contactUrl
+        ? 'url'
+        : 'form'
+      : undefined,
     contactUrl:
-      isCustomContactEnabled &&
-      isCollectiveOfferTemplate(offer) &&
-      offer.contactUrl
+      isCollectiveOfferTemplate(offer) && offer.contactUrl
         ? offer.contactUrl
         : undefined,
   }
