@@ -182,6 +182,10 @@
   .offer-item {
     display: table-row;
 
+    > td {
+      padding: rem.torem(8px);
+    }
+
     .venue-column,
     .institution-column,
     .title-column {
@@ -194,6 +198,8 @@
     }
 
     .thumb-column {
+      padding: rem.torem(8px);
+      
       a {
         height: unset;
       }
