@@ -159,7 +159,7 @@ When('I update Individual section data', () => {
   cy.findByText('Psychique ou cognitif').click()
   cy.findByText('Auditif').click()
   cy.intercept({ method: 'PATCH', url: '/venues/*' }).as('patchVenue')
-  cy.findByText('Enregistrer et quitter').click()
+  cy.findByText('Enregistrer').click()
   cy.wait('@patchVenue')
 })
 
