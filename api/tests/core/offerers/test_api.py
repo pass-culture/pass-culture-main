@@ -2290,7 +2290,7 @@ class CreateFromOnboardingDataTest:
         )
 
     @override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
-    @override_features(ENABLE_API_ADRESSE_WHILE_CREATING_UPDATING_VENUE=True)
+    @override_features(ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE=True)
     def test_new_siren_new_siret(self, requests_mock):
         api_adresse_response = {
             "type": "FeatureCollection",

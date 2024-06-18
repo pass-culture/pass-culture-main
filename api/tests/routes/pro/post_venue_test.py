@@ -61,7 +61,9 @@ venue_malformed_test_data = [
 
 class Returns201Test:
     @testing.override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
-    @testing.override_features(ENABLE_ZENDESK_SELL_CREATION=True, ENABLE_API_ADRESSE_WHILE_CREATING_UPDATING_VENUE=True)
+    @testing.override_features(
+        ENABLE_ZENDESK_SELL_CREATION=True, ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE=True
+    )
     def test_register_new_venue(self, client, requests_mock):
         api_adresse_response = {
             "type": "FeatureCollection",

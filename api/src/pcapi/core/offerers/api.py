@@ -108,7 +108,7 @@ def update_venue(
     modifications = {field: value for field, value in attrs.items() if venue.field_exists_and_has_changed(field, value)}
     new_permanent = not venue.isPermanent and attrs.get("isPermanent")
 
-    if feature.FeatureToggle.ENABLE_API_ADRESSE_WHILE_CREATING_UPDATING_VENUE.is_active():
+    if feature.FeatureToggle.ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE.is_active():
         update_venue_location(venue, modifications)
 
     if not admin_update:
@@ -323,7 +323,7 @@ def upsert_venue_opening_hours(venue: models.Venue, opening_hours: serialize_bas
 def create_venue(venue_data: venues_serialize.PostVenueBodyModel) -> models.Venue:
     venue = models.Venue()
 
-    if feature.FeatureToggle.ENABLE_API_ADRESSE_WHILE_CREATING_UPDATING_VENUE.is_active():
+    if feature.FeatureToggle.ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE.is_active():
         if utils_regions.NON_DIFFUSIBLE_TAG in venue_data.street:
             address_info = get_municipality_centroid(venue_data.city, venue_data.postalCode)
             address_info.street = utils_regions.NON_DIFFUSIBLE_TAG

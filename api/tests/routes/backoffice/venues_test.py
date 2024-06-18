@@ -895,7 +895,7 @@ class UpdateVenueTest(PostEndpointHelper):
         }
 
     @override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
-    @override_features(ENABLE_API_ADRESSE_WHILE_CREATING_UPDATING_VENUE=True)
+    @override_features(ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE=True)
     def test_update_venue(self, authenticated_client, offerer, requests_mock):
         requests_mock.get(
             "https://api-adresse.data.gouv.fr/search?q=23+Boulevard+de+la+Madeleine&postcode=75001&autocomplete=0&limit=1",
