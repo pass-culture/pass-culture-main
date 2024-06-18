@@ -27,7 +27,10 @@ interface AdageMultiselectProps {
 }
 
 const filterItems = (items: ItemProps[], inputValue: string) => {
-  const regExp = new RegExp(inputValue, 'i')
+  const regExp = new RegExp(
+    inputValue.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, ''),
+    'i'
+  )
   return items.filter((item) => item.label.match(regExp))
 }
 
