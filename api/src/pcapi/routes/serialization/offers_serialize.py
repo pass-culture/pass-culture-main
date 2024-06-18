@@ -165,6 +165,7 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
 
 class PatchOfferPublishBodyModel(BaseModel):
     id: int
+    publicationDate: datetime.datetime | None
 
 
 class PatchOfferActiveStatusBodyModel(BaseModel):
@@ -417,6 +418,7 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     bookingsCount: int | None
     bookingEmail: str | None
     dateCreated: datetime.datetime
+    publicationDate: datetime.datetime | None
     description: str | None
     durationMinutes: int | None
     extraData: Any

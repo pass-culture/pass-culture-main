@@ -107,13 +107,15 @@ def retrieve_offers(
     is_event: bool, firstIndex: int, filtered_venue_id: int, ids_at_provider: list[str] | None
 ) -> sqla_orm.Query:
     offers_query = (
-        offers_models.Offer.query.join(offerers_models.Venue)
+        offers_models.Offer.query.outerjoin(offers_models.Offer.futureOffer)
+        .join(offerers_models.Venue)
         .join(providers_models.VenueProvider)
         .filter(providers_models.VenueProvider.provider == current_api_key.provider)
         .filter(offers_models.Offer.venueId == filtered_venue_id)
         .filter(offers_models.Offer.isEvent == is_event)
         .filter(offers_models.Offer.id >= firstIndex)
         .order_by(offers_models.Offer.id)
+        .options(sqla.orm.contains_eager(offers_models.Offer.futureOffer))
     )
 
     if ids_at_provider:
