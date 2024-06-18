@@ -610,8 +610,8 @@ def create_product_with_multiple_images() -> None:
 
 
 def create_discord_users() -> None:
-    for i in range(10):
-        user = users_factories.UserFactory(
+    for i in range(10, 20):
+        user = users_factories.BeneficiaryGrant18Factory(
             email=f"discordUser{i}@test.com", firstName=f"discord{i}", lastName=f"user{i}"
         )
-        users_factories.DiscordUserFactory(userId=user.id, discordId=None, hasAccess=True)
+        users_factories.DiscordUserFactory(user=user, discordId=None, hasAccess=True)
