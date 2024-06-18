@@ -29,6 +29,7 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerer_with_
 )
 from pcapi.sandboxes.scripts.creators.industrial.create_role_permissions import create_roles_with_permissions
 from pcapi.sandboxes.scripts.creators.test_cases import venues_mock
+from pcapi.sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
 import pcapi.sandboxes.thumbs.generic_pictures as generic_picture_thumbs
 from pcapi.scripts.venue.venue_label.create_venue_labels import create_venue_labels
 
@@ -285,7 +286,7 @@ def create_offers_for_each_subcategory() -> None:
             is_free = i % 2
             is_in_Paris = i < 6  # else it will be Marseille
             if subcategory.id in subcategories_v2.EVENT_SUBCATEGORIES:
-                offers_factories.EventStockFactory(
+                stock = offers_factories.EventStockFactory(
                     offer__product=None,
                     offer__subcategoryId=subcategory.id,
                     offer__venue__latitude=48.87004 if is_in_Paris else 43.29542,
@@ -300,12 +301,14 @@ def create_offers_for_each_subcategory() -> None:
                     ),
                 )
             else:
-                offers_factories.StockFactory(
+                stock = offers_factories.StockFactory(
                     offer__product=None,
                     offer__subcategoryId=subcategory.id,
                     price=0 if is_free else 10,
                     quantity=i * 10,
                 )
+            mediation = offers_factories.MediationFactory(offer=stock.offer)
+            store_public_object_from_sandbox_assets("thumbs", mediation, subcategory.id)
 
 
 def create_offers_with_same_author() -> None:
