@@ -133,6 +133,11 @@ def build_extra_data_from_subcategory(
     return offers_models.OfferExtraData(**extradata)
 
 
+class FutureOfferFactory(BaseFactory):
+    class Meta:
+        model = models.FutureOffer
+
+
 class OfferFactory(BaseFactory):
     class Meta:
         model = models.Offer
