@@ -460,6 +460,38 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert set(row["Contremarque"] for row in rows) == {bookings[0].token, bookings[2].token}
 
+    @pytest.mark.parametrize(
+        "deposit_filter_value, result_token",
+        [
+            ("expired", "EXPIRD"),
+            ("active", "ACTIVE"),
+        ],
+    )
+    def test_list_bookings_by_deposit_expiration_status(self, authenticated_client, deposit_filter_value, result_token):
+        old_user = users_factories.BeneficiaryGrant18Factory()
+        expired_deposit_booking = bookings_factories.UsedBookingFactory(
+            user=old_user,
+            token="EXPIRD",
+        )
+        users_factories.DepositGrantFactory(
+            bookings=[expired_deposit_booking],
+            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=5),
+            expirationDate=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        )
+
+        new_user = users_factories.BeneficiaryGrant18Factory()
+        bookings_factories.UsedBookingFactory(
+            user=new_user,
+            token="ACTIVE",
+        )
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, deposit=deposit_filter_value))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert set(row["Contremarque"] for row in rows) == {result_token}
+
     def test_list_bookings_more_than_max(self, authenticated_client):
         bookings_factories.BookingFactory.create_batch(
             25,
