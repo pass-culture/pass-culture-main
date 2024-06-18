@@ -54,3 +54,7 @@ When('I close the cookie option', () => {
 When('I clear all cookies in Browser', () => {
   cy.clearCookies()
 })
+
+When('I click on the {string} link', (link: string) => {
+  cy.findByText(link).click()
+})
