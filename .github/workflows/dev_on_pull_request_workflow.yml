@@ -189,6 +189,8 @@ jobs:
     #  always() &&
     #  contains(fromJSON('["success", "skipped"]'), needs.test-api.result) &&
     #  contains(fromJSON('["success", "skipped"]'), needs.test-pro.result)
+    needs: [check-folders-changes, build-pcapi-tests]
+    if: needs.check-folders-changes.outputs.api-changed == 'true'
     uses: ./.github/workflows/dev_on_workflow_deploy_pullrequests.yml
     with:
       environment: pullrequests
