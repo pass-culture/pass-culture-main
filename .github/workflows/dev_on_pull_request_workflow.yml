@@ -25,9 +25,6 @@ jobs:
       docker-image-tags: ${{ steps.define-image-tags.outputs.docker-image-tags }}
     steps:
       - uses: actions/checkout@v4.1.7
-        with:
-          fetch-depth: 0
-          fetch-tags: false
       - name: "Check api folder changes"
         id: check-api-changes
         uses: tj-actions/changed-files@v44
@@ -189,8 +186,7 @@ jobs:
     #  always() &&
     #  contains(fromJSON('["success", "skipped"]'), needs.test-api.result) &&
     #  contains(fromJSON('["success", "skipped"]'), needs.test-pro.result)
-    needs: [check-folders-changes, build-pcapi-tests]
-    if: needs.check-folders-changes.outputs.api-changed == 'true'
+    needs: build-pcapi
     uses: ./.github/workflows/dev_on_workflow_deploy_pullrequests.yml
     with:
       environment: pullrequests
