@@ -1,4 +1,6 @@
+import isEqual from 'lodash.isequal'
 import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
 
@@ -27,6 +29,7 @@ import strokeUserIcon from 'icons/stroke-user.svg'
 import { ChoosePreFiltersMessage } from 'pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
 import { NoBookingsForPreFiltersMessage } from 'pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
 import { formatAndOrderVenues } from 'repository/venuesService'
+import { selectCurrentOffererId } from 'store/user/selectors'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { Tabs } from 'ui-kit/Tabs/Tabs'
 import { Titles } from 'ui-kit/Titles/Titles'
@@ -63,16 +66,40 @@ export const BookingsScreen = <
   const notify = useNotification()
   const { logEvent } = useAnalytics()
 
-  const [appliedPreFilters, setAppliedPreFilters] =
-    useState<PreFiltersParams>(DEFAULT_PRE_FILTERS)
-  const [wereBookingsRequested, setWereBookingsRequested] = useState(false)
-  const [urlParams, setUrlParams] =
-    useState<PreFiltersParams>(DEFAULT_PRE_FILTERS)
+  const isNewInterfaceActive = useIsNewInterfaceActive()
+  const selectedOffererId = useSelector(selectCurrentOffererId)
 
-  const isNewSideNavActive = useIsNewInterfaceActive()
+  const venuesQuery = useSWR(
+    [
+      GET_VENUES_QUERY_KEY,
+      isNewInterfaceActive ? selectedOffererId : undefined,
+    ],
+    ([, maybeOffererId]) => api.getVenues(undefined, false, maybeOffererId)
+  )
+
+  const venues = formatAndOrderVenues(venuesQuery.data?.venues ?? []).map(
+    (venue) => ({
+      id: String(venue.value),
+      displayName: venue.label,
+    })
+  )
+
+  const initialAppliedFilters = {
+    ...DEFAULT_PRE_FILTERS,
+    ...{
+      offerVenueId: isNewInterfaceActive ? venues[0]?.id : 'all',
+    },
+  }
+  const [appliedPreFilters, setAppliedPreFilters] = useState<PreFiltersParams>(
+    initialAppliedFilters
+  )
+  const [wereBookingsRequested, setWereBookingsRequested] = useState(false)
+  const [urlParams, setUrlParams] = useState<PreFiltersParams>(
+    initialAppliedFilters
+  )
 
   const bookingsQuery = useSWR(
-    appliedPreFilters !== DEFAULT_PRE_FILTERS
+    !isEqual(appliedPreFilters, initialAppliedFilters)
       ? [GET_BOOKINGS_QUERY_KEY, appliedPreFilters]
       : null,
     async ([, filterParams]) => {
@@ -98,20 +125,9 @@ export const BookingsScreen = <
     { fallbackData: true }
   )
 
-  const venuesQuery = useSWR([GET_VENUES_QUERY_KEY], () =>
-    api.getVenues(undefined, false)
-  )
-
-  const venues = formatAndOrderVenues(venuesQuery.data?.venues ?? []).map(
-    (venue) => ({
-      id: String(venue.value),
-      displayName: venue.label,
-    })
-  )
-
   const resetPreFilters = () => {
     setWereBookingsRequested(false)
-    setAppliedPreFilters(DEFAULT_PRE_FILTERS)
+    setAppliedPreFilters(initialAppliedFilters)
     logEvent(Events.CLICKED_RESET_FILTERS, {
       from: location.pathname,
     })
@@ -119,7 +135,7 @@ export const BookingsScreen = <
 
   const resetAndApplyPreFilters = () => {
     resetPreFilters()
-    updateUrl({ ...DEFAULT_PRE_FILTERS })
+    updateUrl({ ...initialAppliedFilters })
   }
 
   const applyPreFilters = (filters: PreFiltersParams) => {
@@ -146,20 +162,20 @@ export const BookingsScreen = <
         // TODO typeguard this to remove the `as`
         bookingStatusFilter:
           (params.get('bookingStatusFilter') as BookingStatusFilter | null) ??
-          DEFAULT_PRE_FILTERS.bookingStatusFilter,
+          initialAppliedFilters.bookingStatusFilter,
         bookingBeginningDate:
           params.get('bookingBeginningDate') ??
           (params.has('offerEventDate')
             ? ''
-            : DEFAULT_PRE_FILTERS.bookingBeginningDate),
+            : initialAppliedFilters.bookingBeginningDate),
         bookingEndingDate:
           params.get('bookingEndingDate') ??
           (params.has('offerEventDate')
             ? ''
-            : DEFAULT_PRE_FILTERS.bookingEndingDate),
-        offerType: params.get('offerType') ?? DEFAULT_PRE_FILTERS.offerType,
+            : initialAppliedFilters.bookingEndingDate),
+        offerType: params.get('offerType') ?? initialAppliedFilters.offerType,
         offerEventDate:
-          params.get('offerEventDate') ?? DEFAULT_PRE_FILTERS.offerEventDate,
+          params.get('offerEventDate') ?? initialAppliedFilters.offerEventDate,
       }
 
       setAppliedPreFilters(filterToLoad)
@@ -195,7 +211,6 @@ export const BookingsScreen = <
     )
   }
 
-  const isNewInterfaceActive = useIsNewInterfaceActive()
   const title = isNewInterfaceActive
     ? audience === Audience.COLLECTIVE
       ? 'Réservations collectives'
@@ -205,7 +220,7 @@ export const BookingsScreen = <
   return (
     <div className="bookings-page">
       <Titles title={title} />
-      {!isNewSideNavActive && (
+      {!isNewInterfaceActive && (
         <Tabs
           nav="Réservations individuelles et collectives"
           selectedKey={audience}
