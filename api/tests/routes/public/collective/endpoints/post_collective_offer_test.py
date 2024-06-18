@@ -95,8 +95,6 @@ def minimal_payload_fixture(domain, institution, venue):
         },
         "isActive": True,
         "beginningDatetime": booking_beginning.isoformat(timespec="seconds"),
-        "startDatetime": booking_beginning.isoformat(timespec="seconds"),
-        "endDatetime": booking_beginning.isoformat(timespec="seconds"),
         "bookingLimitDatetime": booking_limit.isoformat(timespec="seconds"),
         "totalPrice": 600,
         "numberOfTickets": 30,

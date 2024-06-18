@@ -488,8 +488,8 @@ def create_collective_offer_public(
     collective_stock = educational_models.CollectiveStock(
         collectiveOffer=collective_offer,
         beginningDatetime=body.beginning_datetime,
-        startDatetime=body.start_datetime,
-        endDatetime=body.end_datetime,
+        startDatetime=body.start_datetime or body.beginning_datetime,
+        endDatetime=body.end_datetime or body.beginning_datetime,
         bookingLimitDatetime=body.booking_limit_datetime,
         price=body.total_price,
         numberOfTickets=body.number_of_tickets,
