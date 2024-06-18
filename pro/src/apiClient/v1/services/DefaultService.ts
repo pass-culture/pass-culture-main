@@ -621,6 +621,26 @@ export class DefaultService {
     });
   }
   /**
+   * patch_collective_offers_template_archive <PATCH>
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public patchCollectiveOffersTemplateArchive(
+    requestBody?: PatchCollectiveOfferArchiveBodyModel,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'PATCH',
+      url: '/collective/offers-template/archive',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
    * get_collective_offer_request <GET>
    * @param requestId
    * @returns GetCollectiveOfferRequestResponseModel OK

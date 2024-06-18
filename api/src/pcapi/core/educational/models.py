@@ -743,6 +743,8 @@ class CollectiveOfferTemplate(
         "OffererAddress", foreign_keys=[offererAddressId], uselist=False
     )
 
+    dateArchived: datetime = sa.Column(sa.DateTime, nullable=True)
+
     @declared_attr
     def __table_args__(self):
         parent_args = []
@@ -825,6 +827,14 @@ class CollectiveOfferTemplate(
     def hasBeginningDatetimePassed(cls) -> False_:  # pylint: disable=no-self-argument
         # this property is here for compatibility reasons
         return sa.sql.expression.false()
+
+    @hybrid_property
+    def isArchived(self) -> bool:
+        return self.dateArchived is not None
+
+    @isArchived.expression  # type: ignore[no-redef]
+    def isArchived(cls) -> Boolean:  # pylint: disable=no-self-argument
+        return cls.dateArchived.is_not(None)
 
     @hybrid_property
     def isSoldOut(self) -> bool:
