@@ -397,6 +397,19 @@ describe('screen Offers', () => {
     expect(screen.queryByText('Créer une offre')).toBeNull()
   })
 
+  it('should not have "Tout Sélectionner" checked when there is no offer to be checked', () => {
+    const offers = [
+      listOffersOfferFactory({
+        isActive: false,
+        status: OfferStatus.PENDING,
+      }),
+    ]
+
+    renderOffers({ ...props, audience: Audience.COLLECTIVE, offers })
+
+    expect(screen.getByLabelText('Tout sélectionner')).not.toBeChecked()
+  })
+
   it('should display the button to create an offer when user is not an admin', async () => {
     const individualOffererNames = getOffererNameFactory()
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
