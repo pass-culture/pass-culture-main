@@ -487,6 +487,24 @@ class WithdrawalTypeEnum(enum.Enum):
     ON_SITE = "on_site"
 
 
+class FutureOffer(PcObject, Base, Model):
+    __tablename__ = "future_offer"
+
+    offerId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), nullable=False, index=True, unique=True
+    )
+    offer: sa_orm.Mapped["Offer"] = sa.orm.relationship("Offer", back_populates="futureOffer")
+    publicationDate = sa.Column(sa.DateTime, index=True, nullable=False)
+
+    @hybrid_property
+    def isWaitingForPublication(self) -> bool:
+        return datetime.datetime.utcnow() < self.publicationDate
+
+    @isWaitingForPublication.expression  # type: ignore[no-redef]
+    def isWaitingForPublication(cls) -> bool:  # pylint: disable=no-self-argument
+        return sa.func.now() < cls.publicationDate
+
+
 class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, AccessibilityMixin):
     __tablename__ = "offer"
 
@@ -562,6 +580,9 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     offererAddressId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offerer_address.id"), nullable=True)
     offererAddress: sa_orm.Mapped["OffererAddress"] = sa_orm.relationship(
         "OffererAddress", foreign_keys=[offererAddressId], uselist=False
+    )
+    futureOffer: sa_orm.Mapped["FutureOffer"] = sa_orm.relationship(
+        "FutureOffer", back_populates="offer", uselist=False
     )
 
     sa.Index("idx_offer_trgm_name", name, postgresql_using="gin")
@@ -886,6 +907,12 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         ):
             return False
         return True
+
+    @property
+    def publicationDate(self) -> datetime.datetime | None:
+        if not self.futureOffer:
+            return None
+        return self.futureOffer.publicationDate
 
 
 class ActivationCode(PcObject, Base, Model):
