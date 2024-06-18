@@ -103,7 +103,7 @@ class Returns200Test:
             }
         }
 
-    @override_features(ENABLE_API_ADRESSE_WHILE_CREATING_UPDATING_VENUE=True)
+    @override_features(ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE=True)
     def test_update_venue_location_should_create_offerer_address_if_not_existing(self, client, requests_mock) -> None:
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, offererAddress=None)
@@ -174,7 +174,7 @@ class Returns200Test:
             "old_info": "75000",
         }
 
-    @override_features(ENABLE_API_ADRESSE_WHILE_CREATING_UPDATING_VENUE=True)
+    @override_features(ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE=True)
     def test_update_venue_location_should_update_venue_offerer_address(self, client, requests_mock) -> None:
         user_offerer = offerers_factories.UserOffererFactory()
         address = geography_factories.AddressFactory(

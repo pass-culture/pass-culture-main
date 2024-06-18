@@ -743,7 +743,7 @@ class CreateOffererTest(PostEndpointHelper):
     endpoint = "backoffice_web.pro.create_offerer"
     needed_permission = perm_models.Permissions.CREATE_PRO_ENTITY
 
-    @override_features(ENABLE_API_ADRESSE_WHILE_CREATING_UPDATING_VENUE=True)
+    @override_features(ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE=True)
     def test_create_offerer(self, legit_user, authenticated_client, non_diffusible_tag):
         user = users_factories.NonAttachedProFactory()
 
