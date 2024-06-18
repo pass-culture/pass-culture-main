@@ -9,16 +9,11 @@ import * as useNotification from 'hooks/useNotification'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import {
-  NewRequestFormDialog,
-  NewRequestFormDialogProps,
-} from '../NewRequestFormDialog'
+import { RequestFormDialog, RequestFormDialogProps } from '../RequestFormDialog'
 
-const renderNewRequestFormDialog = (
-  props?: Partial<NewRequestFormDialogProps>
-) => {
+const renderRequestFormDialog = (props?: Partial<RequestFormDialogProps>) => {
   renderWithProviders(
-    <NewRequestFormDialog
+    <RequestFormDialog
       closeModal={vi.fn()}
       offerId={1}
       userEmail={'contact@example.com'}
@@ -41,9 +36,9 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-describe('NewRequestFormDialog', () => {
+describe('RequestFormDialog', () => {
   it('should display passCulture default form', () => {
-    renderNewRequestFormDialog({
+    renderRequestFormDialog({
       contactEmail: '',
       contactPhone: '',
       contactForm: 'form',
@@ -54,7 +49,7 @@ describe('NewRequestFormDialog', () => {
   })
 
   it('should only display mail ', () => {
-    renderNewRequestFormDialog({
+    renderRequestFormDialog({
       contactEmail: 'test@example.com',
       contactPhone: '',
       contactForm: '',
@@ -68,7 +63,7 @@ describe('NewRequestFormDialog', () => {
   })
 
   it('should only display phone number', () => {
-    renderNewRequestFormDialog({
+    renderRequestFormDialog({
       contactEmail: '',
       contactPhone: '0600000000',
       contactForm: '',
@@ -82,7 +77,7 @@ describe('NewRequestFormDialog', () => {
   })
 
   it('should only display buttonlink of custom form', () => {
-    renderNewRequestFormDialog({
+    renderRequestFormDialog({
       contactEmail: '',
       contactPhone: '',
       contactForm: '',
@@ -95,7 +90,7 @@ describe('NewRequestFormDialog', () => {
   })
 
   it('should display mail and phone', () => {
-    renderNewRequestFormDialog({
+    renderRequestFormDialog({
       contactEmail: 'test@example.com',
       contactPhone: '0600000000',
       contactForm: '',
@@ -111,7 +106,7 @@ describe('NewRequestFormDialog', () => {
   })
 
   it('should display mail and phone and passCulture default form', () => {
-    renderNewRequestFormDialog({
+    renderRequestFormDialog({
       contactEmail: 'test@example.com',
       contactPhone: '0600000000',
       contactForm: 'form',
@@ -128,7 +123,7 @@ describe('NewRequestFormDialog', () => {
   })
 
   it('should display mail and phone and custom form', () => {
-    renderNewRequestFormDialog({
+    renderRequestFormDialog({
       contactEmail: 'test@example.com',
       contactPhone: '0600000000',
       contactForm: '',
@@ -158,7 +153,7 @@ describe('NewRequestFormDialog', () => {
       close: vi.fn(),
     }))
 
-    renderNewRequestFormDialog({ closeModal: mockCloseModal })
+    renderRequestFormDialog({ closeModal: mockCloseModal })
 
     const today = format(new Date(), FORMAT_ISO_DATE_ONLY)
     await userEvent.type(
@@ -197,7 +192,7 @@ describe('NewRequestFormDialog', () => {
       close: vi.fn(),
     }))
 
-    renderNewRequestFormDialog({ closeModal: mockCloseModal })
+    renderRequestFormDialog({ closeModal: mockCloseModal })
 
     const descriptionField = screen.getByLabelText(
       'Que souhaitez vous organiser ? *'
@@ -215,7 +210,7 @@ describe('NewRequestFormDialog', () => {
   })
 
   it('should display error message when description is empty', async () => {
-    renderNewRequestFormDialog()
+    renderRequestFormDialog()
 
     const submitButton = screen.getByRole('button', {
       name: 'Envoyer ma demande',
@@ -228,7 +223,7 @@ describe('NewRequestFormDialog', () => {
   })
 
   it('should display error message when phone number is not valid', async () => {
-    renderNewRequestFormDialog()
+    renderRequestFormDialog()
 
     const phoneField = screen.getByLabelText('Téléphone', { exact: false })
     await userEvent.type(phoneField, '123')
@@ -246,7 +241,7 @@ describe('NewRequestFormDialog', () => {
   })
 
   it('should not display form if user is readonly', () => {
-    renderNewRequestFormDialog({ userRole: AdageFrontRoles.READONLY })
+    renderRequestFormDialog({ userRole: AdageFrontRoles.READONLY })
 
     expect(
       screen.queryByText(
@@ -257,7 +252,7 @@ describe('NewRequestFormDialog', () => {
 
   it('should log event when user close modal', async () => {
     const mockCloseModal = vi.fn()
-    renderNewRequestFormDialog({ closeModal: mockCloseModal })
+    renderRequestFormDialog({ closeModal: mockCloseModal })
 
     const descriptionField = screen.getByLabelText(
       'Que souhaitez vous organiser ? *'
@@ -282,7 +277,7 @@ describe('NewRequestFormDialog', () => {
   })
 
   it('should log event when user click on custom link form', async () => {
-    renderNewRequestFormDialog({
+    renderRequestFormDialog({
       contactEmail: '',
       contactPhone: '',
       contactForm: '',

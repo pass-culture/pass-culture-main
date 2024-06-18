@@ -15,11 +15,11 @@ import { isDateValid } from 'utils/date'
 
 import { createCollectiveRequestPayload } from './createCollectiveRequestPayload'
 import { DefaultFormContact } from './DefaultFormContact'
-import styles from './NewRequestFormDialog.module.scss'
+import styles from './RequestFormDialog.module.scss'
 import { RequestFormValues } from './type'
 import { validationSchema } from './validationSchema'
 
-export interface NewRequestFormDialogProps {
+export interface RequestFormDialogProps {
   closeModal: () => void
   offerId: number
   userEmail?: string | null
@@ -31,7 +31,7 @@ export interface NewRequestFormDialogProps {
   isPreview: boolean
 }
 
-export const NewRequestFormDialog = ({
+export const RequestFormDialog = ({
   closeModal,
   offerId,
   userEmail,
@@ -41,7 +41,7 @@ export const NewRequestFormDialog = ({
   contactForm,
   contactUrl,
   isPreview,
-}: NewRequestFormDialogProps): JSX.Element => {
+}: RequestFormDialogProps): JSX.Element => {
   const notify = useNotification()
 
   const initialValues = {
