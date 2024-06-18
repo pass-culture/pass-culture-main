@@ -78,16 +78,11 @@ describe('OfferEducationalForm', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should show the custom form section if the FF is enabled', () => {
-    renderOfferEducationalForm(
-      {
-        ...defaultProps,
-        isTemplate: true,
-      },
-      {
-        features: ['WIP_ENABLE_COLLECTIVE_CUSTOM_CONTACT'],
-      }
-    )
+  it('should show the custom form section', () => {
+    renderOfferEducationalForm({
+      ...defaultProps,
+      isTemplate: true,
+    })
 
     expect(screen.getByRole('checkbox', { name: 'Par email' }))
     expect(screen.getByRole('checkbox', { name: 'Par téléphone' }))
@@ -95,12 +90,7 @@ describe('OfferEducationalForm', () => {
   })
 
   it('should have no custom contact checked initially', () => {
-    renderOfferEducationalForm(
-      { ...defaultProps, isTemplate: true },
-      {
-        features: ['WIP_ENABLE_COLLECTIVE_CUSTOM_CONTACT'],
-      }
-    )
+    renderOfferEducationalForm({ ...defaultProps, isTemplate: true })
 
     expect(
       screen.getByRole('checkbox', { name: 'Par email' })

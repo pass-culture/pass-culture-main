@@ -33,7 +33,7 @@ describe('computeInitialValuesFromOffer', () => {
     ).toEqual('23:00')
   })
 
-  it('should create a default template offer form with custom contact options if the ff is enabled', () => {
+  it('should create a default template offer form with custom contact options', () => {
     expect(
       computeInitialValuesFromOffer(
         [],
@@ -41,8 +41,7 @@ describe('computeInitialValuesFromOffer', () => {
         undefined,
         undefined,
         undefined,
-        false,
-        true
+        false
       )
     ).toEqual(
       expect.objectContaining({
@@ -52,7 +51,7 @@ describe('computeInitialValuesFromOffer', () => {
     )
   })
 
-  it('should create a template from an offer with offer email if ff is enabled', () => {
+  it('should create a template from an offer with offer email', () => {
     expect(
       computeInitialValuesFromOffer(
         [],
@@ -63,8 +62,7 @@ describe('computeInitialValuesFromOffer', () => {
         }),
         undefined,
         undefined,
-        false,
-        true
+        false
       )
     ).toEqual(
       expect.objectContaining({
@@ -74,7 +72,7 @@ describe('computeInitialValuesFromOffer', () => {
     )
   })
 
-  it('should create a template from an offer with offer phone if ff is enabled', () => {
+  it('should create a template from an offer with offer phone', () => {
     expect(
       computeInitialValuesFromOffer(
         [],
@@ -85,8 +83,7 @@ describe('computeInitialValuesFromOffer', () => {
         }),
         undefined,
         undefined,
-        false,
-        true
+        false
       )
     ).toEqual(
       expect.objectContaining({
@@ -96,7 +93,7 @@ describe('computeInitialValuesFromOffer', () => {
     )
   })
 
-  it('should create a template from an offer with offer form url if ff is enabled', () => {
+  it('should create a template from an offer with offer form url', () => {
     expect(
       computeInitialValuesFromOffer(
         [],
@@ -109,8 +106,7 @@ describe('computeInitialValuesFromOffer', () => {
         }),
         undefined,
         undefined,
-        false,
-        true
+        false
       )
     ).toEqual(
       expect.objectContaining({
@@ -120,7 +116,7 @@ describe('computeInitialValuesFromOffer', () => {
     )
   })
 
-  it('should create a template from an offer with offer default form if ff is enabled', () => {
+  it('should create a template from an offer with offer default form', () => {
     expect(
       computeInitialValuesFromOffer(
         [],
@@ -133,34 +129,12 @@ describe('computeInitialValuesFromOffer', () => {
         }),
         undefined,
         undefined,
-        false,
-        true
+        false
       )
     ).toEqual(
       expect.objectContaining({
         contactOptions: { email: false, phone: false, form: true },
       })
     )
-  })
-
-  it('should not build the contact options if the ff is disabled', () => {
-    const formValues = computeInitialValuesFromOffer(
-      [],
-      true,
-      getCollectiveOfferTemplateFactory({
-        contactEmail: 'email@test.co',
-        contactUrl: 'http://url.com',
-        contactForm: OfferContactFormEnum.FORM,
-      }),
-      undefined,
-      undefined,
-      false,
-      false
-    )
-    expect(formValues.contactOptions).toEqual(undefined)
-
-    expect(formValues.email).toEqual('email@test.co')
-
-    expect(formValues.contactUrl).toEqual(undefined)
   })
 })

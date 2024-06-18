@@ -48,91 +48,51 @@ describe('validationSchema OfferEducational', () => {
       description: string
       formValues: Partial<OfferEducationalFormValues>
       expectedErrors: string[]
-      isCustomContactActive: boolean
     }[] = [
       {
         description: 'valid form',
         formValues: defaultValues,
         expectedErrors: [],
-        isCustomContactActive: true,
       },
       {
-        description: 'not valid form without any contact option and FF active',
+        description: 'not valid form without any contact option',
         formValues: {
           ...defaultValues,
           contactOptions: { email: false, form: false, phone: false },
         },
         expectedErrors: ['Veuillez sélectionner au moins un moyen de contact'],
-        isCustomContactActive: true,
       },
       {
-        description:
-          'not valid form with email option checked but field empty and FF active',
+        description: 'not valid form with email option checked but field empty',
         formValues: {
           ...defaultValues,
           contactOptions: { email: true, form: false, phone: false },
           email: '',
         },
         expectedErrors: ['Veuillez renseigner une adresse email'],
-        isCustomContactActive: true,
       },
       {
-        description: 'not valid form with email field empty and FF inactive',
-        formValues: {
-          ...defaultValues,
-          contactOptions: undefined,
-          email: '',
-        },
-        expectedErrors: ['Veuillez renseigner une adresse email'],
-        isCustomContactActive: false,
-      },
-      {
-        description: 'not valid form with email field invalid and FF inactive',
-        formValues: {
-          ...defaultValues,
-          contactOptions: undefined,
-          email: 'invalidEmailString',
-        },
-        expectedErrors: [
-          'Veuillez renseigner une adresse email valide, exemple : mail@exemple.com',
-        ],
-        isCustomContactActive: false,
-      },
-      {
-        description:
-          'not valid form with phone option checked but field empty and FF active',
+        description: 'not valid form with phone option checked but field empty',
         formValues: {
           ...defaultValues,
           contactOptions: { email: true, form: false, phone: true },
           phone: '',
         },
         expectedErrors: ['Veuillez renseigner un numéro de téléphone'],
-        isCustomContactActive: true,
-      },
-      {
-        description: 'valid form with phone field empty and FF inactive',
-        formValues: {
-          ...defaultValues,
-          contactOptions: undefined,
-          phone: '',
-        },
-        expectedErrors: [],
-        isCustomContactActive: false,
       },
       {
         description:
-          'valid form with form option checked and default form selected and FF active',
+          'valid form with form option checked and default form selected',
         formValues: {
           ...defaultValues,
           contactOptions: { email: false, form: true, phone: false },
           contactFormType: 'form',
         },
         expectedErrors: [],
-        isCustomContactActive: true,
       },
       {
         description:
-          'invalid form with form option checked and url form selected but custom url field empty and FF active',
+          'invalid form with form option checked and url form selected but custom url field empty',
         formValues: {
           ...defaultValues,
           contactOptions: { email: false, form: true, phone: false },
@@ -140,11 +100,10 @@ describe('validationSchema OfferEducational', () => {
           contactUrl: '',
         },
         expectedErrors: ['Veuillez renseigner une URL de contact'],
-        isCustomContactActive: true,
       },
       {
         description:
-          'invalid form with form option checked and url form selected but custom url invalid and FF active',
+          'invalid form with form option checked and url form selected but custom url invalid',
         formValues: {
           ...defaultValues,
           contactOptions: { email: false, form: true, phone: false },
@@ -154,11 +113,10 @@ describe('validationSchema OfferEducational', () => {
         expectedErrors: [
           'Veuillez renseigner une URL valide, exemple : https://mon-formulaire.fr',
         ],
-        isCustomContactActive: true,
       },
       {
         description:
-          'valid form with form option checked and url form selected and custom url valid and FF active',
+          'valid form with form option checked and url form selected and custom url valid',
         formValues: {
           ...defaultValues,
           contactOptions: { email: false, form: true, phone: false },
@@ -166,20 +124,17 @@ describe('validationSchema OfferEducational', () => {
           contactUrl: 'http://testValidUrl.com',
         },
         expectedErrors: [],
-        isCustomContactActive: true,
       },
     ]
 
-    cases.forEach(
-      ({ description, formValues, expectedErrors, isCustomContactActive }) => {
-        it(`should validate the form for case: ${description}`, async () => {
-          const errors = await getYupValidationSchemaErrors(
-            getOfferEducationalValidationSchema(isCustomContactActive),
-            formValues
-          )
-          expect(errors).toEqual(expectedErrors)
-        })
-      }
-    )
+    cases.forEach(({ description, formValues, expectedErrors }) => {
+      it(`should validate the form for case: ${description}`, async () => {
+        const errors = await getYupValidationSchemaErrors(
+          getOfferEducationalValidationSchema(),
+          formValues
+        )
+        expect(errors).toEqual(expectedErrors)
+      })
+    })
   })
 })

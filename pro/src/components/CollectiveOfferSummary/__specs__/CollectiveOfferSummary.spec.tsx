@@ -119,16 +119,13 @@ describe('CollectiveOfferSummary', () => {
     expect(title).toBeInTheDocument()
   })
 
-  it('should display the custom contact details if the ff is enabled', async () => {
+  it('should display the custom contact details', async () => {
     const offer = getCollectiveOfferTemplateFactory({
       contactEmail: 'email@test.co',
       contactPhone: '00000000',
       contactForm: OfferContactFormEnum.FORM,
     })
-    renderCollectiveOfferSummary(
-      { ...props, offer },
-      { features: ['WIP_ENABLE_COLLECTIVE_CUSTOM_CONTACT'] }
-    )
+    renderCollectiveOfferSummary({ ...props, offer })
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
@@ -139,14 +136,11 @@ describe('CollectiveOfferSummary', () => {
     ).toBeInTheDocument()
   })
 
-  it('should display the custom contact custom url if the ff is enabled', async () => {
+  it('should display the custom contact custom url', async () => {
     const offer = getCollectiveOfferTemplateFactory({
       contactUrl: 'http://www.form.com',
     })
-    renderCollectiveOfferSummary(
-      { ...props, offer },
-      { features: ['WIP_ENABLE_COLLECTIVE_CUSTOM_CONTACT'] }
-    )
+    renderCollectiveOfferSummary({ ...props, offer })
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
