@@ -9,7 +9,6 @@ from dateutil.relativedelta import relativedelta
 import fakeredis
 from flask_jwt_extended.utils import decode_token
 import pytest
-import requests_mock
 import time_machine
 
 from pcapi import settings
@@ -507,7 +506,58 @@ class CreateBeneficiaryTest:
         assert user.has_active_deposit
         assert user.deposit.amount == 30
 
-    def test_apps_flyer_called(self):
+    def test_apps_flyer_called_for_underage_beneficiary(self, requests_mock):
+        apps_flyer_data = {
+            "apps_flyer": {"user": "some-user-id", "platform": "ANDROID"},
+            "firebase_pseudo_id": "firebase_pseudo_id",
+        }
+        user = users_factories.UserFactory(
+            externalIds=apps_flyer_data, validatedBirthDate=datetime.date.today() - relativedelta(years=16, months=4)
+        )
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+        )
+        posted = requests_mock.post("https://api2.appsflyer.com/inappevent/app.passculture.webapp")
+        user = subscription_api.activate_beneficiary_for_eligibility(
+            user, fraud_check, users_models.EligibilityType.UNDERAGE
+        )
+
+        first_request, second_request, third_request = posted.request_history
+        assert first_request.json() == {
+            "appsflyer_id": "some-user-id",
+            "eventName": "af_complete_beneficiary",
+            "eventValue": {
+                "af_user_id": str(user.id),
+                "af_firebase_pseudo_id": "firebase_pseudo_id",
+                "type": "GRANT_15_17",
+            },
+        }
+        assert second_request.json() == {
+            "appsflyer_id": "some-user-id",
+            "eventName": "af_complete_beneficiary_underage",
+            "eventValue": {
+                "af_user_id": str(user.id),
+                "af_firebase_pseudo_id": "firebase_pseudo_id",
+                "type": "GRANT_15_17",
+            },
+        }
+        assert third_request.json() == {
+            "appsflyer_id": "some-user-id",
+            "eventName": "af_complete_beneficiary_16",
+            "eventValue": {
+                "af_user_id": str(user.id),
+                "af_firebase_pseudo_id": "firebase_pseudo_id",
+                "type": "GRANT_15_17",
+            },
+        }
+
+        assert user.has_underage_beneficiary_role
+        assert len(user.deposits) == 1
+
+    def test_apps_flyer_called_for_eighteen_beneficiary(self, requests_mock):
         apps_flyer_data = {
             "apps_flyer": {"user": "some-user-id", "platform": "ANDROID"},
             "firebase_pseudo_id": "firebase_pseudo_id",
@@ -516,7 +566,13 @@ class CreateBeneficiaryTest:
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
         )
-        expected = {
+        posted = requests_mock.post("https://api2.appsflyer.com/inappevent/app.passculture.webapp")
+        user = subscription_api.activate_beneficiary_for_eligibility(
+            user, fraud_check, users_models.EligibilityType.AGE18
+        )
+
+        first_request, second_request = posted.request_history
+        assert first_request.json() == {
             "appsflyer_id": "some-user-id",
             "eventName": "af_complete_beneficiary",
             "eventValue": {
@@ -525,17 +581,18 @@ class CreateBeneficiaryTest:
                 "type": "GRANT_18",
             },
         }
+        assert second_request.json() == {
+            "appsflyer_id": "some-user-id",
+            "eventName": "af_complete_beneficiary_18",
+            "eventValue": {
+                "af_user_id": str(user.id),
+                "af_firebase_pseudo_id": "firebase_pseudo_id",
+                "type": "GRANT_18",
+            },
+        }
 
-        with requests_mock.Mocker() as request_mock:
-            posted = request_mock.post("https://api2.appsflyer.com/inappevent/app.passculture.webapp")
-            user = subscription_api.activate_beneficiary_for_eligibility(
-                user, fraud_check, users_models.EligibilityType.AGE18
-            )
-
-            assert posted.last_request.json() == expected
-
-            assert user.has_beneficiary_role
-            assert len(user.deposits) == 1
+        assert user.has_beneficiary_role
+        assert len(user.deposits) == 1
 
     def test_external_users_updated(self):
         user = users_factories.UserFactory(roles=[])
