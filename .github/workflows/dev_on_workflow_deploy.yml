@@ -162,8 +162,8 @@ jobs:
           ENTRYPOINT: api/documentation
           CHANNEL: ''
           EXPIRES: '7d'
-          GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_TOKEN }}
           GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   deploy-pro-on-testing-on-firebase:
     name: "Deploy pro on testing live channel"
