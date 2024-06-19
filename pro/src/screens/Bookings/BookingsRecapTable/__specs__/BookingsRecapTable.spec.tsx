@@ -80,7 +80,7 @@ describe('components | BookingsRecapTable', () => {
 
     await userEvent.type(screen.getByRole('textbox'), 'Le nom de l’offre 2')
     await waitFor(() => {
-      // 1 line = 6 cells
+      // 1 line = 5 cells
       expect(screen.getAllByRole('cell')).toHaveLength(5)
     })
 
@@ -91,12 +91,12 @@ describe('components | BookingsRecapTable', () => {
     await userEvent.clear(screen.getByRole('textbox'))
 
     await waitFor(() => {
-      // 2 lines = 12 cells
+      // 2 lines = 10 cells
       expect(screen.getAllByRole('cell')).toHaveLength(10)
     })
     await userEvent.type(screen.getByRole('textbox'), 'Parjeot')
     await waitFor(() => {
-      // 1 line = 6 cells
+      // 1 line = 5
       expect(screen.getAllByRole('cell')).toHaveLength(5)
     })
   })
@@ -202,7 +202,7 @@ describe('components | BookingsRecapTable', () => {
     renderBookingRecap(props)
 
     // Then
-    // 1 line = 6 cells
+    // 1 line = 6
     const cells = screen.getAllByRole('columnheader')
     expect(cells).toHaveLength(6)
     expect(cells[0]).toHaveTextContent('Réservation')

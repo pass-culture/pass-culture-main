@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import { format } from 'date-fns-tz'
 import React from 'react'
 
@@ -22,13 +23,17 @@ import styles from './BookingOfferCell.module.scss'
 
 export interface BookingOfferCellProps {
   booking: BookingRecapResponseModel | CollectiveBookingResponseModel
+  className?: string
 }
 
 export const isCollectiveBooking = (
   booking: BookingRecapResponseModel | CollectiveBookingResponseModel
 ): booking is CollectiveBookingResponseModel => booking.stock.offerIsEducational
 
-export const BookingOfferCell = ({ booking }: BookingOfferCellProps) => {
+export const BookingOfferCell = ({
+  booking,
+  className,
+}: BookingOfferCellProps) => {
   const editionUrl = useOfferEditionURL(
     booking.stock.offerIsEducational,
     booking.stock.offerId,
@@ -48,7 +53,7 @@ export const BookingOfferCell = ({ booking }: BookingOfferCellProps) => {
     booking.bookingStatus.toUpperCase() === OFFER_STATUS_PENDING &&
     shouldDisplayWarning(booking.stock)
   return (
-    <div>
+    <div className={cn(className)}>
       <a
         href={editionUrl}
         title={booking.stock.offerName}

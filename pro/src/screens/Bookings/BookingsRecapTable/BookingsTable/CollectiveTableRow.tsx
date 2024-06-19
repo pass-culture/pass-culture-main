@@ -8,15 +8,14 @@ import { useAnalytics } from 'app/App/analytics/firebase'
 import { GET_COLLECTIVE_BOOKING_BY_ID_QUERY_KEY } from 'config/swrQueryKeys'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
+import { formatPrice } from 'utils/formatPrice'
+import { pluralizeString } from 'utils/pluralize'
 import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
 
 import styles from './BookingsTable.module.scss'
-import { BookingIdCell } from './Cells/BookingIdCell'
 import { BookingOfferCell } from './Cells/BookingOfferCell'
 import { CollectiveBookingStatusCell } from './Cells/CollectiveBookingStatusCell'
 import { DetailsButtonCell } from './Cells/DetailsButtonCell'
-import { InstitutionCell } from './Cells/InstitutionCell'
-import { NumberOfTicketsAndPriceCell } from './Cells/NumberOfTicketsAndPriceCell'
 import { CollectiveBookingDetails } from './CollectiveBookingDetails'
 
 export interface CollectiveTableRowProps {
@@ -59,6 +58,12 @@ export const CollectiveTableRow = ({
     }
   }, [booking, defaultOpenedBookingId])
 
+  const institutionName =
+    `${booking.institution.institutionType} ${booking.institution.name}`.trim()
+  const institutionAddress =
+    `${booking.institution.postalCode} ${booking.institution.city}`.trim()
+  const numberOfTickets = booking.stock.numberOfTickets
+
   return (
     <>
       <tr
@@ -70,7 +75,7 @@ export const CollectiveTableRow = ({
           className={cn(styles['table-cell'], styles['column-booking-id'])}
           data-label="Réservation"
         >
-          <BookingIdCell id={booking.bookingId} />
+          <div className={styles['cell-item-wrapper']}>{booking.bookingId}</div>
         </td>
 
         <td
@@ -80,32 +85,60 @@ export const CollectiveTableRow = ({
           )}
           data-label="Nom de l’offre"
         >
-          <BookingOfferCell booking={booking} />
+          <BookingOfferCell
+            booking={booking}
+            className={styles['cell-item-wrapper']}
+          />
         </td>
 
         <td
           className={cn(styles['table-cell'], styles['column-institution'])}
           data-label="Établissement"
         >
-          <InstitutionCell institution={booking.institution} />
+          <div className={styles['cell-item-wrapper']}>
+            <div>
+              <span>{institutionName}</span>
+              <br />
+            </div>
+            <span className={styles['institution-cell-subtitle']}>
+              {institutionAddress}
+            </span>
+          </div>
         </td>
 
         <td
           className={cn(styles['table-cell'], styles['column-price-and-price'])}
           data-label="Places et prix"
         >
-          <NumberOfTicketsAndPriceCell booking={booking} />
+          <div className={styles['cell-item-wrapper']}>
+            <div>
+              {numberOfTickets} {pluralizeString('place', numberOfTickets)}
+            </div>
+            <div>
+              {formatPrice(booking.bookingAmount, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+                trailingZeroDisplay: 'stripIfInteger',
+              })}
+            </div>
+          </div>
         </td>
 
         <td
           className={cn(styles['table-cell'], styles['column-booking-status'])}
           data-label="Statut"
         >
-          <CollectiveBookingStatusCell booking={booking} />
+          <CollectiveBookingStatusCell
+            booking={booking}
+            className={styles['cell-item-wrapper']}
+          />
         </td>
 
         <td className={cn(styles['table-cell'])} data-label="Détails">
-          <DetailsButtonCell isExpanded={isExpanded} />
+          <DetailsButtonCell
+            isExpanded={isExpanded}
+            className={styles['cell-item-wrapper']}
+          />
         </td>
       </tr>
 
