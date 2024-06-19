@@ -147,23 +147,22 @@ def main():
             + ".py"
         )
 
-        alembic_util.status(
-            f"Generating {path}",
-            alembic_util.template_to_file,
-            str(ALEMBIC_TEMPLATE),
-            path,
-            "utf-8",
-            # The following kwargs are used to populate the template.
-            message=message,
-            imports=imports,
-            config=config,
-            up_revision=rev_id,
-            down_revision=down_revision,
-            branch_labels=None,
-            depends_on=None,
-            upgrades=upgrade,
-            downgrades=downgrade,
-        )
+        with alembic_util.status(f"Generating {path}"):
+            alembic_util.template_to_file(
+                str(ALEMBIC_TEMPLATE),
+                path,
+                "utf-8",
+                # The following kwargs are used to populate the template.
+                message=message,
+                imports=imports,
+                config=config,
+                up_revision=rev_id,
+                down_revision=down_revision,
+                branch_labels=None,
+                depends_on=None,
+                upgrades=upgrade,
+                downgrades=downgrade,
+            )
         down_revision = rev_id
 
 
