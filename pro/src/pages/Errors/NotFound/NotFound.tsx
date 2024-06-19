@@ -1,5 +1,3 @@
-import React from 'react'
-
 import stroke404Icon from 'icons/stroke-404.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -7,11 +5,11 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './NotFound.module.scss'
 
-interface Props {
+type NotFoundProps = {
   redirect?: string
 }
 
-export const NotFound = ({ redirect = '/accueil' }: Props) => (
+export const NotFound = ({ redirect = '/accueil' }: NotFoundProps) => (
   <main className={styles['no-match']} id="content">
     <SvgIcon
       src={stroke404Icon}

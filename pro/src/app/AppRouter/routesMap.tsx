@@ -346,4 +346,9 @@ export const routes: RouteConfig[] = [
     path: '/collaborateurs',
     title: 'Collaborateurs',
   },
+  {
+    lazy: () => import('pages/Errors/NotFound/NotFound'),
+    path: '/404',
+    title: 'Erreur 404 - Page indisponible',
+  },
 ]
