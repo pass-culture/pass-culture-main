@@ -1249,40 +1249,6 @@ def get_educational_institution_public(
     ).one_or_none()
 
 
-def get_all_collective_offers_by_institutionUAI(uai: str) -> list[educational_models.CollectiveOffer]:
-    query = (
-        educational_models.CollectiveOffer.query.join(
-            educational_models.EducationalInstitution, educational_models.CollectiveOffer.institution
-        )
-        .options(
-            sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
-                educational_models.CollectiveStock.collectiveBookings
-            ),
-        )
-        .options(
-            sa_orm.joinedload(educational_models.CollectiveOffer.nationalProgram),
-        )
-        .options(
-            sa_orm.joinedload(educational_models.CollectiveOffer.domains),
-        )
-        .options(
-            sa_orm.joinedload(educational_models.CollectiveOffer.teacher),
-        )
-        .options(
-            sa_orm.joinedload(educational_models.CollectiveOffer.venue)
-            .joinedload(offerers_models.Venue.managingOfferer)
-            .load_only(
-                offerers_models.Offerer.name,
-                offerers_models.Offerer.isActive,
-                offerers_models.Offerer.validationStatus,
-            ),
-        )
-        .filter(educational_models.EducationalInstitution.institutionId == uai)
-    )
-
-    return query.all()
-
-
 def get_all_offer_by_redactor_id(redactor_id: int) -> list[educational_models.CollectiveOffer]:
     return (
         educational_models.CollectiveOffer.query.join(
