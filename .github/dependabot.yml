@@ -11,6 +11,16 @@ updates:
       - dependency-name: '*'
         update-types: ['version-update:semver-major']
 
+  - package-ecosystem: 'npm'
+    directory: '/api/documentation'
+    schedule:
+      interval: 'daily'
+      time: '09:00'
+    open-pull-requests-limit: 10
+    ignore:
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
+
   - package-ecosystem: 'pip' # pip even if we use poetry
     directory: '/api'
     schedule:
