@@ -1,5 +1,3 @@
-import React from 'react'
-
 import strokeDuoIcon from 'icons/stroke-duo.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
