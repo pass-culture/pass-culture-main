@@ -21,6 +21,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.repository import atomic
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro import forms as pro_forms
@@ -59,6 +60,7 @@ def render_bank_account_details(
 
 
 @bank_blueprint.route("/<int:bank_account_id>", methods=["GET"])
+@atomic()
 def get(bank_account_id: int) -> utils.BackofficeResponse:
     bank_account = (
         finance_models.BankAccount.query.filter(finance_models.BankAccount.id == bank_account_id)
@@ -74,6 +76,7 @@ def get(bank_account_id: int) -> utils.BackofficeResponse:
 
 
 @bank_blueprint.route("/<int:bank_account_id>/linked_venues", methods=["GET"])
+@atomic()
 def get_linked_venues(bank_account_id: int) -> utils.BackofficeResponse:
     linked_venues = (
         offerers_models.VenueBankAccountLink.query.filter(
@@ -96,6 +99,7 @@ def get_linked_venues(bank_account_id: int) -> utils.BackofficeResponse:
 
 
 @bank_blueprint.route("/<int:bank_account_id>/history", methods=["GET"])
+@atomic()
 def get_history(bank_account_id: int) -> utils.BackofficeResponse:
     actions_history = (
         history_models.ActionHistory.query.filter_by(bankAccountId=bank_account_id)
@@ -120,6 +124,7 @@ def get_history(bank_account_id: int) -> utils.BackofficeResponse:
 
 
 @bank_blueprint.route("/<int:bank_account_id>/invoices", methods=["GET"])
+@atomic()
 def get_invoices(bank_account_id: int) -> utils.BackofficeResponse:
     invoices = (
         finance_models.Invoice.query.filter(finance_models.Invoice.bankAccountId == bank_account_id)
@@ -140,6 +145,7 @@ def get_invoices(bank_account_id: int) -> utils.BackofficeResponse:
 
 
 @bank_blueprint.route("/<int:bank_account_id>/reimbursement-details", methods=["POST"])
+@atomic()
 def download_reimbursement_details(bank_account_id: int) -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
     if not form.validate():
@@ -164,6 +170,7 @@ def download_reimbursement_details(bank_account_id: int) -> utils.BackofficeResp
 
 
 @bank_blueprint.route("/<int:bank_account_id>", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def update_bank_account(bank_account_id: int) -> utils.BackofficeResponse:
     bank_account = (
@@ -199,7 +206,6 @@ def update_bank_account(bank_account_id: int) -> utils.BackofficeResponse:
         )
         bank_account.label = form.label.data
         db.session.add(bank_account)
-        db.session.commit()
         flash("Les informations ont été mises à jour", "success")
 
     return redirect(url_for("backoffice_web.bank_account.get", bank_account_id=bank_account_id), code=303)

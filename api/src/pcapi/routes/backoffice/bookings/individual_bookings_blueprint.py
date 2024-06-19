@@ -16,6 +16,7 @@ import sqlalchemy as sa
 from werkzeug.exceptions import BadRequest
 from werkzeug.exceptions import NotFound
 
+from pcapi import repository
 from pcapi import settings
 from pcapi.connectors import ems
 from pcapi.core.bookings import api as bookings_api
@@ -143,6 +144,7 @@ def _get_individual_bookings(
 
 
 @individual_bookings_blueprint.route("", methods=["GET"])
+@repository.atomic()
 def list_individual_bookings() -> utils.BackofficeResponse:
     form = booking_forms.GetIndividualBookingListForm(formdata=utils.get_query_params())
     if not form.validate():
@@ -188,6 +190,7 @@ def _redirect_after_individual_booking_action() -> utils.BackofficeResponse:
 
 
 @individual_bookings_blueprint.route("/download-csv", methods=["GET"])
+@repository.atomic()
 def get_individual_booking_csv_download() -> utils.BackofficeResponse:
     form = booking_forms.GetDownloadBookingsForm(formdata=utils.get_query_params())
     if not form.validate():
@@ -205,6 +208,7 @@ def get_individual_booking_csv_download() -> utils.BackofficeResponse:
 
 
 @individual_bookings_blueprint.route("/download-xlsx", methods=["GET"])
+@repository.atomic()
 def get_individual_booking_xlsx_download() -> utils.BackofficeResponse:
     form = booking_forms.GetDownloadBookingsForm(formdata=utils.get_query_params())
     if not form.validate():
@@ -227,6 +231,7 @@ def get_individual_booking_xlsx_download() -> utils.BackofficeResponse:
 
 
 @individual_bookings_blueprint.route("/<int:booking_id>/mark-as-used", methods=["POST"])
+@repository.atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
 def mark_booking_as_used(booking_id: int) -> utils.BackofficeResponse:
     booking = bookings_models.Booking.query.filter_by(id=booking_id).one_or_none()
@@ -240,11 +245,13 @@ def mark_booking_as_used(booking_id: int) -> utils.BackofficeResponse:
     try:
         bookings_api.mark_as_used_with_uncancelling(booking, bookings_models.BookingValidationAuthorType.BACKOFFICE)
     except bookings_exceptions.BookingDepositCreditExpired:
+        repository.mark_transaction_as_invalid()
         flash(
             f"La réservation <b>{booking.token}</b> ne peut être validée, car le crédit associé est expiré.",
             "warning",
         )
     except Exception as exc:  # pylint: disable=broad-except
+        repository.mark_transaction_as_invalid()
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
     else:
         flash(Markup("La réservation <b>{token}</b> a été validée").format(token=booking.token), "success")
@@ -253,6 +260,7 @@ def mark_booking_as_used(booking_id: int) -> utils.BackofficeResponse:
 
 
 @individual_bookings_blueprint.route("/<int:booking_id>/cancel", methods=["POST"])
+@repository.atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
 def mark_booking_as_cancelled(booking_id: int) -> utils.BackofficeResponse:
     booking = bookings_models.Booking.query.filter_by(id=booking_id).one_or_none()
@@ -267,11 +275,14 @@ def mark_booking_as_cancelled(booking_id: int) -> utils.BackofficeResponse:
     try:
         bookings_api.mark_as_cancelled(booking, bookings_models.BookingCancellationReasons(form.reason.data))
     except bookings_exceptions.BookingIsAlreadyCancelled:
+        repository.mark_transaction_as_invalid()
         flash("Impossible d'annuler une réservation déjà annulée", "warning")
     except bookings_exceptions.BookingIsAlreadyRefunded:
         # The same exception is issued when Pricing is PROCESSED or when INVOICED with Payment
+        repository.mark_transaction_as_invalid()
         flash("Cette réservation est en train d’être remboursée, il est impossible de l’invalider", "warning")
     except bookings_exceptions.BookingIsAlreadyUsed:
+        repository.mark_transaction_as_invalid()
         flash("Impossible d'annuler une réservation déjà utilisée", "warning")
     except (
         cgr_exceptions.CGRAPIException,
@@ -287,10 +298,12 @@ def mark_booking_as_cancelled(booking_id: int) -> utils.BackofficeResponse:
                 booking, bookings_models.BookingCancellationReasons(form.reason.data), one_side_cancellation=True
             )
         except Exception as exception:  # pylint: disable=broad-except
+            repository.mark_transaction_as_invalid()
             flash(Markup("Une erreur s'est produite : {message}").format(message=str(exception)), "warning")
         else:
             flash(Markup("La réservation <b>{token}</b> a été annulée").format(token=booking.token), "success")
     except Exception as exc:  # pylint: disable=broad-except
+        repository.mark_transaction_as_invalid()
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
     else:
         flash(Markup("La réservation <b>{token}</b> a été annulée").format(token=booking.token), "success")
@@ -299,6 +312,7 @@ def mark_booking_as_cancelled(booking_id: int) -> utils.BackofficeResponse:
 
 
 @individual_bookings_blueprint.route("/batch-validate", methods=["GET"])
+@repository.atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
 def get_batch_validate_individual_bookings_form() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
@@ -313,6 +327,7 @@ def get_batch_validate_individual_bookings_form() -> utils.BackofficeResponse:
 
 
 @individual_bookings_blueprint.route("/batch-validate", methods=["POST"])
+@repository.atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
 def batch_validate_individual_bookings() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
