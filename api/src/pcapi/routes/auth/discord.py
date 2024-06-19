@@ -7,7 +7,6 @@ from flask import request
 from werkzeug.wrappers.response import Response
 
 from pcapi import settings
-from pcapi.app import csrf
 from pcapi.core import token as token_utils
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as user_models
@@ -38,7 +37,6 @@ def discord_signin() -> str:
 
 @blueprint.auth_blueprint.route("/discord/signin", methods=["POST"])
 def discord_signin_post() -> str | Response | None:
-    csrf.protect()
     form = SigninForm()
     if not form.validate():
         form.error_message = "Identifiant ou Mot de passe incorrect"
