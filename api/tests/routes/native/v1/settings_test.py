@@ -1,5 +1,6 @@
 import pytest
 
+from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 
 
@@ -17,8 +18,10 @@ class SettingsTest:
         APP_ENABLE_AUTOCOMPLETE=True,
     )
     def test_get_settings_feature_combination_1(self, client):
-        response = client.get("/native/v1/settings")
-        assert response.status_code == 200
+        with assert_num_queries(1):  # feature
+            response = client.get("/native/v1/settings")
+            assert response.status_code == 200
+
         assert response.json == {
             "accountCreationMinimumAge": 15,
             "appEnableAutocomplete": True,
@@ -43,8 +46,10 @@ class SettingsTest:
         APP_ENABLE_AUTOCOMPLETE=False,
     )
     def test_get_settings_feature_combination_2(self, client):
-        response = client.get("/native/v1/settings")
-        assert response.status_code == 200
+        with assert_num_queries(1):  # feature
+            response = client.get("/native/v1/settings")
+            assert response.status_code == 200
+
         assert response.json == {
             "accountCreationMinimumAge": 15,
             "appEnableAutocomplete": False,

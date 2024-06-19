@@ -33,6 +33,7 @@ import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.subscription.api as subscription_api
 import pcapi.core.subscription.models as subscription_models
+from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
@@ -70,18 +71,20 @@ class AccountTest:
         users_factories.UserFactory(email=self.identifier)
 
         client.with_token(email="other-email@example.com")
-        response = client.get("/native/v1/me")
+        with assert_num_queries(1):  # user
+            response = client.get("/native/v1/me")
+            assert response.status_code == 403
 
-        assert response.status_code == 403
         assert response.json["email"] == ["Utilisateur introuvable"]
 
     def test_get_user_profile_not_active(self, client, app):
         users_factories.UserFactory(email=self.identifier, isActive=False)
 
         client.with_token(email=self.identifier)
-        response = client.get("/native/v1/me")
+        with assert_num_queries(1):  # user
+            response = client.get("/native/v1/me")
+            assert response.status_code == 403
 
-        assert response.status_code == 403
         assert response.json["email"] == ["Utilisateur introuvable"]
 
     @time_machine.travel("2018-06-01", tick=False)
@@ -109,9 +112,13 @@ class AccountTest:
         booking = BookingFactory(user=user, amount=Decimal("123.45"))
         CancelledBookingFactory(user=user, amount=Decimal("123.45"))
 
+        expected_num_queries = (
+            5  # user + deposit + booking(from _get_booked_offers) + booking (from get_domains_credit) + feature
+        )
         client.with_token(self.identifier)
-
-        response = client.get("/native/v1/me")
+        with assert_num_queries(expected_num_queries):
+            response = client.get("/native/v1/me")
+            assert response.status_code == 200
 
         EXPECTED_DATA = {
             "id": user.id,
@@ -144,15 +151,19 @@ class AccountTest:
         }
         EXPECTED_DATA.update(USER_DATA)
 
-        assert response.status_code == 200
         assert response.json == EXPECTED_DATA
         assert user.dateOfBirth == datetime(2000, 1, 1)
 
     def test_status_contains_subscription_status_when_eligible(self, client):
         user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18))
 
+        expected_num_queries = (
+            6  # user + beneficiary_fraud_review + feature + beneficiary_fraud_check + deposit + booking
+        )
+
         client.with_token(user.email)
-        response = client.get("/native/v1/me")
+        with assert_num_queries(expected_num_queries):
+            response = client.get("/native/v1/me")
 
         assert response.json["status"] == {
             "statusType": young_status.YoungStatusType.ELIGIBLE.value,
@@ -162,19 +173,26 @@ class AccountTest:
     def test_get_user_not_beneficiary(self, client, app):
         users_factories.UserFactory(email=self.identifier)
 
-        client.with_token(email=self.identifier)
-        response = client.get("/native/v1/me")
+        expected_num_queries = 4  # user + beneficiary_fraud_review + deposit + booking
 
-        assert response.status_code == 200
+        client.with_token(email=self.identifier)
+
+        with assert_num_queries(expected_num_queries):
+            response = client.get("/native/v1/me")
+            assert response.status_code == 200
+
         assert not response.json["domainsCredit"]
 
     def test_get_user_profile_empty_first_name(self, client, app):
         users_factories.UserFactory(email=self.identifier, firstName="")
 
-        client.with_token(email=self.identifier)
-        response = client.get("/native/v1/me")
+        expected_num_queries = 4  # user + beneficiary_fraud_review + deposit + booking
 
-        assert response.status_code == 200
+        client.with_token(email=self.identifier)
+        with assert_num_queries(expected_num_queries):
+            response = client.get("/native/v1/me")
+            assert response.status_code == 200
+
         assert response.json["email"] == self.identifier
         assert response.json["firstName"] is None
         assert not response.json["isBeneficiary"]
@@ -207,7 +225,11 @@ class AccountTest:
         fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
         client.with_token(user.email)
 
-        response = client.get("/native/v1/me")
+        expected_num_queries = (
+            6  # user + beneficiary_fraud_review + beneficiary_fraud_check + feature + deposit + booking
+        )
+        with assert_num_queries(expected_num_queries):
+            response = client.get("/native/v1/me")
         assert response.status_code == 200
 
         msg = response.json["subscriptionMessage"]
@@ -233,10 +255,14 @@ class AccountTest:
             status=fraud_models.FraudCheckStatus.SUSPICIOUS,
             reasonCodes=[fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED],
         )
-        client.with_token(user.email)
 
-        response = client.get("/native/v1/me")
-        assert response.status_code == 200
+        client.with_token(user.email)
+        expected_num_queries = (
+            6  # user + beneficiary_fraud_review + beneficiary_fraud_check + feature + deposit + booking
+        )
+        with assert_num_queries(expected_num_queries):
+            response = client.get("/native/v1/me")
+            assert response.status_code == 200
 
         msg = response.json["subscriptionMessage"]
         assert (
@@ -361,10 +387,16 @@ class AccountTest:
 
     def should_display_cultural_survey_if_beneficiary(self, client):
         user = users_factories.BeneficiaryGrant18Factory()
+
+        expected_num_queries = (
+            5  # user + deposit + booking(from _get_booked_offers) + booking (from get_domains_credit) + feature
+        )
+
         client.with_token(user.email)
 
-        response = client.get("/native/v1/me")
-        assert response.status_code == 200
+        with assert_num_queries(expected_num_queries):
+            response = client.get("/native/v1/me")
+            assert response.status_code == 200
         assert response.json["needsToFillCulturalSurvey"] is True
 
     def test_user_without_password(self, client):
@@ -372,9 +404,11 @@ class AccountTest:
         user = sso.user
         user.password = None
 
-        response = client.with_token(user.email).get("/native/v1/me")
+        expected_num_queries = 5  # user(update) + user+ beneficiary_fraud_review + deposit + booking
+        with assert_num_queries(expected_num_queries):
+            response = client.with_token(user.email).get("/native/v1/me")
+            assert response.status_code == 200, response.json
 
-        assert response.status_code == 200, response.json
         assert response.json["hasPassword"] == False
 
 
@@ -1229,9 +1263,13 @@ class UpdateUserEmailTest:
         assert response.status_code == 200
         # Ensure the access token is valid
         access_token = response.json["accessToken"]
+
+        expected_num_query = 4  # user + beneficiary_fraud_review + deposit + booking
+
         client.auth_header = {"Authorization": f"Bearer {access_token}"}
-        protected_response = client.get("/native/v1/me")
-        assert protected_response.status_code == 200
+        with assert_num_queries(expected_num_query):
+            protected_response = client.get("/native/v1/me")
+            assert protected_response.status_code == 200
 
         # Ensure the refresh token is valid
         refresh_token = response.json["refreshToken"]
@@ -1323,9 +1361,12 @@ class GetEMailUpdateStatusTest:
         user = users_factories.UserFactory(email=self.old_email)
         request_email_update_with_credentials(user, self.new_email, settings.TEST_DEFAULT_PASSWORD)
 
-        response = client.with_token(user.email).get("/native/v1/profile/email_update/status")
+        client = client.with_token(user.email)
+        expected_num_queries = 2  # user + user_email_history
+        with assert_num_queries(expected_num_queries):
+            response = client.get("/native/v1/profile/email_update/status")
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json["newEmail"] == self.new_email
         assert response.json["expired"] is False
         assert response.json["status"] == users_models.EmailHistoryEventTypeEnum.UPDATE_REQUEST.value
@@ -1333,18 +1374,24 @@ class GetEMailUpdateStatusTest:
     def test_with_no_email_update_event(self, client):
         user = users_factories.UserFactory(email=self.old_email)
 
-        response = client.with_token(user.email).get("/native/v1/profile/email_update/status")
-
-        assert response.status_code == 404
+        client = client.with_token(user.email)
+        expected_num_queries = 2  # user + user_email_history
+        with assert_num_queries(expected_num_queries):
+            response = client.get("/native/v1/profile/email_update/status")
+            assert response.status_code == 404
 
     def test_expired_token_is_reported(self, app, client):
         user = users_factories.UserFactory(email=self.old_email)
         request_email_update_with_credentials(user, self.new_email, settings.TEST_DEFAULT_PASSWORD)
 
-        with mock.patch.object(app.redis_client, "ttl", return_value=-1):
-            response = client.with_token(user.email).get("/native/v1/profile/email_update/status")
+        client = client.with_token(user.email)
+        expected_num_queries = 2  # user + user_email_history
 
-        assert response.status_code == 200
+        with mock.patch.object(app.redis_client, "ttl", return_value=-1):
+            with assert_num_queries(expected_num_queries):
+                response = client.get("/native/v1/profile/email_update/status")
+                assert response.status_code == 200
+
         assert response.json["newEmail"] == self.new_email
         assert response.json["expired"] is True
         assert response.json["status"] == users_models.EmailHistoryEventTypeEnum.UPDATE_REQUEST.value
@@ -1357,7 +1404,11 @@ class GetEMailUpdateStatusTest:
         redis_value = app.redis_client.get(redis_key)
         redis_expiration = app.redis_client.ttl(redis_key)
         app.redis_client.delete(redis_key)
-        response = client.with_token(user.email).get("/native/v1/profile/email_update/status")
+
+        client = client.with_token(user.email)
+        expected_num_queries = 2  # user + user_email_history
+        with assert_num_queries(expected_num_queries):
+            response = client.get("/native/v1/profile/email_update/status")
         app.redis_client.set(redis_key, redis_value)
         app.redis_client.expireat(redis_key, redis_expiration)
 
@@ -1418,6 +1469,7 @@ class ValidateEmailTest:
         # Ensure the access token is valid
         access_token = response.json["accessToken"]
         client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
         protected_response = client.get("/native/v1/me")
         assert protected_response.status_code == 200
 
@@ -1545,8 +1597,11 @@ class GetTokenExpirationTest:
             data={"new_email": "newemail@email.com"},
         )
 
-        response = client.with_token(user.email).get("/native/v1/profile/token_expiration")
-        assert response.status_code == 200
+        client = client.with_token(user.email)
+        expected_num_queries = 1  # user_email
+        with assert_num_queries(expected_num_queries):
+            response = client.get("/native/v1/profile/token_expiration")
+            assert response.status_code == 200
 
         expiration = datetime.fromisoformat(response.json["expiration"])
         delta = abs(expiration - expiration_date)
@@ -1555,9 +1610,11 @@ class GetTokenExpirationTest:
     def test_no_token(self, app, client):
         user = users_factories.UserFactory(email=self.email)
 
-        response = client.with_token(user.email).get("/native/v1/profile/token_expiration")
-
-        assert response.status_code == 200
+        client = client.with_token(user.email)
+        expected_num_queries = 1  # user
+        with assert_num_queries(expected_num_queries):
+            response = client.get("/native/v1/profile/token_expiration")
+            assert response.status_code == 200
         assert response.json["expiration"] is None
 
 
@@ -1629,8 +1686,8 @@ class EmailValidationRemainingResendsTest:
         user = users_factories.UserFactory(isEmailValidated=False)
 
         response = client.get(f"/native/v1/email_validation_remaining_resends/{user.email}")
-
         assert response.status_code == 200
+
         assert response.json["remainingResends"] == 3
         client.post("/native/v1/resend_email_validation", json={"email": user.email})
         response = client.get(f"/native/v1/email_validation_remaining_resends/{user.email}")
@@ -1658,7 +1715,10 @@ class EmailValidationRemainingResendsTest:
         self,
         client,
     ):
-        response = client.get("/native/v1/email_validation_remaining_resends/test@example.com")
+
+        expected_num_queries = 1  # user
+        with assert_num_queries(expected_num_queries):
+            response = client.get("/native/v1/email_validation_remaining_resends/test@example.com")
 
         assert response.json["remainingResends"] == 0
         assert response.json["counterResetDatetime"] is None
@@ -2437,9 +2497,11 @@ class GetAccountSuspendedDateTest:
         )
 
         client.with_token(email=user.email)
-        response = client.get("/native/v1/account/suspension_date")
+        expected_num_queries = 2  # user + action_history
+        with assert_num_queries(expected_num_queries):
+            response = client.get("/native/v1/account/suspension_date")
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json["date"] == "2020-10-14T00:00:00Z"
 
     class ShouldNotRespondWithSuspensionDateTest:
@@ -2477,9 +2539,11 @@ class GetAccountSuspendedDateTest:
 
         def assert_no_suspension_date_returned(self, client, user) -> None:
             client.with_token(email=user.email)
-            response = client.get("/native/v1/account/suspension_date")
 
-            assert response.status_code == 403
+            expected_num_queries = 2  # user + action_history
+            with assert_num_queries(expected_num_queries):
+                response = client.get("/native/v1/account/suspension_date")
+                assert response.status_code == 403
 
 
 class SuspensionStatusTest:
