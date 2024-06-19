@@ -872,15 +872,6 @@ def get_offerer_addresses(offerer_id: int) -> BaseQuery:
     )
 
 
-def offerer_address_exists(offerer_id: int, offerer_address_id: int) -> bool:
-    return db.session.query(
-        sqla.select(1)
-        .select_from(models.OffererAddress)
-        .where(models.OffererAddress.offererId == offerer_id, models.OffererAddress.id == offerer_address_id)
-        .exists()
-    ).scalar()
-
-
 def get_offerer_address_of_offerer(offerer_id: int, offerer_address_id: int) -> models.OffererAddress:
     return (
         models.OffererAddress.query.where(
