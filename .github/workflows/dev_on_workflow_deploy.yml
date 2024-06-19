@@ -8,15 +8,6 @@ on:
       app_version:
         type: string
         required: false
-      teleport_version:
-        type: string
-        required: true
-      teleport_proxy:
-        type: string
-        required: true
-      teleport_kubernetes_cluster:
-        type: string
-        required: true
       deploy_api:
         type: boolean
         required: false
