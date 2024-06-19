@@ -293,7 +293,9 @@ class GetCollectiveOfferTemplateDetailTest(GetEndpointHelper):
 
     def test_collective_offer_template_not_found(self, authenticated_client):
         url = url_for(self.endpoint, collective_offer_template_id=1)
-        with assert_num_queries(self.expected_num_queries):
+        expected_num_queries = self.expected_num_queries
+        expected_num_queries += 1  # rollback after the exception
+        with assert_num_queries(expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 404
 
