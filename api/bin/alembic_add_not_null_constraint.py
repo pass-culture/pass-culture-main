@@ -72,12 +72,10 @@ STEP_2 = {
 from pcapi import settings
     """,
     "upgrade": """
-    op.execute("COMMIT")
-    # The timeout here has the same value (5 minutes) as `helm upgrade`.
-    # If this migration fails, you'll have to execute it manually.
-    op.execute("SET SESSION statement_timeout = '300s'")
-    op.execute('ALTER TABLE "$table" VALIDATE CONSTRAINT "$constraint"')
-    op.execute(f"SET SESSION statement_timeout={settings.DATABASE_STATEMENT_TIMEOUT}")
+    with op.get_context().autocommit_block():
+        op.execute("SET SESSION statement_timeout = '300s'")
+        op.execute('ALTER TABLE "$table" VALIDATE CONSTRAINT "$constraint"')
+        op.execute(f"SET SESSION statement_timeout={settings.DATABASE_STATEMENT_TIMEOUT}")
     """,
     "downgrade": """
     pass
