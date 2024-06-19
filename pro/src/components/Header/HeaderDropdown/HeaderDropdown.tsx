@@ -202,10 +202,11 @@ export const HeaderDropdown = () => {
                         ))}
                       </DropdownMenu.RadioGroup>
                       <DropdownMenu.Separator className={styles['separator']} />
-                      <DropdownMenu.Item>
+                      <DropdownMenu.Item asChild>
                         <ButtonLink
                           icon={fullMoreIcon}
                           link={{ to: '/structures/creation' }}
+                          className={styles['menu-item']}
                         >
                           Ajouter une nouvelle structure
                         </ButtonLink>
@@ -215,10 +216,11 @@ export const HeaderDropdown = () => {
                 </DropdownMenu.Portal>
               </DropdownMenu.Sub>
             ) : (
-              <DropdownMenu.Item>
+              <DropdownMenu.Item asChild>
                 <ButtonLink
                   icon={fullMoreIcon}
                   link={{ to: '/structures/creation' }}
+                  className={styles['menu-item']}
                 >
                   Ajouter une nouvelle structure
                 </ButtonLink>
