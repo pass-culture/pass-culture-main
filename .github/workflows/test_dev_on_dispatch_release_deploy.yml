@@ -20,12 +20,17 @@ on:
 permissions: write-all
 
 jobs:
+  dummy-job:
+    name: "Dummy Job"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dummy Step
+        run: echo "This is a dummy job."
 
   deploy-ehp:
     name: "Deploy on EHP environnement"
-    needs: version
     if: github.event.inputs.target_environment != 'production'
-    uses: ./.github/workflows/actions/dev_on_workflow_deploy.yml
+    uses: ./.github/workflows/dev_on_workflow_deploy.yml
     with:
       environment: ${{ github.event.inputs.target_environment }}
       deploy_api: true
