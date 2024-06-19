@@ -1,0 +1,34 @@
+name: "[DEVOPS][TESTCI] 0 [on_dispatch/CD] Deploy release or hotfix"
+
+run-name: "Deploy ${{ github.ref }} to ${{ github.event.inputs.target_environment }} by @${{ github.actor }}"
+
+on:
+  push:
+    branches:
+      - feature/host-pc-doc-api
+  workflow_dispatch:
+    inputs:
+      target_environment:
+        type: choice
+        description: "Environnement cible"
+        required: true
+        options:
+          - staging
+          # - production
+          - testing
+
+permissions: write-all
+
+jobs:
+
+  deploy-ehp:
+    name: "Deploy on EHP environnement"
+    needs: version
+    if: github.event.inputs.target_environment != 'production'
+    uses: ./.github/workflows/actions/dev_on_workflow_deploy.yml
+    with:
+      environment: ${{ github.event.inputs.target_environment }}
+      deploy_api: true
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}

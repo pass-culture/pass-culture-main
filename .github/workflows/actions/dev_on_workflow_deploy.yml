@@ -1,0 +1,54 @@
+name: "[DEVOPS][TESTCI] 3 [on_workflow] Deploy"
+on:
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        required: true
+      app_version:
+        type: string
+        required: true
+      deploy_api:
+        type: boolean
+        required: false
+        default: false
+      deploy_pro:
+        type: boolean
+        required: false
+        default: false
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
+        required: true
+      GCP_EHP_SERVICE_ACCOUNT:
+        required: true
+
+jobs:
+  deploy-api:
+    name: "Deploy api"
+    if: ${{ inputs.deploy_api }}
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4.1.7
+      - name: "Authentification to Google"
+        uses: 'google-github-actions/auth@v2'
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
+      - name: "Deploy doc API to Firebase"
+        id: deploy-doc-api
+        uses: ./.github/workflows/actions/action_build_deploy_to_firebase.yml
+        with:
+          environment: ${{ inputs.environment }}
+          REF: ${{ github.ref }}
+          APPNAME: pc-doc-api
+          ENTRYPOINT: api/documentation
+          CHANNEL: ''
+          EXPIRES: '7d'
+          secrets:
+            GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+            GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}

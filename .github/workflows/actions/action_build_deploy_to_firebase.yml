@@ -1,4 +1,4 @@
-name: "[Firebase] Build and Deploy to Firebase"
+name: "[DEVOPS][TESTCI][Firebase] Build and Deploy to Firebase"
 
 on:
   # push:
