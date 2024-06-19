@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import React from 'react'
 
 import { BookingRecapResponseBeneficiaryModel } from 'apiClient/v1'
@@ -6,9 +7,13 @@ import styles from './BeneficiaryCell.module.scss'
 
 export interface BeneficiaryCellProps {
   beneficiaryInfos: BookingRecapResponseBeneficiaryModel
+  className?: string
 }
 
-export const BeneficiaryCell = ({ beneficiaryInfos }: BeneficiaryCellProps) => {
+export const BeneficiaryCell = ({
+  beneficiaryInfos,
+  className,
+}: BeneficiaryCellProps) => {
   const beneficiaryName = [
     beneficiaryInfos.lastname,
     beneficiaryInfos.firstname,
@@ -17,7 +22,7 @@ export const BeneficiaryCell = ({ beneficiaryInfos }: BeneficiaryCellProps) => {
     .trim()
 
   return (
-    <div>
+    <div className={cn(className)}>
       {beneficiaryName !== '' && (
         <div data-testid="booking-cell-beneficiary-name">
           <span>{beneficiaryName}</span>

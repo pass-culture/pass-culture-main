@@ -12,28 +12,34 @@ import styles from './CellFormatter.module.scss'
 
 export interface DetailsButtonCellProps {
   isExpanded: boolean
+  className?: string
 }
 
-export const DetailsButtonCell = ({ isExpanded }: DetailsButtonCellProps) => {
+export const DetailsButtonCell = ({
+  isExpanded,
+  className,
+}: DetailsButtonCellProps) => {
   const { logEvent } = useAnalytics()
 
   return (
-    <Button
-      onClick={() =>
-        logEvent(CollectiveBookingsEvents.CLICKED_DETAILS_BUTTON_CELL, {
-          from: location.pathname,
-        })
-      }
-      variant={ButtonVariant.TERNARY}
-    >
-      Détails
-      <SvgIcon
-        alt=""
-        src={fullUpIcon}
-        className={cn(styles['details-dropdown-icon'], {
-          [styles['details-dropdown-icon-up']]: !isExpanded,
-        })}
-      />
-    </Button>
+    <div className={cn(className)}>
+      <Button
+        onClick={() =>
+          logEvent(CollectiveBookingsEvents.CLICKED_DETAILS_BUTTON_CELL, {
+            from: location.pathname,
+          })
+        }
+        variant={ButtonVariant.TERNARY}
+      >
+        Détails
+        <SvgIcon
+          alt=""
+          src={fullUpIcon}
+          className={cn(styles['details-dropdown-icon'], {
+            [styles['details-dropdown-icon-up']]: !isExpanded,
+          })}
+        />
+      </Button>
+    </div>
   )
 }

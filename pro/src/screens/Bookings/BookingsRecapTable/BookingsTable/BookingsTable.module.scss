@@ -36,7 +36,7 @@
   border-bottom: rem.torem(1px) solid var(--color-grey-medium);
 
   // In mobile-view, it takes labels from "data-label" in order to construct à left-column with that content
-  td[data-label] {
+  .table-cell[data-label] {
     display: contents; // ignores <td> with [data-label], so their children can be used as grid items
 
     // ::before is the left column
@@ -49,18 +49,10 @@
       margin: rem.torem(8px) rem.torem(8px) rem.torem(8px);
     }
 
-    // any other container element (generally a <div> or a <span>) is the right column
-    > div,
-    > span {
+    // the cell content wrapper is the right column
+    .cell-item-wrapper {
       grid-column: 2;
       margin: rem.torem(8px);
-    }
-
-    // this item is a flex element: we don't want to distort it, so we'll vertically align its children instead
-    > button {
-      align-items: center;
-      margin-left: rem.torem(8px);
-      margin-right: auto;
     }
   }
 }
@@ -97,15 +89,15 @@
     display: flex;
     justify-content: flex-start;
     align-items: flex-start;
-
-    svg {
-      width: rem.torem(32px);
-      height: rem.torem(32px);
-      position: relative;
-      top: rem.torem(-6px);
-      margin-left: rem.torem(8px);
-    }
   }
+
+  .bookings-duo-icon {
+    width: rem.torem(24px);
+    height: rem.torem(24px);
+    position: relative;
+    top: rem.torem(-2px);
+    margin-left: rem.torem(8px);
+  }  
 }
 
 .column-collective-offer-name {
@@ -118,6 +110,10 @@
 
 .column-institution {
   word-break: break-word;
+
+  .institution-cell-subtitle {
+    color: var(--color-grey-dark);
+  }
 }
 
 .column-booking-token {
@@ -132,15 +128,14 @@
 
   // <tbody>
   .table-body {
-    td[data-label] {
+    .table-cell[data-label] {
       display: table-cell;
 
       &::before {
         display: none;
       }
 
-      > div,
-      > span {
+      .cell-item-wrapper {
         margin-left: 0;
       }
     }
