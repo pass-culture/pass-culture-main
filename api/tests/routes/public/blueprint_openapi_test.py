@@ -31,7 +31,7 @@ def test_public_api_openapi_json(client):
     response = client.get("/openapi.json")
     assert response.status_code == 200
 
-    # To regenerate the expected JSON use the generate_openapi_json function
+    # To regenerate the expected JSON use the command `flask generate_expected_openapi_json` (in `/usr/src/app/`)
     expected = _get_expected_json()
 
     # Test paths key
