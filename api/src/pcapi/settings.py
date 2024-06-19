@@ -524,11 +524,6 @@ METABASE_SITE_URL = os.environ.get("METABASE_SITE_URL")
 METABASE_SECRET_KEY = secrets_utils.get("METABASE_SECRET_KEY")
 METABASE_DASHBOARD_ID = int(os.environ.get("METABASE_DASHBOARD_ID", 438))
 
-# AMPLITUDE
-AMPLITUDE_API_PUBLIC_KEY = os.environ.get("AMPLITUDE_API_PUBLIC_KEY", "")
-AMPLITUDE_BACKEND = os.environ.get("AMPLITUDE_BACKEND", "pcapi.analytics.amplitude.backends.TestingBackend")
-AMPLITUDE_QUEUE_NAME = os.environ.get("AMPLITUDE_QUEUE_NAME", "amplitude-queue-development")
-
 # NATIONAL PARTNERS
 NATIONAL_PARTNERS_EMAIL_DOMAINS = secrets_utils.get("NATIONAL_PARTNERS_EMAIL_DOMAINS", "impossible_email_domain.fr")
 

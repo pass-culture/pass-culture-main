@@ -9,7 +9,6 @@ import sentry_sdk
 import sqlalchemy as sa
 from sqlalchemy.orm import joinedload
 
-from pcapi.analytics.amplitude import events as amplitude_events
 from pcapi.connectors.ems import EMSAPIException
 from pcapi.core import search
 from pcapi.core.bookings import exceptions as bookings_exceptions
@@ -344,7 +343,6 @@ def book_offer(
             "stock_quantity": stock.quantity,
         },
     )
-    amplitude_events.track_book_offer_event(booking)
     track_offer_booked_event(beneficiary.id, stock.offer)
     _send_external_booking_notification_if_necessary(booking, BookingAction.BOOK)
 
@@ -471,7 +469,6 @@ def _cancel_booking(
         },
         technical_message_id="booking.cancelled",
     )
-    amplitude_events.track_cancel_booking_event(booking, reason)
     _send_external_booking_notification_if_necessary(booking, BookingAction.CANCEL)
 
     update_external_user(booking.user)
@@ -697,7 +694,6 @@ def mark_as_used(booking: Booking, validation_author_type: BookingValidationAuth
         extra={"booking_id": booking.id},
         technical_message_id="booking.used",
     )
-    amplitude_events.track_mark_as_used_event(booking)
 
     update_external_user(booking.user)
 

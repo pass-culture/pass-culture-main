@@ -12,8 +12,6 @@ from sqlalchemy import create_engine
 import sqlalchemy.exc
 from sqlalchemy.sql import text
 
-from pcapi.analytics.amplitude.backends.amplitude_connector import AmplitudeEventType
-import pcapi.analytics.amplitude.testing as amplitude_testing
 from pcapi.connectors.ems import EMSBookingConnector
 from pcapi.core import search
 from pcapi.core.bookings import api
@@ -358,7 +356,7 @@ class BookOfferTest:
                 quantity=2,
             )
 
-    def test_logs_event_to_amplitude_and_batch(self):
+    def test_logs_event_to_batch(self):
         # Given
         stock = offers_factories.StockFactory(price=10)
         beneficiary = users_factories.BeneficiaryGrant18Factory()
@@ -367,18 +365,6 @@ class BookOfferTest:
         api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
 
         # Then
-        assert len(amplitude_testing.requests) == 1
-        assert amplitude_testing.requests[0] == {
-            "event_name": AmplitudeEventType.OFFER_BOOKED.value,
-            "event_properties": {
-                "booking_id": stock.bookings[0].id,
-                "category": "FILM",
-                "offer_id": stock.offer.id,
-                "price": 10.00,
-                "subcategory": "SUPPORT_PHYSIQUE_FILM",
-            },
-            "user_id": beneficiary.id,
-        }
         assert push_testing.requests[0] == {
             "can_be_asynchronously_retried": True,
             "event_name": "has_booked_offer",
@@ -1372,24 +1358,6 @@ class CancelByBeneficiaryTest:
 
         mocked_cancel_booking.assert_called()
 
-    def test_cancel_booking_tracked_in_amplitude(self):
-        booking = bookings_factories.BookingFactory()
-
-        api.cancel_booking_by_beneficiary(booking.user, booking)
-
-        assert amplitude_testing.requests[0] == {
-            "event_name": "BOOKING_CANCELLED",
-            "event_properties": {
-                "booking_id": booking.id,
-                "category": "FILM",
-                "offer_id": booking.stock.offerId,
-                "price": 10.10,
-                "reason": BookingCancellationReasons.BENEFICIARY.value,
-                "subcategory": "SUPPORT_PHYSIQUE_FILM",
-            },
-            "user_id": booking.userId,
-        }
-
 
 @pytest.mark.usefixtures("db_session")
 class CancelByOffererTest:
@@ -1609,22 +1577,6 @@ class MarkAsUsedTest:
         with pytest.raises(exceptions.BookingIsNotConfirmed):
             api.mark_as_used(booking, models.BookingValidationAuthorType.OFFERER)
         assert booking.status is not BookingStatus.USED
-
-    def test_mark_as_used_tracked_to_amplitude(self):
-        booking = bookings_factories.BookingFactory()
-        api.mark_as_used(booking, models.BookingValidationAuthorType.OFFERER)
-        assert len(amplitude_testing.requests) == 1
-        assert amplitude_testing.requests[0] == {
-            "event_name": "BOOKING_USED",
-            "event_properties": {
-                "booking_id": booking.id,
-                "category": "FILM",
-                "offer_id": booking.stock.offerId,
-                "price": 10.10,
-                "subcategory": "SUPPORT_PHYSIQUE_FILM",
-            },
-            "user_id": booking.userId,
-        }
 
 
 @pytest.mark.usefixtures("db_session")
