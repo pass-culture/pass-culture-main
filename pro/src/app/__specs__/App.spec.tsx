@@ -1,10 +1,12 @@
 import { setUser } from '@sentry/browser'
 import { screen } from '@testing-library/react'
 import { Route, Routes } from 'react-router-dom'
+import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import * as orejime from 'app/App/analytics/orejime'
+import { GET_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
@@ -17,6 +19,12 @@ vi.mock('app/App/analytics/firebase', () => ({ useFirebase: vi.fn() }))
 vi.mock('app/App/hook/useLogNavigation', () => ({ useLogNavigation: vi.fn() }))
 vi.mock('app/App/hook/usePageTitle', () => ({ usePageTitle: vi.fn() }))
 vi.mock('@sentry/browser', () => ({ setUser: vi.fn() }))
+
+function TestBrokenCallComponent() {
+  useSWR([GET_OFFER_QUERY_KEY], () => api.getOffer(17))
+
+  return <>broken page</>
+}
 
 const renderApp = (options?: RenderWithProvidersOptions) =>
   renderWithProviders(
@@ -33,6 +41,8 @@ const renderApp = (options?: RenderWithProvidersOptions) =>
             path="/parcours-inscription"
             element={<p>Onboarding page</p>}
           />
+          <Route path="/broken-page" element={<TestBrokenCallComponent />} />
+          <Route path="/404" element={<p>404 page</p>} />
         </Route>
       </Routes>
     </>,
@@ -108,5 +118,23 @@ describe('App', () => {
     expect(useAnalyticsSpy).not.toHaveBeenCalledWith(
       expect.objectContaining({ isCookieEnabled: true })
     )
+  })
+
+  it('should redirect to page 404 when api has not found', async () => {
+    vi.spyOn(api, 'getOffer').mockRejectedValueOnce({
+      status: 404,
+      name: 'ApiError',
+      message: 'oh no',
+    })
+    const user = sharedCurrentUserFactory({ hasUserOfferer: true })
+
+    renderApp({
+      initialRouterEntries: ['/broken-page'],
+      user,
+    })
+
+    expect(await screen.findByText('broken page')).toBeInTheDocument()
+
+    expect(await screen.findByText('404 page')).toBeInTheDocument()
   })
 })

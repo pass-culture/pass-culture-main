@@ -1,5 +1,4 @@
 import { waitFor } from '@testing-library/react'
-import React from 'react'
 
 import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
@@ -16,15 +15,12 @@ const renderIndividualOfferContextProvider = () =>
   )
 
 describe('IndividualOfferContextProvider', () => {
-  beforeEach(() => {
-    vi.spyOn(api, 'getCategories').mockResolvedValue({
+  it('should initialize context with api', async () => {
+    vi.spyOn(api, 'getCategories').mockResolvedValueOnce({
       categories: [],
       subcategories: [],
     })
-    vi.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
-  })
-
-  it('should initialize context with api', async () => {
+    vi.spyOn(api, 'getOffer').mockResolvedValueOnce(apiOffer)
     renderIndividualOfferContextProvider()
 
     await waitFor(() => {

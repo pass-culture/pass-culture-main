@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Navigate, Outlet, useLocation } from 'react-router-dom'
+import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { SWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
+import { isErrorAPIError } from 'apiClient/helpers'
 import { findCurrentRoute } from 'app/AppRouter/findCurrentRoute'
 import { Notification } from 'components/Notification/Notification'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
@@ -25,6 +26,7 @@ window.beamer_config = { product_id: 'vjbiYuMS52566', lazy: true }
 
 export const App = (): JSX.Element | null => {
   const location = useLocation()
+  const navigate = useNavigate()
   const currentUser = useSelector(selectCurrentUser)
   const dispatch = useDispatch()
   const notify = useNotification()
@@ -78,12 +80,15 @@ export const App = (): JSX.Element | null => {
   ) {
     return <Navigate to="/parcours-inscription" replace />
   }
-
   return (
     <>
       <SWRConfig
         value={{
-          onError: () => {
+          onError: (error) => {
+            if (isErrorAPIError(error) && error.status === 404) {
+              navigate('/404')
+              return
+            }
             notify.error(GET_DATA_ERROR_MESSAGE)
           },
           revalidateOnFocus: false,
