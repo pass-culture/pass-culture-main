@@ -108,24 +108,28 @@ When('I add details to offerer', () => {
   cy.wait('@venue-types').its('response.statusCode').should('eq', 200)
 })
 
-When('I fill activity step', () => {
+When('I fill activity form without main activity', () => {
   cy.url().should('contain', '/parcours-inscription/activite')
-  cy.findByLabelText('Activité principale *').select('Spectacle vivant')
-  cy.findByLabelText('Site internet, réseau social').type('https://exemple.com')
-  cy.findByText('Ajouter un lien').click()
-  cy.findAllByTestId('activity-form-social-url')
-    .eq(1)
-    .type('https://exemple2.com')
-
+  cy.findByLabelText('Activité principale *').select(
+    'Sélectionnez votre activité principale'
+  ) // No activity selected
   cy.findByText('Au grand public').click()
   cy.findByText('Étape suivante').click()
-  // Attente visiblement indispensable, mais venues-types pas toujours reçu si déjà reçu plus haut
-  // cy.wait('@venue-types').its('response.statusCode').should('eq', 200)
-  cy.wait(1000)
+  cy.findByTestId('error-venueTypeCode').contains(
+    'Veuillez sélectionner une activité principale'
+  )
 })
 
-When('I validate', () => {
-  cy.url().should('contain', '/parcours-inscription/validation')
+When('I fill activity form without target audience', () => {
+  cy.url().should('contain', '/parcours-inscription/activite')
+  cy.findByLabelText('Activité principale *').select('Spectacle vivant')
+  cy.findByText('Étape suivante').click()
+  cy.findByTestId('error-targetCustomer').contains(
+    'Veuillez sélectionner une des réponses ci-dessus'
+  )
+})
+
+When('I validate the registration', () => {
   cy.intercept({ method: 'POST', url: '/offerers/new' }).as('createOfferer')
   cy.findByText('Valider et créer ma structure').click()
 })
@@ -183,4 +187,27 @@ Then('the offerer is created', () => {
 
   cy.findByTestId('offerer-details-offerId').select(offererName)
   cy.findAllByTestId('spinner').should('not.exist')
+})
+
+Then('An error message is raised', () => {
+  cy.findByTestId('global-notification-error').contains(
+    'Une ou plusieurs erreurs sont présentes dans le formulaire'
+  )
+  cy.url().should('not.contain', '/parcours-inscription/validation')
+})
+
+Then('The next step is displayed', () => {
+  cy.url().should('contain', '/parcours-inscription/validation')
+})
+
+When('I fill in missing main activity', () => {
+  cy.url().should('contain', '/parcours-inscription/activite')
+  cy.findByLabelText('Activité principale *').select('Spectacle vivant')
+  cy.findByText('Étape suivante').click()
+})
+
+When('I fill in missing target audience', () => {
+  cy.url().should('contain', '/parcours-inscription/activite')
+  cy.findByText('Au grand public').click()
+  cy.findByText('Étape suivante').click()
 })
