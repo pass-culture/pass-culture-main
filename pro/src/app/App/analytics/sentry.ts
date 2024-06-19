@@ -111,7 +111,7 @@ export const useSentry = () => {
   const currentUser = useSelector(selectCurrentUser)
 
   useEffect(() => {
-    if (currentUser !== null) {
+    if (currentUser && currentUser.id) {
       Sentry.setUser({ id: currentUser.id.toString() })
     }
   }, [currentUser])
