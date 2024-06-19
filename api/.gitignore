@@ -107,9 +107,6 @@ private.tar.gz
 private.key
 public.cert
 
-# Certificate to start the api with a proxy
-cacert.pem
-
 # Store
 src/pcapi/static/object_store_data
 
