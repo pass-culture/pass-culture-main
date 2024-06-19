@@ -70,6 +70,20 @@ class BoostLoginTest:
         )
 
 
+class BoostLogoutTest:
+    def test_logout(self, requests_mock):
+        cinema_details = providers_factories.BoostCinemaDetailsFactory(
+            cinemaUrl="https://cinema.example.com/",
+            token="old-token",
+        )
+        response_json = {"code": 200, "message": "OK"}
+        requests_mock.post("https://cinema.example.com/api/vendors/logout", json=response_json)
+
+        boost.logout(cinema_details)
+
+        assert requests_mock.last_request.headers["Authorization"] == "Bearer old-token"
+
+
 class BoostGetResourceTest:
     def test_with_valid_non_expired_token(self, requests_mock):
         cinema_details = providers_factories.BoostCinemaDetailsFactory(

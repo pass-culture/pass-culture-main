@@ -7,10 +7,13 @@ from werkzeug.exceptions import NotFound
 
 from pcapi.connectors import boost
 from pcapi.core.external_bookings.boost import exceptions as boost_exceptions
+from pcapi.core.external_bookings.boost.exceptions import BoostAPIException
+from pcapi.core.external_bookings.boost.exceptions import BoostInvalidTokenException
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import models as providers_models
 from pcapi.core.providers import repository as providers_repository
 from pcapi.models import db
+from pcapi.utils import requests
 
 from .. import forms
 from .base import PivotContext
@@ -109,3 +112,19 @@ class BoostContext(PivotContext):
                 extra={"exc": exc, "cinema_url": pivot.cinemaUrl},
             )
         flash("Connexion à l'API KO.", "warning")
+
+    @classmethod
+    def delete_pivot(cls, pivot_id: int) -> bool:
+        pivot_model = cls.pivot_class()
+        pivot = pivot_model.query.filter_by(id=pivot_id).one_or_none()
+
+        if not pivot:
+            raise NotFound()
+        try:
+            boost.logout(pivot)
+        except (requests.exceptions.RequestException, BoostInvalidTokenException, BoostAPIException) as exc:
+            logger.exception(
+                "Unexpected error from Boost logout API", extra={"exc": exc, "cinema_url": pivot.cinemaUrl}
+            )
+
+        return super().delete_pivot(pivot_id)
