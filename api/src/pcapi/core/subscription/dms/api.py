@@ -3,7 +3,6 @@ import hashlib
 import logging
 
 from pcapi import settings
-from pcapi.analytics.amplitude import events as amplitude_events
 from pcapi.connectors.dms import api as dms_connector_api
 from pcapi.connectors.dms import models as dms_models
 from pcapi.connectors.dms import serializer as dms_serializer
@@ -427,9 +426,6 @@ def _process_accepted_application(
         _update_fraud_check_with_field_errors(
             fraud_check, field_errors, fraud_models.FraudCheckStatus.ERROR, [fraud_models.FraudReasonCode.ERROR_IN_DATA]
         )
-        amplitude_events.track_dms_error_event(
-            user.id, [fraud_models.FraudReasonCode.ERROR_IN_DATA], field_errors=field_errors
-        )
         return
 
     dms_content: fraud_models.DMSContent = fraud_check.source_data()
@@ -445,7 +441,6 @@ def _process_accepted_application(
     if fraud_check.status != fraud_models.FraudCheckStatus.OK:
         error_codes = fraud_check.reasonCodes or []
         _handle_validation_errors(user, error_codes, dms_content)
-        amplitude_events.track_dms_error_event(user.id, error_codes)
 
         return
 

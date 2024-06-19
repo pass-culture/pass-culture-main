@@ -10,7 +10,6 @@ import time
 import typing
 import uuid
 
-import amplitude
 import flask
 from flask_login import current_user
 
@@ -172,8 +171,6 @@ class JsonLogEncoder(json.JSONEncoder):
             return obj.isoformat()
         if isinstance(obj, Exception):
             return str(obj)
-        if isinstance(obj, amplitude.BaseEvent):
-            return {"event_type": obj.event_type}
         return super().default(obj)
 
 
