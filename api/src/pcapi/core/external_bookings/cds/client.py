@@ -14,6 +14,7 @@ from pcapi.connectors.cine_digital_service import get_resource
 from pcapi.connectors.cine_digital_service import post_resource
 from pcapi.connectors.cine_digital_service import put_resource
 import pcapi.connectors.serialization.cine_digital_service_serializers as cds_serializers
+from pcapi.core import search
 from pcapi.core.bookings.constants import REDIS_EXTERNAL_BOOKINGS_NAME
 from pcapi.core.bookings.constants import RedisExternalBookingType
 import pcapi.core.bookings.models as bookings_models
@@ -21,6 +22,7 @@ import pcapi.core.external_bookings.cds.constants as cds_constants
 import pcapi.core.external_bookings.cds.exceptions as cds_exceptions
 import pcapi.core.external_bookings.models as external_bookings_models
 from pcapi.core.external_bookings.models import Ticket
+import pcapi.core.offers.api as offers_api
 import pcapi.core.users.models as users_models
 from pcapi.utils.queue import add_to_queue
 
@@ -251,6 +253,14 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
             raise cds_exceptions.CineDigitalServiceAPIException(f"Booking quantity={quantity} should be 1 or 2")
 
         show = self.get_show(show_id)
+        offer_has_new_sold_out_stock = offers_api.update_cinema_stock_quantity(booking.stock, show.remaining_place)
+        if offer_has_new_sold_out_stock:
+            search.async_index_offer_ids(
+                [booking.stock.offer.id],
+                reason=search.IndexationReason.CINEMA_STOCK_QUANTITY_UPDATE,
+                log_extra={"sold_out": True},
+            )
+
         screen = self.get_screen(show.screen.id)
         show_voucher_type = self.get_voucher_type_for_show(show)
         if not show_voucher_type:
