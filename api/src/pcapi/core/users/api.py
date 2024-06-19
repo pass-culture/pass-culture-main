@@ -1189,8 +1189,8 @@ def search_pro_account(search_query: str, *_: typing.Any) -> BaseQuery:
     )
 
     return _filter_user_accounts(pro_accounts, search_query).options(
-        sa.orm.with_expression("suspension_reason_expression", users_models.User.suspension_reason.expression),  # type: ignore[attr-defined]
-        sa.orm.with_expression("suspension_date_expression", users_models.User.suspension_date.expression),  # type: ignore[attr-defined]
+        sa.orm.with_expression(users_models.User.suspension_reason_expression, users_models.User.suspension_reason.expression),  # type: ignore[attr-defined]
+        sa.orm.with_expression(users_models.User.suspension_date_expression, users_models.User.suspension_date.expression),  # type: ignore[attr-defined]
         sa.orm.joinedload(users_models.User.UserOfferers).load_only(offerers_models.UserOfferer.validationStatus),
     )
 
@@ -1207,8 +1207,8 @@ def get_pro_account_base_query(pro_id: int) -> BaseQuery:
 
 def search_backoffice_accounts(search_query: str) -> BaseQuery:
     bo_accounts = models.User.query.join(users_models.User.backoffice_profile).options(
-        sa.orm.with_expression("suspension_reason_expression", users_models.User.suspension_reason.expression),  # type: ignore[attr-defined]
-        sa.orm.with_expression("suspension_date_expression", users_models.User.suspension_date.expression),  # type: ignore[attr-defined]
+        sa.orm.with_expression(users_models.User.suspension_reason_expression, users_models.User.suspension_reason.expression),  # type: ignore[attr-defined]
+        sa.orm.with_expression(users_models.User.suspension_date_expression, users_models.User.suspension_date.expression),  # type: ignore[attr-defined]
     )
 
     if not search_query:

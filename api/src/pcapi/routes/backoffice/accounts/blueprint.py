@@ -68,8 +68,8 @@ def _load_suspension_info(query: BaseQuery) -> BaseQuery:
     # So these expressions use a subquery so that result count is accurate, and the redirection well forced when a
     # single card would be displayed.
     return query.options(
-        sa.orm.with_expression("suspension_reason_expression", users_models.User.suspension_reason.expression),  # type: ignore[attr-defined]
-        sa.orm.with_expression("suspension_date_expression", users_models.User.suspension_date.expression),  # type: ignore[attr-defined]
+        sa.orm.with_expression(users_models.User.suspension_reason_expression, users_models.User.suspension_reason.expression),  # type: ignore[attr-defined]
+        sa.orm.with_expression(users_models.User.suspension_date_expression, users_models.User.suspension_date.expression),  # type: ignore[attr-defined]
     )
 
 
