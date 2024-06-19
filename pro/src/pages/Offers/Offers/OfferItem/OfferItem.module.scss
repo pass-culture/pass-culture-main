@@ -58,7 +58,6 @@
     align-self: center;
     font-weight: 600;
     padding-top: rem.torem(4px);
-    word-break: break-all;
 
     .offer-template-tag {
       margin-bottom: rem.torem(4px);
@@ -80,7 +79,7 @@
   .institution-column,
   .title-column {
     display: block;
-    word-break: break-all;
+    overflow-wrap: anywhere;
   }
 
   .venue-column {
@@ -109,12 +108,15 @@
   }
 }
 
+.isbn {
+  @include fonts.caption;
+  color: var(--color-grey-dark);
+}
+
 .stocks {
   @include fonts.caption;
-
   color: var(--color-grey-dark);
   display: flex;
-  font-size: rem.torem(14px);
   align-items: center;
 
   a {
