@@ -20,19 +20,25 @@ import {
 import { SAVED_OFFERER_ID_KEY } from 'core/shared/constants'
 import { SelectOption } from 'custom_types/form'
 import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
+import { SAVED_VENUE_ID_KEY } from 'pages/Home/Offerers/PartnerPages'
 import { CollectiveDataEdition } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/CollectiveDataEdition'
 import { updateSelectedOffererId } from 'store/user/reducer'
 import { SelectInput } from 'ui-kit/form/Select/SelectInput'
 import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { Tab, Tabs } from 'ui-kit/Tabs/Tabs'
+import { localStorageAvailable } from 'utils/localStorageAvailable'
 
 import styles from './VenueEdition.module.scss'
 import { VenueEditionFormScreen } from './VenueEditionFormScreen'
 import { VenueEditionHeader } from './VenueEditionHeader'
 
 export const VenueEdition = (): JSX.Element | null => {
-  const [selectedVenueId, setSelectedVenueId] = useState('')
+  const savedVenueId = localStorageAvailable()
+    ? localStorage.getItem(SAVED_VENUE_ID_KEY)
+    : null
+
+  const [selectedVenueId, setSelectedVenueId] = useState(savedVenueId ?? '')
   const { offererId, venueId } = useParams<{
     offererId: string
     venueId: string
