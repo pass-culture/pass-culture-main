@@ -94,6 +94,6 @@ describe('OffererDetails', () => {
       '+ Ajouter une structure'
     )
 
-    expect(mockNavigate).toHaveBeenCalledWith('/structures/creation')
+    expect(mockNavigate).toHaveBeenCalledWith('/parcours-inscription/structure')
   })
 })

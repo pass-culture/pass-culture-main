@@ -97,11 +97,6 @@ export const routes: RouteConfig[] = [
     meta: { public: true },
   },
   {
-    lazy: () => import('pages/Offerers/OffererCreation/OffererCreation'),
-    path: '/structures/creation',
-    title: 'Créer une structure',
-  },
-  {
     lazy: () => import('pages/Offerers/Offerer/OffererDetails/OffererDetails'),
     path: '/structures/:offererId',
     title: 'Détails de la structure',
