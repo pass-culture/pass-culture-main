@@ -5,22 +5,26 @@ RUN="${RUN:=''}" # avoid unbound variable error
 
 # Recreate databases
 recreate_database() {
-    psql <<EOF
+    sudo su postgres -c "psql <<EOF
     \echo recreating pass_culture database with UTC timezone
     \set ON_ERROR_STOP on
     DROP DATABASE IF EXISTS pass_culture;
     CREATE DATABASE pass_culture WITH OWNER pass_culture;
+    \c pass_culture
+    CREATE EXTENSION IF NOT EXISTS postgis;
     ALTER DATABASE pass_culture SET TIMEZONE TO 'UTC';
-EOF
+EOF"
 }
 recreate_database_test() {
-    psql <<EOF
+    sudo su postgres -c "psql <<EOF
     \echo recreating pass_culture_test database with UTC timezone
     \set ON_ERROR_STOP on
     DROP DATABASE IF EXISTS pass_culture_test;
     CREATE DATABASE pass_culture_test WITH OWNER pytest;
+    \c pass_culture_test
+    CREATE EXTENSION IF NOT EXISTS postgis;
     ALTER DATABASE pass_culture_test SET TIMEZONE TO 'UTC';
-EOF
+EOF"
 }
 
 check_requirements() {

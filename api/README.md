@@ -74,12 +74,34 @@ npm install --global squawk-cli
 ```
 
 #### III.7. Postgresql
-Lien officiel pour l'installation https://www.postgresql.org/download/
+Les informations générales sur les étapes d"installation sont disponible sur le lien https://www.postgresql.org/download/
+  - Linux : 
+    * Ubuntu : 
+     Il est préférable de cibler la version utilisé en production. Celle-ci peut se retrouver dans le fichier doker-compose-backend.
+     A la date de rédaction postgres 15 est utilisé. 
+     Configuration du repos apt
+     ```shell
+     sudo apt install -y postgresql-common
+     sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh
 
+     ```
+     install version 15
+     ```shell
+    # Update the package lists:
+    sudo apt update
+
+    # Install the latest version of PostgreSQL:
+    # If you want a specific version, use 'postgresql-16' or similar instead of 'postgresql'
+    sudo apt -y install postgresql-15
+    ```
+     `apt install postgis` pour Ubuntu ou `pacman -S postgis` pour Arch Linux
 #### III.5. PostGIS
 
 - Verifier que `PostGIS` est bien installé. Si ce n'est pas le cas: pour installer `PostGIS` dans les systèmes d'exploitation qui ne le fournissent pas avec `PostgreSQL`:
-  - Linux : `apt install postgis` pour Ubuntu ou `pacman -S postgis` pour Arch Linux
+
+
+  ___# todo install for postgresql 15 specific version
+  sudo apt install postgresql-15-postgis-3
   - Windows : après l'installation de `PostgreSQL`, [Stackbuilder](https://www.bostongis.com/PrinterFriendly.aspx?content_name=postgis_tut01)
     permet d'installer `PostGIS`
   - MacOS : `PostGIS` est fourni avec la distribution [Postgres.app](https://postgresapp.com/). Si une autre manière
