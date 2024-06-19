@@ -5,6 +5,7 @@ from pcapi import settings
 
 def install_routes(app: Flask) -> None:
     # pylint: disable=unused-import
+    from . import e2e
     from . import health_check
 
     if settings.ENABLE_UBBLE_E2E_TESTING or settings.IS_E2E_TESTS:

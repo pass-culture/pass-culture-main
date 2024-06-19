@@ -23,3 +23,4 @@ class AddressFactory(BaseFactory):
 
     class Meta:
         model = models.Address
+        sqlalchemy_get_or_create = ["street", "inseeCode"]

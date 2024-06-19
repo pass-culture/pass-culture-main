@@ -15,10 +15,19 @@ When('I go to the {string} page', (page: string) => {
     cy.url().should('not.equal', urlSource)
   })
 })
+var user_email = ""
+Given('data from signup account im logged in', () => {
+  cy.request('http://localhost:5001/sanboxes/pro_01_create_thing_individual_offer/setup_data_for_create_thing_individual_offer_e2e_test').then((response) => {
+    console.log("response", response)
+  })
+})
+
 
 Given('I am logged in', () => {
+  // appel a la sandbox pour création d'user + données du test
+  console.log(user_email)
   cy.login({
-    email: 'retention_structures@example.com',
+    email: user_email,
     password: 'user@AZERTY123',
   })
 })
