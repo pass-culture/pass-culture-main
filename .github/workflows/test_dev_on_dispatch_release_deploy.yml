@@ -30,7 +30,7 @@ jobs:
   deploy-ehp:
     name: "Deploy on EHP environnement"
     if: github.event.inputs.target_environment != 'production'
-    uses: ./.github/workflows/dev_on_workflow_deploy.yml
+    uses: ./.github/workflows/test_dev_on_workflow_deploy.yml
     with:
       environment: ${{ github.event.inputs.target_environment }}
       deploy_api: true
