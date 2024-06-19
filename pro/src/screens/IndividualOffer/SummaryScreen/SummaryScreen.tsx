@@ -52,7 +52,7 @@ export const SummaryScreen = () => {
     isFutureOfferEnabled && offer?.isEvent
   )
 
-  const onPublish = async () => {
+  const onPublish = async (values: EventPublicationFormValues) => {
     // Edition mode offers are already published
     /* istanbul ignore next: DEBT, TO FIX */
     if (mode === OFFER_WIZARD_MODE.EDITION || offer === null) {
@@ -65,6 +65,10 @@ export const SummaryScreen = () => {
       )
       const publishIndividualOfferResponse = await api.patchPublishOffer({
         id: offer.id,
+        publicationDate:
+          values.publicationMode === 'later'
+            ? values.publicationDate
+            : undefined,
       })
 
       const shouldDisplayRedirectDialog =
