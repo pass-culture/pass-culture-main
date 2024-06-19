@@ -18,7 +18,6 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import BookingStatusFilter
 import pcapi.core.bookings.repository as booking_repository
 from pcapi.core.bookings.repository import get_bookings_from_deposit
-from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezone
 from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Venue
@@ -29,7 +28,7 @@ from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import User
 from pcapi.domain.booking_recap import utils as booking_recap_utils
-from pcapi.routes.serialization.bookings_recap_serialize import OfferType
+from pcapi.utils.date import utc_to_local_datetime
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -42,6 +41,26 @@ THREE_DAYS_AGO = NOW - timedelta(days=3)
 FOUR_DAYS_AGO = NOW - timedelta(days=4)
 FIVE_DAYS_AGO = NOW - timedelta(days=5)
 ONE_WEEK_FROM_NOW = NOW + timedelta(weeks=1)
+
+HEADERS = [
+    "Lieu",
+    "Nom de l’offre",
+    "Date de l'évènement",
+    "EAN",
+    "Nom et prénom du bénéficiaire",
+    "Email du bénéficiaire",
+    "Téléphone du bénéficiaire",
+    "Date et heure de réservation",
+    "Date et heure de validation",
+    "Contremarque",
+    "Intitulé du tarif",
+    "Prix de la réservation",
+    "Statut de la contremarque",
+    "Date et heure de remboursement",
+    "Type d'offre",
+    "Code postal du bénéficiaire",
+    "Duo",
+]
 
 
 def test_find_all_ongoing_bookings(app):
@@ -68,7 +87,7 @@ def test_find_not_cancelled_bookings_by_stock(app):
     not_cancelled_booking = bookings_factories.BookingFactory(user=user, stock=stock)
 
     # When
-    all_not_cancelled_bookings = booking_repository.find_not_cancelled_bookings_by_stock(stock)
+    all_not_cancelled_bookings = booking_repository.find_not_cancelled_bookings_by_stock(stock.id)
 
     # Then
     assert set(all_not_cancelled_bookings) == {used_booking, not_cancelled_booking}
@@ -80,6 +99,47 @@ one_year_after_booking = default_booking_date + timedelta(weeks=52)
 
 
 class FindByProUserTest:
+    def test_should_return_only_expected_pro_user_bookings(self, app: fixture):
+        # Given
+        booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
+
+        beneficiary_1 = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary_1@example.com", firstName="Ron", lastName="Weasley"
+        )
+        pro_1 = users_factories.ProFactory()
+        offerer_1 = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro_1, offerer=offerer_1)
+        venue_1 = offerers_factories.VenueFactory(managingOfferer=offerer_1)
+        offer_1 = offers_factories.ThingOfferFactory(venue=venue_1)
+        stock_1 = offers_factories.ThingStockFactory(offer=offer_1, price=0)
+        bookings_factories.UsedBookingFactory(user=beneficiary_1, stock=stock_1, dateCreated=booking_date)
+
+        beneficiary_2 = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary_2@example.com", firstName="Harry", lastName="Potter"
+        )
+        pro_2 = users_factories.ProFactory()
+        offerer_2 = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro_2, offerer=offerer_2)
+        venue_2 = offerers_factories.VenueFactory(managingOfferer=offerer_2)
+        offer_2 = offers_factories.ThingOfferFactory(venue=venue_2)
+        stock_2 = offers_factories.ThingStockFactory(offer=offer_2, price=0)
+        bookings_factories.UsedBookingFactory(user=beneficiary_2, stock=stock_2, dateCreated=booking_date)
+
+        # When
+        booking_period = (booking_date - timedelta(days=365), booking_date + timedelta(days=365))
+        bookings_query, total = booking_repository.find_by_pro_user(user=pro_2, booking_period=booking_period)
+        bookings = bookings_query.all()
+
+        # Then
+        assert total == 1
+        assert len(bookings) == 1
+        expected_booking = bookings[0]
+        assert expected_booking.offerId == stock_2.offer.id
+        assert expected_booking.offerName == offer_2.name
+        assert expected_booking.beneficiaryFirstName == "Harry"
+        assert expected_booking.beneficiaryLastName == "Potter"
+        assert expected_booking.beneficiaryEmail == "beneficiary_2@example.com"
+
     def test_should_return_only_expected_booking_attributes(self, app: fixture):
         # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory(
@@ -113,8 +173,8 @@ class FindByProUserTest:
         expected_booking = bookings[0]
         assert expected_booking.offerId == stock.offer.id
         assert expected_booking.offerName == offer.name
-        assert expected_booking.beneficiaryFirstname == "Ron"
-        assert expected_booking.beneficiaryLastname == "Weasley"
+        assert expected_booking.beneficiaryFirstName == "Ron"
+        assert expected_booking.beneficiaryLastName == "Weasley"
         assert expected_booking.beneficiaryEmail == "beneficiary@example.com"
         assert expected_booking.bookedAt == booking_date  # .astimezone(tz.gettz("Europe/Paris"))
         assert expected_booking.bookingToken == "ABCDEF"
@@ -176,7 +236,7 @@ class FindByProUserTest:
 
         bookings_query, _ = booking_repository.find_by_pro_user(
             user=pro,
-            booking_period=((booking_date + timedelta(1)), (booking_date + timedelta(3))),
+            booking_period=((booking_date + timedelta(2)), (booking_date + timedelta(3))),
             status_filter=BookingStatusFilter.REIMBURSED,
         )
         bookings = bookings_query.all()
@@ -265,8 +325,8 @@ class FindByProUserTest:
         expected_booking = bookings[0]
         assert expected_booking.offerId == stock.offer.id
         assert expected_booking.offerName == stock.offer.name
-        assert expected_booking.beneficiaryFirstname == "Ron"
-        assert expected_booking.beneficiaryLastname == "Weasley"
+        assert expected_booking.beneficiaryFirstName == "Ron"
+        assert expected_booking.beneficiaryLastName == "Weasley"
         assert expected_booking.beneficiaryEmail == "beneficiary@example.com"
         assert expected_booking.bookedAt == yesterday
         assert expected_booking.bookingToken == "ABCDEF"
@@ -735,7 +795,6 @@ class FindByProUserTest:
         individual_bookings_recap_paginated_query, _ = booking_repository.find_by_pro_user(
             user=user_offerer.user,
             booking_period=(one_year_before_booking, one_year_after_booking),
-            offer_type=OfferType.INDIVIDUAL_OR_DUO,
         )
         individual_bookings_recap_paginated = individual_bookings_recap_paginated_query.all()
         all_bookings_recap_paginated_query, _ = booking_repository.find_by_pro_user(
@@ -755,9 +814,8 @@ class GetOfferBookingsByStatusCSVTest:
     ):
         assert data_dict["Lieu"] == venue.name
         assert data_dict["Nom de l’offre"] == offer.name
-        booking.venueDepartmentCode = booking.venue.departementCode
         assert data_dict["Date de l'évènement"] == str(
-            convert_booking_dates_utc_to_venue_timezone(booking.stock.beginningDatetime, booking)
+            utc_to_local_datetime(booking.stock.beginningDatetime, venue.timezone)
         )
         assert data_dict["EAN"] == ((offer.extraData or {}).get("ean") or "")
         assert data_dict["Nom et prénom du bénéficiaire"] == " ".join((beneficiary.lastName, beneficiary.firstName))
@@ -832,33 +890,16 @@ class GetOfferBookingsByStatusCSVTest:
 
         offer_id = offer.id
         with assert_num_queries(queries):
-            bookings_csv = booking_repository.export_validated_bookings_by_offer_id(
+            bookings_csv = booking_repository.export_bookings_by_offer_id(
                 offer_id=offer_id,
-                event_beginning_date=date.today() + timedelta(days=10),
+                event_date=date.today() + timedelta(days=10),
                 export_type=BookingExportType.CSV,
+                validated=True,
             )
 
         # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert headers == [
-            "Lieu",
-            "Nom de l’offre",
-            "Date de l'évènement",
-            "EAN",
-            "Nom et prénom du bénéficiaire",
-            "Email du bénéficiaire",
-            "Téléphone du bénéficiaire",
-            "Date et heure de réservation",
-            "Date et heure de validation",
-            "Contremarque",
-            "Intitulé du tarif",
-            "Prix de la réservation",
-            "Statut de la contremarque",
-            "Date et heure de remboursement",
-            "Type d'offre",
-            "Code postal du bénéficiaire",
-            "Duo",
-        ]
+        assert headers == HEADERS
         assert len(data) == 2
         self._validate_csv_row(
             dict(zip(headers, data[0])), beneficiary, offer, venue, validated_booking, "validé", "Non"
@@ -906,33 +947,16 @@ class GetOfferBookingsByStatusCSVTest:
 
         offer_id = offer.id
         with assert_num_queries(queries):
-            bookings_csv = booking_repository.export_validated_bookings_by_offer_id(
+            bookings_csv = booking_repository.export_bookings_by_offer_id(
                 offer_id=offer_id,
-                event_beginning_date=date.today() + timedelta(days=10),
+                event_date=date.today() + timedelta(days=10),
                 export_type=BookingExportType.CSV,
+                validated=True,
             )
 
         # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert headers == [
-            "Lieu",
-            "Nom de l’offre",
-            "Date de l'évènement",
-            "EAN",
-            "Nom et prénom du bénéficiaire",
-            "Email du bénéficiaire",
-            "Téléphone du bénéficiaire",
-            "Date et heure de réservation",
-            "Date et heure de validation",
-            "Contremarque",
-            "Intitulé du tarif",
-            "Prix de la réservation",
-            "Statut de la contremarque",
-            "Date et heure de remboursement",
-            "Type d'offre",
-            "Code postal du bénéficiaire",
-            "Duo",
-        ]
+        assert headers == HEADERS
         assert len(data) == 2
         self._validate_csv_row(
             dict(zip(headers, data[0])), beneficiary, offer, venue, validated_booking, "validé", "Non"
@@ -970,33 +994,16 @@ class GetOfferBookingsByStatusCSVTest:
         bookings_factories.BookingFactory(stock=stock_2)
 
         # When
-        bookings_csv = booking_repository.export_validated_bookings_by_offer_id(
+        bookings_csv = booking_repository.export_bookings_by_offer_id(
             offer_id=offer.id,
-            event_beginning_date=date.today() + timedelta(days=5),
+            event_date=date.today() + timedelta(days=5),
             export_type=BookingExportType.CSV,
+            validated=True,
         )
 
         # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert headers == [
-            "Lieu",
-            "Nom de l’offre",
-            "Date de l'évènement",
-            "EAN",
-            "Nom et prénom du bénéficiaire",
-            "Email du bénéficiaire",
-            "Téléphone du bénéficiaire",
-            "Date et heure de réservation",
-            "Date et heure de validation",
-            "Contremarque",
-            "Intitulé du tarif",
-            "Prix de la réservation",
-            "Statut de la contremarque",
-            "Date et heure de remboursement",
-            "Type d'offre",
-            "Code postal du bénéficiaire",
-            "Duo",
-        ]
+        assert headers == HEADERS
         assert len(data) == 3
         self._validate_csv_row(
             dict(zip(headers, data[0])), beneficiary, offer, venue, validated_booking, "validé", "DUO 1"
@@ -1042,31 +1049,13 @@ class GetOfferBookingsByStatusCSVTest:
         # When
         bookings_csv = booking_repository.export_bookings_by_offer_id(
             offer_id=offer.id,
-            event_beginning_date=date.today() + timedelta(days=10),
+            event_date=date.today() + timedelta(days=10),
             export_type=BookingExportType.CSV,
         )
 
         # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert headers == [
-            "Lieu",
-            "Nom de l’offre",
-            "Date de l'évènement",
-            "EAN",
-            "Nom et prénom du bénéficiaire",
-            "Email du bénéficiaire",
-            "Téléphone du bénéficiaire",
-            "Date et heure de réservation",
-            "Date et heure de validation",
-            "Contremarque",
-            "Intitulé du tarif",
-            "Prix de la réservation",
-            "Statut de la contremarque",
-            "Date et heure de remboursement",
-            "Type d'offre",
-            "Code postal du bénéficiaire",
-            "Duo",
-        ]
+        assert headers == HEADERS
         assert len(data) == 4
         self._validate_csv_row(
             dict(zip(headers, data[0])), beneficiary, offer, venue, validated_booking, "validé", "Non"
@@ -1105,31 +1094,13 @@ class GetOfferBookingsByStatusCSVTest:
         # When
         bookings_csv = booking_repository.export_bookings_by_offer_id(
             offer_id=offer.id,
-            event_beginning_date=date.today() + timedelta(days=5),
+            event_date=date.today() + timedelta(days=5),
             export_type=BookingExportType.CSV,
         )
 
         # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert headers == [
-            "Lieu",
-            "Nom de l’offre",
-            "Date de l'évènement",
-            "EAN",
-            "Nom et prénom du bénéficiaire",
-            "Email du bénéficiaire",
-            "Téléphone du bénéficiaire",
-            "Date et heure de réservation",
-            "Date et heure de validation",
-            "Contremarque",
-            "Intitulé du tarif",
-            "Prix de la réservation",
-            "Statut de la contremarque",
-            "Date et heure de remboursement",
-            "Type d'offre",
-            "Code postal du bénéficiaire",
-            "Duo",
-        ]
+        assert headers == HEADERS
         assert len(data) == 6
         self._validate_csv_row(
             dict(zip(headers, data[0])), beneficiary, offer, venue, validated_booking, "validé", "DUO 1"
@@ -1156,7 +1127,6 @@ class GetOfferBookingsByStatusExcelTest:
         self,
         bookings_excel,
         row: int,
-        headers: dict,
         beneficiary: User,
         offer: Offer,
         venue: Venue,
@@ -1169,16 +1139,15 @@ class GetOfferBookingsByStatusExcelTest:
 
         # Then
         # Headers
-        for i in range(1, len(headers)):
-            assert sheet.cell(row=1, column=i).value == headers[i - 1]
+        for i in range(1, len(HEADERS)):
+            assert sheet.cell(row=1, column=i).value == HEADERS[i - 1]
         # Lieu
         assert sheet.cell(row=row, column=1).value == venue.name
         # Nom de l’offre
         assert sheet.cell(row=row, column=2).value == offer.name
         # Date de l'évènement
-        booking.venueDepartmentCode = booking.venue.departementCode
         assert sheet.cell(row=row, column=3).value == str(
-            convert_booking_dates_utc_to_venue_timezone(booking.stock.beginningDatetime, booking)
+            utc_to_local_datetime(booking.stock.beginningDatetime, venue.timezone)
         )
         # EAN
         assert sheet.cell(row=row, column=4).value == ((offer.extraData or {}).get("ean") or None)
@@ -1259,38 +1228,16 @@ class GetOfferBookingsByStatusExcelTest:
 
         # When
         with assert_num_queries(2):
-            bookings_excel = booking_repository.export_validated_bookings_by_offer_id(
+            bookings_excel = booking_repository.export_bookings_by_offer_id(
                 offer_id=offer.id,
-                event_beginning_date=date.today() + timedelta(days=3),
+                event_date=date.today() + timedelta(days=3),
                 export_type=BookingExportType.EXCEL,
+                validated=True,
             )
-        headers = [
-            "Lieu",
-            "Nom de l’offre",
-            "Date de l'évènement",
-            "EAN",
-            "Nom et prénom du bénéficiaire",
-            "Email du bénéficiaire",
-            "Téléphone du bénéficiaire",
-            "Date et heure de réservation",
-            "Date et heure de validation",
-            "Contremarque",
-            "Intitulé du tarif",
-            "Prix de la réservation",
-            "Statut de la contremarque",
-            "Date et heure de remboursement",
-            "Type d'offre",
-            "Code postal du bénéficiaire",
-            "Duo",
-        ]
 
         # Then
-        self._validate_excel_row(
-            bookings_excel, 2, headers, beneficiary, offer, venue, validated_booking, "validé", "Non"
-        )
-        self._validate_excel_row(
-            bookings_excel, 3, headers, beneficiary_2, offer, venue, validated_booking_2, "confirmé", "Non"
-        )
+        self._validate_excel_row(bookings_excel, 2, beneficiary, offer, venue, validated_booking, "validé", "Non")
+        self._validate_excel_row(bookings_excel, 3, beneficiary_2, offer, venue, validated_booking_2, "confirmé", "Non")
 
     def should_return_validated_bookings_for_offer_with_duo(self):
         # Given
@@ -1324,41 +1271,17 @@ class GetOfferBookingsByStatusExcelTest:
         bookings_factories.BookingFactory(stock=stock_2)
 
         # When
-        bookings_excel = booking_repository.export_validated_bookings_by_offer_id(
+        bookings_excel = booking_repository.export_bookings_by_offer_id(
             offer_id=offer.id,
-            event_beginning_date=date.today() + timedelta(days=3),
+            event_date=date.today() + timedelta(days=3),
             export_type=BookingExportType.EXCEL,
+            validated=True,
         )
-        headers = [
-            "Lieu",
-            "Nom de l’offre",
-            "Date de l'évènement",
-            "EAN",
-            "Nom et prénom du bénéficiaire",
-            "Email du bénéficiaire",
-            "Téléphone du bénéficiaire",
-            "Date et heure de réservation",
-            "Date et heure de validation",
-            "Contremarque",
-            "Intitulé du tarif",
-            "Prix de la réservation",
-            "Statut de la contremarque",
-            "Date et heure de remboursement",
-            "Type d'offre",
-            "Code postal du bénéficiaire",
-            "Duo",
-        ]
 
         # Then
-        self._validate_excel_row(
-            bookings_excel, 2, headers, beneficiary, offer, venue, validated_booking, "validé", "DUO 1"
-        )
-        self._validate_excel_row(
-            bookings_excel, 3, headers, beneficiary, offer, venue, validated_booking, "validé", "DUO 2"
-        )
-        self._validate_excel_row(
-            bookings_excel, 4, headers, beneficiary_2, offer, venue, validated_booking_2, "confirmé", "Non"
-        )
+        self._validate_excel_row(bookings_excel, 2, beneficiary, offer, venue, validated_booking, "validé", "DUO 1")
+        self._validate_excel_row(bookings_excel, 3, beneficiary, offer, venue, validated_booking, "validé", "DUO 2")
+        self._validate_excel_row(bookings_excel, 4, beneficiary_2, offer, venue, validated_booking_2, "confirmé", "Non")
 
     def should_return_all_bookings_for_offer(self):
         # Given
@@ -1403,40 +1326,15 @@ class GetOfferBookingsByStatusExcelTest:
         # When
         bookings_excel = booking_repository.export_bookings_by_offer_id(
             offer_id=offer.id,
-            event_beginning_date=date.today() + timedelta(days=30),
+            event_date=date.today() + timedelta(days=30),
             export_type=BookingExportType.EXCEL,
         )
-        headers = [
-            "Lieu",
-            "Nom de l’offre",
-            "Date de l'évènement",
-            "EAN",
-            "Nom et prénom du bénéficiaire",
-            "Email du bénéficiaire",
-            "Téléphone du bénéficiaire",
-            "Date et heure de réservation",
-            "Date et heure de validation",
-            "Contremarque",
-            "Intitulé du tarif",
-            "Prix de la réservation",
-            "Statut de la contremarque",
-            "Date et heure de remboursement",
-            "Type d'offre",
-            "Code postal du bénéficiaire",
-            "Duo",
-        ]
 
         # Then
-        self._validate_excel_row(
-            bookings_excel, 2, headers, beneficiary, offer, venue, validated_booking, "validé", "Non"
-        )
-        self._validate_excel_row(
-            bookings_excel, 3, headers, beneficiary_2, offer, venue, validated_booking_2, "confirmé", "Non"
-        )
-        self._validate_excel_row(
-            bookings_excel, 4, headers, beneficiary_3, offer, venue, reimbursed_booking, "remboursé", "Non"
-        )
-        self._validate_excel_row(bookings_excel, 5, headers, beneficiary_4, offer, venue, new_booking, "réservé", "Non")
+        self._validate_excel_row(bookings_excel, 2, beneficiary, offer, venue, validated_booking, "validé", "Non")
+        self._validate_excel_row(bookings_excel, 3, beneficiary_2, offer, venue, validated_booking_2, "confirmé", "Non")
+        self._validate_excel_row(bookings_excel, 4, beneficiary_3, offer, venue, reimbursed_booking, "remboursé", "Non")
+        self._validate_excel_row(bookings_excel, 5, beneficiary_4, offer, venue, new_booking, "réservé", "Non")
 
     def should_return_validated_bookings_for_offer_with_duo_offerer_with_mutiple_users(self):
         # Given
@@ -1474,41 +1372,17 @@ class GetOfferBookingsByStatusExcelTest:
         bookings_factories.BookingFactory(stock=stock_2)
 
         # When
-        bookings_excel = booking_repository.export_validated_bookings_by_offer_id(
+        bookings_excel = booking_repository.export_bookings_by_offer_id(
             offer_id=offer.id,
-            event_beginning_date=date.today() + timedelta(days=3),
+            event_date=date.today() + timedelta(days=3),
             export_type=BookingExportType.EXCEL,
+            validated=True,
         )
-        headers = [
-            "Lieu",
-            "Nom de l’offre",
-            "Date de l'évènement",
-            "EAN",
-            "Nom et prénom du bénéficiaire",
-            "Email du bénéficiaire",
-            "Téléphone du bénéficiaire",
-            "Date et heure de réservation",
-            "Date et heure de validation",
-            "Contremarque",
-            "Intitulé du tarif",
-            "Prix de la réservation",
-            "Statut de la contremarque",
-            "Date et heure de remboursement",
-            "Type d'offre",
-            "Code postal du bénéficiaire",
-            "Duo",
-        ]
 
         # Then
-        self._validate_excel_row(
-            bookings_excel, 2, headers, beneficiary, offer, venue, validated_booking, "validé", "DUO 1"
-        )
-        self._validate_excel_row(
-            bookings_excel, 3, headers, beneficiary, offer, venue, validated_booking, "validé", "DUO 2"
-        )
-        self._validate_excel_row(
-            bookings_excel, 4, headers, beneficiary_2, offer, venue, validated_booking_2, "confirmé", "Non"
-        )
+        self._validate_excel_row(bookings_excel, 2, beneficiary, offer, venue, validated_booking, "validé", "DUO 1")
+        self._validate_excel_row(bookings_excel, 3, beneficiary, offer, venue, validated_booking, "validé", "DUO 2")
+        self._validate_excel_row(bookings_excel, 4, beneficiary_2, offer, venue, validated_booking_2, "confirmé", "Non")
 
     def should_return_all_bookings_for_offer_with_duo(self):
         # Given
@@ -1547,48 +1421,17 @@ class GetOfferBookingsByStatusExcelTest:
         # When
         bookings_excel = booking_repository.export_bookings_by_offer_id(
             offer_id=offer.id,
-            event_beginning_date=date.today() + timedelta(days=30),
+            event_date=date.today() + timedelta(days=30),
             export_type=BookingExportType.EXCEL,
         )
-        headers = [
-            "Lieu",
-            "Nom de l’offre",
-            "Date de l'évènement",
-            "EAN",
-            "Nom et prénom du bénéficiaire",
-            "Email du bénéficiaire",
-            "Téléphone du bénéficiaire",
-            "Date et heure de réservation",
-            "Date et heure de validation",
-            "Contremarque",
-            "Intitulé du tarif",
-            "Prix de la réservation",
-            "Statut de la contremarque",
-            "Date et heure de remboursement",
-            "Type d'offre",
-            "Code postal du bénéficiaire",
-            "Duo",
-        ]
 
         # Then
-        self._validate_excel_row(
-            bookings_excel, 2, headers, beneficiary, offer, venue, validated_booking, "validé", "DUO 1"
-        )
-        self._validate_excel_row(
-            bookings_excel, 3, headers, beneficiary, offer, venue, validated_booking, "validé", "DUO 2"
-        )
-        self._validate_excel_row(
-            bookings_excel, 4, headers, beneficiary_2, offer, venue, validated_booking_2, "confirmé", "Non"
-        )
-        self._validate_excel_row(
-            bookings_excel, 5, headers, beneficiary, offer, venue, reimbursed_booking, "remboursé", "Non"
-        )
-        self._validate_excel_row(
-            bookings_excel, 6, headers, beneficiary_2, offer, venue, new_booking, "réservé", "DUO 1"
-        )
-        self._validate_excel_row(
-            bookings_excel, 7, headers, beneficiary_2, offer, venue, new_booking, "réservé", "DUO 2"
-        )
+        self._validate_excel_row(bookings_excel, 2, beneficiary, offer, venue, validated_booking, "validé", "DUO 1")
+        self._validate_excel_row(bookings_excel, 3, beneficiary, offer, venue, validated_booking, "validé", "DUO 2")
+        self._validate_excel_row(bookings_excel, 4, beneficiary_2, offer, venue, validated_booking_2, "confirmé", "Non")
+        self._validate_excel_row(bookings_excel, 5, beneficiary, offer, venue, reimbursed_booking, "remboursé", "Non")
+        self._validate_excel_row(bookings_excel, 6, beneficiary_2, offer, venue, new_booking, "réservé", "DUO 1")
+        self._validate_excel_row(bookings_excel, 7, beneficiary_2, offer, venue, new_booking, "réservé", "DUO 2")
 
 
 class GetCsvReportTest:
@@ -1620,25 +1463,7 @@ class GetCsvReportTest:
 
         # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert headers == [
-            "Lieu",
-            "Nom de l’offre",
-            "Date de l'évènement",
-            "EAN",
-            "Nom et prénom du bénéficiaire",
-            "Email du bénéficiaire",
-            "Téléphone du bénéficiaire",
-            "Date et heure de réservation",
-            "Date et heure de validation",
-            "Contremarque",
-            "Intitulé du tarif",
-            "Prix de la réservation",
-            "Statut de la contremarque",
-            "Date et heure de remboursement",
-            "Type d'offre",
-            "Code postal du bénéficiaire",
-            "Duo",
-        ]
+        assert headers == HEADERS
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
         assert data_dict["Lieu"] == venue.name
@@ -1690,25 +1515,7 @@ class GetCsvReportTest:
 
         # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert headers == [
-            "Lieu",
-            "Nom de l’offre",
-            "Date de l'évènement",
-            "EAN",
-            "Nom et prénom du bénéficiaire",
-            "Email du bénéficiaire",
-            "Téléphone du bénéficiaire",
-            "Date et heure de réservation",
-            "Date et heure de validation",
-            "Contremarque",
-            "Intitulé du tarif",
-            "Prix de la réservation",
-            "Statut de la contremarque",
-            "Date et heure de remboursement",
-            "Type d'offre",
-            "Code postal du bénéficiaire",
-            "Duo",
-        ]
+        assert headers == HEADERS
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
         assert data_dict["Lieu"] == venue.name
@@ -1802,7 +1609,7 @@ class GetCsvReportTest:
 
         bookings_csv = booking_repository.get_export(
             user=pro,
-            booking_period=((booking_date + timedelta(1)), (booking_date + timedelta(3))),
+            booking_period=((booking_date + timedelta(2)), (booking_date + timedelta(3))),
             status_filter=BookingStatusFilter.REIMBURSED,
         )
 
@@ -1834,8 +1641,8 @@ class GetCsvReportTest:
         # Then
         _, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 2
-        assert data[0][16] == "Oui"
-        assert data[1][16] == "Oui"
+        assert data[0][16] == "DUO 1"
+        assert data[1][16] == "DUO 2"
 
     def test_should_not_duplicate_bookings_when_user_is_admin_and_bookings_offerer_has_multiple_user(
         self, app: fixture
@@ -1884,25 +1691,7 @@ class GetCsvReportTest:
 
         # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert headers == [
-            "Lieu",
-            "Nom de l’offre",
-            "Date de l'évènement",
-            "EAN",
-            "Nom et prénom du bénéficiaire",
-            "Email du bénéficiaire",
-            "Téléphone du bénéficiaire",
-            "Date et heure de réservation",
-            "Date et heure de validation",
-            "Contremarque",
-            "Intitulé du tarif",
-            "Prix de la réservation",
-            "Statut de la contremarque",
-            "Date et heure de remboursement",
-            "Type d'offre",
-            "Code postal du bénéficiaire",
-            "Duo",
-        ]
+        assert headers == HEADERS
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
         assert data_dict["Lieu"] == venue.name
@@ -2198,9 +1987,8 @@ class GetCsvReportTest:
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 3
         data_dicts = [dict(zip(headers, line)) for line in data]
-        assert data_dicts[0]["Lieu"] == venue_for_event.name
-        assert data_dicts[1]["Lieu"] == venue_for_book.name
-        assert data_dicts[2]["Lieu"] == venue_for_thing.name
+        venues = [data_dict["Lieu"] for data_dict in data_dicts]
+        assert sorted(venues) == [venue_for_thing.name, venue_for_book.name, venue_for_event.name]
 
     def test_should_return_booking_with_venue_public_name_when_public_name_is_provided(self, app):
         # Given
@@ -2262,9 +2050,8 @@ class GetCsvReportTest:
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 3
         data_dicts = [dict(zip(headers, line)) for line in data]
-        assert data_dicts[0]["Lieu"] == venue_for_event.publicName
-        assert data_dicts[1]["Lieu"] == venue_for_book.publicName
-        assert data_dicts[2]["Lieu"] == venue_for_thing.publicName
+        venues = [data_dict["Lieu"] for data_dict in data_dicts]
+        assert sorted(venues) == [venue_for_thing.publicName, venue_for_book.publicName, venue_for_event.publicName]
 
     def test_should_return_only_booking_for_requested_venue(self, app: fixture):
         # Given
@@ -2474,7 +2261,6 @@ class GetCsvReportTest:
         individual_bookings_csv = booking_repository.get_export(
             user=user_offerer.user,
             booking_period=(one_year_before_booking, one_year_after_booking),
-            offer_type=OfferType.INDIVIDUAL_OR_DUO,
         )
         all_bookings_csv = booking_repository.get_export(
             user=user_offerer.user,
@@ -2509,8 +2295,8 @@ class GetCsvReportTest:
             )
 
             # When
-            beginning_period = (datetime.utcnow().date() - timedelta(days=1)).isoformat()
-            ending_period = (datetime.utcnow().date() + timedelta(days=360)).isoformat()
+            beginning_period = datetime.utcnow().date() - timedelta(days=1)
+            ending_period = datetime.utcnow().date() + timedelta(days=360)
             bookings_csv = booking_repository.get_export(
                 user=pro,
                 booking_period=(beginning_period, ending_period),
@@ -2550,8 +2336,8 @@ class GetCsvReportTest:
             )
 
             # When
-            beginning_period = (datetime.utcnow().date() - timedelta(days=11)).isoformat()
-            ending_period = (datetime.utcnow().date() + timedelta(days=360)).isoformat()
+            beginning_period = datetime.utcnow().date() - timedelta(days=11)
+            ending_period = datetime.utcnow().date() + timedelta(days=360)
             bookings_csv = booking_repository.get_export(
                 user=pro,
                 booking_period=(beginning_period, ending_period),
@@ -2592,8 +2378,8 @@ class GetCsvReportTest:
             )
 
             # When
-            beginning_period = (datetime.utcnow().date() - timedelta(days=11)).isoformat()
-            ending_period = (datetime.utcnow().date() + timedelta(days=360)).isoformat()
+            beginning_period = datetime.utcnow().date() - timedelta(days=11)
+            ending_period = datetime.utcnow().date() + timedelta(days=360)
             bookings_csv = booking_repository.get_export(
                 user=pro,
                 booking_period=(beginning_period, ending_period),
@@ -2628,25 +2414,6 @@ class GetExcelReportTest:
             token="ABCDEF",
             amount=12,
         )
-        headers = [
-            "Lieu",
-            "Nom de l’offre",
-            "Date de l'évènement",
-            "EAN",
-            "Nom et prénom du bénéficiaire",
-            "Email du bénéficiaire",
-            "Téléphone du bénéficiaire",
-            "Date et heure de réservation",
-            "Date et heure de validation",
-            "Contremarque",
-            "Intitulé du tarif",
-            "Prix de la réservation",
-            "Statut de la contremarque",
-            "Date et heure de remboursement",
-            "Type d'offre",
-            "Code postal du bénéficiaire",
-            "Duo",
-        ]
 
         # When
         bookings_excel = booking_repository.get_export(
@@ -2659,8 +2426,8 @@ class GetExcelReportTest:
 
         # Then
         # Headers
-        for i in range(1, len(headers)):
-            assert sheet.cell(row=1, column=i).value == headers[i - 1]
+        for i in range(1, len(HEADERS)):
+            assert sheet.cell(row=1, column=i).value == HEADERS[i - 1]
         # Lieu
         assert sheet.cell(row=2, column=1).value == venue.name
         # Nom de l’offre
@@ -2941,7 +2708,7 @@ class GetTomorrowEventOfferTest:
             )
         )
 
-        bookings = booking_repository.find_individual_bookings_event_happening_tomorrow_query()
+        bookings = booking_repository.find_individual_bookings_event_happening_tomorrow()
 
         assert len(bookings) == 1
 
@@ -2953,7 +2720,7 @@ class GetTomorrowEventOfferTest:
             )
         )
 
-        bookings = booking_repository.find_individual_bookings_event_happening_tomorrow_query()
+        bookings = booking_repository.find_individual_bookings_event_happening_tomorrow()
 
         assert len(bookings) == 0
 
@@ -2965,7 +2732,7 @@ class GetTomorrowEventOfferTest:
             )
         )
 
-        bookings = booking_repository.find_individual_bookings_event_happening_tomorrow_query()
+        bookings = booking_repository.find_individual_bookings_event_happening_tomorrow()
 
         assert len(bookings) == 0
 
@@ -2973,7 +2740,7 @@ class GetTomorrowEventOfferTest:
         tomorrow = datetime.utcnow() + timedelta(days=1)
         bookings_factories.BookingFactory(stock__beginningDatetime=tomorrow)
 
-        bookings = booking_repository.find_individual_bookings_event_happening_tomorrow_query()
+        bookings = booking_repository.find_individual_bookings_event_happening_tomorrow()
 
         assert len(bookings) == 0
 
@@ -2986,7 +2753,7 @@ class GetTomorrowEventOfferTest:
         )
 
         with assert_no_duplicated_queries():
-            bookings = booking_repository.find_individual_bookings_event_happening_tomorrow_query()
+            bookings = booking_repository.find_individual_bookings_event_happening_tomorrow()
 
         assert len(bookings) == 1
 
@@ -2999,7 +2766,7 @@ class GetTomorrowEventOfferTest:
             )
         )
 
-        bookings = booking_repository.find_individual_bookings_event_happening_tomorrow_query()
+        bookings = booking_repository.find_individual_bookings_event_happening_tomorrow()
 
         assert len(bookings) == 0
 
@@ -3019,7 +2786,7 @@ class GetTomorrowEventOfferTest:
             )
         )
 
-        bookings = booking_repository.find_individual_bookings_event_happening_tomorrow_query()
+        bookings = booking_repository.find_individual_bookings_event_happening_tomorrow()
 
         assert len(bookings) == 1
 
@@ -3032,7 +2799,7 @@ class GetTomorrowEventOfferTest:
             status=BookingStatus.CANCELLED,
         )
 
-        bookings = booking_repository.find_individual_bookings_event_happening_tomorrow_query()
+        bookings = booking_repository.find_individual_bookings_event_happening_tomorrow()
 
         assert len(bookings) == 0
 
@@ -3044,6 +2811,6 @@ class GetTomorrowEventOfferTest:
         bookings_factories.BookingFactory(stock=stock)
         bookings_factories.BookingFactory(stock=stock)
 
-        bookings = booking_repository.find_individual_bookings_event_happening_tomorrow_query()
+        bookings = booking_repository.find_individual_bookings_event_happening_tomorrow()
 
         assert len(bookings) == 2
