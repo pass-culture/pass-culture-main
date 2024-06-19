@@ -1,39 +1,74 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/variables/_size.scss" as size;
+@use "styles/mixins/_a11y.scss" as a11y;
 
+// <div>
 .table-wrapper {
   display: flex;
   flex-direction: column;
 }
 
+// <table>
 .table {
-  display: flex;
-  flex-direction: column;
   margin-bottom: rem.torem(10px);
 }
 
+// <thead>
 .table-header {
   @include fonts.caption;
+  @include a11y.visually-hidden;
 
   color: var(--color-black);
-  padding: rem.torem(14px);
 }
 
+// <th>
 .table-header-cell {
   @include fonts.caption;
 
   color: var(--color-black);
-  padding: rem.torem(14px);
-  display: inline-block;
+  padding: rem.torem(8px);
+  white-space: nowrap;
 }
 
+// <tbody>
 .table-body {
   border-bottom: rem.torem(1px) solid var(--color-grey-medium);
+
+  // In mobile-view, it takes labels from "data-label" in order to construct à left-column with that content
+  td[data-label] {
+    display: contents; // ignores <td> with [data-label], so their children can be used as grid items
+
+    // ::before is the left column
+    &::before {
+      @include fonts.bold;
+
+      grid-column: 1;
+      font-style: italic;
+      content: attr(data-label) " : ";
+      margin: rem.torem(8px) rem.torem(8px) rem.torem(8px);
+    }
+
+    // any other container element (generally a <div> or a <span>) is the right column
+    > div,
+    > span {
+      grid-column: 2;
+      margin: rem.torem(8px);
+    }
+
+    // this item is a flex element: we don't want to distort it, so we'll vertically align its children instead
+    > button {
+      align-items: center;
+      margin-left: rem.torem(8px);
+      margin-right: auto;
+    }
+  }
 }
 
+// <tr>
 .table-row {
-  display: flex;
-  flex-flow: row wrap;
+  display: grid;
+  grid-template-columns: auto 1fr;
   border-top: rem.torem(1px) solid var(--color-grey-medium);
   padding: rem.torem(16px) 0;
 
@@ -42,70 +77,99 @@
   }
 }
 
+// <td>
 .table-cell {
   @include fonts.body;
 
-  padding: rem.torem(16px);
+  padding: rem.torem(8px);
 }
 
 .column-booking-id {
-  width: rem.torem(110px);
+  min-width: rem.torem(60px);
+  white-space: initial;
+  word-break: break-word;
 }
 
 .column-offer-name {
-  width: rem.torem(160px);
+  word-break: break-word;
+
+  .offer-details-wrapper {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+
+    svg {
+      width: rem.torem(32px);
+      height: rem.torem(32px);
+      position: relative;
+      top: rem.torem(-6px);
+      margin-left: rem.torem(8px);
+    }
+  }
 }
 
 .column-collective-offer-name {
-  width: rem.torem(180px);
-}
-
-.column-booking-duo {
-  padding: 0;
-  width: rem.torem(35px);
+  word-break: break-word;
 }
 
 .column-beneficiary {
-  width: rem.torem(225px);
   word-break: break-word;
 }
 
 .column-institution {
-  width: rem.torem(160px);
   word-break: break-word;
-}
-
-.column-price-and-price {
-  width: rem.torem(112px);
-}
-
-.column-booking-date {
-  width: rem.torem(135px);
 }
 
 .column-booking-token {
-  width: rem.torem(120px);
   word-break: break-word;
 }
 
-.column-booking-status {
-  width: rem.torem(140px);
+@media (min-width: size.$tablet) {
+  // <thead>
+  .table-header {
+    @include a11y.visually-hidden-reset;
+  }
+
+  // <tbody>
+  .table-body {
+    td[data-label] {
+      display: table-cell;
+
+      &::before {
+        display: none;
+      }
+
+      > div,
+      > span {
+        margin-left: 0;
+      }
+    }
+  }
+
+  // <tr>
+  .table-row {
+    display: table-row;
+  }
+
+  .column-offer-name {
+    .offer-details-wrapper {
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+
+  .details-content {
+    padding: rem.torem(24px) rem.torem(16px) 0 rem.torem(16px);
+  }
 }
 
-.details-container {
-  display: flex;
-  flex-flow: row wrap;
-  padding: rem.torem(16px) rem.torem(16px) rem.torem(32px) rem.torem(16px);
-}
-
+// <td>
 .details-content {
-  width: 100%;
-  padding: unset;
-  font-size: unset;
-  font-weight: unset;
-  line-height: unset;
+  padding: 0;
+  overflow: hidden;
 }
 
 .loader {
+  padding: rem.torem(24px) rem.torem(16px);
   margin: auto;
 }

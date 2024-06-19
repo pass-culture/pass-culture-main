@@ -66,7 +66,10 @@ export const CollectiveTableRow = ({
         onClick={onRowClick}
         data-testid="offer-item-row"
       >
-        <td className={cn(styles['table-cell'], styles['column-booking-id'])}>
+        <td
+          className={cn(styles['table-cell'], styles['column-booking-id'])}
+          data-label="Réservation"
+        >
           <BookingIdCell id={booking.bookingId} />
         </td>
 
@@ -75,27 +78,33 @@ export const CollectiveTableRow = ({
             styles['table-cell'],
             styles['column-collective-offer-name']
           )}
+          data-label="Nom de l’offre"
         >
           <BookingOfferCell booking={booking} />
         </td>
 
-        <td className={cn(styles['table-cell'], styles['column-institution'])}>
+        <td
+          className={cn(styles['table-cell'], styles['column-institution'])}
+          data-label="Établissement"
+        >
           <InstitutionCell institution={booking.institution} />
         </td>
 
         <td
           className={cn(styles['table-cell'], styles['column-price-and-price'])}
+          data-label="Places et prix"
         >
           <NumberOfTicketsAndPriceCell booking={booking} />
         </td>
 
         <td
           className={cn(styles['table-cell'], styles['column-booking-status'])}
+          data-label="Statut"
         >
           <CollectiveBookingStatusCell booking={booking} />
         </td>
 
-        <td className={cn(styles['table-cell'])}>
+        <td className={cn(styles['table-cell'])} data-label="Détails">
           <DetailsButtonCell isExpanded={isExpanded} />
         </td>
       </tr>
@@ -103,11 +112,15 @@ export const CollectiveTableRow = ({
       {isExpanded ? (
         <tr className={styles['details-container']} ref={detailsRef}>
           {bookingDetailsQuery.isLoading || !bookingDetailsQuery.data ? (
-            <td className={styles['loader']}>
+            <td className={styles['loader']} colSpan={6}>
               <Spinner />
             </td>
           ) : (
-            <td className={styles['details-content']} id={booking.bookingId}>
+            <td
+              className={styles['details-content']}
+              id={booking.bookingId}
+              colSpan={6}
+            >
               <CollectiveBookingDetails
                 bookingDetails={bookingDetailsQuery.data}
                 bookingRecap={booking}

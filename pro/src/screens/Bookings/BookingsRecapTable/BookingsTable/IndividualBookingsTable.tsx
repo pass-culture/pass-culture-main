@@ -97,7 +97,7 @@ export const IndividualBookingsTable = ({
     <div className={styles['table-wrapper']}>
       {currentPageItems.length !== 0 && (
         <table className={styles['table']}>
-          <thead>
+          <thead className={styles['table-header']}>
             <tr>
               <th
                 scope="col"
@@ -122,14 +122,6 @@ export const IndividualBookingsTable = ({
                   }
                 />
               </th>
-
-              <th
-                scope="col"
-                className={cn(
-                  styles['column-booking-duo'],
-                  styles['table-header-cell']
-                )}
-              />
 
               <th
                 scope="col"
@@ -214,17 +206,12 @@ export const IndividualBookingsTable = ({
                     styles['table-cell'],
                     styles['column-offer-name']
                   )}
+                  data-label="Nom de l’offre"
                 >
-                  <BookingOfferCell booking={booking} />
-                </td>
-
-                <td
-                  className={cn(
-                    styles['table-cell'],
-                    styles['column-booking-duo']
-                  )}
-                >
-                  <BookingIsDuoCell isDuo={booking.bookingIsDuo} />
+                  <div className={styles['offer-details-wrapper']}>
+                    <BookingOfferCell booking={booking} />
+                    <BookingIsDuoCell isDuo={booking.bookingIsDuo} />
+                  </div>
                 </td>
 
                 <td
@@ -232,6 +219,7 @@ export const IndividualBookingsTable = ({
                     styles['table-cell'],
                     styles['column-beneficiary']
                   )}
+                  data-label="Bénéficiaire"
                 >
                   <BeneficiaryCell beneficiaryInfos={booking.beneficiary} />
                 </td>
@@ -241,6 +229,7 @@ export const IndividualBookingsTable = ({
                     styles['table-cell'],
                     styles['column-booking-date']
                   )}
+                  data-label="Réservation"
                 >
                   <BookingDateCell
                     bookingDateTimeIsoString={booking.bookingDate}
@@ -252,6 +241,7 @@ export const IndividualBookingsTable = ({
                     styles['table-cell'],
                     styles['column-booking-token']
                   )}
+                  data-label="Contremarque"
                 >
                   <BookingTokenCell bookingToken={booking.bookingToken} />
                 </td>
@@ -261,6 +251,7 @@ export const IndividualBookingsTable = ({
                     styles['table-cell'],
                     styles['column-booking-status']
                   )}
+                  data-label="Statut"
                 >
                   <IndividualBookingStatusCell booking={booking} />
                 </td>

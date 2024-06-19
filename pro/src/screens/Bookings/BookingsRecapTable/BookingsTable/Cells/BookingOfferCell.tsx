@@ -48,7 +48,7 @@ export const BookingOfferCell = ({ booking }: BookingOfferCellProps) => {
     booking.bookingStatus.toUpperCase() === OFFER_STATUS_PENDING &&
     shouldDisplayWarning(booking.stock)
   return (
-    <>
+    <div>
       <a
         href={editionUrl}
         title={booking.stock.offerName}
@@ -91,9 +91,13 @@ export const BookingOfferCell = ({ booking }: BookingOfferCellProps) => {
             ? `${booking.bookingPriceCategoryLabel} - ${formatPrice(
                 booking.bookingAmount
               )}`
-            : formatPrice(booking.bookingAmount)}
+            : formatPrice(booking.bookingAmount, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+                trailingZeroDisplay: 'stripIfInteger',
+              })}
         </div>
       )}
-    </>
+    </div>
   )
 }
