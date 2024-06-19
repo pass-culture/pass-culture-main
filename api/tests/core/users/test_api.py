@@ -631,30 +631,6 @@ class CreateBeneficiaryTest:
         assert fifteen_year_old.deposit.amount == 20
 
 
-class SetOffererDepartementCodeTest:
-    def test_with_empty_postal_code(self):
-        # Given
-        new_user = users_factories.ProFactory.build()
-        offerer = offerers_factories.OffererFactory.build(postalCode=None)
-
-        # When
-        updated_user = users_api._set_offerer_departement_code(new_user, offerer)
-
-        # Then
-        assert updated_user.departementCode is None
-
-    def test_with_set_postal_code(self):
-        # Given
-        new_user = users_factories.ProFactory.build()
-        offerer = offerers_factories.OffererFactory.build(postalCode="75019")
-
-        # When
-        updated_user = users_api._set_offerer_departement_code(new_user, offerer)
-
-        # Then
-        assert updated_user.departementCode == "75"
-
-
 @pytest.mark.usefixtures("db_session")
 class SetProTutoAsSeenTest:
     def should_set_has_seen_pro_tutorials_to_true_for_user(self):

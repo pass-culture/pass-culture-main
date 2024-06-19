@@ -888,14 +888,6 @@ def create_pro_user(pro_user: ProUserCreationBodyV2Model) -> models.User:
     return new_pro_user
 
 
-def _set_offerer_departement_code(new_user: models.User, offerer: offerers_models.Offerer) -> models.User:
-    if offerer.postalCode:  # not None, not ""
-        new_user.departementCode = postal_code_utils.PostalCode(offerer.postalCode).get_departement_code()
-    else:
-        new_user.departementCode = None
-    return new_user
-
-
 def set_pro_tuto_as_seen(user: models.User) -> None:
     user.hasSeenProTutorials = True
     repository.save(user)
