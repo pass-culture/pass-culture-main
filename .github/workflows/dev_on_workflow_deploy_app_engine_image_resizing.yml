@@ -98,5 +98,5 @@ jobs:
         run: |
           gcloud app versions list --service=image-resizing --format="table[no-heading](id)" --project=${{ inputs.google_project }} \
             | grep -v $(gcloud app versions list --service=image-resizing --hide-no-traffic --format="table[no-heading](id)" --project=${{ inputs.google_project }}) \
-            | xargs gcloud app versions delete --service=image-resizing --project=${{ inputs.google_project }}
+            | xargs --no-run-if-empty gcloud app versions delete --service=image-resizing --project=${{ inputs.google_project }}
           
