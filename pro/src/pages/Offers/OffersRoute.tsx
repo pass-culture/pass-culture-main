@@ -92,12 +92,20 @@ export const OffersRoute = (): JSX.Element => {
     ...DEFAULT_SEARCH_FILTERS,
     ...urlSearchFilters,
     ...(isRestrictedAsAdmin ? { status: ALL_STATUS } : {}),
-  }
-
-  if (isNewInterfaceActive && selectedOffererId) {
-    apiFilters.offererId = selectedOffererId.toString()
+    ...(isNewInterfaceActive
+      ? { offererId: selectedOffererId?.toString() ?? '' }
+      : {}),
   }
   delete apiFilters.page
+  if (
+    isNewInterfaceActive &&
+    selectedOffererId &&
+    selectedOffererId.toString() !== urlSearchFilters.offererId
+  ) {
+    setTimeout(() => {
+      redirectWithUrlFilters(apiFilters)
+    })
+  }
 
   const offersQuery = useSWR([GET_OFFERS_QUERY_KEY, apiFilters], () => {
     const {
