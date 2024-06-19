@@ -3,30 +3,5 @@
     "testing": "pc-doc-api-testing",
     "staging": "pc-doc-api-staging",
     "production": "pc-doc-api-production"
-  },
-  "targets": {
-    "pc-doc-api-testing": {
-      "hosting": {
-        "testing": [
-          "pc-doc-api-testing"
-        ]
-      }
-    },
-    "pc-doc-api-staging": {
-      "hosting": {
-        "staging": [
-          "pc-doc-api-staging"
-        ]
-      }
-    },
-    "pc-doc-api-production": {
-      "hosting": {
-        "production": [
-          "pc-doc-api-production"
-        ]
-      }
-    }
-  },
-  "etags": {},
-  "dataconnectEmulatorConfig": {}
+  }
 }

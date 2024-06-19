@@ -46,7 +46,7 @@ jobs:
           environment: ${{ inputs.environment }}
           REF: ${{ github.ref }}
           APPNAME: pc-doc-api
-          ENTRYPOINT: api/documentation
+          ENTRYPOINT: 'api/documentation'
           CHANNEL: ''
           EXPIRES: '7d'
           GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
