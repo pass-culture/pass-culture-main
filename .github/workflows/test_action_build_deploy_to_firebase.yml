@@ -36,8 +36,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.1.7
-          with:
-            ref: ${{ inputs.REF }}
+        with:
+          ref: ${{ inputs.REF }}
       - uses: actions/setup-node@v4
         with:
           node-version-file: '${{ inputs.ENTRYPOINT }}/.nvmrc'
