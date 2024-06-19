@@ -857,9 +857,10 @@ class GetBookingsTest:
             stock__offer__withdrawalDelay=60 * 30,
         )
 
-        response = client.with_token(self.identifier).get("/native/v1/bookings")
+        with assert_num_queries(2):  # user + booking
+            response = client.with_token(self.identifier).get("/native/v1/bookings")
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         offer = response.json["ongoing_bookings"][0]["stock"]["offer"]
         assert offer["withdrawalDetails"] == "Veuillez chercher votre billet au guichet"
         assert offer["withdrawalType"] == "on_site"
@@ -880,9 +881,10 @@ class GetBookingsTest:
         ExternalBookingFactory(booking=booking, barcode="111111111", seat="A_1")
         ExternalBookingFactory(booking=booking, barcode="111111112", seat="A_2")
 
-        response = client.with_token(self.identifier).get("/native/v1/bookings")
+        with assert_num_queries(2):  # user + booking
+            response = client.with_token(self.identifier).get("/native/v1/bookings")
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         booking_response = response.json["ongoing_bookings"][0]
         assert booking_response["token"] is None  # do not display CM when it is an external booking
         assert booking_response["qrCodeData"] is not None
@@ -1077,8 +1079,9 @@ class ToggleBookingVisibilityTest:
         )
 
         client = client.with_token(self.identifier)
-        response = client.get("/native/v1/bookings")
-        assert response.status_code == 200
+        with assert_num_queries(2):  # user + booking
+            response = client.get("/native/v1/bookings")
+            assert response.status_code == 200
 
         assert [b["id"] for b in response.json["ongoing_bookings"]] == [booking.id]
         assert [b["id"] for b in response.json["ended_bookings"]] == []

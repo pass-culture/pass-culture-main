@@ -7,6 +7,7 @@ import time_machine
 
 from pcapi.core.cultural_survey.models import CulturalSurveyAnswerEnum
 from pcapi.core.cultural_survey.models import CulturalSurveyQuestionEnum
+from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users import testing
@@ -24,9 +25,10 @@ class CulturalSurveyQuestionsTest:
         )
 
         client.with_token(user.email)
-        response = client.get("/native/v1/cultural_survey/questions")
+        with assert_num_queries(1):  # user
+            response = client.get("/native/v1/cultural_survey/questions")
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json == {
             "questions": [
                 {
