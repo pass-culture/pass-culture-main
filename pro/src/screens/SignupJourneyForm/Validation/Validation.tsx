@@ -18,7 +18,7 @@ import { useInitReCaptcha } from 'hooks/useInitReCaptcha'
 import { useNotification } from 'hooks/useNotification'
 import fullEditIcon from 'icons/full-edit.svg'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
-import { updateUser } from 'store/user/reducer'
+import { updateSelectedOffererId, updateUser } from 'store/user/reducer'
 import { Banner } from 'ui-kit/Banners/Banner/Banner'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
@@ -53,16 +53,12 @@ export const Validation = (): JSX.Element => {
 
   useEffect(() => {
     // This is needed because `ReactRouter` is reloaded because of useIsNewInterfaceActive()
-    if (currentUser.hasUserOfferer) {
-      navigate('/accueil')
-    } else {
-      if (offerer === null || offerer === DEFAULT_OFFERER_FORM_VALUES) {
-        navigate('/parcours-inscription/identification')
-        return
-      }
-      if (activity === null || activity === DEFAULT_ACTIVITY_VALUES) {
-        navigate('/parcours-inscription/activite')
-      }
+    if (offerer === null || offerer === DEFAULT_OFFERER_FORM_VALUES) {
+      navigate('/parcours-inscription/identification')
+      return
+    }
+    if (activity === null || activity === DEFAULT_ACTIVITY_VALUES) {
+      navigate('/parcours-inscription/activite')
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activity, offerer])
@@ -104,10 +100,11 @@ export const Validation = (): JSX.Element => {
     }
 
     try {
-      await api.saveNewOnboardingData(data)
+      const response = await api.saveNewOnboardingData(data)
       dispatch(updateUser({ ...currentUser, hasUserOfferer: true }))
       notify.success('Votre structure a bien été créée')
       navigate('/accueil')
+      dispatch(updateSelectedOffererId(response.id))
     } catch (error) {
       notify.error('Erreur lors de la création de votre structure')
     }

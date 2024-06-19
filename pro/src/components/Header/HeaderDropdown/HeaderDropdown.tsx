@@ -205,8 +205,8 @@ export const HeaderDropdown = () => {
                       <DropdownMenu.Item asChild>
                         <ButtonLink
                           icon={fullMoreIcon}
-                          link={{ to: '/structures/creation' }}
                           className={styles['menu-item']}
+                          link={{ to: '/parcours-inscription/structure' }}
                         >
                           Ajouter une nouvelle structure
                         </ButtonLink>
@@ -219,7 +219,7 @@ export const HeaderDropdown = () => {
               <DropdownMenu.Item asChild>
                 <ButtonLink
                   icon={fullMoreIcon}
-                  link={{ to: '/structures/creation' }}
+                  link={{ to: '/parcours-inscription/structure' }}
                   className={styles['menu-item']}
                 >
                   Ajouter une nouvelle structure
