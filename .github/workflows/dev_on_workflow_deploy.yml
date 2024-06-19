@@ -7,7 +7,7 @@ on:
         required: true
       app_version:
         type: string
-        required: true
+        required: false
       teleport_version:
         type: string
         required: true
