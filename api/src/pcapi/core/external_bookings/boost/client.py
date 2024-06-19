@@ -45,7 +45,6 @@ def get_pcu_pricing_if_exists(
 
 
 class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
-    # FIXME: define those later
     def get_shows_remaining_places(self, shows_id: list[int]) -> dict[str, int]:
         raise NotImplementedError()
 
