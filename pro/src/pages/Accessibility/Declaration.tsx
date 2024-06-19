@@ -345,9 +345,9 @@ export const Declaration = () => {
             <td className={styles['td']}>
               <a
                 className={styles['link']}
-                href="https://integration.passculture.pro/structures/creation"
+                href="https://integration.passculture.pro/parcours-inscription/structure"
               >
-                https://integration.passculture.pro/structures/creation
+                https://integration.passculture.pro/parcours-inscription/structure
               </a>
             </td>
           </tr>

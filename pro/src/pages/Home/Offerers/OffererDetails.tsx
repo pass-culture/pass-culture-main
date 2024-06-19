@@ -45,7 +45,7 @@ export const OffererDetails = ({
   const handleChangeOfferer = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newOffererId = event.target.value
     if (newOffererId === CREATE_OFFERER_SELECT_ID) {
-      navigate('/structures/creation')
+      navigate('/parcours-inscription/structure')
     } else if (Number(newOffererId) !== selectedOffererId) {
       searchParams.set('structure', newOffererId)
       setSearchParams(searchParams)

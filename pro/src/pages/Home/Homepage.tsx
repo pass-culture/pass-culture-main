@@ -30,6 +30,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { formatBrowserTimezonedDateAsUTC, isDateValid } from 'utils/date'
+import { getSavedOffererId } from 'utils/getSavedOffererId'
 import { localStorageAvailable } from 'utils/localStorageAvailable'
 import { sortByLabel } from 'utils/strings'
 
@@ -52,7 +53,6 @@ export const Homepage = (): JSX.Element => {
   const hasNewSideBarNavigation = useIsNewInterfaceActive()
   const { currentUser } = useCurrentUser()
   const notify = useNotification()
-  const [searchParams] = useSearchParams()
   const profileRef = useRef<HTMLElement>(null)
   const offerersRef = useRef<HTMLElement>(null)
 
@@ -68,6 +68,7 @@ export const Homepage = (): JSX.Element => {
   const [seesNewNavAvailableBanner, setSeesNewNavAvailableBanner] = useState(
     userClosedBetaTestBanner && !hasNewSideBarNavigation && isEligibleToNewNav
   )
+  const [searchParams] = useSearchParams()
 
   const offererNamesQuery = useSWR([GET_OFFERER_NAMES_QUERY_KEY], () =>
     api.listOfferersNames()
@@ -86,7 +87,15 @@ export const Homepage = (): JSX.Element => {
     })) ?? []
   )
 
-  const selectedOffererId = useSelector(selectCurrentOffererId) ?? ''
+  const headerOffererId = useSelector(selectCurrentOffererId)
+  const selectedOffererId = hasNewSideBarNavigation
+    ? headerOffererId ?? ''
+    : // TODO remove this when noUncheckedIndexedAccess is enabled in TS config
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      searchParams.get('structure') ??
+      getSavedOffererId(offererOptions) ??
+      offererOptions[0]?.value ??
+      ''
 
   const selectedOffererQuery = useSWR(
     offererNames ? [GET_OFFERER_QUERY_KEY, selectedOffererId] : null,
