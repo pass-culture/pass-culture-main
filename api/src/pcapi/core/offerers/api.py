@@ -453,13 +453,9 @@ def create_venue(venue_data: venues_serialize.PostVenueBodyModel, author: users_
 
 
 def delete_venue(venue_id: int) -> None:
-    venue_has_bookings = db.session.query(
-        bookings_models.Booking.query.filter(bookings_models.Booking.venueId == venue_id).exists()
-    ).scalar()
+    venue_has_bookings = db.session.query(bookings_models.Booking.query.filter_by(venueId=venue_id).exists()).scalar()
     venue_has_collective_bookings = db.session.query(
-        educational_models.CollectiveBooking.query.filter(
-            educational_models.CollectiveBooking.venueId == venue_id
-        ).exists()
+        educational_models.CollectiveBooking.query.filter_by(venueId=venue_id).exists()
     ).scalar()
 
     if venue_has_bookings or venue_has_collective_bookings:
@@ -487,7 +483,7 @@ def delete_venue(venue_id: int) -> None:
             raise exceptions.CannotDeleteVenueUsedAsPricingPointException()
 
         pricing_point_has_pricings = db.session.query(
-            finance_models.Pricing.query.filter(finance_models.Pricing.pricingPointId == venue_id).exists()
+            finance_models.Pricing.query.filter_by(pricingPointId=venue_id).exists()
         ).scalar()
 
         if pricing_point_has_pricings:
@@ -522,7 +518,7 @@ def delete_venue(venue_id: int) -> None:
     ).delete(synchronize_session=False)
     offerers_models.VenueReimbursementPointLink.query.filter_by(venueId=venue_id).delete(synchronize_session=False)
 
-    offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id).delete(synchronize_session=False)
+    offerers_models.Venue.query.filter_by(id=venue_id).delete(synchronize_session=False)
 
     db.session.commit()
 
