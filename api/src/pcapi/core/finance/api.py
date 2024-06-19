@@ -2497,7 +2497,7 @@ def edit_reimbursement_rule(
         db.session.expire(rule)
         raise
     db.session.add(rule)
-    db.session.commit()
+    db.session.flush()
     return rule
 
 
