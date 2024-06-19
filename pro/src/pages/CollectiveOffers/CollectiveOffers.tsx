@@ -73,10 +73,20 @@ export const CollectiveOffers = (): JSX.Element => {
     ...DEFAULT_SEARCH_FILTERS,
     ...urlSearchFilters,
     ...(isRestrictedAsAdmin ? { status: ALL_STATUS } : {}),
+    ...(isNewInterfaceActive
+      ? { offererId: selectedOffererId?.toString() ?? '' }
+      : {}),
   }
   delete apiFilters.page
-  if (isNewInterfaceActive) {
-    apiFilters.offererId = selectedOffererId?.toString() ?? ''
+
+  if (
+    isNewInterfaceActive &&
+    selectedOffererId &&
+    selectedOffererId.toString() !== urlSearchFilters.offererId
+  ) {
+    setTimeout(() => {
+      redirectWithUrlFilters(apiFilters)
+    })
   }
 
   const offersQuery = useSWR(
