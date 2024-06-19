@@ -19,6 +19,7 @@ import strokeHomeIcon from 'icons/stroke-home.svg'
 import strokePhoneIcon from 'icons/stroke-phone.svg'
 import strokePieIcon from 'icons/stroke-pie.svg'
 import strokeTeacherIcon from 'icons/stroke-teacher.svg'
+import { getSavedVenueId } from 'pages/Home/Offerers/PartnerPages'
 import {
   setIsCollectiveSectionOpen,
   setIsIndividualSectionOpen,
@@ -82,7 +83,9 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   const permanentVenues =
     selectedOfferer?.managedVenues?.filter((venue) => venue.isPermanent) ?? []
 
-  const venueId = permanentVenues[0]?.id
+  const venueId =
+    getSavedVenueId(selectedOfferer?.managedVenues ?? []) ??
+    permanentVenues[0]?.id
 
   useEffect(() => {
     if (INDIVIDUAL_LINKS.includes(location.pathname)) {
