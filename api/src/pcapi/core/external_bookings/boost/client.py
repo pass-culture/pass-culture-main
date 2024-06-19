@@ -7,9 +7,11 @@ from pydantic.v1 import parse_obj_as
 
 from pcapi.connectors import boost
 from pcapi.connectors.serialization import boost_serializers
+from pcapi.core import search
 import pcapi.core.bookings.constants as bookings_constants
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.external_bookings.models as external_bookings_models
+import pcapi.core.offers.api as offers_api
 import pcapi.core.users.models as users_models
 from pcapi.utils.queue import add_to_queue
 
@@ -72,6 +74,16 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
     ) -> list[external_bookings_models.Ticket]:
         quantity = booking.quantity
         showtime = self.get_showtime(show_id)
+        offer_has_new_sold_out_stock = offers_api.update_cinema_stock_quantity(
+            booking.stock, showtime.numberSeatsRemaining
+        )
+        if offer_has_new_sold_out_stock:
+            search.async_index_offer_ids(
+                [booking.stock.offer.id],
+                reason=search.IndexationReason.CINEMA_STOCK_QUANTITY_UPDATE,
+                log_extra={"sold_out": True},
+            )
+
         pcu_pricing = get_pcu_pricing_if_exists(showtime.showtimePricing)
         if not pcu_pricing:
             raise exceptions.BoostAPIException(f"pass Culture pricing not found for show {show_id}")
