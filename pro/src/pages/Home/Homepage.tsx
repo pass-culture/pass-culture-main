@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useSearchParams } from 'react-router-dom'
 import useSWR from 'swr'
 
@@ -24,12 +24,12 @@ import strokeCloseIcon from 'icons/stroke-close.svg'
 import { WelcomeToTheNewBetaBanner } from 'pages/Home/WelcomeToTheNewBetaBanner/WelcomeToTheNewBetaBanner'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 import { updateSelectedOffererId, updateUser } from 'store/user/reducer'
+import { selectCurrentOffererId } from 'store/user/selectors'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { formatBrowserTimezonedDateAsUTC, isDateValid } from 'utils/date'
-import { getSavedOffererId } from 'utils/getSavedOffererId'
 import { localStorageAvailable } from 'utils/localStorageAvailable'
 import { sortByLabel } from 'utils/strings'
 
@@ -86,20 +86,14 @@ export const Homepage = (): JSX.Element => {
     })) ?? []
   )
 
-  const selectedOffererId =
-    // TODO remove this when noUncheckedIndexedAccess is enabled in TS config
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    searchParams.get('structure') ??
-    getSavedOffererId(offererOptions) ??
-    offererOptions[0]?.value ??
-    ''
+  const selectedOffererId = useSelector(selectCurrentOffererId) ?? ''
 
   const selectedOffererQuery = useSWR(
     offererNames ? [GET_OFFERER_QUERY_KEY, selectedOffererId] : null,
     async ([, offererIdParam]) => {
       try {
         const offerer = await api.getOfferer(Number(offererIdParam))
-        localStorage.setItem(SAVED_OFFERER_ID_KEY, offererIdParam)
+        localStorage.setItem(SAVED_OFFERER_ID_KEY, offererIdParam.toString())
         dispatch(updateSelectedOffererId(Number(offererIdParam)))
 
         return offerer
