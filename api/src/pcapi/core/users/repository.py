@@ -70,10 +70,6 @@ def find_user_by_email(email: str) -> models.User | None:
     return _find_user_by_email_query(email).one_or_none()
 
 
-def find_pro_user_by_email_query(email: str) -> BaseQuery:
-    return _find_user_by_email_query(email).filter(models.User.has_pro_role)
-
-
 def find_pro_or_non_attached_pro_user_by_email_query(email: str) -> BaseQuery:
     return _find_user_by_email_query(email).filter(sa.or_(models.User.has_pro_role, models.User.has_non_attached_pro_role))  # type: ignore[type-var]
 
