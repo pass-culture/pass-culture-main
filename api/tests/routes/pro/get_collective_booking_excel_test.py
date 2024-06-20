@@ -47,16 +47,17 @@ class Returns200Test:
         assert sheet.cell(row=2, column=1).value == booking.venue.name
         assert sheet.cell(row=2, column=2).value == booking.collectiveStock.collectiveOffer.name
         assert sheet.cell(row=2, column=3).value == "2020-08-13 14:00:00+02:00"
-        assert sheet.cell(row=2, column=4).value == "Kelso Bob"
-        assert sheet.cell(row=2, column=5).value == booking.educationalRedactor.email
-        assert sheet.cell(row=2, column=6).value == "2020-08-11 14:00:00+02:00"
-        assert sheet.cell(row=2, column=7).value == "2020-08-15 14:00:00+02:00"
-        assert sheet.cell(row=2, column=8).value == booking.collectiveStock.price
-        assert sheet.cell(row=2, column=9).value == "réservé"
-        assert sheet.cell(row=2, column=10).value == "2021-08-11 14:00:00+02:00"
-        assert sheet.cell(row=2, column=11).value == booking.educationalInstitution.institutionId
+        assert sheet.cell(row=2, column=4).value == "Bob"
+        assert sheet.cell(row=2, column=5).value == "Kelso"
+        assert sheet.cell(row=2, column=6).value == booking.educationalRedactor.email
+        assert sheet.cell(row=2, column=7).value == "2020-08-11 14:00:00+02:00"
+        assert sheet.cell(row=2, column=8).value == "2020-08-15 14:00:00+02:00"
+        assert sheet.cell(row=2, column=9).value == booking.collectiveStock.price
+        assert sheet.cell(row=2, column=10).value == "réservé"
+        assert sheet.cell(row=2, column=11).value == "2021-08-11 14:00:00+02:00"
+        assert sheet.cell(row=2, column=12).value == booking.educationalInstitution.institutionId
         assert (
-            sheet.cell(row=2, column=12).value
+            sheet.cell(row=2, column=13).value
             == f"{booking.educationalInstitution.institutionType} {booking.educationalInstitution.name}"
         )
 
@@ -87,13 +88,14 @@ class Returns200Test:
         assert sheet.cell(row=2, column=1).value == booking.venue.name
         assert sheet.cell(row=2, column=2).value == booking.collectiveStock.collectiveOffer.name
         assert sheet.cell(row=2, column=3).value == "2020-08-13 14:00:00+02:00"
-        assert sheet.cell(row=2, column=4).value == "Cox Perry"
-        assert sheet.cell(row=2, column=5).value == booking.educationalRedactor.email
-        assert sheet.cell(row=2, column=6).value == "2020-08-11 14:00:00+02:00"
-        assert sheet.cell(row=2, column=7).value == "None"
-        assert sheet.cell(row=2, column=8).value == booking.collectiveStock.price
-        assert sheet.cell(row=2, column=9).value == "réservé"
-        assert sheet.cell(row=2, column=10).value == "None"
+        assert sheet.cell(row=2, column=4).value == "Perry"
+        assert sheet.cell(row=2, column=5).value == "Cox"
+        assert sheet.cell(row=2, column=6).value == booking.educationalRedactor.email
+        assert sheet.cell(row=2, column=7).value == "2020-08-11 14:00:00+02:00"
+        assert sheet.cell(row=2, column=8).value == "None"
+        assert sheet.cell(row=2, column=9).value == booking.collectiveStock.price
+        assert sheet.cell(row=2, column=10).value == "réservé"
+        assert sheet.cell(row=2, column=11).value == "None"
 
     def test_one_invisible_rights_booking(self, client):
         invisible_user_offerer = offerers_factories.UserOffererFactory()
@@ -127,13 +129,14 @@ class Returns200Test:
         assert sheet.cell(row=2, column=1).value == booking.venue.name
         assert sheet.cell(row=2, column=2).value == booking.collectiveStock.collectiveOffer.name
         assert sheet.cell(row=2, column=3).value == "2020-08-13 14:00:00+02:00"
-        assert sheet.cell(row=2, column=4).value == "Dorian John Michael"
-        assert sheet.cell(row=2, column=5).value == booking.educationalRedactor.email
-        assert sheet.cell(row=2, column=6).value == "2020-08-11 14:00:00+02:00"
-        assert sheet.cell(row=2, column=7).value == "2020-08-15 14:00:00+02:00"
-        assert sheet.cell(row=2, column=8).value == booking.collectiveStock.price
-        assert sheet.cell(row=2, column=9).value == "réservé"
-        assert sheet.cell(row=2, column=10).value == "2021-08-11 14:00:00+02:00"
+        assert sheet.cell(row=2, column=4).value == "John Michael"
+        assert sheet.cell(row=2, column=5).value == "Dorian"
+        assert sheet.cell(row=2, column=6).value == booking.educationalRedactor.email
+        assert sheet.cell(row=2, column=7).value == "2020-08-11 14:00:00+02:00"
+        assert sheet.cell(row=2, column=8).value == "2020-08-15 14:00:00+02:00"
+        assert sheet.cell(row=2, column=9).value == booking.collectiveStock.price
+        assert sheet.cell(row=2, column=10).value == "réservé"
+        assert sheet.cell(row=2, column=11).value == "2021-08-11 14:00:00+02:00"
 
         for i in range(1, len(COLLECTIVE_BOOKING_EXPORT_HEADER)):
             assert sheet.cell(row=3, column=i).value is None
@@ -171,13 +174,14 @@ class Returns200Test:
         assert sheet.cell(row=2, column=1).value == booking.venue.name
         assert sheet.cell(row=2, column=2).value == booking.collectiveStock.collectiveOffer.name
         assert sheet.cell(row=2, column=3).value == "2020-08-13 14:00:00+02:00"
-        assert sheet.cell(row=2, column=4).value == "Reid Eliot"
-        assert sheet.cell(row=2, column=5).value == booking.educationalRedactor.email
-        assert sheet.cell(row=2, column=6).value == "2020-08-11 14:00:00+02:00"
-        assert sheet.cell(row=2, column=7).value == "2020-08-15 14:00:00+02:00"
-        assert sheet.cell(row=2, column=8).value == booking.collectiveStock.price
-        assert sheet.cell(row=2, column=9).value == "réservé"
-        assert sheet.cell(row=2, column=10).value == "2021-08-11 14:00:00+02:00"
+        assert sheet.cell(row=2, column=4).value == "Eliot"
+        assert sheet.cell(row=2, column=5).value == "Reid"
+        assert sheet.cell(row=2, column=6).value == booking.educationalRedactor.email
+        assert sheet.cell(row=2, column=7).value == "2020-08-11 14:00:00+02:00"
+        assert sheet.cell(row=2, column=8).value == "2020-08-15 14:00:00+02:00"
+        assert sheet.cell(row=2, column=9).value == booking.collectiveStock.price
+        assert sheet.cell(row=2, column=10).value == "réservé"
+        assert sheet.cell(row=2, column=11).value == "2021-08-11 14:00:00+02:00"
 
     def test_complete_booking_multiple(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
@@ -224,17 +228,17 @@ class Returns200Test:
         assert response.status_code == 200
         sheet = reader_from_response(response)
         for i in range(2, 5):
-            name = f"{bookings[i-2].educationalRedactor.lastName} {bookings[i-2].educationalRedactor.firstName}"
             assert sheet.cell(row=i, column=1).value == bookings[i - 2].venue.name
             assert sheet.cell(row=i, column=2).value == bookings[i - 2].collectiveStock.collectiveOffer.name
             assert sheet.cell(row=i, column=3).value == "2020-08-13 14:00:00+02:00"
-            assert sheet.cell(row=i, column=4).value == name
-            assert sheet.cell(row=i, column=5).value == bookings[i - 2].educationalRedactor.email
-            assert sheet.cell(row=i, column=6).value == "2020-08-11 14:00:00+02:00"
-            assert sheet.cell(row=i, column=7).value == "2020-08-15 14:00:00+02:00"
-            assert sheet.cell(row=i, column=8).value == bookings[i - 2].collectiveStock.price
-            assert sheet.cell(row=2, column=9).value == "réservé"
-            assert sheet.cell(row=i, column=10).value == "2021-08-11 14:00:00+02:00"
+            assert sheet.cell(row=i, column=4).value == bookings[i - 2].educationalRedactor.firstName
+            assert sheet.cell(row=i, column=5).value == bookings[i - 2].educationalRedactor.lastName
+            assert sheet.cell(row=i, column=6).value == bookings[i - 2].educationalRedactor.email
+            assert sheet.cell(row=i, column=7).value == "2020-08-11 14:00:00+02:00"
+            assert sheet.cell(row=i, column=8).value == "2020-08-15 14:00:00+02:00"
+            assert sheet.cell(row=i, column=9).value == bookings[i - 2].collectiveStock.price
+            assert sheet.cell(row=2, column=10).value == "réservé"
+            assert sheet.cell(row=i, column=11).value == "2021-08-11 14:00:00+02:00"
 
     def test_booking_status_when_used(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
@@ -251,7 +255,7 @@ class Returns200Test:
         )
         assert response.status_code == 200
         sheet = reader_from_response(response)
-        assert sheet.cell(row=2, column=9).value == "validé"
+        assert sheet.cell(row=2, column=10).value == "validé"
 
     def test_booking_status_when_reimbursed(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
@@ -269,7 +273,7 @@ class Returns200Test:
         )
         assert response.status_code == 200
         sheet = reader_from_response(response)
-        assert sheet.cell(row=2, column=9).value == "remboursé"
+        assert sheet.cell(row=2, column=10).value == "remboursé"
 
     def test_booking_status_when_cancelled(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
@@ -285,7 +289,7 @@ class Returns200Test:
         )
         assert response.status_code == 200
         sheet = reader_from_response(response)
-        assert sheet.cell(row=2, column=9).value == "annulé"
+        assert sheet.cell(row=2, column=10).value == "annulé"
 
     def test_booking_status_when_pending(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
@@ -301,7 +305,7 @@ class Returns200Test:
         )
         assert response.status_code == 200
         sheet = reader_from_response(response)
-        assert sheet.cell(row=2, column=9).value == "préréservé"
+        assert sheet.cell(row=2, column=10).value == "préréservé"
 
     def test_booking_status_when_confirmed(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
@@ -317,4 +321,4 @@ class Returns200Test:
         )
         assert response.status_code == 200
         sheet = reader_from_response(response)
-        assert sheet.cell(row=2, column=9).value == "confirmé"
+        assert sheet.cell(row=2, column=10).value == "confirmé"

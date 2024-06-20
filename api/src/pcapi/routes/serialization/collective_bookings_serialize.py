@@ -338,7 +338,8 @@ COLLECTIVE_BOOKING_EXPORT_HEADER = [
     "Lieu",
     "Nom de l'offre",
     "Date de l'évènement",
-    "Nom et prénom du bénéficiaire",
+    "Prénom du bénéficiaire",
+    "Nom du bénéficiaire",
     "Email du bénéficiaire",
     "Date et heure de réservation",
     "Date et heure de validation",
@@ -362,7 +363,8 @@ def serialize_collective_booking_csv_report(query: BaseQuery) -> str:
                 convert_booking_dates_utc_to_venue_timezone(
                     collective_booking.stockBeginningDatetime, collective_booking
                 ),
-                f"{collective_booking.lastName} {collective_booking.firstName}",
+                collective_booking.firstName,
+                collective_booking.lastName,
                 collective_booking.email,
                 convert_booking_dates_utc_to_venue_timezone(collective_booking.bookedAt, collective_booking),
                 convert_booking_dates_utc_to_venue_timezone(collective_booking.usedAt, collective_booking),
@@ -404,23 +406,24 @@ def serialize_collective_booking_excel_report(query: BaseQuery) -> bytes:
                 )
             ),
         )
-        worksheet.write(row, 3, f"{collective_booking.lastName} {collective_booking.firstName}")
-        worksheet.write(row, 4, collective_booking.email)
+        worksheet.write(row, 3, collective_booking.firstName)
+        worksheet.write(row, 4, collective_booking.lastName)
+        worksheet.write(row, 5, collective_booking.email)
         worksheet.write(
-            row, 5, str(convert_booking_dates_utc_to_venue_timezone(collective_booking.bookedAt, collective_booking))
+            row, 6, str(convert_booking_dates_utc_to_venue_timezone(collective_booking.bookedAt, collective_booking))
         )
         worksheet.write(
-            row, 6, str(convert_booking_dates_utc_to_venue_timezone(collective_booking.usedAt, collective_booking))
+            row, 7, str(convert_booking_dates_utc_to_venue_timezone(collective_booking.usedAt, collective_booking))
         )
-        worksheet.write(row, 7, collective_booking.price, currency_format)
-        worksheet.write(row, 8, _get_booking_status(collective_booking.status, collective_booking.isConfirmed))
+        worksheet.write(row, 8, collective_booking.price, currency_format)
+        worksheet.write(row, 9, _get_booking_status(collective_booking.status, collective_booking.isConfirmed))
         worksheet.write(
             row,
-            9,
+            10,
             str(convert_booking_dates_utc_to_venue_timezone(collective_booking.reimbursedAt, collective_booking)),
         )
-        worksheet.write(row, 10, collective_booking.institutionId, currency_format)
-        worksheet.write(row, 11, f"{collective_booking.institutionType} {collective_booking.institutionName}")
+        worksheet.write(row, 11, collective_booking.institutionId, currency_format)
+        worksheet.write(row, 12, f"{collective_booking.institutionType} {collective_booking.institutionName}")
 
         row += 1
 

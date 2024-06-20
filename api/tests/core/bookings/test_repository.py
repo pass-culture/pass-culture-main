@@ -42,6 +42,26 @@ THREE_DAYS_AGO = NOW - timedelta(days=3)
 FOUR_DAYS_AGO = NOW - timedelta(days=4)
 FIVE_DAYS_AGO = NOW - timedelta(days=5)
 ONE_WEEK_FROM_NOW = NOW + timedelta(weeks=1)
+BOOKINGS_CSV_HEADER = [
+    "Lieu",
+    "Nom de l’offre",
+    "Date de l'évènement",
+    "EAN",
+    "Prénom du bénéficiaire",
+    "Nom du bénéficiaire",
+    "Email du bénéficiaire",
+    "Téléphone du bénéficiaire",
+    "Date et heure de réservation",
+    "Date et heure de validation",
+    "Contremarque",
+    "Intitulé du tarif",
+    "Prix de la réservation",
+    "Statut de la contremarque",
+    "Date et heure de remboursement",
+    "Type d'offre",
+    "Code postal du bénéficiaire",
+    "Duo",
+]
 
 
 def test_find_all_ongoing_bookings(app):
@@ -760,7 +780,8 @@ class GetOfferBookingsByStatusCSVTest:
             convert_booking_dates_utc_to_venue_timezone(booking.stock.beginningDatetime, booking)
         )
         assert data_dict["EAN"] == ((offer.extraData or {}).get("ean") or "")
-        assert data_dict["Nom et prénom du bénéficiaire"] == " ".join((beneficiary.lastName, beneficiary.firstName))
+        assert data_dict["Prénom du bénéficiaire"] == beneficiary.firstName
+        assert data_dict["Nom du bénéficiaire"] == beneficiary.lastName
         assert data_dict["Email du bénéficiaire"] == beneficiary.email
         assert data_dict["Téléphone du bénéficiaire"] == (beneficiary.phoneNumber or "")
         assert data_dict["Date et heure de réservation"] == str(
@@ -840,25 +861,7 @@ class GetOfferBookingsByStatusCSVTest:
 
         # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert headers == [
-            "Lieu",
-            "Nom de l’offre",
-            "Date de l'évènement",
-            "EAN",
-            "Nom et prénom du bénéficiaire",
-            "Email du bénéficiaire",
-            "Téléphone du bénéficiaire",
-            "Date et heure de réservation",
-            "Date et heure de validation",
-            "Contremarque",
-            "Intitulé du tarif",
-            "Prix de la réservation",
-            "Statut de la contremarque",
-            "Date et heure de remboursement",
-            "Type d'offre",
-            "Code postal du bénéficiaire",
-            "Duo",
-        ]
+        assert headers == BOOKINGS_CSV_HEADER
         assert len(data) == 2
         self._validate_csv_row(
             dict(zip(headers, data[0])), beneficiary, offer, venue, validated_booking, "validé", "Non"
@@ -914,25 +917,7 @@ class GetOfferBookingsByStatusCSVTest:
 
         # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert headers == [
-            "Lieu",
-            "Nom de l’offre",
-            "Date de l'évènement",
-            "EAN",
-            "Nom et prénom du bénéficiaire",
-            "Email du bénéficiaire",
-            "Téléphone du bénéficiaire",
-            "Date et heure de réservation",
-            "Date et heure de validation",
-            "Contremarque",
-            "Intitulé du tarif",
-            "Prix de la réservation",
-            "Statut de la contremarque",
-            "Date et heure de remboursement",
-            "Type d'offre",
-            "Code postal du bénéficiaire",
-            "Duo",
-        ]
+        assert headers == BOOKINGS_CSV_HEADER
         assert len(data) == 2
         self._validate_csv_row(
             dict(zip(headers, data[0])), beneficiary, offer, venue, validated_booking, "validé", "Non"
@@ -978,25 +963,7 @@ class GetOfferBookingsByStatusCSVTest:
 
         # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert headers == [
-            "Lieu",
-            "Nom de l’offre",
-            "Date de l'évènement",
-            "EAN",
-            "Nom et prénom du bénéficiaire",
-            "Email du bénéficiaire",
-            "Téléphone du bénéficiaire",
-            "Date et heure de réservation",
-            "Date et heure de validation",
-            "Contremarque",
-            "Intitulé du tarif",
-            "Prix de la réservation",
-            "Statut de la contremarque",
-            "Date et heure de remboursement",
-            "Type d'offre",
-            "Code postal du bénéficiaire",
-            "Duo",
-        ]
+        assert headers == BOOKINGS_CSV_HEADER
         assert len(data) == 3
         self._validate_csv_row(
             dict(zip(headers, data[0])), beneficiary, offer, venue, validated_booking, "validé", "DUO 1"
@@ -1048,25 +1015,7 @@ class GetOfferBookingsByStatusCSVTest:
 
         # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert headers == [
-            "Lieu",
-            "Nom de l’offre",
-            "Date de l'évènement",
-            "EAN",
-            "Nom et prénom du bénéficiaire",
-            "Email du bénéficiaire",
-            "Téléphone du bénéficiaire",
-            "Date et heure de réservation",
-            "Date et heure de validation",
-            "Contremarque",
-            "Intitulé du tarif",
-            "Prix de la réservation",
-            "Statut de la contremarque",
-            "Date et heure de remboursement",
-            "Type d'offre",
-            "Code postal du bénéficiaire",
-            "Duo",
-        ]
+        assert headers == BOOKINGS_CSV_HEADER
         assert len(data) == 4
         self._validate_csv_row(
             dict(zip(headers, data[0])), beneficiary, offer, venue, validated_booking, "validé", "Non"
@@ -1111,25 +1060,7 @@ class GetOfferBookingsByStatusCSVTest:
 
         # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert headers == [
-            "Lieu",
-            "Nom de l’offre",
-            "Date de l'évènement",
-            "EAN",
-            "Nom et prénom du bénéficiaire",
-            "Email du bénéficiaire",
-            "Téléphone du bénéficiaire",
-            "Date et heure de réservation",
-            "Date et heure de validation",
-            "Contremarque",
-            "Intitulé du tarif",
-            "Prix de la réservation",
-            "Statut de la contremarque",
-            "Date et heure de remboursement",
-            "Type d'offre",
-            "Code postal du bénéficiaire",
-            "Duo",
-        ]
+        assert headers == BOOKINGS_CSV_HEADER
         assert len(data) == 6
         self._validate_csv_row(
             dict(zip(headers, data[0])), beneficiary, offer, venue, validated_booking, "validé", "DUO 1"
@@ -1183,18 +1114,19 @@ class GetOfferBookingsByStatusExcelTest:
         # EAN
         assert sheet.cell(row=row, column=4).value == ((offer.extraData or {}).get("ean") or None)
         # Nom et prénom du bénéficiaire
-        assert sheet.cell(row=row, column=5).value == " ".join((beneficiary.lastName, beneficiary.firstName))
+        assert sheet.cell(row=row, column=5).value == beneficiary.firstName
+        assert sheet.cell(row=row, column=6).value == beneficiary.lastName
         # Email du bénéficiaire
-        assert sheet.cell(row=row, column=6).value == beneficiary.email
+        assert sheet.cell(row=row, column=7).value == beneficiary.email
         # Téléphone du bénéficiaire
-        assert sheet.cell(row=row, column=7).value == (beneficiary.phoneNumber or None)
+        assert sheet.cell(row=row, column=8).value == (beneficiary.phoneNumber or None)
         # Date et heure de réservation
-        assert sheet.cell(row=row, column=8).value == str(booking.dateCreated.astimezone(tz.gettz("Europe/Paris")))
+        assert sheet.cell(row=row, column=9).value == str(booking.dateCreated.astimezone(tz.gettz("Europe/Paris")))
         # Date et heure de validation
         if booking.dateUsed:
-            assert sheet.cell(row=row, column=9).value == str(booking.dateUsed.astimezone(tz.gettz("Europe/Paris")))
+            assert sheet.cell(row=row, column=10).value == str(booking.dateUsed.astimezone(tz.gettz("Europe/Paris")))
         else:
-            assert sheet.cell(row=row, column=9).value == "None"
+            assert sheet.cell(row=row, column=10).value == "None"
         # Contremarque
         token = booking_recap_utils.get_booking_token(
             booking.token,
@@ -1203,28 +1135,28 @@ class GetOfferBookingsByStatusExcelTest:
             booking.stock.beginningDatetime,
         )
         if token:
-            assert sheet.cell(row=row, column=10).value == token
+            assert sheet.cell(row=row, column=11).value == token
         else:
-            assert sheet.cell(row=row, column=10).value == None
+            assert sheet.cell(row=row, column=11).value == None
         # Intitulé du tarif
-        assert sheet.cell(row=row, column=11).value == booking.stock.priceCategory.label
+        assert sheet.cell(row=row, column=12).value == booking.stock.priceCategory.label
         # Prix de la réservation
-        assert sheet.cell(row=row, column=12).value == float(str(booking.amount).rstrip("0"))
+        assert sheet.cell(row=row, column=13).value == float(str(booking.amount).rstrip("0"))
         # Statut de la contremarque
-        assert sheet.cell(row=row, column=13).value == status
+        assert sheet.cell(row=row, column=14).value == status
         # Date et heure de remboursement
         if booking.reimbursementDate:
-            assert sheet.cell(row=row, column=14).value == str(
+            assert sheet.cell(row=row, column=15).value == str(
                 booking.reimbursementDate.astimezone(tz.gettz("Europe/Paris"))
             )
         else:
-            assert sheet.cell(row=row, column=14).value == "None"
+            assert sheet.cell(row=row, column=15).value == "None"
         # Type d'offre
-        assert sheet.cell(row=row, column=15).value == "offre grand public"
+        assert sheet.cell(row=row, column=16).value == "offre grand public"
         # Code postal du bénéficiaire
-        assert sheet.cell(row=row, column=16).value == beneficiary.postalCode
+        assert sheet.cell(row=row, column=17).value == beneficiary.postalCode
         # Duo
-        assert sheet.cell(row=row, column=17).value == duo
+        assert sheet.cell(row=row, column=18).value == duo
 
     def should_return_validated_bookings_for_offer(self):
         # Given
@@ -1264,25 +1196,7 @@ class GetOfferBookingsByStatusExcelTest:
                 event_beginning_date=date.today() + timedelta(days=3),
                 export_type=BookingExportType.EXCEL,
             )
-        headers = [
-            "Lieu",
-            "Nom de l’offre",
-            "Date de l'évènement",
-            "EAN",
-            "Nom et prénom du bénéficiaire",
-            "Email du bénéficiaire",
-            "Téléphone du bénéficiaire",
-            "Date et heure de réservation",
-            "Date et heure de validation",
-            "Contremarque",
-            "Intitulé du tarif",
-            "Prix de la réservation",
-            "Statut de la contremarque",
-            "Date et heure de remboursement",
-            "Type d'offre",
-            "Code postal du bénéficiaire",
-            "Duo",
-        ]
+        headers = BOOKINGS_CSV_HEADER
 
         # Then
         self._validate_excel_row(
@@ -1329,25 +1243,7 @@ class GetOfferBookingsByStatusExcelTest:
             event_beginning_date=date.today() + timedelta(days=3),
             export_type=BookingExportType.EXCEL,
         )
-        headers = [
-            "Lieu",
-            "Nom de l’offre",
-            "Date de l'évènement",
-            "EAN",
-            "Nom et prénom du bénéficiaire",
-            "Email du bénéficiaire",
-            "Téléphone du bénéficiaire",
-            "Date et heure de réservation",
-            "Date et heure de validation",
-            "Contremarque",
-            "Intitulé du tarif",
-            "Prix de la réservation",
-            "Statut de la contremarque",
-            "Date et heure de remboursement",
-            "Type d'offre",
-            "Code postal du bénéficiaire",
-            "Duo",
-        ]
+        headers = BOOKINGS_CSV_HEADER
 
         # Then
         self._validate_excel_row(
@@ -1406,25 +1302,7 @@ class GetOfferBookingsByStatusExcelTest:
             event_beginning_date=date.today() + timedelta(days=30),
             export_type=BookingExportType.EXCEL,
         )
-        headers = [
-            "Lieu",
-            "Nom de l’offre",
-            "Date de l'évènement",
-            "EAN",
-            "Nom et prénom du bénéficiaire",
-            "Email du bénéficiaire",
-            "Téléphone du bénéficiaire",
-            "Date et heure de réservation",
-            "Date et heure de validation",
-            "Contremarque",
-            "Intitulé du tarif",
-            "Prix de la réservation",
-            "Statut de la contremarque",
-            "Date et heure de remboursement",
-            "Type d'offre",
-            "Code postal du bénéficiaire",
-            "Duo",
-        ]
+        headers = BOOKINGS_CSV_HEADER
 
         # Then
         self._validate_excel_row(
@@ -1479,25 +1357,7 @@ class GetOfferBookingsByStatusExcelTest:
             event_beginning_date=date.today() + timedelta(days=3),
             export_type=BookingExportType.EXCEL,
         )
-        headers = [
-            "Lieu",
-            "Nom de l’offre",
-            "Date de l'évènement",
-            "EAN",
-            "Nom et prénom du bénéficiaire",
-            "Email du bénéficiaire",
-            "Téléphone du bénéficiaire",
-            "Date et heure de réservation",
-            "Date et heure de validation",
-            "Contremarque",
-            "Intitulé du tarif",
-            "Prix de la réservation",
-            "Statut de la contremarque",
-            "Date et heure de remboursement",
-            "Type d'offre",
-            "Code postal du bénéficiaire",
-            "Duo",
-        ]
+        headers = BOOKINGS_CSV_HEADER
 
         # Then
         self._validate_excel_row(
@@ -1550,25 +1410,7 @@ class GetOfferBookingsByStatusExcelTest:
             event_beginning_date=date.today() + timedelta(days=30),
             export_type=BookingExportType.EXCEL,
         )
-        headers = [
-            "Lieu",
-            "Nom de l’offre",
-            "Date de l'évènement",
-            "EAN",
-            "Nom et prénom du bénéficiaire",
-            "Email du bénéficiaire",
-            "Téléphone du bénéficiaire",
-            "Date et heure de réservation",
-            "Date et heure de validation",
-            "Contremarque",
-            "Intitulé du tarif",
-            "Prix de la réservation",
-            "Statut de la contremarque",
-            "Date et heure de remboursement",
-            "Type d'offre",
-            "Code postal du bénéficiaire",
-            "Duo",
-        ]
+        headers = BOOKINGS_CSV_HEADER
 
         # Then
         self._validate_excel_row(
@@ -1620,32 +1462,15 @@ class GetCsvReportTest:
 
         # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert headers == [
-            "Lieu",
-            "Nom de l’offre",
-            "Date de l'évènement",
-            "EAN",
-            "Nom et prénom du bénéficiaire",
-            "Email du bénéficiaire",
-            "Téléphone du bénéficiaire",
-            "Date et heure de réservation",
-            "Date et heure de validation",
-            "Contremarque",
-            "Intitulé du tarif",
-            "Prix de la réservation",
-            "Statut de la contremarque",
-            "Date et heure de remboursement",
-            "Type d'offre",
-            "Code postal du bénéficiaire",
-            "Duo",
-        ]
+        assert headers == BOOKINGS_CSV_HEADER
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
         assert data_dict["Lieu"] == venue.name
         assert data_dict["Nom de l’offre"] == offer.name
         assert data_dict["Date de l'évènement"] == ""
         assert data_dict["EAN"] == ((offer.extraData or {}).get("ean") or "")
-        assert data_dict["Nom et prénom du bénéficiaire"] == " ".join((beneficiary.lastName, beneficiary.firstName))
+        assert data_dict["Prénom du bénéficiaire"] == beneficiary.firstName
+        assert data_dict["Nom du bénéficiaire"] == beneficiary.lastName
         assert data_dict["Email du bénéficiaire"] == beneficiary.email
         assert data_dict["Téléphone du bénéficiaire"] == (beneficiary.phoneNumber or "")
         assert data_dict["Date et heure de réservation"] == str(
@@ -1690,32 +1515,15 @@ class GetCsvReportTest:
 
         # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert headers == [
-            "Lieu",
-            "Nom de l’offre",
-            "Date de l'évènement",
-            "EAN",
-            "Nom et prénom du bénéficiaire",
-            "Email du bénéficiaire",
-            "Téléphone du bénéficiaire",
-            "Date et heure de réservation",
-            "Date et heure de validation",
-            "Contremarque",
-            "Intitulé du tarif",
-            "Prix de la réservation",
-            "Statut de la contremarque",
-            "Date et heure de remboursement",
-            "Type d'offre",
-            "Code postal du bénéficiaire",
-            "Duo",
-        ]
+        assert headers == BOOKINGS_CSV_HEADER
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
         assert data_dict["Lieu"] == venue.name
         assert data_dict["Nom de l’offre"] == offer.name
         assert data_dict["Date de l'évènement"] == ""
         assert data_dict["EAN"] == ((offer.extraData or {}).get("ean") or "")
-        assert data_dict["Nom et prénom du bénéficiaire"] == " ".join((beneficiary.lastName, beneficiary.firstName))
+        assert data_dict["Prénom du bénéficiaire"] == beneficiary.firstName
+        assert data_dict["Nom du bénéficiaire"] == beneficiary.lastName
         assert data_dict["Email du bénéficiaire"] == beneficiary.email
         assert data_dict["Téléphone du bénéficiaire"] == (beneficiary.phoneNumber or "")
         assert data_dict["Date et heure de réservation"] == str(
@@ -1834,8 +1642,8 @@ class GetCsvReportTest:
         # Then
         _, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 2
-        assert data[0][16] == "Oui"
-        assert data[1][16] == "Oui"
+        assert data[0][17] == "Oui"
+        assert data[1][17] == "Oui"
 
     def test_should_not_duplicate_bookings_when_user_is_admin_and_bookings_offerer_has_multiple_user(
         self, app: fixture
@@ -1884,32 +1692,15 @@ class GetCsvReportTest:
 
         # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert headers == [
-            "Lieu",
-            "Nom de l’offre",
-            "Date de l'évènement",
-            "EAN",
-            "Nom et prénom du bénéficiaire",
-            "Email du bénéficiaire",
-            "Téléphone du bénéficiaire",
-            "Date et heure de réservation",
-            "Date et heure de validation",
-            "Contremarque",
-            "Intitulé du tarif",
-            "Prix de la réservation",
-            "Statut de la contremarque",
-            "Date et heure de remboursement",
-            "Type d'offre",
-            "Code postal du bénéficiaire",
-            "Duo",
-        ]
+        assert headers == BOOKINGS_CSV_HEADER
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
         assert data_dict["Lieu"] == venue.name
         assert data_dict["Nom de l’offre"] == offer.name
         assert data_dict["Date de l'évènement"] == str(stock.beginningDatetime.astimezone(tz.gettz("Europe/Paris")))
         assert data_dict["EAN"] == ((offer.extraData or {}).get("ean") or "")
-        assert data_dict["Nom et prénom du bénéficiaire"] == " ".join((beneficiary.lastName, beneficiary.firstName))
+        assert data_dict["Prénom du bénéficiaire"] == beneficiary.firstName
+        assert data_dict["Nom du bénéficiaire"] == beneficiary.lastName
         assert data_dict["Email du bénéficiaire"] == beneficiary.email
         assert data_dict["Téléphone du bénéficiaire"] == (beneficiary.phoneNumber or "")
         assert data_dict["Date et heure de réservation"] == str(
@@ -2628,25 +2419,7 @@ class GetExcelReportTest:
             token="ABCDEF",
             amount=12,
         )
-        headers = [
-            "Lieu",
-            "Nom de l’offre",
-            "Date de l'évènement",
-            "EAN",
-            "Nom et prénom du bénéficiaire",
-            "Email du bénéficiaire",
-            "Téléphone du bénéficiaire",
-            "Date et heure de réservation",
-            "Date et heure de validation",
-            "Contremarque",
-            "Intitulé du tarif",
-            "Prix de la réservation",
-            "Statut de la contremarque",
-            "Date et heure de remboursement",
-            "Type d'offre",
-            "Code postal du bénéficiaire",
-            "Duo",
-        ]
+        headers = BOOKINGS_CSV_HEADER
 
         # When
         bookings_excel = booking_repository.get_export(
@@ -2670,31 +2443,32 @@ class GetExcelReportTest:
         # EAN
         assert sheet.cell(row=2, column=4).value == ((offer.extraData or {}).get("ean") or None)
         # Nom et prénom du bénéficiaire
-        assert sheet.cell(row=2, column=5).value == " ".join((beneficiary.lastName, beneficiary.firstName))
+        assert sheet.cell(row=2, column=5).value == beneficiary.firstName
+        assert sheet.cell(row=2, column=6).value == beneficiary.lastName
         # Email du bénéficiaire
-        assert sheet.cell(row=2, column=6).value == beneficiary.email
+        assert sheet.cell(row=2, column=7).value == beneficiary.email
         # Téléphone du bénéficiaire
-        assert sheet.cell(row=2, column=7).value == (beneficiary.phoneNumber or None)
+        assert sheet.cell(row=2, column=8).value == (beneficiary.phoneNumber or None)
         # Date et heure de réservation
-        assert sheet.cell(row=2, column=8).value == str(booking.dateCreated.astimezone(tz.gettz("Europe/Paris")))
+        assert sheet.cell(row=2, column=9).value == str(booking.dateCreated.astimezone(tz.gettz("Europe/Paris")))
         # Date et heure de validation
-        assert sheet.cell(row=2, column=9).value == str(booking.dateUsed.astimezone(tz.gettz("Europe/Paris")))
+        assert sheet.cell(row=2, column=10).value == str(booking.dateUsed.astimezone(tz.gettz("Europe/Paris")))
         # Contremarque
-        assert sheet.cell(row=2, column=10).value == booking.token
+        assert sheet.cell(row=2, column=11).value == booking.token
         # Intitulé du tarif
-        assert sheet.cell(row=2, column=11).value is None
+        assert sheet.cell(row=2, column=12).value is None
         # Prix de la réservation
-        assert sheet.cell(row=2, column=12).value == booking.amount
+        assert sheet.cell(row=2, column=13).value == booking.amount
         # Statut de la contremarque
-        assert sheet.cell(row=2, column=13).value == booking_repository.BOOKING_STATUS_LABELS[booking.status]
+        assert sheet.cell(row=2, column=14).value == booking_repository.BOOKING_STATUS_LABELS[booking.status]
         # Date et heure de remboursement
-        assert sheet.cell(row=2, column=14).value == "None"
+        assert sheet.cell(row=2, column=15).value == "None"
         # Type d'offre
-        assert sheet.cell(row=2, column=15).value == "offre grand public"
+        assert sheet.cell(row=2, column=16).value == "offre grand public"
         # Code postal du bénéficiaire
-        assert sheet.cell(row=2, column=16).value == beneficiary.postalCode
+        assert sheet.cell(row=2, column=17).value == beneficiary.postalCode
         # Duo
-        assert sheet.cell(row=2, column=17).value == "Non"
+        assert sheet.cell(row=2, column=18).value == "Non"
 
 
 class FindSoonToBeExpiredBookingsTest:

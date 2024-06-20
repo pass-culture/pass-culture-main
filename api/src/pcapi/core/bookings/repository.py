@@ -72,7 +72,8 @@ BOOKING_EXPORT_HEADER = [
     "Nom de l’offre",
     "Date de l'évènement",
     "EAN",
-    "Nom et prénom du bénéficiaire",
+    "Prénom du bénéficiaire",
+    "Nom du bénéficiaire",
     "Email du bénéficiaire",
     "Téléphone du bénéficiaire",
     "Date et heure de réservation",
@@ -627,7 +628,8 @@ def _write_csv_row(csv_writer: typing.Any, booking: Booking, booking_duo_column:
             booking.offerName,
             convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking),
             booking.ean,
-            f"{booking.beneficiaryLastName} {booking.beneficiaryFirstName}",
+            booking.beneficiaryFirstName,
+            booking.beneficiaryLastName,
             booking.beneficiaryEmail,
             booking.beneficiaryPhoneNumber,
             convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking),
@@ -684,14 +686,15 @@ def _write_excel_row(
     worksheet.write(row, 1, booking.offerName)
     worksheet.write(row, 2, str(convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking)))
     worksheet.write(row, 3, booking.ean)
-    worksheet.write(row, 4, f"{booking.beneficiaryLastName} {booking.beneficiaryFirstName}")
-    worksheet.write(row, 5, booking.beneficiaryEmail)
-    worksheet.write(row, 6, booking.beneficiaryPhoneNumber)
-    worksheet.write(row, 7, str(convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking)))
-    worksheet.write(row, 8, str(convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking)))
+    worksheet.write(row, 4, booking.beneficiaryFirstName)
+    worksheet.write(row, 5, booking.beneficiaryLastName)
+    worksheet.write(row, 6, booking.beneficiaryEmail)
+    worksheet.write(row, 7, booking.beneficiaryPhoneNumber)
+    worksheet.write(row, 8, str(convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking)))
+    worksheet.write(row, 9, str(convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking)))
     worksheet.write(
         row,
-        9,
+        10,
         booking_recap_utils.get_booking_token(
             booking.token,
             booking.status,
@@ -699,15 +702,15 @@ def _write_excel_row(
             booking.stockBeginningDatetime,
         ),
     )
-    worksheet.write(row, 10, booking.priceCategoryLabel)
-    worksheet.write(row, 11, booking.amount, currency_format)
-    worksheet.write(row, 12, _get_booking_status(booking.status, booking.isConfirmed))
-    worksheet.write(row, 13, str(convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking)))
-    worksheet.write(row, 14, serialize_offer_type_educational_or_individual(offer_is_educational=False))
-    worksheet.write(row, 15, booking.beneficiaryPostalCode)
+    worksheet.write(row, 11, booking.priceCategoryLabel)
+    worksheet.write(row, 12, booking.amount, currency_format)
+    worksheet.write(row, 13, _get_booking_status(booking.status, booking.isConfirmed))
+    worksheet.write(row, 14, str(convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking)))
+    worksheet.write(row, 15, serialize_offer_type_educational_or_individual(offer_is_educational=False))
+    worksheet.write(row, 16, booking.beneficiaryPostalCode)
     worksheet.write(
         row,
-        16,
+        17,
         duo_column,
     )
 
@@ -723,7 +726,8 @@ def _serialize_csv_report(query: BaseQuery) -> str:
                 booking.offerName,
                 convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking),
                 booking.ean,
-                f"{booking.beneficiaryLastName} {booking.beneficiaryFirstName}",
+                booking.beneficiaryFirstName,
+                booking.beneficiaryLastName,
                 booking.beneficiaryEmail,
                 booking.beneficiaryPhoneNumber,
                 convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking),
@@ -770,14 +774,15 @@ def _serialize_excel_report(query: BaseQuery) -> bytes:
             row, 2, str(convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking))
         )
         worksheet.write(row, 3, booking.ean)
-        worksheet.write(row, 4, f"{booking.beneficiaryLastName} {booking.beneficiaryFirstName}")
-        worksheet.write(row, 5, booking.beneficiaryEmail)
-        worksheet.write(row, 6, booking.beneficiaryPhoneNumber)
-        worksheet.write(row, 7, str(convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking)))
-        worksheet.write(row, 8, str(convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking)))
+        worksheet.write(row, 4, booking.beneficiaryFirstName)
+        worksheet.write(row, 5, booking.beneficiaryLastName)
+        worksheet.write(row, 6, booking.beneficiaryEmail)
+        worksheet.write(row, 7, booking.beneficiaryPhoneNumber)
+        worksheet.write(row, 8, str(convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking)))
+        worksheet.write(row, 9, str(convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking)))
         worksheet.write(
             row,
-            9,
+            10,
             booking_recap_utils.get_booking_token(
                 booking.token,
                 booking.status,
@@ -785,15 +790,15 @@ def _serialize_excel_report(query: BaseQuery) -> bytes:
                 booking.stockBeginningDatetime,
             ),
         )
-        worksheet.write(row, 10, booking.priceCategoryLabel)
-        worksheet.write(row, 11, booking.amount, currency_format)
-        worksheet.write(row, 12, _get_booking_status(booking.status, booking.isConfirmed))
-        worksheet.write(row, 13, str(convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking)))
-        worksheet.write(row, 14, serialize_offer_type_educational_or_individual(offer_is_educational=False))
-        worksheet.write(row, 15, booking.beneficiaryPostalCode)
+        worksheet.write(row, 11, booking.priceCategoryLabel)
+        worksheet.write(row, 12, booking.amount, currency_format)
+        worksheet.write(row, 13, _get_booking_status(booking.status, booking.isConfirmed))
+        worksheet.write(row, 14, str(convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking)))
+        worksheet.write(row, 15, serialize_offer_type_educational_or_individual(offer_is_educational=False))
+        worksheet.write(row, 16, booking.beneficiaryPostalCode)
         worksheet.write(
             row,
-            16,
+            17,
             "Oui" if booking.quantity == DUO_QUANTITY else "Non",
         )
         row += 1
