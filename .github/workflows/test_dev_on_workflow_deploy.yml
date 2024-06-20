@@ -39,7 +39,10 @@ jobs:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
-      - name: "Deploy doc API to Firebase"
+      - name: "list files"
+        run: find ./.github/
+
+      - name: "Deploy doc API to Firebase==="
         id: deploy-doc-api
         uses: ./.github/workflows/test_action_build_deploy_to_firebase.yml
         with:
