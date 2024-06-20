@@ -63,6 +63,7 @@ from pcapi.tasks.serialization.external_api_booking_notification_tasks import Bo
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import ExternalApiBookingNotificationRequest
 from pcapi.utils import queue
 import pcapi.utils.cinema_providers as cinema_providers_utils
+from pcapi.utils.requests import exceptions as requests_exceptions
 from pcapi.workers import push_notification_job
 from pcapi.workers import user_emails_job
 
@@ -1124,4 +1125,16 @@ def cancel_ems_external_bookings() -> None:
                 extra={"token": token, "cinema_id": cinema_id},
             )
             continue
-        client.cancel_booking_with_tickets(tickets)
+
+        try:
+            client.cancel_booking_with_tickets(tickets)
+        except (requests_exceptions.ReadTimeout, requests_exceptions.Timeout):
+            logger.info(
+                "Fail to cancel external booking due to timeout", extra={"token": token, "cinema_id": cinema_id}
+            )
+        except EMSAPIException as exc:
+            logger.info(
+                "Fail to cancel external booking due to EMSAPIException: %s",
+                str(exc),
+                extra={"token": token, "cinema_id": cinema_id},
+            )

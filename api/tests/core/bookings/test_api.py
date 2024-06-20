@@ -12,6 +12,7 @@ from sqlalchemy import create_engine
 import sqlalchemy.exc
 from sqlalchemy.sql import text
 
+from pcapi.connectors.ems import EMSAPIException
 from pcapi.connectors.ems import EMSBookingConnector
 from pcapi.core import search
 from pcapi.core.bookings import api
@@ -796,6 +797,82 @@ class BookOfferTest:
             assert mock_rpop.call_count == 0
             assert mock_cancel_booking.call_count == 0
             assert not Booking.query.all()
+
+        @patch("flask.current_app.redis_client.llen")
+        @patch("pcapi.core.external_bookings.ems.client.current_app.redis_client.rpop")
+        @patch("pcapi.core.external_bookings.ems.client.EMSClientAPI.cancel_booking_with_tickets")
+        @override_features(ENABLE_EMS_INTEGRATION=True, EMS_CANCEL_PENDING_EXTERNAL_BOOKING=True)
+        @pytest.mark.parametrize(
+            "exception", [requests_exception.Timeout, requests_exception.ReadTimeout, EMSAPIException]
+        )
+        def test_we_dont_crash_will_cancelling_external_booking_if_ems_api_timeout(
+            self,
+            mock_cancel_booking,
+            mock_rpop,
+            mock_llen,
+            exception,
+            requests_mock,
+            caplog,
+        ):
+            token = "AAAAAA"
+            ems_provider = get_provider_by_local_class("EMSStocks")
+            venue_provider = providers_factories.VenueProviderFactory(
+                provider=ems_provider, venueIdAtOfferProvider="9997"
+            )
+            providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
+
+            mock_llen.side_effect = [1, 0]
+            mock_rpop.return_value = json.dumps(
+                {
+                    "cinema_id": venue_provider.venueIdAtOfferProvider,
+                    "token": token,
+                    # Mocking an older booking, otherwise tests runs too fast
+                    "timestamp": (datetime.utcnow() - timedelta(seconds=180)).timestamp(),
+                }
+            )
+
+            payload = {"num_cine": venue_provider.venueIdAtOfferProvider, "num_cmde": token}
+            get_ticket_url = EMSBookingConnector()._build_url("STATUT", payload)
+            get_tickets_adapter = requests_mock.post(
+                url=get_ticket_url,
+                json={
+                    "statut": 1,
+                    "num_cine": "9997",
+                    "id_seance": "999700078774",
+                    "qte_place": 1,
+                    "pass_culture_price": 5.15,
+                    "total_price": 5.15,
+                    "email": "email@email.fr",
+                    "num_pass_culture": "",
+                    "num_cmde": "",
+                    "billets": [
+                        {
+                            "num_caisse": "255",
+                            "code_barre": "000000139863",
+                            "num_trans": 475,
+                            "num_ope": 139863,
+                            "code_tarif": "0RG",
+                            "num_serie": 5,
+                            "montant": 5.15,
+                            "num_place": "",
+                        }
+                    ],
+                },
+            )
+
+            # Cancelling external booking call time out
+            mock_cancel_booking.side_effect = [exception]
+
+            with caplog.at_level(logging.INFO):
+                api.cancel_ems_external_bookings()
+
+            assert get_tickets_adapter.call_count == 1
+            assert mock_rpop.call_count == 1
+            assert mock_cancel_booking.call_count == 1
+            if exception in (requests_exception.ReadTimeout, requests_exception.Timeout):
+                assert "Fail to cancel external booking due to timeout" in caplog.messages
+            else:
+                assert "Fail to cancel external booking due to EMSAPIException: " in caplog.messages
 
         @patch("pcapi.core.bookings.api.external_bookings_api.book_cinema_ticket")
         @override_features(ENABLE_CDS_IMPLEMENTATION=True)
