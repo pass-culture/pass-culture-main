@@ -16,6 +16,10 @@ on:
         type: boolean
         required: false
         default: false
+      ENTRYPOINT:
+        type: string
+        # required: true
+        default: 'api/documentation'
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
         required: true
@@ -23,7 +27,7 @@ on:
         required: true
 
 jobs:
-  deploy-api:
+  deploy-api-doc-on-firebase:
     name: "Deploy api"
     if: ${{ inputs.deploy_api }}
     runs-on: ubuntu-latest
@@ -42,15 +46,51 @@ jobs:
       - name: "list files"
         run: find ./.github/
 
-      - name: "Deploy doc API to Firebase==="
-        # id: deploy-doc-api
-        uses: ./.github/workflows/test_build_deploy_to_firebase.yml
+      - uses: actions/setup-node@v4
         with:
-          environment: ${{ inputs.environment }}
-          REF: ${{ github.ref }}
-          APPNAME: pc-doc-api
-          ENTRYPOINT: 'api/documentation'
-          CHANNEL: ''
-          EXPIRES: '7d'
-          GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-          GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+          node-version-file: '${{ inputs.ENTRYPOINT }}/.nvmrc'
+      - name: "Build documentation"
+        run: |
+            set -e
+            npm install
+            npm run build
+        env:
+          ENV: ${{ inputs.environment }}
+        working-directory: '${{ inputs.ENTRYPOINT }}'
+      # - name: "OpenID Connect Authentication"
+      #   id: "openid-auth"
+      #   uses: "google-github-actions/auth@v2"
+      #   with:
+      #     workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      #     service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      # - name: "Get Secret"
+      #   id: "secrets"
+      #   uses: "google-github-actions/get-secretmanager-secrets@v2"
+      #   with:
+      #     secrets: |-
+      #       FIREBASE_TOKEN:passculture-metier-ehp/pc_doc_api_${{ inputs.ENV }}_firebase_json
+      # - uses: FirebaseExtended/action-hosting-deploy@v0
+      #   with:
+      #     repoToken: "${{ secrets.GITHUB_TOKEN }}"
+      #     firebaseServiceAccount: "${{ steps.secrets.outputs.FIREBASE_TOKEN }}"
+      #     expires: "${{ inputs.EXPIRES }}"
+      #     projectId: "${{ inputs.APPNAME }}-${{ inputs.ENV }}"
+      #     entryPoint: "${{ inputs.ENTRYPOINT }}"
+      #     channelId: "${{ inputs.CHANNEL }}"
+
+
+
+      # - name: "Deploy doc API to Firebase==="
+      #   # id: deploy-doc-api
+      #   uses: ./.github/workflows/test_build_deploy_to_firebase.yml
+      #   with:
+      #     environment: ${{ inputs.environment }}
+      #     REF: ${{ github.ref }}
+      #     APPNAME: pc-doc-api
+      #     ENTRYPOINT: 'api/documentation'
+      #     CHANNEL: ''
+      #     EXPIRES: '7d'
+      #     GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      #     GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
+
