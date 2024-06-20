@@ -245,3 +245,7 @@ def _upload_as_csv_to_google_drive(filename_base: str, header: typing.Iterable, 
 
 def sa_exists(query: BaseQuery) -> bool:
     return db.session.query(query.exists()).scalar()
+
+
+def sa_delete(query: BaseQuery, synchronize_session: bool = False) -> int:
+    return query.delete(synchronize_session=synchronize_session)

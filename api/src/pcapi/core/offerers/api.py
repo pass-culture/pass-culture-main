@@ -487,10 +487,12 @@ def delete_venue(venue_id: int) -> None:
         if pricing_point_has_pricings:
             raise exceptions.CannotDeleteVenueUsedAsPricingPointException()
 
-        offerers_models.VenuePricingPointLink.query.filter(
-            offerers_models.VenuePricingPointLink.venueId != venue_id,
-            offerers_models.VenuePricingPointLink.pricingPointId == venue_id,
-        ).delete(synchronize_session=False)
+        db_utils.sa_delete(
+            offerers_models.VenuePricingPointLink.query.filter(
+                offerers_models.VenuePricingPointLink.venueId != venue_id,
+                offerers_models.VenuePricingPointLink.pricingPointId == venue_id,
+            )
+        )
 
     venue_used_as_reimbursement_point = db_utils.sa_exists(
         offerers_models.VenueReimbursementPointLink.query.filter(
@@ -511,12 +513,10 @@ def delete_venue(venue_id: int) -> None:
     # their pricing/reimbursement point, the database will rightfully
     # raise an error. Either these venues should be deleted first, or
     # the "venue to delete" should not be deleted.
-    offerers_models.VenuePricingPointLink.query.filter_by(
-        venueId=venue_id,
-    ).delete(synchronize_session=False)
-    offerers_models.VenueReimbursementPointLink.query.filter_by(venueId=venue_id).delete(synchronize_session=False)
+    db_utils.sa_delete(offerers_models.VenuePricingPointLink.query.filter_by(venueId=venue_id))
+    db_utils.sa_delete(offerers_models.VenueReimbursementPointLink.query.filter_by(venueId=venue_id))
 
-    offerers_models.Venue.query.filter_by(id=venue_id).delete(synchronize_session=False)
+    db_utils.sa_delete(offerers_models.Venue.query.filter_by(id=venue_id))
 
     db.session.commit()
 
