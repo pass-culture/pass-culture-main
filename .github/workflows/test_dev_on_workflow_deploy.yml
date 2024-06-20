@@ -31,7 +31,7 @@ jobs:
     name: "Deploy api"
     if: ${{ inputs.deploy_api }}
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
+    environment: testing
     permissions:
       id-token: write
       contents: read
@@ -42,10 +42,6 @@ jobs:
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-
-      - name: "list files"
-        run: find ./.github/
-
       - uses: actions/setup-node@v4
         with:
           node-version-file: '${{ inputs.ENTRYPOINT }}/.nvmrc'
@@ -55,8 +51,8 @@ jobs:
             env
             npm install
             npm run build
-        env:
-          ENV: ${{ inputs.environment }}
+        # env:
+        #   ENV: ${{ inputs.environment }}
         working-directory: '${{ inputs.ENTRYPOINT }}'
       # - name: "OpenID Connect Authentication"
       #   id: "openid-auth"
