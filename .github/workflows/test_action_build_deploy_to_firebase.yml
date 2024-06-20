@@ -41,7 +41,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: '${{ inputs.ENTRYPOINT }}/.nvmrc'
-      - name: "Deploy doc API to Firebase"
+      - name: "Build documentation"
         run: |
             set -e
             npm install
