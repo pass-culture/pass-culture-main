@@ -47,7 +47,7 @@ logger = logging.getLogger(__name__)
 @blueprint.v1_offers_blueprint.route("/offerer_venues", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.OFFERER_VENUES_TAG],
+    tags=[tags.VENUES_TAG],
     response_model=venues_serialization.GetOfferersVenuesResponse,
     resp=SpectreeResponse(
         **(
