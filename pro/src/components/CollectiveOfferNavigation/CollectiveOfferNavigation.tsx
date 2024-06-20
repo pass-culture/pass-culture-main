@@ -1,17 +1,24 @@
 import cn from 'classnames'
+import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { useSWRConfig } from 'swr'
 
+import { api } from 'apiClient/api'
 import { useAnalytics } from 'app/App/analytics/firebase'
+import { ArchiveConfirmationModal } from 'components/ArchiveConfirmationModal/ArchiveConfirmationModal'
 import { Step, Stepper } from 'components/Stepper/Stepper'
+import { GET_COLLECTIVE_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
 import {
   Events,
   OFFER_FROM_TEMPLATE_ENTRIES,
 } from 'core/FirebaseEvents/constants'
+import { NOTIFICATION_LONG_SHOW_DURATION } from 'core/Notification/constants'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { createOfferFromTemplate } from 'core/OfferEducational/utils/createOfferFromTemplate'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'
 import { useOfferStockEditionURL } from 'hooks/useOfferEditionURL'
+import fullArchiveIcon from 'icons/full-archive.svg'
 import fullEditIcon from 'icons/full-edit.svg'
 import fullMoreIcon from 'icons/full-more.svg'
 import fullShowIcon from 'icons/full-show.svg'
@@ -40,6 +47,7 @@ export interface CollectiveOfferNavigationProps {
   className?: string
   isTemplate: boolean
   requestId?: string | null
+  isArchivable?: boolean | null
 }
 
 export const CollectiveOfferNavigation = ({
@@ -50,6 +58,7 @@ export const CollectiveOfferNavigation = ({
   offerId = 0,
   className,
   requestId = null,
+  isArchivable,
 }: CollectiveOfferNavigationProps): JSX.Element => {
   const { logEvent } = useAnalytics()
   const notify = useNotification()
@@ -61,6 +70,9 @@ export const CollectiveOfferNavigation = ({
     offerId,
     isTemplate
   )}/collectif/edition`
+  const { mutate } = useSWRConfig()
+
+  const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false)
 
   const previewLink = `/offre/${computeURLCollectiveOfferId(
     offerId,
@@ -172,6 +184,30 @@ export const CollectiveOfferNavigation = ({
     url,
   }))
 
+  const archiveOffer = async () => {
+    if (!offerId) {
+      notify.error('L’identifiant de l’offre n’est pas valide.')
+      return
+    }
+    try {
+      if (isTemplate) {
+        await api.patchCollectiveOffersTemplateArchive({ ids: [offerId] })
+      } else {
+        await api.patchCollectiveOffersArchive({ ids: [offerId] })
+      }
+
+      await mutate([GET_COLLECTIVE_OFFER_QUERY_KEY, offerId])
+      setIsArchiveModalOpen(false)
+      notify.success('Une offre a bien été archivée', {
+        duration: NOTIFICATION_LONG_SHOW_DURATION,
+      })
+    } catch (error) {
+      notify.error('Une erreur est survenue lors de l’archivage de l’offre', {
+        duration: NOTIFICATION_LONG_SHOW_DURATION,
+      })
+    }
+  }
+
   return isEditingExistingOffer ? (
     <>
       <div className={styles['duplicate-offer']}>
@@ -195,6 +231,17 @@ export const CollectiveOfferNavigation = ({
         >
           Aperçu dans ADAGE
         </ButtonLink>
+
+        {isArchivable && (
+          <Button
+            onClick={() => setIsArchiveModalOpen(true)}
+            icon={fullArchiveIcon}
+            variant={ButtonVariant.TERNARY}
+          >
+            Archiver
+          </Button>
+        )}
+
         {isTemplate && (
           <Button
             variant={ButtonVariant.TERNARY}
@@ -231,6 +278,12 @@ export const CollectiveOfferNavigation = ({
           ].includes(activeStep),
         })}
       />
+      {isArchiveModalOpen && (
+        <ArchiveConfirmationModal
+          onDismiss={() => setIsArchiveModalOpen(false)}
+          onValidate={archiveOffer}
+        />
+      )}
     </>
   ) : (
     <Stepper activeStep={activeStep} className={className} steps={steps} />

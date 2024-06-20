@@ -140,9 +140,11 @@ export const OfferEducationalActions = ({
 
   const shouldDisplayAdagePublicationButton =
     !isBooked &&
-    ![CollectiveOfferStatus.EXPIRED, CollectiveOfferStatus.PENDING].includes(
-      offer.status
-    )
+    ![
+      CollectiveOfferStatus.EXPIRED,
+      CollectiveOfferStatus.PENDING,
+      CollectiveOfferStatus.ARCHIVED,
+    ].includes(offer.status)
 
   const shouldDisplayBookingLink =
     lastBookingId &&
