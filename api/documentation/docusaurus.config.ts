@@ -3,42 +3,35 @@ import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 import type * as Redocusaurus from 'redocusaurus';
 
+const env = process.env['ENV'];
+
 const getOpenAPIJsonUrlFromEnv = (): string => {
-  const env = process.env['ENV'];
-
-  // TO DO: update once the proper devops config is available.
-  if (env === 'deploy') {
-    return 'https://backend.testing.passculture.team/openapi.json';
+  if (env === 'testing' || env === 'staging') {
+    return `https://backend.${env}.passculture.team/openapi.json`;
   }
-
-  return 'http://localhost/openapi.json';
+  if (env === 'production') {
+    return 'https://backend.passculture.pro/openapi.json';
+  }
+  return 'http://localhost:5001/openapi.json';
 }
-
 
 const getDocumentationBaseUrlFromEnv = (): string => {
-  const env = process.env['ENV'];
-
-  // TO DO: update once the proper devops config is available.
-  if (env === 'deploy') {
-    return 'https://pass-culture.github.io';
+  if (env === 'testing' || env === 'staging') {
+    return `https://developers.${env}.passculture.team`;
   }
-
+  if (env === 'production') {
+    return 'https://developers.passculture.pro';
+  }
   return 'http://localhost:3000';
 }
+
 
 const config: Config = {
   title: 'Pass Culture documentation',
   tagline: '',
   favicon: 'img/favicon.ico',
-
-  // TO DO: update once the proper devops config is available.
   url: getDocumentationBaseUrlFromEnv(),
   baseUrl: '/',
-  organizationName: 'pass-culture',
-  projectName: 'pass-culture-api-documentation',
-  deploymentBranch: 'gh-pages',
-  // End TODO
-
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   trailingSlash: false,

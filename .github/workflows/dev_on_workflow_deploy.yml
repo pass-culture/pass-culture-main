@@ -25,6 +25,11 @@ on:
         type: boolean
         required: false
         default: false
+      doc-api-entrypoint:
+        type: string
+        required: true
+        default: 'api/documentation'
+
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
         required: true
@@ -37,7 +42,7 @@ jobs:
     if: ${{ inputs.deploy_api }}
     concurrency:
       group: deploy-pcapi-${{ inputs.environment }}
-      cancel-in-progress: false 
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     permissions:
@@ -126,7 +131,7 @@ jobs:
           additional_args: ${{ steps.generate-pcapi-secrets-list.outputs.PCAPI_SECRETS }}
           registry_workload_identity_secret_name: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
           registry_service_account_secret_name: passculture-metier-ehp/passculture-main-artifact-registry-service-account
-          api_token_github_secret_name: passculture-metier-ehp/passculture-main-sa-access-token  
+          api_token_github_secret_name: passculture-metier-ehp/passculture-main-sa-access-token
           chart_values_repository: ""
           helmfile_path: "./pass-culture-deployment/helm/pcapi"
       - name: "Install argocd cli"
@@ -156,11 +161,58 @@ jobs:
           done
           kubectl wait --for=condition=complete --timeout=10900s -n ${{ inputs.environment }} jobs/post-upgrade-${DATE}
 
+  deploy-api-doc-on-firebase:
+    name: "Deploy api doc on firebase"
+    if: ${{ inputs.deploy_api }}
+    needs: deploy-api
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4.1.7
+      - name: "Authentification to Google"
+        uses: 'google-github-actions/auth@v2'
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '${{ inputs.doc-api-entrypoint }}/.nvmrc'
+      - name: "Build documentation"
+        run: |
+            set -e
+            npm install
+            npm run build
+        env:
+          ENV: ${{ inputs.environment }}
+        working-directory: '${{ inputs.doc-api-entrypoint }}'
+      - name: "OpenID Connect Authentication"
+        id: "openid-auth"
+        uses: "google-github-actions/auth@v2"
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      - name: "Get Secret"
+        id: "secrets"
+        uses: "google-github-actions/get-secretmanager-secrets@v2"
+        with:
+          secrets: |-
+            FIREBASE_TOKEN:passculture-metier-ehp/pc_doc_api_${{ inputs.environment }}_firebase_json
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          firebaseServiceAccount: "${{ steps.secrets.outputs.FIREBASE_TOKEN }}"
+          projectId: "pc-doc-api-${{ inputs.environment }}"
+          entryPoint: "${{ inputs.doc-api-entrypoint }}"
+          channelId: "live"
+
   deploy-pro-on-testing-on-firebase:
     name: "Deploy pro on testing live channel"
     concurrency:
       group: deploy-pro-${{ inputs.environment }}
-      cancel-in-progress: false 
+      cancel-in-progress: false
     needs: deploy-api
     if: |
       always() &&
@@ -181,7 +233,7 @@ jobs:
     name: "Deploy pro"
     concurrency:
       group: deploy-pro-${{ inputs.environment }}
-      cancel-in-progress: false 
+      cancel-in-progress: false
     needs: deploy-api
     if: |
       always() &&

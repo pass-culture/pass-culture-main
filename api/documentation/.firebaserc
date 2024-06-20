@@ -1,0 +1,7 @@
+{
+  "projects": {
+    "testing": "pc-doc-api-testing",
+    "staging": "pc-doc-api-staging",
+    "production": "pc-doc-api-production"
+  }
+}
