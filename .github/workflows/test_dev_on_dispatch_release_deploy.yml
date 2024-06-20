@@ -29,11 +29,16 @@ jobs:
 
   deploy-ehp:
     name: "Deploy on EHP environnement"
-    if: github.event.inputs.target_environment != 'production'
+    # if: github.event.inputs.target_environment != 'production'
     uses: ./.github/workflows/test_dev_on_workflow_deploy.yml
     with:
-      environment: ${{ github.event.inputs.target_environment }}
+      # environment: ${{ github.event.inputs.target_environment }}
+      environment: testing
       deploy_api: true
+      APPNAME: pc-doc-api
+      ENTRYPOINT: 'api/documentation'
+      CHANNEL: 'live'
+      EXPIRES: '7d'
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
