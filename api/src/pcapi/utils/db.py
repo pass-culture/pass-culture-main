@@ -7,6 +7,7 @@ import pathlib
 import tempfile
 import typing
 
+from flask_sqlalchemy import BaseQuery
 import psycopg2.extras
 import pytz
 import sqlalchemy as sqla
@@ -240,3 +241,7 @@ def _upload_as_csv_to_google_drive(filename_base: str, header: typing.Iterable, 
         logger.exception("Could not upload stat file to Google Drive", extra={"path": str(local_path), "exc": str(exc)})
     else:
         logger.info("Stat file has been uploaded to Google Drive", extra={"path": str(local_path)})
+
+
+def sa_exists(query: BaseQuery) -> bool:
+    return db.session.query(query.exists()).scalar()
