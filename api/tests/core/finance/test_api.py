@@ -700,7 +700,7 @@ class PriceEventTest:
         ###################################
         # Validate the commercial gesture #
         ###################################
-        api.validate_finance_commercial_gesture(commercial_gesture, force_debit_note=False, author=author_user)
+        api.validate_finance_commercial_gesture(commercial_gesture, author=author_user)
         assert commercial_gesture.status == models.IncidentStatus.VALIDATED
         commercial_gesture_finance_events = models.FinanceEvent.query.filter(
             models.FinanceEvent.id.not_in(

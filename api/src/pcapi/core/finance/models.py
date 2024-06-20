@@ -1007,6 +1007,13 @@ class FinanceIncident(PcObject, Base, Model):
         )
 
     @property
+    def commercial_gesture_amount(self) -> int:
+        return sum(
+            booking_finance_incident.commercial_gesture_amount
+            for booking_finance_incident in self.booking_finance_incidents
+        )
+
+    @property
     def author_full_name(self) -> str:
         from pcapi.core.users.models import User
 
