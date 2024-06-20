@@ -43,7 +43,7 @@ jobs:
         run: find ./.github/
 
       - name: "Deploy doc API to Firebase==="
-        id: deploy-doc-api
+        # id: deploy-doc-api
         uses: ./.github/workflows/test_action_build_deploy_to_firebase.yml
         with:
           environment: ${{ inputs.environment }}
