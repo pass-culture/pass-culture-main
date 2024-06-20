@@ -34,8 +34,8 @@ COLLECTIVE_OFFERS_TAG = Tag(
     description='Endpoints to manage collective offers that are "bookable", not those that are displayed in the showcase.',
 )
 COLLECTIVE_BOOKING_TAG = Tag(name="Collective booking")
-COLLECTIVE_CATEGORIES_TAG = Tag(name="Collective categories")
-COLLECTIVE_VENUES_TAG = Tag(name="Collective venues")
+COLLECTIVE_CATEGORIES_TAG = Tag(name="[DEPRECATED] Collective categories")
+COLLECTIVE_VENUES_TAG = Tag(name="[DEPRECATED] Collective venues")
 COLLECTIVE_OFFER_ATTRIBUTES_TAG = Tag(name="Collective offer attributes")
 
 
@@ -47,8 +47,8 @@ OPEN_API_TAGS = [
     EVENT_OFFER_PRICES_TAG,
     EVENT_OFFER_DATES_TAG,
     # PRODUCTS
-    PRODUCT_OFFER_TAG,
     PRODUCT_EAN_OFFER_TAG,
+    PRODUCT_OFFER_TAG,
     # BOOKING
     BOOKING_TAG,
     # OFFERS ADDITIONAL DATA
@@ -57,9 +57,10 @@ OPEN_API_TAGS = [
     # COLLECTIVE
     COLLECTIVE_OFFERS_TAG,
     COLLECTIVE_BOOKING_TAG,
+    COLLECTIVE_OFFER_ATTRIBUTES_TAG,
+    # COLLECTIVE DEPRECATED ENDPOINTS
     COLLECTIVE_CATEGORIES_TAG,
     COLLECTIVE_VENUES_TAG,
-    COLLECTIVE_OFFER_ATTRIBUTES_TAG,
 ]
 
 # DEPRECATED APIS TAGS

@@ -16,6 +16,7 @@ from pcapi.validation.routes.users_authentifications import current_api_key
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.COLLECTIVE_VENUES_TAG],
+    deprecated=True,
     resp=SpectreeResponse(
         **(
             {
@@ -33,7 +34,7 @@ def list_venues() -> serialization.CollectiveOffersListVenuesResponseModel:
     """
     Get all venues
 
-    Get all venues linked to your API key.
+    This route is deprecated and should not be used anymore.
     """
     venues = providers_repository.get_providers_venues(current_api_key.providerId)
 
@@ -64,9 +65,9 @@ def get_offerer_venues(
     query: venues_serialization.GetOfferersVenuesQuery,
 ) -> venues_serialization.GetOfferersVenuesResponse:
     """
-    [LEGACY] Récupération des lieux associés au fournisseur authentifié par le jeton d'API; groupés par structures
+    [DEPRECATED]
 
-    You should be using **/public/offer/v1/offerer_venues endpoint**.
+    You should be using [**/public/offer/v1/offerer_venues endpoint**](/rest-api#tag/Venues/operation/GetOffererVenues).
     """
     rows = offerers_api.get_providers_offerer_and_venues(current_api_key.provider, query.siren)
     return venues_serialization.GetOfferersVenuesResponse.serialize_offerers_venues(rows)
