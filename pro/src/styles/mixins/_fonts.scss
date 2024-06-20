@@ -18,21 +18,23 @@ $caption-line-height: rem.torem(16px);
 }
 
 @mixin title1() {
-  font-size: rem.torem(26px);
+  font-family: Montserrat;
   font-style: normal;
   font-weight: 800;
+  font-size: rem.torem(26px);
   line-height: rem.torem(34px);
 }
 
 @mixin title2() {
   font-size: rem.torem(22px);
+  font-family: Montserrat;
   font-style: normal;
   font-weight: 500;
   line-height: rem.torem(26px);
 }
 
 @mixin title3() {
-  font-size: rem.torem(20px);
+  font-family: Montserrat;
   font-style: normal;
   font-weight: 700;
   line-height: rem.torem(24px);
@@ -51,6 +53,7 @@ $caption-line-height: rem.torem(16px);
 }
 
 @mixin body() {
+  font-family: Montserrat;
   font-size: $body-font-size;
   font-weight: 400;
   line-height: $body-line-height;

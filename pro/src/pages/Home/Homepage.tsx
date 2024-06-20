@@ -257,6 +257,15 @@ export const Homepage = (): JSX.Element => {
   )
 }
 
+export const HomeTestTypo = () => (
+  <>
+    <h1>Test typo</h1>
+    <h2>Test title 2</h2>
+    <h3>Test title 3</h3>
+    <p>Test text</p>
+  </>
+)
+
 // Below exports are used by react-router-dom
 // ts-unused-exports:disable-next-line
 export const Component = Homepage
