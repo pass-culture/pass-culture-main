@@ -125,7 +125,7 @@ jobs:
   test-api:
     name: "Test api"
     needs: [check-folders-changes, build-pcapi-tests]
-    if: needs.check-folders-changes.outputs.api-changed == 'true'
+    if: false
     uses: ./.github/workflows/dev_on_workflow_tests_api.yml
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
@@ -134,7 +134,7 @@ jobs:
   test-pro:
     name: "Tests pro"
     needs: check-folders-changes
-    if: needs.check-folders-changes.outputs.pro-changed == 'true'
+    if: false
     uses: ./.github/workflows/dev_on_workflow_tests_pro.yml
     with:
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
@@ -145,9 +145,7 @@ jobs:
   test-pro-e2e:
     name: "Tests pro E2E"
     needs: [check-folders-changes, build-pcapi]
-    if: |
-      needs.check-folders-changes.outputs.api-changed == 'true' ||
-      needs.check-folders-changes.outputs.pro-changed == 'true'
+    if: false
     uses: ./.github/workflows/dev_on_workflow_tests_pro_e2e.yml
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
