@@ -44,7 +44,7 @@ jobs:
 
       - name: "Deploy doc API to Firebase==="
         # id: deploy-doc-api
-        uses: ./.github/workflows/test_action_build_deploy_to_firebase.yml
+        uses: ./.github/workflows/test_build_deploy_to_firebase.yml
         with:
           environment: ${{ inputs.environment }}
           REF: ${{ github.ref }}
