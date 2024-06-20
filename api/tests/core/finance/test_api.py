@@ -1086,17 +1086,13 @@ class CancelLatestEventTest:
             booking__stock__offer__venue__pricing_point="self",
             status=models.FinanceEventStatus.PRICED,
         )
-        factories.PricingFactory(event=event1, booking=event1.booking)
         event2 = factories.UsedBookingFinanceEventFactory(
             booking__stock__offer__venue__pricing_point=event1.pricingPoint,
             status=models.FinanceEventStatus.PRICED,
         )
         factories.PricingFactory(event=event2, booking=event2.booking)
 
-        api.cancel_latest_event(event1.booking)
-
-        assert event1.status == models.FinanceEventStatus.CANCELLED
-        assert event1.pricings[0].status == models.PricingStatus.CANCELLED
+        api._delete_dependent_pricings(event1, "test_delete_dependent_pricings")
 
         assert event2.status == models.FinanceEventStatus.READY
         assert not event2.pricings
@@ -1117,25 +1113,84 @@ class CancelLatestEventTest:
             booking=event2.booking,
             status=models.PricingStatus.PROCESSED,
         )
+        event3 = factories.UsedBookingFinanceEventFactory(
+            booking__stock__offer__venue__pricing_point=ppoint,
+            status=models.FinanceEventStatus.PRICED,
+        )
+        factories.PricingFactory(
+            event=event3,
+            booking=event3.booking,
+        )
 
         with pytest.raises(exceptions.NonCancellablePricingError):
-            api.cancel_latest_event(event1.booking)
+            api._delete_dependent_pricings(event1, "test_cannot_delete_dependent_pricings_that_are_not_deletable")
+        db.session.refresh(event2)
+        db.session.refresh(event3)
 
         # No changes!
-        assert event1.status == models.FinanceEventStatus.PRICED
-        assert event1.pricings[0].status == models.PricingStatus.VALIDATED
         assert event2.status == models.FinanceEventStatus.PRICED
         assert event2.pricings[0].status == models.PricingStatus.PROCESSED
+        assert event3.status == models.FinanceEventStatus.PRICED
+        assert event3.pricings[0].status == models.PricingStatus.VALIDATED
 
-        with override_settings(FINANCE_OVERRIDE_PRICING_ORDERING_ON_PRICING_POINTS=[ppoint.id]):
-            api.cancel_latest_event(event1.booking)
+        api._delete_dependent_pricings(
+            event1, "test_cannot_delete_dependent_pricings_that_are_not_deletable", [ppoint.id]
+        )
+        db.session.refresh(event2)
+        db.session.refresh(event3)
 
-        # This time, event1 and its pricing were cancelled. event2 and
-        # its pricing were left untouched.
-        assert event1.status == models.FinanceEventStatus.CANCELLED
-        assert event1.pricings[0].status == models.PricingStatus.CANCELLED
+        # This time, it works with no error
         assert event2.status == models.FinanceEventStatus.PRICED  # unchanged
         assert event2.pricings[0].status == models.PricingStatus.PROCESSED  # unchanged
+        assert event3.status == models.FinanceEventStatus.READY
+        assert not event3.pricings
+
+    def test_cannot_delete_dependent_pricings_that_are_not_deletable_with_override(self):
+        event1 = factories.UsedBookingFinanceEventFactory(
+            booking__stock__offer__venue__pricing_point="self",
+            status=models.FinanceEventStatus.PRICED,
+        )
+        ppoint = event1.pricingPoint
+        factories.PricingFactory(event=event1, booking=event1.booking)
+        event2 = factories.UsedBookingFinanceEventFactory(
+            booking__stock__offer__venue__pricing_point=ppoint,
+            status=models.FinanceEventStatus.PRICED,
+        )
+        factories.PricingFactory(
+            event=event2,
+            booking=event2.booking,
+            status=models.PricingStatus.PROCESSED,
+        )
+        event3 = factories.UsedBookingFinanceEventFactory(
+            booking__stock__offer__venue__pricing_point=ppoint,
+            status=models.FinanceEventStatus.PRICED,
+        )
+        factories.PricingFactory(
+            event=event3,
+            booking=event3.booking,
+        )
+
+        with pytest.raises(exceptions.NonCancellablePricingError):
+            api._delete_dependent_pricings(event1, "test_cannot_delete_dependent_pricings_that_are_not_deletable")
+        db.session.refresh(event2)
+        db.session.refresh(event3)
+
+        # No changes!
+        assert event2.status == models.FinanceEventStatus.PRICED
+        assert event2.pricings[0].status == models.PricingStatus.PROCESSED
+        assert event3.status == models.FinanceEventStatus.PRICED
+        assert event3.pricings[0].status == models.PricingStatus.VALIDATED
+
+        with override_settings(FINANCE_OVERRIDE_PRICING_ORDERING_ON_PRICING_POINTS=[ppoint.id]):
+            api._delete_dependent_pricings(event1, "test_cannot_delete_dependent_pricings_that_are_not_deletable")
+        db.session.refresh(event2)
+        db.session.refresh(event3)
+
+        # This time, it works with no error
+        assert event2.status == models.FinanceEventStatus.PRICED  # unchanged
+        assert event2.pricings[0].status == models.PricingStatus.PROCESSED  # unchanged
+        assert event3.status == models.FinanceEventStatus.READY
+        assert not event3.pricings
 
 
 class UpdateFinanceEventPricingDateTest:
