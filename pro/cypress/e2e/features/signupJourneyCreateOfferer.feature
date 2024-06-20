@@ -1,4 +1,4 @@
-@P0
+@P0 @retries(runMode=0)
 Feature: Signup journey
 
   Scenario: With a new account, create a new offerer with an unknown SIRET
