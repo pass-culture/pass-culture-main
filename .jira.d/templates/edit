@@ -13,7 +13,7 @@ update:
     - set: "{{ .overrides.customfield_10060 }}"
   {{- end -}}
   {{if .overrides.customfield_10086 }}
-  customfield_10086: # 'SafeToDeploy' flag
+  customfield_10086: # 'SafeToPlaceTag' property
     - set: "{{ .overrides.customfield_10086 }}"
   {{- end -}}
 
