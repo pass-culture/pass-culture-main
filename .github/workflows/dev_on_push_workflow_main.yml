@@ -11,7 +11,7 @@ permissions: write-all
 concurrency:
   # cancel previous workflow of the same branch except on master
   group: main-${{ github.ref }}
-  cancel-in-progress: ${{ github.ref == 'refs/heads/master' && false || true }}
+  cancel-in-progress: ${{ !contains(github.ref, 'master') }}
 
 jobs:
   check-folders-changes:
