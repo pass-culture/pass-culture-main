@@ -31,8 +31,9 @@ import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import fullPlusIcon from 'icons/full-plus.svg'
 import strokeLibraryIcon from 'icons/stroke-library.svg'
 import strokeUserIcon from 'icons/stroke-user.svg'
-import { ActionsBar } from 'pages/Offers/Offers/ActionsBar/ActionsBar'
 import { Offers as OffersContainer } from 'pages/Offers/Offers/Offers'
+import { CollectiveOffersActionsBar } from 'pages/Offers/Offers/OffersActionsBar/CollectiveOffersActionsBar'
+import { IndividualOffersActionsBar } from 'pages/Offers/Offers/OffersActionsBar/IndividualOffersActionsBar'
 import { selectCurrentOffererId } from 'store/user/selectors'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -270,18 +271,26 @@ export const Offers = ({
           isRestrictedAsAdmin={isRestrictedAsAdmin}
         />
       )}
-      {selectedOfferIds.length > 0 && (
-        <ActionsBar
-          areAllOffersSelected={areAllOffersSelected}
-          clearSelectedOfferIds={clearSelectedOfferIds}
-          selectedOfferIds={selectedOfferIds}
-          selectedOffers={selectedOffers}
-          toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
-          audience={audience}
-          getUpdateOffersStatusMessage={getUpdateOffersStatusMessage}
-          canDeleteOffers={canDeleteOffers}
-        />
-      )}
+      {selectedOfferIds.length > 0 &&
+        (audience === Audience.COLLECTIVE ? (
+          <CollectiveOffersActionsBar
+            areAllOffersSelected={areAllOffersSelected}
+            clearSelectedOfferIds={clearSelectedOfferIds}
+            selectedOfferIds={selectedOfferIds}
+            selectedOffers={selectedOffers as CollectiveOfferResponseModel[]}
+            toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
+            getUpdateOffersStatusMessage={getUpdateOffersStatusMessage}
+          />
+        ) : (
+          <IndividualOffersActionsBar
+            areAllOffersSelected={areAllOffersSelected}
+            clearSelectedOfferIds={clearSelectedOfferIds}
+            selectedOfferIds={selectedOfferIds}
+            toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
+            getUpdateOffersStatusMessage={getUpdateOffersStatusMessage}
+            canDeleteOffers={canDeleteOffers}
+          />
+        ))}
     </div>
   )
 }
