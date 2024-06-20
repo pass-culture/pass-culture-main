@@ -704,11 +704,20 @@ def _cancel_event_pricing(
     return pricing
 
 
-def _delete_dependent_pricings(event: models.FinanceEvent, log_message: str) -> None:
+def _delete_dependent_pricings(
+    event: models.FinanceEvent, log_message: str, pricing_points_overriding_pricing_ordering: typing.Iterable[int] = ()
+) -> None:
     """Delete pricings for events that should be priced after the
     requested ``event``.
 
     See note in the module docstring for further details.
+
+    pricing_points_overriding_pricing_ordering : a list of pricing point ids.
+    In a script, you might have to add new pricings to a cutoff period that already
+    has reimbursed pricings that can't be deleted (and so you can't compute the new
+    pricing order). But sometimes, the order would not change the pricing value (because
+    there is a custom reimbursement rule, or the pricing point's revenue would not change enough to
+    change the reimbursement rule, etc), so you can add the pricing point to the list, and the pricings will be moved as you needed.
     """
     revenue_period_start, revenue_period_end = _get_revenue_period(event.valueDate)
 
@@ -731,7 +740,11 @@ def _delete_dependent_pricings(event: models.FinanceEvent, log_message: str) -> 
     events_already_priced = {pricing.eventId for pricing in pricings}
     for pricing in pricings:
         if pricing.status not in models.DELETABLE_PRICING_STATUSES:
-            if event.pricingPointId in settings.FINANCE_OVERRIDE_PRICING_ORDERING_ON_PRICING_POINTS:
+            assert event.pricingPointId  # helps mypy
+            if event.pricingPointId in (
+                pricing_points_overriding_pricing_ordering
+                or settings.FINANCE_OVERRIDE_PRICING_ORDERING_ON_PRICING_POINTS
+            ):
                 pricing_ids.remove(pricing.id)
                 events_already_priced.remove(pricing.eventId)
                 logger.info(
