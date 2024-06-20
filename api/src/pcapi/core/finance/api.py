@@ -3117,7 +3117,6 @@ def validate_finance_overpayment_incident(
 
 def validate_finance_commercial_gesture(
     finance_incident: models.FinanceIncident,
-    force_debit_note: bool,
     author: users_models.User,
 ) -> None:
     incident_validation_date = datetime.datetime.utcnow()
@@ -3143,7 +3142,7 @@ def validate_finance_commercial_gesture(
             )
 
     finance_incident.status = models.IncidentStatus.VALIDATED
-    finance_incident.forceDebitNote = force_debit_note
+    finance_incident.forceDebitNote = False
     db.session.add(finance_incident)
 
     history_api.add_action(
@@ -3151,11 +3150,7 @@ def validate_finance_commercial_gesture(
         author=author,
         venue=finance_incident.venue,
         finance_incident=finance_incident,
-        comment=(
-            "Génération d'une note de débit à la prochaine échéance."
-            if force_debit_note
-            else "Récupération sur les prochaines réservations."
-        ),
+        comment="Récupération sur les prochaines réservations.",
         linked_incident_id=finance_incident.id,
     )
 

@@ -96,7 +96,6 @@ def _create_total_commercial_gesture_individual_offer(
 
         finance_api.validate_finance_commercial_gesture(
             commercial_gesture,
-            force_debit_note=False,
             author=author_user,
         )
         finance_api.price_event(commercial_gesture.booking_finance_incidents[0].finance_events[0])
@@ -160,7 +159,6 @@ def _create_total_commercial_gesture_collective_offer(
         )
         finance_api.validate_finance_commercial_gesture(
             finance_incident=commercial_gesture,
-            force_debit_note=False,
             author=author_user,
         )
 
@@ -255,7 +253,6 @@ def _create_partial_commercial_gesture_multiple_individual_offer(
 
         finance_api.validate_finance_commercial_gesture(
             commercial_gesture,
-            force_debit_note=False,
             author=author_user,
         )
 
