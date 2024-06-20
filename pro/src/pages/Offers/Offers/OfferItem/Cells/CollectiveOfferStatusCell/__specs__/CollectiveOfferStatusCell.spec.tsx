@@ -52,6 +52,7 @@ describe('CollectiveStatusLabel', () => {
       bookingStatus: 'USED',
     },
     { offerStatus: CollectiveOfferStatus.EXPIRED, expectedLabel: 'expirée' },
+    { offerStatus: CollectiveOfferStatus.ARCHIVED, expectedLabel: 'archivée' },
   ]
 
   it.each(testCases)(

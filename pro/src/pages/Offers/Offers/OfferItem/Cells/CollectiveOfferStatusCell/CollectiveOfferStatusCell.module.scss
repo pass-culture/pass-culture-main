@@ -44,4 +44,13 @@
   &-draft {
     background-color: var(--color-secondary);
   }
+
+  &-archived {
+    background-color: var(--color-grey-light);
+    color: var(--color-black);
+
+    .status-label-icon {
+      color: var(--color-black);
+    }
+  }
 }
