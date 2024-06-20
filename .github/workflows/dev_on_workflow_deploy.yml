@@ -35,6 +35,9 @@ jobs:
   deploy-api:
     name: "Deploy api"
     if: ${{ inputs.deploy_api }}
+    concurrency:
+      group: deploy-pcapi-${{ inputs.environment }}
+      cancel-in-progress: false 
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     permissions:
@@ -155,6 +158,9 @@ jobs:
 
   deploy-pro-on-testing-on-firebase:
     name: "Deploy pro on testing live channel"
+    concurrency:
+      group: deploy-pro-${{ inputs.environment }}
+      cancel-in-progress: false 
     needs: deploy-api
     if: |
       always() &&
@@ -173,6 +179,9 @@ jobs:
 
   deploy-pro-on-firebase:
     name: "Deploy pro"
+    concurrency:
+      group: deploy-pro-${{ inputs.environment }}
+      cancel-in-progress: false 
     needs: deploy-api
     if: |
       always() &&
