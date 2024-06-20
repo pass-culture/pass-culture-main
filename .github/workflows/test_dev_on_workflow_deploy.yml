@@ -52,6 +52,7 @@ jobs:
       - name: "Build documentation"
         run: |
             set -e
+            env
             npm install
             npm run build
         env:
