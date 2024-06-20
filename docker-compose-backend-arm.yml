@@ -1,0 +1,45 @@
+version: "3.7"
+
+services:
+  postgres:
+    image: imresamu/postgis-arm64:15-3.4
+    extends:
+      file: docker-compose-backend.yml
+      service: postgres
+
+  postgres-test:
+    image: imresamu/postgis-arm64:15-3.4
+    extends:
+      file: docker-compose-backend.yml
+      service: postgres-test
+
+  flask:
+    extends:
+      file: docker-compose-backend.yml
+      service: flask
+
+  backoffice:
+    extends:
+      file: docker-compose-backend.yml
+      service: backoffice
+
+  redis:
+    extends:
+      file: docker-compose-backend.yml
+      service: redis
+
+  nginx:
+    extends:
+      file: docker-compose-backend.yml
+      service: nginx
+
+networks:
+  db_nw:
+    driver: bridge
+  web_nw:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  postgres_data_test:
+  redis_data:
