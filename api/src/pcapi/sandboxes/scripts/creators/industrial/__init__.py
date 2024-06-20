@@ -94,7 +94,6 @@ def save_industrial_sandbox() -> None:
 
     create_industrial_thing_stocks(thing_offers_by_name)
 
-    prepare_mediations_folders()
     create_industrial_mediations(offers_by_name)
 
     criteria_by_name = create_industrial_criteria()
