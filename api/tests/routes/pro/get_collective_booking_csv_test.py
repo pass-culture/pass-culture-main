@@ -42,7 +42,8 @@ class Returns200Test:
         assert reader[0]["Lieu"] == booking.venue.name
         assert reader[0]["Nom de l'offre"] == booking.collectiveStock.collectiveOffer.name
         assert reader[0]["Date de l'évènement"] == "2020-08-13 14:00:00+02:00"
-        assert reader[0]["Nom et prénom du bénéficiaire"] == "Kelso Bob"
+        assert reader[0]["Prénom du bénéficiaire"] == "Bob"
+        assert reader[0]["Nom du bénéficiaire"] == "Kelso"
         assert reader[0]["Email du bénéficiaire"] == booking.educationalRedactor.email
         assert reader[0]["Date et heure de réservation"] == "2020-08-11 14:00:00+02:00"
         assert reader[0]["Date et heure de validation"] == "2020-08-15 14:00:00+02:00"
@@ -77,7 +78,8 @@ class Returns200Test:
         assert reader[0]["Lieu"] == booking.venue.name
         assert reader[0]["Nom de l'offre"] == booking.collectiveStock.collectiveOffer.name
         assert reader[0]["Date de l'évènement"] == "2020-08-13 14:00:00+02:00"
-        assert reader[0]["Nom et prénom du bénéficiaire"] == "Cox Perry"
+        assert reader[0]["Prénom du bénéficiaire"] == "Perry"
+        assert reader[0]["Nom du bénéficiaire"] == "Cox"
         assert reader[0]["Email du bénéficiaire"] == booking.educationalRedactor.email
         assert reader[0]["Date et heure de réservation"] == "2020-08-11 14:00:00+02:00"
         assert reader[0]["Date et heure de validation"] == ""
@@ -112,7 +114,8 @@ class Returns200Test:
         assert reader[0]["Lieu"] == booking.venue.name
         assert reader[0]["Nom de l'offre"] == booking.collectiveStock.collectiveOffer.name
         assert reader[0]["Date de l'évènement"] == "2020-08-13 14:00:00+02:00"
-        assert reader[0]["Nom et prénom du bénéficiaire"] == "Dorian John Michael"
+        assert reader[0]["Prénom du bénéficiaire"] == "John Michael"
+        assert reader[0]["Nom du bénéficiaire"] == "Dorian"
         assert reader[0]["Email du bénéficiaire"] == booking.educationalRedactor.email
         assert reader[0]["Date et heure de réservation"] == "2020-08-11 14:00:00+02:00"
         assert reader[0]["Date et heure de validation"] == "2020-08-15 14:00:00+02:00"
@@ -148,7 +151,8 @@ class Returns200Test:
         assert reader[0]["Lieu"] == booking.venue.name
         assert reader[0]["Nom de l'offre"] == booking.collectiveStock.collectiveOffer.name
         assert reader[0]["Date de l'évènement"] == "2020-08-13 14:00:00+02:00"
-        assert reader[0]["Nom et prénom du bénéficiaire"] == "Reid Eliot"
+        assert reader[0]["Prénom du bénéficiaire"] == "Eliot"
+        assert reader[0]["Nom du bénéficiaire"] == "Reid"
         assert reader[0]["Email du bénéficiaire"] == booking.educationalRedactor.email
         assert reader[0]["Date et heure de réservation"] == "2020-08-11 14:00:00+02:00"
         assert reader[0]["Date et heure de validation"] == "2020-08-15 14:00:00+02:00"
@@ -198,11 +202,11 @@ class Returns200Test:
         reader = reader_from_response(response)
         assert len(reader) == 3
         for i in range(3):
-            name = f"{bookings[i].educationalRedactor.lastName} {bookings[i].educationalRedactor.firstName}"
             assert reader[i]["Lieu"] == bookings[i].venue.name
             assert reader[i]["Nom de l'offre"] == bookings[i].collectiveStock.collectiveOffer.name
             assert reader[i]["Date de l'évènement"] == "2020-08-13 14:00:00+02:00"
-            assert reader[i]["Nom et prénom du bénéficiaire"] == name
+            assert reader[i]["Prénom du bénéficiaire"] == bookings[i].educationalRedactor.firstName
+            assert reader[i]["Nom du bénéficiaire"] == bookings[i].educationalRedactor.lastName
             assert reader[i]["Email du bénéficiaire"] == bookings[i].educationalRedactor.email
             assert reader[i]["Date et heure de réservation"] == "2020-08-11 14:00:00+02:00"
             assert reader[i]["Date et heure de validation"] == "2020-08-15 14:00:00+02:00"
