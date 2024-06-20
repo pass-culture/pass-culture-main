@@ -48,8 +48,7 @@ class Returns200Test:
     # payload (joined query)
     # user offerer
     # stocks of offer (a backref)
-    # future_offer (a backref)
-    num_queries = 6
+    num_queries = 5
 
     def test_access_by_pro_user(self, client):
         # Given

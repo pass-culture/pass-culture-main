@@ -36,7 +36,9 @@ LIMIT_STOCKS_PER_PAGE = 20
 STOCK_LIMIT_TO_DELETE = 50
 
 OFFER_LOAD_OPTIONS = typing.Iterable[
-    typing.Literal["stock", "mediations", "product", "price_category", "venue", "bookings_count", "offerer_address"]
+    typing.Literal[
+        "stock", "mediations", "product", "price_category", "venue", "bookings_count", "offerer_address", "future_offer"
+    ]
 ]
 
 
@@ -822,6 +824,8 @@ def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> mod
                     offerers_models.OffererAddress._isEditable, offerers_models.OffererAddress.isEditable.expression  # type: ignore [attr-defined]
                 ),
             )
+        if "future_offer" in load_options:
+            query = query.outerjoin(models.Offer.futureOffer).options(sa_orm.contains_eager(models.Offer.futureOffer))
 
         return query.one()
     except sa_orm.exc.NoResultFound:
