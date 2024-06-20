@@ -664,7 +664,9 @@ def cancel_booking_for_fraud(booking: Booking) -> None:
 
 def cancel_booking_on_user_requested_account_suspension(booking: Booking) -> None:
     validation.check_booking_can_be_cancelled(booking)
-    _cancel_booking(booking, BookingCancellationReasons.BENEFICIARY)
+    cancelled = _cancel_booking(booking, BookingCancellationReasons.BENEFICIARY)
+    if not cancelled:
+        return
     logger.info(
         "Cancelled booking on user-requested account suspension",
         extra={"booking": booking.id},
