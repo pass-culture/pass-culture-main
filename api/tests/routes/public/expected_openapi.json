@@ -10740,7 +10740,7 @@
                 ],
                 "summary": "Get collective offers categories",
                 "tags": [
-                    "Collective categories"
+                    "[DEPRECATED] Collective categories"
                 ]
             }
         },
@@ -11002,7 +11002,7 @@
         "/v2/collective/offerer_venues": {
             "get": {
                 "deprecated": true,
-                "description": "You should be using **/public/offer/v1/offerer_venues endpoint**.",
+                "description": "You should be using [**/public/offer/v1/offerer_venues endpoint**](/rest-api#tag/Venues/operation/GetOffererVenues).",
                 "operationId": "GetOffererVenues",
                 "parameters": [
                     {
@@ -11059,9 +11059,9 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "[LEGACY] R\u00e9cup\u00e9ration des lieux associ\u00e9s au fournisseur authentifi\u00e9 par le jeton d'API; group\u00e9s par structures",
+                "summary": "[DEPRECATED]",
                 "tags": [
-                    "Collective venues"
+                    "[DEPRECATED] Collective venues"
                 ]
             }
         },
@@ -11573,13 +11573,14 @@
                 ],
                 "summary": "Get collective offers subcatgories",
                 "tags": [
-                    "Collective categories"
+                    "[DEPRECATED] Collective categories"
                 ]
             }
         },
         "/v2/collective/venues": {
             "get": {
-                "description": "Get all venues linked to your API key.",
+                "deprecated": true,
+                "description": "This route is deprecated and should not be used anymore.",
                 "operationId": "ListVenues",
                 "parameters": [],
                 "responses": {
@@ -11624,7 +11625,7 @@
                 ],
                 "summary": "Get all venues",
                 "tags": [
-                    "Collective venues"
+                    "[DEPRECATED] Collective venues"
                 ]
             }
         }
@@ -11662,14 +11663,14 @@
             "name": "Event offer dates"
         },
         {
-            "description": "Endpoints to manage product offers of a venue.",
-            "externalDocs": null,
-            "name": "Product offer"
-        },
-        {
             "description": "Endpoints to create and get products usings European Article Number (EAN-13).",
             "externalDocs": null,
             "name": "Product offer bulk operations"
+        },
+        {
+            "description": "Endpoints to manage product offers of a venue.",
+            "externalDocs": null,
+            "name": "Product offer"
         },
         {
             "description": "Endpoints to manage the bookings of an offer (event and product).",
@@ -11699,17 +11700,17 @@
         {
             "description": "",
             "externalDocs": null,
-            "name": "Collective categories"
-        },
-        {
-            "description": "",
-            "externalDocs": null,
-            "name": "Collective venues"
-        },
-        {
-            "description": "",
-            "externalDocs": null,
             "name": "Collective offer attributes"
+        },
+        {
+            "description": "",
+            "externalDocs": null,
+            "name": "[DEPRECATED] Collective categories"
+        },
+        {
+            "description": "",
+            "externalDocs": null,
+            "name": "[DEPRECATED] Collective venues"
         }
     ]
 }
