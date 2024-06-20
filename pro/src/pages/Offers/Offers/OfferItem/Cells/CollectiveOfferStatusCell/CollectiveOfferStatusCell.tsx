@@ -13,6 +13,7 @@ import strokeClockIcon from 'icons/stroke-clock.svg'
 import strokeCloseIcon from 'icons/stroke-close.svg'
 import strokeDoubleCheckIcon from 'icons/stroke-double-check.svg'
 import strokeHourglassIcon from 'icons/stroke-hourglass.svg'
+import strokeThing from 'icons/stroke-thing.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from '../../OfferItem.module.scss'
@@ -134,6 +135,23 @@ export const getCollectiveStatusLabel = (
             />
           }
           label="expirée"
+        />
+      )
+    case CollectiveOfferStatus.ARCHIVED:
+      return (
+        <CollectiveStatusLabel
+          className={style['status-archived']}
+          icon={
+            <SvgIcon
+              alt=""
+              src={strokeThing}
+              className={cn(
+                style['status-label-icon'],
+                style['status-archived-icon']
+              )}
+            />
+          }
+          label="archivée"
         />
       )
     default:
