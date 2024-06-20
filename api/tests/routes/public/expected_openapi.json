@@ -10019,7 +10019,7 @@
                 ],
                 "summary": "Get offerer venues",
                 "tags": [
-                    "Offerer and Venues"
+                    "Venues"
                 ]
             }
         },
@@ -10805,7 +10805,7 @@
                 ],
                 "summary": "Get the eductional domains",
                 "tags": [
-                    "Collective educational data"
+                    "Collective offer attributes"
                 ]
             }
         },
@@ -10958,7 +10958,7 @@
                 ],
                 "summary": "Get all educational institutions",
                 "tags": [
-                    "Collective educational data"
+                    "Collective offer attributes"
                 ]
             }
         },
@@ -11009,7 +11009,7 @@
                 ],
                 "summary": "Get all known national programs",
                 "tags": [
-                    "Collective educational data"
+                    "Collective offer attributes"
                 ]
             }
         },
@@ -11535,7 +11535,7 @@
                 ],
                 "summary": "Get student levels eligible for collective offers",
                 "tags": [
-                    "Collective educational data"
+                    "Collective offer attributes"
                 ]
             }
         },
@@ -11658,7 +11658,7 @@
         {
             "description": "",
             "externalDocs": null,
-            "name": "Offerer and Venues"
+            "name": "Venues"
         },
         {
             "description": "Endpoints to manage event offers data of a venue (except prices and dates).",
@@ -11723,7 +11723,7 @@
         {
             "description": "",
             "externalDocs": null,
-            "name": "Collective educational data"
+            "name": "Collective offer attributes"
         }
     ]
 }
