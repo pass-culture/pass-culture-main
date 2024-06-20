@@ -1,3 +1,5 @@
+import { format } from 'date-fns'
+
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
@@ -14,6 +16,7 @@ import { DisplayOfferInAppLink } from 'screens/IndividualOffer/SummaryScreen/Dis
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { FORMAT_DD_MM_YYYY, FORMAT_HH_mm, isDateValid } from 'utils/date'
 
 import styles from './IndividualOfferConfirmationScreen.module.scss'
 
@@ -25,11 +28,17 @@ export const IndividualOfferConfirmationScreen = ({
   offer,
 }: IndividualOfferConfirmationScreenProps): JSX.Element => {
   const { logEvent } = useAnalytics()
+  const isPublishedInTheFuture = isDateValid(offer.publicationDate)
   const isPendingOffer = offer.status === OFFER_STATUS_PENDING
   const queryString = `?structure=${offer.venue.managingOfferer.id}&lieu=${offer.venue.id}`
-  const title = isPendingOffer
-    ? 'Offre en cours de validation'
-    : 'Offre publiée !'
+
+  const offerType = isPublishedInTheFuture ? 'Offre programmée' : 'Offre'
+  const formattedDate = isDateValid(offer.publicationDate)
+    ? format(new Date(offer.publicationDate), FORMAT_DD_MM_YYYY)
+    : ''
+  const formattedTime = isDateValid(offer.publicationDate)
+    ? format(new Date(offer.publicationDate), FORMAT_HH_mm)
+    : ''
 
   return (
     <div className={styles['confirmation-container']}>
@@ -47,7 +56,12 @@ export const IndividualOfferConfirmationScreen = ({
             className={styles['validate-icon']}
           />
         )}
-        <h2 className={styles['confirmation-title']}>{title}</h2>
+        <h2 className={styles['confirmation-title']}>
+          {isPendingOffer
+            ? `${offerType} en cours de validation`
+            : `${offerType} publiée !`}
+        </h2>
+
         {isPendingOffer ? (
           <p className={styles['confirmation-details']}>
             Votre offre est en cours de validation par l’équipe pass Culture.
@@ -57,34 +71,39 @@ export const IndividualOfferConfirmationScreen = ({
               Cette vérification pourra prendre jusqu’à 72h. Vous ne pouvez pas
               effectuer de modification pour l’instant.{' '}
             </b>
-            Vous recevrez un email de confirmation une fois votre offre validée
-            et disponible à la réservation.
+            {isPublishedInTheFuture
+              ? `Vous recevrez un email de confirmation une fois votre offre validée. Elle sera automatiquement publiée le ${formattedDate} à ${formattedTime}.`
+              : 'Vous recevrez un email de confirmation une fois votre offre validée et disponible à la réservation.'}
           </p>
         ) : (
           <p className={styles['confirmation-details']}>
-            Votre offre est désormais disponible à la réservation sur
-            l’application pass Culture.
+            {isPublishedInTheFuture
+              ? `Votre offre sera disponible à la réservation sur l’application pass Culture le ${formattedDate} à ${formattedTime}.`
+              : 'Votre offre est désormais disponible à la réservation sur l’application pass Culture.'}
           </p>
         )}
       </div>
 
-      <div className={styles['display-in-app-link']}>
-        <DisplayOfferInAppLink
-          id={offer.id}
-          svgAlt="Nouvelle fenêtre"
-          icon={fullLinkIcon}
-          onClick={() => {
-            logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-              from: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
-              to: OFFER_FORM_NAVIGATION_OUT.PREVIEW,
-              used: OFFER_FORM_NAVIGATION_MEDIUM.CONFIRMATION_PREVIEW,
-              isEdition: false,
-            })
-          }}
-        >
-          Visualiser l’offre dans l’application
-        </DisplayOfferInAppLink>
-      </div>
+      {!isPublishedInTheFuture && (
+        <div className={styles['display-in-app-link']}>
+          <DisplayOfferInAppLink
+            id={offer.id}
+            svgAlt="Nouvelle fenêtre"
+            icon={fullLinkIcon}
+            onClick={() => {
+              logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+                from: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
+                to: OFFER_FORM_NAVIGATION_OUT.PREVIEW,
+                used: OFFER_FORM_NAVIGATION_MEDIUM.CONFIRMATION_PREVIEW,
+                isEdition: false,
+              })
+            }}
+          >
+            Visualiser l’offre dans l’application
+          </DisplayOfferInAppLink>
+        </div>
+      )}
+
       <div className={styles['confirmation-actions']}>
         <ButtonLink
           link={{
@@ -96,6 +115,7 @@ export const IndividualOfferConfirmationScreen = ({
         >
           Créer une nouvelle offre
         </ButtonLink>
+
         <ButtonLink
           link={{
             to: `/offres`,
