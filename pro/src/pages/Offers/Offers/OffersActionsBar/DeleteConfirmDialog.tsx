@@ -1,5 +1,3 @@
-import React from 'react'
-
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import strokeTrashIcon from 'icons/stroke-trash.svg'
 

@@ -1,3 +1,5 @@
+import { getOffersCountToDisplay } from 'pages/Offers/domain/getOffersCountToDisplay'
+
 export const computeAllActivationSuccessMessage = (nbSelectedOffers: number) =>
   nbSelectedOffers > 1
     ? 'Les offres sont en cours d’activation, veuillez rafraichir dans quelques instants'
@@ -24,4 +26,12 @@ export const computeDeactivationSuccessMessage = (nbSelectedOffers: number) => {
       ? 'offres ont bien été désactivées'
       : 'offre a bien été désactivée'
   return `${nbSelectedOffers} ${successMessage}`
+}
+
+export function computeSelectedOffersLabel(offersLength: number) {
+  if (offersLength > 1) {
+    return `${getOffersCountToDisplay(offersLength)} offres sélectionnées`
+  }
+
+  return `${offersLength} offre sélectionnée`
 }

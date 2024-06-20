@@ -2,15 +2,7 @@ import { useState } from 'react'
 import { mutate, useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
-import {
-  CollectiveBookingStatus,
-  CollectiveOfferResponseModel,
-  CollectiveOfferStatus,
-  ListOffersOfferResponseModel,
-} from 'apiClient/v1'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
-import { GET_COLLECTIVE_OFFERS_QUERY_KEY } from 'config/swrQueryKeys'
-import { isOfferEducational } from 'core/OfferEducational/types'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
 import { SearchFiltersParams } from 'core/Offers/types'
@@ -30,8 +22,8 @@ import {
   computeDeletionSuccessMessage,
 } from '../utils'
 
-import { DeactivationConfirmDialog } from './ConfirmDialog/DeactivationConfirmDialog'
-import { DeleteConfirmDialog } from './ConfirmDialog/DeleteConfirmDialog'
+import { DeactivationConfirmDialog } from './DeactivationConfirmDialog/DeactivationConfirmDialog'
+import { DeleteConfirmDialog } from './DeleteConfirmDialog'
 import {
   computeActivationSuccessMessage,
   computeAllActivationSuccessMessage,
@@ -39,92 +31,13 @@ import {
   computeDeactivationSuccessMessage,
 } from './utils'
 
-export interface ActionBarProps {
+export interface IndividualOffersActionsBarProps {
   areAllOffersSelected: boolean
   clearSelectedOfferIds: () => void
   selectedOfferIds: number[]
-  selectedOffers: (
-    | CollectiveOfferResponseModel
-    | ListOffersOfferResponseModel
-  )[]
   toggleSelectAllCheckboxes: () => void
-  audience: Audience
   getUpdateOffersStatusMessage: (selectedOfferIds: number[]) => string
   canDeleteOffers: () => boolean
-}
-
-const handleCollectiveOffers = async (
-  isActive: boolean,
-  areAllOffersSelected: boolean,
-  selectedOffers: (
-    | CollectiveOfferResponseModel
-    | ListOffersOfferResponseModel
-  )[],
-  notify: ReturnType<typeof useNotification>,
-  apiFilters: SearchFiltersParams
-) => {
-  const payload = serializeApiFilters(apiFilters)
-  if (areAllOffersSelected) {
-    try {
-      await api.patchAllCollectiveOffersActiveStatus({
-        ...payload,
-        isActive,
-      })
-
-      notify.pending(
-        isActive
-          ? computeAllActivationSuccessMessage(selectedOffers.length)
-          : computeAllDeactivationSuccessMessage(selectedOffers.length)
-      )
-    } catch {
-      notify.error(
-        `Une erreur est survenue lors de ${
-          isActive ? 'l’activation' : 'la désactivation'
-        } des offres`
-      )
-    }
-  } else {
-    try {
-      const collectiveOfferIds = []
-      const collectiveOfferTemplateIds = []
-
-      for (const offer of selectedOffers) {
-        if (offer.isShowcase) {
-          collectiveOfferTemplateIds.push(offer.id)
-        } else {
-          collectiveOfferIds.push(offer.id)
-        }
-      }
-
-      if (collectiveOfferIds.length > 0) {
-        await api.patchCollectiveOffersActiveStatus({
-          ids: collectiveOfferIds.map((id) => Number(id)),
-          isActive,
-        })
-      }
-
-      if (collectiveOfferTemplateIds.length > 0) {
-        await api.patchCollectiveOffersTemplateActiveStatus({
-          ids: collectiveOfferTemplateIds.map((ids) => Number(ids)),
-          isActive,
-        })
-      }
-
-      notify.information(
-        isActive
-          ? computeActivationSuccessMessage(selectedOffers.length)
-          : computeDeactivationSuccessMessage(selectedOffers.length)
-      )
-    } catch {
-      notify.error(
-        `Une erreur est survenue lors de ${
-          isActive ? 'l’activation' : 'la désactivation'
-        } des offres sélectionnées`
-      )
-    }
-  }
-
-  await mutate([GET_COLLECTIVE_OFFERS_QUERY_KEY, apiFilters])
 }
 
 const handleIndividualOffers = async (
@@ -176,34 +89,14 @@ const handleIndividualOffers = async (
   await mutate([GET_OFFERS_QUERY_KEY, apiFilters])
 }
 
-function canDeactivateCollectiveOffers(
-  offers: (CollectiveOfferResponseModel | ListOffersOfferResponseModel)[]
-) {
-  return offers.every((offer) => {
-    if (!isOfferEducational(offer)) {
-      return false
-    }
-
-    //  Check that all the offers are published or expired
-    return (
-      offer.status === CollectiveOfferStatus.ACTIVE ||
-      (offer.status === CollectiveOfferStatus.EXPIRED &&
-        (!offer.booking?.booking_status ||
-          offer.booking.booking_status === CollectiveBookingStatus.CANCELLED))
-    )
-  })
-}
-
-export const ActionsBar = ({
+export const IndividualOffersActionsBar = ({
   selectedOfferIds,
-  selectedOffers,
   clearSelectedOfferIds,
   toggleSelectAllCheckboxes,
   areAllOffersSelected,
-  audience,
   getUpdateOffersStatusMessage,
   canDeleteOffers,
-}: ActionBarProps): JSX.Element => {
+}: IndividualOffersActionsBarProps): JSX.Element => {
   const urlSearchFilters = useQuerySearchFilters()
   const { mutate } = useSWRConfig()
 
@@ -222,37 +115,14 @@ export const ActionsBar = ({
     areAllOffersSelected && toggleSelectAllCheckboxes()
   }
 
-  function onDeactivateOffersClicked() {
-    if (
-      audience === Audience.COLLECTIVE &&
-      !canDeactivateCollectiveOffers(selectedOffers)
-    ) {
-      notify.error(
-        'Seules les offres au statut publié ou expiré peuvent être désactivées.'
-      )
-      return
-    }
-    setIsConfirmDialogOpen(true)
-  }
-
   const handleUpdateOffersStatus = async (isActivating: boolean) => {
-    if (audience === Audience.COLLECTIVE) {
-      await handleCollectiveOffers(
-        isActivating,
-        areAllOffersSelected,
-        selectedOffers,
-        notify,
-        apiFilters
-      )
-    } else {
-      await handleIndividualOffers(
-        isActivating,
-        areAllOffersSelected,
-        selectedOfferIds,
-        notify,
-        apiFilters
-      )
-    }
+    await handleIndividualOffers(
+      isActivating,
+      areAllOffersSelected,
+      selectedOfferIds,
+      notify,
+      apiFilters
+    )
 
     handleClose()
   }
@@ -281,10 +151,6 @@ export const ActionsBar = ({
   }
 
   const handleDelete = async () => {
-    if (!canDeleteOffers()) {
-      notify.error('Seuls les  brouillons peuvent être supprimés')
-      return
-    }
     try {
       await api.deleteDraftOffers({
         ids: selectedOfferIds.map((id) => Number(id)),
@@ -306,39 +172,6 @@ export const ActionsBar = ({
     setIsDeleteDialogOpen(true)
   }
 
-  const Left = () => <span role="status">{computeSelectedOffersLabel()}</span>
-
-  const Right = () => (
-    <>
-      <Button onClick={handleClose} variant={ButtonVariant.SECONDARY}>
-        Annuler
-      </Button>
-      <Button
-        onClick={onDeactivateOffersClicked}
-        icon={fullHideIcon}
-        variant={ButtonVariant.SECONDARY}
-      >
-        Désactiver
-      </Button>
-      {audience === Audience.INDIVIDUAL && (
-        <Button
-          onClick={() => handleOpenDeleteDialog()}
-          icon={fullTrashIcon}
-          variant={ButtonVariant.SECONDARY}
-        >
-          Supprimer
-        </Button>
-      )}
-      <Button
-        onClick={handleActivate}
-        icon={fullValidateIcon}
-        variant={ButtonVariant.SECONDARY}
-      >
-        Publier
-      </Button>
-    </>
-  )
-
   return (
     <>
       {isConfirmDialogOpen && (
@@ -347,7 +180,7 @@ export const ActionsBar = ({
           nbSelectedOffers={selectedOfferIds.length}
           onConfirm={handleDeactivateOffers}
           onCancel={() => setIsConfirmDialogOpen(false)}
-          audience={audience}
+          audience={Audience.INDIVIDUAL}
         />
       )}
 
@@ -361,10 +194,33 @@ export const ActionsBar = ({
 
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
-          <Left />
+          <span role="status">{computeSelectedOffersLabel()}</span>
         </ActionsBarSticky.Left>
         <ActionsBarSticky.Right>
-          <Right />
+          <Button onClick={handleClose} variant={ButtonVariant.SECONDARY}>
+            Annuler
+          </Button>
+          <Button
+            onClick={() => setIsConfirmDialogOpen(true)}
+            icon={fullHideIcon}
+            variant={ButtonVariant.SECONDARY}
+          >
+            Désactiver
+          </Button>
+          <Button
+            onClick={() => handleOpenDeleteDialog()}
+            icon={fullTrashIcon}
+            variant={ButtonVariant.SECONDARY}
+          >
+            Supprimer
+          </Button>
+          <Button
+            onClick={handleActivate}
+            icon={fullValidateIcon}
+            variant={ButtonVariant.SECONDARY}
+          >
+            Publier
+          </Button>
         </ActionsBarSticky.Right>
       </ActionsBarSticky>
     </>

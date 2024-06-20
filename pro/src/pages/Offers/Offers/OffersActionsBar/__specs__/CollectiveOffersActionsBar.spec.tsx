@@ -2,78 +2,68 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
-import {
-  CollectiveBookingStatus,
-  CollectiveOfferStatus,
-  OfferStatus,
-} from 'apiClient/v1'
+import { CollectiveBookingStatus, CollectiveOfferStatus } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { Notification } from 'components/Notification/Notification'
 import { Events } from 'core/FirebaseEvents/constants'
-import { Audience } from 'core/shared/types'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
-import { listOffersOfferFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { ActionsBar, ActionBarProps } from '../ActionsBar'
+import {
+  CollectiveOffersActionsBar,
+  CollectiveOffersActionsBarProps,
+} from '../CollectiveOffersActionsBar'
 
-const renderActionsBar = (props: ActionBarProps) => {
+const renderActionsBar = (props: CollectiveOffersActionsBarProps) => {
   renderWithProviders(
     <>
-      <ActionsBar {...props} />
+      <CollectiveOffersActionsBar {...props} />
       <Notification />
     </>,
-    { storeOverrides: {}, initialRouterEntries: ['/offres'] }
+    { storeOverrides: {}, initialRouterEntries: ['/offres/collectives'] }
   )
 }
 
 vi.mock('apiClient/api', () => ({
   api: {
-    patchOffersActiveStatus: vi.fn(),
-    deleteDraftOffers: vi.fn(),
-    patchAllOffersActiveStatus: vi.fn(),
     patchCollectiveOffersActiveStatus: vi.fn(),
     patchCollectiveOffersTemplateActiveStatus: vi.fn(),
+    patchAllCollectiveOffersActiveStatus: vi.fn(),
   },
 }))
 
 const mockLogEvent = vi.fn()
 const mockGetUpdateOffersStatusMessage = vi.fn()
-const mockCanDeleteOffers = vi.fn(() => true)
 
 describe('ActionsBar', () => {
-  let props: ActionBarProps
+  let props: CollectiveOffersActionsBarProps
   const offerIds = [1, 2]
 
   beforeEach(() => {
     props = {
       getUpdateOffersStatusMessage: mockGetUpdateOffersStatusMessage,
-      canDeleteOffers: mockCanDeleteOffers,
       selectedOfferIds: offerIds,
-      selectedOffers: [collectiveOfferFactory(), collectiveOfferFactory()],
+      selectedOffers: offerIds.map((offerId) => ({
+        ...collectiveOfferFactory(),
+        id: offerId,
+      })),
       clearSelectedOfferIds: vi.fn(),
       toggleSelectAllCheckboxes: vi.fn(),
       areAllOffersSelected: false,
-      audience: Audience.INDIVIDUAL,
     }
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
   })
 
-  it('should have buttons to activate and deactivate offers, to delete, and to abort action', () => {
+  it('should have buttons to unckeck, disable and publish offers', () => {
     renderActionsBar(props)
-
-    screen.getByText('Publier', { selector: 'button' })
 
     expect(
       screen.queryByText('Publier', { selector: 'button' })
     ).toBeInTheDocument()
     expect(
       screen.queryByText('Désactiver', { selector: 'button' })
-    ).toBeInTheDocument()
-    expect(
-      screen.queryByText('Supprimer', { selector: 'button' })
     ).toBeInTheDocument()
     expect(
       screen.queryByText('Annuler', { selector: 'button' })
@@ -109,7 +99,7 @@ describe('ActionsBar', () => {
 
     await userEvent.click(screen.getByText('Publier'))
 
-    expect(api.patchOffersActiveStatus).toHaveBeenLastCalledWith({
+    expect(api.patchCollectiveOffersActiveStatus).toHaveBeenLastCalledWith({
       ids: [1, 2],
       isActive: true,
     })
@@ -128,45 +118,12 @@ describe('ActionsBar', () => {
 
     await userEvent.click(screen.getByText('Publier'))
 
-    expect(api.patchOffersActiveStatus).not.toHaveBeenCalled()
+    expect(api.patchCollectiveOffersActiveStatus).not.toHaveBeenCalled()
     expect(props.clearSelectedOfferIds).not.toHaveBeenCalled()
     expect(
       screen.getByText(
         'Vous ne pouvez pas publier des brouillons depuis cette liste'
       )
-    ).toBeInTheDocument()
-  })
-
-  it('should delete selected draft offers upon deletion', async () => {
-    renderActionsBar(props)
-
-    await userEvent.click(screen.getByText('Supprimer'))
-    await userEvent.click(screen.getByText('Supprimer ces brouillons'))
-
-    expect(api.deleteDraftOffers).toHaveBeenLastCalledWith({
-      ids: [1, 2],
-    })
-    expect(api.deleteDraftOffers).toHaveBeenCalledTimes(1)
-    expect(api.deleteDraftOffers).toHaveBeenNthCalledWith(1, {
-      ids: [1, 2],
-    })
-    expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
-    expect(
-      screen.getByText('2 brouillons ont bien été supprimés')
-    ).toBeInTheDocument()
-  })
-
-  it('should not delete offers when a non draft is selected upon deletion', async () => {
-    mockCanDeleteOffers.mockReturnValueOnce(false)
-
-    renderActionsBar(props)
-
-    await userEvent.click(screen.getByText('Supprimer'))
-
-    expect(api.patchOffersActiveStatus).not.toHaveBeenCalled()
-    expect(props.clearSelectedOfferIds).not.toHaveBeenCalled()
-    expect(
-      screen.getByText('Seuls les brouillons peuvent être supprimés')
     ).toBeInTheDocument()
   })
 
@@ -183,11 +140,11 @@ describe('ActionsBar', () => {
       1,
       Events.CLICKED_DISABLED_SELECTED_OFFERS,
       {
-        from: '/offres',
+        from: '/offres/collectives',
         has_selected_all_offers: false,
       }
     )
-    expect(api.patchOffersActiveStatus).toHaveBeenLastCalledWith({
+    expect(api.patchCollectiveOffersActiveStatus).toHaveBeenLastCalledWith({
       ids: [1, 2],
       isActive: false,
     })
@@ -217,10 +174,43 @@ describe('ActionsBar', () => {
     const activateButton = screen.getByText('Publier')
     await userEvent.click(activateButton)
 
-    expect(api.patchAllOffersActiveStatus).toHaveBeenLastCalledWith(
+    expect(api.patchAllCollectiveOffersActiveStatus).toHaveBeenLastCalledWith(
       expectedBody
     )
     expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
+  })
+
+  it('should show an error message when an error occurs after clicking on "Publier" button when all offers are selected', async () => {
+    props.areAllOffersSelected = true
+    vi.spyOn(api, 'patchAllCollectiveOffersActiveStatus').mockRejectedValueOnce(
+      null
+    )
+    renderActionsBar(props)
+
+    const activateButton = screen.getByText('Publier')
+    await userEvent.click(activateButton)
+
+    expect(
+      screen.getByText(
+        'Une erreur est survenue lors de l’activation des offres'
+      )
+    )
+  })
+
+  it('should show an error message when an error occurs after clicking on "Publier" button when some offers are selected', async () => {
+    vi.spyOn(api, 'patchCollectiveOffersActiveStatus').mockRejectedValueOnce(
+      null
+    )
+    renderActionsBar(props)
+
+    const activateButton = screen.getByText('Publier')
+    await userEvent.click(activateButton)
+
+    expect(
+      screen.getByText(
+        'Une erreur est survenue lors de l’activation des offres sélectionnées'
+      )
+    )
   })
 
   it('should deactivate all offers on click on "Désactiver" button when all offers are selected', async () => {
@@ -241,11 +231,11 @@ describe('ActionsBar', () => {
       1,
       Events.CLICKED_DISABLED_SELECTED_OFFERS,
       {
-        from: '/offres',
+        from: '/offres/collectives',
         has_selected_all_offers: true,
       }
     )
-    expect(api.patchAllOffersActiveStatus).toHaveBeenLastCalledWith(
+    expect(api.patchAllCollectiveOffersActiveStatus).toHaveBeenLastCalledWith(
       expectedBody
     )
     expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
@@ -254,7 +244,6 @@ describe('ActionsBar', () => {
   it('should not deactivate offers on click on "Désactiver" when at least one offer is not published or expired', async () => {
     renderActionsBar({
       ...props,
-      audience: Audience.COLLECTIVE,
       selectedOffers: [
         collectiveOfferFactory({ id: 1, status: CollectiveOfferStatus.ACTIVE }),
         collectiveOfferFactory({
@@ -281,7 +270,6 @@ describe('ActionsBar', () => {
     })
     renderActionsBar({
       ...props,
-      audience: Audience.COLLECTIVE,
       selectedOffers: [
         {
           ...expiredOffer,
@@ -305,71 +293,9 @@ describe('ActionsBar', () => {
     ).toBeInTheDocument()
   })
 
-  it('should not deactivate offers on click on "Désactiver" when audience is collective and an induvidual offer is checked ', async () => {
-    renderActionsBar({
-      ...props,
-      audience: Audience.COLLECTIVE,
-      selectedOffers: [
-        collectiveOfferFactory({ id: 1, status: CollectiveOfferStatus.ACTIVE }),
-        listOffersOfferFactory({ id: 2, status: OfferStatus.ACTIVE }),
-      ],
-      selectedOfferIds: [1, 2],
-    })
-
-    const deactivateButton = screen.getByText('Désactiver')
-    await userEvent.click(deactivateButton)
-
-    expect(
-      screen.getByText(
-        'Seules les offres au statut publié ou expiré peuvent être désactivées.'
-      )
-    ).toBeInTheDocument()
-  })
-
-  it('should track cancel all offers on click on "Annuler" button', async () => {
-    props.areAllOffersSelected = true
-    renderActionsBar(props)
-    const deactivateButton = screen.getByText('Désactiver')
-
-    await userEvent.click(deactivateButton)
-    const cancelDeactivateButton = screen.getAllByText('Annuler')[1]
-    await userEvent.click(cancelDeactivateButton)
-
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
-      Events.CLICKED_CANCELED_SELECTED_OFFERS,
-      {
-        from: '/offres',
-        has_selected_all_offers: true,
-      }
-    )
-  })
-
-  it('should track cancel offer on click on "Annuler" button', async () => {
-    props.areAllOffersSelected = false
-    renderActionsBar(props)
-    const deactivateButton = screen.getByText('Désactiver')
-
-    await userEvent.click(deactivateButton)
-    const cancelDeactivateButton = screen.getAllByText('Annuler')[1]
-    await userEvent.click(cancelDeactivateButton)
-
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
-      Events.CLICKED_CANCELED_SELECTED_OFFERS,
-      {
-        from: '/offres',
-        has_selected_all_offers: false,
-      }
-    )
-  })
-
   it('should only make one call if the ids all come from the bookable offer', async () => {
     renderActionsBar({
       ...props,
-      audience: Audience.COLLECTIVE,
       areAllOffersSelected: false,
       selectedOffers: [
         collectiveOfferFactory({ id: 1, status: CollectiveOfferStatus.ACTIVE }),
@@ -395,7 +321,6 @@ describe('ActionsBar', () => {
   it('should only make one call if the ids all come from template offer', async () => {
     renderActionsBar({
       ...props,
-      audience: Audience.COLLECTIVE,
       areAllOffersSelected: false,
       selectedOffers: [
         collectiveOfferFactory({
@@ -429,7 +354,6 @@ describe('ActionsBar', () => {
   it('should make two calls if the ids come from template offer and bookable offer', async () => {
     renderActionsBar({
       ...props,
-      audience: Audience.COLLECTIVE,
       areAllOffersSelected: false,
       selectedOffers: [
         collectiveOfferFactory({
