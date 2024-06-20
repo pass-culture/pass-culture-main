@@ -8,11 +8,6 @@ on:
 
 permissions: write-all
 
-concurrency:
-  # cancel previous workflow of the same branch except on master
-  group: main-${{ github.ref }}
-  cancel-in-progress: ${{ !contains(github.ref, 'master') }}
-
 jobs:
   check-folders-changes:
     # Perform all changes checks at once to remove the need for multiple checkouts accross jobs
