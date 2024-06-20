@@ -1,9 +1,5 @@
 {{/* This file is used by update-jira-issues.yml github action via go jira cli https://github.com/go-jira/jira */ -}}
 update:
-  {{if .overrides.customfield_10044 }}
-  customfield_10044: # 'impropre' flag
-    - set: "{{ .overrides.customfield_10044 }}"
-  {{- end -}}
   {{if .overrides.customfield_10059 }}
   customfield_10059: # commit number
     - set: {{ .overrides.customfield_10059 }}
