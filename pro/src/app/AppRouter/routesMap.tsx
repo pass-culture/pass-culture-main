@@ -4,6 +4,7 @@
 import React from 'react'
 import { Navigate } from 'react-router-dom'
 
+import { HomeTestTypo } from 'pages/Home/Homepage'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
 import { routesIndividualOfferWizard } from './subroutesIndividualOfferWizardMap'
@@ -350,5 +351,11 @@ export const routes: RouteConfig[] = [
     lazy: () => import('pages/Errors/NotFound/NotFound'),
     path: '/404',
     title: 'Erreur 404 - Page indisponible',
+  },
+  {
+    element: <HomeTestTypo />,
+    path: '/test-typo',
+    title: 'Collaborateurs',
+    meta: { public: true },
   },
 ]

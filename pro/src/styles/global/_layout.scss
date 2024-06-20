@@ -15,13 +15,13 @@ html {
   height: 100%;
 }
 
-body,
+/* body,
 button,
 input,
 select,
 textarea {
   font-family: Montserrat, "Helvetica Neue", arial, sans-serif;
-}
+} */
 
 body {
   @include fonts.body;

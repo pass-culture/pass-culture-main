@@ -11,3 +11,7 @@ h1 {
 h2 {
   @include fonts.title2;
 }
+
+h3 {
+  @include fonts.title3;
+}
