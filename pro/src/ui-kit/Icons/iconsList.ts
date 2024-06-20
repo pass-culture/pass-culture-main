@@ -1,5 +1,6 @@
 /* istanbul ignore file */
 import fullAddUserIcon from 'icons/full-add-user.svg'
+import fullArchiveIcon from 'icons/full-archive.svg'
 import fullArrowLeftIcon from 'icons/full-arrow-left.svg'
 import fullArrowRightIcon from 'icons/full-arrow-right.svg'
 import fullBackIcon from 'icons/full-back.svg'
@@ -188,6 +189,7 @@ export const fullIcons: IconListItem[] = [
   { src: fullCloseIcon },
   { src: fullThreeDotsIcon },
   { src: fullSwitchIcon },
+  { src: fullArchiveIcon },
 ]
 
 export const strokeIcons: IconListItem[] = [

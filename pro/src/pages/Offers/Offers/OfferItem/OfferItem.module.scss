@@ -262,6 +262,10 @@
   &[data-state="open"] {
     color: var(--color-secondary-light);
   }
+
+  &-hide {
+    display: none;
+  }
 }
 
 .menu {
@@ -300,4 +304,9 @@
 
 .button-cancel-booking {
   color: var(--color-error);
+}
+
+.status-filter-label {
+  cursor: pointer;
+  gap: rem.torem(8px);
 }

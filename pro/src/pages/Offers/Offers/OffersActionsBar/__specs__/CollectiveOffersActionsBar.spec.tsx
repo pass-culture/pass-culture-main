@@ -2,7 +2,11 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
-import { CollectiveBookingStatus, CollectiveOfferStatus } from 'apiClient/v1'
+import {
+  CollectiveBookingStatus,
+  CollectiveOfferStatus,
+  CollectiveOffersStockResponseModel,
+} from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { Notification } from 'components/Notification/Notification'
 import { Events } from 'core/FirebaseEvents/constants'
@@ -29,6 +33,8 @@ vi.mock('apiClient/api', () => ({
     patchCollectiveOffersActiveStatus: vi.fn(),
     patchCollectiveOffersTemplateActiveStatus: vi.fn(),
     patchAllCollectiveOffersActiveStatus: vi.fn(),
+    patchCollectiveOffersTemplateArchive: vi.fn(),
+    patchCollectiveOffersArchive: vi.fn(),
   },
 }))
 
@@ -38,8 +44,16 @@ const mockGetUpdateOffersStatusMessage = vi.fn()
 describe('ActionsBar', () => {
   let props: CollectiveOffersActionsBarProps
   const offerIds = [1, 2]
+  let stocks: Array<CollectiveOffersStockResponseModel>
 
   beforeEach(() => {
+    stocks = [
+      {
+        beginningDatetime: String(new Date()),
+        hasBookingLimitDatetimePassed: true,
+        remainingQuantity: 1,
+      },
+    ]
     props = {
       getUpdateOffersStatusMessage: mockGetUpdateOffersStatusMessage,
       selectedOffers: offerIds.map((offerId) => ({
@@ -376,5 +390,70 @@ describe('ActionsBar', () => {
       ids: [3],
       isActive: false,
     })
+  })
+
+  it('should archive offers on click on "Archiver"', async () => {
+    renderActionsBar({
+      ...props,
+      selectedOffers: [
+        collectiveOfferFactory({
+          id: 1,
+          status: CollectiveOfferStatus.ACTIVE,
+          stocks,
+        }),
+        collectiveOfferFactory({
+          id: 2,
+          status: CollectiveOfferStatus.ACTIVE,
+          stocks,
+          isShowcase: true,
+        }),
+      ],
+    })
+
+    const archivingButton = screen.getByText('Archiver')
+    await userEvent.click(archivingButton)
+
+    const confirmArchivingButton = screen.getByText('Archiver les offres')
+    await userEvent.click(confirmArchivingButton)
+
+    expect(api.patchCollectiveOffersTemplateArchive).toHaveBeenLastCalledWith({
+      ids: [2],
+    })
+
+    expect(api.patchCollectiveOffersArchive).toHaveBeenLastCalledWith({
+      ids: [1],
+    })
+
+    expect(
+      screen.getByText('2 offres ont bien été archivée')
+    ).toBeInTheDocument()
+  })
+
+  it('should not archive offers on click on "Archiver" when at least one offer cannot be archived', async () => {
+    renderActionsBar({
+      ...props,
+
+      selectedOffers: [
+        collectiveOfferFactory({
+          id: 1,
+          status: CollectiveOfferStatus.ACTIVE,
+          stocks,
+        }),
+        collectiveOfferFactory({
+          id: 2,
+          status: CollectiveOfferStatus.PENDING,
+          stocks,
+        }),
+      ],
+    })
+
+    const archivingButton = screen.getByText('Archiver')
+    await userEvent.click(archivingButton)
+
+    expect(
+      screen.getByText(
+        'Les offres liées à des réservations en cours ne peuvent pas être archivées'
+      )
+    ).toBeInTheDocument()
   })
 })
