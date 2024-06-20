@@ -66,7 +66,7 @@ Then('These results should be displayed', (dataTable: DataTable) => {
       .within(() => {
         cy.get('td').then(($elt) => {
           for (let column = 0; column < numColumns; column++) {
-            cy.wrap($elt).eq(column).should('contain', bookLineArray[column])
+            cy.wrap($elt).eq(column).contains(bookLineArray[column])
           }
         })
       })
