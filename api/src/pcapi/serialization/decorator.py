@@ -1,6 +1,7 @@
 from copy import deepcopy
 from functools import wraps
 import logging
+import typing
 from typing import Any
 from typing import Callable
 from typing import Sequence
@@ -8,8 +9,9 @@ from typing import Sequence
 from flask import Response
 from flask import make_response
 from flask import request
-import pydantic.v1
+import pydantic.v1.main
 import spectree
+from werkzeug.datastructures import MultiDict
 from werkzeug.exceptions import BadRequest
 
 from pcapi.models.api_errors import ApiErrors
@@ -52,6 +54,17 @@ def _make_string_response(content: BaseModel | None, status_code: int, headers: 
 
     response = make_response(content, status_code, headers or {})
     return response
+
+
+def transform_query_args_to_dict(query_params: MultiDict, query_in_kwargs: pydantic.v1.main.ModelMetaclass) -> dict:
+    result: dict[str, Any | None] = {}
+    for key in query_params.keys():
+        key_type = typing.cast(BaseModel, query_in_kwargs).schema()["properties"].get(key, {}).get("type")
+        if key_type == "array":
+            result[key] = query_params.getlist(key)
+        else:
+            result[key] = query_params.get(key)
+    return result
 
 
 # When using this decorator, you should pass the following arguments when necessary:
@@ -166,7 +179,7 @@ def spectree_serialize(
                         400,
                     )
             if query_in_kwargs:
-                content = request.args.to_dict(flat=False) if flatten else query_params
+                content = transform_query_args_to_dict(query_params, query_in_kwargs)
                 kwargs["query"] = query_in_kwargs(**content)
             if form_in_kwargs:
                 kwargs["form"] = form_in_kwargs(**form)
