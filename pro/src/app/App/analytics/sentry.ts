@@ -83,6 +83,7 @@ export const initializeSentry = () => {
       // Other network errors
       'La connexion réseau a été perdue',
       'A request was aborted',
+      'annulé',
     ],
     denyUrls: [
       // Facebook flakiness
