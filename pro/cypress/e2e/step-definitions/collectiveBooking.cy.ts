@@ -1,8 +1,8 @@
 import { When } from '@badeball/cypress-cucumber-preprocessor'
 
 When('I display offers', () => {
-    cy.findByText('Afficher').click()
-    cy.findByTestId('spinned').should('not.exist')
+  cy.findByText('Afficher').click()
+  cy.findByTestId('spinner').should('not.exist')
 })
 
 When('I search for {string} with text {string}', (criteria: string, search: string) => {
