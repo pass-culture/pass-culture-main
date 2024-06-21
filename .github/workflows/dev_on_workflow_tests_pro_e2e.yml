@@ -127,6 +127,7 @@ jobs:
           working-directory: pro
           command: yarn test:bdd
       - name: "Move cypress videos"
+        if: always()
         run: |
           mkdir -p cypress/videos/${{ github.ref }}/${{ github.sha }} && \
           mv cypress/videos/*.mp4 cypress/videos/${{ github.ref }}/${{ github.sha }}/
