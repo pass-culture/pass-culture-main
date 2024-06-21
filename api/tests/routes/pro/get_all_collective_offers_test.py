@@ -284,7 +284,7 @@ class Returns200Test:
 
         # When
         response = client.with_session_auth(user.email).get(
-            "/collective/offers?periodBeginningDate=2022-10-10&periodEndingDate=2022-10-11"
+            "/collective/offers?periodBeginningDate=2022-10-10&periodEndingDate=2022-10-11&status=PREBOOKED&status=BOOKED"
         )
 
         # Then
