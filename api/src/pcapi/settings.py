@@ -74,6 +74,7 @@ SQLALCHEMY_ECHO = bool(int(os.environ.get("SQLALCHEMY_ECHO", "0")))
 # FLASK
 PROFILE_REQUESTS = bool(int(os.environ.get("PROFILE_REQUESTS", "0")))
 PROFILE_REQUESTS_LINES_LIMIT = int(os.environ.get("PROFILE_REQUESTS_LINES_LIMIT", 100))
+FLASK_IP = os.environ.get("FLASK_IP", "0.0.0.0")
 FLASK_PORT = int(os.environ.get("PORT", 5001))
 FLASK_BACKOFFICE_PORT = int(os.environ.get("FLASK_BACKOFFICE_PORT", 5001))
 FLASK_SECRET = secrets_utils.get("FLASK_SECRET", "+%+3Q23!zbc+!Dd@")

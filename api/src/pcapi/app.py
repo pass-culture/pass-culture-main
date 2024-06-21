@@ -34,6 +34,7 @@ with app.app_context():
 
 
 if __name__ == "__main__":
+    ip = settings.FLASK_IP
     port = settings.FLASK_PORT
     is_debugger_enabled = settings.IS_DEV and settings.DEBUG_ACTIVATED
     if is_debugger_enabled:
@@ -50,4 +51,4 @@ if __name__ == "__main__":
             print("🎉 Code debugger attached, enjoy debugging 🎉", flush=True)
 
     set_tag("pcapi.app_type", "app")
-    app.run(host="0.0.0.0", port=port, debug=True, use_reloader=not is_debugger_enabled)
+    app.run(host=ip, port=port, debug=True, use_reloader=not is_debugger_enabled)
