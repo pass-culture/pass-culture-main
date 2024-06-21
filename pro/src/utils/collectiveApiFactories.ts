@@ -17,13 +17,13 @@ import {
   GetCollectiveOfferVenueResponseModel,
   GetVenueResponseModel,
   OfferAddressType,
-  OfferStatus,
   StudentLevels,
   VenueTypeCode,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
   CollectiveOfferResponseModel,
   ListOffersVenueResponseModel,
+  CollectiveOfferStatus,
 } from 'apiClient/v1'
 import { BOOKING_STATUS } from 'core/Bookings/constants'
 
@@ -42,7 +42,7 @@ export const collectiveOfferFactory = (
 
   return {
     id: currentId,
-    status: OfferStatus.ACTIVE,
+    status: CollectiveOfferStatus.ACTIVE,
     isActive: true,
     hasBookingLimitDatetimesPassed: true,
     isEducational: true,
@@ -68,7 +68,7 @@ export const listOffersVenueFactory = (
 
 const sharedCollectiveOfferData = {
   isActive: true,
-  status: OfferStatus.ACTIVE,
+  status: CollectiveOfferStatus.ACTIVE,
   isCancellable: true,
   isTemplate: true,
   name: 'Offre de test',

@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { OfferStatus } from 'apiClient/v1'
+import { CollectiveOfferStatus, OfferStatus } from 'apiClient/v1'
 import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
 import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 
@@ -8,7 +8,7 @@ interface CheckboxCellProps {
   offerName: string
   isSelected: boolean
   offerId: number
-  status: OfferStatus
+  status: OfferStatus | CollectiveOfferStatus
   disabled: boolean
   selectOffer: (offerId: number, selected: boolean) => void
 }

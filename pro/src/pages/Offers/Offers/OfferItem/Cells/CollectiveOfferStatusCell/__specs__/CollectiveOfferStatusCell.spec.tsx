@@ -1,7 +1,10 @@
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 
-import { CollectiveOfferResponseModel, OfferStatus } from 'apiClient/v1'
+import {
+  CollectiveOfferResponseModel,
+  CollectiveOfferStatus,
+} from 'apiClient/v1'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
 
 import { CollectiveOfferStatusCell } from '../CollectiveOfferStatusCell'
@@ -19,33 +22,36 @@ const renderCollectiveStatusLabel = (offer: CollectiveOfferResponseModel) => {
 }
 
 interface TestCaseProps {
-  offerStatus: OfferStatus
+  offerStatus: CollectiveOfferStatus
   bookingStatus?: string
   expectedLabel: string
 }
 
 describe('CollectiveStatusLabel', () => {
   const testCases: TestCaseProps[] = [
-    { offerStatus: OfferStatus.PENDING, expectedLabel: 'en attente' },
-    { offerStatus: OfferStatus.REJECTED, expectedLabel: 'refusée' },
-    { offerStatus: OfferStatus.INACTIVE, expectedLabel: 'désactivée' },
-    { offerStatus: OfferStatus.ACTIVE, expectedLabel: 'publiée' },
+    { offerStatus: CollectiveOfferStatus.PENDING, expectedLabel: 'en attente' },
+    { offerStatus: CollectiveOfferStatus.REJECTED, expectedLabel: 'refusée' },
     {
-      offerStatus: OfferStatus.SOLD_OUT,
+      offerStatus: CollectiveOfferStatus.INACTIVE,
+      expectedLabel: 'désactivée',
+    },
+    { offerStatus: CollectiveOfferStatus.ACTIVE, expectedLabel: 'publiée' },
+    {
+      offerStatus: CollectiveOfferStatus.SOLD_OUT,
       expectedLabel: 'préréservée',
       bookingStatus: 'PENDING',
     },
     {
-      offerStatus: OfferStatus.SOLD_OUT,
+      offerStatus: CollectiveOfferStatus.SOLD_OUT,
       expectedLabel: 'réservée',
       bookingStatus: 'CONFIRMED',
     },
     {
-      offerStatus: OfferStatus.EXPIRED,
+      offerStatus: CollectiveOfferStatus.EXPIRED,
       expectedLabel: 'terminée',
       bookingStatus: 'USED',
     },
-    { offerStatus: OfferStatus.EXPIRED, expectedLabel: 'expirée' },
+    { offerStatus: CollectiveOfferStatus.EXPIRED, expectedLabel: 'expirée' },
   ]
 
   it.each(testCases)(
@@ -63,7 +69,7 @@ describe('CollectiveStatusLabel', () => {
   )
   it('should throw error is offer status does not exist', () => {
     const collectiveOffer = collectiveOfferFactory({
-      status: 'toto' as OfferStatus,
+      status: 'toto' as CollectiveOfferStatus,
     })
     expect(() => renderCollectiveStatusLabel(collectiveOffer)).toThrowError(
       'Le statut de l’offre n’est pas valide'

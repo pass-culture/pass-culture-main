@@ -9,6 +9,7 @@ import {
   ListOffersStockResponseModel,
   OfferStatus,
   CollectiveBookingStatus,
+  CollectiveOfferStatus,
 } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
@@ -532,7 +533,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       it('should display booking link for sold out offer with pending booking', () => {
         props.audience = Audience.COLLECTIVE
         props.offer = collectiveOfferFactory({
-          status: OfferStatus.SOLD_OUT,
+          status: CollectiveOfferStatus.SOLD_OUT,
           stocks: [
             listOffersStockFactory({
               remainingQuantity: 0,
@@ -555,7 +556,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
     it('should display booking link for expired offer with booking', () => {
       props.audience = Audience.COLLECTIVE
       props.offer = collectiveOfferFactory({
-        status: OfferStatus.EXPIRED,
+        status: CollectiveOfferStatus.EXPIRED,
         stocks: [
           listOffersStockFactory({
             remainingQuantity: 0,
@@ -588,7 +589,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         ...props,
         audience: Audience.COLLECTIVE,
         offer: collectiveOfferFactory({
-          status: OfferStatus.SOLD_OUT,
+          status: CollectiveOfferStatus.SOLD_OUT,
           stocks: [
             listOffersStockFactory({
               remainingQuantity: 0,
@@ -618,7 +619,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       props.audience = Audience.COLLECTIVE
       props.offer = collectiveOfferFactory({
         stocks,
-        status: OfferStatus.SOLD_OUT,
+        status: CollectiveOfferStatus.SOLD_OUT,
         booking: { booking_status: CollectiveBookingStatus.PENDING, id: 1 },
       })
       renderOfferItem(props)
@@ -648,7 +649,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       props.audience = Audience.COLLECTIVE
       props.offer = collectiveOfferFactory({
         stocks,
-        status: OfferStatus.SOLD_OUT,
+        status: CollectiveOfferStatus.SOLD_OUT,
         booking: { booking_status: 'PENDING', id: 0 },
       })
 

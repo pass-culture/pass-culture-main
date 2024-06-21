@@ -6,7 +6,7 @@ import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
   CollectiveBookingStatus,
-  OfferStatus,
+  CollectiveOfferStatus,
 } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import {
@@ -140,12 +140,14 @@ export const OfferEducationalActions = ({
 
   const shouldDisplayAdagePublicationButton =
     !isBooked &&
-    ![OfferStatus.EXPIRED, OfferStatus.PENDING].includes(offer.status)
+    ![CollectiveOfferStatus.EXPIRED, CollectiveOfferStatus.PENDING].includes(
+      offer.status
+    )
 
   const shouldDisplayBookingLink =
     lastBookingId &&
     (lastBookingStatus !== CollectiveBookingStatus.CANCELLED ||
-      offer.status === OfferStatus.EXPIRED)
+      offer.status === CollectiveOfferStatus.EXPIRED)
 
   const shouldDisplayStatusSeparator =
     shouldDisplayAdagePublicationButton || shouldDisplayBookingLink
