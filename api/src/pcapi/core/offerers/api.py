@@ -863,15 +863,8 @@ def create_offerer(
     if offerer is not None:
         # The user can have his attachment rejected or deleted to the structure,
         # in this case it is passed to NEW if the structure is not rejected
-        user_offerer = (
-            offerers_models.UserOfferer.query.filter_by(userId=user.id, offererId=offerer.id)
-            .filter(sa.or_(offerers_models.UserOfferer.isRejected, offerers_models.UserOfferer.isDeleted))  # type: ignore[type-var]
-            .first()
-        )
-        if user_offerer:
-            user_offerer.validationStatus = ValidationStatus.VALIDATED
-            db.session.add(user_offerer)
-        else:
+        user_offerer = offerers_models.UserOfferer.query.filter_by(userId=user.id, offererId=offerer.id).one_or_none()
+        if not user_offerer:
             user_offerer = grant_user_offerer_access(offerer, user)
 
         if offerer.isRejected:
@@ -880,6 +873,7 @@ def create_offerer(
             is_new = True
             _fill_in_offerer(offerer, offerer_informations)
             comment = (comment + "\n" if comment else "") + "Nouvelle demande sur un SIREN précédemment rejeté"
+            user_offerer.validationStatus = ValidationStatus.VALIDATED
         else:
             user_offerer.validationStatus = ValidationStatus.NEW
             user_offerer.dateCreated = datetime.utcnow()

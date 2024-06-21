@@ -762,6 +762,38 @@ class CreateOffererTest:
         assert actions_list[0].user == user
         assert actions_list[0].offerer == created_offerer
 
+    def test_create_offerer_on_known_offerer_twice(self):
+        # Given
+        user = users_factories.UserFactory()
+        offerer_informations = offerers_serialize.CreateOffererQueryModel(
+            name="Test Offerer", siren="418166096", address="123 rue de Paris", postalCode="93100", city="Montreuil"
+        )
+        offerer = offerers_factories.OffererFactory(siren=offerer_informations.siren)
+        offerers_factories.RejectedUserOffererFactory(user=user, offerer=offerer)
+
+        # When
+        updated_user_offerer = offerers_api.create_offerer(user, offerer_informations)
+        updated_user_offerer = offerers_api.create_offerer(user, offerer_informations)
+
+        # Then
+        assert offerer.validationStatus == ValidationStatus.VALIDATED
+        assert updated_user_offerer.validationStatus == ValidationStatus.NEW
+        assert updated_user_offerer.dateCreated is not None
+
+        assert not updated_user_offerer.user.has_pro_role
+
+        actions_list = history_models.ActionHistory.query.order_by(history_models.ActionHistory.actionType).all()
+        created_offerer = updated_user_offerer.offerer
+        assert len(actions_list) == 2
+        assert actions_list[0].actionType == history_models.ActionType.USER_OFFERER_NEW
+        assert actions_list[0].authorUser == user
+        assert actions_list[0].user == user
+        assert actions_list[0].offerer == created_offerer
+        assert actions_list[1].actionType == history_models.ActionType.USER_OFFERER_NEW
+        assert actions_list[1].authorUser == user
+        assert actions_list[1].user == user
+        assert actions_list[1].offerer == created_offerer
+
     def test_create_new_offerer_on_known_offerer_by_user_deleted(self):
         # Given
         user = users_factories.UserFactory()
