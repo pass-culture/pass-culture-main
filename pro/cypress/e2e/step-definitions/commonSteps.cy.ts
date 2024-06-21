@@ -33,7 +33,9 @@ Given('create specific invoice', () => {
   cy.request('http://localhost:5001/sanboxes/pro_02_create_specific_invoice/create_specific_invoice')
 })
 
-
+Given('individual offers has been created', () => {
+  cy.request('http://localhost:5001/sanboxes/pro_03_offers/create_individual_offers')
+})
 
 Given('I am logged in', () => {
   cy.login({

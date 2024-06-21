@@ -5,7 +5,7 @@ from pcapi.sandboxes.scripts.utils.helpers import get_pro_user_helper
 
 
 def create_pro_user_with_venue_bank_account_and_userofferer() -> dict:
-    pro_user = users_factories.ProFactory()
+    pro_user = users_factories.ProFactory(email="test_e2e_pro_user@example.com")
     venue = offerers_factories.VenueFactory()
 
     finance_factories.BankAccountFactory(offerer=venue.managingOfferer)
