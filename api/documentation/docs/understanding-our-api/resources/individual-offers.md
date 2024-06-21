@@ -4,7 +4,7 @@ sidebar_position: 1
 
 # Individual offers
 
-**Indivual offers** are offers **meant for individual teenager**. They are split in two main categories : **`products`** and **`events`**.
+**Indivual offers** are offers **meant for individual beneficiary**. They are split in two main categories : **`products`** and **`events`**.
 
 ## 📚 `Products` 
 
@@ -97,22 +97,22 @@ To manage those offers you will be using the **[bookings endpoints](/rest-api/#t
 ### General description
 
 The **`booking`** is a resource shared by **`event` and `product` offers**.
-A **`booking`** is a reservation made by a teenager of a product or of an event date.
+A **`booking`** is a reservation made by a beneficiary of a product or of an event date.
 
 ### `Booking` for `products` 
 
-**For a `product`**, the **`booking`** is a **🪙 countermark**. This **countermark** will be used by the teenager either:
+**For a `product`**, the **`booking`** is a **🪙 countermark**. This **countermark** will be used by the beneficiary either:
 - **in the case of a physical product**, to retrieve its order in the offerer shop. 
 
-  _For instance, if you are developping a stock management systems for bookshops, the seller will validate the teenager order by inputing the countermark in your software. Your software will then make a call to our [booking validation endpoint](/rest-api/#tag/Booking/operation/ValidateBookingByToken)_
+  _For instance, if you are developing a stock management systems for bookshops, the seller will validate the beneficiary order by inputting the countermark in your software. Your software will then make a call to our [booking validation endpoint](/rest-api/#tag/Booking/operation/ValidateBookingByToken)_
 - **in the case of a digital product**, to retrieve its order on the offerer website. 
 
-  _For instance, if you are a music streaming service, the teenager will validate its order by inputing the countermark in one of the field of the offer webiste form. On the form submission, your website will make a call to our [booking validation endpoint](/rest-api/#tag/Booking/operation/ValidateBookingByToken)_.
+  _For instance, if you are a music streaming service, the beneficiary will validate its order by inputting the countermark in one of the field of the offer website form. On the form submission, your website will make a call to our [booking validation endpoint](/rest-api/#tag/Booking/operation/ValidateBookingByToken)_.
 
 ### `Booking` for `events` 
 
 **For an `event`**, the **`booking`** is a **📅 reservation** for the event.
 
 - **It can be linked to a ticket** if you plugged your ticketing solution to the pass Culture application 
-- **it can be a countermark**, if you chose to make the teenagers retrieve their tickets at the event venue.
+- **it can be a countermark**, if you chose to make the beneficiaries retrieve their tickets at the event venue.
 
