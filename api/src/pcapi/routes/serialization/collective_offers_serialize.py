@@ -71,7 +71,8 @@ EmptyStringToNone = EmptyAsNullString | None
 class ListCollectiveOffersQueryModel(BaseModel):
     nameOrIsbn: str | None
     offerer_id: int | None
-    status: CollectiveOfferDisplayedStatus | None
+    # CollectiveOfferDisplayedStatus is required for front retro-compatibility
+    status: list[CollectiveOfferDisplayedStatus] | CollectiveOfferDisplayedStatus | None
     venue_id: int | None
     categoryId: str | None
     creation_mode: str | None
@@ -84,6 +85,15 @@ class ListCollectiveOffersQueryModel(BaseModel):
         alias_generator = to_camel
         extra = "forbid"
         arbitrary_types_allowed = True
+
+    @root_validator(pre=True)
+    def format_status(cls, values: dict) -> dict:
+        status = values.get("status")
+
+        if not isinstance(status, list) and status is not None:
+            values["status"] = [status]
+
+        return values
 
 
 class CollectiveOffersStockResponseModel(BaseModel):

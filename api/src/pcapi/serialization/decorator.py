@@ -1,3 +1,4 @@
+from collections import defaultdict
 from copy import deepcopy
 from functools import wraps
 import logging
@@ -10,6 +11,7 @@ from flask import make_response
 from flask import request
 import pydantic.v1
 import spectree
+from werkzeug.datastructures import MultiDict
 from werkzeug.exceptions import BadRequest
 
 from pcapi.models.api_errors import ApiErrors
@@ -54,6 +56,16 @@ def _make_string_response(content: BaseModel | None, status_code: int, headers: 
     return response
 
 
+def _transform_query_args_to_dict(query_params: MultiDict, use_as_list: list[str]) -> dict:
+    result = defaultdict(list)
+    for key, value in query_params.items(multi=True):
+        if key in use_as_list:
+            result[key].append(value)
+        else:
+            result[key] = value
+    return dict(result)
+
+
 # When using this decorator, you should pass the following arguments when necessary:
 # - query: the query parameters
 # - body : the body of the request
@@ -78,6 +90,7 @@ def spectree_serialize(
     resp: SpectreeResponse | None = None,
     deprecated: bool = False,
     flatten: bool = False,
+    query_params_as_list: list[str] | None = None,
 ) -> Callable[[Any], Any]:
     """A decorator that serialize/deserialize and validate input/output
 
@@ -96,6 +109,7 @@ def spectree_serialize(
         raw_response: transmit the route response without touching it. Defaults to False.
         response_headers: a dict of headers to be added to the response. defaults to {}.
         resp: a Spectree.Response explicitly listing the possible responses.
+        query_params_as_list: a list of query parameters to be passed to the spectree. defaults to [].
 
     Returns:
         Callable[[Any], Any]: [description]
@@ -104,6 +118,7 @@ def spectree_serialize(
     on_error_statuses = on_error_statuses or []
     response_headers = response_headers or {}
     on_empty_status = on_empty_status or on_success_status
+    query_params_as_list = query_params_as_list or []
 
     def decorate_validation(route: Callable[..., Any]) -> Callable[[Any], Any]:
         body_in_kwargs = route.__annotations__.get("body")
@@ -165,8 +180,13 @@ def spectree_serialize(
                         'Please send a "Content-Type: application/json" HTTP header',
                         400,
                     )
+
             if query_in_kwargs:
-                content = request.args.to_dict(flat=False) if flatten else query_params
+                content: object | dict
+                if len(query_params_as_list) > 0:
+                    content = _transform_query_args_to_dict(query_params, query_params_as_list)
+                else:
+                    content = request.args.to_dict(flat=False) if flatten else query_params
                 kwargs["query"] = query_in_kwargs(**content)
             if form_in_kwargs:
                 kwargs["form"] = form_in_kwargs(**form)
