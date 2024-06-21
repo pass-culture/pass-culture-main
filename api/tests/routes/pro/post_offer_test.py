@@ -115,7 +115,7 @@ class Returns200Test:
         assert offer.visualDisabilityCompliant is False
         assert offer.audioDisabilityCompliant is True
         assert offer.mentalDisabilityCompliant is False
-        assert offer.offererAddress.id == venue.offererAddressId
+        assert offer.offererAddress is None
 
     def test_create_offer_with_ean(self, client):
         venue = offerers_factories.VenueFactory()

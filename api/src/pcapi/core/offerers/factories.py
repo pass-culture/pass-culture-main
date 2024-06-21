@@ -11,6 +11,7 @@ from pcapi.models import feature
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import crypto
 from pcapi.utils import siren as siren_utils
+from pcapi.utils.date import get_department_timezone
 from pcapi.utils.date import timespan_str_to_numrange
 import pcapi.utils.postal_code as postal_code_utils
 
@@ -85,10 +86,21 @@ class VenueFactory(BaseFactory):
     contact = factory.RelatedFactory("pcapi.core.offerers.factories.VenueContactFactory", factory_related_name="venue")
     bookingEmail = factory.Sequence("venue{}@example.net".format)
     dmsToken = factory.LazyFunction(api.generate_dms_token)
-    timezone: str = "Europe/Paris"
+    timezone = factory.LazyAttribute(lambda venue: get_department_timezone(venue.departementCode))
     _bannerUrl = None
     offererAddress = factory.SubFactory(
-        "pcapi.core.offerers.factories.OffererAddressFactory", offerer=factory.SelfAttribute("..managingOfferer")
+        "pcapi.core.offerers.factories.OffererAddressFactory",
+        label=None,
+        address=factory.SubFactory(
+            "pcapi.core.geography.factories.AddressFactory",
+            banId=factory.SelfAttribute("...banId"),
+            street=factory.SelfAttribute("...street"),
+            postalCode=factory.SelfAttribute("...postalCode"),
+            city=factory.SelfAttribute("...city"),
+            latitude=factory.SelfAttribute("...latitude"),
+            longitude=factory.SelfAttribute("...longitude"),
+        ),
+        offerer=factory.SelfAttribute("..managingOfferer"),
     )
 
     @factory.post_generation
@@ -222,6 +234,7 @@ class VirtualVenueFactory(VenueFactory):
     motorDisabilityCompliant = None
     visualDisabilityCompliant = None
     venueTypeCode = models.VenueTypeCode.DIGITAL
+    offererAddress = None
 
 
 class VenueWithoutSiretFactory(VenueFactory):
@@ -459,12 +472,13 @@ class AccessibilityProviderFactory(BaseFactory):
 
 
 class OffererAddressFactory(BaseFactory):
+    class Meta:
+        model = models.OffererAddress
+        sqlalchemy_get_or_create = ("offerer", "address", "label")
+
     label = factory.Sequence("Address label {}".format)
     address = factory.SubFactory(geography_factories.AddressFactory)
     offerer = factory.SubFactory(OffererFactory)
-
-    class Meta:
-        model = models.OffererAddress
 
 
 class OffererConfidenceRuleFactory(BaseFactory):
