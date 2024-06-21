@@ -162,10 +162,6 @@ def _create_total_commercial_gesture_collective_offer(
             author=author_user,
         )
 
-        # TODO(amine) figure out why this is mandatory to be able to fetch the related pricings in `_price_event` function
-        # tried session.expire_all() and session.commit() but no effect
-        [p.id for p in booking.pricings]  # # pylint: disable=pointless-statement
-
         # Pricing of the commercial gestures
         for booking_finance_incident in commercial_gesture.booking_finance_incidents:
             for event in booking_finance_incident.finance_events:

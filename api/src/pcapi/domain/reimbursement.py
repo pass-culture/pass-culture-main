@@ -41,6 +41,18 @@ class EducationalOffersReimbursement(finance_models.ReimbursementRule):
         return int(base * self.rate)
 
 
+class CommercialGestureReimbursementRule(finance_models.ReimbursementRule):
+    # This rule is used to allow full reimbursement of commercial gesture regardless of the cancelled related bookings
+    rate = Decimal(1)
+    description = "Remboursement total pour les gestes commerciaux"
+    group = finance_models.RuleGroup.STANDARD
+    valid_from = None
+    valid_until = None
+
+    def is_relevant(self, booking: Booking, cumulative_revenue: int) -> bool:
+        return False
+
+
 class PhysicalOffersReimbursement(finance_models.ReimbursementRule):
     rate = Decimal(1)
     description = "Remboursement total pour les offres physiques"
@@ -174,6 +186,7 @@ REGULAR_RULES = [
     DigitalThingsReimbursement(),
     EducationalOffersReimbursement(),
     PhysicalOffersReimbursement(),
+    CommercialGestureReimbursementRule(),
     LegacyPreSeptember2021ReimbursementRateByVenueBetween20000And40000(),
     LegacyPreSeptember2021ReimbursementRateByVenueBetween40000And150000(),
     LegacyPreSeptember2021ReimbursementRateByVenueAbove150000(),
@@ -189,6 +202,7 @@ assert [r.description for r in REGULAR_RULES] == [
     "Pas de remboursement pour les offres digitales",
     "Remboursement total pour les offres éducationnelles",
     "Remboursement total pour les offres physiques",
+    "Remboursement total pour les gestes commerciaux",
     "Remboursement à 95% entre 20 000 € et 40 000 € par lieu",
     "Remboursement à 85% entre 40 000 € et 150 000 € par lieu",
     "Remboursement à 70% au dessus de 150 000 € par lieu",

@@ -730,6 +730,7 @@ class PriceEventTest:
         assert commercial_gesture_pricing.pricingPointId == venue.id
         assert commercial_gesture_pricing.bookingId is None
         assert commercial_gesture_pricing.collectiveBookingId is None
+        assert commercial_gesture_pricing.standardRule == "Remboursement total pour les gestes commerciaux"
 
         assert {line.category for line in commercial_gesture_pricing.lines} == {
             models.PricingLineCategory.OFFERER_REVENUE,
