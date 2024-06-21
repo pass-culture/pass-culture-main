@@ -39,7 +39,8 @@
                  style="width: {{ "100%" if individual_subscription else "0" }}"></div>
           </div>
           <ol class="breadcrumb-container position-relative d-flex p-0 justify-content-between">
-            {{ build_step("Mail envoyé", "bi-envelope-fill", "bi-check-circle-fill text-success" if individual_subscription.isEmailSent else ("bi-x-circle-fill text-danger" if individual_subscription) , "step-success" if individual_subscription.isEmailSent) }}
+            {% set mail_label = "Envoi du mail" if (not individual_subscription or not individual_subscription.isEmailSent) else "Mail envoyé le " + individual_subscription.dateEmailSent | format_date %}
+            {{ build_step(mail_label, "bi-envelope-fill", "bi-check-circle-fill text-success" if individual_subscription.isEmailSent else ("bi-x-circle-fill text-danger" if individual_subscription) , "step-success" if individual_subscription.isEmailSent) }}
             {{ build_step("Casier judiciaire", "bi-person-vcard", "bi-check-circle-fill text-success" if individual_subscription.isCriminalRecordReceived else ("bi-exclamation-circle-fill text-warning" if individual_subscription) , "step-success" if individual_subscription.isCriminalRecordReceived) }}
             {{ build_step("Diplômes", "bi-mortarboard-fill", "bi-check-circle-fill text-success" if individual_subscription.isCertificateReceived else ("bi-exclamation-circle-fill text-warning" if individual_subscription) , "step-success" if individual_subscription.isCertificateReceived) }}
             {{ build_step("Certifications professionnelles", "bi-box-fill", "bi-check-circle-fill text-success" if individual_subscription.isExperienceReceived else ("bi-exclamation-circle-fill text-warning" if individual_subscription) , "step-success" if individual_subscription.isExperienceReceived) }}
@@ -66,12 +67,7 @@
         method="post"
         class="row">
     <div class="col-4">
-      <p class="fw-bold pt-2">Réception des documents</p>
-      <div class="px-3">
-        {{ form.is_email_sent }}
-        {{ form.date_email_sent }}
-      </div>
-      <p class="fw-bold pt-4">Réception du casier judiciaire</p>
+      <p class="fw-bold pt-2">Réception du casier judiciaire</p>
       <div class="px-3">
         {{ form.is_criminal_record_received }}
         {{ form.date_criminal_record_received }}
@@ -112,5 +108,14 @@
       </div>
     </div>
   </form>
+{% else %}
+  <div class="d-flex">
+    <form action="{{ create_dst }}"
+          method="post">
+      {{ csrf_token }}
+      <button type="submit"
+              class="btn btn-outline-primary fw-bold">Envoyer l'email à l'auto-entrepreneur</button>
+    </form>
+  </div>
 {% endif %}
 </turbo-frame>

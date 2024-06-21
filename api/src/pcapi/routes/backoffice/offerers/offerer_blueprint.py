@@ -1,4 +1,5 @@
 import datetime
+from functools import partial
 import typing
 
 from flask import flash
@@ -19,6 +20,7 @@ from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
+from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
@@ -27,6 +29,8 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
+from pcapi.repository import atomic
+from pcapi.repository import on_commit
 from pcapi.routes.backoffice.pro import forms as pro_forms
 from pcapi.utils import regions as regions_utils
 from pcapi.utils.siren import is_valid_siren
@@ -938,10 +942,8 @@ def get_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
     read_only = not utils.has_current_user_permission(perm_models.Permissions.VALIDATE_OFFERER)
 
     individual_subscription = offerer.individualSubscription
-    if individual_subscription:
+    if individual_subscription and individual_subscription.isEmailSent:
         form = offerer_forms.IndividualOffererSubscriptionForm(
-            is_email_sent=individual_subscription.isEmailSent,
-            date_email_sent=individual_subscription.dateEmailSent,
             is_criminal_record_received=individual_subscription.isCriminalRecordReceived,
             date_criminal_record_received=individual_subscription.dateCriminalRecordReceived,
             is_certificate_received=individual_subscription.isCertificateReceived,
@@ -954,8 +956,7 @@ def get_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
             read_only=read_only,
         )
     else:
-        # Form with default empty values, which will be inserted in database when saved
-        form = offerer_forms.IndividualOffererSubscriptionForm(read_only=read_only)
+        form = None
 
     adage_statuses = [venue.dms_adage_status for venue in offerer.managedVenues]
     for value in (
@@ -976,8 +977,46 @@ def get_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
         has_adage_tag=any(tag.name == "adage" for tag in offerer.tags),
         form=form,
         dst=url_for("backoffice_web.offerer.update_individual_subscription", offerer_id=offerer_id),
+        create_dst=url_for("backoffice_web.offerer.create_individual_subscription", offerer_id=offerer_id),
         read_only=read_only,
     )
+
+
+@offerer_blueprint.route("/send-individual-subscription-email", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+@atomic()
+def create_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
+    offerer = (
+        offerers_models.Offerer.query.options(
+            sa.orm.joinedload(offerers_models.Offerer.UserOfferers)
+            .joinedload(offerers_models.UserOfferer.user)
+            .load_only(users_models.User.email),
+            sa.orm.joinedload(offerers_models.Offerer.individualSubscription),
+        )
+        .filter(offerers_models.Offerer.id == offerer_id)
+        .one_or_none()
+    )
+
+    if not offerer:
+        raise NotFound()
+
+    if not offerer.individualSubscription:
+        db.session.add(
+            offerers_models.IndividualOffererSubscription(
+                offererId=offerer_id, isEmailSent=True, dateEmailSent=datetime.datetime.utcnow()
+            )
+        )
+    elif not offerer.individualSubscription.isEmailSent:
+        offerer.individualSubscription.isEmailSent = True
+        offerer.individualSubscription.dateEmailSent = datetime.datetime.utcnow()
+        db.session.add(offerer.individualSubscription)
+
+    callback = partial(
+        transactional_mails.send_offerer_individual_subscription_reminder, offerer.UserOfferers[0].user.email
+    )
+    on_commit(callback)
+
+    return _self_redirect(offerer_id, active_tab="subscription")
 
 
 @offerer_blueprint.route("/individual-subscription", methods=["POST"])
@@ -1002,8 +1041,6 @@ def update_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
         return _self_redirect(offerer_id, active_tab="subscription")
 
     data = {
-        "isEmailSent": form.is_email_sent.data,
-        "dateEmailSent": form.date_email_sent.data,
         "isCriminalRecordReceived": form.is_criminal_record_received.data,
         "dateCriminalRecordReceived": form.date_criminal_record_received.data,
         "isCertificateReceived": form.is_certificate_received.data,
@@ -1015,12 +1052,9 @@ def update_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
         "isCertificateValid": form.is_certificate_valid.data,
     }
 
-    if offerer.individualSubscription:
-        offerers_models.IndividualOffererSubscription.query.filter_by(offererId=offerer_id).update(
-            data, synchronize_session=False
-        )
-    else:
-        db.session.add(offerers_models.IndividualOffererSubscription(offererId=offerer_id, **data))
+    offerers_models.IndividualOffererSubscription.query.filter_by(offererId=offerer_id).update(
+        data, synchronize_session=False
+    )
     db.session.commit()
 
     return _self_redirect(offerer_id, active_tab="subscription")
