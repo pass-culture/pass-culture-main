@@ -16,5 +16,11 @@ Feature: Financial Management - messages, links to external help page, reimburse
     When I download reimbursement details
     Then I can see the reimbursement details
 
+  Scenario: I can chose another offerer and see financial informations modified
+    Then These receipt results should be displayed
+      | Date du justificatif | Type de document | Compte bancaire | N° de virement                        | Montant remboursé | Actions |
+      |                      |                  | Remboursement   | Libellé des coordonnées bancaires n°0 | VIR1              |         |
+    When I select offerer "1 - [CB] Structure avec des coordonnées bancaires dans différents états"
+    Then No receipt results should be displayed
   # Scenario: I can download accounting receipt as pdf
   #   Then I can download accounting receipt as pdf

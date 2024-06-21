@@ -215,7 +215,7 @@ export const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
           Justificatif de remboursement ou de trop perçu
         </caption>
         <thead className={styles['header']}>
-          <tr role="row">
+          <tr role="row" data-testid="invoice-title-row">
             <th
               role="columnheader"
               scope="col"
@@ -349,7 +349,12 @@ export const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
         <tbody className={styles['body']}>
           {sortedInvoices.map((invoice) => {
             return (
-              <tr role="row" key={invoice.reference} className={styles['row']}>
+              <tr
+                role="row"
+                key={invoice.reference}
+                className={styles['row']}
+                data-testid="invoice-item-row"
+              >
                 <td
                   role="cell"
                   className={styles['data']}
