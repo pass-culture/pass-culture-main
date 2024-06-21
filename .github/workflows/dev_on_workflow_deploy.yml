@@ -27,7 +27,7 @@ on:
         default: false
       doc-api-entrypoint:
         type: string
-        required: true
+        required: false
         default: 'api/documentation'
 
     secrets:
