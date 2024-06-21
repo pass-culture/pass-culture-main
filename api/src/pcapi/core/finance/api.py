@@ -586,22 +586,18 @@ def _price_event(event: models.FinanceEvent) -> models.Pricing:
             ),
         ]
     elif event.motive == models.FinanceEventMotive.INCIDENT_COMMERCIAL_GESTURE:
-        original_pricing = [
-            pricing for pricing in booking.pricings if pricing.status == models.PricingStatus.CANCELLED
-        ][0]
-
-        rule = find_reimbursement_rule(original_pricing.customRuleId or original_pricing.standardRule)
-        amount = -rule.apply(booking, event.bookingFinanceIncident.commercial_gesture_amount)  # outgoing, thus negative
+        rule = reimbursement.CommercialGestureReimbursementRule()
+        amount = -event.bookingFinanceIncident.commercial_gesture_amount  # outgoing, thus negative
         offerer_revenue_amount = -event.bookingFinanceIncident.commercial_gesture_amount
         pricing_booking_id = None
         pricing_collective_booking_id = None
         lines = [
             models.PricingLine(
-                amount=offerer_revenue_amount,
+                amount=amount,
                 category=models.PricingLineCategory.OFFERER_REVENUE,
             ),
             models.PricingLine(
-                amount=amount - offerer_revenue_amount,
+                amount=0,
                 category=models.PricingLineCategory.OFFERER_CONTRIBUTION,
             ),
         ]
