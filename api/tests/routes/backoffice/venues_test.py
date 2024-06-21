@@ -1444,6 +1444,23 @@ class UpdateVenueTest(PostEndpointHelper):
             }
         }
 
+    def test_update_venue_latitude_longitude_precision(self, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+
+        data = self._get_current_data(venue)
+        data["latitude"] = "48.870037"
+        data["longitude"] = "2.378504"
+
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+
+        assert response.status_code == 303
+
+        db.session.refresh(venue)
+
+        assert venue.latitude == Decimal("48.87004")
+        assert venue.longitude == Decimal("2.37850")
+        assert len(venue.action_history) == 0
+
     def test_update_venue_accessibility_provider_with_url(self, authenticated_client):
         venue = offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.LIBRARY)
         assert not venue.accessibilityProvider
