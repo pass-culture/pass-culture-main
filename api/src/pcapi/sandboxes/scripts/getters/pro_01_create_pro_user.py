@@ -1,15 +1,13 @@
-from flask import jsonify
-
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.users import factories as users_factories
-from pcapi.serialization.decorator import spectree_serialize
+from pcapi.sandboxes.scripts.utils.helpers import get_pro_user_helper
 
 
-def setup_data_for_create_thing_individual_offer_e2e_test() -> dict:
+def create_pro_user_with_venue_bank_account_and_userofferer() -> dict:
     pro_user = users_factories.ProFactory()
     venue = offerers_factories.VenueFactory()
 
     finance_factories.BankAccountFactory(offerer=venue.managingOfferer)
     offerers_factories.UserOffererFactory(user=pro_user, offerer=venue.managingOfferer)
-    return {"email": pro_user.email}
+    return {"user": get_pro_user_helper(pro_user)}

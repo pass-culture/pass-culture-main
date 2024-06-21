@@ -2,7 +2,7 @@
 Feature: Create an individual offer (event)
 
   Scenario: It should create an individual offer (event)
-    Given data from signup account im logged in
+    Given pro user has been created
     Given I am logged in
     When I go to the "Créer une offre" page
     And I want to create "Un évènement physique daté" offer

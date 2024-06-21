@@ -1,1 +1,1 @@
-import pcapi.sandboxes.scripts.getters.pro_01_create_thing_individual_offer
+import pcapi.sandboxes.scripts.getters.pro_01_create_pro_user
