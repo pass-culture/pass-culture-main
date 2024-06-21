@@ -114,19 +114,24 @@ def _apply_search_filters(query: BaseQuery, search_filters: list[str]) -> BaseQu
 
 
 def is_beneficiary_anonymizable(user: users_models.User) -> bool:
+    # Check if the user is admin, pro or anonymised
+    beneficiary_roles = {
+        users_models.UserRole.BENEFICIARY,
+        users_models.UserRole.UNDERAGE_BENEFICIARY,
+    }
+    if not beneficiary_roles.issuperset(user.roles):
+        return False
 
+    # Check if the user never had credits.
+    if len(user.deposits) == 0:
+        return True
+
+    # Check if the user is over 21.
     if (
-        not user.has_pro_role
-        and not user.has_non_attached_pro_role
-        and not user.has_admin_role
-        and not user.is_beneficiary
-        and not user.beneficiaryFraudChecks
+        user.validatedBirthDate
+        and users_utils.get_age_at_date(user.validatedBirthDate, datetime.datetime.utcnow()) >= 21
     ):
-        if users_models.UserRole.ANONYMIZED not in user.roles:
-            if not user.deposit_expiration_date or (
-                user.deposit_expiration_date and user.deposit_expiration_date < datetime.datetime.utcnow()
-            ):
-                return True
+        return True
     return False
 
 

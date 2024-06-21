@@ -2463,7 +2463,7 @@ class AnonymizePublicAccountTest(PostEndpointHelper):
         legit_user,
         authenticated_client,
     ):
-        user = users_factories.UserFactory()
+        user = users_factories.BeneficiaryFactory(validatedBirthDate=datetime.date(2000, 1, 1))
 
         response = self.post_to_endpoint(authenticated_client, user_id=user.id)
         assert response.status_code == 302
@@ -2474,6 +2474,7 @@ class AnonymizePublicAccountTest(PostEndpointHelper):
         assert "Anonymous" in user.firstName
         assert user.roles == [users_models.UserRole.ANONYMIZED]
         history = history_models.ActionHistory.query.one_or_none()
+        assert history
         assert history.actionType == history_models.ActionType.USER_ANONYMIZED
         assert history.authorUser == legit_user
         assert history.user == user
@@ -2483,14 +2484,12 @@ class AnonymizePublicAccountTest(PostEndpointHelper):
         [
             users_models.UserRole.PRO,
             users_models.UserRole.NON_ATTACHED_PRO,
-            users_models.UserRole.BENEFICIARY,
-            users_models.UserRole.UNDERAGE_BENEFICIARY,
+            users_models.UserRole.ANONYMIZED,
             users_models.UserRole.ADMIN,
         ],
     )
-    def test_anonymize_public_account_when_user_does_not_meet_criteria(
+    def test_anonymize_public_account_when_user_does_not_meet_roles_criteria(
         self,
-        legit_user,
         authenticated_client,
         role,
     ):
@@ -2498,6 +2497,54 @@ class AnonymizePublicAccountTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(authenticated_client, user_id=user.id)
         assert response.status_code == 400
+
+    @pytest.mark.parametrize(
+        "roles",
+        [
+            [users_models.UserRole.UNDERAGE_BENEFICIARY],
+            [users_models.UserRole.BENEFICIARY],
+            [],
+        ],
+    )
+    def test_anonymize_public_account_when_user_is_too_young(self, authenticated_client, roles):
+        user = users_factories.BeneficiaryFactory(
+            validatedBirthDate=datetime.datetime.today() - datetime.timedelta(days=365 * 21), roles=roles
+        )
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id)
+        assert response.status_code == 400
+
+    def test_anonymize_public_account_when_user_has_no_deposit(self, authenticated_client):
+        user = users_factories.UserFactory()
+
+        finance_models.Deposit.query.filter(finance_models.Deposit.user == user).delete()
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id)
+        assert response.status_code == 302
+
+        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id, _external=True)
+        assert response.location == expected_url
+
+        assert user.roles == [users_models.UserRole.ANONYMIZED]
+
+    @pytest.mark.parametrize(
+        "factory",
+        [
+            users_factories.BeneficiaryGrant18Factory,
+            users_factories.UnderageBeneficiaryFactory,
+            users_factories.UserFactory,
+        ],
+    )
+    def test_anonymize_public_account_when_user_is_older_than_21(self, authenticated_client, factory):
+        user = factory(validatedBirthDate=datetime.datetime.today() - datetime.timedelta(days=(365 * 21) + 6))
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id)
+        assert response.status_code == 302
+
+        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id, _external=True)
+        assert response.location == expected_url
+
+        assert user.roles == [users_models.UserRole.ANONYMIZED]
 
 
 class ExtractPublicAccountTest(PostEndpointHelper):
