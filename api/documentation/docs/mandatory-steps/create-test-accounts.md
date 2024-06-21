@@ -8,7 +8,7 @@ In order to test your integration before publishing it in production, we provide
 In this section, you will learn how to create an account on this test environment in **3 simple steps**.
 
 :::warning
-In the **test environment**, the account you are going to create will enable to log yourself as **a *cultural player* on the [PRO interface](https://integration.passculture.pro/connexion?de=%2F)** and to log yourself as **a *teenager user* on the [app interface](https://integration.passculture.app/accueil)**.
+In the **test environment**, the account you are going to create will enable to log yourself as **a *cultural player* on the [PRO interface](https://integration.passculture.pro/connexion?de=%2F)** and to log yourself as **a *beneficiary* on the [app interface](https://integration.passculture.app/accueil)**.
 :::
 
 1. **Create an account** as a cultural player on the [integration test environment](https://integration.passculture.pro/inscription)

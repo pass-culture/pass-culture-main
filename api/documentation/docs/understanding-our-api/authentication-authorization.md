@@ -7,10 +7,10 @@ description: How authentication and authorization work
 
 ## Users
 
-### Non technical users: teenagers and offerers
+### Non technical users: beneficiaries and offerers
 
 There are two main users of the pass Culture application :
-- the **teenagers** who are using their credit to buy cultural offers through the **[web application](https://passculture.app/accueil)** or the **mobile application**
+- the **beneficiaries** who are using their credit to buy cultural offers through the **[web application](https://passculture.app/accueil)** or the **mobile application**
 - the **offerers** who are providing those cultural offers through the **[pro interface](https://passculture.pro/)**
 
 ### Technical users: providers
