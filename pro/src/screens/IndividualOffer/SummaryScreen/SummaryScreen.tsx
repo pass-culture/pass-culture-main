@@ -1,6 +1,7 @@
 import { Form, FormikProvider, useFormik } from 'formik'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import { getHumanReadableApiError } from 'apiClient/helpers'
@@ -11,6 +12,7 @@ import { OfferAppPreview } from 'components/OfferAppPreview/OfferAppPreview'
 import { SummaryAside } from 'components/SummaryLayout/SummaryAside'
 import { SummaryContent } from 'components/SummaryLayout/SummaryContent'
 import { SummaryLayout } from 'components/SummaryLayout/SummaryLayout'
+import { GET_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import {
   Events,
@@ -29,6 +31,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { getOfferConditionalFields } from 'utils/getOfferConditionalFields'
 
 import { ActionBar } from '../ActionBar/ActionBar'
+import { serializeDateTimeToUTCFromLocalDepartment } from '../StocksEventEdition/serializers'
 
 import { DisplayOfferInAppLink } from './DisplayOfferInAppLink/DisplayOfferInAppLink'
 import { EventPublicationForm } from './EventPublicationForm/EventPublicationForm'
@@ -44,6 +47,7 @@ export const SummaryScreen = () => {
   const [displayRedirectDialog, setDisplayRedirectDialog] = useState(false)
   const notification = useNotification()
   const mode = useOfferWizardMode()
+  const { mutate } = useSWRConfig()
   const navigate = useNavigate()
   const { offer, subCategories } = useIndividualOfferContext()
   const { logEvent } = useAnalytics()
@@ -67,9 +71,14 @@ export const SummaryScreen = () => {
         id: offer.id,
         publicationDate:
           values.publicationMode === 'later'
-            ? values.publicationDate
+            ? serializeDateTimeToUTCFromLocalDepartment(
+                values.publicationDate,
+                values.publicationTime,
+                offer.venue.departementCode
+              )
             : undefined,
       })
+      await mutate([GET_OFFER_QUERY_KEY, offer.id])
 
       const shouldDisplayRedirectDialog =
         publishIndividualOfferResponse.isNonFreeOffer &&
