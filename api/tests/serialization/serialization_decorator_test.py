@@ -2,9 +2,11 @@ from unittest.mock import Mock
 from unittest.mock import patch
 
 from flask.blueprints import Blueprint
+from werkzeug.datastructures import ImmutableMultiDict
 
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.serialization.decorator import transform_query_args_to_dict
 
 
 class TestBodyModel(BaseModel):
@@ -165,3 +167,62 @@ class SerializationDecoratorTest:
     def test_post_without_content_type_throws_400(self, client):
         response = client.post("/test-blueprint/body-validation", headers={})
         assert response.status_code == 400
+
+
+class TransformQueryArgsToDictTest:
+    def test_list_are_casted(self):
+        class TestQueryKwargsModel(BaseModel):
+            compulsory_int_body: int
+            optional_string_body: str | None
+            additional_list: list[str]
+
+        query_kwargs = ImmutableMultiDict(
+            [("compulsory_int_body", "5"), ("additional_list", "first"), ("additional_list", "second")]
+        )
+
+        result = transform_query_args_to_dict(query_kwargs, TestQueryKwargsModel)
+        assert result == {
+            "compulsory_int_body": "5",
+            "additional_list": ["first", "second"],
+        }
+
+    def test_list_with_single_item(self):
+        class TestQueryKwargsModel(BaseModel):
+            compulsory_int_body: int
+            optional_string_body: str | None
+            additional_list: list[str]
+
+        query_kwargs = ImmutableMultiDict([("compulsory_int_body", "5"), ("additional_list", "first")])
+
+        result = transform_query_args_to_dict(query_kwargs, TestQueryKwargsModel)
+        assert result == {
+            "compulsory_int_body": "5",
+            "additional_list": ["first"],
+        }
+
+    def test_with_missing_list(self):
+        class TestQueryKwargsModel(BaseModel):
+            compulsory_int_body: int
+            optional_string_body: str | None
+            additional_list: list[str]
+
+        query_kwargs = ImmutableMultiDict([("compulsory_int_body", "5")])
+
+        result = transform_query_args_to_dict(query_kwargs, TestQueryKwargsModel)
+        assert result == {
+            "compulsory_int_body": "5",
+        }
+
+    def test_with_empty_list(self):
+        class TestQueryKwargsModel(BaseModel):
+            compulsory_int_body: int
+            optional_string_body: str | None
+            additional_list: list[str]
+
+        query_kwargs = ImmutableMultiDict([("compulsory_int_body", "5"), ("additional_list", "")])
+
+        result = transform_query_args_to_dict(query_kwargs, TestQueryKwargsModel)
+        assert result == {
+            "compulsory_int_body": "5",
+            "additional_list": [""],
+        }

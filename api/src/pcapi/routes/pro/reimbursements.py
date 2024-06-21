@@ -65,7 +65,6 @@ def _get_reimbursements_csv_filter(user: User, query: ReimbursementCsvQueryModel
         "Content-Disposition": "attachment; filename=remboursements_pass_culture.csv",
     },
     api=blueprint.pro_private_schema,
-    flatten=True,
 )
 def get_reimbursements_csv_v2(query: ReimbursementCsvByInvoicesModel) -> bytes:
     reimbursement_details_csv = _get_reimbursments_csv_filter_by_invoices(current_user, query)

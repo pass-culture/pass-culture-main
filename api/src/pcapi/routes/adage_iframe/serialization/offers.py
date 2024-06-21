@@ -6,7 +6,6 @@ import logging
 import typing
 
 from pydantic.v1 import Field
-from pydantic.v1 import root_validator
 from pydantic.v1.class_validators import validator
 
 import pcapi.core.categories.subcategories_v2 as subcategories
@@ -383,14 +382,3 @@ class PostCollectiveRequestBodyModel(BaseModel):
 
 class GetTemplateIdsModel(BaseModel):
     ids: typing.Sequence[int]
-
-    @root_validator(pre=True)
-    def format_ids(cls, values: dict) -> dict:
-        ids = values.get("ids")
-        if not ids:
-            return values
-
-        if not isinstance(ids, list):
-            values["ids"] = [ids]
-
-        return values
