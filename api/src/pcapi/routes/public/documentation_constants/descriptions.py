@@ -1,12 +1,12 @@
 # HIGH LEVEL INFORMATION
 PUBLIC_API_DESCRIPTION = """
-This the documentation of the Pass Culture public REST API.
+This the documentation of the pass Culture public REST API.
 
 # Important notice
 - Since January 2023, rate limiting has been implemented on the Pass Culture API.
   You are limited to **200 requests/minute** per API key.
   Once this limit reached, you will received a `429 Too Many Requests` error message. You will then need to back down.
-- Dates of event offers are stored in the **UTC format** to be able to format them correctly, according to the user timezone, in our application interface.
+- Event offers dates are stored in the **UTC format**. This is necessary because dates are displayed according to the beneficiary timezone in our application.
 - Any non-blank field sent using a `PATCH` method will be considered as changed, even if the new value is equal to old value.
   _For example, if you update the stock of an event, you **should not resend the `beginningDate`** if it has not changed because, otherwise it is going to trigger the reschedule process on our side._
 
@@ -29,6 +29,15 @@ OFFER_STATUS_FIELD_DESCRIPTION = """
 - `PENDING`: offer is pending for pass Culture rules compliance validation. This step may take up to 72 hours.\n\n
 - `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n
 - `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.
+"""
+
+BOOKING_STATUS_DESCRIPTION = """
+Booking status explanation:
+
+* `CONFIRMED`: The beneficiary has booked an offer but he didn’t pick it up yet
+* `USED`: The booking has been validated by the venue and will be reimbursed in the next payment
+* `CANCELLED`: The booking has been cancelled by the beneficiary or by the provider
+* `REIMBURSED` The booking has been reimbursed by pass Culture to the venue
 """
 
 BEGINNING_DATETIME_FIELD_DESCRIPTION = "Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime)."

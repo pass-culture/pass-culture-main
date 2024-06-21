@@ -48,8 +48,8 @@ def get_collective_offers_public(
     """
     Get collective offers
 
-    Return filtered collective offers.
-    It doesn't return the showcase offers or the collective offers that have been started on the pro interface and that are in the draft status.
+    Return collective offers. It will only return collective offers created by API
+    (collective offers created manually in the pro interface won't show up).
     """
 
     offers = educational_api_offer.list_public_collective_offers(

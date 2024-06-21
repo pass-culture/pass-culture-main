@@ -5,7 +5,6 @@ import enum
 import logging
 import typing
 
-from dateutil import relativedelta
 from flask import request
 import pydantic.v1 as pydantic_v1
 from pydantic.v1 import validator
@@ -166,10 +165,9 @@ DESCRIPTION_FIELD_RESPONSE = pydantic_v1.Field(
 )
 EXTERNAL_TICKET_OFFICE_URL_FIELD = pydantic_v1.Field(
     None,
-    description="Link displayed to users wishing to book the offer but who do not have (anymore) credit.",
+    description="Link displayed to users wishing to book the offer but who do not have credit.",
     example="https://example.com",
 )
-IMAGE_CREDIT_FIELD = pydantic_v1.Field(None, description="Image owner or author.", example="Jane Doe")
 WITHDRAWAL_DETAILS_FIELD = pydantic_v1.Field(
     None,
     description="Further information that will be provided to attendees to ease the offer collection.",
@@ -185,11 +183,10 @@ LOCATION_FIELD = pydantic_v1.Field(
     discriminator="type",
     description="Location where the offer will be available or will take place. The location type must be compatible with the category",
 )
-NAME_FIELD = pydantic_v1.Field(description="Offer title", example="Le Petit Prince", max_length=90)
 DURATION_MINUTES_FIELD = pydantic_v1.Field(description="Event duration in minutes", example=60, alias="eventDuration")
 
 HAS_TICKET_FIELD = pydantic_v1.Field(
-    description="Indicates whether the offer has an associated ticket. True if a ticket is available, False otherwise. To create an offer with tickets you must have developed the pass culture ticketing interface.",
+    description="Indicated whether a ticket is mandatory to access to the event. True if it is the case, False otherwise. The ticket will be sent by you, the provider and you must have developed the pass Culture ticketing interface to do so.",
     example=False,
 )
 PRICE_CATEGORY_LABEL_FIELD = pydantic_v1.Field(description="Price category label", example="Carré or")
@@ -202,21 +199,15 @@ EVENT_DATES_FIELD = pydantic_v1.Field(
 class ImageBody(serialization.ConfiguredBaseModel):
     """Image illustrating the offer. Offers with images are more likely to be booked."""
 
-    credit: str | None = IMAGE_CREDIT_FIELD
-    file: str = pydantic_v1.Field(
-        ...,
-        description="Image file encoded in base64 string. Image format must be PNG or JPEG. Size must be between 400x600 and 800x1200 pixels. Aspect ratio must be 2:3 (portrait format).",
-        example="iVBORw0KGgoAAAANSUhEUgAAAhUAAAMgCAAAAACxT88IAAABImlDQ1BJQ0MgcHJvZmlsZQAAKJGdkLFKw1AUhr+0oiKKg6IgDhlcO5pFB6tCKCjEWMHqlCYpFpMYkpTiG/gm+jAdBMFXcFdw9r/RwcEs3nD4Pw7n/P+9gZadhGk5dwBpVhWu3x1cDq7shTfa+lbZZC8Iy7zreSc0ns9XLKMvHePVPPfnmY/iMpTOVFmYFxVY+2JnWuWGVazf9v0j8YPYjtIsEj+Jd6I0Mmx2/TSZhD+e5jbLcXZxbvqqbVx6nOJhM2TCmISKjjRT5xiHXalLQcA9JaE0IVZvqpmKG1EpJ5dDUV+k2zTkbdV5nlKG8hjLyyTckcrT5GH+7/fax1m9aW3M8qAI6lZb1RqN4P0RVgaw9gxL1w1Zi7/f1jDj1DP/fOMXG7hQfuNVil0AAAAJcEhZcwAALiMAAC4jAXilP3YAAAAHdElNRQfnAwMPGDrdy1JyAAABtElEQVR42u3BAQ0AAADCoPdPbQ8HFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8GaFGgABH6N7kwAAAABJRU5ErkJggg==",
-    )
+    credit: str | None = fields.IMAGE_CREDIT
+    file: str = fields.IMAGE_FILE
 
 
 class ImageResponse(serialization.ConfiguredBaseModel):
     """Image illustrating the offer. Offers with images are more likely to be booked."""
 
-    credit: str | None = IMAGE_CREDIT_FIELD
-    url: str = pydantic_v1.Field(
-        ..., description="Url where the image is accessible", example="https://example.com/image.png"
-    )
+    credit: str | None = fields.IMAGE_CREDIT
+    url: str = fields.IMAGE_URL
 
 
 class OfferCreationBase(serialization.ConfiguredBaseModel):
@@ -399,28 +390,11 @@ else:
         pydantic_v1.Field(discriminator="subcategory_id", description=CATEGORY_RELATED_FIELD_DESCRIPTION),
     ]
 
-next_month = datetime.datetime.utcnow().replace(hour=12, minute=0, second=0) + relativedelta.relativedelta(months=1)
-paris_tz_next_month = date_utils.utc_datetime_to_department_timezone(next_month, "75")
-
-BEGINNING_DATETIME_FIELD = pydantic_v1.Field(
-    description=descriptions.BEGINNING_DATETIME_FIELD_DESCRIPTION,
-    example=paris_tz_next_month.isoformat(timespec="seconds"),
-)
-BOOKING_LIMIT_DATETIME_FIELD = pydantic_v1.Field(
-    description=descriptions.BOOKING_LIMIT_DATETIME_FIELD_DESCRIPTION,
-    example=paris_tz_next_month.isoformat(timespec="seconds"),
-)
-PRICE_FIELD = pydantic_v1.Field(description="Offer price in euro cents.", example=1000)
-QUANTITY_FIELD = pydantic_v1.Field(
-    description="Quantity of items currently available to pass Culture. Value 'unlimited' is used for infinite quantity of items.",
-    example=10,
-)
-
 UNLIMITED_LITERAL = typing.Literal["unlimited"]
 
 
 class BaseStockCreation(serialization.ConfiguredBaseModel):
-    quantity: pydantic_v1.StrictInt | UNLIMITED_LITERAL = QUANTITY_FIELD
+    quantity: pydantic_v1.StrictInt | UNLIMITED_LITERAL = fields.QUANTITY
 
     @pydantic_v1.validator("quantity")
     def quantity_must_be_in_range(cls, quantity: int | str) -> int | str:
@@ -440,8 +414,8 @@ def deserialize_quantity(quantity: int | UNLIMITED_LITERAL | None) -> int | None
 
 
 class StockCreation(BaseStockCreation):
-    price: offer_price_model = PRICE_FIELD
-    booking_limit_datetime: datetime.datetime | None = BOOKING_LIMIT_DATETIME_FIELD
+    price: offer_price_model = fields.PRICE
+    booking_limit_datetime: datetime.datetime | None = fields.BOOKING_LIMIT_DATETIME
 
     _validate_booking_limit_datetime = serialization_utils.validate_datetime("booking_limit_datetime")
 
@@ -453,8 +427,8 @@ class StockCreation(BaseStockCreation):
 
 
 class BaseStockEdition(serialization.ConfiguredBaseModel):
-    booking_limit_datetime: datetime.datetime | None = BOOKING_LIMIT_DATETIME_FIELD
-    quantity: pydantic_v1.StrictInt | UNLIMITED_LITERAL | None = QUANTITY_FIELD
+    booking_limit_datetime: datetime.datetime | None = fields.BOOKING_LIMIT_DATETIME
+    quantity: pydantic_v1.StrictInt | UNLIMITED_LITERAL | None = fields.QUANTITY
 
     @pydantic_v1.validator("quantity")
     def quantity_must_be_in_range(cls, quantity: int | str | None) -> int | str | None:
@@ -471,7 +445,7 @@ class BaseStockEdition(serialization.ConfiguredBaseModel):
 
 
 class StockEdition(BaseStockEdition):
-    price: offer_price_model | None = PRICE_FIELD
+    price: offer_price_model | None = fields.PRICE
 
 
 class ProductOfferCreation(OfferCreationBase):
@@ -516,7 +490,7 @@ class PriceCategoryCreation(serialization.ConfiguredBaseModel):
         label: str = PRICE_CATEGORY_LABEL_FIELD
     else:
         label: pydantic_v1.constr(min_length=1, max_length=50) = PRICE_CATEGORY_LABEL_FIELD
-    price: offer_price_model = PRICE_FIELD
+    price: offer_price_model = fields.PRICE
 
     class Config:
         getter_dict = DecimalPriceGetterDict
@@ -572,7 +546,7 @@ class OfferEditionBase(serialization.ConfiguredBaseModel):
     booking_contact: pydantic_v1.EmailStr | None = BOOKING_CONTACT_FIELD
     booking_email: pydantic_v1.EmailStr | None = BOOKING_EMAIL_FIELD
     is_active: bool | None = pydantic_v1.Field(
-        description="Whether the offer is activated. An inactive offer cannot be booked."
+        description="Set to `false` if you want to deactivate the offer. This will not cancel former bookings. "
     )
     is_duo: bool | None = IS_DUO_BOOKINGS_FIELD
     withdrawal_details: str | None = WITHDRAWAL_DETAILS_FIELD
@@ -606,7 +580,7 @@ class PriceCategoryEdition(serialization.ConfiguredBaseModel):
         label: str = PRICE_CATEGORY_LABEL_FIELD
     else:
         label: pydantic_v1.constr(min_length=1, max_length=50) | None = PRICE_CATEGORY_LABEL_FIELD
-    price: offer_price_model | None = PRICE_FIELD
+    price: offer_price_model | None = fields.PRICE
 
     @pydantic_v1.validator("price")
     def price_must_be_positive(cls, value: int | None) -> int | None:
@@ -619,8 +593,8 @@ class PriceCategoryEdition(serialization.ConfiguredBaseModel):
 
 
 class DateEdition(BaseStockEdition):
-    beginning_datetime: datetime.datetime | None = BEGINNING_DATETIME_FIELD
-    price_category_id: int | None
+    beginning_datetime: datetime.datetime | None = fields.BEGINNING_DATETIME
+    price_category_id: int | None = fields.PRICE_CATEGORY_ID
     id_at_provider: str | None = fields.ID_AT_PROVIDER_WITH_MAX_LENGTH
 
 
@@ -633,9 +607,9 @@ class EventOfferEdition(OfferEditionBase):
 
 
 class DateCreation(BaseStockCreation):
-    beginning_datetime: datetime.datetime = BEGINNING_DATETIME_FIELD
-    booking_limit_datetime: datetime.datetime = BOOKING_LIMIT_DATETIME_FIELD
-    price_category_id: int
+    beginning_datetime: datetime.datetime = fields.BEGINNING_DATETIME
+    booking_limit_datetime: datetime.datetime = fields.BOOKING_LIMIT_DATETIME
+    price_category_id: int = fields.PRICE_CATEGORY_ID
     id_at_provider: str | None = fields.ID_AT_PROVIDER_WITH_MAX_LENGTH
 
     _validate_beginning_datetime = serialization_utils.validate_datetime("beginning_datetime")
@@ -654,7 +628,7 @@ class DatesCreation(serialization.ConfiguredBaseModel):
 class PriceCategoryResponse(serialization.ConfiguredBaseModel):
     id: int
     label: str = PRICE_CATEGORY_LABEL_FIELD
-    price: pydantic_v1.StrictInt = PRICE_FIELD
+    price: pydantic_v1.StrictInt = fields.PRICE
 
     class Config:
         getter_dict = DecimalPriceGetterDict
@@ -669,9 +643,9 @@ class PriceCategoriesResponse(serialization.ConfiguredBaseModel):
 
 
 class BaseStockResponse(serialization.ConfiguredBaseModel):
-    booking_limit_datetime: datetime.datetime | None = BOOKING_LIMIT_DATETIME_FIELD
+    booking_limit_datetime: datetime.datetime | None = fields.BOOKING_LIMIT_DATETIME
     dnBookedQuantity: int = pydantic_v1.Field(..., description="Number of bookings.", example=0, alias="bookedQuantity")
-    quantity: pydantic_v1.StrictInt | UNLIMITED_LITERAL = QUANTITY_FIELD
+    quantity: pydantic_v1.StrictInt | UNLIMITED_LITERAL = fields.QUANTITY
 
     class Config:
         json_encoders = {datetime.datetime: date_utils.format_into_utc_date}
@@ -687,8 +661,8 @@ class BaseStockResponse(serialization.ConfiguredBaseModel):
 
 class DateResponse(BaseStockResponse):
     id: int
-    beginning_datetime: datetime.datetime = BEGINNING_DATETIME_FIELD
-    booking_limit_datetime: datetime.datetime = BOOKING_LIMIT_DATETIME_FIELD
+    beginning_datetime: datetime.datetime = fields.BEGINNING_DATETIME
+    booking_limit_datetime: datetime.datetime = fields.BOOKING_LIMIT_DATETIME
     price_category: PriceCategoryResponse
     id_at_provider: str | None = fields.ID_AT_PROVIDER_WITH_MAX_LENGTH
 
@@ -750,7 +724,7 @@ class OfferResponse(serialization.ConfiguredBaseModel):
 
 
 class ProductStockResponse(BaseStockResponse):
-    price: pydantic_v1.StrictInt = PRICE_FIELD
+    price: pydantic_v1.StrictInt = fields.PRICE
 
     @classmethod
     def build_product_stock(cls, stock: offers_models.Stock) -> "ProductStockResponse":
@@ -835,8 +809,8 @@ class GetDatesResponse(serialization.ConfiguredBaseModel):
 
 
 class GetProductsListByEansQuery(serialization.ConfiguredBaseModel):
-    eans: str = pydantic_v1.Field(example="0123456789123,0123456789124")
-    venueId: int = pydantic_v1.Field(example=1)
+    eans: str = fields.EANS_FILTER
+    venueId: int = fields.VENUE_ID
 
     @pydantic_v1.validator("eans")
     def validate_ean_list(cls, eans: str) -> list[str]:

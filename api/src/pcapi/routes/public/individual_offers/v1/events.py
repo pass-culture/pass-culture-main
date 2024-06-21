@@ -364,6 +364,7 @@ def post_event_dates(event_id: int, body: serialization.DatesCreation) -> serial
     Add dates to event
 
     Add a dates to given event. Each date is attached to a price category so if there are several prices categories, several dates must be added.
+    **⚠️ Event must have less than 1 000 stocks** otherwise they will not be published.
     """
     offer = (
         utils.retrieve_offer_query(event_id)
@@ -587,7 +588,7 @@ def get_event_categories() -> serialization.GetEventCategoriesResponse:
     """
     Get event categories
 
-    Return all the categories available for an event, with their conditional fields, and whether they are required for event creation.
+    Return all the categories available, with their conditional fields, and whether they are required.
     """
     # Individual offers API only relies on subcategories, not categories.
     # To make it simpler for the provider using this API, we only expose subcategories and call them categories.

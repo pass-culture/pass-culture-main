@@ -79,6 +79,7 @@ class _FIELDS:
         description="Image file encoded in base64 string. Image format must be PNG or JPEG. Size must be between 400x600 and 800x1200 pixels. Aspect ratio must be 2:3 (portrait format).",
         example="iVBORw0KGgoAAAANSUhEUgAAAhUAAAMgCAAAAACxT88IAAABImlDQ1BJQ0MgcHJvZmlsZQAAKJGdkLFKw1AUhr+0oiKKg6IgDhlcO5pFB6tCKCjEWMHqlCYpFpMYkpTiG/gm+jAdBMFXcFdw9r/RwcEs3nD4Pw7n/P+9gZadhGk5dwBpVhWu3x1cDq7shTfa+lbZZC8Iy7zreSc0ns9XLKMvHePVPPfnmY/iMpTOVFmYFxVY+2JnWuWGVazf9v0j8YPYjtIsEj+Jd6I0Mmx2/TSZhD+e5jbLcXZxbvqqbVx6nOJhM2TCmISKjjRT5xiHXalLQcA9JaE0IVZvqpmKG1EpJ5dDUV+k2zTkbdV5nlKG8hjLyyTckcrT5GH+7/fax1m9aW3M8qAI6lZb1RqN4P0RVgaw9gxL1w1Zi7/f1jDj1DP/fOMXG7hQfuNVil0AAAAJcEhZcwAALiMAAC4jAXilP3YAAAAHdElNRQfnAwMPGDrdy1JyAAABtElEQVR42u3BAQ0AAADCoPdPbQ8HFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8GaFGgABH6N7kwAAAABJRU5ErkJggg==",
     )
+    IMAGE_URL = Field(description="Image URL publicly accessible", example="https://example.com/image.png")
 
     # Disability fields
     AUDIO_DISABILITY = Field(description="Is accessible for people with hearing disability", example=True)
@@ -99,10 +100,36 @@ class _FIELDS:
     )
 
     # Offer fields
+    OFFER_ID = Field(description="Offer id", example=12345)
     OFFER_NAME = Field(description="Offer title", example="Le Petit Prince")
     OFFER_NAME_WITH_MAX_LENGTH = Field(description="Offer title", example="Le Petit Prince", max_length=90)
 
-    # Collective offer specific fields
+    # Products dields
+    EANS_FILTER = Field(description="EANs list (max 100)", example="3700551782888,9782895761792")
+
+    # Event fields
+    PRICE_CATEGORY_ID = Field(description="Price category id", example=12)
+    BEGINNING_DATETIME = Field(
+        description="Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+        example=_paris_tz_next_month.isoformat(timespec="seconds"),
+    )
+    BOOKING_LIMIT_DATETIME = Field(
+        description=descriptions.BOOKING_LIMIT_DATETIME_FIELD_DESCRIPTION,
+        example=_paris_tz_next_month.isoformat(timespec="seconds"),
+    )
+
+    # Booking fields
+    BOOKING_STATUS = Field(description=descriptions.BOOKING_STATUS_DESCRIPTION, example="CONFIRMED")
+
+    # Stock fields
+    STOCK_ID = Field(description="Stock id", example=45)
+    QUANTITY = Field(
+        description="Quantity of items currently available to pass Culture. Value `'unlimited'` is used for infinite quantity of items.",
+        example=10,
+    )
+    PRICE = Field(description="Offer price in euro cents", example=1000)
+
+    # Collective offer fields
     COLLECTIVE_OFFER_NAME = Field(description="Collective offer name", example="Atelier de peinture")
     COLLECTIVE_OFFER_DESCRIPTION = Field(
         description="Collective offer description", example="Atelier de peinture à la gouache pour élèves de 5ème"
