@@ -23,7 +23,6 @@ import {
   EducationalOfferType,
   isCollectiveOfferTemplate,
 } from 'core/OfferEducational/types'
-import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
 import { NBSP } from 'core/shared/constants'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
@@ -65,7 +64,6 @@ export const OfferEducationalStock = <
   mode,
   requestId = '',
 }: OfferEducationalStockProps<T>): JSX.Element => {
-  const offerIsDisabled = isOfferDisabled(offer.status)
   const [isLoading, setIsLoading] = useState(false)
   const startDatetime =
     isCollectiveOffer(offer) && offer.collectiveStock?.startDatetime
@@ -231,8 +229,7 @@ export const OfferEducationalStock = <
                   type="submit"
                   className=""
                   disabled={
-                    (offerIsDisabled || mode === Mode.READ_ONLY) &&
-                    disablePriceAndParticipantInputs
+                    mode === Mode.READ_ONLY && disablePriceAndParticipantInputs
                   }
                   isLoading={isLoading}
                 >
