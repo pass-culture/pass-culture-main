@@ -36,6 +36,7 @@ logger = logging.getLogger(__name__)
 @spectree_serialize(
     response_model=collective_offers_serialize.ListCollectiveOffersResponseModel,
     api=blueprint.pro_private_schema,
+    use_as_list=["status"],
 )
 def get_collective_offers(
     query: collective_offers_serialize.ListCollectiveOffersQueryModel,
