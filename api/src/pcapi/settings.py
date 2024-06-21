@@ -50,6 +50,7 @@ LOG_LEVEL = int(os.environ.get("LOG_LEVEL", LOG_LEVEL_INFO))
 
 # API config
 API_URL = os.environ.get("API_URL", "")
+PRO_API_URL = os.environ.get("PRO_API_URL", API_URL)
 
 
 # Applications urls

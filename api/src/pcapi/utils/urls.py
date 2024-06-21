@@ -71,7 +71,7 @@ def build_pc_pro_bank_account_link(bank_account: finance_models.BankAccount) -> 
 
 
 def build_pc_pro_connect_as_link(token: str) -> str:
-    return f"{settings.API_URL}/users/connect-as/{token}"
+    return f"{settings.PRO_API_URL}/users/connect-as/{token}"
 
 
 def build_backoffice_public_account_link(user_id: int) -> str:
