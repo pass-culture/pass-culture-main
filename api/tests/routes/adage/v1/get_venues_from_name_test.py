@@ -17,10 +17,8 @@ class Returns200Test:
             name="not the same",
             isPermanent=True,
         )
-        offerer_factories.VenueFactory(
-            isVirtual=True,
+        offerer_factories.VirtualVenueFactory(
             name="a beautiful name",
-            siret=None,
             isPermanent=True,
         )
 
@@ -42,10 +40,8 @@ class Returns200Test:
             name="not the same",
             isPermanent=True,
         )
-        offerer_factories.VenueFactory(
-            isVirtual=True,
+        offerer_factories.VirtualVenueFactory(
             name="a beautiful name",
-            siret=None,
             isPermanent=True,
         )
 
@@ -128,10 +124,8 @@ class Returns200Test:
             name="not the same",
             isPermanent=True,
         )
-        offerer_factories.VenueFactory(
-            isVirtual=True,
+        offerer_factories.VirtualVenueFactory(
             name="somting completely diffetrent",
-            siret=None,
             isPermanent=True,
         )
 
@@ -153,10 +147,8 @@ class Returns200Test:
             name="not the same",
             isPermanent=True,
         )
-        offerer_factories.VenueFactory(
-            isVirtual=True,
+        offerer_factories.VirtualVenueFactory(
             name="somting completely diffetrent",
-            siret=None,
             isPermanent=True,
         )
 
@@ -178,10 +170,8 @@ class Returns200Test:
             name="not the same",
             isPermanent=True,
         )
-        offerer_factories.VenueFactory(
-            isVirtual=True,
+        offerer_factories.VirtualVenueFactory(
             name="somting completely diffetrent",
-            siret=None,
             isPermanent=True,
         )
 
@@ -203,10 +193,8 @@ class Returns200Test:
             name="not the same",
             isPermanent=True,
         )
-        offerer_factories.VenueFactory(
-            isVirtual=True,
+        offerer_factories.VirtualVenueFactory(
             name="somting completely diffetrent",
-            siret=None,
             isPermanent=True,
         )
 
@@ -228,10 +216,8 @@ class Returns200Test:
             name="not the same",
             isPermanent=True,
         )
-        offerer_factories.VenueFactory(
-            isVirtual=True,
+        offerer_factories.VirtualVenueFactory(
             name="somting completely diffetrent",
-            siret=None,
             isPermanent=True,
         )
 
@@ -253,10 +239,8 @@ class Returns200Test:
             name="not the same",
             isPermanent=True,
         )
-        offerer_factories.VenueFactory(
-            isVirtual=True,
+        offerer_factories.VirtualVenueFactory(
             name="somting completely diffetrent",
-            siret=None,
             isPermanent=True,
         )
 

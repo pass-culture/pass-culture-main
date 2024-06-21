@@ -21,7 +21,9 @@ class Returns403Test:
     def test_access_by_beneficiary(self, client):
         # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory()
-        offer = offers_factories.ThingOfferFactory(venue__latitude=None, venue__longitude=None)
+        offer = offers_factories.ThingOfferFactory(
+            venue__latitude=None, venue__longitude=None, venue__offererAddress=None
+        )
 
         # When
         response = client.with_session_auth(email=beneficiary.email).get(f"/offers/{offer.id}")
@@ -32,7 +34,9 @@ class Returns403Test:
     def test_access_by_unauthorized_pro_user(self, client):
         # Given
         pro_user = users_factories.ProFactory()
-        offer = offers_factories.ThingOfferFactory(venue__latitude=None, venue__longitude=None)
+        offer = offers_factories.ThingOfferFactory(
+            venue__latitude=None, venue__longitude=None, venue__offererAddress=None
+        )
 
         # When
         response = client.with_session_auth(email=pro_user.email).get(f"/offers/{offer.id}")
@@ -54,7 +58,10 @@ class Returns200Test:
         # Given
         user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.ThingOfferFactory(
-            venue__latitude=None, venue__longitude=None, venue__managingOfferer=user_offerer.offerer
+            venue__latitude=None,
+            venue__longitude=None,
+            venue__offererAddress=None,
+            venue__managingOfferer=user_offerer.offerer,
         )
 
         # When
