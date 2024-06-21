@@ -291,8 +291,6 @@ class CreateOffererTagCategoryForm(OffererTagBaseForm):
 
 class IndividualOffererSubscriptionForm(FlaskForm):
     # full_opacity=True ensures that read-only view does not look disabled
-    is_email_sent = fields.PCSwitchBooleanField("Mail envoyé à l'acteur", full_row=True, full_opacity=True)
-    date_email_sent = fields.PCOptDateField("Date d'envoi")
     is_criminal_record_received = fields.PCSwitchBooleanField(
         "Casier judiciaire reçu", full_row=True, full_opacity=True
     )
@@ -308,8 +306,6 @@ class IndividualOffererSubscriptionForm(FlaskForm):
     def __init__(self, *args: typing.Any, read_only: bool = False, **kwargs: typing.Any) -> None:
         super().__init__(*args, **kwargs)
         if read_only:
-            self.is_email_sent.flags.readonly = True
-            self.date_email_sent.flags.readonly = True
             self.is_criminal_record_received.flags.readonly = True
             self.date_criminal_record_received.flags.readonly = True
             self.is_certificate_received.flags.readonly = True

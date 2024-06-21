@@ -188,6 +188,7 @@ class TransactionalEmail(Enum):
     OFFERER_ATTACHMENT_REJECTION = models.TemplatePro(
         id_prod=792, id_not_prod=107, tags=["pro_rattachement_structure_rejet"]
     )
+    REMINDER_OFFERER_INDIVIDUAL_SUBSCRIPTION = models.TemplatePro(id_prod=1295, id_not_prod=164)
     REMINDER_7_DAYS_BEFORE_EVENT_TO_PRO = models.TemplatePro(id_prod=587, id_not_prod=73, tags=["pro_rappel_event_J-7"])
     REMINDER_OFFER_CREATION_5_DAYS_AFTER_TO_PRO = models.TemplatePro(
         id_prod=566, id_not_prod=104, tags=["pro_relance_offre_J+5"]
