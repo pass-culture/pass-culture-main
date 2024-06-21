@@ -23,6 +23,18 @@ Given('pro user has been created', () => {
   })
 })
 
+Given('pro user new nav has been created', () => {
+  cy.request('http://localhost:5001/sanboxes/pro_01_create_pro_user/create_pro_user_new_nav').then((response) => {
+    user_email = response.body.user.email
+  })
+})
+
+Given('create specific invoice', () => {
+  cy.request('http://localhost:5001/sanboxes/pro_02_create_specific_invoice/create_specific_invoice')
+})
+
+
+
 Given('I am logged in', () => {
   cy.login({
     email: user_email,
@@ -32,7 +44,7 @@ Given('I am logged in', () => {
 
 Given('I am logged in with the new interface', () => {
   cy.login({
-    email: 'activation_new_nav@example.com',
+    email: user_email,
     password: 'user@AZERTY123',
   })
 })
