@@ -3,6 +3,8 @@ import * as yup from 'yup'
 
 import { MAX_DETAILS_LENGTH } from 'core/OfferEducational/constants'
 
+import { getMaxEndDateInSchoolYear } from './utils/getMaxEndDateInSchoolYear'
+
 const todayAtMidnight = () => {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
@@ -64,10 +66,16 @@ export const generateValidationSchema = (
       .when([], {
         is: () => !preventPriceIncrease,
         then: (schema) =>
-          schema.min(
-            todayAtMidnight(),
-            "La date de l’évènement doit être supérieure à aujourd'hui"
-          ),
+          schema
+            .min(
+              todayAtMidnight(),
+              "La date de l’évènement doit être supérieure à aujourd'hui"
+            )
+            .test({
+              message: 'Les dates doivent être sur la même année scolaire',
+              test: (value, context) =>
+                value < getMaxEndDateInSchoolYear(context.parent.startDatetime),
+            }),
       }),
     eventTime: yup
       .string()
