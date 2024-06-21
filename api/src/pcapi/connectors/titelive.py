@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 def get_jwt_token() -> str:
     TITELIVE_JWT_CACHE_KEY = "api:titelive_jwt:cache"
-    TITELIVE_JWT_CACHE_TIMEOUT = 5 * 60 - 15  # a little less than 5 minutes
+    TITELIVE_JWT_CACHE_TIMEOUT = 145  # 2 minutes and 25 seconds
     url = f"{settings.TITELIVE_EPAGINE_API_AUTH_URL}/login/{settings.TITELIVE_EPAGINE_API_USERNAME}/token"
     payload = {"password": settings.TITELIVE_EPAGINE_API_PASSWORD}
 
