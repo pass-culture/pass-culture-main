@@ -19,6 +19,7 @@
   @include fonts.caption;
   @include a11y.visually-hidden;
 
+  text-align: left;
   color: var(--color-black);
 }
 
@@ -97,7 +98,7 @@
     position: relative;
     top: rem.torem(-2px);
     margin-left: rem.torem(8px);
-  }  
+  }
 }
 
 .column-collective-offer-name {
