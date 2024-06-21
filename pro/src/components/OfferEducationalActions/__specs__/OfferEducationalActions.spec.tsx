@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import { CollectiveBookingStatus, OfferStatus } from 'apiClient/v1'
+import { CollectiveBookingStatus, CollectiveOfferStatus } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY } from 'config/swrQueryKeys'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
@@ -116,7 +116,7 @@ describe('OfferEducationalActions', () => {
     renderOfferEducationalActions({
       ...defaultValues,
       offer: getCollectiveOfferFactory({
-        status: OfferStatus.SOLD_OUT,
+        status: CollectiveOfferStatus.SOLD_OUT,
         lastBookingId: 1,
         lastBookingStatus: CollectiveBookingStatus.CONFIRMED,
       }),
@@ -134,7 +134,7 @@ describe('OfferEducationalActions', () => {
     renderOfferEducationalActions({
       ...defaultValues,
       offer: getCollectiveOfferFactory({
-        status: OfferStatus.EXPIRED,
+        status: CollectiveOfferStatus.EXPIRED,
         lastBookingId: 1,
         lastBookingStatus: CollectiveBookingStatus.USED,
       }),
@@ -152,7 +152,7 @@ describe('OfferEducationalActions', () => {
     renderOfferEducationalActions({
       ...defaultValues,
       offer: getCollectiveOfferFactory({
-        status: OfferStatus.ACTIVE,
+        status: CollectiveOfferStatus.ACTIVE,
         lastBookingId: 1,
         lastBookingStatus: CollectiveBookingStatus.CANCELLED,
       }),
@@ -173,7 +173,7 @@ describe('OfferEducationalActions', () => {
     renderOfferEducationalActions({
       ...defaultValues,
       offer: getCollectiveOfferFactory({
-        status: OfferStatus.ACTIVE,
+        status: CollectiveOfferStatus.ACTIVE,
         lastBookingId: 1,
         lastBookingStatus: CollectiveBookingStatus.CONFIRMED,
       }),
@@ -256,7 +256,7 @@ describe('OfferEducationalActions', () => {
     renderOfferEducationalActions({
       ...defaultValues,
       offer: getCollectiveOfferFactory({
-        status: OfferStatus.PENDING,
+        status: CollectiveOfferStatus.PENDING,
       }),
     })
 

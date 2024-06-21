@@ -2,7 +2,11 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
-import { CollectiveBookingStatus, OfferStatus } from 'apiClient/v1'
+import {
+  CollectiveBookingStatus,
+  CollectiveOfferStatus,
+  OfferStatus,
+} from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { Notification } from 'components/Notification/Notification'
 import { Events } from 'core/FirebaseEvents/constants'
@@ -252,8 +256,11 @@ describe('ActionsBar', () => {
       ...props,
       audience: Audience.COLLECTIVE,
       selectedOffers: [
-        collectiveOfferFactory({ id: 1, status: OfferStatus.ACTIVE }),
-        collectiveOfferFactory({ id: 2, status: OfferStatus.PENDING }),
+        collectiveOfferFactory({ id: 1, status: CollectiveOfferStatus.ACTIVE }),
+        collectiveOfferFactory({
+          id: 2,
+          status: CollectiveOfferStatus.PENDING,
+        }),
       ],
       selectedOfferIds: [1, 2],
     })
@@ -270,7 +277,7 @@ describe('ActionsBar', () => {
   it('should not deactivate offers on click on "Désactiver" when at least one offer expired but with booking finished', async () => {
     const expiredOffer = collectiveOfferFactory({
       id: 1,
-      status: OfferStatus.EXPIRED,
+      status: CollectiveOfferStatus.EXPIRED,
     })
     renderActionsBar({
       ...props,
@@ -283,7 +290,7 @@ describe('ActionsBar', () => {
             id: 3,
           },
         },
-        collectiveOfferFactory({ id: 2, status: OfferStatus.ACTIVE }),
+        collectiveOfferFactory({ id: 2, status: CollectiveOfferStatus.ACTIVE }),
       ],
       selectedOfferIds: [1, 2],
     })
@@ -303,7 +310,7 @@ describe('ActionsBar', () => {
       ...props,
       audience: Audience.COLLECTIVE,
       selectedOffers: [
-        collectiveOfferFactory({ id: 1, status: OfferStatus.ACTIVE }),
+        collectiveOfferFactory({ id: 1, status: CollectiveOfferStatus.ACTIVE }),
         listOffersOfferFactory({ id: 2, status: OfferStatus.ACTIVE }),
       ],
       selectedOfferIds: [1, 2],
@@ -365,8 +372,8 @@ describe('ActionsBar', () => {
       audience: Audience.COLLECTIVE,
       areAllOffersSelected: false,
       selectedOffers: [
-        collectiveOfferFactory({ id: 1, status: OfferStatus.ACTIVE }),
-        collectiveOfferFactory({ id: 2, status: OfferStatus.ACTIVE }),
+        collectiveOfferFactory({ id: 1, status: CollectiveOfferStatus.ACTIVE }),
+        collectiveOfferFactory({ id: 2, status: CollectiveOfferStatus.ACTIVE }),
       ],
       selectedOfferIds: [1, 2],
     })
@@ -393,12 +400,12 @@ describe('ActionsBar', () => {
       selectedOffers: [
         collectiveOfferFactory({
           id: 1,
-          status: OfferStatus.ACTIVE,
+          status: CollectiveOfferStatus.ACTIVE,
           isShowcase: true,
         }),
         collectiveOfferFactory({
           id: 2,
-          status: OfferStatus.ACTIVE,
+          status: CollectiveOfferStatus.ACTIVE,
           isShowcase: true,
         }),
       ],
@@ -427,17 +434,17 @@ describe('ActionsBar', () => {
       selectedOffers: [
         collectiveOfferFactory({
           id: 1,
-          status: OfferStatus.ACTIVE,
+          status: CollectiveOfferStatus.ACTIVE,
           isShowcase: true,
         }),
         collectiveOfferFactory({
           id: 2,
-          status: OfferStatus.ACTIVE,
+          status: CollectiveOfferStatus.ACTIVE,
           isShowcase: true,
         }),
         collectiveOfferFactory({
           id: 3,
-          status: OfferStatus.ACTIVE,
+          status: CollectiveOfferStatus.ACTIVE,
         }),
       ],
       selectedOfferIds: [1, 2],

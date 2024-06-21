@@ -9,7 +9,7 @@ import { getErrorCode, isErrorAPIError } from 'apiClient/helpers'
 import {
   CollectiveBookingStatus,
   CollectiveOfferResponseModel,
-  OfferStatus,
+  CollectiveOfferStatus,
 } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { CancelCollectiveBookingModal } from 'components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
@@ -161,8 +161,8 @@ export const CollectiveActionsCells = ({
   return (
     <td className={styles['actions-column']}>
       <div className={styles['actions-container']}>
-        {(offer.status === OfferStatus.SOLD_OUT ||
-          offer.status === OfferStatus.EXPIRED) &&
+        {(offer.status === CollectiveOfferStatus.SOLD_OUT ||
+          offer.status === CollectiveOfferStatus.EXPIRED) &&
           offer.booking && (
             <BookingLinkCell
               bookingId={offer.booking.id}
@@ -179,8 +179,8 @@ export const CollectiveActionsCells = ({
           <DropdownMenu.Portal>
             <DropdownMenu.Content className={styles['pop-in']} align="start">
               <div className={styles['menu']}>
-                {(offer.status === OfferStatus.SOLD_OUT ||
-                  offer.status === OfferStatus.EXPIRED) &&
+                {(offer.status === CollectiveOfferStatus.SOLD_OUT ||
+                  offer.status === CollectiveOfferStatus.EXPIRED) &&
                   offer.booking && (
                     <>
                       <DropdownMenu.Item
@@ -238,7 +238,7 @@ export const CollectiveActionsCells = ({
                     </ButtonLink>
                   </DropdownMenu.Item>
                 )}
-                {offer.status === OfferStatus.SOLD_OUT &&
+                {offer.status === CollectiveOfferStatus.SOLD_OUT &&
                   offer.booking &&
                   (offer.booking.booking_status ===
                     CollectiveBookingStatus.PENDING ||

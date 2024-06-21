@@ -5,8 +5,8 @@ import { api } from 'apiClient/api'
 import {
   CollectiveBookingStatus,
   CollectiveOfferResponseModel,
+  CollectiveOfferStatus,
   ListOffersOfferResponseModel,
-  OfferStatus,
 } from 'apiClient/v1'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { GET_COLLECTIVE_OFFERS_QUERY_KEY } from 'config/swrQueryKeys'
@@ -186,8 +186,8 @@ function canDeactivateCollectiveOffers(
 
     //  Check that all the offers are published or expired
     return (
-      offer.status === OfferStatus.ACTIVE ||
-      (offer.status === OfferStatus.EXPIRED &&
+      offer.status === CollectiveOfferStatus.ACTIVE ||
+      (offer.status === CollectiveOfferStatus.EXPIRED &&
         (!offer.booking?.booking_status ||
           offer.booking.booking_status === CollectiveBookingStatus.CANCELLED))
     )

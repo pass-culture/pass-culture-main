@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import React from 'react'
 
-import { OfferStatus } from 'apiClient/v1'
+import { CollectiveOfferStatus } from 'apiClient/v1'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { CollectiveOfferConfirmationScreen } from '../CollectiveOfferConfirmation'
@@ -11,7 +11,7 @@ describe('CollectiveOfferConfirmation', () => {
     renderWithProviders(
       <CollectiveOfferConfirmationScreen
         offererId={1}
-        offerStatus={OfferStatus.PENDING}
+        offerStatus={CollectiveOfferStatus.PENDING}
         isShowcase={false}
         institutionDisplayName="Collège Bellevue"
       />
@@ -26,7 +26,7 @@ describe('CollectiveOfferConfirmation', () => {
     renderWithProviders(
       <CollectiveOfferConfirmationScreen
         offererId={1}
-        offerStatus={OfferStatus.ACTIVE}
+        offerStatus={CollectiveOfferStatus.ACTIVE}
         isShowcase={false}
         institutionDisplayName="Collège Bellevue"
       />
@@ -44,7 +44,7 @@ describe('CollectiveOfferConfirmation', () => {
     renderWithProviders(
       <CollectiveOfferConfirmationScreen
         offererId={1}
-        offerStatus={OfferStatus.ACTIVE}
+        offerStatus={CollectiveOfferStatus.ACTIVE}
         isShowcase={false}
         institutionDisplayName=""
       />
@@ -67,7 +67,7 @@ describe('CollectiveOfferConfirmation', () => {
     renderWithProviders(
       <CollectiveOfferConfirmationScreen
         offererId={null}
-        offerStatus={OfferStatus.ACTIVE}
+        offerStatus={CollectiveOfferStatus.ACTIVE}
         isShowcase={true}
         institutionDisplayName=""
       />
@@ -82,7 +82,7 @@ describe('CollectiveOfferConfirmation', () => {
     renderWithProviders(
       <CollectiveOfferConfirmationScreen
         offererId={null}
-        offerStatus={OfferStatus.ACTIVE}
+        offerStatus={CollectiveOfferStatus.ACTIVE}
         isShowcase={true}
         institutionDisplayName=""
       />
