@@ -70,6 +70,7 @@ def create_offers_with_gtls() -> None:
         postalCode="63140",
         city="CHATEL-GUYON",
         departementCode="63",
+        banId="63103_0040_00013",
     )
     create_offers_for_each_gtl_level_1(10, librairie_gtl)
     create_offers_with_gtl_id("01030000", 10, librairie_gtl)  # littérature, Œuvres classiques
@@ -89,6 +90,7 @@ def create_offers_with_gtls() -> None:
         postalCode="85000",
         city="LA ROCHE-SUR-YON",
         departementCode="85",
+        banId="85191_0940_00011",
     )
     create_offers_with_gtl_id("03050300", 10, librairie_manga)  # 10 mangas
 
@@ -144,6 +146,7 @@ def create_offers_with_same_ean() -> None:
                     postalCode=venue_data["postalCode"],
                     city=venue_data["city"],
                     departementCode=venue_data["departementCode"],
+                    banId=venue_data["banId"],
                 ),
             )
         )
@@ -205,6 +208,7 @@ def create_allocine_venues() -> None:
             postalCode=venue_data["postalCode"],
             city=venue_data["city"],
             departementCode=venue_data["departementCode"],
+            banId=venue_data["banId"],
             managingOfferer=allocine_offerer,
         )
         allocine_provider = providers_factories.AllocineProviderFactory(isActive=True)
@@ -238,6 +242,7 @@ def create_venues_across_cities() -> None:
                 postalCode=venue["postalCode"],
                 city=venue["city"],
                 departementCode=venue["departementCode"],
+                banId=venue["banId"],
             )
             for _ in range(7):
                 offer = offers_factories.OfferFactory(

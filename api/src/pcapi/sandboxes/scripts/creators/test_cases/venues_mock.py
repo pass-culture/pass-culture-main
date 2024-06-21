@@ -1,4 +1,5 @@
 import dataclasses
+import typing
 
 
 @dataclasses.dataclass
@@ -8,10 +9,13 @@ class City:
     postal_code: int | None = None
 
 
+VenueTestDataListType = list[dict[str, typing.Any]]
+
+
 # Retrieved from staging with following query:
 # select * from venue where city='<city>' and "isPermanent"=True
 # then I only kept the first venue per venueTypeCode
-paris_venues = [
+paris_venues: VenueTestDataListType = [
     {
         "name": "QUAI DES SONGES",
         "latitude": "48.88387",
@@ -20,6 +24,7 @@ paris_venues = [
         "postalCode": "75019",
         "city": "PARIS",
         "departementCode": "75",
+        "banId": "75119_5732_00007",
     },
     {
         "name": "DOMAINE NATIONAL DU PALAIS-ROYAL, entrée place Colette",
@@ -29,6 +34,7 @@ paris_venues = [
         "postalCode": "75001",
         "city": "PARIS",
         "departementCode": "75",
+        "banId": None,
     },
     {
         "name": "Centre Paris Anim Rebeval",
@@ -38,6 +44,7 @@ paris_venues = [
         "postalCode": "75019",
         "city": "PARIS",
         "departementCode": "75",
+        "banId": "75119_8076_00036",
     },
     {
         "name": "THEATRE DE LA GAITE MONTPARNASSE",
@@ -47,6 +54,7 @@ paris_venues = [
         "postalCode": "75014",
         "city": "PARIS",
         "departementCode": "75",
+        "banId": "75114_3919_00026",
     },
     {
         "name": "WOODBRASS COM",
@@ -56,6 +64,7 @@ paris_venues = [
         "postalCode": "75019",
         "city": "PARIS",
         "departementCode": "75",
+        "banId": "75119_4903_00182",
     },
     {
         "name": "B'ZZ boutique et galerie au CENTQUATRE Paris",
@@ -65,6 +74,7 @@ paris_venues = [
         "postalCode": "75019",
         "city": "PARIS",
         "departementCode": "75",
+        "banId": "75119_2494_00005",
     },
     {
         "name": "Centre Paris Anim Daviel",
@@ -74,6 +84,7 @@ paris_venues = [
         "postalCode": "75013",
         "city": "PARIS",
         "departementCode": "75",
+        "banId": "75113_2603_00024",
     },
     {
         "name": "BALADES SONORES",
@@ -83,6 +94,7 @@ paris_venues = [
         "postalCode": "75009",
         "city": "PARIS",
         "departementCode": "75",
+        "banId": "75109_9484_00003",
     },
     {
         "name": "Médiation - Musée d'art et d'histoire du Judaïsme",
@@ -92,6 +104,7 @@ paris_venues = [
         "postalCode": "75003",
         "city": "PARIS",
         "departementCode": "75",
+        "banId": "75103_9191_00071",
     },
     {
         "name": "ITABUNA",
@@ -101,6 +114,7 @@ paris_venues = [
         "postalCode": "75004",
         "city": "PARIS",
         "departementCode": "75",
+        "banId": "75104_8249_00038",
     },
     {
         "name": "Virtual Room Paris",
@@ -110,6 +124,7 @@ paris_venues = [
         "postalCode": "75011",
         "city": "PARIS",
         "departementCode": "75",
+        "banId": "75111_8208_00035",
     },
     {
         "name": "Site François Mitterrand",
@@ -119,6 +134,7 @@ paris_venues = [
         "postalCode": "75013",
         "city": "PARIS",
         "departementCode": "75",
+        "banId": "75113_3802",
     },
     {
         "name": "EDEN PLUS",
@@ -128,6 +144,7 @@ paris_venues = [
         "postalCode": "75009",
         "city": "PARIS",
         "departementCode": "75",
+        "banId": "75109_7560_00024",
     },
     {
         "name": "PARC ZOOLOGIQUE DE PARIS",
@@ -137,6 +154,7 @@ paris_venues = [
         "postalCode": "75012",
         "city": "PARIS",
         "departementCode": "75",
+        "banId": None,
     },
     {
         "name": "VILLE DE PARIS",
@@ -146,6 +164,7 @@ paris_venues = [
         "postalCode": "75001",
         "city": "PARIS",
         "departementCode": "75",
+        "banId": "75101_5822_00004",
     },
     {
         "name": "ADAM MONTPARNASSE - DALBE PARIS 14",
@@ -155,6 +174,7 @@ paris_venues = [
         "postalCode": "75014",
         "city": "PARIS",
         "departementCode": "75",
+        "banId": "75114_3116_00011",
     },
     {
         "name": "QJ - Quartiers Jeunes",
@@ -164,6 +184,7 @@ paris_venues = [
         "postalCode": "75001",
         "city": "PARIS",
         "departementCode": "75",
+        "banId": "75101_5822_00004",
     },
     {
         "name": "Festival We Love Green - Bois de Vincennes",
@@ -173,11 +194,12 @@ paris_venues = [
         "postalCode": "75012",
         "city": "PARIS",
         "departementCode": "75",
+        "banId": None,
     },
 ]
 
 # I used `where "departementCode"='976'` to have more results
-mayotte_venues = [
+mayotte_venues: VenueTestDataListType = [
     {
         "name": "POLE CULTUREL DE CHIRONGUI",
         "latitude": "-12.93546",
@@ -186,6 +208,7 @@ mayotte_venues = [
         "postalCode": "97620",
         "city": "Chirongui",
         "departementCode": "976",
+        "banId": "97606_1373_00425",
     },
     {
         "name": "ASSOCIATION MUSIQUE A MAYOTTE",
@@ -195,6 +218,7 @@ mayotte_venues = [
         "postalCode": "97600",
         "city": "MAMOUDZOU",
         "departementCode": "976",
+        "banId": None,
     },
     {
         "name": "LA BOUQUINERIE DE PASSAMAINTY",
@@ -204,6 +228,7 @@ mayotte_venues = [
         "postalCode": "97600",
         "city": "MAMOUDZOU",
         "departementCode": "976",
+        "banId": None,
     },
     {
         "name": "MAIRIE",
@@ -213,15 +238,17 @@ mayotte_venues = [
         "postalCode": "97650",
         "city": "BANDRABOUA",
         "departementCode": "976",
+        "banId": "97602_0685_00238",
     },
     {
         "name": "Musée de Mayotte (MUMA)",
-        "latitude": "-12.78207",
-        "longitude": "45.25710",
-        "address": "Place de France",
+        "latitude": "-12.78213",
+        "longitude": "45.25668",
+        "address": "2 Place de France",
         "postalCode": "97615",
         "city": "Dzaoudzi",
         "departementCode": "976",
+        "banId": "97608_ore3k1_00002",
     },
     {
         "name": "Le M'Haju",
@@ -231,15 +258,17 @@ mayotte_venues = [
         "postalCode": "97660",
         "city": "Bandrele",
         "departementCode": "976",
+        "banId": "97603_0886_02275",
     },
     {
         "name": "Site de Valarano entre Coconi et Kahani",
-        "latitude": "-12.83082",
-        "longitude": "45.13500",
+        "latitude": "-12.83416",
+        "longitude": "45.13455",
         "address": "20 Rue Ibrahim Ramadani",
         "postalCode": "97670",
         "city": "Ouangani",
         "departementCode": "976",
+        "banId": "97614_2wkrzr_00020",
     },
     {
         "name": "ESPACE FOURNITURES",
@@ -249,6 +278,7 @@ mayotte_venues = [
         "postalCode": "97600",
         "city": "Mamoudzou",
         "departementCode": "976",
+        "banId": None,
     },
     {
         "name": "Cinéma De Chirongui",
@@ -258,6 +288,7 @@ mayotte_venues = [
         "postalCode": "97620",
         "city": "Chirongui",
         "departementCode": "976",
+        "banId": "97606_1373_00425",
     },
     {
         "name": "AGENCE REGIONALE DU LIVRE ET DE LA LECTURE DE MAYOTTE",
@@ -267,6 +298,7 @@ mayotte_venues = [
         "postalCode": "97670",
         "city": "CHICONI",
         "departementCode": "976",
+        "banId": "97605_0258_00006",
     },
     {
         "name": "KAMALDINE BEN AZALI",
@@ -276,10 +308,11 @@ mayotte_venues = [
         "postalCode": "97600",
         "city": "Mamoudzou",
         "departementCode": "976",
+        "banId": "97611",
     },
 ]
 
-lyon_venues = [
+lyon_venues: VenueTestDataListType = [
     {
         "name": "PATHE CINEMAS FRANCE",
         "latitude": "45.78734",
@@ -288,6 +321,7 @@ lyon_venues = [
         "postalCode": "69009",
         "city": "Lyon",
         "departementCode": "69",
+        "banId": "69389_2190_00043",
     },
     {
         "name": "LIBRAIRIE LES BIBLIOS",
@@ -297,6 +331,7 @@ lyon_venues = [
         "postalCode": "69006",
         "city": "Lyon",
         "departementCode": "69",
+        "banId": "69386_2050_00034",
     },
     {
         "name": "Musée Lumière",
@@ -306,6 +341,7 @@ lyon_venues = [
         "postalCode": "69008",
         "city": "Lyon",
         "departementCode": "69",
+        "banId": "69388_5700_00025",
     },
     {
         "name": "BAILA CONMIGO",
@@ -315,6 +351,7 @@ lyon_venues = [
         "postalCode": "69007",
         "city": "LYON 7EME",
         "departementCode": "69",
+        "banId": "69387_1980_00035",
     },
     {
         "name": "MAISON DES JEUNES ET DE LA CULTURE",
@@ -324,6 +361,7 @@ lyon_venues = [
         "postalCode": "69110",
         "city": "SAINTE-FOY-LES-LYON",
         "departementCode": "69",
+        "banId": "69202_0680_00112",
     },
     {
         "name": "Studio Ben",
@@ -333,6 +371,7 @@ lyon_venues = [
         "postalCode": "69003",
         "city": "LYON 3EME",
         "departementCode": "69",
+        "banId": "69383_6330_00006",
     },
     {
         "name": "LIVITY RECORDS",
@@ -342,6 +381,7 @@ lyon_venues = [
         "postalCode": "69005",
         "city": "LYON 5EME",
         "departementCode": "69",
+        "banId": "69385_2200_00001",
     },
     {
         "name": "CAPSULE CORP",
@@ -351,6 +391,7 @@ lyon_venues = [
         "postalCode": "69006",
         "city": "LYON 6EME",
         "departementCode": "69",
+        "banId": "69386_6860_00010",
     },
     {
         "name": "A B C G",
@@ -360,6 +401,7 @@ lyon_venues = [
         "postalCode": "69005",
         "city": "LYON 5EME",
         "departementCode": "69",
+        "banId": "69385_6110_00027",
     },
     {
         "name": "BIBLIOTHEQUE DE LA PART-DIEU",
@@ -369,6 +411,7 @@ lyon_venues = [
         "postalCode": "69003",
         "city": "Lyon",
         "departementCode": "69",
+        "banId": "69383_7520_00030",
     },
     {
         "name": "ONIGIRI RECORDS",
@@ -378,6 +421,7 @@ lyon_venues = [
         "postalCode": "69007",
         "city": "LYON 7EME",
         "departementCode": "69",
+        "banId": "69387_1630_00040",
     },
     {
         "name": "Chapelle de la Trinité",
@@ -387,6 +431,7 @@ lyon_venues = [
         "postalCode": "69002",
         "city": "Lyon",
         "departementCode": "69",
+        "banId": "69382_1100_00031",
     },
     {
         "name": "THEATRE DE GERLAND",
@@ -396,6 +441,7 @@ lyon_venues = [
         "postalCode": "69007",
         "city": "LYON 7EME",
         "departementCode": "69",
+        "banId": "69387_5950_00007",
     },
     {
         "name": "GERSTAECKER LYON LE GEANT DES BEAUX ARTS",
@@ -405,6 +451,7 @@ lyon_venues = [
         "postalCode": "69001",
         "city": "LYON 1ER",
         "departementCode": "69",
+        "banId": "69381_3025_00003",
     },
     {
         "name": "SOIERIE VIVANTE",
@@ -414,6 +461,7 @@ lyon_venues = [
         "postalCode": "69004",
         "city": "LYON 4EME",
         "departementCode": "69",
+        "banId": "69384_6035_00021",
     },
     {
         "name": "H7",
@@ -423,6 +471,7 @@ lyon_venues = [
         "postalCode": "69002",
         "city": "Lyon",
         "departementCode": "69",
+        "banId": "69382_5355_00070",
     },
     {
         "name": "THEATRE ISHTAR",
@@ -432,6 +481,7 @@ lyon_venues = [
         "postalCode": "69007",
         "city": "Lyon",
         "departementCode": "69",
+        "banId": "69387_0900_00014",
     },
     {
         "name": "COMMUNAUTE D'UNIVERSITES ET ETABLISSEMENTS (COMUE) UNIVERSITE DE LYON",
@@ -441,6 +491,7 @@ lyon_venues = [
         "postalCode": "69007",
         "city": "Lyon",
         "departementCode": "69",
+        "banId": "69387_2460_00001",
     },
     {
         "name": "S-A",
@@ -450,11 +501,12 @@ lyon_venues = [
         "postalCode": "69002",
         "city": "Lyon",
         "departementCode": "69",
+        "banId": "69382_6005_00085",
     },
 ]
 
 # Other venues extracted randomly from staging
-venues = [
+venues: VenueTestDataListType = [
     {
         "name": "AGORA",
         "latitude": 46.66979,
@@ -463,6 +515,7 @@ venues = [
         "postalCode": "85000",
         "city": "LA ROCHE-SUR-YON",
         "departementCode": 85,
+        "banId": "85191_0940_00011",
     },
     {
         "name": "LIS TES RATURES",
@@ -472,6 +525,7 @@ venues = [
         "postalCode": "63140",
         "city": "CHATEL-GUYON",
         "departementCode": 63,
+        "banId": "63103_0040_00013",
     },
     {
         "name": "LES COCOTTES ROUSSES",
@@ -481,6 +535,7 @@ venues = [
         "postalCode": "69360",
         "city": "SAINT SYMPHORIEN D'OZON",
         "departementCode": 69,
+        "banId": "69291_0511_00003",
     },
     {
         "name": "FNAC Paris - Forum des Halles",
@@ -490,6 +545,7 @@ venues = [
         "postalCode": "75001",
         "city": "PARIS 1",
         "departementCode": 75,
+        "banId": "75101_8598",
     },
     {
         "name": "librairie saint martin",
@@ -499,6 +555,7 @@ venues = [
         "postalCode": "33430",
         "city": "Bazas",
         "departementCode": 33,
+        "banId": "33036_1242_00002",
     },
     {
         "name": "SGEC CORSE",
@@ -508,6 +565,7 @@ venues = [
         "postalCode": "20000",
         "city": "Ajaccio",
         "departementCode": 20,
+        "banId": "2a004_0866_00002",
     },
     {
         "name": "SOCULTUR",
@@ -517,6 +575,7 @@ venues = [
         "postalCode": "77410",
         "city": "CLAYE-SOUILLY",
         "departementCode": 77,
+        "banId": "77118_1280",
     },
     {
         "name": "LIBRAIRIE PAPETERIE CHRISTMANN SARL",
@@ -526,6 +585,7 @@ venues = [
         "postalCode": "77400",
         "city": "LAGNY-SUR-MARNE",
         "departementCode": 77,
+        "banId": "77243_1110_00015",
     },
     {
         "name": "UN EN DEHORS",
@@ -535,6 +595,7 @@ venues = [
         "postalCode": "69001",
         "city": "LYON 1ER",
         "departementCode": 69,
+        "banId": "69381_1245_00018",
     },
     {
         "name": "WH SMITH FRANCE",
@@ -544,10 +605,11 @@ venues = [
         "postalCode": "75001",
         "city": "PARIS",
         "departementCode": "75",
+        "banId": "75101_8249_00248",
     },
 ]
 
-cinemas_paris = [
+cinemas_paris: VenueTestDataListType = [
     {
         "name": "Musée national EugèneDelacroix",
         "latitude": "48.86015",
@@ -556,6 +618,7 @@ cinemas_paris = [
         "postalCode": "75006",
         "city": "Paris",
         "departementCode": "75",
+        "banId": "75106_3886_00006",
         "theaterId": "VGhlYXRlcjpDMDE2OQ==",
         "internalId": "C0169",
     },
@@ -567,6 +630,7 @@ cinemas_paris = [
         "postalCode": "75007",
         "city": "Paris",
         "departementCode": "75",
+        "banId": "75107_1257_00037",
         "theaterId": "VGhlYXRlcjpQMDAwNw==",
         "internalId": "P0007",
     },
@@ -578,6 +642,7 @@ cinemas_paris = [
         "postalCode": "75013",
         "city": "Paris",
         "departementCode": "75",
+        "banId": "75113_4209_00066_b",
         "theaterId": "VGhlYXRlcjpDMDE1MA==",
         "internalId": "C0150",
     },
@@ -589,6 +654,7 @@ cinemas_paris = [
         "postalCode": "75017",
         "city": "Paris",
         "departementCode": "75",
+        "banId": "75117_7725",
         "theaterId": "VGhlYXRlcjpDMDE3NQ==",
         "internalId": "C0175",
     },
@@ -600,6 +666,7 @@ cinemas_paris = [
         "postalCode": "75009",
         "city": "Paris",
         "departementCode": "75",
+        "banId": "75109_7560_00024",
         "theaterId": "VGhlYXRlcjpDMDA4OQ==",
         "internalId": "C0089",
     },
@@ -611,6 +678,7 @@ cinemas_paris = [
         "postalCode": "75019",
         "city": "Paris",
         "departementCode": "75",
+        "banId": "75119_4903_00211",
         "theaterId": "VGhlYXRlcjpXNzUwMQ==",
         "internalId": "W7501",
     },
@@ -622,6 +690,7 @@ cinemas_paris = [
         "postalCode": "75001",
         "city": "Paris",
         "departementCode": "75",
+        "banId": None,
         "theaterId": "VGhlYXRlcjpDMDE1OQ==",
         "internalId": "C0159",
     },
@@ -633,6 +702,7 @@ cinemas_paris = [
         "postalCode": "75005",
         "city": "Paris",
         "departementCode": "75",
+        "banId": "75105_9751_00013",
         "theaterId": "VGhlYXRlcjpDMDA3Ng==",
         "internalId": "C0076",
     },
@@ -644,6 +714,7 @@ cinemas_paris = [
         "postalCode": "75014",
         "city": "Paris",
         "departementCode": "75",
+        "banId": "75114_2691_00024",
         "theaterId": "VGhlYXRlcjpDMDE1Mw==",
         "internalId": "C0153",
     },
@@ -655,6 +726,7 @@ cinemas_paris = [
         "postalCode": "75010",
         "city": "Paris",
         "departementCode": "75",
+        "banId": "75110_5907_00170",
         "theaterId": "VGhlYXRlcjpXNzUxMA==",
         "internalId": "W7510",
     },
@@ -666,12 +738,13 @@ cinemas_paris = [
         "postalCode": "75001",
         "city": "Paris",
         "departementCode": "75",
+        "banId": "75101_2259_00001",
         "theaterId": "VGhlYXRlcjpXNzU4OA==",
         "internalId": "W7588",
     },
 ]
 
-cinemas_lyon = [
+cinemas_lyon: VenueTestDataListType = [
     {
         "name": "CINEMA COMOEDIA",
         "latitude": "45.74737",
@@ -680,17 +753,19 @@ cinemas_lyon = [
         "postalCode": "69007",
         "city": "LYON 7EME",
         "departementCode": "69",
+        "banId": "69387_0900_00013",
         "theaterId": "VGhlYXRlcjpQMzc1Nw==",
         "internalId": "P3757",
     },
     {
         "name": "CINE DUCHERE",
-        "latitude": "45.78743",
-        "longitude": "4.79962",
-        "address": "AVENUE ANDREI SAKHAROV",
+        "latitude": "45.78837",
+        "longitude": "4.80057",
+        "address": "308 AVENUE ANDREI SAKHAROV",
         "postalCode": "69009",
         "city": "LYON 9EME",
         "departementCode": "69",
+        "banId": "69389_0130_00308",
         "theaterId": "VGhlYXRlcjpQMDYxOA==",
         "internalId": "P0618",
     },
@@ -702,6 +777,7 @@ cinemas_lyon = [
         "postalCode": "69002",
         "city": "Lyon",
         "departementCode": "69",
+        "banId": "69382_0660_00012",
         "theaterId": "VGhlYXRlcjpQMDAxNQ==",
         "internalId": "P0015",
     },
@@ -713,6 +789,7 @@ cinemas_lyon = [
         "postalCode": "69003",
         "city": "LYON 3EME",
         "departementCode": "69",
+        "banId": "69383_5475_00068",
         "theaterId": "VGhlYXRlcjpXNjkwMw==",
         "internalId": "W6903",
     },
@@ -724,12 +801,13 @@ cinemas_lyon = [
         "postalCode": "69001",
         "city": "LYON 1ER",
         "departementCode": "69",
+        "banId": "69381_5720_00040",
         "theaterId": "VGhlYXRlcjpQMDAxNw==",
         "internalId": "P0017",
     },
 ]
 
-cinemas_domtom = [
+cinemas_domtom: VenueTestDataListType = [
     {
         "name": "CINEMA REX",
         "latitude": "-21.34186",
@@ -738,6 +816,7 @@ cinemas_domtom = [
         "postalCode": "97410",
         "city": "SAINT-PIERRE",
         "departementCode": "974",
+        "banId": "97416_0020_00001",
         "theaterId": "VGhlYXRlcjpQMDkxNQ==",
         "internalId": "P0915",
     },
@@ -749,6 +828,7 @@ cinemas_domtom = [
         "postalCode": "97310",
         "city": "KOUROU",
         "departementCode": "973",
+        "banId": "97304_0610",
         "theaterId": "VGhlYXRlcjpXOTczMQ==",
         "internalId": "W9731",
     },
@@ -760,6 +840,7 @@ cinemas_domtom = [
         "postalCode": "97233",
         "city": "SCHOELCHER",
         "departementCode": "972",
+        "banId": "97229_nfmrlp_00003_u",
         "theaterId": "VGhlYXRlcjpQOTcyMA==",
         "internalId": "P9720",
     },
@@ -771,6 +852,7 @@ cinemas_domtom = [
         "postalCode": "97100",
         "city": "BASSE-TERRE",
         "departementCode": "971",
+        "banId": "97105_0390_00018",
         "theaterId": "VGhlYXRlcjpQOTcxMA==",
         "internalId": "P9710",
     },
@@ -782,6 +864,7 @@ cinemas_domtom = [
         "postalCode": "97300",
         "city": "CAYENNE",
         "departementCode": "973",
+        "banId": "97302_0759_00021",
         "theaterId": "VGhlYXRlcjpCOTczMA==",
         "internalId": "B9730",
     },
@@ -793,6 +876,7 @@ cinemas_domtom = [
         "postalCode": "97438",
         "city": "SAINTE-MARIE",
         "departementCode": "974",
+        "banId": "97418_0443_00051",
         "theaterId": "VGhlYXRlcjpQNzgwMQ==",
         "internalId": "P7801",
     },
@@ -804,6 +888,7 @@ cinemas_domtom = [
         "postalCode": "97351",
         "city": "MATOURY",
         "departementCode": "973",
+        "banId": None,
         "theaterId": "VGhlYXRlcjpQOTczNQ==",
         "internalId": "P9735",
     },
@@ -815,20 +900,22 @@ cinemas_domtom = [
         "postalCode": "97320",
         "city": "SAINT LAURENT DU MARONI",
         "departementCode": "973",
+        "banId": "97311_0230_00005",
         "theaterId": "VGhlYXRlcjpQOTczMg==",
         "internalId": "P9732",
     },
     {
         "name": "POLE CULTUREL DE CHIRONGUI",
-        "latitude": "-12.93546",
-        "longitude": "45.14915",
-        "address": "425 rue Saïd VITTA",
+        "latitude": "-12.93555",
+        "longitude": "45.14910",
+        "address": "425 avenue Saïd VITTA",
         "postalCode": "97620",
         "city": "Chirongui",
         "departementCode": "976",
+        "banId": "97606_1373_00425",
         "theaterId": "VGhlYXRlcjpXOTc2Mg==",
         "internalId": "W9762",
     },
 ]
 
-cinemas_venues = cinemas_paris + cinemas_lyon + cinemas_domtom
+cinemas_venues: VenueTestDataListType = cinemas_paris + cinemas_lyon + cinemas_domtom
