@@ -1,4 +1,4 @@
-import { Then, When } from '@badeball/cypress-cucumber-preprocessor'
+import { Then, When, DataTable } from '@badeball/cypress-cucumber-preprocessor'
 
 When('I download reimbursement details', () => {
   cy.findByTestId('dropdown-menu-trigger').click()
@@ -52,3 +52,48 @@ Then(
     })
   }
 )
+
+Then('These receipt results should be displayed', (dataTable: DataTable) => {
+  const numRows = dataTable.rows().length
+  const numColumns = dataTable.raw()[0].length
+  const data = dataTable.raw()
+
+  cy.findAllByTestId('spinner').should('not.exist')
+  cy.findAllByTestId('invoice-item-row').should('have.length', numRows)
+
+  // Vérification des titres des colonnes
+  const titleArray = data[0]
+  cy.findAllByTestId('invoice-title-row').within(() => {
+    cy.get('th').then(($elt) => {
+      for (let column = 0; column < numColumns; column++) {
+        if (titleArray[column] != '')
+          cy.wrap($elt).eq(column).should('contain', titleArray[column])
+      }
+    })
+  })
+
+  // Vérification du contenu du tableau
+  for (let rowLine = 0; rowLine < numRows; rowLine++) {
+    const bookLineArray = data[rowLine + 1]
+
+    cy.findAllByTestId('invoice-item-row')
+      .eq(rowLine)
+      .within(() => {
+        cy.get('td').then(($elt) => {
+          for (let column = 0; column < numColumns; column++) {
+            if (bookLineArray[column] != '')
+              cy.wrap($elt).eq(column).should('contain', bookLineArray[column])
+          }
+        })
+      })
+  }
+})
+
+Then('No receipt results should be displayed', () => {
+  cy.findAllByTestId('spinner').should('not.exist')
+  cy.findAllByTestId('invoice-title-row').should('not.exist')
+  cy.findAllByTestId('invoice-item-row').should('not.exist')
+  cy.contains(
+    'Vous n’avez pas encore de justificatifs de remboursement disponibles'
+  )
+})
