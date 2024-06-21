@@ -22,7 +22,7 @@ const serializeBookingLimitDatetime = (
     new Date(beginningDate).toDateString() ===
     new Date(bookingLimitDatetime).toDateString()
   ) {
-    return serializeBeginningDateTime(
+    return serializeDateTimeToUTCFromLocalDepartment(
       beginningDate,
       beginningTime,
       departementCode
@@ -55,7 +55,7 @@ export const buildDateTime = (date: string, time: string) => {
   )
 }
 
-export const serializeBeginningDateTime = (
+export const serializeDateTimeToUTCFromLocalDepartment = (
   beginningDate: string,
   beginningTime: string,
   departementCode?: string | null
@@ -84,7 +84,7 @@ const serializeStockEvent = (
     throw Error("L'heure de début d'évenement est invalide")
   }
 
-  const serializedbeginningDatetime = serializeBeginningDateTime(
+  const serializedbeginningDatetime = serializeDateTimeToUTCFromLocalDepartment(
     formValues.beginningDate,
     formValues.beginningTime,
     departementCode
