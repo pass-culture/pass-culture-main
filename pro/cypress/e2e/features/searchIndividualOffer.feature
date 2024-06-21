@@ -6,7 +6,7 @@ Feature: Search individual offers
     And I go to the "Offres" page
 
   Scenario: A search with a name should display expected results
-    When I search with the text "Offer 1643"
+    When I search with the text "Offer 1868"
     Then These results should be displayed
       |  |  | Titre      | Lieu                             | Stocks | Status     |
       |  |  | Offer 1643 | Cinéma du coin - Offre numérique | 0      | désactivée |
@@ -15,14 +15,14 @@ Feature: Search individual offers
     When I search with the text "9780000000004"
     Then These results should be displayed
       |  |  | Titre            | Lieu         | Stocks | Status     |
-      |  |  | Livre 4 avec EAN | Librairie 10 |     10 | publiée    |
-      |  |  | Livre 4 avec EAN | Librairie 9  |     10 | désactivée |
-      |  |  | Livre 4 avec EAN | Librairie 8  |     10 | publiée    |
-      |  |  | Livre 4 avec EAN | Librairie 7  |     10 | publiée    |
-      |  |  | Livre 4 avec EAN | Librairie 6  |     10 | en attente |
-      |  |  | Livre 4 avec EAN | Librairie 5  |     10 | publiée    |
-      |  |  | Livre 4 avec EAN | Librairie 4  |     10 | publiée    |
-      |  |  | Livre 4 avec EAN | Librairie 3  |     10 | désactivée |
-      |  |  | Livre 4 avec EAN | Librairie 2  |     10 | publiée    |
-      |  |  | Livre 4 avec EAN | Librairie 1  |     10 | publiée    |
+      |  |  | Livre 4 avec EAN | Librairie 10 | 10     | publiée    |
+      |  |  | Livre 4 avec EAN | Librairie 9  | 10     | désactivée |
+      |  |  | Livre 4 avec EAN | Librairie 8  | 10     | publiée    |
+      |  |  | Livre 4 avec EAN | Librairie 7  | 10     | publiée    |
+      |  |  | Livre 4 avec EAN | Librairie 6  | 10     | en attente |
+      |  |  | Livre 4 avec EAN | Librairie 5  | 10     | publiée    |
+      |  |  | Livre 4 avec EAN | Librairie 4  | 10     | publiée    |
+      |  |  | Livre 4 avec EAN | Librairie 3  | 10     | désactivée |
+      |  |  | Livre 4 avec EAN | Librairie 2  | 10     | publiée    |
+      |  |  | Livre 4 avec EAN | Librairie 1  | 10     | publiée    |
 
