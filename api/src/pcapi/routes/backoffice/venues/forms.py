@@ -55,13 +55,13 @@ class EditVenueForm(EditVirtualVenueForm):
         "Adresse",
         validators=(wtforms.validators.Length(max=200, message="doit contenir moins de %(max)d caractères"),),
     )
+    postal_code = fields.PCPostalCodeHiddenField("Code postal")  # match Venue.postalCode case
     city = fields.PCHiddenField(
         "Ville",
         validators=(
             wtforms.validators.Length(min=1, max=50, message="doit contenir entre %(min)d et %(max)d caractères"),
         ),
     )
-    postal_code = fields.PCPostalCodeHiddenField("Code postal")  # match Venue.postalCode case
     latitude = fields.PCOptHiddenField("Latitude")
     longitude = fields.PCOptHiddenField("Longitude")
     ban_id = fields.PCOptHiddenField("Identifiant Base Adresse Nationale")
