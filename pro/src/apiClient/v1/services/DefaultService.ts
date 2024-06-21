@@ -529,7 +529,7 @@ export class DefaultService {
   public getCollectiveOffers(
     nameOrIsbn?: string | null,
     offererId?: number | null,
-    status?: CollectiveOfferDisplayedStatus | null,
+    status?: (Array<CollectiveOfferDisplayedStatus> | CollectiveOfferDisplayedStatus) | null,
     venueId?: number | null,
     categoryId?: string | null,
     creationMode?: string | null,

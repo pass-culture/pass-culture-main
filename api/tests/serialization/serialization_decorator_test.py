@@ -2,8 +2,10 @@ from unittest.mock import Mock
 from unittest.mock import patch
 
 from flask.blueprints import Blueprint
+from werkzeug.datastructures import MultiDict
 
 from pcapi.routes.serialization import BaseModel
+from pcapi.serialization.decorator import _transform_query_args_to_dict
 from pcapi.serialization.decorator import spectree_serialize
 
 
@@ -165,3 +167,35 @@ class SerializationDecoratorTest:
     def test_post_without_content_type_throws_400(self, client):
         response = client.post("/test-blueprint/body-validation", headers={})
         assert response.status_code == 400
+
+
+class TransformQueryArgsToDictTest:
+    def test_basic_transformation(self, client):
+        query_params = MultiDict([("a", "1"), ("b", "2"), ("c", "3")])
+        use_as_list = ["b"]
+        expected = {"a": "1", "b": ["2"], "c": "3"}
+        assert _transform_query_args_to_dict(query_params, use_as_list) == expected
+
+    def test_multiple_values_for_list_param(self, client):
+        query_params = MultiDict([("a", "1"), ("b", "2"), ("b", "3"), ("c", "4")])
+        use_as_list = ["b"]
+        expected = {"a": "1", "b": ["2", "3"], "c": "4"}
+        assert _transform_query_args_to_dict(query_params, use_as_list) == expected
+
+    def test_empty_query_params(self, client):
+        query_params = MultiDict()
+        use_as_list = ["a"]
+        expected = {}
+        assert _transform_query_args_to_dict(query_params, use_as_list) == expected
+
+    def test_all_params_as_list(self, client):
+        query_params = MultiDict([("a", "1"), ("b", "2"), ("c", "3")])
+        use_as_list = ["a", "b", "c"]
+        expected = {"a": ["1"], "b": ["2"], "c": ["3"]}
+        assert _transform_query_args_to_dict(query_params, use_as_list) == expected
+
+    def test_no_params_as_list(self, client):
+        query_params = MultiDict([("a", "1"), ("b", "2"), ("c", "3")])
+        use_as_list = []
+        expected = {"a": "1", "b": "2", "c": "3"}
+        assert _transform_query_args_to_dict(query_params, use_as_list) == expected

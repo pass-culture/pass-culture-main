@@ -451,3 +451,22 @@ class Return400Test:
 
         for value in CollectiveOfferDisplayedStatus:
             assert value.name in msg
+
+    def test_with_multiple_status_filters(self, client):
+        # Given
+        user = users_factories.UserFactory()
+        offerer = offerer_factories.OffererFactory()
+        offerer_factories.UserOffererFactory(user=user, offerer=offerer)
+        venue = offerer_factories.VenueFactory(managingOfferer=offerer)
+        educational_factories.CollectiveOfferFactory(venue=venue, offerId=1)
+
+        # When
+        client = client.with_session_auth(user.email)
+
+        # Fetch the session
+        # Fetch the user
+        with assert_num_queries(2):
+            response = client.get("/collective/offers?status=BOOKED&status=PREBOOKED")
+
+            # Then
+            assert response.status_code == 400
