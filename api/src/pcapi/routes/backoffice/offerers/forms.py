@@ -67,13 +67,13 @@ class EditOffererForm(FlaskForm):
         "Adresse",
         validators=(wtforms.validators.Length(max=200, message="doit contenir moins de %(max)d caractères"),),
     )
+    postal_code = fields.PCPostalCodeHiddenField("Code postal")
     city = fields.PCHiddenField(
         "Ville",
         validators=(
             wtforms.validators.Length(min=1, max=50, message="doit contenir entre %(min)d et %(max)d caractères"),
         ),
     )
-    postal_code = fields.PCPostalCodeHiddenField("Code postal")
 
 
 class SuspendOffererForm(FlaskForm):
