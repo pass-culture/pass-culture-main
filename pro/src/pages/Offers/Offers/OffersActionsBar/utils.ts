@@ -1,4 +1,4 @@
-import { getOffersCountToDisplay } from 'pages/Offers/domain/getOffersCountToDisplay'
+import { pluralize } from 'utils/pluralize'
 
 export const computeAllActivationSuccessMessage = (nbSelectedOffers: number) =>
   nbSelectedOffers > 1
@@ -29,9 +29,7 @@ export const computeDeactivationSuccessMessage = (nbSelectedOffers: number) => {
 }
 
 export function computeSelectedOffersLabel(offersLength: number) {
-  if (offersLength > 1) {
-    return `${getOffersCountToDisplay(offersLength)} offres sélectionnées`
-  }
-
-  return `${offersLength} offre sélectionnée`
+  return offersLength > 500
+    ? '500+ offres sélectionnées'
+    : `${pluralize(offersLength, 'offre sélectionnée')}`
 }

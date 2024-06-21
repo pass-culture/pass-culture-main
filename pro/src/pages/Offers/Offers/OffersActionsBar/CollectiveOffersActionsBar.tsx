@@ -5,7 +5,7 @@ import { api } from 'apiClient/api'
 import {
   CollectiveBookingStatus,
   CollectiveOfferResponseModel,
-  OfferStatus,
+  CollectiveOfferStatus,
 } from 'apiClient/v1'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { GET_COLLECTIVE_OFFERS_QUERY_KEY } from 'config/swrQueryKeys'
@@ -32,13 +32,12 @@ import {
 export type CollectiveOffersActionsBarProps = {
   areAllOffersSelected: boolean
   clearSelectedOfferIds: () => void
-  selectedOfferIds: number[]
   selectedOffers: CollectiveOfferResponseModel[]
   toggleSelectAllCheckboxes: () => void
   getUpdateOffersStatusMessage: (selectedOfferIds: number[]) => string
 }
 
-const handleCollectiveOffers = async (
+const updateCollectiveOffersStatus = async (
   isActive: boolean,
   areAllOffersSelected: boolean,
   selectedOffers: CollectiveOfferResponseModel[],
@@ -47,6 +46,7 @@ const handleCollectiveOffers = async (
 ) => {
   const payload = serializeApiFilters(apiFilters)
   if (areAllOffersSelected) {
+    //  Bulk edit if all editable offers are selected
     try {
       await api.patchAllCollectiveOffersActiveStatus({
         ...payload,
@@ -67,6 +67,7 @@ const handleCollectiveOffers = async (
     }
   } else {
     try {
+      //  Differenciate template and bookable selected offers so that there can be two separarate api status update calls
       const collectiveOfferIds = []
       const collectiveOfferTemplateIds = []
 
@@ -113,8 +114,8 @@ function canDeactivateCollectiveOffers(offers: CollectiveOfferResponseModel[]) {
   return offers.every((offer) => {
     //  Check that all the offers are published or expired
     return (
-      offer.status === OfferStatus.ACTIVE ||
-      (offer.status === OfferStatus.EXPIRED &&
+      offer.status === CollectiveOfferStatus.ACTIVE ||
+      (offer.status === CollectiveOfferStatus.EXPIRED &&
         (!offer.booking?.booking_status ||
           offer.booking.booking_status === CollectiveBookingStatus.CANCELLED))
     )
@@ -122,7 +123,6 @@ function canDeactivateCollectiveOffers(offers: CollectiveOfferResponseModel[]) {
 }
 
 export function CollectiveOffersActionsBar({
-  selectedOfferIds,
   selectedOffers,
   clearSelectedOfferIds,
   toggleSelectAllCheckboxes,
@@ -132,7 +132,8 @@ export function CollectiveOffersActionsBar({
   const urlSearchFilters = useQuerySearchFilters()
 
   const notify = useNotification()
-  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
+  const [isDeactivationDialogOpen, setIsDeactivationDialogOpen] =
+    useState(false)
 
   const apiFilters = {
     ...DEFAULT_SEARCH_FILTERS,
@@ -152,11 +153,11 @@ export function CollectiveOffersActionsBar({
       )
       return
     }
-    setIsConfirmDialogOpen(true)
+    setIsDeactivationDialogOpen(true)
   }
 
   const handleUpdateOffersStatus = async (isActivating: boolean) => {
-    await handleCollectiveOffers(
+    await updateCollectiveOffersStatus(
       isActivating,
       areAllOffersSelected,
       selectedOffers,
@@ -168,8 +169,9 @@ export function CollectiveOffersActionsBar({
   }
 
   const handleActivate = async () => {
-    const updateOfferStatusMessage =
-      getUpdateOffersStatusMessage(selectedOfferIds)
+    const updateOfferStatusMessage = getUpdateOffersStatusMessage(
+      selectedOffers.map((offer) => offer.id)
+    )
     if (!updateOfferStatusMessage) {
       await handleUpdateOffersStatus(true)
     } else {
@@ -179,17 +181,17 @@ export function CollectiveOffersActionsBar({
 
   const handleDeactivateOffers = async () => {
     await handleUpdateOffersStatus(false)
-    setIsConfirmDialogOpen(false)
+    setIsDeactivationDialogOpen(false)
   }
 
   return (
     <>
-      {isConfirmDialogOpen && (
+      {isDeactivationDialogOpen && (
         <DeactivationConfirmDialog
           areAllOffersSelected={areAllOffersSelected}
-          nbSelectedOffers={selectedOfferIds.length}
+          nbSelectedOffers={selectedOffers.length}
           onConfirm={handleDeactivateOffers}
-          onCancel={() => setIsConfirmDialogOpen(false)}
+          onCancel={() => setIsDeactivationDialogOpen(false)}
           audience={Audience.COLLECTIVE}
         />
       )}
@@ -197,7 +199,7 @@ export function CollectiveOffersActionsBar({
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
           <span role="status">
-            {computeSelectedOffersLabel(selectedOfferIds.length)}
+            {computeSelectedOffersLabel(selectedOffers.length)}
           </span>
         </ActionsBarSticky.Left>
         <ActionsBarSticky.Right>

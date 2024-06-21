@@ -11,6 +11,7 @@ import {
 } from 'apiClient/v1'
 import { NoData } from 'components/NoData/NoData'
 import { GET_VALIDATED_OFFERERS_NAMES_QUERY_KEY } from 'config/swrQueryKeys'
+import { isOfferEducational } from 'core/OfferEducational/types'
 import {
   DEFAULT_PAGE,
   DEFAULT_SEARCH_FILTERS,
@@ -24,7 +25,6 @@ import {
   computeCollectiveOffersUrl,
 } from 'core/Offers/utils/computeOffersUrl'
 import { hasSearchFilters } from 'core/Offers/utils/hasSearchFilters'
-import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
 import { Audience } from 'core/shared/types'
 import { SelectOption } from 'custom_types/form'
 import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
@@ -34,6 +34,7 @@ import strokeUserIcon from 'icons/stroke-user.svg'
 import { Offers as OffersContainer } from 'pages/Offers/Offers/Offers'
 import { CollectiveOffersActionsBar } from 'pages/Offers/Offers/OffersActionsBar/CollectiveOffersActionsBar'
 import { IndividualOffersActionsBar } from 'pages/Offers/Offers/OffersActionsBar/IndividualOffersActionsBar'
+import { isSameOffer } from 'pages/Offers/Offers/utils'
 import { selectCurrentOffererId } from 'store/user/selectors'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -42,7 +43,7 @@ import { Titles } from 'ui-kit/Titles/Titles'
 
 import { SearchFilters } from './SearchFilters/SearchFilters'
 
-export interface OffersProps {
+export type OffersProps = {
   currentPageNumber: number
   currentUser: {
     roles: Array<UserRole>
@@ -50,7 +51,6 @@ export interface OffersProps {
   }
   isLoading: boolean
   offerer: GetOffererResponseModel | null
-  offers: CollectiveOfferResponseModel[] | ListOffersOfferResponseModel[]
   initialSearchFilters: SearchFiltersParams
   audience: Audience
   redirectWithUrlFilters: (
@@ -63,14 +63,16 @@ export interface OffersProps {
   venues: SelectOption[]
   categories?: SelectOption[]
   isRestrictedAsAdmin?: boolean
-}
+} & (
+  | { audience: Audience.COLLECTIVE; offers: CollectiveOfferResponseModel[] }
+  | { audience: Audience.INDIVIDUAL; offers: ListOffersOfferResponseModel[] }
+)
 
 export const Offers = ({
   currentPageNumber,
   currentUser,
   isLoading,
   offerer,
-  offers,
   initialSearchFilters,
   audience,
   redirectWithUrlFilters,
@@ -78,11 +80,19 @@ export const Offers = ({
   venues,
   categories,
   isRestrictedAsAdmin,
+  offers,
 }: OffersProps): JSX.Element => {
-  const [selectedOfferIds, setSelectedOfferIds] = useState<number[]>([])
+  const [selectedCollectiveOffers, setSelectedCollectiveOffers] = useState<
+    CollectiveOfferResponseModel[]
+  >([])
+  const [selectedIndividualOffers, setSelectedIndividualOffers] = useState<
+    ListOffersOfferResponseModel[]
+  >([])
   const isNewSideBarNavigation = useIsNewInterfaceActive()
   const selectedOffererId = useSelector(selectCurrentOffererId)
   const [selectedFilters, setSelectedFilters] = useState(initialSearchFilters)
+
+  const isCollective = audience === Audience.COLLECTIVE
 
   const { isAdmin } = currentUser
   const currentPageOffersSubset = offers.slice(
@@ -119,27 +129,35 @@ export const Offers = ({
     </ButtonLink>
   ) : undefined
 
-  const selectedOffers = offers.filter((offer) =>
-    selectedOfferIds.includes(offer.id)
-  )
+  const areAllCollectiveOffersSelected =
+    selectedCollectiveOffers.length > 0 &&
+    selectedCollectiveOffers.length ===
+      offers.filter((offer) => offer.isEditable).length
 
-  const areAllOffersSelected =
-    selectedOffers.length > 0 &&
-    selectedOffers.length ===
-      offers.filter((offer) => !isOfferDisabled(offer.status)).length
+  const areAllIndividualOffersSelected =
+    selectedIndividualOffers.length > 0 &&
+    selectedIndividualOffers.length ===
+      offers.filter((offer) => offer.isEditable).length
 
   function clearSelectedOfferIds() {
-    setSelectedOfferIds([])
+    setSelectedCollectiveOffers([])
+    setSelectedIndividualOffers([])
   }
 
   function toggleSelectAllCheckboxes() {
-    setSelectedOfferIds(
-      areAllOffersSelected
-        ? []
-        : offers
-            .filter((offer) => !isOfferDisabled(offer.status))
-            .map((offer) => offer.id)
-    )
+    if (isCollective) {
+      setSelectedCollectiveOffers(
+        areAllCollectiveOffersSelected
+          ? []
+          : offers.filter((offer) => offer.isEditable)
+      )
+    } else {
+      setSelectedIndividualOffers(
+        areAllIndividualOffersSelected
+          ? []
+          : offers.filter((offer) => offer.isEditable)
+      )
+    }
   }
 
   const resetFilters = () => {
@@ -184,7 +202,7 @@ export const Offers = ({
       return 'Vous ne pouvez pas publier des brouillons depuis cette liste'
     }
     if (
-      audience === Audience.COLLECTIVE &&
+      isCollective &&
       selectedOffers.some((offer) => offer.hasBookingLimitDatetimesPassed)
     ) {
       return 'Vous ne pouvez pas publier des offres collectives dont la date de réservation est passée'
@@ -193,7 +211,9 @@ export const Offers = ({
   }
 
   const canDeleteOffers = () => {
-    return selectedOffers.some((offer) => offer.status !== OFFER_STATUS_DRAFT)
+    return (
+      isCollective ? selectedCollectiveOffers : selectedIndividualOffers
+    ).some((offer) => offer.status !== OFFER_STATUS_DRAFT)
   }
 
   const isNewInterfaceActive = useIsNewInterfaceActive()
@@ -202,6 +222,36 @@ export const Offers = ({
       ? 'Offres collectives'
       : 'Offres individuelles'
     : 'Offres'
+
+  function onSetSelectedOffer(
+    offer: ListOffersOfferResponseModel | CollectiveOfferResponseModel
+  ) {
+    const matchingOffer = (
+      isCollective ? selectedCollectiveOffers : selectedIndividualOffers
+    ).find((selectedOffer) => isSameOffer(offer, selectedOffer))
+
+    if (isOfferEducational(offer)) {
+      if (matchingOffer) {
+        setSelectedCollectiveOffers((offers) =>
+          offers.filter((collectiveOffer) => collectiveOffer !== matchingOffer)
+        )
+      } else {
+        setSelectedCollectiveOffers((selectedOffers) => {
+          return [...selectedOffers, offer]
+        })
+      }
+    } else {
+      if (matchingOffer) {
+        setSelectedIndividualOffers((offers) =>
+          offers.filter((indivOffer) => indivOffer !== matchingOffer)
+        )
+      } else {
+        setSelectedIndividualOffers((selectedOffers) => {
+          return [...selectedOffers, offer]
+        })
+      }
+    }
+  }
 
   return (
     <div className="offers-page">
@@ -253,7 +303,11 @@ export const Offers = ({
       ) : (
         <OffersContainer
           applyUrlFiltersAndRedirect={applyUrlFiltersAndRedirect}
-          areAllOffersSelected={areAllOffersSelected}
+          areAllOffersSelected={
+            isCollective
+              ? areAllCollectiveOffersSelected
+              : areAllIndividualOffersSelected
+          }
           audience={audience}
           currentPageNumber={currentPageNumber}
           currentPageOffersSubset={currentPageOffersSubset}
@@ -263,34 +317,42 @@ export const Offers = ({
           offersCount={offers.length}
           pageCount={pageCount}
           resetFilters={resetFilters}
-          selectedOfferIds={selectedOfferIds}
-          setSelectedOfferIds={setSelectedOfferIds}
+          selectedOffers={
+            isCollective ? selectedCollectiveOffers : selectedIndividualOffers
+          }
+          setSelectedOffer={onSetSelectedOffer}
           toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
           urlSearchFilters={urlSearchFilters}
-          isAtLeastOneOfferChecked={selectedOfferIds.length > 0}
+          isAtLeastOneOfferChecked={
+            isCollective
+              ? selectedCollectiveOffers.length > 1
+              : selectedIndividualOffers.length > 1
+          }
           isRestrictedAsAdmin={isRestrictedAsAdmin}
         />
       )}
-      {selectedOfferIds.length > 0 &&
-        (audience === Audience.COLLECTIVE ? (
-          <CollectiveOffersActionsBar
-            areAllOffersSelected={areAllOffersSelected}
-            clearSelectedOfferIds={clearSelectedOfferIds}
-            selectedOfferIds={selectedOfferIds}
-            selectedOffers={selectedOffers as CollectiveOfferResponseModel[]}
-            toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
-            getUpdateOffersStatusMessage={getUpdateOffersStatusMessage}
-          />
-        ) : (
-          <IndividualOffersActionsBar
-            areAllOffersSelected={areAllOffersSelected}
-            clearSelectedOfferIds={clearSelectedOfferIds}
-            selectedOfferIds={selectedOfferIds}
-            toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
-            getUpdateOffersStatusMessage={getUpdateOffersStatusMessage}
-            canDeleteOffers={canDeleteOffers}
-          />
-        ))}
+      {isCollective
+        ? selectedCollectiveOffers.length > 0 && (
+            <CollectiveOffersActionsBar
+              areAllOffersSelected={areAllCollectiveOffersSelected}
+              clearSelectedOfferIds={clearSelectedOfferIds}
+              selectedOffers={selectedCollectiveOffers}
+              toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
+              getUpdateOffersStatusMessage={getUpdateOffersStatusMessage}
+            />
+          )
+        : selectedIndividualOffers.length > 0 && (
+            <IndividualOffersActionsBar
+              areAllOffersSelected={areAllIndividualOffersSelected}
+              clearSelectedOfferIds={clearSelectedOfferIds}
+              selectedOfferIds={selectedIndividualOffers.map(
+                (offer) => offer.id
+              )}
+              toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
+              getUpdateOffersStatusMessage={getUpdateOffersStatusMessage}
+              canDeleteOffers={canDeleteOffers}
+            />
+          )}
     </div>
   )
 }

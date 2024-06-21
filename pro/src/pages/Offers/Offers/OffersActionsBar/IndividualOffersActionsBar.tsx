@@ -12,7 +12,6 @@ import { useNotification } from 'hooks/useNotification'
 import fullHideIcon from 'icons/full-hide.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
-import { getOffersCountToDisplay } from 'pages/Offers/domain/getOffersCountToDisplay'
 import { GET_OFFERS_QUERY_KEY } from 'pages/Offers/OffersRoute'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -29,6 +28,7 @@ import {
   computeAllActivationSuccessMessage,
   computeAllDeactivationSuccessMessage,
   computeDeactivationSuccessMessage,
+  computeSelectedOffersLabel,
 } from './utils'
 
 export interface IndividualOffersActionsBarProps {
@@ -40,7 +40,7 @@ export interface IndividualOffersActionsBarProps {
   canDeleteOffers: () => boolean
 }
 
-const handleIndividualOffers = async (
+const updateIndividualOffersStatus = async (
   isActive: boolean,
   areAllOffersSelected: boolean,
   selectedOfferIds: number[],
@@ -49,6 +49,7 @@ const handleIndividualOffers = async (
 ) => {
   const payload = serializeApiFilters(apiFilters)
   if (areAllOffersSelected) {
+    //  Bulk edit if all editable offers are selected
     try {
       await api.patchAllOffersActiveStatus({
         ...payload,
@@ -101,7 +102,8 @@ export const IndividualOffersActionsBar = ({
   const { mutate } = useSWRConfig()
 
   const notify = useNotification()
-  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
+  const [isDeactivationDialogOpen, setIsDeactivationDialogOpen] =
+    useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
 
   const apiFilters = {
@@ -116,7 +118,7 @@ export const IndividualOffersActionsBar = ({
   }
 
   const handleUpdateOffersStatus = async (isActivating: boolean) => {
-    await handleIndividualOffers(
+    await updateIndividualOffersStatus(
       isActivating,
       areAllOffersSelected,
       selectedOfferIds,
@@ -139,15 +141,7 @@ export const IndividualOffersActionsBar = ({
 
   const handleDeactivateOffers = async () => {
     await handleUpdateOffersStatus(false)
-    setIsConfirmDialogOpen(false)
-  }
-
-  const computeSelectedOffersLabel = () => {
-    if (selectedOfferIds.length > 1) {
-      return `${getOffersCountToDisplay(selectedOfferIds.length)} offres sélectionnées`
-    }
-
-    return `${selectedOfferIds.length} offre sélectionnée`
+    setIsDeactivationDialogOpen(false)
   }
 
   const handleDelete = async () => {
@@ -174,12 +168,12 @@ export const IndividualOffersActionsBar = ({
 
   return (
     <>
-      {isConfirmDialogOpen && (
+      {isDeactivationDialogOpen && (
         <DeactivationConfirmDialog
           areAllOffersSelected={areAllOffersSelected}
           nbSelectedOffers={selectedOfferIds.length}
           onConfirm={handleDeactivateOffers}
-          onCancel={() => setIsConfirmDialogOpen(false)}
+          onCancel={() => setIsDeactivationDialogOpen(false)}
           audience={Audience.INDIVIDUAL}
         />
       )}
@@ -194,14 +188,16 @@ export const IndividualOffersActionsBar = ({
 
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
-          <span role="status">{computeSelectedOffersLabel()}</span>
+          <span role="status">
+            {computeSelectedOffersLabel(selectedOfferIds.length)}
+          </span>
         </ActionsBarSticky.Left>
         <ActionsBarSticky.Right>
           <Button onClick={handleClose} variant={ButtonVariant.SECONDARY}>
             Annuler
           </Button>
           <Button
-            onClick={() => setIsConfirmDialogOpen(true)}
+            onClick={() => setIsDeactivationDialogOpen(true)}
             icon={fullHideIcon}
             variant={ButtonVariant.SECONDARY}
           >

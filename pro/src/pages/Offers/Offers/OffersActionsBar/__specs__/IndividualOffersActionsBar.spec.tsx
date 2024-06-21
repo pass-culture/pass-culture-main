@@ -85,7 +85,7 @@ describe('ActionsBar', () => {
     expect(screen.queryByText('2 offres sélectionnées')).toBeInTheDocument()
   })
 
-  it('should say how many offers are selected when more than 500 offers are selected', () => {
+  it('should show a generic count when more than 500 offers are selected', () => {
     props.selectedOfferIds = Array(501)
       .fill(null)
       .map((val, i) => i)
