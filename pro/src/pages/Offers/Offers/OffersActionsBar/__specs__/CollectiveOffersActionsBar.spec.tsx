@@ -42,7 +42,6 @@ describe('ActionsBar', () => {
   beforeEach(() => {
     props = {
       getUpdateOffersStatusMessage: mockGetUpdateOffersStatusMessage,
-      selectedOfferIds: offerIds,
       selectedOffers: offerIds.map((offerId) => ({
         ...collectiveOfferFactory(),
         id: offerId,
@@ -71,7 +70,7 @@ describe('ActionsBar', () => {
   })
 
   it('should say how many offers are selected when only 1 offer is selected', () => {
-    props.selectedOfferIds = [1]
+    props.selectedOffers = [collectiveOfferFactory()]
 
     renderActionsBar(props)
 
@@ -84,10 +83,10 @@ describe('ActionsBar', () => {
     expect(screen.queryByText('2 offres sélectionnées')).toBeInTheDocument()
   })
 
-  it('should say how many offers are selected when more than 500 offers are selected', () => {
-    props.selectedOfferIds = Array(501)
+  it('should show a generic count when more than 500 offers are selected', () => {
+    props.selectedOffers = Array(501)
       .fill(null)
-      .map((val, i) => i)
+      .map((val, i) => ({ ...collectiveOfferFactory(), id: i }))
 
     renderActionsBar(props)
 
@@ -251,7 +250,6 @@ describe('ActionsBar', () => {
           status: CollectiveOfferStatus.PENDING,
         }),
       ],
-      selectedOfferIds: [1, 2],
     })
 
     const deactivateButton = screen.getByText('Désactiver')
@@ -263,6 +261,7 @@ describe('ActionsBar', () => {
       )
     ).toBeInTheDocument()
   })
+
   it('should not deactivate offers on click on "Désactiver" when at least one offer expired but with booking finished', async () => {
     const expiredOffer = collectiveOfferFactory({
       id: 1,
@@ -280,7 +279,6 @@ describe('ActionsBar', () => {
         },
         collectiveOfferFactory({ id: 2, status: CollectiveOfferStatus.ACTIVE }),
       ],
-      selectedOfferIds: [1, 2],
     })
 
     const deactivateButton = screen.getByText('Désactiver')
@@ -301,7 +299,6 @@ describe('ActionsBar', () => {
         collectiveOfferFactory({ id: 1, status: CollectiveOfferStatus.ACTIVE }),
         collectiveOfferFactory({ id: 2, status: CollectiveOfferStatus.ACTIVE }),
       ],
-      selectedOfferIds: [1, 2],
     })
 
     await userEvent.click(screen.getByText('Désactiver'))
@@ -334,7 +331,6 @@ describe('ActionsBar', () => {
           isShowcase: true,
         }),
       ],
-      selectedOfferIds: [1, 2],
     })
 
     await userEvent.click(screen.getByText('Désactiver'))
@@ -371,7 +367,6 @@ describe('ActionsBar', () => {
           status: CollectiveOfferStatus.ACTIVE,
         }),
       ],
-      selectedOfferIds: [1, 2],
     })
 
     await userEvent.click(screen.getByText('Désactiver'))
