@@ -32,7 +32,7 @@ from pcapi.validation.routes.users_authentifications import api_key_required
 @api_key_required
 def list_categories() -> offers_serialization.CollectiveOffersListCategoriesResponseModel:
     """
-    Get collective offers categories
+    [LEGACY] Get collective offers categories
 
     Return categories for collective offers.
     """
@@ -65,9 +65,9 @@ def list_categories() -> offers_serialization.CollectiveOffersListCategoriesResp
 @api_key_required
 def list_subcategories() -> offers_serialization.CollectiveOffersListSubCategoriesResponseModel:
     """
-    Get collective offers subcatgories
+    [LEGACY] Get collective offers subcatgories
 
-    Return subcategories for collective offerS.
+    Return subcategories for collective offers.
     """
     result_dict = defaultdict(list)
     for _, subcategory in subcategories_v2.COLLECTIVE_SUBCATEGORIES.items():

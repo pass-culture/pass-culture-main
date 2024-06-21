@@ -19,7 +19,7 @@ _servers = [_INTEGRATION_SERVER, _PRODUCTION_SERVER]
 # Schema of current public API
 public_api_schema = ExtendedSpecTree(
     "flask",
-    title="Pass Culture REST API",
+    title="pass Culture REST API",
     description=descriptions.PUBLIC_API_DESCRIPTION,
     PATH="/",
     MODE="strict",

@@ -86,7 +86,9 @@ def get_offerer_venues(
 @api_key_required
 def get_show_types() -> serialization.GetShowTypesResponse:
     """
-    Get all the show types
+    Get show types
+
+    Return show types.
     """
     # Individual offers API only relies on show subtypes, not show types.
     # To make it simpler for the provider using this API, we only expose show subtypes and call them show types.
@@ -148,7 +150,8 @@ def get_all_titelive_music_types() -> serialization.GetMusicTypesResponse:
     """
     Get all music types
 
-    Return all the music types.
+    Return music types. Not all the music types returned by this endpoint are suitable
+    for events. For events, use the [Get events music types endpoint](/rest-api#tag/Offer-attributes/operation/GetEventTiteliveMusicTypes).
     """
     return serialization.GetMusicTypesResponse(
         __root__=[
@@ -178,7 +181,7 @@ def get_event_titelive_music_types() -> serialization.GetMusicTypesResponse:
     """
     Get events music types
 
-    Return all eligible music types for events.
+    Return eligible music types for events.
     """
     return serialization.GetMusicTypesResponse(
         __root__=[

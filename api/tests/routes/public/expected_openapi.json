@@ -1793,6 +1793,8 @@
                         "type": "string"
                     },
                     "priceCategoryId": {
+                        "description": "Price category id",
+                        "example": 12,
                         "title": "Pricecategoryid",
                         "type": "integer"
                     },
@@ -1808,7 +1810,7 @@
                                 "type": "string"
                             }
                         ],
-                        "description": "Quantity of items currently available to pass Culture. Value 'unlimited' is used for infinite quantity of items.",
+                        "description": "Quantity of items currently available to pass Culture. Value `'unlimited'` is used for infinite quantity of items.",
                         "example": 10,
                         "title": "Quantity"
                     }
@@ -1850,6 +1852,8 @@
                         "type": "string"
                     },
                     "priceCategoryId": {
+                        "description": "Price category id",
+                        "example": 12,
                         "nullable": true,
                         "title": "Pricecategoryid",
                         "type": "integer"
@@ -1866,7 +1870,7 @@
                                 "type": "string"
                             }
                         ],
-                        "description": "Quantity of items currently available to pass Culture. Value 'unlimited' is used for infinite quantity of items.",
+                        "description": "Quantity of items currently available to pass Culture. Value `'unlimited'` is used for infinite quantity of items.",
                         "example": 10,
                         "nullable": true,
                         "title": "Quantity"
@@ -1924,7 +1928,7 @@
                                 "type": "string"
                             }
                         ],
-                        "description": "Quantity of items currently available to pass Culture. Value 'unlimited' is used for infinite quantity of items.",
+                        "description": "Quantity of items currently available to pass Culture. Value `'unlimited'` is used for infinite quantity of items.",
                         "example": 10,
                         "title": "Quantity"
                     }
@@ -2518,7 +2522,7 @@
                         "type": "integer"
                     },
                     "externalTicketOfficeUrl": {
-                        "description": "Link displayed to users wishing to book the offer but who do not have (anymore) credit.",
+                        "description": "Link displayed to users wishing to book the offer but who do not have credit.",
                         "example": "https://example.com",
                         "format": "uri",
                         "maxLength": 2083,
@@ -2528,7 +2532,7 @@
                         "type": "string"
                     },
                     "hasTicket": {
-                        "description": "Indicates whether the offer has an associated ticket. True if a ticket is available, False otherwise. To create an offer with tickets you must have developed the pass culture ticketing interface.",
+                        "description": "Indicated whether a ticket is mandatory to access to the event. True if it is the case, False otherwise. The ticket will be sent by you, the provider and you must have developed the pass Culture ticketing interface to do so.",
                         "example": false,
                         "title": "Hasticket",
                         "type": "boolean"
@@ -2755,7 +2759,7 @@
                         "title": "ImageBody"
                     },
                     "isActive": {
-                        "description": "Whether the offer is activated. An inactive offer cannot be booked.",
+                        "description": "Set to `false` if you want to deactivate the offer. This will not cancel former bookings. ",
                         "nullable": true,
                         "title": "Isactive",
                         "type": "boolean"
@@ -2933,14 +2937,14 @@
                         "type": "integer"
                     },
                     "externalTicketOfficeUrl": {
-                        "description": "Link displayed to users wishing to book the offer but who do not have (anymore) credit.",
+                        "description": "Link displayed to users wishing to book the offer but who do not have credit.",
                         "example": "https://example.com",
                         "nullable": true,
                         "title": "Externalticketofficeurl",
                         "type": "string"
                     },
                     "hasTicket": {
-                        "description": "Indicates whether the offer has an associated ticket. True if a ticket is available, False otherwise. To create an offer with tickets you must have developed the pass culture ticketing interface.",
+                        "description": "Indicated whether a ticket is mandatory to access to the event. True if it is the case, False otherwise. The ticket will be sent by you, the provider and you must have developed the pass Culture ticketing interface to do so.",
                         "example": false,
                         "title": "Hasticket",
                         "type": "boolean"
@@ -3628,7 +3632,8 @@
             "GetFilteredBookingsRequest": {
                 "properties": {
                     "beginningDatetime": {
-                        "description": "Timezone aware datetime of the event.",
+                        "description": "Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "example": "2024-07-21T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Beginningdatetime",
@@ -3650,12 +3655,14 @@
                         "type": "integer"
                     },
                     "offerId": {
-                        "description": "Id of the bookings' offer.",
+                        "description": "Offer id",
+                        "example": 12345,
                         "title": "Offerid",
                         "type": "integer"
                     },
                     "priceCategoryId": {
-                        "description": "Price category of the bookings' stock.",
+                        "description": "Price category id",
+                        "example": 12,
                         "nullable": true,
                         "title": "Pricecategoryid",
                         "type": "integer"
@@ -3666,11 +3673,13 @@
                                 "$ref": "#/components/schemas/BookingStatus"
                             }
                         ],
-                        "description": "Booking Status.\n\n* `CONFIRMED`: The bookings is confirmed.\n* `USED`: The bookings has been used.\n* `CANCELLED`: The bookings has been cancelled.\n* `REIMBURSED` The bookings has been reimbursed.",
+                        "description": "\nBooking status explanation:\n\n* `CONFIRMED`: The beneficiary has booked an offer but he didn\u2019t pick it up yet\n* `USED`: The booking has been validated by the venue and will be reimbursed in the next payment\n* `CANCELLED`: The booking has been cancelled by the beneficiary or by the provider\n* `REIMBURSED` The booking has been reimbursed by pass Culture to the venue\n",
+                        "example": "CONFIRMED",
                         "nullable": true
                     },
                     "stockId": {
-                        "description": "Id of the bookings' stock.",
+                        "description": "Stock id",
+                        "example": 45,
                         "nullable": true,
                         "title": "Stockid",
                         "type": "integer"
@@ -3861,12 +3870,14 @@
             "GetProductsListByEansQuery": {
                 "properties": {
                     "eans": {
-                        "example": "0123456789123,0123456789124",
+                        "description": "EANs list (max 100)",
+                        "example": "3700551782888,9782895761792",
                         "title": "Eans",
                         "type": "string"
                     },
                     "venueId": {
-                        "example": 1,
+                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
+                        "example": 1234,
                         "title": "Venueid",
                         "type": "integer"
                     }
@@ -4098,7 +4109,7 @@
                 "description": "Image illustrating the offer. Offers with images are more likely to be booked.",
                 "properties": {
                     "credit": {
-                        "description": "Image owner or author.",
+                        "description": "Image owner or author",
                         "example": "Jane Doe",
                         "nullable": true,
                         "title": "Credit",
@@ -4121,14 +4132,14 @@
                 "description": "Image illustrating the offer. Offers with images are more likely to be booked.",
                 "properties": {
                     "credit": {
-                        "description": "Image owner or author.",
+                        "description": "Image owner or author",
                         "example": "Jane Doe",
                         "nullable": true,
                         "title": "Credit",
                         "type": "string"
                     },
                     "url": {
-                        "description": "Url where the image is accessible",
+                        "description": "Image URL publicly accessible",
                         "example": "https://example.com/image.png",
                         "title": "Url",
                         "type": "string"
@@ -5952,7 +5963,7 @@
                         "type": "string"
                     },
                     "price": {
-                        "description": "Offer price in euro cents.",
+                        "description": "Offer price in euro cents",
                         "example": 1000,
                         "maximum": 30000,
                         "minimum": 0,
@@ -5980,7 +5991,7 @@
                         "type": "string"
                     },
                     "price": {
-                        "description": "Offer price in euro cents.",
+                        "description": "Offer price in euro cents",
                         "example": 1000,
                         "maximum": 30000,
                         "minimum": 0,
@@ -6005,7 +6016,7 @@
                         "type": "string"
                     },
                     "price": {
-                        "description": "Offer price in euro cents.",
+                        "description": "Offer price in euro cents",
                         "example": 1000,
                         "title": "Price",
                         "type": "integer"
@@ -6193,7 +6204,7 @@
                         "type": "boolean"
                     },
                     "externalTicketOfficeUrl": {
-                        "description": "Link displayed to users wishing to book the offer but who do not have (anymore) credit.",
+                        "description": "Link displayed to users wishing to book the offer but who do not have credit.",
                         "example": "https://example.com",
                         "format": "uri",
                         "maxLength": 2083,
@@ -6419,7 +6430,7 @@
                         "title": "ImageBody"
                     },
                     "isActive": {
-                        "description": "Whether the offer is activated. An inactive offer cannot be booked.",
+                        "description": "Set to `false` if you want to deactivate the offer. This will not cancel former bookings. ",
                         "nullable": true,
                         "title": "Isactive",
                         "type": "boolean"
@@ -6675,7 +6686,7 @@
                         "type": "boolean"
                     },
                     "externalTicketOfficeUrl": {
-                        "description": "Link displayed to users wishing to book the offer but who do not have (anymore) credit.",
+                        "description": "Link displayed to users wishing to book the offer but who do not have credit.",
                         "example": "https://example.com",
                         "nullable": true,
                         "title": "Externalticketofficeurl",
@@ -6812,7 +6823,7 @@
                         "type": "string"
                     },
                     "price": {
-                        "description": "Offer price in euro cents.",
+                        "description": "Offer price in euro cents",
                         "example": 1000,
                         "title": "Price",
                         "type": "integer"
@@ -6829,7 +6840,7 @@
                                 "type": "string"
                             }
                         ],
-                        "description": "Quantity of items currently available to pass Culture. Value 'unlimited' is used for infinite quantity of items.",
+                        "description": "Quantity of items currently available to pass Culture. Value `'unlimited'` is used for infinite quantity of items.",
                         "example": 10,
                         "title": "Quantity"
                     }
@@ -7761,7 +7772,7 @@
                         "type": "string"
                     },
                     "price": {
-                        "description": "Offer price in euro cents.",
+                        "description": "Offer price in euro cents",
                         "example": 1000,
                         "maximum": 30000,
                         "minimum": 0,
@@ -7780,7 +7791,7 @@
                                 "type": "string"
                             }
                         ],
-                        "description": "Quantity of items currently available to pass Culture. Value 'unlimited' is used for infinite quantity of items.",
+                        "description": "Quantity of items currently available to pass Culture. Value `'unlimited'` is used for infinite quantity of items.",
                         "example": 10,
                         "title": "Quantity"
                     }
@@ -7804,7 +7815,7 @@
                         "type": "string"
                     },
                     "price": {
-                        "description": "Offer price in euro cents.",
+                        "description": "Offer price in euro cents",
                         "example": 1000,
                         "maximum": 30000,
                         "minimum": 0,
@@ -7824,7 +7835,7 @@
                                 "type": "string"
                             }
                         ],
-                        "description": "Quantity of items currently available to pass Culture. Value 'unlimited' is used for infinite quantity of items.",
+                        "description": "Quantity of items currently available to pass Culture. Value `'unlimited'` is used for infinite quantity of items.",
                         "example": 10,
                         "nullable": true,
                         "title": "Quantity"
@@ -8462,8 +8473,8 @@
         }
     },
     "info": {
-        "description": "\nThis the documentation of the Pass Culture public REST API.\n\n# Important notice\n- Since January 2023, rate limiting has been implemented on the Pass Culture API.\n  You are limited to **200 requests/minute** per API key.\n  Once this limit reached, you will received a `429 Too Many Requests` error message. You will then need to back down.\n- Dates of event offers are stored in the **UTC format** to be able to format them correctly, according to the user timezone, in our application interface.\n- Any non-blank field sent using a `PATCH` method will be considered as changed, even if the new value is equal to old value.\n  _For example, if you update the stock of an event, you **should not resend the `beginningDate`** if it has not changed because, otherwise it is going to trigger the reschedule process on our side._\n\n# Authentication\nThe authentication system on the Pass Culture API uses an API key. For each of your requests, you should put your API key in the authorization header of the request following the `Bearer`pattern.\nThat is to say, in your request headers, you should have a line that looks like this : `Authorization: Bearer {you_api_key}` (**\u26a0\ufe0f Make sure to use the right API key for the right environment**)\nAn API key authenticates you as a provider. As a provider, you have access to the venues linked to your provider account by the offerers.\nFor in depth explanations about our authentication & authorization system, you [can read this documentation](/docs/understanding-our-api/authentication-authorization).\n",
-        "title": "Pass Culture REST API",
+        "description": "\nThis the documentation of the pass Culture public REST API.\n\n# Important notice\n- Since January 2023, rate limiting has been implemented on the Pass Culture API.\n  You are limited to **200 requests/minute** per API key.\n  Once this limit reached, you will received a `429 Too Many Requests` error message. You will then need to back down.\n- Event offers dates are stored in the **UTC format**. This is necessary because dates are displayed according to the beneficiary timezone in our application.\n- Any non-blank field sent using a `PATCH` method will be considered as changed, even if the new value is equal to old value.\n  _For example, if you update the stock of an event, you **should not resend the `beginningDate`** if it has not changed because, otherwise it is going to trigger the reschedule process on our side._\n\n# Authentication\nThe authentication system on the Pass Culture API uses an API key. For each of your requests, you should put your API key in the authorization header of the request following the `Bearer`pattern.\nThat is to say, in your request headers, you should have a line that looks like this : `Authorization: Bearer {you_api_key}` (**\u26a0\ufe0f Make sure to use the right API key for the right environment**)\nAn API key authenticates you as a provider. As a provider, you have access to the venues linked to your provider account by the offerers.\nFor in depth explanations about our authentication & authorization system, you [can read this documentation](/docs/understanding-our-api/authentication-authorization).\n",
+        "title": "pass Culture REST API",
         "version": "1.0"
     },
     "openapi": "3.0.3",
@@ -8501,42 +8512,45 @@
                         }
                     },
                     {
-                        "description": "Id of the bookings' offer.",
+                        "description": "Offer id",
                         "in": "query",
                         "name": "offerId",
                         "required": true,
                         "schema": {
-                            "description": "Id of the bookings' offer.",
+                            "description": "Offer id",
+                            "example": 12345,
                             "title": "Offerid",
                             "type": "integer"
                         }
                     },
                     {
-                        "description": "Price category of the bookings' stock.",
+                        "description": "Price category id",
                         "in": "query",
                         "name": "priceCategoryId",
                         "required": false,
                         "schema": {
-                            "description": "Price category of the bookings' stock.",
+                            "description": "Price category id",
+                            "example": 12,
                             "nullable": true,
                             "title": "Pricecategoryid",
                             "type": "integer"
                         }
                     },
                     {
-                        "description": "Id of the bookings' stock.",
+                        "description": "Stock id",
                         "in": "query",
                         "name": "stockId",
                         "required": false,
                         "schema": {
-                            "description": "Id of the bookings' stock.",
+                            "description": "Stock id",
+                            "example": 45,
                             "nullable": true,
                             "title": "Stockid",
                             "type": "integer"
                         }
                     },
                     {
-                        "description": "Booking Status.\n\n* `CONFIRMED`: The bookings is confirmed.\n* `USED`: The bookings has been used.\n* `CANCELLED`: The bookings has been cancelled.\n* `REIMBURSED` The bookings has been reimbursed.",
+                        "description": "\nBooking status explanation:\n\n* `CONFIRMED`: The beneficiary has booked an offer but he didn\u2019t pick it up yet\n* `USED`: The booking has been validated by the venue and will be reimbursed in the next payment\n* `CANCELLED`: The booking has been cancelled by the beneficiary or by the provider\n* `REIMBURSED` The booking has been reimbursed by pass Culture to the venue\n",
                         "in": "query",
                         "name": "status",
                         "required": false,
@@ -8546,17 +8560,19 @@
                                     "$ref": "#/components/schemas/BookingStatus"
                                 }
                             ],
-                            "description": "Booking Status.\n\n* `CONFIRMED`: The bookings is confirmed.\n* `USED`: The bookings has been used.\n* `CANCELLED`: The bookings has been cancelled.\n* `REIMBURSED` The bookings has been reimbursed.",
+                            "description": "\nBooking status explanation:\n\n* `CONFIRMED`: The beneficiary has booked an offer but he didn\u2019t pick it up yet\n* `USED`: The booking has been validated by the venue and will be reimbursed in the next payment\n* `CANCELLED`: The booking has been cancelled by the beneficiary or by the provider\n* `REIMBURSED` The booking has been reimbursed by pass Culture to the venue\n",
+                            "example": "CONFIRMED",
                             "nullable": true
                         }
                     },
                     {
-                        "description": "Timezone aware datetime of the event.",
+                        "description": "Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
                         "in": "query",
                         "name": "beginningDatetime",
                         "required": false,
                         "schema": {
-                            "description": "Timezone aware datetime of the event.",
+                            "description": "Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                            "example": "2024-07-21T14:00:00+02:00",
                             "format": "date-time",
                             "nullable": true,
                             "title": "Beginningdatetime",
@@ -8821,7 +8837,7 @@
         },
         "/public/bookings/v1/use/token/{token}": {
             "patch": {
-                "description": "Confirms that the booking has been successfully used by the beneficiary.",
+                "description": "Confirm that the booking has been used by the beneficiary.",
                 "operationId": "ValidateBookingByToken",
                 "parameters": [
                     {
@@ -9062,7 +9078,7 @@
         },
         "/public/offers/v1/events/categories": {
             "get": {
-                "description": "Return all the categories available for an event, with their conditional fields, and whether they are required for event creation.",
+                "description": "Return all the categories available, with their conditional fields, and whether they are required.",
                 "operationId": "GetEventCategories",
                 "parameters": [],
                 "responses": {
@@ -9360,7 +9376,7 @@
                 ]
             },
             "post": {
-                "description": "Add a dates to given event. Each date is attached to a price category so if there are several prices categories, several dates must be added.",
+                "description": "Add a dates to given event. Each date is attached to a price category so if there are several prices categories, several dates must be added. **\u26a0\ufe0f Event must have less than 1 000 stocks** otherwise they will not be published.",
                 "operationId": "PostEventDates",
                 "parameters": [
                     {
@@ -10315,23 +10331,25 @@
                 "operationId": "GetProductByEan",
                 "parameters": [
                     {
-                        "description": "",
+                        "description": "EANs list (max 100)",
                         "in": "query",
                         "name": "eans",
                         "required": true,
                         "schema": {
-                            "example": "0123456789123,0123456789124",
+                            "description": "EANs list (max 100)",
+                            "example": "3700551782888,9782895761792",
                             "title": "Eans",
                             "type": "string"
                         }
                     },
                     {
-                        "description": "",
+                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
                         "in": "query",
                         "name": "venueId",
                         "required": true,
                         "schema": {
-                            "example": 1,
+                            "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
+                            "example": 1234,
                             "title": "Venueid",
                             "type": "integer"
                         }
@@ -10738,7 +10756,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Get collective offers categories",
+                "summary": "[LEGACY] Get collective offers categories",
                 "tags": [
                     "[DEPRECATED] Collective categories"
                 ]
@@ -11528,7 +11546,7 @@
         "/v2/collective/subcategories": {
             "get": {
                 "deprecated": true,
-                "description": "Return subcategories for collective offerS.",
+                "description": "Return subcategories for collective offers.",
                 "operationId": "ListSubcategories",
                 "parameters": [],
                 "responses": {
@@ -11571,7 +11589,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Get collective offers subcatgories",
+                "summary": "[LEGACY] Get collective offers subcatgories",
                 "tags": [
                     "[DEPRECATED] Collective categories"
                 ]
