@@ -1,6 +1,6 @@
-# The Pass Culture Public API documentation
+# The pass Culture Public API documentation
 
-Here are the source files to generate the [Pass Culture Public API Documentation](https://pass-culture.github.io/pass-culture-api-documentation/docs/category/mandatory-steps).
+Here are the source files to generate the [pass Culture Public API Documentation](https://pass-culture.github.io/pass-culture-api-documentation/docs/category/mandatory-steps).
 
 It is built with [Docusaurus](https://docusaurus.io/) and [Redoc](https://github.com/Redocly/redoc).
 
@@ -16,7 +16,7 @@ npm install
 
 ### Prerequisite
 
-To be able to start the development server, you need to have the Pass Culture local backend server running, as Redoc will be using the Open API JSON served by spectree on http://localhost/openapi.json to generate the REST API documentation.
+To be able to start the development server, you need to have the pass Culture local backend server running, as Redoc will be using the Open API JSON served by spectree on http://localhost/openapi.json to generate the REST API documentation.
 
 ### Command
 

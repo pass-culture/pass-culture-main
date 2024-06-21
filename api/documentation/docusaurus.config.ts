@@ -27,7 +27,7 @@ const getDocumentationBaseUrlFromEnv = (): string => {
 
 
 const config: Config = {
-  title: 'Pass Culture documentation',
+  title: 'pass Culture documentation',
   tagline: '',
   favicon: 'img/favicon.ico',
   url: getDocumentationBaseUrlFromEnv(),
@@ -75,9 +75,9 @@ const config: Config = {
       disableSwitch: true,
     },
     navbar: {
-      title: 'Pass Culture Developers',
+      title: 'pass Culture Developers',
       logo: {
-        alt: 'Pass Culture Logo',
+        alt: 'pass Culture Logo',
         src: 'img/passculture_logo.jpeg',
       },
       items: [
@@ -145,7 +145,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Pass Culture. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} pass Culture. Built with Docusaurus.`,
     },
     prism: {
       additionalLanguages: ['php', 'json', 'bash'],
