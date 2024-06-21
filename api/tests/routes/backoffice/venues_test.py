@@ -1152,15 +1152,27 @@ class UpdateVenueTest(PostEndpointHelper):
         db.session.refresh(venue)
         assert venue.contact.phone_number is None
 
-    def test_update_venue_empty_name(self, authenticated_client):
+    @pytest.mark.parametrize(
+        "field,value",
+        [
+            ("name", ""),
+            ("latitude", "48.87.004"),
+            ("latitude", "98.87004"),
+            ("longitude", "2.3785O"),
+            ("longitude", "237.850"),
+        ],
+    )
+    def test_update_venue_with_validation_error(self, authenticated_client, field, value):
         venue = offerers_factories.VenueFactory()
 
         data = self._get_current_data(venue)
-        data["name"] = ""
+        data[field] = value
 
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
 
         assert response.status_code == 400
+        assert "Les données envoyées comportent des erreurs" in response.data.decode("utf-8")
+
         db.session.refresh(venue)
         assert venue.name
 
