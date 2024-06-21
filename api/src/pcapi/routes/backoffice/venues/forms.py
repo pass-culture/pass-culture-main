@@ -6,6 +6,7 @@ import wtforms
 from wtforms import validators
 
 from pcapi.connectors import acceslibre as acceslibre_connector
+from pcapi.core.geography import constants as geography_constants
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.routes.backoffice import filters
@@ -120,6 +121,28 @@ class EditVenueForm(EditVirtualVenueForm):
         if not street.data and not self.siret.data:
             raise validators.ValidationError("L'adresse est obligatoire pour un lieu sans SIRET")
         return street
+
+    def validate_latitude(self, latitude: fields.PCOptHiddenField) -> fields.PCOptHiddenField:
+        try:
+            float_data = float(latitude.data)
+        except ValueError:
+            raise validators.ValidationError("La latitude doit s'écrire en degrés décimaux")
+        if not -geography_constants.MAX_LATITUDE < float_data <= geography_constants.MAX_LATITUDE:
+            raise validators.ValidationError(
+                f"La latitude doit être comprise entre -{geography_constants.MAX_LATITUDE} et +{geography_constants.MAX_LATITUDE}"
+            )
+        return latitude
+
+    def validate_longitude(self, longitude: fields.PCOptHiddenField) -> fields.PCOptHiddenField:
+        try:
+            float_data = float(longitude.data)
+        except ValueError:
+            raise validators.ValidationError("La longitude doit s'écrire en degrés décimaux")
+        if not -geography_constants.MAX_LONGITUDE <= float_data <= geography_constants.MAX_LONGITUDE:
+            raise validators.ValidationError(
+                f"La longitude doit être comprise entre -{geography_constants.MAX_LONGITUDE} et +{geography_constants.MAX_LONGITUDE}"
+            )
+        return longitude
 
     def validate_acceslibre_url(self, acceslibre_url: fields.PCOptStringField) -> fields.PCOptStringField:
         if acceslibre_url.data and not (
