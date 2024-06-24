@@ -319,7 +319,7 @@ class PatchDateReturns404Test:
             json={"beginningDatetime": "2022-02-01T12:00:00+02:00"},
         )
         assert response.status_code == 404
-        assert response.json == {"date_id": ["No date could be found"]}
+        assert response.json == {"stock_id": ["No stock could be found"]}
 
     def test_find_no_price_category_returns_404(self, client):
         venue, api_key = utils.create_offerer_provider_linked_to_venue()

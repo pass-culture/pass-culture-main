@@ -11,10 +11,10 @@ EVENT_OFFERS_TAG = Tag(
 EVENT_OFFER_PRICES_TAG = Tag(
     name="Event offer prices", description="Endpoints to create and update price categories of an event."
 )
-EVENT_OFFER_DATES_TAG = Tag(
-    name="Event offer dates",
-    description="Endpoints to manage the dates of an event. The date of an event is composed of a price category and an actual date. \
-        Hence for a given performance, you might have several dates (one per category).",
+EVENT_OFFER_STOCKS_TAG = Tag(
+    name="Event offer stocks",
+    description="Endpoints to manage events stocks. An event stock has a price category, a date and a quantity. \
+        Hence for a given performance date, you might have several stocks (one per category).",
 )
 
 # PRODUCT TAGS
@@ -50,7 +50,7 @@ OPEN_API_TAGS = [
     # EVENTS
     EVENT_OFFERS_TAG,
     EVENT_OFFER_PRICES_TAG,
-    EVENT_OFFER_DATES_TAG,
+    EVENT_OFFER_STOCKS_TAG,
     # OFFERS ADDITIONAL DATA
     IMAGE_TAG,
     OFFER_ATTRIBUTES,
