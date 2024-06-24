@@ -43,7 +43,7 @@ deprecated_public_api_schema = ExtendedSpecTree(
     MODE="strict",
     before=serialization_utils.before_handler,
     PATH="/deprecated",
-    tags=tags.DEPRACTED_TAGS,
+    tags=tags.DEPRECATED_TAGS,
     security_schemes=[
         SecurityScheme(
             name=users_authentifications.API_KEY_AUTH_NAME,

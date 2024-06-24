@@ -67,7 +67,7 @@ def _get_paginated_and_filtered_bookings(
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     response_model=serialization.GetFilteredBookingsResponse,
-    tags=[tags.BOOKINGS_TAG],
+    tags=[tags.BOOKINGS],
     resp=SpectreeResponse(
         **(
             {"HTTP_200": (serialization.GetFilteredBookingsResponse, http_responses.HTTP_200_MESSAGE)}
@@ -122,7 +122,7 @@ def _get_booking_by_token(token: str) -> booking_models.Booking | None:
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     response_model=serialization.GetBookingResponse,
-    tags=[tags.BOOKINGS_TAG],
+    tags=[tags.BOOKINGS],
     resp=SpectreeResponse(
         **(
             {"HTTP_200": (serialization.GetBookingResponse, "The booking has been found successfully")}
@@ -164,7 +164,7 @@ def get_booking_by_token(token: str) -> serialization.GetBookingResponse:
 @spectree_serialize(
     on_success_status=204,
     api=spectree_schemas.public_api_schema,
-    tags=[tags.BOOKINGS_TAG],
+    tags=[tags.BOOKINGS],
     resp=SpectreeResponse(
         **(
             http_responses.HTTP_204_BOOKING_VALIDATION_SUCCESS
@@ -205,7 +205,7 @@ def validate_booking_by_token(token: str) -> None:
 @spectree_serialize(
     on_success_status=204,
     api=spectree_schemas.public_api_schema,
-    tags=[tags.BOOKINGS_TAG],
+    tags=[tags.BOOKINGS],
     resp=SpectreeResponse(
         **(
             http_responses.HTTP_204_BOOKING_VALIDATION_CANCELLATION_SUCCESS
@@ -246,7 +246,7 @@ def cancel_booking_validation_by_token(token: str) -> None:
 @spectree_serialize(
     on_success_status=204,
     api=spectree_schemas.public_api_schema,
-    tags=[tags.BOOKINGS_TAG],
+    tags=[tags.BOOKINGS],
     resp=SpectreeResponse(
         **(
             http_responses.HTTP_204_BOOKING_CANCELLATION_SUCCESS
