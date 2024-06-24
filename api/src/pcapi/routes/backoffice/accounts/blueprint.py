@@ -161,8 +161,6 @@ def anonymize_public_account(user_id: int) -> utils.BackofficeResponse:
         flash("Une erreur est survenue lors de l'anonymisation de l'utilisateur", "warning")
         return redirect(url_for(".get_public_account", user_id=user_id))
 
-    db.session.commit()
-
     flash("Les informations de l'utilisateur ont été anonymisées", "success")
 
     return redirect(url_for(".get_public_account", user_id=user_id))
@@ -385,8 +383,6 @@ def render_public_account_details(
         key=lambda action: action["creationDate"],
         reverse=True,
     )
-
-    is_gdpr_extract_valid = is_valid_gdpr_user_extract(user=user)
 
     kwargs.update(user_forms.get_toggle_suspension_args(user, suspension_type=user_forms.SuspensionUserType.PUBLIC))
     return render_template(

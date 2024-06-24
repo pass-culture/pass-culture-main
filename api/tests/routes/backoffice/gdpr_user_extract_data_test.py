@@ -193,38 +193,25 @@ class DownloadPublicAccountExtractTest(PostEndpointHelper, StorageFolderManager)
 STORAGE_FOLDER = settings.LOCAL_STORAGE_DIR / settings.GCP_GDPR_EXTRACT_BUCKET / settings.GCP_GDPR_EXTRACT_FOLDER
 
 
-class DeleteGdprUserExtractTest(PostEndpointHelper):
+class DeleteGdprUserExtractTest(PostEndpointHelper, StorageFolderManager):
     endpoint = "backoffice_web.gdpr_extract.delete_gdpr_user_data_extract"
     endpoint_kwargs = {"gdpr_id": 1}
     needed_permission = perm_models.Permissions.EXTRACT_PUBLIC_ACCOUNT
-
-    def teardown_method(self) -> None:
-        """clear extracts after each tests"""
-        try:
-            for child in STORAGE_FOLDER.iterdir():
-                if not child.is_file():
-                    continue
-                child.unlink()
-        except FileNotFoundError:
-            pass
-
-    def setup_method(self):
-        """Create the folder to work with"""
-        os.makedirs(STORAGE_FOLDER, exist_ok=True)
+    storage_folder = settings.LOCAL_STORAGE_DIR / settings.GCP_GDPR_EXTRACT_BUCKET / settings.GCP_GDPR_EXTRACT_FOLDER
 
     def test_delete_gdpr_user_extract(self, authenticated_client):
-        gdpr = users_factories.GdprUserDataExtractBeneficiaryFactory(dateProcessed=datetime.datetime.utcnow())
-        with open(STORAGE_FOLDER / f"{gdpr.id}.zip", "wb") as fp:
+        extract = users_factories.GdprUserDataExtractBeneficiaryFactory(dateProcessed=datetime.datetime.utcnow())
+        with open(self.storage_folder / f"{extract.id}.zip", "wb") as fp:
             fp.write(b"[personal data compressed with deflate]")
 
-        response = self.post_to_endpoint(authenticated_client, gdpr_id=gdpr.id)
+        response = self.post_to_endpoint(authenticated_client, gdpr_id=extract.id)
         assert response.status_code == 302
 
         expected_url = url_for("backoffice_web.gdpr_extract.list_gdpr_user_data_extract", _external=True)
         assert response.location == expected_url
 
         assert users_models.GdprUserDataExtract.query.count() == 0
-        assert len(os.listdir(STORAGE_FOLDER)) == 0
+        assert len(os.listdir(self.storage_folder)) == 0
 
     def test_delete_gdpr_user_extract_still_processed(self, authenticated_client):
         gdpr = users_factories.GdprUserDataExtractBeneficiaryFactory()

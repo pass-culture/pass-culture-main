@@ -1497,6 +1497,11 @@ def anonymize_user(user: users_models.User, *, author: users_models.User | None 
         if not iris and not force:
             return False
 
+    if user.gdprUserDataExtract:
+        for extract in user.gdprUserDataExtract:
+            if not extract.is_expired and not extract.dateProcessed:
+                return False
+
     try:
         push_api.delete_user_attributes(user_id=user.id, can_be_asynchronously_retried=True)
     except ExternalAPIException as exc:
@@ -1519,6 +1524,9 @@ def anonymize_user(user: users_models.User, *, author: users_models.User | None 
 
     for deposit in user.deposits:
         deposit.source = "Anonymized"
+
+    for extract in user.gdprUserDataExtract:
+        delete_gdpr_extract(extract.id)
 
     user.password = b"Anonymized"
     user.firstName = f"Anonymous_{user.id}"
@@ -1543,6 +1551,7 @@ def anonymize_user(user: users_models.User, *, author: users_models.User | None 
         history_models.ActionHistory.userId == user.id,
         history_models.ActionHistory.offererId.is_(None),
     ).delete()
+    users_models.GdprUserDataExtract.query.filter(users_models.GdprUserDataExtract.userId == user.id).delete()
 
     if external_email_anonymized:
         user.replace_roles_by_anonymized_role()
