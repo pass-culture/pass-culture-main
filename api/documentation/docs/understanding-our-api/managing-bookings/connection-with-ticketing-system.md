@@ -15,7 +15,7 @@ To connect your ticketing system to the pass Culture application, you need first
 
 ## Enable ticket booking for an event
 
-Once your provider account is properly set (with a booking URL and a cancellation URL), you can enable ticket booking for an event by **setting the `hasTicket` parameter to `true`** when **[creating the event](/rest-api#tag/Event-offer/operation/PostEventOffer)**.
+Once your provider account is properly set (with a booking URL and a cancellation URL), you can enable ticket booking for an event by **setting the `hasTicket` parameter to `true`** when **[creating the event](/rest-api#tag/Event-offers/operation/PostEventOffer)**.
 
 :::note
 Once the event is created, you cannot change the **`hasTicket`** attribute.

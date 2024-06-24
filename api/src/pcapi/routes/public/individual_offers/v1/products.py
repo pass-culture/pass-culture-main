@@ -197,7 +197,7 @@ def get_event_titelive_music_types() -> serialization.GetMusicTypesResponse:
 @blueprint.v1_offers_blueprint.route("/products", methods=["POST"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.PRODUCT_OFFER_TAG],
+    tags=[tags.PRODUCT_OFFERS_TAG],
     response_model=serialization.ProductOfferResponse,
     resp=SpectreeResponse(
         **(
@@ -266,7 +266,7 @@ def post_product_offer(body: serialization.ProductOfferCreation) -> serializatio
 @blueprint.v1_offers_blueprint.route("/products/ean", methods=["POST"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.PRODUCT_EAN_OFFER_TAG],
+    tags=[tags.PRODUCT_EAN_OFFERS_TAG],
     on_success_status=204,
     resp=SpectreeResponse(
         **(
@@ -498,7 +498,7 @@ def _create_offer_from_product(
 @blueprint.v1_offers_blueprint.route("/products/<int:product_id>", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.PRODUCT_OFFER_TAG],
+    tags=[tags.PRODUCT_OFFERS_TAG],
     response_model=serialization.ProductOfferResponse,
     resp=SpectreeResponse(
         **(
@@ -530,7 +530,7 @@ def get_product(product_id: int) -> serialization.ProductOfferResponse:
 @blueprint.v1_offers_blueprint.route("/products/ean", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.PRODUCT_EAN_OFFER_TAG],
+    tags=[tags.PRODUCT_EAN_OFFERS_TAG],
     response_model=serialization.ProductOffersByEanResponse,
     resp=SpectreeResponse(
         **(
@@ -578,7 +578,7 @@ def _retrieve_offer_by_eans_query(eans: list[str], venueId: int) -> sqla.orm.Que
 @blueprint.v1_offers_blueprint.route("/products", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.PRODUCT_OFFER_TAG],
+    tags=[tags.PRODUCT_OFFERS_TAG],
     response_model=serialization.ProductOffersResponse,
     resp=SpectreeResponse(
         **(
@@ -628,7 +628,7 @@ def _check_offer_can_be_edited(offer: offers_models.Offer) -> None:
 @blueprint.v1_offers_blueprint.route("/products", methods=["PATCH"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.PRODUCT_OFFER_TAG],
+    tags=[tags.PRODUCT_OFFERS_TAG],
     response_model=serialization.ProductOfferResponse,
     resp=SpectreeResponse(
         **(
@@ -725,7 +725,7 @@ def _upsert_product_stock(
 @blueprint.v1_offers_blueprint.route("/products/categories", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.PRODUCT_OFFER_TAG],
+    tags=[tags.PRODUCT_OFFERS_TAG],
     response_model=serialization.GetProductCategoriesResponse,
     resp=SpectreeResponse(
         **(
