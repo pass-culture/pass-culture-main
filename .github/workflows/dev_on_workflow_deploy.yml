@@ -163,7 +163,7 @@ jobs:
 
   deploy-api-doc-on-firebase:
     name: "Deploy api doc on firebase"
-    if: ${{ inputs.deploy_api }}
+    if: ${{ inputs.deploy_api && inputs.environment != 'ops' }}
     needs: deploy-api
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
