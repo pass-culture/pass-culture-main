@@ -21,6 +21,16 @@ A bookable offer is linked to (at least) one collective booking. Most of the tim
 There can only be one active booking per bookable offer.
 :::
 
+### Who can view and book collective offers?
+
+Collective offers differ from their individual counterparts in that they are not visible on a public application or website. They can only be viewed on the Adage platform, managed by the ministry of education.
+
+This means that a collective offer must be attached to a known venue: known by the pass Culture and the Adage platform.
+
+### Administrative/billing address
+
+A collective offer is always linked to an administrative venue: its the `venueId` field.
+
 ### Status
 
 A bookable offer can have five states:
@@ -43,6 +53,10 @@ The location must be specified under the `offerVenue` object which contains thre
 * `venueId` (`null` when type is `SCHOOL` or `OTHER`);
 * `otherAddress` (not `null` only if `addressType` equals `OTHER`).
 
+:::warning
+`offerVenue` defines where the event takes place, `venueId` defines the administrative/billing address.
+:::
+
 ## Creation rules
 
 ### Offer templates
@@ -57,6 +71,11 @@ There are two requirements to meet in order to create a collective offer:
 
 * your offerer must be referenced by Adage;
 * the offer's subcategory is valid and eligible for a collective offer.
+
+#### Who can create a collective (bookable) offer?
+
+Anyone using an API key which has access to the administrative venue.
+For example: one needs to create events for a local theatre. To do so, its API key must be linked to this venue. Again, this is not the location, this is the organizer. This theatre could then offer tickets for a film at the same location or an outdoor visit nearby, etc.
 
 ## Update rules
 
