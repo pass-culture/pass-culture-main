@@ -110,37 +110,57 @@ const config: Config = {
       style: 'dark',
       links: [
         {
-          title: 'Docs',
+          title: 'pass Culture websites',
           items: [
             {
-              label: 'Documentation',
-              to: '/docs/category/mandatory-steps',
+              label: 'For cultural partners',
+              href: 'https://passculture.pro/accueil',
             },
             {
-              label: 'REST API',
-              to: '/rest-api',
+              label: 'For beneficiaries',
+              href: 'https://passculture.app/accueil',
             },
             {
-              label: 'Change logs',
-              to: '/change-logs',
+              label: 'General information',
+              href: 'https://pass.culture.fr/',
             },
           ],
         },
         {
-          title: 'Community',
+          title: 'Useful links',
           items: [
+            {
+              label: 'CGU',
+              href: 'https://www.notion.so/passcultureapp/Conditions-G-n-rales-d-Utilisation-des-API-pass-Culture-ed6df4e66ed048e292350285319e6d2a',
+            },
+            {
+              label: 'Help Center',
+              href: 'https://aide.passculture.app/hc/fr',
+            },
+            {
+              label: 'GitHub',
+              href: 'https://github.com/pass-culture/pass-culture-main',
+            },
+          ],
+        },
+        {
+          title: 'Follow us',
+          items: [
+            {
+              label: 'LinkedIn',
+              href: 'https://fr.linkedin.com/company/pass-culture',
+            },
             {
               label: 'X',
               href: 'https://x.com/pass_Culture',
             },
-          ],
-        },
-        {
-          title: 'More',
-          items: [
             {
-              label: 'GitHub',
-              href: 'https://github.com/pass-culture/pass-culture-main',
+              label: 'Medium',
+              href: 'https://medium.com/passcultureofficiel',
+            },
+            {
+              label: 'TikTok',
+              href: 'https://www.tiktok.com/@passcultureofficiel',
             },
           ],
         },
