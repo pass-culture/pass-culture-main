@@ -46,7 +46,7 @@ def _get_booking_by_token_or_404(token: str) -> bookings_models.Booking:
 @blueprint.deprecated_booking_token_blueprint.route("/bookings/token/<token>", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.deprecated_public_api_schema,
-    tags=[tags.DEPRECATED_BOOKING_TOKEN_TAG],
+    tags=[tags.DEPRECATED_BOOKING_TOKEN],
     deprecated=True,
     resp=SpectreeResponse(
         **(
@@ -82,7 +82,7 @@ def get_booking_by_token_v2(token: str) -> serialization.GetBookingResponse:
 @blueprint.deprecated_booking_token_blueprint.route("/bookings/use/token/<token>", methods=["PATCH"])
 @spectree_serialize(
     api=spectree_schemas.deprecated_public_api_schema,
-    tags=[tags.DEPRECATED_BOOKING_TOKEN_TAG],
+    tags=[tags.DEPRECATED_BOOKING_TOKEN],
     on_success_status=204,
     deprecated=True,
     resp=SpectreeResponse(
@@ -117,7 +117,7 @@ def patch_booking_use_by_token(token: str) -> None:
 @blueprint.deprecated_booking_token_blueprint.route("/bookings/cancel/token/<token>", methods=["PATCH"])
 @spectree_serialize(
     api=spectree_schemas.deprecated_public_api_schema,
-    tags=[tags.DEPRECATED_BOOKING_TOKEN_TAG],
+    tags=[tags.DEPRECATED_BOOKING_TOKEN],
     on_success_status=204,
     deprecated=True,
     resp=SpectreeResponse(
@@ -165,7 +165,7 @@ def patch_cancel_booking_by_token(token: str) -> None:
 @blueprint.deprecated_booking_token_blueprint.route("/bookings/keep/token/<token>", methods=["PATCH"])
 @spectree_serialize(
     api=spectree_schemas.deprecated_public_api_schema,
-    tags=[tags.DEPRECATED_BOOKING_TOKEN_TAG],
+    tags=[tags.DEPRECATED_BOOKING_TOKEN],
     deprecated=True,
     on_success_status=204,
     resp=SpectreeResponse(

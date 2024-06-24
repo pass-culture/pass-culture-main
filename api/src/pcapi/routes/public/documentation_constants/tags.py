@@ -1,76 +1,76 @@
 from spectree import Tag
 
 
-# BOOKING_TAGS
-BOOKINGS_TAG = Tag(name="Bookings", description="Endpoints to manage the bookings of an offer (event and product).")
+# BOOKING
+BOOKINGS = Tag(name="Bookings", description="Endpoints to manage the bookings of an offer (event and product).")
 
-# EVENT TAGS
-EVENT_OFFERS_TAG = Tag(
+# EVENT OFFERS
+EVENT_OFFERS = Tag(
     name="Event offers", description="Endpoints to manage event offers data of a venue (except prices and dates)."
 )
-EVENT_OFFER_PRICES_TAG = Tag(
+EVENT_OFFER_PRICES = Tag(
     name="Event offer prices", description="Endpoints to create and update price categories of an event."
 )
-EVENT_OFFER_STOCKS_TAG = Tag(
+EVENT_OFFER_STOCKS = Tag(
     name="Event offer stocks",
     description="Endpoints to manage events stocks. An event stock has a price category, a date and a quantity. \
         Hence for a given performance date, you might have several stocks (one per category).",
 )
 
-# PRODUCT TAGS
-PRODUCT_OFFERS_TAG = Tag(name="Product offers", description="Endpoints to manage product offers of a venue.")
-IMAGE_TAG = Tag(name="Images")
-PRODUCT_EAN_OFFERS_TAG = Tag(
+# PRODUCT OFFERS
+PRODUCT_OFFERS = Tag(name="Product offers", description="Endpoints to manage product offers of a venue.")
+IMAGE = Tag(name="Images")
+PRODUCT_EAN_OFFERS = Tag(
     name="Product offer bulk operations",
     description="Endpoints to create and get products usings European Article Number (EAN-13).",
 )
-VENUES_TAG = Tag(name="Venues")
+VENUES = Tag(name="Venues")
 OFFER_ATTRIBUTES = Tag(name="Offer attributes")
 
 
-# COLLECTIVE TAGS
-COLLECTIVE_OFFERS_TAG = Tag(
+# COLLECTIVE OFFERS
+COLLECTIVE_OFFERS = Tag(
     name="Collective offers",
     description='Endpoints to manage collective offers that are "bookable", not those that are displayed in the showcase.',
 )
-COLLECTIVE_BOOKINGS_TAG = Tag(name="Collective bookings")
-COLLECTIVE_OFFER_ATTRIBUTES_TAG = Tag(name="Collective offer attributes")
+COLLECTIVE_BOOKINGS = Tag(name="Collective bookings")
+COLLECTIVE_OFFER_ATTRIBUTES = Tag(name="Collective offer attributes")
 
-# COLLECTIVE TAGS --- Deprecated
-COLLECTIVE_CATEGORIES_TAG = Tag(name="[DEPRECATED] Collective categories")
-COLLECTIVE_VENUES_TAG = Tag(name="[DEPRECATED] Collective venues")
+# COLLECTIVE OFFERS --- Deprecated
+COLLECTIVE_CATEGORIES = Tag(name="[DEPRECATED] Collective categories")
+COLLECTIVE_VENUES = Tag(name="[DEPRECATED] Collective venues")
 
 
 OPEN_API_TAGS = [
     # OFFERER VENUES
-    VENUES_TAG,
+    VENUES,
     # PRODUCTS
-    PRODUCT_EAN_OFFERS_TAG,
-    PRODUCT_OFFERS_TAG,
+    PRODUCT_EAN_OFFERS,
+    PRODUCT_OFFERS,
     # EVENTS
-    EVENT_OFFERS_TAG,
-    EVENT_OFFER_PRICES_TAG,
-    EVENT_OFFER_STOCKS_TAG,
+    EVENT_OFFERS,
+    EVENT_OFFER_PRICES,
+    EVENT_OFFER_STOCKS,
     # OFFERS ADDITIONAL DATA
-    IMAGE_TAG,
+    IMAGE,
     OFFER_ATTRIBUTES,
     # BOOKINGS
-    BOOKINGS_TAG,
+    BOOKINGS,
     # COLLECTIVE
-    COLLECTIVE_OFFERS_TAG,
-    COLLECTIVE_BOOKINGS_TAG,
-    COLLECTIVE_OFFER_ATTRIBUTES_TAG,
+    COLLECTIVE_OFFERS,
+    COLLECTIVE_BOOKINGS,
+    COLLECTIVE_OFFER_ATTRIBUTES,
     # COLLECTIVE DEPRECATED ENDPOINTS
-    COLLECTIVE_CATEGORIES_TAG,
-    COLLECTIVE_VENUES_TAG,
+    COLLECTIVE_CATEGORIES,
+    COLLECTIVE_VENUES,
 ]
 
-# DEPRECATED APIS TAGS
-DEPRECATED_BOOKING_TOKEN_TAG = Tag(name="[Dépréciée] API Contremarque")
-DEPRECATED_VENUES_STOCK_TAG = Tag(name="[Dépréciée] API stocks")
+# DEPRECATED APIS
+DEPRECATED_BOOKING_TOKEN = Tag(name="[Dépréciée] API Contremarque")
+DEPRECATED_VENUES_STOCK = Tag(name="[Dépréciée] API stocks")
 
 
-DEPRACTED_TAGS = [
-    DEPRECATED_BOOKING_TOKEN_TAG,
-    DEPRECATED_VENUES_STOCK_TAG,
+DEPRECATED_TAGS = [
+    DEPRECATED_BOOKING_TOKEN,
+    DEPRECATED_VENUES_STOCK,
 ]
