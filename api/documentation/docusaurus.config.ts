@@ -27,7 +27,7 @@ const getDocumentationBaseUrlFromEnv = (): string => {
 
 
 const config: Config = {
-  title: 'pass Culture documentation',
+  title: 'API documentation',
   tagline: '',
   favicon: 'img/favicon.ico',
   url: getDocumentationBaseUrlFromEnv(),
