@@ -8,6 +8,7 @@ from pcapi.core.categories.subcategories_v2 import SubcategoryIdEnum
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.models import WithdrawalTypeEnum
+from pcapi.core.reactions.models import ReactionTypeEnum
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
 from pcapi.routes.native.v1.serialization.offers import OfferImageResponse
 from pcapi.routes.serialization import BaseModel
@@ -123,6 +124,7 @@ class BookingReponse(BaseModel):
     stock: BookingStockResponse
     total_amount: int
     token: str | None
+    userReaction: ReactionTypeEnum | None
     activationCode: BookingActivationCodeResponse | None
     externalBookings: list[ExternalBookingResponse] | None
 
