@@ -12,4 +12,5 @@ def install_routes(app: Flask) -> None:
     if settings.ENABLE_LOCAL_DEV_MODE_FOR_STORAGE:
         from . import storage
     if settings.ENABLE_TEST_ROUTES:
+        from . import e2e
         from . import testing
