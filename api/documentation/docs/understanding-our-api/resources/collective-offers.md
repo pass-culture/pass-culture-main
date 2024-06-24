@@ -57,6 +57,10 @@ The location must be specified under the `offerVenue` object which contains thre
 `offerVenue` defines where the event takes place, `venueId` defines the administrative/billing address.
 :::
 
+:::warning
+`offerVenue` defines where the event takes place, `venueId` defines the administrative/billing address.
+:::
+
 ## Creation rules
 
 ### Offer templates
@@ -71,6 +75,11 @@ There are two requirements to meet in order to create a collective offer:
 
 * your offerer must be referenced by Adage;
 * the offer's subcategory is valid and eligible for a collective offer.
+
+#### Who can create a collective (bookable) offer?
+
+Anyone using an API key which has access to the administrative venue.
+For example: one needs to create events for a local theatre. To do so, its API key must be linked to this venue. Again, this is not the location, this is the organizer. This theatre could then offer tickets for a film at the same location or an outdoor visit nearby, etc.
 
 #### Who can create a collective (bookable) offer?
 
