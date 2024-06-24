@@ -7,9 +7,9 @@ import useSWR from 'swr'
 import { api } from 'apiClient/api'
 import {
   BookingRecapResponseModel,
-  BookingStatusFilter,
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
+import { isBookingStatusFilter } from 'apiClient/v1/models/BookingStatusFilter'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { NoData } from 'components/NoData/NoData'
 import {
@@ -156,13 +156,13 @@ export const BookingsScreen = <
       params.has('offerType') ||
       params.has('offerEventDate')
     ) {
+      const bookingStatusFilter = params.get('bookingStatusFilter')
       const filterToLoad: PreFiltersParams = {
         offerVenueId:
           params.get('offerVenueId') ?? DEFAULT_PRE_FILTERS.offerVenueId,
-        // TODO typeguard this to remove the `as`
-        bookingStatusFilter:
-          (params.get('bookingStatusFilter') as BookingStatusFilter | null) ??
-          initialAppliedFilters.bookingStatusFilter,
+        bookingStatusFilter: isBookingStatusFilter(bookingStatusFilter)
+          ? bookingStatusFilter
+          : initialAppliedFilters.bookingStatusFilter,
         bookingBeginningDate:
           params.get('bookingBeginningDate') ??
           (params.has('offerEventDate')

@@ -30,6 +30,7 @@ export type SelectAutocompleteProps = FieldLayoutBaseProps & {
   onSearch?: (pattern: string) => void
   searchInOptions?: (options: SelectOption[], pattern: string) => SelectOption[]
   onReset?: () => void
+  onChange?: (value: string) => Promise<void>
   type?: 'text' | 'search'
   leftIcon?: string
 }
@@ -54,6 +55,7 @@ export const SelectAutocomplete = ({
   onSearch = () => {},
   searchInOptions = (options) => options,
   onReset = () => {},
+  onChange,
   type = 'text',
   leftIcon,
 }: SelectAutocompleteProps): JSX.Element => {
@@ -193,6 +195,10 @@ export const SelectAutocomplete = ({
         optionsLabelById[updatedSelection],
         false
       )
+      if (onChange) {
+        await onChange(optionsLabelById[updatedSelection])
+        return
+      }
     }
     await setFieldValue(name, updatedSelection)
   }

@@ -10,3 +10,9 @@ export enum BookingStatusFilter {
   VALIDATED = 'validated',
   REIMBURSED = 'reimbursed',
 }
+
+export function isBookingStatusFilter(
+  value: any
+): value is BookingStatusFilter {
+  return Object.values(BookingStatusFilter).includes(value)
+}
