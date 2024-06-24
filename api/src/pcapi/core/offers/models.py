@@ -586,7 +586,9 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     futureOffer: sa_orm.Mapped["FutureOffer"] = sa_orm.relationship(
         "FutureOffer", back_populates="offer", uselist=False
     )
-    reactions: list["Reaction"] = sa.orm.relationship("Reaction", back_populates="offer", uselist=True)
+    reactions: list["Reaction"] = sa.orm.relationship(
+        "Reaction", back_populates="offer", uselist=True, cascade="all, delete-orphan", passive_deletes=True
+    )
 
     sa.Index("idx_offer_trgm_name", name, postgresql_using="gin")
     sa.Index("offer_idAtProvider", idAtProvider)
