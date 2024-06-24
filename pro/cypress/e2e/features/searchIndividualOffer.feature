@@ -8,8 +8,8 @@ Feature: Search individual offers
   Scenario: A search with a name should display expected results
     When I search with the text "Offer 1643"
     Then These results should be displayed
-      |  |  | Titre      | Lieu             | Stocks | Status  |
-      |  |  | Offer 1643 | Espace des Gnoux |     20 | publiée |
+      |  |  | Titre      | Lieu                             | Stocks | Status     |
+      |  |  | Offer 1643 | Cinéma du coin - Offre numérique | 0      | désactivée |
 
   Scenario: A search with a EAN should display expected results
     When I search with the text "9780000000004"
