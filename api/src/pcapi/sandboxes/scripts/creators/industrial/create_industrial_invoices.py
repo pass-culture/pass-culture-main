@@ -2,6 +2,7 @@ from datetime import datetime
 from datetime import timedelta
 import logging
 import random
+from unittest.mock import patch
 
 from pcapi.connectors.big_query.queries.offerer_stats import DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
 from pcapi.connectors.big_query.queries.offerer_stats import TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE
@@ -57,10 +58,11 @@ def create_free_invoice() -> None:
             stock=stock,
             user__deposit__source="create_free_invoice() in industrial sandbox",
         )
-        bookings_api.mark_as_used(
-            booking=booking,
-            validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
-        )
+        with patch("pcapi.core.bookings.api.update_external_user"):
+            bookings_api.mark_as_used(
+                booking=booking,
+                validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
+            )
 
         for finance_event in booking.finance_events:
             finance_api.price_event(finance_event)

@@ -1,6 +1,7 @@
 import datetime
 import decimal
 import logging
+from unittest.mock import patch
 import uuid
 
 from pcapi.core.bookings import api as bookings_api
@@ -148,10 +149,11 @@ def _create_one_individual_incident(
 
     bookings = special_bookings + incident_bookings
     for booking in bookings:
-        bookings_api.mark_as_used(
-            booking=booking,
-            validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
-        )
+        with patch("pcapi.core.bookings.api.update_external_user"):
+            bookings_api.mark_as_used(
+                booking=booking,
+                validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
+            )
         for finance_event in booking.finance_events:
             finance_api.price_event(finance_event)
 
@@ -172,10 +174,11 @@ def _create_one_individual_incident(
             user__firstName=f"valent.incident_{uuid.uuid4()}@example.com",
         )
         for booking in new_bookings:
-            bookings_api.mark_as_used(
-                booking=booking,
-                validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
-            )
+            with patch("pcapi.core.bookings.api.update_external_user"):
+                bookings_api.mark_as_used(
+                    booking=booking,
+                    validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
+                )
             finance_api.price_event(booking.finance_events[0])
 
     amount = None if len(bookings) > 1 else decimal.Decimal("10")

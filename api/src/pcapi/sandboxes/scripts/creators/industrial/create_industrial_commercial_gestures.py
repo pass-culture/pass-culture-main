@@ -1,5 +1,6 @@
 import datetime
 import decimal
+from unittest.mock import patch
 
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import factories as bookings_factories
@@ -35,10 +36,11 @@ def _create_total_commercial_gesture_individual_offer(
             stock__price=decimal.Decimal("5.0"),
             stock__offer__venue=venue,
         )  # 200€
-        bookings_api.mark_as_used(
-            booking=booking,
-            validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
-        )
+        with patch("pcapi.core.bookings.api.update_external_user"):
+            bookings_api.mark_as_used(
+                booking=booking,
+                validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
+            )
         finance_api.price_event(booking.finance_events[0])
 
     # Create the bookings and cancel them
@@ -50,15 +52,17 @@ def _create_total_commercial_gesture_individual_offer(
             stock__price=decimal.Decimal("10.1") + decimal.Decimal(i),
             quantity=1,
         )
-        bookings_api.mark_as_used(
-            booking=booking,
-            validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
-        )
+        with patch("pcapi.core.bookings.api.update_external_user"):
+            bookings_api.mark_as_used(
+                booking=booking,
+                validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
+            )
         finance_api.price_event(booking.finance_events[0])
-        bookings_api.mark_as_cancelled(
-            booking=booking,
-            reason=bookings_models.BookingCancellationReasons.BACKOFFICE,
-        )
+        with patch("pcapi.core.bookings.api.update_external_user"):
+            bookings_api.mark_as_cancelled(
+                booking=booking,
+                reason=bookings_models.BookingCancellationReasons.BACKOFFICE,
+            )
         for finance_event in booking.finance_events:
             if finance_event.status == finance_models.FinanceEventStatus.CANCELLED:
                 finance_api.price_event(finance_event)
@@ -73,10 +77,11 @@ def _create_total_commercial_gesture_individual_offer(
             stock__price=decimal.Decimal("99.9"),
             stock__offer__venue=venue,
         )
-        bookings_api.mark_as_used(
-            booking=booking,
-            validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
-        )
+        with patch("pcapi.core.bookings.api.update_external_user"):
+            bookings_api.mark_as_used(
+                booking=booking,
+                validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
+            )
         finance_api.price_event(booking.finance_events[0])
 
     # Generate the commercial gestures
@@ -189,10 +194,11 @@ def _create_partial_commercial_gesture_multiple_individual_offer(
             stock__price=decimal.Decimal("5.0"),
             stock__offer__venue=venue,
         )  # 200€
-        bookings_api.mark_as_used(
-            booking=booking,
-            validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
-        )
+        with patch("pcapi.core.bookings.api.update_external_user"):
+            bookings_api.mark_as_used(
+                booking=booking,
+                validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
+            )
 
         for finance_event in booking.finance_events:
             finance_api.price_event(finance_event)
@@ -207,17 +213,19 @@ def _create_partial_commercial_gesture_multiple_individual_offer(
             stock__price=decimal.Decimal("10.1") + decimal.Decimal(i),
             quantity=1,
         )
-        bookings_api.mark_as_used(
-            booking=booking,
-            validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
-        )
+        with patch("pcapi.core.bookings.api.update_external_user"):
+            bookings_api.mark_as_used(
+                booking=booking,
+                validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
+            )
         for finance_event in booking.finance_events:
             finance_api.price_event(finance_event)
 
-        bookings_api.mark_as_cancelled(
-            booking=booking,
-            reason=bookings_models.BookingCancellationReasons.BACKOFFICE,
-        )
+        with patch("pcapi.core.bookings.api.update_external_user"):
+            bookings_api.mark_as_cancelled(
+                booking=booking,
+                reason=bookings_models.BookingCancellationReasons.BACKOFFICE,
+            )
 
         for finance_event in booking.finance_events:
             if finance_event.status == finance_models.FinanceEventStatus.CANCELLED:
@@ -233,10 +241,11 @@ def _create_partial_commercial_gesture_multiple_individual_offer(
             stock__price=decimal.Decimal("99.9"),
             stock__offer__venue=venue,
         )
-        bookings_api.mark_as_used(
-            booking=booking,
-            validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
-        )
+        with patch("pcapi.core.bookings.api.update_external_user"):
+            bookings_api.mark_as_used(
+                booking=booking,
+                validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
+            )
         for finance_event in booking.finance_events:
             finance_api.price_event(finance_event)
 
@@ -275,10 +284,11 @@ def _generate_bookings_for_commercial_gesture_creation(venue: offerers_models.Ve
             stock__price=decimal.Decimal("5.0"),
             stock__offer__venue=venue,
         )  # 200€
-        bookings_api.mark_as_used(
-            booking=booking,
-            validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
-        )
+        with patch("pcapi.core.bookings.api.update_external_user"):
+            bookings_api.mark_as_used(
+                booking=booking,
+                validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
+            )
 
         for finance_event in booking.finance_events:
             finance_api.price_event(finance_event)
@@ -291,17 +301,19 @@ def _generate_bookings_for_commercial_gesture_creation(venue: offerers_models.Ve
             stock__price=decimal.Decimal("10.1") + decimal.Decimal(i),
             quantity=1,
         )
-        bookings_api.mark_as_used(
-            booking=booking,
-            validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
-        )
+        with patch("pcapi.core.bookings.api.update_external_user"):
+            bookings_api.mark_as_used(
+                booking=booking,
+                validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
+            )
         for finance_event in booking.finance_events:
             finance_api.price_event(finance_event)
 
-        bookings_api.mark_as_cancelled(
-            booking=booking,
-            reason=bookings_models.BookingCancellationReasons.BACKOFFICE,
-        )
+        with patch("pcapi.core.bookings.api.update_external_user"):
+            bookings_api.mark_as_cancelled(
+                booking=booking,
+                reason=bookings_models.BookingCancellationReasons.BACKOFFICE,
+            )
 
         for finance_event in booking.finance_events:
             if finance_event.status == finance_models.FinanceEventStatus.CANCELLED:
@@ -315,10 +327,11 @@ def _generate_bookings_for_commercial_gesture_creation(venue: offerers_models.Ve
             stock__price=decimal.Decimal("99.9"),
             stock__offer__venue=venue,
         )
-        bookings_api.mark_as_used(
-            booking=booking,
-            validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
-        )
+        with patch("pcapi.core.bookings.api.update_external_user"):
+            bookings_api.mark_as_used(
+                booking=booking,
+                validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
+            )
         for finance_event in booking.finance_events:
             finance_api.price_event(finance_event)
 
