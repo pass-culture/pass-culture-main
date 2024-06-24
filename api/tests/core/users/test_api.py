@@ -2009,7 +2009,9 @@ class AnonymizeProUserTest:
         delete_beamer_user_mock.assert_called_once_with(user_id)
 
 
-class AnonymizeBeneficiaryUsersTest:
+class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
+    storage_folder = settings.LOCAL_STORAGE_DIR / settings.GCP_GDPR_EXTRACT_BUCKET / settings.GCP_GDPR_EXTRACT_FOLDER
+
     def import_iris(self):
         path = DATA_DIR / "iris_min.7z"
         geography_api.import_iris_from_7z(str(path))
@@ -2025,6 +2027,28 @@ class AnonymizeBeneficiaryUsersTest:
             firstName="user_underage_beneficiary_to_anonymize",
             age=17,
             lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
+        )
+        user_with_ready_gdpr_extract_to_anonymize = users_factories.BeneficiaryFactory(
+            firstName="user_beneficiary_to_anonymize",
+            age=18,
+            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            gdprUserDataExtract=[
+                users_factories.GdprUserDataExtractBeneficiaryFactory(
+                    dateProcessed=datetime.datetime.utcnow() - datetime.timedelta(days=1)
+                )
+            ],
+            deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
+        )
+        user_with_expired_gdpr_extract_to_anonymize = users_factories.BeneficiaryFactory(
+            firstName="user_beneficiary_to_anonymize",
+            age=18,
+            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            gdprUserDataExtract=[
+                users_factories.GdprUserDataExtractBeneficiaryFactory(
+                    dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=8)
+                )
+            ],
             deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
         )
         user_too_new = users_factories.BeneficiaryFactory(
@@ -2056,11 +2080,18 @@ class AnonymizeBeneficiaryUsersTest:
         self.import_iris()
         iris = geography_models.IrisFrance.query.first()
 
+        with open(
+            self.storage_folder / f"{user_with_expired_gdpr_extract_to_anonymize.gdprUserDataExtract[0].id}.zip", "wb"
+        ):
+            pass
+
         with mock.patch("pcapi.core.users.api.get_iris_from_address", return_value=iris):
             users_api.anonymize_beneficiary_users(force=False)
 
         db.session.refresh(user_beneficiary_to_anonymize)
         db.session.refresh(user_underage_beneficiary_to_anonymize)
+        db.session.refresh(user_with_ready_gdpr_extract_to_anonymize)
+        db.session.refresh(user_with_expired_gdpr_extract_to_anonymize)
         db.session.refresh(user_too_new)
         db.session.refresh(user_deposit_too_new)
         db.session.refresh(user_never_connected)
@@ -2069,10 +2100,15 @@ class AnonymizeBeneficiaryUsersTest:
         db.session.refresh(user_pass_culture)
         db.session.refresh(user_anonymized)
 
-        assert len(sendinblue_testing.sendinblue_requests) == 2
-        assert len(batch_testing.requests) == 2
+        assert len(sendinblue_testing.sendinblue_requests) == 4
+        assert len(batch_testing.requests) == 4
         user_id_set = set(request["user_id"] for request in batch_testing.requests)
-        assert user_id_set == {user_beneficiary_to_anonymize.id, user_underage_beneficiary_to_anonymize.id}
+        assert user_id_set == {
+            user_beneficiary_to_anonymize.id,
+            user_underage_beneficiary_to_anonymize.id,
+            user_with_ready_gdpr_extract_to_anonymize.id,
+            user_with_expired_gdpr_extract_to_anonymize.id,
+        }
 
         # these profiles should not have been anonymized
         assert user_too_new.firstName == "user_too_new"
@@ -2082,8 +2118,14 @@ class AnonymizeBeneficiaryUsersTest:
         assert user_pro.firstName == "user_pro"
         assert user_pass_culture.firstName == "user_pass_culture"
         assert user_anonymized.firstName == "user_anonymized"
+        assert len(os.listdir(self.storage_folder)) == 0
 
-        for user_to_anonymize in [user_beneficiary_to_anonymize, user_underage_beneficiary_to_anonymize]:
+        for user_to_anonymize in [
+            user_beneficiary_to_anonymize,
+            user_underage_beneficiary_to_anonymize,
+            user_with_ready_gdpr_extract_to_anonymize,
+            user_with_expired_gdpr_extract_to_anonymize,
+        ]:
             for beneficiary_fraud_check in user_to_anonymize.beneficiaryFraudChecks:
                 assert beneficiary_fraud_check.resultContent == None
                 assert beneficiary_fraud_check.reason == "Anonymized"
@@ -2097,6 +2139,13 @@ class AnonymizeBeneficiaryUsersTest:
 
             for deposit in user_to_anonymize.deposits:
                 assert deposit.source == "Anonymized"
+
+            assert (
+                users_models.GdprUserDataExtract.query.filter(
+                    users_models.GdprUserDataExtract.userId == user_to_anonymize.id
+                ).count()
+                == 0
+            )
 
             assert user_to_anonymize.email == f"anonymous_{user_to_anonymize.id}@anonymized.passculture"
             assert user_to_anonymize.password == b"Anonymized"
@@ -2154,6 +2203,27 @@ class AnonymizeBeneficiaryUsersTest:
 
         assert len(sendinblue_testing.sendinblue_requests) == 0
         assert user_to_anonymize.firstName == "user_to_anonymize"
+
+    def test_anonymize_beneficiary_user_with_unprocessed_gdpr_extract(self) -> None:
+        user_beneficiary_to_anonymize = users_factories.BeneficiaryFactory(
+            firstName="user_beneficiary_to_anonymize",
+            age=18,
+            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            gdprUserDataExtract=[users_factories.GdprUserDataExtractBeneficiaryFactory()],
+            deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
+        )
+
+        self.import_iris()
+        iris = geography_models.IrisFrance.query.first()
+
+        with mock.patch("pcapi.core.users.api.get_iris_from_address", return_value=iris):
+            users_api.anonymize_beneficiary_users(force=False)
+
+        db.session.refresh(user_beneficiary_to_anonymize)
+
+        assert len(sendinblue_testing.sendinblue_requests) == 0
+        assert user_beneficiary_to_anonymize.firstName == "user_beneficiary_to_anonymize"
+        assert users_models.GdprUserDataExtract.query.count() == 1
 
     def test_anonymize_beneficiary_user_no_addr_api(self) -> None:
         user_to_anonymize = users_factories.BeneficiaryFactory(
