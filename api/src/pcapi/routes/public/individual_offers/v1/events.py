@@ -346,7 +346,7 @@ def patch_event_price_categories(
 @blueprint.v1_offers_blueprint.route("/events/<int:event_id>/dates", methods=["POST"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.EVENT_OFFER_DATES_TAG],
+    tags=[tags.EVENT_OFFER_STOCKS_TAG],
     response_model=serialization.PostDatesResponse,
     resp=SpectreeResponse(
         **(
@@ -359,11 +359,13 @@ def patch_event_price_categories(
     ),
 )
 @api_key_required
-def post_event_dates(event_id: int, body: serialization.DatesCreation) -> serialization.PostDatesResponse:
+def post_event_stocks(event_id: int, body: serialization.DatesCreation) -> serialization.PostDatesResponse:
     """
-    Add dates to event
+    Add stocks to an event
 
-    Add a dates to given event. Each date is attached to a price category so if there are several prices categories, several dates must be added.
+    Add stocks to given event. Each stock is attached to a price category and to a date.
+    For a given date, you will have one stock per price category.
+
     **⚠️ Event must have less than 1 000 stocks** otherwise they will not be published.
     """
     offer = (
@@ -407,7 +409,7 @@ def post_event_dates(event_id: int, body: serialization.DatesCreation) -> serial
 @blueprint.v1_offers_blueprint.route("/events/<int:event_id>/dates", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.EVENT_OFFER_DATES_TAG],
+    tags=[tags.EVENT_OFFER_STOCKS_TAG],
     response_model=serialization.GetDatesResponse,
     resp=SpectreeResponse(
         **(
@@ -420,11 +422,11 @@ def post_event_dates(event_id: int, body: serialization.DatesCreation) -> serial
     ),
 )
 @api_key_required
-def get_event_dates(event_id: int, query: serialization.GetDatesQueryParams) -> serialization.GetDatesResponse:
+def get_event_stocks(event_id: int, query: serialization.GetDatesQueryParams) -> serialization.GetDatesResponse:
     """
-    Get event dates
+    Get event stocks
 
-    Return all the dates linked to an event. Results are paginated (by default there are `50` date per page).
+    Return all stocks for given event. Results are paginated (by default there are `50` date per page).
     """
     offer = utils.retrieve_offer_query(event_id).filter(offers_models.Offer.isEvent).one_or_none()
     if not offer:
@@ -453,10 +455,10 @@ def get_event_dates(event_id: int, query: serialization.GetDatesQueryParams) -> 
     )
 
 
-@blueprint.v1_offers_blueprint.route("/events/<int:event_id>/dates/<int:date_id>", methods=["DELETE"])
+@blueprint.v1_offers_blueprint.route("/events/<int:event_id>/dates/<int:stock_id>", methods=["DELETE"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.EVENT_OFFER_DATES_TAG],
+    tags=[tags.EVENT_OFFER_STOCKS_TAG],
     on_success_status=204,
     resp=SpectreeResponse(
         **(
@@ -469,12 +471,12 @@ def get_event_dates(event_id: int, query: serialization.GetDatesQueryParams) -> 
     ),
 )
 @api_key_required
-def delete_event_date(event_id: int, date_id: int) -> None:
+def delete_event_stock(event_id: int, stock_id: int) -> None:
     """
-    Delete event date
+    Delete event stock
 
-    When an event date is deleted, all cancellable bookings (i.e not used) are cancelled.
-    To prevent from further bookings, you may alternatively update the date's quantity to the bookedQuantity (but not below).
+    When an event stock is deleted, all cancellable bookings (i.e not used) are cancelled.
+    To prevent from further bookings, you may alternatively update the stock's quantity to the bookedQuantity (but not below).
     """
     offer = (
         utils.retrieve_offer_query(event_id)
@@ -484,19 +486,19 @@ def delete_event_date(event_id: int, date_id: int) -> None:
     )
     if not offer:
         raise api_errors.ApiErrors({"event_id": ["The event could not be found"]}, status_code=404)
-    stock_to_delete = next((stock for stock in offer.stocks if stock.id == date_id and not stock.isSoftDeleted), None)
+    stock_to_delete = next((stock for stock in offer.stocks if stock.id == stock_id and not stock.isSoftDeleted), None)
     if not stock_to_delete:
-        raise api_errors.ApiErrors({"date_id": ["The date could not be found"]}, status_code=404)
+        raise api_errors.ApiErrors({"stock_id": ["No stock could be found"]}, status_code=404)
     try:
         offers_api.delete_stock(stock_to_delete)
     except offers_exceptions.OfferEditionBaseException as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
 
-@blueprint.v1_offers_blueprint.route("/events/<int:event_id>/dates/<int:date_id>", methods=["PATCH"])
+@blueprint.v1_offers_blueprint.route("/events/<int:event_id>/dates/<int:stock_id>", methods=["PATCH"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.EVENT_OFFER_DATES_TAG],
+    tags=[tags.EVENT_OFFER_STOCKS_TAG],
     response_model=serialization.DateResponse,
     resp=SpectreeResponse(
         **(
@@ -509,15 +511,15 @@ def delete_event_date(event_id: int, date_id: int) -> None:
     ),
 )
 @api_key_required
-def patch_event_date(
+def patch_event_stock(
     event_id: int,
-    date_id: int,
+    stock_id: int,
     body: serialization.DateEdition,
 ) -> serialization.DateResponse:
     """
-    Update event date
+    Update event stock
 
-    Update the price category and the beginning time of an event date.
+    Update the price category and the beginning time of an event stock.
     """
     offer: offers_models.Offer | None = (
         utils.retrieve_offer_relations_query(utils.retrieve_offer_query(event_id))
@@ -527,9 +529,9 @@ def patch_event_date(
     if not offer:
         raise api_errors.ApiErrors({"event_id": ["The event could not be found"]}, status_code=404)
 
-    stock_to_edit = next((stock for stock in offer.stocks if stock.id == date_id and not stock.isSoftDeleted), None)
+    stock_to_edit = next((stock for stock in offer.stocks if stock.id == stock_id and not stock.isSoftDeleted), None)
     if not stock_to_edit:
-        raise api_errors.ApiErrors({"date_id": ["No date could be found"]}, status_code=404)
+        raise api_errors.ApiErrors({"stock_id": ["No stock could be found"]}, status_code=404)
 
     update_body = body.dict(exclude_unset=True)
     try:

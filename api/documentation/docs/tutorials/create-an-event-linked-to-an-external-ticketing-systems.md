@@ -375,7 +375,7 @@ Then log with this account [**on the pro interface in the integration test envir
 
 For that, you need:
 - **to create an event with `hasTicket` set to `true`** and **having at least one price category**, using [**this endpoint**](/rest-api#tag/Event-offers/operation/PostEventOffer)
-- **to add stocks for this newly created event**, using [**this endpoint**](/rest-api#tag/Event-offer-dates/operation/PostEventDates)
+- **to add stocks for this newly created event**, using [**this endpoint**](/rest-api#tag/Event-offer-stocks/operation/PostEventStocks)
 
 ### Step 3: Try to book/cancel a ticket as a beneficiary
 

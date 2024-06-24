@@ -9290,8 +9290,8 @@
         },
         "/public/offers/v1/events/{event_id}/dates": {
             "get": {
-                "description": "Return all the dates linked to an event. Results are paginated (by default there are `50` date per page).",
-                "operationId": "GetEventDates",
+                "description": "Return all stocks for given event. Results are paginated (by default there are `50` date per page).",
+                "operationId": "GetEventStocks",
                 "parameters": [
                     {
                         "description": "",
@@ -9384,14 +9384,14 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Get event dates",
+                "summary": "Get event stocks",
                 "tags": [
-                    "Event offer dates"
+                    "Event offer stocks"
                 ]
             },
             "post": {
-                "description": "Add a dates to given event. Each date is attached to a price category so if there are several prices categories, several dates must be added. **\u26a0\ufe0f Event must have less than 1 000 stocks** otherwise they will not be published.",
-                "operationId": "PostEventDates",
+                "description": "Add stocks to given event. Each stock is attached to a price category and to a date. For a given date, you will have one stock per price category.\n\n**\u26a0\ufe0f Event must have less than 1 000 stocks** otherwise they will not be published.",
+                "operationId": "PostEventStocks",
                 "parameters": [
                     {
                         "description": "",
@@ -9466,16 +9466,16 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Add dates to event",
+                "summary": "Add stocks to an event",
                 "tags": [
-                    "Event offer dates"
+                    "Event offer stocks"
                 ]
             }
         },
-        "/public/offers/v1/events/{event_id}/dates/{date_id}": {
+        "/public/offers/v1/events/{event_id}/dates/{stock_id}": {
             "delete": {
-                "description": "When an event date is deleted, all cancellable bookings (i.e not used) are cancelled. To prevent from further bookings, you may alternatively update the date's quantity to the bookedQuantity (but not below).",
-                "operationId": "DeleteEventDate",
+                "description": "When an event stock is deleted, all cancellable bookings (i.e not used) are cancelled. To prevent from further bookings, you may alternatively update the stock's quantity to the bookedQuantity (but not below).",
+                "operationId": "DeleteEventStock",
                 "parameters": [
                     {
                         "description": "",
@@ -9490,7 +9490,7 @@
                     {
                         "description": "",
                         "in": "path",
-                        "name": "date_id",
+                        "name": "stock_id",
                         "required": true,
                         "schema": {
                             "format": "int32",
@@ -9544,14 +9544,14 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Delete event date",
+                "summary": "Delete event stock",
                 "tags": [
-                    "Event offer dates"
+                    "Event offer stocks"
                 ]
             },
             "patch": {
-                "description": "Update the price category and the beginning time of an event date.",
-                "operationId": "PatchEventDate",
+                "description": "Update the price category and the beginning time of an event stock.",
+                "operationId": "PatchEventStock",
                 "parameters": [
                     {
                         "description": "",
@@ -9566,7 +9566,7 @@
                     {
                         "description": "",
                         "in": "path",
-                        "name": "date_id",
+                        "name": "stock_id",
                         "required": true,
                         "schema": {
                             "format": "int32",
@@ -9636,9 +9636,9 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Update event date",
+                "summary": "Update event stock",
                 "tags": [
-                    "Event offer dates"
+                    "Event offer stocks"
                 ]
             }
         },
@@ -11700,9 +11700,9 @@
             "name": "Event offer prices"
         },
         {
-            "description": "Endpoints to manage the dates of an event. The date of an event is composed of a price category and an actual date.         Hence for a given performance, you might have several dates (one per category).",
+            "description": "Endpoints to manage events stocks. An event stock has a price category, a date and a quantity.         Hence for a given performance date, you might have several stocks (one per category).",
             "externalDocs": null,
-            "name": "Event offer dates"
+            "name": "Event offer stocks"
         },
         {
             "description": "",

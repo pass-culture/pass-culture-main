@@ -81,7 +81,7 @@ Therefore, you will have **`(number of performances)*(number of categories)`** s
 ### Creation rules
 
 Creating a `event` offer with its stocks is a three steps process.
-You will need to first **[create the event](/rest-api/#tag/Event-offers/operation/PostEventOffer)**, then to **[create its price categories](/rest-api/#tag/Event-offer-prices/operation/PostEventPriceCategories)** and finally to **[create its dates](/rest-api/#tag/Event-offer-dates/operation/PostEventDates)**.
+You will need to first **[create the event](/rest-api/#tag/Event-offers/operation/PostEventOffer)**, then to **[create its price categories](/rest-api/#tag/Event-offer-prices/operation/PostEventPriceCategories)** and finally to **[create its stocks](/rest-api/#tag/Event-offer-stocks/operation/PostEventStocks)**.
 
 Here are the rules you should be aware of when creating an event:
 - the **number of price categories for an event** is limited to **`10`**
