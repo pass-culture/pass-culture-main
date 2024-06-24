@@ -255,58 +255,61 @@ class HasImageMixin:
 
 
 @sa.orm.declarative_mixin
-class StatusMixin:
+class CollectiveStatusMixin:
     @hybrid_property
-    def status(self) -> offer_mixin.OfferStatus:
+    def status(self) -> offer_mixin.CollectiveOfferStatus:
         if self.isArchived:
-            return offer_mixin.OfferStatus.ARCHIVED
+            return offer_mixin.CollectiveOfferStatus.ARCHIVED
 
         if self.validation == offer_mixin.OfferValidationStatus.REJECTED:
-            return offer_mixin.OfferStatus.REJECTED
+            return offer_mixin.CollectiveOfferStatus.REJECTED
 
         if self.validation == offer_mixin.OfferValidationStatus.PENDING:
-            return offer_mixin.OfferStatus.PENDING
+            return offer_mixin.CollectiveOfferStatus.PENDING
 
         if self.validation == offer_mixin.OfferValidationStatus.DRAFT:
-            return offer_mixin.OfferStatus.DRAFT
+            return offer_mixin.CollectiveOfferStatus.DRAFT
 
         if not self.isActive:
-            return offer_mixin.OfferStatus.INACTIVE
+            return offer_mixin.CollectiveOfferStatus.INACTIVE
 
         if self.validation == offer_mixin.OfferValidationStatus.APPROVED:
             if self.hasBeginningDatetimePassed:
-                return offer_mixin.OfferStatus.EXPIRED
+                return offer_mixin.CollectiveOfferStatus.EXPIRED
             if self.isSoldOut:
-                return offer_mixin.OfferStatus.SOLD_OUT
+                return offer_mixin.CollectiveOfferStatus.SOLD_OUT
             if self.hasBookingLimitDatetimesPassed:
-                return offer_mixin.OfferStatus.INACTIVE
+                return offer_mixin.CollectiveOfferStatus.INACTIVE
             if self.hasEndDatePassed:
-                return offer_mixin.OfferStatus.INACTIVE
+                return offer_mixin.CollectiveOfferStatus.INACTIVE
 
-        return offer_mixin.OfferStatus.ACTIVE
+        return offer_mixin.CollectiveOfferStatus.ACTIVE
 
     @status.expression  # type: ignore[no-redef]
     def status(cls) -> sa.sql.elements.Case:  # pylint: disable=no-self-argument
         return sa.case(
             (
                 cls.isArchived.is_(True),
-                offer_mixin.OfferStatus.ARCHIVED,
+                offer_mixin.CollectiveOfferStatus.ARCHIVED,
             ),
             (
                 cls.validation == offer_mixin.OfferValidationStatus.REJECTED.name,
-                offer_mixin.OfferStatus.REJECTED.name,
+                offer_mixin.CollectiveOfferStatus.REJECTED.name,
             ),
             (
                 cls.validation == offer_mixin.OfferValidationStatus.PENDING.name,
-                offer_mixin.OfferStatus.PENDING.name,
+                offer_mixin.CollectiveOfferStatus.PENDING.name,
             ),
-            (cls.validation == offer_mixin.OfferValidationStatus.DRAFT.name, offer_mixin.OfferStatus.DRAFT.name),
-            (cls.isActive.is_(False), offer_mixin.OfferStatus.INACTIVE.name),
-            (cls.hasBeginningDatetimePassed, offer_mixin.OfferStatus.EXPIRED.name),
-            (cls.isSoldOut, offer_mixin.OfferStatus.SOLD_OUT.name),
-            (cls.hasBookingLimitDatetimesPassed, offer_mixin.OfferStatus.INACTIVE.name),
-            (cls.hasEndDatePassed, offer_mixin.OfferStatus.INACTIVE.name),
-            else_=offer_mixin.OfferStatus.ACTIVE.name,
+            (
+                cls.validation == offer_mixin.OfferValidationStatus.DRAFT.name,
+                offer_mixin.CollectiveOfferStatus.DRAFT.name,
+            ),
+            (cls.isActive.is_(False), offer_mixin.CollectiveOfferStatus.INACTIVE.name),
+            (cls.hasBeginningDatetimePassed, offer_mixin.CollectiveOfferStatus.EXPIRED.name),
+            (cls.isSoldOut, offer_mixin.CollectiveOfferStatus.SOLD_OUT.name),
+            (cls.hasBookingLimitDatetimesPassed, offer_mixin.CollectiveOfferStatus.INACTIVE.name),
+            (cls.hasEndDatePassed, offer_mixin.CollectiveOfferStatus.INACTIVE.name),
+            else_=offer_mixin.CollectiveOfferStatus.ACTIVE.name,
         )
 
 
@@ -315,7 +318,7 @@ class OfferContactFormEnum(enum.Enum):
 
 
 class CollectiveOffer(
-    PcObject, Base, offer_mixin.ValidationMixin, AccessibilityMixin, StatusMixin, HasImageMixin, Model
+    PcObject, Base, offer_mixin.ValidationMixin, AccessibilityMixin, CollectiveStatusMixin, HasImageMixin, Model
 ):
     __tablename__ = "collective_offer"
 
@@ -464,7 +467,10 @@ class CollectiveOffer(
 
     @property
     def isEditable(self) -> bool:
-        return self.status not in [offer_mixin.OfferStatus.PENDING, offer_mixin.OfferStatus.REJECTED]
+        return self.status not in [
+            offer_mixin.CollectiveOfferStatus.PENDING,
+            offer_mixin.CollectiveOfferStatus.REJECTED,
+        ]
 
     @property
     def isVisibilityEditable(self) -> bool:
@@ -633,7 +639,7 @@ class CollectiveOffer(
 
 
 class CollectiveOfferTemplate(
-    PcObject, offer_mixin.ValidationMixin, AccessibilityMixin, StatusMixin, HasImageMixin, Base, Model
+    PcObject, offer_mixin.ValidationMixin, AccessibilityMixin, CollectiveStatusMixin, HasImageMixin, Base, Model
 ):
     __tablename__ = "collective_offer_template"
 
@@ -803,7 +809,10 @@ class CollectiveOfferTemplate(
 
     @property
     def isEditable(self) -> bool:
-        return self.status not in [offer_mixin.OfferStatus.PENDING, offer_mixin.OfferStatus.REJECTED]
+        return self.status not in [
+            offer_mixin.CollectiveOfferStatus.PENDING,
+            offer_mixin.CollectiveOfferStatus.REJECTED,
+        ]
 
     @hybrid_property
     def hasEndDatePassed(self) -> bool:

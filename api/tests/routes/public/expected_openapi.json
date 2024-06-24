@@ -1504,6 +1504,21 @@
                 ],
                 "title": "CollectiveBookingStatus"
             },
+            "CollectiveOfferStatus": {
+                "description": "An enumeration.",
+                "enum": [
+                    "ACTIVE",
+                    "PENDING",
+                    "EXPIRED",
+                    "REJECTED",
+                    "SOLD_OUT",
+                    "INACTIVE",
+                    "DRAFT",
+                    "ARCHIVED"
+                ],
+                "title": "CollectiveOfferStatus",
+                "type": "string"
+            },
             "CollectiveOffersCategoryResponseModel": {
                 "properties": {
                     "id": {
@@ -3029,7 +3044,7 @@
                                 "$ref": "#/components/schemas/OfferStatus"
                             }
                         ],
-                        "description": "\n**Offer status:**\n\n- `ACTIVE`: offer is validated and active. \n\n\n- `DRAFT`: offer is still a draft and not yet submitted for validation. This status is not applicable to offers created via this API.\n\n\n- `EXPIRED`: offer is validated but the booking limit datetime has passed.\n\n\n- `INACTIVE`: offer is not active and cannot be booked.\n\n\n- `PENDING`: offer is pending for pass Culture rules compliance validation. This step may take up to 72 hours.\n\n\n- `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n\n- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.\n\n\n- `ARCHIVED`: offer is archived by pro.\n",
+                        "description": "\n**Offer status:**\n\n- `ACTIVE`: offer is validated and active. \n\n\n- `DRAFT`: offer is still a draft and not yet submitted for validation. This status is not applicable to offers created via this API.\n\n\n- `EXPIRED`: offer is validated but the booking limit datetime has passed.\n\n\n- `INACTIVE`: offer is not active and cannot be booked.\n\n\n- `PENDING`: offer is pending for pass Culture rules compliance validation. This step may take up to 72 hours.\n\n\n- `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n\n- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.\n",
                         "example": "ACTIVE"
                     }
                 },
@@ -4738,10 +4753,10 @@
                     "status": {
                         "allOf": [
                             {
-                                "$ref": "#/components/schemas/OfferStatus"
+                                "$ref": "#/components/schemas/CollectiveOfferStatus"
                             }
                         ],
-                        "description": "\n**Offer status:**\n\n- `ACTIVE`: offer is validated and active. \n\n\n- `DRAFT`: offer is still a draft and not yet submitted for validation. This status is not applicable to offers created via this API.\n\n\n- `EXPIRED`: offer is validated but the booking limit datetime has passed.\n\n\n- `INACTIVE`: offer is not active and cannot be booked.\n\n\n- `PENDING`: offer is pending for pass Culture rules compliance validation. This step may take up to 72 hours.\n\n\n- `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n\n- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.\n\n\n- `ARCHIVED`: offer is archived by pro.\n",
+                        "description": "\n**Offer status:**\n\n- `ACTIVE`: offer is validated and active. \n\n\n- `DRAFT`: offer is still a draft and not yet submitted for validation. This status is not applicable to offers created via this API.\n\n\n- `EXPIRED`: offer is validated but the booking limit datetime has passed.\n\n\n- `INACTIVE`: offer is not active and cannot be booked.\n\n\n- `PENDING`: offer is pending for pass Culture rules compliance validation. This step may take up to 72 hours.\n\n\n- `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n\n- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.\n\n\n- `ARCHIVED`: offer is archived by pro.",
                         "example": "ACTIVE",
                         "nullable": true
                     },
@@ -5091,8 +5106,7 @@
                     "REJECTED",
                     "SOLD_OUT",
                     "INACTIVE",
-                    "DRAFT",
-                    "ARCHIVED"
+                    "DRAFT"
                 ],
                 "title": "OfferStatus",
                 "type": "string"
@@ -6765,7 +6779,7 @@
                                 "$ref": "#/components/schemas/OfferStatus"
                             }
                         ],
-                        "description": "\n**Offer status:**\n\n- `ACTIVE`: offer is validated and active. \n\n\n- `DRAFT`: offer is still a draft and not yet submitted for validation. This status is not applicable to offers created via this API.\n\n\n- `EXPIRED`: offer is validated but the booking limit datetime has passed.\n\n\n- `INACTIVE`: offer is not active and cannot be booked.\n\n\n- `PENDING`: offer is pending for pass Culture rules compliance validation. This step may take up to 72 hours.\n\n\n- `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n\n- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.\n\n\n- `ARCHIVED`: offer is archived by pro.\n",
+                        "description": "\n**Offer status:**\n\n- `ACTIVE`: offer is validated and active. \n\n\n- `DRAFT`: offer is still a draft and not yet submitted for validation. This status is not applicable to offers created via this API.\n\n\n- `EXPIRED`: offer is validated but the booking limit datetime has passed.\n\n\n- `INACTIVE`: offer is not active and cannot be booked.\n\n\n- `PENDING`: offer is pending for pass Culture rules compliance validation. This step may take up to 72 hours.\n\n\n- `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n\n- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.\n",
                         "example": "ACTIVE"
                     },
                     "stock": {
@@ -11104,17 +11118,17 @@
                 "operationId": "GetCollectiveOffersPublic",
                 "parameters": [
                     {
-                        "description": "\n**Offer status:**\n\n- `ACTIVE`: offer is validated and active. \n\n\n- `DRAFT`: offer is still a draft and not yet submitted for validation. This status is not applicable to offers created via this API.\n\n\n- `EXPIRED`: offer is validated but the booking limit datetime has passed.\n\n\n- `INACTIVE`: offer is not active and cannot be booked.\n\n\n- `PENDING`: offer is pending for pass Culture rules compliance validation. This step may take up to 72 hours.\n\n\n- `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n\n- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.\n\n\n- `ARCHIVED`: offer is archived by pro.\n",
+                        "description": "\n**Offer status:**\n\n- `ACTIVE`: offer is validated and active. \n\n\n- `DRAFT`: offer is still a draft and not yet submitted for validation. This status is not applicable to offers created via this API.\n\n\n- `EXPIRED`: offer is validated but the booking limit datetime has passed.\n\n\n- `INACTIVE`: offer is not active and cannot be booked.\n\n\n- `PENDING`: offer is pending for pass Culture rules compliance validation. This step may take up to 72 hours.\n\n\n- `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n\n- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.\n\n\n- `ARCHIVED`: offer is archived by pro.",
                         "in": "query",
                         "name": "status",
                         "required": false,
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/components/schemas/OfferStatus"
+                                    "$ref": "#/components/schemas/CollectiveOfferStatus"
                                 }
                             ],
-                            "description": "\n**Offer status:**\n\n- `ACTIVE`: offer is validated and active. \n\n\n- `DRAFT`: offer is still a draft and not yet submitted for validation. This status is not applicable to offers created via this API.\n\n\n- `EXPIRED`: offer is validated but the booking limit datetime has passed.\n\n\n- `INACTIVE`: offer is not active and cannot be booked.\n\n\n- `PENDING`: offer is pending for pass Culture rules compliance validation. This step may take up to 72 hours.\n\n\n- `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n\n- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.\n\n\n- `ARCHIVED`: offer is archived by pro.\n",
+                            "description": "\n**Offer status:**\n\n- `ACTIVE`: offer is validated and active. \n\n\n- `DRAFT`: offer is still a draft and not yet submitted for validation. This status is not applicable to offers created via this API.\n\n\n- `EXPIRED`: offer is validated but the booking limit datetime has passed.\n\n\n- `INACTIVE`: offer is not active and cannot be booked.\n\n\n- `PENDING`: offer is pending for pass Culture rules compliance validation. This step may take up to 72 hours.\n\n\n- `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n\n- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.\n\n\n- `ARCHIVED`: offer is archived by pro.",
                             "example": "ACTIVE",
                             "nullable": true
                         }

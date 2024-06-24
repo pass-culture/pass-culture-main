@@ -176,7 +176,7 @@ class CollectiveOfferTemplateTest:
             response = eac_client.get(url)
 
         assert response.status_code == 200
-        assert offer.status == offer_mixin.OfferStatus.INACTIVE.value
+        assert offer.status == offer_mixin.CollectiveOfferStatus.INACTIVE.value
 
     def test_get_collective_offer_template_without_date_range(self, eac_client, redactor):
         venue = offerers_factories.VenueFactory()
@@ -206,7 +206,7 @@ class CollectiveOfferTemplateTest:
             response = eac_client.get(url)
 
         assert response.status_code == 200
-        assert offer.status == offer_mixin.OfferStatus.ACTIVE.value
+        assert offer.status == offer_mixin.CollectiveOfferStatus.ACTIVE.value
 
     def test_is_a_redactors_favorite(self, eac_client):
         """Ensure that the isFavorite field is true only if the

@@ -5,7 +5,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
-from pcapi.models.offer_mixin import OfferStatus
+from pcapi.models.offer_mixin import CollectiveOfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 
 
@@ -23,7 +23,7 @@ class Returns204Test:
         response = client.with_session_auth(user_offerer.user.email).patch(url)
 
         assert response.status_code == 200
-        assert response.json["status"] == OfferStatus.ACTIVE.value
+        assert response.json["status"] == CollectiveOfferStatus.ACTIVE.value
         assert response.json["isActive"] is True
         assert response.json["isNonFreeOffer"] is False
 
@@ -50,7 +50,7 @@ class Returns204Test:
         response = client.with_session_auth(user_offerer.user.email).patch(url)
 
         assert response.status_code == 200
-        assert response.json["status"] == OfferStatus.PENDING.value
+        assert response.json["status"] == CollectiveOfferStatus.PENDING.value
         assert response.json["isActive"] is False
         assert response.json["isNonFreeOffer"] is True
 
