@@ -1,7 +1,8 @@
 import { api } from 'apiClient/api'
 import { CollectiveBookingResponseModel } from 'apiClient/v1'
+import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
 import { PreFiltersParams } from 'core/Bookings/types'
-import { buildBookingsRecapQuery } from 'core/Bookings/utils'
+import { isDateValid } from 'utils/date'
 
 const MAX_LOADED_PAGES = 5
 
@@ -14,27 +15,23 @@ export const getFilteredCollectiveBookingsAdapter = async (
 
   do {
     currentPage += 1
-    const nextPageFilters = {
-      ...apiFilters,
-      page: currentPage,
-    }
-    const {
-      venueId,
-      eventDate,
-      bookingPeriodBeginningDate,
-      bookingPeriodEndingDate,
-      bookingStatusFilter,
-      page,
-    } = buildBookingsRecapQuery(nextPageFilters)
 
     const bookings = await api.getCollectiveBookingsPro(
-      page,
+      currentPage,
       // @ts-expect-error type string is not assignable to type number
-      venueId,
-      eventDate,
-      bookingStatusFilter,
-      bookingPeriodBeginningDate,
-      bookingPeriodEndingDate
+      apiFilters.offerVenueId !== DEFAULT_PRE_FILTERS.offerVenueId
+        ? apiFilters.offerVenueId
+        : undefined,
+      apiFilters.offerEventDate !== DEFAULT_PRE_FILTERS.offerEventDate
+        ? apiFilters.offerEventDate
+        : undefined,
+      apiFilters.bookingStatusFilter,
+      isDateValid(apiFilters.bookingBeginningDate)
+        ? apiFilters.bookingBeginningDate
+        : undefined,
+      isDateValid(apiFilters.bookingEndingDate)
+        ? apiFilters.bookingEndingDate
+        : undefined
     )
     pages = bookings.pages
 

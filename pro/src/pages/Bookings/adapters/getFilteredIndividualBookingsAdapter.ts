@@ -1,7 +1,8 @@
 import { api } from 'apiClient/api'
 import { BookingRecapResponseModel } from 'apiClient/v1'
+import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
 import { PreFiltersParams } from 'core/Bookings/types'
-import { buildBookingsRecapQuery } from 'core/Bookings/utils'
+import { isDateValid } from 'utils/date'
 
 const MAX_LOADED_PAGES = 5
 
@@ -14,31 +15,29 @@ export const getFilteredIndividualBookingsAdapter = async (
 
   do {
     currentPage += 1
-    const nextPageFilters = {
-      ...apiFilters,
-      page: currentPage,
-    }
-    const {
-      venueId,
-      offerId,
-      eventDate,
-      bookingPeriodBeginningDate,
-      bookingPeriodEndingDate,
-      bookingStatusFilter,
-      offerType,
-      page,
-    } = buildBookingsRecapQuery(nextPageFilters)
 
     const bookings = await api.getBookingsPro(
-      page,
+      currentPage,
       // @ts-expect-error api expect number
-      venueId,
-      offerId,
-      eventDate,
-      bookingStatusFilter,
-      bookingPeriodBeginningDate,
-      bookingPeriodEndingDate,
-      offerType
+      apiFilters.offerVenueId !== DEFAULT_PRE_FILTERS.offerVenueId
+        ? apiFilters.offerVenueId
+        : undefined,
+      apiFilters.offerId !== DEFAULT_PRE_FILTERS.offerId
+        ? apiFilters.offerId
+        : undefined,
+      apiFilters.offerEventDate !== DEFAULT_PRE_FILTERS.offerEventDate
+        ? apiFilters.offerEventDate
+        : undefined,
+      apiFilters.bookingStatusFilter,
+      isDateValid(apiFilters.bookingBeginningDate)
+        ? apiFilters.bookingBeginningDate
+        : undefined,
+      isDateValid(apiFilters.bookingEndingDate)
+        ? apiFilters.bookingEndingDate
+        : undefined,
+      apiFilters.offerType !== DEFAULT_PRE_FILTERS.offerType
+        ? apiFilters.offerType
+        : undefined
     )
     pages = bookings.pages
 

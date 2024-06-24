@@ -9,14 +9,3 @@ export type PreFiltersParams = {
   offerType: string
   offerId?: string
 }
-
-export type APIFilters = {
-  venueId: string
-  eventDate: string
-  bookingPeriodBeginningDate: string
-  bookingPeriodEndingDate: string
-  bookingStatusFilter: BookingStatusFilter
-  offerType: string
-  offerId?: string
-  page: number
-}
