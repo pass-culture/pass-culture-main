@@ -71,7 +71,7 @@ The access to the venue will be given to you either :
 - **_by our support team_ if you are developing a _private_ integration**. This situation is relevant for internal technical teams that are developing an integration for their company that won't be used by other **`offerers`**.
 
 :::tip
-If you want **to know which venues are linked to your provider account**, you can use this **[endpoint](/rest-api/#tag/Offerer-and-Venues/operation/GetOffererVenues)**. It is possible to filter by offerer, using the offerer's SIREN.
+If you want **to know which venues are linked to your provider account**, you can use this **[endpoint](/rest-api/#tag/Venues/operation/GetOffererVenues)**. It is possible to filter by offerer, using the offerer's SIREN.
 
 
 ```bash

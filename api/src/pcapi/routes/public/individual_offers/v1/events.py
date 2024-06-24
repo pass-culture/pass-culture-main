@@ -45,7 +45,7 @@ def _deserialize_has_ticket(
 @blueprint.v1_offers_blueprint.route("/events", methods=["POST"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.EVENT_OFFER_INFO_TAG],
+    tags=[tags.EVENT_OFFERS_TAG],
     response_model=serialization.EventOfferResponse,
     resp=SpectreeResponse(
         **(
@@ -114,7 +114,7 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
 @blueprint.v1_offers_blueprint.route("/events/<int:event_id>", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.EVENT_OFFER_INFO_TAG],
+    tags=[tags.EVENT_OFFERS_TAG],
     response_model=serialization.EventOfferResponse,
     resp=SpectreeResponse(
         **(
@@ -146,7 +146,7 @@ def get_event(event_id: int) -> serialization.EventOfferResponse:
 @blueprint.v1_offers_blueprint.route("/events", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.EVENT_OFFER_INFO_TAG],
+    tags=[tags.EVENT_OFFERS_TAG],
     response_model=serialization.EventOffersResponse,
     resp=SpectreeResponse(
         **(
@@ -181,7 +181,7 @@ def get_events(query: serialization.GetOffersQueryParams) -> serialization.Event
 @blueprint.v1_offers_blueprint.route("/events/<int:event_id>", methods=["PATCH"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.EVENT_OFFER_INFO_TAG],
+    tags=[tags.EVENT_OFFERS_TAG],
     response_model=serialization.EventOfferResponse,
     resp=SpectreeResponse(
         **(

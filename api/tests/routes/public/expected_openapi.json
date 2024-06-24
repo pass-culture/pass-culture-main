@@ -8639,7 +8639,7 @@
                 ],
                 "summary": "Get bookings for a given offer",
                 "tags": [
-                    "Booking"
+                    "Bookings"
                 ]
             }
         },
@@ -8712,7 +8712,7 @@
                 ],
                 "summary": "Cancel a booking",
                 "tags": [
-                    "Booking"
+                    "Bookings"
                 ]
             }
         },
@@ -8775,7 +8775,7 @@
                 ],
                 "summary": "Cancel a booking validation",
                 "tags": [
-                    "Booking"
+                    "Bookings"
                 ]
             }
         },
@@ -8845,7 +8845,7 @@
                 ],
                 "summary": "Get a booking",
                 "tags": [
-                    "Booking"
+                    "Bookings"
                 ]
             }
         },
@@ -8908,7 +8908,7 @@
                 ],
                 "summary": "Validate a booking",
                 "tags": [
-                    "Booking"
+                    "Bookings"
                 ]
             }
         },
@@ -9015,7 +9015,7 @@
                 ],
                 "summary": "Get events",
                 "tags": [
-                    "Event offer"
+                    "Event offers"
                 ]
             },
             "post": {
@@ -9086,7 +9086,7 @@
                 ],
                 "summary": "Create event offer",
                 "tags": [
-                    "Event offer"
+                    "Event offers"
                 ]
             }
         },
@@ -9202,7 +9202,7 @@
                 ],
                 "summary": "Get event offer",
                 "tags": [
-                    "Event offer"
+                    "Event offers"
                 ]
             },
             "patch": {
@@ -9284,7 +9284,7 @@
                 ],
                 "summary": "Update event offer",
                 "tags": [
-                    "Event offer"
+                    "Event offers"
                 ]
             }
         },
@@ -10142,7 +10142,7 @@
                 ],
                 "summary": "Get venue products",
                 "tags": [
-                    "Product offer"
+                    "Product offers"
                 ]
             },
             "patch": {
@@ -10213,7 +10213,7 @@
                 ],
                 "summary": "Update product offer",
                 "tags": [
-                    "Product offer"
+                    "Product offers"
                 ]
             },
             "post": {
@@ -10284,7 +10284,7 @@
                 ],
                 "summary": "Create product",
                 "tags": [
-                    "Product offer"
+                    "Product offers"
                 ]
             }
         },
@@ -10335,7 +10335,7 @@
                 ],
                 "summary": "Get product categories",
                 "tags": [
-                    "Product offer"
+                    "Product offers"
                 ]
             }
         },
@@ -10540,7 +10540,7 @@
                 ],
                 "summary": "Get product offer",
                 "tags": [
-                    "Product offer"
+                    "Product offers"
                 ]
             }
         },
@@ -10655,7 +10655,7 @@
                 ],
                 "summary": "Upload an image",
                 "tags": [
-                    "Image"
+                    "Images"
                 ]
             }
         },
@@ -10720,7 +10720,7 @@
                 ],
                 "summary": "Cancel collective booking",
                 "tags": [
-                    "Collective booking"
+                    "Collective bookings"
                 ]
             }
         },
@@ -11680,9 +11680,19 @@
             "name": "Venues"
         },
         {
+            "description": "Endpoints to create and get products usings European Article Number (EAN-13).",
+            "externalDocs": null,
+            "name": "Product offer bulk operations"
+        },
+        {
+            "description": "Endpoints to manage product offers of a venue.",
+            "externalDocs": null,
+            "name": "Product offers"
+        },
+        {
             "description": "Endpoints to manage event offers data of a venue (except prices and dates).",
             "externalDocs": null,
-            "name": "Event offer"
+            "name": "Event offers"
         },
         {
             "description": "Endpoints to create and update price categories of an event.",
@@ -11695,29 +11705,19 @@
             "name": "Event offer dates"
         },
         {
-            "description": "Endpoints to create and get products usings European Article Number (EAN-13).",
-            "externalDocs": null,
-            "name": "Product offer bulk operations"
-        },
-        {
-            "description": "Endpoints to manage product offers of a venue.",
-            "externalDocs": null,
-            "name": "Product offer"
-        },
-        {
-            "description": "Endpoints to manage the bookings of an offer (event and product).",
-            "externalDocs": null,
-            "name": "Booking"
-        },
-        {
             "description": "",
             "externalDocs": null,
-            "name": "Image"
+            "name": "Images"
         },
         {
             "description": "",
             "externalDocs": null,
             "name": "Offer attributes"
+        },
+        {
+            "description": "Endpoints to manage the bookings of an offer (event and product).",
+            "externalDocs": null,
+            "name": "Bookings"
         },
         {
             "description": "Endpoints to manage collective offers that are \"bookable\", not those that are displayed in the showcase.",
@@ -11727,7 +11727,7 @@
         {
             "description": "",
             "externalDocs": null,
-            "name": "Collective booking"
+            "name": "Collective bookings"
         },
         {
             "description": "",
