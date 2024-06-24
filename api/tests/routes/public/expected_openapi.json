@@ -8586,7 +8586,7 @@
                         "required": false,
                         "schema": {
                             "description": "Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                            "example": "2024-07-21T14:00:00+02:00",
+                            "example": "2024-07-24T14:00:00+02:00",
                             "format": "date-time",
                             "nullable": true,
                             "title": "Beginningdatetime",
@@ -8645,7 +8645,7 @@
         },
         "/public/bookings/v1/cancel/token/{token}": {
             "patch": {
-                "description": "Cancel a booking that has not been refunded. For events, the booking can be cancelled until 48 hours before the event.",
+                "description": "Cancel a booking that has not been used or refunded.\n\nFor events, a booking can only be cancelled if it is pending. Once it is confirmed, you cannot cancel it (for booking confirmation see [this page](/docs/understanding-our-api/resources/individual-offers#general-description-2)).",
                 "operationId": "CancelBookingByToken",
                 "parameters": [
                     {
@@ -9874,7 +9874,7 @@
         },
         "/public/offers/v1/music_types/all": {
             "get": {
-                "description": "Return all the music types.",
+                "description": "Return music types. Not all the music types returned by this endpoint are suitable for events. For events, use the [Get events music types endpoint](/rest-api#tag/Offer-attributes/operation/GetEventTiteliveMusicTypes).",
                 "operationId": "GetAllTiteliveMusicTypes",
                 "parameters": [],
                 "responses": {
@@ -9925,7 +9925,7 @@
         },
         "/public/offers/v1/music_types/event": {
             "get": {
-                "description": "Return all eligible music types for events.",
+                "description": "Return eligible music types for events.",
                 "operationId": "GetEventTiteliveMusicTypes",
                 "parameters": [],
                 "responses": {
@@ -10546,7 +10546,7 @@
         },
         "/public/offers/v1/show_types": {
             "get": {
-                "description": "",
+                "description": "Return show types.",
                 "operationId": "GetShowTypes",
                 "parameters": [],
                 "responses": {
@@ -10589,7 +10589,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Get all the show types",
+                "summary": "Get show types",
                 "tags": [
                     "Offer attributes"
                 ]
@@ -11099,7 +11099,7 @@
         },
         "/v2/collective/offers/": {
             "get": {
-                "description": "Return filtered collective offers. It doesn't return the showcase offers or the collective offers that have been started on the pro interface and that are in the draft status.",
+                "description": "Return collective offers. It will only return collective offers created by API (collective offers created manually in the pro interface won't show up).",
                 "operationId": "GetCollectiveOffersPublic",
                 "parameters": [
                     {
