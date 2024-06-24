@@ -129,6 +129,7 @@ export class DefaultService {
    * @param page
    * @param venueId
    * @param offerId
+   * @param offererAddressId
    * @param eventDate
    * @param bookingStatusFilter
    * @param bookingPeriodBeginningDate
@@ -142,6 +143,7 @@ export class DefaultService {
     page: number = 1,
     venueId?: number | null,
     offerId?: number | null,
+    offererAddressId?: number | null,
     eventDate?: string | null,
     bookingStatusFilter?: BookingStatusFilter | null,
     bookingPeriodBeginningDate?: string | null,
@@ -156,6 +158,7 @@ export class DefaultService {
         'page': page,
         'venueId': venueId,
         'offerId': offerId,
+        'offererAddressId': offererAddressId,
         'eventDate': eventDate,
         'bookingStatusFilter': bookingStatusFilter,
         'bookingPeriodBeginningDate': bookingPeriodBeginningDate,
@@ -195,6 +198,7 @@ export class DefaultService {
    * @param page
    * @param venueId
    * @param offerId
+   * @param offererAddressId
    * @param eventDate
    * @param bookingStatusFilter
    * @param bookingPeriodBeginningDate
@@ -208,6 +212,7 @@ export class DefaultService {
     page: number = 1,
     venueId?: number | null,
     offerId?: number | null,
+    offererAddressId?: number | null,
     eventDate?: string | null,
     bookingStatusFilter?: BookingStatusFilter | null,
     bookingPeriodBeginningDate?: string | null,
@@ -222,6 +227,7 @@ export class DefaultService {
         'page': page,
         'venueId': venueId,
         'offerId': offerId,
+        'offererAddressId': offererAddressId,
         'eventDate': eventDate,
         'bookingStatusFilter': bookingStatusFilter,
         'bookingPeriodBeginningDate': bookingPeriodBeginningDate,
@@ -298,6 +304,7 @@ export class DefaultService {
    * @param page
    * @param venueId
    * @param offerId
+   * @param offererAddressId
    * @param eventDate
    * @param bookingStatusFilter
    * @param bookingPeriodBeginningDate
@@ -311,6 +318,7 @@ export class DefaultService {
     page: number = 1,
     venueId?: number | null,
     offerId?: number | null,
+    offererAddressId?: number | null,
     eventDate?: string | null,
     bookingStatusFilter?: BookingStatusFilter | null,
     bookingPeriodBeginningDate?: string | null,
@@ -325,6 +333,7 @@ export class DefaultService {
         'page': page,
         'venueId': venueId,
         'offerId': offerId,
+        'offererAddressId': offererAddressId,
         'eventDate': eventDate,
         'bookingStatusFilter': bookingStatusFilter,
         'bookingPeriodBeginningDate': bookingPeriodBeginningDate,

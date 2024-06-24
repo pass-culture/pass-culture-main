@@ -33,6 +33,7 @@ def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel
     per_page_limit = 1000
     venue_id = query.venue_id
     offer_id = query.offer_id
+    offerer_address_id = query.offerer_address_id
     event_date = query.event_date
     booking_status = query.booking_status_filter
     booking_period = None
@@ -51,6 +52,7 @@ def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel
         venue_id=venue_id,
         offer_id=offer_id,
         offer_type=offer_type,
+        offerer_address_id=offerer_address_id,
         page=int(page),
         per_page_limit=per_page_limit,
     )

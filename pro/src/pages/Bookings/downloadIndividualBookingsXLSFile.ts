@@ -15,6 +15,7 @@ export const downloadIndividualBookingsXLSFile = async (
       ? Number(filters.offerVenueId)
       : null,
     null,
+    null,
     filters.offerEventDate !== DEFAULT_PRE_FILTERS.offerEventDate &&
       isDateValid(filters.offerEventDate)
       ? filters.offerEventDate
