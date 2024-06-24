@@ -4506,5 +4506,4 @@ def test_public_api(client):
     got_lines = json.dumps(response.json, indent=2, sort_keys=True).splitlines()
     expected_lines = json.dumps(expected, indent=2, sort_keys=True).splitlines()
     diff = "\n".join(difflib.unified_diff(got_lines, expected_lines))
-    print(response.json)
     assert response.json == expected, f"Got diff from expected schema: {diff}"
