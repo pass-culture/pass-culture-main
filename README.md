@@ -17,12 +17,12 @@
 
 [![Tag](https://img.shields.io/github/v/tag/pass-culture/pass-culture-main)](https://github.com/pass-culture/pass-culture-main/tags)
 
-Le repo `main` contient les 5 projets suivants :
+Le repo `main` contient les 4 projets suivants :
 
-- l'[api](./api/) (Flask)
+- l'[api](./api) (Flask)
 - le portail [pro](./pro) (React), pour les acteurs culturels
-- [doc](./doc) : documentation de l'API pour les partenaires du pass Culture
-- [maintenance-api](./maintenance-ste) : page de maintenance (HTML)
+- [doc](./api/documentation) : documentation de l'API pour les partenaires du pass Culture
+- [maintenance-api](./maintenance-site) : page de maintenance (HTML)
 
 ## Installation
 
