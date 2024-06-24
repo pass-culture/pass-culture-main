@@ -308,15 +308,19 @@ def get_collective_offers_by_filters(
         match status:
             # Status BOOKED == offer is sold out and last booking link to this reservation is not PENDING
             case educational_models.CollectiveOfferDisplayedStatus.BOOKED.value:
-                booking_subquery = (
-                    educational_models.CollectiveStock.query.with_entities(
-                        educational_models.CollectiveStock.collectiveOfferId
-                    )
-                    .join(educational_models.CollectiveBooking, educational_models.CollectiveStock.collectiveBookings)
-                    .filter(
-                        educational_models.CollectiveBooking.status
-                        != educational_models.CollectiveBookingStatus.PENDING
-                    )
+                booking_subquery = educational_models.CollectiveStock.query.with_entities(
+                    educational_models.CollectiveStock.collectiveOfferId
+                ).join(
+                    educational_models.CollectiveBooking,
+                    sa.and_(
+                        educational_models.CollectiveStock.id == educational_models.CollectiveBooking.collectiveStockId,
+                        educational_models.CollectiveBooking.status.not_in(
+                            [
+                                educational_models.CollectiveBookingStatus.PENDING.value,
+                                educational_models.CollectiveBookingStatus.CANCELLED.value,
+                            ]
+                        ),
+                    ),
                 )
                 query = query.filter(
                     educational_models.CollectiveOffer.status == offer_mixin.CollectiveOfferStatus.SOLD_OUT.name,
