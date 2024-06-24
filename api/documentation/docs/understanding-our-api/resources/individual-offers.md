@@ -111,8 +111,4 @@ A **`booking`** is a reservation made by a beneficiary of a product or of an eve
 
 ### `Booking` for `events` 
 
-**For an `event`**, the **`booking`** is a **📅 reservation** for the event.
-
-- **It can be linked to a ticket** if you plugged your ticketing solution to the pass Culture application 
-- **it can be a countermark**, if you chose to make the beneficiaries retrieve their tickets at the event venue.
-
+**For an `event`**, the **`booking`** is a **📅 reservation** for the event. **It can be linked to a ticket** if you plugged your [ticketing solution to the pass Culture application](/docs/understanding-our-api/managing-bookings/connection-with-ticketing-system)].
