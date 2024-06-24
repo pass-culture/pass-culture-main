@@ -1481,11 +1481,22 @@ def notify_users_before_deletion_of_suspended_account() -> None:
         transactional_mails.send_email_before_deletion_of_suspended_account(account)
 
 
+def has_unprocessed_extract(user: users_models.User) -> bool:
+    for extract in user.gdprUserDataExtract:
+        if not extract.is_expired and not extract.dateProcessed:
+            return True
+    return False
+
+
 def anonymize_user(user: users_models.User, *, author: users_models.User | None = None, force: bool = False) -> bool:
     """
     Anonymize the given User. If force is True, the function will anonymize the user even if they have an address and
     we cannot find an iris for it.
     """
+
+    if has_unprocessed_extract(user):
+        return False
+
     iris = None
     if user.address:
         try:
@@ -1520,7 +1531,10 @@ def anonymize_user(user: users_models.User, *, author: users_models.User | None 
     for deposit in user.deposits:
         deposit.source = "Anonymized"
 
-    user.password = b"Anonymized"
+    for extract in user.gdprUserDataExtract:
+        delete_gdpr_extract(extract.id)
+
+    user.password = b"Anonymized"  # ggignore
     user.firstName = f"Anonymous_{user.id}"
     user.lastName = f"Anonymous_{user.id}"
     user.married_name = None
