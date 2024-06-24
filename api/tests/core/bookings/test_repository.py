@@ -583,6 +583,29 @@ class FindByProUserTest:
         # Then
         assert bookings[0].offerEan == "9876543234"
 
+    def test_should_return_only_bookings_for_requested_offerer_address(self):
+        pro_user = users_factories.ProFactory()
+        user_offerer = offerers_factories.UserOffererFactory(user=pro_user)
+        offerer = user_offerer.offerer
+
+        offerer_address_1 = offerers_factories.OffererAddressFactory(offerer=offerer)
+
+        booking_1 = bookings_factories.BookingFactory(
+            stock__offer__venue__managingOfferer=offerer, stock__offer__offererAddress=offerer_address_1
+        )
+        bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=offerer)
+
+        bookings_query, _ = booking_repository.find_by_pro_user(
+            user=pro_user,
+            booking_period=(one_year_before_booking, one_year_after_booking),
+            offerer_address_id=offerer_address_1.id,
+        )
+
+        bookings = bookings_query.all()
+
+        assert len(bookings) == 1
+        assert bookings[0].offerId == booking_1.stock.offer.id
+
     def test_should_return_only_booking_for_requested_venue(self, app: fixture):
         # Given
         pro_user = users_factories.ProFactory()
