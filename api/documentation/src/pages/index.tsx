@@ -12,17 +12,12 @@ function HomepageHeader() {
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
       <div className="container">
+        <img src="/img/pass_culture_white_logo.png"/>
         <Heading as="h1" className="hero__title">
           {siteConfig.title}
         </Heading>
         <p className="hero__subtitle">{siteConfig.tagline}</p>
-        <div className={styles.buttons}>
-          <Link
-            className="button button--secondary button--lg"
-            to="/docs/mandatory-steps/request-a-provider-account">
-            Docusaurus Tutorial - 5min ⏱️
-          </Link>
-        </div>
+        <p>The pass Culture API is meant for plugging your tools with the pass Culture and for fostering new uses on the pass Culture. Whether you're an association, a developer, a ticketing system editor, a stock management tool, an online diary, etc., you'll find in this documentation all the information you need to integrate the pass Culture API.</p>
       </div>
     </header>
   );

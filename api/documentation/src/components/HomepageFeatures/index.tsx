@@ -4,48 +4,72 @@ import styles from './styles.module.css';
 
 type FeatureItem = {
   title: string;
-  Svg: React.ComponentType<React.ComponentProps<'svg'>>;
   description: JSX.Element;
+  imageUrl: string;
 };
 
 const FeatureList: FeatureItem[] = [
   {
-    title: 'Easy to Use',
-    Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
+    title: 'Manage a stock of goods',
+    imageUrl: '/img/manage_stock.jpg',
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        With pass Culture API you will be able to create and manage easy all your stocks, whether you are a bookshop, a music shop or a digital platform. 
       </>
     ),
   },
   {
-    title: 'Focus on What Matters',
-    Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
+    title: 'Manage events for individual beneficiaries',
+    imageUrl: '/img/theater.jpg',
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        If you are a concert hall, a theater, a museum, a movie theater, or other cultural partner organizing events, pass Culture API will help you manage your gauge and directly send tickets to beneficiary. 
       </>
     ),
   },
   {
-    title: 'Powered by React',
-    Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
+    title: 'Manage events for scholar groups',
+    imageUrl: '/img/scholar_group.jpg',
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        The pass Culture API enables you to create bookable offers for scholar groups. 
+      </>
+    ),
+  },
+  {
+    title: 'Request your integration access',
+    imageUrl: '/img/integration_access.jpg',
+    description: (
+      <>
+        <a href='https://passculture.typeform.com/to/JHmbK9Hg'>Fill this form</a> to obtain your access. You will receive your dedicated API key and an access to your integration environment so you can see the situation for pass Culture users : beneficiary user and cultural actor user.. 
+      </>
+    ),
+  },
+  {
+    title: 'Develop your integration',
+    imageUrl: '/img/your_integration.jpg',
+    description: (
+      <>
+        In this documentation, you will find tutorials to help you design your integration and all the different resources. Do not hesitate to download our openAPI specifications and reuse it in Postman for instance.
+      </>
+    ),
+  },
+  {
+    title: 'Obtain your production access',
+    imageUrl: '/img/production_access.jpg',
+    description: (
+      <>
+        Once your integration is completed, we will ask you a short documentation of it that we will published on our help center and a quick demo. If your integration is public, we can organize a share communication.
       </>
     ),
   },
 ];
 
-function Feature({title, Svg, description}: FeatureItem) {
+function Feature({title, description, imageUrl}: FeatureItem) {
   return (
     <div className={clsx('col col--4')}>
       <div className="text--center">
-        <Svg className={styles.featureSvg} role="img" />
+        <img src={imageUrl} className={styles.featureSvg} />
       </div>
       <div className="text--center padding-horiz--md">
         <Heading as="h3">{title}</Heading>
