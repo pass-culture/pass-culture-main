@@ -153,6 +153,7 @@ def get_individual_bookings(user: User) -> list[Booking]:
         .options(joinedload(Booking.activationCode))
         .options(joinedload(Booking.externalBookings))
         .options(joinedload(Booking.deposit).load_only(finance_models.Deposit.type))
+        .options(joinedload(Booking.user).joinedload(User.reactions))
     ).all()
 
 

@@ -36,6 +36,7 @@ from pcapi.core.bookings.constants import BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY
 from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.finance.models as finance_models
 from pcapi.core.offers import models as offers_models
+from pcapi.core.reactions.models import ReactionTypeEnum
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
@@ -361,6 +362,23 @@ class Booking(PcObject, Base, Model):
         return and_(
             offers_models.Offer.subcategoryId.in_(offers_models.Stock.AUTOMATICALLY_USED_SUBCATEGORIES),
             cls.amount == 0,
+        )
+
+    @property
+    def userReaction(self) -> ReactionTypeEnum | None:
+        is_linked_to_product = self.stock.offer.product is not None
+
+        if is_linked_to_product:
+            return next(
+                (
+                    reaction.reactionType
+                    for reaction in self.user.reactions
+                    if reaction.productId == self.stock.offer.productId
+                ),
+                None,
+            )
+        return next(
+            (reaction.reactionType for reaction in self.user.reactions if reaction.offerId == self.stock.offerId), None
         )
 
 
