@@ -276,31 +276,27 @@ def create_venues_across_cities() -> None:
 
 def create_offers_for_each_subcategory() -> None:
     for subcategory in subcategories_v2.ALL_SUBCATEGORIES:
-        for i in range(1, 11):
-            is_free = i % 2
-            is_in_Paris = i < 6  # else it will be Marseille
-            if subcategory.id in subcategories_v2.EVENT_SUBCATEGORIES:
-                offers_factories.EventStockFactory(
-                    offer__product=None,
-                    offer__subcategoryId=subcategory.id,
-                    offer__venue__latitude=48.87004 if is_in_Paris else 43.29542,
-                    offer__venue__longitude=2.37850 if is_in_Paris else 5.37421,
-                    price=0 if is_free else i * 2,
-                    quantity=i * 10,
-                    beginningDatetime=datetime.datetime.utcnow()
-                    + datetime.timedelta(
-                        days=i + 7,
-                        hours=(3 * i) % 60,
-                        minutes=(5 * i) % 60,
-                    ),
-                )
-            else:
-                offers_factories.StockFactory(
-                    offer__product=None,
-                    offer__subcategoryId=subcategory.id,
-                    price=0 if is_free else 10,
-                    quantity=i * 10,
-                )
+        if subcategory.id in subcategories_v2.EVENT_SUBCATEGORIES:
+            offers_factories.EventStockFactory.create_batch(
+                size=10,
+                offer__product=None,
+                offer__subcategoryId=subcategory.id,
+                quantity=random.randint(10, 100),
+                beginningDatetime=datetime.datetime.utcnow()
+                + datetime.timedelta(
+                    days=random.randint(30, 59),
+                    hours=random.randint(1, 23),
+                    minutes=random.randint(1, 59),
+                    seconds=random.randint(1, 59),
+                ),
+            )
+        else:
+            offers_factories.StockFactory.create_batch(
+                size=10,
+                offer__product=None,
+                offer__subcategoryId=subcategory.id,
+                quantity=random.randint(10, 100),
+            )
 
 
 def create_offers_with_same_author() -> None:
