@@ -19,6 +19,16 @@ class OfferStatus(str, enum.Enum):
     SOLD_OUT = "SOLD_OUT"
     INACTIVE = "INACTIVE"
     DRAFT = "DRAFT"
+
+
+class CollectiveOfferStatus(str, enum.Enum):
+    ACTIVE = "ACTIVE"
+    PENDING = "PENDING"
+    EXPIRED = "EXPIRED"
+    REJECTED = "REJECTED"
+    SOLD_OUT = "SOLD_OUT"
+    INACTIVE = "INACTIVE"
+    DRAFT = "DRAFT"
     ARCHIVED = "ARCHIVED"
 
 

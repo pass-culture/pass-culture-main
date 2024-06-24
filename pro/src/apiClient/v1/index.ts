@@ -50,6 +50,7 @@ export type { CollectiveOfferResponseIdModel } from './models/CollectiveOfferRes
 export type { CollectiveOfferResponseModel } from './models/CollectiveOfferResponseModel';
 export type { CollectiveOffersBookingResponseModel } from './models/CollectiveOffersBookingResponseModel';
 export type { CollectiveOffersStockResponseModel } from './models/CollectiveOffersStockResponseModel';
+export { CollectiveOfferStatus } from './models/CollectiveOfferStatus';
 export type { CollectiveOfferTemplateBodyModel } from './models/CollectiveOfferTemplateBodyModel';
 export type { CollectiveOfferTemplateResponseIdModel } from './models/CollectiveOfferTemplateResponseIdModel';
 export { CollectiveOfferType } from './models/CollectiveOfferType';

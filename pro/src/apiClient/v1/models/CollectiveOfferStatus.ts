@@ -5,7 +5,7 @@
 /**
  * An enumeration.
  */
-export enum OfferStatus {
+export enum CollectiveOfferStatus {
   ACTIVE = 'ACTIVE',
   PENDING = 'PENDING',
   EXPIRED = 'EXPIRED',
@@ -13,4 +13,5 @@ export enum OfferStatus {
   SOLD_OUT = 'SOLD_OUT',
   INACTIVE = 'INACTIVE',
   DRAFT = 'DRAFT',
+  ARCHIVED = 'ARCHIVED',
 }

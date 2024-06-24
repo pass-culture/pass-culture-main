@@ -631,7 +631,7 @@ def _get_filtered_collective_bookings_query(
 
 def list_public_collective_offers(
     required_id: int,
-    status: offer_mixin.OfferStatus | None = None,
+    status: offer_mixin.CollectiveOfferStatus | None = None,
     venue_id: int | None = None,
     period_beginning_date: str | None = None,
     period_ending_date: str | None = None,

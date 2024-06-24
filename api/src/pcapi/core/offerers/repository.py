@@ -22,6 +22,7 @@ from pcapi.core.offers.models import Offer
 import pcapi.core.offers.repository as offers_repository
 import pcapi.core.users.models as users_models
 from pcapi.models import db
+from pcapi.models.offer_mixin import CollectiveOfferStatus
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 
@@ -759,7 +760,7 @@ def get_number_of_bookable_collective_offers_for_offerer(offerer_id: int) -> int
         .filter(
             models.Venue.managingOffererId == offerer_id,
             CollectiveOffer.isActive,
-            CollectiveOffer.status == OfferStatus.ACTIVE,
+            CollectiveOffer.status == CollectiveOfferStatus.ACTIVE,
         )
         .with_entities(CollectiveOffer.id)
         .union_all(
@@ -767,7 +768,7 @@ def get_number_of_bookable_collective_offers_for_offerer(offerer_id: int) -> int
             .filter(
                 models.Venue.managingOffererId == offerer_id,
                 CollectiveOfferTemplate.isActive,
-                CollectiveOfferTemplate.status == OfferStatus.ACTIVE,
+                CollectiveOfferTemplate.status == CollectiveOfferStatus.ACTIVE,
             )
             .with_entities(CollectiveOfferTemplate.id)
         )

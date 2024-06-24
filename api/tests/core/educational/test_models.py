@@ -14,7 +14,7 @@ from pcapi.core.educational.models import EducationalDeposit
 from pcapi.core.educational.models import HasImageMixin
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.models import db
-from pcapi.models.offer_mixin import OfferStatus
+from pcapi.models.offer_mixin import CollectiveOfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils.image_conversion import CropParams
@@ -283,7 +283,7 @@ class CollectiveOfferIsArchiveTest:
             offer.dateArchived = datetime.datetime.utcnow()
 
             assert offer.isArchived == True
-            assert offer.status == OfferStatus.ARCHIVED.value
+            assert offer.status == CollectiveOfferStatus.ARCHIVED.value
 
     def test_query_is_archived(self) -> None:
         offer_archived = factories.CollectiveOfferFactory(dateArchived=datetime.datetime.utcnow())

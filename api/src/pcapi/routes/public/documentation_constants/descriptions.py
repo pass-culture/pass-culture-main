@@ -1,6 +1,6 @@
 # HIGH LEVEL INFORMATION
 PUBLIC_API_DESCRIPTION = """
-This the documentation of the pass Culture public REST API.
+This the documentation of the Pass Culture public REST API.
 
 # Important notice
 - Since January 2023, rate limiting has been implemented on the Pass Culture API.
@@ -28,9 +28,12 @@ OFFER_STATUS_FIELD_DESCRIPTION = """
 - `INACTIVE`: offer is not active and cannot be booked.\n\n
 - `PENDING`: offer is pending for pass Culture rules compliance validation. This step may take up to 72 hours.\n\n
 - `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n
-- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.\n\n
-- `ARCHIVED`: offer is archived by pro.
+- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.
 """
+
+COLLECTIVE_OFFER_STATUS_FIELD_DESCRIPTION = (
+    OFFER_STATUS_FIELD_DESCRIPTION + "\n\n" + "- `ARCHIVED`: offer is archived by pro."
+)
 
 BOOKING_STATUS_DESCRIPTION = """
 Booking status explanation:

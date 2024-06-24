@@ -12,7 +12,7 @@ import pcapi.core.categories.subcategories_v2 as subcategories
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import StudentLevels
-from pcapi.models.offer_mixin import OfferStatus
+from pcapi.models.offer_mixin import CollectiveOfferStatus
 from pcapi.routes.public.documentation_constants.fields import fields
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import collective_offers_serialize
@@ -26,7 +26,7 @@ from pcapi.validation.routes.offers import check_collective_offer_name_length_is
 
 
 class ListCollectiveOffersQueryModel(BaseModel):
-    status: OfferStatus | None = fields.OFFER_STATUS
+    status: CollectiveOfferStatus | None = fields.COLLECTIVE_OFFER_STATUS
     venue_id: int | None = fields.VENUE_ID
     period_beginning_date: str | None = fields.PERIOD_BEGINNING_DATE
     period_ending_date: str | None = fields.PERIOD_ENDING_DATE

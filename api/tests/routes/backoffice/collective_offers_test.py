@@ -21,6 +21,7 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
+from pcapi.models.offer_mixin import CollectiveOfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.routes.backoffice.filters import format_date
@@ -205,7 +206,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         query_args = {
             "search-0-search_field": "STATUS",
             "search-0-operator": "IN",
-            "search-0-status": offers_models.OfferStatus.ACTIVE.value,
+            "search-0-status": CollectiveOfferStatus.ACTIVE.value,
             "search-2-search_field": "EVENT_DATE",
             "search-2-operator": "DATE_TO",
             "search-2-date": (datetime.date.today() + datetime.timedelta(days=2)).isoformat(),
@@ -329,7 +330,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "limit": "100",
             "search-0-search_field": "EVENT_DATE",
             "search-0-operator": "DATE_FROM",
-            "search-0-status": offers_models.OfferStatus.ACTIVE.value,
+            "search-0-status": CollectiveOfferStatus.ACTIVE.value,
             "search-0-integer": "",
             "search-0-string": "",
             "search-0-date": (datetime.date.today() + datetime.timedelta(days=2)).isoformat(),

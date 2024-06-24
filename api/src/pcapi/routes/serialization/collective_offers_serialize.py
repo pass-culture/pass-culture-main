@@ -24,7 +24,7 @@ from pcapi.core.educational.models import StudentLevels
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import validation as offers_validation
 from pcapi.core.offers.serialize import CollectiveOfferType
-from pcapi.models.offer_mixin import OfferStatus
+from pcapi.models.offer_mixin import CollectiveOfferStatus
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import base as base_serializers
@@ -126,7 +126,7 @@ class CollectiveOfferResponseModel(BaseModel):
     subcategoryId: SubcategoryIdEnum | EmptyStringToNone
     isShowcase: bool
     venue: base_serializers.ListOffersVenueResponseModel
-    status: OfferStatus
+    status: CollectiveOfferStatus
     educationalInstitution: EducationalInstitutionResponseModel | None
     interventionArea: list[str]
     templateId: str | None
@@ -168,7 +168,7 @@ def _serialize_offer_paginated(offer: CollectiveOffer | CollectiveOfferTemplate)
     return CollectiveOfferResponseModel(  # type: ignore[call-arg]
         hasBookingLimitDatetimesPassed=offer.hasBookingLimitDatetimesPassed if not is_offer_template else False,
         id=offer.id,
-        isActive=False if offer.status == OfferStatus.INACTIVE else offer.isActive,
+        isActive=False if offer.status == CollectiveOfferStatus.INACTIVE else offer.isActive,
         isEditable=offer.isEditable,
         isEducational=True,
         name=offer.name,
@@ -322,7 +322,7 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     name: str
     subcategoryId: SubcategoryIdEnum | EmptyStringToNone
     venue: GetCollectiveOfferVenueResponseModel
-    status: OfferStatus
+    status: CollectiveOfferStatus
     domains: list[OfferDomain]
     interventionArea: list[str]
     is_cancellable_from_offerer: bool = Field(alias="isCancellable")
@@ -415,7 +415,7 @@ class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
         result = super().from_orm(offer)
         result.formats = offer.get_formats()
 
-        if result.status == OfferStatus.INACTIVE.name:
+        if result.status == CollectiveOfferStatus.INACTIVE.name:
             result.isActive = False
 
         return result

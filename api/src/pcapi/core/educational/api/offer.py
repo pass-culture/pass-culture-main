@@ -172,7 +172,7 @@ def list_collective_offers_for_pro_user(
 def list_public_collective_offers(
     required_id: int,
     venue_id: int | None = None,
-    status: offer_mixin.OfferStatus | None = None,
+    status: offer_mixin.CollectiveOfferStatus | None = None,
     period_beginning_date: str | None = None,
     period_ending_date: str | None = None,
     limit: int = 500,

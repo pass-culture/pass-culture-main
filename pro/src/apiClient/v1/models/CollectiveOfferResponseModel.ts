@@ -4,11 +4,11 @@
 /* eslint-disable */
 import type { CollectiveOffersBookingResponseModel } from './CollectiveOffersBookingResponseModel';
 import type { CollectiveOffersStockResponseModel } from './CollectiveOffersStockResponseModel';
+import type { CollectiveOfferStatus } from './CollectiveOfferStatus';
 import type { EacFormat } from './EacFormat';
 import type { EducationalInstitutionResponseModel } from './EducationalInstitutionResponseModel';
 import type { ListOffersVenueResponseModel } from './ListOffersVenueResponseModel';
 import type { NationalProgramModel } from './NationalProgramModel';
-import type { OfferStatus } from './OfferStatus';
 import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
 export type CollectiveOfferResponseModel = {
   booking?: CollectiveOffersBookingResponseModel | null;
@@ -26,7 +26,7 @@ export type CollectiveOfferResponseModel = {
   isShowcase: boolean;
   name: string;
   nationalProgram?: NationalProgramModel | null;
-  status: OfferStatus;
+  status: CollectiveOfferStatus;
   stocks: Array<CollectiveOffersStockResponseModel>;
   subcategoryId?: (SubcategoryIdEnum | string) | null;
   templateId?: string | null;
