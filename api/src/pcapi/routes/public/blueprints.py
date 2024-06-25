@@ -22,7 +22,6 @@ public_api_blueprint = Blueprint(
 # [ACTIVE] Public API following pattern /public/<resource>/v1/....
 _public_v1_blueprint = Blueprint("v1_public_api", __name__, url_prefix="/public")
 _public_v1_blueprint.register_blueprint(indivual_offers_blueprints.individual_offers_blueprint)
-_public_v1_blueprint.register_blueprint(indivual_offers_blueprints.individual_bookings_blueprint)
 
 
 # [ACTIVE] Public API following pattern /v2/collective/....

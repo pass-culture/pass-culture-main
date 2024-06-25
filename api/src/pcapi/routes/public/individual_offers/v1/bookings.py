@@ -13,12 +13,12 @@ from pcapi.models import api_errors
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.documentation_constants import http_responses
 from pcapi.routes.public.documentation_constants import tags
+from pcapi.routes.public.individual_offers import blueprint
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.validation.routes.users_authentifications import api_key_required
 from pcapi.validation.routes.users_authentifications import current_api_key
 
-from . import blueprint
 from . import bookings_serialization as serialization
 
 
@@ -63,7 +63,7 @@ def _get_paginated_and_filtered_bookings(
     )
 
 
-@blueprint.v1_bookings_blueprint.route("/bookings", methods=["GET"])
+@blueprint.individual_offers_blueprint.route("/bookings/v1/bookings", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     response_model=serialization.GetFilteredBookingsResponse,
@@ -118,7 +118,7 @@ def _get_booking_by_token(token: str) -> booking_models.Booking | None:
     return _get_base_booking_query().filter(booking_models.Booking.token == token.upper()).one_or_none()
 
 
-@blueprint.v1_bookings_blueprint.route("/token/<string:token>", methods=["GET"])
+@blueprint.individual_offers_blueprint.route("/bookings/v1/token/<string:token>", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     response_model=serialization.GetBookingResponse,
@@ -160,7 +160,7 @@ def get_booking_by_token(token: str) -> serialization.GetBookingResponse:
     return serialization.GetBookingResponse.build_booking(booking)
 
 
-@blueprint.v1_bookings_blueprint.route("/use/token/<token>", methods=["PATCH"])
+@blueprint.individual_offers_blueprint.route("/bookings/v1/use/token/<token>", methods=["PATCH"])
 @spectree_serialize(
     on_success_status=204,
     api=spectree_schemas.public_api_schema,
@@ -201,7 +201,7 @@ def validate_booking_by_token(token: str) -> None:
     bookings_api.mark_as_used(booking, booking_models.BookingValidationAuthorType.OFFERER)
 
 
-@blueprint.v1_bookings_blueprint.route("/keep/token/<token>", methods=["PATCH"])
+@blueprint.individual_offers_blueprint.route("/bookings/v1/keep/token/<token>", methods=["PATCH"])
 @spectree_serialize(
     on_success_status=204,
     api=spectree_schemas.public_api_schema,
@@ -242,7 +242,7 @@ def cancel_booking_validation_by_token(token: str) -> None:
         )
 
 
-@blueprint.v1_bookings_blueprint.route("/cancel/token/<token>", methods=["PATCH"])
+@blueprint.individual_offers_blueprint.route("/bookings/v1/cancel/token/<token>", methods=["PATCH"])
 @spectree_serialize(
     on_success_status=204,
     api=spectree_schemas.public_api_schema,
