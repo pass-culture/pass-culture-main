@@ -49,10 +49,6 @@ def test_public_api_openapi_json(client):
     for path in expected_paths_sub_keys:
         assert response_json["paths"][path] == expected["paths"][path]
 
-    # Drop datetime examples (because they vary over time)
-    _drop_openapi_datetime_examples(response_json)
-    _drop_openapi_datetime_examples(expected)
-
     # Test components keys
     # -- Tests components.securitySchemes
     assert response_json["components"]["securitySchemes"] == expected["components"]["securitySchemes"]
@@ -73,18 +69,3 @@ def test_public_api_openapi_json(client):
     assert response_json["servers"] == expected["servers"]
     assert response_json["openapi"] == expected["openapi"]
     assert response_json["security"] == expected["security"]
-
-
-def _drop_openapi_datetime_examples(openapi_json_dict: dict) -> dict:
-    schemas = openapi_json_dict["components"]["schemas"]
-
-    for _, schema_name in enumerate(schemas):
-        schema_properties = schemas[schema_name].get("properties", {})
-
-        for _, property_name in enumerate(schema_properties):
-            if schema_properties[property_name].get("format") == "date-time":
-                openapi_json_dict["components"]["schemas"][schema_name]["properties"][property_name].pop(
-                    "example", None
-                )
-
-    return openapi_json_dict

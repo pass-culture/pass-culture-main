@@ -1,15 +1,11 @@
 import copy
-import datetime
 
-from dateutil import relativedelta
 from pydantic.v1 import Field
 
 from pcapi.routes.public.documentation_constants import descriptions
-from pcapi.utils import date as date_utils
 
 
-_next_month = datetime.datetime.utcnow().replace(hour=12, minute=0, second=0) + relativedelta.relativedelta(months=1)
-_paris_tz_next_month = date_utils.utc_datetime_to_department_timezone(_next_month, "75")
+_example_datetime_with_tz = "2034-07-24T14:00:00+02:00"
 
 
 LIMIT_DESCRIPTION = "Number of items per page"
@@ -111,11 +107,11 @@ class _FIELDS:
     PRICE_CATEGORY_ID = Field(description="Price category id", example=12)
     BEGINNING_DATETIME = Field(
         description="Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-        example=_paris_tz_next_month.isoformat(timespec="seconds"),
+        example=_example_datetime_with_tz,
     )
     BOOKING_LIMIT_DATETIME = Field(
         description=descriptions.BOOKING_LIMIT_DATETIME_FIELD_DESCRIPTION,
-        example=_paris_tz_next_month.isoformat(timespec="seconds"),
+        example=_example_datetime_with_tz,
     )
 
     # Booking fields
@@ -163,19 +159,19 @@ class _FIELDS:
     )
     COLLECTIVE_OFFER_BEGINNING_DATETIME = Field(
         description="Collective offer beginning datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-        example=_paris_tz_next_month.isoformat(timespec="seconds"),
+        example=_example_datetime_with_tz,
     )
     COLLECTIVE_OFFER_START_DATETIME = Field(
         description="Collective offer start datetime. Replaces beginning dateime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-        example=_paris_tz_next_month.isoformat(timespec="seconds"),
+        example=_example_datetime_with_tz,
     )
     COLLECTIVE_OFFER_END_DATETIME = Field(
         description="Collective offer end datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-        example=_paris_tz_next_month.isoformat(timespec="seconds"),
+        example=_example_datetime_with_tz,
     )
     COLLECTIVE_OFFER_BOOKING_LIMIT_DATETIME = Field(
         description="Booking limit datetime. It must be anterior to the `beginning_datetime`. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-        example=_paris_tz_next_month.isoformat(timespec="seconds"),
+        example=_example_datetime_with_tz,
     )
     COLLECTIVE_OFFER_TOTAL_PRICE = Field(example=100.00, description="Collective offer price (in €)")
     COLLECTIVE_OFFER_NB_OF_TICKETS_FIELD = Field(example=10, description="Number of tickets for your collective offer")
