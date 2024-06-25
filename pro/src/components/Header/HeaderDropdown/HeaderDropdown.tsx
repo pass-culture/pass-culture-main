@@ -77,6 +77,18 @@ export const HeaderDropdown = () => {
     }
   }
 
+  if (offererOptions.length && !currentOffererId) {
+    setTimeout(() => {
+      handleChangeOfferer(selectedOffererId.toString())
+    })
+  }
+
+  if (offererOptions.length && !selectedOffererName) {
+    setTimeout(() => {
+      handleChangeOfferer(offererOptions[0]?.value)
+    })
+  }
+
   useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth)
