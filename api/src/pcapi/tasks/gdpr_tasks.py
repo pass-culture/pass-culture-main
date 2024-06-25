@@ -3,6 +3,7 @@ from io import BytesIO
 import logging
 import zipfile
 
+from flask import render_template
 from sqlalchemy.orm import joinedload
 
 from pcapi import repository
@@ -19,6 +20,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.users import models as users_models
 from pcapi.tasks.decorator import task
+from pcapi.utils.pdf import generate_pdf_from_html
 
 from .serialization import gdpr_tasks as serializers
 
@@ -99,9 +101,12 @@ def _extract_email_history(user: users_models.User) -> list[serializers.EmailHis
     )
     emails_history = []
     for history in emails:
+        old_email = None
+        if history.oldUserEmail:
+            old_email = f"{history.oldUserEmail}@{history.oldDomainEmail}"
         emails_history.append(
             serializers.EmailHistory(
-                oldEmail=f"{history.oldUserEmail}@{history.oldDomainEmail}",
+                oldEmail=old_email,
                 newEmail=f"{history.newUserEmail}@{history.newDomainEmail}",
                 dateCreated=history.creationDate,
             )
@@ -175,16 +180,27 @@ def _extract_brevo_data(user: users_models.User) -> dict:
 def _dump_as_json_bytes(container: serializers.DataContainer) -> tuple[zipfile.ZipInfo, bytes]:
     json_bytes = container.json(indent=4).encode("utf-8")
     file_info = zipfile.ZipInfo(
-        filename=f"{container.internal.user.firstName}_{container.internal.user.lastName}.json",
+        filename=f"{container.internal.user.firstName} {container.internal.user.lastName}.json",
         date_time=datetime.utcnow().timetuple()[:6],
     )
     return file_info, json_bytes
+
+
+def _dump_as_pdf_bytes(container: serializers.DataContainer) -> tuple[zipfile.ZipInfo, bytes]:
+    html_content = render_template("extracts/beneficiary_extract.html", container=container)
+    pdf_bytes = generate_pdf_from_html(html_content=html_content)
+    file_info = zipfile.ZipInfo(
+        filename=f"{container.internal.user.firstName} {container.internal.user.lastName}.pdf",
+        date_time=datetime.utcnow().timetuple()[:6],
+    )
+    return file_info, pdf_bytes
 
 
 def _generate_archive(container: serializers.DataContainer) -> BytesIO:
     buffer = BytesIO()
     with zipfile.ZipFile(buffer, "w", allowZip64=False) as zip_file:
         zip_file.writestr(*_dump_as_json_bytes(container))
+        zip_file.writestr(*_dump_as_pdf_bytes(container))
     buffer.seek(0)
     return buffer
 

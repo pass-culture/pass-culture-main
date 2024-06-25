@@ -1256,7 +1256,6 @@ def create_extract_user_gdpr_data(user_id: int) -> utils.BackofficeResponse:
     user = (
         users_models.User.query.filter(
             users_models.User.id == user_id,
-            users_models.User.is_beneficiary,
         )
         .options(
             sa.orm.load_only(users_models.User.firstName, users_models.User.lastName),
@@ -1265,6 +1264,9 @@ def create_extract_user_gdpr_data(user_id: int) -> utils.BackofficeResponse:
         .one_or_none()
     )
     if not user:
+        raise NotFound()
+
+    if not (user.is_beneficiary or user.roles == []):
         raise NotFound()
 
     if has_gdpr_extract(user=user):
