@@ -764,6 +764,10 @@ def delete_past_draft_collective_offers() -> None:
     db.session.commit()
 
 
+def delete_future_offer(offer_id: int) -> None:
+    models.FutureOffer.query.filter_by(offerId=offer_id).delete()
+
+
 def get_available_activation_code(stock: models.Stock) -> models.ActivationCode | None:
     activable_code = next(
         (

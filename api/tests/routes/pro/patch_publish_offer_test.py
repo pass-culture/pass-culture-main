@@ -99,6 +99,52 @@ class Returns200Test:
         mock_async_index_offer_ids.assert_not_called()
         mocked_send_first_venue_approved_offer_email_to_pro.assert_called_once_with(offer)
 
+    @patch("pcapi.core.mails.transactional.send_first_venue_approved_offer_email_to_pro")
+    def test_patch_publish_future_offer_early_publish(
+        self,
+        mocked_send_first_venue_approved_offer_email_to_pro,
+        mock_async_index_offer_ids,
+        client,
+    ):
+        stock = offers_factories.StockFactory(
+            offer__isActive=False,
+            offer__validation=OfferValidationStatus.DRAFT,
+            offer__subcategoryId=subcategories.SEANCE_CINE.id,
+        )
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=stock.offer.venue.managingOfferer,
+        )
+
+        client = client.with_session_auth("user@example.com")
+        publication_date = datetime.datetime.utcnow().replace(minute=0, second=0) + datetime.timedelta(days=30)
+        response = client.patch(
+            "/offers/publish",
+            json={
+                "id": stock.offerId,
+                "publicationDate": publication_date.isoformat(),
+            },
+        )
+
+        assert response.status_code == 200
+        offer = offers_models.Offer.query.get(stock.offer.id)
+        assert offer.publicationDate == local_datetime_to_default_timezone(publication_date, "Europe/Paris").replace(
+            microsecond=0, tzinfo=None
+        )
+        mock_async_index_offer_ids.assert_not_called()
+        mocked_send_first_venue_approved_offer_email_to_pro.assert_called_once_with(offer)
+        assert offers_models.FutureOffer.query.count() == 1
+
+        response = client.patch("/offers/publish", json={"id": stock.offerId})
+
+        assert response.status_code == 200
+        content = response.json
+        offer = offers_models.Offer.query.get(stock.offer.id)
+        assert offer.publicationDate is None
+        assert content["isActive"] is True
+        mock_async_index_offer_ids.assert_called_once()
+        assert offers_models.FutureOffer.query.count() == 0
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:

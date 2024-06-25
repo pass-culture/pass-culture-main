@@ -725,6 +725,8 @@ def publish_offer(
         db.session.add(future_offer)
         db.session.flush()
     else:
+        if offer.publicationDate:
+            offers_repository.delete_future_offer(offer.id)
         search.async_index_offer_ids(
             [offer.id],
             reason=search.IndexationReason.OFFER_PUBLICATION,
