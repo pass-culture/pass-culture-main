@@ -60,6 +60,4 @@ class CancelCollectiveBookingTest:
 
     def _send_request(self, client, booking_id: int):
         client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
-        return client.patch(
-            url_for("public_api.v2_prefixed_public_api.cancel_collective_booking", booking_id=booking_id)
-        )
+        return client.patch(url_for("public_api.cancel_collective_booking", booking_id=booking_id))

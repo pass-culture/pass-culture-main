@@ -12,7 +12,7 @@ from pcapi.validation.routes.users_authentifications import api_key_required
 from pcapi.validation.routes.users_authentifications import current_api_key
 
 
-@blueprints.v2_prefixed_public_api.route("/collective/venues", methods=["GET"])
+@blueprints.public_api.route("/v2/collective/venues", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.COLLECTIVE_VENUES],
@@ -43,7 +43,7 @@ def list_venues() -> serialization.CollectiveOffersListVenuesResponseModel:
     )
 
 
-@blueprints.v2_prefixed_public_api.route("/collective/offerer_venues", methods=["GET"])
+@blueprints.public_api.route("/v2/collective/offerer_venues", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.COLLECTIVE_VENUES],
@@ -61,7 +61,7 @@ def list_venues() -> serialization.CollectiveOffersListVenuesResponseModel:
     ),
 )
 @api_key_required
-def get_offerer_venues(
+def deprecated_get_offerer_venues(
     query: venues_serialization.GetOfferersVenuesQuery,
 ) -> venues_serialization.GetOfferersVenuesResponse:
     """

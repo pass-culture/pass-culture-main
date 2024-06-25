@@ -10,7 +10,7 @@ from pcapi.utils.cache import cached_view
 from pcapi.validation.routes.users_authentifications import api_key_required
 
 
-@blueprints.v2_prefixed_public_api.route("/collective/educational-domains", methods=["GET"])
+@blueprints.public_api.route("/v2/collective/educational-domains", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.COLLECTIVE_OFFER_ATTRIBUTES],

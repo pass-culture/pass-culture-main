@@ -42,7 +42,7 @@ def _deserialize_has_ticket(
     return offers_models.WithdrawalTypeEnum.IN_APP
 
 
-@blueprints.public_v1_blueprint.route("/offers/v1/events", methods=["POST"])
+@blueprints.public_api.route("/public/offers/v1/events", methods=["POST"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFERS],
@@ -111,7 +111,7 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
     return serialization.EventOfferResponse.build_event_offer(created_offer)
 
 
-@blueprints.public_v1_blueprint.route("/offers/v1/events/<int:event_id>", methods=["GET"])
+@blueprints.public_api.route("/public/offers/v1/events/<int:event_id>", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFERS],
@@ -143,7 +143,7 @@ def get_event(event_id: int) -> serialization.EventOfferResponse:
     return serialization.EventOfferResponse.build_event_offer(offer)
 
 
-@blueprints.public_v1_blueprint.route("/offers/v1/events", methods=["GET"])
+@blueprints.public_api.route("/public/offers/v1/events", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFERS],
@@ -178,7 +178,7 @@ def get_events(query: serialization.GetOffersQueryParams) -> serialization.Event
     )
 
 
-@blueprints.public_v1_blueprint.route("/offers/v1/events/<int:event_id>", methods=["PATCH"])
+@blueprints.public_api.route("/public/offers/v1/events/<int:event_id>", methods=["PATCH"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFERS],
@@ -239,7 +239,7 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
     return serialization.EventOfferResponse.build_event_offer(offer)
 
 
-@blueprints.public_v1_blueprint.route("/offers/v1/events/<int:event_id>/price_categories", methods=["POST"])
+@blueprints.public_api.route("/public/offers/v1/events/<int:event_id>/price_categories", methods=["POST"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFER_PRICES],
@@ -285,8 +285,8 @@ def post_event_price_categories(
     return serialization.PriceCategoriesResponse.build_price_categories(created_price_categories)
 
 
-@blueprints.public_v1_blueprint.route(
-    "/offers/v1/events/<int:event_id>/price_categories/<int:price_category_id>", methods=["PATCH"]
+@blueprints.public_api.route(
+    "/public/offers/v1/events/<int:event_id>/price_categories/<int:price_category_id>", methods=["PATCH"]
 )
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
@@ -343,7 +343,7 @@ def patch_event_price_categories(
     return serialization.PriceCategoryResponse.from_orm(price_category_to_edit)
 
 
-@blueprints.public_v1_blueprint.route("/offers/v1/events/<int:event_id>/dates", methods=["POST"])
+@blueprints.public_api.route("/public/offers/v1/events/<int:event_id>/dates", methods=["POST"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFER_STOCKS],
@@ -406,7 +406,7 @@ def post_event_stocks(event_id: int, body: serialization.DatesCreation) -> seria
     )
 
 
-@blueprints.public_v1_blueprint.route("/offers/v1/events/<int:event_id>/dates", methods=["GET"])
+@blueprints.public_api.route("/public/offers/v1/events/<int:event_id>/dates", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFER_STOCKS],
@@ -455,7 +455,7 @@ def get_event_stocks(event_id: int, query: serialization.GetDatesQueryParams) ->
     )
 
 
-@blueprints.public_v1_blueprint.route("/offers/v1/events/<int:event_id>/dates/<int:stock_id>", methods=["DELETE"])
+@blueprints.public_api.route("/public/offers/v1/events/<int:event_id>/dates/<int:stock_id>", methods=["DELETE"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFER_STOCKS],
@@ -495,7 +495,7 @@ def delete_event_stock(event_id: int, stock_id: int) -> None:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
 
-@blueprints.public_v1_blueprint.route("/offers/v1/events/<int:event_id>/dates/<int:stock_id>", methods=["PATCH"])
+@blueprints.public_api.route("/public/offers/v1/events/<int:event_id>/dates/<int:stock_id>", methods=["PATCH"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFER_STOCKS],
@@ -572,7 +572,7 @@ def patch_event_stock(
     return serialization.DateResponse.build_date(edited_stock or stock_to_edit)
 
 
-@blueprints.public_v1_blueprint.route("/offers/v1/events/categories", methods=["GET"])
+@blueprints.public_api.route("/public/offers/v1/events/categories", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.OFFER_ATTRIBUTES],
