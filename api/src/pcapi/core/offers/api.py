@@ -492,6 +492,12 @@ def batch_update_collective_offers_template(query: BaseQuery, update_fields: dic
         )
 
 
+def activate_future_offers(publication_date: datetime.datetime | None = None) -> None:
+    query = offers_repository.get_offers_by_publication_date(publication_date=publication_date)
+    query = offers_repository.exclude_offers_from_inactive_venue_provider(query)
+    batch_update_offers(query, {"isActive": True})
+
+
 def _notify_pro_upon_stock_edit_for_event_offer(stock: models.Stock, bookings: list[bookings_models.Booking]) -> None:
     if stock.offer.isEvent:
         transactional_mails.send_event_offer_postponement_confirmation_email_to_pro(stock, len(bookings))

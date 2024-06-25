@@ -1470,6 +1470,30 @@ class BatchUpdateOffersTest:
 
 
 @pytest.mark.usefixtures("db_session")
+class ActivateFutureOffersTest:
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_activate_future_offers_empty(self, mocked_async_index_offer_ids):
+        offer = factories.OfferFactory(isActive=False)  # Offer not in the future, i.e. no publication_date
+
+        api.activate_future_offers()
+
+        assert not models.Offer.query.get(offer.id).isActive
+        mocked_async_index_offer_ids.assert_not_called()
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_activate_future_offers(self, mocked_async_index_offer_ids):
+        offer = factories.OfferFactory(isActive=False)
+        publication_date = datetime.utcnow().replace(minute=0, second=0, microsecond=0) + timedelta(days=30)
+        factories.FutureOfferFactory(offerId=offer.id, publicationDate=publication_date)
+
+        api.activate_future_offers(publication_date=publication_date)
+
+        assert models.Offer.query.get(offer.id).isActive
+        mocked_async_index_offer_ids.assert_called_once()
+        assert set(mocked_async_index_offer_ids.call_args[0][0]) == set([offer.id])
+
+
+@pytest.mark.usefixtures("db_session")
 class OfferExpenseDomainsTest:
     def test_offer_expense_domains(self):
         assert api.get_expense_domains(factories.OfferFactory(subcategoryId=subcategories.EVENEMENT_JEU.id)) == [
