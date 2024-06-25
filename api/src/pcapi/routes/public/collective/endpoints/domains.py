@@ -1,6 +1,6 @@
 from pcapi.core.educational import repository as educational_repository
+from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
-from pcapi.routes.public.collective.blueprint import collective_offers_blueprint
 from pcapi.routes.public.collective.serialization import domains as domains_serialization
 from pcapi.routes.public.documentation_constants import http_responses
 from pcapi.routes.public.documentation_constants import tags
@@ -10,7 +10,7 @@ from pcapi.utils.cache import cached_view
 from pcapi.validation.routes.users_authentifications import api_key_required
 
 
-@collective_offers_blueprint.route("/collective/educational-domains", methods=["GET"])
+@blueprints.v2_prefixed_public_api.route("/collective/educational-domains", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.COLLECTIVE_OFFER_ATTRIBUTES],

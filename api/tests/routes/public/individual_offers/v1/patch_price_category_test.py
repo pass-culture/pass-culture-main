@@ -46,7 +46,7 @@ def event_with_stock_fixture(stock):
 
 
 class PatchPriceCategoryErrorsTest:
-    endpoint = "public_api.v1_public_api.individual_offers.patch_event_price_categories"
+    endpoint = "public_api.v1_public_api.patch_event_price_categories"
 
     def test_cannot_access_resource_from_other_api_key(self, other_auth_client, event_with_stock, price_category):
         kwargs = {"event_id": event_with_stock.id, "price_category_id": price_category.id}
