@@ -1,5 +1,4 @@
 import cn from 'classnames'
-import { format } from 'date-fns'
 
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { IndividualOfferNavigation } from 'components/IndividualOfferNavigation/IndividualOfferNavigation'
@@ -7,7 +6,7 @@ import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import fullWaitIcon from 'icons/full-wait.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { FORMAT_DD_MM_YYYY, FORMAT_HH_mm, isDateValid } from 'utils/date'
+import { formatDateTimeParts, isDateValid } from 'utils/date'
 
 import { Status } from '../Status/Status'
 import { SynchronizedProviderInformation } from '../SynchronisedProviderInfos/SynchronizedProviderInformation'
@@ -31,12 +30,9 @@ export const IndivualOfferLayout = ({
   mode,
 }: IndivualOfferLayoutProps) => {
   const isFutureOfferEnabled = useActiveFeature('WIP_FUTURE_OFFER')
-  const formattedDate = isDateValid(offer?.publicationDate)
-    ? format(new Date(offer.publicationDate), FORMAT_DD_MM_YYYY)
-    : ''
-  const formattedTime = isDateValid(offer?.publicationDate)
-    ? format(new Date(offer.publicationDate), FORMAT_HH_mm)
-    : ''
+  const { date: publicationDate, time: publicationTime } = formatDateTimeParts(
+    offer?.publicationDate
+  )
   const shouldDisplayActionOnStatus =
     mode !== OFFER_WIZARD_MODE.CREATION && offer && withStepper
 
@@ -50,16 +46,7 @@ export const IndivualOfferLayout = ({
         <div className={styles['title-container']}>
           <h1 className={styles['title']}>{title}</h1>
           {shouldDisplayActionOnStatus && (
-            <span className={styles['status']}>
-              {
-                <Status
-                  offerId={offer.id}
-                  status={offer.status}
-                  isActive={offer.isActive}
-                  canDeactivate={offer.isActivable}
-                />
-              }
-            </span>
+            <span className={styles['status']}>{<Status offer={offer} />}</span>
           )}
         </div>
 
@@ -76,7 +63,7 @@ export const IndivualOfferLayout = ({
                 className={styles['publication-icon']}
                 width="24"
               />
-              Publication prévue le {formattedDate} à {formattedTime}
+              Publication prévue le {publicationDate} à {publicationTime}
             </div>
           )}
       </div>

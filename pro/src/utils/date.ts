@@ -9,6 +9,19 @@ export const FORMAT_DD_MM_YYYY = 'dd/MM/yyyy'
 const FORMAT_DD_MMMM_YYYY = 'dd MMMM yyyy'
 export const FORMAT_HH_mm = 'HH:mm'
 
+export const formatDateTimeParts = (
+  date?: string | null
+): { date: string; time: string } => {
+  const formattedDate = isDateValid(date)
+    ? format(new Date(date), FORMAT_DD_MM_YYYY)
+    : ''
+  const formattedTime = isDateValid(date)
+    ? format(new Date(date), FORMAT_HH_mm)
+    : ''
+
+  return { date: formattedDate, time: formattedTime }
+}
+
 export const removeTime = (date: Date): Date => {
   date.setHours(0)
   date.setMinutes(0)
