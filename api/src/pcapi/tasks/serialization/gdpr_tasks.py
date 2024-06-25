@@ -4,9 +4,6 @@ from datetime import datetime
 from pydantic.v1 import BaseModel
 from pydantic.v1 import Field
 
-from pcapi.core.bookings import models as bookings_models
-from pcapi.core.finance import enum as finance_enum
-from pcapi.core.fraud import models as fraud_models
 from pcapi.core.history import models as history_models
 from pcapi.core.users import models as users_models
 
@@ -56,20 +53,17 @@ class LoginDeviceHistorySerializer(BaseModel):
 
 class EmailHistory(BaseModel):
     dateCreated: datetime
-    newEmail: str
-    oldEmail: str | None
+    newEmail: str | None
+    oldEmail: str
 
 
 class DepositSerializer(BaseModel):
     dateCreated: datetime
-    dateUpdated: datetime
+    dateUpdated: datetime | None
     expirationDate: datetime | None
     amount: float
     source: str
-    type: finance_enum.DepositType
-
-    class Config:
-        orm_mode = True
+    type: str
 
 
 class BookingSerializer(BaseModel):
@@ -78,7 +72,7 @@ class BookingSerializer(BaseModel):
     dateUsed: datetime | None
     quantity: int
     amount: float
-    status: bookings_models.BookingStatus
+    status: str
     name: str
     venue: str
     offerer: str
@@ -94,13 +88,10 @@ class ActionHistorySerializer(BaseModel):
 
 class BeneficiaryValidation(BaseModel):
     dateCreated: datetime
-    eligibilityType: users_models.EligibilityType | None
-    status: fraud_models.FraudCheckStatus | None
-    type: fraud_models.FraudCheckType
+    eligibilityType: str | None
+    status: str | None
+    type: str
     updatedAt: datetime | None
-
-    class Config:
-        orm_mode = True
 
 
 class Internal(BaseModel):
