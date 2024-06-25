@@ -35,4 +35,8 @@
   flex-grow: 1;
   min-height: rem.torem(300px);
   margin-top: rem.torem(16px);
+
+  /* Protect the chart from being too tall
+  InvalidStateError: CanvasRenderingContext2D.setTransform: Canvas exceeds max size. */
+  max-height: rem.torem(2000px);
 }
