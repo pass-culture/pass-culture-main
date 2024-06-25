@@ -91,8 +91,12 @@ class ObjectUpdateSnapshot:
         return self
 
     def _is_different(self, field_name: str, old_value: typing.Any, new_value: typing.Any) -> bool:
-        if field_name in ("latitude", "longitude"):
-            # Avoid diff: "Latitude : 46.66979 => 46.669789" because of different precision in API and db storage
+        if (
+            ("latitude" in field_name.lower() or "longitude" in field_name.lower())
+            and old_value is not None
+            and new_value is not None
+        ):
+            # Avoid diff: "Latitude : 46.66979 => 46.669789" because of different precision in APIn and db storage
             return not math.isclose(float(old_value), float(new_value), rel_tol=0.00001)
 
         return old_value != new_value
