@@ -173,7 +173,6 @@ export const BookingsScreen = <
           (params.has('offerEventDate')
             ? ''
             : initialAppliedFilters.bookingEndingDate),
-        offerType: params.get('offerType') ?? initialAppliedFilters.offerType,
         offerEventDate:
           params.get('offerEventDate') ?? initialAppliedFilters.offerEventDate,
       }
@@ -196,7 +195,6 @@ export const BookingsScreen = <
       ...(filter.bookingEndingDate
         ? { bookingEndingDate: filter.bookingEndingDate }
         : {}),
-      ...(filter.offerType ? { offerType: filter.offerType } : {}),
       ...(filter.offerVenueId ? { offerVenueId: filter.offerVenueId } : {}),
     } as Partial<PreFiltersParams>
 

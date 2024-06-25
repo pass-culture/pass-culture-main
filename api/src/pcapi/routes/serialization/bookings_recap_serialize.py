@@ -18,11 +18,6 @@ from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import isoformat
 
 
-class OfferType(Enum):
-    INDIVIDUAL_OR_DUO = "INDIVIDUAL_OR_DUO"
-    EDUCATIONAL = "EDUCATIONAL"
-
-
 class BookingRecapResponseBeneficiaryModel(BaseModel):
     email: str | None
     firstname: str | None
@@ -194,7 +189,6 @@ class ListBookingsQueryModel(BaseModel):
     booking_status_filter: BookingStatusFilter | None
     booking_period_beginning_date: date | None
     booking_period_ending_date: date | None
-    offer_type: OfferType | None
     export_type: BookingExportType | None
 
     class Config:

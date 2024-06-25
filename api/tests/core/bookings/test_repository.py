@@ -29,7 +29,6 @@ from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import User
 from pcapi.domain.booking_recap import utils as booking_recap_utils
-from pcapi.routes.serialization.bookings_recap_serialize import OfferType
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -778,7 +777,6 @@ class FindByProUserTest:
         individual_bookings_recap_paginated_query, _ = booking_repository.find_by_pro_user(
             user=user_offerer.user,
             booking_period=(one_year_before_booking, one_year_after_booking),
-            offer_type=OfferType.INDIVIDUAL_OR_DUO,
         )
         individual_bookings_recap_paginated = individual_bookings_recap_paginated_query.all()
         all_bookings_recap_paginated_query, _ = booking_repository.find_by_pro_user(
@@ -2288,7 +2286,6 @@ class GetCsvReportTest:
         individual_bookings_csv = booking_repository.get_export(
             user=user_offerer.user,
             booking_period=(one_year_before_booking, one_year_after_booking),
-            offer_type=OfferType.INDIVIDUAL_OR_DUO,
         )
         all_bookings_csv = booking_repository.get_export(
             user=user_offerer.user,

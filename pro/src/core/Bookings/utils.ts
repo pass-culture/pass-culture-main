@@ -7,7 +7,6 @@ export const buildBookingsRecapQuery = ({
   bookingBeginningDate = DEFAULT_PRE_FILTERS.bookingBeginningDate,
   bookingEndingDate = DEFAULT_PRE_FILTERS.bookingEndingDate,
   bookingStatusFilter = DEFAULT_PRE_FILTERS.bookingStatusFilter,
-  offerType = DEFAULT_PRE_FILTERS.offerType,
   offerId,
   page,
 }: Partial<PreFiltersParams> & { page?: number }): APIFilters => {
@@ -15,9 +14,6 @@ export const buildBookingsRecapQuery = ({
 
   if (offerVenueId !== DEFAULT_PRE_FILTERS.offerVenueId) {
     params.venueId = offerVenueId
-  }
-  if (offerType !== DEFAULT_PRE_FILTERS.offerType) {
-    params.offerType = offerType
   }
   if (offerEventDate !== DEFAULT_PRE_FILTERS.offerEventDate) {
     params.eventDate = offerEventDate

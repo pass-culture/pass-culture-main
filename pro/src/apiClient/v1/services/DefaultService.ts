@@ -74,7 +74,6 @@ import type { OffererAddressRequestModel } from '../models/OffererAddressRequest
 import type { OffererAddressResponseModel } from '../models/OffererAddressResponseModel';
 import type { OffererStatsResponseModel } from '../models/OffererStatsResponseModel';
 import type { OfferStatus } from '../models/OfferStatus';
-import type { OfferType } from '../models/OfferType';
 import type { PatchAllCollectiveOffersActiveStatusBodyModel } from '../models/PatchAllCollectiveOffersActiveStatusBodyModel';
 import type { PatchAllOffersActiveStatusBodyModel } from '../models/PatchAllOffersActiveStatusBodyModel';
 import type { PatchCollectiveOfferActiveStatusBodyModel } from '../models/PatchCollectiveOfferActiveStatusBodyModel';
@@ -134,7 +133,6 @@ export class DefaultService {
    * @param bookingStatusFilter
    * @param bookingPeriodBeginningDate
    * @param bookingPeriodEndingDate
-   * @param offerType
    * @param exportType
    * @returns any OK
    * @throws ApiError
@@ -148,7 +146,6 @@ export class DefaultService {
     bookingStatusFilter?: BookingStatusFilter | null,
     bookingPeriodBeginningDate?: string | null,
     bookingPeriodEndingDate?: string | null,
-    offerType?: OfferType | null,
     exportType?: BookingExportType | null,
   ): CancelablePromise<any> {
     return this.httpRequest.request({
@@ -163,7 +160,6 @@ export class DefaultService {
         'bookingStatusFilter': bookingStatusFilter,
         'bookingPeriodBeginningDate': bookingPeriodBeginningDate,
         'bookingPeriodEndingDate': bookingPeriodEndingDate,
-        'offerType': offerType,
         'exportType': exportType,
       },
       errors: {
@@ -203,7 +199,6 @@ export class DefaultService {
    * @param bookingStatusFilter
    * @param bookingPeriodBeginningDate
    * @param bookingPeriodEndingDate
-   * @param offerType
    * @param exportType
    * @returns any OK
    * @throws ApiError
@@ -217,7 +212,6 @@ export class DefaultService {
     bookingStatusFilter?: BookingStatusFilter | null,
     bookingPeriodBeginningDate?: string | null,
     bookingPeriodEndingDate?: string | null,
-    offerType?: OfferType | null,
     exportType?: BookingExportType | null,
   ): CancelablePromise<any> {
     return this.httpRequest.request({
@@ -232,7 +226,6 @@ export class DefaultService {
         'bookingStatusFilter': bookingStatusFilter,
         'bookingPeriodBeginningDate': bookingPeriodBeginningDate,
         'bookingPeriodEndingDate': bookingPeriodEndingDate,
-        'offerType': offerType,
         'exportType': exportType,
       },
       errors: {
@@ -309,7 +302,6 @@ export class DefaultService {
    * @param bookingStatusFilter
    * @param bookingPeriodBeginningDate
    * @param bookingPeriodEndingDate
-   * @param offerType
    * @param exportType
    * @returns ListBookingsResponseModel OK
    * @throws ApiError
@@ -323,7 +315,6 @@ export class DefaultService {
     bookingStatusFilter?: BookingStatusFilter | null,
     bookingPeriodBeginningDate?: string | null,
     bookingPeriodEndingDate?: string | null,
-    offerType?: OfferType | null,
     exportType?: BookingExportType | null,
   ): CancelablePromise<ListBookingsResponseModel> {
     return this.httpRequest.request({
@@ -338,7 +329,6 @@ export class DefaultService {
         'bookingStatusFilter': bookingStatusFilter,
         'bookingPeriodBeginningDate': bookingPeriodBeginningDate,
         'bookingPeriodEndingDate': bookingPeriodEndingDate,
-        'offerType': offerType,
         'exportType': exportType,
       },
       errors: {

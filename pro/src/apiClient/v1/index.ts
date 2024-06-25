@@ -179,7 +179,6 @@ export type { OffererStatsResponseModel } from './models/OffererStatsResponseMod
 export type { OffererViewsModel } from './models/OffererViewsModel';
 export type { OfferImage } from './models/OfferImage';
 export { OfferStatus } from './models/OfferStatus';
-export { OfferType } from './models/OfferType';
 export type { OpeningHoursModel } from './models/OpeningHoursModel';
 export type { PatchAllCollectiveOffersActiveStatusBodyModel } from './models/PatchAllCollectiveOffersActiveStatusBodyModel';
 export type { PatchAllOffersActiveStatusBodyModel } from './models/PatchAllOffersActiveStatusBodyModel';

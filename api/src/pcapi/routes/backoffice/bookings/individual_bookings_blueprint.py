@@ -36,7 +36,6 @@ from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.bookings import forms as booking_forms
 from pcapi.routes.backoffice.bookings import helpers as booking_helpers
 from pcapi.routes.backoffice.forms import empty as empty_forms
-from pcapi.routes.serialization.bookings_recap_serialize import OfferType
 
 
 logger = logging.getLogger(__name__)
@@ -212,7 +211,6 @@ def get_individual_booking_csv_download() -> utils.BackofficeResponse:
         user=current_user,
         booking_period=typing.cast(tuple[datetime.date, datetime.date], form.from_to_date.data),
         venue_id=form.venue.data,
-        offer_type=OfferType.INDIVIDUAL_OR_DUO,
         export_type=bookings_models.BookingExportType.CSV,
     )
     buffer = BytesIO(typing.cast(str, export_data).encode("utf-8-sig"))
@@ -230,7 +228,6 @@ def get_individual_booking_xlsx_download() -> utils.BackofficeResponse:
         user=current_user,
         booking_period=typing.cast(tuple[datetime.date, datetime.date], form.from_to_date.data),
         venue_id=form.venue.data,
-        offer_type=OfferType.INDIVIDUAL_OR_DUO,
         export_type=bookings_models.BookingExportType.EXCEL,
     )
     buffer = BytesIO(typing.cast(bytes, export_data))
