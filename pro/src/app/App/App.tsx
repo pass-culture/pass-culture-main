@@ -7,10 +7,14 @@ import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
 import { findCurrentRoute } from 'app/AppRouter/findCurrentRoute'
 import { Notification } from 'components/Notification/Notification'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
+import {
+  GET_DATA_ERROR_MESSAGE,
+  SAVED_OFFERER_ID_KEY,
+} from 'core/shared/constants'
 import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import { useNotification } from 'hooks/useNotification'
-import { updateUser } from 'store/user/reducer'
+import { SAVED_VENUE_ID_KEY } from 'pages/Home/Offerers/PartnerPages'
+import { updateSelectedOffererId, updateUser } from 'store/user/reducer'
 import { selectCurrentUser } from 'store/user/selectors'
 
 import { useBeamer } from './analytics/beamer'
@@ -56,7 +60,10 @@ export const App = (): JSX.Element | null => {
     if (location.search.includes('logout')) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       api.signout()
+      localStorage.removeItem(SAVED_OFFERER_ID_KEY)
+      localStorage.removeItem(SAVED_VENUE_ID_KEY)
       dispatch(updateUser(null))
+      dispatch(updateSelectedOffererId(null))
     }
   }, [location])
 
