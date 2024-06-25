@@ -52,6 +52,7 @@ import pcapi.core.users.repository as users_repository
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models import pc_object
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.repository import repository
 from pcapi.routes.serialization import offerers_serialize
@@ -102,10 +103,15 @@ def update_venue(
     contact_data: serialize_base.VenueContactModel | None = None,
     criteria: list[criteria_models.Criterion] | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
     external_accessibility_url: str | None | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
+    is_manual_edition: bool = False,
 ) -> models.Venue:
     new_permanent = not venue.isPermanent and modifications.get("isPermanent")
 
     venue_snapshot = history_api.ObjectUpdateSnapshot(venue, author)
+    if not venue.isVirtual and FeatureToggle.ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE.is_active():
+        update_venue_location(
+            venue, modifications, author=author, venue_snapshot=venue_snapshot, is_manual_edition=is_manual_edition
+        )
 
     if contact_data:
         # target must not be None, otherwise contact_data fields will be compared to fields in Venue, which do not exist
@@ -196,7 +202,13 @@ def update_venue(
     return venue
 
 
-def update_venue_location(venue: models.Venue, modifications: dict, is_manual_edition: bool = False) -> None:
+def update_venue_location(
+    venue: models.Venue,
+    modifications: dict,
+    author: users_models.User,
+    venue_snapshot: history_api.ObjectUpdateSnapshot,
+    is_manual_edition: bool = False,
+) -> None:
     """
     Update the venue location and also populate the newly created Address & OffererAddress.
     You might want to skip the API Adresse call and force the location update with incoming data.
@@ -249,13 +261,35 @@ def update_venue_location(venue: models.Venue, modifications: dict, is_manual_ed
         )
 
     address = get_or_create_address(location_data, is_manual_edition=is_manual_edition)
+    snapshot_location_data = {
+        "city": address.city,
+        "postalCode": address.postalCode,
+        "latitude": address.latitude,
+        "longitude": address.longitude,
+        "street": address.street,
+        "banId": address.banId,
+        "inseeCode": address.inseeCode,
+    }
 
     if not venue.offererAddressId:
         offerer_address = get_or_create_offerer_address(venue.managingOffererId, address.id)
+        venue_snapshot.trace_update({"offererAddressId": offerer_address.id})
+        venue_snapshot.trace_update(
+            snapshot_location_data,
+            target=geography_models.Address(),
+            field_name_template="offererAddress.address.{}",
+        )
         venue.offererAddress = offerer_address
         db.session.add(venue)
         db.session.flush()
     else:
+        target = venue.offererAddress.address  # type: ignore[union-attr]
+        venue_snapshot.trace_update(
+            snapshot_location_data, target=target, field_name_template="offererAddress.address.{}"
+        )
+        venue_snapshot.trace_update(
+            {"addressId": address.id}, target=venue.offererAddress, field_name_template="offererAddress.{}"
+        )
         update_offerer_address(venue.offererAddressId, address.id)
 
     if modifications.get("street"):
