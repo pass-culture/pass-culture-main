@@ -11,6 +11,7 @@ from pcapi.core.educational.models import CollectiveStock
 import pcapi.core.educational.testing as adage_api_testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
+from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_settings
 from pcapi.models import offer_mixin
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdition
@@ -24,6 +25,10 @@ class Return200Test:
     @time_machine.travel("2020-11-17 15:00:00")
     def test_edit_collective_stock(self, client):
         # Given
+        _educational_year_2021_2022 = educational_factories.EducationalYearFactory(
+            beginningDate=datetime(2021, 9, 1), expirationDate=datetime(2022, 8, 31)
+        )
+
         stock = educational_factories.CollectiveStockFactory(
             beginningDatetime=datetime(2021, 12, 18),
             price=1200,
@@ -72,6 +77,9 @@ class Return200Test:
     @time_machine.travel("2020-11-17 15:00:00")
     def test_edit_collective_stock_begining_datedame_same_day(self, client):
         # Given
+        _educational_year_2021_2022 = educational_factories.EducationalYearFactory(
+            beginningDate=datetime(2021, 9, 1), expirationDate=datetime(2022, 8, 31)
+        )
         stock = educational_factories.CollectiveStockFactory(
             beginningDatetime=datetime(2021, 12, 18, 18, 22, 12),
             price=1200,
@@ -113,6 +121,9 @@ class Return200Test:
     @time_machine.travel("2020-11-17 15:00:00")
     def test_edit_collective_stock_partially(self, client):
         # Given
+        _educational_year_2021_2022 = educational_factories.EducationalYearFactory(
+            beginningDate=datetime(2021, 9, 1), expirationDate=datetime(2022, 8, 31)
+        )
         stock = educational_factories.CollectiveStockFactory(
             beginningDatetime=datetime(2021, 12, 18),
             price=1200,
@@ -580,3 +591,56 @@ class Return400Test:
         edited_stock = CollectiveStock.query.get(stock.id)
         assert edited_stock.startDatetime == startDatetime
         assert edited_stock.endDatetime == endDatetime
+
+    @time_machine.travel("2020-11-17 15:00:00")
+    def should_not_accept_payload_with_startDatetime_endDatetime_in_different_educational_year(self, client):
+        # Given
+        educational_factories.EducationalYearFactory(
+            beginningDate="2021-09-01T22:00:00Z", expirationDate="2022-07-31T22:00:00Z"
+        )
+        educational_factories.EducationalYearFactory(
+            beginningDate="2022-09-01T22:00:00Z", expirationDate="2023-07-31T22:00:00Z"
+        )
+
+        startDatetime = datetime(2021, 12, 18)
+        endDatetime = datetime(2021, 12, 19)
+
+        stock = educational_factories.CollectiveStockFactory(
+            beginningDatetime=datetime(2021, 12, 18),
+            startDatetime=startDatetime,
+            endDatetime=endDatetime,
+            price=1200,
+            numberOfTickets=32,
+            bookingLimitDatetime=datetime(2021, 12, 1),
+        )
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=stock.collectiveOffer.venue.managingOfferer,
+        )
+
+        # When
+        stock_edition_payload = {
+            "endDatetime": "2022-12-19T22:00:00Z",
+        }
+
+        client.with_session_auth("user@example.com")
+
+        stock_id = stock.id
+
+        with assert_num_queries(7):
+            # query += 1 -> load session
+            # query += 1 -> load user
+            # query += 1 -> load existing stock
+            # query += 1 -> ensure the offerer is VALIDATED
+            # query += 1 -> check the number of existing stock for the offer id
+            # query += 1 -> find education year for start date
+            # query += 1 -> find education year for end date
+
+            response = client.patch(f"/collective/stocks/{stock_id}", json=stock_edition_payload)
+
+            # Then
+            assert response.status_code == 400
+            assert response.json == {"code": "START_AND_END_EDUCATIONAL_YEAR_DIFFERENT"}
+            edited_stock = CollectiveStock.query.get(stock.id)
+            assert edited_stock.startDatetime == startDatetime
+            assert edited_stock.endDatetime == endDatetime
