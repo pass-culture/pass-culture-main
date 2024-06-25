@@ -1,7 +1,11 @@
 from flask import Blueprint
 from flask import redirect
+from flask import request
 from flask_cors import CORS
+from werkzeug.exceptions import BadRequest
 from werkzeug.wrappers.response import Response
+
+from pcapi.models import api_errors
 
 # Spectree schemas
 from . import spectree_schemas
@@ -10,9 +14,14 @@ from . import spectree_schemas
 from .booking_token import blueprint as booking_token_blueprint
 from .books_stocks import blueprint as booking_stocks_blueprint
 
-# ACTIVE APIs
-from .collective import blueprint as collective_blueprint
-from .individual_offers import blueprint as indivual_offers_blueprints
+
+def _check_api_is_enabled_and_json_valid() -> None:
+    # We test the json validity because pydantic will not raise an error if the json is not valid.
+    # Pydantic will then try to apply the validation schema and throws unintelligible errors.
+    try:
+        _ = request.get_json()
+    except BadRequest as e:
+        raise api_errors.ApiErrors({"global": [e.description]}, status_code=400)
 
 
 public_api_blueprint = Blueprint(
@@ -20,13 +29,11 @@ public_api_blueprint = Blueprint(
 )
 
 # [ACTIVE] Public API following pattern /public/<resource>/v1/....
-_public_v1_blueprint = Blueprint("v1_public_api", __name__, url_prefix="/public")
-_public_v1_blueprint.register_blueprint(indivual_offers_blueprints.individual_offers_blueprint)
-
+public_v1_blueprint = Blueprint("v1_public_api", __name__, url_prefix="/public")
+public_v1_blueprint.before_request(_check_api_is_enabled_and_json_valid)
 
 # [ACTIVE] Public API following pattern /v2/collective/....
-_v2_prefixed_public_api = Blueprint("v2_prefixed_public_api", __name__, url_prefix="/v2")
-_v2_prefixed_public_api.register_blueprint(collective_blueprint.collective_offers_blueprint)
+v2_prefixed_public_api = Blueprint("v2_prefixed_public_api", __name__, url_prefix="/v2")
 
 
 # [OLD] Old tokens and stocks apis
@@ -61,8 +68,8 @@ public_api_blueprint.register_blueprint(documentation_redirect_blueprint)
 
 
 # Registering blueprints (current & deprecated public APIs)
-public_api_blueprint.register_blueprint(_public_v1_blueprint)
-public_api_blueprint.register_blueprint(_v2_prefixed_public_api)
+public_api_blueprint.register_blueprint(public_v1_blueprint)
+public_api_blueprint.register_blueprint(v2_prefixed_public_api)
 public_api_blueprint.register_blueprint(_deprecated_v2_prefixed_public_api)
 CORS(
     public_api_blueprint,

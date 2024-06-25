@@ -14,7 +14,7 @@ class CollectiveOffersGetStudentsLevelsTest:
 
         # When
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            url_for("public_api.v2_prefixed_public_api.collectives_offers.list_students_levels")
+            url_for("public_api.v2_prefixed_public_api.list_students_levels")
         )
 
         # Then
@@ -34,7 +34,7 @@ class CollectiveOffersGetStudentsLevelsTest:
 
         # When
         response = client.with_session_auth(user_offerer.user.email).get(
-            url_for("public_api.v2_prefixed_public_api.collectives_offers.list_students_levels")
+            url_for("public_api.v2_prefixed_public_api.list_students_levels")
         )
 
         # Then
@@ -44,7 +44,7 @@ class CollectiveOffersGetStudentsLevelsTest:
         # Given
 
         # When
-        response = client.get(url_for("public_api.v2_prefixed_public_api.collectives_offers.list_students_levels"))
+        response = client.get(url_for("public_api.v2_prefixed_public_api.list_students_levels"))
 
         # Then
         assert response.status_code == 401

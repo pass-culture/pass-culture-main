@@ -2,8 +2,8 @@ from collections import defaultdict
 
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories_v2
+from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
-from pcapi.routes.public.collective.blueprint import collective_offers_blueprint
 from pcapi.routes.public.collective.serialization import offers as offers_serialization
 from pcapi.routes.public.documentation_constants import http_responses
 from pcapi.routes.public.documentation_constants import tags
@@ -12,7 +12,7 @@ from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.validation.routes.users_authentifications import api_key_required
 
 
-@collective_offers_blueprint.route("/collective/categories", methods=["GET"])
+@blueprints.v2_prefixed_public_api.route("/collective/categories", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     deprecated=True,
@@ -45,7 +45,7 @@ def list_categories() -> offers_serialization.CollectiveOffersListCategoriesResp
     )
 
 
-@collective_offers_blueprint.route("/collective/subcategories", methods=["GET"])
+@blueprints.v2_prefixed_public_api.route("/collective/subcategories", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     deprecated=True,
