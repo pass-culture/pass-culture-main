@@ -11,6 +11,8 @@ const todayAtMidnight = () => {
   return today
 }
 
+// FIXME(anoukhello - 25/06/2024) this function is obsolete as eventDate no longer exists on bookable offer stock.
+// Add tests on FormStock to cover all validation cases and make typing more robust on validation schema.
 const isBeforeEventDate = (
   bookingLimitDatetime: Date | null | undefined,
   context: yup.TestContext
