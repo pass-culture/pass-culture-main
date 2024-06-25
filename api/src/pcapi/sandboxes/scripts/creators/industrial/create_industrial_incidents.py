@@ -1,6 +1,7 @@
 import datetime
 import decimal
 import logging
+from unittest.mock import patch
 import uuid
 
 from pcapi.core.bookings import api as bookings_api
@@ -301,11 +302,12 @@ def _create_one_collective_incident(
             author=pro,
             origin=comment,
         )
-        finance_api.validate_finance_overpayment_incident(
-            finance_incident=finance_incident,
-            force_debit_note=force_debit_note,
-            author=pro,
-        )
+        with patch("pcapi.core.finance.api.educational_api_booking.notify_reimburse_collective_booking"):
+            finance_api.validate_finance_overpayment_incident(
+                finance_incident=finance_incident,
+                force_debit_note=force_debit_note,
+                author=pro,
+            )
         for booking_finance_incident in finance_incident.booking_finance_incidents:
             for finance_event in booking_finance_incident.finance_events:
                 finance_api.price_event(finance_event)
