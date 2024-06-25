@@ -2,6 +2,8 @@
 Feature: Financial Management - messages, links to external help page, reimbursement details
 
   Background:
+    Given pro user new nav has been created
+    Given create specific invoice
     Given I am logged in with the new interface
     And I select offerer "0 - Structure avec justificatif et compte bancaire"
     And I go to the "Gestion financière" page

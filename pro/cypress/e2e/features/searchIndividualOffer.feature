@@ -2,6 +2,8 @@
 Feature: Search individual offers
 
   Background:
+    Given pro user has been created
+    Given individual offers has been created
     Given I am logged in
     And I go to the "Offres" page
 

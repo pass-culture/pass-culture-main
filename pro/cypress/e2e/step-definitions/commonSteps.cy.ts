@@ -16,16 +16,37 @@ When('I go to the {string} page', (page: string) => {
   })
 })
 
+var user_email = ""
+Given('pro user has been created', () => {
+  cy.request('http://localhost:5001/sanboxes/pro_01_create_pro_user/create_pro_user_with_venue_bank_account_and_userofferer').then((response) => {
+    user_email = response.body.user.email
+  })
+})
+
+Given('pro user new nav has been created', () => {
+  cy.request('http://localhost:5001/sanboxes/pro_01_create_pro_user/create_pro_user_new_nav').then((response) => {
+    user_email = response.body.user.email
+  })
+})
+
+Given('create specific invoice', () => {
+  cy.request('http://localhost:5001/sanboxes/pro_02_create_specific_invoice/create_specific_invoice')
+})
+
+Given('individual offers has been created', () => {
+  cy.request('http://localhost:5001/sanboxes/pro_03_offers/create_individual_offers')
+})
+
 Given('I am logged in', () => {
   cy.login({
-    email: 'retention_structures@example.com',
+    email: user_email,
     password: 'user@AZERTY123',
   })
 })
 
 Given('I am logged in with the new interface', () => {
   cy.login({
-    email: 'activation_new_nav@example.com',
+    email: user_email,
     password: 'user@AZERTY123',
   })
 })

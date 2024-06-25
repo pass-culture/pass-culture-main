@@ -2,6 +2,7 @@
 Feature: Create an individual offer (thing)
 
   Scenario: It should create an individual offer (thing)
+    Given pro user has been created
     Given I am logged in
     When I go to the "Créer une offre" page
     And I want to create "Un bien physique" offer
