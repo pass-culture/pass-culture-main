@@ -98,9 +98,11 @@ export const HeaderDropdown = () => {
           data-testid="offerer-select"
         >
           <SvgIcon src={fullProfilIcon} alt="" width="18" />
-          <span className={styles['dropdown-button-name']}>
-            {selectedOffererName?.name}
-          </span>
+          {offererOptions.length > 1 && (
+            <span className={styles['dropdown-button-name']}>
+              {selectedOffererName?.name}
+            </span>
+          )}
         </button>
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
@@ -120,114 +122,108 @@ export const HeaderDropdown = () => {
                 />
               </button>
             </DropdownMenu.Item>
-            <DropdownMenu.Label className={styles['menu-title']}>
-              Structure
-            </DropdownMenu.Label>
-            <div className={styles['menu-email']}>
-              {selectedOffererName?.name}
-            </div>
+            {offererOptions.length > 1 && (
+              <>
+                <DropdownMenu.Label className={styles['menu-title']}>
+                  Structure
+                </DropdownMenu.Label>
+                <div className={styles['menu-email']}>
+                  {selectedOffererName?.name}
+                </div>
 
-            {offererOptions.length > 1 ? (
-              <DropdownMenu.Sub open={subOpen}>
-                <DropdownMenu.SubTrigger
-                  asChild
-                  onClick={() => setSubOpen(!subOpen)}
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter' || event.key === 'Space') {
-                      setSubOpen(!subOpen)
-                    }
-                  }}
-                >
-                  <Button
-                    variant={ButtonVariant.TERNARY}
-                    icon={fullSwitchIcon}
-                    className={styles['menu-item']}
+                <DropdownMenu.Sub open={subOpen}>
+                  <DropdownMenu.SubTrigger
+                    asChild
+                    onClick={() => setSubOpen(!subOpen)}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' || event.key === 'Space') {
+                        setSubOpen(!subOpen)
+                      }
+                    }}
                   >
-                    Changer de structure
-                  </Button>
-                </DropdownMenu.SubTrigger>
-                <DropdownMenu.Portal>
-                  <DropdownMenu.SubContent
-                    loop
-                    sideOffset={sideOffset}
-                    avoidCollisions={true}
-                    className={styles['sub-popin']}
-                  >
-                    <div className={styles['sub-popin-header']}>
-                      <Button
-                        icon={fulBackIcon}
-                        variant={ButtonVariant.TERNARY}
-                        onClick={() => setSubOpen(false)}
-                      >
-                        Retour
-                      </Button>
-                      <div className={styles['sub-popin-header-text']}>
-                        Structure
-                      </div>
-                    </div>
-                    <div
-                      className={styles['sub-menu']}
-                      data-testid="offerers-selection-menu"
+                    <Button
+                      variant={ButtonVariant.TERNARY}
+                      icon={fullSwitchIcon}
+                      className={styles['menu-item']}
                     >
-                      <DropdownMenu.RadioGroup
-                        onValueChange={handleChangeOfferer}
-                        className={styles['menu-group']}
-                        value={selectedOffererName?.id.toString()}
-                      >
-                        {offererOptions.map((offererOption) => (
-                          <DropdownMenu.RadioItem
-                            key={offererOption.value}
-                            asChild
-                            value={offererOption.value}
-                            className={cn(
-                              styles['menu-item'],
-                              styles['menu-item-sub']
-                            )}
-                          >
-                            <div>
-                              <span className={styles['menu-item-name']}>
-                                {offererOption.label}
-                              </span>
-                              {selectedOffererName?.name ===
-                                offererOption.label && (
-                                <SvgIcon
-                                  src={fulValidateIcon}
-                                  alt=""
-                                  width="16"
-                                  className={styles['menu-item-check']}
-                                />
-                              )}
-                            </div>
-                          </DropdownMenu.RadioItem>
-                        ))}
-                      </DropdownMenu.RadioGroup>
-                      <DropdownMenu.Separator className={styles['separator']} />
-                      <DropdownMenu.Item asChild>
-                        <ButtonLink
-                          icon={fullMoreIcon}
-                          className={styles['menu-item']}
-                          link={{ to: '/parcours-inscription/structure' }}
+                      Changer de structure
+                    </Button>
+                  </DropdownMenu.SubTrigger>
+                  <DropdownMenu.Portal>
+                    <DropdownMenu.SubContent
+                      loop
+                      sideOffset={sideOffset}
+                      avoidCollisions={true}
+                      className={styles['sub-popin']}
+                    >
+                      <div className={styles['sub-popin-header']}>
+                        <Button
+                          icon={fulBackIcon}
+                          variant={ButtonVariant.TERNARY}
+                          onClick={() => setSubOpen(false)}
                         >
-                          Ajouter une nouvelle structure
-                        </ButtonLink>
-                      </DropdownMenu.Item>
-                    </div>
-                  </DropdownMenu.SubContent>
-                </DropdownMenu.Portal>
-              </DropdownMenu.Sub>
-            ) : (
-              <DropdownMenu.Item asChild>
-                <ButtonLink
-                  icon={fullMoreIcon}
-                  link={{ to: '/parcours-inscription/structure' }}
-                  className={styles['menu-item']}
-                >
-                  Ajouter une nouvelle structure
-                </ButtonLink>
-              </DropdownMenu.Item>
+                          Retour
+                        </Button>
+                        <div className={styles['sub-popin-header-text']}>
+                          Structure
+                        </div>
+                      </div>
+                      <div
+                        className={styles['sub-menu']}
+                        data-testid="offerers-selection-menu"
+                      >
+                        <DropdownMenu.RadioGroup
+                          onValueChange={handleChangeOfferer}
+                          className={styles['menu-group']}
+                          value={selectedOffererName?.id.toString()}
+                        >
+                          {offererOptions.map((offererOption) => (
+                            <DropdownMenu.RadioItem
+                              key={offererOption.value}
+                              asChild
+                              value={offererOption.value}
+                              className={cn(
+                                styles['menu-item'],
+                                styles['menu-item-sub']
+                              )}
+                            >
+                              <div>
+                                <span className={styles['menu-item-name']}>
+                                  {offererOption.label}
+                                </span>
+                                {selectedOffererName?.name ===
+                                  offererOption.label && (
+                                  <SvgIcon
+                                    src={fulValidateIcon}
+                                    alt=""
+                                    width="16"
+                                    className={styles['menu-item-check']}
+                                  />
+                                )}
+                              </div>
+                            </DropdownMenu.RadioItem>
+                          ))}
+                        </DropdownMenu.RadioGroup>
+                        <DropdownMenu.Separator
+                          className={styles['separator']}
+                        />
+                        <DropdownMenu.Item asChild>
+                          <ButtonLink
+                            icon={fullMoreIcon}
+                            className={styles['menu-item']}
+                            link={{ to: '/parcours-inscription/structure' }}
+                          >
+                            Ajouter une nouvelle structure
+                          </ButtonLink>
+                        </DropdownMenu.Item>
+                      </div>
+                    </DropdownMenu.SubContent>
+                  </DropdownMenu.Portal>
+                </DropdownMenu.Sub>
+                <DropdownMenu.Separator className={styles['separator']} />
+              </>
             )}
 
-            <DropdownMenu.Separator className={styles['separator']} />
             <DropdownMenu.Label className={styles['menu-title']}>
               Profil
             </DropdownMenu.Label>
