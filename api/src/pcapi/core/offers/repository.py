@@ -144,6 +144,14 @@ def get_capped_offers_for_filters(
     return offers
 
 
+def get_offers_by_publication_date(publication_date: datetime.datetime | None = None) -> flask_sqlalchemy.BaseQuery:
+    if publication_date is None:
+        publication_date = datetime.datetime.utcnow()
+    publication_date = publication_date.replace(minute=0, second=0, microsecond=0, tzinfo=None)
+    future_offers_subquery = db.session.query(models.FutureOffer.offerId).filter_by(publicationDate=publication_date)
+    return models.Offer.query.filter(models.Offer.id.in_(future_offers_subquery))
+
+
 def get_offers_by_ids(user: users_models.User, offer_ids: list[int]) -> flask_sqlalchemy.BaseQuery:
     query = models.Offer.query
     if not user.has_admin_role:
