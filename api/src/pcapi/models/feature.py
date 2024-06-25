@@ -114,7 +114,6 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API = (
         "Activer les nouvelles règles de création et d'édition d'offres collecrives pour l'API publique (collective)"
     )
-    WIP_ENABLE_NEW_NAV_AB_TEST = "Activer l'A/B test de la nouvelle navigation du portail pro."
     WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS = (
         "Synchroniser les offres et stocks de cinéma avec les produits allociné"
     )
@@ -182,7 +181,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_BENEFICIARY_EXTRACT_TOOL,
     FeatureToggle.WIP_CONNECT_AS,
     FeatureToggle.WIP_ENABLE_MOCK_UBBLE,
-    FeatureToggle.WIP_ENABLE_NEW_NAV_AB_TEST,
     FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY,
     FeatureToggle.WIP_ENABLE_TITELIVE_API_FOR_BOOKS,
     FeatureToggle.WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS,
