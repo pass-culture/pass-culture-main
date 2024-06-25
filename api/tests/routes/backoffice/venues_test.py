@@ -377,7 +377,6 @@ class GetVenueTest(GetEndpointHelper):
             lastSyncDate=datetime(2024, 1, 5, 12, 0),
         )
         venue_id = random_venue.id
-
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
             assert response.status_code == 200
@@ -980,6 +979,10 @@ class UpdateVenueTest(PostEndpointHelper):
         assert update_snapshot["latitude"]["new_info"] == data["latitude"]
         assert update_snapshot["longitude"]["new_info"] == data["longitude"]
         assert update_snapshot["venueTypeCode"]["new_info"] == data["venue_type_code"]
+        assert update_snapshot["offererAddressId"]["new_info"] == offerer_address.id
+        assert update_snapshot["offererAddress.address.latitude"]["new_info"] == data["latitude"]
+        assert update_snapshot["offererAddress.address.longitude"]["new_info"] == data["longitude"]
+        assert update_snapshot["offererAddress.address.city"]["new_info"] == data["city"]
 
         assert len(mails_testing.outbox) == 1
         # check that email is sent when venue is set to permanent and has no image
@@ -987,6 +990,63 @@ class UpdateVenueTest(PostEndpointHelper):
         assert mails_testing.outbox[0]["template"] == TransactionalEmail.VENUE_NEEDS_PICTURE.value.__dict__
         assert mails_testing.outbox[0]["params"]["VENUE_NAME"] == venue.common_name
         assert mails_testing.outbox[0]["params"]["VENUE_FORM_URL"] == urls.build_pc_pro_venue_link(venue)
+
+    @override_features(ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE=True)
+    def test_update_venue_location_with_offerer_address(self, authenticated_client, offerer):
+        contact_email = "contact.venue@example.com"
+        website = "update.venue@example.com"
+        social_medias = {"instagram": "https://instagram.com/update.venue"}
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=offerer,
+            contact__email=contact_email,
+            contact__website=website,
+            contact__social_medias=social_medias,
+        )
+
+        data = {
+            "name": "IKEA",
+            "public_name": "Ikea city",
+            "siret": venue.managingOfferer.siren + "98765",
+            "city": "Paris",
+            "postal_code": "75001",
+            "street": "23 Boulevard de la Madeleine",
+            "ban_id": "75101_5888_00023",
+            "is_manual_address": "",  # autocompletion used
+            "booking_email": venue.bookingEmail + ".update",
+            "phone_number": "+33102030456",
+            "is_permanent": True,
+            "latitude": "48.869311",
+            "longitude": "2.325463",
+            "venue_type_code": offerers_models.VenueTypeCode.CREATIVE_ARTS_STORE.name,
+            "acceslibre_url": "https://acceslibre.beta.gouv.fr/app/slug/",
+        }
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
+
+        db.session.refresh(venue)
+        offerer_address = offerers_models.OffererAddress.query.one()
+        addresses = geography_models.Address.query.all()
+        assert venue.offererAddressId == offerer_address.id
+
+        assert len(addresses) == 2
+        address = [address for address in addresses if address.id == offerer_address.addressId][0]
+        assert offerer_address.addressId == address.id
+        assert len(venue.action_history) == 1
+
+        update_snapshot = venue.action_history[0].extraData["modified_info"]
+
+        assert update_snapshot["offererAddress.addressId"]["new_info"] == offerer_address.addressId
+
+        assert update_snapshot["street"]["new_info"] == "3 Rue de Valois"
+        assert update_snapshot["bookingEmail"]["new_info"] == data["booking_email"]
+        assert update_snapshot["latitude"]["new_info"] == "48.87171"
+        assert update_snapshot["longitude"]["new_info"] == "2.308289"  # rounding due to Decimal column in db
+        assert update_snapshot["venueTypeCode"]["new_info"] == data["venue_type_code"]
+        assert update_snapshot["offererAddress.address.latitude"]["new_info"] == "48.87171"
+        assert update_snapshot["offererAddress.address.longitude"]["new_info"] == "2.308289"
+        assert "offererAddress.address.city" not in update_snapshot  # not changed
 
     @pytest.mark.parametrize(
         "api_adresse_patch_params,expected_insee_code",
@@ -1638,6 +1698,29 @@ class UpdateVenueTest(PostEndpointHelper):
         assert venue.latitude == Decimal("48.87004")
         assert venue.longitude == Decimal("2.37850")
         assert len(venue.action_history) == 0
+
+    def test_update_venue_latitude_longitude_not_changed(self, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+        data = self._get_current_data(venue)
+        data["city"] = "Rome"
+        data["is_manual_address"] = "on"
+
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+
+        assert response.status_code == 303
+
+        db.session.refresh(venue)
+        assert len(venue.action_history) == 1
+        update_snapshot = venue.action_history[0].extraData["modified_info"]
+        assert update_snapshot["city"]["new_info"] == "Rome"
+        assert venue.longitude == data["longitude"]
+        assert venue.latitude == data["latitude"]
+        assert venue.offererAddress.address.longitude == data["longitude"]
+        assert venue.offererAddress.address.latitude == data["latitude"]
+        assert "offererAddress.address.longitude" not in update_snapshot
+        assert "offererAddress.address.latitude" not in update_snapshot
+        assert "longitude" not in update_snapshot
+        assert "latitude" not in update_snapshot
 
     def test_update_venue_accessibility_provider_with_url(self, authenticated_client):
         venue = offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.LIBRARY)
