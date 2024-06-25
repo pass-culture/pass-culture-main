@@ -15,8 +15,6 @@ export const BOOKING_STATUS = {
 
 const ALL_VENUES = 'all'
 
-const ALL_OFFER_TYPE = 'all'
-
 const ALL_DATES = 'all'
 
 export const EMPTY_FILTER_VALUE = ''
@@ -32,7 +30,6 @@ export const DEFAULT_PRE_FILTERS = {
   bookingStatusFilter: BookingStatusFilter.BOOKED,
   offerEventDate: ALL_DATES,
   offerVenueId: ALL_VENUES,
-  offerType: ALL_OFFER_TYPE,
   offerId: undefined,
 }
 

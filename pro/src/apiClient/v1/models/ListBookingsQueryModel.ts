@@ -4,7 +4,6 @@
 /* eslint-disable */
 import type { BookingExportType } from './BookingExportType';
 import type { BookingStatusFilter } from './BookingStatusFilter';
-import type { OfferType } from './OfferType';
 export type ListBookingsQueryModel = {
   bookingPeriodBeginningDate?: string | null;
   bookingPeriodEndingDate?: string | null;
@@ -12,7 +11,6 @@ export type ListBookingsQueryModel = {
   eventDate?: string | null;
   exportType?: BookingExportType | null;
   offerId?: number | null;
-  offerType?: OfferType | null;
   offererAddressId?: number | null;
   page?: number;
   venueId?: number | null;

@@ -46,7 +46,6 @@ from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users.models import User
 from pcapi.domain.booking_recap import utils as booking_recap_utils
 from pcapi.models import db
-from pcapi.routes.serialization.bookings_recap_serialize import OfferType
 from pcapi.utils.token import random_token
 
 
@@ -96,7 +95,6 @@ def find_by_pro_user(
     event_date: date | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
-    offer_type: OfferType | None = None,
     offerer_address_id: int | None = None,
     page: int = 1,
     per_page_limit: int = 1000,
@@ -108,7 +106,6 @@ def find_by_pro_user(
         event_date=event_date,
         venue_id=venue_id,
         offer_id=offer_id,
-        offer_type=offer_type,
         offerer_address_id=offerer_address_id,
     )
 
@@ -118,7 +115,6 @@ def find_by_pro_user(
         status_filter=status_filter,
         event_date=event_date,
         venue_id=venue_id,
-        offer_type=offer_type,
         offer_id=offer_id,
         offerer_address_id=offerer_address_id,
     )
@@ -397,7 +393,6 @@ def get_export(
     event_date: date | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
-    offer_type: OfferType | None = None,
     export_type: BookingExportType | None = BookingExportType.CSV,
 ) -> str | bytes:
     bookings_query = _get_filtered_booking_report(
@@ -407,7 +402,6 @@ def get_export(
         event_date=event_date,
         venue_id=venue_id,
         offer_id=offer_id,
-        offer_type=offer_type,
     )
     bookings_query = _duplicate_booking_when_quantity_is_two(bookings_query)
     if export_type == BookingExportType.EXCEL:
@@ -427,7 +421,6 @@ def _get_filtered_bookings_query(
     event_date: date | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
-    offer_type: OfferType | None = None,
     offerer_address_id: int | None = None,
     extra_joins: Iterable[Column] | None = None,
 ) -> BaseQuery:
@@ -481,12 +474,11 @@ def _get_filtered_bookings_count(
     event_date: date | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
-    offer_type: OfferType | None = None,
     offerer_address_id: int | None = None,
 ) -> int:
     bookings = (
         _get_filtered_bookings_query(
-            pro_user, period, status_filter, event_date, venue_id, offer_id, offer_type, offerer_address_id
+            pro_user, period, status_filter, event_date, venue_id, offer_id, offerer_address_id
         )
         .with_entities(Booking.id, Booking.quantity)
         .distinct(Booking.id)
@@ -504,7 +496,6 @@ def _get_filtered_booking_report(
     event_date: date | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
-    offer_type: OfferType | None = None,
 ) -> str:
     bookings_query = (
         _get_filtered_bookings_query(
@@ -514,7 +505,6 @@ def _get_filtered_booking_report(
             event_date,
             venue_id,
             offer_id,
-            offer_type,
             extra_joins=(Stock.offer, Booking.user),
         )
         .with_entities(
@@ -560,7 +550,6 @@ def _get_filtered_booking_pro(
     event_date: date | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
-    offer_type: OfferType | None = None,
     offerer_address_id: int | None = None,
 ) -> BaseQuery:
     bookings_query = (
@@ -571,7 +560,6 @@ def _get_filtered_booking_pro(
             event_date,
             venue_id,
             offer_id,
-            offer_type,
             offerer_address_id,
             extra_joins=(
                 Stock.offer,

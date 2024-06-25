@@ -24,13 +24,11 @@ describe('buildBookingsRecapQuery', () => {
       bookingBeginningDate: '2022-01-01',
       bookingEndingDate: '2022-01-02',
       bookingStatusFilter: BookingStatusFilter.REIMBURSED,
-      offerType: 'individual',
       page: 2,
     }
 
     expect(buildBookingsRecapQuery(preFilters)).toStrictEqual({
       venueId: 'AY',
-      offerType: 'individual',
       eventDate: formatBrowserTimezonedDateAsUTC(
         new Date('2022-01-01T10:00:00.000Z'),
         FORMAT_ISO_DATE_ONLY
