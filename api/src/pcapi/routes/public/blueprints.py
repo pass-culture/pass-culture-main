@@ -24,16 +24,8 @@ def _check_api_is_enabled_and_json_valid() -> None:
         raise api_errors.ApiErrors({"global": [e.description]}, status_code=400)
 
 
-public_api_blueprint = Blueprint(
-    "public_api", __name__, url_prefix="/"  # we must add `url_prefix="/"` for spectree to work
-)
-
-# [ACTIVE] Public API following pattern /public/<resource>/v1/....
-public_v1_blueprint = Blueprint("v1_public_api", __name__, url_prefix="/public")
-public_v1_blueprint.before_request(_check_api_is_enabled_and_json_valid)
-
-# [ACTIVE] Public API following pattern /v2/collective/....
-v2_prefixed_public_api = Blueprint("v2_prefixed_public_api", __name__, url_prefix="/v2")
+public_api = Blueprint("public_api", __name__, url_prefix="/")  # we must add `url_prefix="/"` for spectree to work
+public_api.before_request(_check_api_is_enabled_and_json_valid)
 
 
 # [OLD] Old tokens and stocks apis
@@ -63,21 +55,19 @@ def redirect_bookings_swagger_to_new_swagger() -> "Response":
     return redirect("/redoc", code=301)
 
 
-public_api_blueprint.register_blueprint(documentation_redirect_blueprint)
+public_api.register_blueprint(documentation_redirect_blueprint)
 # End TODO
 
 
-# Registering blueprints (current & deprecated public APIs)
-public_api_blueprint.register_blueprint(public_v1_blueprint)
-public_api_blueprint.register_blueprint(v2_prefixed_public_api)
-public_api_blueprint.register_blueprint(_deprecated_v2_prefixed_public_api)
+# Registering deprecated APIs
+public_api.register_blueprint(_deprecated_v2_prefixed_public_api)
 CORS(
-    public_api_blueprint,
+    public_api,
     resources={r"/*": {"origins": "*"}},
     supports_credentials=True,
 )
 
 
 # Registering spectree schemas
-spectree_schemas.public_api_schema.register(public_api_blueprint)
+spectree_schemas.public_api_schema.register(public_api)
 spectree_schemas.deprecated_public_api_schema.register(_deprecated_v2_prefixed_public_api)

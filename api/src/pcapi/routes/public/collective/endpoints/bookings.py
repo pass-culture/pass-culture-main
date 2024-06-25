@@ -17,7 +17,7 @@ from pcapi.validation.routes.users_authentifications import api_key_required
 from pcapi.validation.routes.users_authentifications import current_api_key
 
 
-@blueprints.v2_prefixed_public_api.route("/collective/bookings/<int:booking_id>", methods=["PATCH"])
+@blueprints.public_api.route("/v2/collective/bookings/<int:booking_id>", methods=["PATCH"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.COLLECTIVE_BOOKINGS],

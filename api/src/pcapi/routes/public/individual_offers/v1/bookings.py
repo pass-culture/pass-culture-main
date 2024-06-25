@@ -63,7 +63,7 @@ def _get_paginated_and_filtered_bookings(
     )
 
 
-@blueprints.public_v1_blueprint.route("/bookings/v1/bookings", methods=["GET"])
+@blueprints.public_api.route("/public/bookings/v1/bookings", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     response_model=serialization.GetFilteredBookingsResponse,
@@ -118,7 +118,7 @@ def _get_booking_by_token(token: str) -> booking_models.Booking | None:
     return _get_base_booking_query().filter(booking_models.Booking.token == token.upper()).one_or_none()
 
 
-@blueprints.public_v1_blueprint.route("/bookings/v1/token/<string:token>", methods=["GET"])
+@blueprints.public_api.route("/public/bookings/v1/token/<string:token>", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     response_model=serialization.GetBookingResponse,
@@ -160,7 +160,7 @@ def get_booking_by_token(token: str) -> serialization.GetBookingResponse:
     return serialization.GetBookingResponse.build_booking(booking)
 
 
-@blueprints.public_v1_blueprint.route("/bookings/v1/use/token/<token>", methods=["PATCH"])
+@blueprints.public_api.route("/public/bookings/v1/use/token/<token>", methods=["PATCH"])
 @spectree_serialize(
     on_success_status=204,
     api=spectree_schemas.public_api_schema,
@@ -201,7 +201,7 @@ def validate_booking_by_token(token: str) -> None:
     bookings_api.mark_as_used(booking, booking_models.BookingValidationAuthorType.OFFERER)
 
 
-@blueprints.public_v1_blueprint.route("/bookings/v1/keep/token/<token>", methods=["PATCH"])
+@blueprints.public_api.route("/public/bookings/v1/keep/token/<token>", methods=["PATCH"])
 @spectree_serialize(
     on_success_status=204,
     api=spectree_schemas.public_api_schema,
@@ -242,7 +242,7 @@ def cancel_booking_validation_by_token(token: str) -> None:
         )
 
 
-@blueprints.public_v1_blueprint.route("/bookings/v1/cancel/token/<token>", methods=["PATCH"])
+@blueprints.public_api.route("/public/bookings/v1/cancel/token/<token>", methods=["PATCH"])
 @spectree_serialize(
     on_success_status=204,
     api=spectree_schemas.public_api_schema,

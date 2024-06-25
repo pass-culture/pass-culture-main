@@ -9,7 +9,7 @@ from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.validation.routes.users_authentifications import api_key_required
 
 
-@blueprints.v2_prefixed_public_api.route("/collective/student-levels", methods=["GET"])
+@blueprints.public_api.route("/v2/collective/student-levels", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.COLLECTIVE_OFFER_ATTRIBUTES],
