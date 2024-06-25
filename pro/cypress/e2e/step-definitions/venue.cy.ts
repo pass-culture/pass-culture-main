@@ -180,6 +180,7 @@ When('I update Paramètres généraux data', () => {
 })
 
 Then('Individual section data should be updated', () => {
+  cy.url().should('not.include', '/edition')
   cy.findByText('Annuler et quitter').should('not.exist')
   cy.findByText('Vos informations pour le grand public').should('be.visible')
   cy.findByText('On peut ajouter des choses, vraiment fantastique !!!').should(
