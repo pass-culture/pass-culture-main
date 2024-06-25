@@ -60,6 +60,7 @@ class PcPostalAddressAutocomplete extends PcAddOn {
       const $banId = this.#getBanId($autoComplete)
       const $latitude = this.#getLatitude($autoComplete)
       const $longitude = this.#getLongitude($autoComplete)
+      const $isManualAddress = this.#getIsManualAddress($autoComplete)
       this.state[name] = {
         cursorIndex: -1,
         initialValues: {
@@ -70,6 +71,7 @@ class PcPostalAddressAutocomplete extends PcAddOn {
           ...($banId ? { banId: $banId.value } : {}),
           ...($latitude ? { latitude: $latitude.value } : {}),
           ...($longitude ? { longitude: $longitude.value } : {}),
+          ...($isManualAddress ? { isManualAddress: $isManualAddress.value } : {}),
         }
       }
 
@@ -175,6 +177,11 @@ class PcPostalAddressAutocomplete extends PcAddOn {
   #getLongitude($autoComplete) {
     const { longitudeInputName } = $autoComplete.dataset
     return $autoComplete.form[longitudeInputName]
+  }
+
+  #getIsManualAddress($autoComplete) {
+    const { isManualAddressInputName } = $autoComplete.dataset
+    return $autoComplete.form[isManualAddressInputName]
   }
 
   #getAutocompleteContainer($autoComplete) {
@@ -343,6 +350,7 @@ class PcPostalAddressAutocomplete extends PcAddOn {
       a.dataset.city = city
       a.dataset.latitude = latitude
       a.dataset.longitude = longitude
+      a.dataset.isManualAddress = ""
       a.onclick = this._onSelectFeature
       a.append(label)
       li.append(a)
@@ -392,6 +400,9 @@ class PcPostalAddressAutocomplete extends PcAddOn {
     if ($longitude) {
       $longitude.value = longitude
     }
+
+    const $isManualAddress = this.#getIsManualAddress($autoComplete)
+    $isManualAddress.value = ""
   }
 
   #onBlur = (event) => {
@@ -424,6 +435,7 @@ class PcPostalAddressAutocomplete extends PcAddOn {
       banId,
       latitude,
       longitude,
+      isManualAddress,
     } = this.state[name].initialValues
     $autoComplete.value = `${street}, ${postalCode} ${city}`
     $autoComplete.classList.remove('is-invalid', 'is-valid')
@@ -434,6 +446,7 @@ class PcPostalAddressAutocomplete extends PcAddOn {
     const $banId = this.#getBanId($banId)
     const $latitude = this.#getLatitude($autoComplete)
     const $longitude = this.#getLongitude($autoComplete)
+    const $isManualAddress = this.#getIsManualAddress($autoComplete)
     $autoComplete.required = required
 
     if ($postalCode) {
@@ -454,6 +467,9 @@ class PcPostalAddressAutocomplete extends PcAddOn {
     if ($longitude) {
       $longitude.value = longitude
     }
+    if ($isManualAddress) {
+      $isManualAddress.value = $isManualAddress
+    }
 
     this.#getReset($autoComplete).disabled = true
   }
@@ -472,6 +488,7 @@ class PcPostalAddressAutocomplete extends PcAddOn {
     const $banId = this.#getBanId($autoComplete)
     const $latitude = this.#getLatitude($autoComplete)
     const $longitude = this.#getLongitude($autoComplete)
+    const $isManualAddress = this.#getIsManualAddress($autoComplete)
     const isManualEditing = event.target.innerHTML.includes(PcPostalAddressAutocomplete.MANUAL_EDITION_OFF_LABEL)
 
     event.target.innerHTML = isManualEditing ?
@@ -501,7 +518,9 @@ class PcPostalAddressAutocomplete extends PcAddOn {
     if ($longitude) {
       $longitude.parentElement.classList[isManualEditing ? 'remove' : 'add']('d-none')
     }
-    if (!isManualEditing) {
+    if (isManualEditing) {
+      $isManualAddress.value = "on"
+    } else {
       this.#resetForm($autoComplete)
     }
   }

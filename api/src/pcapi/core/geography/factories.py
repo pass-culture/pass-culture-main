@@ -32,3 +32,4 @@ class AddressFactory(BaseFactory):
         )
     )
     timezone = factory.LazyAttribute(lambda address: get_department_timezone(address.departmentCode))
+    isManualEdition = False
