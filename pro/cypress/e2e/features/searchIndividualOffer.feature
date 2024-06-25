@@ -6,7 +6,7 @@ Feature: Search individual offers
     And I go to the "Offres" page
 
   Scenario: A search with a name should display expected results
-    When I search with the text "Offer 1868"
+    When I search with the text "Offer 1643"
     Then These results should be displayed
       |  |  | Titre      | Lieu                             | Stocks | Status     |
       |  |  | Offer 1643 | Cinéma du coin - Offre numérique | 0      | désactivée |
