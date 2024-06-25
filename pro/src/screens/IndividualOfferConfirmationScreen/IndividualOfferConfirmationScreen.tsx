@@ -1,5 +1,3 @@
-import { format } from 'date-fns'
-
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
@@ -16,7 +14,7 @@ import { DisplayOfferInAppLink } from 'screens/IndividualOffer/SummaryScreen/Dis
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { FORMAT_DD_MM_YYYY, FORMAT_HH_mm, isDateValid } from 'utils/date'
+import { formatDateTimeParts, isDateValid } from 'utils/date'
 
 import styles from './IndividualOfferConfirmationScreen.module.scss'
 
@@ -33,12 +31,9 @@ export const IndividualOfferConfirmationScreen = ({
   const queryString = `?structure=${offer.venue.managingOfferer.id}&lieu=${offer.venue.id}`
 
   const offerType = isPublishedInTheFuture ? 'Offre programmée' : 'Offre'
-  const formattedDate = isDateValid(offer.publicationDate)
-    ? format(new Date(offer.publicationDate), FORMAT_DD_MM_YYYY)
-    : ''
-  const formattedTime = isDateValid(offer.publicationDate)
-    ? format(new Date(offer.publicationDate), FORMAT_HH_mm)
-    : ''
+  const { date: publicationDate, time: publicationTime } = formatDateTimeParts(
+    offer.publicationDate
+  )
 
   return (
     <div className={styles['confirmation-container']}>
@@ -72,13 +67,13 @@ export const IndividualOfferConfirmationScreen = ({
               effectuer de modification pour l’instant.{' '}
             </b>
             {isPublishedInTheFuture
-              ? `Vous recevrez un email de confirmation une fois votre offre validée. Elle sera automatiquement publiée le ${formattedDate} à ${formattedTime}.`
+              ? `Vous recevrez un email de confirmation une fois votre offre validée. Elle sera automatiquement publiée le ${publicationDate} à ${publicationTime}.`
               : 'Vous recevrez un email de confirmation une fois votre offre validée et disponible à la réservation.'}
           </p>
         ) : (
           <p className={styles['confirmation-details']}>
             {isPublishedInTheFuture
-              ? `Votre offre sera disponible à la réservation sur l’application pass Culture le ${formattedDate} à ${formattedTime}.`
+              ? `Votre offre sera disponible à la réservation sur l’application pass Culture le ${publicationDate} à ${publicationTime}.`
               : 'Votre offre est désormais disponible à la réservation sur l’application pass Culture.'}
           </p>
         )}
