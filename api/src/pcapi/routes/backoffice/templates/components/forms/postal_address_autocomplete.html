@@ -16,6 +16,7 @@
     {% if field.latitude %}data-latitude-input-name="{{ field.latitude }}"{% endif %}
     {% if field.longitude %}data-longitude-input-name="{{ field.longitude }}"{% endif %}
     {% if field.ban_id %}data-ban-id-input-name="{{ field.ban_id }}"{% endif %}
+    {% if field.is_manual_address %}data-is-manual-address-input-name="{{ field.is_manual_address }}"{% endif %}
     />
     <label for="{{ field.name }}">{{ field.label.text }}</label>
     {% if field.has_reset %}

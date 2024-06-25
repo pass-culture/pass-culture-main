@@ -426,6 +426,7 @@ class PcPostalAddressAutocomplete(wtforms.StringField):
         required: bool = False,
         has_reset: bool = False,
         has_manual_editing: bool = False,
+        is_manual_address: str | None = None,
         limit: int = 10,
         **kwargs: typing.Any,
     ):
@@ -436,6 +437,7 @@ class PcPostalAddressAutocomplete(wtforms.StringField):
         self.postal_code = postal_code
         self.latitude = latitude
         self.longitude = longitude
+        self.is_manual_address = is_manual_address
         self.required = required
         self.has_reset = has_reset
         self.has_manual_editing = has_manual_editing

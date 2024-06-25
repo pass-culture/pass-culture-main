@@ -20,10 +20,9 @@ from sqlalchemy.dialects.postgresql import INTERVAL
 import sqlalchemy.orm as sa_orm
 
 from pcapi import settings
+from pcapi.connectors import api_adresse
 from pcapi.connectors import virustotal
 import pcapi.connectors.acceslibre as accessibility_provider
-from pcapi.connectors.api_adresse import get_address
-from pcapi.connectors.api_adresse import get_municipality_centroid
 from pcapi.connectors.entreprise import exceptions as sirene_exceptions
 from pcapi.connectors.entreprise import models as sirene_models
 from pcapi.connectors.entreprise import sirene
@@ -197,7 +196,7 @@ def update_venue(
     return venue
 
 
-def update_venue_location(venue: models.Venue, modifications: dict, write_only: bool = False) -> None:
+def update_venue_location(venue: models.Venue, modifications: dict, is_manual_edition: bool = False) -> None:
     """
     Update the venue location and also populate the newly created Address & OffererAddress.
     You might want to skip the API Adresse call and force the location update with incoming data.
@@ -209,17 +208,17 @@ def update_venue_location(venue: models.Venue, modifications: dict, write_only: 
     if any(field in modifications for field in ("street", "city", "postalCode")):
         street = modifications.get("street") or venue.street
         city = modifications.get("city") or venue.city
-        postalCode = modifications.get("postalCode") or venue.postalCode
+        postal_code = modifications.get("postalCode") or venue.postalCode
         latitude = modifications.get("latitude") or venue.latitude
         longitude = modifications.get("longitude") or venue.longitude
         ban_id = modifications.get("banId") or venue.banId
         logger.info(
             "Updating venue location",
-            extra={"venue_id": venue.id, "venue_street": street, "venue_city": city, "venue_postalCode": postalCode},
+            extra={"venue_id": venue.id, "venue_street": street, "venue_city": city, "venue_postalCode": postal_code},
         )
 
-        if not write_only:
-            address_info = get_address(street, postalCode, city)
+        if not is_manual_edition:
+            address_info = api_adresse.get_address(street, postal_code, city)
             location_data = LocationData(
                 city=address_info.city,
                 postal_code=address_info.postcode,
@@ -230,17 +229,25 @@ def update_venue_location(venue: models.Venue, modifications: dict, write_only: 
                 ban_id=address_info.id,
             )
         else:
+            insee_code = None
+            if city and postal_code:
+                # Address entered manually does not provide INSEE code, find it
+                try:
+                    insee_code = api_adresse.get_municipality_centroid(city, postal_code).citycode
+                except api_adresse.AdresseException:
+                    pass
+
             location_data = LocationData(
                 city=typing.cast(str, city),
-                postal_code=typing.cast(str, postalCode),
+                postal_code=typing.cast(str, postal_code),
                 latitude=typing.cast(float, latitude),
                 longitude=typing.cast(float, longitude),
                 street=street,
                 ban_id=ban_id,
-                insee_code=None,
+                insee_code=insee_code,
             )
 
-        address = get_or_create_address(location_data)
+        address = get_or_create_address(location_data, is_manual_edition=is_manual_edition)
 
         if not venue.offererAddressId:
             offerer_address = get_or_create_offerer_address(venue.managingOffererId, address.id)
@@ -348,10 +355,10 @@ def create_venue(venue_data: venues_serialize.PostVenueBodyModel) -> models.Venu
 
     if feature.FeatureToggle.ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE.is_active():
         if utils_regions.NON_DIFFUSIBLE_TAG in venue_data.street:
-            address_info = get_municipality_centroid(venue_data.city, venue_data.postalCode)
+            address_info = api_adresse.get_municipality_centroid(venue_data.city, venue_data.postalCode)
             address_info.street = utils_regions.NON_DIFFUSIBLE_TAG
         else:
-            address_info = get_address(venue_data.street, venue_data.postalCode, venue_data.city)
+            address_info = api_adresse.get_address(venue_data.street, venue_data.postalCode, venue_data.city)
 
         address = get_or_create_address(
             LocationData(
@@ -2535,7 +2542,7 @@ LocationData = typing.TypedDict(
 )
 
 
-def get_or_create_address(location_data: LocationData) -> geography_models.Address:
+def get_or_create_address(location_data: LocationData, is_manual_edition: bool = False) -> geography_models.Address:
     department_code = None
     timezone = None
     insee_code = location_data.get("insee_code")
@@ -2543,22 +2550,26 @@ def get_or_create_address(location_data: LocationData) -> geography_models.Addre
     latitude = typing.cast(decimal.Decimal, location_data["latitude"])
     longitude = typing.cast(decimal.Decimal, location_data["longitude"])
     street = location_data.get("street")
+    city = location_data["city"]
     ban_id = location_data.get("ban_id")
     city_code = insee_code or postal_code
+
     if city_code:
         department_code = utils_regions.get_department_code_from_city_code(city_code)
         timezone = date_utils.get_department_timezone(department_code)
+
     try:
         address = geography_models.Address(
             banId=ban_id,
             inseeCode=insee_code,
             street=street,
             postalCode=postal_code,
-            city=location_data["city"],
+            city=city,
             latitude=latitude,
             longitude=longitude,
             departmentCode=department_code,
             timezone=timezone,
+            isManualEdition=is_manual_edition,
         )
         db.session.add(address)
         db.session.flush()
@@ -2567,9 +2578,21 @@ def get_or_create_address(location_data: LocationData) -> geography_models.Addre
         address = geography_models.Address.query.filter(
             geography_models.Address.street == street,
             geography_models.Address.inseeCode == insee_code,
+            sa.or_(
+                geography_models.Address.isManualEdition.is_not(True),  # false or null
+                sa.and_(
+                    geography_models.Address.banId == ban_id,
+                    geography_models.Address.inseeCode == insee_code,
+                    geography_models.Address.street == street,
+                    geography_models.Address.postalCode == postal_code,
+                    geography_models.Address.city == city,
+                    geography_models.Address.latitude == decimal.Decimal(latitude),
+                    geography_models.Address.longitude == decimal.Decimal(longitude),
+                ),
+            ),
         ).one()
-        if not math.isclose(float(address.latitude), latitude, rel_tol=0.00001) or not math.isclose(
-            float(address.longitude), longitude, rel_tol=0.00001
+        if not math.isclose(float(address.latitude), float(latitude), rel_tol=0.00001) or not math.isclose(
+            float(address.longitude), float(longitude), rel_tol=0.00001
         ):
             logger.error(
                 "Unique constraint over street and inseeCode matched different coordinates",

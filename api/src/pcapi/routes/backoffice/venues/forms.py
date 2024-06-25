@@ -47,6 +47,7 @@ class EditVenueForm(EditVirtualVenueForm):
         postal_code="postal_code",
         latitude="latitude",
         longitude="longitude",
+        is_manual_address="is_manual_address",
         required=True,
         has_reset=True,
         has_manual_editing=True,
@@ -66,6 +67,7 @@ class EditVenueForm(EditVirtualVenueForm):
     latitude = fields.PCOptHiddenField("Latitude")
     longitude = fields.PCOptHiddenField("Longitude")
     ban_id = fields.PCOptHiddenField("Identifiant Base Adresse Nationale")
+    is_manual_address = fields.PCOptHiddenField("Édition manuelle de l'adresse")
     venue_type_code = fields.PCSelectWithPlaceholderValueField(
         "Activité principale", choices=utils.choices_from_enum(offerers_models.VenueTypeCode)
     )
