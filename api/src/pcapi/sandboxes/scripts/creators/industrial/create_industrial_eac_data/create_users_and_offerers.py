@@ -1,5 +1,6 @@
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.users import factories as user_factories
 
 
 def create_users_offerers() -> list[offerers_models.Offerer]:
@@ -11,6 +12,7 @@ def create_users_offerers() -> list[offerers_models.Offerer]:
         offerer__name="eac_1_lieu",
         offerer__siren="552081317",
     )
+    user_factories.UserProNewNavStateFactory(user__email="eac_1_lieu@example.com")
     offerers.append(user_offerer.offerer)
     user_offerer = offerers_factories.UserOffererFactory(
         user__email="eac_2_lieu@example.com",
