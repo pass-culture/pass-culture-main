@@ -29,3 +29,18 @@
   align-self: baseline;
   margin-bottom: rem.torem(16px);
 }
+
+.publication-date {
+  @include fonts.body-important;
+
+  margin-top: rem.torem(4px);
+  display: flex;
+  gap: rem.torem(8px);
+  align-items: center;
+}
+
+.publication-icon {
+  color: var(--color-valid);
+  width: rem.torem(24px);
+  height: rem.torem(24px);
+}

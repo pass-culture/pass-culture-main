@@ -1,32 +1,35 @@
 import { screen } from '@testing-library/react'
+import { addDays } from 'date-fns'
 import React from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferFactory } from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'utils/renderWithProviders'
 
 import {
   IndivualOfferLayout,
   IndivualOfferLayoutProps,
 } from '../IndivualOfferLayout'
 
-const renderIndivualOfferLayout = ({
-  title = 'layout title',
-  withStepper = true,
-  offer = getIndividualOfferFactory(),
-  mode = OFFER_WIZARD_MODE.EDITION,
-  children = <div>Template child</div>,
-}: Partial<IndivualOfferLayoutProps>) => {
+const renderIndivualOfferLayout = (
+  props: Partial<IndivualOfferLayoutProps>,
+  options?: RenderWithProvidersOptions
+) => {
   renderWithProviders(
     <IndivualOfferLayout
-      title={title}
-      withStepper={withStepper}
-      offer={offer}
-      mode={mode}
+      title="layout title"
+      withStepper
+      offer={getIndividualOfferFactory()}
+      mode={OFFER_WIZARD_MODE.EDITION}
+      {...props}
     >
-      {children}
-    </IndivualOfferLayout>
+      <div>Template child</div>
+    </IndivualOfferLayout>,
+    options
   )
 }
 
@@ -143,5 +146,51 @@ describe('IndivualOfferLayout', () => {
     })
 
     expect(screen.queryByText('Offre synchronisée')).not.toBeInTheDocument()
+  })
+
+  it('should display publication date when it is in the future', () => {
+    const future = addDays(new Date(), 3)
+
+    renderIndivualOfferLayout(
+      {
+        offer: getIndividualOfferFactory({
+          publicationDate: future.toISOString(),
+        }),
+        mode: OFFER_WIZARD_MODE.READ_ONLY,
+      },
+      { features: ['WIP_FUTURE_OFFER'] }
+    )
+
+    expect(screen.getByText(/Publication prévue le/)).toBeInTheDocument()
+  })
+
+  it('should not display publication date when it is passed', () => {
+    renderIndivualOfferLayout(
+      {
+        offer: getIndividualOfferFactory({
+          publicationDate: '2021-01-01T00:00:00.000Z',
+        }),
+        mode: OFFER_WIZARD_MODE.READ_ONLY,
+      },
+      { features: ['WIP_FUTURE_OFFER'] }
+    )
+
+    expect(screen.queryByText(/Publication prévue le/)).not.toBeInTheDocument()
+  })
+
+  it('should not display publication date in creation', () => {
+    const future = addDays(new Date(), 3)
+
+    renderIndivualOfferLayout(
+      {
+        offer: getIndividualOfferFactory({
+          publicationDate: future.toISOString(),
+        }),
+        mode: OFFER_WIZARD_MODE.CREATION,
+      },
+      { features: ['WIP_FUTURE_OFFER'] }
+    )
+
+    expect(screen.queryByText(/Publication prévue le/)).not.toBeInTheDocument()
   })
 })
