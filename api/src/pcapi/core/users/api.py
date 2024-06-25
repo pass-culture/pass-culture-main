@@ -874,13 +874,12 @@ def create_pro_user(pro_user: ProUserCreationBodyV2Model) -> models.User:
                 newNavDate=datetime.datetime.utcnow(),
             )
             db.session.add(new_nav_pro)
-    elif feature.FeatureToggle.WIP_ENABLE_NEW_NAV_AB_TEST.is_active():
-        if new_pro_user.id % 2 == 0:
-            new_nav_pro = users_models.UserProNewNavState(
-                userId=new_pro_user.id,
-                newNavDate=datetime.datetime.utcnow(),
-            )
-            db.session.add(new_nav_pro)
+    else:
+        new_nav_pro = users_models.UserProNewNavState(
+            userId=new_pro_user.id,
+            newNavDate=datetime.datetime.utcnow(),
+        )
+        db.session.add(new_nav_pro)
 
     return new_pro_user
 
