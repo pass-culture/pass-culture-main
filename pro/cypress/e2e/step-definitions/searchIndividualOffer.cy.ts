@@ -15,3 +15,8 @@ When('I select offerer {string} in offer page', (offererName: string) => {
   cy.wait('@getOffererId')
   cy.findAllByTestId('spinner').should('not.exist')
 })
+When('I select {string} in offer status', (filter: string) => {
+  cy.findByText('Statut').click()
+  cy.findByText(filter).click()
+  cy.findByText('Appliquer').click()
+})
