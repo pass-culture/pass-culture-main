@@ -4,5 +4,6 @@
 /* eslint-disable */
 export type PatchOfferPublishBodyModel = {
   id: number;
+  publicationDate?: string | null;
 };
 
