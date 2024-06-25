@@ -110,11 +110,13 @@
 
 .isbn {
   @include fonts.caption;
+
   color: var(--color-grey-dark);
 }
 
 .stocks {
   @include fonts.caption;
+
   color: var(--color-grey-dark);
   display: flex;
   align-items: center;
@@ -203,7 +205,7 @@
 
     .thumb-column {
       padding: rem.torem(8px);
-      
+
       a {
         height: unset;
       }
@@ -222,7 +224,6 @@
 
     .actions-column {
       padding: 0 0 0 rem.torem(10px);
-
 
       & > div {
         justify-content: flex-end;
@@ -279,7 +280,7 @@
     justify-content: flex-start;
     width: 100%;
     padding: rem.torem(8px);
-  
+
     &:focus-visible {
       outline: rem.torem(1px) solid var(--color-input-text-color);
       outline-offset: rem.torem(2px);
