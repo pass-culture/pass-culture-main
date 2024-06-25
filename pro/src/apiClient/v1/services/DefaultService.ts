@@ -1084,7 +1084,9 @@ export class DefaultService {
       body: requestBody,
       mediaType: 'application/json',
       errors: {
+        400: `Bad Request`,
         403: `Forbidden`,
+        404: `Not Found`,
         422: `Unprocessable Entity`,
       },
     });

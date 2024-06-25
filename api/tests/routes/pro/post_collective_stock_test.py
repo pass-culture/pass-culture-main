@@ -9,6 +9,7 @@ import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveStock
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.testing import assert_num_queries
 from pcapi.models.offer_mixin import OfferValidationStatus
 
 
@@ -58,6 +59,10 @@ class Return200Test:
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
+        )
+
+        educational_factories.EducationalYearFactory(
+            beginningDate="2021-09-01T22:00:00Z", expirationDate="2022-07-31T22:00:00Z"
         )
 
         # When
@@ -293,7 +298,7 @@ class Return400Test:
         response = client.post("/collective/stocks/", json=stock_payload)
 
         # Then
-        assert response.status_code == 409
+        assert response.status_code == 400
         assert response.json == {"code": "EDUCATIONAL_STOCK_ALREADY_EXISTS"}
 
     def test_create_valid_stock_for_collective_offer(self, client):
@@ -330,6 +335,10 @@ class Return400Test:
             offerer=offer.venue.managingOfferer,
         )
 
+        educational_factories.EducationalYearFactory(
+            beginningDate="2021-09-01T22:00:00Z", expirationDate="2022-07-31T22:00:00Z"
+        )
+
         # When
         stock_payload = {
             "offerId": offer.id,
@@ -341,8 +350,50 @@ class Return400Test:
         }
 
         client.with_session_auth("user@example.com")
-        response = client.post("/collective/stocks/", json=stock_payload)
+
+        response = client.post("/collective/stocks", json=stock_payload)
 
         # Then
         assert response.status_code == 400
         assert response.json == {"endDatetime": ["La date de fin de l'évènement ne peut précéder la date de début."]}
+
+    @time_machine.travel("2020-11-17 15:00:00")
+    def should_not_accept_payload_with_startDatetime_endDatetime_in_different_educational_year(self, client):
+        # Given
+        offer = educational_factories.CollectiveOfferFactory()
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        educational_factories.EducationalYearFactory(
+            beginningDate="2021-09-01T22:00:00Z", expirationDate="2022-07-31T22:00:00Z", id=1
+        )
+        educational_factories.EducationalYearFactory(
+            beginningDate="2022-09-01T22:00:00Z", expirationDate="2023-07-31T22:00:00Z", id=2
+        )
+
+        # When
+        stock_payload = {
+            "offerId": offer.id,
+            "startDatetime": "2022-01-17T22:00:00Z",
+            "endDatetime": "2023-01-18T18:00:00Z",
+            "bookingLimitDatetime": "2021-12-31T20:00:00Z",
+            "totalPrice": 1500,
+            "numberOfTickets": 30,
+        }
+
+        client.with_session_auth("user@example.com")
+
+        with assert_num_queries(6):
+            # query += 1 -> load session
+            # query += 1 -> load user
+            # query += 1 -> ensure the offerer is VALIDATED
+            # query += 1 -> check the number of existing stock for the offer id
+            # query += 1 -> find education year for start date
+            # query += 1 -> find education year for end date
+            response = client.post("/collective/stocks", json=stock_payload)
+
+            # Then
+            assert response.status_code == 400
+            assert response.json == {"code": "START_AND_END_EDUCATIONAL_YEAR_DIFFERENT"}

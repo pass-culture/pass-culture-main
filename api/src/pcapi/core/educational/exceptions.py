@@ -205,3 +205,8 @@ class UpdateCollectiveOfferTemplateError(Exception):
 class StartsBeforeOfferCreation(UpdateCollectiveOfferTemplateError):
     field = "dates.start"
     msg = "Can't start before template creation date"
+
+
+class StartAndEndEducationalYearDifferent(Exception):
+    field = "dates.start"
+    msg = "start and end dates in different school year"

@@ -23,12 +23,14 @@ logger = logging.getLogger(__name__)
 @login_required
 @spectree_serialize(
     on_success_status=201,
+    on_error_statuses=[400, 404],
     response_model=collective_stock_serialize.CollectiveStockResponseModel,
     api=blueprint.pro_private_schema,
 )
 def create_collective_stock(
     body: collective_stock_serialize.CollectiveStockCreationBodyModel,
 ) -> collective_stock_serialize.CollectiveStockResponseModel:
+
     try:
         offerer = offerers_repository.get_by_collective_offer_id(body.offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
@@ -38,7 +40,9 @@ def create_collective_stock(
     try:
         collective_stock = educational_api_stock.create_collective_stock(body, current_user)
     except educational_exceptions.CollectiveStockAlreadyExists:
-        raise ApiErrors({"code": "EDUCATIONAL_STOCK_ALREADY_EXISTS"}, status_code=409)
+        raise ApiErrors({"code": "EDUCATIONAL_STOCK_ALREADY_EXISTS"}, status_code=400)
+    except educational_exceptions.StartAndEndEducationalYearDifferent:
+        raise ApiErrors({"code": "START_AND_END_EDUCATIONAL_YEAR_DIFFERENT"}, status_code=400)
 
     return collective_stock_serialize.CollectiveStockResponseModel.from_orm(collective_stock)
 
@@ -47,7 +51,7 @@ def create_collective_stock(
 @login_required
 @spectree_serialize(
     on_success_status=200,
-    on_error_statuses=[400, 401, 404, 422],
+    on_error_statuses=[400, 401, 404],
     api=blueprint.pro_private_schema,
     response_model=collective_stock_serialize.CollectiveStockResponseModel,
 )
@@ -84,3 +88,5 @@ def edit_collective_stock(
         )
     except offers_exceptions.OfferEditionBaseException as error:
         raise ApiErrors(error.errors, status_code=400)
+    except educational_exceptions.StartAndEndEducationalYearDifferent:
+        raise ApiErrors({"code": "START_AND_END_EDUCATIONAL_YEAR_DIFFERENT"}, status_code=400)
