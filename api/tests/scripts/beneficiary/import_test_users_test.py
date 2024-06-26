@@ -29,6 +29,7 @@ BOUNTY_FIRST_NAME = "Hackèrman"
 BOUNTY_CSV = f"""Nom,Prénom,Mail,Téléphone,Département,Code postal,Date de naissance,Role,SIREN,Mot de passe,Type
 Doux,{BOUNTY_FIRST_NAME},{BOUNTY_EMAIL},0102030405,86,86140,2000-01-01,PRO,10000135,,externe:bug-bounty
 Dur,Hubert,touriste@mars.org,0102030405,86,86140,2000-01-01,PRO,10000115,,interne:test
+Dur,{BOUNTY_FIRST_NAME},another_hunter@bugbounty.ninja,0102030405,86,86140,2000-01-01,PRO,10000105,,externe:bug-bounty
 """
 
 
@@ -129,7 +130,7 @@ class ReadFileTest:
         csv_file = io.StringIO(BOUNTY_CSV)
         import_test_users.create_users_from_csv(csv_file)
 
-        prefix = f"staging_{BOUNTY_FIRST_NAME}"
+        prefix = f"staging_{BOUNTY_EMAIL}"
         api_key = offerers_models.ApiKey.query.filter_by(prefix=prefix).one()
         assert crypto.hash_public_api_key(BOUNTY_EMAIL) == api_key.secret
 
