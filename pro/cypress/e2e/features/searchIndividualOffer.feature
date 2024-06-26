@@ -6,13 +6,15 @@ Feature: Search individual offers
     And I go to the "Offres" page
 
   Scenario: A search with a name should display expected results
-    When I search with the text "Offer 1773"
+    When I select offerer "Cinéma du coin"
+    And I search with the text "Offer 1773"
     Then These results should be displayed
       |  |  | Titre      | Lieu                                 | Stocks | Status  |
       |  |  | Offer 1773 | Herbert Marcuse Entreprise - Salle 1 | 24     | publiée |
 
   Scenario: A search with a EAN should display expected results
-    When I search with the text "9780000000004"
+    When I select offerer "Réseau de librairies"
+    And I search with the text "9780000000004"
     Then These results should be displayed
       |  |  | Titre            | Lieu         | Stocks | Status     |
       |  |  | Livre 4 avec EAN | Librairie 10 | 10     | publiée    |

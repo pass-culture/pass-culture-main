@@ -5,10 +5,10 @@ Given('I go to {string} view', (tab: string) => {
 })
 
 Given('I go to Offres collectives view', () => {
-  cy.intercept({ method: 'GET', url: '/collective/offers' }).as(
+  cy.intercept({ method: 'GET', url: '/collective/offers*' }).as(
     'collectiveOffers'
   )
-  cy.findByText('Offres collectives').click()
+  cy.visit('/offres/collectives')
   cy.wait('@collectiveOffers')
 })
 
