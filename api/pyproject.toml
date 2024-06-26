@@ -230,8 +230,7 @@ addopts = [
     "--verbose",
     "--tb=short",
     "--disable-socket",
-    # FIXME (dbaty, 2022-12-01): use network range 172.16.0.0/12 once pytest-socket
-    # supports it.
+    # Use network range 172.16.0.0/12 once pytest-socket supports it (https://github.com/miketheman/pytest-socket/pull/185)
     "--allow-hosts=127.0.0.1,::1,172.18.0.2,172.18.0.3,172.18.0.4,172.19.0.2,172.19.0.3,172.19.0.4,172.20.0.2,172.20.0.3,172.20.0.4,172.21.0.2,192.168.16.2", # allow connections to local Redis
 ]
 filterwarnings = [
