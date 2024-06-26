@@ -45,6 +45,7 @@ from pcapi.routes.native.v1.serialization import account as account_serializatio
 from pcapi.routes.serialization.users import ProUserCreationBodyV2Model
 
 import tests
+from tests.test_utils import StorageFolderManager
 
 
 DATA_DIR = pathlib.Path(tests.__path__[0]) / "files"
@@ -2235,32 +2236,20 @@ class EnableNewProNavTest:
 STORAGE_FOLDER = settings.LOCAL_STORAGE_DIR / settings.GCP_GDPR_EXTRACT_BUCKET / settings.GCP_GDPR_EXTRACT_FOLDER
 
 
-class DeleteGdprExtractTest:
-    def teardown_method(self) -> None:
-        """clear extracts after each tests"""
-        try:
-            for child in STORAGE_FOLDER.iterdir():
-                if not child.is_file():
-                    continue
-                child.unlink()
-        except FileNotFoundError:
-            pass
-
-    def setup_method(self):
-        """Create the folder to work with"""
-        os.makedirs(STORAGE_FOLDER, exist_ok=True)
+class DeleteGdprExtractTest(StorageFolderManager):
+    storage_folder = settings.LOCAL_STORAGE_DIR / settings.GCP_GDPR_EXTRACT_BUCKET / settings.GCP_GDPR_EXTRACT_FOLDER
 
     def test_nominal(self):
         # given
         extract = users_factories.GdprUserDataExtractBeneficiaryFactory(dateProcessed=datetime.datetime.utcnow())
-        with open(STORAGE_FOLDER / f"{extract.id}.zip", "wb") as fp:
+        with open(self.storage_folder / f"{extract.id}.zip", "wb") as fp:
             fp.write(b"[personal data compressed with deflate]")
         # when
         users_api.delete_gdpr_extract(extract.id)
 
         # then
         assert users_models.GdprUserDataExtract.query.count() == 0
-        assert len(os.listdir(STORAGE_FOLDER)) == 0
+        assert len(os.listdir(self.storage_folder)) == 0
 
     def test_extract_file_does_not_exists(self):
         # given
@@ -2272,21 +2261,8 @@ class DeleteGdprExtractTest:
         assert users_models.GdprUserDataExtract.query.count() == 0
 
 
-class CleanGdprExtractTest:
-
-    def teardown_method(self) -> None:
-        """clear extracts after each tests"""
-        try:
-            for child in STORAGE_FOLDER.iterdir():
-                if not child.is_file():
-                    continue
-                child.unlink()
-        except FileNotFoundError:
-            pass
-
-    def setup_method(self):
-        """Create the folder to work with"""
-        os.makedirs(STORAGE_FOLDER, exist_ok=True)
+class CleanGdprExtractTest(StorageFolderManager):
+    storage_folder = settings.LOCAL_STORAGE_DIR / settings.GCP_GDPR_EXTRACT_BUCKET / settings.GCP_GDPR_EXTRACT_FOLDER
 
     def test_delete_expired_extracts(self):
         # given
@@ -2294,22 +2270,22 @@ class CleanGdprExtractTest:
             dateProcessed=datetime.datetime.utcnow() - datetime.timedelta(days=6),
             dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=8),
         )
-        with open(STORAGE_FOLDER / f"{extract.id}.zip", "wb") as fp:
+        with open(self.storage_folder / f"{extract.id}.zip", "wb") as fp:
             fp.write(b"[personal data compressed with deflate]")
         # when
         users_api.clean_gdpr_extracts()
         # then
         assert users_models.GdprUserDataExtract.query.count() == 0
-        assert len(os.listdir(STORAGE_FOLDER)) == 0
+        assert len(os.listdir(self.storage_folder)) == 0
 
     def test_delete_extracts_files_not_in_db(self):
         # given
-        with open(STORAGE_FOLDER / "1.zip", "wb") as fp:
+        with open(self.storage_folder / "1.zip", "wb") as fp:
             fp.write(b"[personal data compressed with deflate]")
         # when
         users_api.clean_gdpr_extracts()
         # then
-        assert len(os.listdir(STORAGE_FOLDER)) == 0
+        assert len(os.listdir(self.storage_folder)) == 0
 
     def test_delete_expired_unprocessed_extracts(self):
         # given
@@ -2327,10 +2303,10 @@ class CleanGdprExtractTest:
             dateProcessed=datetime.datetime.utcnow() - datetime.timedelta(days=5),
             dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=6),
         )
-        with open(STORAGE_FOLDER / f"{extract.id}.zip", "wb") as fp:
+        with open(self.storage_folder / f"{extract.id}.zip", "wb") as fp:
             fp.write(b"[personal data compressed with deflate]")
         # when
         users_api.clean_gdpr_extracts()
         # then
         assert users_models.GdprUserDataExtract.query.count() == 1
-        assert len(os.listdir(STORAGE_FOLDER)) == 1
+        assert len(os.listdir(self.storage_folder)) == 1
