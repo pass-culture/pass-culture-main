@@ -3,6 +3,7 @@ Feature: Create an individual offer (thing)
 
   Scenario: It should create an individual offer (thing)
     Given I am logged in
+    And I select offerer "Club Dorothy"
     When I go to the "Créer une offre" page
     And I want to create "Un bien physique" offer
     And I fill in details for physical offer

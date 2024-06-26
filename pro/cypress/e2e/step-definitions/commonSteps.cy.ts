@@ -16,6 +16,7 @@ When('I go to the {string} page', (page: string) => {
   })
 })
 
+// this account is also in the new interface now
 Given('I am logged in', () => {
   cy.login({
     email: 'retention_structures@example.com',

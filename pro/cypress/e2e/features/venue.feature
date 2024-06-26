@@ -3,6 +3,7 @@ Feature: Create and update venue
 
   Scenario: A pro user can add a venue without SIRET
     Given I am logged in
+    And I select offerer "Bar des amis"
     When I want to add a venue
     And I choose a venue which already has a Siret
     And I add venue without Siret details
@@ -14,6 +15,7 @@ Feature: Create and update venue
 
   Scenario: A pro user can add a venue with SIRET
     Given I am logged in
+    And I select offerer "Bar des amis"
     When I want to add a venue
     And I add a valid Siret
     And I add venue with Siret details
@@ -23,12 +25,15 @@ Feature: Create and update venue
 
   Scenario: It should update a venue
     Given I am logged in
+    And I select offerer "Bar des amis"
     When I go to the venue page in Individual section
     And I update Individual section data
     Then Individual section data should be updated
     When I go to the venue page in Paramètres généraux
     And I update Paramètres généraux data
-    Then Paramètres généraux data should be updated
+    Then I go to the venue page in Paramètres généraux
+    And Paramètres généraux data should be updated
+
 
   Scenario: It should display venues of selected offerer
     Given I am logged in with the new interface
