@@ -33,7 +33,6 @@ import pcapi.core.providers.repository as providers_api
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.reactions.factories import ReactionFactory
 from pcapi.core.reactions.models import ReactionTypeEnum
-from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
@@ -711,7 +710,8 @@ class GetBookingsTest:
         mediation = MediationFactory(id=111, offer=used2.stock.offer, thumbCount=1, credit="street credit")
 
         client = client.with_token(self.identifier)
-        with assert_no_duplicated_queries():
+        with assert_num_queries(2):
+            # select user, booking
             response = client.get("/native/v1/bookings")
 
         assert response.status_code == 200
@@ -803,8 +803,10 @@ class GetBookingsTest:
             stock=stock, user__deposit__expirationDate=now + timedelta(days=180)
         )
 
-        with assert_no_duplicated_queries():
-            response = client.with_token(ongoing_booking.user.email).get("/native/v1/bookings")
+        client = client.with_token(ongoing_booking.user.email)
+        with assert_num_queries(2):
+            # select user, booking
+            response = client.get("/native/v1/bookings")
 
         assert response.status_code == 200
         assert response.json["ongoing_bookings"][0]["userReaction"] is None
@@ -817,8 +819,10 @@ class GetBookingsTest:
         )
         ReactionFactory(user=ongoing_booking.user, offer=stock.offer)
 
-        with assert_no_duplicated_queries():
-            response = client.with_token(ongoing_booking.user.email).get("/native/v1/bookings")
+        client = client.with_token(ongoing_booking.user.email)
+        with assert_num_queries(3):
+            # select user, booking, stock
+            response = client.get("/native/v1/bookings")
 
         assert response.status_code == 200
         assert response.json["ongoing_bookings"][0]["userReaction"] == "NO_REACTION"
@@ -831,9 +835,10 @@ class GetBookingsTest:
             stock=stock, user__deposit__expirationDate=now + timedelta(days=180)
         )
         ReactionFactory(reactionType=ReactionTypeEnum.LIKE, user=ongoing_booking.user, product=stock.offer.product)
-
-        with assert_no_duplicated_queries():
-            response = client.with_token(ongoing_booking.user.email).get("/native/v1/bookings")
+        client = client.with_token(ongoing_booking.user.email)
+        with assert_num_queries(3):
+            # select user, booking, offer
+            response = client.get("/native/v1/bookings")
 
         assert response.status_code == 200
         assert response.json["ongoing_bookings"][0]["userReaction"] == "LIKE"
@@ -845,9 +850,10 @@ class GetBookingsTest:
             stock=stock, user__deposit__expirationDate=now + timedelta(days=180)
         )
         booking_factories.BookingFactory(stock=stock, user=ongoing_booking.user, status=BookingStatus.CANCELLED)
-
-        with assert_no_duplicated_queries():
-            response = client.with_token(ongoing_booking.user.email).get("/native/v1/bookings")
+        client = client.with_token(ongoing_booking.user.email)
+        with assert_num_queries(2):
+            # select user, booking
+            response = client.get("/native/v1/bookings")
 
         assert response.status_code == 200
         assert (
@@ -870,8 +876,10 @@ class GetBookingsTest:
             user=user, stock=StockFactory(price=10, offer__subcategoryId=subcategories.CARTE_MUSEE.id)
         )
 
-        with assert_no_duplicated_queries():
-            response = client.with_token(ongoing_booking.user.email).get("/native/v1/bookings")
+        client = client.with_token(ongoing_booking.user.email)
+        with assert_num_queries(2):
+            # select user, booking
+            response = client.get("/native/v1/bookings")
 
         assert response.status_code == 200
         assert response.json["ongoing_bookings"][0]["id"] == ongoing_booking.id
@@ -886,7 +894,8 @@ class GetBookingsTest:
         )
 
         test_client = client.with_token(user.email)
-        with assert_no_duplicated_queries():
+        with assert_num_queries(2):
+            # select user, booking
             response = test_client.get("/native/v1/bookings")
 
         assert response.status_code == 200
