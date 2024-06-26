@@ -404,21 +404,6 @@ You can find them below.
 | 9782381511306 | Digital book |
 
 
-### Ineligible paper books EANs
-
-| EAN | Category |
-|-----|-----------|
-| 9782841612826 | Ineligible paper book |
-| 9782841614042 | Ineligible paper book |
-| 9791022504119 | Ineligible paper book |
-| 9791022503150 | Ineligible paper book |
-| 9791022505659 | Ineligible paper book |
-| 9791022504812 | Ineligible paper book |
-| 9791022504102 | Ineligible paper book |
-| 9791022504140 | Ineligible paper book |
-| 9791022507202 | Ineligible paper book |
-| 9791022509435 | Ineligible paper book |
-
 ### Eligible paper books EANs
 
 | EAN | Category |
