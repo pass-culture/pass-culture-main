@@ -5,6 +5,7 @@ import decimal
 import enum
 import json
 import logging
+import os
 import sys
 import time
 import typing
@@ -270,10 +271,16 @@ def _silence_noisy_loggers() -> None:
     # fontTools is used by weasyprint
     logging.getLogger("fontTools.subset").setLevel(logging.WARNING)
 
-    # FIXME (dbaty, 2021-03-17): these log levels are historical.
-    # Perhaps we should set them to WARNING instead?
-    logging.getLogger("werkzeug").setLevel(logging.ERROR)
-    logging.getLogger("rq.worker").setLevel(logging.CRITICAL)
+    # FIXME (mgeoffray, 2024-06-26): environment variables can be
+    # quickly set and redeployed if we get a deluge of warnings. If
+    # everything seems fine, the use of these environment variables
+    # here can be removed to simplify the code.
+    werkzeug_log_level = os.environ.get("WERZEUG_LOG_LEVEL", "WARNING")
+    rq_log_level = os.environ.get("RQ_LOG_LEVEL", "WARNING")
+    # We don't want Werkzeug INFO log for each request, we already
+    # have our own request logs.
+    logging.getLogger("werkzeug").setLevel(getattr(logging, werkzeug_log_level))
+    logging.getLogger("rq.worker").setLevel(getattr(logging, rq_log_level))
 
 
 def log_for_supervision(
