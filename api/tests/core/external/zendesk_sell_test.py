@@ -1,3 +1,4 @@
+import logging
 from unittest.mock import patch
 import urllib.parse
 
@@ -333,6 +334,7 @@ def test_update_offerer_multiple_results_one_has_id():
                                     "custom_fields": {
                                         zendesk_sell.ZendeskCustomFieldsShort.PRODUCT_OFFERER_ID.value: None,
                                         zendesk_sell.ZendeskCustomFieldsShort.SIREN.value: offerer.siren,
+                                        zendesk_sell.ZendeskCustomFieldsShort.TYPAGE.value: ["Structure"],
                                     },
                                 }
                             },
@@ -342,6 +344,7 @@ def test_update_offerer_multiple_results_one_has_id():
                                     "custom_fields": {
                                         zendesk_sell.ZendeskCustomFieldsShort.PRODUCT_OFFERER_ID.value: str(offerer.id),
                                         zendesk_sell.ZendeskCustomFieldsShort.SIREN.value: None,
+                                        zendesk_sell.ZendeskCustomFieldsShort.TYPAGE.value: ["Structure"],
                                     },
                                 }
                             },
@@ -379,7 +382,8 @@ def test_update_venue_multiple_results_none_has_id():
                                 "data": {
                                     "id": 1,
                                     "custom_fields": {
-                                        zendesk_sell.ZendeskCustomFieldsShort.PRODUCT_VENUE_ID.value: None
+                                        zendesk_sell.ZendeskCustomFieldsShort.PRODUCT_VENUE_ID.value: None,
+                                        zendesk_sell.ZendeskCustomFieldsShort.TYPAGE.value: ["Lieu"],
                                     },
                                 }
                             },
@@ -387,7 +391,8 @@ def test_update_venue_multiple_results_none_has_id():
                                 "data": {
                                     "id": 2,
                                     "custom_fields": {
-                                        zendesk_sell.ZendeskCustomFieldsShort.PRODUCT_VENUE_ID.value: None
+                                        zendesk_sell.ZendeskCustomFieldsShort.PRODUCT_VENUE_ID.value: None,
+                                        zendesk_sell.ZendeskCustomFieldsShort.TYPAGE.value: ["Lieu"],
                                     },
                                 }
                             },
@@ -424,6 +429,7 @@ def test_update_venue_multiple_results_one_has_id():
                                         zendesk_sell.ZendeskCustomFieldsShort.PRODUCT_OFFERER_ID.value: None,
                                         zendesk_sell.ZendeskCustomFieldsShort.SIREN.value: None,
                                         zendesk_sell.ZendeskCustomFieldsShort.PRODUCT_VENUE_ID.value: str(venue.id),
+                                        zendesk_sell.ZendeskCustomFieldsShort.TYPAGE.value: ["Lieu"],
                                     },
                                 }
                             },
@@ -434,6 +440,7 @@ def test_update_venue_multiple_results_one_has_id():
                                         zendesk_sell.ZendeskCustomFieldsShort.PRODUCT_OFFERER_ID.value: None,
                                         zendesk_sell.ZendeskCustomFieldsShort.SIREN.value: None,
                                         zendesk_sell.ZendeskCustomFieldsShort.PRODUCT_VENUE_ID.value: str(venue.id + 1),
+                                        zendesk_sell.ZendeskCustomFieldsShort.TYPAGE.value: ["Lieu"],
                                     },
                                 }
                             },
@@ -451,6 +458,43 @@ def test_update_venue_multiple_results_one_has_id():
 
     assert searched.call_count == 2  # venue and managing offerer
     assert put.call_count == 1
+
+
+@patch("pcapi.core.external.zendesk_sell.zendesk_backend", ZendeskSellBackend())
+def test_update_venue_when_parent_found_is_the_same_contact(caplog):
+    zendesk_id = 300
+
+    venue = offerers_factories.VenueFactory()
+
+    with requests_mock.Mocker() as mock:
+        searched = mock.post(
+            urllib.parse.urljoin(settings.ZENDESK_SELL_API_URL, "/v3/contacts/search"),
+            status_code=200,
+            json={"items": [{"meta": {"total_count": 1}, "items": [{"data": {"id": zendesk_id}}]}]},
+        )
+        put = mock.put(
+            urllib.parse.urljoin(settings.ZENDESK_SELL_API_URL, f"/v2/contacts/{zendesk_id}"),
+            status_code=200,
+            json={"id": zendesk_id},
+        )
+
+        with caplog.at_level(logging.WARNING):
+            response = zendesk_sell.zendesk_update_venue(zendesk_id, venue, zendesk_sell.SEARCH_PARENT)
+
+    assert searched.call_count == 1
+    searched_json = searched.last_request.json()
+    assert searched_json
+
+    assert put.call_count == 1
+    put_json = put.last_request.json()
+    assert put_json["data"]["is_organization"] is True
+
+    assert "parent_organization_id" not in put_json["data"]
+    assert response["id"] == zendesk_id
+
+    assert len(caplog.records) == 1
+    assert caplog.records[0].message == "Trying to set a contact as its own parent in Zendesk Sell"
+    assert caplog.records[0].extra == {"zendesk_id": zendesk_id, "venue_id": venue.id}
 
 
 @patch("pcapi.core.external.zendesk_sell.zendesk_backend", ZendeskSellReadOnlyBackend())
@@ -473,6 +517,7 @@ def test_update_offerer_from_staging():
                                     "custom_fields": {
                                         zendesk_sell.ZendeskCustomFieldsShort.PRODUCT_OFFERER_ID.value: str(offerer.id),
                                         zendesk_sell.ZendeskCustomFieldsShort.SIREN.value: offerer.siren,
+                                        zendesk_sell.ZendeskCustomFieldsShort.TYPAGE.value: ["Structure"],
                                     },
                                 }
                             },
@@ -513,6 +558,7 @@ def test_do_update_venue_from_staging():
                                         zendesk_sell.ZendeskCustomFieldsShort.PRODUCT_OFFERER_ID.value: None,
                                         zendesk_sell.ZendeskCustomFieldsShort.SIREN.value: venue.siret,
                                         zendesk_sell.ZendeskCustomFieldsShort.PRODUCT_VENUE_ID.value: str(venue.id),
+                                        zendesk_sell.ZendeskCustomFieldsShort.TYPAGE.value: ["Lieu"],
                                     },
                                 }
                             },
