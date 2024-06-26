@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Step, Stepper } from 'components/Stepper/Stepper'
@@ -11,8 +11,6 @@ import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/compute
 import { createOfferFromTemplate } from 'core/OfferEducational/utils/createOfferFromTemplate'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'
-import { useOfferStockEditionURL } from 'hooks/useOfferEditionURL'
-import fullEditIcon from 'icons/full-edit.svg'
 import fullMoreIcon from 'icons/full-more.svg'
 import fullShowIcon from 'icons/full-show.svg'
 import { Button } from 'ui-kit/Button/Button'
@@ -54,45 +52,21 @@ export const CollectiveOfferNavigation = ({
   const { logEvent } = useAnalytics()
   const notify = useNotification()
   const navigate = useNavigate()
-  const location = useLocation()
-  const isMarseilleActive = useActiveFeature('WIP_ENABLE_MARSEILLE')
 
-  const offerEditLink = `/offre/${computeURLCollectiveOfferId(
-    offerId,
-    isTemplate
-  )}/collectif/edition`
+  const isMarseilleActive = useActiveFeature('WIP_ENABLE_MARSEILLE')
 
   const previewLink = `/offre/${computeURLCollectiveOfferId(
     offerId,
     isTemplate
   )}/collectif${isTemplate ? '/vitrine' : ''}/apercu`
 
-  const stockEditionUrl = useOfferStockEditionURL(true, offerId)
   const isEditingExistingOffer = !(isCreatingOffer || isCompletingDraft)
 
   const stepList: { [key in CollectiveOfferStep]?: Step } = {}
 
   const requestIdUrl = requestId ? `?requete=${requestId}` : ''
 
-  if (isEditingExistingOffer) {
-    if (!isTemplate) {
-      stepList[CollectiveOfferStep.DETAILS] = {
-        id: CollectiveOfferStep.DETAILS,
-        label: 'Détails de l’offre',
-        url: `/offre/${offerId}/collectif/edition`,
-      }
-      stepList[CollectiveOfferStep.STOCKS] = {
-        id: CollectiveOfferStep.STOCKS,
-        label: 'Dates et prix',
-        url: stockEditionUrl,
-      }
-      stepList[CollectiveOfferStep.VISIBILITY] = {
-        id: CollectiveOfferStep.VISIBILITY,
-        label: 'Établissement et enseignant',
-        url: `/offre/${offerId}/collectif/visibilite/edition`,
-      }
-    }
-  } else {
+  if (!isEditingExistingOffer) {
     stepList[CollectiveOfferStep.DETAILS] = {
       id: CollectiveOfferStep.DETAILS,
       label: 'Détails de l’offre',
@@ -120,49 +94,55 @@ export const CollectiveOfferNavigation = ({
       id: CollectiveOfferStep.CONFIRMATION,
       label: 'Confirmation',
     }
+  }
 
-    //  Steps witout url will be displayed as disabeld in the stepper,
-    //  that's why we need to add url only to the current step and the previeous steps
+  //  Steps witout url will be displayed as disabeld in the stepper,
+  //  that's why we need to add url only to the current step and the previeous steps
 
-    // Add clickable urls depending on current completion
-    // Switch fallthrough is intended, this is precisely the kind of use case for it
-    /* eslint-disable no-fallthrough */
-    switch (activeStep) {
-      // @ts-expect-error switch fallthrough
-      case CollectiveOfferStep.CONFIRMATION:
+  // Add clickable urls depending on current completion
+  // Switch fallthrough is intended, this is precisely the kind of use case for it
+  /* eslint-disable no-fallthrough */
+  switch (activeStep) {
+    // @ts-expect-error switch fallthrough
+    case CollectiveOfferStep.CONFIRMATION:
+      if (stepList[CollectiveOfferStep.PREVIEW]) {
         stepList[CollectiveOfferStep.PREVIEW].url = isTemplate
           ? `/offre/${offerId}/collectif/vitrine/creation/apercu`
           : `/offre/${offerId}/collectif/creation/apercu`
+      }
 
-      // @ts-expect-error switch fallthrough
-      case CollectiveOfferStep.PREVIEW:
+    // @ts-expect-error switch fallthrough
+    case CollectiveOfferStep.PREVIEW:
+      if (stepList[CollectiveOfferStep.SUMMARY]) {
         stepList[CollectiveOfferStep.SUMMARY].url = isTemplate
           ? `/offre/${offerId}/collectif/vitrine/creation/recapitulatif`
           : `/offre/${offerId}/collectif/creation/recapitulatif`
+      }
 
-      // @ts-expect-error switch fallthrough
-      case CollectiveOfferStep.SUMMARY:
-        if (!isTemplate && stepList[CollectiveOfferStep.VISIBILITY]) {
-          stepList[CollectiveOfferStep.VISIBILITY].url =
-            `/offre/${offerId}/collectif/visibilite`
-        }
+    // @ts-expect-error switch fallthrough
+    case CollectiveOfferStep.SUMMARY:
+      if (!isTemplate && stepList[CollectiveOfferStep.VISIBILITY]) {
+        stepList[CollectiveOfferStep.VISIBILITY].url =
+          `/offre/${offerId}/collectif/visibilite`
+      }
 
-      // @ts-expect-error switch fallthrough
-      case CollectiveOfferStep.VISIBILITY:
-        if (!isTemplate && stepList[CollectiveOfferStep.STOCKS]) {
-          stepList[CollectiveOfferStep.STOCKS].url =
-            `/offre/${offerId}/collectif/stocks`
-        }
+    // @ts-expect-error switch fallthrough
+    case CollectiveOfferStep.VISIBILITY:
+      if (!isTemplate && stepList[CollectiveOfferStep.STOCKS]) {
+        stepList[CollectiveOfferStep.STOCKS].url =
+          `/offre/${offerId}/collectif/stocks`
+      }
 
-      // @ts-expect-error switch fallthrough
-      case CollectiveOfferStep.STOCKS:
+    // @ts-expect-error switch fallthrough
+    case CollectiveOfferStep.STOCKS:
+      if (stepList[CollectiveOfferStep.DETAILS]) {
         stepList[CollectiveOfferStep.DETAILS].url = isTemplate
           ? `/offre/collectif/vitrine/${offerId}/creation`
           : `/offre/collectif/${offerId}/creation${requestIdUrl}`
+      }
 
-      case CollectiveOfferStep.DETAILS:
-      // Nothing to do here
-    }
+    case CollectiveOfferStep.DETAILS:
+    // Nothing to do here
   }
 
   const steps = Object.values(stepList)
@@ -175,17 +155,6 @@ export const CollectiveOfferNavigation = ({
   return isEditingExistingOffer ? (
     <>
       <div className={styles['duplicate-offer']}>
-        {!location.pathname.includes('edition') && (
-          <ButtonLink
-            link={{
-              to: offerEditLink,
-              isExternal: false,
-            }}
-            icon={fullEditIcon}
-          >
-            Modifier l’offre
-          </ButtonLink>
-        )}
         <ButtonLink
           link={{
             to: previewLink,
