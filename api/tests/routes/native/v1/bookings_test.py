@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
+from decimal import Decimal
 import hashlib
 import hmac
 import json
@@ -34,6 +35,7 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
+import pcapi.notifications.push.testing as push_testing
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import BookingAction
 from pcapi.utils.human_ids import humanize
 
@@ -907,6 +909,30 @@ class CancelBookingTest:
         assert booking.status == BookingStatus.CANCELLED
         assert booking.cancellationReason == BookingCancellationReasons.BENEFICIARY
         assert len(mails_testing.outbox) == 1
+
+    def test_cancel_booking_trigger_recredit_event(self, client):
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        booking = booking_factories.BookingFactory(user=user)
+
+        client = client.with_token(self.identifier)
+        with assert_num_queries(29):
+            response = client.post(f"/native/v1/bookings/{booking.id}/cancel")
+
+        assert response.status_code == 204
+
+        booking = Booking.query.get(booking.id)
+        assert len(push_testing.requests) == 3
+        assert push_testing.requests[0] == {
+            "can_be_asynchronously_retried": True,
+            "event_name": "recredit_account_cancellation",
+            "event_payload": {
+                "credit": Decimal("300"),
+                "offer_id": booking.stock.offer.id,
+                "offer_name": booking.stock.offer.name,
+                "offer_price": Decimal("10.1"),
+            },
+            "user_id": user.id,
+        }
 
     def test_cancel_others_booking(self, client):
         users_factories.BeneficiaryGrant18Factory(email=self.identifier)
