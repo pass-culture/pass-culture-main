@@ -51,9 +51,9 @@ if _db_options:
 
 Base = declarative_base()
 db = flask_sqlalchemy.SQLAlchemy(engine_options=_engine_options)
-# FIXME (dbaty: 2022-10-22): this is a workaround for a limitation of
-# mypy.  Check if it's still necessary when we migrate to
-# flask_sqlalchemy >= 3.0.1, which exports better typing.
+# This is a workaround for a limitation of mypy.  Check if it's still
+# necessary when we migrate to flask_sqlalchemy >= 3.0.1, which
+# exports better typing.
 if typing.TYPE_CHECKING:
 
     class Model(flask_sqlalchemy.Model):
