@@ -6,12 +6,12 @@ sidebar_position: 3
 
 ## Setup
 
-First, setup a provider, if not already done (more information [**here**](/docs/mandatory-steps/request-a-provider-account#how-to-get-a-provider-account).
+First, set up your provider if you haven't already done so (more information [**here**](/docs/mandatory-steps/request-a-provider-account#how-to-get-a-provider-account).
 
 Next step is to ensure that your API key is linked to at least one venue.
 
 :::warning
-Please note that inside the integration environment, all venues are considered known by Adage. This will not be the case in real life, please ensure that your linked venues can be used for collective offers.
+Note that in an integration environment, all venues are linked to an Adage ID, which mean you are allowed to created a collective offer, in order to test it. However, in the production environment it won’t be the case : a venue is not automatically referenced Adage. Please ensure that your linked venues can be used for collective offers.
 :::
 
 ## API: create a bookable offer
