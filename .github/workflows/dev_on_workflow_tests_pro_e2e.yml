@@ -23,10 +23,6 @@ jobs:
   tests-pro-e2e-tests:
     name: "E2E tests"
     runs-on: ubuntu-latest
-    # strategy: # parallélisation pour Cypress Cloud
-    #   fail-fast: false
-    #   matrix:
-    #     containers: [1, 2, 3, 4]
     steps:
       - uses: actions/checkout@v4.1.7
       - name: "Authentification to Google"
@@ -134,7 +130,6 @@ jobs:
           browser: chrome
           config-file: cypress/cypress.config.ts
           env: TAGS="@P0"
-          # parallel: ${{ github.ref != 'refs/heads/master' }} # pour Cypress Cloud
           record: ${{ github.ref == 'refs/heads/master' }} # pour Cypress Cloud
         env:
           CYPRESS_RECORD_KEY: ${{ steps.secrets.outputs.CYPRESS_CLOUD_RECORD_KEY }}
