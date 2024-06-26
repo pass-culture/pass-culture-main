@@ -112,7 +112,7 @@ def string_length_validator(field_name: str, *, length: int) -> classmethod:
 
 
 def as_utc_without_timezone(d: datetime.datetime) -> datetime.datetime:
-    # FIXME (dbaty, 2020-11-25): We need this ugly workaround because
+    # We need this ugly workaround because
     # the api users send us datetimes like "2020-12-03T14:00:00Z"
     # (note the "Z" suffix). Pydantic deserializes it as a datetime
     # *with* a timezone. However, datetimes are stored in the database
