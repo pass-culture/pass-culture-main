@@ -139,4 +139,24 @@ describe('FormStock', () => {
       screen.getByText('Vous ne pouvez pas définir un prix plus élevé.')
     ).toBeInTheDocument()
   })
+
+  it('should disable start datetime, end datetime and event time inputs when form access is read only', () => {
+    renderFormStock({
+      initialValues: initialValues,
+      onSubmit,
+      props: {
+        mode: Mode.READ_ONLY,
+        disablePriceAndParticipantInputs: false,
+        preventPriceIncrease: false,
+      },
+    })
+
+    const startDatetimeInput = screen.getByLabelText('Date de début *')
+    const endDatetimeInput = screen.getByLabelText('Date de fin *')
+    const eventTimeInput = screen.getByLabelText('Horaire *')
+
+    expect(startDatetimeInput).toBeDisabled()
+    expect(endDatetimeInput).toBeDisabled()
+    expect(eventTimeInput).toBeDisabled()
+  })
 })

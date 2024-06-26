@@ -128,7 +128,7 @@ describe('OfferEducationalStock', () => {
       }),
     }),
   ])(
-    'should disable description, price and places when offer is reimbursed or is used since more than 2 days',
+    'should disable save button, description, price and places when offer is reimbursed or is used since more than 2 days',
     (offer) => {
       const testProps: OfferEducationalStockProps = {
         ...defaultProps,
@@ -142,10 +142,12 @@ describe('OfferEducationalStock', () => {
       )
       const priceInput = screen.getByLabelText('Prix total TTC *')
       const placeInput = screen.getByLabelText('Nombre de participants *')
+      const saveButton = screen.getByText('Enregistrer les modifications')
 
       expect(descriptionInput).toBeDisabled()
       expect(priceInput).toBeDisabled()
       expect(placeInput).toBeDisabled()
+      expect(saveButton).toBeDisabled()
     }
   )
 
@@ -245,4 +247,19 @@ it('should automatically update bookingLimitDatetime when the user edits the sta
     'Date limite de réservation *'
   )
   expect(bookingLimitDatetimeInput).toHaveValue(userDateInput)
+})
+
+it('should disable booking limit datetime when form access is read only', () => {
+  const testProps: OfferEducationalStockProps = {
+    ...defaultProps,
+    mode: Mode.READ_ONLY,
+  }
+
+  renderWithProviders(<OfferEducationalStock {...testProps} />)
+
+  const bookingLimitDatetimeInput = screen.getByLabelText(
+    'Date limite de réservation *'
+  )
+
+  expect(bookingLimitDatetimeInput).toBeDisabled()
 })
