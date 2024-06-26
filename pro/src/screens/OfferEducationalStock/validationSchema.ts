@@ -102,7 +102,7 @@ export const generateValidationSchema = (
     numberOfPlaces: yup
       .number()
       .nullable()
-      .min(0, 'Nombre positif attendu')
+      .min(1, 'Minimum 1 participant')
       .max(3000, 'Le nombre de participants ne doit pas dépasser 3000')
       .required('Champ requis'),
     totalPrice: totalPriceValidation,

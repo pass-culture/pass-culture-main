@@ -127,6 +127,20 @@ export const CollectiveOfferStockCreation = ({
           { revalidate: false }
         )
       }
+
+      let url = `/offre/${computeURLCollectiveOfferId(
+        isTemplate && createdOfferTemplateId !== null
+          ? createdOfferTemplateId
+          : offer.id,
+        isTemplate
+      )}/collectif`
+
+      if (!isTemplate) {
+        url = `${url}/visibilite${requestId ? `?requete=${requestId}` : ''}`
+      } else {
+        url = `${url}/creation/recapitulatif`
+      }
+      navigate(url)
     } catch (e) {
       if (
         hasStatusCodeAndErrorsCode(e) &&
@@ -152,20 +166,6 @@ export const CollectiveOfferStockCreation = ({
         )
       }
     }
-
-    let url = `/offre/${computeURLCollectiveOfferId(
-      isTemplate && createdOfferTemplateId !== null
-        ? createdOfferTemplateId
-        : offer.id,
-      isTemplate
-    )}/collectif`
-
-    if (!isTemplate) {
-      url = `${url}/visibilite${requestId ? `?requete=${requestId}` : ''}`
-    } else {
-      url = `${url}/creation/recapitulatif`
-    }
-    navigate(url)
   }
 
   return (
