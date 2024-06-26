@@ -17,7 +17,10 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
       title="Vos informations pour le grand public"
       editLink={`/structures/${venue.managingOfferer.id}/lieux/${venue.id}/edition`}
     >
-      <SummarySubSection title="À propos de votre activité">
+      <SummarySubSection
+        title="À propos de votre activité"
+        shouldShowDivider={false}
+      >
         <SummaryDescriptionList
           descriptions={[
             {
@@ -32,7 +35,10 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
         <OpeningHoursReadOnly openingHours={venue.openingHours} />
       )}
 
-      <SummarySubSection title="Informations de contact">
+      <SummarySubSection
+        title="Informations de contact"
+        shouldShowDivider={false}
+      >
         <SummaryDescriptionList
           descriptions={[
             {
