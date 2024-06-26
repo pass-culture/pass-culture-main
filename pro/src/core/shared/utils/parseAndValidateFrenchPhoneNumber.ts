@@ -1,4 +1,4 @@
-import { parsePhoneNumberFromString } from 'libphonenumber-js'
+import { E164Number, parsePhoneNumberFromString } from 'libphonenumber-js'
 
 import {
   FRENCH_PACIFIC_DOM_PHONE_REGION,
@@ -36,7 +36,8 @@ export const parseAndValidateFrenchPhoneNumber = (phoneNumber: string) => {
 
   // Dom-tom numbers
   if (Object.keys(prefixRegionDict).includes(prefix)) {
-    phoneNumberFormated = `+${prefixRegionDict[prefix]}${defaultParsing.nationalNumber}`
+    phoneNumberFormated =
+      `+${prefixRegionDict[prefix]}${defaultParsing.nationalNumber}` as E164Number
   }
   const parsedPhoneNumber = parsePhoneNumberFromString(phoneNumberFormated)
   if (!parsedPhoneNumber || !parsedPhoneNumber.isValid()) {
