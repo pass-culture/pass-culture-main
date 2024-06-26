@@ -245,7 +245,7 @@ def _add_or_update_admin(update_if_exists: bool) -> None:
 def _create_provider(venue: offerers_models.Venue, row: dict) -> None:
     provider = providers_models.Provider(name=row["Prénom"])
     offerer_provider = offerers_models.OffererProvider(offerer=venue.managingOfferer, provider=provider)
-    prefix = f"staging_{row['Prénom']}"
+    prefix = f"staging_{row['Mail']}"
     key = offerers_models.ApiKey(
         offerer=venue.managingOfferer, provider=provider, prefix=prefix, secret=crypto.hash_public_api_key(row["Mail"])
     )
