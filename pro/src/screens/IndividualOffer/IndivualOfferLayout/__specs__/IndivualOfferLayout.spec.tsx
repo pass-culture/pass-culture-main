@@ -155,6 +155,7 @@ describe('IndivualOfferLayout', () => {
       {
         offer: getIndividualOfferFactory({
           publicationDate: future.toISOString(),
+          status: OfferStatus.INACTIVE,
         }),
         mode: OFFER_WIZARD_MODE.READ_ONLY,
       },
@@ -169,6 +170,7 @@ describe('IndivualOfferLayout', () => {
       {
         offer: getIndividualOfferFactory({
           publicationDate: '2021-01-01T00:00:00.000Z',
+          status: OfferStatus.INACTIVE,
         }),
         mode: OFFER_WIZARD_MODE.READ_ONLY,
       },
@@ -185,8 +187,25 @@ describe('IndivualOfferLayout', () => {
       {
         offer: getIndividualOfferFactory({
           publicationDate: future.toISOString(),
+          status: OfferStatus.INACTIVE,
         }),
         mode: OFFER_WIZARD_MODE.CREATION,
+      },
+      { features: ['WIP_FUTURE_OFFER'] }
+    )
+
+    expect(screen.queryByText(/Publication prévue le/)).not.toBeInTheDocument()
+  })
+
+  it('should not display publication date if offer is published', () => {
+    const future = addDays(new Date(), 3)
+
+    renderIndivualOfferLayout(
+      {
+        offer: getIndividualOfferFactory({
+          publicationDate: future.toISOString(),
+          status: OfferStatus.ACTIVE,
+        }),
       },
       { features: ['WIP_FUTURE_OFFER'] }
     )

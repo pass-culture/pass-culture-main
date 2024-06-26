@@ -30,7 +30,6 @@ export const IndividualOfferConfirmationScreen = ({
   const isPendingOffer = offer.status === OFFER_STATUS_PENDING
   const queryString = `?structure=${offer.venue.managingOfferer.id}&lieu=${offer.venue.id}`
 
-  const offerType = isPublishedInTheFuture ? 'Offre programmée' : 'Offre'
   const { date: publicationDate, time: publicationTime } = formatDateTimeParts(
     offer.publicationDate
   )
@@ -52,9 +51,13 @@ export const IndividualOfferConfirmationScreen = ({
           />
         )}
         <h2 className={styles['confirmation-title']}>
-          {isPendingOffer
-            ? `${offerType} en cours de validation`
-            : `${offerType} publiée !`}
+          {isPublishedInTheFuture
+            ? isPendingOffer
+              ? `Offre programmée en cours de validation`
+              : `Offre programmée !`
+            : isPendingOffer
+              ? `Offre en cours de validation`
+              : `Offre publiée !`}
         </h2>
 
         {isPendingOffer ? (

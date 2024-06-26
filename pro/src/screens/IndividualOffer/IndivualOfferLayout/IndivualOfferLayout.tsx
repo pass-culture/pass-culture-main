@@ -1,6 +1,6 @@
 import cn from 'classnames'
 
-import { GetIndividualOfferResponseModel } from 'apiClient/v1'
+import { GetIndividualOfferResponseModel, OfferStatus } from 'apiClient/v1'
 import { IndividualOfferNavigation } from 'components/IndividualOfferNavigation/IndividualOfferNavigation'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { useActiveFeature } from 'hooks/useActiveFeature'
@@ -54,6 +54,7 @@ export const IndivualOfferLayout = ({
 
         {isFutureOfferEnabled &&
           mode !== OFFER_WIZARD_MODE.CREATION &&
+          offer?.status !== OfferStatus.ACTIVE &&
           isDateValid(offer?.publicationDate) &&
           new Date(offer.publicationDate) > new Date() && (
             <div className={styles['publication-date']}>
