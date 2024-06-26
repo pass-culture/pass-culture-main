@@ -215,17 +215,6 @@ def _book_offer(
         if is_activation_code_applicable:
             validation.check_activation_code_available(stock)
 
-        # FIXME (dbaty, 2020-10-20): if we directly set relations (for
-        # example with `booking.user = beneficiary`) instead of foreign keys,
-        # the session tries to add the object when `get_user_expenses()`
-        # is called because autoflush is enabled. As such, the PostgreSQL
-        # exceptions (tooManyBookings and insufficientFunds) may raise at
-        # this point and will bubble up. If we want them to be caught, we
-        # have to set foreign keys, so that the session is NOT autoflushed
-        # in `get_user_expenses` and is only committed in `repository.save()`
-        # where exceptions are caught. Since we are using flask-sqlalchemy,
-        # I don't think that we should use autoflush, nor should we use
-        # the `pcapi.repository.repository` module.
         booking = Booking(
             userId=beneficiary.id,
             stockId=stock.id,
