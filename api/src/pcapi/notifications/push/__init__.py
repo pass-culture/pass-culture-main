@@ -14,6 +14,7 @@ class BatchEvent(enum.Enum):
     HAS_ADDED_OFFER_TO_FAVORITES = "has_added_offer_to_favorites"
     HAS_UBBLE_KO_STATUS = "has_ubble_ko_status"
     HAS_BOOKED_OFFER = "has_booked_offer"
+    RECREDIT_ACCOUNT_CANCELLATION = "recredit_account_cancellation"
 
 
 def update_user_attributes(

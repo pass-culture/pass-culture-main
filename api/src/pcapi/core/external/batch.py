@@ -2,6 +2,7 @@ from datetime import datetime
 import logging
 import textwrap
 
+import pcapi.core.bookings.models as bookings_models
 from pcapi.core.cultural_survey import models as cultural_survey_models
 from pcapi.core.external.attributes import models as attributes_models
 import pcapi.core.finance.models as finance_models
@@ -140,6 +141,23 @@ def track_offer_booked_event(user_id: int, offer: offers_models.Offer) -> None:
     payload = batch_tasks.TrackBatchEventRequest(
         event_name=event_name, event_payload=formatted_offer_attributes, user_id=user_id
     )
+    batch_tasks.track_event_task.delay(payload)
+
+
+def track_booking_cancellation(booking: bookings_models.Booking) -> None:
+    from pcapi.core.users.api import get_domains_credit
+
+    event_name = push_notifications.BatchEvent.RECREDIT_ACCOUNT_CANCELLATION
+    user = booking.user
+    offer = booking.stock.offer
+    domains_credit = get_domains_credit(user)
+    event_payload = {
+        "credit": domains_credit.all.remaining,  # type: ignore[union-attr]
+        "offer_id": offer.id,
+        "offer_name": textwrap.shorten(offer.name, width=64, placeholder="..."),
+        "offer_price": booking.total_amount,
+    }
+    payload = batch_tasks.TrackBatchEventRequest(event_name=event_name, event_payload=event_payload, user_id=user.id)
     batch_tasks.track_event_task.delay(payload)
 
 

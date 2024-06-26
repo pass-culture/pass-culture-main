@@ -22,6 +22,7 @@ from pcapi.core.educational import utils as educational_utils
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveStock
+from pcapi.core.external import batch
 from pcapi.core.external.attributes.api import update_external_pro
 from pcapi.core.external.attributes.api import update_external_user
 from pcapi.core.external.batch import track_offer_booked_event
@@ -459,6 +460,7 @@ def _cancel_booking(
         },
         technical_message_id="booking.cancelled",
     )
+    batch.track_booking_cancellation(booking)
     _send_external_booking_notification_if_necessary(booking, BookingAction.CANCEL)
 
     update_external_user(booking.user)
