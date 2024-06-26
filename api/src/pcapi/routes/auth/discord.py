@@ -4,6 +4,7 @@ import urllib
 from flask import redirect
 from flask import render_template
 from flask import request
+from flask_wtf.csrf import CSRFProtect
 from werkzeug.wrappers.response import Response
 
 from pcapi import settings
@@ -37,6 +38,8 @@ def discord_signin() -> str:
 
 @blueprint.auth_blueprint.route("/discord/signin", methods=["POST"])
 def discord_signin_post() -> str | Response | None:
+    csrf = CSRFProtect()
+    csrf.protect()
     form = SigninForm()
     if not form.validate():
         form.error_message = "Identifiant ou Mot de passe incorrect"
