@@ -30,6 +30,7 @@ import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.repository as providers_api
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.testing import assert_no_duplicated_queries
+from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
@@ -897,7 +898,8 @@ class CancelBookingTest:
         booking = booking_factories.BookingFactory(user=user)
 
         client = client.with_token(self.identifier)
-        response = client.post(f"/native/v1/bookings/{booking.id}/cancel")
+        with assert_num_queries(29):
+            response = client.post(f"/native/v1/bookings/{booking.id}/cancel")
 
         assert response.status_code == 204
 
@@ -911,7 +913,11 @@ class CancelBookingTest:
         booking = booking_factories.BookingFactory()
 
         client = client.with_token(self.identifier)
-        response = client.post(f"/native/v1/bookings/{booking.id}/cancel")
+        # fetch booking
+        # fetch user
+        # fetch booking (by email cloud task)
+        with assert_num_queries(3):
+            response = client.post(f"/native/v1/bookings/{booking.id}/cancel")
 
         assert response.status_code == 404
 
@@ -922,7 +928,11 @@ class CancelBookingTest:
         )
 
         client = client.with_token(self.identifier)
-        response = client.post(f"/native/v1/bookings/{booking.id}/cancel")
+        # fetch booking
+        # fetch user
+        # fetch booking (by email cloud task)
+        with assert_num_queries(3):
+            response = client.post(f"/native/v1/bookings/{booking.id}/cancel")
 
         assert response.status_code == 400
         assert response.json == {
@@ -938,7 +948,12 @@ class CancelBookingTest:
             cancellationReason=BookingCancellationReasons.BENEFICIARY,
         )
 
-        response = client.with_token(self.identifier).post(f"/native/v1/bookings/{booking.id}/cancel")
+        client = client.with_token(self.identifier)
+        # fetch booking
+        # fetch user
+        # fetch booking (by email cloud task)
+        with assert_num_queries(3):
+            response = client.post(f"/native/v1/bookings/{booking.id}/cancel")
 
         # successful but it does nothing, so it does not send a new cancellation email
         assert response.status_code == 204
