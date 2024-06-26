@@ -102,4 +102,14 @@ describe('OfferEducationalForm', () => {
       screen.getByRole('checkbox', { name: 'Via un formulaire' })
     ).not.toBeChecked()
   })
+
+  it('should disable save button when access is read only', () => {
+    renderOfferEducationalForm({
+      ...defaultProps,
+      mode: Mode.READ_ONLY,
+    })
+
+    const saveButton = screen.getByText('Enregistrer les modifications')
+    expect(saveButton).toBeDisabled()
+  })
 })
