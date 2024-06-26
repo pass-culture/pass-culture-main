@@ -8,8 +8,9 @@ ACCOUNT_CREATION_TOKEN_LIFE_TIME = datetime.timedelta(hours=1)
 OAUTH_STATE_TOKEN_LIFE_TIME = datetime.timedelta(hours=1)
 RESET_PASSWORD_TOKEN_LIFE_TIME = datetime.timedelta(hours=24)
 EMAIL_VALIDATION_TOKEN_LIFE_TIME = datetime.timedelta(minutes=30)
-# FIXME (dbaty, 2024-03-07): decrease TTL (to something like 1 day or
-# less) once users have a proper way to generate a new token.
+# FIXME (dbaty, 2024-06-26) for now, pro users cannot re-send the token themselves.
+# The default (30 minutes) TTL could thus be too low. So we use an augmented TTL.
+# Once pro users can re-send tokens, we can use the default TTL (EMAIL_VALIDATION_TOKEN_LIFE_TIME).
 EMAIL_VALIDATION_TOKEN_FOR_PRO_LIFE_TIME = datetime.timedelta(days=90)
 EMAIL_VALIDATION_TOKEN_UPON_MANUAL_CREATION_LIFE_TIME = datetime.timedelta(days=1)
 EMAIL_CHANGE_TOKEN_LIFE_TIME = datetime.timedelta(seconds=settings.EMAIL_CHANGE_TOKEN_LIFE_TIME)

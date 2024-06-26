@@ -819,9 +819,6 @@ def create_pro_user_V2(pro_user: ProUserCreationBodyV2Model) -> models.User:
 
     token = token_utils.Token.create(
         token_utils.TokenType.EMAIL_VALIDATION,
-        # FIXME (dbaty, 2024-02-27): for now, the pro user cannot re-send the token themselves.
-        # The default (30 minutes) TTL could thus be too low, so we use an augmented TTL. Once
-        # pro users can re-send tokens, we can use the default TTL (EMAIL_VALIDATION_TOKEN_LIFE_TIME).
         ttl=constants.EMAIL_VALIDATION_TOKEN_FOR_PRO_LIFE_TIME,
         user_id=new_pro_user.id,
     )
