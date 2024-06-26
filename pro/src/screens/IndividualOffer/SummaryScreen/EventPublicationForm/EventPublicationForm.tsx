@@ -45,7 +45,7 @@ export const EventPublicationForm = () => {
   return (
     <>
       <FormLayout fullWidthActions className={styles['form']}>
-        <FormLayout.Section title="Date de publication">
+        <FormLayout.Section title="Date de publication" isNew>
           <FormLayout.Row
             sideComponent={
               values.publicationMode === 'later' ? (
