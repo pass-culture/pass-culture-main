@@ -14,6 +14,7 @@ When('I go to the {string} page', (page: string) => {
     cy.findAllByText(page).first().click()
     cy.url().should('not.equal', urlSource)
   })
+  cy.findAllByTestId('spinner').should('not.exist')
 })
 
 // this account is also in the new interface now
@@ -22,6 +23,7 @@ Given('I am logged in', () => {
     email: 'retention_structures@example.com',
     password: 'user@AZERTY123',
   })
+  cy.findAllByTestId('spinner').should('not.exist')
 })
 
 Given('I am logged in with the new interface', () => {
@@ -29,6 +31,7 @@ Given('I am logged in with the new interface', () => {
     email: 'activation_new_nav@example.com',
     password: 'user@AZERTY123',
   })
+  cy.findAllByTestId('spinner').should('not.exist')
 })
 
 // créer un seul scénario createOffers avec son step-def
@@ -48,12 +51,12 @@ When('I select offerer {string}', (offererName: string) => {
   cy.findAllByTestId('spinner').should('not.exist')
 })
 
-Then('These results should be displayed', (dataTable: DataTable) => {
+Then('These {int} results should be displayed', (int: number, dataTable: DataTable) => {
   const numRows = dataTable.rows().length
   const numColumns = dataTable.raw()[0].length
   const data = dataTable.raw()
   const reLAbelCount = new RegExp(
-    numRows + ' ' + '(offre|réservation)' + (numRows > 1 ? 's' : ''),
+    int + ' ' + '(offre|réservation)' + (int > 1 ? 's' : ''),
     'g'
   )
 
@@ -81,4 +84,12 @@ Then('These results should be displayed', (dataTable: DataTable) => {
         })
       })
   }
+})
+
+When('I validate my filters', () => {
+  cy.findByText('Rechercher').click()
+})
+
+When('I select {string} in {string}', (option: string, filter: string) => {
+  cy.findByLabelText(filter).select(option)
 })
