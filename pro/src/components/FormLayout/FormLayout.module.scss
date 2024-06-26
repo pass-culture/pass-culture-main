@@ -110,6 +110,11 @@ $info-box-margin-left: rem.torem(24px);
   }
 }
 
+.new-tag {
+  display: flex;
+  gap: rem.torem(8px);
+}
+
 .mandatory-info {
   @include fonts.caption;
 
