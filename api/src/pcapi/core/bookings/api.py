@@ -868,7 +868,7 @@ def auto_mark_as_used_after_event() -> None:
     now = datetime.datetime.utcnow()
     threshold = now - constants.AUTO_USE_AFTER_EVENT_TIME_DELAY
 
-    # FIXME (dbaty, 2023-07-07): Revisit with SQLAlchemy 2.
+    # Revisit with SQLAlchemy 2.
     #
     # I tried to update and select bookings in a single query, like this:
     #     WITH updated AS (
