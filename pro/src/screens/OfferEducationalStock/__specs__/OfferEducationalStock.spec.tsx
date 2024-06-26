@@ -1,7 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { addDays, addMinutes, format, subDays } from 'date-fns'
-import React from 'react'
 import * as router from 'react-router-dom'
 
 import { CollectiveBookingStatus } from 'apiClient/v1'
@@ -190,6 +189,48 @@ describe('OfferEducationalStock', () => {
   })
 
   it('should display error message when selected event time is less than current time', async () => {
+    const offer = getCollectiveOfferFactory({ isPublicApi: false })
+    const testProps: OfferEducationalStockProps = {
+      ...defaultProps,
+      offer,
+      initialValues: {
+        ...initialValuesNotEmpty,
+        startDatetime: String(new Date()),
+        eventTime: '02:00',
+      },
+      mode: Mode.CREATION,
+    }
+
+    renderWithProviders(<OfferEducationalStock {...testProps} />)
+    const submitButton = screen.getByRole('button', { name: 'Étape suivante' })
+    await userEvent.click(submitButton)
+
+    expect(
+      screen.getByText("L'heure doit être postérieure à l'heure actuelle")
+    ).toBeInTheDocument()
+  })
+
+  it('should show an error message when participants are less than 1', async () => {
+    const offer = getCollectiveOfferFactory({ isPublicApi: false })
+    const testProps: OfferEducationalStockProps = {
+      ...defaultProps,
+      offer,
+      initialValues: {
+        ...initialValuesNotEmpty,
+        totalPrice: 10,
+        numberOfPlaces: 0,
+      },
+      mode: Mode.CREATION,
+    }
+
+    renderWithProviders(<OfferEducationalStock {...testProps} />)
+    const submitButton = screen.getByRole('button', { name: 'Étape suivante' })
+    await userEvent.click(submitButton)
+
+    expect(screen.getByText('Minimum 1 participant')).toBeInTheDocument()
+  })
+
+  it('should display error message when price and participants are too high', async () => {
     const offer = getCollectiveOfferFactory({ isPublicApi: false })
     const testProps: OfferEducationalStockProps = {
       ...defaultProps,
