@@ -21,7 +21,10 @@ When('I validate offer details step', () => {
 })
 
 When('I fill in prices', () => {
-  cy.findByLabelText('Intitulé du tarif *').should('have.value', 'Tarif unique')
+  cy.findByLabelText('Intitulé du tarif *').should(
+    'have.value',
+    'Tarif unique fffff'
+  )
   cy.findByText('Ajouter un tarif').click()
   cy.findByText('Ajouter un tarif').click()
 
