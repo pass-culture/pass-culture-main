@@ -19,6 +19,13 @@ from pcapi.routes.backoffice.finance import validation
 from pcapi.utils.chunks import get_chunks
 
 
+def _price_event(event: finance_models.FinanceEvent) -> None:
+    pricing = finance_api._price_event(event)
+    db.session.add(pricing)
+    event.status = finance_models.FinanceEventStatus.PRICED
+    db.session.commit()
+
+
 def _create_total_commercial_gesture_individual_offer(
     author_user: users_models.User,
     venue: offerers_models.Venue,
@@ -39,7 +46,7 @@ def _create_total_commercial_gesture_individual_offer(
             booking=booking,
             validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
         )
-        finance_api.price_event(booking.finance_events[0])
+        _price_event(booking.finance_events[0])
 
     # Create the bookings and cancel them
     bookings = []
@@ -54,14 +61,11 @@ def _create_total_commercial_gesture_individual_offer(
             booking=booking,
             validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
         )
-        finance_api.price_event(booking.finance_events[0])
+        _price_event(booking.finance_events[0])
         bookings_api.mark_as_cancelled(
             booking=booking,
             reason=bookings_models.BookingCancellationReasons.BACKOFFICE,
         )
-        for finance_event in booking.finance_events:
-            if finance_event.status == finance_models.FinanceEventStatus.CANCELLED:
-                finance_api.price_event(finance_event)
 
         bookings.append(booking)
 
@@ -77,7 +81,7 @@ def _create_total_commercial_gesture_individual_offer(
             booking=booking,
             validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
         )
-        finance_api.price_event(booking.finance_events[0])
+        _price_event(booking.finance_events[0])
 
     # Generate the commercial gestures
     for booking in bookings:
@@ -98,7 +102,7 @@ def _create_total_commercial_gesture_individual_offer(
             commercial_gesture,
             author=author_user,
         )
-        finance_api.price_event(commercial_gesture.booking_finance_incidents[0].finance_events[0])
+        _price_event(commercial_gesture.booking_finance_incidents[0].finance_events[0])
 
 
 def _create_total_commercial_gesture_collective_offer(
@@ -129,7 +133,7 @@ def _create_total_commercial_gesture_collective_offer(
             venue=venue,
             collectiveBooking=booking,
         )
-        finance_api.price_event(finance_event)
+        _price_event(finance_event)
 
         # Create collective bookings
         booking = educational_factories.UsedCollectiveBookingFactory(
@@ -141,16 +145,13 @@ def _create_total_commercial_gesture_collective_offer(
             venue=venue,
             collectiveBooking=booking,
         )
-        finance_api.price_event(finance_event)
+        _price_event(finance_event)
         # Cancel the collective bookings
         educational_api_booking.cancel_collective_booking(
             collective_booking=booking,
             reason=educational_models.CollectiveBookingCancellationReasons.FINANCE_INCIDENT,
             _from="create_industrial_commercial_gestures collective booking cancel",
         )
-        for event in booking.finance_events:
-            if event.status == finance_models.FinanceEventStatus.CANCELLED:
-                finance_api.price_event(event)
         # Create the commercial gesture and validate it
         commercial_gesture = finance_api.create_finance_commercial_gesture_collective_booking(
             booking=booking,
@@ -165,7 +166,7 @@ def _create_total_commercial_gesture_collective_offer(
         # Pricing of the commercial gestures
         for booking_finance_incident in commercial_gesture.booking_finance_incidents:
             for event in booking_finance_incident.finance_events:
-                finance_api.price_event(event)
+                _price_event(event)
 
 
 def _create_partial_commercial_gesture_multiple_individual_offer(
@@ -189,7 +190,7 @@ def _create_partial_commercial_gesture_multiple_individual_offer(
         )
 
         for finance_event in booking.finance_events:
-            finance_api.price_event(finance_event)
+            _price_event(finance_event)
 
     # Create the bookings to cancel
     bookings = []
@@ -206,16 +207,12 @@ def _create_partial_commercial_gesture_multiple_individual_offer(
             validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
         )
         for finance_event in booking.finance_events:
-            finance_api.price_event(finance_event)
+            _price_event(finance_event)
 
         bookings_api.mark_as_cancelled(
             booking=booking,
             reason=bookings_models.BookingCancellationReasons.BACKOFFICE,
         )
-
-        for finance_event in booking.finance_events:
-            if finance_event.status == finance_models.FinanceEventStatus.CANCELLED:
-                finance_api.price_event(finance_event)
 
         bookings.append(booking)
 
@@ -232,7 +229,7 @@ def _create_partial_commercial_gesture_multiple_individual_offer(
             validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
         )
         for finance_event in booking.finance_events:
-            finance_api.price_event(finance_event)
+            _price_event(finance_event)
 
     # Generate the commercial gestures
     for bookings_batch in get_chunks(bookings, 2):
@@ -254,7 +251,7 @@ def _create_partial_commercial_gesture_multiple_individual_offer(
 
         for booking_finance_incident in commercial_gesture.booking_finance_incidents:
             for finance_event in booking_finance_incident.finance_events:
-                finance_api.price_event(finance_event)
+                _price_event(finance_event)
 
 
 def _generate_bookings_for_commercial_gesture_creation(venue: offerers_models.Venue, users_count: int) -> None:
@@ -274,7 +271,7 @@ def _generate_bookings_for_commercial_gesture_creation(venue: offerers_models.Ve
         )
 
         for finance_event in booking.finance_events:
-            finance_api.price_event(finance_event)
+            _price_event(finance_event)
 
     # Create the bookings to cancel
     for i, user in enumerate(users):
@@ -289,16 +286,12 @@ def _generate_bookings_for_commercial_gesture_creation(venue: offerers_models.Ve
             validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
         )
         for finance_event in booking.finance_events:
-            finance_api.price_event(finance_event)
+            _price_event(finance_event)
 
         bookings_api.mark_as_cancelled(
             booking=booking,
             reason=bookings_models.BookingCancellationReasons.BACKOFFICE,
         )
-
-        for finance_event in booking.finance_events:
-            if finance_event.status == finance_models.FinanceEventStatus.CANCELLED:
-                finance_api.price_event(finance_event)
 
     # Empty the remaining credits leaving only 10 cents in each balance
     for user in users:
@@ -313,7 +306,7 @@ def _generate_bookings_for_commercial_gesture_creation(venue: offerers_models.Ve
             validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
         )
         for finance_event in booking.finance_events:
-            finance_api.price_event(finance_event)
+            _price_event(finance_event)
 
     ################################
     # Generate collective bookings #
@@ -341,7 +334,7 @@ def _generate_bookings_for_commercial_gesture_creation(venue: offerers_models.Ve
             venue=venue,
             collectiveBooking=booking,
         )
-        finance_api.price_event(finance_event)
+        _price_event(finance_event)
 
         # Create collective bookings
         booking = educational_factories.UsedCollectiveBookingFactory(
@@ -353,16 +346,13 @@ def _generate_bookings_for_commercial_gesture_creation(venue: offerers_models.Ve
             venue=venue,
             collectiveBooking=booking,
         )
-        finance_api.price_event(finance_event)
+        _price_event(finance_event)
         # Cancel the collective bookings
         educational_api_booking.cancel_collective_booking(
             collective_booking=booking,
             reason=educational_models.CollectiveBookingCancellationReasons.FINANCE_INCIDENT,
             _from="create_industrial_commercial_gestures collective booking cancel",
         )
-        for event in booking.finance_events:
-            if event.status == finance_models.FinanceEventStatus.CANCELLED:
-                finance_api.price_event(event)
 
 
 def create_industrial_commercial_gestures() -> None:
