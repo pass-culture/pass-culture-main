@@ -11,7 +11,6 @@ from pcapi.core.educational import validation
 from pcapi.core.educational.api.offer import notify_educational_redactor_on_collective_offer_or_stock_edit
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.offers import validation as offer_validation
-from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.repository import transaction
 from pcapi.routes.serialization.collective_stock_serialize import CollectiveStockCreationBodyModel
@@ -21,13 +20,8 @@ from pcapi.serialization import utils as serialization_utils
 logger = logging.getLogger(__name__)
 
 
-def create_collective_stock(
-    stock_data: CollectiveStockCreationBodyModel,
-    user: User,
-    *,
-    offer_id: int | None = None,
-) -> educational_models.CollectiveStock | None:
-    offer_id = offer_id or stock_data.offer_id
+def create_collective_stock(stock_data: CollectiveStockCreationBodyModel) -> educational_models.CollectiveStock | None:
+    offer_id = stock_data.offer_id
     beginning = stock_data.beginning_datetime
     start = stock_data.start_datetime
     end = stock_data.end_datetime

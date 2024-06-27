@@ -16,7 +16,6 @@ import pcapi.core.educational.factories as educational_factories
 import pcapi.core.educational.models as educational_models
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.testing import override_settings
-import pcapi.core.users.factories as users_factories
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.serialization import collective_stock_serialize
 from pcapi.utils import db as db_utils
@@ -27,7 +26,6 @@ class CreateCollectiveOfferStocksTest:
     @time_machine.travel("2020-11-17 15:00:00")
     def should_create_one_stock_on_collective_offer_stock_creation(self) -> None:
         # Given
-        user_pro = users_factories.ProFactory()
         offer = educational_factories.CollectiveOfferFactory()
         new_stock = collective_stock_serialize.CollectiveStockCreationBodyModel(
             offerId=offer.id,
@@ -38,7 +36,7 @@ class CreateCollectiveOfferStocksTest:
         )
 
         # When
-        stock_created = educational_api_stock.create_collective_stock(stock_data=new_stock, user=user_pro)
+        stock_created = educational_api_stock.create_collective_stock(stock_data=new_stock)
 
         # Then
         stock = educational_models.CollectiveStock.query.filter_by(id=stock_created.id).one()
@@ -51,7 +49,6 @@ class CreateCollectiveOfferStocksTest:
     @time_machine.travel("2020-11-17 15:00:00")
     def should_set_booking_limit_datetime_to_beginning_datetime_when_not_provided(self) -> None:
         # Given
-        user_pro = users_factories.ProFactory()
         offer = educational_factories.CollectiveOfferFactory()
         new_stock = collective_stock_serialize.CollectiveStockCreationBodyModel(
             offerId=offer.id,
@@ -61,7 +58,7 @@ class CreateCollectiveOfferStocksTest:
         )
 
         # When
-        stock_created = educational_api_stock.create_collective_stock(stock_data=new_stock, user=user_pro)
+        stock_created = educational_api_stock.create_collective_stock(stock_data=new_stock)
 
         # Then
         stock = educational_models.CollectiveStock.query.filter_by(id=stock_created.id).one()
@@ -70,7 +67,6 @@ class CreateCollectiveOfferStocksTest:
     @time_machine.travel("2020-11-17 15:00:00")
     def test_create_stock_for_non_approved_offer_fails(self) -> None:
         # Given
-        user = users_factories.ProFactory()
         offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.PENDING)
         created_stock_data = collective_stock_serialize.CollectiveStockCreationBodyModel(
             offerId=offer.id,
@@ -82,7 +78,7 @@ class CreateCollectiveOfferStocksTest:
 
         # When
         with pytest.raises(offers_exceptions.RejectedOrPendingOfferNotEditable) as error:
-            educational_api_stock.create_collective_stock(stock_data=created_stock_data, user=user)
+            educational_api_stock.create_collective_stock(stock_data=created_stock_data)
 
         # Then
         assert error.value.errors == {
