@@ -75,7 +75,6 @@ logger = logging.getLogger(__name__)
 AnyOffer = educational_api_offer.AnyCollectiveOffer | models.Offer
 
 OFFERS_RECAP_LIMIT = 501
-STOCK_LIMIT_TO_DELETE = 50
 
 
 OFFER_LIKE_MODELS = {
