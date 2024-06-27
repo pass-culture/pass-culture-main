@@ -622,4 +622,24 @@ describe('screen Offers', () => {
     })
     expect(screen.queryByText(/Créer une offre/)).not.toBeInTheDocument()
   })
+
+  it('should display onboarding banner for archivage only in collective offer list', () => {
+    renderOffers({ ...props, audience: Audience.COLLECTIVE, offers: [] })
+
+    expect(
+      screen.getByText(
+        'C’est nouveau ! Vous pouvez désormais archiver vos offres collectives.'
+      )
+    ).toBeInTheDocument()
+  })
+
+  it('should not display onboarding banner for archivage when we are in individual offer list ', () => {
+    renderOffers(props)
+
+    expect(
+      screen.queryByText(
+        'C’est nouveau ! Vous pouvez désormais archiver vos offres collectives.'
+      )
+    ).not.toBeInTheDocument()
+  })
 })
