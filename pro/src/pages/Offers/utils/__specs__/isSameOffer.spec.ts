@@ -1,7 +1,7 @@
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
 import { listOffersOfferFactory } from 'utils/individualApiFactories'
 
-import { isSameOffer } from '../utils'
+import { isSameOffer } from '../isSameOffer'
 
 describe('isSameOffer', () => {
   const individualOffer = listOffersOfferFactory()

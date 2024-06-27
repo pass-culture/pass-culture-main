@@ -4,9 +4,9 @@ import {
 } from 'apiClient/v1'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { Audience } from 'core/shared/types'
+import { isSameOffer } from 'pages/Offers/utils/isSameOffer'
 
 import { OfferItem } from '../OfferItem/OfferItem'
-import { isSameOffer } from '../utils'
 
 type OffersTableBodyProps = {
   offers: CollectiveOfferResponseModel[] | ListOffersOfferResponseModel[]
