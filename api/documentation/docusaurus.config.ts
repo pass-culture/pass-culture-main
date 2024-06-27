@@ -63,7 +63,7 @@ const config: Config = {
           },
         ],
         theme: {
-          primaryColor: '#6123df',
+          primaryColor: '#320096',
         },
       },
     ] satisfies Redocusaurus.PresetEntry,
