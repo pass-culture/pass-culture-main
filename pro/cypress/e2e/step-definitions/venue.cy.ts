@@ -71,15 +71,9 @@ When('I add venue without Siret details', () => {
 })
 
 When('I validate venue step', () => {
-  cy.intercept({ method: 'GET', url: '/venue-types' }).as('getVenues')
   cy.intercept({ method: 'POST', url: '/venues' }).as('postVenues')
   cy.findByText('Enregistrer et créer le lieu').click()
-  cy.wait(['@getVenues', '@postVenues']).then((interception) => {
-    if (interception[0].response)
-      expect(interception[0].response.statusCode).to.equal(200)
-    if (interception[1].response)
-      expect(interception[1].response.statusCode).to.equal(201)
-  })
+  cy.wait('@postVenues').its('response.statusCode').should('eq', 201)
 })
 
 When('I add venue with Siret details', () => {
