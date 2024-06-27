@@ -53,10 +53,11 @@
   }
 
   .title-column {
+    @include fonts.body-exergue;
+
     grid-column: head;
     grid-row: head / desc;
     align-self: center;
-    font-weight: 600;
     padding-top: rem.torem(4px);
 
     .offer-template-tag {

@@ -33,9 +33,9 @@ $offer-image-width: rem.torem(176px);
 
     &-text {
       display: flex;
-      flex-direction: column
+      flex-direction: column;
     }
-  
+
     .intended-for {
       @include fonts.caption;
 
@@ -50,7 +50,6 @@ $offer-image-width: rem.torem(176px);
       display: flex;
       flex-direction: column;
     }
-
   }
 
   &-image-container {
@@ -123,8 +122,7 @@ $offer-image-width: rem.torem(176px);
 
     &-subtitles,
     &-teacher {
-      font-weight: 500;
-      font-size: rem.torem(15px);
+      @include fonts.body-important;
     }
 
     &-subtitles {
@@ -168,26 +166,6 @@ $offer-image-width: rem.torem(176px);
     justify-content: space-between;
   }
 
-  &-see-more {
-    border: none;
-    background-color: transparent;
-    color: var(--color-primary);
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    padding: 0;
-    cursor: pointer;
-
-    &-icon {
-      margin-right: rem.torem(10px);
-      fill: var(--color-primary);
-
-      &-closed {
-        transform: rotate(180deg);
-      }
-    }
-  }
-
   &-prebooking-button {
     display: flex;
     align-items: center;
@@ -203,8 +181,8 @@ $offer-image-width: rem.torem(176px);
 
 @media (max-width: size.$mobile) {
   .offer-headband {
-      display: flex;
-      flex-direction: column;
-      gap: rem.torem(16px);
-    }
+    display: flex;
+    flex-direction: column;
+    gap: rem.torem(16px);
+  }
 }

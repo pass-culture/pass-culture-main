@@ -12,11 +12,6 @@ $caption-line-height: rem.torem(16px);
   font-weight: 500;
 }
 
-@mixin exception() {
-  font-size: rem.torem(28px);
-  font-weight: 400;
-}
-
 @mixin title1() {
   font-size: rem.torem(26px);
   font-style: normal;
@@ -45,6 +40,13 @@ $caption-line-height: rem.torem(16px);
   line-height: rem.torem(22px);
 }
 
+@mixin title4-light() {
+  font-size: rem.torem(18px);
+  font-style: normal;
+  font-weight: 500;
+  line-height: rem.torem(22px);
+}
+
 @mixin button() {
   font-size: rem.torem(15px);
   font-weight: 700;
@@ -59,6 +61,11 @@ $caption-line-height: rem.torem(16px);
 @mixin body-important() {
   font-size: $body-font-size;
   font-weight: 500;
+}
+
+@mixin body-exergue() {
+  font-size: $body-font-size;
+  font-weight: 600;
 }
 
 @mixin caption() {

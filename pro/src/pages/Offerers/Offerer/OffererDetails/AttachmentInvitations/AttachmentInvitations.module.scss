@@ -20,7 +20,8 @@
     margin-top: rem.torem(26px);
     margin-bottom: rem.torem(24px);
     padding-bottom: rem.torem(8px);
-    font-weight: bold;
+
+    @include fonts.bold;
   }
 
   .subtitle {
