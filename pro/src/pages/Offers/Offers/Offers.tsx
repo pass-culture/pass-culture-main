@@ -98,7 +98,7 @@ export const Offers = ({
             </Banner>
           )}
           {hasOffers && (
-            <div className={styles['offers-count']}>
+            <div>
               {`${getOffersCountToDisplay(offersCount)} ${
                 offersCount <= 1 ? 'offre' : 'offres'
               }`}
