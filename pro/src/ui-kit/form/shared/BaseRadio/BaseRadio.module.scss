@@ -1,4 +1,5 @@
 @use "styles/variables/_forms.scss" as forms;
+@use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
 
 .base-radio {
@@ -130,7 +131,8 @@
     background-color: var(--color-background-secondary);
 
     .base-radio-label {
-      font-weight: 700;
+      @include fonts.button;
+
       padding: rem.torem(16px) rem.torem(16px) rem.torem(16px) 0;
     }
   }

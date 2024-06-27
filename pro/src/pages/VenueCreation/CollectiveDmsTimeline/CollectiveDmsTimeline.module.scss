@@ -3,15 +3,12 @@
 
 .timeline {
   &-step-title {
-    @include fonts.body;
-
-    font-weight: 700;
+    @include fonts.bold;
   }
 
   &-step-title-passed {
-    @include fonts.body;
+    @include fonts.bold;
 
-    font-weight: 700;
     color: var(--color-grey-dark);
   }
 
@@ -33,7 +30,7 @@
     }
 
     &-accent {
-      font-weight: 500;
+      @include fonts.body-important;
     }
   }
 

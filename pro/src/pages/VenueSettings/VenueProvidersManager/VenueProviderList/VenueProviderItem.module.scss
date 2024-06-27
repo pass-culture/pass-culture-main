@@ -64,13 +64,14 @@
 
 .venue-id-at-offer-provider-message {
   color: var(--color-black);
-  font-weight: 500;
+
+  @include fonts.body-important;
 }
 
 .last-synchronisation {
   color: var(--color-grey-dark);
-  font-size: rem.torem(12px);
-  font-weight: 600;
+
+  @include fonts.highlight;
 
   &::before {
     background-color: var(--color-valid);

@@ -43,8 +43,8 @@
   }
 
   .activation-codes-upload-gabarit {
-    font-size: rem.torem(18px);
-    font-weight: 300;
+    @include fonts.gabarit;
+
     margin-bottom: rem.torem(16px);
   }
 

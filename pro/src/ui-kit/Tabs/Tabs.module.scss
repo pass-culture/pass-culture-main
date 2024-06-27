@@ -9,8 +9,9 @@
   gap: rem.torem(16px);
 
   &-tab {
+    @include fonts.body-exergue;
+
     font-size: rem.torem(16px);
-    font-weight: 600;
     border-bottom: rem.torem(2px) solid var(--color-black);
     padding-bottom: rem.torem(8px);
 

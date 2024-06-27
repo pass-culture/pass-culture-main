@@ -1,4 +1,5 @@
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/variables/_z-index.scss" as zIndex;
 
 .adage-container {
@@ -18,12 +19,14 @@
   cursor: pointer;
 
   &-is-active {
-    font-weight: 700;
+    @include fonts.button;
+
     line-height: rem.torem(20px);
   }
 
   &-selected {
-    font-weight: 700;
+    @include fonts.button;
+
     line-height: rem.torem(20px);
     border: rem.torem(2px) solid var(--color-primary);
   }

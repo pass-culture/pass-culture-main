@@ -52,7 +52,9 @@ $radio-size: rem.torem(16px);
 
   &.is-selected {
     border: $border-size-selected solid var(--color-secondary-light);
-    font-weight: 700;
+
+    @include fonts.button;
+
     background-color: var(--color-background-secondary);
   }
 

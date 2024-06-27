@@ -120,6 +120,6 @@
   }
 
   .account-status {
-    font-weight: bold;
+    @include fonts.bold;
   }
 }
