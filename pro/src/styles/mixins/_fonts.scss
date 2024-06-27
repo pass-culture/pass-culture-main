@@ -74,12 +74,6 @@ $caption-line-height: rem.torem(16px);
   line-height: $caption-line-height;
 }
 
-// seems future captions will be smaller
-@mixin small-caption() {
-  font-size: rem.torem(12px);
-  font-weight: 600;
-}
-
 @mixin preview-text() {
   font-size: rem.torem(12px);
   font-weight: 400;

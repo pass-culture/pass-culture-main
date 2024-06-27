@@ -68,7 +68,7 @@
   }
 
   .issue-text {
-    @include fonts.small-caption;
+    @include fonts.highlight;
 
     color: var(--color-error);
     margin-bottom: rem.torem(16px);
