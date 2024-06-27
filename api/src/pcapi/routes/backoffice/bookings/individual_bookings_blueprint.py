@@ -102,7 +102,7 @@ def _get_individual_bookings(
         )
     )
 
-    if form.deposit.data:
+    if form.deposit.data and form.deposit.data != booking_forms.DEPOSIT_DEFAULT_VALUE:
         base_query = base_query.join(finance_models.Deposit, bookings_models.Booking.deposit).options(
             sa.orm.contains_eager(bookings_models.Booking.deposit).load_only(
                 finance_models.Deposit.expirationDate,
