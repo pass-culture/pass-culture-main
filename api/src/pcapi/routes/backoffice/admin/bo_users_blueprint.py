@@ -130,6 +130,7 @@ def render_bo_user_page(user_id: int, edit_form: forms.EditBOUserForm | None = N
         history=get_bo_user_history(user),
         roles=user.backoffice_profile.roles if user.backoffice_profile else [],
         active_tab=request.args.get("active_tab", "history"),
+        extract_user_form=None,
         **user_forms.get_toggle_suspension_args(
             user, required_permission=perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS
         ),

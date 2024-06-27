@@ -356,7 +356,11 @@ def render_public_account_details(
                 "manual_review_dst": url_for(".review_public_account", user_id=user.id),
                 "send_validation_code_form": empty_forms.EmptyForm(),
                 "manual_phone_validation_form": empty_forms.EmptyForm(),
-                "extract_user_form": empty_forms.EmptyForm(),
+                "extract_user_form": (
+                    empty_forms.EmptyForm()
+                    if utils.has_current_user_permission(perm_models.Permissions.EXTRACT_PUBLIC_ACCOUNT)
+                    else None
+                ),
                 "anonymize_form": (
                     empty_forms.EmptyForm()
                     if is_beneficiary_anonymizable(user)
