@@ -13,7 +13,6 @@ const textMock =
 export const Attention: StoryObj<typeof Banner> = {
   args: {
     type: 'attention',
-    closable: true,
     children: textMock,
   },
 }
@@ -29,7 +28,6 @@ export const AttentionWithoutTitle: StoryObj<typeof Banner> = {
 export const Info: StoryObj<typeof Banner> = {
   args: {
     type: 'notification-info',
-    closable: true,
     children: textMock,
   },
 }
@@ -45,7 +43,6 @@ export const InfoWithoutTitle: StoryObj<typeof Banner> = {
 export const Light: StoryObj<typeof Banner> = {
   args: {
     type: 'light',
-    closable: true,
     children: textMock,
   },
 }
@@ -71,7 +68,6 @@ export const WithLink: StoryObj<typeof Banner> = {
       },
     ],
     minimalStyle: false,
-    closable: false,
     type: 'notification-info',
   },
 }
