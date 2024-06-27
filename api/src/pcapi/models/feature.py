@@ -125,6 +125,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_OFFER_MARKDOWN_DESCRIPTION = "Activer la description des offres collectives en markdown."
     WIP_FUTURE_OFFER = "Activer la publication d'offres dans le futur"
     USE_END_DATE_FOR_COLLECTIVE_PRICING = "Utiliser la date de fin du stock collectif comme date de valorisation."
+    WIP_ENABLE_OFFER_ADDRESS = "Activer l'association des offres à des adresses."
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -181,6 +182,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_BENEFICIARY_EXTRACT_TOOL,
     FeatureToggle.WIP_CONNECT_AS,
     FeatureToggle.WIP_ENABLE_MOCK_UBBLE,
+    FeatureToggle.WIP_ENABLE_OFFER_ADDRESS,
     FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY,
     FeatureToggle.WIP_ENABLE_TITELIVE_API_FOR_BOOKS,
     FeatureToggle.WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS,
