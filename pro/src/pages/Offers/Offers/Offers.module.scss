@@ -2,10 +2,6 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/variables/_size.scss" as size;
 
-.offers-count {
-  margin-bottom: rem.torem(32px);
-}
-
 .offers-pagination {
   margin-top: rem.torem(32px);
 }
