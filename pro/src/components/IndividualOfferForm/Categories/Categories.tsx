@@ -25,7 +25,6 @@ import { buildSubcategoryFields } from '../utils/buildSubCategoryFields'
 import { getFilteredVenueListBySubcategory } from '../utils/getFilteredVenueList'
 
 import { SUBCATEGORIES_FIELDS_DEFAULT_VALUES } from './constants'
-import { LegacyMusicTypes } from './MusicTypes/LegacyMusicTypes'
 import { MusicTypes } from './MusicTypes/MusicTypes'
 import { OfferSubtypeTag } from './OfferSubtypeTag/OfferSubtypeTag'
 import { ShowTypes } from './ShowTypes/ShowTypes'
@@ -77,9 +76,6 @@ export const Categories = ({
   } = useFormikContext<IndividualOfferFormValues>()
   const isBookingContactEnabled = useActiveFeature(
     'WIP_MANDATORY_BOOKING_CONTACT'
-  )
-  const isTitliveGenreEnabled = useActiveFeature(
-    'ENABLE_PRO_TITELIVE_MUSIC_GENRES'
   )
   const categoryOptions = buildCategoryOptions(categories)
   const subcategoryOptions = buildSubcategoryOptions(subCategories, categoryId)
@@ -159,7 +155,7 @@ export const Categories = ({
 
   const hasSubCategory = categoryId !== FORM_DEFAULT_VALUES.categoryId
   const hasMusicType =
-    categoryId !== 'LIVRE' && isTitliveGenreEnabled
+    categoryId !== 'LIVRE'
       ? subCategoryFields.includes('gtl_id')
       : subCategoryFields.includes('musicType')
   const hasShowType = subCategoryFields.includes('showType')
@@ -236,15 +232,12 @@ export const Categories = ({
         </FormLayout.Row>
       )}
 
-      {hasMusicType &&
-        (isTitliveGenreEnabled ? (
-          <MusicTypes
-            readOnly={readOnlyFields.includes('gtl_id')}
-            isEvent={isEvent}
-          />
-        ) : (
-          <LegacyMusicTypes readOnly={readOnlyFields.includes('musicType')} />
-        ))}
+      {hasMusicType && (
+        <MusicTypes
+          readOnly={readOnlyFields.includes('gtl_id')}
+          isEvent={isEvent}
+        />
+      )}
 
       {hasShowType && (
         <ShowTypes readOnly={readOnlyFields.includes('showType')} />
