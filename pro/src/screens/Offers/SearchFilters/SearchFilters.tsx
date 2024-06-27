@@ -50,6 +50,7 @@ interface SearchFiltersProps {
 
 const collectiveFilterStatus = [
   { label: 'Tous', value: ALL_STATUS },
+  { label: 'Archivée', value: CollectiveOfferDisplayedStatus.ARCHIVED },
   { label: 'Désactivée', value: CollectiveOfferDisplayedStatus.INACTIVE },
   { label: 'Expirée', value: CollectiveOfferDisplayedStatus.EXPIRED },
   { label: 'Préréservée', value: CollectiveOfferDisplayedStatus.PREBOOKED },
