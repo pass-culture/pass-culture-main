@@ -62,9 +62,9 @@ npm install --global squawk-cli
 ### III.2 Lancement de l'api
 
 Il y a deux options pour lancer l'application Flask.
-La première consiste en l'utilisation d'un utilitaire dédié (`pc`) qui utilise docker-compose. Cette méthode permet d'avoir le plus simplement un server capable de répondre et s'adresse essentiellement aux developpeurs front.
+La première consiste en l'utilisation d'un utilitaire dédié (`pc`) qui utilise docker-compose. Cette méthode permet d'avoir le plus simplement un server HTTP.
 
-La seconde méthode consiste à créer en local les différents constituant logiciel afin d'avoir une maitrise plus fine des traitements (debugger, se connecter à la DB) et un temps de setup plus court.
+La seconde méthode consiste à créer en local les différents constituant logiciel afin d'avoir une maitrise plus fine des traitements et un temps de setup plus court.
  
 #### III.2.1 Option 1 : Lancement via le script `pc` présent dans pass-culture-main
 
@@ -83,11 +83,11 @@ Les dépendances suivantes doivent également être installées:
 
 
 #### III.2.2.a Postgresql
-Les informations générales sur les étapes d"installation sont disponible sur le lien https://www.postgresql.org/download/
+Les informations générales sur les étapes d'installation sont disponibles sur le lien https://www.postgresql.org/download/
   - Linux : 
     * Ubuntu : 
-     Il est préférable de cibler la version utilisé en production. Celle-ci peut se retrouver dans le fichier doker-compose-backend.
-     A la date de rédaction postgres 15 est utilisé. 
+     Il est préférable de cibler la version utilisée en production. Celle-ci peut se retrouver dans le fichier doker-compose-backend.
+     A la date de rédaction postgresql 15.0 est utilisé. 
      Configuration du repos apt
      ```shell
      sudo apt install -y postgresql-common
@@ -108,7 +108,15 @@ Les informations générales sur les étapes d"installation sont disponible sur 
   - Macos :
 
     Installer postgres.app depuis ce lien [Postgres.app](https://postgresapp.com/), choisir la version iso à la prod (à date postgresql 15)
-    
+Il est nécessaire de configurer des accès utilisateur afin de lancer les scripts.
+* Pour les utilisateur Linux/Mac:
+<br> Il faut créer un role au même nom que l'utilisateur:
+  ```shell
+  $ psql -U postgres
+  > CREATE ROLE <myuser> LOGIN password 'secret';
+  > CREATE DATABASE <myuser> ENCODING 'UTF8' OWNER <myuser>;
+  ```
+
 
 #### III.2.2.b PostGIS
 
@@ -141,8 +149,8 @@ Pour initialiser l'application, vous devez suivre les étapes suivantes :
 
 * Soit en réalisant les étapes suivantes une par une:
   - créer les _users_ suivants:
-  <br>il faut pour cela changer d'utilisateur par afin de se connecter au server postgresql.
-  <br> A l'installation un utilisateur système est crée et doit être utilisé pour se connecter à la base de données.
+  <br>il faut pour cela changer d'utilisateur afin de se connecter au server postgresql.
+  <br> A l'installation un utilisateur système est créé et doit être utilisé pour se connecter à la base de données.
     ```shell 
     >sudo su postgres
     >psql
@@ -184,7 +192,7 @@ Vous pouvez maintenant lancer l'application back
     python src/pcapi/backofficeapp.py
     ```
  - Par pc 
-  <br>Cette methode relance les migrations et s'assure de l'existance des composants logiciel(redis, extension postgres)
+  <br>Cette methode relance les migrations et s'assure de l'existence des composants logiciels (redis, extension postgres)
   ```
   # Lancer l'API
   pc start-api-no-docker
@@ -214,13 +222,13 @@ Pour lancer les tests il faut d'abord lancer l'api
 Et lancer les tests 
   ```shell
   pc test-backend # Pour lancer tous les tests backend
-  pc test-backoffice # pour lancer tout les tests du backoffice
+  pc test-backoffice # pour lancer tous les tests du backoffice
   pc test-backend tests/core/offers/test_api.py::CreateOfferTest::test_create_offer_from_scratch # Pour lancer un test en particulier
 
   ```
 
 ### IV.2 Test dans l'environnement poetry
-Suite à l'initialisation de l'application il existe déjà un server redis et une base de données test.
+Suite à l'initialisation de l'application il existe déjà un serveur redis et une base de données test.
 <br>Il suffit alors de :
 * Lancer les tests depuis la ligne de commande dans un `poetry shell`. Il est ainsi très simple d'accéder à
   `stdin`/`stdout` via le paramètre  `-s`, par exemple pour utiliser des breakpoints.
@@ -248,7 +256,7 @@ Il est également possible d'utiliser le serveur redis et la base de données te
       -v redis_local_data:/data \
       redis redis-server
     ```
-Il suffit alors d'éxecuter les tests comme présenté précedemment.
+Il suffit alors d'éxecuter les tests comme présenté précédemment.
 ### IV.3. Écriture des tests
 
 Les tests utilisent leur propre base de données. Si un test a besoin d'accéder à la base de données, il faut décorer la
