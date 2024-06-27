@@ -15,6 +15,8 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers.models import TiteliveImageType
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers.titelive_gtl import GTLS
+from pcapi.core.reactions.factories import ReactionFactory
+from pcapi.core.reactions.models import ReactionTypeEnum
 from pcapi.core.users import factories as users_factories
 from pcapi.repository import atomic
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_gdpr_users import create_industrial_gdpr_users
@@ -60,6 +62,7 @@ def save_test_cases_sandbox() -> None:
     create_institutional_website_offer_playlist()
     create_product_with_multiple_images()
     create_discord_users()
+    create_users_with_reactions()
 
 
 def create_offers_with_gtls() -> None:
@@ -670,3 +673,26 @@ def create_discord_users() -> None:
             email=f"discordUser{i}@test.com", firstName=f"discord{i}", lastName=f"user{i}"
         )
         users_factories.DiscordUserFactory(user=user, discordId=None, hasAccess=True)
+
+
+def create_users_with_reactions() -> None:
+    # Test case 1 : a user booked an offer and reacted to it
+    #   - user_1 booked and reacted to offers linked to a product
+    #   - user_2 booked and reacted to offers not linked to a product
+    user_1 = users_factories.BeneficiaryGrant18Factory(email="catherine.foundling@scrying.ca")
+    user_2 = users_factories.BeneficiaryGrant18Factory(email="hakram@scrying.ca")
+
+    reactions_to_add = [ReactionTypeEnum.LIKE, ReactionTypeEnum.DISLIKE, ReactionTypeEnum.NO_REACTION, None]
+    for reaction_type in reactions_to_add:
+        # USER 1
+        product = offers_factories.ProductFactory()
+        stock = offers_factories.StockFactory(offer__product=product)
+        bookings_factories.UsedBookingFactory(stock=stock, user=user_1)
+        if reaction_type is not None:
+            ReactionFactory(user=user_1, product=product, reactionType=reaction_type)
+
+        # USER 2
+        stock = offers_factories.StockFactory()
+        bookings_factories.UsedBookingFactory(stock=stock, user=user_2)
+        if reaction_type is not None:
+            ReactionFactory(user=user_2, offer=stock.offer, reactionType=reaction_type)
