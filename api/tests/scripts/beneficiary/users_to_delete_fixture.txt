@@ -1,2 +1,0 @@
-user_to_delete@example.com
-user_to_suspend@example.com
