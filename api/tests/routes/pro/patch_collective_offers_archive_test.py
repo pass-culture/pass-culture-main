@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pytest
 
 from pcapi.core.educational.factories import CollectiveOfferFactory
@@ -20,11 +22,12 @@ class Returns204Test:
         # When
         data = {"ids": [offer1.id, offer2.id]}
 
-        # 1. authentication
-        # 2. load current_user
-        # 3. retrieve all collective_order.ids to batch them in pool for update
-        # 4. update dateArchive on collective_offer
-        with assert_num_queries(4):
+        # query += 1 authentication
+        # query += 1 load current_user
+        # query += 1 ensure there is no existing archived offer
+        # query += 1 retrieve all collective_order.ids to batch them in pool for update
+        # query += 1 update dateArchive on collective_offer
+        with assert_num_queries(5):
             response = client.patch("/collective/offers/archive", json=data)
 
         # Then
@@ -57,3 +60,27 @@ class Returns204Test:
         assert response.status_code == 204
         assert CollectiveOffer.query.get(offer.id).isArchived
         assert not CollectiveOffer.query.get(other_offer.id).isArchived
+
+
+@pytest.mark.usefixtures("db_session")
+class Returns422Test:
+    def when_archiving_already_archived(self, client):
+        # Given
+        offer_already_archived = CollectiveOfferFactory(dateArchived=datetime.utcnow())
+        venue = offer_already_archived.venue
+        offer_not_archived = CollectiveOfferFactory(venue=venue)
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
+        client = client.with_session_auth("pro@example.com")
+
+        # When
+        data = {"ids": [offer_already_archived.id, offer_not_archived.id]}
+
+        response = client.patch("/collective/offers/archive", json=data)
+
+        # Then
+        assert response.status_code == 422
+        assert response.json == {"global": ["One of the offer is already archived"]}
+
+        assert CollectiveOffer.query.get(offer_already_archived.id).isArchived
+        assert not CollectiveOffer.query.get(offer_not_archived.id).isArchived

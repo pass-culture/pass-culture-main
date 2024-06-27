@@ -442,6 +442,10 @@ def patch_collective_offers_archive(
     body: collective_offers_serialize.PatchCollectiveOfferArchiveBodyModel,
 ) -> None:
     collective_query = educational_api_offer.get_query_for_collective_offers_by_ids_for_user(current_user, body.ids)
+
+    if educational_api_offer.query_has_any_archived(collective_query):
+        raise ApiErrors({"global": ["One of the offer is already archived"]}, status_code=422)
+
     offers_api.batch_update_collective_offers(collective_query, {"dateArchived": datetime.utcnow()})
 
 
