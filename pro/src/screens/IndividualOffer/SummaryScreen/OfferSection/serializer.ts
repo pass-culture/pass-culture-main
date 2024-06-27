@@ -4,13 +4,9 @@ import {
   GetMusicTypesResponse,
   SubcategoryResponseModel,
 } from 'apiClient/v1'
-import {
-  musicOptionsTree,
-  showOptionsTree,
-} from 'core/Offers/categoriesSubTypes'
+import { showOptionsTree } from 'core/Offers/categoriesSubTypes'
 
 const getMusicData = (
-  isTiteliveMusicGenreEnabled: boolean,
   offer: GetIndividualOfferResponseModel,
   musicTypes?: GetMusicTypesResponse,
   gtl_id?: string
@@ -19,38 +15,16 @@ const getMusicData = (
   musicSubTypeName?: string
   gtl_id?: string
 } => {
-  if (isTiteliveMusicGenreEnabled) {
-    return {
-      musicTypeName: musicTypes?.find(
-        (item) => item.gtl_id.substring(0, 2) === gtl_id?.substring(0, 2) // Gtl_id is a string of 8 characters, only first 2 are relevant to music genre
-      )?.label,
-      gtl_id: offer.extraData?.gtl_id,
-    }
-  }
-
-  const offerMusicType = offer.extraData?.musicType
-  const offerMusicSubType = offer.extraData?.musicSubType
-  if (!offerMusicType || !offerMusicSubType) {
-    return {}
-  }
-  const musicTypeItem = musicOptionsTree.find(
-    (item) => item.code === parseInt(offerMusicType, 10)
-  )
-  const children = musicTypeItem?.children
-  if (children === undefined) {
-    throw new Error('Music subtype not found')
-  }
   return {
-    musicTypeName: musicTypeItem?.label,
-    musicSubTypeName: children.find(
-      (item) => item.code === parseInt(offerMusicSubType, 10)
+    musicTypeName: musicTypes?.find(
+      (item) => item.gtl_id.substring(0, 2) === gtl_id?.substring(0, 2) // Gtl_id is a string of 8 characters, only first 2 are relevant to music genre
     )?.label,
+    gtl_id: offer.extraData?.gtl_id,
   }
 }
 
 const serializerOfferSubCategoryFields = (
   offer: GetIndividualOfferResponseModel,
-  isTiteliveMusicGenreEnabled: boolean,
   subCategory?: SubcategoryResponseModel,
   musicTypes?: GetMusicTypesResponse
 ): {
@@ -91,7 +65,6 @@ const serializerOfferSubCategoryFields = (
   )
 
   const { musicTypeName, musicSubTypeName, gtl_id } = getMusicData(
-    isTiteliveMusicGenreEnabled,
     offer,
     musicTypes,
     offer.extraData?.gtl_id
@@ -121,7 +94,6 @@ export const serializeOfferSectionData = (
   offer: GetIndividualOfferResponseModel,
   categories: CategoryResponseModel[],
   subCategories: SubcategoryResponseModel[],
-  isTiteliveMusicGenreEnabled: boolean,
   musicTypes?: GetMusicTypesResponse
 ) => {
   const offerSubCategory = subCategories.find(
@@ -155,7 +127,6 @@ export const serializeOfferSectionData = (
   }
   const subCategoryData = serializerOfferSubCategoryFields(
     offer,
-    isTiteliveMusicGenreEnabled,
     offerSubCategory,
     musicTypes
   )

@@ -65,7 +65,6 @@ class FeatureToggle(enum.Enum):
     ENABLE_PHONE_VALIDATION = "Active la validation du numéro de téléphone"
     ENABLE_PRO_ACCOUNT_CREATION = "Permettre l'inscription des comptes professionels"
     ENABLE_PRO_BOOKINGS_V2 = "Activer l'affichage de la page booking avec la nouvelle architecture."
-    ENABLE_PRO_TITELIVE_MUSIC_GENRES = "Activer l'utilisation des genres musicaux Titelive pour les pros"
 
     ENABLE_TITELIVE_MUSIC_TYPES_IN_API_OUTPUT = "Désactiver le renvoi des genres de titelive dans l'api publique"
 
