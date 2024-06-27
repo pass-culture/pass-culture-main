@@ -14,7 +14,7 @@ def get_flag():  # type: ignore[no-untyped-def]
     from pcapi.models import feature
 
     return feature.Feature(
-        name="ENABLE_FRATIBULATION",
+        name="WIP_ENABLE_NEW_NAV_AB_TEST",
         isActive=True,
         description="Activer l'A/B test de la nouvelle navigation du portail pro.",
     )
