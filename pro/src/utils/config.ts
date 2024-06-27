@@ -13,7 +13,6 @@ if (typeof window !== 'undefined') {
 export const API_URL = apiUrlBasedOnDomain || 'http://localhost'
 
 export const ENVIRONMENT_NAME = import.meta.env.MODE
-export const ENV_WORDING = import.meta.env.VITE_ENV_WORDING
 export const SENTRY_SAMPLE_RATE = import.meta.env.VITE_SENTRY_SAMPLE_RATE ?? '0'
 export const SENTRY_SERVER_URL = import.meta.env.VITE_SENTRY_SERVER_URL
 export const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY ?? ''

@@ -8,8 +8,9 @@ import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { Notification } from 'components/Notification/Notification'
-import { AttachmentInvitations } from 'pages/Offerers/Offerer/OffererDetails/AttachmentInvitations/AttachmentInvitations'
+import { Collaborators } from 'pages/Collaborators/Collaborators'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 vi.mock('apiClient/api', () => ({
   api: {
@@ -23,9 +24,17 @@ const mockLogEvent = vi.fn()
 const renderAttachmentInvitations = async () => {
   renderWithProviders(
     <>
-      <AttachmentInvitations offererId={1} />
+      <Collaborators />
       <Notification />
-    </>
+    </>,
+    {
+      storeOverrides: {
+        user: {
+          selectedOffererId: 1,
+          currentUser: sharedCurrentUserFactory(),
+        },
+      },
+    }
   )
   await waitFor(() => {
     expect(api.getOffererMembers).toHaveBeenCalled()

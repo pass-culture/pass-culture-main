@@ -66,26 +66,6 @@ describe('OffererDetails', () => {
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
   })
 
-  it('should trigger an event when clicking on "Modifier" for offerers', async () => {
-    renderOffererDetails()
-
-    await userEvent.click(screen.getByText('Modifier'))
-
-    expect(mockLogEvent).toHaveBeenCalledWith('hasClickedModifyOfferer', {
-      offerer_id: defaultGetOffererResponseModel.id,
-    })
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-  })
-
-  it('should not allow user to update offerer informations when user attachment to offerer is not yet validated', () => {
-    renderOffererDetails({ isUserOffererValidated: false })
-
-    const [offererUpdateButton] = screen.getAllByRole('link', {
-      name: 'Modifier Action non disponible',
-    })
-    expect(offererUpdateButton).toBeInTheDocument()
-  })
-
   it('should redirect to offerer creation page when selecting "add offerer" option"', async () => {
     renderOffererDetails()
 

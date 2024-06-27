@@ -104,14 +104,6 @@ export const Sitemap = () => {
           </Link>
         </li>
         <li className={styles['sitemap-list-item']}>
-          <Link
-            to={`/structures/${selectedOffererId}`}
-            className={styles['sitemap-link']}
-          >
-            Structure
-          </Link>
-        </li>
-        <li className={styles['sitemap-list-item']}>
           <Link to="/profil" className={styles['sitemap-link']}>
             Profil
           </Link>

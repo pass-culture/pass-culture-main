@@ -2,11 +2,7 @@ import { useFormikContext } from 'formik'
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
 
-import {
-  GetOffererResponseModel,
-  SharedCurrentUserResponseModel,
-  VenueTypeResponseModel,
-} from 'apiClient/v1'
+import { GetOffererResponseModel, VenueTypeResponseModel } from 'apiClient/v1'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { AddressSelect } from 'components/Address/Address'
 import { FormLayout } from 'components/FormLayout/FormLayout'
@@ -15,7 +11,6 @@ import {
   RouteLeavingGuard,
 } from 'components/RouteLeavingGuard/RouteLeavingGuard'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
-import { useCurrentUser } from 'hooks/useCurrentUser'
 import { selectCurrentOffererId } from 'store/user/selectors'
 import { Banner } from 'ui-kit/Banners/Banner/Banner'
 import { Button } from 'ui-kit/Button/Button'
@@ -30,7 +25,6 @@ import { buildVenueTypesOptions } from './buildVenueTypesOptions'
 import { SiretOrCommentFields } from './SiretOrCommentFields/SiretOrCommentFields'
 import { VenueCreationFormValues } from './types'
 import styles from './VenueCreationForm.module.scss'
-import { venueSubmitRedirectUrl } from './venueSubmitRedirectUrl'
 
 type VenueFormProps = {
   offerer: GetOffererResponseModel
@@ -41,7 +35,6 @@ type VenueFormProps = {
 type ShouldBlockVenueNavigationProps = {
   offererId: number
   selectedOffererId: number | null
-  user: SharedCurrentUserResponseModel
 }
 
 type ShouldBlockVenueNavigation = (
@@ -51,11 +44,10 @@ type ShouldBlockVenueNavigation = (
 export const shouldBlockVenueNavigation: ShouldBlockVenueNavigation =
   ({
     offererId,
-    user,
     selectedOffererId,
   }: ShouldBlockVenueNavigationProps): BlockerFunction =>
   ({ nextLocation }) => {
-    const url = venueSubmitRedirectUrl(offererId, user)
+    const url = '/accueil?success'
     const nextUrl = nextLocation.pathname + nextLocation.search
 
     return selectedOffererId === offererId && !nextUrl.startsWith(url)
@@ -68,7 +60,6 @@ export const VenueCreationForm = ({
 }: VenueFormProps) => {
   const { initialValues, isSubmitting } =
     useFormikContext<VenueCreationFormValues>()
-  const user = useCurrentUser()
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const [isFieldNameFrozen, setIsFieldNameFrozen] = useState(false)
@@ -186,7 +177,6 @@ export const VenueCreationForm = ({
         <RouteLeavingGuard
           shouldBlockNavigation={shouldBlockVenueNavigation({
             offererId: offerer.id,
-            user: user.currentUser,
             selectedOffererId,
           })}
           dialogTitle="Voulez-vous quitter la création de lieu ?"
