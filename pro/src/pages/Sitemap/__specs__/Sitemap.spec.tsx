@@ -48,7 +48,6 @@ describe('Sitemap', () => {
         href: '/remboursements/informations-bancaires',
       },
       { name: 'Collaborateurs', href: '/collaborateurs' },
-      { name: 'Structure', href: '/structures/42' },
       { name: 'Profil', href: '/profil' },
     ]
 

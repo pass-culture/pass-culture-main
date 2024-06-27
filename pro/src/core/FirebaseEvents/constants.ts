@@ -22,7 +22,6 @@ export enum Events {
   CLICKED_HELP_CENTER = 'hasClickedHelpCenter',
   CLICKED_HOME = 'hasClickedHome',
   CLICKED_LOGOUT = 'hasClickedLogout',
-  CLICKED_MODIFY_OFFERER = 'hasClickedModifyOfferer',
   CLICKED_OFFER = 'hasClickedOffer',
   CLICKED_OFFER_FORM_NAVIGATION = 'hasClickedOfferFormNavigation',
   CLICKED_ONBOARDING_FORM_NAVIGATION = 'HasClickedOnboardingFormNavigation',

@@ -28,25 +28,7 @@ const defaultShouldBlockNavigationInVenueProps = {
 }
 
 describe('shouldBlockNavigation', () => {
-  it('should not block when creating venue and being redirected for admin', () => {
-    const nextLocation = {
-      ...defaultLocation,
-      pathname: `/structures/${offererId}`,
-    }
-
-    const shouldBlockNavigationInVenueProps = {
-      ...defaultShouldBlockNavigationInVenueProps,
-      user: userAdmin,
-    }
-
-    const result = shouldBlockVenueNavigation(
-      shouldBlockNavigationInVenueProps
-    )({ currentLocation: defaultLocation, nextLocation: nextLocation })
-
-    expect(result).toBe(false)
-  })
-
-  it('should not block when creating venue and being redirected for pro user', () => {
+  it('should not block when creating venue and being redirected', () => {
     const nextLocation = {
       ...defaultLocation,
       pathname: '/accueil',
