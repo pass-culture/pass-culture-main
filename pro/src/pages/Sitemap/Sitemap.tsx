@@ -12,7 +12,7 @@ export const Sitemap = () => {
   return (
     <AppLayout>
       <h1>Plan du site</h1>
-      <ul className={styles['sitemap-list']}>
+      <ul className={styles['sitemap-list']} data-testid="sitemap">
         <li className={styles['sitemap-list-item']}>
           <Link
             to={`/offre/creation?structure=${selectedOffererId}`}
