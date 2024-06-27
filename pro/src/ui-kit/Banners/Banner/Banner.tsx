@@ -1,10 +1,8 @@
 import cn from 'classnames'
 import React from 'react'
 
-import fullClearIcon from 'icons/full-clear.svg'
 import shadowTipsHelpIcon from 'icons/shadow-tips-help.svg'
 import shadowTipsWarningIcon from 'icons/shadow-tips-warning.svg'
-import strokeCloseIcon from 'icons/stroke-close.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { LinkNodes, Link } from '../LinkNodes/LinkNodes'
@@ -15,7 +13,6 @@ export interface BannerProps {
   children?: React.ReactNode | React.ReactNode[]
   links?: Link[]
   type?: 'notification-info' | 'attention' | 'light'
-  closable?: boolean
   minimalStyle?: boolean
   handleOnClick?: () => void
   className?: string
@@ -26,9 +23,7 @@ export interface BannerProps {
 export const Banner = ({
   children,
   type = 'attention',
-  closable = false,
   minimalStyle = false,
-  handleOnClick,
   className,
   links,
   showTitle = true,
@@ -68,27 +63,6 @@ export const Banner = ({
         </div>
       )}
       <div className={styles['border-cut']}>
-        {closable && (
-          <button onClick={handleOnClick} type="button">
-            {
-              /* istanbul ignore next: graphic variation */
-              type !== 'light' ? (
-                <SvgIcon
-                  src={fullClearIcon}
-                  alt="Masquer le bandeau"
-                  className={cn(styles['close-icon-banner'])}
-                />
-              ) : (
-                <SvgIcon
-                  src={strokeCloseIcon}
-                  alt="Masquer le bandeau"
-                  className={styles['close-icon']}
-                />
-              )
-            }
-          </button>
-        )}
-
         <div className={styles['content']}>
           <div>
             {children && (

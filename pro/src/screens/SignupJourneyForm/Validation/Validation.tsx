@@ -140,11 +140,7 @@ export const Validation = (): JSX.Element => {
             Modifier
           </ButtonLink>
         </h2>
-        <Banner
-          type={'light'}
-          closable={false}
-          className={styles['data-displaying']}
-        >
+        <Banner type={'light'} className={styles['data-displaying']}>
           <div className={styles['data-line']}>
             {offerer.publicName || offerer.name}
           </div>
@@ -177,11 +173,7 @@ export const Validation = (): JSX.Element => {
             Modifier
           </ButtonLink>
         </h2>
-        <Banner
-          type={'light'}
-          closable={false}
-          className={styles['data-displaying']}
-        >
+        <Banner type={'light'} className={styles['data-displaying']}>
           <div className={styles['data-line']}>
             {
               venueTypes.find(

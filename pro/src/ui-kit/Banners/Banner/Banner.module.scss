@@ -13,13 +13,6 @@ $banner-left-padding: rem.torem(16px);
       margin: rem.torem(30px) 0 rem.torem(16px) 0;
     }
 
-    &::before,
-    .close-icon-banner {
-      background: var(--color-white);
-      font-weight: 700;
-      position: absolute;
-    }
-
     &::before {
       padding: 0 rem.torem(8px) 0 rem.torem(40px);
       top: rem.torem(-10px);
@@ -33,13 +26,6 @@ $banner-left-padding: rem.torem(16px);
       height: rem.torem(24px);
       top: rem.torem(-15px);
       left: rem.torem(23px);
-    }
-
-    .close-icon-banner {
-      top: rem.torem(-11px);
-      right: rem.torem(25px);
-      height: rem.torem(20px);
-      width: rem.torem(20px);
     }
 
     .bi-banner-text {
@@ -90,22 +76,11 @@ $banner-left-padding: rem.torem(16px);
     .bi-link {
       color: var(--color-black);
     }
-
-    .close-icon-banner {
-      fill: var(--color-primary);
-      color: var(--color-primary);
-    }
   }
 
   &.notification-info {
     border: rem.torem(1px) solid var(--color-secondary-light);
     color: var(--color-secondary-light);
-
-    .close-icon-banner,
-    .close-icon {
-      fill: var(--color-secondary-light);
-      color: var(--color-secondary-light);
-    }
   }
 
   &.light {
@@ -132,7 +107,6 @@ $banner-left-padding: rem.torem(16px);
       color: var(--color-white);
     }
 
-    .close-icon,
     path {
       fill: var(--color-white);
       color: var(--color-white);
@@ -156,12 +130,6 @@ $banner-left-padding: rem.torem(16px);
       right: rem.torem(8px);
       top: rem.torem(8px);
 
-      .close-icon-banner {
-        height: rem.torem(20px);
-        width: rem.torem(20px);
-      }
-
-      .close-icon-banner,
       path {
         fill: var(--color-white);
         color: var(--color-white);
