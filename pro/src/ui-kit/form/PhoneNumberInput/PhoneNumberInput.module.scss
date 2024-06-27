@@ -33,7 +33,7 @@ $input-phone-number-padding-left: calc(
     }
 
     &-optional {
-      @include fonts.small-caption;
+      @include fonts.highlight;
 
       color: var(--color-grey-dark);
     }

@@ -115,11 +115,11 @@ $offer-image-width: rem.torem(216px);
   margin-bottom: rem.torem(8px);
 
   &-name {
-    @include fonts.small-caption;
+    @include fonts.highlight;
   }
 
   &-distance {
-    @include fonts.small-caption;
+    @include fonts.highlight;
 
     color: var(--color-grey-dark);
     text-transform: uppercase;

@@ -74,7 +74,7 @@ $venue-image-width: rem.torem(276px);
   }
 
   &-distance {
-    @include fonts.small-caption;
+    @include fonts.highlight;
 
     color: var(--color-grey-dark);
     text-transform: uppercase;
