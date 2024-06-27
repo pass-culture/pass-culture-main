@@ -57,10 +57,11 @@ class Returns200Test:
     def test_access_by_pro_user(self, client):
         # Given
         user_offerer = offerers_factories.UserOffererFactory()
+        offerer_address = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer)
         offer = offers_factories.ThingOfferFactory(
             venue__latitude=None,
             venue__longitude=None,
-            venue__offererAddress=None,
+            venue__offererAddress=offerer_address,
             venue__managingOfferer=user_offerer.offerer,
         )
 
@@ -89,8 +90,10 @@ class Returns200Test:
         # When
         client.with_session_auth(email=user_offerer.user.email)
 
-        with testing.assert_no_duplicated_queries():
-            client.get(f"/offers/{offer.id}")
+        offer_id = offer.id
+        with testing.assert_num_queries(self.num_queries):
+            with testing.assert_no_duplicated_queries():
+                client.get(f"/offers/{offer_id}")
 
     def test_access_even_if_offerer_has_no_siren(self, client):
         # Given
@@ -165,7 +168,6 @@ class Returns200Test:
             bookingLimitDatetime=now + timedelta(hours=1),
             priceCategory__priceCategoryLabel__label="Au pied du mur",
         )
-        offer = stock.offer
         venue = offer.venue
         offerer = venue.managingOfferer
         finance_factories.BankInformationFactory(venue=venue)
@@ -212,7 +214,18 @@ class Returns200Test:
             "subcategoryId": "SEANCE_CINE",
             "thumbUrl": None,
             "url": None,
-            "address": None,
+            "address": {
+                "label": venue.offererAddress.label or venue.common_name,
+                "id": venue.offererAddress.address.id,
+                "banId": venue.offererAddress.address.banId,
+                "inseeCode": venue.offererAddress.address.inseeCode,
+                "city": venue.offererAddress.address.city,
+                "latitude": float(venue.offererAddress.address.latitude),
+                "longitude": float(venue.offererAddress.address.longitude),
+                "postalCode": venue.offererAddress.address.postalCode,
+                "street": venue.offererAddress.address.street,
+                "isEditable": venue.offererAddress.isEditable,
+            },
             "venue": {
                 "street": "1 boulevard Poissonnière",
                 "audioDisabilityCompliant": False,
@@ -313,13 +326,50 @@ class Returns200Test:
         assert response.json["bookingsCount"] == 2
         assert response.json["hasStocks"] == True
 
-    def test_return_offerer_address(self, client):
+    def test_return_offer_offerer_address(self, client):
+        """If offer has an offererAddress, it should be used"""
+        # Given
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue_offerer_address = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer)
+        offer_offerer_address = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer)
+        offer = offers_factories.ThingOfferFactory(
+            venue__managingOfferer=user_offerer.offerer,
+            venue__offererAddress=venue_offerer_address,
+            offererAddress=offer_offerer_address,
+        )
+        assert offer.venue.offererAddress != offer.offererAddress
+
+        # When
+        auth_client = client.with_session_auth(email=user_offerer.user.email)
+        offer_id = offer.id
+        with testing.assert_num_queries(self.num_queries):
+            response = auth_client.get(f"/offers/{offer_id}")
+
+        # Then
+        assert response.status_code == 200
+        assert response.json["address"] == {
+            "label": offer_offerer_address.label,
+            "id": offer_offerer_address.address.id,
+            "banId": offer_offerer_address.address.banId,
+            "inseeCode": offer_offerer_address.address.inseeCode,
+            "city": offer_offerer_address.address.city,
+            "latitude": float(offer_offerer_address.address.latitude),
+            "longitude": float(offer_offerer_address.address.longitude),
+            "postalCode": offer_offerer_address.address.postalCode,
+            "street": offer_offerer_address.address.street,
+            "isEditable": offer_offerer_address.isEditable,
+        }
+
+    def test_return_venue_offerer_address(self, client):
         # Given
         user_offerer = offerers_factories.UserOffererFactory()
         offerer_address = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer)
         offer = offers_factories.ThingOfferFactory(
-            venue__managingOfferer=user_offerer.offerer, offererAddress=offerer_address
+            venue__managingOfferer=user_offerer.offerer,
+            venue__offererAddress=offerer_address,
+            offererAddress=None,
         )
+        assert offer.offererAddress is None
 
         # When
         auth_client = client.with_session_auth(email=user_offerer.user.email)
