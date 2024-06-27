@@ -2252,11 +2252,11 @@ def get_reimbursements_by_venue(
         venue_common_name = venue_pricing_info.common_name
         reimbursed_amount = venue_pricing_info.reimbursed_amount
         booking_amount = -utils.to_eurocents(venue_pricing_info.booking_amount)
-        if venue_pricing_info.venue_id in reimbursements_by_venue:
-            reimbursements_by_venue[venue_pricing_info.venue_id]["reimbursed_amount"] += reimbursed_amount
-            reimbursements_by_venue[venue_pricing_info.venue_id]["validated_booking_amount"] += booking_amount
+        if venue_id in reimbursements_by_venue:
+            reimbursements_by_venue[venue_id]["reimbursed_amount"] += reimbursed_amount
+            reimbursements_by_venue[venue_id]["validated_booking_amount"] += booking_amount
         else:
-            reimbursements_by_venue[venue_pricing_info.venue_id] = {
+            reimbursements_by_venue[venue_id] = {
                 "venue_name": venue_common_name,
                 "reimbursed_amount": reimbursed_amount,
                 "validated_booking_amount": booking_amount,
