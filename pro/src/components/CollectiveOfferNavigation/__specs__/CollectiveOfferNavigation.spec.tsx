@@ -26,8 +26,8 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
   CollectiveOfferNavigation,
-  CollectiveOfferStep,
   CollectiveOfferNavigationProps,
+  CollectiveOfferStep,
 } from '../CollectiveOfferNavigation'
 
 const renderCollectiveOfferNavigation = (
@@ -215,6 +215,7 @@ describe('CollectiveOfferNavigation', () => {
       Events.CLICKED_DUPLICATE_TEMPLATE_OFFER,
       {
         from: OFFER_FROM_TEMPLATE_ENTRIES.OFFER_TEMPLATE_RECAP,
+        offerId: 1,
       }
     )
   })

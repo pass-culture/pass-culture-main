@@ -13,12 +13,14 @@ interface BookingLinkCellProps {
   bookingId: number
   bookingStatus: string
   offerEventDate?: string | null
+  offerId: number
 }
 
 export const BookingLinkCell = ({
   bookingId,
   bookingStatus,
   offerEventDate,
+  offerId,
 }: BookingLinkCellProps) => {
   const { logEvent } = useAnalytics()
 
@@ -40,6 +42,7 @@ export const BookingLinkCell = ({
       onClick={() =>
         logEvent(CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING, {
           from: location.pathname,
+          offerId,
         })
       }
     >

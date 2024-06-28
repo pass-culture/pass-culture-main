@@ -4,12 +4,12 @@ import { userEvent } from '@testing-library/user-event'
 import { api } from 'apiClient/api'
 import {
   ApiError,
+  CollectiveBookingStatus,
   CollectiveOfferResponseModel,
+  CollectiveOfferStatus,
   ListOffersOfferResponseModel,
   ListOffersStockResponseModel,
   OfferStatus,
-  CollectiveBookingStatus,
-  CollectiveOfferStatus,
 } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
@@ -19,13 +19,13 @@ import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { Audience } from 'core/shared/types'
 import {
-  listOffersVenueFactory,
   collectiveOfferFactory,
+  listOffersVenueFactory,
 } from 'utils/collectiveApiFactories'
 import { getToday } from 'utils/date'
 import {
-  listOffersStockFactory,
   listOffersOfferFactory,
+  listOffersStockFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -611,6 +611,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING,
         {
           from: '/',
+          offerId: 10,
         }
       )
     })
