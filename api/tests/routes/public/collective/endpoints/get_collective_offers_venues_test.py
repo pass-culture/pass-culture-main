@@ -45,6 +45,9 @@ class CollectiveOffersGetVenuesTest:
                 "publicName": venue.publicName,
                 "siret": venue.siret,
                 "activityDomain": venue.venueTypeCode.name,
+                "bookingUrl": None,
+                "cancelUrl": None,
+                "notificationUrl": None,
                 "accessibility": {
                     "audioDisabilityCompliant": venue.audioDisabilityCompliant,
                     "mentalDisabilityCompliant": venue.mentalDisabilityCompliant,
@@ -118,6 +121,9 @@ class GetOfferersVenuesTest:
                         "createdDatetime": format_into_utc_date(venue.dateCreated),
                         "publicName": venue.publicName,
                         "siret": venue.siret,
+                        "bookingUrl": None,
+                        "cancelUrl": None,
+                        "notificationUrl": None,
                         "activityDomain": venue.venueTypeCode.name,
                         "accessibility": {
                             "audioDisabilityCompliant": venue.audioDisabilityCompliant,

@@ -278,6 +278,18 @@ class _FIELDS:
     )
     VENUE_LEGAL_NAME = Field(description="Venue legal name", example="SAS pass Culture")
     VENUE_PUBLIC_NAME = Field(description="Venue public name. If `null`, `legalName` is used.", example="pass Culture")
+    VENUE_NOTIFICATION_URL = Field(
+        description="Url on which notifications for this venues will be sent",
+        example="https://mysolution.com/pass-culture-endpoint",
+    )
+    VENUE_BOOKING_URL = Field(
+        description="Url on which request for tickets are sent when a beneficiary tries to book tickets for an event linked to this venue",
+        example="https://my-ticketing-solution.com/pass-culture-booking-endpoint",
+    )
+    VENUE_CANCEL_URL = Field(
+        description="Url on which ticket cancellation request are sent when a beneficiary cancels its tickets for an event linked to this venue",
+        example="https://my-ticketing-solution.com/pass-culture-cancellation-endpoint",
+    )
 
 
 fields = _FIELDS()
