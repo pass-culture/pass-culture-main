@@ -803,13 +803,16 @@ class CreateOffererTest(PostEndpointHelper):
         assert venue_registration.target == offerers_models.Target.INDIVIDUAL
         assert venue_registration.webPresence == form_data["web_presence"]
 
-        new_action: history_models.ActionHistory = history_models.ActionHistory.query.one()
-        assert new_action.actionType == history_models.ActionType.OFFERER_NEW
-        assert new_action.offererId == new_offerer.id
-        assert new_action.userId == user.id
-        assert new_action.authorUserId == legit_user.id
-        assert new_action.comment == "Structure créée depuis le backoffice"
-        assert new_action.extraData == {
+        assert history_models.ActionHistory.query.count() == 2
+
+        new_offerer_action: history_models.ActionHistory = history_models.ActionHistory.query.filter_by(
+            actionType=history_models.ActionType.OFFERER_NEW
+        ).one()
+        assert new_offerer_action.offererId == new_offerer.id
+        assert new_offerer_action.userId == user.id
+        assert new_offerer_action.authorUserId == legit_user.id
+        assert new_offerer_action.comment == "Structure créée depuis le backoffice"
+        assert new_offerer_action.extraData == {
             "target": form_data["target"],
             "venue_type_code": form_data["venue_type_code"],
             "web_presence": form_data["web_presence"],
@@ -827,6 +830,12 @@ class CreateOffererTest(PostEndpointHelper):
                 "siren": "900000001",
             },
         }
+
+        new_venue_action: history_models.ActionHistory = history_models.ActionHistory.query.filter_by(
+            actionType=history_models.ActionType.VENUE_CREATED
+        ).one()
+        assert new_venue_action.venueId == new_venue.id
+        assert new_venue_action.authorUserId == legit_user.id
 
         assert response.location == url_for("backoffice_web.offerer.get", offerer_id=new_offerer.id, _external=True)
 
@@ -880,30 +889,8 @@ class CreateOffererTest(PostEndpointHelper):
         assert venue_registration.target == offerers_models.Target.INDIVIDUAL
         assert venue_registration.webPresence == form_data["web_presence"]
 
-        new_action: history_models.ActionHistory = history_models.ActionHistory.query.one()
-        assert new_action.actionType == history_models.ActionType.OFFERER_NEW
-        assert new_action.offererId == new_offerer.id
-        assert new_action.userId == user.id
-        assert new_action.authorUserId == legit_user.id
-        assert new_action.comment == "Structure créée depuis le backoffice"
-        assert new_action.extraData == {
-            "target": form_data["target"],
-            "venue_type_code": form_data["venue_type_code"],
-            "web_presence": form_data["web_presence"],
-            "ds_dossier_id": int(form_data["ds_id"]),
-            "sirene_info": {
-                "active": True,
-                "address": {"city": "CANNES", "insee_code": "06029", "postal_code": "[ND]", "street": "[ND]"},
-                "ape_code": "90.01Z",
-                "ape_label": "Arts du spectacle vivant",
-                "creation_date": f"{datetime.date.today().year}-01-01",
-                "diffusible": False,
-                "head_office_siret": "90000000100017",
-                "legal_category_code": "1000",
-                "name": "[ND]",
-                "siren": "900000001",
-            },
-        }
+        # Actions: content already checked in test_create_offerer
+        assert history_models.ActionHistory.query.count() == 2
 
         assert response.location == url_for("backoffice_web.offerer.get", offerer_id=new_offerer.id, _external=True)
 

@@ -154,7 +154,7 @@ def _create_pro_user(row: dict) -> User:
         motorDisabilityCompliant=False,
         visualDisabilityCompliant=False,
     )
-    venue = offerers_api.create_venue(venue_creation_info)
+    venue = offerers_api.create_venue(venue_creation_info, user)
     offerers_api.create_venue_registration(venue.id, new_onboarding_info.target, new_onboarding_info.webPresence)
 
     for i, status in enumerate(finance_models.BankAccountApplicationStatus, start=1):

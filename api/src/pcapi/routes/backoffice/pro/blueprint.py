@@ -250,7 +250,7 @@ def create_offerer() -> utils.BackofficeResponse:
         visualDisabilityCompliant=None,
         comment=None,
     )
-    venue = offerers_api.create_venue(venue_creation_info)
+    venue = offerers_api.create_venue(venue_creation_info, current_user)
     offerers_api.create_venue_registration(venue.id, new_onboarding_info.target, new_onboarding_info.webPresence)
 
     transactional_mails.send_welcome_to_pro_email(pro_user, venue)
