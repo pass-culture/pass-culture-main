@@ -69,8 +69,6 @@ When('I specify an offerer with a SIRET', () => {
   )
 })
 
-
-
 When('I fill activity form without main activity', () => {
   cy.url().should('contain', '/parcours-inscription/activite')
   cy.findByLabelText('Activité principale *').select(

@@ -31,9 +31,8 @@ Feature: Create and update venue
     Then Individual section data should be updated
     When I go to the venue page in Paramètres généraux
     And I update Paramètres généraux data
-    Then I go to the venue page in Paramètres généraux
-    And Paramètres généraux data should be updated
-
+    And I go to the venue page in Paramètres généraux
+    Then Paramètres généraux data should be updated
 
   Scenario: It should display venues of selected offerer
     Given I am logged in with the new interface
