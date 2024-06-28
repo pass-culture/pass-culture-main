@@ -7088,6 +7088,42 @@
                 "title": "ProviderResponse",
                 "type": "object"
             },
+            "ProviderUpdate": {
+                "properties": {
+                    "bookingUrl": {
+                        "description": "Url on which tickets requests for events you created are sent",
+                        "example": "https://ultimate-ticketing-solution.com/pass-culture-booking-endpoint",
+                        "format": "uri",
+                        "maxLength": 2083,
+                        "minLength": 1,
+                        "nullable": true,
+                        "title": "Bookingurl",
+                        "type": "string"
+                    },
+                    "cancelUrl": {
+                        "description": "Url on which tickets cancellation requests for events you created are sent",
+                        "example": "https://ultimate-ticketing-solution.com/pass-culture-cancellation-endpoint",
+                        "format": "uri",
+                        "maxLength": 2083,
+                        "minLength": 1,
+                        "nullable": true,
+                        "title": "Cancelurl",
+                        "type": "string"
+                    },
+                    "notificationUrl": {
+                        "description": "Url on which booking notifications on offers you created are sent",
+                        "example": "https://ultimate-ticketing-solution.com/pass-culture-endpoint",
+                        "format": "uri",
+                        "maxLength": 2083,
+                        "minLength": 1,
+                        "nullable": true,
+                        "title": "Notificationurl",
+                        "type": "string"
+                    }
+                },
+                "title": "ProviderUpdate",
+                "type": "object"
+            },
             "RENCONTRE_EN_LIGNE_create": {
                 "description": "Rencontre en ligne",
                 "properties": {
@@ -10916,6 +10952,74 @@
                     }
                 ],
                 "summary": "Get my provider",
+                "tags": [
+                    "Providers"
+                ]
+            },
+            "patch": {
+                "description": "Endpoint to set the urls used by our notification system to notify/request your solution.",
+                "operationId": "UpdateProvider",
+                "parameters": [],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ProviderUpdate"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProviderResponse"
+                                }
+                            }
+                        },
+                        "description": "Your provider has been returned"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "The request is invalid. The response body contains a list of errors."
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "Authentication is necessary to use this API."
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Entity"
+                    },
+                    "429": {
+                        "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "summary": "Update my provider",
                 "tags": [
                     "Providers"
                 ]

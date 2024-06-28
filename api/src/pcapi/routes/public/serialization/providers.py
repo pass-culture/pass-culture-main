@@ -1,3 +1,5 @@
+import pydantic.v1 as pydantic_v1
+
 from pcapi.core.providers import models as providers_models
 from pcapi.routes import serialization
 from pcapi.routes.public.documentation_constants.fields import fields
@@ -23,3 +25,9 @@ class ProviderResponse(serialization.ConfiguredBaseModel):
             booking_url=provider.bookingExternalUrl,
             cancel_url=provider.cancelExternalUrl,
         )
+
+
+class ProviderUpdate(serialization.ConfiguredBaseModel):
+    notification_url: pydantic_v1.HttpUrl | None = fields.PROVIDER_NOTIFICATION_URL
+    booking_url: pydantic_v1.HttpUrl | None = fields.PROVIDER_BOOKING_URL
+    cancel_url: pydantic_v1.HttpUrl | None = fields.PROVIDER_CANCEL_URL
