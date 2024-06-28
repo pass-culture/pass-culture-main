@@ -8403,6 +8403,20 @@
                         "description": "Venue activity domain",
                         "example": "RECORD_STORE"
                     },
+                    "bookingUrl": {
+                        "description": "Url on which request for tickets are sent when a beneficiary tries to book tickets for an event linked to this venue",
+                        "example": "https://my-ticketing-solution.com/pass-culture-booking-endpoint",
+                        "nullable": true,
+                        "title": "Bookingurl",
+                        "type": "string"
+                    },
+                    "cancelUrl": {
+                        "description": "Url on which ticket cancellation request are sent when a beneficiary cancels its tickets for an event linked to this venue",
+                        "example": "https://my-ticketing-solution.com/pass-culture-cancellation-endpoint",
+                        "nullable": true,
+                        "title": "Cancelurl",
+                        "type": "string"
+                    },
                     "createdDatetime": {
                         "description": "When the venue was created",
                         "format": "date-time",
@@ -8439,6 +8453,13 @@
                             }
                         ],
                         "title": "Location"
+                    },
+                    "notificationUrl": {
+                        "description": "Url on which notifications for this venues will be sent",
+                        "example": "https://mysolution.com/pass-culture-endpoint",
+                        "nullable": true,
+                        "title": "Notificationurl",
+                        "type": "string"
                     },
                     "publicName": {
                         "description": "Venue public name. If `null`, `legalName` is used.",

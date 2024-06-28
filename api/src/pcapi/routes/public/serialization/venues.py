@@ -40,8 +40,14 @@ class VenueResponse(serialization.ConfiguredBaseModel):
     venue_type_code: VenueTypeEnum = fields.VENUE_ACTIVITY_DOMAIN  # type: ignore[valid-type]
     accessibility: PartialAccessibility
 
+    # External urls
+    notification_url: str | None = fields.VENUE_NOTIFICATION_URL
+    booking_url: str | None = fields.VENUE_BOOKING_URL
+    cancel_url: str | None = fields.VENUE_CANCEL_URL
+
     @classmethod
     def build_model(cls, venue: offerers_models.Venue) -> "VenueResponse":
+        external_urls = venue.venueProviders[0].externalUrls
         return cls(
             siret_comment=venue.comment,
             created_datetime=venue.dateCreated,
@@ -56,6 +62,9 @@ class VenueResponse(serialization.ConfiguredBaseModel):
             siret=venue.siret,
             venue_type_code=venue.venueTypeCode.name,
             accessibility=PartialAccessibility.from_orm(venue),
+            notification_url=external_urls.notificationExternalUrl if external_urls else None,
+            booking_url=external_urls.bookingExternalUrl if external_urls else None,
+            cancel_url=external_urls.cancelExternalUrl if external_urls else None,
         )
 
     class Config:
