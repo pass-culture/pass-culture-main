@@ -264,5 +264,20 @@ class _FIELDS:
     STUDENT_LEVEL_ID = Field(description="Student level id", example="COLLEGE6")
     STUDENT_LEVEL_NAME = Field(description="Student level name", example="Collège - 6e")
 
+    # Venue fields
+    VENUE_ACTIVITY_DOMAIN = Field(alias="activityDomain", description="Venue activity domain", example="RECORD_STORE")
+    VENUE_SIRET_COMMENT = Field(description="Applicable if siret is null and venue is physical.")
+    VENUE_SIRET = Field(
+        description="Venue siret. `null` when venue is digital or when `siretComment` field is not `null`.",
+        example="85331845900049",
+    )
+    VENUE_CREATED_DATETIME = Field(description="When the venue was created")
+    VENUE_LOCATION = Field(
+        description="Location where the offers will be available or will take place. There is exactly one digital venue per offerer, which is listed although its id is not required to create a digital offer (see DigitalLocation model).",
+        discriminator="type",
+    )
+    VENUE_LEGAL_NAME = Field(description="Venue legal name", example="SAS pass Culture")
+    VENUE_PUBLIC_NAME = Field(description="Venue public name. If `null`, `legalName` is used.", example="pass Culture")
+
 
 fields = _FIELDS()

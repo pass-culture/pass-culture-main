@@ -8512,19 +8512,29 @@
                         "$ref": "#/components/schemas/PartialAccessibility"
                     },
                     "activityDomain": {
-                        "$ref": "#/components/schemas/VenueTypeEnum"
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/VenueTypeEnum"
+                            }
+                        ],
+                        "description": "Venue activity domain",
+                        "example": "RECORD_STORE"
                     },
                     "createdDatetime": {
+                        "description": "When the venue was created",
                         "format": "date-time",
                         "title": "Createddatetime",
                         "type": "string"
                     },
                     "id": {
+                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
+                        "example": 1234,
                         "title": "Id",
                         "type": "integer"
                     },
                     "legalName": {
-                        "example": "Palais de l'\u00c9lys\u00e9e",
+                        "description": "Venue legal name",
+                        "example": "SAS pass Culture",
                         "title": "Legalname",
                         "type": "string"
                     },
@@ -8548,33 +8558,31 @@
                         "title": "Location"
                     },
                     "publicName": {
-                        "description": "If null, legalName is used.",
-                        "example": "\u00c9lys\u00e9e",
+                        "description": "Venue public name. If `null`, `legalName` is used.",
+                        "example": "pass Culture",
                         "nullable": true,
                         "title": "Publicname",
                         "type": "string"
                     },
                     "siret": {
-                        "description": "Null when venue is digital or when siretComment field is not null.",
-                        "example": "12345678901234",
+                        "description": "Venue siret. `null` when venue is digital or when `siretComment` field is not `null`.",
+                        "example": "85331845900049",
                         "nullable": true,
                         "title": "Siret",
                         "type": "string"
                     },
                     "siretComment": {
                         "description": "Applicable if siret is null and venue is physical.",
-                        "example": null,
                         "nullable": true,
                         "title": "Siretcomment",
                         "type": "string"
                     }
                 },
                 "required": [
-                    "createdDatetime",
                     "id",
+                    "createdDatetime",
                     "location",
                     "legalName",
-                    "publicName",
                     "activityDomain",
                     "accessibility"
                 ],
