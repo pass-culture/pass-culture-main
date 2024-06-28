@@ -33,7 +33,7 @@ export const DeactivationConfirmDialog = ({
   return (
     <ConfirmDialog
       cancelText={'Annuler'}
-      confirmText={'Désactiver'}
+      confirmText={'Masquer'}
       onCancel={() => {
         logEvent(Events.CLICKED_CANCELED_SELECTED_OFFERS, {
           from: location.pathname,
@@ -56,8 +56,8 @@ export const DeactivationConfirmDialog = ({
       }
       secondTitle={
         nbSelectedOffers === 1
-          ? `êtes-vous sûr de vouloir la désactiver${NBSP}?`
-          : `êtes-vous sûr de vouloir toutes les désactiver${NBSP}?`
+          ? `êtes-vous sûr de vouloir la masquer${NBSP}?`
+          : `êtes-vous sûr de vouloir toutes les masquer${NBSP}?`
       }
     >
       {nbSelectedOffers === 1

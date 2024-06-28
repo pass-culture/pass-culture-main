@@ -62,7 +62,7 @@ describe('ActionsBar', () => {
       screen.queryByText('Publier', { selector: 'button' })
     ).toBeInTheDocument()
     expect(
-      screen.queryByText('Désactiver', { selector: 'button' })
+      screen.queryByText('Masquer', { selector: 'button' })
     ).toBeInTheDocument()
     expect(
       screen.queryByText('Annuler', { selector: 'button' })
@@ -130,8 +130,8 @@ describe('ActionsBar', () => {
     props.areAllOffersSelected = false
     renderActionsBar(props)
 
-    await userEvent.click(screen.getByText('Désactiver'))
-    const confirmDeactivateButton = screen.getAllByText('Désactiver')[1]
+    await userEvent.click(screen.getByText('Masquer'))
+    const confirmDeactivateButton = screen.getAllByText('Masquer')[1]
     await userEvent.click(confirmDeactivateButton)
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
@@ -150,7 +150,7 @@ describe('ActionsBar', () => {
     expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
 
     expect(
-      screen.getByText('2 offres ont bien été désactivées')
+      screen.getByText('2 offres ont bien été masquées')
     ).toBeInTheDocument()
   })
 
@@ -191,7 +191,7 @@ describe('ActionsBar', () => {
 
     expect(
       screen.getByText(
-        'Une erreur est survenue lors de l’activation des offres'
+        'Une erreur est survenue lors de la publication des offres'
       )
     )
   })
@@ -207,12 +207,12 @@ describe('ActionsBar', () => {
 
     expect(
       screen.getByText(
-        'Une erreur est survenue lors de l’activation des offres sélectionnées'
+        'Une erreur est survenue lors de la publication des offres sélectionnées'
       )
     )
   })
 
-  it('should deactivate all offers on click on "Désactiver" button when all offers are selected', async () => {
+  it('should deactivate all offers on click on "Masquer" button when all offers are selected', async () => {
     props.areAllOffersSelected = true
     renderActionsBar(props)
 
@@ -220,9 +220,9 @@ describe('ActionsBar', () => {
       isActive: false,
     }
 
-    const deactivateButton = screen.getByText('Désactiver')
+    const deactivateButton = screen.getByText('Masquer')
     await userEvent.click(deactivateButton)
-    const confirmDeactivateButton = screen.getAllByText('Désactiver')[1]
+    const confirmDeactivateButton = screen.getAllByText('Masquer')[1]
     await userEvent.click(confirmDeactivateButton)
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
@@ -240,7 +240,7 @@ describe('ActionsBar', () => {
     expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
   })
 
-  it('should not deactivate offers on click on "Désactiver" when at least one offer is not published or expired', async () => {
+  it('should not deactivate offers on click on "Masquer" when at least one offer is not published or expired', async () => {
     renderActionsBar({
       ...props,
       selectedOffers: [
@@ -252,17 +252,17 @@ describe('ActionsBar', () => {
       ],
     })
 
-    const deactivateButton = screen.getByText('Désactiver')
+    const deactivateButton = screen.getByText('Masquer')
     await userEvent.click(deactivateButton)
 
     expect(
       screen.getByText(
-        'Seules les offres au statut publié ou expiré peuvent être désactivées.'
+        'Seules les offres au statut publié ou expiré peuvent être masquées.'
       )
     ).toBeInTheDocument()
   })
 
-  it('should not deactivate offers on click on "Désactiver" when at least one offer expired but with booking finished', async () => {
+  it('should not deactivate offers on click on "Masquer" when at least one offer expired but with booking finished', async () => {
     const expiredOffer = collectiveOfferFactory({
       id: 1,
       status: CollectiveOfferStatus.EXPIRED,
@@ -281,12 +281,12 @@ describe('ActionsBar', () => {
       ],
     })
 
-    const deactivateButton = screen.getByText('Désactiver')
+    const deactivateButton = screen.getByText('Masquer')
     await userEvent.click(deactivateButton)
 
     expect(
       screen.getByText(
-        'Seules les offres au statut publié ou expiré peuvent être désactivées.'
+        'Seules les offres au statut publié ou expiré peuvent être masquées.'
       )
     ).toBeInTheDocument()
   })
@@ -301,8 +301,8 @@ describe('ActionsBar', () => {
       ],
     })
 
-    await userEvent.click(screen.getByText('Désactiver'))
-    const confirmDeactivateButton = screen.getAllByText('Désactiver')[1]
+    await userEvent.click(screen.getByText('Masquer'))
+    const confirmDeactivateButton = screen.getAllByText('Masquer')[1]
     await userEvent.click(confirmDeactivateButton)
 
     expect(api.patchCollectiveOffersActiveStatus).toHaveBeenLastCalledWith({
@@ -333,8 +333,8 @@ describe('ActionsBar', () => {
       ],
     })
 
-    await userEvent.click(screen.getByText('Désactiver'))
-    const confirmDeactivateButton = screen.getAllByText('Désactiver')[1]
+    await userEvent.click(screen.getByText('Masquer'))
+    const confirmDeactivateButton = screen.getAllByText('Masquer')[1]
     await userEvent.click(confirmDeactivateButton)
 
     expect(
@@ -369,8 +369,8 @@ describe('ActionsBar', () => {
       ],
     })
 
-    await userEvent.click(screen.getByText('Désactiver'))
-    const confirmDeactivateButton = screen.getAllByText('Désactiver')[1]
+    await userEvent.click(screen.getByText('Masquer'))
+    const confirmDeactivateButton = screen.getAllByText('Masquer')[1]
     await userEvent.click(confirmDeactivateButton)
 
     expect(
