@@ -95,6 +95,7 @@ export const IndividualOfferConfirmationScreen = ({
                 used: OFFER_FORM_NAVIGATION_MEDIUM.CONFIRMATION_PREVIEW,
                 isEdition: false,
                 offerId: offer.id,
+                offerType: 'individual',
               })
             }}
           >

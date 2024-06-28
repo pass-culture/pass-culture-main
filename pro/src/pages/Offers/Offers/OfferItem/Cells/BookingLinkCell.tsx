@@ -43,6 +43,7 @@ export const BookingLinkCell = ({
         logEvent(CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING, {
           from: location.pathname,
           offerId,
+          offerType: 'collective',
         })
       }
     >

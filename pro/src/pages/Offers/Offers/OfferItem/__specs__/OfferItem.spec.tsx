@@ -612,6 +612,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         {
           from: '/',
           offerId: 10,
+          offerType: 'collective',
         }
       )
     })

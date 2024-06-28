@@ -19,8 +19,8 @@ import { GET_OFFERS_QUERY_KEY } from 'pages/Offers/OffersRoute'
 import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
 
 import {
-  computeDeletionSuccessMessage,
   computeDeletionErrorMessage,
+  computeDeletionSuccessMessage,
 } from '../../utils'
 import styles from '../OfferItem.module.scss'
 
@@ -55,6 +55,7 @@ export const DeleteDraftCell = ({ offer }: DeleteDraftOffersProps) => {
         from: OFFER_FORM_NAVIGATION_IN.OFFERS,
         used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_TRASH_ICON,
         offerId: offer.id,
+        offerType: 'individual',
         isDraft: true,
       })
       await mutate([GET_OFFERS_QUERY_KEY, apiFilters])
