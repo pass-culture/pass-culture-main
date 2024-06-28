@@ -1268,7 +1268,7 @@ def create_extract_user_gdpr_data(user_id: int) -> utils.BackofficeResponse:
         raise NotFound()
 
     if has_gdpr_extract(user=user):
-        flash("Une extraction de données est déjà en cours pour cet utilisateur.", "error")
+        flash("Une extraction de données est déjà en cours pour cet utilisateur.", "warning")
         return redirect(url_for(".get_public_account", user_id=user_id))
 
     gdpr_data = users_models.GdprUserDataExtract(
