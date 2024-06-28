@@ -46,6 +46,7 @@ from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users.models import User
 from pcapi.domain.booking_recap import utils as booking_recap_utils
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.utils.token import random_token
 
 
@@ -66,7 +67,7 @@ BOOKING_DATE_STATUS_MAPPING: dict[BookingStatusFilter, InstrumentedAttribute] = 
     BookingStatusFilter.REIMBURSED: Booking.reimbursementDate,
 }
 
-BOOKING_EXPORT_HEADER = [
+LEGACY_BOOKING_EXPORT_HEADER = [
     "Lieu",
     "Nom de l’offre",
     "Date de l'évènement",
@@ -86,6 +87,33 @@ BOOKING_EXPORT_HEADER = [
     "Code postal du bénéficiaire",
     "Duo",
 ]
+
+BOOKING_EXPORT_HEADER = [
+    "Partenaire culturel",
+    "Nom de l’offre",
+    "Date de l'évènement",
+    "EAN",
+    "Prénom du bénéficiaire",
+    "Nom du bénéficiaire",
+    "Email du bénéficiaire",
+    "Téléphone du bénéficiaire",
+    "Date et heure de réservation",
+    "Date et heure de validation",
+    "Contremarque",
+    "Intitulé du tarif",
+    "Prix de la réservation",
+    "Statut de la contremarque",
+    "Date et heure de remboursement",
+    "Type d'offre",
+    "Code postal du bénéficiaire",
+    "Duo",
+]
+
+
+def booking_export_header() -> list[str]:
+    if FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
+        return BOOKING_EXPORT_HEADER
+    return LEGACY_BOOKING_EXPORT_HEADER
 
 
 def find_by_pro_user(
@@ -611,7 +639,7 @@ def _get_booking_status(status: BookingStatus, is_confirmed: bool) -> str:
 def _write_bookings_to_csv(query: BaseQuery) -> str:
     output = StringIO()
     writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
-    writer.writerow(BOOKING_EXPORT_HEADER)
+    writer.writerow(booking_export_header())
     for booking in query.yield_per(1000):
         if booking.quantity == DUO_QUANTITY:
             _write_csv_row(writer, booking, "DUO 1")
@@ -663,7 +691,7 @@ def _write_bookings_to_excel(query: BaseQuery) -> bytes:
     worksheet = workbook.add_worksheet()
     row = 0
 
-    for col_num, title in enumerate(BOOKING_EXPORT_HEADER):
+    for col_num, title in enumerate(booking_export_header()):
         worksheet.write(row, col_num, title, bold)
         worksheet.set_column(col_num, col_num, col_width)
 
@@ -719,7 +747,7 @@ def _write_excel_row(
 def _serialize_csv_report(query: BaseQuery) -> str:
     output = StringIO()
     writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
-    writer.writerow(BOOKING_EXPORT_HEADER)
+    writer.writerow(LEGACY_BOOKING_EXPORT_HEADER)
     for booking in query.yield_per(1000):
         writer.writerow(
             (
@@ -764,7 +792,7 @@ def _serialize_excel_report(query: BaseQuery) -> bytes:
     worksheet = workbook.add_worksheet()
     row = 0
 
-    for col_num, title in enumerate(BOOKING_EXPORT_HEADER):
+    for col_num, title in enumerate(LEGACY_BOOKING_EXPORT_HEADER):
         worksheet.write(row, col_num, title, bold)
         worksheet.set_column(col_num, col_num, col_width)
     row = 1
