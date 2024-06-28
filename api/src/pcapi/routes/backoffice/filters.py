@@ -595,7 +595,7 @@ def format_fraud_action_dict_url(fraud_action_dict: dict) -> str:
 
 
 def format_gdpr_date_processed(date_processed: datetime.datetime | None) -> str:
-    return "prêt" if date_processed else "en attente"
+    return "prête" if date_processed else "en attente"
 
 
 def _format_modified_info_value(value: typing.Any, name: str | None = None) -> str:

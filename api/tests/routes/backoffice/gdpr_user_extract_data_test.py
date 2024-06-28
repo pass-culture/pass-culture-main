@@ -67,7 +67,7 @@ class ListGdprUserExtractDataTest(GetEndpointHelper):
         )
         assert rows[0]["Auteur de la demande"] == list_of_gdpr_user_extract_data[1].authorUser.full_name
 
-        assert rows[2]["État de la demande"] == "prêt"
+        assert rows[2]["État de la demande"] == "prête"
 
         for row in rows:
             assert list_of_gdpr_user_extract_data[4].id not in row
