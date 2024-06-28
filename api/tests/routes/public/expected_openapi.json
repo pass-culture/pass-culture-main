@@ -6921,6 +6921,56 @@
                 "title": "ProductsOfferByEanCreation",
                 "type": "object"
             },
+            "ProviderResponse": {
+                "properties": {
+                    "bookingUrl": {
+                        "description": "Url on which tickets requests for events you created are sent",
+                        "example": "https://ultimate-ticketing-solution.com/pass-culture-booking-endpoint",
+                        "nullable": true,
+                        "title": "Bookingurl",
+                        "type": "string"
+                    },
+                    "cancelUrl": {
+                        "description": "Url on which tickets cancellation requests for events you created are sent",
+                        "example": "https://ultimate-ticketing-solution.com/pass-culture-cancellation-endpoint",
+                        "nullable": true,
+                        "title": "Cancelurl",
+                        "type": "string"
+                    },
+                    "id": {
+                        "description": "Provider id",
+                        "example": 123456,
+                        "title": "Id",
+                        "type": "integer"
+                    },
+                    "logoUrl": {
+                        "description": "Provider logo url",
+                        "example": "https://ultimate-ticketing-solution.com/logo.png",
+                        "nullable": true,
+                        "title": "Logourl",
+                        "type": "string"
+                    },
+                    "name": {
+                        "description": "Provider name",
+                        "example": "Ultimate ticketing solution",
+                        "title": "Name",
+                        "type": "string"
+                    },
+                    "notificationUrl": {
+                        "description": "Url on which booking notifications on offers you created are sent",
+                        "example": "https://ultimate-ticketing-solution.com/pass-culture-endpoint",
+                        "nullable": true,
+                        "title": "Notificationurl",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "name"
+                ],
+                "title": "ProviderResponse",
+                "type": "object"
+            },
             "RENCONTRE_EN_LIGNE_create": {
                 "description": "Rencontre en ligne",
                 "properties": {
@@ -8404,14 +8454,14 @@
                         "example": "RECORD_STORE"
                     },
                     "bookingUrl": {
-                        "description": "Url on which request for tickets are sent when a beneficiary tries to book tickets for an event linked to this venue",
+                        "description": "Url on which requests for tickets are sent when a beneficiary tries to book tickets for an event linked to this venue. If not set, our system will use the booking url defined at provider level.",
                         "example": "https://my-ticketing-solution.com/pass-culture-booking-endpoint",
                         "nullable": true,
                         "title": "Bookingurl",
                         "type": "string"
                     },
                     "cancelUrl": {
-                        "description": "Url on which ticket cancellation request are sent when a beneficiary cancels its tickets for an event linked to this venue",
+                        "description": "Url on which tickets cancellation requests are sent when a beneficiary cancels its tickets for an event linked to this venue. If not set, our system will use the cancel url defined at provider level.",
                         "example": "https://my-ticketing-solution.com/pass-culture-cancellation-endpoint",
                         "nullable": true,
                         "title": "Cancelurl",
@@ -8455,28 +8505,28 @@
                         "title": "Location"
                     },
                     "notificationUrl": {
-                        "description": "Url on which notifications for this venues will be sent",
+                        "description": "Url on which notifications for this venues will be sent. If not set, our system will use the notification url defined at provider level.",
                         "example": "https://mysolution.com/pass-culture-endpoint",
                         "nullable": true,
                         "title": "Notificationurl",
                         "type": "string"
                     },
                     "publicName": {
-                        "description": "Venue public name. If `null`, `legalName` is used.",
+                        "description": "Venue public name. If `null`, `legalName` is used instead.",
                         "example": "pass Culture",
                         "nullable": true,
                         "title": "Publicname",
                         "type": "string"
                     },
                     "siret": {
-                        "description": "Venue siret. `null` when venue is digital or when `siretComment` field is not `null`.",
+                        "description": "Venue siret. `null` when the venue is digital or when the `siretComment` field is not `null`.",
                         "example": "85331845900049",
                         "nullable": true,
                         "title": "Siret",
                         "type": "string"
                     },
                     "siretComment": {
-                        "description": "Applicable if siret is null and venue is physical.",
+                        "description": "Applicable if siret is null and venue is physical",
                         "nullable": true,
                         "title": "Siretcomment",
                         "type": "string"
@@ -10703,6 +10753,57 @@
                 ]
             }
         },
+        "/public/providers/v1/provider": {
+            "get": {
+                "description": "Return your provider information.",
+                "operationId": "GetProvider",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProviderResponse"
+                                }
+                            }
+                        },
+                        "description": "Your provider has been returned"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "Authentication is necessary to use this API."
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Entity"
+                    },
+                    "429": {
+                        "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "summary": "Get my provider",
+                "tags": [
+                    "Providers"
+                ]
+            }
+        },
         "/v2/collective/bookings/{booking_id}": {
             "patch": {
                 "description": "Cancel an collective event booking.",
@@ -11718,6 +11819,11 @@
         }
     ],
     "tags": [
+        {
+            "description": "",
+            "externalDocs": null,
+            "name": "Providers"
+        },
         {
             "description": "",
             "externalDocs": null,

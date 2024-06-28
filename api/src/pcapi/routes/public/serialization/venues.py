@@ -37,7 +37,7 @@ class VenueResponse(serialization.ConfiguredBaseModel):
     location: VenuePhysicalLocation | VenueDigitalLocation = fields.VENUE_LOCATION
     legal_name: str = fields.VENUE_LEGAL_NAME
     public_name: str | None = fields.VENUE_PUBLIC_NAME
-    venue_type_code: VenueTypeEnum = fields.VENUE_ACTIVITY_DOMAIN  # type: ignore[valid-type]
+    activity_domain: VenueTypeEnum = fields.VENUE_ACTIVITY_DOMAIN  # type: ignore[valid-type]
     accessibility: PartialAccessibility
 
     # External urls
@@ -60,7 +60,7 @@ class VenueResponse(serialization.ConfiguredBaseModel):
             legal_name=venue.name,
             public_name=venue.publicName,
             siret=venue.siret,
-            venue_type_code=venue.venueTypeCode.name,
+            activity_domain=venue.venueTypeCode.name,
             accessibility=PartialAccessibility.from_orm(venue),
             notification_url=external_urls.notificationExternalUrl if external_urls else None,
             booking_url=external_urls.bookingExternalUrl if external_urls else None,

@@ -24,6 +24,7 @@ PRODUCT_EAN_OFFERS = Tag(
     name="Product offer bulk operations",
     description="Endpoints to create and get products usings European Article Number (EAN-13).",
 )
+PROVIDERS = Tag(name="Providers")
 VENUES = Tag(name="Venues")
 OFFER_ATTRIBUTES = Tag(name="Offer attributes")
 
@@ -42,7 +43,9 @@ COLLECTIVE_VENUES = Tag(name="[DEPRECATED] Collective venues")
 
 
 OPEN_API_TAGS = [
-    # OFFERER VENUES
+    # PROVIDERS
+    PROVIDERS,
+    # VENUES
     VENUES,
     # PRODUCTS
     PRODUCT_EAN_OFFERS,
