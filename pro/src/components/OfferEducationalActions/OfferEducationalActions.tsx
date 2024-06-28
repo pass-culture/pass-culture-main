@@ -3,10 +3,10 @@ import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import {
-  GetCollectiveOfferResponseModel,
-  GetCollectiveOfferTemplateResponseModel,
   CollectiveBookingStatus,
   CollectiveOfferStatus,
+  GetCollectiveOfferResponseModel,
+  GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import {
@@ -182,6 +182,7 @@ export const OfferEducationalActions = ({
                   CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING,
                   {
                     from: '/offre/collectif/recapitulatif',
+                    offerId: offer.id,
                   }
                 )
               }

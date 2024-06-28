@@ -3,8 +3,8 @@ import { useAnalytics } from 'app/App/analytics/firebase'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import {
   Events,
-  OFFER_FORM_NAVIGATION_OUT,
   OFFER_FORM_NAVIGATION_MEDIUM,
+  OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
 import { OFFER_STATUS_PENDING } from 'core/Offers/constants'
 import fullLinkIcon from 'icons/full-link.svg'
@@ -94,6 +94,7 @@ export const IndividualOfferConfirmationScreen = ({
                 to: OFFER_FORM_NAVIGATION_OUT.PREVIEW,
                 used: OFFER_FORM_NAVIGATION_MEDIUM.CONFIRMATION_PREVIEW,
                 isEdition: false,
+                offerId: offer.id,
               })
             }}
           >

@@ -10,9 +10,9 @@ import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
 import { Mode } from 'core/OfferEducational/types'
 import * as useNotification from 'hooks/useNotification'
 import {
+  getCollectiveOfferCollectiveStockFactory,
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
-  getCollectiveOfferCollectiveStockFactory,
 } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -188,6 +188,7 @@ describe('OfferEducationalActions', () => {
       CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING,
       {
         from: '/offre/collectif/recapitulatif',
+        offerId: 7,
       }
     )
   })

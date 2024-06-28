@@ -88,6 +88,7 @@ export const CollectiveActionsCells = ({
   const onDialogConfirm = async (shouldNotDisplayModalAgain: boolean) => {
     logEvent(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
       from: OFFER_FROM_TEMPLATE_ENTRIES.OFFERS_MODAL,
+      offerId: offer.id,
     })
     if (shouldNotDisplayModalAgain && isLocalStorageAvailable) {
       localStorage.setItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY, 'true')
@@ -106,6 +107,7 @@ export const CollectiveActionsCells = ({
       if (!shouldDisplayModal) {
         logEvent(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
           from: OFFER_FROM_TEMPLATE_ENTRIES.OFFERS,
+          offerId: offer.id,
         })
         await createOfferFromTemplate(
           navigate,
@@ -168,6 +170,7 @@ export const CollectiveActionsCells = ({
               bookingId={offer.booking.id}
               bookingStatus={offer.booking.booking_status}
               offerEventDate={offer.stocks[0].beginningDatetime}
+              offerId={offer.id}
             />
           )}
         <DropdownMenu.Root modal={false}>
