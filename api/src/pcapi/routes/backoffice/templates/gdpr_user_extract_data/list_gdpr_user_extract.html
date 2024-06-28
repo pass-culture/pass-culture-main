@@ -41,7 +41,8 @@
                       {{ empty_form.csrf_token }}
                       <a class="nonblock"
                          href=""
-                         onclick="document.getElementById('download-extract-{{ gdpr_data.id }}').submit(); return false;"><i class="bi bi-cloud-download-fill"></i></a>
+                         onclick="document.getElementById('download-extract-{{ gdpr_data.id }}').submit(); return false;"
+                         title="Télécharger les données"><i class="bi bi-cloud-download-fill"></i></a>
                     </form>
                   {% else %}
                     <i style="opacity: 0.5"
