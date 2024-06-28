@@ -264,11 +264,30 @@ class _FIELDS:
     STUDENT_LEVEL_ID = Field(description="Student level id", example="COLLEGE6")
     STUDENT_LEVEL_NAME = Field(description="Student level name", example="Collège - 6e")
 
+    # Provider fields
+    PROVIDER_ID = Field(description="Provider id", example=123456)
+    PROVIDER_NAME = Field(description="Provider name", example="Ultimate ticketing solution")
+    PROVIDER_LOGO_URL = Field(
+        description="Provider logo url", example="https://ultimate-ticketing-solution.com/logo.png"
+    )
+    PROVIDER_NOTIFICATION_URL = Field(
+        description="Url on which booking notifications on offers you created are sent",
+        example="https://ultimate-ticketing-solution.com/pass-culture-endpoint",
+    )
+    PROVIDER_BOOKING_URL = Field(
+        description="Url on which tickets requests for events you created are sent",
+        example="https://ultimate-ticketing-solution.com/pass-culture-booking-endpoint",
+    )
+    PROVIDER_CANCEL_URL = Field(
+        description="Url on which tickets cancellation requests for events you created are sent",
+        example="https://ultimate-ticketing-solution.com/pass-culture-cancellation-endpoint",
+    )
+
     # Venue fields
-    VENUE_ACTIVITY_DOMAIN = Field(alias="activityDomain", description="Venue activity domain", example="RECORD_STORE")
-    VENUE_SIRET_COMMENT = Field(description="Applicable if siret is null and venue is physical.")
+    VENUE_ACTIVITY_DOMAIN = Field(description="Venue activity domain", example="RECORD_STORE")
+    VENUE_SIRET_COMMENT = Field(description="Applicable if siret is null and venue is physical")
     VENUE_SIRET = Field(
-        description="Venue siret. `null` when venue is digital or when `siretComment` field is not `null`.",
+        description="Venue siret. `null` when the venue is digital or when the `siretComment` field is not `null`.",
         example="85331845900049",
     )
     VENUE_CREATED_DATETIME = Field(description="When the venue was created")
@@ -277,17 +296,19 @@ class _FIELDS:
         discriminator="type",
     )
     VENUE_LEGAL_NAME = Field(description="Venue legal name", example="SAS pass Culture")
-    VENUE_PUBLIC_NAME = Field(description="Venue public name. If `null`, `legalName` is used.", example="pass Culture")
+    VENUE_PUBLIC_NAME = Field(
+        description="Venue public name. If `null`, `legalName` is used instead.", example="pass Culture"
+    )
     VENUE_NOTIFICATION_URL = Field(
-        description="Url on which notifications for this venues will be sent",
+        description="Url on which notifications for this venues will be sent. If not set, our system will use the notification url defined at provider level.",
         example="https://mysolution.com/pass-culture-endpoint",
     )
     VENUE_BOOKING_URL = Field(
-        description="Url on which request for tickets are sent when a beneficiary tries to book tickets for an event linked to this venue",
+        description="Url on which requests for tickets are sent when a beneficiary tries to book tickets for an event linked to this venue. If not set, our system will use the booking url defined at provider level.",
         example="https://my-ticketing-solution.com/pass-culture-booking-endpoint",
     )
     VENUE_CANCEL_URL = Field(
-        description="Url on which ticket cancellation request are sent when a beneficiary cancels its tickets for an event linked to this venue",
+        description="Url on which tickets cancellation requests are sent when a beneficiary cancels its tickets for an event linked to this venue. If not set, our system will use the cancel url defined at provider level.",
         example="https://my-ticketing-solution.com/pass-culture-cancellation-endpoint",
     )
 
