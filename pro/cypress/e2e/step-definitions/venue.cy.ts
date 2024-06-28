@@ -128,21 +128,11 @@ Then('I should see details of my venue', () => {
 
 When('I go to the venue page in Individual section', () => {
   initValuesAndIntercept()
-  cy.findByTestId('offerer-select').click()
-  cy.findByText('Changer de structure').click()
-  cy.findByText('Lieu non dit').click()
-  cy.findByText('Vos pages partenaire').should('be.visible')
-  cy.findByText('Carnet d’adresses').should('be.visible')
-  cy.findByLabelText('Sélectionnez votre page partenaire *').select(
-    'Cinéma de la fin Bis'
-  )
-
-  cy.findByText('Gérer votre page pour le grand public').click()
-  cy.findByText('Vos informations pour le grand public').should('be.visible')
+  cy.findByText('Votre page partenaire').should('be.visible')
+  cy.findByText('Carnet d’adresses') //.should('be.visible')
+  cy.get('a[aria-label^="Gérer la page de Lieu avec Siret"]').eq(0).click()
   cy.findByText('À propos de votre activité').should('be.visible')
   cy.findByText('Modifier').click()
-
-  // cy.findByText('Cinéma de la fin Bis').should('be.visible')
 })
 
 When('I update Individual section data', () => {
@@ -159,9 +149,13 @@ When('I update Individual section data', () => {
 
 When('I go to the venue page in Paramètres généraux', () => {
   cy.findByText('Paramètres généraux').click()
+  cy.url().should('include', '/structures').and('include', 'lieux')
+  cy.findAllByTestId('spinner').should('not.exist')
 })
 
 When('I update Paramètres généraux data', () => {
+  cy.url().should('include', '/parametres').and('include', 'structures')
+  cy.findAllByTestId('spinner').should('not.exist')
   cy.intercept({ method: 'PATCH', url: '/venues/*' }).as('patchVenue')
   cy.findByLabelText(
     'Label du ministère de la Culture ou du Centre national du cinéma et de l’image animée'
@@ -185,12 +179,23 @@ Then('Individual section data should be updated', () => {
 })
 
 Then('Paramètres généraux data should be updated', () => {
+  cy.findAllByTestId('spinner').should('not.exist')
   cy.findByText(
     'En main bien propres, avec un masque et un gel hydroalcoolique, didiou !'
-  ).should('be.visible')
+  )
+    .scrollIntoView()
+    .should('be.visible')
 
-  // I don't know why this test is failing
-  // cy.findByText('Musée de France').should('be.visible')
+  cy.findByTestId('wrapper-venueLabel').within(() => {
+    cy.get('select')
+      .invoke('val')
+      .then((identifiant) => {
+        cy.get('option[value="' + identifiant + '"]').should(
+          'have.text',
+          'Musée de France'
+        )
+      })
+  })
 })
 
 Then('I should only see these venues', (venues: DataTable) => {

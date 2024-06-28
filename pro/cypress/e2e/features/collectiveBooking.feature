@@ -21,6 +21,9 @@ Feature: Search for collective bookings
       |          79 | offer 38       | LYCEE POLYVALENT METIER ROBERT DOISNEAU | 25 places100 € | annulée     |
       |          72 | offer 31       | LYCEE POLYVALENT METIER ROBERT DOISNEAU | 25 places100 € | annulée     |
       |          65 | offer 24       | LYCEE POLYVALENT METIER ROBERT DOISNEAU | 25 places100 € | remboursée  |
+      |          58 | offer 17       | LYCEE POLYVALENT METIER ROBERT DOISNEAU | 25 places100 € | terminée    |
+      |          51 | offer 10       | LYCEE POLYVALENT METIER ROBERT DOISNEAU | 25 places100 € | confirmée   |
+      |          44 | offer 3        | LYCEE POLYVALENT METIER ROBERT DOISNEAU | 25 places100 € | préréservée |
 
   Scenario: It should find collective bookings by booking number
     When I display offers
@@ -28,4 +31,13 @@ Feature: Search for collective bookings
     Then These results should be displayed
       | Réservation | Nom de l'offre | Établissement                               | Places et prix | Statut  |
       |          66 | offer 25       | ECOLE ELEMENTAIRE PUBLIQUE FRANCOIS MOISSON | 25 places100 € | annulée |
-
+  # @todo: faire un cas de recherche par date (comme dans https://github.com/pass-culture/pass-culture-main/pull/12931) + établissement
+  # Scenario: It should find collective bookings with two filters
+  #   When I fill venue with "real_venue 1 eac_2_lieu [BON EAC]"
+  #   And I display offers
+  #   And I search for "Établissement" with text "ECOLE ELEMENTAIRE PUBLIQUE FRANCOIS MOISSON"
+  #   Then These results should be displayed
+  #     | Réservation | Nom de l'offre | Établissement                               | Places et prix | Statut    |
+  #     |          80 | offer 39       | ECOLE ELEMENTAIRE PUBLIQUE FRANCOIS MOISSON | 25 places100 € | annulée   |
+  #     |          66 | offer 25       | ECOLE ELEMENTAIRE PUBLIQUE FRANCOIS MOISSON | 25 places100 € | annulée   |
+  #     |          52 | offer 11       | ECOLE ELEMENTAIRE PUBLIQUE FRANCOIS MOISSON | 25 places100 € | confirmée |
