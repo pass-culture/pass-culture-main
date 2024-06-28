@@ -5,6 +5,8 @@ import React from 'react'
 
 import { api } from 'apiClient/api'
 import { OfferStatus } from 'apiClient/v1'
+import * as useAnalytics from 'app/App/analytics/firebase'
+import { Events } from 'core/FirebaseEvents/constants'
 import * as useNotification from 'hooks/useNotification'
 import { getIndividualOfferFactory } from 'utils/individualApiFactories'
 import {
@@ -16,6 +18,8 @@ import {
   StatusToggleButton,
   StatusToggleButtonProps,
 } from '../StatusToggleButton'
+
+const mockLogEvent = vi.fn()
 
 const renderStatusToggleButton = (
   props: StatusToggleButtonProps,
@@ -66,6 +70,9 @@ describe('StatusToggleButton', () => {
 
   it('should activate an offer and confirm', async () => {
     // given
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
     const toggleFunction = vi
       .spyOn(api, 'patchOffersActiveStatus')
       .mockResolvedValue()
@@ -98,6 +105,7 @@ describe('StatusToggleButton', () => {
       1,
       'L’offre a bien été publiée.'
     )
+    expect(mockLogEvent).not.toHaveBeenCalled()
   })
 
   it('should display error', async () => {
@@ -127,6 +135,9 @@ describe('StatusToggleButton', () => {
   })
 
   it('should display publication confirmation modal when publication date is in the future', async () => {
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
     const futureDate = addDays(new Date(), 1)
     props.offer = getIndividualOfferFactory({
       id: offerId,
@@ -144,6 +155,14 @@ describe('StatusToggleButton', () => {
         /Attention, vous allez publier une offre programmée/
       )
     ).toBeInTheDocument()
+    await userEvent.click(screen.getByText(/Confirmer/))
+    expect(mockLogEvent).toHaveBeenCalledWith(
+      Events.CLICKED_PUBLISH_FUTURE_OFFER_EARLIER,
+      {
+        offerId: 12,
+        offerType: 'individual',
+      }
+    )
   })
 
   it('should not display publication confirmation modal when offer is already published', async () => {

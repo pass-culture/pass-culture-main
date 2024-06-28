@@ -3,8 +3,10 @@ import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel, OfferStatus } from 'apiClient/v1'
+import { useAnalytics } from 'app/App/analytics/firebase'
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import { GET_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
+import { Events } from 'core/FirebaseEvents/constants'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'
 import fullHideIcon from 'icons/full-hide.svg'
@@ -20,6 +22,7 @@ export interface StatusToggleButtonProps {
 export const StatusToggleButton = ({ offer }: StatusToggleButtonProps) => {
   const notification = useNotification()
   const { mutate } = useSWRConfig()
+  const { logEvent } = useAnalytics()
   const isFutureOfferEnabled = useActiveFeature('WIP_FUTURE_OFFER')
   const isPublicationDateInFuture =
     isDateValid(offer.publicationDate) &&
@@ -52,6 +55,12 @@ export const StatusToggleButton = ({ offer }: StatusToggleButtonProps) => {
       notification.success(
         `L’offre a bien été ${offer.isActive ? 'désactivée' : 'publiée'}.`
       )
+      if (isPublicationConfirmationModalOpen) {
+        logEvent(Events.CLICKED_PUBLISH_FUTURE_OFFER_EARLIER, {
+          offerId: offer.id,
+          offerType: 'individual',
+        })
+      }
     } catch (error) {
       notification.error(
         'Une erreur est survenue, veuillez réessayer ultérieurement.'
