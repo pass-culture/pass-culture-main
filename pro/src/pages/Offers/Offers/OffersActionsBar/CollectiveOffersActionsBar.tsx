@@ -61,7 +61,7 @@ const updateCollectiveOffersStatus = async (
     } catch {
       notify.error(
         `Une erreur est survenue lors de ${
-          isActive ? 'l’activation' : 'la désactivation'
+          isActive ? 'la publication' : 'la désactivation'
         } des offres`
       )
     }
@@ -101,7 +101,7 @@ const updateCollectiveOffersStatus = async (
     } catch {
       notify.error(
         `Une erreur est survenue lors de ${
-          isActive ? 'l’activation' : 'la désactivation'
+          isActive ? 'la publication' : 'la désactivation'
         } des offres sélectionnées`
       )
     }
@@ -149,7 +149,7 @@ export function CollectiveOffersActionsBar({
   function onDeactivateOffersClicked() {
     if (!canDeactivateCollectiveOffers(selectedOffers)) {
       notify.error(
-        'Seules les offres au statut publié ou expiré peuvent être désactivées.'
+        'Seules les offres au statut publié ou expiré peuvent être masquées.'
       )
       return
     }
@@ -211,7 +211,7 @@ export function CollectiveOffersActionsBar({
             icon={fullHideIcon}
             variant={ButtonVariant.SECONDARY}
           >
-            Désactiver
+            Masquer
           </Button>
           <Button
             onClick={handleActivate}

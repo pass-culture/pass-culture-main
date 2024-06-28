@@ -33,7 +33,7 @@ describe('CollectiveStatusLabel', () => {
     { offerStatus: CollectiveOfferStatus.REJECTED, expectedLabel: 'refusée' },
     {
       offerStatus: CollectiveOfferStatus.INACTIVE,
-      expectedLabel: 'désactivée',
+      expectedLabel: 'masquée',
     },
     { offerStatus: CollectiveOfferStatus.ACTIVE, expectedLabel: 'publiée' },
     {

@@ -65,7 +65,7 @@ export const getCollectiveStatusLabel = (
               className={style['status-label-icon']}
             />
           }
-          label="désactivée"
+          label="masquée"
         />
       )
     case CollectiveOfferStatus.ACTIVE:
