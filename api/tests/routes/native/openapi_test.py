@@ -293,6 +293,10 @@ def test_public_api(client):
                         "stock": {"$ref": "#/components/schemas/BookingStockResponse"},
                         "token": {"nullable": True, "title": "Token", "type": "string"},
                         "totalAmount": {"title": "Totalamount", "type": "integer"},
+                        "userReaction": {
+                            "anyOf": [{"$ref": "#/components/schemas/ReactionTypeEnum"}],
+                            "nullable": True,
+                        },
                     },
                     "required": ["id", "dateCreated", "quantity", "stock", "totalAmount"],
                     "title": "BookingReponse",
@@ -1565,6 +1569,11 @@ def test_public_api(client):
                     "required": ["activityId", "address", "city", "firstName", "lastName", "postalCode"],
                     "title": "ProfileUpdateRequest",
                     "type": "object",
+                },
+                "ReactionTypeEnum": {
+                    "description": "An enumeration.",
+                    "enum": ["LIKE", "DISLIKE", "NO_REACTION"],
+                    "title": "ReactionTypeEnum",
                 },
                 "Reason": {
                     "description": "Describe possible reason codes to used when reporting an offer.\n\nThe whole meta part is only consumed by the api client, it has no meaning\ninside the whole API code.\n\nNote: when adding a new enum symbol, do not forget to update the meta method.",

@@ -24,13 +24,15 @@ from pcapi.core.offers.exceptions import UnexpectedCinemaProvider
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import MediationFactory
+from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.offers.factories import StockFactory
 from pcapi.core.offers.factories import StockWithActivationCodesFactory
 from pcapi.core.providers.exceptions import InactiveProvider
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.repository as providers_api
 from pcapi.core.providers.repository import get_provider_by_local_class
-from pcapi.core.testing import assert_no_duplicated_queries
+from pcapi.core.reactions.factories import ReactionFactory
+from pcapi.core.reactions.models import ReactionTypeEnum
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
@@ -708,7 +710,8 @@ class GetBookingsTest:
         mediation = MediationFactory(id=111, offer=used2.stock.offer, thumbCount=1, credit="street credit")
 
         client = client.with_token(self.identifier)
-        with assert_no_duplicated_queries():
+        with assert_num_queries(2):
+            # select user, booking
             response = client.get("/native/v1/bookings")
 
         assert response.status_code == 200
@@ -742,6 +745,7 @@ class GetBookingsTest:
 
         used2_json = next(booking for booking in response.json["ended_bookings"] if booking["id"] == used2.id)
         assert used2_json == {
+            "userReaction": None,
             "activationCode": None,
             "cancellationDate": None,
             "cancellationReason": None,
@@ -792,6 +796,53 @@ class GetBookingsTest:
         for booking in response.json["ongoing_bookings"]:
             assert booking["qrCodeData"] is not None
 
+    def test_get_bookings_returns_user_reaction(self, client):
+        now = datetime.utcnow()
+        stock = EventStockFactory()
+        ongoing_booking = booking_factories.BookingFactory(
+            stock=stock, user__deposit__expirationDate=now + timedelta(days=180)
+        )
+
+        client = client.with_token(ongoing_booking.user.email)
+        with assert_num_queries(2):
+            # select user, booking
+            response = client.get("/native/v1/bookings")
+
+        assert response.status_code == 200
+        assert response.json["ongoing_bookings"][0]["userReaction"] is None
+
+    def test_get_bookings_returns_user_reaction_when_one_exists(self, client):
+        now = datetime.utcnow()
+        stock = EventStockFactory()
+        ongoing_booking = booking_factories.BookingFactory(
+            stock=stock, user__deposit__expirationDate=now + timedelta(days=180)
+        )
+        ReactionFactory(user=ongoing_booking.user, offer=stock.offer)
+
+        client = client.with_token(ongoing_booking.user.email)
+        with assert_num_queries(3):
+            # select user, booking, stock
+            response = client.get("/native/v1/bookings")
+
+        assert response.status_code == 200
+        assert response.json["ongoing_bookings"][0]["userReaction"] == "NO_REACTION"
+
+    def test_get_bookings_returns_user_reaction_when_reaction_is_on_the_product(self, client):
+        now = datetime.utcnow()
+        product = ProductFactory()
+        stock = EventStockFactory(offer__product=product)
+        ongoing_booking = booking_factories.BookingFactory(
+            stock=stock, user__deposit__expirationDate=now + timedelta(days=180)
+        )
+        ReactionFactory(reactionType=ReactionTypeEnum.LIKE, user=ongoing_booking.user, product=stock.offer.product)
+        client = client.with_token(ongoing_booking.user.email)
+        with assert_num_queries(3):
+            # select user, booking, offer
+            response = client.get("/native/v1/bookings")
+
+        assert response.status_code == 200
+        assert response.json["ongoing_bookings"][0]["userReaction"] == "LIKE"
+
     def test_get_bookings_returns_stock_price_and_price_category_label(self, client):
         now = datetime.utcnow()
         stock = EventStockFactory()
@@ -799,9 +850,10 @@ class GetBookingsTest:
             stock=stock, user__deposit__expirationDate=now + timedelta(days=180)
         )
         booking_factories.BookingFactory(stock=stock, user=ongoing_booking.user, status=BookingStatus.CANCELLED)
-
-        with assert_no_duplicated_queries():
-            response = client.with_token(ongoing_booking.user.email).get("/native/v1/bookings")
+        client = client.with_token(ongoing_booking.user.email)
+        with assert_num_queries(2):
+            # select user, booking
+            response = client.get("/native/v1/bookings")
 
         assert response.status_code == 200
         assert (
@@ -824,8 +876,10 @@ class GetBookingsTest:
             user=user, stock=StockFactory(price=10, offer__subcategoryId=subcategories.CARTE_MUSEE.id)
         )
 
-        with assert_no_duplicated_queries():
-            response = client.with_token(ongoing_booking.user.email).get("/native/v1/bookings")
+        client = client.with_token(ongoing_booking.user.email)
+        with assert_num_queries(2):
+            # select user, booking
+            response = client.get("/native/v1/bookings")
 
         assert response.status_code == 200
         assert response.json["ongoing_bookings"][0]["id"] == ongoing_booking.id
@@ -840,7 +894,8 @@ class GetBookingsTest:
         )
 
         test_client = client.with_token(user.email)
-        with assert_no_duplicated_queries():
+        with assert_num_queries(2):
+            # select user, booking
             response = test_client.get("/native/v1/bookings")
 
         assert response.status_code == 200
