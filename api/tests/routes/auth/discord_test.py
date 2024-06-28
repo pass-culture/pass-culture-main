@@ -2,6 +2,7 @@ from urllib.parse import urlparse
 
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
+from flask import g
 from flask import url_for
 import pytest
 
@@ -34,6 +35,10 @@ class DiscordSigninTest:
         format=serialization.PublicFormat.SubjectPublicKeyInfo,
     )
 
+    def fetch_csrf_token(self, client):
+        # will generate a csrf token
+        client.get(url_for("auth.discord_signin"))
+
     def post_to_endpoint(
         self,
         client,
@@ -43,12 +48,12 @@ class DiscordSigninTest:
         expected_num_queries: int | None = None,
         **url_kwargs,
     ):
-
+        self.fetch_csrf_token(client)
         url = url_for(self.endpoint, **url_kwargs)
 
         if form is None:
             form = {}
-
+        form["csrf_token"] = g.get("csrf_token", None)
         if expected_num_queries is not None:
             with assert_num_queries(expected_num_queries):
                 return client.post(url, form=form, headers=headers, follow_redirects=follow_redirects)

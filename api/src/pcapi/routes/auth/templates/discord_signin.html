@@ -18,6 +18,8 @@
                     </div>
                     <form action="{{ url_for('.discord_signin_post') }}" name="{{ url_for('.discord_signin_post') }}" method="post" data-turbo="false">
                         {{ form.redirect_url }}
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
                         <div class=" col-10 gap-2 w-2  items-center">
                             <div>
                                 {{ form.redirect_url }}
