@@ -53,6 +53,9 @@ class SearchBackend:
     ) -> None:
         raise NotImplementedError()
 
+    def get_indexed_offers_ids(self) -> list[int]:
+        raise NotImplementedError()
+
     def index_collective_offer_templates(
         self, collective_offer_templates: "abc.Collection[educational_models.CollectiveOfferTemplate]"
     ) -> None:
