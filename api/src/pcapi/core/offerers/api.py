@@ -350,7 +350,7 @@ def upsert_venue_opening_hours(venue: models.Venue, opening_hours: serialize_bas
     return venue
 
 
-def create_venue(venue_data: venues_serialize.PostVenueBodyModel) -> models.Venue:
+def create_venue(venue_data: venues_serialize.PostVenueBodyModel, author: users_models.User) -> models.Venue:
     venue = models.Venue()
 
     if feature.FeatureToggle.ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE.is_active():
@@ -391,6 +391,9 @@ def create_venue(venue_data: venues_serialize.PostVenueBodyModel) -> models.Venu
         venue.adageInscriptionDate = datetime.utcnow()
 
     ava = educational_address_api.new_venue_address(venue)
+
+    history_api.add_action(history_models.ActionType.VENUE_CREATED, author, venue=venue)
+
     repository.save(venue, ava)
 
     if venue.siret:
@@ -1918,7 +1921,7 @@ def create_from_onboarding_data(
             )
         venue_kwargs = common_kwargs | comment_and_siret
         venue_creation_info = venues_serialize.PostVenueBodyModel(**venue_kwargs)  # type: ignore[arg-type]
-        venue = create_venue(venue_creation_info)
+        venue = create_venue(venue_creation_info, user)
         create_venue_registration(venue.id, new_onboarding_info.target, new_onboarding_info.webPresence)
 
     # Send welcome email only in the case of offerer creation
