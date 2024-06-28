@@ -2,7 +2,9 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .hero {
-  h1 {
+  .title {
+    @include fonts.title1;
+
     margin-bottom: rem.torem(16px);
   }
 

@@ -20,7 +20,7 @@ export const CollectiveOfferPreviewEdition = ({
   return (
     <AppLayout layout={'sticky-actions'}>
       <div>
-        <h1>Aperçu de l’offre</h1>
+        <h1 className={styles['title']}>Aperçu de l’offre</h1>
         <p className={styles['preview-info']}>
           Voici à quoi ressemble votre offre une fois publiée sur la plateforme
           ADAGE.

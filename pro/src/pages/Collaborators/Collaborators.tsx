@@ -104,7 +104,7 @@ export const Collaborators = (): JSX.Element | null => {
 
   return (
     <AppLayout>
-      <h1>Collaborateurs</h1>
+      <h1 className={styles['title']}>Collaborateurs</h1>
 
       <section className={styles['section']} ref={scrollToSection}>
         <h2

@@ -9,7 +9,7 @@ export const Unavailable = () => {
   return (
     <main className={styles['unavailable-page']} id="content">
       <SvgIcon className={styles['error-icon']} src={strokeWipIcon} alt="" />
-      <h1>Page indisponible</h1>
+      <h1 className={styles['title']}>Page indisponible</h1>
       <p>Veuillez rééssayer plus tard</p>
     </main>
   )

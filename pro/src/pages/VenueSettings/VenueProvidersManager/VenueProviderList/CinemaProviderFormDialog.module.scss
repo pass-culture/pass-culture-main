@@ -16,20 +16,4 @@
   .explanation {
     margin-top: rem.torem(24px);
   }
-
-  form {
-    width: 100%;
-
-    .cinema-provider-form {
-      .actions {
-        display: flex;
-        justify-content: center;
-        margin-top: rem.torem(16px);
-
-        button {
-          padding: 0 rem.torem(80px);
-        }
-      }
-    }
-  }
 }

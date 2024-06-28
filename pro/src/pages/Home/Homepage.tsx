@@ -169,7 +169,9 @@ export const Homepage = (): JSX.Element => {
 
   return (
     <AppLayout>
-      <h1>Bienvenue dans l’espace acteurs culturels</h1>
+      <h1 className={styles['title']}>
+        Bienvenue dans l’espace acteurs culturels
+      </h1>
 
       {seesNewNavAvailableBanner && (
         <div className={styles['beta-banner']}>

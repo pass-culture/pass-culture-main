@@ -4,6 +4,10 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/variables/_size.scss" as size;
 
+.title {
+  @include fonts.title1;
+}
+
 .logo-side {
   @include layout.logo-side;
 }

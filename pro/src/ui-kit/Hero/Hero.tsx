@@ -20,7 +20,7 @@ export const Hero = ({
 }: HeroProps): JSX.Element => (
   <section className={styles['hero']}>
     <div className={styles['hero-body']}>
-      <h1>{title}</h1>
+      <h1 className={styles['title']}>{title}</h1>
       <h2>{text}</h2>
       <ButtonLink
         variant={ButtonVariant.PRIMARY}

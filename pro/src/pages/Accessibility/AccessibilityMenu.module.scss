@@ -1,4 +1,5 @@
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 .menu-accessibility {
   display: flex;
@@ -13,5 +14,7 @@
 }
 
 .title-accessibility {
+  @include fonts.title1;
+
   margin-bottom: rem.torem(32px);
 }

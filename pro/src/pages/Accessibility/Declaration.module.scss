@@ -1,6 +1,9 @@
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 .heading1-declaration {
+  @include fonts.title1;
+
   margin-bottom: rem.torem(32px);
 }
 
