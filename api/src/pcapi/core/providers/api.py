@@ -1,6 +1,7 @@
 from dataclasses import asdict
 from datetime import datetime
 import decimal
+import enum
 import logging
 import typing
 from typing import Iterable
@@ -27,8 +28,17 @@ from pcapi.validation.models.entity_validator import validate
 from pcapi.workers.update_all_offers_active_status_job import update_all_collective_offers_active_status_job
 from pcapi.workers.update_all_offers_active_status_job import update_venue_synchronized_offers_active_status_job
 
+from . import validation
+
 
 logger = logging.getLogger(__name__)
+
+
+class T_UNCHANGED(enum.Enum):
+    TOKEN = 0
+
+
+UNCHANGED = T_UNCHANGED.TOKEN
 
 
 def create_venue_provider(
@@ -237,6 +247,40 @@ def connect_venue_to_cinema_provider(
 
     repository.save(venue_provider)
     return venue_provider
+
+
+def update_provider_external_urls(
+    provider: providers_models.Provider,
+    *,
+    notification_external_url: str | None | T_UNCHANGED = UNCHANGED,
+    booking_external_url: str | None | T_UNCHANGED = UNCHANGED,
+    cancel_external_url: str | None | T_UNCHANGED = UNCHANGED,
+) -> providers_models.Provider:
+    ticketing_urls_are_unset = booking_external_url is None and cancel_external_url is None
+    ticketing_urls_are_updated = booking_external_url != UNCHANGED or cancel_external_url != UNCHANGED
+
+    # Validation
+    if ticketing_urls_are_unset:
+        validation.check_ticketing_urls_can_be_unset(provider)
+    elif ticketing_urls_are_updated:
+        validation.check_ticketing_urls_are_coherently_set(
+            provider.bookingExternalUrl if booking_external_url == UNCHANGED else booking_external_url,
+            provider.cancelExternalUrl if cancel_external_url == UNCHANGED else cancel_external_url,
+        )
+
+    # Update
+    if notification_external_url != UNCHANGED:
+        provider.notificationExternalUrl = notification_external_url
+
+    if booking_external_url != UNCHANGED:
+        provider.bookingExternalUrl = booking_external_url
+
+    if cancel_external_url != UNCHANGED:
+        provider.cancelExternalUrl = cancel_external_url
+
+    repository.save(provider)
+
+    return provider
 
 
 def _check_provider_can_be_connected(provider: providers_models.Provider, id_at_provider: str | None) -> None:

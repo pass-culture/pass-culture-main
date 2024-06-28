@@ -4,6 +4,7 @@ from typing import Sequence
 
 from flask_sqlalchemy import BaseQuery
 from sqlalchemy import func
+from sqlalchemy import or_
 import sqlalchemy.orm as sqla_orm
 
 from pcapi.core.categories import subcategories_v2 as subcategories
@@ -209,3 +210,37 @@ def is_event_external_ticket_applicable(offer: offers_models.Offer) -> bool:
 
 def get_providers_venues(provider_id: int) -> BaseQuery:
     return Venue.query.join(models.VenueProvider).filter(models.VenueProvider.providerId == provider_id)
+
+
+def get_future_events_requiring_provider_ticketing_system(
+    provider: models.Provider,
+) -> list[offers_models.Offer]:
+    # base query
+    events_query = (
+        offers_models.Offer.query.join(offers_models.Stock, offers_models.Offer.stocks)
+        .join(Venue, offers_models.Offer.venue)
+        .join(models.VenueProvider, Venue.venueProviders)
+        .outerjoin(models.VenueProviderExternalUrls, models.VenueProvider.externalUrls)
+    )
+
+    # Events linked to the the provider & requiring a ticketing system
+    events_query = events_query.filter(
+        offers_models.Offer.lastProvider == provider,
+        offers_models.Offer.isEvent,
+        offers_models.Offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP,
+    )
+
+    # Events with future stocks
+    events_query = events_query.filter(
+        offers_models.Stock.beginningDatetime >= datetime.datetime.utcnow(),
+    )
+
+    # Events not linked to a Venue specific ticketing system
+    events_query = events_query.filter(
+        or_(
+            Venue.venueProviders == None,
+            models.VenueProviderExternalUrls.bookingExternalUrl == None,
+        )
+    )
+
+    return events_query.all()
