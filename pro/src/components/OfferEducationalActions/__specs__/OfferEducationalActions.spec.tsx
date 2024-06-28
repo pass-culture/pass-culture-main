@@ -189,6 +189,7 @@ describe('OfferEducationalActions', () => {
       {
         from: '/offre/collectif/recapitulatif',
         offerId: 7,
+        offerType: 'collective',
       }
     )
   })

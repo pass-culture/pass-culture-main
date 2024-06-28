@@ -50,6 +50,7 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
     logEvent(Events.CLICKED_CREATE_OFFER_FROM_REQUEST, {
       from: location.pathname,
       requestId,
+      offerType: 'collective',
       templateOfferId: offerId,
     })
     // eslint-disable-next-line @typescript-eslint/no-floating-promises

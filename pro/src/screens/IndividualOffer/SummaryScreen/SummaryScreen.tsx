@@ -228,6 +228,7 @@ export const SummaryScreen = () => {
                     isEdition: true,
                     isDraft: false,
                     offerId: offer.id,
+                    offerType: 'individual',
                   })
                 }
               >

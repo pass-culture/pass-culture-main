@@ -183,6 +183,7 @@ export const OfferEducationalActions = ({
                   {
                     from: '/offre/collectif/recapitulatif',
                     offerId: offer.id,
+                    offerType: 'collective',
                   }
                 )
               }

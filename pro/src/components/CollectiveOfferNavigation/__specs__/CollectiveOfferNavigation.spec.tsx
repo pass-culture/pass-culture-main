@@ -216,6 +216,7 @@ describe('CollectiveOfferNavigation', () => {
       {
         from: OFFER_FROM_TEMPLATE_ENTRIES.OFFER_TEMPLATE_RECAP,
         offerId: 1,
+        offerType: 'collective',
       }
     )
   })

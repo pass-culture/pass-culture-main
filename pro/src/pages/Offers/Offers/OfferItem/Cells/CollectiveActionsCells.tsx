@@ -89,6 +89,7 @@ export const CollectiveActionsCells = ({
     logEvent(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
       from: OFFER_FROM_TEMPLATE_ENTRIES.OFFERS_MODAL,
       offerId: offer.id,
+      offerType: 'collective',
     })
     if (shouldNotDisplayModalAgain && isLocalStorageAvailable) {
       localStorage.setItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY, 'true')
@@ -108,6 +109,7 @@ export const CollectiveActionsCells = ({
         logEvent(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
           from: OFFER_FROM_TEMPLATE_ENTRIES.OFFERS,
           offerId: offer.id,
+          offerType: 'collective',
         })
         await createOfferFromTemplate(
           navigate,
@@ -198,6 +200,8 @@ export const CollectiveActionsCells = ({
                               CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING,
                               {
                                 from: location.pathname,
+                                offerId: offer.id,
+                                offerType: 'collective',
                               }
                             )
                           }

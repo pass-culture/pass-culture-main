@@ -174,6 +174,7 @@ export const InformationsScreen = ({
         isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
         isDraft: mode === OFFER_WIZARD_MODE.CREATION,
         offerId: receivedOfferId,
+        offerType: 'individual',
         subcategoryId: formik.values.subcategoryId,
       })
 

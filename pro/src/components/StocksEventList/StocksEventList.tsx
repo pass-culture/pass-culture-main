@@ -66,6 +66,7 @@ export interface StocksEventListProps {
 }
 
 const DELETE_STOCKS_CHUNK_SIZE = 50
+
 function* chunks<T>(array: T[], n: number): Generator<T[], void> {
   for (let i = 0; i < array.length; i += n) {
     yield array.slice(i, i + n)
@@ -237,6 +238,7 @@ export const StocksEventList = ({
     await api.deleteStock(stockId)
     logEvent(Events.CLICKED_DELETE_STOCK, {
       offerId: offer.id,
+      offerType: 'individual',
       stockId: stockId,
     })
 
@@ -312,6 +314,7 @@ export const StocksEventList = ({
     setIsDeleteAllLoading(false)
     logEvent(Events.CLICKED_BULK_DELETE_STOCK, {
       offerId: offer.id,
+      offerType: 'individual',
       deletionCount: deletionCount,
     })
 
