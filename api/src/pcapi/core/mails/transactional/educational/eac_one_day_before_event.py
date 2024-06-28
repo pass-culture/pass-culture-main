@@ -26,7 +26,7 @@ def get_eac_one_day_before_event_data(
         template=TransactionalEmail.EAC_ONE_DAY_BEFORE_EVENT.value,
         params={
             "OFFER_NAME": offer.name,
-            "VENUE_NAME": offer.venue.name,
+            "VENUE_NAME": offer.venue.common_name,
             "EVENT_HOUR": format_booking_hours_for_email(booking),
             "QUANTITY": 1,
             "PRICE": str(stock.price) if stock.price > 0 else "Gratuit",
