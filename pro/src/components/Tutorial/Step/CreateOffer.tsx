@@ -19,7 +19,7 @@ export const CreateOffer = ({
     <section className={contentClassName}>
       <div className={styles['two-columns-section-block']}>
         <SvgIcon src={phoneStrokeIcon} alt="" />
-        <h2>Du grand public</h2>
+        <h2 className={styles['subtitle']}>Du grand public</h2>
         <p>
           Les offres seront publiées et réservables par les jeunes via
           l’application pass Culture.
@@ -31,7 +31,7 @@ export const CreateOffer = ({
       </div>
       <div className={styles['two-columns-section-block']}>
         <SvgIcon src={strokeProfIcon} alt="" />
-        <h2>Des établissements scolaires</h2>
+        <h2 className={styles['subtitle']}>Des établissements scolaires</h2>
         <p>
           Les offres seront publiées et réservables par les enseignants sur la
           plateforme ADAGE (Application Dédiée À la Généralisation de

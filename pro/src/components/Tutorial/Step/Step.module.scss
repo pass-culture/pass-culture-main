@@ -33,11 +33,11 @@
   align-items: flex-start;
 
   p,
-  h2 {
+  .subtitle {
     text-align: left;
   }
 
-  h2 {
+  .subtitle {
     @include fonts.button;
 
     line-height: rem.torem(20px);

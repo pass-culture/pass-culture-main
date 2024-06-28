@@ -7,6 +7,10 @@
   margin-bottom: rem.torem(32px);
 }
 
+.heading2 {
+  @include fonts.title2;
+}
+
 .heading2,
 .heading3,
 .paragraph,

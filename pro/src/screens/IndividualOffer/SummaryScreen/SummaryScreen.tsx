@@ -210,7 +210,7 @@ export const SummaryScreen = () => {
               alt=""
               className={styles['icon-info-phone']}
             />
-            <h2>Aperçu dans l’app</h2>
+            <h2 className={styles['title']}>Aperçu dans l’app</h2>
           </div>
 
           <OfferAppPreview offer={offer} />

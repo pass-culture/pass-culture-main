@@ -21,7 +21,7 @@
     width: rem.torem(24px);
   }
 
-  h2 {
+  .title {
     @include fonts.title4-light;
   }
 }

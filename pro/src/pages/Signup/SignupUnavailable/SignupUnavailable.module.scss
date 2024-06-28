@@ -16,8 +16,12 @@
   @include layout.full-content-side;
 }
 
-.heading-1 {
+.title {
   @include fonts.title1;
 
   margin: rem.torem(24px) 0;
+}
+
+.subtitle {
+  @include fonts.title2;
 }
