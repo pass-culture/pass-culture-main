@@ -8,7 +8,7 @@ import pytz
 
 from pcapi.core import search
 import pcapi.core.offers.models as offers_models
-from pcapi.core.search.backends import algolia
+from pcapi.core.search.backends import base
 from pcapi.utils.blueprint import Blueprint
 
 
@@ -28,7 +28,7 @@ def _get_eta(end: int, current: int, elapsed_per_batch: list[int]) -> str:
 
 
 def _enqueue_or_index(
-    backend: algolia.AlgoliaBackend,
+    backend: base.SearchBackend,
     q: list,
     offer: offers_models.Offer | None,
     last_30_days_bookings: dict[int, int] | None,
@@ -46,7 +46,7 @@ def _enqueue_or_index(
         q.clear()
 
 
-def _process_eligible_offers(backend: algolia.AlgoliaBackend, queue: list, offers: list[offers_models.Offer]) -> None:
+def _process_eligible_offers(backend: base.SearchBackend, queue: list, offers: list[offers_models.Offer]) -> None:
     last_x_days_bookings_count_by_offer = search.get_last_x_days_booking_count_by_offer(offers)
     for offer in offers:
         if offer.is_eligible_for_search:
@@ -95,7 +95,7 @@ def full_index_offers(start: int, end: int) -> None:
     if start > end:
         raise ValueError('"start" must be less than "end"')
 
-    backend = algolia.AlgoliaBackend()
+    backend = search._get_backend()
     queue: list[tuple] = []
 
     last_report = start
@@ -128,13 +128,13 @@ def full_reindex_indexed_offers() -> None:
     track of offers already indexed.
     """
 
-    backend = algolia.AlgoliaBackend()
+    backend = search._get_backend()
     queue: list[tuple] = []
 
     start = 0
     last_report = 0
     elapsed_per_batch = []
-    offer_ids_to_index = sorted(map(int, backend.redis_client.hkeys(algolia.REDIS_HASHMAP_INDEXED_OFFERS_NAME)))
+    offer_ids_to_index = sorted(backend.get_indexed_offers_ids())
     while start <= len(offer_ids_to_index):
         start_time = time.perf_counter()
         offers = (
@@ -149,6 +149,5 @@ def full_reindex_indexed_offers() -> None:
         elapsed_per_batch.append(int(time.perf_counter() - start_time))
         start = start + BATCH_SIZE
         last_report = _report_progress(len(offer_ids_to_index), start, elapsed_per_batch, last_report)
-        break
     _enqueue_or_index(backend, queue, offer=None, last_30_days_bookings=None, force_index=True)
     logger.info("Done")

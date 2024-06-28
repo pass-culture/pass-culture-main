@@ -375,6 +375,9 @@ class AlgoliaBackend(base.SearchBackend):
         finally:
             pipeline.reset()
 
+    def get_indexed_offers_ids(self) -> list[int]:
+        return [int(offer_id) for offer_id in self.redis_client.hkeys(REDIS_HASHMAP_INDEXED_OFFERS_NAME)]
+
     def index_collective_offer_templates(
         self,
         collective_offer_templates: abc.Collection[educational_models.CollectiveOfferTemplate],
