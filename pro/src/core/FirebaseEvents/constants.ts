@@ -63,6 +63,7 @@ export enum Events {
   CLICKED_PAGE_FOR_APP_HOME = 'hasClickedPageForAppHome',
   CLICKED_PAGE_FOR_ADAGE_HOME = 'hasClickedPageForAdageHome',
   CLICKED_INVOICES_DOWNLOAD = 'hasClickedInvoicesDownload',
+  CLICKED_PUBLISH_FUTURE_OFFER_EARLIER = 'hasClickedPublishFutureOfferEarlier',
 }
 
 export enum VenueEvents {
