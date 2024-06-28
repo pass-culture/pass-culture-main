@@ -3,7 +3,6 @@ import datetime
 from pcapi.core.categories import subcategories_v2
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
-from pcapi.repository import repository
 
 
 def create_complex_offers(offerers_by_name: dict[str, offerers_models.Offerer]) -> None:
@@ -139,8 +138,7 @@ Ut quis egestas neque. Fusce sem nulla, luctus ac sagittis eu, mattis quis purus
             "diffusionVersion": "VO",
         },
     )
-    movie_stock = offers_factories.StockFactory(offer=movie_offer, bookingLimitDatetime=datetime.datetime.utcnow())
-    repository.save(movie_stock)
+    offers_factories.StockFactory(offer=movie_offer, bookingLimitDatetime=datetime.datetime.utcnow())
 
     book_product = offers_factories.ProductFactory(
         subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
