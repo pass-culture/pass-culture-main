@@ -1,4 +1,4 @@
-import React from 'react'
+import styles from './Titles.module.scss'
 
 interface TitlesProps {
   action?: JSX.Element
@@ -16,7 +16,7 @@ export const Titles = ({
   return (
     <div className="section hero-section">
       <div className="title-subtitle-link-block">
-        <h1>{title}</h1>
+        <h1 className={styles['title']}>{title}</h1>
         {action && <div className="title-action-links">{action}</div>}
       </div>
       {subtitle && <h2 className="subtitle">{subtitle.toUpperCase()}</h2>}

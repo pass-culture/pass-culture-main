@@ -118,3 +118,7 @@
 .display-all-members-button {
   margin-top: rem.torem(20px);
 }
+
+.title {
+  @include fonts.title1;
+}

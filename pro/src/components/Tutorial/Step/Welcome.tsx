@@ -15,7 +15,9 @@ export const Welcome = ({
   contentClassName,
 }: StepComponentProps): JSX.Element => (
   <>
-    <h1 id={titleId}>Bienvenue dans l’espace acteurs culturels</h1>
+    <h1 id={titleId} className={styles['title']}>
+      Bienvenue dans l’espace acteurs culturels
+    </h1>
     <section className={contentClassName}>
       <div className={styles['tw-description']}>
         Le pass Culture est un dispositif gouvernemental permettant aux jeunes

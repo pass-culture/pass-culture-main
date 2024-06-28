@@ -2,7 +2,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_size.scss" as size;
 
-// sass doc: https://sass-lang.com/documentation
 .tutorial-box {
   @media (min-width: size.$tablet) {
     height: rem.torem(620px);
@@ -17,17 +16,6 @@
   height: 100%;
   justify-content: space-between;
   text-align: center;
-
-  h1 {
-    margin-bottom: rem.torem(32px);
-    margin-top: rem.torem(40px);
-  }
-
-  li {
-    list-style-position: inside;
-    list-style-type: "- ";
-    margin-top: rem.torem(8px);
-  }
 
   .tutorial-content {
     display: flex;

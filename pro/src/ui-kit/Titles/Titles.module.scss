@@ -1,5 +1,5 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
-h2 {
-  @include fonts.title2;
+.title {
+  @include fonts.title1;
 }

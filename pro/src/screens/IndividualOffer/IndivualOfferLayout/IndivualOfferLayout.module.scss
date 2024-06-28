@@ -20,6 +20,8 @@
 }
 
 .title {
+  @include fonts.title1;
+
   flex: auto;
 }
 

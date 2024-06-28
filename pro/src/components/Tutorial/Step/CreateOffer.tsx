@@ -13,7 +13,9 @@ export const CreateOffer = ({
   contentClassName,
 }: StepComponentProps): JSX.Element => (
   <>
-    <h1 id={titleId}>Créez et publiez vos offres à destination :</h1>
+    <h1 id={titleId} className={styles['title']}>
+      Créez et publiez vos offres à destination :
+    </h1>
     <section className={contentClassName}>
       <div className={styles['two-columns-section-block']}>
         <SvgIcon src={phoneStrokeIcon} alt="" />

@@ -1,5 +1,10 @@
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+
+.title {
+  @include fonts.title1;
+}
 
 .preview-info {
-    margin: rem.torem(32px) 0;
+  margin: rem.torem(32px) 0;
 }

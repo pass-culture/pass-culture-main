@@ -42,7 +42,7 @@ export const OffersForMyInstitution = () => {
 
   return (
     <AnalyticsContextProvider>
-      <h1>Pour mon établissement</h1>
+      <h1 className={styles['title']}>Pour mon établissement</h1>
       <Callout
         className={styles['my-institution-callout']}
         links={[

@@ -14,7 +14,9 @@ export const CreateVenue = ({
 }: StepComponentProps): JSX.Element => {
   return (
     <>
-      <h1 id={titleId}>Paramétrez votre espace PRO</h1>
+      <h1 id={titleId} className={styles['title']}>
+        Paramétrez votre espace PRO
+      </h1>
       <section className={contentClassName}>
         <div className={styles['two-columns-section-block']}>
           <SvgIcon src={strokeRepaymentIcon} alt="" />
