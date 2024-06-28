@@ -7,6 +7,10 @@
   margin-bottom: rem.torem(32px);
 }
 
+.heading2-commitment {
+  @include fonts.title2;
+}
+
 .heading2-commitment,
 .paragraph,
 .link {

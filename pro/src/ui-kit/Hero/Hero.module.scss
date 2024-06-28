@@ -8,7 +8,7 @@
     margin-bottom: rem.torem(16px);
   }
 
-  h2 {
+  .subtitle {
     @include fonts.title4;
 
     margin-bottom: rem.torem(24px);

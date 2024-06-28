@@ -21,7 +21,7 @@ export const Hero = ({
   <section className={styles['hero']}>
     <div className={styles['hero-body']}>
       <h1 className={styles['title']}>{title}</h1>
-      <h2>{text}</h2>
+      <h2 className={styles['subtitle']}>{text}</h2>
       <ButtonLink
         variant={ButtonVariant.PRIMARY}
         link={{ isExternal: false, to: linkTo }}

@@ -20,7 +20,9 @@ export const CreateVenue = ({
       <section className={contentClassName}>
         <div className={styles['two-columns-section-block']}>
           <SvgIcon src={strokeRepaymentIcon} alt="" />
-          <h2>Renseignez vos informations bancaires</h2>
+          <h2 className={styles['subtitle']}>
+            Renseignez vos informations bancaires
+          </h2>
           <p>
             Ajoutez votre ou vos comptes bancaires pour percevoir les
             remboursements de vos offres.
@@ -30,7 +32,7 @@ export const CreateVenue = ({
         </div>
         <div className={styles['two-columns-section-block']}>
           <SvgIcon src={strokeBuildingIcon} alt="" />
-          <h2>Ajoutez des lieux</h2>
+          <h2 className={styles['subtitle']}>Ajoutez des lieux</h2>
           <p>
             Vous ne disposez pas d’un lieu physique ?
             <br />
