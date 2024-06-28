@@ -1842,6 +1842,9 @@ def test_generate_bank_accounts_file():
     assert len(rows) == 3
     for row, bank_account in zip(rows, [bank_account_2, bank_account_3, bank_account_4]):
         assert row == {
+            "Lieux liés au compte bancaire": ", ".join(
+                map(str, sorted(link.venueId for link in bank_account.venueLinks))
+            ),
             "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account.id),
             "SIREN de la structure": bank_account.offerer.siren,
             "Nom de la structure - Libellé des coordonnées bancaires": f"{bank_account.offerer.name} - {bank_account.label}",
