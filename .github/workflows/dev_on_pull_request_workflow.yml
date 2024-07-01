@@ -32,7 +32,10 @@ jobs:
         id: check-api-changes
         uses: tj-actions/changed-files@v44
         with:
-          files: api/**
+          files: |
+            api/**
+            !api/src/pcapi/scripts/**/main.py
+            !api/src/pcapi/scripts/**/main.sql
       - name: "Check pro folder changes"
         id: check-pro-changes
         uses: tj-actions/changed-files@v44
