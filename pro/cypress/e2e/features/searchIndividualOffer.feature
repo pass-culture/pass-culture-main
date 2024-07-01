@@ -32,8 +32,8 @@ Feature: Search individual offers
     And I validate my filters
     Then These 2 results should be displayed
       |  |  | Titre      | Lieu                   | Stocks | Status     |
-      |  |  | Offer 1619 | La librairie quantique |      0 | désactivée |
-      |  |  | Offer 1600 | Club Dorothy           |     20 | publiée    |
+      |  |  | Offer 1844 | La librairie quantique |      0 | désactivée |
+      |  |  | Offer 1825 | Club Dorothy           |     20 | publiée    |
 
   Scenario: A search by offer status should display expected results
     When I select "Validation en attente" in offer status
@@ -60,8 +60,8 @@ Feature: Search individual offers
     And I validate my filters
     Then These 2 results should be displayed
       |  |  | Titre      | Lieu             | Stocks | Status  |
-      |  |  | Offer 1585 | Espace des Gnoux |     40 | publiée |
-      |  |  | Offer 1582 | Espace des Gnoux |     60 | publiée |
+      |  |  | Offer 1810 | Espace des Gnoux |     40 | publiée |
+      |  |  | Offer 1807 | Espace des Gnoux |     60 | publiée |
     When I reset all filters
     Then All filters are empty
     And These 172 results should be displayed
