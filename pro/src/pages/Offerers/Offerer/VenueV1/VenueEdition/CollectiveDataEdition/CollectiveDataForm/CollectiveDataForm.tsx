@@ -20,9 +20,9 @@ import { RouteLeavingGuardVenueEdition } from 'pages/VenueEdition/RouteLeavingGu
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { MultiSelectAutocomplete } from 'ui-kit/form/MultiSelectAutoComplete/MultiSelectAutocomplete'
 import { PhoneNumberInput } from 'ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 import { Select } from 'ui-kit/form/Select/Select'
+import { SelectAutocomplete } from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
@@ -131,7 +131,8 @@ export const CollectiveDataForm = ({
                 </FormLayout.Row>
 
                 <FormLayout.Row>
-                  <MultiSelectAutocomplete
+                  <SelectAutocomplete
+                    multi
                     name="collectiveStudents"
                     label="Public cible"
                     options={studentOptions}
@@ -153,7 +154,8 @@ export const CollectiveDataForm = ({
 
               <FormLayout.SubSection title="Informations du lieu">
                 <FormLayout.Row>
-                  <MultiSelectAutocomplete
+                  <SelectAutocomplete
+                    multi
                     hideTags
                     options={domains}
                     name="collectiveDomains"
@@ -164,7 +166,8 @@ export const CollectiveDataForm = ({
                 </FormLayout.Row>
 
                 <FormLayout.Row>
-                  <MultiSelectAutocomplete
+                  <SelectAutocomplete
+                    multi
                     hideTags
                     options={venueInterventionOptions}
                     name="collectiveInterventionArea"
@@ -188,14 +191,13 @@ export const CollectiveDataForm = ({
                 </FormLayout.Row>
 
                 <FormLayout.Row>
-                  <MultiSelectAutocomplete
+                  <SelectAutocomplete
+                    multi
                     options={culturalPartners}
                     name="collectiveNetwork"
                     label="Réseaux partenaires EAC"
                     placeholder="Sélectionner un ou plusieurs réseau(x) partenaire(s)"
                     isOptional
-                    maxDisplayOptions={20}
-                    maxDisplayOptionsLabel="20 résultats maximum. Veuillez affiner votre recherche"
                     hideTags
                   />
                 </FormLayout.Row>
