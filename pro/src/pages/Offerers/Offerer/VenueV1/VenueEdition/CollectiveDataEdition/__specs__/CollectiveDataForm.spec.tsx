@@ -19,7 +19,7 @@ describe('CollectiveDataForm', () => {
       screen.getByPlaceholderText('Sélectionner un public cible')
     )
     expect(
-      screen.getByText('Écoles Marseille - Maternelle')
+      screen.getByRole('option', { name: 'Écoles Marseille - Maternelle' })
     ).toBeInTheDocument()
   })
 

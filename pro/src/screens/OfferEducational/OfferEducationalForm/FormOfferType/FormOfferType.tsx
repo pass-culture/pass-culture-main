@@ -7,7 +7,6 @@ import { OfferEducationalFormValues } from 'core/OfferEducational/types'
 import { SelectOption } from 'custom_types/form'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import { getNationalProgramsForDomains } from 'screens/OfferEducational/constants/getNationalProgramsForDomains'
-import { MultiSelectAutocomplete } from 'ui-kit/form/MultiSelectAutoComplete/MultiSelectAutocomplete'
 import { Select } from 'ui-kit/form/Select/Select'
 import { SelectAutocomplete } from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
@@ -52,11 +51,12 @@ export const FormOfferType = ({
     >
       {domainsOptions.length > 0 && (
         <FormLayout.Row>
-          <MultiSelectAutocomplete
-            options={domainsOptions}
-            pluralLabel="Domaines artistiques et culturels"
+          <SelectAutocomplete
+            multi
             label="Domaine artistique et culturel"
+            pluralLabel="Domaines artistiques et culturels"
             name="domains"
+            options={domainsOptions}
             disabled={disableForm}
           />
         </FormLayout.Row>

@@ -13,9 +13,9 @@ import { offerInterventionOptions } from 'core/shared/interventionOptions'
 import { handleAllFranceDepartmentOptions } from 'core/shared/utils/handleAllFranceDepartmentOptions'
 import { SelectOption } from 'custom_types/form'
 import { Banner } from 'ui-kit/Banners/Banner/Banner'
-import { MultiSelectAutocomplete } from 'ui-kit/form/MultiSelectAutoComplete/MultiSelectAutocomplete'
 import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 import { Select } from 'ui-kit/form/Select/Select'
+import { SelectAutocomplete } from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
@@ -184,12 +184,13 @@ export const FormPracticalInformation = ({
             </InfoBox>
           }
         >
-          <MultiSelectAutocomplete
+          <SelectAutocomplete
+            multi
+            label={INTERVENTION_AREA_LABEL}
+            pluralLabel={INTERVENTION_AREA_PLURAL_LABEL}
+            name="interventionArea"
             hideTags
             options={offerInterventionOptions}
-            name="interventionArea"
-            pluralLabel={INTERVENTION_AREA_PLURAL_LABEL}
-            label={INTERVENTION_AREA_LABEL}
             className={styles.row}
             disabled={disableForm}
           />
