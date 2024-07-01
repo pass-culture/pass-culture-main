@@ -107,6 +107,10 @@ class _FIELDS:
         example="A great book for kids and old kids.",
         max_length=1000,
     )
+    OFFER_BOOKING_EMAIL = Field(
+        description="Recipient email for notifications about bookings, cancellations, etc.",
+        example="contact@yourcompany.com",
+    )
 
     # Products dields
     EANS_FILTER = Field(description="EANs list (max 100)", example="3700551782888,9782895761792")
