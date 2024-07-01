@@ -2,7 +2,7 @@
 Feature: Signup journey
 
   Scenario: With a new account, create a new offerer with an unknown SIRET
-    Given I log in with a "first" new account
+    Given I log in with a new account
     When I start offerer creation
     And I specify an offerer with a SIRET
     And I add details to offerer
@@ -14,7 +14,8 @@ Feature: Signup journey
     Then the offerer is created
 
   Scenario: With a new account and a known offerer, create a new offerer in the space
-    Given I log in with a "second" new account
+    Given I create a user offerer
+    Given I log in with a new account
     When I start offerer creation
     And I specify an offerer with a SIRET
     And I add a new offerer
@@ -28,7 +29,7 @@ Feature: Signup journey
     And the attachment is in progress
 
   Scenario: With a new account and a known offerer, ask to join space
-    Given I log in with a "third" new account
+    Given I log in with a new account
     When I start offerer creation
     And I specify an offerer with a SIRET
     And I chose to join the space

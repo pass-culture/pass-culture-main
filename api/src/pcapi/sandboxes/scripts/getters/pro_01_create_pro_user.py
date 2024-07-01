@@ -11,3 +11,9 @@ def create_pro_user_with_venue_bank_account_and_userofferer() -> dict:
     finance_factories.BankAccountFactory(offerer=venue.managingOfferer)
     offerers_factories.UserOffererFactory(user=pro_user, offerer=venue.managingOfferer)
     return {"user": get_pro_user_helper(pro_user)}
+
+
+def create_pro_user_new_nav() -> dict:
+    pro_user = users_factories.ProFactory()
+    users_factories.UserProNewNavStateFactory(user=pro_user)
+    return {"user": get_pro_user_helper(pro_user)}
