@@ -62,16 +62,26 @@ export const IndividualOfferConfirmationScreen = ({
 
         {isPendingOffer ? (
           <p className={styles['confirmation-details']}>
-            Votre offre est en cours de validation par l’équipe pass Culture.
-            Nous vérifions actuellement son éligibilité.
-            <b>
-              {' '}
-              Cette vérification pourra prendre jusqu’à 72h. Vous ne pouvez pas
-              effectuer de modification pour l’instant.{' '}
-            </b>
-            {isPublishedInTheFuture
-              ? `Vous recevrez un email de confirmation une fois votre offre validée. Elle sera automatiquement publiée le ${publicationDate} à ${publicationTime}.`
-              : 'Vous recevrez un email de confirmation une fois votre offre validée et disponible à la réservation.'}
+            Nous vérifions actuellement l’éligibilité de votre offre.{' '}
+            <b>Cette vérification pourra prendre jusqu’à 72h.</b>
+            <br />
+            <b>Vous ne pouvez pas effectuer de modification pour l’instant.</b>
+            <br />
+            {isPublishedInTheFuture ? (
+              <>
+                <>
+                  Vous recevrez un email de confirmation une fois votre offre{' '}
+                  validée.
+                </>
+                <br />
+                <>
+                  Elle sera automatiquement publiée le {publicationDate} à{' '}
+                  {publicationTime}.
+                </>
+              </>
+            ) : (
+              'Vous recevrez un email de confirmation une fois votre offre validée et disponible à la réservation.'
+            )}
           </p>
         ) : (
           <p className={styles['confirmation-details']}>
