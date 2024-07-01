@@ -4,6 +4,7 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.install_database_extensions import install_database_extensions
 from pcapi.models import db
 from pcapi.models.feature import check_feature_flags_completeness
+from pcapi.models.feature import clean_feature_flags
 from pcapi.models.feature import install_feature_flags
 import pcapi.scheduled_tasks.decorators as cron_decorators
 from pcapi.utils.blueprint import Blueprint
@@ -23,6 +24,12 @@ def install_data() -> None:
 
     perm_models.sync_db_roles(db.session)
     logger.info("Roles synced")
+
+
+@blueprint.cli.command("clean_data")
+def clean_data() -> None:
+    clean_feature_flags()
+    logger.info("Feature flags cleaned")
 
 
 @blueprint.cli.command("check_feature_flags")
