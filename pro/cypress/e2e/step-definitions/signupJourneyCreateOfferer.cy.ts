@@ -56,12 +56,15 @@ When('I specify an offerer with a SIRET', () => {
   cy.findByText('Continuer').click()
   cy.wait(['@getSiret', '@venuesSiret', '@search1Address']).then(
     (interception) => {
-      if (interception[0].response)
+      if (interception[0].response) {
         expect(interception[0].response.statusCode).to.equal(200)
-      if (interception[1].response)
+      }
+      if (interception[1].response) {
         expect(interception[1].response.statusCode).to.equal(200)
-      if (interception[2].response)
+      }
+      if (interception[2].response) {
         expect(interception[2].response.statusCode).to.equal(200)
+      }
     }
   )
 })

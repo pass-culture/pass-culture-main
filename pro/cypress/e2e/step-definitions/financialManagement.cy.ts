@@ -72,8 +72,9 @@ Then('These receipt results should be displayed', (dataTable: DataTable) => {
   cy.findAllByTestId('invoice-title-row').within(() => {
     cy.get('th').then(($elt) => {
       for (let column = 0; column < numColumns; column++) {
-        if (titleArray[column] != '')
+        if (titleArray[column] !== '') {
           cy.wrap($elt).eq(column).should('contain', titleArray[column])
+        }
       }
     })
   })
@@ -87,8 +88,9 @@ Then('These receipt results should be displayed', (dataTable: DataTable) => {
       .within(() => {
         cy.get('td').then(($elt) => {
           for (let column = 0; column < numColumns; column++) {
-            if (bookLineArray[column] != '')
+            if (bookLineArray[column] !== '') {
               cy.wrap($elt).eq(column).should('contain', bookLineArray[column])
+            }
           }
         })
       })
