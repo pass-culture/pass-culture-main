@@ -115,6 +115,9 @@ class _FIELDS:
         description="Recipient email to contact if there is an issue with booking the offer. Mandatory if the offer has withdrawable tickets.",
         example="support@yourcompany.com",
     )
+    OFFER_PUBLICATION_DATE = Field(
+        description="Publication date",
+    )
 
     # Products dields
     EANS_FILTER = Field(description="EANs list (max 100)", example="3700551782888,9782895761792")
