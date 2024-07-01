@@ -2638,7 +2638,7 @@
                         "type": "string"
                     },
                     "priceCategories": {
-                        "description": "Available price categories for dates of this offer",
+                        "description": "Available price categories for this offer stocks",
                         "items": {
                             "$ref": "#/components/schemas/PriceCategoryCreation"
                         },
@@ -3065,7 +3065,7 @@
                         "type": "string"
                     },
                     "priceCategories": {
-                        "description": "Available price categories for dates of this offer",
+                        "description": "Available price categories for this offer stocks",
                         "items": {
                             "$ref": "#/components/schemas/PriceCategoryResponse"
                         },
@@ -6058,7 +6058,7 @@
                 "additionalProperties": false,
                 "properties": {
                     "priceCategories": {
-                        "description": "Available price categories for dates of this offer",
+                        "description": "Available price categories for this offer stocks",
                         "items": {
                             "$ref": "#/components/schemas/PriceCategoryCreation"
                         },
@@ -6075,7 +6075,7 @@
             "PriceCategoriesResponse": {
                 "properties": {
                     "priceCategories": {
-                        "description": "Available price categories for dates of this offer",
+                        "description": "Available price categories for this offer stocks",
                         "items": {
                             "$ref": "#/components/schemas/PriceCategoryResponse"
                         },
