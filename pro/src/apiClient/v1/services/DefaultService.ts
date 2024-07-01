@@ -128,11 +128,11 @@ export class DefaultService {
    * @param page
    * @param venueId
    * @param offerId
-   * @param offererAddressId
    * @param eventDate
    * @param bookingStatusFilter
    * @param bookingPeriodBeginningDate
    * @param bookingPeriodEndingDate
+   * @param offererAddressId
    * @param exportType
    * @returns any OK
    * @throws ApiError
@@ -141,11 +141,11 @@ export class DefaultService {
     page: number = 1,
     venueId?: number | null,
     offerId?: number | null,
-    offererAddressId?: number | null,
     eventDate?: string | null,
     bookingStatusFilter?: BookingStatusFilter | null,
     bookingPeriodBeginningDate?: string | null,
     bookingPeriodEndingDate?: string | null,
+    offererAddressId?: number | null,
     exportType?: BookingExportType | null,
   ): CancelablePromise<any> {
     return this.httpRequest.request({
@@ -155,11 +155,11 @@ export class DefaultService {
         'page': page,
         'venueId': venueId,
         'offerId': offerId,
-        'offererAddressId': offererAddressId,
         'eventDate': eventDate,
         'bookingStatusFilter': bookingStatusFilter,
         'bookingPeriodBeginningDate': bookingPeriodBeginningDate,
         'bookingPeriodEndingDate': bookingPeriodEndingDate,
+        'offererAddressId': offererAddressId,
         'exportType': exportType,
       },
       errors: {
@@ -194,11 +194,11 @@ export class DefaultService {
    * @param page
    * @param venueId
    * @param offerId
-   * @param offererAddressId
    * @param eventDate
    * @param bookingStatusFilter
    * @param bookingPeriodBeginningDate
    * @param bookingPeriodEndingDate
+   * @param offererAddressId
    * @param exportType
    * @returns any OK
    * @throws ApiError
@@ -207,11 +207,11 @@ export class DefaultService {
     page: number = 1,
     venueId?: number | null,
     offerId?: number | null,
-    offererAddressId?: number | null,
     eventDate?: string | null,
     bookingStatusFilter?: BookingStatusFilter | null,
     bookingPeriodBeginningDate?: string | null,
     bookingPeriodEndingDate?: string | null,
+    offererAddressId?: number | null,
     exportType?: BookingExportType | null,
   ): CancelablePromise<any> {
     return this.httpRequest.request({
@@ -221,11 +221,11 @@ export class DefaultService {
         'page': page,
         'venueId': venueId,
         'offerId': offerId,
-        'offererAddressId': offererAddressId,
         'eventDate': eventDate,
         'bookingStatusFilter': bookingStatusFilter,
         'bookingPeriodBeginningDate': bookingPeriodBeginningDate,
         'bookingPeriodEndingDate': bookingPeriodEndingDate,
+        'offererAddressId': offererAddressId,
         'exportType': exportType,
       },
       errors: {
@@ -297,11 +297,11 @@ export class DefaultService {
    * @param page
    * @param venueId
    * @param offerId
-   * @param offererAddressId
    * @param eventDate
    * @param bookingStatusFilter
    * @param bookingPeriodBeginningDate
    * @param bookingPeriodEndingDate
+   * @param offererAddressId
    * @param exportType
    * @returns ListBookingsResponseModel OK
    * @throws ApiError
@@ -310,11 +310,11 @@ export class DefaultService {
     page: number = 1,
     venueId?: number | null,
     offerId?: number | null,
-    offererAddressId?: number | null,
     eventDate?: string | null,
     bookingStatusFilter?: BookingStatusFilter | null,
     bookingPeriodBeginningDate?: string | null,
     bookingPeriodEndingDate?: string | null,
+    offererAddressId?: number | null,
     exportType?: BookingExportType | null,
   ): CancelablePromise<ListBookingsResponseModel> {
     return this.httpRequest.request({
@@ -324,11 +324,11 @@ export class DefaultService {
         'page': page,
         'venueId': venueId,
         'offerId': offerId,
-        'offererAddressId': offererAddressId,
         'eventDate': eventDate,
         'bookingStatusFilter': bookingStatusFilter,
         'bookingPeriodBeginningDate': bookingPeriodBeginningDate,
         'bookingPeriodEndingDate': bookingPeriodEndingDate,
+        'offererAddressId': offererAddressId,
         'exportType': exportType,
       },
       errors: {
