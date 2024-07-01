@@ -10,6 +10,7 @@ from pcapi.core.external import zendesk_sell
 from pcapi.core.external.zendesk_sell_backends import BaseBackend
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.repository import atomic
 from pcapi.routes.backoffice import utils
 from pcapi.utils import requests
 from pcapi.utils.module_loading import import_string
@@ -63,6 +64,7 @@ def _get_parent_organization_id(venue: offerers_models.Venue) -> int | None:
 
 
 @zendesk_sell_blueprint.route("/offerer/<int:offerer_id>/update", methods=["POST"])
+@atomic()
 def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
         offerers_models.Offerer.query.filter_by(id=offerer_id)
@@ -125,6 +127,7 @@ def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @zendesk_sell_blueprint.route("/venue/<int:venue_id>/update", methods=["POST"])
+@atomic()
 def update_venue(venue_id: int) -> utils.BackofficeResponse:
     venue = offerers_models.Venue.query.filter_by(id=venue_id).one_or_none()
     if not venue:
