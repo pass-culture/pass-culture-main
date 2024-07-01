@@ -93,22 +93,15 @@ export const IndividualOfferNavigation = () => {
 
   // Summary/confirmation steps on creation
   if (mode === OFFER_WIZARD_MODE.CREATION) {
-    steps.push(
-      {
-        id: OFFER_WIZARD_STEP_IDS.SUMMARY,
-        label: 'Récapitulatif',
-        path: getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-          mode,
-        }),
-        isActive: Boolean(offer?.hasStocks),
-      },
-      {
-        id: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
-        label: 'Confirmation',
-        isActive: false,
-      }
-    )
+    steps.push({
+      id: OFFER_WIZARD_STEP_IDS.SUMMARY,
+      label: 'Récapitulatif',
+      path: getIndividualOfferPath({
+        step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+        mode,
+      }),
+      isActive: Boolean(offer?.hasStocks),
+    })
   }
 
   if (
