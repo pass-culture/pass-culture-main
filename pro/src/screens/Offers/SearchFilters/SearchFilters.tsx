@@ -50,27 +50,27 @@ interface SearchFiltersProps {
 
 const collectiveFilterStatus = [
   { label: 'Tous', value: ALL_STATUS },
-  { label: 'Archivée', value: CollectiveOfferDisplayedStatus.ARCHIVED },
-  {
-    label: 'Masquée sur ADAGE',
-    value: CollectiveOfferDisplayedStatus.INACTIVE,
-  },
-  { label: 'Expirée', value: CollectiveOfferDisplayedStatus.EXPIRED },
-  { label: 'Préréservée', value: CollectiveOfferDisplayedStatus.PREBOOKED },
-  { label: 'Publiée sur ADAGE', value: CollectiveOfferDisplayedStatus.ACTIVE },
-  {
-    label: 'Refusée',
-    value: CollectiveOfferDisplayedStatus.REJECTED,
-  },
-  {
-    label: 'Réservée',
-    value: CollectiveOfferDisplayedStatus.BOOKED,
-  },
-  { label: 'Terminée', value: CollectiveOfferDisplayedStatus.ENDED },
   {
     label: 'Validation en attente',
     value: CollectiveOfferDisplayedStatus.PENDING,
   },
+  {
+    label: 'Refusée',
+    value: CollectiveOfferDisplayedStatus.REJECTED,
+  },
+  { label: 'Publiée sur ADAGE', value: CollectiveOfferDisplayedStatus.ACTIVE },
+  {
+    label: 'Masquée sur ADAGE',
+    value: CollectiveOfferDisplayedStatus.INACTIVE,
+  },
+  { label: 'Préréservée', value: CollectiveOfferDisplayedStatus.PREBOOKED },
+  {
+    label: 'Réservée',
+    value: CollectiveOfferDisplayedStatus.BOOKED,
+  },
+  { label: 'Expirée', value: CollectiveOfferDisplayedStatus.EXPIRED },
+  { label: 'Terminée', value: CollectiveOfferDisplayedStatus.ENDED },
+  { label: 'Archivée', value: CollectiveOfferDisplayedStatus.ARCHIVED },
 ]
 
 const individualFilterStatus = [
