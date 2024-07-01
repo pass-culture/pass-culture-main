@@ -161,11 +161,6 @@ LOCATION_FIELD = pydantic_v1.Field(
     discriminator="type",
     description="Location where the offer will be available or will take place. The location type must be compatible with the category",
 )
-PRICE_CATEGORY_LABEL_FIELD = pydantic_v1.Field(description="Price category label", example="Carré or")
-PRICE_CATEGORIES_FIELD = pydantic_v1.Field(description="Available price categories for dates of this offer")
-EVENT_DATES_FIELD = pydantic_v1.Field(
-    description="Dates of the event. If there are different prices for the same date, several date objects are needed",
-)
 
 
 class ImageBody(serialization.ConfiguredBaseModel):
@@ -459,9 +454,9 @@ class DecimalPriceGetterDict(GetterDict):
 
 class PriceCategoryCreation(serialization.ConfiguredBaseModel):
     if typing.TYPE_CHECKING:
-        label: str = PRICE_CATEGORY_LABEL_FIELD
+        label: str = fields.PRICE_CATEGORY_LABEL
     else:
-        label: pydantic_v1.constr(min_length=1, max_length=50) = PRICE_CATEGORY_LABEL_FIELD
+        label: pydantic_v1.constr(min_length=1, max_length=50) = fields.PRICE_CATEGORY_LABEL
     price: offer_price_model = fields.PRICE
 
     class Config:
@@ -469,7 +464,7 @@ class PriceCategoryCreation(serialization.ConfiguredBaseModel):
 
 
 class PriceCategoriesCreation(serialization.ConfiguredBaseModel):
-    price_categories: list[PriceCategoryCreation] = PRICE_CATEGORIES_FIELD
+    price_categories: list[PriceCategoryCreation] = fields.PRICE_CATEGORIES
 
     @pydantic_v1.validator("price_categories")
     def get_unique_price_categories(
@@ -492,7 +487,7 @@ class EventOfferCreation(OfferCreationBase):
     event_duration: int | None = fields.EVENT_DURATION
     location: PhysicalLocation | DigitalLocation = LOCATION_FIELD
     has_ticket: bool = fields.EVENT_HAS_TICKET
-    price_categories: list[PriceCategoryCreation] | None = PRICE_CATEGORIES_FIELD
+    price_categories: list[PriceCategoryCreation] | None = fields.PRICE_CATEGORIES
     publication_date: datetime.datetime | None = fields.OFFER_PUBLICATION_DATE
 
     @pydantic_v1.validator("price_categories")
@@ -549,9 +544,9 @@ class ProductOfferEdition(OfferEditionBase):
 
 class PriceCategoryEdition(serialization.ConfiguredBaseModel):
     if typing.TYPE_CHECKING:
-        label: str = PRICE_CATEGORY_LABEL_FIELD
+        label: str = fields.PRICE_CATEGORY_LABEL
     else:
-        label: pydantic_v1.constr(min_length=1, max_length=50) | None = PRICE_CATEGORY_LABEL_FIELD
+        label: pydantic_v1.constr(min_length=1, max_length=50) | None = fields.PRICE_CATEGORY_LABEL
     price: offer_price_model | None = fields.PRICE
 
     @pydantic_v1.validator("price")
@@ -599,7 +594,7 @@ class DatesCreation(serialization.ConfiguredBaseModel):
 
 class PriceCategoryResponse(serialization.ConfiguredBaseModel):
     id: int
-    label: str = PRICE_CATEGORY_LABEL_FIELD
+    label: str = fields.PRICE_CATEGORY_LABEL
     price: pydantic_v1.StrictInt = fields.PRICE
 
     class Config:
@@ -607,7 +602,7 @@ class PriceCategoryResponse(serialization.ConfiguredBaseModel):
 
 
 class PriceCategoriesResponse(serialization.ConfiguredBaseModel):
-    price_categories: list[PriceCategoryResponse] = PRICE_CATEGORIES_FIELD
+    price_categories: list[PriceCategoryResponse] = fields.PRICE_CATEGORIES
 
     @classmethod
     def build_price_categories(cls, price_categories: list[offers_models.PriceCategory]) -> "PriceCategoriesResponse":
