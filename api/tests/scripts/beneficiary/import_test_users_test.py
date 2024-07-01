@@ -12,6 +12,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import User
 from pcapi.scripts.beneficiary import import_test_users
 from pcapi.utils import crypto
+from pcapi.utils.email import sanitize_email
 
 
 AGE18_ELIGIBLE_BIRTH_DATE = datetime.datetime.utcnow() - relativedelta(years=18, months=4)
@@ -24,7 +25,7 @@ Vienne,Jeune17,jeune17.vienne@example.com,0102030407,44,44000,{AGE17_ELIGIBLE_BI
 Pro,Pierre,pro@example.com,0123456789,06,06000,2000-01-01,PRO,11122233,PierrePro$123,interne:test
 """
 
-BOUNTY_EMAIL = "unit-test-bùg-bounty-hunter-0123456789abcdef@bugbounty.ninja"
+BOUNTY_EMAIL = "Unit_test-bùg-bounty-hunter_0123456789abcdef@bugbounty.ninja"
 BOUNTY_FIRST_NAME = "Hackèrman"
 BOUNTY_CSV = f"""Nom,Prénom,Mail,Téléphone,Département,Code postal,Date de naissance,Role,SIREN,Mot de passe,Type
 Doux,{BOUNTY_FIRST_NAME},{BOUNTY_EMAIL},0102030405,86,86140,2000-01-01,PRO,10000135,,externe:bug-bounty
@@ -129,14 +130,14 @@ class ReadFileTest:
     def test_create_provider_for_bounty_users(self, client):
         csv_file = io.StringIO(BOUNTY_CSV)
         import_test_users.create_users_from_csv(csv_file)
-
-        prefix = f"staging_{BOUNTY_EMAIL}"
+        sanitized_email = sanitize_email(BOUNTY_EMAIL).replace("_", "-")
+        prefix = f"staging_{sanitized_email}"
         api_key = offerers_models.ApiKey.query.filter_by(prefix=prefix).one()
-        assert crypto.hash_public_api_key(BOUNTY_EMAIL) == api_key.secret
+        assert crypto.hash_public_api_key(sanitized_email) == api_key.secret
 
         # This call ensures that we have access to the api and at least one venue
         # attached to this provider
-        client = client.with_explicit_token(f"{prefix}_{BOUNTY_EMAIL}")
+        client = client.with_explicit_token(f"{prefix}_{sanitized_email}")
         response = client.get("/public/offers/v1/offerer_venues")
         assert response.status_code == 200
         assert len(response.json) == 1
