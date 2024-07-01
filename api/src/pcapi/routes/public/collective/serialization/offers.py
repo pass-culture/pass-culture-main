@@ -256,42 +256,42 @@ class CollectiveOffersListCategoriesResponseModel(BaseModel):
 
 
 class GetPublicCollectiveOfferResponseModel(BaseModel):
-    id: int
-    status: str
-    name: str
-    description: str | None
-    subcategoryId: str | None
-    bookingEmails: list[str] | None
-    contactEmail: str
-    contactPhone: str
-    domains: list[int]
-    durationMinutes: int | None
+    id: int = fields.COLLECTIVE_OFFER_ID
+    status: str = fields.COLLECTIVE_OFFER_STATUS
+    name: str = fields.COLLECTIVE_OFFER_NAME
+    description: str | None = fields.COLLECTIVE_OFFER_DESCRIPTION
+    subcategoryId: str | None = fields.COLLECTIVE_OFFER_SUBCATEGORY_ID
+    bookingEmails: list[str] | None = fields.COLLECTIVE_OFFER_BOOKING_EMAILS
+    contactEmail: str = fields.COLLECTIVE_OFFER_CONTACT_EMAIL
+    contactPhone: str = fields.COLLECTIVE_OFFER_CONTACT_PHONE
+    domains: list[int] = fields.COLLECTIVE_OFFER_EDUCATIONAL_DOMAINS
+    durationMinutes: int | None = fields.DURATION_MINUTES
     interventionArea: list[str]
     students: list[str]
-    dateCreated: str
+    dateCreated: str = fields.COLLECTIVE_OFFER_DATE_CREATED
     hasBookingLimitDatetimesPassed: bool
-    isActive: bool | None
-    isSoldOut: bool
-    venueId: int
-    audioDisabilityCompliant: bool | None
-    mentalDisabilityCompliant: bool | None
-    motorDisabilityCompliant: bool | None
-    visualDisabilityCompliant: bool | None
-    beginningDatetime: str
-    startDatetime: str
-    endDatetime: str
-    bookingLimitDatetime: str
-    totalPrice: decimal.Decimal
-    numberOfTickets: int
-    educationalPriceDetail: str | None
-    educationalInstitution: str | None
-    educationalInstitutionId: int | None
+    isActive: bool | None = fields.COLLECTIVE_OFFER_IS_ACTIVE
+    isSoldOut: bool = fields.COLLECTIVE_OFFER_IS_SOLD_OUT
+    venueId: int = fields.VENUE_ID
+    audioDisabilityCompliant: bool | None = fields.AUDIO_DISABILITY
+    mentalDisabilityCompliant: bool | None = fields.MENTAL_DISABILITY
+    motorDisabilityCompliant: bool | None = fields.MOTOR_DISABILITY
+    visualDisabilityCompliant: bool | None = fields.VISUAL_DISABILITY
+    beginningDatetime: str = fields.COLLECTIVE_OFFER_BEGINNING_DATETIME
+    startDatetime: str = fields.COLLECTIVE_OFFER_START_DATETIME
+    endDatetime: str = fields.COLLECTIVE_OFFER_END_DATETIME
+    bookingLimitDatetime: str = fields.COLLECTIVE_OFFER_BOOKING_LIMIT_DATETIME
+    totalPrice: decimal.Decimal = fields.COLLECTIVE_OFFER_TOTAL_PRICE
+    numberOfTickets: int = fields.COLLECTIVE_OFFER_NB_OF_TICKETS
+    educationalPriceDetail: str | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_PRICE_DETAIL
+    educationalInstitution: str | None = fields.EDUCATIONAL_INSTITUTION_UAI
+    educationalInstitutionId: int | None = fields.EDUCATIONAL_INSTITUTION_ID
     offerVenue: OfferVenueModel
-    imageCredit: str | None
-    imageUrl: str | None
+    imageCredit: str | None = fields.IMAGE_CREDIT
+    imageUrl: str | None = fields.IMAGE_URL
     bookings: Sequence[CollectiveBookingResponseModel]
     nationalProgram: NationalProgramModel | None
-    formats: list[subcategories.EacFormat] | None
+    formats: list[subcategories.EacFormat] | None = fields.COLLECTIVE_OFFER_FORMATS
 
     class Config:
         extra = "forbid"
@@ -388,7 +388,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     end_datetime: datetime | None = fields.COLLECTIVE_OFFER_END_DATETIME
     booking_limit_datetime: datetime = fields.COLLECTIVE_OFFER_BOOKING_LIMIT_DATETIME
     total_price: decimal.Decimal = fields.COLLECTIVE_OFFER_TOTAL_PRICE
-    number_of_tickets: int = fields.COLLECTIVE_OFFER_NB_OF_TICKETS_FIELD
+    number_of_tickets: int = fields.COLLECTIVE_OFFER_NB_OF_TICKETS
     educational_price_detail: str | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_PRICE_DETAIL
     # link to educational institution
     educational_institution_id: int | None = fields.EDUCATIONAL_INSTITUTION_ID
@@ -506,7 +506,7 @@ class PatchCollectiveOfferBodyModel(BaseModel):
         alias="totalPrice",
     )
     educationalPriceDetail: str | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_PRICE_DETAIL
-    numberOfTickets: int | None = fields.COLLECTIVE_OFFER_NB_OF_TICKETS_FIELD
+    numberOfTickets: int | None = fields.COLLECTIVE_OFFER_NB_OF_TICKETS
     # educational_institution
     educationalInstitutionId: int | None = fields.EDUCATIONAL_INSTITUTION_ID
     educationalInstitution: str | None = fields.EDUCATIONAL_INSTITUTION_UAI
