@@ -1449,40 +1449,52 @@
             "CollectiveBookingResponseModel": {
                 "properties": {
                     "cancellationLimitDate": {
+                        "description": "Deadline to cancel the booking",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Cancellationlimitdate",
                         "type": "string"
                     },
                     "confirmationDate": {
+                        "description": "When the booking was confirmed",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Confirmationdate",
                         "type": "string"
                     },
                     "dateCreated": {
+                        "description": "When the booking was made",
                         "format": "date-time",
                         "title": "Datecreated",
                         "type": "string"
                     },
                     "dateUsed": {
+                        "description": "When the booking was used",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Dateused",
                         "type": "string"
                     },
                     "id": {
+                        "description": "Collective booking id",
                         "title": "Id",
                         "type": "integer"
                     },
                     "reimbursementDate": {
+                        "description": "When the booking was reimbursed",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Reimbursementdate",
                         "type": "string"
                     },
                     "status": {
-                        "$ref": "#/components/schemas/CollectiveBookingStatus"
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/CollectiveBookingStatus"
+                            }
+                        ],
+                        "description": "Collective booking status",
+                        "example": "PENDING"
                     }
                 },
                 "required": [
