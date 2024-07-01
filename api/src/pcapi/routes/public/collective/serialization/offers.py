@@ -179,13 +179,13 @@ def image_file_validator(field_name: str) -> classmethod:
 
 
 class CollectiveBookingResponseModel(BaseModel):
-    id: int
-    status: CollectiveBookingStatus
-    confirmationDate: datetime | None
-    cancellationLimitDate: datetime | None
-    reimbursementDate: datetime | None
-    dateUsed: datetime | None
-    dateCreated: datetime
+    id: int = fields.COLLECTIVE_BOOKING_ID
+    status: CollectiveBookingStatus = fields.COLLECTIVE_BOOKING_STATUS
+    confirmationDate: datetime | None = fields.COLLECTIVE_BOOKING_CONFIRMATION_DATE
+    cancellationLimitDate: datetime | None = fields.COLLECTIVE_BOOKING_CANCELLATION_LIMIT_DATE
+    reimbursementDate: datetime | None = fields.COLLECTIVE_BOOKING_REIMBURSED_DATA
+    dateUsed: datetime | None = fields.COLLECTIVE_BOOKING_DATE_USED
+    dateCreated: datetime = fields.COLLECTIVE_BOOKING_DATE_CREATED
 
     class Config:
         orm_mode = True

@@ -181,6 +181,14 @@ class _FIELDS:
     COLLECTIVE_OFFER_EDUCATIONAL_PRICE_DETAIL = Field(
         description="The explanation of the offer price", example="10 tickets x 10 € = 100 €"
     )
+    # Collective booking
+    COLLECTIVE_BOOKING_ID = Field(description="Collective booking id")
+    COLLECTIVE_BOOKING_STATUS = Field(description="Collective booking status", example="PENDING")
+    COLLECTIVE_BOOKING_DATE_CREATED = Field(description="When the booking was made")
+    COLLECTIVE_BOOKING_CONFIRMATION_DATE = Field(description="When the booking was confirmed")
+    COLLECTIVE_BOOKING_REIMBURSED_DATA = Field(description="When the booking was reimbursed")
+    COLLECTIVE_BOOKING_DATE_USED = Field(description="When the booking was used")
+    COLLECTIVE_BOOKING_CANCELLATION_LIMIT_DATE = Field(description="Deadline to cancel the booking")
     # Educational institution fields
     EDUCATIONAL_INSTITUTION_ID = Field(
         description="Educational institution id in the pass Culture application. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
