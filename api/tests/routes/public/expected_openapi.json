@@ -2559,6 +2559,7 @@
                     "enableDoubleBookings": {
                         "default": false,
                         "description": "If set to true, users may book the offer for two persons. Second item will be delivered at the same price as the first one. Category must be compatible with this feature.",
+                        "example": true,
                         "nullable": true,
                         "title": "Enabledoublebookings",
                         "type": "boolean"
@@ -2788,6 +2789,7 @@
                     "enableDoubleBookings": {
                         "default": false,
                         "description": "If set to true, users may book the offer for two persons. Second item will be delivered at the same price as the first one. Category must be compatible with this feature.",
+                        "example": true,
                         "nullable": true,
                         "title": "Enabledoublebookings",
                         "type": "boolean"
@@ -2985,6 +2987,7 @@
                     "enableDoubleBookings": {
                         "default": false,
                         "description": "If set to true, users may book the offer for two persons. Second item will be delivered at the same price as the first one. Category must be compatible with this feature.",
+                        "example": true,
                         "nullable": true,
                         "title": "Enabledoublebookings",
                         "type": "boolean"
@@ -6335,6 +6338,7 @@
                     "enableDoubleBookings": {
                         "default": false,
                         "description": "If set to true, users may book the offer for two persons. Second item will be delivered at the same price as the first one. Category must be compatible with this feature.",
+                        "example": true,
                         "nullable": true,
                         "title": "Enabledoublebookings",
                         "type": "boolean"
@@ -6546,6 +6550,7 @@
                     "enableDoubleBookings": {
                         "default": false,
                         "description": "If set to true, users may book the offer for two persons. Second item will be delivered at the same price as the first one. Category must be compatible with this feature.",
+                        "example": true,
                         "nullable": true,
                         "title": "Enabledoublebookings",
                         "type": "boolean"
@@ -6821,6 +6826,7 @@
                     "enableDoubleBookings": {
                         "default": false,
                         "description": "If set to true, users may book the offer for two persons. Second item will be delivered at the same price as the first one. Category must be compatible with this feature.",
+                        "example": true,
                         "nullable": true,
                         "title": "Enabledoublebookings",
                         "type": "boolean"

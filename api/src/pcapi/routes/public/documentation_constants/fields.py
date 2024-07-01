@@ -118,6 +118,11 @@ class _FIELDS:
     OFFER_PUBLICATION_DATE = Field(
         description="Publication date",
     )
+    OFFER_ENABLE_DOUBLE_BOOKINGS_WITH_DEFAULT = Field(
+        description="If set to true, users may book the offer for two persons. Second item will be delivered at the same price as the first one. Category must be compatible with this feature.",
+        example=True,
+        default=False,
+    )
 
     # Products dields
     EANS_FILTER = Field(description="EANs list (max 100)", example="3700551782888,9782895761792")
