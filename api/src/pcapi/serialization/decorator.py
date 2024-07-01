@@ -54,6 +54,17 @@ def _make_string_response(content: BaseModel | None, status_code: int, headers: 
     return response
 
 
+def _transform_query_args_to_dict(query_params, use_as_list) -> dict:
+    result = {}
+    for key, value in query_params.items():
+        if key in use_as_list:
+            previous_list = result.get(key, [])
+            result[key] = previous_list.append(value)
+        else:
+            result[key] = value
+    return result
+
+
 # When using this decorator, you should pass the following arguments when necessary:
 # - query: the query parameters
 # - body : the body of the request
@@ -78,6 +89,7 @@ def spectree_serialize(
     resp: SpectreeResponse | None = None,
     deprecated: bool = False,
     flatten: bool = False,
+    use_as_list: list[str] | None = None,
 ) -> Callable[[Any], Any]:
     """A decorator that serialize/deserialize and validate input/output
 
@@ -165,6 +177,10 @@ def spectree_serialize(
                         'Please send a "Content-Type: application/json" HTTP header',
                         400,
                     )
+            if use_as_list:
+                result = _transform_query_args_to_dict(query_params, use_as_list)
+                kwargs["query"] = query_in_kwargs(**result)
+
             if query_in_kwargs:
                 content = request.args.to_dict(flat=False) if flatten else query_params
                 kwargs["query"] = query_in_kwargs(**content)
