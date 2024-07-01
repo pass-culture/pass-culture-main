@@ -126,6 +126,7 @@ class _FIELDS:
     PRICE = Field(description="Offer price in euro cents", example=1000)
 
     # Collective offer fields
+    COLLECTIVE_OFFER_ID = Field(description="Collective offer id", example=12345)
     COLLECTIVE_OFFER_STATUS = Field(
         description=descriptions.COLLECTIVE_OFFER_STATUS_FIELD_DESCRIPTION, example="ACTIVE"
     )

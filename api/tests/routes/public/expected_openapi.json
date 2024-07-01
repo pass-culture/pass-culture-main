@@ -1681,6 +1681,8 @@
             "CollectiveOffersResponseModel": {
                 "properties": {
                     "beginningDatetime": {
+                        "description": "Collective offer beginning datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "example": "2034-07-24T14:00:00+02:00",
                         "title": "Beginningdatetime",
                         "type": "string"
                     },
@@ -1692,22 +1694,32 @@
                         "type": "array"
                     },
                     "endDatetime": {
+                        "description": "Collective offer end datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "example": "2034-07-24T14:00:00+02:00",
                         "title": "Enddatetime",
                         "type": "string"
                     },
                     "id": {
+                        "description": "Collective offer id",
+                        "example": 12345,
                         "title": "Id",
                         "type": "integer"
                     },
                     "startDatetime": {
+                        "description": "Collective offer start datetime. Replaces beginning dateime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "example": "2034-07-24T14:00:00+02:00",
                         "title": "Startdatetime",
                         "type": "string"
                     },
                     "status": {
+                        "description": "\n**Offer status:**\n\n- `ACTIVE`: offer is validated and active. \n\n\n- `DRAFT`: offer is still a draft and not yet submitted for validation. This status is not applicable to offers created via this API.\n\n\n- `EXPIRED`: offer is validated but the booking limit datetime has passed.\n\n\n- `INACTIVE`: offer is not active and cannot be booked.\n\n\n- `PENDING`: offer is pending for pass Culture rules compliance validation. This step may take up to 72 hours.\n\n\n- `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n\n- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.\n\n\n- `ARCHIVED`: offer is archived by pro.",
+                        "example": "ACTIVE",
                         "title": "Status",
                         "type": "string"
                     },
                     "venueId": {
+                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
+                        "example": 1234,
                         "title": "Venueid",
                         "type": "integer"
                     }
