@@ -24,6 +24,16 @@ export const getIndividualOfferPath = ({
       [OFFER_WIZARD_MODE.EDITION]: `/offre/individuelle/:offerId/edition/informations`,
       [OFFER_WIZARD_MODE.READ_ONLY]: `/offre/individuelle/:offerId/informations`,
     },
+    [OFFER_WIZARD_STEP_IDS.DETAILS]: {
+      [OFFER_WIZARD_MODE.CREATION]: `/offre/individuelle/:offerId/creation/details`,
+      [OFFER_WIZARD_MODE.EDITION]: `/offre/individuelle/:offerId/edition/details`,
+      [OFFER_WIZARD_MODE.READ_ONLY]: `/offre/individuelle/:offerId/details`,
+    },
+    [OFFER_WIZARD_STEP_IDS.ABOUT]: {
+      [OFFER_WIZARD_MODE.CREATION]: `/offre/individuelle/:offerId/creation/pratiques`,
+      [OFFER_WIZARD_MODE.EDITION]: `/offre/individuelle/:offerId/edition/pratiques`,
+      [OFFER_WIZARD_MODE.READ_ONLY]: `/offre/individuelle/:offerId/pratiques`,
+    },
     [OFFER_WIZARD_STEP_IDS.STOCKS]: {
       [OFFER_WIZARD_MODE.CREATION]: `/offre/individuelle/:offerId/creation/stocks`,
       [OFFER_WIZARD_MODE.EDITION]: `/offre/individuelle/:offerId/edition/stocks`,

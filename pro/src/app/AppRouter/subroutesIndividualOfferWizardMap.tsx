@@ -22,6 +22,36 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
     title: 'Détails - Modifier une offre individuelle',
   },
   {
+    lazy: () => import('pages/IndividualOfferWizard/Details/Details'),
+    path: '/offre/individuelle/:offerId/details',
+    title: 'Détails de l’offre - Consulter une offre individuelle',
+  },
+  {
+    lazy: () => import('pages/IndividualOfferWizard/Details/Details'),
+    path: '/offre/individuelle/:offerId/creation/details',
+    title: 'Détails de l’offre - Créer une offre individuelle',
+  },
+  {
+    lazy: () => import('pages/IndividualOfferWizard/Details/Details'),
+    path: '/offre/individuelle/:offerId/edition/details',
+    title: 'Détails de l’offre - Modifier une offre individuelle',
+  },
+  {
+    lazy: () => import('pages/IndividualOfferWizard/About/About'),
+    path: '/offre/individuelle/:offerId/pratiques',
+    title: 'Informations pratiques - Consulter une offre individuelle',
+  },
+  {
+    lazy: () => import('pages/IndividualOfferWizard/About/About'),
+    path: '/offre/individuelle/:offerId/creation/pratiques',
+    title: 'Informations pratiques - Créer une offre individuelle',
+  },
+  {
+    lazy: () => import('pages/IndividualOfferWizard/About/About'),
+    path: '/offre/individuelle/:offerId/edition/pratiques',
+    title: 'Informations pratiques - Modifier une offre individuelle',
+  },
+  {
     lazy: () =>
       import('pages/IndividualOfferWizard/PriceCategories/PriceCategories'),
     path: '/offre/individuelle/:offerId/creation/tarifs',
