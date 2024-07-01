@@ -6,7 +6,7 @@ import { Footer } from 'components/Footer/Footer'
 import { Header } from 'components/Header/Header'
 import { NewNavReview } from 'components/NewNavReview/NewNavReview'
 import { SkipLinks } from 'components/SkipLinks/SkipLinks'
-import { useActiveFeature } from 'hooks/useActiveFeature'
+import { useWithoutFrame } from 'hooks/useWithoutFrame'
 import fullInfoIcon from 'icons/full-info.svg'
 import { selectCurrentUser } from 'store/user/selectors'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -34,7 +34,7 @@ export const Layout = ({ children, layout = 'basic' }: LayoutProps) => {
     layout !== 'funnel' &&
     layout !== 'without-nav'
 
-  const isLayoutWithoutFrame = useActiveFeature('WIP_ENABLE_PRO_WITHOUT_FRAME')
+  const isWithoutFrame = useWithoutFrame()
 
   return (
     <>
@@ -92,7 +92,7 @@ export const Layout = ({ children, layout = 'basic' }: LayoutProps) => {
           <div
             className={cn(styles['content-container'], {
               [styles['content-container-funnel']]: layout === 'funnel',
-              [styles['content-container-without-frame']]: isLayoutWithoutFrame,
+              [styles['content-container-without-frame']]: isWithoutFrame,
             })}
           >
             <div>
@@ -103,7 +103,7 @@ export const Layout = ({ children, layout = 'basic' }: LayoutProps) => {
                 ) : (
                   <div
                     className={cn(styles.content, {
-                      [styles['content-without-frame']]: isLayoutWithoutFrame,
+                      [styles['content-without-frame']]: isWithoutFrame,
                     })}
                   >
                     {children}
