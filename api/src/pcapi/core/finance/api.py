@@ -2649,15 +2649,22 @@ def _has_celebrated_birthday_since_credit_or_registration(user: users_models.Use
 
 
 def _has_been_recredited(user: users_models.User) -> bool:
-    if user.age is None:  # helps mypy to use age as index for RECREDIT_TYPE_AGE_MAPPING
+    import pcapi.core.subscription.api as subscription_api
+
+    if user.age is None:
         logger.error("Trying to check recredit for user that has no age", extra={"user_id": user.id})
         return False
+
     if user.deposit is None:
         return False
+
+    age_at_registration = subscription_api._get_age_at_first_registration(user, users_models.EligibilityType.UNDERAGE)
+    # print(age_at_registration, user.age)
+    # if age_at_registration == user.age:
+    #     return True
+
     if len(user.deposit.recredits) == 0:
         return False
-
-    assert user.age
 
     sorted_recredits = sorted(user.deposit.recredits, key=lambda recredit: recredit.dateCreated)
     return sorted_recredits[-1].recreditType == conf.RECREDIT_TYPE_AGE_MAPPING[user.age]
