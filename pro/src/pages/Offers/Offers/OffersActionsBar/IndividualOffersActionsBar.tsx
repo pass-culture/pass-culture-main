@@ -7,7 +7,6 @@ import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { serializeApiFilters } from 'core/Offers/utils/serializer'
-import { Audience } from 'core/shared/types'
 import { useNotification } from 'hooks/useNotification'
 import fullHideIcon from 'icons/full-hide.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
@@ -21,7 +20,7 @@ import {
   computeDeletionSuccessMessage,
 } from '../utils'
 
-import { DeactivationConfirmDialog } from './DeactivationConfirmDialog/DeactivationConfirmDialog'
+import { IndividualDeactivationConfirmDialog } from './DeactivationConfirmDialog/IndividualDeactivationConfirmDialog'
 import { DeleteConfirmDialog } from './DeleteConfirmDialog'
 import {
   computeActivationSuccessMessage,
@@ -169,12 +168,11 @@ export const IndividualOffersActionsBar = ({
   return (
     <>
       {isDeactivationDialogOpen && (
-        <DeactivationConfirmDialog
+        <IndividualDeactivationConfirmDialog
           areAllOffersSelected={areAllOffersSelected}
           nbSelectedOffers={selectedOfferIds.length}
           onConfirm={handleDeactivateOffers}
           onCancel={() => setIsDeactivationDialogOpen(false)}
-          audience={Audience.INDIVIDUAL}
         />
       )}
 

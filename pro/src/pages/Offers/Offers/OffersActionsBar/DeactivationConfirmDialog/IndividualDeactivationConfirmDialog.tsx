@@ -4,7 +4,6 @@ import { useAnalytics } from 'app/App/analytics/firebase'
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import { Events } from 'core/FirebaseEvents/constants'
 import { NBSP } from 'core/shared/constants'
-import { Audience } from 'core/shared/types'
 import fullEyeIcon from 'icons/full-hide.svg'
 
 export interface DeactivationConfirmDialogProps {
@@ -12,28 +11,21 @@ export interface DeactivationConfirmDialogProps {
   nbSelectedOffers: number
   onCancel: (status: boolean) => void
   onConfirm: () => void
-  audience: Audience
 }
 
-export const DeactivationConfirmDialog = ({
+export const IndividualDeactivationConfirmDialog = ({
   areAllOffersSelected,
   onCancel,
   nbSelectedOffers,
   onConfirm,
-  audience,
 }: DeactivationConfirmDialogProps): JSX.Element => {
   const { logEvent } = useAnalytics()
   const location = useLocation()
 
-  const wordingVisibilityOffer =
-    audience === Audience.COLLECTIVE
-      ? 'par les enseignants sur adage'
-      : 'sur l’application pass Culture'
-
   return (
     <ConfirmDialog
       cancelText={'Annuler'}
-      confirmText={'Masquer'}
+      confirmText={'Désactiver'}
       onCancel={() => {
         logEvent(Events.CLICKED_CANCELED_SELECTED_OFFERS, {
           from: location.pathname,
@@ -56,13 +48,13 @@ export const DeactivationConfirmDialog = ({
       }
       secondTitle={
         nbSelectedOffers === 1
-          ? `êtes-vous sûr de vouloir la masquer${NBSP}?`
-          : `êtes-vous sûr de vouloir toutes les masquer${NBSP}?`
+          ? `êtes-vous sûr de vouloir la désactiver${NBSP}?`
+          : `êtes-vous sûr de vouloir toutes les désactiver${NBSP}?`
       }
     >
       {nbSelectedOffers === 1
-        ? `Dans ce cas, elle ne sera plus visible ${wordingVisibilityOffer}.`
-        : `Dans ce cas, elles ne seront plus visibles ${wordingVisibilityOffer}.`}
+        ? `Dans ce cas, elle ne sera plus visible sur l’application pass Culture.`
+        : `Dans ce cas, elles ne seront plus visibles sur l’application pass Culture.`}
     </ConfirmDialog>
   )
 }

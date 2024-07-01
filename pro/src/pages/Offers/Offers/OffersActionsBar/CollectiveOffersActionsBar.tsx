@@ -13,14 +13,13 @@ import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { serializeApiFilters } from 'core/Offers/utils/serializer'
-import { Audience } from 'core/shared/types'
 import { useNotification } from 'hooks/useNotification'
 import fullHideIcon from 'icons/full-hide.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
-import { DeactivationConfirmDialog } from './DeactivationConfirmDialog/DeactivationConfirmDialog'
+import { CollectiveDeactivationConfirmDialog } from './DeactivationConfirmDialog/CollectiveDeactivationConfirmDialog'
 import {
   computeActivationSuccessMessage,
   computeAllActivationSuccessMessage,
@@ -187,12 +186,11 @@ export function CollectiveOffersActionsBar({
   return (
     <>
       {isDeactivationDialogOpen && (
-        <DeactivationConfirmDialog
+        <CollectiveDeactivationConfirmDialog
           areAllOffersSelected={areAllOffersSelected}
           nbSelectedOffers={selectedOffers.length}
           onConfirm={handleDeactivateOffers}
           onCancel={() => setIsDeactivationDialogOpen(false)}
-          audience={Audience.COLLECTIVE}
         />
       )}
 
