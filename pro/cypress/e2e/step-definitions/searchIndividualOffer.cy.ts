@@ -28,7 +28,7 @@ When('I select {string} in offer status', (filter: string) => {
 })
 
 When('I select a date in one month', () => {
-  const dateSearch = dayjs().add(1, 'months').format('YYYY-MM-DD')
+  const dateSearch = dayjs().add(30, 'days').format('YYYY-MM-DD')
   cy.findByLabelText('Début de la période').type(dateSearch)
   cy.findByLabelText('Fin de la période').type(dateSearch)
 })

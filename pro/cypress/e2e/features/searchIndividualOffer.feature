@@ -29,56 +29,57 @@ Feature: Search individual offers
       |  |  | Livre 4 avec EAN | Librairie 1  |     10 | publiée    |
   # pourrait être un TU/TI, on le met en E2E temporairement
 
-  Scenario: A search with "Mode de création" filter should display expected results
-    When I select "Beaux-arts" in "Catégories"
-    And I validate my filters
-    Then These 2 results should be displayed
-      |  |  | Titre      | Lieu                   | Stocks | Status     |
-      |  |  | Offer 1619 | La librairie quantique |      0 | désactivée |
-      |  |  | Offer 1600 | Club Dorothy           |     20 | publiée    |
-
-  Scenario: A search by offer status should display expected results
-    When I select "Validation en attente" in offer status
-    And I validate my filters
-    Then These 4 results should be displayed
-      |  |  | Titre            | Lieu        | Stocks | Status     |
-      |  |  | Livre 4 avec EAN | Librairie 6 |     10 | en attente |
-      |  |  | Livre 3 avec EAN | Librairie 6 |     10 | en attente |
-      |  |  | Livre 2 avec EAN | Librairie 6 |     10 | en attente |
-      |  |  | Livre 1 avec EAN | Librairie 6 |     10 | en attente |
-
-  Scenario: A search by date should display expected results
-    When I select a date in one month
+  Scenario: A search with "Catégories" filter should display expected results
+    When I select "Jeux" in "Catégories"
     And I validate my filters
     Then These 1 results should be displayed
-      |  |  | Titre      | Lieu                                 | Stocks | Status  |
-      |  |  | good movie | Herbert Marcuse Entreprise - Salle 1 |  1 000 | expirée |
+      |  |  | Titre      | Lieu          | Stocks | Status  |
+      |  |  | Offer 1872 | Terrain vague |     16 | expirée |
+
+  Scenario: A search by offer status should display expected results
+    And I select "Publiée" in offer status
+    And I validate my filters
+    Then These 5 results should be displayed
+      |  |  | Titre      | Lieu                           | Stocks | Status  |
+      |  |  | Offer 1875 | Terrain vague                  |     20 | publiée |
+      |  |  | Offer 1873 | Bar des amis - Offre numérique |     20 | publiée |
+      |  |  | Offer 1816 | Terrain vague                  |     40 | publiée |
+      |  |  | Offer 1815 | Terrain vague                  |     40 | publiée |
+      |  |  | Offer 1812 | Terrain vague                  |     40 | publiée |
+
+  Scenario: A search by date should display expected results
+    When I select offerer "Michel Léon" in offer page
+    And I select a date in one month
+    And I validate my filters
+    Then These 1 results should be displayed
+      |  |  | Titre                            | Lieu                    | Stocks | Status  |
+      |  |  | Un concert d'electro inoubliable | Michel et son accordéon |  1 000 | publiée |
 
   Scenario: A search combining several filters should display expected results
     When I search with the text "Offer"
     And I select "Films, vidéos" in "Catégories"
-    And I select "Espace des Gnoux" in "Lieu"
+    And I select "Terrain vague" in "Lieu"
     And I select "Publiée" in offer status
     And I validate my filters
-    Then These 2 results should be displayed
-      |  |  | Titre      | Lieu             | Stocks | Status  |
-      |  |  | Offer 1585 | Espace des Gnoux |     40 | publiée |
-      |  |  | Offer 1582 | Espace des Gnoux |     60 | publiée |
+    Then These 3 results should be displayed
+      |  |  | Titre      | Lieu          | Stocks | Status  |
+      |  |  | Offer 1816 | Terrain vague |     40 | publiée |
+      |  |  | Offer 1815 | Terrain vague |     40 | publiée |
+      |  |  | Offer 1812 | Terrain vague |     40 | publiée |
     When I reset all filters
     Then All filters are empty
-    And These 172 results should be displayed
-      |  |  | Titre                                | Lieu          | Stocks   | Status     |
-      |  |  | H2G2 Le Guide du voyageur galactique | Terrain vague |       42 | publiée    |
-      |  |  | Le Diner de Devs                     | Terrain vague | Illimité | publiée    |
-      |  |  | Livre 4 avec EAN                     | Librairie 10  |       10 | publiée    |
-      |  |  | Livre 3 avec EAN                     | Librairie 10  |       10 | publiée    |
-      |  |  | Livre 2 avec EAN                     | Librairie 10  |       10 | publiée    |
-      |  |  | Livre 1 avec EAN                     | Librairie 10  |       10 | publiée    |
-      |  |  | Livre 4 avec EAN                     | Librairie 9   |       10 | désactivée |
-      |  |  | Livre 3 avec EAN                     | Librairie 9   |       10 | désactivée |
-      |  |  | Livre 2 avec EAN                     | Librairie 9   |       10 | désactivée |
-      |  |  | Livre 1 avec EAN                     | Librairie 9   |       10 | désactivée |
-    # 2 premières lignes créés par createThingIndividual et createEventIndividual
+    And These 12 results should be displayed
+      |  |  | Titre                          | Lieu                           | Stocks | Status     |
+      |  |  | Mon offre brouillon avec stock | Terrain vague                  |  1 000 | brouillon  |
+      |  |  | Mon offre brouillon            | Terrain vague                  |      0 | brouillon  |
+      |  |  | Offer 1876                     | Terrain vague                  |     16 | expirée    |
+      |  |  | Offer 1875                     | Terrain vague                  |     20 | publiée    |
+      |  |  | Offer 1874                     | Terrain vague                  |      0 | désactivée |
+      |  |  | Offer 1873                     | Bar des amis - Offre numérique |     20 | publiée    |
+      |  |  | Offer 1872                     | Terrain vague                  |     16 | expirée    |
+      |  |  | Offer 1816                     | Terrain vague                  |     40 | publiée    |
+      |  |  | Offer 1815                     | Terrain vague                  |     40 | publiée    |
+      |  |  | Offer 1814                     | Terrain vague                  |      0 | désactivée |
   # comme tout est "Manuel" dans la sandbox, automatiser ce test en l'état n'aurait pas beaucoup de sens
   # Scenario: A search by creation mode should display expected results
   #   When I select "Manuel" in "Mode de création"

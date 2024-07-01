@@ -51,40 +51,43 @@ When('I select offerer {string}', (offererName: string) => {
   cy.findAllByTestId('spinner').should('not.exist')
 })
 
-Then('These {int} results should be displayed', (int: number, dataTable: DataTable) => {
-  const numRows = dataTable.rows().length
-  const numColumns = dataTable.raw()[0].length
-  const data = dataTable.raw()
-  const reLAbelCount = new RegExp(
-    int + ' ' + '(offre|réservation)' + (int > 1 ? 's' : ''),
-    'g'
-  )
+Then(
+  'These {int} results should be displayed',
+  (int: number, dataTable: DataTable) => {
+    const numRows = dataTable.rows().length
+    const numColumns = dataTable.raw()[0].length
+    const data = dataTable.raw()
+    const reLAbelCount = new RegExp(
+      int + ' ' + '(offre|réservation)' + (int > 1 ? 's' : ''),
+      'g'
+    )
 
-  cy.findAllByTestId('offer-item-row').should('have.length', numRows)
-  cy.contains(reLAbelCount)
+    cy.findAllByTestId('offer-item-row').should('have.length', numRows)
+    cy.contains(reLAbelCount)
 
-  for (let rowLine = 0; rowLine < numRows; rowLine++) {
-    const bookLineArray = data[rowLine + 1]
+    for (let rowLine = 0; rowLine < numRows; rowLine++) {
+      const bookLineArray = data[rowLine + 1]
 
-    cy.findAllByTestId('offer-item-row')
-      .eq(rowLine)
-      .within(() => {
-        cy.get('td').then(($elt) => {
-          for (let column = 0; column < numColumns; column++) {
-            cy.wrap($elt)
-              .eq(column)
-              .then((cellValue) => {
-                if (cellValue.text().length && bookLineArray[column].length) {
-                  return cy.wrap(cellValue).contains(bookLineArray[column])
-                } else {
-                  return true
-                }
-              })
-          }
+      cy.findAllByTestId('offer-item-row')
+        .eq(rowLine)
+        .within(() => {
+          cy.get('td').then(($elt) => {
+            for (let column = 0; column < numColumns; column++) {
+              cy.wrap($elt)
+                .eq(column)
+                .then((cellValue) => {
+                  if (cellValue.text().length && bookLineArray[column].length) {
+                    return cy.wrap(cellValue).contains(bookLineArray[column])
+                  } else {
+                    return true
+                  }
+                })
+            }
+          })
         })
-      })
+    }
   }
-})
+)
 
 When('I validate my filters', () => {
   cy.findByText('Rechercher').click()
