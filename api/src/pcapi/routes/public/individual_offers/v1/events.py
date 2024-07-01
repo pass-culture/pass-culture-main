@@ -72,7 +72,7 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
                 booking_contact=body.booking_contact,
                 booking_email=body.booking_email,
                 description=body.description,
-                duration_minutes=body.duration_minutes,
+                duration_minutes=body.event_duration,
                 external_ticket_office_url=body.external_ticket_office_url,
                 extra_data=serialization.deserialize_extra_data(body.category_related_fields),
                 is_duo=body.enable_double_bookings,
@@ -218,7 +218,7 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
                 offer,
                 bookingContact=update_body.get("booking_contact", offers_api.UNCHANGED),
                 bookingEmail=update_body.get("booking_email", offers_api.UNCHANGED),
-                durationMinutes=update_body.get("duration_minutes", offers_api.UNCHANGED),
+                durationMinutes=update_body.get("event_duration", offers_api.UNCHANGED),
                 extraData=(
                     serialization.deserialize_extra_data(body.category_related_fields, copy.deepcopy(offer.extraData))
                     if body.category_related_fields
