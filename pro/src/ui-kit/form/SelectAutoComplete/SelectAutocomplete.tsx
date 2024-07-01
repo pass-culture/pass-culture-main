@@ -52,7 +52,10 @@ export const SelectAutocomplete = ({
   resetOnOpen = true,
   description,
   onSearch = () => {},
-  searchInOptions = (options) => options,
+  searchInOptions = (options, pattern) =>
+    options.filter((opt) =>
+      opt.label.toLowerCase().includes(pattern.trim().toLowerCase())
+    ),
   onReset = () => {},
   type = 'text',
   leftIcon,
