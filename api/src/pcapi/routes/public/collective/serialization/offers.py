@@ -192,12 +192,12 @@ class CollectiveBookingResponseModel(BaseModel):
 
 
 class CollectiveOffersResponseModel(BaseModel):
-    id: int
-    beginningDatetime: str
-    startDatetime: str
-    endDatetime: str
-    status: str
-    venueId: int
+    id: int = fields.COLLECTIVE_OFFER_ID
+    beginningDatetime: str = fields.COLLECTIVE_OFFER_BEGINNING_DATETIME
+    startDatetime: str = fields.COLLECTIVE_OFFER_START_DATETIME
+    endDatetime: str = fields.COLLECTIVE_OFFER_END_DATETIME
+    status: str = fields.COLLECTIVE_OFFER_STATUS
+    venueId: int = fields.VENUE_ID
     bookings: Sequence[CollectiveBookingResponseModel]
 
     class Config:
