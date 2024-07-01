@@ -189,11 +189,7 @@ describe('ActionsBar', () => {
     const activateButton = screen.getByText('Publier')
     await userEvent.click(activateButton)
 
-    expect(
-      screen.getByText(
-        'Une erreur est survenue lors de la publication des offres'
-      )
-    )
+    expect(screen.getByText('Une erreur est survenue'))
   })
 
   it('should show an error message when an error occurs after clicking on "Publier" button when some offers are selected', async () => {
@@ -205,11 +201,7 @@ describe('ActionsBar', () => {
     const activateButton = screen.getByText('Publier')
     await userEvent.click(activateButton)
 
-    expect(
-      screen.getByText(
-        'Une erreur est survenue lors de la publication des offres sélectionnées'
-      )
-    )
+    expect(screen.getByText('Une erreur est survenue'))
   })
 
   it('should deactivate all offers on click on "Masquer" button when all offers are selected', async () => {

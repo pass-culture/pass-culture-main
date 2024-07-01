@@ -20,12 +20,7 @@ import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { CollectiveDeactivationConfirmDialog } from './DeactivationConfirmDialog/CollectiveDeactivationConfirmDialog'
-import {
-  computeActivationSuccessMessage,
-  computeAllActivationSuccessMessage,
-  computeAllDeactivationSuccessMessage,
-  computeDeactivationSuccessMessage,
-} from './utils'
+import { computeActivationSuccessMessage } from './utils/computeActivationSuccessMessage'
 import { computeSelectedOffersLabel } from './utils/computeSelectedOffersLabel'
 
 export type CollectiveOffersActionsBarProps = {
@@ -34,6 +29,27 @@ export type CollectiveOffersActionsBarProps = {
   selectedOffers: CollectiveOfferResponseModel[]
   toggleSelectAllCheckboxes: () => void
   getUpdateOffersStatusMessage: (selectedOfferIds: number[]) => string
+}
+
+const computeAllActivationSuccessMessage = (nbSelectedOffers: number) => {
+  const activationSucessWording =
+    'en cours de publication, veuillez rafraichir dans quelques instants'
+  return nbSelectedOffers > 1
+    ? `Les offres sont ${activationSucessWording}`
+    : `Une offre est ${activationSucessWording}`
+}
+
+const computeAllDeactivationSuccessMessage = (nbSelectedOffers: number) =>
+  nbSelectedOffers > 1
+    ? 'Les offres seront masquées dans quelques instants'
+    : "L'offre sera masquée dans quelques instants"
+
+const computeDeactivationSuccessMessage = (nbSelectedOffers: number) => {
+  const successMessage =
+    nbSelectedOffers > 1
+      ? `offres ont bien été masquées`
+      : `offre a bien été masquée`
+  return `${nbSelectedOffers} ${successMessage}`
 }
 
 const updateCollectiveOffersStatus = async (
@@ -58,11 +74,7 @@ const updateCollectiveOffersStatus = async (
           : computeAllDeactivationSuccessMessage(selectedOffers.length)
       )
     } catch {
-      notify.error(
-        `Une erreur est survenue lors de ${
-          isActive ? 'la publication' : 'la désactivation'
-        } des offres`
-      )
+      notify.error('Une erreur est survenue')
     }
   } else {
     try {
@@ -98,11 +110,7 @@ const updateCollectiveOffersStatus = async (
           : computeDeactivationSuccessMessage(selectedOffers.length)
       )
     } catch {
-      notify.error(
-        `Une erreur est survenue lors de ${
-          isActive ? 'la publication' : 'la désactivation'
-        } des offres sélectionnées`
-      )
+      notify.error('Une erreur est survenue')
     }
   }
 

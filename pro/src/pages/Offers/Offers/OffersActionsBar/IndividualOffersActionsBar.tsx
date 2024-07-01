@@ -22,12 +22,7 @@ import {
 
 import { IndividualDeactivationConfirmDialog } from './DeactivationConfirmDialog/IndividualDeactivationConfirmDialog'
 import { DeleteConfirmDialog } from './DeleteConfirmDialog'
-import {
-  computeActivationSuccessMessage,
-  computeAllActivationSuccessMessage,
-  computeAllDeactivationSuccessMessage,
-  computeDeactivationSuccessMessage,
-} from './utils'
+import { computeActivationSuccessMessage } from './utils/computeActivationSuccessMessage'
 import { computeSelectedOffersLabel } from './utils/computeSelectedOffersLabel'
 
 export interface IndividualOffersActionsBarProps {
@@ -37,6 +32,27 @@ export interface IndividualOffersActionsBarProps {
   toggleSelectAllCheckboxes: () => void
   getUpdateOffersStatusMessage: (selectedOfferIds: number[]) => string
   canDeleteOffers: () => boolean
+}
+
+const computeAllActivationSuccessMessage = (nbSelectedOffers: number) => {
+  const activationWording =
+    'en cours d’activation, veuillez rafraichir dans quelques instants'
+  return nbSelectedOffers > 1
+    ? `Les offres sont ${activationWording}`
+    : `Une offre est ${activationWording}`
+}
+
+const computeAllDeactivationSuccessMessage = (nbSelectedOffers: number) =>
+  nbSelectedOffers > 1
+    ? 'Les offres sont en cours de désactivation, veuillez rafraichir dans quelques instants'
+    : 'Une offre est en cours de désactivation, veuillez rafraichir dans quelques instants'
+
+const computeDeactivationSuccessMessage = (nbSelectedOffers: number) => {
+  const successMessage =
+    nbSelectedOffers > 1
+      ? `offres ont bien été désactivées`
+      : `offre a bien été désactivée`
+  return `${nbSelectedOffers} ${successMessage}`
 }
 
 const updateIndividualOffersStatus = async (
