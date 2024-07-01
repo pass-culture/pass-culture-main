@@ -152,6 +152,7 @@ const hit = {
   __position: 0,
 }
 export const defaultUseInfiniteHitsReturn = {
+  items: [hit],
   hits: [hit],
   isLastPage: true,
   showMore: vi.fn(),
