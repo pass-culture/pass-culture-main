@@ -144,11 +144,6 @@ class CategoryRelatedFields(ExtraDataModel):
     subcategory_id: str = pydantic_v1.Field(alias="category")
 
 
-IS_DUO_BOOKINGS_FIELD = pydantic_v1.Field(
-    False,
-    description="If set to true, users may book the offer for two persons. Second item will be delivered at the same price as the first one. Category must be compatible with this feature.",
-    alias="enableDoubleBookings",
-)
 CATEGORY_RELATED_FIELD_DESCRIPTION = (
     "Cultural category the offer belongs to. According to the category, some fields may or must be specified."
 )
@@ -199,7 +194,7 @@ class OfferCreationBase(serialization.ConfiguredBaseModel):
     description: str | None = fields.OFFER_DESCRIPTION_WITH_MAX_LENGTH
     external_ticket_office_url: pydantic_v1.HttpUrl | None = EXTERNAL_TICKET_OFFICE_URL_FIELD
     image: ImageBody | None
-    is_duo: bool | None = IS_DUO_BOOKINGS_FIELD
+    enable_double_bookings: bool | None = fields.OFFER_ENABLE_DOUBLE_BOOKINGS_WITH_DEFAULT
     name: str = fields.OFFER_NAME_WITH_MAX_LENGTH
     withdrawal_details: str | None = WITHDRAWAL_DETAILS_FIELD
     id_at_provider: str | None = fields.ID_AT_PROVIDER_WITH_MAX_LENGTH
@@ -529,7 +524,7 @@ class OfferEditionBase(serialization.ConfiguredBaseModel):
     is_active: bool | None = pydantic_v1.Field(
         description="Set to `false` if you want to deactivate the offer. This will not cancel former bookings. "
     )
-    is_duo: bool | None = IS_DUO_BOOKINGS_FIELD
+    enable_double_bookings: bool | None = fields.OFFER_ENABLE_DOUBLE_BOOKINGS_WITH_DEFAULT
     withdrawal_details: str | None = WITHDRAWAL_DETAILS_FIELD
     image: ImageBody | None
     description: str | None = fields.OFFER_DESCRIPTION_WITH_MAX_LENGTH
@@ -671,7 +666,7 @@ class OfferResponse(serialization.ConfiguredBaseModel):
     description: str | None = fields.OFFER_DESCRIPTION
     external_ticket_office_url: str | None = EXTERNAL_TICKET_OFFICE_URL_FIELD
     image: ImageResponse | None
-    is_duo: bool | None = IS_DUO_BOOKINGS_FIELD
+    enable_double_bookings: bool | None = fields.OFFER_ENABLE_DOUBLE_BOOKINGS_WITH_DEFAULT
     location: PhysicalLocation | DigitalLocation = LOCATION_FIELD
     name: str = fields.OFFER_NAME
     status: offer_mixin.OfferStatus = pydantic_v1.Field(
@@ -695,7 +690,7 @@ class OfferResponse(serialization.ConfiguredBaseModel):
             accessibility=AccessibilityResponse.from_orm(offer),
             external_ticket_office_url=offer.externalTicketOfficeUrl,
             image=offer.image,  # type: ignore[arg-type]
-            is_duo=offer.isDuo,
+            enable_double_bookings=offer.isDuo,
             location=DigitalLocation.from_orm(offer) if offer.isDigital else PhysicalLocation.from_orm(offer),
             name=offer.name,
             status=offer.status,
