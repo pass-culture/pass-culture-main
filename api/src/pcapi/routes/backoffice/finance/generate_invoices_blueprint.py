@@ -9,6 +9,8 @@ from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import conf as finance_conf
 from pcapi.core.finance import models as finance_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.repository import atomic
+from pcapi.repository import mark_transaction_as_invalid
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.tasks import finance_tasks
@@ -23,6 +25,7 @@ finance_invoices_blueprint = utils.child_backoffice_blueprint(
 
 
 @finance_invoices_blueprint.route("", methods=["GET"])
+@atomic()
 def get_finance_invoices() -> utils.BackofficeResponse:
     is_task_already_running = not finance_tasks.is_generate_invoices_queue_empty()
     number_of_invoices_to_generate = current_app.redis_client.get(finance_conf.REDIS_GENERATE_INVOICES_LENGTH)
@@ -51,6 +54,7 @@ def get_finance_invoices() -> utils.BackofficeResponse:
 
 
 @finance_invoices_blueprint.route("/generate-invoices", methods=["GET"])
+@atomic()
 def get_finance_invoices_generation_form() -> utils.BackofficeResponse:
     latest_cashflow_batch = finance_models.CashflowBatch.query.order_by(finance_models.CashflowBatch.id.desc()).first()
     form = empty_forms.EmptyForm()
@@ -65,9 +69,11 @@ def get_finance_invoices_generation_form() -> utils.BackofficeResponse:
 
 
 @finance_invoices_blueprint.route("/generate-invoices", methods=["POST"])
+@atomic()
 def generate_invoices() -> utils.BackofficeResponse:
     latest_cashflow_batch = finance_models.CashflowBatch.query.order_by(finance_models.CashflowBatch.id.desc()).first()
     if not finance_tasks.is_generate_invoices_queue_empty():
+        mark_transaction_as_invalid()
         flash("La tâche de génération des justificatifs est déjà en cours", "warning")
         return redirect(url_for("backoffice_web.finance_invoices.get_finance_invoices"), code=303)
 
