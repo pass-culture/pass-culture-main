@@ -25,8 +25,8 @@ import {
   computeAllActivationSuccessMessage,
   computeAllDeactivationSuccessMessage,
   computeDeactivationSuccessMessage,
-  computeSelectedOffersLabel,
 } from './utils'
+import { computeSelectedOffersLabel } from './utils/computeSelectedOffersLabel'
 
 export type CollectiveOffersActionsBarProps = {
   areAllOffersSelected: boolean
