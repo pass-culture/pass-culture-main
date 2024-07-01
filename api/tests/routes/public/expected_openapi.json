@@ -834,21 +834,29 @@
                 "description": "Accessibility for people with disabilities.",
                 "properties": {
                     "audioDisabilityCompliant": {
+                        "description": "Is accessible for people with hearing disability",
+                        "example": true,
                         "nullable": true,
                         "title": "Audiodisabilitycompliant",
                         "type": "boolean"
                     },
                     "mentalDisabilityCompliant": {
+                        "description": "Is accessible for people with mental disability",
+                        "example": true,
                         "nullable": true,
                         "title": "Mentaldisabilitycompliant",
                         "type": "boolean"
                     },
                     "motorDisabilityCompliant": {
+                        "description": "Is accessible for people with motor disability",
+                        "example": true,
                         "nullable": true,
                         "title": "Motordisabilitycompliant",
                         "type": "boolean"
                     },
                     "visualDisabilityCompliant": {
+                        "description": "Is accessible for people with visual disability",
+                        "example": true,
                         "nullable": true,
                         "title": "Visualdisabilitycompliant",
                         "type": "boolean"

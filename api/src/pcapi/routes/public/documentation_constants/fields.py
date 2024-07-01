@@ -55,8 +55,6 @@ class _FIELDS:
         example="Your own id",
         max_length=70,
     )
-    OFFER_STATUS = Field(description=descriptions.OFFER_STATUS_FIELD_DESCRIPTION, example="ACTIVE")
-
     PERIOD_BEGINNING_DATE = Field(
         description="Period beginning date. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
         example="2024-03-03T13:00:00+02:00",
@@ -97,8 +95,18 @@ class _FIELDS:
 
     # Offer fields
     OFFER_ID = Field(description="Offer id", example=12345)
+    OFFER_STATUS = Field(description=descriptions.OFFER_STATUS_FIELD_DESCRIPTION, example="ACTIVE")
     OFFER_NAME = Field(description="Offer title", example="Le Petit Prince")
     OFFER_NAME_WITH_MAX_LENGTH = Field(description="Offer title", example="Le Petit Prince", max_length=90)
+    OFFER_DESCRIPTION = Field(
+        description="Offer description",
+        example="A great book for kids and old kids.",
+    )
+    OFFER_DESCRIPTION_WITH_MAX_LENGTH = Field(
+        description="Offer description",
+        example="A great book for kids and old kids.",
+        max_length=1000,
+    )
 
     # Products dields
     EANS_FILTER = Field(description="EANs list (max 100)", example="3700551782888,9782895761792")
@@ -112,6 +120,10 @@ class _FIELDS:
     BOOKING_LIMIT_DATETIME = Field(
         description=descriptions.BOOKING_LIMIT_DATETIME_FIELD_DESCRIPTION,
         example=_example_datetime_with_tz,
+    )
+    EVENT_HAS_TICKET = Field(
+        description="Indicated whether a ticket is mandatory to access to the event. True if it is the case, False otherwise. The ticket will be sent by you, the provider and you must have developed the pass Culture ticketing interface to do so.",
+        example=False,
     )
 
     # Booking fields

@@ -105,10 +105,10 @@ class Accessibility(serialization.ConfiguredBaseModel):
 class AccessibilityResponse(serialization.ConfiguredBaseModel):
     """Accessibility for people with disabilities."""
 
-    audio_disability_compliant: bool | None
-    mental_disability_compliant: bool | None
-    motor_disability_compliant: bool | None
-    visual_disability_compliant: bool | None
+    audio_disability_compliant: bool | None = fields.AUDIO_DISABILITY
+    mental_disability_compliant: bool | None = fields.MENTAL_DISABILITY
+    motor_disability_compliant: bool | None = fields.MOTOR_DISABILITY
+    visual_disability_compliant: bool | None = fields.VISUAL_DISABILITY
 
 
 class PhysicalLocation(serialization.ConfiguredBaseModel):
@@ -157,12 +157,6 @@ CATEGORY_RELATED_FIELD_DESCRIPTION = (
 )
 CATEGORY_RELATED_FIELD = pydantic_v1.Field(..., description=CATEGORY_RELATED_FIELD_DESCRIPTION)
 PUBLICATION_DATE_FIELD = pydantic_v1.Field(None, description="Publication date")
-DESCRIPTION_FIELD_MODEL = pydantic_v1.Field(
-    None, description="Offer description", example="A great book for kids and old kids.", max_length=1000
-)
-DESCRIPTION_FIELD_RESPONSE = pydantic_v1.Field(
-    None, description="Offer description", example="A great book for kids and old kids."
-)
 EXTERNAL_TICKET_OFFICE_URL_FIELD = pydantic_v1.Field(
     None,
     description="Link displayed to users wishing to book the offer but who do not have credit.",
@@ -184,11 +178,6 @@ LOCATION_FIELD = pydantic_v1.Field(
     description="Location where the offer will be available or will take place. The location type must be compatible with the category",
 )
 DURATION_MINUTES_FIELD = pydantic_v1.Field(description="Event duration in minutes", example=60, alias="eventDuration")
-
-HAS_TICKET_FIELD = pydantic_v1.Field(
-    description="Indicated whether a ticket is mandatory to access to the event. True if it is the case, False otherwise. The ticket will be sent by you, the provider and you must have developed the pass Culture ticketing interface to do so.",
-    example=False,
-)
 PRICE_CATEGORY_LABEL_FIELD = pydantic_v1.Field(description="Price category label", example="Carré or")
 PRICE_CATEGORIES_FIELD = pydantic_v1.Field(description="Available price categories for dates of this offer")
 EVENT_DATES_FIELD = pydantic_v1.Field(
@@ -215,7 +204,7 @@ class OfferCreationBase(serialization.ConfiguredBaseModel):
     booking_contact: pydantic_v1.EmailStr | None = BOOKING_CONTACT_FIELD
     booking_email: pydantic_v1.EmailStr | None = BOOKING_EMAIL_FIELD
     category_related_fields: CategoryRelatedFields = CATEGORY_RELATED_FIELD
-    description: str | None = DESCRIPTION_FIELD_MODEL
+    description: str | None = fields.OFFER_DESCRIPTION_WITH_MAX_LENGTH
     external_ticket_office_url: pydantic_v1.HttpUrl | None = EXTERNAL_TICKET_OFFICE_URL_FIELD
     image: ImageBody | None
     is_duo: bool | None = IS_DUO_BOOKINGS_FIELD
@@ -519,7 +508,7 @@ class EventOfferCreation(OfferCreationBase):
     category_related_fields: event_category_creation_fields
     duration_minutes: int | None = DURATION_MINUTES_FIELD
     location: PhysicalLocation | DigitalLocation = LOCATION_FIELD
-    has_ticket: bool = HAS_TICKET_FIELD
+    has_ticket: bool = fields.EVENT_HAS_TICKET
     price_categories: list[PriceCategoryCreation] | None = PRICE_CATEGORIES_FIELD
     publication_date: datetime.datetime | None = PUBLICATION_DATE_FIELD
 
@@ -551,7 +540,7 @@ class OfferEditionBase(serialization.ConfiguredBaseModel):
     is_duo: bool | None = IS_DUO_BOOKINGS_FIELD
     withdrawal_details: str | None = WITHDRAWAL_DETAILS_FIELD
     image: ImageBody | None
-    description: str | None = DESCRIPTION_FIELD_MODEL
+    description: str | None = fields.OFFER_DESCRIPTION_WITH_MAX_LENGTH
     id_at_provider: str | None = fields.ID_AT_PROVIDER_WITH_MAX_LENGTH
 
     class Config:
@@ -687,7 +676,7 @@ class OfferResponse(serialization.ConfiguredBaseModel):
     accessibility: AccessibilityResponse
     booking_contact: str | None = BOOKING_CONTACT_FIELD
     booking_email: str | None = BOOKING_EMAIL_FIELD
-    description: str | None = DESCRIPTION_FIELD_RESPONSE
+    description: str | None = fields.OFFER_DESCRIPTION
     external_ticket_office_url: str | None = EXTERNAL_TICKET_OFFICE_URL_FIELD
     image: ImageResponse | None
     is_duo: bool | None = IS_DUO_BOOKINGS_FIELD
@@ -756,7 +745,7 @@ def _serialize_has_ticket(offer: offers_models.Offer) -> bool:
 class EventOfferResponse(OfferResponse, PriceCategoriesResponse):
     category_related_fields: event_category_reading_fields
     duration_minutes: int | None = DURATION_MINUTES_FIELD
-    has_ticket: bool = HAS_TICKET_FIELD
+    has_ticket: bool = fields.EVENT_HAS_TICKET
     publication_date: datetime.datetime | None = PUBLICATION_DATE_FIELD
 
     @classmethod
