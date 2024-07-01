@@ -126,6 +126,7 @@ class FeatureToggle(enum.Enum):
     USE_END_DATE_FOR_COLLECTIVE_PRICING = "Utiliser la date de fin du stock collectif comme date de valorisation."
     WIP_ENABLE_OFFER_ADDRESS = "Activer l'association des offres à des adresses."
     WIP_ENABLE_PRO_WITHOUT_FRAME = "Active la version du portail pro sans frame autour du contenue principal"
+    WIP_SPLIT_OFFER = "Activer le nouveau parcours de création/édition d'offre individuelle"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -188,6 +189,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_TITELIVE_API_FOR_BOOKS,
     FeatureToggle.WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS,
     FeatureToggle.WIP_FUTURE_OFFER,
+    FeatureToggle.WIP_SPLIT_OFFER,
     # Please keep alphabetic order
 )
 
