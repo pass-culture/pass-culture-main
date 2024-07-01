@@ -2419,6 +2419,7 @@
                     },
                     "bookingContact": {
                         "description": "Recipient email to contact if there is an issue with booking the offer. Mandatory if the offer has withdrawable tickets.",
+                        "example": "support@yourcompany.com",
                         "format": "email",
                         "nullable": true,
                         "title": "Bookingcontact",
@@ -2677,6 +2678,7 @@
                     },
                     "bookingContact": {
                         "description": "Recipient email to contact if there is an issue with booking the offer. Mandatory if the offer has withdrawable tickets.",
+                        "example": "support@yourcompany.com",
                         "format": "email",
                         "nullable": true,
                         "title": "Bookingcontact",
@@ -2838,6 +2840,7 @@
                     },
                     "bookingContact": {
                         "description": "Recipient email to contact if there is an issue with booking the offer. Mandatory if the offer has withdrawable tickets.",
+                        "example": "support@yourcompany.com",
                         "nullable": true,
                         "title": "Bookingcontact",
                         "type": "string"
@@ -6220,6 +6223,7 @@
                     },
                     "bookingContact": {
                         "description": "Recipient email to contact if there is an issue with booking the offer. Mandatory if the offer has withdrawable tickets.",
+                        "example": "support@yourcompany.com",
                         "format": "email",
                         "nullable": true,
                         "title": "Bookingcontact",
@@ -6429,6 +6433,7 @@
                     },
                     "bookingContact": {
                         "description": "Recipient email to contact if there is an issue with booking the offer. Mandatory if the offer has withdrawable tickets.",
+                        "example": "support@yourcompany.com",
                         "format": "email",
                         "nullable": true,
                         "title": "Bookingcontact",
@@ -6603,6 +6608,7 @@
                     },
                     "bookingContact": {
                         "description": "Recipient email to contact if there is an issue with booking the offer. Mandatory if the offer has withdrawable tickets.",
+                        "example": "support@yourcompany.com",
                         "nullable": true,
                         "title": "Bookingcontact",
                         "type": "string"
