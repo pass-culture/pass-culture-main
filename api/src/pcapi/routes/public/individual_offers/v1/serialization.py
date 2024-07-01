@@ -149,9 +149,6 @@ IS_DUO_BOOKINGS_FIELD = pydantic_v1.Field(
     description="If set to true, users may book the offer for two persons. Second item will be delivered at the same price as the first one. Category must be compatible with this feature.",
     alias="enableDoubleBookings",
 )
-BOOKING_EMAIL_FIELD = pydantic_v1.Field(
-    None, description="Recipient email for notifications about bookings, cancellations, etc."
-)
 CATEGORY_RELATED_FIELD_DESCRIPTION = (
     "Cultural category the offer belongs to. According to the category, some fields may or must be specified."
 )
@@ -165,7 +162,7 @@ EXTERNAL_TICKET_OFFICE_URL_FIELD = pydantic_v1.Field(
 WITHDRAWAL_DETAILS_FIELD = pydantic_v1.Field(
     None,
     description="Further information that will be provided to attendees to ease the offer collection.",
-    example="Opening hours, specific office, collection period, access code, email annoucement...",
+    example="Opening hours, specific office, collection period, access code, email announcement...",
     alias="itemCollectionDetails",
 )
 BOOKING_CONTACT_FIELD = pydantic_v1.Field(
@@ -202,7 +199,7 @@ class ImageResponse(serialization.ConfiguredBaseModel):
 class OfferCreationBase(serialization.ConfiguredBaseModel):
     accessibility: Accessibility
     booking_contact: pydantic_v1.EmailStr | None = BOOKING_CONTACT_FIELD
-    booking_email: pydantic_v1.EmailStr | None = BOOKING_EMAIL_FIELD
+    booking_email: pydantic_v1.EmailStr | None = fields.OFFER_BOOKING_EMAIL
     category_related_fields: CategoryRelatedFields = CATEGORY_RELATED_FIELD
     description: str | None = fields.OFFER_DESCRIPTION_WITH_MAX_LENGTH
     external_ticket_office_url: pydantic_v1.HttpUrl | None = EXTERNAL_TICKET_OFFICE_URL_FIELD
@@ -533,7 +530,7 @@ class OfferEditionBase(serialization.ConfiguredBaseModel):
         description="Accessibility to disabled people. Leave fields undefined to keep current value"
     )
     booking_contact: pydantic_v1.EmailStr | None = BOOKING_CONTACT_FIELD
-    booking_email: pydantic_v1.EmailStr | None = BOOKING_EMAIL_FIELD
+    booking_email: pydantic_v1.EmailStr | None = fields.OFFER_BOOKING_EMAIL
     is_active: bool | None = pydantic_v1.Field(
         description="Set to `false` if you want to deactivate the offer. This will not cancel former bookings. "
     )
@@ -675,7 +672,7 @@ class OfferResponse(serialization.ConfiguredBaseModel):
     id: int
     accessibility: AccessibilityResponse
     booking_contact: str | None = BOOKING_CONTACT_FIELD
-    booking_email: str | None = BOOKING_EMAIL_FIELD
+    booking_email: str | None = fields.OFFER_BOOKING_EMAIL
     description: str | None = fields.OFFER_DESCRIPTION
     external_ticket_office_url: str | None = EXTERNAL_TICKET_OFFICE_URL_FIELD
     image: ImageResponse | None

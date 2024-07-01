@@ -2426,6 +2426,7 @@
                     },
                     "bookingEmail": {
                         "description": "Recipient email for notifications about bookings, cancellations, etc.",
+                        "example": "contact@yourcompany.com",
                         "format": "email",
                         "nullable": true,
                         "title": "Bookingemail",
@@ -2603,7 +2604,7 @@
                     },
                     "itemCollectionDetails": {
                         "description": "Further information that will be provided to attendees to ease the offer collection.",
-                        "example": "Opening hours, specific office, collection period, access code, email annoucement...",
+                        "example": "Opening hours, specific office, collection period, access code, email announcement...",
                         "nullable": true,
                         "title": "Itemcollectiondetails",
                         "type": "string"
@@ -2683,6 +2684,7 @@
                     },
                     "bookingEmail": {
                         "description": "Recipient email for notifications about bookings, cancellations, etc.",
+                        "example": "contact@yourcompany.com",
                         "format": "email",
                         "nullable": true,
                         "title": "Bookingemail",
@@ -2820,7 +2822,7 @@
                     },
                     "itemCollectionDetails": {
                         "description": "Further information that will be provided to attendees to ease the offer collection.",
-                        "example": "Opening hours, specific office, collection period, access code, email annoucement...",
+                        "example": "Opening hours, specific office, collection period, access code, email announcement...",
                         "nullable": true,
                         "title": "Itemcollectiondetails",
                         "type": "string"
@@ -2842,6 +2844,7 @@
                     },
                     "bookingEmail": {
                         "description": "Recipient email for notifications about bookings, cancellations, etc.",
+                        "example": "contact@yourcompany.com",
                         "nullable": true,
                         "title": "Bookingemail",
                         "type": "string"
@@ -3025,7 +3028,7 @@
                     },
                     "itemCollectionDetails": {
                         "description": "Further information that will be provided to attendees to ease the offer collection.",
-                        "example": "Opening hours, specific office, collection period, access code, email annoucement...",
+                        "example": "Opening hours, specific office, collection period, access code, email announcement...",
                         "nullable": true,
                         "title": "Itemcollectiondetails",
                         "type": "string"
@@ -6224,6 +6227,7 @@
                     },
                     "bookingEmail": {
                         "description": "Recipient email for notifications about bookings, cancellations, etc.",
+                        "example": "contact@yourcompany.com",
                         "format": "email",
                         "nullable": true,
                         "title": "Bookingemail",
@@ -6360,7 +6364,7 @@
                     },
                     "itemCollectionDetails": {
                         "description": "Further information that will be provided to attendees to ease the offer collection.",
-                        "example": "Opening hours, specific office, collection period, access code, email annoucement...",
+                        "example": "Opening hours, specific office, collection period, access code, email announcement...",
                         "nullable": true,
                         "title": "Itemcollectiondetails",
                         "type": "string"
@@ -6432,6 +6436,7 @@
                     },
                     "bookingEmail": {
                         "description": "Recipient email for notifications about bookings, cancellations, etc.",
+                        "example": "contact@yourcompany.com",
                         "format": "email",
                         "nullable": true,
                         "title": "Bookingemail",
@@ -6565,7 +6570,7 @@
                     },
                     "itemCollectionDetails": {
                         "description": "Further information that will be provided to attendees to ease the offer collection.",
-                        "example": "Opening hours, specific office, collection period, access code, email annoucement...",
+                        "example": "Opening hours, specific office, collection period, access code, email announcement...",
                         "nullable": true,
                         "title": "Itemcollectiondetails",
                         "type": "string"
@@ -6604,6 +6609,7 @@
                     },
                     "bookingEmail": {
                         "description": "Recipient email for notifications about bookings, cancellations, etc.",
+                        "example": "contact@yourcompany.com",
                         "nullable": true,
                         "title": "Bookingemail",
                         "type": "string"
@@ -6842,7 +6848,7 @@
                     },
                     "itemCollectionDetails": {
                         "description": "Further information that will be provided to attendees to ease the offer collection.",
-                        "example": "Opening hours, specific office, collection period, access code, email annoucement...",
+                        "example": "Opening hours, specific office, collection period, access code, email announcement...",
                         "nullable": true,
                         "title": "Itemcollectiondetails",
                         "type": "string"
