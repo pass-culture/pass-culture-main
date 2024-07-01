@@ -27,6 +27,41 @@ def _get_eta(end: int, current: int, elapsed_per_batch: list[int]) -> str:
     return eta_datetime.strftime("%d/%m/%Y %H:%M:%S")
 
 
+def _enqueue_or_index(
+    backend: algolia.AlgoliaBackend,
+    q: list,
+    offer: offers_models.Offer | None,
+    last_30_days_bookings: dict[int, int] | None,
+    force_index: bool = False,
+) -> None:
+    if offer and last_30_days_bookings is not None:
+        q.append((offer, last_30_days_bookings.get(offer.id) or 0))
+    if force_index or len(q) > BATCH_SIZE:
+        try:
+            backend.index_offers([offer for offer, _ in q], {offer.id: n_bookings for offer, n_bookings in q})
+        except Exception as exc:  # pylint: disable=broad-except
+            logger.exception(
+                "Full offer reindexation: error while reindexing from %d to %d: %s", q[0][0].id, q[-1][0].id, exc
+            )
+        q.clear()
+
+
+def _process_eligible_offers(backend: algolia.AlgoliaBackend, queue: list, offers: list[offers_models.Offer]) -> None:
+    last_x_days_bookings_count_by_offer = search.get_last_x_days_booking_count_by_offer(offers)
+    for offer in offers:
+        if offer.is_eligible_for_search:
+            _enqueue_or_index(backend, queue, offer, last_x_days_bookings_count_by_offer)
+
+
+def _report_progress(items_count: int, current: int, elapsed_per_batch: list, last_report: int) -> int:
+    eta = _get_eta(items_count, current, elapsed_per_batch)
+    if current - last_report >= REPORT_EVERY:
+        logger.info("  => OK: %d | eta = %s", current, eta)
+        return current
+
+    return last_report
+
+
 @blueprint.cli.command("full_index_offers")
 @click.argument("start", type=int, required=True)
 @click.argument("end", type=int, required=True)
@@ -59,28 +94,11 @@ def full_index_offers(start: int, end: int) -> None:
     """
     if start > end:
         raise ValueError('"start" must be less than "end"')
-    backend = algolia.AlgoliaBackend()
 
+    backend = algolia.AlgoliaBackend()
     queue: list[tuple] = []
 
-    def enqueue_or_index(
-        q: list,
-        offer: offers_models.Offer | None,
-        last_30_days_bookings: dict[int, int] | None,
-        force_index: bool = False,
-    ) -> None:
-        if offer and last_30_days_bookings is not None:
-            q.append((offer, last_30_days_bookings.get(offer.id) or 0))
-        if force_index or len(q) > BATCH_SIZE:
-            try:
-                backend.index_offers([offer for offer, _ in q], {offer.id: n_bookings for offer, n_bookings in q})
-            except Exception as exc:  # pylint: disable=broad-except
-                logger.exception(
-                    "Full offer reindexation: error while reindexing from %d to %d: %s", q[0][0].id, q[-1][0].id, exc
-                )
-            q.clear()
-
-    to_report = 0
+    last_report = start
     elapsed_per_batch = []
 
     while start <= end:
@@ -93,16 +111,39 @@ def full_index_offers(start: int, end: int) -> None:
             )
             .order_by(offers_models.Offer.id)
         )
-        last_x_days_bookings_count_by_offer = search.get_last_x_days_booking_count_by_offer(offers)
-        for offer in offers:
-            if offer.is_eligible_for_search:
-                enqueue_or_index(queue, offer, last_x_days_bookings_count_by_offer)
+        _process_eligible_offers(backend, queue, offers)
         elapsed_per_batch.append(int(time.perf_counter() - start_time))
         start = start + BATCH_SIZE
-        eta = _get_eta(end, start, elapsed_per_batch)
-        to_report += BATCH_SIZE
-        if to_report >= REPORT_EVERY:
-            to_report = 0
-            print(f"  => OK: {start} | eta = {eta}")
-    enqueue_or_index(queue, offer=None, last_30_days_bookings=None, force_index=True)
-    print("Done")
+        last_report = _report_progress(end, start, elapsed_per_batch, last_report)
+    _enqueue_or_index(backend, queue, offer=None, last_30_days_bookings=None, force_index=True)
+    logger.info("Done")
+
+
+@blueprint.cli.command("full_reindex_indexed_offers")
+def full_reindex_indexed_offers() -> None:
+    backend = algolia.AlgoliaBackend()
+    queue: list[tuple] = []
+
+    start = 0
+    last_report = 0
+    elapsed_per_batch = []
+    offer_ids_to_index = [
+        int(offer_id) for offer_id in backend.redis_client.hkeys(algolia.REDIS_HASHMAP_INDEXED_OFFERS_NAME)
+    ]
+
+    while start <= len(offer_ids_to_index):
+        start_time = time.perf_counter()
+        offers = (
+            search.get_base_query_for_offer_indexation()
+            .filter(
+                offers_models.Offer.isActive.is_(True),
+                offers_models.Offer.id.in_(offer_ids_to_index[start : start + BATCH_SIZE]),
+            )
+            .order_by(offers_models.Offer.id)
+        )
+        _process_eligible_offers(backend, queue, offers)
+        elapsed_per_batch.append(int(time.perf_counter() - start_time))
+        start = start + BATCH_SIZE
+        last_report = _report_progress(len(offer_ids_to_index), start, elapsed_per_batch, last_report)
+    _enqueue_or_index(backend, queue, offer=None, last_30_days_bookings=None, force_index=True)
+    logger.info("Done")
