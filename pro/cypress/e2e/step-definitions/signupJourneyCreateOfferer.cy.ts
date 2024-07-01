@@ -22,9 +22,6 @@ Given('I log in with a {string} new account', (nth: string) => {
 })
 
 When('I start offerer creation', () => {
-  cy.intercept('GET', 'https://api-adresse.data.gouv.fr/search/*').as(
-    'searchAddress'
-  )
   cy.findByText('Commencer').click()
 })
 
@@ -52,13 +49,21 @@ When('I specify an offerer with a SIRET', () => {
     method: 'GET',
     url: `/venues/siret/${mySiret}`,
   }).as('venuesSiret')
+  cy.intercept(
+    'GET',
+    'https://api-adresse.data.gouv.fr/search/?limit=1&q=*'
+  ).as('search1Address')
   cy.findByText('Continuer').click()
-  cy.wait(['@getSiret', '@venuesSiret']).then((interception) => {
-    if (interception[0].response)
-      expect(interception[0].response.statusCode).to.equal(200)
-    if (interception[1].response)
-      expect(interception[1].response.statusCode).to.equal(200)
-  })
+  cy.wait(['@getSiret', '@venuesSiret', '@search1Address']).then(
+    (interception) => {
+      if (interception[0].response)
+        expect(interception[0].response.statusCode).to.equal(200)
+      if (interception[1].response)
+        expect(interception[1].response.statusCode).to.equal(200)
+      if (interception[2].response)
+        expect(interception[2].response.statusCode).to.equal(200)
+    }
+  )
 })
 
 When('I add details to offerer', () => {
@@ -100,8 +105,12 @@ When('I validate the registration', () => {
 
 When('I add a new offerer', () => {
   cy.url().should('contain', '/parcours-inscription/structure/rattachement')
+  cy.intercept(
+    'GET',
+    'https://api-adresse.data.gouv.fr/search/?limit=5&q=*'
+  ).as('search5Address')
   cy.findByText('Ajouter une nouvelle structure').click()
-  cy.wait('@searchAddress')
+  cy.wait('@search5Address')
 })
 
 When('I fill identification step', () => {
@@ -111,8 +120,12 @@ When('I fill identification step', () => {
     'val',
     '89 Rue la Boétie 75008 Pari'
   ) // To avoid being spammed by address search on each chars typed
+  cy.intercept(
+    'GET',
+    'https://api-adresse.data.gouv.fr/search/?limit=5&q=*'
+  ).as('search5Address')
   cy.findByLabelText('Adresse postale *').type('s') // previous search was too fast, this one raises suggestions
-  cy.wait('@searchAddress')
+  cy.wait('@search5Address')
   cy.findByRole('option', { name: '89 Rue la Boétie 75008 Paris' }).click()
 
   cy.intercept({
