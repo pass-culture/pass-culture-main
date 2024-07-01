@@ -13,6 +13,7 @@ from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models.offer_mixin import OfferValidationStatus
+from pcapi.repository import atomic
 
 from . import forms
 from .. import utils
@@ -46,12 +47,14 @@ def _render_search(search_form: forms.SearchEanForm, **kwargs: typing.Any) -> st
 
 
 @multiple_offers_blueprint.route("/", methods=["GET"])
+@atomic()
 def multiple_offers_home() -> utils.BackofficeResponse:
     form = forms.SearchEanForm()
     return _render_search(form)
 
 
 @multiple_offers_blueprint.route("/search", methods=["GET"])
+@atomic()
 def search_multiple_offers() -> utils.BackofficeResponse:
     form = forms.SearchEanForm(formdata=utils.get_query_params())
 
@@ -121,6 +124,7 @@ def search_multiple_offers() -> utils.BackofficeResponse:
 
 
 @multiple_offers_blueprint.route("/add-criteria", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS)
 def add_criteria_to_offers() -> utils.BackofficeResponse:
     form = forms.OfferCriteriaForm()
@@ -136,6 +140,7 @@ def add_criteria_to_offers() -> utils.BackofficeResponse:
 
 
 @multiple_offers_blueprint.route("/set-product-gcu-incompatible", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def set_product_gcu_incompatible() -> utils.BackofficeResponse:
     form = forms.HiddenEanForm()
