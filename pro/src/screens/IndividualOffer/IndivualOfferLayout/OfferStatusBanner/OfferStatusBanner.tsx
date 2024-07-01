@@ -38,14 +38,13 @@ export const OfferStatusBanner = ({
         variant={CalloutVariant.INFO}
         className={styles['callout-offre-validation']}
       >
-        Votre offre est en cours de validation par l’équipe du pass Culture.
+        Nous vérifions actuellement l’éligibilité de votre offre.
         <b>
           {' '}
           Cette vérification pourra prendre jusqu’à 72h. Vous ne pouvez pas
           effectuer de modification pour l’instant.{' '}
         </b>
-        Une fois validée, vous recevrez un email de confirmation et votre offre
-        sera automatiquement mise en ligne.
+        Vous recevrez un e-mail de confirmation une fois votre offre validée.
       </Callout>
     )
   }
