@@ -165,10 +165,6 @@ WITHDRAWAL_DETAILS_FIELD = pydantic_v1.Field(
     example="Opening hours, specific office, collection period, access code, email announcement...",
     alias="itemCollectionDetails",
 )
-BOOKING_CONTACT_FIELD = pydantic_v1.Field(
-    None,
-    description="Recipient email to contact if there is an issue with booking the offer. Mandatory if the offer has withdrawable tickets.",
-)
 LOCATION_FIELD = pydantic_v1.Field(
     ...,
     discriminator="type",
@@ -198,7 +194,7 @@ class ImageResponse(serialization.ConfiguredBaseModel):
 
 class OfferCreationBase(serialization.ConfiguredBaseModel):
     accessibility: Accessibility
-    booking_contact: pydantic_v1.EmailStr | None = BOOKING_CONTACT_FIELD
+    booking_contact: pydantic_v1.EmailStr | None = fields.OFFER_BOOKING_CONTACT
     booking_email: pydantic_v1.EmailStr | None = fields.OFFER_BOOKING_EMAIL
     category_related_fields: CategoryRelatedFields = CATEGORY_RELATED_FIELD
     description: str | None = fields.OFFER_DESCRIPTION_WITH_MAX_LENGTH
@@ -529,8 +525,8 @@ class OfferEditionBase(serialization.ConfiguredBaseModel):
     accessibility: accessibility_serialization.PartialAccessibility | None = pydantic_v1.Field(
         description="Accessibility to disabled people. Leave fields undefined to keep current value"
     )
-    booking_contact: pydantic_v1.EmailStr | None = BOOKING_CONTACT_FIELD
     booking_email: pydantic_v1.EmailStr | None = fields.OFFER_BOOKING_EMAIL
+    booking_contact: pydantic_v1.EmailStr | None = fields.OFFER_BOOKING_CONTACT
     is_active: bool | None = pydantic_v1.Field(
         description="Set to `false` if you want to deactivate the offer. This will not cancel former bookings. "
     )
@@ -671,7 +667,7 @@ class PostDatesResponse(serialization.ConfiguredBaseModel):
 class OfferResponse(serialization.ConfiguredBaseModel):
     id: int
     accessibility: AccessibilityResponse
-    booking_contact: str | None = BOOKING_CONTACT_FIELD
+    booking_contact: str | None = fields.OFFER_BOOKING_CONTACT
     booking_email: str | None = fields.OFFER_BOOKING_EMAIL
     description: str | None = fields.OFFER_DESCRIPTION
     external_ticket_office_url: str | None = EXTERNAL_TICKET_OFFICE_URL_FIELD
