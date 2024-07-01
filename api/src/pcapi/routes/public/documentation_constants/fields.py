@@ -157,10 +157,12 @@ class _FIELDS:
         example=["GENERAL2", "GENERAL1", "GENERAL0"],
     )
     COLLECTIVE_OFFER_IS_ACTIVE = Field(description="Is your offer active", example=True)
+    COLLECTIVE_OFFER_IS_SOLD_OUT = Field(description="Is your offer sold out", example=False)
     COLLECTIVE_OFFER_NATIONAL_PROGRAM_ID = Field(
         description="Id of the national program linked to your offer. The national programs list can be found on **[this endpoint (`Get all known national programs`)](#tag/Collective-educational-data/operation/GetNationalPrograms)**",
         example=123456,
     )
+    COLLECTIVE_OFFER_DATE_CREATED = Field(description="Collective offer creation date")
     COLLECTIVE_OFFER_BEGINNING_DATETIME = Field(
         description="Collective offer beginning datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
         example=_example_datetime_with_tz,
@@ -178,7 +180,7 @@ class _FIELDS:
         example=_example_datetime_with_tz,
     )
     COLLECTIVE_OFFER_TOTAL_PRICE = Field(example=100.00, description="Collective offer price (in €)")
-    COLLECTIVE_OFFER_NB_OF_TICKETS_FIELD = Field(example=10, description="Number of tickets for your collective offer")
+    COLLECTIVE_OFFER_NB_OF_TICKETS = Field(example=10, description="Number of tickets for your collective offer")
     COLLECTIVE_OFFER_EDUCATIONAL_PRICE_DETAIL = Field(
         description="The explanation of the offer price", example="10 tickets x 10 € = 100 €"
     )

@@ -3946,15 +3946,24 @@
                 "additionalProperties": false,
                 "properties": {
                     "audioDisabilityCompliant": {
+                        "description": "Is accessible for people with hearing disability",
+                        "example": true,
                         "nullable": true,
                         "title": "Audiodisabilitycompliant",
                         "type": "boolean"
                     },
                     "beginningDatetime": {
+                        "description": "Collective offer beginning datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "example": "2034-07-24T14:00:00+02:00",
                         "title": "Beginningdatetime",
                         "type": "string"
                     },
                     "bookingEmails": {
+                        "description": "Recipient emails for notifications about bookings, cancellations, etc.",
+                        "example": [
+                            "some@email.com",
+                            "some.other@email.com"
+                        ],
                         "items": {
                             "type": "string"
                         },
@@ -3963,6 +3972,8 @@
                         "type": "array"
                     },
                     "bookingLimitDatetime": {
+                        "description": "Booking limit datetime. It must be anterior to the `beginning_datetime`. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "example": "2034-07-24T14:00:00+02:00",
                         "title": "Bookinglimitdatetime",
                         "type": "string"
                     },
@@ -3974,23 +3985,35 @@
                         "type": "array"
                     },
                     "contactEmail": {
+                        "description": "Email of the person to contact if there is an issue with the offer.",
+                        "example": "somebody.tocontact@gmail.com",
                         "title": "Contactemail",
                         "type": "string"
                     },
                     "contactPhone": {
+                        "description": "Phone of the person to contact if there is an issue with the offer.",
+                        "example": "somebody.tocontact@gmail.com",
                         "title": "Contactphone",
                         "type": "string"
                     },
                     "dateCreated": {
+                        "description": "Collective offer creation date",
                         "title": "Datecreated",
                         "type": "string"
                     },
                     "description": {
+                        "description": "Collective offer description",
+                        "example": "Atelier de peinture \u00e0 la gouache pour \u00e9l\u00e8ves de 5\u00e8me",
                         "nullable": true,
                         "title": "Description",
                         "type": "string"
                     },
                     "domains": {
+                        "description": "Educational domains ids linked to the offer. Those domains are available on **[this endpoint (`Get the eductional domains`)](#tag/Collective-educational-data/operation/ListEducationalDomains)**",
+                        "example": [
+                            1,
+                            2
+                        ],
                         "items": {
                             "type": "integer"
                         },
@@ -3998,30 +4021,44 @@
                         "type": "array"
                     },
                     "durationMinutes": {
+                        "description": "Event duration in minutes",
+                        "example": 60,
                         "nullable": true,
                         "title": "Durationminutes",
                         "type": "integer"
                     },
                     "educationalInstitution": {
+                        "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
+                        "example": "0010008D",
                         "nullable": true,
                         "title": "Educationalinstitution",
                         "type": "string"
                     },
                     "educationalInstitutionId": {
+                        "description": "Educational institution id in the pass Culture application. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
+                        "example": 1234,
                         "nullable": true,
                         "title": "Educationalinstitutionid",
                         "type": "integer"
                     },
                     "educationalPriceDetail": {
+                        "description": "The explanation of the offer price",
+                        "example": "10 tickets x 10 \u20ac = 100 \u20ac",
                         "nullable": true,
                         "title": "Educationalpricedetail",
                         "type": "string"
                     },
                     "endDatetime": {
+                        "description": "Collective offer end datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "example": "2034-07-24T14:00:00+02:00",
                         "title": "Enddatetime",
                         "type": "string"
                     },
                     "formats": {
+                        "description": "Educational Formats",
+                        "example": [
+                            "Atelier de pratique"
+                        ],
                         "items": {
                             "$ref": "#/components/schemas/EacFormat"
                         },
@@ -4033,15 +4070,21 @@
                         "type": "boolean"
                     },
                     "id": {
+                        "description": "Collective offer id",
+                        "example": 12345,
                         "title": "Id",
                         "type": "integer"
                     },
                     "imageCredit": {
+                        "description": "Image owner or author",
+                        "example": "Jane Doe",
                         "nullable": true,
                         "title": "Imagecredit",
                         "type": "string"
                     },
                     "imageUrl": {
+                        "description": "Image URL publicly accessible",
+                        "example": "https://example.com/image.png",
                         "nullable": true,
                         "title": "Imageurl",
                         "type": "string"
@@ -4054,25 +4097,35 @@
                         "type": "array"
                     },
                     "isActive": {
+                        "description": "Is your offer active",
+                        "example": true,
                         "nullable": true,
                         "title": "Isactive",
                         "type": "boolean"
                     },
                     "isSoldOut": {
+                        "description": "Is your offer sold out",
+                        "example": false,
                         "title": "Issoldout",
                         "type": "boolean"
                     },
                     "mentalDisabilityCompliant": {
+                        "description": "Is accessible for people with mental disability",
+                        "example": true,
                         "nullable": true,
                         "title": "Mentaldisabilitycompliant",
                         "type": "boolean"
                     },
                     "motorDisabilityCompliant": {
+                        "description": "Is accessible for people with motor disability",
+                        "example": true,
                         "nullable": true,
                         "title": "Motordisabilitycompliant",
                         "type": "boolean"
                     },
                     "name": {
+                        "description": "Collective offer name",
+                        "example": "Atelier de peinture",
                         "title": "Name",
                         "type": "string"
                     },
@@ -4086,6 +4139,8 @@
                         "title": "NationalProgramModel"
                     },
                     "numberOfTickets": {
+                        "description": "Number of tickets for your collective offer",
+                        "example": 10,
                         "title": "Numberoftickets",
                         "type": "integer"
                     },
@@ -4093,10 +4148,14 @@
                         "$ref": "#/components/schemas/OfferVenueModel"
                     },
                     "startDatetime": {
+                        "description": "Collective offer start datetime. Replaces beginning dateime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "example": "2034-07-24T14:00:00+02:00",
                         "title": "Startdatetime",
                         "type": "string"
                     },
                     "status": {
+                        "description": "\n**Offer status:**\n\n- `ACTIVE`: offer is validated and active. \n\n\n- `DRAFT`: offer is still a draft and not yet submitted for validation. This status is not applicable to offers created via this API.\n\n\n- `EXPIRED`: offer is validated but the booking limit datetime has passed.\n\n\n- `INACTIVE`: offer is not active and cannot be booked.\n\n\n- `PENDING`: offer is pending for pass Culture rules compliance validation. This step may take up to 72 hours.\n\n\n- `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n\n- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.\n\n\n- `ARCHIVED`: offer is archived by pro.",
+                        "example": "ACTIVE",
                         "title": "Status",
                         "type": "string"
                     },
@@ -4108,19 +4167,27 @@
                         "type": "array"
                     },
                     "subcategoryId": {
+                        "description": "Event subcategory id",
+                        "example": "FESTIVAL_MUSIQUE",
                         "nullable": true,
                         "title": "Subcategoryid",
                         "type": "string"
                     },
                     "totalPrice": {
+                        "description": "Collective offer price (in \u20ac)",
+                        "example": 100.0,
                         "title": "Totalprice",
                         "type": "number"
                     },
                     "venueId": {
+                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
+                        "example": 1234,
                         "title": "Venueid",
                         "type": "integer"
                     },
                     "visualDisabilityCompliant": {
+                        "description": "Is accessible for people with visual disability",
+                        "example": true,
                         "nullable": true,
                         "title": "Visualdisabilitycompliant",
                         "type": "boolean"
