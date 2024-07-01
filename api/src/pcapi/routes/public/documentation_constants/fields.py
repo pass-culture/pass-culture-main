@@ -124,8 +124,12 @@ class _FIELDS:
         default=False,
     )
 
-    # Products dields
+    # Products fields
     EANS_FILTER = Field(description="EANs list (max 100)", example="3700551782888,9782895761792")
+    EAN = Field(
+        description="European Article Number (EAN-13)",
+        example="3700551782888",
+    )
 
     # Event fields
     PRICE_CATEGORY_ID = Field(description="Price category id", example=12)

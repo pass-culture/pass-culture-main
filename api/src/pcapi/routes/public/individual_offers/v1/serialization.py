@@ -126,12 +126,9 @@ class DigitalLocation(serialization.ConfiguredBaseModel):
     )
 
 
-EAN_FIELD = pydantic_v1.Field(example="1234567890123", description="European Article Number (EAN-13)")
-
-
 class ExtraDataModel(serialization.ConfiguredBaseModel):
     author: str | None = pydantic_v1.Field(example="Jane Doe")
-    ean: str | None = EAN_FIELD
+    ean: str | None = fields.EAN
     musicType: TiteliveMusicTypeEnum | MusicTypeEnum | None  # type: ignore[valid-type]
     performer: str | None = pydantic_v1.Field(example="Jane Doe")
     stageDirector: str | None = pydantic_v1.Field(example="Jane Doe")
@@ -435,9 +432,9 @@ class ProductOfferCreation(OfferCreationBase):
 
 class ProductOfferByEanCreation(serialization.ConfiguredBaseModel):
     if typing.TYPE_CHECKING:
-        ean: str = EAN_FIELD
+        ean: str = fields.EAN
     else:
-        ean: pydantic_v1.constr(min_length=13, max_length=13) = EAN_FIELD
+        ean: pydantic_v1.constr(min_length=13, max_length=13) = fields.EAN
     stock: StockCreation
 
     class Config:

@@ -6201,7 +6201,7 @@
                 "properties": {
                     "ean": {
                         "description": "European Article Number (EAN-13)",
-                        "example": "1234567890123",
+                        "example": "3700551782888",
                         "maxLength": 13,
                         "minLength": 13,
                         "title": "Ean",
