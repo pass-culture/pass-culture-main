@@ -5,6 +5,7 @@ import pytest
 from pcapi.core.categories import categories
 from pcapi.core.categories.subcategories_v2 import ABO_BIBLIOTHEQUE
 from pcapi.core.categories.subcategories_v2 import CINE_PLEIN_AIR
+from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 
 
@@ -32,10 +33,11 @@ class Returns200Test:
         user = users_factories.ProFactory()
 
         # when
-        response = client.with_session_auth(user.email).get("/offers/categories")
+        client = client.with_session_auth(user.email)
+        with assert_num_queries(2):  #  session + user
+            response = client.get("/offers/categories")
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         assert response.json == {
             "categories": [
                 {"id": "LIVRE", "proLabel": "Livre", "isSelectable": True},

@@ -2,6 +2,7 @@ import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.testing import assert_num_queries
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -13,8 +14,11 @@ class Returns401Test:
         # authorized offer
         offers_factories.OfferFactory(venue__managingOfferer=user_offerer.offerer)
         offer_unauthorized = offers_factories.OfferFactory()
-        response = client.with_session_auth(user_offerer.user.email).get(
-            f"/bookings/offer/{offer_unauthorized.id}/excel?event_date=2021-01-01&status=all"
-        )
-        assert response.status_code == 403
+
+        client = client.with_session_auth(user_offerer.user.email)
+        expected_num_queries = 5  #  offer +  session + user + venue + SELECT EXISTS user_offerer
+        with assert_num_queries(expected_num_queries):
+            response = client.get(f"/bookings/offer/{offer_unauthorized.id}/excel?event_date=2021-01-01&status=all")
+            assert response.status_code == 403
+
         assert response.json == {"global": "You are not allowed to access this offer"}

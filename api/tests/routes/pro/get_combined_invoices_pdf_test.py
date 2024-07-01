@@ -5,6 +5,7 @@ import pytest
 
 from pcapi.core.finance import factories
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.utils import requests
 
@@ -39,10 +40,16 @@ def test_get_combined_invoices_pdf(client, requests_mock, invoice_1_example_pdf,
     requests_mock.get(invoice_2.url, content=invoice_2_example_pdf)
 
     client = client.with_session_auth(pro.email)
+    expected_num_queries = 5
+    # session
+    # user
+    # invoice
+    # bank_account
+    # user_offerer
+    with assert_num_queries(expected_num_queries):
+        response = client.get("/finance/combined-invoices?invoiceReferences=F240000189&invoiceReferences=F240000187")
+        assert response.status_code == 200
 
-    response = client.get("/finance/combined-invoices?invoiceReferences=F240000189&invoiceReferences=F240000187")
-
-    assert response.status_code == 200
     assert response.headers["Content-Type"] == "application/pdf; charset=utf-8;"
     assert response.headers["Content-Disposition"] == "attachment; filename=justificatifs_de_remboursement.pdf"
     assert PdfReader(BytesIO(response.data)).get_num_pages() == 3
@@ -58,9 +65,16 @@ def test_get_one_invoice_pdf(client, requests_mock, invoice_1_example_pdf):
 
     requests_mock.get(invoice.url, content=invoice_1_example_pdf)
     client = client.with_session_auth(pro.email)
+    expected_num_queries = 5
+    # session
+    # user
+    # invoice
+    # bank_account
+    # user_offerer
+    with assert_num_queries(expected_num_queries):
+        response = client.get("/finance/combined-invoices?invoiceReferences=F240000187")
+        assert response.status_code == 200
 
-    response = client.get("/finance/combined-invoices?invoiceReferences=F240000187")
-    assert response.status_code == 200
     assert response.headers["Content-Type"] == "application/pdf; charset=utf-8;"
     assert response.headers["Content-Disposition"] == "attachment; filename=justificatifs_de_remboursement.pdf"
     assert PdfReader(BytesIO(response.data)).get_num_pages() == 1
@@ -68,27 +82,28 @@ def test_get_one_invoice_pdf(client, requests_mock, invoice_1_example_pdf):
 
 def test_get_combined_invoices_pdf_404(client):
     pro = users_factories.ProFactory()
+
     client = client.with_session_auth(pro.email)
+    with assert_num_queries(3):  # session + user + invoice
+        response = client.get("/finance/combined-invoices?invoiceReferences=F240000000&invoiceReferences=F240000001")
+        assert response.status_code == 404
 
-    response = client.get("/finance/combined-invoices?invoiceReferences=F240000000&invoiceReferences=F240000001")
-
-    assert response.status_code == 404
     assert response.json == {"invoice": "Invoice not found"}
 
 
 def test_get_combined_invoices_pdf_user_not_loged_in(client):
-    response = client.get("/finance/combined-invoices?invoiceReferences=F240000000")
-
-    assert response.status_code == 401
+    with assert_num_queries(0):
+        response = client.get("/finance/combined-invoices?invoiceReferences=F240000000")
+        assert response.status_code == 401
 
 
 def test_get_combined_invoices_pdf_no_invoice_references(client):
     pro = users_factories.ProFactory()
     client = client.with_session_auth(pro.email)
+    with assert_num_queries(2):  #  session + user
+        response = client.get("/finance/combined-invoices")
+        assert response.status_code == 400
 
-    response = client.get("/finance/combined-invoices")
-
-    assert response.status_code == 400
     assert response.json == {"invoiceReferences": ["Ce champ est obligatoire"]}
 
 
@@ -102,9 +117,16 @@ def test_get_combined_invoices_pdf_failed_http_request(client, requests_mock):
     client = client.with_session_auth(pro.email)
 
     requests_mock.side_effect = [requests.exceptions.ConnectionError]
+    expected_num_queries = 5
+    # session
+    # user
+    # invoice
+    # bank_account
+    # user_offerer
+    with assert_num_queries(expected_num_queries):
+        response = client.get("/finance/combined-invoices?invoiceReferences=F240000187")
+        assert response.status_code == 424
 
-    response = client.get("/finance/combined-invoices?invoiceReferences=F240000187")
-    assert response.status_code == 424
     assert response.json == {"invoice": f"Failed to fetch invoice PDF from url: {invoice.url}"}
 
     requests_mock.side_effect = [requests.exceptions.ConnectionError]
@@ -115,8 +137,13 @@ def test_user_has_no_access_to_offerer(client):
 
     pro = users_factories.ProFactory()
     client = client.with_session_auth(pro.email)
+    expected_num_queries = 4
+    # session
+    # user
+    # invoice
+    # bank_account
+    with assert_num_queries(expected_num_queries):
+        response = client.get("/finance/combined-invoices?invoiceReferences=F240000000")
+        assert response.status_code == 400
 
-    response = client.get("/finance/combined-invoices?invoiceReferences=F240000000")
-
-    assert response.status_code == 400
     assert response.json == {"invoiceReferences": ["Aucune structure trouvée pour les factures fournies"]}

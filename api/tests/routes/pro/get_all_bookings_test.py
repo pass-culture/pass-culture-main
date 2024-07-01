@@ -13,6 +13,7 @@ from pcapi.core.external_bookings.factories import ExternalBookingFactory
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import assert_no_duplicated_queries
+from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.date import isoformat
 from pcapi.utils.date import utc_datetime_to_department_timezone
@@ -116,6 +117,12 @@ class GetAllBookingsTest:
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
+    # 1.session
+    # 2.user
+    # 3.anon_1
+    # 4.external_booking
+    expected_num_queries = 4
+
     def when_user_is_admin(self, client: Any):
         admin = users_factories.AdminFactory()
         user_offerer = offerers_factories.UserOffererFactory()
@@ -125,10 +132,10 @@ class Returns200Test:
         )
 
         client = client.with_session_auth(admin.email)
-        response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked")
-
-        assert response.status_code == 200
-        assert len(response.json["bookingsRecap"]) == 1
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked")
+            assert response.status_code == 200
+            assert len(response.json["bookingsRecap"]) == 1
 
     def test_when_user_is_linked_to_a_valid_offerer(self, client: Any):
         stock = offers_factories.StockFactory(offer__extraData={"ean": "1234567891234"})
@@ -299,9 +306,12 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(user=pro_user, offerer=externalbooking.booking.offerer)
 
         # when
-        response = client.with_session_auth(pro_user.email).get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+        client = client.with_session_auth(pro_user.email)
+        expected_num_queries = 4  # user + session + SELECT DISTINCT booking + bookingToken
+        with assert_num_queries(expected_num_queries):
+            response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json["bookingsRecap"][0]["bookingToken"] is None
 
 
@@ -311,27 +321,30 @@ class Returns400Test:
         pro = users_factories.ProFactory()
 
         client = client.with_session_auth(pro.email)
-        response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&page=not-a-number")
+        with assert_num_queries(2):  # user + session
+            response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&page=not-a-number")
+            assert response.status_code == 400
 
-        assert response.status_code == 400
         assert response.json["page"] == ["Saisissez un nombre valide"]
 
     def when_date_format_incorrect(self, client: Any):
         pro = users_factories.ProFactory()
 
-        response = client.with_session_auth(pro.email).get(
-            "/bookings/pro?bookingPeriodBeginningDate=20234-08-10&bookingPeriodEndingDate=2020-08-12"
-        )
-
-        assert response.status_code == 400
+        client = client.with_session_auth(pro.email)
+        with assert_num_queries(2):  # user + session
+            response = client.get(
+                "/bookings/pro?bookingPeriodBeginningDate=20234-08-10&bookingPeriodEndingDate=2020-08-12"
+            )
+            assert response.status_code == 400
 
     def when_booking_period_and_event_date_is_not_given(self, client: Any):
         pro = users_factories.ProFactory()
 
         client = client.with_session_auth(pro.email)
-        response = client.get("/bookings/pro")
+        with assert_num_queries(2):  # user + session
+            response = client.get("/bookings/pro")
+            assert response.status_code == 400
 
-        assert response.status_code == 400
         assert response.json["eventDate"] == ["Ce champ est obligatoire si aucune période n'est renseignée."]
         assert response.json["bookingPeriodBeginningDate"] == [
             "Ce champ est obligatoire si la date d'évènement n'est renseignée"

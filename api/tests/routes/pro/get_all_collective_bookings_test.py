@@ -9,6 +9,7 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.models import CollectiveBookingCancellationReasons
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 
 
@@ -21,6 +22,12 @@ BOOKING_PERIOD = (datetime(2022, 3, 10, tzinfo=timezone.utc).date(), datetime(20
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
+    # 1. user
+    # 2. session
+    # 3. collective_booking
+    # 4. collective_booking
+    expected_num_queries = 4
+
     @time_machine.travel("2022-05-01 15:00:00")
     def test_when_user_is_admin(self, client):
         admin = users_factories.AdminFactory()
@@ -31,9 +38,10 @@ class Returns200Test:
         )
 
         client = client.with_session_auth(admin.email)
-        response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked")
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked")
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert len(response.json["bookingsRecap"]) == 1
 
     @time_machine.travel("2022-05-01 15:00:00", tick=False)
@@ -58,9 +66,10 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth(pro_user.email)
-        response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+            assert response.status_code == 200
 
-        # Then
         expected_bookings_recap = [
             {
                 "stock": {
@@ -110,7 +119,6 @@ class Returns200Test:
             }
         ]
 
-        assert response.status_code == 200
         assert response.json["page"] == 1
         assert response.json["pages"] == 1
         assert response.json["total"] == 1
@@ -136,11 +144,11 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth(pro_user.email)
-        response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}")
-        # response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=used")
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+            assert response.status_code == 200
 
         # Then
-        assert response.status_code == 200
         assert response.json["page"] == 1
         assert response.json["pages"] == 0
         assert response.json["total"] == 0
@@ -167,10 +175,11 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth(pro_user.email)
-        response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+            assert response.status_code == 200
 
         # Then
-        assert response.status_code == 200
         booking_recap = response.json["bookingsRecap"][0]
         assert booking_recap["bookingStatus"] == "pending"
         assert booking_recap["bookingStatusHistory"] == [
@@ -208,10 +217,11 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth(pro_user.email)
-        response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+            assert response.status_code == 200
 
         # Then
-        assert response.status_code == 200
         booking_recap = response.json["bookingsRecap"][0]
         assert booking_recap["bookingStatus"] == "cancelled"
         assert booking_recap["bookingStatusHistory"] == [
@@ -261,10 +271,11 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth(pro_user.email)
-        response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+            assert response.status_code == 200
 
         # Then
-        assert response.status_code == 200
         booking_recap = response.json["bookingsRecap"][0]
         assert booking_recap["bookingStatus"] == "cancelled"
         assert booking_recap["bookingCancellationReason"] == "OFFERER"
@@ -308,10 +319,11 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth(pro_user.email)
-        response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+            assert response.status_code == 200
 
         # Then
-        assert response.status_code == 200
         booking_recap = response.json["bookingsRecap"][0]
         assert booking_recap["bookingStatus"] == "reimbursed"
         assert booking_recap["bookingStatusHistory"] == [
@@ -363,10 +375,11 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth(pro_user.email)
-        response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+            assert response.status_code == 200
 
         # Then
-        assert response.status_code == 200
         booking_recap = response.json["bookingsRecap"][0]
         assert booking_recap["bookingStatus"] == "pending"
         assert booking_recap["bookingStatusHistory"] == [
@@ -407,9 +420,11 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth(pro_user.email)
-        response = client.get(
-            f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}&venueId={collective_stock.collectiveOffer.venueId}"
-        )
+        with assert_num_queries(self.expected_num_queries + 2):  # + collective_stock + collective_offer
+            response = client.get(
+                f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}&venueId={collective_stock.collectiveOffer.venueId}"
+            )
+            assert response.status_code == 200
 
         # Then
         expected_bookings_recap = [
@@ -461,7 +476,6 @@ class Returns200Test:
             }
         ]
 
-        assert response.status_code == 200
         assert response.json["page"] == 1
         assert response.json["pages"] == 1
         assert response.json["total"] == 1
@@ -499,7 +513,9 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth(pro_user.email)
-        response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}&eventDate=2022-05-15T00:00:00Z")
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}&eventDate=2022-05-15T00:00:00Z")
+            assert response.status_code == 200
 
         # Then
         expected_bookings_recap = [
@@ -551,7 +567,6 @@ class Returns200Test:
             }
         ]
 
-        assert response.status_code == 200
         assert response.json["page"] == 1
         assert response.json["pages"] == 1
         assert response.json["total"] == 1
@@ -590,7 +605,9 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth(pro_user.email)
-        response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=validated")
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=validated")
+            assert response.status_code == 200
 
         # Then
         # FIXME (gvanneste) : voir pour pouvoir fixer la date limtie d'annulation qu'on souhaite (ici event - 1 jour)
@@ -647,7 +664,6 @@ class Returns200Test:
             }
         ]
 
-        assert response.status_code == 200
         assert response.json["page"] == 1
         assert response.json["pages"] == 1
         assert response.json["total"] == 1
@@ -660,18 +676,20 @@ class Returns400Test:
         pro = users_factories.ProFactory()
 
         client = client.with_session_auth(pro.email)
-        response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}&page=not-a-number")
+        with assert_num_queries(2):  # user + session
+            response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}&page=not-a-number")
+            assert response.status_code == 400
 
-        assert response.status_code == 400
         assert response.json["page"] == ["Saisissez un nombre valide"]
 
     def when_booking_period_and_event_date_is_not_given(self, client):
         pro = users_factories.ProFactory()
 
         client = client.with_session_auth(pro.email)
-        response = client.get("collective/bookings/pro")
+        with assert_num_queries(2):  # user + session
+            response = client.get("collective/bookings/pro")
+            assert response.status_code == 400
 
-        assert response.status_code == 400
         assert response.json["eventDate"] == ["Ce champ est obligatoire si aucune période n'est renseignée."]
         assert response.json["bookingPeriodBeginningDate"] == [
             "Ce champ est obligatoire si la date d'évènement n'est renseignée"
@@ -706,10 +724,11 @@ class Returns400Test:
 
         # When
         client = client.with_session_auth(pro_user.email)
-        response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+        with assert_num_queries(4):  # user + session + count collective_booking + distinct collective_booking
+            response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+            assert response.status_code == 200
 
         # Then
-        assert response.status_code == 200
         booking_recap = response.json["bookingsRecap"][0]
         assert booking_recap["bookingStatus"] == "cancelled"
         assert booking_recap["bookingStatusHistory"] == [

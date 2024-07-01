@@ -1,3 +1,4 @@
+from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.core.token import SecureToken
 from pcapi.core.token.serialization import ConnectAsInternalModel
@@ -22,10 +23,21 @@ class Returns200Test:
             ).dict(),
         )
         # when
-        response = client.with_session_auth(admin.email).get(f"/users/connect-as/{secure_token.token}")
+        client = client.with_session_auth(admin.email)
+        expected_num_queries = 8
+        # session
+        # user
+        # feature
+        # user
+        # INSERT INTO action_history
+        # DELETE FROM user_session
+        # user
+        # INSERT INTO user_session
+        with assert_num_queries(expected_num_queries):
+            response = client.get(f"/users/connect-as/{secure_token.token}")
+            assert response.status_code == 302
 
         # then
-        assert response.status_code == 302
         assert response.location == expected_redirect_link
         # check user is impersonated
         with client.client.session_transaction() as session:
@@ -50,10 +62,22 @@ class Returns200Test:
             ).dict(),
         )
         # when
-        response = client.with_session_auth(admin.email).get(f"/users/connect-as/{secure_token.token}")
+        client = client.with_session_auth(admin.email)
+        expected_num_queries = 8
+        # session
+        # user
+        # feature
+        # user
+        # INSERT INTO action_history
+        # DELETE FROM user_session
+        # user
+        # INSERT INTO user_session
+        with assert_num_queries(expected_num_queries):
+            response = client.get(f"/users/connect-as/{secure_token.token}")
+            assert response.status_code == 302
 
         # then
-        assert response.status_code == 302
+
         assert response.location == expected_redirect_link
         # check user is impersonated
         with client.client.session_transaction() as session:
@@ -88,13 +112,37 @@ class Returns200Test:
         )
 
         # use connect as to connect to a pro
-        response = client.with_session_auth(admin.email).get(f"/users/connect-as/{intermediary_secure_token.token}")
-        assert response.status_code == 302
+        client = client.with_session_auth(admin.email)
+        expected_num_queries = 8
+        # session
+        # user
+        # feature
+        # user
+        # INSERT INTO action_history
+        # DELETE FROM user_session
+        # user
+        # INSERT INTO user_session
+        with assert_num_queries(expected_num_queries):
+            response = client.get(f"/users/connect-as/{intermediary_secure_token.token}")
+            assert response.status_code == 302
+
         assert response.location == expected_redirect_link
 
         # when
-        response = client.with_session_auth(admin.email).get(f"/users/connect-as/{real_secure_token.token}")
-        assert response.status_code == 302
+        client = client.with_session_auth(admin.email)
+        expected_num_queries = 8
+        # session
+        # user
+        # feature
+        # user
+        # INSERT INTO action_history
+        # DELETE FROM user_session
+        # user
+        # INSERT INTO user_session
+        with assert_num_queries(expected_num_queries):
+            response = client.get(f"/users/connect-as/{real_secure_token.token}")
+            assert response.status_code == 302
+
         assert response.location == expected_redirect_link
 
         # then
@@ -125,10 +173,10 @@ class Returns401Test:
             ).dict(),
         )
         # when
-        response = client.get(f"/users/connect-as/{secure_token.token}")
+        with assert_num_queries(0):
+            response = client.get(f"/users/connect-as/{secure_token.token}")
+            assert response.status_code == 401
 
-        # then
-        assert response.status_code == 401
         # check user is not impersonated
         with client.client.session_transaction() as session:
             assert "user_id" not in session
@@ -154,10 +202,12 @@ class Returns403Test:
             ).dict(),
         )
         # when
-        response = client.with_session_auth(admin.email).get(f"/users/connect-as/{secure_token.token}")
+        client = client.with_session_auth(admin.email)
+        with assert_num_queries(3):  #  session + user + feature
+            response = client.get(f"/users/connect-as/{secure_token.token}")
+            assert response.status_code == 403
 
         # then
-        assert response.status_code == 403
         assert response.json == {
             "global": "L'utilisateur doit être connecté avec un compte admin pour pouvoir utiliser cet endpoint",
         }
@@ -175,10 +225,12 @@ class Returns403Test:
         token = "xROk-l708o7G5gWf3BBVlHOviiVPODGDHxCBbCHcycLFI8n3yaCgQcUGH0WYSq3ROXU2DD7P-pyLKNdQjcKNFg"  # ggignore
 
         # when
-        response = client.with_session_auth(admin.email).get(f"/users/connect-as/{token}")
+        client = client.with_session_auth(admin.email)
+        with assert_num_queries(3):  #  session + user + feature
+            response = client.get(f"/users/connect-as/{token}")
+            assert response.status_code == 403
 
         # then
-        assert response.status_code == 403
         assert response.json == {"global": "Le token est invalide"}
         # check user is not impersonated
         with client.client.session_transaction() as session:
@@ -203,10 +255,12 @@ class Returns403Test:
             ).dict(),
         )
         # when
-        response = client.with_session_auth(admin.email).get(f"/users/connect-as/{secure_token.token}")
+        client = client.with_session_auth(admin.email)
+        with assert_num_queries(3):  #  session + user + feature
+            response = client.get(f"/users/connect-as/{secure_token.token}")
+            assert response.status_code == 403
 
         # then
-        assert response.status_code == 403
         assert response.json == {"global": "Le token a été généré pour un autre admin"}
         # check user is not impersonated
         with client.client.session_transaction() as session:
@@ -231,10 +285,12 @@ class Returns403Test:
             ).dict(),
         )
         # when
-        response = client.with_session_auth(admin.email).get(f"/users/connect-as/{secure_token.token}")
+        client = client.with_session_auth(admin.email)
+        with assert_num_queries(4):  #  session + user + feature + user
+            response = client.get(f"/users/connect-as/{secure_token.token}")
+            assert response.status_code == 403
 
         # then
-        assert response.status_code == 403
         assert response.json == {"user": "L'utilisateur est inactif"}
         # check user is not impersonated
         with client.client.session_transaction() as session:
@@ -259,10 +315,12 @@ class Returns403Test:
             ).dict(),
         )
         # when
-        response = client.with_session_auth(admin.email).get(f"/users/connect-as/{secure_token.token}")
+        client = client.with_session_auth(admin.email)
+        with assert_num_queries(4):  #  session + user + feature + user
+            response = client.get(f"/users/connect-as/{secure_token.token}")
+            assert response.status_code == 403
 
         # then
-        assert response.status_code == 403
         assert response.json == {"user": "L'utilisateur est un admin"}
         # check user is not impersonated
         with client.client.session_transaction() as session:
@@ -287,10 +345,12 @@ class Returns403Test:
             ).dict(),
         )
         # when
-        response = client.with_session_auth(admin.email).get(f"/users/connect-as/{secure_token.token}")
+        client = client.with_session_auth(admin.email)
+        with assert_num_queries(4):  #  session + user + feature + user
+            response = client.get(f"/users/connect-as/{secure_token.token}")
+            assert response.status_code == 403
 
         # then
-        assert response.status_code == 403
         assert response.json == {"user": "L'utilisateur est anonyme"}
         # check user is not impersonated
         with client.client.session_transaction() as session:
@@ -315,10 +375,12 @@ class Returns403Test:
             ).dict(),
         )
         # when
-        response = client.with_session_auth(admin.email).get(f"/users/connect-as/{secure_token.token}")
+        client = client.with_session_auth(admin.email)
+        with assert_num_queries(4):  #  session + user + feature + user
+            response = client.get(f"/users/connect-as/{secure_token.token}")
+            assert response.status_code == 403
 
         # then
-        assert response.status_code == 403
         assert response.json == {"user": "L'utilisateur n'est pas un pro"}
         # check user is not impersonated
         with client.client.session_transaction() as session:
@@ -343,10 +405,12 @@ class Returns404Test:
             ).dict(),
         )
         # when
-        response = client.with_session_auth(admin.email).get(f"/users/connect-as/{secure_token.token}")
+        client = client.with_session_auth(admin.email)
+        with assert_num_queries(4):  #  session + user + feature + user
+            response = client.get(f"/users/connect-as/{secure_token.token}")
+            assert response.status_code == 404
 
         # then
-        assert response.status_code == 404
         assert response.json == {"user": "L'utilisateur demandé n'existe pas"}
         # check user is not impersonated
         with client.client.session_transaction() as session:
@@ -371,10 +435,12 @@ class Returns404Test:
             ).dict(),
         )
         # when
-        response = client.with_session_auth(admin.email).get(f"/users/connect-as/{secure_token.token}")
+        client = client.with_session_auth(admin.email)
+        with assert_num_queries(3):  # session + user + feature
+            response = client.get(f"/users/connect-as/{secure_token.token}")
+            assert response.status_code == 404
 
         # then
-        assert response.status_code == 404
         assert response.json == {"global": "La route n'est pas active"}
         # check user is not impersonated
         with client.client.session_transaction() as session:
