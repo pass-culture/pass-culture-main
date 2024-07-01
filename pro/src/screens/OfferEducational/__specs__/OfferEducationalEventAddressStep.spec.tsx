@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -186,19 +186,23 @@ describe('screens | OfferEducational : event address step', () => {
       expect(screen.queryByLabelText('Lieu *')).toHaveValue(venueId)
 
       await userEvent.click(await screen.findByLabelText('Autre'))
+
       expect(screen.getByLabelText('Autre')).toBeChecked()
+
       const interventionArea = await screen.findByLabelText(
         `${INTERVENTION_AREA_LABEL} *`
       )
       await userEvent.click(interventionArea)
-      await waitFor(() => {
-        const checkboxes = screen.getAllByRole('checkbox', { checked: true })
-        expect(
-          checkboxes.filter(
-            (checkbox) => checkbox.getAttribute('name') === 'interventionArea'
-          )
-        ).toHaveLength(2)
-      })
+
+      const interventionAreaContainer = screen.getByTestId(
+        'wrapper-search-interventionArea'
+      )
+
+      const checkedItems = within(interventionAreaContainer).getAllByRole(
+        'checkbox',
+        { checked: true }
+      )
+      expect(checkedItems).toHaveLength(2)
     })
   })
 })
