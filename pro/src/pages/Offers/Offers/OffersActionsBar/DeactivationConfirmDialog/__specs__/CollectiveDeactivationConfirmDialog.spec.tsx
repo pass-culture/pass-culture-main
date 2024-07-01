@@ -1,18 +1,17 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { Audience } from 'core/shared/types'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
-  DeactivationConfirmDialog,
-  DeactivationConfirmDialogProps,
-} from '../DeactivationConfirmDialog'
+  CollectiveDeactivationConfirmDialog,
+  CollectiveDeactivationConfirmDialogProps,
+} from '../CollectiveDeactivationConfirmDialog'
 
 const renderDeactivationConfirmDialog = ({
   ...props
-}: DeactivationConfirmDialogProps) => {
-  renderWithProviders(<DeactivationConfirmDialog {...props} />)
+}: CollectiveDeactivationConfirmDialogProps) => {
+  renderWithProviders(<CollectiveDeactivationConfirmDialog {...props} />)
 }
 
 describe('DeactivationConfirmDialog', () => {
@@ -23,10 +22,9 @@ describe('DeactivationConfirmDialog', () => {
     onCancel: onCancelDialogMock,
     nbSelectedOffers: 0,
     onConfirm: onConfirmDialogMock,
-    audience: Audience.COLLECTIVE,
   }
 
-  it('should called onCancel button onclick', async () => {
+  it('should call onCancel when pressing Annuler button', async () => {
     renderDeactivationConfirmDialog({ ...props, nbSelectedOffers: 1 })
 
     const onCancelButton = screen.getByText('Annuler')
@@ -34,7 +32,7 @@ describe('DeactivationConfirmDialog', () => {
     expect(onCancelDialogMock).toHaveBeenCalled()
   })
 
-  it('should called onConfirm button onclick', async () => {
+  it('should call onConfirm when pressing Masquer button', async () => {
     renderDeactivationConfirmDialog({ ...props, nbSelectedOffers: 1 })
 
     const onConfirmButton = screen.getByText('Masquer')
@@ -53,7 +51,7 @@ describe('DeactivationConfirmDialog', () => {
     ).toBeInTheDocument()
     expect(
       screen.getByText(
-        /Dans ce cas, elle ne sera plus visible par les enseignants sur adage/
+        /Dans ce cas, elle ne sera plus visible par les enseignants sur ADAGE/
       )
     ).toBeInTheDocument()
   })
@@ -69,7 +67,7 @@ describe('DeactivationConfirmDialog', () => {
     ).toBeInTheDocument()
     expect(
       screen.getByText(
-        /Dans ce cas, elles ne seront plus visibles par les enseignants sur adage./
+        /Dans ce cas, elles ne seront plus visibles par les enseignants sur ADAGE./
       )
     ).toBeInTheDocument()
   })
