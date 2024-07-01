@@ -64,7 +64,6 @@ def has_invoice(query: finance_serialize.HasInvoiceQueryModel) -> finance_serial
         "Content-Type": "application/pdf; charset=utf-8;",
         "Content-Disposition": "attachment; filename=justificatifs_de_remboursement.pdf",
     },
-    flatten=True,
 )
 def get_combined_invoices(query: finance_serialize.CombinedInvoiceListModel) -> bytes:
     invoices = finance_repository.get_invoices_by_references(query.invoiceReferences)

@@ -7,7 +7,6 @@ import typing
 from typing import Callable
 from typing import Iterable
 
-from pydantic.v1 import validator
 from pydantic.v1.main import BaseModel
 import pytz
 
@@ -272,9 +271,3 @@ class ReimbursementCsvQueryModel(BaseModel):
 
 class ReimbursementCsvByInvoicesModel(BaseModel):
     invoicesReferences: list[str]
-
-    @validator("invoicesReferences", pre=True)
-    def ensure_invoices_references_is_list(cls, v: list[str] | str) -> list[str]:
-        if isinstance(v, str):
-            return [v]
-        return v
