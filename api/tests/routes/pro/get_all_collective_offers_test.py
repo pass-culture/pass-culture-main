@@ -17,6 +17,13 @@ random.seed(12)
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
+    # 1.session
+    # 2. user
+    # 3. collective_offer
+    # 4. collective_offer_template
+    # 5. national_program
+    expected_num_queries = 5
+
     def test_one_simple_collective_offer(self, client):
         # Given
         user = users_factories.UserFactory()
@@ -31,11 +38,13 @@ class Returns200Test:
         educational_factories.CollectiveStockFactory(collectiveOffer=offer, stockId=1)
 
         # When
-        response = client.with_session_auth(user.email).get("/collective/offers")
+        client = client.with_session_auth(user.email)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get("/collective/offers")
+            assert response.status_code == 200
 
         # Then
         response_json = response.json
-        assert response.status_code == 200
         assert isinstance(response_json, list)
         assert len(response_json) == 1
         assert response_json[0]["venue"]["id"] == venue.id
@@ -63,12 +72,13 @@ class Returns200Test:
         offerer_factories.UserOffererFactory(user=user, offerer=offer.venue.managingOfferer)
 
         # When
-
-        response = client.with_session_auth(email=user.email).get("/collective/offers")
+        client = client.with_session_auth(email=user.email)
+        with assert_num_queries(self.expected_num_queries - 1):  # - national_program
+            response = client.get("/collective/offers")
+            assert response.status_code == 200
 
         # Then
         response_json = response.json
-        assert response.status_code == 200
         assert isinstance(response_json, list)
         assert len(response_json) == 1
         assert response_json[0]["isActive"] is False
@@ -87,11 +97,13 @@ class Returns200Test:
         )
 
         # When
-        response = client.with_session_auth(user.email).get("/collective/offers?status=INACTIVE")
+        client = client.with_session_auth(user.email)
+        with assert_num_queries(self.expected_num_queries - 1):  # - national_program
+            response = client.get("/collective/offers?status=INACTIVE")
+            assert response.status_code == 200
 
         # Then
         response_json = response.json
-        assert response.status_code == 200
         assert len(response_json) == 1
         assert response_json[0]["status"] == "INACTIVE"
         assert response_json[0]["id"] == stock.collectiveOffer.id
@@ -107,10 +119,10 @@ class Returns200Test:
         educational_factories.CollectiveOfferFactory(venue=venue, offerId=1, institution=institution, provider=provider)
 
         # When
-        response = client.with_session_auth(user.email).get("/collective/offers")
-
-        # Then
-        assert response.status_code == 200
+        client = client.with_session_auth(user.email)
+        with assert_num_queries(self.expected_num_queries - 1):  # - national_program
+            response = client.get("/collective/offers")
+            assert response.status_code == 200
 
     def test_one_simple_collective_offer_template(self, client):
         # Given
@@ -121,11 +133,13 @@ class Returns200Test:
         offer = educational_factories.CollectiveOfferTemplateFactory(venue=venue, offerId=1)
 
         # When
-        response = client.with_session_auth(user.email).get("/collective/offers")
+        client = client.with_session_auth(user.email)
+        with assert_num_queries(self.expected_num_queries - 1):  # - national_program
+            response = client.get("/collective/offers")
+            assert response.status_code == 200
 
         # Then
         response_json = response.json
-        assert response.status_code == 200
         assert isinstance(response_json, list)
         assert len(response_json) == 1
         assert response_json[0]["venue"]["id"] == venue.id
@@ -160,11 +174,13 @@ class Returns200Test:
         educational_factories.CollectiveStockFactory(collectiveOffer=offer, stockId=1)
 
         # When
-        response = client.with_session_auth(user.email).get("/collective/offers")
+        client = client.with_session_auth(user.email)
+        with assert_num_queries(self.expected_num_queries - 1):  # - national_program
+            response = client.get("/collective/offers")
+            assert response.status_code == 200
 
         # Then
         response_json = response.json
-        assert response.status_code == 200
         assert isinstance(response_json, list)
         assert len(response_json) == 2
         assert response_json[0]["venue"]["id"] == venue.id
@@ -194,11 +210,12 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth(email=user.email)
-        response = client.get("/collective/offers")
+        with assert_num_queries(self.expected_num_queries - 1):  # - national_program
+            response = client.get("/collective/offers")
+            assert response.status_code == 200
 
         # Then
         response_json = response.json
-        assert response.status_code == 200
         assert isinstance(response_json, list)
         assert len(response_json) == 1
         assert response_json[0]["templateId"] == str(template.id)
@@ -226,11 +243,13 @@ class Returns200Test:
             offers.append(offer)
 
         # When
-        response = client.with_session_auth(user.email).get("/collective/offers")
+        client = client.with_session_auth(user.email)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.with_session_auth(user.email).get("/collective/offers")
+            assert response.status_code == 200
 
         # Then
         response_json = response.json
-        assert response.status_code == 200
         assert isinstance(response_json, list)
         assert len(response_json) == 501
         for i in range(501):
@@ -251,11 +270,13 @@ class Returns200Test:
         educational_factories.CollectiveStockFactory(collectiveOffer=offer, stockId=1)
 
         # When
-        response = client.with_session_auth(user.email).get("/collective/offers")
+        client = client.with_session_auth(user.email)
+        with assert_num_queries(self.expected_num_queries - 1):  # - national_program
+            response = client.get("/collective/offers")
+            assert response.status_code == 200
 
         # Then
         response_json = response.json
-        assert response.status_code == 200
         assert isinstance(response_json, list)
         assert len(response_json) == 0
 
@@ -288,13 +309,13 @@ class Returns200Test:
         )
 
         # When
-        response = client.with_session_auth(user.email).get(
-            "/collective/offers?periodBeginningDate=2022-10-10&periodEndingDate=2022-10-11"
-        )
+        client = client.with_session_auth(user.email)
+        with assert_num_queries(self.expected_num_queries - 1):  # - national_program
+            response = client.get("/collective/offers?periodBeginningDate=2022-10-10&periodEndingDate=2022-10-11")
+            assert response.status_code == 200
 
         # Then
         response_json = response.json
-        assert response.status_code == 200
         assert isinstance(response_json, list)
         assert len(response_json) == 1
         assert response_json[0]["id"] == offer.id
@@ -372,11 +393,13 @@ class Returns200Test:
         educational_factories.CollectiveOfferTemplateFactory(venue=venue, offerId=1)
 
         # When
-        response = client.with_session_auth(user.email).get("/collective/offers?collectiveOfferType=offer")
+        client = client.with_session_auth(user.email)
+        with assert_num_queries(3):  # user + session + collective_offers
+            response = client.get("/collective/offers?collectiveOfferType=offer")
+            assert response.status_code == 200
 
         # Then
         response_json = response.json
-        assert response.status_code == 200
         assert isinstance(response_json, list)
         assert len(response_json) == 1
         assert response_json[0]["venue"]["id"] == venue.id
@@ -399,11 +422,13 @@ class Returns200Test:
         educational_factories.CollectiveStockFactory(collectiveOffer=offer, stockId=1)
 
         # When
-        response = client.with_session_auth(user.email).get("/collective/offers?collectiveOfferType=template")
+        client = client.with_session_auth(user.email)
+        with assert_num_queries(3):  # session + user + collective_offer_template
+            response = client.get("/collective/offers?collectiveOfferType=template")
+            assert response.status_code == 200
 
         # Then
         response_json = response.json
-        assert response.status_code == 200
         assert isinstance(response_json, list)
         assert len(response_json) == 1
         assert response_json[0]["venue"]["id"] == venue.id
@@ -423,10 +448,12 @@ class Returns200Test:
         offer = educational_factories.CollectiveOfferFactory(venue=venue, subcategoryId="")
         educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
-        response = client.with_session_auth(user.email).get("/collective/offers")
-        response_json = response.json
+        client = client.with_session_auth(user.email)
+        with assert_num_queries(self.expected_num_queries - 1):  # - national_program
+            response = client.get("/collective/offers")
+            assert response.status_code == 200
 
-        assert response.status_code == 200
+        response_json = response.json
         assert isinstance(response_json, list)
         assert len(response_json) == 1
         assert response_json[0]["subcategoryId"] is None
@@ -441,10 +468,10 @@ class Return400Test:
         offerer_factories.UserOffererFactory(user=user, offerer=offerer)
 
         # When
-        response = client.with_session_auth(user.email).get("/collective/offers?status=NOT_A_VALID_STATUS")
-
-        # Then
-        assert response.status_code == 400
+        client = client.with_session_auth(user.email)
+        with assert_num_queries(2):  # user + session
+            response = client.get("/collective/offers?status=NOT_A_VALID_STATUS")
+            assert response.status_code == 400
 
         msg = response.json["status"][0]
         assert msg.startswith("value is not a valid enumeration member")
