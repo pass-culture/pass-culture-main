@@ -1,5 +1,3 @@
-import React from 'react'
-
 import { DialogBox } from 'components/DialogBox/DialogBox'
 import { Button } from 'ui-kit/Button/Button'
 
@@ -7,16 +5,18 @@ import topImage from './assets/new-banner-beta.svg'
 import styles from './WelcomeToTheNewBetaBanner.module.scss'
 
 type WelcomeToTheNewBetaBannerProps = {
-  setIsNewNavEnabled: (state: boolean) => void
+  onDismiss(): void
+  onContinue(): void
 }
 export const WelcomeToTheNewBetaBanner = ({
-  setIsNewNavEnabled,
+  onDismiss,
+  onContinue,
 }: WelcomeToTheNewBetaBannerProps): JSX.Element => {
   return (
     <DialogBox
       labelledBy=""
       hasCloseButton={true}
-      onDismiss={() => setIsNewNavEnabled(false)}
+      onDismiss={onDismiss}
       extraClassNames={styles['banner']}
       closeButtonClassName={styles['banner-close']}
     >
@@ -36,7 +36,7 @@ export const WelcomeToTheNewBetaBanner = ({
         avis à n’importe quel moment depuis la bannière prévue à cet effet.
       </p>
       <div className={styles['banner-button']}>
-        <Button onClick={() => setIsNewNavEnabled(false)}>Découvrir</Button>
+        <Button onClick={onContinue}>Découvrir</Button>
       </div>
     </DialogBox>
   )

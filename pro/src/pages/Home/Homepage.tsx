@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useSearchParams } from 'react-router-dom'
 import useSWR from 'swr'
@@ -20,6 +20,7 @@ import { SAVED_OFFERER_ID_KEY } from 'core/shared/constants'
 import { useCurrentUser } from 'hooks/useCurrentUser'
 import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import { useNotification } from 'hooks/useNotification'
+import { useWelcomeToTheNewBetaBanner } from 'hooks/useWelcomeToTheNewBetaBanner'
 import strokeCloseIcon from 'icons/stroke-close.svg'
 import { WelcomeToTheNewBetaBanner } from 'pages/Home/WelcomeToTheNewBetaBanner/WelcomeToTheNewBetaBanner'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
@@ -47,6 +48,7 @@ import {
 } from './venueUtils'
 
 const HAS_CLOSED_BETA_TEST_BANNER = 'HAS_CLOSED_BETA_TEST_BANNER'
+const HAS_CLOSED_WELCOME_BETA_BANNER = 'HAS_CLOSED_WELCOME_BETA_BANNER'
 
 export const Homepage = (): JSX.Element => {
   const dispatch = useDispatch()
@@ -64,7 +66,16 @@ export const Homepage = (): JSX.Element => {
     new Date(currentUser.navState.eligibilityDate) <=
       new Date(formatBrowserTimezonedDateAsUTC(new Date()))
 
-  const [isNewNavEnabled, setIsNewNavEnabled] = useState(false)
+  const showWelcomeToTheNewBetaBanner = useWelcomeToTheNewBetaBanner()
+
+  const userClosedWelcomeToTheNewBetaBanner = localStorageAvailable()
+    ? localStorage.getItem(HAS_CLOSED_WELCOME_BETA_BANNER)
+    : true
+
+  const [isNewNavEnabled, setIsNewNavEnabled] = useState(
+    !userClosedWelcomeToTheNewBetaBanner && showWelcomeToTheNewBetaBanner
+  )
+
   const [seesNewNavAvailableBanner, setSeesNewNavAvailableBanner] = useState(
     userClosedBetaTestBanner && !hasNewSideBarNavigation && isEligibleToNewNav
   )
@@ -167,6 +178,12 @@ export const Homepage = (): JSX.Element => {
     setSeesNewNavAvailableBanner(false)
   }
 
+  function hideWelcomeNPPModal() {
+    localStorageAvailable() &&
+      localStorage.setItem(HAS_CLOSED_WELCOME_BETA_BANNER, 'true')
+    setIsNewNavEnabled(false)
+  }
+
   return (
     <AppLayout>
       <h1 className={styles['title']}>
@@ -256,7 +273,10 @@ export const Homepage = (): JSX.Element => {
 
       <TutorialDialog />
       {isNewNavEnabled && hasNewSideBarNavigation && (
-        <WelcomeToTheNewBetaBanner setIsNewNavEnabled={setIsNewNavEnabled} />
+        <WelcomeToTheNewBetaBanner
+          onDismiss={hideWelcomeNPPModal}
+          onContinue={hideWelcomeNPPModal}
+        />
       )}
     </AppLayout>
   )
