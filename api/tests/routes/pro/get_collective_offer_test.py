@@ -12,6 +12,7 @@ import pcapi.core.educational.models as educational_models
 from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
+from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 
 
@@ -24,9 +25,10 @@ class Returns200Test:
         client = client.with_session_auth(email="user@example.com")
 
         dst = url_for("Private API.get_collective_offers", status=CollectiveOfferDisplayedStatus.PREBOOKED.value)
-        response = client.get(dst)
 
-        assert response.status_code == 200
+        with assert_num_queries(4):  #  session + user + collective_offer + collective_offer_template
+            response = client.get(dst)
+            assert response.status_code == 200
 
         assert len(response.json) == 1
         assert response.json[0]["id"] == offer.id
@@ -50,11 +52,23 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth(email="user@example.com")
-        response = client.get(f"/collective/offers/{offer.id}")
+        expected_num_queries = 11
+        # collective_offer
+        # session
+        # user
+        # offerer
+        # collective_stock
+        # national_program
+        # collective_booking
+        # max collective_booking
+        # educational_redactor
+        # provider
+        with assert_num_queries(expected_num_queries):
+            response = client.get(f"/collective/offers/{offer.id}")
+            assert response.status_code == 200
 
         # Then
         response_json = response.json
-        assert response.status_code == 200
         assert "iban" not in response_json["venue"]
         assert "bic" not in response_json["venue"]
         assert response_json["venue"]["imgUrl"]
@@ -90,11 +104,22 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth(email="user@example.com")
-        response = client.get(f"/collective/offers/{offer.id}")
+        expected_num_queries = 9
+        # collective_offer
+        # session
+        # user
+        # offerer
+        # user_offerer
+        # collective_offer
+        # google_places_info
+        # collective_booking
+        # max collective_booking
+        with assert_num_queries(expected_num_queries):
+            response = client.get(f"/collective/offers/{offer.id}")
+            assert response.status_code == 200
 
         # Then
         response_json = response.json
-        assert response.status_code == 200
         assert response_json["collectiveStock"]["isBooked"] is True
         assert response_json["isCancellable"] is False
         assert response_json["isVisibilityEditable"] is False
@@ -108,11 +133,22 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth(email="user@example.com")
-        response = client.get(f"/collective/offers/{offer.id}")
+        expected_num_queries = 9
+        # collective_offer
+        # session
+        # user
+        # offerer
+        # user_offerer
+        # collective_offer
+        # google_places_info
+        # collective_booking
+        # max collective_booking
+        with assert_num_queries(expected_num_queries):
+            response = client.get(f"/collective/offers/{offer.id}")
+            assert response.status_code == 200
 
         # Then
         response_json = response.json
-        assert response.status_code == 200
         assert response_json["collectiveStock"]["isBooked"] is True
         assert response_json["isCancellable"] is True
         assert response_json["isVisibilityEditable"] is False
@@ -127,11 +163,22 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth(email="user@example.com")
-        response = client.get(f"/collective/offers/{offer.id}")
+        expected_num_queries = 9
+        # collective_offer
+        # session
+        # user
+        # offerer
+        # user_offerer
+        # collective_offer
+        # google_places_info
+        # collective_booking
+        # max collective_booking
+        with assert_num_queries(expected_num_queries):
+            response = client.get(f"/collective/offers/{offer.id}")
+            assert response.status_code == 200
 
         # Then
         response_json = response.json
-        assert response.status_code == 200
         assert response_json["collectiveStock"]["isBooked"] is True
         assert response_json["isCancellable"] is True
         assert response_json["isVisibilityEditable"] is False
@@ -163,11 +210,22 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth(email="user@example.com")
-        response = client.get(f"/collective/offers/{offer.id}")
+        expected_num_queries = 9
+        # collective_offer
+        # session
+        # user
+        # offerer
+        # user_offerer
+        # collective_offer
+        # google_places_info
+        # collective_booking
+        # max collective_booking
+        with assert_num_queries(expected_num_queries):
+            response = client.get(f"/collective/offers/{offer.id}")
+            assert response.status_code == 200
 
         # Then
         response_json = response.json
-        assert response.status_code == 200
         assert response_json["lastBookingId"] == booking.id
         assert response_json["lastBookingStatus"] == booking.status.value
 
@@ -185,10 +243,22 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth(email="user@example.com")
-        response = client.get(f"/collective/offers/{offer.id}")
+        expected_num_queries = 10
+        # collective_offer
+        # session
+        # user
+        # offerer
+        # user_offerer
+        # collective_offer
+        # google_places_info
+        # collective_booking
+        # max collective_booking
+        # educational_redactor
+        with assert_num_queries(expected_num_queries):
+            response = client.get(f"/collective/offers/{offer.id}")
+            assert response.status_code == 200
 
         # Then
-        assert response.status_code == 200
         assert response.json["status"] == "INACTIVE"
         assert response.json["isActive"] is False
 
@@ -202,9 +272,20 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         client = client.with_session_auth(email="user@example.com")
-        response = client.get(f"/collective/offers/{offer.id}")
+        expected_num_queries = 9
+        # collective_offer
+        # session
+        # user
+        # offerer
+        # user_offerer
+        # collective_offer
+        # google_places_info
+        # collective_booking
+        # max collective_booking
+        with assert_num_queries(expected_num_queries):
+            response = client.get(f"/collective/offers/{offer.id}")
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json["offerVenue"] == {
             "venueId": None,
             "addressType": "offererVenue",
@@ -224,9 +305,19 @@ class Returns200Test:
         educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
         dst = url_for("Private API.get_collective_offer", offer_id=offer.id)
-        response = client.with_session_auth(user.email).get(dst)
-
-        assert response.status_code == 200
+        client = client.with_session_auth(user.email)
+        expected_num_queries = 8
+        # session
+        # user
+        # offerer
+        # user_offerer
+        # collective_offer
+        # google_places_info
+        # collective_booking
+        # max collective_booking
+        with assert_num_queries(expected_num_queries):
+            response = client.get(dst)
+            assert response.status_code == 200
         assert response.json["subcategoryId"] is None
 
     def test_dates_on_offer(self, client):
@@ -264,10 +355,15 @@ class Returns403Test:
 
         # When
         client = client.with_session_auth(email=pro_user.email)
-        response = client.get(f"/collective/offers/{offer.id}")
-
-        # Then
-        assert response.status_code == 403
+        expected_num_queries = 5
+        # collective_offer
+        # session
+        # user
+        # offerer
+        # user_offerer
+        with assert_num_queries(expected_num_queries):
+            response = client.get(f"/collective/offers/{offer.id}")
+            assert response.status_code == 403
 
 
 @pytest.mark.usefixtures("db_session")
@@ -341,9 +437,16 @@ class GetCollectiveOfferRequestTest:
             offer_id=request.collectiveOfferTemplateId,
             request_id=request.id,
         )
-        response = client.with_session_auth(email=pro_user.email).get(dst)
 
-        assert response.status_code == 403
+        client = client.with_session_auth(email=pro_user.email)
+        expected_num_queries = 4
+        # session
+        # user
+        # collective_offer_request
+        # user_offerer
+        with assert_num_queries(expected_num_queries):
+            response = client.get(dst)
+            assert response.status_code == 403
 
     def test_offer_request_does_not_exist(self, client):
         pro_user = users_factories.ProFactory()
@@ -358,6 +461,7 @@ class GetCollectiveOfferRequestTest:
             request_id=request.id + 1,
         )
 
-        response = client.with_session_auth(email=pro_user.email).get(dst)
-
-        assert response.status_code == 404
+        client = client.with_session_auth(email=pro_user.email)
+        with assert_num_queries(3):  #  session + user + collective_offer_request
+            response = client.get(dst)
+            assert response.status_code == 404

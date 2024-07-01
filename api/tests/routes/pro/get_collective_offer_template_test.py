@@ -3,6 +3,7 @@ import pytest
 from pcapi.core import testing
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.date import format_into_utc_date
 
@@ -17,11 +18,21 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth(email="user@example.com")
-        response = client.get(f"/collective/offers-template/{offer.id}")
+        expected_num_queries = 8
+        # collective_offer_template
+        # session
+        # user
+        # offerer
+        # user_offerer
+        # collective_offer_template
+        # google_places_info
+        # national_program
+        with assert_num_queries(expected_num_queries):
+            response = client.get(f"/collective/offers-template/{offer.id}")
+            assert response.status_code == 200
 
         # Then
         response_json = response.json
-        assert response.status_code == 200
         assert "iban" not in response_json["venue"]
         assert "bic" not in response_json["venue"]
         assert "iban" not in response_json["venue"]["managingOfferer"]
@@ -63,7 +74,12 @@ class Returns403Test:
 
         # When
         client = client.with_session_auth(email=pro_user.email)
-        response = client.get(f"/collective/offers-template/{offer.id}")
-
-        # Then
-        assert response.status_code == 403
+        expected_num_queries = 5
+        # collective_offer_template
+        # session
+        # user
+        # offerer
+        # user_offerer
+        with assert_num_queries(expected_num_queries):
+            response = client.get(f"/collective/offers-template/{offer.id}")
+            assert response.status_code == 403

@@ -1,5 +1,6 @@
 import pytest
 
+from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 
 
@@ -13,13 +14,13 @@ class Returns200Test:
         user = users_factories.UserFactory()
 
         # When
-        response = client.with_session_auth(email=user.email).get(
-            f"/collective/offers/redactors?uai={VALID_UAI}&candidate=sklodowska"
-        )
+        client = client.with_session_auth(email=user.email)
+        with assert_num_queries(2):  # user + session
+            response = client.get(f"/collective/offers/redactors?uai={VALID_UAI}&candidate=sklodowska")
+            assert response.status_code == 200
 
         # Then
         response_json = response.json
-        assert response.status_code == 200
         assert response_json == [
             {
                 "gender": "Mme.",
@@ -34,13 +35,13 @@ class Returns200Test:
         user = users_factories.UserFactory()
 
         # When
-        response = client.with_session_auth(email=user.email).get(
-            f"/collective/offers/redactors?uai={VALID_UAI}&candidate=HEN"
-        )
+        client = client.with_session_auth(email=user.email)
+        with assert_num_queries(2):  # user + session
+            response = client.get(f"/collective/offers/redactors?uai={VALID_UAI}&candidate=HEN")
+            assert response.status_code == 200
 
         # Then
         response_json = response.json
-        assert response.status_code == 200
         assert response_json == [
             {
                 "gender": "M.",
@@ -61,13 +62,13 @@ class Returns200Test:
         user = users_factories.UserFactory()
 
         # When
-        response = client.with_session_auth(email=user.email).get(
-            f"/collective/offers/redactors?uai={VALID_UAI}&candidate=pointcaré"
-        )
+        client = client.with_session_auth(email=user.email)
+        with assert_num_queries(2):  # session + user
+            response = client.get(f"/collective/offers/redactors?uai={VALID_UAI}&candidate=pointcaré")
+            assert response.status_code == 200
 
         # Then
         response_json = response.json
-        assert response.status_code == 200
         assert response_json == [
             {
                 "gender": "M.",
@@ -82,13 +83,13 @@ class Returns200Test:
         user = users_factories.UserFactory()
 
         # When
-        response = client.with_session_auth(email=user.email).get(
-            f"/collective/offers/redactors?uai={VALID_UAI}&candidate=E%20H"
-        )
+        client = client.with_session_auth(email=user.email)
+        with assert_num_queries(2):  # session + user
+            response = client.get(f"/collective/offers/redactors?uai={VALID_UAI}&candidate=E%20H")
+            assert response.status_code == 200
 
         # Then
         response_json = response.json
-        assert response.status_code == 200
         assert response_json == [
             {
                 "gender": "M.",
@@ -103,13 +104,13 @@ class Returns200Test:
         user = users_factories.UserFactory()
 
         # When
-        response = client.with_session_auth(email=user.email).get(
-            f"/collective/offers/redactors?uai={VALID_UAI}&candidate=Becquerel"
-        )
+        client = client.with_session_auth(email=user.email)
+        with assert_num_queries(2):  #  session + user
+            response = client.get(f"/collective/offers/redactors?uai={VALID_UAI}&candidate=Becquerel")
+            assert response.status_code == 200
 
         # Then
         response_json = response.json
-        assert response.status_code == 200
         assert response_json == []
 
 
@@ -120,12 +121,10 @@ class Returns404Test:
         user = users_factories.UserFactory()
 
         # When
-        response = client.with_session_auth(email=user.email).get(
-            "/collective/offers/redactors?uai=NO_UAI&candidate=sklodowska"
-        )
-
-        # Then
-        assert response.status_code == 404
+        client = client.with_session_auth(email=user.email)
+        with assert_num_queries(2):  #  session + user
+            response = client.get("/collective/offers/redactors?uai=NO_UAI&candidate=sklodowska")
+            assert response.status_code == 404
 
 
 @pytest.mark.usefixtures("db_session")
@@ -135,31 +134,26 @@ class Returns400Test:
         user = users_factories.UserFactory()
 
         # When
-        response = client.with_session_auth(email=user.email).get(
-            "/collective/offers/redactors?uai=X&candidate=sklodowska"
-        )
-
-        # Then
-        assert response.status_code == 400
+        client = client.with_session_auth(email=user.email)
+        with assert_num_queries(2):  #  session + user
+            response = client.get("/collective/offers/redactors?uai=X&candidate=sklodowska")
+            assert response.status_code == 400
 
     def test_candidate_too_short(self, client):
         # Given
         user = users_factories.UserFactory()
 
         # When
-        response = client.with_session_auth(email=user.email).get(
-            f"/collective/offers/redactors?uai={VALID_UAI}&candidate=sk"
-        )
-
-        # Then
-        assert response.status_code == 400
+        client = client.with_session_auth(email=user.email)
+        with assert_num_queries(2):  #  session + user
+            response = client.get(f"/collective/offers/redactors?uai={VALID_UAI}&candidate=sk")
+            assert response.status_code == 400
 
 
 @pytest.mark.usefixtures("db_session")
 class Returns401Test:
     def test_user_not_logged_in(self, client):
         # When
-        response = client.get("/collective/offers/redactors?uai=X&candidate=sklodowska")
-
-        # Then
-        assert response.status_code == 401
+        with assert_num_queries(0):
+            response = client.get("/collective/offers/redactors?uai=X&candidate=sklodowska")
+            assert response.status_code == 401

@@ -4,6 +4,7 @@ from pcapi.core import testing
 import pcapi.core.finance.factories as finances_factories
 import pcapi.core.finance.models as finances_models
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 
 
@@ -19,9 +20,13 @@ def test_get_bank_accounts_by_admin(client):
     admin = users_factories.AdminFactory()
 
     client = client.with_session_auth(admin.email)
-    response = client.get("/finance/bank-accounts")
+    # fetch session
+    # fetch user
+    # fetch bank_account
+    with assert_num_queries(3):
+        response = client.get("/finance/bank-accounts")
+        assert response.status_code == 200
 
-    assert response.status_code == 200
     bank_accounts = response.json
     assert len(bank_accounts) == 2
     assert bank_accounts[0] == {"id": bank_account_a.id, "label": "Bank Account A"}
