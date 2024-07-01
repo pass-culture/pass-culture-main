@@ -3,8 +3,6 @@ A client for the subcategory suggestion API.
 Documentation of the API: https://compliance.passculture.team/latest/docs#
 """
 
-from typing import TypedDict
-
 from pcapi import settings
 from pcapi.core.auth import api as auth_api
 from pcapi.core.offerers.models import Venue
@@ -17,13 +15,6 @@ SUBCATEGORY_SUGGESTION_TIMEOUT_SECONDS = 3
 
 class SubcategorySuggestionApiException(Exception):
     pass
-
-
-class PostSubcategorySuggestionBodyModel(TypedDict):
-    offer_name: str
-    offer_description: str | None
-    venue_type_label: str | None
-    offerer_name: str | None
 
 
 class SubcategoryProbability(BaseModel):
@@ -49,12 +40,12 @@ def get_suggested_categories(
         "Authorization": f"Bearer {id_token}",
     }
 
-    data = PostSubcategorySuggestionBodyModel(
-        offer_name=offer_name,
-        offer_description=offer_description,
-        venue_type_label=venue.venueTypeCode.value if venue else None,
-        offerer_name=venue.managingOfferer.name if venue else None,
-    )
+    data = {
+        "offer_name": offer_name,
+        "offer_description": offer_description if offer_description else "",
+        "venue_type_label": venue.venueTypeCode.value if venue else "",
+        "offerer_name": venue.managingOfferer.name if venue else "",
+    }
     response = requests.post(url, headers=headers, json=data, timeout=SUBCATEGORY_SUGGESTION_TIMEOUT_SECONDS)
 
     if response.status_code != 200:
