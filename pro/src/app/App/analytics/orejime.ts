@@ -1,10 +1,11 @@
 // @ts-expect-error no types for this lib yet
 import * as Orejime from 'orejime'
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { v4 as uuidv4 } from 'uuid'
 
 import { localStorageAvailable } from 'utils/localStorageAvailable'
+import { sendSentryCustomError } from 'utils/sendSentryCustomError'
 
 import {
   Consents,
@@ -30,30 +31,38 @@ export const useOrejime = () => {
           localStorage.setItem(LOCAL_STORAGE_DEVICE_ID_KEY, uuidv4())
         }
 
-        orejime = Orejime.init(orejimeConfig)
-
-        // Set the consent on consent change
-        orejime.internals.manager.watch({
-          update: ({
-            consents,
-          }: {
-            consents: { [key in Consents]: boolean }
-          }) => {
-            setConsentedToFirebase(consents[Consents.FIREBASE])
-            setConsentedToBeamer(consents[Consents.BEAMER])
-          },
-        })
-        setConsentedToFirebase(
-          orejime.internals.manager.consents[Consents.FIREBASE]
-        )
-        setConsentedToBeamer(
-          orejime.internals.manager.consents[Consents.BEAMER]
-        )
-
-        // We force the banner to be displayed again if the cookie was deleted somehow
-        if (!document.cookie.includes('orejime')) {
-          orejime.internals.manager.confirmed = false
+        try {
           orejime = Orejime.init(orejimeConfig)
+        } catch (e) {
+          sendSentryCustomError(e)
+          setConsentedToFirebase(false)
+          setConsentedToBeamer(false)
+        }
+
+        if (orejime !== null) {
+          // Set the consent on consent change
+          orejime.internals.manager.watch({
+            update: ({
+              consents,
+            }: {
+              consents: { [key in Consents]: boolean }
+            }) => {
+              setConsentedToFirebase(consents[Consents.FIREBASE])
+              setConsentedToBeamer(consents[Consents.BEAMER])
+            },
+          })
+          setConsentedToFirebase(
+            orejime.internals.manager.consents[Consents.FIREBASE]
+          )
+          setConsentedToBeamer(
+            orejime.internals.manager.consents[Consents.BEAMER]
+          )
+
+          // We force the banner to be displayed again if the cookie was deleted somehow
+          if (!document.cookie.includes('orejime')) {
+            orejime.internals.manager.confirmed = false
+            orejime = Orejime.init(orejimeConfig)
+          }
         }
       })
     } else {
