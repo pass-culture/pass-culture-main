@@ -69,16 +69,7 @@ When('I specify an offerer with a SIRET', () => {
   )
 })
 
-When('I add details to offerer', () => {
-  cy.url().should('contain', '/parcours-inscription/identification')
-  cy.findByLabelText('Nom public').type('First Offerer')
-  cy.intercept({
-    method: 'GET',
-    url: '/venue-types',
-  }).as('venue-types')
-  cy.findByText('Étape suivante').click()
-  cy.wait('@venue-types').its('response.statusCode').should('eq', 200)
-})
+
 
 When('I fill activity form without main activity', () => {
   cy.url().should('contain', '/parcours-inscription/activite')
@@ -116,7 +107,7 @@ When('I add a new offerer', () => {
   cy.wait('@search5Address')
 })
 
-When('I fill identification step', () => {
+When('I fill identification form with a new address', () => {
   cy.url().should('contain', '/parcours-inscription/identification')
   cy.findByLabelText('Adresse postale *').clear()
   cy.findByLabelText('Adresse postale *').invoke(
@@ -131,6 +122,17 @@ When('I fill identification step', () => {
   cy.wait('@search5Address')
   cy.findByRole('option', { name: '89 Rue la Boétie 75008 Paris' }).click()
 
+  cy.intercept({
+    method: 'GET',
+    url: '/venue-types',
+  }).as('venue-types')
+  cy.findByText('Étape suivante').click()
+  cy.wait('@venue-types').its('response.statusCode').should('eq', 200)
+})
+
+When('I fill identification form with a public name', () => {
+  cy.url().should('contain', '/parcours-inscription/identification')
+  cy.findByLabelText('Nom public').type('First Offerer')
   cy.intercept({
     method: 'GET',
     url: '/venue-types',
