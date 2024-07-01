@@ -1,4 +1,5 @@
 from datetime import datetime
+from functools import partial
 import typing
 
 from flask import flash
@@ -25,6 +26,9 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.repository import atomic
+from pcapi.repository import mark_transaction_as_invalid
+from pcapi.repository import on_commit
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice import utils
@@ -136,6 +140,7 @@ def _get_incidents(
 
 
 @finance_incidents_blueprint.route("", methods=["GET"])
+@atomic()
 def list_incidents() -> utils.BackofficeResponse:
     search_form = forms.GetIncidentsSearchForm(formdata=utils.get_query_params())
 
@@ -153,6 +158,7 @@ def list_incidents() -> utils.BackofficeResponse:
 
 @finance_incidents_blueprint.route("/<int:finance_incident_id>/cancel", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
+@atomic()
 def get_finance_incident_cancellation_form(finance_incident_id: int) -> utils.BackofficeResponse:
     form = offerer_forms.CommentForm()
     return render_template(
@@ -168,6 +174,7 @@ def get_finance_incident_cancellation_form(finance_incident_id: int) -> utils.Ba
 
 
 @finance_incidents_blueprint.route("/<int:finance_incident_id>/cancel", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def cancel_finance_incident(finance_incident_id: int) -> utils.BackofficeResponse:
     incident: finance_models.FinanceIncident = _get_incident(finance_incident_id)
@@ -183,8 +190,10 @@ def cancel_finance_incident(finance_incident_id: int) -> utils.BackofficeRespons
             author=current_user,
         )
     except finance_exceptions.FinanceIncidentAlreadyCancelled:
+        mark_transaction_as_invalid()
         flash("L'incident a déjà été annulé", "warning")
     except finance_exceptions.FinanceIncidentAlreadyValidated:
+        mark_transaction_as_invalid()
         flash("Impossible d'annuler un incident déjà validé", "warning")
     else:
         flash("L'incident a été annulé", "success")
@@ -193,6 +202,7 @@ def cancel_finance_incident(finance_incident_id: int) -> utils.BackofficeRespons
 
 
 @finance_incidents_blueprint.route("/<int:finance_incident_id>", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.READ_INCIDENTS)
 def get_incident(finance_incident_id: int) -> utils.BackofficeResponse:
     incident = finance_models.FinanceIncident.query.filter_by(id=finance_incident_id).one_or_none()
@@ -217,6 +227,7 @@ def get_incident(finance_incident_id: int) -> utils.BackofficeResponse:
 
 
 @finance_incidents_blueprint.route("/overpayment/<int:finance_incident_id>", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.READ_INCIDENTS)
 def get_incident_overpayment(finance_incident_id: int) -> utils.BackofficeResponse:
     incident = _get_incident(finance_incident_id, kind=finance_models.IncidentType.OVERPAYMENT)
@@ -239,6 +250,7 @@ def get_incident_overpayment(finance_incident_id: int) -> utils.BackofficeRespon
 
 
 @finance_incidents_blueprint.route("/commercial-gesture/<int:finance_incident_id>", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.READ_INCIDENTS)
 def get_commercial_gesture(finance_incident_id: int) -> utils.BackofficeResponse:
     incident = _get_incident(finance_incident_id, kind=finance_models.IncidentType.COMMERCIAL_GESTURE)
@@ -261,6 +273,7 @@ def get_commercial_gesture(finance_incident_id: int) -> utils.BackofficeResponse
 
 
 @finance_incidents_blueprint.route("/<int:finance_incident_id>/history", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.READ_INCIDENTS)
 def get_history(finance_incident_id: int) -> utils.BackofficeResponse:
     actions = (
@@ -286,6 +299,7 @@ def get_history(finance_incident_id: int) -> utils.BackofficeResponse:
 
 
 @finance_incidents_blueprint.route("/individual-bookings/overpayment-creation-form", methods=["GET", "POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def get_individual_bookings_overpayment_creation_form() -> utils.BackofficeResponse:
     form = forms.BookingOverPaymentIncidentForm()
@@ -317,6 +331,7 @@ def get_individual_bookings_overpayment_creation_form() -> utils.BackofficeRespo
         )
 
         if not (valid := validation.check_incident_bookings(bookings)):
+            mark_transaction_as_invalid()
             return render_template(
                 "components/turbo/modal_empty_form.html",
                 form=empty_forms.BatchForm(),
@@ -350,6 +365,7 @@ def get_individual_bookings_overpayment_creation_form() -> utils.BackofficeRespo
 
 
 @finance_incidents_blueprint.route("/individual-bookings/commercial-gesture-creation-form", methods=["GET", "POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def get_individual_bookings_commercial_gesture_creation_form() -> utils.BackofficeResponse:
     form = forms.CommercialGestureCreationForm()
@@ -380,6 +396,7 @@ def get_individual_bookings_commercial_gesture_creation_form() -> utils.Backoffi
         )
 
         if not (valid := validation.check_commercial_gesture_bookings(bookings)):
+            mark_transaction_as_invalid()
             return render_template(
                 "components/turbo/modal_empty_form.html",
                 form=empty_forms.BatchForm(),
@@ -407,6 +424,7 @@ def get_individual_bookings_commercial_gesture_creation_form() -> utils.Backoffi
 @finance_incidents_blueprint.route(
     "/collective-bookings/<int:collective_booking_id>/overpayment-creation-form", methods=["GET", "POST"]
 )
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def get_collective_booking_overpayment_creation_form(collective_booking_id: int) -> utils.BackofficeResponse:
     collective_booking: educational_models.CollectiveBooking = (
@@ -434,6 +452,7 @@ def get_collective_booking_overpayment_creation_form(collective_booking_id: int)
     additional_data = _initialize_collective_booking_additional_data(collective_booking)
 
     if not (valid := validation.check_incident_collective_booking(collective_booking)):
+        mark_transaction_as_invalid()
         return render_template(
             "components/turbo/modal_empty_form.html",
             form=empty_forms.BatchForm(),
@@ -459,6 +478,7 @@ def get_collective_booking_overpayment_creation_form(collective_booking_id: int)
     "/collective-bookings/<int:collective_booking_id>/commercial-gesture-creation-form",
     methods=["GET", "POST"],
 )
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def get_collective_booking_commercial_gesture_creation_form(collective_booking_id: int) -> utils.BackofficeResponse:
     collective_booking: educational_models.CollectiveBooking = (
@@ -486,6 +506,7 @@ def get_collective_booking_commercial_gesture_creation_form(collective_booking_i
     additional_data = _initialize_collective_booking_additional_data(collective_booking)
 
     if not (valid := validation.check_commercial_gesture_collective_booking(collective_booking)):
+        mark_transaction_as_invalid()
         return render_template(
             "components/turbo/modal_empty_form.html",
             form=empty_forms.BatchForm(),
@@ -508,12 +529,14 @@ def get_collective_booking_commercial_gesture_creation_form(collective_booking_i
 
 
 @finance_incidents_blueprint.route("/individual-bookings/create-overpayment", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def create_individual_booking_overpayment() -> utils.BackofficeResponse:
     form = forms.BookingOverPaymentIncidentForm()
 
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
+        mark_transaction_as_invalid()
         return redirect(request.referrer, 303)
 
     amount = form.total_amount.data
@@ -543,6 +566,7 @@ def create_individual_booking_overpayment() -> utils.BackofficeResponse:
     if not (valid := validation.check_incident_bookings(bookings) and validation.check_total_amount(amount, bookings)):
         for message in valid.messages:
             flash(message, "warning")
+        mark_transaction_as_invalid()
         return redirect(request.referrer or url_for("backoffice_web.individual_bookings.list_individual_bookings"), 303)
 
     incident = finance_api.create_overpayment_finance_incident(
@@ -563,12 +587,14 @@ def create_individual_booking_overpayment() -> utils.BackofficeResponse:
 
 
 @finance_incidents_blueprint.route("/individual-bookings/create-commercial-gesture", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def create_individual_booking_commercial_gesture() -> utils.BackofficeResponse:
     form = forms.CommercialGestureCreationForm()
 
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
+        mark_transaction_as_invalid()
         return redirect(request.referrer, 303)
 
     amount = form.total_amount.data
@@ -601,6 +627,7 @@ def create_individual_booking_commercial_gesture() -> utils.BackofficeResponse:
     ):
         for message in valid.messages:
             flash(message, "warning")
+        mark_transaction_as_invalid()
         return redirect(request.referrer or url_for("backoffice_web.individual_bookings.list_individual_bookings"), 303)
 
     commercial_gesture = finance_api.create_finance_commercial_gesture(
@@ -624,6 +651,7 @@ def create_individual_booking_commercial_gesture() -> utils.BackofficeResponse:
 @finance_incidents_blueprint.route(
     "/collective-bookings/<int:collective_booking_id>/create-overpayment", methods=["POST"]
 )
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def create_collective_booking_overpayment(collective_booking_id: int) -> utils.BackofficeResponse:
     collective_booking = educational_models.CollectiveBooking.query.filter_by(id=collective_booking_id).one_or_none()
@@ -635,11 +663,13 @@ def create_collective_booking_overpayment(collective_booking_id: int) -> utils.B
 
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
+        mark_transaction_as_invalid()
         return redirect(redirect_url, 303)
 
     if not (valid := validation.check_incident_collective_booking(collective_booking)):
         for message in valid.messages:
             flash(message, "warning")
+        mark_transaction_as_invalid()
         return redirect(redirect_url, 303)
 
     incident = finance_api.create_overpayment_finance_incident_collective_booking(
@@ -659,6 +689,7 @@ def create_collective_booking_overpayment(collective_booking_id: int) -> utils.B
 @finance_incidents_blueprint.route(
     "/collective-bookings/<int:collective_booking_id>/create-commercial-gesture", methods=["POST"]
 )
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def create_collective_booking_commercial_gesture(collective_booking_id: int) -> utils.BackofficeResponse:
     collective_booking = educational_models.CollectiveBooking.query.filter_by(id=collective_booking_id).one_or_none()
@@ -670,11 +701,13 @@ def create_collective_booking_commercial_gesture(collective_booking_id: int) -> 
 
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
+        mark_transaction_as_invalid()
         return redirect(redirect_url, 303)
 
     if not (valid := validation.check_commercial_gesture_collective_booking(collective_booking)):
         for message in valid.messages:
             flash(message, "warning")
+        mark_transaction_as_invalid()
         return redirect(redirect_url, 303)
 
     incident = finance_api.create_finance_commercial_gesture_collective_booking(
@@ -740,6 +773,7 @@ def _initialize_collective_booking_additional_data(collective_booking: education
 
 
 @finance_incidents_blueprint.route("/<int:finance_incident_id>/comment", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def comment_incident(finance_incident_id: int) -> utils.BackofficeResponse:
     incident = finance_models.FinanceIncident.query.filter_by(id=finance_incident_id).one_or_none()
@@ -750,6 +784,7 @@ def comment_incident(finance_incident_id: int) -> utils.BackofficeResponse:
 
     if not form.validate():
         flash("Le formulaire comporte des erreurs", "warning")
+        mark_transaction_as_invalid()
     else:
         history_api.add_action(
             history_models.ActionType.COMMENT,
@@ -757,7 +792,7 @@ def comment_incident(finance_incident_id: int) -> utils.BackofficeResponse:
             finance_incident=incident,
             comment=form.comment.data,
         )
-        db.session.commit()
+        db.session.flush()
         flash("Le commentaire a été enregistré", "success")
 
     return redirect(
@@ -816,6 +851,7 @@ def _get_finance_commercial_gesture_validation_form(
 
 
 @finance_incidents_blueprint.route("/<int:finance_incident_id>/validate", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def get_finance_incident_validation_form(finance_incident_id: int) -> utils.BackofficeResponse:
     finance_incident = _get_incident(finance_incident_id)
@@ -826,6 +862,7 @@ def get_finance_incident_validation_form(finance_incident_id: int) -> utils.Back
 
 
 @finance_incidents_blueprint.route("/overpayment/<int:finance_incident_id>/validate", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def validate_finance_overpayment_incident(finance_incident_id: int) -> utils.BackofficeResponse:
     finance_incident = _get_incident(finance_incident_id, kind=finance_models.IncidentType.OVERPAYMENT)
@@ -849,11 +886,13 @@ def validate_finance_overpayment_incident(finance_incident_id: int) -> utils.Bac
 
 
 @finance_incidents_blueprint.route("/commercial-gesture/<int:finance_incident_id>/validate", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.VALIDATE_COMMERCIAL_GESTURE)
 def validate_finance_commercial_gesture(finance_incident_id: int) -> utils.BackofficeResponse:
     finance_incident = _get_incident(finance_incident_id, kind=finance_models.IncidentType.COMMERCIAL_GESTURE)
 
     if finance_incident.status != finance_models.IncidentStatus.CREATED:
+        mark_transaction_as_invalid()
         flash("Le geste commercial ne peut être validé que s'il est au statut 'créé'.", "warning")
     else:
         finance_api.validate_finance_commercial_gesture(
@@ -868,6 +907,7 @@ def validate_finance_commercial_gesture(finance_incident_id: int) -> utils.Backo
 
 
 @finance_incidents_blueprint.route("/<int:finance_incident_id>/force-debit-note", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def get_finance_incident_force_debit_note_form(finance_incident_id: int) -> utils.BackofficeResponse:
     finance_incident = finance_models.FinanceIncident.query.filter_by(id=finance_incident_id).one_or_none()
@@ -887,12 +927,14 @@ def get_finance_incident_force_debit_note_form(finance_incident_id: int) -> util
 
 
 @finance_incidents_blueprint.route("/<int:finance_incident_id>/force-debit-note", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def force_debit_note(finance_incident_id: int) -> utils.BackofficeResponse:
     finance_incident = _get_incident(finance_incident_id)
 
     if finance_incident.status != finance_models.IncidentStatus.VALIDATED or finance_incident.isClosed:
         flash("Cette action ne peut être effectuée que sur un incident validé non terminé.", "warning")
+        mark_transaction_as_invalid()
         return redirect(
             url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=finance_incident.id), 303
         )
@@ -909,7 +951,7 @@ def force_debit_note(finance_incident_id: int) -> utils.BackofficeResponse:
         },
     )
 
-    db.session.commit()
+    db.session.flush()
 
     flash("Une note de débit sera générée à la prochaine échéance.", "success")
     return redirect(
@@ -918,6 +960,7 @@ def force_debit_note(finance_incident_id: int) -> utils.BackofficeResponse:
 
 
 @finance_incidents_blueprint.route("/<int:finance_incident_id>/cancel-debit-note", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def get_finance_incident_cancel_debit_note_form(finance_incident_id: int) -> utils.BackofficeResponse:
     finance_incident = finance_models.FinanceIncident.query.filter_by(id=finance_incident_id).one_or_none()
@@ -937,6 +980,7 @@ def get_finance_incident_cancel_debit_note_form(finance_incident_id: int) -> uti
 
 
 @finance_incidents_blueprint.route("/<int:finance_incident_id>/cancel-debit-note", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def cancel_debit_note(finance_incident_id: int) -> utils.BackofficeResponse:
     finance_incident = _get_incident(finance_incident_id)
@@ -959,9 +1003,11 @@ def cancel_debit_note(finance_incident_id: int) -> utils.BackofficeResponse:
         },
     )
 
-    db.session.commit()
+    db.session.flush()
 
-    send_finance_incident_emails(finance_incident)
+    on_commit(
+        partial(send_finance_incident_emails, finance_incident=finance_incident),
+    )
 
     flash("Vous avez fait le choix de récupérer l'argent sur les prochaines réservations de l'acteur.", "success")
     return redirect(
