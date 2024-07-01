@@ -283,7 +283,6 @@ describe('components | BookingsRecap | Pro user', () => {
       null,
       null,
       null,
-      null,
       DEFAULT_PRE_FILTERS.bookingStatusFilter,
       DEFAULT_PRE_FILTERS.bookingBeginningDate,
       DEFAULT_PRE_FILTERS.bookingEndingDate
