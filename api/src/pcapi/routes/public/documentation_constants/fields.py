@@ -145,6 +145,7 @@ class _FIELDS:
         description="Indicated whether a ticket is mandatory to access to the event. True if it is the case, False otherwise. The ticket will be sent by you, the provider and you must have developed the pass Culture ticketing interface to do so.",
         example=False,
     )
+    EVENT_DURATION = Field(description="Event duration in minutes", example=60)
 
     # Booking fields
     BOOKING_STATUS = Field(description=descriptions.BOOKING_STATUS_DESCRIPTION, example="CONFIRMED")

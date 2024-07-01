@@ -161,7 +161,6 @@ LOCATION_FIELD = pydantic_v1.Field(
     discriminator="type",
     description="Location where the offer will be available or will take place. The location type must be compatible with the category",
 )
-DURATION_MINUTES_FIELD = pydantic_v1.Field(description="Event duration in minutes", example=60, alias="eventDuration")
 PRICE_CATEGORY_LABEL_FIELD = pydantic_v1.Field(description="Price category label", example="Carré or")
 PRICE_CATEGORIES_FIELD = pydantic_v1.Field(description="Available price categories for dates of this offer")
 EVENT_DATES_FIELD = pydantic_v1.Field(
@@ -490,7 +489,7 @@ class PriceCategoriesCreation(serialization.ConfiguredBaseModel):
 
 class EventOfferCreation(OfferCreationBase):
     category_related_fields: event_category_creation_fields
-    duration_minutes: int | None = DURATION_MINUTES_FIELD
+    event_duration: int | None = fields.EVENT_DURATION
     location: PhysicalLocation | DigitalLocation = LOCATION_FIELD
     has_ticket: bool = fields.EVENT_HAS_TICKET
     price_categories: list[PriceCategoryCreation] | None = PRICE_CATEGORIES_FIELD
@@ -576,7 +575,7 @@ class EventOfferEdition(OfferEditionBase):
         None,
         description="To override category related fields, the category must be specified, even if it cannot be changed. Other category related fields may be left undefined to keep their current value.",
     )
-    duration_minutes: int | None = DURATION_MINUTES_FIELD
+    event_duration: int | None = fields.EVENT_DURATION
 
 
 class DateCreation(BaseStockCreation):
@@ -728,7 +727,7 @@ def _serialize_has_ticket(offer: offers_models.Offer) -> bool:
 
 class EventOfferResponse(OfferResponse, PriceCategoriesResponse):
     category_related_fields: event_category_reading_fields
-    duration_minutes: int | None = DURATION_MINUTES_FIELD
+    event_duration: int | None = fields.EVENT_DURATION
     has_ticket: bool = fields.EVENT_HAS_TICKET
     publication_date: datetime.datetime | None = fields.OFFER_PUBLICATION_DATE
 
@@ -737,7 +736,7 @@ class EventOfferResponse(OfferResponse, PriceCategoriesResponse):
         base_offer_response = OfferResponse.build_offer(offer)
         return cls(
             category_related_fields=serialize_extra_data(offer),
-            duration_minutes=offer.durationMinutes,
+            event_duration=offer.durationMinutes,
             has_ticket=_serialize_has_ticket(offer),
             price_categories=[
                 PriceCategoryResponse.from_orm(price_category) for price_category in offer.priceCategories
