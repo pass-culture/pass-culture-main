@@ -1,5 +1,5 @@
 import { useField, useFormikContext } from 'formik'
-import React, { useEffect, useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 import { apiAdresse } from 'apiClient/adresse/apiAdresse'
 import { serializeAdressData } from 'components/Address/serializer'
@@ -21,55 +21,47 @@ export const AddressSelect = ({
   const [addressesMap, setAddressesMap] = useState<
     Record<string, AutocompleteItemProps>
   >({})
-  const [searchField] = useField('search-addressAutocomplete')
-  const [selectedField] = useField('addressAutocomplete')
+  const [, , { setValue: setSearchValue }] = useField(
+    'search-addressAutocomplete'
+  )
+  const [selectedField, , { setValue: setSelectedValue }] = useField(
+    'addressAutocomplete'
+  )
+
   useEffect(() => {
     setOptions([{ label: selectedField.value, value: selectedField.value }])
-  }, [])
-
-  // TODO we should not use useEffect for this but an event handler on the input
-  useEffect(() => {
-    const onSearchFieldChange = async () => {
-      if (searchField.value.length >= 3) {
-        const response = await getSuggestions(searchField.value)
-        setAddressesMap(
-          response.reduce<Record<string, AutocompleteItemProps>>(
-            (acc, add: AutocompleteItemProps) => {
-              acc[add.label] = add
-              return acc
-            },
-            {}
-          )
-        )
-        setOptions(
-          response.map((item) => ({
-            value: String(item.value),
-            label: item.label,
-          }))
-        )
-      } else if (searchField.value.length === 0) {
-        setOptions([])
-        handleAddressSelect(setFieldValue, undefined, searchField)
-      }
-    }
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    onSearchFieldChange()
-  }, [searchField.value])
-
-  // TODO we should not use useEffect for this but an event handler on the input
-  useEffect(() => {
-    // False positive, eslint disable can be removed when noUncheckedIndexedAccess is enabled in TS config
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    if (addressesMap[searchField.value] !== undefined) {
-      handleAddressSelect(
-        setFieldValue,
-        addressesMap[searchField.value],
-        searchField
-      )
-    }
   }, [selectedField.value])
 
-  /* istanbul ignore next: DEBT, TO FIX */
+  const handleSearchFieldChange = async (pattern: string) => {
+    await setSearchValue(pattern)
+    if (pattern.length >= 3) {
+      const response = await getSuggestions(pattern)
+      setAddressesMap(
+        response.reduce<Record<string, AutocompleteItemProps>>(
+          (acc, add: AutocompleteItemProps) => {
+            acc[add.label] = add
+            return acc
+          },
+          {}
+        )
+      )
+      setOptions(
+        response.map((item) => ({
+          value: String(item.value),
+          label: item.label,
+        }))
+      )
+    } else if (pattern.length === 0) {
+      setOptions([])
+      handleAddressSelect(setFieldValue, undefined, { value: pattern })
+    }
+  }
+
+  const handleSelectedFieldChange = async (value: string) => {
+    await setSelectedValue(value)
+    handleAddressSelect(setFieldValue, addressesMap[value], { value })
+  }
+
   const getSuggestions = async (search: string) => {
     if (search) {
       try {
@@ -94,6 +86,8 @@ export const AddressSelect = ({
       hideArrow={true}
       resetOnOpen={false}
       description={description}
+      onSearch={handleSearchFieldChange}
+      onChange={handleSelectedFieldChange}
     />
   )
 }
@@ -104,7 +98,7 @@ export const handleAddressSelect = (
   searchField?: any
 ) => {
   setFieldValue('street', selectedItem?.extraData.address)
-  if (searchField) {
+  if (searchField.value) {
     setFieldValue('addressAutocomplete', searchField?.value)
   }
   setFieldValue('postalCode', selectedItem?.extraData.postalCode)
