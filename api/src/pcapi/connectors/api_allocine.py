@@ -51,6 +51,38 @@ def get_movie_list_page(after: str = "") -> allocine_serializers.AllocineMovieLi
     return validated_response
 
 
+def filter_invalid_edge(json_data: dict, locs: tuple) -> dict:
+    if not locs or set(locs[:2]) != {"movieShowtimeList", "edges"}:
+        # nothing to do (to complicated or locs is malformed), let it fail
+        return json_data
+
+    invalid_edge = json_data["movieShowtimeList"]["edges"].pop(locs[2])
+
+    logger.error(
+        "One allocine show time edge removed (invalid)",
+        extra={"location": locs, "edge": invalid_edge},
+    )
+
+    return json_data
+
+
+def _parse_movie_showtimes(
+    json_data: dict, try_count: int = 0
+) -> allocine_serializers.AllocineMovieShowtimeListResponse:
+    try:
+        return allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(json_data)
+    except pydantic.ValidationError as exc:
+        if try_count > 1:
+            # try two times, in case some errors were hidden
+            raise
+
+        data = json_data
+        for err in exc.errors():
+            data = filter_invalid_edge(data, err["loc"])
+
+        return _parse_movie_showtimes(data, try_count + 1)
+
+
 def get_movies_showtimes_from_allocine(theater_id: str) -> allocine_serializers.AllocineMovieShowtimeListResponse:
     url = f"{ALLOCINE_API_URL}/movieShowtimeList?theater={theater_id}"
 
@@ -63,8 +95,8 @@ def get_movies_showtimes_from_allocine(theater_id: str) -> allocine_serializers.
         raise AllocineException(f"Error getting API Allocine DATA for theater {theater_id}")
 
     try:
-        validated_response = allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(response.json())
-    except pydantic.ValidationError as exc:
+        validated_response = _parse_movie_showtimes(response.json())
+    except Exception as exc:
         raise AllocineException(f"Error validating Allocine response. Error: {str(exc)}")
 
     return validated_response

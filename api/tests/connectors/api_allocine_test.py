@@ -1,4 +1,5 @@
 import copy
+from dataclasses import dataclass
 import logging
 from unittest.mock import MagicMock
 from unittest.mock import patch
@@ -6,12 +7,22 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.connectors.api_allocine import AllocineException
+from pcapi.connectors.api_allocine import filter_invalid_edge
 from pcapi.connectors.api_allocine import get_movie_list_page
 from pcapi.connectors.api_allocine import get_movie_poster_from_allocine
 from pcapi.connectors.api_allocine import get_movies_showtimes_from_allocine
 from pcapi.connectors.serialization import allocine_serializers
 
 from tests.connectors import fixtures
+
+
+@dataclass
+class MockedResponse:
+    data: dict | list
+    status_code: int
+
+    def json(self):
+        return self.data
 
 
 class GetMovieListTest:
@@ -129,6 +140,22 @@ class GetMovieShowtimeListTest:
         # Then
         assert str(allocine_exception.value) == "Error connecting Allocine API for theater test_id"
 
+    @patch("pcapi.connectors.api_allocine.requests")
+    def test_should_drop_invalid_showtimes_and_move_on(self, requests_mock):
+        payload = copy.deepcopy(fixtures.MOVIE_SHOWTIME_LIST)
+
+        # add one (valid) edge
+        valid_edge = copy.deepcopy(payload["movieShowtimeList"]["edges"][0])
+        payload["movieShowtimeList"]["edges"].append(valid_edge)
+        # one and only movie becomes invalid because of one showtime language
+        payload["movieShowtimeList"]["edges"][0]["node"]["showtimes"][0]["languages"] = [None]
+
+        requests_mock.get.return_value = MockedResponse(data=payload, status_code=200)
+        api_response = get_movies_showtimes_from_allocine("does not matter")
+
+        expected_result = copy.deepcopy(fixtures.MOVIE_SHOWTIME_LIST)
+        assert api_response == allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(expected_result)
+
 
 class GetMoviePosterFromAllocineTest:
     @patch("pcapi.connectors.api_allocine.requests.get")
@@ -164,3 +191,17 @@ class GetMoviePosterFromAllocineTest:
             " https://fr.web.img6.acsta.net/pictures/19/10/23/15/11/3506165.jpg"
             " with code 400"
         )
+
+
+class FilterInvalidEdgeTest:
+    def test_filters_invalid_edges(self):
+        payload = copy.deepcopy(fixtures.MOVIE_SHOWTIME_LIST)
+
+        filter_invalid_edge(payload, ("movieShowtimeList", "edges", 0))
+        assert not payload["movieShowtimeList"]["edges"]
+
+    def test_ignore_if_locations_is_unusable(self):
+        payload = copy.deepcopy(fixtures.MOVIE_SHOWTIME_LIST)
+
+        filter_invalid_edge(payload, ("some", "unknown", "path"))
+        assert len(payload["movieShowtimeList"]["edges"]) == 1
