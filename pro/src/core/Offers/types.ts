@@ -20,6 +20,7 @@ export type SearchFiltersParams = {
   periodEndingDate: string
   offererAddressId: string
   page?: number
+  offererAddressId: string
 }
 
 export interface CategorySubtypeItem {

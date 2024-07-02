@@ -23,6 +23,7 @@ export const serializeApiFilters = (
     'periodEndingDate',
     'collectiveOfferType',
     'format',
+    'offererAddressId',
   ]
 
   const body: ListOffersQueryModel & ListCollectiveOffersQueryModel = {}
