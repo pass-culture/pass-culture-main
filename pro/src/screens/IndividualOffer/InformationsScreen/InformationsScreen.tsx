@@ -271,7 +271,7 @@ export const InformationsScreen = ({
               Boolean(offer && isOfferDisabled(offer.status)) ||
               isWithdrawalMailDialogOpen
             }
-            dirtyForm={formik.dirty}
+            dirtyForm={formik.dirty || offer === null}
           />
         </form>
       </FormLayout>
