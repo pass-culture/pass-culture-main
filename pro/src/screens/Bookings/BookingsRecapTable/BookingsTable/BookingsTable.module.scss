@@ -42,10 +42,7 @@
 
     // ::before is the left column
     &::before {
-      @include fonts.bold;
-
       grid-column: 1;
-      font-style: italic;
       content: attr(data-label) " : ";
       margin: rem.torem(8px) rem.torem(8px) rem.torem(8px);
     }

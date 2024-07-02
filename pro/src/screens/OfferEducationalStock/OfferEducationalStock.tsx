@@ -157,9 +157,9 @@ export const OfferEducationalStock = <
                   Indiquez le prix total TTC de l’évènement et le nombre de
                   personnes qui y participeront.
                   <br />
-                  <span className={styles['description-text-italic']}>
-                    (Exemple : j’accueille 30 élèves à 5{NBSP}€ la place, le
-                    prix total de mon offre s’élève à 150{NBSP}€ TTC.)
+                  <span className={styles['description-text-example']}>
+                    Exemple : j’accueille 30 élèves à 5{NBSP}€ la place, le prix
+                    total de mon offre s’élève à 150{NBSP}€ TTC.
                   </span>
                 </p>
                 <FormStock

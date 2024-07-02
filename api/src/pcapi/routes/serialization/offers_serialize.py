@@ -393,15 +393,17 @@ class IndividualOfferResponseGetterDict(GetterDict):
     def get(self, key: str, default: Any | None = None) -> Any:
         if key == "address":
             if not self._obj.offererAddress:
-                return None
-            offererAddress = GetOffererAddressWithIsEditableResponseModel.from_orm(self._obj.offererAddress)
+                offerer_address = self._obj.venue.offererAddress
+            else:
+                offerer_address = self._obj.offererAddress
+            offererAddress = GetOffererAddressWithIsEditableResponseModel.from_orm(offerer_address)
             offererAddress.label = offererAddress.label or self._obj.venue.common_name
             return AddressResponseIsEditableModel(
-                id=self._obj.offererAddress.addressId,
-                banId=self._obj.offererAddress.address.banId,
-                inseeCode=self._obj.offererAddress.address.inseeCode,
-                longitude=self._obj.offererAddress.address.longitude,
-                latitude=self._obj.offererAddress.address.latitude,
+                id=offerer_address.addressId,
+                banId=offerer_address.address.banId,
+                inseeCode=offerer_address.address.inseeCode,
+                longitude=offerer_address.address.longitude,
+                latitude=offerer_address.address.latitude,
                 **offererAddress.dict(exclude={"id"}),
             )
         return super().get(key, default)

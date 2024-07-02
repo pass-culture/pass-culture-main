@@ -17,7 +17,7 @@
           <thead>
             <tr>
               <th scope="col">ID de l'extrait</th>
-              <th scope="col">Nom et prénom du jeune</th>
+              <th scope="col">Prénom et nom du jeune</th>
               <th scope="col">Date de création de la demande</th>
               <th scope="col">État de la demande</th>
               <th scope="col">Auteur de la demande</th>
@@ -41,7 +41,8 @@
                       {{ empty_form.csrf_token }}
                       <a class="nonblock"
                          href=""
-                         onclick="document.getElementById('download-extract-{{ gdpr_data.id }}').submit(); return false;"><i class="bi bi-cloud-download-fill"></i></a>
+                         onclick="document.getElementById('download-extract-{{ gdpr_data.id }}').submit(); return false;"
+                         title="Télécharger les données"><i class="bi bi-cloud-download-fill"></i></a>
                     </form>
                   {% else %}
                     <i style="opacity: 0.5"

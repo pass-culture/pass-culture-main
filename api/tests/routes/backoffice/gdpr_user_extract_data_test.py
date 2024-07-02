@@ -62,12 +62,12 @@ class ListGdprUserExtractDataTest(GetEndpointHelper):
         assert rows[0]["Date de création de la demande"] == format_date(list_of_gdpr_user_extract_data[1].dateCreated)
         assert rows[0]["État de la demande"] == "en attente"
         assert (
-            rows[0]["Nom et prénom du jeune"]
+            rows[0]["Prénom et nom du jeune"]
             == f"{list_of_gdpr_user_extract_data[1].user.full_name} ({str(list_of_gdpr_user_extract_data[1].user.id)})"
         )
         assert rows[0]["Auteur de la demande"] == list_of_gdpr_user_extract_data[1].authorUser.full_name
 
-        assert rows[2]["État de la demande"] == "prêt"
+        assert rows[2]["État de la demande"] == "prête"
 
         for row in rows:
             assert list_of_gdpr_user_extract_data[4].id not in row

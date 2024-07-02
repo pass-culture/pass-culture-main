@@ -257,7 +257,7 @@ jobs:
 
   deploy-to-testing:
     name: "Deploy to testing"
-    needs: [test-api, test-pro]
+    needs: [test-api, test-pro, push-pcapi-console, push-pcapi]
     if: |
       always() &&
       github.ref == 'refs/heads/master' &&
@@ -278,7 +278,7 @@ jobs:
 
   deploy-to-ops:
     name: "Deploy to ops"
-    needs: [test-api, test-pro]
+    needs: [test-api, test-pro, push-pcapi-console, push-pcapi]
     if: |
       always() &&
       github.ref == 'refs/heads/master' &&

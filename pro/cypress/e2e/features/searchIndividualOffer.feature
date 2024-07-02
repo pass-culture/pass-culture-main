@@ -6,14 +6,14 @@ Feature: Search individual offers
     And I go to the "Offres" page
 
   Scenario: A search with a name should display expected results
-    When I select offerer "Cinéma du coin"
+    When I select offerer "Cinéma du coin" in offer page
     And I search with the text "Mon offre brouillon avec stock"
     Then These results should be displayed
       |  |  | Titre               | Lieu             | Stocks | Status    |
       |  |  | Mon offre brouillon | Espace des Gnoux |      0 | brouillon |
 
   Scenario: A search with a EAN should display expected results
-    When I select offerer "Réseau de librairies"
+    When I select offerer "Réseau de librairies" in offer page
     And I search with the text "9780000000004"
     Then These results should be displayed
       |  |  | Titre            | Lieu         | Stocks | Status     |
