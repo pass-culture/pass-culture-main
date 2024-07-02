@@ -136,7 +136,7 @@ jobs:
     with:
       ref: ${{ github.sha }}
       image: pcapi
-      tags: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
+      tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -149,7 +149,7 @@ jobs:
     with:
       ref: ${{ github.sha }}
       image: pcapi-tests
-      tags: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
+      tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -166,7 +166,7 @@ jobs:
     with:
       ref: ${{ github.sha }}
       image: pcapi-console
-      tags: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
+      tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
