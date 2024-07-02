@@ -15,7 +15,6 @@ CORS(
     supports_credentials=True,
 )
 
-
 SECURITY_SCHEMES = [
     SecurityScheme(
         name=users_authentifications.API_KEY_AUTH_NAME,
