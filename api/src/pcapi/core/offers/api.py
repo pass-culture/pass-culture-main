@@ -729,7 +729,6 @@ def publish_offer(
         offer.isActive = False
         future_offer = models.FutureOffer(offerId=offer.id, publicationDate=publication_date)
         db.session.add(future_offer)
-        db.session.flush()
     else:
         if offer.publicationDate:
             offers_repository.delete_future_offer(offer.id)
