@@ -161,8 +161,6 @@ def anonymize_public_account(user_id: int) -> utils.BackofficeResponse:
         flash("Une erreur est survenue lors de l'anonymisation de l'utilisateur", "warning")
         return redirect(url_for(".get_public_account", user_id=user_id))
 
-    db.session.commit()
-
     flash("Les informations de l'utilisateur ont été anonymisées", "success")
 
     return redirect(url_for(".get_public_account", user_id=user_id))

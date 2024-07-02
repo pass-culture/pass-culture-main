@@ -8,11 +8,14 @@ from flask import render_template
 from flask import url_for
 import sqlalchemy as sa
 from sqlalchemy.orm import joinedload
+from werkzeug.exceptions import Forbidden
 
 from pcapi import settings
 from pcapi.core import object_storage
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
+from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import atomic
 from pcapi.routes.backoffice import utils
@@ -120,3 +123,18 @@ def download_gdpr_extract(extract_id: int) -> utils.BackofficeResponse:
     )
 
     return response
+
+
+@gdpr_extract_blueprint.route("<int:gdpr_id>/extract", methods=["POST"])
+@atomic()
+def delete_gdpr_user_data_extract(gdpr_id: int) -> utils.BackofficeResponse:
+    gdpr = users_models.GdprUserDataExtract.query.filter_by(id=gdpr_id).one_or_none()
+    if not gdpr:
+        flash("Une erreur est survenue lors de la tentative de suppression de l'extrait.", "warning")
+        return redirect(url_for(".list_gdpr_user_data_extract"))
+    if not gdpr.dateProcessed and not gdpr.is_expired:
+        raise Forbidden
+
+    users_api.delete_gdpr_extract(gdpr.id)
+    db.session.delete(gdpr)
+    return redirect(url_for(".list_gdpr_user_data_extract"))
