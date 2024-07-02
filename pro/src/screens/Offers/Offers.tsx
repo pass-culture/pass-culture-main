@@ -9,6 +9,8 @@ import {
   ListOffersOfferResponseModel,
   UserRole,
 } from 'apiClient/v1'
+import { Callout } from 'components/Callout/Callout'
+import { CalloutVariant } from 'components/Callout/types'
 import { NoData } from 'components/NoData/NoData'
 import { GET_VALIDATED_OFFERERS_NAMES_QUERY_KEY } from 'config/swrQueryKeys'
 import { isOfferEducational } from 'core/OfferEducational/types'
@@ -41,6 +43,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { Tabs } from 'ui-kit/Tabs/Tabs'
 import { Titles } from 'ui-kit/Titles/Titles'
 
+import styles from './Offers.module.scss'
 import { SearchFilters } from './SearchFilters/SearchFilters'
 
 export type OffersProps = {
@@ -298,6 +301,31 @@ export const Offers = ({
         venues={venues}
         isRestrictedAsAdmin={isRestrictedAsAdmin}
       />
+      {Audience.COLLECTIVE === audience && (
+        <Callout
+          className={styles['banner']}
+          variant={CalloutVariant.INFO}
+          links={[
+            {
+              href: 'https://aide.passculture.app/hc/fr/articles/4416082284945--Acteurs-Culturels-Quel-est-le-cycle-de-vie-de-votre-offre-collective-de-sa-cr%C3%A9ation-%C3%A0-son-remboursement',
+              label: 'En savoir plus sur les statuts',
+              isExternal: true,
+            },
+          ]}
+        >
+          <div className={styles['banner-onboarding']}>
+            <span className={styles['banner-onboarding-title']}>
+              C’est nouveau ! Vous pouvez désormais archiver vos offres
+              collectives.
+            </span>
+            <span>
+              Cliquez sur le bouton “Actions” pour archiver vos offres. Elles ne
+              seront plus visibles sur ADAGE. Vous pourrez les retrouver en
+              filtrant sur le statut “Archivée”.{' '}
+            </span>
+          </div>
+        </Callout>
+      )}
       {userHasNoOffers ? (
         <NoData page="offers" />
       ) : (
