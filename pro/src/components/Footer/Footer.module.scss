@@ -4,8 +4,11 @@
 
 .footer {
   margin-left: rem.torem(32px);
+  margin-right: rem.torem(32px);
+  display: flex;
+  align-items: center;
 
-  @media (min-width: size.$mobile) {
+  @media (min-width: size.$tablet) {
     min-height: size.$footer-height;
   }
 
@@ -27,17 +30,15 @@
 
   ul {
     display: flex;
-    height: 100%;
-    flex-flow: column;
+    flex-direction: column;
     white-space: nowrap;
-    width: 100%;
     margin: rem.torem(24px);
     gap: rem.torem(16px);
-    justify-content: flex-start;
+    justify-content: center;
     align-items: flex-start;
 
     @media (min-width: size.$mobile) {
-      flex-direction: row;
+      flex-flow: row wrap;
       align-items: center;
       margin: 0 auto;
     }
