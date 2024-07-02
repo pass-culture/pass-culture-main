@@ -42,9 +42,12 @@ When('I want to create {string} offer', (offerType: string) => {
 })
 
 When('I select offerer {string}', (offererName: string) => {
+  cy.intercept({ method: 'GET', url: '/venues?offererId=*' }).as('getOffererId')
   cy.findByTestId('offerer-select').click()
   cy.findByText(/Changer de structure/).click()
   cy.findByTestId('offerers-selection-menu').findByText(offererName).click()
+  cy.wait('@getOffererId')
+  cy.findAllByTestId('spinner').should('not.exist')
 })
 
 Then('These results should be displayed', (dataTable: DataTable) => {
