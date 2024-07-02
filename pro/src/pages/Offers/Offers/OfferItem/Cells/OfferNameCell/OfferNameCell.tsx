@@ -14,6 +14,7 @@ import { Audience } from 'core/shared/types'
 import fullErrorIcon from 'icons/full-error.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
+import { useTooltipProps } from 'ui-kit/Tooltip/useTooltipProps'
 import { FORMAT_DD_MM_YYYY_HH_mm } from 'utils/date'
 import { pluralize } from 'utils/pluralize'
 import { formatLocalTimeDateString } from 'utils/timezone'
@@ -33,6 +34,7 @@ export const OfferNameCell = ({
   editionOfferLink,
   audience,
 }: OfferNameCellProps) => {
+  const { isTooltipHidden, ...tooltipProps } = useTooltipProps({})
   const getDateInformations = () => {
     const {
       stocks,
@@ -92,22 +94,31 @@ export const OfferNameCell = ({
           {getDateInformations()}
 
           {shouldShowIndividualWarning && (
-            <div>
-              <SvgIcon
-                className={styles['sold-out-icon']}
-                src={fullErrorIcon}
-                alt="Attention"
-              />
-
-              <span className={styles['sold-out-dates']}>
+            <>
+              <button
+                type="button"
+                {...tooltipProps}
+                className={styles['sold-out-button']}
+              >
                 <SvgIcon
                   className={styles['sold-out-icon']}
                   src={fullErrorIcon}
                   alt="Attention"
+                  width="16"
                 />
-                {pluralize(computeNumberOfSoldOutStocks(), 'date épuisée')}
-              </span>
-            </div>
+              </button>
+              {!isTooltipHidden && (
+                <span className={styles['sold-out-dates']}>
+                  <SvgIcon
+                    className={styles['sold-out-icon']}
+                    src={fullErrorIcon}
+                    alt="Attention"
+                    width="16"
+                  />
+                  {pluralize(computeNumberOfSoldOutStocks(), 'date épuisée')}
+                </span>
+              )}
+            </>
           )}
 
           {shouldShowCollectiveWarning && (

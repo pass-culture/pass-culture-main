@@ -120,11 +120,10 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
           renderOfferItem(props)
 
-          await userEvent.click(screen.getByRole('button'))
+          await userEvent.click(screen.getAllByRole('button')[1])
           const deleteButton = screen.getByRole('button', {
             name: 'Supprimer ce brouillon',
           })
-          expect(deleteButton).toBeInTheDocument()
           await userEvent.click(deleteButton)
           expect(api.deleteDraftOffers).toHaveBeenCalledTimes(1)
           expect(api.deleteDraftOffers).toHaveBeenCalledWith({
@@ -152,7 +151,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
             )
           )
 
-          await userEvent.click(screen.getByRole('button'))
+          await userEvent.click(screen.getAllByRole('button')[1])
           await userEvent.click(
             screen.getByRole('button', {
               name: 'Supprimer ce brouillon',
@@ -396,13 +395,14 @@ describe('src | components | pages | Offers | OfferItem', () => {
         expect(screen.queryByText(/épuisées/)).not.toBeInTheDocument()
       })
 
-      it('should display a warning with number of stocks sold out when at least one stock is sold out', () => {
+      it('should display a warning with number of stocks sold out when at least one stock is sold out', async () => {
         props.offer.stocks = [
           listOffersStockFactory({ remainingQuantity: 0 }),
           listOffersStockFactory({ remainingQuantity: 'unlimited' }),
         ]
 
         renderOfferItem(props)
+        await userEvent.click(screen.getAllByRole('button')[0])
 
         const numberOfStocks = screen.getByText('1 date épuisée', {
           selector: 'span',
@@ -410,7 +410,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         expect(numberOfStocks).toBeInTheDocument()
       })
 
-      it('should pluralize number of stocks sold out when at least two stocks are sold out', () => {
+      it('should pluralize number of stocks sold out when at least two stocks are sold out', async () => {
         props.offer.stocks = [
           listOffersStockFactory({ remainingQuantity: 0 }),
           listOffersStockFactory({ remainingQuantity: 0 }),
@@ -418,6 +418,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         ]
 
         renderOfferItem(props)
+        await userEvent.click(screen.getAllByRole('button')[0])
 
         expect(
           screen.queryByText('2 dates épuisées', { selector: 'span' })
