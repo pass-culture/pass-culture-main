@@ -204,69 +204,70 @@ def update_venue_location(venue: models.Venue, modifications: dict, is_manual_ed
     On the other side, BO users might want to force a location to a venue, for example if the address is unknown
     for the API.
     """
+    if not any(field in modifications for field in ("street", "city", "postalCode")):
+        return
 
-    if any(field in modifications for field in ("street", "city", "postalCode")):
-        street = modifications.get("street") or venue.street
-        city = modifications.get("city") or venue.city
-        postal_code = modifications.get("postalCode") or venue.postalCode
-        latitude = modifications.get("latitude") or venue.latitude
-        longitude = modifications.get("longitude") or venue.longitude
-        ban_id = modifications.get("banId") or venue.banId
-        logger.info(
-            "Updating venue location",
-            extra={"venue_id": venue.id, "venue_street": street, "venue_city": city, "venue_postalCode": postal_code},
+    street = modifications.get("street") or venue.street
+    city = modifications.get("city") or venue.city
+    postal_code = modifications.get("postalCode") or venue.postalCode
+    latitude = modifications.get("latitude") or venue.latitude
+    longitude = modifications.get("longitude") or venue.longitude
+    ban_id = modifications.get("banId") or venue.banId
+    logger.info(
+        "Updating venue location",
+        extra={"venue_id": venue.id, "venue_street": street, "venue_city": city, "venue_postalCode": postal_code},
+    )
+
+    if not is_manual_edition:
+        address_info = api_adresse.get_address(street, postal_code, city)
+        location_data = LocationData(
+            city=address_info.city,
+            postal_code=address_info.postcode,
+            latitude=address_info.latitude,
+            longitude=address_info.longitude,
+            street=address_info.street,
+            insee_code=address_info.citycode,
+            ban_id=address_info.id,
+        )
+    else:
+        insee_code = None
+        if city and postal_code:
+            # Address entered manually does not provide INSEE code, find it
+            try:
+                insee_code = api_adresse.get_municipality_centroid(city, postal_code).citycode
+            except api_adresse.AdresseException:
+                pass
+
+        location_data = LocationData(
+            city=typing.cast(str, city),
+            postal_code=typing.cast(str, postal_code),
+            latitude=typing.cast(float, latitude),
+            longitude=typing.cast(float, longitude),
+            street=street,
+            ban_id=ban_id,
+            insee_code=insee_code,
         )
 
-        if not is_manual_edition:
-            address_info = api_adresse.get_address(street, postal_code, city)
-            location_data = LocationData(
-                city=address_info.city,
-                postal_code=address_info.postcode,
-                latitude=address_info.latitude,
-                longitude=address_info.longitude,
-                street=address_info.street,
-                insee_code=address_info.citycode,
-                ban_id=address_info.id,
-            )
-        else:
-            insee_code = None
-            if city and postal_code:
-                # Address entered manually does not provide INSEE code, find it
-                try:
-                    insee_code = api_adresse.get_municipality_centroid(city, postal_code).citycode
-                except api_adresse.AdresseException:
-                    pass
+    address = get_or_create_address(location_data, is_manual_edition=is_manual_edition)
 
-            location_data = LocationData(
-                city=typing.cast(str, city),
-                postal_code=typing.cast(str, postal_code),
-                latitude=typing.cast(float, latitude),
-                longitude=typing.cast(float, longitude),
-                street=street,
-                ban_id=ban_id,
-                insee_code=insee_code,
-            )
+    if not venue.offererAddressId:
+        offerer_address = get_or_create_offerer_address(venue.managingOffererId, address.id)
+        venue.offererAddress = offerer_address
+        db.session.add(venue)
+        db.session.flush()
+    else:
+        update_offerer_address(venue.offererAddressId, address.id)
 
-        address = get_or_create_address(location_data, is_manual_edition=is_manual_edition)
-
-        if not venue.offererAddressId:
-            offerer_address = get_or_create_offerer_address(venue.managingOffererId, address.id)
-            venue.offererAddress = offerer_address
-            db.session.add(venue)
-            db.session.flush()
-        else:
-            update_offerer_address(venue.offererAddressId, address.id)
-
-        if modifications.get("street"):
-            modifications["street"] = address.street
-        if modifications.get("city"):
-            modifications["city"] = address.city
-        if modifications.get("postalCode"):
-            modifications["postalCode"] = address.postalCode
-        if modifications.get("latitude"):
-            modifications["latitude"] = address.latitude
-        if modifications.get("longitude"):
-            modifications["longitude"] = address.longitude
+    if modifications.get("street"):
+        modifications["street"] = address.street
+    if modifications.get("city"):
+        modifications["city"] = address.city
+    if modifications.get("postalCode"):
+        modifications["postalCode"] = address.postalCode
+    if modifications.get("latitude"):
+        modifications["latitude"] = address.latitude
+    if modifications.get("longitude"):
+        modifications["longitude"] = address.longitude
 
 
 def update_venue_collective_data(
