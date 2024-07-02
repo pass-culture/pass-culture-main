@@ -86,6 +86,15 @@ class VenueProviderFactory(BaseFactory):
     venueIdAtOfferProvider = factory.SelfAttribute("venue.siret")
 
 
+class VenueProviderExternalUrlsFactory(BaseFactory):
+    class Meta:
+        model = models.VenueProviderExternalUrls
+
+    bookingExternalUrl = factory.Sequence("https://{}.example.org/booking".format)
+    cancelExternalUrl = factory.Sequence("https://{}.example.org/cancel".format)
+    notificationExternalUrl = factory.Sequence("https://{}.example.org/notification".format)
+
+
 class CinemaProviderPivotFactory(BaseFactory):
     class Meta:
         model = models.CinemaProviderPivot
