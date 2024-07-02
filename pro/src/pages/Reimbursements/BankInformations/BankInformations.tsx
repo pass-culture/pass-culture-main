@@ -33,7 +33,8 @@ export const BankInformations = (): JSX.Element => {
   const {
     selectedOfferer = null,
     setSelectedOfferer = () => {},
-  }: ReimbursementsContextProps = useOutletContext()
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  }: ReimbursementsContextProps = useOutletContext() ?? {}
 
   const [isOffererBankAccountsLoading, setIsOffererBankAccountsLoading] =
     useState<boolean>(false)
