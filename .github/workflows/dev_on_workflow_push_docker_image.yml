@@ -1,33 +1,35 @@
-name: '3 [on_workflow/Deprecated] Build and push docker images to Artifact Registry'
+name: '3 [on_workflow] push docker image'
 
 on:
   workflow_call:
     inputs:
-      ref:
-        # The git ref to build from.
-        # Can be a branch name, a tag or a commit.
-        required: false
-        type: string
-      tags:
-        # The docker image tag(s)
-        required: true
-        type: string
       image:
         required: true
         type: string
+      commit-hash:
+        required: true
+        type: string
+      checksum-tag:
+        required: true
+        type: string
+      tag-latest:
+        required: false
+        type: boolean
+        default: false
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
         required: true
       GCP_EHP_SERVICE_ACCOUNT:
         required: true
 
+env:
+  registry: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry
+
 jobs:
-  build-and-push-docker-images:
+  push-docker-image:
+    name: "Push ${{ inputs.image }}"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.7
-        with:
-          ref: ${{ inputs.ref }}
       - name: "Authentification to Google"
         uses: 'google-github-actions/auth@v2'
         with:
@@ -55,29 +57,18 @@ jobs:
           registry: 'europe-west1-docker.pkg.dev'
           username: 'oauth2accesstoken'
           password: '${{ steps.openid-auth.outputs.access_token }}'
-      - name: "Add version to api"
-        working-directory: api
-        run: |
-          echo "${{ inputs.ref }}" > version.txt
-          git add version.txt
-      - name: "Install poetry"
-        run: pip install poetry
-      - name: "check poetry lock is up to date"
-        working-directory: api
-        run: poetry check
-      - name: Replace image name in tags inputs
-        id: define-docker-image-tags
-        run: |
-          echo "tags-to-push=${{ inputs.tags }}" | sed 's/DOCKER_IMAGE/${{ inputs.image }}/g'
-          echo "tags-to-push=${{ inputs.tags }}" | sed 's/DOCKER_IMAGE/${{ inputs.image }}/g' >> "$GITHUB_OUTPUT"
-      - name: "Set up Docker Buildx"
-        uses: docker/setup-buildx-action@v3
+      - name: "Compute docker image name:tag"
+        id: compute-image-name
+        run: echo "image_name=${{ env.registry }}/${{ inputs.image }}:${{ inputs.checksum-tag }}" | tee -a ${GITHUB_OUTPUT}
+      - name: "Download artifact"
+        uses: actions/download-artifact@v4
         with:
-          driver: docker
-      - name: "Build and push ${{ inputs.image }} image"
-        uses: docker/build-push-action@v5
-        with:
-          context: api
-          push: true
-          target: ${{ inputs.image }}
-          tags: ${{ steps.define-docker-image-tags.outputs.tags-to-push }}
+          name: ${{ inputs.image }}-${{ inputs.checksum-tag }}.tar
+      - name: "Load and push docker image"
+        run: |
+          docker load --input $GITHUB_WORKSPACE/${{ inputs.image }}-${{ inputs.checksum-tag }}.tar
+          docker image tag ${{ steps.compute-image-name.outputs.image_name }} "${{ env.registry }}/${{ inputs.image }}:${{ inputs.commit-hash }}"
+          if [ ${{ inputs.tag-latest }} == 'true' ]; then
+            docker image tag ${{ steps.compute-image-name.outputs.image_name }} "${{ env.registry }}/${{ inputs.image }}:latest"
+          fi
+          docker image push --all-tags ${{ env.registry }}/${{ inputs.image }} 

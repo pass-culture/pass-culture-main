@@ -2,6 +2,14 @@ name: "3 [on_workflow/API] Tests"
 
 on:
   workflow_call:
+    inputs:
+      image:
+        type: string
+        required: false
+        default: pcapi-tests
+      tag:
+        type: string
+        required: true
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
         required: true
@@ -9,7 +17,7 @@ on:
         required: true
 
 env:
-  tests_docker_image: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi-tests:${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+  registry: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry
 
 defaults:
   run:
@@ -21,52 +29,67 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.1.7
+      - name: "Compute docker image name:tag"
+        id: compute-image-name
+        run: |
+          echo "image_name=${{ env.registry }}/${{ inputs.image }}:${{ inputs.tag }}" | tee -a ${GITHUB_OUTPUT}
+          echo "::notice:: Running tests api with ${{ env.registry }}/${{ inputs.image }}:${{ inputs.tag }}"
+      - name: "Download artifact"
+        if: ${{ inputs.tag }} != 'latest'
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.image }}-${{ inputs.tag }}.tar
+      - name: "Docker load artifact."
+        if: ${{ inputs.tag }} != 'latest'
+        run: |
+          docker load --input $GITHUB_WORKSPACE/${{ inputs.image }}-${{ inputs.tag }}.tar
       - name: "Authentification to Google"
         uses: "google-github-actions/auth@v2"
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       - name: "Get Secret"
-        id: "secrets"
+        id: secrets
         uses: "google-github-actions/get-secretmanager-secrets@v2"
         with:
           secrets: |-
-            ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/passculture-main-gcp-workload-identity-provider
-            ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
             SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
+            ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
+            ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
       - name: "OpenID Connect Authentication"
-        id: "openid-auth"
+        id: openid-auth
         uses: "google-github-actions/auth@v2"
         with:
           create_credentials_file: false
           token_format: "access_token"
-          workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER }}
+          workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER  }}
           service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
-      - uses: docker/login-action@v3
+      - name: "Docker login"
+        id: docker-login
+        uses: "docker/login-action@v1"
         with:
           registry: "europe-west1-docker.pkg.dev"
-          username: oauth2accesstoken
-          password: ${{ steps.openid-auth.outputs.access_token }}
-      - run: docker pull ${{ env.tests_docker_image }}
+          username: "oauth2accesstoken"
+          password: "${{ steps.openid-auth.outputs.access_token }}"
       - name: "Show installed Python packages"
         uses: addnab/docker-run-action@v3
         with:
-          image: ${{ env.tests_docker_image }}
+          image: ${{ steps.compute-image-name.outputs.image_name }}
           run: pip freeze
       - name: "Check imports are well organized with isort"
         uses: addnab/docker-run-action@v3
         with:
-          image: ${{ env.tests_docker_image }}
+          image: ${{ steps.compute-image-name.outputs.image_name }}
           run: isort . --check-only
       - name: "Check code is well formatted with black"
         uses: addnab/docker-run-action@v3
         with:
-          image: ${{ env.tests_docker_image }}
+          image: ${{ steps.compute-image-name.outputs.image_name }}
           run: black . --check
       - name: "Run mypy"
         uses: addnab/docker-run-action@v3
         with:
-          image: ${{ env.tests_docker_image }}
+          image: ${{ steps.compute-image-name.outputs.image_name }}
           run: mypy src
       - name: "Slack Notification"
         if: ${{ failure() && github.ref == 'refs/heads/master'  }}
@@ -99,42 +122,55 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.1.7
-      - name: Authentification to Google
+      - name: "Compute docker image name:tag"
+        id: compute-image-name
+        run: echo "image_name=${{ env.registry }}/${{ inputs.image }}:${{ inputs.tag }}" | tee -a ${GITHUB_OUTPUT}
+      - name: "Download artifact"
+        if: ${{ inputs.tag }} != 'latest'
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.image }}-${{ inputs.tag }}.tar
+      - name: "Docker load artifact."
+        if: ${{ inputs.tag }} != 'latest'
+        run: |
+          docker load --input $GITHUB_WORKSPACE/${{ inputs.image }}-${{ inputs.tag }}.tar
+      - name: "Authentification to Google"
         uses: "google-github-actions/auth@v2"
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       - name: "Get Secret"
-        id: "secrets"
+        id: secrets
         uses: "google-github-actions/get-secretmanager-secrets@v2"
         with:
           secrets: |-
-            ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/passculture-main-gcp-workload-identity-provider
-            ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
             SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
-      - id: "openid-auth"
-        name: "OpenID Connect Authentication"
+            ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
+            ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
+      - name: "OpenID Connect Authentication"
+        id: openid-auth
         uses: "google-github-actions/auth@v2"
         with:
           create_credentials_file: false
           token_format: "access_token"
-          workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER }}
+          workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER  }}
           service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
-      - uses: docker/login-action@v3
+      - name: "Docker login"
+        id: docker-login
+        uses: "docker/login-action@v1"
         with:
           registry: "europe-west1-docker.pkg.dev"
-          username: oauth2accesstoken
-          password: ${{ steps.openid-auth.outputs.access_token }}
-      - run: docker pull ${{ env.tests_docker_image }}
+          username: "oauth2accesstoken"
+          password: "${{ steps.openid-auth.outputs.access_token }}"
       - name: "Show installed Python packages"
         uses: addnab/docker-run-action@v3
         with:
-          image: ${{ env.tests_docker_image }}
+          image: ${{ steps.compute-image-name.outputs.image_name }}
           run: pip freeze
       - name: "Run pylint"
         uses: addnab/docker-run-action@v3
         with:
-          image: ${{ env.tests_docker_image }}
+          image: ${{ steps.compute-image-name.outputs.image_name }}
           run: pylint src tests --jobs=15
       - name: "Slack Notification"
         if: ${{ failure() && github.ref == 'refs/heads/master'  }}
@@ -196,32 +232,6 @@ jobs:
           # feature branch on top of the master branch). We don't want
           # that, we want the latest commit of the branch.
           ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
-      - name: "Authentification to Google"
-        uses: "google-github-actions/auth@v2"
-        with:
-          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      - name: "Get Secret"
-        id: "secrets"
-        uses: "google-github-actions/get-secretmanager-secrets@v2"
-        with:
-          secrets: |-
-            ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/passculture-main-gcp-workload-identity-provider
-            ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
-            SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
-      - name: "OpenID Connect Authentication"
-        id: "openid-auth"
-        uses: "google-github-actions/auth@v2"
-        with:
-          create_credentials_file: false
-          token_format: "access_token"
-          workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
-      - uses: docker/login-action@v3
-        with:
-          registry: "europe-west1-docker.pkg.dev"
-          username: oauth2accesstoken
-          password: ${{ steps.openid-auth.outputs.access_token }}
       - name: "Checkout HEAD (on master) or the parent of the first commit (pull request)"
         run: |
           if [[ "${{ github.ref }}" == "master" ]];
@@ -238,11 +248,50 @@ jobs:
           post=$(tail --lines 1 alembic_version_conflict_detection.txt | cut --fields 1 --delimiter " ")
           echo "pre=$pre" >> $GITHUB_OUTPUT
           echo "post=$post" >> $GITHUB_OUTPUT
-      - run: docker pull ${{ env.tests_docker_image }}
+      - name: "Compute docker image name:tag"
+        id: compute-image-name
+        run: echo "image_name=${{ env.registry }}/${{ inputs.image }}:${{ inputs.tag }}" | tee -a ${GITHUB_OUTPUT}
+      - name: "Download artifact"
+        if: ${{ inputs.tag }} != 'latest'
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.image }}-${{ inputs.tag }}.tar
+      - name: "Docker load artifact."
+        if: ${{ inputs.tag }} != 'latest'
+        run: |
+          docker load --input $GITHUB_WORKSPACE/${{ inputs.image }}-${{ inputs.tag }}.tar
+      - name: "Authentification to Google"
+        uses: "google-github-actions/auth@v2"
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      - name: "Get Secret"
+        id: secrets
+        uses: "google-github-actions/get-secretmanager-secrets@v2"
+        with:
+          secrets: |-
+            SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
+            ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
+            ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
+      - name: "OpenID Connect Authentication"
+        id: openid-auth
+        uses: "google-github-actions/auth@v2"
+        with:
+          create_credentials_file: false
+          token_format: "access_token"
+          workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER  }}
+          service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
+      - name: "Docker login"
+        id: docker-login
+        uses: "docker/login-action@v1"
+        with:
+          registry: "europe-west1-docker.pkg.dev"
+          username: "oauth2accesstoken"
+          password: "${{ steps.openid-auth.outputs.access_token }}"
       - name: "Check for alembic multiple heads"
         uses: addnab/docker-run-action@v3
         with:
-          image: ${{ env.tests_docker_image }}
+          image: ${{ steps.compute-image-name.outputs.image_name }}
           shell: bash
           run: |
             LINE_COUNT=$(wc -l <<< "$(alembic heads)")
@@ -251,7 +300,7 @@ jobs:
       - name: "Check database and model are aligned"
         uses: addnab/docker-run-action@v3
         with:
-          image: ${{ env.tests_docker_image }}
+          image: ${{ steps.compute-image-name.outputs.image_name }}
           shell: bash
           options: -e RUN_ENV -e DATABASE_URL_TEST
           run: |
@@ -264,7 +313,7 @@ jobs:
       - name: "Check that downgrade scripts are correctly written"
         uses: addnab/docker-run-action@v3
         with:
-          image: ${{ env.tests_docker_image }}
+          image: ${{ steps.compute-image-name.outputs.image_name }}
           shell: bash
           options: -e RUN_ENV -e DATABASE_URL_TEST
           run: |
@@ -276,7 +325,7 @@ jobs:
       - name: "Lint migration upgrades"
         uses: addnab/docker-run-action@v3
         with:
-          image: ${{ env.tests_docker_image }}
+          image: ${{ steps.compute-image-name.outputs.image_name }}
           shell: bash
           options: -e RUN_ENV -e DATABASE_URL_TEST
           run: |
@@ -300,7 +349,7 @@ jobs:
       - name: "Lint migration downgrades"
         uses: addnab/docker-run-action@v3
         with:
-          image: ${{ env.tests_docker_image }}
+          image: ${{ steps.compute-image-name.outputs.image_name }}
           shell: bash
           options: -e RUN_ENV -e DATABASE_URL_TEST
           run: |
@@ -387,37 +436,50 @@ jobs:
           POSTGRES_DB: pass_culture
     steps:
       - uses: actions/checkout@v4.1.7
+      - name: "Compute docker image name:tag"
+        id: compute-image-name
+        run: echo "image_name=${{ env.registry }}/${{ inputs.image }}:${{ inputs.tag }}" | tee -a ${GITHUB_OUTPUT}
+      - name: "Download artifact"
+        if: ${{ inputs.tag }} != 'latest'
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.image }}-${{ inputs.tag }}.tar
+      - name: "Docker load artifact."
+        if: ${{ inputs.tag }} != 'latest'
+        run: |
+          docker load --input $GITHUB_WORKSPACE/${{ inputs.image }}-${{ inputs.tag }}.tar
       - name: "Authentification to Google"
         uses: "google-github-actions/auth@v2"
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       - name: "Get Secret"
-        id: "secrets"
+        id: secrets
         uses: "google-github-actions/get-secretmanager-secrets@v2"
         with:
           secrets: |-
-            ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/passculture-main-gcp-workload-identity-provider
-            ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
             SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
+            ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
+            ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
       - name: "OpenID Connect Authentication"
-        id: "openid-auth"
+        id: openid-auth
         uses: "google-github-actions/auth@v2"
         with:
           create_credentials_file: false
           token_format: "access_token"
-          workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER }}
+          workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER  }}
           service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
-      - uses: docker/login-action@v3
+      - name: "Docker login"
+        id: docker-login
+        uses: "docker/login-action@v1"
         with:
           registry: "europe-west1-docker.pkg.dev"
-          username: oauth2accesstoken
-          password: ${{ steps.openid-auth.outputs.access_token }}
-      - run: docker pull ${{ env.tests_docker_image }}
+          username: "oauth2accesstoken"
+          password: "${{ steps.openid-auth.outputs.access_token }}"
       - name: "Setup database"
         uses: addnab/docker-run-action@v3
         with:
-          image: ${{ env.tests_docker_image }}
+          image: ${{ steps.compute-image-name.outputs.image_name }}
           shell: bash
           options: -e RUN_ENV -e DATABASE_URL_TEST
           run: |
@@ -429,7 +491,7 @@ jobs:
       - name: "Mount a Volume with pcapi rights"
         uses: addnab/docker-run-action@v3
         with:
-          image: ${{ env.tests_docker_image }}
+          image: ${{ steps.compute-image-name.outputs.image_name }}
           shell: bash
           options: -e RUN_ENV -e DATABASE_URL_TEST -e REDIS_URL -v ${{ runner.workspace }}/pass-culture-main/api/tests/:/tests -u 0
           run: |
@@ -438,7 +500,7 @@ jobs:
       - name: "Run tests"
         uses: addnab/docker-run-action@v3
         with:
-          image: ${{ env.tests_docker_image }}
+          image: ${{ steps.compute-image-name.outputs.image_name }}
           shell: bash
           options: -e RUN_ENV -e DATABASE_URL_TEST -e REDIS_URL -e SQLALCHEMY_WARN_20 -v ${{ runner.workspace }}/pass-culture-main/api/tests/:/tests
           run: |
