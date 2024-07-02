@@ -20,7 +20,8 @@
   }
 
   label,
-  .label {
+  .label,
+  .too-many-options {
     display: flex;
     padding: rem.torem(11.2px) rem.torem(16px);
   }
