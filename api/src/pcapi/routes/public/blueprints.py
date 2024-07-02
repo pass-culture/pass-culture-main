@@ -29,9 +29,9 @@ public_api.before_request(_check_api_is_enabled_and_json_valid)
 
 
 # [OLD] Old tokens and stocks apis
-_deprecated_v2_prefixed_public_api = Blueprint("deprecated_public_api", __name__, url_prefix="/v2")
-_deprecated_v2_prefixed_public_api.register_blueprint(booking_token_blueprint.deprecated_booking_token_blueprint)
-_deprecated_v2_prefixed_public_api.register_blueprint(booking_stocks_blueprint.deprecated_books_stocks_blueprint)
+deprecated_v2_prefixed_public_api = Blueprint("deprecated_public_api", __name__, url_prefix="/v2")
+deprecated_v2_prefixed_public_api.register_blueprint(booking_token_blueprint.deprecated_booking_token_blueprint)
+deprecated_v2_prefixed_public_api.register_blueprint(booking_stocks_blueprint.deprecated_books_stocks_blueprint)
 
 
 # DOCUMENTATION REDIRECTS
@@ -60,7 +60,6 @@ public_api.register_blueprint(documentation_redirect_blueprint)
 
 
 # Registering deprecated APIs
-public_api.register_blueprint(_deprecated_v2_prefixed_public_api)
 CORS(
     public_api,
     resources={r"/*": {"origins": "*"}},
@@ -70,4 +69,4 @@ CORS(
 
 # Registering spectree schemas
 spectree_schemas.public_api_schema.register(public_api)
-spectree_schemas.deprecated_public_api_schema.register(_deprecated_v2_prefixed_public_api)
+spectree_schemas.deprecated_public_api_schema.register(deprecated_v2_prefixed_public_api)
