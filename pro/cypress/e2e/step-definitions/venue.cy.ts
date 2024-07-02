@@ -35,6 +35,7 @@ function initValuesAndIntercept(): void {
       },
     })
   ).as('getSiretVenue')
+  cy.intercept({ method: 'PATCH', url: '/venues/*' }).as('patchVenue')
 }
 
 Given('I want to add a venue', () => {
@@ -129,7 +130,7 @@ Then('I should see details of my venue', () => {
 When('I go to the venue page in Individual section', () => {
   initValuesAndIntercept()
   cy.findByText('Votre page partenaire').should('be.visible')
-  cy.findByText('Carnet d’adresses') //.should('be.visible')
+  cy.findByText('Carnet d’adresses').should('be.visible')
   cy.get('a[aria-label^="Gérer la page de Lieu avec Siret"]').eq(0).click()
   cy.findByText('À propos de votre activité').should('be.visible')
   cy.findByText('Modifier').click()
@@ -142,12 +143,13 @@ When('I update Individual section data', () => {
   cy.findByText('Non accessible').click()
   cy.findByText('Psychique ou cognitif').click()
   cy.findByText('Auditif').click()
-  cy.intercept({ method: 'PATCH', url: '/venues/*' }).as('patchVenue')
   cy.findByText('Enregistrer').click()
   cy.wait('@patchVenue')
 })
 
 When('I go to the venue page in Paramètres généraux', () => {
+  cy.findAllByTestId('spinner').should('not.exist')
+  cy.url().should('not.include', '/parametres')
   cy.findByText('Paramètres généraux').click()
   cy.url().should('include', '/structures').and('include', 'lieux')
   cy.findAllByTestId('spinner').should('not.exist')
@@ -156,7 +158,6 @@ When('I go to the venue page in Paramètres généraux', () => {
 When('I update Paramètres généraux data', () => {
   cy.url().should('include', '/parametres').and('include', 'structures')
   cy.findAllByTestId('spinner').should('not.exist')
-  cy.intercept({ method: 'PATCH', url: '/venues/*' }).as('patchVenue')
   cy.findByLabelText(
     'Label du ministère de la Culture ou du Centre national du cinéma et de l’image animée'
   ).select('Musée de France')
@@ -167,6 +168,7 @@ When('I update Paramètres généraux data', () => {
     )
   cy.findByText('Enregistrer').click()
   cy.wait('@patchVenue')
+  cy.findAllByTestId('spinner').should('not.exist')
 })
 
 Then('Individual section data should be updated', () => {
