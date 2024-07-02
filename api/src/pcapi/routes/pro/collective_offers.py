@@ -451,7 +451,11 @@ def patch_collective_offers_archive(
     if educational_api_offer.query_has_any_archived(collective_query):
         raise ApiErrors({"global": ["One of the offer is already archived"]}, status_code=422)
 
-    offers_api.batch_update_collective_offers(collective_query, {"dateArchived": datetime.utcnow()})
+    try:
+        offers_api.batch_update_collective_offers(collective_query, {"dateArchived": datetime.utcnow()})
+    except ValueError as error:
+        message = error.args[0]
+        raise ApiErrors({"ids": [message]}, status_code=400)
 
 
 @private_api.route("/collective/offers-template/active-status", methods=["PATCH"])

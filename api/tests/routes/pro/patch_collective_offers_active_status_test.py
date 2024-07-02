@@ -52,30 +52,6 @@ class Returns204Test:
         assert not CollectiveOffer.query.get(offer1.id).isActive
         assert not CollectiveOffer.query.get(offer2.id).isActive
 
-    def test_only_approved_offers_patch(self, client):
-        approved_offer = CollectiveOfferFactory(isActive=False)
-        venue = approved_offer.venue
-        pending_offer = CollectiveOfferFactory(venue=venue, validation=OfferValidationStatus.PENDING)
-        rejected_offer = CollectiveOfferFactory(venue=venue, validation=OfferValidationStatus.REJECTED)
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
-
-        data = {
-            "ids": [approved_offer.id, pending_offer.id, rejected_offer.id],
-            "isActive": True,
-        }
-
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-        ):
-            client = client.with_session_auth("pro@example.com")
-            response = client.patch("/collective/offers/active-status", json=data)
-
-        assert response.status_code == 204
-        assert approved_offer.isActive
-        assert not pending_offer.isActive
-        assert not rejected_offer.isActive
-
 
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:
