@@ -58,7 +58,7 @@ vi.mock('react-instantsearch', async () => {
     useStats: () => ({ nbHits: 1 }),
     useSearchBox: () => ({ refine: vi.fn() }),
     useInfiniteHits: () => ({
-      hits: defaultUseInfiniteHitsReturn.hits.slice(0, 1),
+      items: defaultUseInfiniteHitsReturn.items.slice(0, 1),
     }),
     useInstantSearch: () => ({
       scopedResults: [],

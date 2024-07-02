@@ -168,7 +168,7 @@ SET "jsonData" = '{}'
 WHERE "ruleId" is null and "financeIncidentId" is null
 ;
 
--- FIXME (dbaty, 2023-05-04): we should anonymize `offer.bookingEmail`
+-- We probably should anonymize `offer.bookingEmail`
 -- but that would take a very long time.
 --   UPDATE offer
 --   SET

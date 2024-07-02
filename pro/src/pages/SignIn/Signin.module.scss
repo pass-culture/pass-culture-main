@@ -20,6 +20,8 @@
 }
 
 .title {
+  @include fonts.title1;
+
   margin-bottom: rem.torem(16px);
 }
 

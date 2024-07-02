@@ -29,7 +29,6 @@ from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import User
 from pcapi.domain.booking_recap import utils as booking_recap_utils
-from pcapi.routes.serialization.bookings_recap_serialize import OfferType
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -583,6 +582,29 @@ class FindByProUserTest:
         # Then
         assert bookings[0].offerEan == "9876543234"
 
+    def test_should_return_only_bookings_for_requested_offerer_address(self):
+        pro_user = users_factories.ProFactory()
+        user_offerer = offerers_factories.UserOffererFactory(user=pro_user)
+        offerer = user_offerer.offerer
+
+        offerer_address_1 = offerers_factories.OffererAddressFactory(offerer=offerer)
+
+        booking_1 = bookings_factories.BookingFactory(
+            stock__offer__venue__managingOfferer=offerer, stock__offer__offererAddress=offerer_address_1
+        )
+        bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=offerer)
+
+        bookings_query, _ = booking_repository.find_by_pro_user(
+            user=pro_user,
+            booking_period=(one_year_before_booking, one_year_after_booking),
+            offerer_address_id=offerer_address_1.id,
+        )
+
+        bookings = bookings_query.all()
+
+        assert len(bookings) == 1
+        assert bookings[0].offerId == booking_1.stock.offer.id
+
     def test_should_return_only_booking_for_requested_venue(self, app: fixture):
         # Given
         pro_user = users_factories.ProFactory()
@@ -755,7 +777,6 @@ class FindByProUserTest:
         individual_bookings_recap_paginated_query, _ = booking_repository.find_by_pro_user(
             user=user_offerer.user,
             booking_period=(one_year_before_booking, one_year_after_booking),
-            offer_type=OfferType.INDIVIDUAL_OR_DUO,
         )
         individual_bookings_recap_paginated = individual_bookings_recap_paginated_query.all()
         all_bookings_recap_paginated_query, _ = booking_repository.find_by_pro_user(
@@ -2265,7 +2286,6 @@ class GetCsvReportTest:
         individual_bookings_csv = booking_repository.get_export(
             user=user_offerer.user,
             booking_period=(one_year_before_booking, one_year_after_booking),
-            offer_type=OfferType.INDIVIDUAL_OR_DUO,
         )
         all_bookings_csv = booking_repository.get_export(
             user=user_offerer.user,

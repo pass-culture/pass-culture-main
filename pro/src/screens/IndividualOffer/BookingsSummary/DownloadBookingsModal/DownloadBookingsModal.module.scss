@@ -2,105 +2,103 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .container {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: rem.torem(16px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: rem.torem(16px);
 }
 
 .header {
-    @include fonts.title3;
+  @include fonts.title3;
 }
 
 .one-booking-date-section {
-    @include fonts.title4;
+  @include fonts.title4;
 
-    margin: rem.torem(8px) 0;
+  margin: rem.torem(8px) 0;
 }
 
 .date-select-section {
-    width: 100%;
+  width: 100%;
 }
 
 .horizontal-line {
-    border: 1px solid var(--color-grey-medium);
-    margin: 0;
+  border: 1px solid var(--color-grey-medium);
+  margin: 0;
 }
 
 .actions {
-    display: flex;
-    justify-content: flex-end;
-    flex-wrap: wrap;
-    gap: rem.torem(24px);
-    width: 100%;
-    margin-top: rem.torem(24px);
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: rem.torem(24px);
+  width: 100%;
+  margin-top: rem.torem(24px);
 }
 
 .bookings-radio-buttons {
-    max-width: rem.torem(486px);
-    
-    &-validated {
-        margin: rem.torem(16px) 0;
-    }
-}
+  max-width: rem.torem(486px);
 
+  &-validated {
+    margin: rem.torem(16px) 0;
+  }
+}
 
 .bookings-date-count {
-    margin: rem.torem(16px) 0;
-    font-size: rem.torem(12px);
-    font-weight: 600;
+  margin: rem.torem(16px) 0;
+
+  @include fonts.highlight;
 }
 
-
 .date-select-table {
-    width: 100%;
-    margin: rem.torem(8px) 0;
-    text-align: left;
-    max-height: rem.torem(276px);
-    overflow: scroll;
+  width: 100%;
+  margin: rem.torem(8px) 0;
+  text-align: left;
+  max-height: rem.torem(276px);
+  overflow: scroll;
 
-    &-header {
-        font-size: rem.torem(12px);
-        font-weight: 600;
-    }
+  &-header {
+    @include fonts.highlight;
+  }
 }
 
 .table-row:focus-within {
-    outline: rem.torem(1px) solid var(--color-input-text-color);
-    outline-offset: rem.torem(2px);
-    border-radius: rem.torem(4px);
+  outline: rem.torem(1px) solid var(--color-input-text-color);
+  outline-offset: rem.torem(2px);
+  border-radius: rem.torem(4px);
 }
 
 .table-column {
-    padding: rem.torem(8px) 0;
+  padding: rem.torem(8px) 0;
 }
 
 .table-header {
-    font-size: rem.torem(12px);
+  font-size: rem.torem(12px);
 
-    &:first-child {
-        padding-left: rem.torem(28px);
-    }
+  &:first-child {
+    padding-left: rem.torem(28px);
+  }
 }
 
 .bookings-date-radio {
-    outline: none;
+  outline: none;
 
-    &:focus-within {
-        outline: none;
-    }
+  &:focus-within {
+    outline: none;
+  }
 }
 
 .bookings-day {
-    width: 4em;
-    font-size: rem.torem(15px);
-    font-weight: 700;
-    text-decoration: none;
-    text-transform: capitalize;
+  width: 4em;
+
+  @include fonts.bold;
+
+  text-decoration: none;
+  text-transform: capitalize;
 }
 
 .radio-label {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
 }

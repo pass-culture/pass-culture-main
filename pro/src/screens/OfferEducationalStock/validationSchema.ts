@@ -3,12 +3,16 @@ import * as yup from 'yup'
 
 import { MAX_DETAILS_LENGTH } from 'core/OfferEducational/constants'
 
+import { getMaxEndDateInSchoolYear } from './utils/getMaxEndDateInSchoolYear'
+
 const todayAtMidnight = () => {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   return today
 }
 
+// FIXME(anoukhello - 25/06/2024) this function is obsolete as eventDate no longer exists on bookable offer stock.
+// Add tests on FormStock to cover all validation cases and make typing more robust on validation schema.
 const isBeforeEventDate = (
   bookingLimitDatetime: Date | null | undefined,
   context: yup.TestContext
@@ -64,10 +68,16 @@ export const generateValidationSchema = (
       .when([], {
         is: () => !preventPriceIncrease,
         then: (schema) =>
-          schema.min(
-            todayAtMidnight(),
-            "La date de l’évènement doit être supérieure à aujourd'hui"
-          ),
+          schema
+            .min(
+              todayAtMidnight(),
+              "La date de l’évènement doit être supérieure à aujourd'hui"
+            )
+            .test({
+              message: 'Les dates doivent être sur la même année scolaire',
+              test: (value, context) =>
+                value < getMaxEndDateInSchoolYear(context.parent.startDatetime),
+            }),
       }),
     eventTime: yup
       .string()
@@ -94,7 +104,7 @@ export const generateValidationSchema = (
     numberOfPlaces: yup
       .number()
       .nullable()
-      .min(0, 'Nombre positif attendu')
+      .min(1, 'Minimum 1 participant')
       .max(3000, 'Le nombre de participants ne doit pas dépasser 3000')
       .required('Champ requis'),
     totalPrice: totalPriceValidation,

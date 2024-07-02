@@ -40,10 +40,14 @@ def create_free_invoice() -> None:
     offerer = offerers_factories.OffererFactory(name="0 - Structure avec compte bancaire et justificatif à 0€")
     bank_account = finance_factories.BankAccountFactory(offerer=offerer)
     offerers_factories.UserOffererFactory(offerer=offerer, user__email="activation_new_nav@example.com")
+    pricing_point = offerers_factories.VenueFactory(
+        name="Point de valorisation pour justificatifs à 0€",
+        managingOfferer=offerer,
+    )
     venue = offerers_factories.VirtualVenueFactory(
         name="Lieu avec justificatif à 0€",
         managingOfferer=offerer,
-        pricing_point="self",
+        pricing_point=pricing_point,
         bank_account=bank_account,
     )
     digital_offer1 = offers_factories.DigitalOfferFactory(name="Specific free invoice digital offer 1", venue=venue)

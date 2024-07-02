@@ -24,7 +24,7 @@ export const UserProfile = ({
 }: UserProfileProps): JSX.Element => {
   const [currentForm, setCurrentForm] = useState<Forms | null>(null)
   return (
-    <>
+    <div className={styles['profil-container']}>
       <h1 className={styles['profil-title']}>Profil</h1>
       <BannerRGS className={styles.banner} />
       <UserIdentity
@@ -46,6 +46,6 @@ export const UserProfile = ({
         setCurrentForm={(value: Forms | null) => setCurrentForm(value)}
         showForm={currentForm === Forms.USER_PASSWORD}
       />
-    </>
+    </div>
   )
 }

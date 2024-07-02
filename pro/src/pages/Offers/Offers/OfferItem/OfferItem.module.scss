@@ -53,12 +53,12 @@
   }
 
   .title-column {
+    @include fonts.body-exergue;
+
     grid-column: head;
     grid-row: head / desc;
     align-self: center;
-    font-weight: 600;
     padding-top: rem.torem(4px);
-    word-break: break-all;
 
     .offer-template-tag {
       margin-bottom: rem.torem(4px);
@@ -80,7 +80,7 @@
   .institution-column,
   .title-column {
     display: block;
-    word-break: break-all;
+    overflow-wrap: anywhere;
   }
 
   .venue-column {
@@ -109,12 +109,17 @@
   }
 }
 
+.isbn {
+  @include fonts.caption;
+
+  color: var(--color-grey-dark);
+}
+
 .stocks {
   @include fonts.caption;
 
   color: var(--color-grey-dark);
   display: flex;
-  font-size: rem.torem(14px);
   align-items: center;
 
   a {
@@ -201,7 +206,7 @@
 
     .thumb-column {
       padding: rem.torem(8px);
-      
+
       a {
         height: unset;
       }
@@ -220,7 +225,6 @@
 
     .actions-column {
       padding: 0 0 0 rem.torem(10px);
-
 
       & > div {
         justify-content: flex-end;
@@ -277,7 +281,7 @@
     justify-content: flex-start;
     width: 100%;
     padding: rem.torem(8px);
-  
+
     &:focus-visible {
       outline: rem.torem(1px) solid var(--color-input-text-color);
       outline-offset: rem.torem(2px);

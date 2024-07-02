@@ -35,13 +35,14 @@
     top: rem.torem(45px);
 
     .inside-modal-button {
+      @include fonts.body-exergue;
+
+      font-size: rem.torem(16px);
       background: var(--color-white);
       border: none;
       display: flex;
       justify-content: flex-start;
       font-style: normal;
-      font-weight: 600;
-      font-size: rem.torem(16px);
       padding: rem.torem(8px) rem.torem(17px);
       width: 100%;
 

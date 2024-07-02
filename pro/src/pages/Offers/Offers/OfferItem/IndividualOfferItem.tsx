@@ -18,7 +18,7 @@ type IndividualOfferItemProps = {
   disabled: boolean
   isSelected: boolean
   offer: ListOffersOfferResponseModel
-  selectOffer: (offerId: number, selected: boolean) => void
+  selectOffer: (offer: ListOffersOfferResponseModel) => void
   editionOfferLink: string
   editionStockLink: string
   venue: ListOffersVenueResponseModel
@@ -39,11 +39,10 @@ export const IndividualOfferItem = ({
     <>
       <CheckboxCell
         offerName={offer.name}
-        offerId={offer.id}
         status={offer.status}
         disabled={disabled}
         isSelected={isSelected}
-        selectOffer={selectOffer}
+        selectOffer={() => selectOffer(offer)}
       />
 
       <ThumbCell offer={offer} editionOfferLink={editionOfferLink} />

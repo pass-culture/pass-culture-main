@@ -51,7 +51,6 @@ export const AddRecurrencesButton = ({
           onDismiss={onCancel}
           hasCloseButton
           labelledBy="add-recurrence"
-          fullContentWidth
         >
           <RecurrenceForm
             priceCategories={offer.priceCategories ?? []}

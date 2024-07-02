@@ -18,6 +18,7 @@ import { buildOffererOptions, buildVenueOptions } from './utils'
 export interface VenueProps {
   offererNames: GetOffererNameResponseModel[]
   venueList: VenueListItemResponseModel[]
+  hideOfferer?: boolean
   readOnlyFields?: string[]
 }
 
@@ -39,6 +40,7 @@ export const onVenueChange = async (
 export const Venue = ({
   offererNames,
   venueList,
+  hideOfferer = false,
   readOnlyFields = [],
 }: VenueProps): JSX.Element => {
   const { values, setFieldValue } =
@@ -70,15 +72,17 @@ export const Venue = ({
 
   return (
     <>
-      <FormLayout.Row>
-        <Select
-          disabled={isOffererDisabled || readOnlyFields.includes('offererId')}
-          label="Structure"
-          name="offererId"
-          options={offererOptions}
-          onChange={onOffererChange}
-        />
-      </FormLayout.Row>
+      {!hideOfferer && (
+        <FormLayout.Row>
+          <Select
+            disabled={isOffererDisabled || readOnlyFields.includes('offererId')}
+            label="Structure"
+            name="offererId"
+            options={offererOptions}
+            onChange={onOffererChange}
+          />
+        </FormLayout.Row>
+      )}
       <FormLayout.Row>
         <Select
           disabled={isVenueDisabled || readOnlyFields.includes('venueId')}

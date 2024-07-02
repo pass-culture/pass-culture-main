@@ -64,7 +64,7 @@
   height: rem.torem(50px);
 
   &-text {
-    @include fonts.small-caption;
+    @include fonts.highlight;
 
     margin-bottom: rem.torem(10px);
   }

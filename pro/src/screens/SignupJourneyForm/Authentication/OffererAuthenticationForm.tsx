@@ -7,6 +7,8 @@ import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import { OffererFormValues } from '../Offerer/OffererForm'
 
+import styles from './OffererAuthenticationForm.module.scss'
+
 export interface OffererAuthenticationFormValues
   extends OffererFormValues,
     Address {
@@ -19,7 +21,7 @@ export interface OffererAuthenticationFormValues
 export const OffererAuthenticationForm = (): JSX.Element => {
   return (
     <FormLayout.Section>
-      <h1>Identification</h1>
+      <h1 className={styles['title']}>Identification</h1>
       <FormLayout.Row>
         <TextInput name="siret" label="Numéro de SIRET" type="text" disabled />
         <TextInput name="name" label="Raison sociale" type="text" disabled />

@@ -25,14 +25,15 @@ class BaseFactory(factory.alchemy.SQLAlchemyModelFactory):
         *args: typing.Any,
         **kwargs: typing.Any,
     ) -> models.Model:
-        # FIXME (dbaty, 2020-10-20): pytest-flask-sqlalchemy mocks
-        # (replaces) `db.session` to remove the session and rollback
-        # changes at the end of each test function (see `_session()`
-        # fixture in pytest-flask-sqlalchemy). As such, the session
-        # that is used in tests is not the session we defined in
+        # pytest-flask-sqlalchemy mocks (replaces) `db.session` to
+        # remove the session and rollback changes at the end of each
+        # test function (see `_session()` fixture in
+        # pytest-flask-sqlalchemy). As such, the session that is used
+        # in tests is not the session we defined in
         # `Meta.sqlalchemy_session` above. Because of this, data added
         # through a factory is not rollback'ed. To work around this,
         # here is a hack.
+
         # This issue is discussed here: https://github.com/jeancochrane/pytest-flask-sqlalchemy/issues/12
         session = db.session
 

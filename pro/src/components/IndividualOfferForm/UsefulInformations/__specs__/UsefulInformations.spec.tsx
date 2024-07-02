@@ -117,8 +117,6 @@ describe('IndividualOffer section: UsefulInformations', () => {
       props,
     })
 
-    const offererSelect = screen.getByLabelText('Structure *')
-    await userEvent.selectOptions(offererSelect, offererId.toString())
     const venueSelect = screen.getByLabelText('Lieu *')
     await userEvent.selectOptions(venueSelect, venueList[0].id.toString())
     const withEmail = screen.getByLabelText(
@@ -259,8 +257,6 @@ describe('IndividualOffer section: UsefulInformations', () => {
       props,
     })
 
-    const offererSelect = screen.getByLabelText('Structure *')
-    await userEvent.selectOptions(offererSelect, offererId.toString())
     const venueSelect = screen.getByLabelText('Lieu *')
     await userEvent.selectOptions(venueSelect, venueList[0].id.toString())
     const withEmail = screen.getByLabelText(
@@ -294,8 +290,6 @@ describe('IndividualOffer section: UsefulInformations', () => {
         props,
       })
 
-      const offererSelect = screen.getByLabelText('Structure *')
-      await userEvent.selectOptions(offererSelect, offererId.toString())
       const venueSelect = screen.getByLabelText('Lieu *')
       await userEvent.selectOptions(venueSelect, venueList[1].id.toString())
 
@@ -338,8 +332,6 @@ describe('IndividualOffer section: UsefulInformations', () => {
         props,
       })
 
-      const offererSelect = screen.getByLabelText('Structure *')
-      await userEvent.selectOptions(offererSelect, offererId.toString())
       const venueSelect = screen.getByLabelText('Lieu *')
       await userEvent.selectOptions(venueSelect, venueList[1].id.toString())
 

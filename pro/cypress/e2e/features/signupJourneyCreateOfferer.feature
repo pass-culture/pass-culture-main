@@ -5,7 +5,7 @@ Feature: Signup journey
     Given I log in with a "first" new account
     When I start offerer creation
     And I specify an offerer with a SIRET
-    And I add details to offerer
+    And I fill identification form with a public name
     And I fill activity form without target audience
     Then An error message is raised
     When I fill in missing target audience
@@ -18,7 +18,7 @@ Feature: Signup journey
     When I start offerer creation
     And I specify an offerer with a SIRET
     And I add a new offerer
-    And I fill identification step
+    And I fill identification form with a new address
     And I fill activity form without main activity
     Then An error message is raised
     When I fill in missing main activity

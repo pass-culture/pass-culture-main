@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
+from decimal import Decimal
 import hashlib
 import hmac
 import json
@@ -30,9 +31,11 @@ import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.repository as providers_api
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.testing import assert_no_duplicated_queries
+from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
+import pcapi.notifications.push.testing as push_testing
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import BookingAction
 from pcapi.utils.human_ids import humanize
 
@@ -854,9 +857,10 @@ class GetBookingsTest:
             stock__offer__withdrawalDelay=60 * 30,
         )
 
-        response = client.with_token(self.identifier).get("/native/v1/bookings")
+        with assert_num_queries(2):  # user + booking
+            response = client.with_token(self.identifier).get("/native/v1/bookings")
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         offer = response.json["ongoing_bookings"][0]["stock"]["offer"]
         assert offer["withdrawalDetails"] == "Veuillez chercher votre billet au guichet"
         assert offer["withdrawalType"] == "on_site"
@@ -877,9 +881,10 @@ class GetBookingsTest:
         ExternalBookingFactory(booking=booking, barcode="111111111", seat="A_1")
         ExternalBookingFactory(booking=booking, barcode="111111112", seat="A_2")
 
-        response = client.with_token(self.identifier).get("/native/v1/bookings")
+        with assert_num_queries(2):  # user + booking
+            response = client.with_token(self.identifier).get("/native/v1/bookings")
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         booking_response = response.json["ongoing_bookings"][0]
         assert booking_response["token"] is None  # do not display CM when it is an external booking
         assert booking_response["qrCodeData"] is not None
@@ -897,7 +902,8 @@ class CancelBookingTest:
         booking = booking_factories.BookingFactory(user=user)
 
         client = client.with_token(self.identifier)
-        response = client.post(f"/native/v1/bookings/{booking.id}/cancel")
+        with assert_num_queries(29):
+            response = client.post(f"/native/v1/bookings/{booking.id}/cancel")
 
         assert response.status_code == 204
 
@@ -906,12 +912,40 @@ class CancelBookingTest:
         assert booking.cancellationReason == BookingCancellationReasons.BENEFICIARY
         assert len(mails_testing.outbox) == 1
 
+    def test_cancel_booking_trigger_recredit_event(self, client):
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        booking = booking_factories.BookingFactory(user=user)
+
+        client = client.with_token(self.identifier)
+        with assert_num_queries(29):
+            response = client.post(f"/native/v1/bookings/{booking.id}/cancel")
+
+        assert response.status_code == 204
+
+        booking = Booking.query.get(booking.id)
+        assert len(push_testing.requests) == 3
+        assert push_testing.requests[0] == {
+            "can_be_asynchronously_retried": True,
+            "event_name": "recredit_account_cancellation",
+            "event_payload": {
+                "credit": Decimal("300"),
+                "offer_id": booking.stock.offer.id,
+                "offer_name": booking.stock.offer.name,
+                "offer_price": Decimal("10.1"),
+            },
+            "user_id": user.id,
+        }
+
     def test_cancel_others_booking(self, client):
         users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         booking = booking_factories.BookingFactory()
 
         client = client.with_token(self.identifier)
-        response = client.post(f"/native/v1/bookings/{booking.id}/cancel")
+        # fetch booking
+        # fetch user
+        # fetch booking (by email cloud task)
+        with assert_num_queries(3):
+            response = client.post(f"/native/v1/bookings/{booking.id}/cancel")
 
         assert response.status_code == 404
 
@@ -922,7 +956,11 @@ class CancelBookingTest:
         )
 
         client = client.with_token(self.identifier)
-        response = client.post(f"/native/v1/bookings/{booking.id}/cancel")
+        # fetch booking
+        # fetch user
+        # fetch booking (by email cloud task)
+        with assert_num_queries(3):
+            response = client.post(f"/native/v1/bookings/{booking.id}/cancel")
 
         assert response.status_code == 400
         assert response.json == {
@@ -938,7 +976,12 @@ class CancelBookingTest:
             cancellationReason=BookingCancellationReasons.BENEFICIARY,
         )
 
-        response = client.with_token(self.identifier).post(f"/native/v1/bookings/{booking.id}/cancel")
+        client = client.with_token(self.identifier)
+        # fetch booking
+        # fetch user
+        # fetch booking (by email cloud task)
+        with assert_num_queries(3):
+            response = client.post(f"/native/v1/bookings/{booking.id}/cancel")
 
         # successful but it does nothing, so it does not send a new cancellation email
         assert response.status_code == 204
@@ -1036,8 +1079,9 @@ class ToggleBookingVisibilityTest:
         )
 
         client = client.with_token(self.identifier)
-        response = client.get("/native/v1/bookings")
-        assert response.status_code == 200
+        with assert_num_queries(2):  # user + booking
+            response = client.get("/native/v1/bookings")
+            assert response.status_code == 200
 
         assert [b["id"] for b in response.json["ongoing_bookings"]] == [booking.id]
         assert [b["id"] for b in response.json["ended_bookings"]] == []

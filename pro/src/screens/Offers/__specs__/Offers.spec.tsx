@@ -3,6 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
 import {
+  CollectiveOfferStatus,
   ListOffersOfferResponseModel,
   OfferStatus,
   SharedCurrentUserResponseModel,
@@ -147,6 +148,7 @@ describe('screen Offers', () => {
 
     renderOffers({
       ...props,
+      audience: Audience.INDIVIDUAL,
       offers: [firstOffer, secondOffer],
     })
 
@@ -160,6 +162,7 @@ describe('screen Offers', () => {
 
     renderOffers({
       ...props,
+      audience: Audience.INDIVIDUAL,
       currentUser: { ...props.currentUser, isAdmin: false },
       offers: [firstOffer, secondOffer],
     })
@@ -173,6 +176,7 @@ describe('screen Offers', () => {
   it('should display total number of offers in plural if multiple offers', () => {
     renderOffers({
       ...props,
+      audience: Audience.INDIVIDUAL,
       offers: [...offersRecap, listOffersOfferFactory()],
     })
 
@@ -181,7 +185,11 @@ describe('screen Offers', () => {
   })
 
   it('should display total number of offers in singular if one or no offer', async () => {
-    renderOffers({ ...props, offers: offersRecap })
+    renderOffers({
+      ...props,
+      audience: Audience.INDIVIDUAL,
+      offers: offersRecap,
+    })
 
     screen.getByLabelText(offersRecap[0].name)
     expect(await screen.findByText('1 offre')).toBeInTheDocument()
@@ -190,7 +198,11 @@ describe('screen Offers', () => {
   it('should display 500+ for total number of offers if more than 500 offers are fetched', async () => {
     offersRecap = Array.from({ length: 501 }, () => listOffersOfferFactory())
 
-    renderOffers({ ...props, offers: offersRecap })
+    renderOffers({
+      ...props,
+      audience: Audience.INDIVIDUAL,
+      offers: offersRecap,
+    })
 
     screen.getByLabelText(offersRecap[0].name)
     expect(await screen.findByText('500+ offres')).toBeInTheDocument()
@@ -382,7 +394,7 @@ describe('screen Offers', () => {
       }),
     ]
 
-    renderOffers({ ...props, offers })
+    renderOffers({ ...props, offers, audience: Audience.INDIVIDUAL })
 
     expect(screen.queryByLabelText(offers[0].name)).toBeDisabled()
     expect(screen.queryByLabelText(offers[1].name)).toBeDisabled()
@@ -399,9 +411,9 @@ describe('screen Offers', () => {
 
   it('should not have "Tout Sélectionner" checked when there is no offer to be checked', () => {
     const offers = [
-      listOffersOfferFactory({
+      collectiveOfferFactory({
         isActive: false,
-        status: OfferStatus.PENDING,
+        status: CollectiveOfferStatus.PENDING,
       }),
     ]
 
@@ -463,7 +475,7 @@ describe('screen Offers', () => {
         }),
       ]
 
-      renderOffers({ ...props, offers })
+      renderOffers({ ...props, offers, audience: Audience.INDIVIDUAL })
 
       await userEvent.click(screen.getByLabelText('Tout sélectionner'))
       await userEvent.click(screen.getByText('Publier'))
@@ -500,7 +512,7 @@ describe('screen Offers', () => {
 
     it('should display success message activate inactive collective offer', async () => {
       const offers = [
-        listOffersOfferFactory({
+        collectiveOfferFactory({
           isActive: false,
           hasBookingLimitDatetimesPassed: false,
         }),
@@ -522,13 +534,15 @@ describe('screen Offers', () => {
         listOffersOfferFactory({
           isActive: false,
           status: OfferStatus.REJECTED,
+          isEditable: false,
         }),
         listOffersOfferFactory({
           status: OfferStatus.PENDING,
+          isEditable: false,
         }),
       ]
 
-      renderOffers({ ...props, offers })
+      renderOffers({ ...props, offers, audience: Audience.INDIVIDUAL })
 
       const firstOfferCheckbox = screen.getByLabelText(offers[0].name)
       const secondOfferCheckbox = screen.getByLabelText(offers[1].name)
@@ -552,13 +566,20 @@ describe('screen Offers', () => {
   })
 
   it('should display the collective offers format', () => {
-    renderOffers({ ...props, audience: Audience.COLLECTIVE })
-
+    renderOffers({
+      ...props,
+      offers: [collectiveOfferFactory()],
+      audience: Audience.COLLECTIVE,
+    })
     expect(screen.getByRole('combobox', { name: 'Format' }))
   })
 
   it('should filter on the format', async () => {
-    renderOffers({ ...props, audience: Audience.COLLECTIVE })
+    renderOffers({
+      ...props,
+      offers: [collectiveOfferFactory()],
+      audience: Audience.COLLECTIVE,
+    })
 
     const formatSelect = screen.getByRole('combobox', { name: 'Format' })
 

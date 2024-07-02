@@ -1,4 +1,5 @@
 from datetime import datetime
+import logging
 from unittest.mock import patch
 
 from flask import url_for
@@ -630,8 +631,21 @@ class DeleteProviderTest(PostEndpointHelper):
         assert not providers_models.AllocineVenueProvider.query.filter_by(id=allocine_venue_provider.id).first()
         assert not providers_models.AllocinePivot.query.filter_by(id=allocine_pivot.id).first()
 
-    def test_delete_pivot_boost(self, authenticated_client):
+    def test_delete_pivot_boost_with_logout_error(self, authenticated_client, caplog):
         boost_pivot = providers_factories.BoostCinemaDetailsFactory()
+        cinema_url = boost_pivot.cinemaUrl
+
+        with caplog.at_level(logging.ERROR):
+            self.post_to_endpoint(authenticated_client, name="boost", pivot_id=boost_pivot.id)
+
+        assert not providers_models.BoostCinemaDetails.query.filter_by(id=boost_pivot.id).first()
+        assert len(caplog.records) == 1
+        assert caplog.records[0].message == "Unexpected error from Boost logout API"
+        assert caplog.records[0].cinema_url == cinema_url
+
+    def test_delete_pivot_boost_with_success_logout(self, authenticated_client, requests_mock):
+        boost_pivot = providers_factories.BoostCinemaDetailsFactory()
+        requests_mock.post(f"{boost_pivot.cinemaUrl}api/vendors/logout", json={"code": 200, "message": "string"})
 
         self.post_to_endpoint(authenticated_client, name="boost", pivot_id=boost_pivot.id)
 

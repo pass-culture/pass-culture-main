@@ -22,6 +22,7 @@ from pcapi.core.educational import utils as educational_utils
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveStock
+from pcapi.core.external import batch
 from pcapi.core.external.attributes.api import update_external_pro
 from pcapi.core.external.attributes.api import update_external_user
 from pcapi.core.external.batch import track_offer_booked_event
@@ -215,17 +216,6 @@ def _book_offer(
         if is_activation_code_applicable:
             validation.check_activation_code_available(stock)
 
-        # FIXME (dbaty, 2020-10-20): if we directly set relations (for
-        # example with `booking.user = beneficiary`) instead of foreign keys,
-        # the session tries to add the object when `get_user_expenses()`
-        # is called because autoflush is enabled. As such, the PostgreSQL
-        # exceptions (tooManyBookings and insufficientFunds) may raise at
-        # this point and will bubble up. If we want them to be caught, we
-        # have to set foreign keys, so that the session is NOT autoflushed
-        # in `get_user_expenses` and is only committed in `repository.save()`
-        # where exceptions are caught. Since we are using flask-sqlalchemy,
-        # I don't think that we should use autoflush, nor should we use
-        # the `pcapi.repository.repository` module.
         booking = Booking(
             userId=beneficiary.id,
             stockId=stock.id,
@@ -470,6 +460,7 @@ def _cancel_booking(
         },
         technical_message_id="booking.cancelled",
     )
+    batch.track_booking_cancellation(booking)
     _send_external_booking_notification_if_necessary(booking, BookingAction.CANCEL)
 
     update_external_user(booking.user)
@@ -879,7 +870,7 @@ def auto_mark_as_used_after_event() -> None:
     now = datetime.datetime.utcnow()
     threshold = now - constants.AUTO_USE_AFTER_EVENT_TIME_DELAY
 
-    # FIXME (dbaty, 2023-07-07): Revisit with SQLAlchemy 2.
+    # Revisit with SQLAlchemy 2.
     #
     # I tried to update and select bookings in a single query, like this:
     #     WITH updated AS (

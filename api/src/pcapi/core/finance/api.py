@@ -586,22 +586,18 @@ def _price_event(event: models.FinanceEvent) -> models.Pricing:
             ),
         ]
     elif event.motive == models.FinanceEventMotive.INCIDENT_COMMERCIAL_GESTURE:
-        original_pricing = [
-            pricing for pricing in booking.pricings if pricing.status == models.PricingStatus.CANCELLED
-        ][0]
-
-        rule = find_reimbursement_rule(original_pricing.customRuleId or original_pricing.standardRule)
-        amount = -rule.apply(booking, event.bookingFinanceIncident.commercial_gesture_amount)  # outgoing, thus negative
+        rule = reimbursement.CommercialGestureReimbursementRule()
+        amount = -event.bookingFinanceIncident.commercial_gesture_amount  # outgoing, thus negative
         offerer_revenue_amount = -event.bookingFinanceIncident.commercial_gesture_amount
         pricing_booking_id = None
         pricing_collective_booking_id = None
         lines = [
             models.PricingLine(
-                amount=offerer_revenue_amount,
+                amount=amount,
                 category=models.PricingLineCategory.OFFERER_REVENUE,
             ),
             models.PricingLine(
-                amount=amount - offerer_revenue_amount,
+                amount=0,
                 category=models.PricingLineCategory.OFFERER_CONTRIBUTION,
             ),
         ]
@@ -1266,6 +1262,7 @@ def _write_csv(
 
 def _generate_bank_accounts_file(cutoff: datetime.datetime) -> pathlib.Path:
     header = (
+        "Lieux liés au compte bancaire",
         "Identifiant des coordonnées bancaires",
         "SIREN de la structure",
         "Nom de la structure - Libellé des coordonnées bancaires",
@@ -1281,9 +1278,19 @@ def _generate_bank_accounts_file(cutoff: datetime.datetime) -> pathlib.Path:
             )
         )
         .join(models.BankAccount.offerer)
+        .join(models.BankAccount.venueLinks)
+        .group_by(
+            models.BankAccount.id,
+            models.BankAccount.label,
+            models.BankAccount.iban,
+            models.BankAccount.bic,
+            offerers_models.Offerer.name,
+            offerers_models.Offerer.siren,
+        )
         .order_by(models.BankAccount.id)
     ).with_entities(
         models.BankAccount.id,
+        sqla_func.array_agg(offerers_models.VenueBankAccountLink.venueId.distinct()).label("venue_ids"),
         offerers_models.Offerer.name.label("offerer_name"),
         offerers_models.Offerer.siren.label("offerer_siren"),
         models.BankAccount.label.label("label"),
@@ -1292,6 +1299,7 @@ def _generate_bank_accounts_file(cutoff: datetime.datetime) -> pathlib.Path:
     )
 
     row_formatter = lambda row: (
+        ", ".join(str(venue_id) for venue_id in sorted(row.venue_ids)),
         human_ids.humanize(row.id),
         _clean_for_accounting(row.offerer_siren),
         _clean_for_accounting(f"{row.offerer_name} - {row.label}"),
@@ -2509,7 +2517,7 @@ def edit_reimbursement_rule(
         db.session.expire(rule)
         raise
     db.session.add(rule)
-    db.session.commit()
+    db.session.flush()
     return rule
 
 

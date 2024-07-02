@@ -19,8 +19,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-size: rem.torem(12px);
-  font-weight: 600;
+
+  @include fonts.caption;
 }
 
 .prebooking-tag {

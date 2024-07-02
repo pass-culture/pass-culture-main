@@ -3,7 +3,7 @@ import { format, sub } from 'date-fns'
 import { api } from 'apiClient/api'
 import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 import { useNotification } from 'hooks/useNotification'
-import { serializeBeginningDateTime } from 'screens/IndividualOffer/StocksEventEdition/serializers'
+import { serializeDateTimeToUTCFromLocalDepartment } from 'screens/IndividualOffer/StocksEventEdition/serializers'
 import {
   FORMAT_ISO_DATE_ONLY,
   isDateValid,
@@ -193,7 +193,7 @@ const generateStocksForDates = (
               throw new Error('Some values are empty')
             }
 
-            const beginningDatetime = serializeBeginningDateTime(
+            const beginningDatetime = serializeDateTimeToUTCFromLocalDepartment(
               format(beginningDate, FORMAT_ISO_DATE_ONLY),
               beginningTime,
               departmentCode

@@ -33,7 +33,7 @@ describe('CollectiveStatusLabel', () => {
     { offerStatus: CollectiveOfferStatus.REJECTED, expectedLabel: 'refusée' },
     {
       offerStatus: CollectiveOfferStatus.INACTIVE,
-      expectedLabel: 'désactivée',
+      expectedLabel: 'masquée',
     },
     { offerStatus: CollectiveOfferStatus.ACTIVE, expectedLabel: 'publiée' },
     {
@@ -52,6 +52,7 @@ describe('CollectiveStatusLabel', () => {
       bookingStatus: 'USED',
     },
     { offerStatus: CollectiveOfferStatus.EXPIRED, expectedLabel: 'expirée' },
+    { offerStatus: CollectiveOfferStatus.ARCHIVED, expectedLabel: 'archivée' },
   ]
 
   it.each(testCases)(

@@ -7,7 +7,6 @@ import { Banner, BannerProps } from '../Banner'
 
 describe('Banner', () => {
   const props: BannerProps = {
-    closable: true,
     links: [
       {
         href: '/some/site',
@@ -30,22 +29,5 @@ describe('Banner', () => {
     expect(link).toHaveAttribute('href', props.links?.[0]?.href)
     expect(link).toHaveAttribute('target', '_blank')
     expect(link).toHaveAttribute('rel', 'noopener noreferrer')
-
-    expect(screen.getByRole('img')).toHaveAttribute(
-      'aria-label',
-      'Masquer le bandeau'
-    )
-  })
-
-  it('should display close icon with light type', () => {
-    props.type = 'light'
-    renderWithProviders(
-      <Banner {...props}>This is the banner light content</Banner>
-    )
-    expect(screen.getByRole('img')).toHaveAttribute(
-      'aria-label',
-      'Masquer le bandeau'
-    )
-    expect(screen.getByRole('img')).toHaveAttribute('class', 'close-icon')
   })
 })

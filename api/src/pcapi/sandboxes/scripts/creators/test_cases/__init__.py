@@ -5,6 +5,7 @@ import random
 
 from factory.faker import faker
 
+from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories_v2
 from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.offerers import factories as offerers_factories
@@ -29,6 +30,7 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerer_with_
 )
 from pcapi.sandboxes.scripts.creators.industrial.create_role_permissions import create_roles_with_permissions
 from pcapi.sandboxes.scripts.creators.test_cases import venues_mock
+from pcapi.sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
 import pcapi.sandboxes.thumbs.generic_pictures as generic_picture_thumbs
 from pcapi.scripts.venue.venue_label.create_venue_labels import create_venue_labels
 
@@ -39,7 +41,7 @@ Fake = faker.Faker(locale="fr_FR")
 def save_test_cases_sandbox() -> None:
     create_offers_with_gtls()
     create_offers_with_same_ean()
-    create_allocine_venues()
+    create_cinema_data()
     create_venues_across_cities()
     create_offers_for_each_subcategory()
     create_offers_with_same_author()
@@ -175,27 +177,65 @@ def create_offer_with_ean(ean: str, venue: offerers_models.Venue, author: str) -
     offers_factories.StockFactory(quantity=random.randint(10, 100), offer=offer)
 
 
-def _create_offer_and_stocks_for_allocine_venues(venue: offerers_models.Venue) -> None:
-    film_offer = offers_factories.OfferFactory(
-        venue=venue,
-        subcategoryId=subcategories_v2.SEANCE_CINE.id,
-        name=f"Séance Allociné - {venue.name}",
-    )
-    for daydelta in range(30):
-        day = datetime.date.today() + datetime.timedelta(days=daydelta)
-        for hour in (0, 5, 11, 17, 21):
-            beginning_datetime = datetime.datetime.combine(day, datetime.time(hour=hour))
-            is_full = random.random() < 0.3
-            quantity = random.randint(1, 100) if not is_full else 0
-            offers_factories.StockFactory(
-                offer=film_offer,
-                beginningDatetime=beginning_datetime,
-                bookingLimitDatetime=beginning_datetime - datetime.timedelta(minutes=30),
-                quantity=quantity,
+def _create_offer_and_stocks_for_allocine_venues(
+    venues: list[offerers_models.Venue], products: list[offers_models.Product]
+) -> None:
+    for venue in venues:
+        for idx, product in enumerate(products):
+            movie_offer = offers_factories.OfferFactory(
+                durationMinutes=product.durationMinutes,
+                name=product.name,
+                product=product,
+                subcategoryId=subcategories_v2.SEANCE_CINE.id,
+                venue=venue,
+                extraData=product.extraData,
             )
+            product_stocks = []
+            for daydelta in range(30):
+                day = datetime.date.today() + datetime.timedelta(days=daydelta)
+                for hour in (0, 5, 11, 17, 21):
+                    beginning_datetime = datetime.datetime.combine(day, datetime.time(hour=hour))
+                    is_full = hour == 5
+                    quantity = daydelta * hour + 1 if not is_full else 0
+                    stock = offers_factories.StockFactory(
+                        offer=movie_offer,
+                        beginningDatetime=beginning_datetime,
+                        bookingLimitDatetime=beginning_datetime - datetime.timedelta(minutes=30),
+                        quantity=quantity,
+                    )
+                    if not is_full:
+                        product_stocks.append(stock)
+
+            product_bookings = idx + 1
+            # We want the two most popular products to have the same number of bookings
+            if product == products[-1]:
+                product_bookings -= 1
+
+            for stock_idx in range(product_bookings):
+                bookings_factories.BookingFactory(stock=product_stocks[stock_idx % len(product_stocks)])
 
 
-def create_allocine_venues() -> None:
+def create_cinema_data() -> None:
+    venues = _create_allocine_venues()
+    products = _create_movie_products()
+    _create_offer_and_stocks_for_allocine_venues(venues, products)
+
+
+def _create_movie_products() -> list[offers_models.Product]:
+    return [
+        offers_factories.ProductFactory(
+            subcategoryId=subcategories_v2.SEANCE_CINE.id,
+            description=f"Description du film {i}",
+            name=f"Film {i}",
+            extraData={"allocineId": 100_000 + i},
+            durationMinutes=115 + i,
+        )
+        for i in range(1, 11)
+    ]
+
+
+def _create_allocine_venues() -> list[offerers_models.Venue]:
+    venues = []
     for venue_data in venues_mock.cinemas_venues:
         allocine_offerer = offerers_factories.OffererFactory(name=f"Structure du lieu allocine {venue_data['name']}")
         offerers_factories.UserOffererFactory(offerer=allocine_offerer, user__email="api@example.com")
@@ -226,7 +266,9 @@ def create_allocine_venues() -> None:
             venue=allocine_synchonized_venue,
             venueIdAtOfferProvider=pivot.theaterId,
         )
-        _create_offer_and_stocks_for_allocine_venues(allocine_synchonized_venue)
+        venues.append(allocine_synchonized_venue)
+
+    return venues
 
 
 def create_venues_across_cities() -> None:
@@ -281,27 +323,33 @@ def create_venues_across_cities() -> None:
 
 def create_offers_for_each_subcategory() -> None:
     for subcategory in subcategories_v2.ALL_SUBCATEGORIES:
-        if subcategory.id in subcategories_v2.EVENT_SUBCATEGORIES:
-            offers_factories.EventStockFactory.create_batch(
-                size=10,
-                offer__product=None,
-                offer__subcategoryId=subcategory.id,
-                quantity=random.randint(10, 100),
-                beginningDatetime=datetime.datetime.utcnow()
-                + datetime.timedelta(
-                    days=random.randint(30, 59),
-                    hours=random.randint(1, 23),
-                    minutes=random.randint(1, 59),
-                    seconds=random.randint(1, 59),
-                ),
-            )
-        else:
-            offers_factories.StockFactory.create_batch(
-                size=10,
-                offer__product=None,
-                offer__subcategoryId=subcategory.id,
-                quantity=random.randint(10, 100),
-            )
+        for i in range(1, 11):
+            is_free = i % 2
+            is_in_Paris = i < 6  # else it will be Marseille
+            if subcategory.id in subcategories_v2.EVENT_SUBCATEGORIES:
+                stock = offers_factories.EventStockFactory(
+                    offer__product=None,
+                    offer__subcategoryId=subcategory.id,
+                    offer__venue__latitude=48.87004 if is_in_Paris else 43.29542,
+                    offer__venue__longitude=2.37850 if is_in_Paris else 5.37421,
+                    price=0 if is_free else i * 2,
+                    quantity=i * 10,
+                    beginningDatetime=datetime.datetime.utcnow()
+                    + datetime.timedelta(
+                        days=i + 7,
+                        hours=(3 * i) % 60,
+                        minutes=(5 * i) % 60,
+                    ),
+                )
+            else:
+                stock = offers_factories.StockFactory(
+                    offer__product=None,
+                    offer__subcategoryId=subcategory.id,
+                    price=0 if is_free else 10,
+                    quantity=i * 10,
+                )
+            mediation = offers_factories.MediationFactory(offer=stock.offer)
+            store_public_object_from_sandbox_assets("thumbs", mediation, subcategory.id)
 
 
 def create_offers_with_same_author() -> None:

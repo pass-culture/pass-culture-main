@@ -102,9 +102,9 @@ class CreateVenueTest:
         }
 
     def test_basics(self):
-        offerer = offerers_factories.OffererFactory()
-        data = venues_serialize.PostVenueBodyModel(**self.base_data(offerer))
-        offerers_api.create_venue(data)
+        user_offerer = offerers_factories.UserOffererFactory()
+        data = venues_serialize.PostVenueBodyModel(**self.base_data(user_offerer.offerer))
+        offerers_api.create_venue(data, user_offerer.user)
 
         venue = offerers_models.Venue.query.one()
         assert venue.street == "rue du test"
@@ -113,18 +113,25 @@ class CreateVenueTest:
         assert venue.postalCode == "75000"
         assert venue.latitude == 1
         assert venue.longitude == 1
-        assert venue.managingOfferer == offerer
+        assert venue.managingOfferer == user_offerer.offerer
         assert venue.name == "La Venue"
         assert venue.bookingEmail == "venue@example.com"
         assert venue.dmsToken
         assert venue.current_pricing_point_id == venue.id
 
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.VENUE_CREATED
+        assert action.authorUser == user_offerer.user
+        assert action.user is None
+        assert action.offerer is None
+        assert action.venue == venue
+
     def test_venue_with_no_siret_has_no_pricing_point(self):
-        offerer = offerers_factories.OffererFactory()
-        data = self.base_data(offerer) | {"siret": None, "comment": "no siret"}
+        user_offerer = offerers_factories.UserOffererFactory()
+        data = self.base_data(user_offerer.offerer) | {"siret": None, "comment": "no siret"}
         data = venues_serialize.PostVenueBodyModel(**data)
 
-        offerers_api.create_venue(data)
+        offerers_api.create_venue(data, user_offerer.user)
 
         venue = offerers_models.Venue.query.one()
         assert venue.siret is None
@@ -2106,7 +2113,7 @@ class CreateFromOnboardingDataTest:
         assert offerer_address.addressId == address.id
 
         # Action logs
-        assert history_models.ActionHistory.query.count() == 1
+        assert history_models.ActionHistory.query.count() == 2
         offerer_action = history_models.ActionHistory.query.filter(
             history_models.ActionHistory.actionType == history_models.ActionType.OFFERER_NEW
         ).one()
@@ -2114,6 +2121,12 @@ class CreateFromOnboardingDataTest:
         assert offerer_action.authorUser == user
         assert offerer_action.user == user
         self.assert_common_action_history_extra_data(offerer_action)
+        venue_action = history_models.ActionHistory.query.filter(
+            history_models.ActionHistory.actionType == history_models.ActionType.VENUE_CREATED
+        ).one()
+        assert venue_action.venue == created_venue
+        assert venue_action.authorUser == user
+
         self.assert_only_welcome_email_to_pro_was_sent()
         # Venue Registration
         self.assert_venue_registration_attrs(created_venue)
@@ -2153,15 +2166,9 @@ class CreateFromOnboardingDataTest:
         assert created_venue.current_pricing_point_id == created_venue.id
         assert not created_venue.offererAddressId
 
-        # Action logs
-        assert history_models.ActionHistory.query.count() == 1
-        offerer_action = history_models.ActionHistory.query.filter(
-            history_models.ActionHistory.actionType == history_models.ActionType.OFFERER_NEW
-        ).one()
-        assert offerer_action.offerer == created_offerer
-        assert offerer_action.authorUser == user
-        assert offerer_action.user == user
-        self.assert_common_action_history_extra_data(offerer_action)
+        # Action logs (content already checked in test_new_siren_new_siret)
+        assert history_models.ActionHistory.query.count() == 2
+
         self.assert_only_welcome_email_to_pro_was_sent()
         # Venue Registration
         self.assert_venue_registration_attrs(created_venue)
@@ -2190,7 +2197,7 @@ class CreateFromOnboardingDataTest:
         assert created_venue.siret == "85331845900031"
         assert created_venue.current_pricing_point_id == created_venue.id
         # Action logs
-        assert history_models.ActionHistory.query.count() == 1
+        assert history_models.ActionHistory.query.count() == 2
         offerer_action = history_models.ActionHistory.query.filter(
             history_models.ActionHistory.actionType == history_models.ActionType.USER_OFFERER_NEW
         ).one()
@@ -2198,6 +2205,12 @@ class CreateFromOnboardingDataTest:
         assert offerer_action.authorUser == user
         assert offerer_action.user == user
         self.assert_common_action_history_extra_data(offerer_action)
+        venue_action = history_models.ActionHistory.query.filter(
+            history_models.ActionHistory.actionType == history_models.ActionType.VENUE_CREATED
+        ).one()
+        assert venue_action.venue == created_venue
+        assert venue_action.authorUser == user
+
         assert len(mails_testing.outbox) == 0
         # Venue Registration
         self.assert_venue_registration_attrs(created_venue)
@@ -2227,7 +2240,7 @@ class CreateFromOnboardingDataTest:
         # No pricing point yet
         assert not created_venue.current_pricing_point_id
         # Action logs
-        assert history_models.ActionHistory.query.count() == 1
+        assert history_models.ActionHistory.query.count() == 2
         offerer_action = history_models.ActionHistory.query.filter(
             history_models.ActionHistory.actionType == history_models.ActionType.USER_OFFERER_NEW
         ).one()
@@ -2235,6 +2248,12 @@ class CreateFromOnboardingDataTest:
         assert offerer_action.authorUser == user
         assert offerer_action.user == user
         self.assert_common_action_history_extra_data(offerer_action)
+        offerer_action = history_models.ActionHistory.query.filter(
+            history_models.ActionHistory.actionType == history_models.ActionType.VENUE_CREATED
+        ).one()
+        assert offerer_action.venue == created_venue
+        assert offerer_action.authorUser == user
+
         assert len(mails_testing.outbox) == 0
         # Venue Registration
         self.assert_venue_registration_attrs(created_venue)

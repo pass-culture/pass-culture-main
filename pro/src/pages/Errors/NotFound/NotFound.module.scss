@@ -13,7 +13,7 @@
   justify-content: center;
   height: 100vh;
 
-  h1 {
+  .title {
     @include fonts.hero;
 
     color: var(--color-white);

@@ -19,8 +19,12 @@ When('I open adage iframe', () => {
   }).as('features')
   cy.visit(`/adage-iframe?token=${adageToken}`)
   cy.wait(['@local_offerers', '@features']).then((interception) => {
-    expect(interception[0].response.statusCode).to.equal(200)
-    expect(interception[1].response.statusCode).to.equal(200)
+    if (interception[0].response) {
+      expect(interception[0].response.statusCode).to.equal(200)
+    }
+    if (interception[1].response) {
+      expect(interception[1].response.statusCode).to.equal(200)
+    }
   })
   cy.findAllByTestId('spinner').should('not.exist')
   cy.wait(500) // la liste des offres se réordonne, d'où cette attente

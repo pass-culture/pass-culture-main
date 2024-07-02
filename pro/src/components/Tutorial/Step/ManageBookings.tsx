@@ -16,7 +16,9 @@ export const ManageBookings = ({
   titleId,
 }: StepComponentProps): JSX.Element => (
   <>
-    <h1 id={titleId}>Suivez et gérez vos réservations</h1>
+    <h1 id={titleId} className={styles['title']}>
+      Suivez et gérez vos réservations
+    </h1>
     <section className={styles['mb-content']}>
       <div className={styles['nav-tutorial']}>
         <div className={styles['ticket-office']}>

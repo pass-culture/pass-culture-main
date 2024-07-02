@@ -48,7 +48,7 @@ export const collectiveOfferFactory = (
     isEducational: true,
     name: `offer name ${offerId}`,
     venue: listOffersVenueFactory(),
-    stocks: [],
+    stocks: [{ hasBookingLimitDatetimePassed: false, remainingQuantity: 1 }],
     isEditable: true,
     isPublicApi: false,
     interventionArea: [],

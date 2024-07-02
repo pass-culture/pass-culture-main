@@ -34,8 +34,12 @@ type OffersProps = {
   offersCount: number
   pageCount: number
   resetFilters: () => void
-  selectedOfferIds: number[]
-  setSelectedOfferIds: React.Dispatch<React.SetStateAction<number[]>>
+  selectedOffers:
+    | CollectiveOfferResponseModel[]
+    | ListOffersOfferResponseModel[]
+  setSelectedOffer: (
+    offer: ListOffersOfferResponseModel | CollectiveOfferResponseModel
+  ) => void
   toggleSelectAllCheckboxes: () => void
   urlSearchFilters: SearchFiltersParams
   isAtLeastOneOfferChecked: boolean
@@ -51,9 +55,9 @@ export const Offers = ({
   offersCount,
   pageCount,
   resetFilters,
-  selectedOfferIds,
+  selectedOffers,
   applyUrlFiltersAndRedirect,
-  setSelectedOfferIds,
+  setSelectedOffer,
   toggleSelectAllCheckboxes,
   urlSearchFilters,
   audience,
@@ -71,19 +75,6 @@ export const Offers = ({
       { ...urlSearchFilters, page: currentPageNumber + 1 },
       false
     )
-
-  function selectOffer(offerId: number, isAlreadyChecked: boolean) {
-    setSelectedOfferIds((currentSelectedIds) => {
-      const newSelectedOfferIds = [...currentSelectedIds]
-      if (isAlreadyChecked) {
-        newSelectedOfferIds.push(offerId)
-      } else {
-        const offerIdIndex = newSelectedOfferIds.indexOf(offerId)
-        newSelectedOfferIds.splice(offerIdIndex, 1)
-      }
-      return newSelectedOfferIds
-    })
-  }
 
   return (
     <div aria-busy={isLoading} aria-live="polite" className="section">
@@ -125,8 +116,8 @@ export const Offers = ({
                 <OffersTableHead audience={audience} />
                 <OffersTableBody
                   offers={currentPageOffersSubset}
-                  selectOffer={selectOffer}
-                  selectedOfferIds={selectedOfferIds}
+                  selectOffer={setSelectedOffer}
+                  selectedOffers={selectedOffers}
                   audience={audience}
                   urlSearchFilters={urlSearchFilters}
                 />

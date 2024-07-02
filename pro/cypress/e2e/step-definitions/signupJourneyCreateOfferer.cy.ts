@@ -22,45 +22,6 @@ Given('I log in with a {string} new account', (nth: string) => {
 })
 
 When('I start offerer creation', () => {
-  cy.intercept(
-    'GET',
-    `https://api-adresse.data.gouv.fr/search/?limit=1&q=3%20RUE%20DE%20VALOIS%20Paris%2075001`,
-    (req) =>
-      req.reply({
-        statusCode: 200,
-        body: {
-          type: 'FeatureCollection',
-          version: 'draft',
-          features: [
-            {
-              type: 'Feature',
-              geometry: { type: 'Point', coordinates: [2.337933, 48.863666] },
-              properties: {
-                label: '3 Rue de Valois 75001 Paris',
-                score: 0.8136893939393939,
-                housenumber: '3',
-                id: '75101_9575_00003',
-                name: '3 Rue de Valois',
-                postcode: '75001',
-                citycode: '75101',
-                x: 651428.82,
-                y: 6862829.62,
-                city: 'Paris',
-                district: 'Paris 1er Arrondissement',
-                context: '75, Paris, Île-de-France',
-                type: 'housenumber',
-                importance: 0.61725,
-                street: 'Rue de Valois',
-              },
-            },
-          ],
-          attribution: 'BAN',
-          licence: 'ETALAB-2.0',
-          query: '3 RUE DE VALOIS Paris 75001',
-          limit: 1,
-        },
-      })
-  ).as('searchAddress')
   cy.findByText('Commencer').click()
 })
 
@@ -88,25 +49,27 @@ When('I specify an offerer with a SIRET', () => {
     method: 'GET',
     url: `/venues/siret/${mySiret}`,
   }).as('venuesSiret')
+  cy.intercept(
+    'GET',
+    'https://api-adresse.data.gouv.fr/search/?limit=1&q=*'
+  ).as('search1Address')
   cy.findByText('Continuer').click()
-  cy.wait(['@getSiret', '@venuesSiret']).then((interception) => {
-    if (interception[0].response)
-      expect(interception[0].response.statusCode).to.equal(200)
-    if (interception[1].response)
-      expect(interception[1].response.statusCode).to.equal(200)
-  })
+  cy.wait(['@getSiret', '@venuesSiret', '@search1Address']).then(
+    (interception) => {
+      if (interception[0].response) {
+        expect(interception[0].response.statusCode).to.equal(200)
+      }
+      if (interception[1].response) {
+        expect(interception[1].response.statusCode).to.equal(200)
+      }
+      if (interception[2].response) {
+        expect(interception[2].response.statusCode).to.equal(200)
+      }
+    }
+  )
 })
 
-When('I add details to offerer', () => {
-  cy.url().should('contain', '/parcours-inscription/identification')
-  cy.findByLabelText('Nom public').type('First Offerer')
-  cy.intercept({
-    method: 'GET',
-    url: '/venue-types',
-  }).as('venue-types')
-  cy.findByText('Étape suivante').click()
-  cy.wait('@venue-types').its('response.statusCode').should('eq', 200)
-})
+
 
 When('I fill activity form without main activity', () => {
   cy.url().should('contain', '/parcours-inscription/activite')
@@ -136,16 +99,40 @@ When('I validate the registration', () => {
 
 When('I add a new offerer', () => {
   cy.url().should('contain', '/parcours-inscription/structure/rattachement')
+  cy.intercept(
+    'GET',
+    'https://api-adresse.data.gouv.fr/search/?limit=5&q=*'
+  ).as('search5Address')
   cy.findByText('Ajouter une nouvelle structure').click()
+  cy.wait('@search5Address')
 })
 
-When('I fill identification step', () => {
+When('I fill identification form with a new address', () => {
   cy.url().should('contain', '/parcours-inscription/identification')
-  cy.findByLabelText('Adresse postale *')
-    .clear()
-    .type('89 Rue la Boétie 75008 Paris')
+  cy.findByLabelText('Adresse postale *').clear()
+  cy.findByLabelText('Adresse postale *').invoke(
+    'val',
+    '89 Rue la Boétie 75008 Pari'
+  ) // To avoid being spammed by address search on each chars typed
+  cy.intercept(
+    'GET',
+    'https://api-adresse.data.gouv.fr/search/?limit=5&q=*'
+  ).as('search5Address')
+  cy.findByLabelText('Adresse postale *').type('s') // previous search was too fast, this one raises suggestions
+  cy.wait('@search5Address')
   cy.findByRole('option', { name: '89 Rue la Boétie 75008 Paris' }).click()
 
+  cy.intercept({
+    method: 'GET',
+    url: '/venue-types',
+  }).as('venue-types')
+  cy.findByText('Étape suivante').click()
+  cy.wait('@venue-types').its('response.statusCode').should('eq', 200)
+})
+
+When('I fill identification form with a public name', () => {
+  cy.url().should('contain', '/parcours-inscription/identification')
+  cy.findByLabelText('Nom public').type('First Offerer')
   cy.intercept({
     method: 'GET',
     url: '/venue-types',

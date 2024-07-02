@@ -27,7 +27,7 @@ def get_eac_one_day_after_event_data(
         template=TransactionalEmail.EAC_ONE_DAY_AFTER_EVENT.value,
         params={
             "OFFER_NAME": offer.name,
-            "VENUE_NAME": offer.venue.name,
+            "VENUE_NAME": offer.venue.common_name,
             "EVENT_DATE": format_booking_date_for_email(booking),
             "EVENT_HOUR": format_booking_hours_for_email(booking),
             "EDUCATIONAL_INSTITUTION_NAME": booking.educationalInstitution.name,

@@ -42,6 +42,8 @@ def create_collective_stock(
         assert start and end  # helps mypy
         beginning = start
 
+        _check_start_and_end_dates_in_same_educational_year(start, end)
+
     if not start or not end:
         assert beginning  # helps mypy
         start, end = beginning, beginning
@@ -98,6 +100,12 @@ def edit_collective_stock(
 
     if not end_datetime and beginning:
         end_datetime = beginning
+
+    if start_datetime or end_datetime:
+        after_update_start_datetime = start_datetime or stock.startDatetime
+        after_update_end_datetime = end_datetime or stock.endDatetime
+
+        _check_start_and_end_dates_in_same_educational_year(after_update_end_datetime, after_update_start_datetime)
 
     booking_limit = stock_data.get("bookingLimitDatetime")
     booking_limit = serialization_utils.as_utc_without_timezone(booking_limit) if booking_limit else None
@@ -176,6 +184,19 @@ def edit_collective_stock(
 
 def get_collective_stock(collective_stock_id: int) -> educational_models.CollectiveStock | None:
     return educational_repository.get_collective_stock(collective_stock_id)
+
+
+def _check_start_and_end_dates_in_same_educational_year(
+    end_datetime: datetime.datetime, start_datetime: datetime.datetime
+) -> None:
+    start_year = educational_repository.find_educational_year_by_date(start_datetime)
+    assert start_year
+
+    end_year = educational_repository.find_educational_year_by_date(end_datetime)
+    assert end_year
+
+    if start_year.id != end_year.id:
+        raise exceptions.StartAndEndEducationalYearDifferent()
 
 
 def _extract_updatable_fields_from_stock_data(

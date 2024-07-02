@@ -372,7 +372,10 @@ describe('Summary', () => {
       expect(
         await screen.findByText(/Confirmation page: creation/)
       ).toBeInTheDocument()
-      expect(api.patchPublishOffer).toHaveBeenCalled()
+      expect(api.patchPublishOffer).toHaveBeenCalledWith({
+        id: customContext.offer.id,
+        publicationDate: `${publicationDate}T09:00:00Z`,
+      })
     })
 
     it('should display notification on api error', async () => {

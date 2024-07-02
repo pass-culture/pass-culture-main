@@ -1,7 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { addDays, addMinutes, format, subDays } from 'date-fns'
-import React from 'react'
 import * as router from 'react-router-dom'
 
 import { CollectiveBookingStatus } from 'apiClient/v1'
@@ -128,7 +127,7 @@ describe('OfferEducationalStock', () => {
       }),
     }),
   ])(
-    'should disable description, price and places when offer is reimbursed or is used since more than 2 days',
+    'should disable save button, description, price and places when offer is reimbursed or is used since more than 2 days',
     (offer) => {
       const testProps: OfferEducationalStockProps = {
         ...defaultProps,
@@ -142,10 +141,12 @@ describe('OfferEducationalStock', () => {
       )
       const priceInput = screen.getByLabelText('Prix total TTC *')
       const placeInput = screen.getByLabelText('Nombre de participants *')
+      const saveButton = screen.getByText('Enregistrer les modifications')
 
       expect(descriptionInput).toBeDisabled()
       expect(priceInput).toBeDisabled()
       expect(placeInput).toBeDisabled()
+      expect(saveButton).toBeDisabled()
     }
   )
 
@@ -211,6 +212,48 @@ describe('OfferEducationalStock', () => {
     ).toBeInTheDocument()
   })
 
+  it('should show an error message when participants are less than 1', async () => {
+    const offer = getCollectiveOfferFactory({ isPublicApi: false })
+    const testProps: OfferEducationalStockProps = {
+      ...defaultProps,
+      offer,
+      initialValues: {
+        ...initialValuesNotEmpty,
+        totalPrice: 10,
+        numberOfPlaces: 0,
+      },
+      mode: Mode.CREATION,
+    }
+
+    renderWithProviders(<OfferEducationalStock {...testProps} />)
+    const submitButton = screen.getByRole('button', { name: 'Étape suivante' })
+    await userEvent.click(submitButton)
+
+    expect(screen.getByText('Minimum 1 participant')).toBeInTheDocument()
+  })
+
+  it('should display error message when price and participants are too high', async () => {
+    const offer = getCollectiveOfferFactory({ isPublicApi: false })
+    const testProps: OfferEducationalStockProps = {
+      ...defaultProps,
+      offer,
+      initialValues: {
+        ...initialValuesNotEmpty,
+        startDatetime: String(new Date()),
+        eventTime: '02:00',
+      },
+      mode: Mode.CREATION,
+    }
+
+    renderWithProviders(<OfferEducationalStock {...testProps} />)
+    const submitButton = screen.getByRole('button', { name: 'Étape suivante' })
+    await userEvent.click(submitButton)
+
+    expect(
+      screen.getByText("L'heure doit être postérieure à l'heure actuelle")
+    ).toBeInTheDocument()
+  })
+
   it('should have a cancel button instead of the previous step button when editing the offer', () => {
     const testProps: OfferEducationalStockProps = {
       ...defaultProps,
@@ -245,4 +288,19 @@ it('should automatically update bookingLimitDatetime when the user edits the sta
     'Date limite de réservation *'
   )
   expect(bookingLimitDatetimeInput).toHaveValue(userDateInput)
+})
+
+it('should disable booking limit datetime when form access is read only', () => {
+  const testProps: OfferEducationalStockProps = {
+    ...defaultProps,
+    mode: Mode.READ_ONLY,
+  }
+
+  renderWithProviders(<OfferEducationalStock {...testProps} />)
+
+  const bookingLimitDatetimeInput = screen.getByLabelText(
+    'Date limite de réservation *'
+  )
+
+  expect(bookingLimitDatetimeInput).toBeDisabled()
 })

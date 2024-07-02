@@ -4,6 +4,10 @@
 @use "styles/variables/_forms.scss" as forms;
 @use "styles/mixins/_layout.scss" as layout;
 
+.title {
+  @include fonts.title1;
+}
+
 .content {
   @include layout.full-content-side;
 

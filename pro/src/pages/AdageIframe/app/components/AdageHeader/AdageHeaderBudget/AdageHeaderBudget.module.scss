@@ -8,7 +8,7 @@
   display: none;
 
   &-link {
-    @include fonts.small-caption;
+    @include fonts.highlight;
 
     display: flex;
     align-items: center;

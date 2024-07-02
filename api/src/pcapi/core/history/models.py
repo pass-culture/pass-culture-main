@@ -58,11 +58,13 @@ class ActionType(enum.Enum):
     FINANCE_INCIDENT_WAIT_FOR_PAYMENT = "Attente de la prochaine échéance de remboursement"
     FINANCE_INCIDENT_GENERATE_DEBIT_NOTE = "Une note de débit va être générée"
     FINANCE_INCIDENT_CHOOSE_DEBIT_NOTE = "Choix note de débit"
-    # Bank accounts changes:
+
+    # Actions related to a venue:
+    VENUE_CREATED = "Lieu créé"
     LINK_VENUE_BANK_ACCOUNT_DEPRECATED = "Lieu dissocié d'un compte bancaire"
     LINK_VENUE_BANK_ACCOUNT_CREATED = "Lieu associé à un compte bancaire"
-    # Venue provider changes:
     LINK_VENUE_PROVIDER_DELETED = "Suppression du lien avec le provider"
+
     # Permissions role changes:
     ROLE_PERMISSIONS_CHANGED = "Modification des permissions du rôle"
     # RGPD scripts

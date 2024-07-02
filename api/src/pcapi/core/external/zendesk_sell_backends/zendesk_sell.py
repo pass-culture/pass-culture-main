@@ -56,7 +56,7 @@ class ZendeskSellReadOnlyBackend(BaseBackend):
         raise ContactNotFoundError
 
     def get_offerer_by_id(self, offerer: offerers_models.Offerer) -> dict:
-        # (offerer id OR siren) AND NO venue id AND NO siret
+        # Filters: https://developer.zendesk.com/api-reference/sales-crm/search/query-language/#filter
         offerer_filter: dict = {
             "filter": {
                 "attribute": {"name": "custom_fields." + ZendeskCustomFieldsShort.PRODUCT_OFFERER_ID.value},
@@ -90,6 +90,16 @@ class ZendeskSellReadOnlyBackend(BaseBackend):
                                             "parameter": {"eq": True},
                                         }
                                     },
+                                    {
+                                        "not": {
+                                            "filter": {
+                                                "attribute": {
+                                                    "name": "custom_fields." + ZendeskCustomFieldsShort.TYPAGE.value
+                                                },
+                                                "parameter": {"all": ["Lieu"]},
+                                            }
+                                        }
+                                    },
                                     offerer_filter,
                                     {
                                         "or": [
@@ -98,7 +108,7 @@ class ZendeskSellReadOnlyBackend(BaseBackend):
                                                     "attribute": {
                                                         "name": "custom_fields." + ZendeskCustomFieldsShort.TYPAGE.value
                                                     },
-                                                    "parameter": {"eq": "Structure"},
+                                                    "parameter": {"all": ["Structure"]},
                                                 }
                                             },
                                             {
@@ -139,6 +149,7 @@ class ZendeskSellReadOnlyBackend(BaseBackend):
                                 {"name": "id"},
                                 {"name": f"custom_fields.{ZendeskCustomFieldsShort.SIREN.value}"},
                                 {"name": f"custom_fields.{ZendeskCustomFieldsShort.PRODUCT_OFFERER_ID.value}"},
+                                {"name": f"custom_fields.{ZendeskCustomFieldsShort.TYPAGE.value}"},
                             ],
                         }
                     }
@@ -151,11 +162,12 @@ class ZendeskSellReadOnlyBackend(BaseBackend):
         except ContactFoundMoreThanOneError as e:
             contacts = e.items
 
-            # looking for the item that has a product offerer id amongst the found items
+            # looking for the item that has both product offerer id and "typage" amongst the found items
             contacts_with_offerer_id = [
                 contact
                 for contact in contacts
                 if contact["custom_fields"][ZendeskCustomFieldsShort.PRODUCT_OFFERER_ID.value] == str(offerer.id)
+                and contact["custom_fields"][ZendeskCustomFieldsShort.TYPAGE.value] == ["Structure"]
             ]
 
             # we found just one result, we assume it's the offerer, the others seems to be the venues
@@ -197,6 +209,16 @@ class ZendeskSellReadOnlyBackend(BaseBackend):
                                             "parameter": {"eq": True},
                                         }
                                     },
+                                    {
+                                        "not": {
+                                            "filter": {
+                                                "attribute": {
+                                                    "name": "custom_fields." + ZendeskCustomFieldsShort.TYPAGE.value
+                                                },
+                                                "parameter": {"all": ["Structure"]},
+                                            }
+                                        }
+                                    },
                                     venue_filter,
                                 ]
                             },
@@ -204,6 +226,7 @@ class ZendeskSellReadOnlyBackend(BaseBackend):
                                 {"name": "id"},
                                 {"name": f"custom_fields.{ZendeskCustomFieldsShort.SIRET.value}"},
                                 {"name": f"custom_fields.{ZendeskCustomFieldsShort.PRODUCT_VENUE_ID.value}"},
+                                {"name": f"custom_fields.{ZendeskCustomFieldsShort.TYPAGE.value}"},
                             ],
                         }
                     }
@@ -216,11 +239,12 @@ class ZendeskSellReadOnlyBackend(BaseBackend):
         except ContactFoundMoreThanOneError as e:
             contacts = e.items
 
-            # looking for the item that has a product venue id amongst the found items
+            # looking for the item that has both product venue id and "typage" amongst the found items
             contacts_with_venue_id = [
                 contact
                 for contact in contacts
                 if contact["custom_fields"][ZendeskCustomFieldsShort.PRODUCT_VENUE_ID.value] == str(venue.id)
+                and contact["custom_fields"][ZendeskCustomFieldsShort.TYPAGE.value] == ["Lieu"]
             ]
 
             # we found just one result, we assume it's the venue
@@ -304,6 +328,13 @@ class ZendeskSellBackend(ZendeskSellReadOnlyBackend):
         return response
 
     def update_venue(self, zendesk_id: int, venue: offerers_models.Venue, parent_organization_id: int | None) -> dict:
+        if parent_organization_id == zendesk_id:
+            logger.warning(
+                "Trying to set a contact as its own parent in Zendesk Sell",
+                extra={"zendesk_id": zendesk_id, "venue_id": venue.id},
+            )
+            parent_organization_id = None
+
         response = {}
         data = self._get_venue_data(venue, parent_organization_id)
         try:

@@ -6,8 +6,7 @@
   margin-top: rem.torem(16px);
 
   .title {
-    font-size: rem.torem(18px);
-    font-weight: 600;
+    @include fonts.title4;
   }
 
   .parameters-list {
@@ -19,8 +18,8 @@
 
     span {
       color: var(--color-black);
-      font-size: rem.torem(15px);
-      font-weight: 500;
+
+      @include fonts.body-important;
     }
   }
 

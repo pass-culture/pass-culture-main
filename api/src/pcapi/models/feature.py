@@ -65,7 +65,6 @@ class FeatureToggle(enum.Enum):
     ENABLE_PHONE_VALIDATION = "Active la validation du numéro de téléphone"
     ENABLE_PRO_ACCOUNT_CREATION = "Permettre l'inscription des comptes professionels"
     ENABLE_PRO_BOOKINGS_V2 = "Activer l'affichage de la page booking avec la nouvelle architecture."
-    ENABLE_PRO_TITELIVE_MUSIC_GENRES = "Activer l'utilisation des genres musicaux Titelive pour les pros"
 
     ENABLE_TITELIVE_MUSIC_TYPES_IN_API_OUTPUT = "Désactiver le renvoi des genres de titelive dans l'api publique"
 
@@ -114,7 +113,6 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API = (
         "Activer les nouvelles règles de création et d'édition d'offres collecrives pour l'API publique (collective)"
     )
-    WIP_ENABLE_NEW_NAV_AB_TEST = "Activer l'A/B test de la nouvelle navigation du portail pro."
     WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS = (
         "Synchroniser les offres et stocks de cinéma avec les produits allociné"
     )
@@ -126,6 +124,9 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_OFFER_MARKDOWN_DESCRIPTION = "Activer la description des offres collectives en markdown."
     WIP_FUTURE_OFFER = "Activer la publication d'offres dans le futur"
     USE_END_DATE_FOR_COLLECTIVE_PRICING = "Utiliser la date de fin du stock collectif comme date de valorisation."
+    WIP_ENABLE_OFFER_ADDRESS = "Activer l'association des offres à des adresses."
+    WIP_ENABLE_PRO_WITHOUT_FRAME = "Active la version du portail pro sans frame autour du contenue principal"
+    WIP_SPLIT_OFFER = "Activer le nouveau parcours de création/édition d'offre individuelle"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -182,11 +183,13 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_BENEFICIARY_EXTRACT_TOOL,
     FeatureToggle.WIP_CONNECT_AS,
     FeatureToggle.WIP_ENABLE_MOCK_UBBLE,
-    FeatureToggle.WIP_ENABLE_NEW_NAV_AB_TEST,
+    FeatureToggle.WIP_ENABLE_OFFER_ADDRESS,
+    FeatureToggle.WIP_ENABLE_PRO_WITHOUT_FRAME,
     FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY,
     FeatureToggle.WIP_ENABLE_TITELIVE_API_FOR_BOOKS,
     FeatureToggle.WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS,
     FeatureToggle.WIP_FUTURE_OFFER,
+    FeatureToggle.WIP_SPLIT_OFFER,
     # Please keep alphabetic order
 )
 

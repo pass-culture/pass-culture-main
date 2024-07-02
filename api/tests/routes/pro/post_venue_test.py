@@ -5,6 +5,7 @@ import pytest
 from pcapi.core import testing
 from pcapi.core.external.zendesk_sell_backends import testing as zendesk_testing
 from pcapi.core.geography import models as geography_models
+from pcapi.core.history import models as history_models
 from pcapi.core.offerers import models
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Venue
@@ -155,6 +156,10 @@ class Returns201Test:
         assert address.inseeCode.startswith(address.departmentCode)
         assert address.departmentCode == "07"
         assert address.timezone == "Europe/Paris"
+
+        assert len(venue.action_history) == 1
+        assert venue.action_history[0].actionType == history_models.ActionType.VENUE_CREATED
+        assert venue.action_history[0].authorUser == user
 
     @testing.override_features(ENABLE_ZENDESK_SELL_CREATION=True)
     def test_register_new_venue_without_double_model_writing(self, client, requests_mock):

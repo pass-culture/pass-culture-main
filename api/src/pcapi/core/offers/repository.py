@@ -144,6 +144,14 @@ def get_capped_offers_for_filters(
     return offers
 
 
+def get_offers_by_publication_date(publication_date: datetime.datetime | None = None) -> flask_sqlalchemy.BaseQuery:
+    if publication_date is None:
+        publication_date = datetime.datetime.utcnow()
+    publication_date = publication_date.replace(minute=0, second=0, microsecond=0, tzinfo=None)
+    future_offers_subquery = db.session.query(models.FutureOffer.offerId).filter_by(publicationDate=publication_date)
+    return models.Offer.query.filter(models.Offer.id.in_(future_offers_subquery))
+
+
 def get_offers_by_ids(user: users_models.User, offer_ids: list[int]) -> flask_sqlalchemy.BaseQuery:
     query = models.Offer.query
     if not user.has_admin_role:
@@ -308,15 +316,19 @@ def get_collective_offers_by_filters(
         match status:
             # Status BOOKED == offer is sold out and last booking link to this reservation is not PENDING
             case educational_models.CollectiveOfferDisplayedStatus.BOOKED.value:
-                booking_subquery = (
-                    educational_models.CollectiveStock.query.with_entities(
-                        educational_models.CollectiveStock.collectiveOfferId
-                    )
-                    .join(educational_models.CollectiveBooking, educational_models.CollectiveStock.collectiveBookings)
-                    .filter(
-                        educational_models.CollectiveBooking.status
-                        != educational_models.CollectiveBookingStatus.PENDING
-                    )
+                booking_subquery = educational_models.CollectiveStock.query.with_entities(
+                    educational_models.CollectiveStock.collectiveOfferId
+                ).join(
+                    educational_models.CollectiveBooking,
+                    sa.and_(
+                        educational_models.CollectiveStock.id == educational_models.CollectiveBooking.collectiveStockId,
+                        educational_models.CollectiveBooking.status.not_in(
+                            [
+                                educational_models.CollectiveBookingStatus.PENDING.value,
+                                educational_models.CollectiveBookingStatus.CANCELLED.value,
+                            ]
+                        ),
+                    ),
                 )
                 query = query.filter(
                     educational_models.CollectiveOffer.status == offer_mixin.CollectiveOfferStatus.SOLD_OUT.name,
@@ -758,6 +770,10 @@ def delete_past_draft_collective_offers() -> None:
     ).delete()
 
     db.session.commit()
+
+
+def delete_future_offer(offer_id: int) -> None:
+    models.FutureOffer.query.filter_by(offerId=offer_id).delete()
 
 
 def get_available_activation_code(stock: models.Stock) -> models.ActivationCode | None:

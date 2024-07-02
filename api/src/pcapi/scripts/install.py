@@ -14,6 +14,7 @@ def install_commands(app: flask.Flask) -> None:
         "pcapi.core.finance.commands",
         "pcapi.core.geography.commands",
         "pcapi.core.offerers.commands",
+        "pcapi.core.offers.commands",
         "pcapi.core.providers.commands",
         "pcapi.core.search.commands.indexation",
         "pcapi.core.search.commands.settings",

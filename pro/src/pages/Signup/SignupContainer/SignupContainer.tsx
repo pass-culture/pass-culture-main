@@ -107,7 +107,7 @@ export const SignupContainer = (): JSX.Element => {
 
   return (
     <section className={styles['content']}>
-      <h1>Créer votre compte</h1>
+      <h1 className={styles['title']}>Créer votre compte</h1>
       <OperatingProcedures />
 
       <div className={styles['mandatory']}>

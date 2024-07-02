@@ -8,6 +8,7 @@ import pcapi.core.educational.models as educational_models
 from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 import pcapi.core.offerers.factories as offerer_factories
 import pcapi.core.providers.factories as providers_factories
+from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 
 
@@ -258,7 +259,7 @@ class Returns200Test:
         assert isinstance(response_json, list)
         assert len(response_json) == 0
 
-    def test_with_filters(self, client):
+    def test_with_date_filters(self, client):
         # Given
         user = users_factories.UserFactory()
         offerer = offerer_factories.OffererFactory()
@@ -267,14 +268,18 @@ class Returns200Test:
         offer = educational_factories.CollectiveOfferFactory(
             venue=venue, dateCreated=datetime.datetime.utcnow(), offerId=1
         )
+
+        other_offer = educational_factories.CollectiveOfferFactory(
+            venue=venue, dateCreated=datetime.datetime.utcnow(), offerId=2
+        )
         educational_factories.CollectiveStockFactory(
             collectiveOffer__venue=venue,
             collectiveOffer__dateCreated=datetime.datetime.utcnow(),
-            collectiveOffer__offerId=2,
+            collectiveOffer__offerId=other_offer.id,
             beginningDatetime=datetime.datetime(2022, 8, 10),
         )
         educational_factories.CollectiveOfferTemplateFactory(
-            venue=venue, dateCreated=datetime.datetime.utcnow(), offerId=2
+            venue=venue, dateCreated=datetime.datetime.utcnow(), offerId=other_offer.id
         )
         educational_factories.CollectiveStockFactory(
             collectiveOffer=offer,
@@ -293,6 +298,68 @@ class Returns200Test:
         assert isinstance(response_json, list)
         assert len(response_json) == 1
         assert response_json[0]["id"] == offer.id
+
+    def test_with_status_filters(self, client):
+        # Given
+        user = users_factories.UserFactory()
+        offerer = offerer_factories.OffererFactory()
+        offerer_factories.UserOffererFactory(user=user, offerer=offerer)
+        venue = offerer_factories.VenueFactory(managingOfferer=offerer)
+
+        offer_booked = educational_factories.CollectiveOfferFactory(venue=venue, dateCreated=datetime.datetime.utcnow())
+        stock_booked = educational_factories.CollectiveStockFactory(
+            collectiveOffer=offer_booked, dateCreated=datetime.datetime.utcnow()
+        )
+        _booking_confirmed = educational_factories.CollectiveBookingFactory(
+            collectiveStock=stock_booked,
+            dateCreated=datetime.datetime.utcnow(),
+            status=educational_models.CollectiveBookingStatus.CONFIRMED,
+        )
+
+        offer_prebooked = educational_factories.CollectiveOfferFactory(
+            venue=venue, dateCreated=datetime.datetime.utcnow()
+        )
+        stock_prebooked = educational_factories.CollectiveStockFactory(
+            collectiveOffer=offer_prebooked, dateCreated=datetime.datetime.utcnow()
+        )
+        _booking_cancelled = educational_factories.CollectiveBookingFactory(
+            collectiveStock=stock_prebooked,
+            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            status=educational_models.CollectiveBookingStatus.CANCELLED,
+        )
+        _booking_pending = educational_factories.CollectiveBookingFactory(
+            collectiveStock=stock_prebooked,
+            dateCreated=datetime.datetime.utcnow(),
+            status=educational_models.CollectiveBookingStatus.PENDING,
+        )
+
+        client = client.with_session_auth(user.email)
+
+        # When
+
+        with assert_num_queries(4):
+            # Fetch the session
+            # Fetch the user
+            # Select collective_offers
+            # Select collective_offers_templates
+            response_booked = client.get("/collective/offers?status=BOOKED")
+
+        response_prebooked = client.get("/collective/offers?status=PREBOOKED")
+
+        # Then
+        assert response_booked.status_code == 200
+
+        response_booked_json = response_booked.json
+        assert isinstance(response_booked_json, list)
+        assert len(response_booked_json) == 1
+        assert response_booked_json[0]["id"] == offer_booked.id
+
+        assert response_prebooked.status_code == 200
+
+        response_prebooked_json = response_prebooked.json
+        assert isinstance(response_prebooked_json, list)
+        assert len(response_prebooked_json) == 1
+        assert response_prebooked_json[0]["id"] == offer_prebooked.id
 
     def test_select_only_collective_offer(self, client):
         # Given

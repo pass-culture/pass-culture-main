@@ -97,7 +97,7 @@ export const routes: RouteConfig[] = [
     meta: { public: true },
   },
   {
-    lazy: () => import('pages/Offerers/Offerer/OffererDetails/OffererDetails'),
+    element: <Navigate to="/collaborateurs" />,
     path: '/structures/:offererId',
     title: 'Détails de la structure',
   },

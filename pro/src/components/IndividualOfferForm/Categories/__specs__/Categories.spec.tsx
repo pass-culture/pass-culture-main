@@ -21,7 +21,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { Categories, CategoriesProps } from '../Categories'
 import { CATEGORIES_DEFAULT_VALUES } from '../constants'
-import { getValidationSchema } from '../validationSchema'
+import { validationSchema } from '../validationSchema'
 
 const renderCategories = ({
   initialValues,
@@ -39,7 +39,7 @@ const renderCategories = ({
       <Formik
         initialValues={initialValues}
         onSubmit={onSubmit}
-        validationSchema={yup.object().shape(getValidationSchema(true))}
+        validationSchema={yup.object().shape(validationSchema)}
       >
         <Form>
           <Categories {...props} />
@@ -48,8 +48,7 @@ const renderCategories = ({
           </Button>
         </Form>
       </Formik>
-    </IndividualOfferContext.Provider>,
-    { features: ['ENABLE_PRO_TITELIVE_MUSIC_GENRES'] }
+    </IndividualOfferContext.Provider>
   )
 }
 

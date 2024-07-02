@@ -21,10 +21,8 @@
     width: rem.torem(24px);
   }
 
-  h2 {
-    @include fonts.title4;
-
-    font-weight: 500;
+  .title {
+    @include fonts.title4-light;
   }
 }
 

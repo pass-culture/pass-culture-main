@@ -17,6 +17,7 @@ import { Events } from 'core/FirebaseEvents/constants'
 import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'
 import { useNotification } from 'hooks/useNotification'
 import { usePaginationWithSearchParams } from 'hooks/usePagination'
+import { useWithoutFrame } from 'hooks/useWithoutFrame'
 import fullTrashIcon from 'icons/full-trash.svg'
 import { serializeStockEvents } from 'pages/IndividualOfferWizard/Stocks/serializeStockEvents'
 import { AddRecurrencesButton } from 'screens/IndividualOffer/StocksEventCreation/AddRecurrencesButton'
@@ -66,6 +67,7 @@ export interface StocksEventListProps {
 }
 
 const DELETE_STOCKS_CHUNK_SIZE = 50
+
 function* chunks<T>(array: T[], n: number): Generator<T[], void> {
   for (let i = 0; i < array.length; i += n) {
     yield array.slice(i, i + n)
@@ -85,6 +87,7 @@ export const StocksEventList = ({
   const notify = useNotification()
   const [searchParams, setSearchParams] = useSearchParams()
   const { mutate } = useSWRConfig()
+  const isWithoutFrame = useWithoutFrame()
 
   // states
   const [allStocksChecked, setAllStocksChecked] = useState<PartialCheck>(
@@ -237,6 +240,7 @@ export const StocksEventList = ({
     await api.deleteStock(stockId)
     logEvent(Events.CLICKED_DELETE_STOCK, {
       offerId: offer.id,
+      offerType: 'individual',
       stockId: stockId,
     })
 
@@ -312,6 +316,7 @@ export const StocksEventList = ({
     setIsDeleteAllLoading(false)
     logEvent(Events.CLICKED_BULK_DELETE_STOCK, {
       offerId: offer.id,
+      offerType: 'individual',
       deletionCount: deletionCount,
     })
 
@@ -429,7 +434,9 @@ export const StocksEventList = ({
 
                 <th
                   scope="col"
-                  className={cn(styles['price-column'], styles['header'])}
+                  className={cn(styles['price-column'], styles['header'], {
+                    [styles['price-column-without-frame']]: isWithoutFrame,
+                  })}
                 >
                   <span className={styles['header-name']}>Tarif</span>
 

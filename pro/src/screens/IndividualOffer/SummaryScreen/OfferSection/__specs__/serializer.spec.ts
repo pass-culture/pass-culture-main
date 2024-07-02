@@ -71,8 +71,7 @@ describe('routes::Summary::serializers', () => {
     const offerSerialized = serializeOfferSectionData(
       offer,
       categories,
-      subCategoryList,
-      false
+      subCategoryList
     )
 
     expect(offerSerialized).toEqual({
@@ -122,8 +121,7 @@ describe('routes::Summary::serializers', () => {
     const offerSerialized = serializeOfferSectionData(
       offer,
       categories,
-      subCategoryList,
-      false
+      subCategoryList
     )
     expect(offerSerialized.showTypeName).toEqual('Humour / Café-théâtre')
     expect(offerSerialized.showSubTypeName).toEqual('Café Théâtre')

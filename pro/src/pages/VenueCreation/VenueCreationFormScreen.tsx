@@ -17,7 +17,6 @@ import { VenueCreationForm } from 'pages/VenueCreation/VenueCreationForm'
 import { serializePostVenueBodyModel } from './serializers'
 import { generateSiretValidationSchema } from './SiretOrCommentFields/validationSchema'
 import style from './VenueCreationFormScreen.module.scss'
-import { venueSubmitRedirectUrl } from './venueSubmitRedirectUrl'
 
 interface VenueEditionProps {
   initialValues: VenueCreationFormValues
@@ -45,7 +44,7 @@ export const VenueCreationFormScreen = ({
         serializePostVenueBodyModel(values, offerer.id, !isSiretValued)
       )
 
-      navigate(venueSubmitRedirectUrl(offerer.id, currentUser))
+      navigate('/accueil?success')
 
       if (currentUser.isAdmin) {
         notify.success(PATCH_SUCCESS_MESSAGE)

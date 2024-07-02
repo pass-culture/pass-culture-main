@@ -1,10 +1,8 @@
-import './CinemaProviderFormDialog.scss'
-
-import React from 'react'
-
 import { DialogBox } from 'components/DialogBox/DialogBox'
 
 import { CinemaProviderForm } from '../CinemaProviderForm/CinemaProviderForm'
+
+import styles from './CinemaProviderFormDialog.module.scss'
 
 interface CinemaProviderFormDialogProps {
   onCancel: () => void
@@ -25,14 +23,14 @@ export const CinemaProviderFormDialog = ({
 }: CinemaProviderFormDialogProps) => {
   return (
     <DialogBox
-      extraClassNames="cinema-provider-form-dialog"
+      extraClassNames={styles['cinema-provider-form-dialog']}
       labelledBy="cinema-provider-form-dialog"
       onDismiss={onCancel}
     >
-      <h1 className="title">
+      <h1 className={styles['title']}>
         <strong>Modifier les paramètres de mes offres</strong>
       </h1>
-      <div className="explanation">
+      <div className={styles['explanation']}>
         Les modifications s’appliqueront uniquement aux nouvelles offres créées.
         La modification doit être faite manuellement pour les offres existantes.
       </div>

@@ -15,6 +15,9 @@ from pcapi.routes.backoffice.forms import utils
 from pcapi.routes.backoffice.forms.empty import BatchForm
 
 
+DEPOSIT_DEFAULT_VALUE = "all"
+
+
 class BookingStatus(enum.Enum):
     BOOKED = "Réservée"
     CONFIRMED = "Confirmée"
@@ -170,8 +173,8 @@ class GetIndividualBookingListForm(BaseBookingListForm):
     )
     deposit = fields.PCSelectField(
         "État du crédit",
-        choices=(("active", "Actif"), ("expired", "Expiré")),
-        default=None,
+        choices=((DEPOSIT_DEFAULT_VALUE, "Tous"), ("active", "Actif"), ("expired", "Expiré")),
+        default=DEPOSIT_DEFAULT_VALUE,
         validators=(wtforms.validators.Optional(),),
     )
 
@@ -194,7 +197,7 @@ class GetIndividualBookingListForm(BaseBookingListForm):
             super().is_empty()
             and not self.category.data
             and not self.cancellation_reason.data
-            and not self.deposit.data
+            and (not self.deposit.data or self.deposit.data == DEPOSIT_DEFAULT_VALUE)
         )
 
     @property

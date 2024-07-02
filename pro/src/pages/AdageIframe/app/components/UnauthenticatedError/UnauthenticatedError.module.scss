@@ -1,4 +1,5 @@
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 .error {
   min-height: 100vh;
@@ -17,6 +18,8 @@
     padding: rem.torem(32px);
 
     &-title {
+      @include fonts.title1;
+
       font-size: rem.torem(40px);
       margin-bottom: rem.torem(16px);
     }

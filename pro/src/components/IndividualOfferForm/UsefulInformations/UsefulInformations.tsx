@@ -61,6 +61,7 @@ export const UsefulInformations = ({
         offererNames={offererNames}
         venueList={venueList}
         readOnlyFields={readOnlyFields}
+        hideOfferer
       />
 
       {displayNoRefundWarning && (

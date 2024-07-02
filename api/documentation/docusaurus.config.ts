@@ -9,6 +9,9 @@ const getOpenAPIJsonUrlFromEnv = (): string => {
   if (env === 'testing' || env === 'staging') {
     return `https://backend.${env}.passculture.team/openapi.json`;
   }
+  if (env === 'integration') {
+    return 'https://backend.staging.passculture.team/openapi.json';
+  }
   if (env === 'production') {
     return 'https://backend.passculture.pro/openapi.json';
   }
@@ -19,6 +22,9 @@ const getDocumentationBaseUrlFromEnv = (): string => {
   if (env === 'testing' || env === 'staging') {
     return `https://developers.${env}.passculture.team`;
   }
+  if (env === 'integration') {
+    return 'developers.staging.passculture.team';
+  }
   if (env === 'production') {
     return 'https://developers.passculture.pro';
   }
@@ -27,7 +33,7 @@ const getDocumentationBaseUrlFromEnv = (): string => {
 
 
 const config: Config = {
-  title: 'pass Culture documentation',
+  title: 'API documentation',
   tagline: '',
   favicon: 'img/favicon.ico',
   url: getDocumentationBaseUrlFromEnv(),
@@ -63,7 +69,7 @@ const config: Config = {
           },
         ],
         theme: {
-          primaryColor: '#6123df',
+          primaryColor: '#320096',
         },
       },
     ] satisfies Redocusaurus.PresetEntry,

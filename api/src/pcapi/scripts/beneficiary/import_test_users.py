@@ -154,7 +154,7 @@ def _create_pro_user(row: dict) -> User:
         motorDisabilityCompliant=False,
         visualDisabilityCompliant=False,
     )
-    venue = offerers_api.create_venue(venue_creation_info)
+    venue = offerers_api.create_venue(venue_creation_info, user)
     offerers_api.create_venue_registration(venue.id, new_onboarding_info.target, new_onboarding_info.webPresence)
 
     for i, status in enumerate(finance_models.BankAccountApplicationStatus, start=1):
@@ -243,11 +243,15 @@ def _add_or_update_admin(update_if_exists: bool) -> None:
 
 
 def _create_provider(venue: offerers_models.Venue, row: dict) -> None:
+    formatted_email = sanitize_email(row["Mail"]).replace("_", "-")
     provider = providers_models.Provider(name=row["Prénom"])
     offerer_provider = offerers_models.OffererProvider(offerer=venue.managingOfferer, provider=provider)
-    prefix = f"staging_{row['Prénom']}"
+    prefix = f"staging_{formatted_email}"
     key = offerers_models.ApiKey(
-        offerer=venue.managingOfferer, provider=provider, prefix=prefix, secret=crypto.hash_public_api_key(row["Mail"])
+        offerer=venue.managingOfferer,
+        provider=provider,
+        prefix=prefix,
+        secret=crypto.hash_public_api_key(formatted_email),
     )
     venue_provider = providers_models.VenueProvider(venue=venue, provider=provider)
 

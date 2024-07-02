@@ -171,6 +171,8 @@ export const CollectiveOfferNavigation = ({
             onClick={() => {
               logEvent(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
                 from: OFFER_FROM_TEMPLATE_ENTRIES.OFFER_TEMPLATE_RECAP,
+                offerId,
+                offerType: 'collective',
               })
               // eslint-disable-next-line @typescript-eslint/no-floating-promises
               createOfferFromTemplate(

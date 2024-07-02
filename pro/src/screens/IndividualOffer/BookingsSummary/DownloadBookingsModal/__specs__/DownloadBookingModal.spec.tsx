@@ -162,6 +162,7 @@ describe('DownloadBookingModal', () => {
       format: 'csv',
       bookingStatus: 'validated',
       offerId: MOCK_OFFER_ID,
+      offerType: 'individual',
     })
   })
 
@@ -218,6 +219,7 @@ describe('DownloadBookingModal', () => {
       format: 'excel',
       bookingStatus: 'all',
       offerId: MOCK_OFFER_ID,
+      offerType: 'individual',
     })
   })
 })

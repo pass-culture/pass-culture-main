@@ -2,7 +2,13 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .heading1-scheme {
+  @include fonts.title1;
+
   margin-bottom: rem.torem(32px);
+}
+
+.heading2 {
+  @include fonts.title2;
 }
 
 .heading2,

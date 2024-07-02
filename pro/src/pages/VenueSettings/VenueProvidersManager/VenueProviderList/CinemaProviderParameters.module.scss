@@ -16,8 +16,8 @@
 
     span {
       color: var(--color-black);
-      font-size: rem.torem(15px);
-      font-weight: 500;
+
+      @include fonts.body-important;
     }
   }
 

@@ -49,15 +49,11 @@ export const OfferSection = ({
   const isBookingContactEnabled = useActiveFeature(
     'WIP_MANDATORY_BOOKING_CONTACT'
   )
-  const isTiteliveMusicGenreEnabled = useActiveFeature(
-    'ENABLE_PRO_TITELIVE_MUSIC_GENRES'
-  )
 
   const offerData = serializeOfferSectionData(
     offer,
     categories,
     subCategories,
-    isTiteliveMusicGenreEnabled,
     musicTypes
   )
 
@@ -80,12 +76,6 @@ export const OfferSection = ({
     offerTypeDescriptions.push({
       title: 'Genre musical',
       text: offerData.musicTypeName || '-',
-    })
-  }
-  if (offerData.musicSubTypeName && !isTiteliveMusicGenreEnabled) {
-    offerTypeDescriptions.push({
-      title: 'Sous-genre',
-      text: offerData.musicSubTypeName,
     })
   }
   if (conditionalFields.includes('showType')) {

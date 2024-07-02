@@ -102,3 +102,9 @@ def get_unknown_status_by_user_id(from_id: int) -> None:
         logger.warning(unknown_status_by_user_id)
     else:
         logger.info("all good, no unknown young status was found")
+
+
+@blueprint.cli.command("clean_gdpr_extracts")
+@cron_decorators.log_cron_with_transaction
+def clean_gdpr_extracts() -> None:
+    user_api.clean_gdpr_extracts()

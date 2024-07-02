@@ -24,7 +24,7 @@ $small-gap: rem.torem(8px);
 
   & h4,
   & .offerer-name-accent {
-    font-weight: 500;
+    @include fonts.body-important;
   }
 
   .venue-list {

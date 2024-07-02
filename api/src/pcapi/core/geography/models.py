@@ -27,6 +27,10 @@ class Address(PcObject, Base, Model):
     longitude: Decimal = sa.Column(sa.Numeric(8, 5), nullable=False)
     departmentCode = sa.Column(sa.Text(), nullable=True, index=True)
     timezone = sa.Column(sa.Text(), nullable=False, default=METROPOLE_TIMEZONE, server_default=METROPOLE_TIMEZONE)
+    # TODO(prouzet, 2024-06-25) make isManualEdition not nullable after post migration is done on all platforms
+    isManualEdition: bool = sa.Column(
+        sa.Boolean, nullable=True, server_default=sa.sql.expression.false(), default=False
+    )
 
     __table_args__ = (
         sa.Index(
@@ -34,7 +38,19 @@ class Address(PcObject, Base, Model):
             "street",
             "inseeCode",
             unique=True,
-            postgresql_where=sa.and_(street.is_not(None), inseeCode.is_not(None)),
+            postgresql_where=sa.and_(street.is_not(None), inseeCode.is_not(None), isManualEdition.is_not(True)),
+        ),
+        sa.Index(
+            # if manual edition does not alter autocompleted address, re-use it
+            "ix_complete_unique_address",
+            "banId",
+            "inseeCode",
+            "street",
+            "postalCode",
+            "city",
+            "latitude",
+            "longitude",
+            unique=True,
         ),
         sa.CheckConstraint('length("postalCode") = 5'),
         sa.CheckConstraint('length("inseeCode") = 5'),

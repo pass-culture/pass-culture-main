@@ -10,20 +10,4 @@
   .bookings-header-loading .bookings-header-number {
     @include fonts.body;
   }
-
-  .bookings-header-csv-download a {
-    align-items: center;
-    display: flex;
-    font-weight: 700;
-
-    &:focus,
-    &:hover {
-      color: var(--color-black);
-      text-decoration: none;
-    }
-
-    img {
-      margin-right: rem.torem(8px);
-    }
-  }
 }

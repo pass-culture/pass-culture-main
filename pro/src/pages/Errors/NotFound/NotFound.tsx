@@ -17,7 +17,7 @@ export const NotFound = ({ redirect = '/accueil' }: NotFoundProps) => (
       className={styles['no-match-icon']}
       width="350"
     />
-    <h1>Oh non !</h1>
+    <h1 className={styles['title']}>Oh non !</h1>
     <p>Cette page n’existe pas.</p>
     <ButtonLink
       className={styles['nm-redirection-link']}

@@ -52,7 +52,8 @@ $checkbox-size: rem.torem(40px);
   &:checked {
     border: rem.torem(2px) solid var(--color-secondary-light);
     background-color: var(--color-background-secondary);
-    font-weight: 700;
+
+    @include fonts.button;
 
     &:focus {
       border: rem.torem(2px) solid var(--color-secondary-light);

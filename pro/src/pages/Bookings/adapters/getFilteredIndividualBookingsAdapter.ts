@@ -25,7 +25,6 @@ export const getFilteredIndividualBookingsAdapter = async (
       bookingPeriodBeginningDate,
       bookingPeriodEndingDate,
       bookingStatusFilter,
-      offerType,
       page,
     } = buildBookingsRecapQuery(nextPageFilters)
 
@@ -37,8 +36,7 @@ export const getFilteredIndividualBookingsAdapter = async (
       eventDate,
       bookingStatusFilter,
       bookingPeriodBeginningDate,
-      bookingPeriodEndingDate,
-      offerType
+      bookingPeriodEndingDate
     )
     pages = bookings.pages
 

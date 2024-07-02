@@ -21,6 +21,8 @@
               <th scope="col">Date de création de la demande</th>
               <th scope="col">État de la demande</th>
               <th scope="col">Auteur de la demande</th>
+              <th scope="col">
+              </td>
             </tr>
           </thead>
           <tbody>
@@ -31,6 +33,21 @@
                 <td>{{ gdpr_data.dateCreated | format_date }}</td>
                 <td>{{ gdpr_data.dateProcessed | format_gdpr_date_processed }}</td>
                 <td>{{ gdpr_data.authorUser.full_name }}</td>
+                <td>
+                  {% if gdpr_data.dateProcessed %}
+                    <form id="download-extract-{{ gdpr_data.id }}"
+                          action="{{ url_for('backoffice_web.gdpr_extract.download_gdpr_extract', extract_id=gdpr_data.id) }}"
+                          method="post">
+                      {{ empty_form.csrf_token }}
+                      <a class="nonblock"
+                         href=""
+                         onclick="document.getElementById('download-extract-{{ gdpr_data.id }}').submit(); return false;"><i class="bi bi-cloud-download-fill"></i></a>
+                    </form>
+                  {% else %}
+                    <i style="opacity: 0.5"
+                       class="bi bi-cloud-download-fill"></i>
+                  {% endif %}
+                </td>
               </tr>
             {% endfor %}
           </tbody>
