@@ -16,7 +16,7 @@ export const OffersSynchronization = ({
   venueProviders,
 }: OffersSynchronization) => {
   return (
-    <FormLayout fullWidthActions>
+    <FormLayout mediumWidthActions>
       <FormLayout.Section
         title="Gestion des synchronisations"
         description="Vous pouvez synchroniser votre lieu avec un logiciel tiers afin de faciliter la gestion de vos offres et de vos réservations."

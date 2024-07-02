@@ -20,6 +20,18 @@ $info-box-margin-left: rem.torem(24px);
     }
   }
 
+  &.medium-width-actions {
+    @media (min-width: size.$tablet) {
+      & > *:not(.form-layout-actions) {
+        max-width: rem.torem(826px);
+      }
+    }
+
+    .form-layout-actions {
+      justify-content: space-between;
+    }
+  }
+
   &-section {
     margin-bottom: rem.torem(24px);
 
