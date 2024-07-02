@@ -320,6 +320,7 @@ def _create_one_collective_incident(
 def create_industrial_incidents() -> None:
     offerer = offerers_factories.OffererFactory(name="Structure avec beaucoup d'incidents")
     pro = users_factories.ProFactory(email="pctest.pro.incidents@example.com")
+    users_factories.UserProNewNavStateFactory(user=pro)
     offerers_factories.UserOffererFactory(offerer=offerer, user=pro)
 
     for i, params in enumerate(INDIVIDUAL_INCIDENT_PARAMS):

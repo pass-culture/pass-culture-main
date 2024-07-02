@@ -71,6 +71,7 @@ def create_offerer_provider_with_offers(name: str, user_email: str) -> None:
         lastName="Api",
         phoneNumber="+33100000000",
     )
+    users_factories.UserProNewNavStateFactory(user=user)
     offerers_factories.UserOffererFactory(offerer=offerer, user=user)
     first_venue = offerers_factories.VenueFactory(name="Zénith de Lisieux", managingOfferer=offerer)
     second_venue = offerers_factories.VenueFactory(name="Olympia de Besançon", managingOfferer=offerer)

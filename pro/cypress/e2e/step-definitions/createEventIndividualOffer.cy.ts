@@ -131,7 +131,7 @@ When('I publish my offer', () => {
 })
 
 When('I go to the offers list', () => {
-  cy.intercept({ method: 'GET', url: '/offers' }).as('getOffers')
+  cy.intercept({ method: 'GET', url: '/offers?*' }).as('getOffers')
   cy.findByText('Voir la liste des offres').click()
   cy.wait('@getOffers')
 })

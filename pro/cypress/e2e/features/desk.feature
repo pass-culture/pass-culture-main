@@ -1,5 +1,5 @@
 @P0
-Feature: Counter (Guichet) feature
+Feature: Desk (Guichet) feature
 
   Background:
     Given I am logged in with the new interface
