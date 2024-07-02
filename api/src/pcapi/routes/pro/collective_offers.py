@@ -269,7 +269,7 @@ def edit_collective_offer(
     except educational_exceptions.VenueIdDontExist:
         raise ApiErrors({"venueId": "The venue does not exist."}, 404)
     except educational_exceptions.CollectiveOfferIsPublicApi:
-        raise ApiErrors({"global": ["Collective offer created by public API is not editable."]}, 403)
+        raise ApiErrors({"global": ["Collective offer created by public API is only editable via API."]}, 403)
     except educational_exceptions.NationalProgramNotFound:
         raise ApiErrors({"global": ["National program not found"]}, 400)
     except educational_exceptions.EducationalDomainsNotFound:
