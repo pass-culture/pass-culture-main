@@ -30,6 +30,11 @@ Given('I am logged in with the new interface', () => {
   })
 })
 
+Given('create specific invoice', () => {
+  cy.request('http://localhost:5001/sanboxes/pro_01_create_pro_user/create_pro_user_new_nav'),
+  cy.request('http://localhost:5001/sanboxes/pro_02_create_specific_invoice/create_specific_invoice')
+})
+
 // créer un seul scénario createOffers avec son step-def
 When('I want to create {string} offer', (offerType: string) => {
   cy.findByText('Au grand public').click()
