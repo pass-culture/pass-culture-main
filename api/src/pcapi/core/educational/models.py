@@ -473,6 +473,10 @@ class CollectiveOffer(
         ]
 
     @property
+    def isEditableByPro(self) -> bool:
+        return self.isEditable and not self.isPublicApi
+
+    @property
     def isVisibilityEditable(self) -> bool:
         is_editable = self.isEditable
         if self.collectiveStock:
