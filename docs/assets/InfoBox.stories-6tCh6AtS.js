@@ -1,0 +1,14 @@
+import{j as s}from"./jsx-runtime-X2b_N9AH.js";import{c as a}from"./index-BpvXyOxN.js";import{f as x}from"./full-link-Ct7SQyQr.js";import{s as b}from"./shadow-tips-help-BWD8Tj4_.js";import{B as _}from"./ButtonLink-Cc3ZnLaE.js";import{S as g}from"./SvgIcon-DP_815J1.js";import"./index-uCp2LrAq.js";import"./_commonjsHelpers-BosuxZz1.js";import"./index-DUsNdcBw.js";import"./index-C74Dn3Vq.js";import"./index-DoMt6nTV.js";import"./Button.module-CufKSpV2.js";import"./types-DjX_gQD6.js";const e={"info-box-header":"_info-box-header_1yvrp_2","info-box-bar":"_info-box-bar_1yvrp_9","info-box-title":"_info-box-title_1yvrp_19","info-box-title-icon":"_info-box-title-icon_1yvrp_29","info-box-link":"_info-box-link_1yvrp_34"},t=({children:i,link:r,svgAlt:u})=>s.jsxs("div",{className:a(e["info-box"]),children:[s.jsxs("div",{className:e["info-box-header"],children:[s.jsx("div",{className:a(e["info-box-bar"])}),s.jsxs("div",{className:e["info-box-title"],children:[s.jsx(g,{src:b,alt:"",className:e["info-box-title-icon"]}),s.jsx("span",{children:"À SAVOIR"})]}),s.jsx("div",{className:a(e["info-box-bar"])})]}),s.jsx("p",{className:e["info-box-text"],children:i}),r&&s.jsx(_,{link:r,icon:x,className:e["info-box-link"],svgAlt:u||"",children:r.text})]});try{t.displayName="InfoBox",t.__docgenInfo={description:"",displayName:"InfoBox",props:{link:{defaultValue:null,description:"",name:"link",required:!1,type:{name:"InfoBoxLinkProps"}},svgAlt:{defaultValue:null,description:"",name:"svgAlt",required:!1,type:{name:"string"}}}}}catch{}const M={title:"ui-kit/InfoBox",component:t,decorators:[i=>s.jsx("div",{style:{maxWidth:"316px"},children:s.jsx(i,{})})]},o={args:{link:{text:"Suivre le lien",to:"#",isExternal:!0},children:"Molestie fermentum accumsan at faucibus leo massa proin. Suspendisse sed sed fringilla ipsum adipiscing."}},n={args:{children:"Molestie fermentum accumsan at faucibus leo massa proin. Suspendisse sed sed fringilla ipsum adipiscing."}};var l,c,m;o.parameters={...o.parameters,docs:{...(l=o.parameters)==null?void 0:l.docs,source:{originalSource:`{
+  args: {
+    link: {
+      text: 'Suivre le lien',
+      to: '#',
+      isExternal: true
+    },
+    children: 'Molestie fermentum accumsan at faucibus leo massa proin. Suspendisse sed sed fringilla ipsum adipiscing.'
+  }
+}`,...(m=(c=o.parameters)==null?void 0:c.docs)==null?void 0:m.source}}};var p,d,f;n.parameters={...n.parameters,docs:{...(p=n.parameters)==null?void 0:p.docs,source:{originalSource:`{
+  args: {
+    children: 'Molestie fermentum accumsan at faucibus leo massa proin. Suspendisse sed sed fringilla ipsum adipiscing.'
+  }
+}`,...(f=(d=n.parameters)==null?void 0:d.docs)==null?void 0:f.source}}};const V=["InfoWithLink","InfoWithoutLink"];export{o as InfoWithLink,n as InfoWithoutLink,V as __namedExportsOrder,M as default};
