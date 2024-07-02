@@ -15,11 +15,20 @@ on:
       CACHE_BUCKET_NAME:
         type: string
         required: true
+      api-changed:
+        type: string
+        required: true
+      dependencies-changed:
+        type: string
+        required: true
     secrets:
       GCP_EHP_SERVICE_ACCOUNT:
         required: true
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
         required: true
+
+env:
+  registry: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry
 
 jobs:
   update-api-client:
@@ -35,21 +44,27 @@ jobs:
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      - name: "Get Secret"
-        id: 'secrets'
-        uses: 'google-github-actions/get-secretmanager-secrets@v2'
-        with:
-          secrets: |-
-            ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
-            ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
       - name: "Should run cache"
         id: "evaluate-variables"
         run: |
-          if ${{ (!inputs.TRIGGER_ONLY_ON_API_CHANGE && !inputs.TRIGGER_ONLY_ON_DEPENDENCY_CHANGE) || (inputs.TRIGGER_ONLY_ON_API_CHANGE && needs.check-folders-changed.outputs.api-changed == 'true') || (inputs.TRIGGER_ONLY_ON_DEPENDENCY_CHANGE && needs.check-folder-changes.outputs.dependencies-changed == 'true') }}; then
+          if ${{ (!inputs.TRIGGER_ONLY_ON_API_CHANGE && !inputs.TRIGGER_ONLY_ON_DEPENDENCY_CHANGE) || (inputs.TRIGGER_ONLY_ON_API_CHANGE && inputs.api-changed == 'true') || (inputs.TRIGGER_ONLY_ON_DEPENDENCY_CHANGE && inputs.dependencies-changed == 'true') }}; then
             echo "should-run-cache=true" | tee -a $GITHUB_OUTPUT
           else
             echo "should-run-cache=false" | tee -a $GITHUB_OUTPUT
           fi
+        shell: bash
+      - name: "Compute docker image name:tag"
+        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
+        id: compute-image-name
+        run: |
+          echo "image_name=${{ env.registry }}/pcapi:${{ inputs.PCAPI_DOCKER_TAG }}" | tee -a ${GITHUB_OUTPUT}
+          echo "::notice:: Running update api client template with ${{ env.registry }}/pcapi:${{ inputs.PCAPI_DOCKER_TAG }}"
+      - name: "Download artifact"
+        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: pcapi-${{ inputs.PCAPI_DOCKER_TAG }}.tar
+          path: ${{ github.workspace }}
       - name: "Fix local permissions"
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         run: sudo chown -R $PCAPI_UID:$PCAPI_GID .
@@ -63,29 +78,15 @@ jobs:
       - name: "Run API"
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         run: docker-compose -f docker-compose-backend.yml up postgres redis -d
-      - id: 'openid-auth'
-        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-        name: "OpenID Connect Authentication"
-        uses: 'google-github-actions/auth@v2'
-        with:
-          create_credentials_file: false
-          token_format: "access_token"
-          workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER  }}
-          service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
       - name: 'Set up Cloud SDK'
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         uses: 'google-github-actions/setup-gcloud@v2'
-      - id: 'docker-login'
-        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-        uses: "docker/login-action@v1"
-        name: "Docker login"
-        with:
-          registry: "europe-west1-docker.pkg.dev"
-          username: "oauth2accesstoken"
-          password: "${{ steps.openid-auth.outputs.access_token }}"
       - name: "Run API server"
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         run: |
+          if [ "${{ inputs.PCAPI_DOCKER_TAG }}" != "latest" ]; then
+            docker load --input $GITHUB_WORKSPACE/pcapi-${{ inputs.PCAPI_DOCKER_TAG }}.tar
+          fi
           docker run \
             --name pc-api \
             --workdir /usr/src/app \
@@ -98,7 +99,7 @@ jobs:
             --publish 5001:5001 \
             --publish 10002:10002 \
             --entrypoint bash \
-            europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi:${{ inputs.PCAPI_DOCKER_TAG }} \
+            ${{ steps.compute-image-name.outputs.image_name }} \
             -c "set -e ; flask install_postgres_extensions ; alembic upgrade pre@head ; alembic upgrade post@head ; flask install_data ; python src/pcapi/app.py"
       - name: "Wait for migrations to be run"
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'

@@ -91,6 +91,7 @@ jobs:
           version: ${{ inputs.CHANNEL }}
           url_prefix: "~"
       - uses: FirebaseExtended/action-hosting-deploy@v0
+        id: firebase-deploy
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
           firebaseServiceAccount: ${{ steps.secrets.outputs.FIREBASE_TOKEN }}
@@ -98,3 +99,6 @@ jobs:
           projectId: pc-pro-${{ inputs.ENV }}
           entryPoint: pro
           channelId: ${{ inputs.CHANNEL }}
+      - name: "Firebase Deployment URL"
+        run: |
+          echo "::notice:: Firebase deployment is available at : ${{ steps.firebase-deploy.outputs.details_url }}"
