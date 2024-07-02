@@ -14,13 +14,13 @@ jobs:
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
       - name: "Approve the PR"
-        if: contains(steps.metadata.outputs.directory, 'pro')
+        if: contains(fromJSON('["pro", "api/documentation"]'), steps.metadata.outputs.directory)
         run: gh pr review --approve "$PR_URL"
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: "Merge Dependabot PR"
-        if: contains(steps.metadata.outputs.directory, 'pro')
+        if: contains(fromJSON('["pro", "api/documentation"]'), steps.metadata.outputs.directory)
         run: gh pr merge --rebase "$PR_URL"
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
