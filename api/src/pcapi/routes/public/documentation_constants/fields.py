@@ -118,7 +118,8 @@ class _FIELDS:
         example="support@yourcompany.com",
     )
     OFFER_PUBLICATION_DATE = Field(
-        description="Publication date",
+        description="Date and time when we want the offer to be published on the native app. It cannot be a date in the past, and the time must be on the exact hour. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime)",
+        example=_example_datetime_with_tz,
     )
     OFFER_ENABLE_DOUBLE_BOOKINGS_WITH_DEFAULT = Field(
         description="If set to true, users may book the offer for two persons. Second item will be delivered at the same price as the first one. Category must be compatible with this feature.",
