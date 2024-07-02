@@ -95,7 +95,7 @@ class Returns200Test:
         )
         assert offer.futureOffer.isWaitingForPublication
         assert content["isActive"] is False
-        assert content["isNonFreeOffer"] is None  # FIXME: should be True ?
+        assert content["isNonFreeOffer"] is True
         mock_async_index_offer_ids.assert_not_called()
         mocked_send_first_venue_approved_offer_email_to_pro.assert_called_once_with(offer)
 
