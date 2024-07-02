@@ -255,6 +255,21 @@ def install_feature_flags() -> None:
     db.session.commit()
 
 
+def clean_feature_flags() -> None:
+    """Automatically remove old feature flags from database.
+
+    This is done after each deployment and in tests.
+    """
+    installed_flag_names = {f[0] for f in Feature.query.with_entities(Feature.name).all()}
+    defined_flag_name = {f.name for f in list(FeatureToggle)}
+
+    to_remove_flags = installed_flag_names - defined_flag_name
+
+    for flag in to_remove_flags:
+        db.session.execute(text("DELETE FROM feature WHERE name = :name").bindparams(name=flag))
+    db.session.commit()
+
+
 def check_feature_flags_completeness() -> None:
     """Check if all feature flags are present in the database and in the code"""
     installed_flag_names = {f[0] for f in Feature.query.with_entities(Feature.name).all()}
