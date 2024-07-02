@@ -2647,11 +2647,12 @@
                         "type": "array"
                     },
                     "publicationDate": {
-                        "description": "Publication date",
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Publicationdate",
-                        "type": "string"
+                      "description": "Date and time when we want the offer to be published on the native app. It cannot be a date in the past, and the time must be on the exact hour. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime)",
+                      "example": "2034-07-24T14:00:00+02:00",
+                      "format": "date-time",
+                      "nullable": true,
+                      "title": "Publicationdate",
+                      "type": "string"
                     }
                 },
                 "required": [
@@ -3073,11 +3074,12 @@
                         "type": "array"
                     },
                     "publicationDate": {
-                        "description": "Publication date",
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Publicationdate",
-                        "type": "string"
+                      "description": "Date and time when we want the offer to be published on the native app. It cannot be a date in the past, and the time must be on the exact hour. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime)",
+                      "example": "2034-07-24T14:00:00+02:00",
+                      "format": "date-time",
+                      "nullable": true,
+                      "title": "Publicationdate",
+                      "type": "string"
                     },
                     "status": {
                         "allOf": [
