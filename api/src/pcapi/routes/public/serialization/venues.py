@@ -6,6 +6,7 @@ import pydantic.v1 as pydantic_v1
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.api import OffererVenues
 from pcapi.routes import serialization
+from pcapi.routes.public.documentation_constants.fields import fields
 from pcapi.utils import date as date_utils
 
 from .accessibility import PartialAccessibility
@@ -29,40 +30,41 @@ class VenuePhysicalLocation(serialization.ConfiguredBaseModel):
 
 
 class VenueResponse(serialization.ConfiguredBaseModel):
-    comment: str | None = pydantic_v1.Field(
-        None, description="Applicable if siret is null and venue is physical.", alias="siretComment", example=None
-    )
-    dateCreated: datetime.datetime = pydantic_v1.Field(..., alias="createdDatetime")
-    id: int
-    location: VenuePhysicalLocation | VenueDigitalLocation = pydantic_v1.Field(
-        ...,
-        description="Location where the offers will be available or will take place. There is exactly one digital venue per offerer, which is listed although its id is not required to create a digital offer (see DigitalLocation model).",
-        discriminator="type",
-    )
-    name: str = pydantic_v1.Field(alias="legalName", example="Palais de l'Élysée")
-    publicName: str | None = pydantic_v1.Field(..., description="If null, legalName is used.", example="Élysée")
-    siret: str | None = pydantic_v1.Field(
-        description="Null when venue is digital or when siretComment field is not null.", example="12345678901234"
-    )
-    venueTypeCode: VenueTypeEnum = pydantic_v1.Field(alias="activityDomain")  # type: ignore[valid-type]
+    id: int = fields.VENUE_ID
+    siret_comment: str | None = fields.VENUE_SIRET_COMMENT
+    siret: str | None = fields.VENUE_SIRET
+    created_datetime: datetime.datetime = fields.VENUE_CREATED_DATETIME
+    location: VenuePhysicalLocation | VenueDigitalLocation = fields.VENUE_LOCATION
+    legal_name: str = fields.VENUE_LEGAL_NAME
+    public_name: str | None = fields.VENUE_PUBLIC_NAME
+    activity_domain: VenueTypeEnum = fields.VENUE_ACTIVITY_DOMAIN  # type: ignore[valid-type]
     accessibility: PartialAccessibility
+
+    # External urls
+    notification_url: str | None = fields.VENUE_NOTIFICATION_URL
+    booking_url: str | None = fields.VENUE_BOOKING_URL
+    cancel_url: str | None = fields.VENUE_CANCEL_URL
 
     @classmethod
     def build_model(cls, venue: offerers_models.Venue) -> "VenueResponse":
-        return cls(  # type: ignore[call-arg]
-            comment=venue.comment,
-            dateCreated=venue.dateCreated,
+        external_urls = venue.venueProviders[0].externalUrls
+        return cls(
+            siret_comment=venue.comment,
+            created_datetime=venue.dateCreated,
             id=venue.id,
             location=(
                 VenuePhysicalLocation(address=venue.street, city=venue.city, postalCode=venue.postalCode)
                 if not venue.isVirtual
                 else VenueDigitalLocation()
             ),
-            name=venue.name,
-            publicName=venue.publicName,
+            legal_name=venue.name,
+            public_name=venue.publicName,
             siret=venue.siret,
-            venueTypeCode=venue.venueTypeCode.name,
+            activity_domain=venue.venueTypeCode.name,
             accessibility=PartialAccessibility.from_orm(venue),
+            notification_url=external_urls.notificationExternalUrl if external_urls else None,
+            booking_url=external_urls.bookingExternalUrl if external_urls else None,
+            cancel_url=external_urls.cancelExternalUrl if external_urls else None,
         )
 
     class Config:

@@ -1,3 +1,6 @@
+from datetime import datetime
+from datetime import timedelta
+
 import pytest
 
 from pcapi.core.external_bookings import exceptions as external_bookings_exceptions
@@ -113,3 +116,60 @@ def test_get_allocine_theater():
 
     venue_without_theater = offerers_factories.VenueFactory()
     assert repository.get_allocine_theater(venue_without_theater) is None
+
+
+class GetFutureEventsRequiringProviderTicketingSystemTest:
+
+    def test_should_return_a_one_event_list(self):
+        provider = factories.PublicApiProviderFactory()
+        venue = offerers_factories.VenueFactory()
+        factories.VenueProviderFactory(provider=provider, venue=venue)
+
+        expected_event_offer = offers_factories.EventOfferFactory(
+            lastProvider=provider, venue=venue, withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP
+        )
+        # event not linked to ticketing
+        offers_factories.EventOfferFactory(
+            lastProvider=provider, venue=venue, withdrawalType=offers_models.WithdrawalTypeEnum.BY_EMAIL
+        )
+        # event with no stock
+        offers_factories.EventOfferFactory(
+            lastProvider=provider, venue=venue, withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP
+        )
+
+        offers_factories.StockFactory(offer=expected_event_offer)
+
+        future_events = repository.get_future_events_requiring_provider_ticketing_system(provider)
+
+        assert len(future_events) == 1
+        assert future_events[0] == expected_event_offer
+
+    def test_should_return_no_event_because_there_is_a_venue_booking_url(self):
+        provider = factories.PublicApiProviderFactory()
+        venue = offerers_factories.VenueFactory()
+        venue_provider = factories.VenueProviderFactory(provider=provider, venue=venue)
+        # External URLS defined at Venue level
+        factories.VenueProviderExternalUrlsFactory(venueProvider=venue_provider)
+        event_offer = offers_factories.EventOfferFactory(
+            lastProvider=provider, venue=venue, withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP
+        )
+        offers_factories.StockFactory(offer=event_offer)
+
+        future_events = repository.get_future_events_requiring_provider_ticketing_system(provider)
+
+        assert len(future_events) == 0
+
+    def test_should_return_no_event_because_stock_is_in_the_past(self):
+        provider = factories.PublicApiProviderFactory()
+        venue = offerers_factories.VenueFactory()
+        factories.VenueProviderFactory(provider=provider, venue=venue)
+        event_offer = offers_factories.EventOfferFactory(
+            lastProvider=provider, venue=venue, withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP
+        )
+        # Old stock
+        one_day_ago = datetime.utcnow() - timedelta(days=1)
+        offers_factories.StockFactory(offer=event_offer, beginningDatetime=one_day_ago)
+
+        future_events = repository.get_future_events_requiring_provider_ticketing_system(provider)
+
+        assert len(future_events) == 0
