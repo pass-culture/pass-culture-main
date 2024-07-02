@@ -18,9 +18,8 @@
 - [x] selected gras
 - [x] enlever la checkbox lorsque le composant n’est pas multi
 - [ ] revérifier l’a11y du composant
-- [ ] remplacer le composant TextInputAutocomplete
-- [ ] remplacer le composant SelectAutocomplete
-- [ ] remplacer le composant MultiSelectAutocomplete
+- [x] remplacer le composant TextInputAutocomplete
+- [x] remplacer le composant MultiSelectAutocomplete
 - [ ] `className={hovered === index ? styles['option-hovered'] : ''}` ne pas utiliser `index` sinon, un machin qui était `hovered` ne l’est plus lorsqu'on tape un truc pour filtrer les résultats
 - [ ] le scroll ne suit pas la navigation clavier
 - [ ] l’index hovered va en deça de zéro et au delà du nombre d'éléments
