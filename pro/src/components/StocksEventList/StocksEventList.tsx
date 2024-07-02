@@ -597,7 +597,7 @@ export const StocksEventList = ({
                 return (
                   <tr key={stock.id} className={styles['row']}>
                     <td
-                      className={styles['data']}
+                      className={cn(styles['data'], styles['checkbox-column'])}
                       data-label="Sélection du stock"
                     >
                       {!readonly && (
@@ -608,7 +608,10 @@ export const StocksEventList = ({
                         />
                       )}
                     </td>
-                    <td className={styles['data']} data-label="Date">
+                    <td
+                      className={cn(styles['data'], styles['date-column'])}
+                      data-label="Date"
+                    >
                       <div
                         className={cn(
                           styles['date-cell-wrapper'],
