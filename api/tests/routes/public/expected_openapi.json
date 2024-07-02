@@ -4003,13 +4003,13 @@
                     },
                     "contactEmail": {
                         "description": "Email of the person to contact if there is an issue with the offer.",
-                        "example": "somebody.tocontact@gmail.com",
+                        "example": "contact@yourcompany.com",
                         "title": "Contactemail",
                         "type": "string"
                     },
                     "contactPhone": {
                         "description": "Phone of the person to contact if there is an issue with the offer.",
-                        "example": "somebody.tocontact@gmail.com",
+                        "example": "0123456789",
                         "title": "Contactphone",
                         "type": "string"
                     },
@@ -5572,14 +5572,14 @@
                     },
                     "contactEmail": {
                         "description": "Email of the person to contact if there is an issue with the offer.",
-                        "example": "somebody.tocontact@gmail.com",
+                        "example": "contact@yourcompany.com",
                         "nullable": true,
                         "title": "Contactemail",
                         "type": "string"
                     },
                     "contactPhone": {
                         "description": "Phone of the person to contact if there is an issue with the offer.",
-                        "example": "somebody.tocontact@gmail.com",
+                        "example": "0123456789",
                         "nullable": true,
                         "title": "Contactphone",
                         "type": "string"
@@ -5839,13 +5839,13 @@
                     },
                     "contactEmail": {
                         "description": "Email of the person to contact if there is an issue with the offer.",
-                        "example": "somebody.tocontact@gmail.com",
+                        "example": "contact@yourcompany.com",
                         "title": "Contactemail",
                         "type": "string"
                     },
                     "contactPhone": {
                         "description": "Phone of the person to contact if there is an issue with the offer.",
-                        "example": "somebody.tocontact@gmail.com",
+                        "example": "0123456789",
                         "title": "Contactphone",
                         "type": "string"
                     },
