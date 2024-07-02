@@ -99,6 +99,10 @@ class _FIELDS:
     OFFER_ID = Field(description="Offer id", example=12345)
     OFFER_NAME = Field(description="Offer title", example="Le Petit Prince")
     OFFER_NAME_WITH_MAX_LENGTH = Field(description="Offer title", example="Le Petit Prince", max_length=90)
+    PUBLICATION_DATE = Field(
+        description="Date and time when we want the offer to be published on the native app. It cannot be a date in the past, and the time must be on the exact hour. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime)",
+        example=_example_datetime_with_tz,
+    )
 
     # Products dields
     EANS_FILTER = Field(description="EANs list (max 100)", example="3700551782888,9782895761792")
