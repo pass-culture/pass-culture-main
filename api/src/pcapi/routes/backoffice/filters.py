@@ -748,6 +748,22 @@ def format_modified_info_name(info_name: str) -> str:
             return "Date d'éligibilité à la nouvelle interface Pro"
         case "confidenceRule.confidenceLevel":
             return "Validation des offres"
+        case "offererAddress.addressId":
+            return "Adresse - ID Adresse"
+        case "offererAddress.address.inseeCode":
+            return "Adresse - Code Insee"
+        case "offererAddress.address.city":
+            return "Adresse - Ville"
+        case "offererAddress.address.postalCode":
+            return "Adresse - Code postal"
+        case "offererAddress.address.street":
+            return "Adresse - Adresse"
+        case "offererAddress.address.banId":
+            return "Adresse - Identifiant Base Adresse Nationale"
+        case "offererAddress.address.latitude":
+            return "Adresse - Latitude"
+        case "offererAddress.address.longitude":
+            return "Adresse - Longitude"
 
     if day := match_opening_hours(info_name):
         return f"Horaires du {day}"

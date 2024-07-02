@@ -12,7 +12,6 @@ from pcapi.core.offerers import models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers import validation
 from pcapi.core.offerers.models import Venue
-from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offerers_serialize
@@ -135,9 +134,6 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
     validation.check_venue_edition(modifications, venue)
 
     have_withdrawal_details_changes = body.withdrawalDetails != venue.withdrawalDetails
-
-    if feature.FeatureToggle.ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE.is_active():
-        offerers_api.update_venue_location(venue, modifications)
 
     venue = offerers_api.update_venue(
         venue,
