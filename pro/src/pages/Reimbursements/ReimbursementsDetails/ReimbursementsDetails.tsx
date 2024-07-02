@@ -74,7 +74,8 @@ export const ReimbursementsDetails = (): JSX.Element => {
     currentUser.isAdmin && bankAccount === ALL_BANK_ACCOUNTS_OPTION_ID
 
   const { selectedOfferer = null }: ReimbursementsContextProps =
-    useOutletContext()
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    useOutletContext() ?? {}
 
   const shouldDisableButtons =
     !isPeriodFilterSelected ||
