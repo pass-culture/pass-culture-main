@@ -188,6 +188,10 @@
       padding: rem.torem(8px);
     }
 
+    .checkbox-column {
+      width: rem.torem(32px);
+    }
+
     .venue-column,
     .institution-column,
     .title-column {
@@ -201,6 +205,7 @@
 
     .thumb-column {
       padding: rem.torem(8px);
+      max-width: rem.torem(80px);
 
       a {
         height: unset;

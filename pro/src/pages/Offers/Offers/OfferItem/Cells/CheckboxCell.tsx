@@ -2,6 +2,8 @@ import { CollectiveOfferStatus, OfferStatus } from 'apiClient/v1'
 import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
 import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 
+import styles from '../OfferItem.module.scss'
+
 interface CheckboxCellProps {
   offerName: string
   isSelected: boolean
@@ -18,7 +20,7 @@ export const CheckboxCell = ({
   selectOffer,
 }: CheckboxCellProps) => {
   return (
-    <td>
+    <td className={styles['checkbox-column']}>
       <BaseCheckbox
         checked={isSelected}
         className="select-offer-checkbox"
