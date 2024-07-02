@@ -373,4 +373,69 @@ describe('SelectAutocomplete', () => {
 
     expect(screen.getByLabelText('Département *')).toHaveValue('Test search')
   })
+
+  it('should show a restricted set of options if there is a limit and the number of options exceeds it', async () => {
+    render(
+      <Formik
+        initialValues={{
+          departement: ['01', '02'],
+          'search-departement': 'Test search',
+        }}
+        onSubmit={vi.fn()}
+      >
+        <SelectAutocomplete
+          {...{ ...props, multi: true, maxDisplayedOptions: 1 }}
+        />
+      </Formik>
+    )
+    await userEvent.click(screen.getByLabelText('Département *'))
+
+    expect(
+      screen.getByText('1 résultat maximum. Veuillez affiner votre recherche')
+    ).toBeInTheDocument()
+  })
+
+  it('should not show a count restriction message if options are not exceeding the maximum count', async () => {
+    render(
+      <Formik
+        initialValues={{
+          departement: ['01', '02'],
+          'search-departement': 'Test search',
+        }}
+        onSubmit={vi.fn()}
+      >
+        <SelectAutocomplete
+          {...{
+            ...props,
+            multi: true,
+            maxDisplayedOptions: props.options.length + 1,
+          }}
+        />
+      </Formik>
+    )
+    await userEvent.click(screen.getByLabelText('Département *'))
+
+    expect(
+      screen.queryByText(/Veuillez affiner votre recherche/)
+    ).not.toBeInTheDocument()
+  })
+
+  it('should not show a count restriction message if there is no maximum count', async () => {
+    render(
+      <Formik
+        initialValues={{
+          departement: ['01', '02'],
+          'search-departement': 'Test search',
+        }}
+        onSubmit={vi.fn()}
+      >
+        <SelectAutocomplete {...{ ...props, multi: true }} />
+      </Formik>
+    )
+    await userEvent.click(screen.getByLabelText('Département *'))
+
+    expect(
+      screen.queryByText(/Veuillez affiner votre recherche/)
+    ).not.toBeInTheDocument()
+  })
 })

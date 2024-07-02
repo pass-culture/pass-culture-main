@@ -199,6 +199,7 @@ export const CollectiveDataForm = ({
                     placeholder="Sélectionner un ou plusieurs réseau(x) partenaire(s)"
                     isOptional
                     hideTags
+                    maxDisplayedOptions={100}
                   />
                 </FormLayout.Row>
               </FormLayout.SubSection>

@@ -32,6 +32,7 @@ export type SelectAutocompleteProps = FieldLayoutBaseProps & {
   onReset?: () => void
   type?: 'text' | 'search'
   leftIcon?: string
+  maxDisplayedOptions?: number
 }
 
 export const SelectAutocomplete = ({
@@ -59,6 +60,7 @@ export const SelectAutocomplete = ({
   onReset = () => {},
   type = 'text',
   leftIcon,
+  maxDisplayedOptions,
 }: SelectAutocompleteProps): JSX.Element => {
   const { setFieldTouched, setFieldValue } = useFormikContext<any>()
 
@@ -321,6 +323,7 @@ export const SelectAutocomplete = ({
               hoveredOptionIndex={hoveredOptionIndex}
               selectOption={selectOption}
               multi={multi}
+              maxDisplayedOptions={maxDisplayedOptions}
             />
           )}
         </div>
