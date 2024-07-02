@@ -9,14 +9,14 @@ Feature: Search for collective bookings
   Scenario: It should find collective bookings by offers
     When I display offers
     And I search for "Offre" with text "offer 39"
-    Then These results should be displayed
+    Then These 1 results should be displayed
       | Réservation | Nom de l'offre | Établissement                               | Places et prix | Statut  |
       |          80 | offer 39       | ECOLE ELEMENTAIRE PUBLIQUE FRANCOIS MOISSON | 25 places100 € | annulée |
 
   Scenario: It should find collective bookings by establishments
     When I display offers
     And I search for "Établissement" with text "LYCEE POLYVALENT METIER ROBERT DOISNEAU"
-    Then These results should be displayed
+    Then These 6 results should be displayed
       | Réservation | Nom de l'offre | Établissement                           | Places et prix | Statut      |
       |          79 | offer 38       | LYCEE POLYVALENT METIER ROBERT DOISNEAU | 25 places100 € | annulée     |
       |          72 | offer 31       | LYCEE POLYVALENT METIER ROBERT DOISNEAU | 25 places100 € | annulée     |
@@ -28,7 +28,7 @@ Feature: Search for collective bookings
   Scenario: It should find collective bookings by booking number
     When I display offers
     And I search for "Numéro de réservation" with text "66"
-    Then These results should be displayed
+    Then These 1 results should be displayed
       | Réservation | Nom de l'offre | Établissement                               | Places et prix | Statut  |
       |          66 | offer 25       | ECOLE ELEMENTAIRE PUBLIQUE FRANCOIS MOISSON | 25 places100 € | annulée |
   # @todo: faire un cas de recherche par date (comme dans https://github.com/pass-culture/pass-culture-main/pull/12931) + établissement
