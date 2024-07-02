@@ -6,13 +6,15 @@ Feature: Search individual offers
     And I go to the "Offres" page
 
   Scenario: A search with a name should display expected results
-    When I search with the text "Offer 1773"
+    When I select offerer "Cinéma du coin"
+    And I search with the text "Mon offre brouillon avec stock"
     Then These 1 results should be displayed
-      |  |  | Titre      | Lieu                                 | Stocks | Status  |
-      |  |  | Offer 1773 | Herbert Marcuse Entreprise - Salle 1 | 24     | publiée |
+      |  |  | Titre               | Lieu             | Stocks | Status    |
+      |  |  | Mon offre brouillon | Espace des Gnoux |      0 | brouillon |
 
   Scenario: A search with a EAN should display expected results
-    When I search with the text "9780000000004"
+    When I select offerer "Réseau de librairies"
+    And I search with the text "9780000000004"
     Then These 10 results should be displayed
       |  |  | Titre            | Lieu         | Stocks | Status     |
       |  |  | Livre 4 avec EAN | Librairie 10 |     10 | publiée    |
@@ -27,23 +29,23 @@ Feature: Search individual offers
       |  |  | Livre 4 avec EAN | Librairie 1  |     10 | publiée    |
   # pourrait être un TU/TI, on le met en E2E temporairement
 
-  Scenario: A search with "Mode de création" filter should display expected results
-    When I select "Beaux-arts" in "Catégories"
+  Scenario: A search with "Catégories" filter should display expected results
+    When I select "Jeux" in "Catégories"
     And I validate my filters
-    Then These 2 results should be displayed
-      |  |  | Titre      | Lieu                   | Stocks | Status     |
-      |  |  | Offer 1844 | La librairie quantique |      0 | désactivée |
-      |  |  | Offer 1825 | Club Dorothy           |     20 | publiée    |
+    Then These 1 results should be displayed
+      |  |  | Titre      | Lieu          | Stocks | Status  |
+      |  |  | Offer 1872 | Terrain vague |     16 | expirée |
 
   Scenario: A search by offer status should display expected results
-    When I select "Validation en attente" in offer status
+    When I select "Publiée" in offer status
     And I validate my filters
-    Then These 4 results should be displayed
-      |  |  | Titre            | Lieu        | Stocks | Status     |
-      |  |  | Livre 4 avec EAN | Librairie 6 |     10 | en attente |
-      |  |  | Livre 3 avec EAN | Librairie 6 |     10 | en attente |
-      |  |  | Livre 2 avec EAN | Librairie 6 |     10 | en attente |
-      |  |  | Livre 1 avec EAN | Librairie 6 |     10 | en attente |
+    Then These 5 results should be displayed
+      |  |  | Titre      | Lieu                           | Stocks | Status  |
+      |  |  | Offer 1875 | Terrain vague                  |     20 | publiée |
+      |  |  | Offer 1873 | Bar des amis - Offre numérique |     20 | publiée |
+      |  |  | Offer 1816 | Terrain vague                  |     40 | publiée |
+      |  |  | Offer 1815 | Terrain vague                  |     40 | publiée |
+      |  |  | Offer 1812 | Terrain vague                  |     40 | publiée |
 
   Scenario: A search by date should display expected results
     When I select a date in one month
