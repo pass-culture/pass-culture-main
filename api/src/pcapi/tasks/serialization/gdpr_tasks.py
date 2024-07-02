@@ -62,7 +62,7 @@ class EmailHistory(BaseModel):
 
 class DepositSerializer(BaseModel):
     dateCreated: datetime
-    dateUpdated: datetime
+    dateUpdated: datetime | None
     expirationDate: datetime | None
     amount: float
     source: str
