@@ -16,6 +16,7 @@ export interface CollectiveOfferLayoutProps {
   isTemplate?: boolean
   isFromTemplate?: boolean
   requestId?: string | null
+  isArchivable?: boolean | null
 }
 
 export const CollectiveOfferLayout = ({
@@ -25,6 +26,7 @@ export const CollectiveOfferLayout = ({
   isCreation = false,
   isTemplate = false,
   requestId = null,
+  isArchivable,
 }: CollectiveOfferLayoutProps): JSX.Element => {
   const location = useLocation()
   const isSummaryPage = location.pathname.includes('recapitulatif')
@@ -82,6 +84,7 @@ export const CollectiveOfferLayout = ({
         offerId={navigationProps.offerId}
         isTemplate={isTemplate}
         requestId={requestId}
+        isArchivable={isArchivable}
       />
 
       {children}
