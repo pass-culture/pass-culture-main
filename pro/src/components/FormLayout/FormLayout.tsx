@@ -12,17 +12,20 @@ export interface FormLayoutProps {
   children: React.ReactNode | React.ReactNode[]
   className?: string
   fullWidthActions?: boolean
+  mediumWidthActions?: boolean
 }
 
 export const FormLayout = ({
   children,
   className,
   fullWidthActions = false,
+  mediumWidthActions = false,
 }: FormLayoutProps): JSX.Element => (
   <div
     className={cn(
       style['form-layout'],
       { [style['full-width-actions']]: fullWidthActions },
+      { [style['medium-width-actions']]: mediumWidthActions },
       className
     )}
   >
