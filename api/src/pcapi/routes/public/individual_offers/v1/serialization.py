@@ -105,10 +105,10 @@ class Accessibility(serialization.ConfiguredBaseModel):
 class AccessibilityResponse(serialization.ConfiguredBaseModel):
     """Accessibility for people with disabilities."""
 
-    audio_disability_compliant: bool | None = fields.AUDIO_DISABILITY
-    mental_disability_compliant: bool | None = fields.MENTAL_DISABILITY
-    motor_disability_compliant: bool | None = fields.MOTOR_DISABILITY
-    visual_disability_compliant: bool | None = fields.VISUAL_DISABILITY
+    audio_disability_compliant: bool | None = fields.AUDIO_DISABILITY_COMPLIANT
+    mental_disability_compliant: bool | None = fields.MENTAL_DISABILITY_COMPLIANT
+    motor_disability_compliant: bool | None = fields.MOTOR_DISABILITY_COMPLIANT
+    visual_disability_compliant: bool | None = fields.VISUAL_DISABILITY_COMPLIANT
 
 
 class PhysicalLocation(serialization.ConfiguredBaseModel):

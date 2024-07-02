@@ -273,10 +273,10 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
     isActive: bool | None = fields.COLLECTIVE_OFFER_IS_ACTIVE
     isSoldOut: bool = fields.COLLECTIVE_OFFER_IS_SOLD_OUT
     venueId: int = fields.VENUE_ID
-    audioDisabilityCompliant: bool | None = fields.AUDIO_DISABILITY
-    mentalDisabilityCompliant: bool | None = fields.MENTAL_DISABILITY
-    motorDisabilityCompliant: bool | None = fields.MOTOR_DISABILITY
-    visualDisabilityCompliant: bool | None = fields.VISUAL_DISABILITY
+    audioDisabilityCompliant: bool | None = fields.AUDIO_DISABILITY_COMPLIANT
+    mentalDisabilityCompliant: bool | None = fields.MENTAL_DISABILITY_COMPLIANT
+    motorDisabilityCompliant: bool | None = fields.MOTOR_DISABILITY_COMPLIANT
+    visualDisabilityCompliant: bool | None = fields.VISUAL_DISABILITY_COMPLIANT
     beginningDatetime: str = fields.COLLECTIVE_OFFER_BEGINNING_DATETIME
     startDatetime: str = fields.COLLECTIVE_OFFER_START_DATETIME
     endDatetime: str = fields.COLLECTIVE_OFFER_END_DATETIME
@@ -373,10 +373,10 @@ class PostCollectiveOfferBodyModel(BaseModel):
     domains: list[int] = fields.COLLECTIVE_OFFER_EDUCATIONAL_DOMAINS
     duration_minutes: int | None = fields.DURATION_MINUTES
     students: list[str] = fields.COLLECTIVE_OFFER_STUDENT_LEVELS
-    audio_disability_compliant: bool = fields.AUDIO_DISABILITY_WITH_DEFAULT
-    mental_disability_compliant: bool = fields.MENTAL_DISABILITY_WITH_DEFAULT
-    motor_disability_compliant: bool = fields.MOTOR_DISABILITY_WITH_DEFAULT
-    visual_disability_compliant: bool = fields.VISUAL_DISABILITY_WITH_DEFAULT
+    audio_disability_compliant: bool = fields.AUDIO_DISABILITY_COMPLIANT_WITH_DEFAULT
+    mental_disability_compliant: bool = fields.MENTAL_DISABILITY_COMPLIANT_WITH_DEFAULT
+    motor_disability_compliant: bool = fields.MOTOR_DISABILITY_COMPLIANT_WITH_DEFAULT
+    visual_disability_compliant: bool = fields.VISUAL_DISABILITY_COMPLIANT_WITH_DEFAULT
     offer_venue: OfferVenueModel
     isActive: bool = fields.COLLECTIVE_OFFER_IS_ACTIVE
     image_file: str | None = fields.IMAGE_FILE
@@ -485,10 +485,10 @@ class PatchCollectiveOfferBodyModel(BaseModel):
     offerVenue: OfferVenueModel | None
     interventionArea: list[str] | None
     durationMinutes: int | None = fields.DURATION_MINUTES
-    audioDisabilityCompliant: bool | None = fields.AUDIO_DISABILITY
-    mentalDisabilityCompliant: bool | None = fields.MENTAL_DISABILITY
-    motorDisabilityCompliant: bool | None = fields.MOTOR_DISABILITY
-    visualDisabilityCompliant: bool | None = fields.VISUAL_DISABILITY
+    audioDisabilityCompliant: bool | None = fields.AUDIO_DISABILITY_COMPLIANT
+    mentalDisabilityCompliant: bool | None = fields.MENTAL_DISABILITY_COMPLIANT
+    motorDisabilityCompliant: bool | None = fields.MOTOR_DISABILITY_COMPLIANT
+    visualDisabilityCompliant: bool | None = fields.VISUAL_DISABILITY_COMPLIANT
 
     isActive: bool | None = fields.COLLECTIVE_OFFER_IS_ACTIVE
     imageCredit: str | None = fields.IMAGE_CREDIT

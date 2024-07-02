@@ -76,20 +76,22 @@ class _FIELDS:
     IMAGE_URL = Field(description="Image URL publicly accessible", example="https://example.com/image.png")
 
     # Disability fields
-    AUDIO_DISABILITY = Field(description="Is accessible for people with hearing disability", example=True)
-    MENTAL_DISABILITY = Field(description="Is accessible for people with mental disability", example=True)
-    MOTOR_DISABILITY = Field(description="Is accessible for people with motor disability", example=True)
-    VISUAL_DISABILITY = Field(description="Is accessible for people with visual disability", example=True)
-    AUDIO_DISABILITY_WITH_DEFAULT = Field(
+    AUDIO_DISABILITY_COMPLIANT = Field(description="Is accessible for people with hearing disability", example=True)
+    MENTAL_DISABILITY_COMPLIANT = Field(
+        description="Is accessible for people with mental or cognitive disability", example=True
+    )
+    MOTOR_DISABILITY_COMPLIANT = Field(description="Is accessible for people with motor disability", example=True)
+    VISUAL_DISABILITY_COMPLIANT = Field(description="Is accessible for people with visual disability", example=True)
+    AUDIO_DISABILITY_COMPLIANT_WITH_DEFAULT = Field(
         False, description="Is accessible for people with hearing disability", example=True
     )
-    MENTAL_DISABILITY_WITH_DEFAULT = Field(
+    MENTAL_DISABILITY_COMPLIANT_WITH_DEFAULT = Field(
         False, description="Is accessible for people with mental disability", example=True
     )
-    MOTOR_DISABILITY_WITH_DEFAULT = Field(
+    MOTOR_DISABILITY_COMPLIANT_WITH_DEFAULT = Field(
         False, description="Is accessible for people with motor disability", example=True
     )
-    VISUAL_DISABILITY_WITH_DEFAULT = Field(
+    VISUAL_DISABILITY_COMPLIANT_WITH_DEFAULT = Field(
         False, description="Is accessible for people with visual disability", example=True
     )
 

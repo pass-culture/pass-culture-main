@@ -841,7 +841,7 @@
                         "type": "boolean"
                     },
                     "mentalDisabilityCompliant": {
-                        "description": "Is accessible for people with mental disability",
+                        "description": "Is accessible for people with mental or cognitive disability",
                         "example": true,
                         "nullable": true,
                         "title": "Mentaldisabilitycompliant",
@@ -4127,7 +4127,7 @@
                         "type": "boolean"
                     },
                     "mentalDisabilityCompliant": {
-                        "description": "Is accessible for people with mental disability",
+                        "description": "Is accessible for people with mental or cognitive disability",
                         "example": true,
                         "nullable": true,
                         "title": "Mentaldisabilitycompliant",
@@ -5681,7 +5681,7 @@
                         "type": "boolean"
                     },
                     "mentalDisabilityCompliant": {
-                        "description": "Is accessible for people with mental disability",
+                        "description": "Is accessible for people with mental or cognitive disability",
                         "example": true,
                         "nullable": true,
                         "title": "Mentaldisabilitycompliant",
