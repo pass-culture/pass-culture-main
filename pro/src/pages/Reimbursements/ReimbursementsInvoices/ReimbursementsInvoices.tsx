@@ -6,8 +6,8 @@ import useSWR from 'swr'
 import { api } from 'apiClient/api'
 import { BannerReimbursementsInfo } from 'components/Banner/BannerReimbursementsInfo'
 import {
-  GET_INVOICES_QUERY_KEY,
   GET_HAS_INVOICE_QUERY_KEY,
+  GET_INVOICES_QUERY_KEY,
   GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY,
 } from 'config/swrQueryKeys'
 import { ReimbursementsContextProps } from 'pages/Reimbursements/Reimbursements'
@@ -51,7 +51,8 @@ export const ReimbursementsInvoices = (): JSX.Element => {
   const [areFiltersDefault, setAreFiltersDefault] = useState(true)
   const [hasSearchedOnce, setHasSearchedOnce] = useState(false)
   const { selectedOfferer = null }: ReimbursementsContextProps =
-    useOutletContext()
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    useOutletContext() ?? {}
 
   const getInvoicesQuery = useSWR(
     selectedOfferer
