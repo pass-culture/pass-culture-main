@@ -27,6 +27,7 @@ from collections import defaultdict
 import csv
 import datetime
 import decimal
+import functools
 import itertools
 import logging
 import math
@@ -69,6 +70,7 @@ import pcapi.core.users.models as users_models
 from pcapi.domain import reimbursement
 from pcapi.models import db
 from pcapi.models import feature
+from pcapi.repository import on_commit
 from pcapi.repository import transaction
 from pcapi.tasks import finance_tasks
 from pcapi.utils import human_ids
@@ -2890,7 +2892,7 @@ def create_overpayment_finance_incident(
         comment=origin,
     )
 
-    db.session.commit()
+    db.session.flush()
 
     return incident
 
@@ -2927,7 +2929,7 @@ def create_overpayment_finance_incident_collective_booking(
         comment=origin,
     )
 
-    db.session.commit()
+    db.session.flush()
 
     return incident
 
@@ -2973,7 +2975,7 @@ def create_finance_commercial_gesture(
         finance_incident=incident,
         comment=origin,
     )
-    db.session.commit()
+    db.session.flush()
     return incident
 
 
@@ -3006,7 +3008,7 @@ def create_finance_commercial_gesture_collective_booking(
         finance_incident=incident,
         comment=origin,
     )
-    db.session.commit()
+    db.session.flush()
     return incident
 
 
@@ -3108,19 +3110,32 @@ def validate_finance_overpayment_incident(
         linked_incident_id=finance_incident.id,
     )
 
-    db.session.commit()
+    db.session.flush()
 
     # send mail to pro
-    send_finance_incident_emails(finance_incident)
+    on_commit(
+        functools.partial(
+            send_finance_incident_emails,
+            finance_incident=finance_incident,
+        ),
+    )
     # send mail to beneficiaries or educational redactor
     for booking_incident in finance_incident.booking_finance_incidents:
         if not booking_incident.is_partial:
             if booking_incident.collectiveBooking:
-                educational_api_booking.notify_reimburse_collective_booking(
-                    collective_booking=booking_incident.collectiveBooking, reason="NO_EVENT"
+                on_commit(
+                    functools.partial(
+                        educational_api_booking.notify_reimburse_collective_booking,
+                        collective_booking=booking_incident.collectiveBooking,
+                        reason="NO_EVENT",
+                    ),
                 )
             else:
-                send_booking_cancellation_by_pro_to_beneficiary_email(booking_incident.booking)
+                on_commit(
+                    functools.partial(
+                        send_booking_cancellation_by_pro_to_beneficiary_email, booking=booking_incident.booking
+                    )
+                )
 
 
 def validate_finance_commercial_gesture(
@@ -3162,10 +3177,15 @@ def validate_finance_commercial_gesture(
         linked_incident_id=finance_incident.id,
     )
 
-    db.session.commit()
+    db.session.flush()
 
     # send mail to pro
-    send_commercial_gesture_email(finance_incident)
+    on_commit(
+        functools.partial(
+            send_commercial_gesture_email,
+            finance_incident=finance_incident,
+        ),
+    )
 
 
 def cancel_finance_incident(
@@ -3188,7 +3208,7 @@ def cancel_finance_incident(
         comment=comment,
     )
 
-    db.session.commit()
+    db.session.flush()
 
 
 def are_cashflows_being_generated() -> bool:
