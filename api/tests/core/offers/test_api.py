@@ -1253,15 +1253,15 @@ class UpdateOfferTest:
     def test_forbidden_on_allocine_offer_on_certain_fields(self):
         provider = providers_factories.AllocineProviderFactory(localClass="AllocineStocks")
         offer = factories.OfferFactory(
-            lastProvider=provider, name="Old name", subcategoryId=subcategories.SEANCE_CINE.id
+            lastProvider=provider, durationMinutes=90, subcategoryId=subcategories.SEANCE_CINE.id
         )
 
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.update_offer(offer, name="New name", isDuo=True)
+            api.update_offer(offer, durationMinutes=120, isDuo=True)
 
-        assert error.value.errors == {"name": ["Vous ne pouvez pas modifier ce champ"]}
+        assert error.value.errors == {"durationMinutes": ["Vous ne pouvez pas modifier ce champ"]}
         offer = models.Offer.query.one()
-        assert offer.name == "Old name"
+        assert offer.durationMinutes == 90
         assert not offer.isDuo
 
     def test_success_on_imported_offer_on_external_ticket_office_url(self):
@@ -1312,21 +1312,21 @@ class UpdateOfferTest:
         provider = providers_factories.APIProviderFactory()
         offer = factories.OfferFactory(
             lastProvider=provider,
-            name="Old name",
+            durationMinutes=90,
             isDuo=False,
             audioDisabilityCompliant=True,
             subcategoryId=subcategories.SEANCE_CINE.id,
         )
 
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.update_offer(offer, name="New name", isDuo=True, audioDisabilityCompliant=False)
+            api.update_offer(offer, durationMinutes=120, isDuo=True, audioDisabilityCompliant=False)
 
         assert error.value.errors == {
-            "name": ["Vous ne pouvez pas modifier ce champ"],
+            "durationMinutes": ["Vous ne pouvez pas modifier ce champ"],
             "isDuo": ["Vous ne pouvez pas modifier ce champ"],
         }
         offer = models.Offer.query.one()
-        assert offer.name == "Old name"
+        assert offer.durationMinutes == 90
         assert offer.isDuo is False
         assert offer.audioDisabilityCompliant is True
 
