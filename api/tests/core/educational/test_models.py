@@ -13,6 +13,7 @@ from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import EducationalDeposit
 from pcapi.core.educational.models import HasImageMixin
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.providers.factories as providers_factories
 from pcapi.models import db
 from pcapi.models.offer_mixin import CollectiveOfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
@@ -261,29 +262,46 @@ class CollectiveStockIsEditableTest:
 
 
 class CollectiveOfferIsEditableTest:
-    def test_offer_all_status(self) -> None:
-        for line in OfferValidationStatus:
-            expected = True
-            if line.name in ("PENDING", "REJECTED"):
-                expected = False
+    @pytest.mark.parametrize(
+        "state,expected", [("PENDING", False), ("REJECTED", False), ("APPROVED", True), ("DRAFT", True)]
+    )
+    def test_offer_for_status(self, state, expected) -> None:
+        offer = factories.CollectiveOfferFactory(validation=state)
+        factories.CollectiveStockFactory(collectiveOffer=offer)
 
-            offer = factories.CollectiveOfferFactory(validation=line.name)
-            factories.CollectiveStockFactory(collectiveOffer=offer)
+        assert offer.isEditable == expected
 
-            assert offer.isEditable == expected
+
+class CollectiveOfferIsEditableByProTest:
+    @pytest.mark.parametrize(
+        "state,expected", [("PENDING", False), ("REJECTED", False), ("APPROVED", True), ("DRAFT", True)]
+    )
+    def test_offer_for_status(self, state, expected) -> None:
+        offer = factories.CollectiveOfferFactory(validation=state)
+        factories.CollectiveStockFactory(collectiveOffer=offer)
+
+        assert offer.isEditableByPcPro == expected
+
+    @pytest.mark.parametrize("state", OfferValidationStatus)
+    def test_offer_from_public_api_for_status(self, state) -> None:
+        provider = providers_factories.APIProviderFactory()
+        offer = factories.CollectiveOfferFactory(validation=state, providerId=provider.id)
+        factories.CollectiveStockFactory(collectiveOffer=offer)
+
+        assert offer.isEditableByPcPro == False
 
 
 class CollectiveOfferIsArchiveTest:
-    def test_date_archive_for_all_status(self) -> None:
-        for line in OfferValidationStatus:
-            offer = factories.CollectiveOfferFactory.build(validation=line.name)
+    @pytest.mark.parametrize("state", OfferValidationStatus)
+    def test_date_archive_for_status(self, state) -> None:
+        offer = factories.CollectiveOfferFactory.build(validation=state)
 
-            assert offer.isArchived == False
+        assert offer.isArchived == False
 
-            offer.dateArchived = datetime.datetime.utcnow()
+        offer.dateArchived = datetime.datetime.utcnow()
 
-            assert offer.isArchived == True
-            assert offer.status == CollectiveOfferStatus.ARCHIVED.value
+        assert offer.isArchived == True
+        assert offer.status == CollectiveOfferStatus.ARCHIVED.value
 
     def test_query_is_archived(self) -> None:
         offer_archived = factories.CollectiveOfferFactory(dateArchived=datetime.datetime.utcnow())
@@ -313,15 +331,21 @@ class CollectiveOfferIsArchiveTest:
 
 
 class CollectiveOfferTemplateIsEditableTest:
-    def test_offer_all_status(self) -> None:
-        for line in OfferValidationStatus:
-            expected = True
-            if line.name in ("PENDING", "REJECTED"):
-                expected = False
+    @pytest.mark.parametrize(
+        "state,expected", [("PENDING", False), ("REJECTED", False), ("APPROVED", True), ("DRAFT", True)]
+    )
+    def test_offer_is_editable_by_pc_pro_for_status(self, state, expected) -> None:
+        offer = factories.CollectiveOfferTemplateFactory(validation=state)
 
-            offer = factories.CollectiveOfferTemplateFactory(validation=line.name)
+        assert offer.isEditableByPcPro == expected
 
-            assert offer.isEditable == expected
+    @pytest.mark.parametrize(
+        "state,expected", [("PENDING", False), ("REJECTED", False), ("APPROVED", True), ("DRAFT", True)]
+    )
+    def test_offer_is_editable_for_status(self, state, expected) -> None:
+        offer = factories.CollectiveOfferTemplateFactory(validation=state)
+
+        assert offer.isEditable == expected
 
 
 class CollectiveStockIsCancellableFromOfferer:

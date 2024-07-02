@@ -50,6 +50,7 @@ export const collectiveOfferFactory = (
     venue: listOffersVenueFactory(),
     stocks: [{ hasBookingLimitDatetimePassed: false, remainingQuantity: 1 }],
     isEditable: true,
+    isEditableByPcPro: true,
     isPublicApi: false,
     interventionArea: [],
     isShowcase: false,
