@@ -1,0 +1,75 @@
+name: '3 [on_workflow/Deprecated] Build docker image'
+
+on:
+  workflow_call:
+    inputs:
+      ref:
+        # The git ref to build from.
+        # Can be a branch name, a tag or a commit.
+        required: false
+        type: string
+      tag:
+        # The docker image tag
+        required: true
+        type: string
+      image:
+        required: true
+        type: string
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
+        required: true
+      GCP_EHP_SERVICE_ACCOUNT:
+        required: true
+
+env:
+  registry: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry
+
+jobs:
+  build-docker-image:
+    name: "Build ${{ inputs.image }}:${{ inputs.tag }}"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.1.7
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: "Add version to api"
+        working-directory: api
+        run: |
+          echo "${{ inputs.ref }}" > version.txt
+          git add version.txt
+
+      - name: "Install poetry"
+        run: pip install poetry
+
+      - name: "check poetry lock is up to date"
+        working-directory: api
+        run: poetry check
+
+      - name: "Set up Docker Buildx"
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver: docker
+
+      - name: "Compute docker image name:tag"
+        id: compute-image-name
+        run: echo "image_name=${{ env.registry }}/${{ inputs.image }}:${{ inputs.tag }}" | tee -a ${GITHUB_OUTPUT}
+          
+      - name: "Build ${{ steps.compute-image-name.outputs.image_name }} image"
+        uses: docker/build-push-action@v5
+        with:
+          context: api
+          target: ${{ inputs.image }}
+          tags: ${{ steps.compute-image-name.outputs.image_name }}
+
+      - name: "Store artifact"
+        run: |
+          docker images
+          docker save ${{ steps.compute-image-name.outputs.image_name }} > ${{ inputs.image }}-${{ inputs.tag }}.tar
+
+      - name: "Upload of artifact content to blob storage"
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.image }}-${{ inputs.tag }}.tar
+          path: ./
+          retention-days: 1

@@ -3,7 +3,11 @@ name: "3 [on_workflow] Tests E2E"
 on:
   workflow_call:
     inputs:
-      TAG:
+      image:
+        type: string
+        required: false
+        default: pcapi
+      tag:
         type: string
         required: true
       CACHE_BUCKET_NAME:
@@ -15,30 +19,60 @@ on:
       GCP_EHP_SERVICE_ACCOUNT:
         required: true
 
+env:
+  registry: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry
+
 defaults:
   run:
     working-directory: pro
 
 jobs:
   tests-pro-e2e-tests:
-    name: "E2E tests"
+    name: "E2E tests and notifications"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.1.7
+      - uses: technote-space/workflow-conclusion-action@v3
       - name: "Authentification to Google"
         uses: "google-github-actions/auth@v2"
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       - name: "Get Secret"
-        id: "secrets"
+        id: secrets
         uses: "google-github-actions/get-secretmanager-secrets@v2"
         with:
           secrets: |-
+            SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
             ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
             ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
             CYPRESS_CLOUD_RECORD_KEY:passculture-metier-ehp/e2e-tests-pro-cypress-cloud-record-key
             CYPRESS_CLOUD_PROJECT_ID:passculture-metier-ehp/e2e-tests-pro-cypress-cloud-project-id
+      - name: "OpenID Connect Authentication"
+        id: openid-auth
+        uses: "google-github-actions/auth@v2"
+        with:
+          create_credentials_file: false
+          token_format: "access_token"
+          workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER  }}
+          service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
+      - name: "Docker login"
+        id: docker-login
+        uses: "docker/login-action@v1"
+        with:
+          registry: "europe-west1-docker.pkg.dev"
+          username: "oauth2accesstoken"
+          password: "${{ steps.openid-auth.outputs.access_token }}"
+      - name: "Compute docker image name:tag"
+        id: compute-image-name
+        run: |
+          echo "image_name=${{ env.registry }}/${{ inputs.image }}:${{ inputs.tag }}" | tee -a ${GITHUB_OUTPUT}
+          echo "::notice:: Running e2e-tests with ${{ env.registry }}/${{ inputs.image }}:${{ inputs.tag }}"
+      - name: "Download artifact"
+        if: ${{ inputs.tag != 'latest' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.image }}-${{ inputs.tag }}.tar
       - uses: actions/setup-node@v3
         with:
           node-version-file: "pro/.nvmrc"
@@ -51,11 +85,6 @@ jobs:
         env:
           PCAPI_UID: 1000
           PCAPI_GID: 1000
-      - name: "OpenID Connect Authentication"
-        uses: "google-github-actions/auth@v2"
-        with:
-          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       - name: "Cache the node_modules"
         id: "yarn-modules-cache"
         uses: pass-culture-github-actions/cache@v1.0.0
@@ -71,25 +100,13 @@ jobs:
       - run: yarn install --immutable
       - name: "Run postgres and redis server"
         run: docker-compose -f ../docker-compose-backend.yml up postgres redis -d
-      - id: "openid-auth"
-        name: "OpenID Connect Authentication"
-        uses: "google-github-actions/auth@v2"
-        with:
-          create_credentials_file: false
-          token_format: "access_token"
-          workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER  }}
-          service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
       - name: "Set up Cloud SDK"
         uses: "google-github-actions/setup-gcloud@v2"
-      - id: "docker-login"
-        uses: "docker/login-action@v1"
-        name: "Docker login"
-        with:
-          registry: "europe-west1-docker.pkg.dev"
-          username: "oauth2accesstoken"
-          password: "${{ steps.openid-auth.outputs.access_token }}"
       - name: "Run API server"
         run: |
+          if [ "${{ inputs.tag }}" != "latest" ]; then
+            docker load --input $GITHUB_WORKSPACE/${{ inputs.image }}-${{ inputs.tag }}.tar
+          fi
           docker run \
             --name pc-api \
             --workdir /usr/src/app \
@@ -102,7 +119,7 @@ jobs:
             --publish 5001:5001 \
             --publish 10002:10002 \
             --entrypoint bash \
-            europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi:${{ inputs.TAG }} \
+            ${{ steps.compute-image-name.outputs.image_name }} \
             -c "set -e ; flask install_postgres_extensions ; alembic upgrade pre@head ; alembic upgrade post@head ; flask install_data ; python src/pcapi/app.py"
       - name: "Wait for migrations to be run"
         uses: iFaxity/wait-on-action@v1
@@ -121,7 +138,6 @@ jobs:
           timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:3001)" != "200" ]]; do sleep 5; done' || false
       # Doc : https://github.com/cypress-io/github-action
       - name: "Cypress run"
-        if: always()
         uses: cypress-io/github-action@v6
         with:
           wait-on: "http://localhost:5001/health/api,http://localhost:5001/health/database"
@@ -149,26 +165,8 @@ jobs:
       - name: 'Show pcapi log when it fails'
         if: failure()
         run: docker logs pc-api
-
-  notification:
-    name: "Notification"
-    runs-on: ubuntu-latest
-    if: ${{ failure() && github.ref == 'refs/heads/master' }}
-    needs: tests-pro-e2e-tests
-    steps:
-      - uses: technote-space/workflow-conclusion-action@v3
-      - name: "Authentification to Google"
-        uses: "google-github-actions/auth@v2"
-        with:
-          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      - name: "Get Secret"
-        id: "secrets"
-        uses: "google-github-actions/get-secretmanager-secrets@v2"
-        with:
-          secrets: |-
-            SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
       - name: "Post to a Slack channel"
+        if: always() && failure() && github.ref == 'refs/heads/master'
         uses: slackapi/slack-github-action@v1.26.0
         with:
           # channel #dev
