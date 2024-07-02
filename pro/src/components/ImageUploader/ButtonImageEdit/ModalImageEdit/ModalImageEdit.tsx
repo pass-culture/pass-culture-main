@@ -9,6 +9,7 @@ import {
 } from 'components/ImageEditor/utils'
 import { ImageUploadBrowserFormValues } from 'components/ImageUploadBrowserForm/types'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
+import { useNotification } from 'hooks/useNotification'
 
 import { UploadImageValues } from '../types'
 
@@ -40,6 +41,7 @@ export const ModalImageEdit = ({
   onImageDelete,
   initialValues = {},
 }: ModalImageEditProps): JSX.Element | null => {
+  const notification = useNotification()
   const [isReady, setIsReady] = useState<boolean>(false)
 
   const {
@@ -52,8 +54,13 @@ export const ModalImageEdit = ({
   const [image, setImage] = useState<File | undefined>()
   useEffect(() => {
     async function setImageFromUrl(url: string) {
-      setImage(await getFileFromURL(url))
+      try {
+        setImage(await getFileFromURL(url))
+      } catch (e) {
+        notification.error('Erreur lors de la récupération de votre image.')
+      }
     }
+
     const imageUrl = initialOriginalImageUrl
       ? initialOriginalImageUrl
       : initialImageUrl
