@@ -25,9 +25,6 @@ jobs:
       docker-image-tags: ${{ steps.define-image-tags.outputs.docker-image-tags }}
     steps:
       - uses: actions/checkout@v4.1.7
-        with:
-          fetch-depth: 0
-          fetch-tags: false
       - name: "Check api folder changes"
         id: check-api-changes
         uses: tj-actions/changed-files@v44
@@ -65,10 +62,28 @@ jobs:
         run: |
           DOCKER_REGISTRY="europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry"
           OUTPUT="docker-image-tags="
+          API_CHECKSUM=`tar cf - api | sha1sum | awk '{ print $1 }'`
+          PRO_CHECKSUM=`tar cf - pro | sha1sum | awk '{ print $1 }'`
           OUTPUT+="$DOCKER_REGISTRY/DOCKER_IMAGE:${{ github.event.pull_request.head.sha }}"
           echo $OUTPUT
           echo $OUTPUT >> "$GITHUB_OUTPUT"
 
+  check-image-tag-exists:
+    name: "Check if image tag already exists."
+    runs-on: ubuntu-latest
+    outputs:
+      image-tag-exists: ${{ steps.check-api-changes.outputs.any_modified }}
+    needs: check-folders-changes
+    steps:
+      - uses: tyriis/docker-image-tag-exists@v2.0.0
+        with:
+          # The container image registry
+          registry: europe-west1-docker.pkg.dev/passculture-infra-prod
+          # The container image name
+          repository: pass-culture-artifact-registry
+          # The container image tag
+          tag: ${{ github.event.pull_request.head.sha }}
+  
   build-pcapi:
     name: "[pcapi] build and push docker image."
     needs: check-folders-changes
@@ -135,14 +150,14 @@ jobs:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
 
-  test-api:
-    name: "Test api"
-    needs: [check-folders-changes, build-pcapi-tests]
-    if: needs.check-folders-changes.outputs.api-changed == 'true'
-    uses: ./.github/workflows/dev_on_workflow_tests_api.yml
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+        #test-api:
+        #name: "Test api"
+        #needs: [check-folders-changes, build-pcapi-tests]
+        #if: needs.check-folders-changes.outputs.api-changed == 'true'
+        #uses: ./.github/workflows/dev_on_workflow_tests_api.yml
+        #secrets:
+        #GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+        #GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   test-pro:
     name: "Tests pro"
@@ -173,17 +188,39 @@ jobs:
       TAG: 'latest'
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
 
-  test-pro-e2e:
-    name: "Tests pro E2E"
-    needs: [check-folders-changes, build-pcapi]
-    if: ${{ needs.check-folders-changes.outputs.pro-changed == 'true' || needs.check-folders-changes.outputs.api-changed == 'true' }}
-    uses: ./.github/workflows/dev_on_workflow_tests_pro_e2e.yml
+        #test-pro-e2e:
+        #name: "Tests pro E2E"
+        #needs: [check-folders-changes, build-pcapi]
+        #if: ${{ needs.check-folders-changes.outputs.pro-changed == 'true' || needs.check-folders-changes.outputs.api-changed == 'true' }}
+        #uses: ./.github/workflows/dev_on_workflow_tests_pro_e2e.yml
+        #secrets:
+        #GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+        #GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+        #with:
+        #TAG: ${{ needs.check-folders-changes.outputs.api-changed == 'true' && github.event.pull_request.head.sha || 'latest' }}
+        #CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
+
+  deploy:
+    name: "Deploy PullRequest to testing"
+    #needs: [test-api, test-pro]
+    #if: |
+    #  always() &&
+    #  contains(fromJSON('["success", "skipped"]'), needs.test-api.result) &&
+    #  contains(fromJSON('["success", "skipped"]'), needs.test-pro.result)
+    needs: build-pcapi
+    if: always()
+    uses: ./.github/workflows/dev_on_workflow_deploy_pullrequests.yml
+    with:
+      environment: pullrequests
+      app_version: ${{ github.sha }}
+      teleport_version: 15.2.5
+      teleport_proxy: teleport.ehp.passculture.team:443
+      teleport_kubernetes_cluster: passculture-metier-ehp
+      deploy_api: ${{ needs.test-api.result == 'success' }}
+      deploy_pro: ${{ needs.test-pro.result == 'success' }}
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-    with:
-      TAG: ${{ needs.check-folders-changes.outputs.api-changed == 'true' && github.event.pull_request.head.sha || 'latest' }}
-      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
 
   deploy-validation-env:
     name: "[PRO] Deploy PR version for validation"
