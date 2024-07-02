@@ -65,7 +65,11 @@ CORS(
     resources={r"/*": {"origins": "*"}},
     supports_credentials=True,
 )
-
+CORS(
+    deprecated_v2_prefixed_public_api,
+    resources={r"/*": {"origins": "*"}},
+    supports_credentials=True,
+)
 
 # Registering spectree schemas
 spectree_schemas.public_api_schema.register(public_api)
