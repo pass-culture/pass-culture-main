@@ -4,6 +4,7 @@ import React, { Ref } from 'react'
 import { SelectOption } from 'custom_types/form'
 import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import baseCheckboxStyles from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox.module.scss'
+import { pluralize } from 'utils/pluralize'
 
 import styles from './OptionsList.module.scss'
 
@@ -17,6 +18,7 @@ interface OptionsListProps {
   hoveredOptionIndex: number | null
   selectOption: (value: string) => void
   multi: boolean
+  maxDisplayedOptions?: number
 }
 
 export const OptionsList = ({
@@ -29,7 +31,12 @@ export const OptionsList = ({
   hoveredOptionIndex,
   selectOption,
   multi,
+  maxDisplayedOptions,
 }: OptionsListProps): JSX.Element => {
+  const displayedOptions = maxDisplayedOptions
+    ? filteredOptions.slice(0, maxDisplayedOptions)
+    : filteredOptions
+
   return (
     <div className={cx(styles['menu'], className)} role="listbox">
       {filteredOptions.length === 0 && (
@@ -41,14 +48,14 @@ export const OptionsList = ({
         ref={listRef}
         role="listbox"
       >
-        {filteredOptions.map(
+        {displayedOptions.map(
           ({ value, label }: SelectOption, index: number) => {
             const isSelected = (selectedValues || []).includes(String(value))
             return (
               <li
                 aria-selected={isSelected}
                 aria-posinset={index + 1}
-                aria-setsize={filteredOptions.length}
+                aria-setsize={displayedOptions.length}
                 className={
                   hoveredOptionIndex === index ? styles['option-hovered'] : ''
                 }
@@ -86,6 +93,15 @@ export const OptionsList = ({
           }
         )}
       </ul>
+      <div role="status">
+        {maxDisplayedOptions &&
+          displayedOptions.length < filteredOptions.length && (
+            <div className={styles['too-many-options']}>
+              {pluralize(maxDisplayedOptions, 'résultat')} maximum. Veuillez
+              affiner votre recherche
+            </div>
+          )}
+      </div>
     </div>
   )
 }

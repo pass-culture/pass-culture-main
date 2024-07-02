@@ -118,12 +118,18 @@ describe('screens | OfferEducational : creation offer type step', () => {
   })
 
   describe('formats', () => {
-    it('should user select formats', async () => {
+    it('should be able to select a format', async () => {
       renderWithProviders(<OfferEducational {...props} />)
 
-      const selectFormat = await screen.findByTestId('select')
+      const selectFormat = await screen.findByRole('combobox', {
+        name: 'Format *',
+      })
 
-      await userEvent.selectOptions(selectFormat, 'Atelier de pratique')
+      await userEvent.click(selectFormat)
+
+      await userEvent.click(
+        screen.getByRole('checkbox', { name: 'Atelier de pratique' })
+      )
 
       expect(
         screen.getByRole('button', { name: /Atelier de pratique/ })
