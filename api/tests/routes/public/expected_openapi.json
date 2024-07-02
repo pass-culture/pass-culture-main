@@ -834,21 +834,29 @@
                 "description": "Accessibility for people with disabilities.",
                 "properties": {
                     "audioDisabilityCompliant": {
+                        "description": "Is accessible for people with hearing disability",
+                        "example": true,
                         "nullable": true,
                         "title": "Audiodisabilitycompliant",
                         "type": "boolean"
                     },
                     "mentalDisabilityCompliant": {
+                        "description": "Is accessible for people with mental or cognitive disability",
+                        "example": true,
                         "nullable": true,
                         "title": "Mentaldisabilitycompliant",
                         "type": "boolean"
                     },
                     "motorDisabilityCompliant": {
+                        "description": "Is accessible for people with motor disability",
+                        "example": true,
                         "nullable": true,
                         "title": "Motordisabilitycompliant",
                         "type": "boolean"
                     },
                     "visualDisabilityCompliant": {
+                        "description": "Is accessible for people with visual disability",
+                        "example": true,
                         "nullable": true,
                         "title": "Visualdisabilitycompliant",
                         "type": "boolean"
@@ -1449,40 +1457,52 @@
             "CollectiveBookingResponseModel": {
                 "properties": {
                     "cancellationLimitDate": {
+                        "description": "Deadline to cancel the booking",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Cancellationlimitdate",
                         "type": "string"
                     },
                     "confirmationDate": {
+                        "description": "When the booking was confirmed",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Confirmationdate",
                         "type": "string"
                     },
                     "dateCreated": {
+                        "description": "When the booking was made",
                         "format": "date-time",
                         "title": "Datecreated",
                         "type": "string"
                     },
                     "dateUsed": {
+                        "description": "When the booking was used",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Dateused",
                         "type": "string"
                     },
                     "id": {
+                        "description": "Collective booking id",
                         "title": "Id",
                         "type": "integer"
                     },
                     "reimbursementDate": {
+                        "description": "When the booking was reimbursed",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Reimbursementdate",
                         "type": "string"
                     },
                     "status": {
-                        "$ref": "#/components/schemas/CollectiveBookingStatus"
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/CollectiveBookingStatus"
+                            }
+                        ],
+                        "description": "Collective booking status",
+                        "example": "PENDING"
                     }
                 },
                 "required": [
@@ -1669,6 +1689,8 @@
             "CollectiveOffersResponseModel": {
                 "properties": {
                     "beginningDatetime": {
+                        "description": "Collective offer beginning datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "example": "2034-07-24T14:00:00+02:00",
                         "title": "Beginningdatetime",
                         "type": "string"
                     },
@@ -1680,22 +1702,32 @@
                         "type": "array"
                     },
                     "endDatetime": {
+                        "description": "Collective offer end datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "example": "2034-07-24T14:00:00+02:00",
                         "title": "Enddatetime",
                         "type": "string"
                     },
                     "id": {
+                        "description": "Collective offer id",
+                        "example": 12345,
                         "title": "Id",
                         "type": "integer"
                     },
                     "startDatetime": {
+                        "description": "Collective offer start datetime. Replaces beginning dateime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "example": "2034-07-24T14:00:00+02:00",
                         "title": "Startdatetime",
                         "type": "string"
                     },
                     "status": {
+                        "description": "\n**Offer status:**\n\n- `ACTIVE`: offer is validated and active. \n\n\n- `DRAFT`: offer is still a draft and not yet submitted for validation. This status is not applicable to offers created via this API.\n\n\n- `EXPIRED`: offer is validated but the booking limit datetime has passed.\n\n\n- `INACTIVE`: offer is not active and cannot be booked.\n\n\n- `PENDING`: offer is pending for pass Culture rules compliance validation. This step may take up to 72 hours.\n\n\n- `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n\n- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.\n\n\n- `ARCHIVED`: offer is archived by pro.",
+                        "example": "ACTIVE",
                         "title": "Status",
                         "type": "string"
                     },
                     "venueId": {
+                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
+                        "example": 1234,
                         "title": "Venueid",
                         "type": "integer"
                     }
@@ -2387,6 +2419,7 @@
                     },
                     "bookingContact": {
                         "description": "Recipient email to contact if there is an issue with booking the offer. Mandatory if the offer has withdrawable tickets.",
+                        "example": "support@yourcompany.com",
                         "format": "email",
                         "nullable": true,
                         "title": "Bookingcontact",
@@ -2394,6 +2427,7 @@
                     },
                     "bookingEmail": {
                         "description": "Recipient email for notifications about bookings, cancellations, etc.",
+                        "example": "contact@yourcompany.com",
                         "format": "email",
                         "nullable": true,
                         "title": "Bookingemail",
@@ -2525,6 +2559,7 @@
                     "enableDoubleBookings": {
                         "default": false,
                         "description": "If set to true, users may book the offer for two persons. Second item will be delivered at the same price as the first one. Category must be compatible with this feature.",
+                        "example": true,
                         "nullable": true,
                         "title": "Enabledoublebookings",
                         "type": "boolean"
@@ -2571,7 +2606,7 @@
                     },
                     "itemCollectionDetails": {
                         "description": "Further information that will be provided to attendees to ease the offer collection.",
-                        "example": "Opening hours, specific office, collection period, access code, email annoucement...",
+                        "example": "Opening hours, specific office, collection period, access code, email announcement...",
                         "nullable": true,
                         "title": "Itemcollectiondetails",
                         "type": "string"
@@ -2603,7 +2638,7 @@
                         "type": "string"
                     },
                     "priceCategories": {
-                        "description": "Available price categories for dates of this offer",
+                        "description": "Available price categories for this offer stocks",
                         "items": {
                             "$ref": "#/components/schemas/PriceCategoryCreation"
                         },
@@ -2644,6 +2679,7 @@
                     },
                     "bookingContact": {
                         "description": "Recipient email to contact if there is an issue with booking the offer. Mandatory if the offer has withdrawable tickets.",
+                        "example": "support@yourcompany.com",
                         "format": "email",
                         "nullable": true,
                         "title": "Bookingcontact",
@@ -2651,6 +2687,7 @@
                     },
                     "bookingEmail": {
                         "description": "Recipient email for notifications about bookings, cancellations, etc.",
+                        "example": "contact@yourcompany.com",
                         "format": "email",
                         "nullable": true,
                         "title": "Bookingemail",
@@ -2752,6 +2789,7 @@
                     "enableDoubleBookings": {
                         "default": false,
                         "description": "If set to true, users may book the offer for two persons. Second item will be delivered at the same price as the first one. Category must be compatible with this feature.",
+                        "example": true,
                         "nullable": true,
                         "title": "Enabledoublebookings",
                         "type": "boolean"
@@ -2788,7 +2826,7 @@
                     },
                     "itemCollectionDetails": {
                         "description": "Further information that will be provided to attendees to ease the offer collection.",
-                        "example": "Opening hours, specific office, collection period, access code, email annoucement...",
+                        "example": "Opening hours, specific office, collection period, access code, email announcement...",
                         "nullable": true,
                         "title": "Itemcollectiondetails",
                         "type": "string"
@@ -2804,12 +2842,14 @@
                     },
                     "bookingContact": {
                         "description": "Recipient email to contact if there is an issue with booking the offer. Mandatory if the offer has withdrawable tickets.",
+                        "example": "support@yourcompany.com",
                         "nullable": true,
                         "title": "Bookingcontact",
                         "type": "string"
                     },
                     "bookingEmail": {
                         "description": "Recipient email for notifications about bookings, cancellations, etc.",
+                        "example": "contact@yourcompany.com",
                         "nullable": true,
                         "title": "Bookingemail",
                         "type": "string"
@@ -2947,6 +2987,7 @@
                     "enableDoubleBookings": {
                         "default": false,
                         "description": "If set to true, users may book the offer for two persons. Second item will be delivered at the same price as the first one. Category must be compatible with this feature.",
+                        "example": true,
                         "nullable": true,
                         "title": "Enabledoublebookings",
                         "type": "boolean"
@@ -2993,7 +3034,7 @@
                     },
                     "itemCollectionDetails": {
                         "description": "Further information that will be provided to attendees to ease the offer collection.",
-                        "example": "Opening hours, specific office, collection period, access code, email annoucement...",
+                        "example": "Opening hours, specific office, collection period, access code, email announcement...",
                         "nullable": true,
                         "title": "Itemcollectiondetails",
                         "type": "string"
@@ -3024,7 +3065,7 @@
                         "type": "string"
                     },
                     "priceCategories": {
-                        "description": "Available price categories for dates of this offer",
+                        "description": "Available price categories for this offer stocks",
                         "items": {
                             "$ref": "#/components/schemas/PriceCategoryResponse"
                         },
@@ -3922,15 +3963,24 @@
                 "additionalProperties": false,
                 "properties": {
                     "audioDisabilityCompliant": {
+                        "description": "Is accessible for people with hearing disability",
+                        "example": true,
                         "nullable": true,
                         "title": "Audiodisabilitycompliant",
                         "type": "boolean"
                     },
                     "beginningDatetime": {
+                        "description": "Collective offer beginning datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "example": "2034-07-24T14:00:00+02:00",
                         "title": "Beginningdatetime",
                         "type": "string"
                     },
                     "bookingEmails": {
+                        "description": "Recipient emails for notifications about bookings, cancellations, etc.",
+                        "example": [
+                            "some@email.com",
+                            "some.other@email.com"
+                        ],
                         "items": {
                             "type": "string"
                         },
@@ -3939,6 +3989,8 @@
                         "type": "array"
                     },
                     "bookingLimitDatetime": {
+                        "description": "Booking limit datetime. It must be anterior to the `beginning_datetime`. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "example": "2034-07-24T14:00:00+02:00",
                         "title": "Bookinglimitdatetime",
                         "type": "string"
                     },
@@ -3950,23 +4002,35 @@
                         "type": "array"
                     },
                     "contactEmail": {
+                        "description": "Email of the person to contact if there is an issue with the offer.",
+                        "example": "contact@yourcompany.com",
                         "title": "Contactemail",
                         "type": "string"
                     },
                     "contactPhone": {
+                        "description": "Phone of the person to contact if there is an issue with the offer.",
+                        "example": "0123456789",
                         "title": "Contactphone",
                         "type": "string"
                     },
                     "dateCreated": {
+                        "description": "Collective offer creation date",
                         "title": "Datecreated",
                         "type": "string"
                     },
                     "description": {
+                        "description": "Collective offer description",
+                        "example": "Atelier de peinture \u00e0 la gouache pour \u00e9l\u00e8ves de 5\u00e8me",
                         "nullable": true,
                         "title": "Description",
                         "type": "string"
                     },
                     "domains": {
+                        "description": "Educational domains ids linked to the offer. Those domains are available on **[this endpoint (`Get the eductional domains`)](#tag/Collective-educational-data/operation/ListEducationalDomains)**",
+                        "example": [
+                            1,
+                            2
+                        ],
                         "items": {
                             "type": "integer"
                         },
@@ -3974,30 +4038,44 @@
                         "type": "array"
                     },
                     "durationMinutes": {
+                        "description": "Event duration in minutes",
+                        "example": 60,
                         "nullable": true,
                         "title": "Durationminutes",
                         "type": "integer"
                     },
                     "educationalInstitution": {
+                        "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
+                        "example": "0010008D",
                         "nullable": true,
                         "title": "Educationalinstitution",
                         "type": "string"
                     },
                     "educationalInstitutionId": {
+                        "description": "Educational institution id in the pass Culture application. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
+                        "example": 1234,
                         "nullable": true,
                         "title": "Educationalinstitutionid",
                         "type": "integer"
                     },
                     "educationalPriceDetail": {
+                        "description": "The explanation of the offer price",
+                        "example": "10 tickets x 10 \u20ac = 100 \u20ac",
                         "nullable": true,
                         "title": "Educationalpricedetail",
                         "type": "string"
                     },
                     "endDatetime": {
+                        "description": "Collective offer end datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "example": "2034-07-24T14:00:00+02:00",
                         "title": "Enddatetime",
                         "type": "string"
                     },
                     "formats": {
+                        "description": "Educational Formats",
+                        "example": [
+                            "Atelier de pratique"
+                        ],
                         "items": {
                             "$ref": "#/components/schemas/EacFormat"
                         },
@@ -4009,15 +4087,21 @@
                         "type": "boolean"
                     },
                     "id": {
+                        "description": "Collective offer id",
+                        "example": 12345,
                         "title": "Id",
                         "type": "integer"
                     },
                     "imageCredit": {
+                        "description": "Image owner or author",
+                        "example": "Jane Doe",
                         "nullable": true,
                         "title": "Imagecredit",
                         "type": "string"
                     },
                     "imageUrl": {
+                        "description": "Image URL publicly accessible",
+                        "example": "https://example.com/image.png",
                         "nullable": true,
                         "title": "Imageurl",
                         "type": "string"
@@ -4030,25 +4114,35 @@
                         "type": "array"
                     },
                     "isActive": {
+                        "description": "Is your offer active",
+                        "example": true,
                         "nullable": true,
                         "title": "Isactive",
                         "type": "boolean"
                     },
                     "isSoldOut": {
+                        "description": "Is your offer sold out",
+                        "example": false,
                         "title": "Issoldout",
                         "type": "boolean"
                     },
                     "mentalDisabilityCompliant": {
+                        "description": "Is accessible for people with mental or cognitive disability",
+                        "example": true,
                         "nullable": true,
                         "title": "Mentaldisabilitycompliant",
                         "type": "boolean"
                     },
                     "motorDisabilityCompliant": {
+                        "description": "Is accessible for people with motor disability",
+                        "example": true,
                         "nullable": true,
                         "title": "Motordisabilitycompliant",
                         "type": "boolean"
                     },
                     "name": {
+                        "description": "Collective offer name",
+                        "example": "Atelier de peinture",
                         "title": "Name",
                         "type": "string"
                     },
@@ -4062,6 +4156,8 @@
                         "title": "NationalProgramModel"
                     },
                     "numberOfTickets": {
+                        "description": "Number of tickets for your collective offer",
+                        "example": 10,
                         "title": "Numberoftickets",
                         "type": "integer"
                     },
@@ -4069,10 +4165,14 @@
                         "$ref": "#/components/schemas/OfferVenueModel"
                     },
                     "startDatetime": {
+                        "description": "Collective offer start datetime. Replaces beginning dateime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "example": "2034-07-24T14:00:00+02:00",
                         "title": "Startdatetime",
                         "type": "string"
                     },
                     "status": {
+                        "description": "\n**Offer status:**\n\n- `ACTIVE`: offer is validated and active. \n\n\n- `DRAFT`: offer is still a draft and not yet submitted for validation. This status is not applicable to offers created via this API.\n\n\n- `EXPIRED`: offer is validated but the booking limit datetime has passed.\n\n\n- `INACTIVE`: offer is not active and cannot be booked.\n\n\n- `PENDING`: offer is pending for pass Culture rules compliance validation. This step may take up to 72 hours.\n\n\n- `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n\n- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.\n\n\n- `ARCHIVED`: offer is archived by pro.",
+                        "example": "ACTIVE",
                         "title": "Status",
                         "type": "string"
                     },
@@ -4084,19 +4184,27 @@
                         "type": "array"
                     },
                     "subcategoryId": {
+                        "description": "Event subcategory id",
+                        "example": "FESTIVAL_MUSIQUE",
                         "nullable": true,
                         "title": "Subcategoryid",
                         "type": "string"
                     },
                     "totalPrice": {
+                        "description": "Collective offer price (in \u20ac)",
+                        "example": 100.0,
                         "title": "Totalprice",
                         "type": "number"
                     },
                     "venueId": {
+                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
+                        "example": 1234,
                         "title": "Venueid",
                         "type": "integer"
                     },
                     "visualDisabilityCompliant": {
+                        "description": "Is accessible for people with visual disability",
+                        "example": true,
                         "nullable": true,
                         "title": "Visualdisabilitycompliant",
                         "type": "boolean"
@@ -5464,14 +5572,14 @@
                     },
                     "contactEmail": {
                         "description": "Email of the person to contact if there is an issue with the offer.",
-                        "example": "somebody.tocontact@gmail.com",
+                        "example": "contact@yourcompany.com",
                         "nullable": true,
                         "title": "Contactemail",
                         "type": "string"
                     },
                     "contactPhone": {
                         "description": "Phone of the person to contact if there is an issue with the offer.",
-                        "example": "somebody.tocontact@gmail.com",
+                        "example": "0123456789",
                         "nullable": true,
                         "title": "Contactphone",
                         "type": "string"
@@ -5573,7 +5681,7 @@
                         "type": "boolean"
                     },
                     "mentalDisabilityCompliant": {
-                        "description": "Is accessible for people with mental disability",
+                        "description": "Is accessible for people with mental or cognitive disability",
                         "example": true,
                         "nullable": true,
                         "title": "Mentaldisabilitycompliant",
@@ -5731,13 +5839,13 @@
                     },
                     "contactEmail": {
                         "description": "Email of the person to contact if there is an issue with the offer.",
-                        "example": "somebody.tocontact@gmail.com",
+                        "example": "contact@yourcompany.com",
                         "title": "Contactemail",
                         "type": "string"
                     },
                     "contactPhone": {
                         "description": "Phone of the person to contact if there is an issue with the offer.",
-                        "example": "somebody.tocontact@gmail.com",
+                        "example": "0123456789",
                         "title": "Contactphone",
                         "type": "string"
                     },
@@ -5950,7 +6058,7 @@
                 "additionalProperties": false,
                 "properties": {
                     "priceCategories": {
-                        "description": "Available price categories for dates of this offer",
+                        "description": "Available price categories for this offer stocks",
                         "items": {
                             "$ref": "#/components/schemas/PriceCategoryCreation"
                         },
@@ -5967,7 +6075,7 @@
             "PriceCategoriesResponse": {
                 "properties": {
                     "priceCategories": {
-                        "description": "Available price categories for dates of this offer",
+                        "description": "Available price categories for this offer stocks",
                         "items": {
                             "$ref": "#/components/schemas/PriceCategoryResponse"
                         },
@@ -6093,7 +6201,7 @@
                 "properties": {
                     "ean": {
                         "description": "European Article Number (EAN-13)",
-                        "example": "1234567890123",
+                        "example": "3700551782888",
                         "maxLength": 13,
                         "minLength": 13,
                         "title": "Ean",
@@ -6118,6 +6226,7 @@
                     },
                     "bookingContact": {
                         "description": "Recipient email to contact if there is an issue with booking the offer. Mandatory if the offer has withdrawable tickets.",
+                        "example": "support@yourcompany.com",
                         "format": "email",
                         "nullable": true,
                         "title": "Bookingcontact",
@@ -6125,6 +6234,7 @@
                     },
                     "bookingEmail": {
                         "description": "Recipient email for notifications about bookings, cancellations, etc.",
+                        "example": "contact@yourcompany.com",
                         "format": "email",
                         "nullable": true,
                         "title": "Bookingemail",
@@ -6228,6 +6338,7 @@
                     "enableDoubleBookings": {
                         "default": false,
                         "description": "If set to true, users may book the offer for two persons. Second item will be delivered at the same price as the first one. Category must be compatible with this feature.",
+                        "example": true,
                         "nullable": true,
                         "title": "Enabledoublebookings",
                         "type": "boolean"
@@ -6261,7 +6372,7 @@
                     },
                     "itemCollectionDetails": {
                         "description": "Further information that will be provided to attendees to ease the offer collection.",
-                        "example": "Opening hours, specific office, collection period, access code, email annoucement...",
+                        "example": "Opening hours, specific office, collection period, access code, email announcement...",
                         "nullable": true,
                         "title": "Itemcollectiondetails",
                         "type": "string"
@@ -6326,6 +6437,7 @@
                     },
                     "bookingContact": {
                         "description": "Recipient email to contact if there is an issue with booking the offer. Mandatory if the offer has withdrawable tickets.",
+                        "example": "support@yourcompany.com",
                         "format": "email",
                         "nullable": true,
                         "title": "Bookingcontact",
@@ -6333,6 +6445,7 @@
                     },
                     "bookingEmail": {
                         "description": "Recipient email for notifications about bookings, cancellations, etc.",
+                        "example": "contact@yourcompany.com",
                         "format": "email",
                         "nullable": true,
                         "title": "Bookingemail",
@@ -6437,6 +6550,7 @@
                     "enableDoubleBookings": {
                         "default": false,
                         "description": "If set to true, users may book the offer for two persons. Second item will be delivered at the same price as the first one. Category must be compatible with this feature.",
+                        "example": true,
                         "nullable": true,
                         "title": "Enabledoublebookings",
                         "type": "boolean"
@@ -6466,7 +6580,7 @@
                     },
                     "itemCollectionDetails": {
                         "description": "Further information that will be provided to attendees to ease the offer collection.",
-                        "example": "Opening hours, specific office, collection period, access code, email annoucement...",
+                        "example": "Opening hours, specific office, collection period, access code, email announcement...",
                         "nullable": true,
                         "title": "Itemcollectiondetails",
                         "type": "string"
@@ -6499,12 +6613,14 @@
                     },
                     "bookingContact": {
                         "description": "Recipient email to contact if there is an issue with booking the offer. Mandatory if the offer has withdrawable tickets.",
+                        "example": "support@yourcompany.com",
                         "nullable": true,
                         "title": "Bookingcontact",
                         "type": "string"
                     },
                     "bookingEmail": {
                         "description": "Recipient email for notifications about bookings, cancellations, etc.",
+                        "example": "contact@yourcompany.com",
                         "nullable": true,
                         "title": "Bookingemail",
                         "type": "string"
@@ -6710,6 +6826,7 @@
                     "enableDoubleBookings": {
                         "default": false,
                         "description": "If set to true, users may book the offer for two persons. Second item will be delivered at the same price as the first one. Category must be compatible with this feature.",
+                        "example": true,
                         "nullable": true,
                         "title": "Enabledoublebookings",
                         "type": "boolean"
@@ -6743,7 +6860,7 @@
                     },
                     "itemCollectionDetails": {
                         "description": "Further information that will be provided to attendees to ease the offer collection.",
-                        "example": "Opening hours, specific office, collection period, access code, email annoucement...",
+                        "example": "Opening hours, specific office, collection period, access code, email announcement...",
                         "nullable": true,
                         "title": "Itemcollectiondetails",
                         "type": "string"

@@ -227,7 +227,7 @@ def post_product_offer(body: serialization.ProductOfferCreation) -> serializatio
                 description=body.description,
                 external_ticket_office_url=body.external_ticket_office_url,
                 extra_data=serialization.deserialize_extra_data(body.category_related_fields),
-                is_duo=body.is_duo,
+                is_duo=body.enable_double_bookings,
                 mental_disability_compliant=body.accessibility.mental_disability_compliant,
                 motor_disability_compliant=body.accessibility.motor_disability_compliant,
                 name=body.name,
@@ -672,7 +672,7 @@ def edit_product(body: serialization.ProductOfferEdition) -> serialization.Produ
                     else offers_api.UNCHANGED
                 ),
                 isActive=updated_offer_from_body.get("is_active", offers_api.UNCHANGED),
-                isDuo=updated_offer_from_body.get("is_duo", offers_api.UNCHANGED),
+                isDuo=updated_offer_from_body.get("enable_double_bookings", offers_api.UNCHANGED),
                 withdrawalDetails=updated_offer_from_body.get("withdrawal_details", offers_api.UNCHANGED),
                 idAtProvider=updated_offer_from_body.get("id_at_provider", offers_api.UNCHANGED),
                 **utils.compute_accessibility_edition_fields(updated_offer_from_body.get("accessibility")),

@@ -105,10 +105,10 @@ class Accessibility(serialization.ConfiguredBaseModel):
 class AccessibilityResponse(serialization.ConfiguredBaseModel):
     """Accessibility for people with disabilities."""
 
-    audio_disability_compliant: bool | None
-    mental_disability_compliant: bool | None
-    motor_disability_compliant: bool | None
-    visual_disability_compliant: bool | None
+    audio_disability_compliant: bool | None = fields.AUDIO_DISABILITY_COMPLIANT
+    mental_disability_compliant: bool | None = fields.MENTAL_DISABILITY_COMPLIANT
+    motor_disability_compliant: bool | None = fields.MOTOR_DISABILITY_COMPLIANT
+    visual_disability_compliant: bool | None = fields.VISUAL_DISABILITY_COMPLIANT
 
 
 class PhysicalLocation(serialization.ConfiguredBaseModel):
@@ -126,12 +126,9 @@ class DigitalLocation(serialization.ConfiguredBaseModel):
     )
 
 
-EAN_FIELD = pydantic_v1.Field(example="1234567890123", description="European Article Number (EAN-13)")
-
-
 class ExtraDataModel(serialization.ConfiguredBaseModel):
     author: str | None = pydantic_v1.Field(example="Jane Doe")
-    ean: str | None = EAN_FIELD
+    ean: str | None = fields.EAN
     musicType: TiteliveMusicTypeEnum | MusicTypeEnum | None  # type: ignore[valid-type]
     performer: str | None = pydantic_v1.Field(example="Jane Doe")
     stageDirector: str | None = pydantic_v1.Field(example="Jane Doe")
@@ -144,25 +141,10 @@ class CategoryRelatedFields(ExtraDataModel):
     subcategory_id: str = pydantic_v1.Field(alias="category")
 
 
-IS_DUO_BOOKINGS_FIELD = pydantic_v1.Field(
-    False,
-    description="If set to true, users may book the offer for two persons. Second item will be delivered at the same price as the first one. Category must be compatible with this feature.",
-    alias="enableDoubleBookings",
-)
-BOOKING_EMAIL_FIELD = pydantic_v1.Field(
-    None, description="Recipient email for notifications about bookings, cancellations, etc."
-)
 CATEGORY_RELATED_FIELD_DESCRIPTION = (
     "Cultural category the offer belongs to. According to the category, some fields may or must be specified."
 )
 CATEGORY_RELATED_FIELD = pydantic_v1.Field(..., description=CATEGORY_RELATED_FIELD_DESCRIPTION)
-PUBLICATION_DATE_FIELD = pydantic_v1.Field(None, description="Publication date")
-DESCRIPTION_FIELD_MODEL = pydantic_v1.Field(
-    None, description="Offer description", example="A great book for kids and old kids.", max_length=1000
-)
-DESCRIPTION_FIELD_RESPONSE = pydantic_v1.Field(
-    None, description="Offer description", example="A great book for kids and old kids."
-)
 EXTERNAL_TICKET_OFFICE_URL_FIELD = pydantic_v1.Field(
     None,
     description="Link displayed to users wishing to book the offer but who do not have credit.",
@@ -171,28 +153,13 @@ EXTERNAL_TICKET_OFFICE_URL_FIELD = pydantic_v1.Field(
 WITHDRAWAL_DETAILS_FIELD = pydantic_v1.Field(
     None,
     description="Further information that will be provided to attendees to ease the offer collection.",
-    example="Opening hours, specific office, collection period, access code, email annoucement...",
+    example="Opening hours, specific office, collection period, access code, email announcement...",
     alias="itemCollectionDetails",
-)
-BOOKING_CONTACT_FIELD = pydantic_v1.Field(
-    None,
-    description="Recipient email to contact if there is an issue with booking the offer. Mandatory if the offer has withdrawable tickets.",
 )
 LOCATION_FIELD = pydantic_v1.Field(
     ...,
     discriminator="type",
     description="Location where the offer will be available or will take place. The location type must be compatible with the category",
-)
-DURATION_MINUTES_FIELD = pydantic_v1.Field(description="Event duration in minutes", example=60, alias="eventDuration")
-
-HAS_TICKET_FIELD = pydantic_v1.Field(
-    description="Indicated whether a ticket is mandatory to access to the event. True if it is the case, False otherwise. The ticket will be sent by you, the provider and you must have developed the pass Culture ticketing interface to do so.",
-    example=False,
-)
-PRICE_CATEGORY_LABEL_FIELD = pydantic_v1.Field(description="Price category label", example="Carré or")
-PRICE_CATEGORIES_FIELD = pydantic_v1.Field(description="Available price categories for dates of this offer")
-EVENT_DATES_FIELD = pydantic_v1.Field(
-    description="Dates of the event. If there are different prices for the same date, several date objects are needed",
 )
 
 
@@ -212,13 +179,13 @@ class ImageResponse(serialization.ConfiguredBaseModel):
 
 class OfferCreationBase(serialization.ConfiguredBaseModel):
     accessibility: Accessibility
-    booking_contact: pydantic_v1.EmailStr | None = BOOKING_CONTACT_FIELD
-    booking_email: pydantic_v1.EmailStr | None = BOOKING_EMAIL_FIELD
+    booking_contact: pydantic_v1.EmailStr | None = fields.OFFER_BOOKING_CONTACT
+    booking_email: pydantic_v1.EmailStr | None = fields.OFFER_BOOKING_EMAIL
     category_related_fields: CategoryRelatedFields = CATEGORY_RELATED_FIELD
-    description: str | None = DESCRIPTION_FIELD_MODEL
+    description: str | None = fields.OFFER_DESCRIPTION_WITH_MAX_LENGTH
     external_ticket_office_url: pydantic_v1.HttpUrl | None = EXTERNAL_TICKET_OFFICE_URL_FIELD
     image: ImageBody | None
-    is_duo: bool | None = IS_DUO_BOOKINGS_FIELD
+    enable_double_bookings: bool | None = fields.OFFER_ENABLE_DOUBLE_BOOKINGS_WITH_DEFAULT
     name: str = fields.OFFER_NAME_WITH_MAX_LENGTH
     withdrawal_details: str | None = WITHDRAWAL_DETAILS_FIELD
     id_at_provider: str | None = fields.ID_AT_PROVIDER_WITH_MAX_LENGTH
@@ -459,9 +426,9 @@ class ProductOfferCreation(OfferCreationBase):
 
 class ProductOfferByEanCreation(serialization.ConfiguredBaseModel):
     if typing.TYPE_CHECKING:
-        ean: str = EAN_FIELD
+        ean: str = fields.EAN
     else:
-        ean: pydantic_v1.constr(min_length=13, max_length=13) = EAN_FIELD
+        ean: pydantic_v1.constr(min_length=13, max_length=13) = fields.EAN
     stock: StockCreation
 
     class Config:
@@ -487,9 +454,9 @@ class DecimalPriceGetterDict(GetterDict):
 
 class PriceCategoryCreation(serialization.ConfiguredBaseModel):
     if typing.TYPE_CHECKING:
-        label: str = PRICE_CATEGORY_LABEL_FIELD
+        label: str = fields.PRICE_CATEGORY_LABEL
     else:
-        label: pydantic_v1.constr(min_length=1, max_length=50) = PRICE_CATEGORY_LABEL_FIELD
+        label: pydantic_v1.constr(min_length=1, max_length=50) = fields.PRICE_CATEGORY_LABEL
     price: offer_price_model = fields.PRICE
 
     class Config:
@@ -497,7 +464,7 @@ class PriceCategoryCreation(serialization.ConfiguredBaseModel):
 
 
 class PriceCategoriesCreation(serialization.ConfiguredBaseModel):
-    price_categories: list[PriceCategoryCreation] = PRICE_CATEGORIES_FIELD
+    price_categories: list[PriceCategoryCreation] = fields.PRICE_CATEGORIES
 
     @pydantic_v1.validator("price_categories")
     def get_unique_price_categories(
@@ -517,11 +484,11 @@ class PriceCategoriesCreation(serialization.ConfiguredBaseModel):
 
 class EventOfferCreation(OfferCreationBase):
     category_related_fields: event_category_creation_fields
-    duration_minutes: int | None = DURATION_MINUTES_FIELD
+    event_duration: int | None = fields.EVENT_DURATION
     location: PhysicalLocation | DigitalLocation = LOCATION_FIELD
-    has_ticket: bool = HAS_TICKET_FIELD
-    price_categories: list[PriceCategoryCreation] | None = PRICE_CATEGORIES_FIELD
-    publication_date: datetime.datetime | None = PUBLICATION_DATE_FIELD
+    has_ticket: bool = fields.EVENT_HAS_TICKET
+    price_categories: list[PriceCategoryCreation] | None = fields.PRICE_CATEGORIES
+    publication_date: datetime.datetime | None = fields.OFFER_PUBLICATION_DATE
 
     @pydantic_v1.validator("price_categories")
     def get_unique_price_categories(
@@ -543,15 +510,15 @@ class OfferEditionBase(serialization.ConfiguredBaseModel):
     accessibility: accessibility_serialization.PartialAccessibility | None = pydantic_v1.Field(
         description="Accessibility to disabled people. Leave fields undefined to keep current value"
     )
-    booking_contact: pydantic_v1.EmailStr | None = BOOKING_CONTACT_FIELD
-    booking_email: pydantic_v1.EmailStr | None = BOOKING_EMAIL_FIELD
+    booking_email: pydantic_v1.EmailStr | None = fields.OFFER_BOOKING_EMAIL
+    booking_contact: pydantic_v1.EmailStr | None = fields.OFFER_BOOKING_CONTACT
     is_active: bool | None = pydantic_v1.Field(
         description="Set to `false` if you want to deactivate the offer. This will not cancel former bookings. "
     )
-    is_duo: bool | None = IS_DUO_BOOKINGS_FIELD
+    enable_double_bookings: bool | None = fields.OFFER_ENABLE_DOUBLE_BOOKINGS_WITH_DEFAULT
     withdrawal_details: str | None = WITHDRAWAL_DETAILS_FIELD
     image: ImageBody | None
-    description: str | None = DESCRIPTION_FIELD_MODEL
+    description: str | None = fields.OFFER_DESCRIPTION_WITH_MAX_LENGTH
     id_at_provider: str | None = fields.ID_AT_PROVIDER_WITH_MAX_LENGTH
 
     class Config:
@@ -577,9 +544,9 @@ class ProductOfferEdition(OfferEditionBase):
 
 class PriceCategoryEdition(serialization.ConfiguredBaseModel):
     if typing.TYPE_CHECKING:
-        label: str = PRICE_CATEGORY_LABEL_FIELD
+        label: str = fields.PRICE_CATEGORY_LABEL
     else:
-        label: pydantic_v1.constr(min_length=1, max_length=50) | None = PRICE_CATEGORY_LABEL_FIELD
+        label: pydantic_v1.constr(min_length=1, max_length=50) | None = fields.PRICE_CATEGORY_LABEL
     price: offer_price_model | None = fields.PRICE
 
     @pydantic_v1.validator("price")
@@ -603,7 +570,7 @@ class EventOfferEdition(OfferEditionBase):
         None,
         description="To override category related fields, the category must be specified, even if it cannot be changed. Other category related fields may be left undefined to keep their current value.",
     )
-    duration_minutes: int | None = DURATION_MINUTES_FIELD
+    event_duration: int | None = fields.EVENT_DURATION
 
 
 class DateCreation(BaseStockCreation):
@@ -627,7 +594,7 @@ class DatesCreation(serialization.ConfiguredBaseModel):
 
 class PriceCategoryResponse(serialization.ConfiguredBaseModel):
     id: int
-    label: str = PRICE_CATEGORY_LABEL_FIELD
+    label: str = fields.PRICE_CATEGORY_LABEL
     price: pydantic_v1.StrictInt = fields.PRICE
 
     class Config:
@@ -635,7 +602,7 @@ class PriceCategoryResponse(serialization.ConfiguredBaseModel):
 
 
 class PriceCategoriesResponse(serialization.ConfiguredBaseModel):
-    price_categories: list[PriceCategoryResponse] = PRICE_CATEGORIES_FIELD
+    price_categories: list[PriceCategoryResponse] = fields.PRICE_CATEGORIES
 
     @classmethod
     def build_price_categories(cls, price_categories: list[offers_models.PriceCategory]) -> "PriceCategoriesResponse":
@@ -685,12 +652,12 @@ class PostDatesResponse(serialization.ConfiguredBaseModel):
 class OfferResponse(serialization.ConfiguredBaseModel):
     id: int
     accessibility: AccessibilityResponse
-    booking_contact: str | None = BOOKING_CONTACT_FIELD
-    booking_email: str | None = BOOKING_EMAIL_FIELD
-    description: str | None = DESCRIPTION_FIELD_RESPONSE
+    booking_contact: str | None = fields.OFFER_BOOKING_CONTACT
+    booking_email: str | None = fields.OFFER_BOOKING_EMAIL
+    description: str | None = fields.OFFER_DESCRIPTION
     external_ticket_office_url: str | None = EXTERNAL_TICKET_OFFICE_URL_FIELD
     image: ImageResponse | None
-    is_duo: bool | None = IS_DUO_BOOKINGS_FIELD
+    enable_double_bookings: bool | None = fields.OFFER_ENABLE_DOUBLE_BOOKINGS_WITH_DEFAULT
     location: PhysicalLocation | DigitalLocation = LOCATION_FIELD
     name: str = fields.OFFER_NAME
     status: offer_mixin.OfferStatus = pydantic_v1.Field(
@@ -714,7 +681,7 @@ class OfferResponse(serialization.ConfiguredBaseModel):
             accessibility=AccessibilityResponse.from_orm(offer),
             external_ticket_office_url=offer.externalTicketOfficeUrl,
             image=offer.image,  # type: ignore[arg-type]
-            is_duo=offer.isDuo,
+            enable_double_bookings=offer.isDuo,
             location=DigitalLocation.from_orm(offer) if offer.isDigital else PhysicalLocation.from_orm(offer),
             name=offer.name,
             status=offer.status,
@@ -755,16 +722,16 @@ def _serialize_has_ticket(offer: offers_models.Offer) -> bool:
 
 class EventOfferResponse(OfferResponse, PriceCategoriesResponse):
     category_related_fields: event_category_reading_fields
-    duration_minutes: int | None = DURATION_MINUTES_FIELD
-    has_ticket: bool = HAS_TICKET_FIELD
-    publication_date: datetime.datetime | None = PUBLICATION_DATE_FIELD
+    event_duration: int | None = fields.EVENT_DURATION
+    has_ticket: bool = fields.EVENT_HAS_TICKET
+    publication_date: datetime.datetime | None = fields.OFFER_PUBLICATION_DATE
 
     @classmethod
     def build_event_offer(cls, offer: offers_models.Offer) -> "EventOfferResponse":
         base_offer_response = OfferResponse.build_offer(offer)
         return cls(
             category_related_fields=serialize_extra_data(offer),
-            duration_minutes=offer.durationMinutes,
+            event_duration=offer.durationMinutes,
             has_ticket=_serialize_has_ticket(offer),
             price_categories=[
                 PriceCategoryResponse.from_orm(price_category) for price_category in offer.priceCategories

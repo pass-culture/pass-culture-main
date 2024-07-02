@@ -55,8 +55,6 @@ class _FIELDS:
         example="Your own id",
         max_length=70,
     )
-    OFFER_STATUS = Field(description=descriptions.OFFER_STATUS_FIELD_DESCRIPTION, example="ACTIVE")
-
     PERIOD_BEGINNING_DATE = Field(
         description="Period beginning date. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
         example="2024-03-03T13:00:00+02:00",
@@ -78,33 +76,67 @@ class _FIELDS:
     IMAGE_URL = Field(description="Image URL publicly accessible", example="https://example.com/image.png")
 
     # Disability fields
-    AUDIO_DISABILITY = Field(description="Is accessible for people with hearing disability", example=True)
-    MENTAL_DISABILITY = Field(description="Is accessible for people with mental disability", example=True)
-    MOTOR_DISABILITY = Field(description="Is accessible for people with motor disability", example=True)
-    VISUAL_DISABILITY = Field(description="Is accessible for people with visual disability", example=True)
-    AUDIO_DISABILITY_WITH_DEFAULT = Field(
+    AUDIO_DISABILITY_COMPLIANT = Field(description="Is accessible for people with hearing disability", example=True)
+    MENTAL_DISABILITY_COMPLIANT = Field(
+        description="Is accessible for people with mental or cognitive disability", example=True
+    )
+    MOTOR_DISABILITY_COMPLIANT = Field(description="Is accessible for people with motor disability", example=True)
+    VISUAL_DISABILITY_COMPLIANT = Field(description="Is accessible for people with visual disability", example=True)
+    AUDIO_DISABILITY_COMPLIANT_WITH_DEFAULT = Field(
         False, description="Is accessible for people with hearing disability", example=True
     )
-    MENTAL_DISABILITY_WITH_DEFAULT = Field(
+    MENTAL_DISABILITY_COMPLIANT_WITH_DEFAULT = Field(
         False, description="Is accessible for people with mental disability", example=True
     )
-    MOTOR_DISABILITY_WITH_DEFAULT = Field(
+    MOTOR_DISABILITY_COMPLIANT_WITH_DEFAULT = Field(
         False, description="Is accessible for people with motor disability", example=True
     )
-    VISUAL_DISABILITY_WITH_DEFAULT = Field(
+    VISUAL_DISABILITY_COMPLIANT_WITH_DEFAULT = Field(
         False, description="Is accessible for people with visual disability", example=True
     )
 
     # Offer fields
     OFFER_ID = Field(description="Offer id", example=12345)
+    OFFER_STATUS = Field(description=descriptions.OFFER_STATUS_FIELD_DESCRIPTION, example="ACTIVE")
     OFFER_NAME = Field(description="Offer title", example="Le Petit Prince")
     OFFER_NAME_WITH_MAX_LENGTH = Field(description="Offer title", example="Le Petit Prince", max_length=90)
+    OFFER_DESCRIPTION = Field(
+        description="Offer description",
+        example="A great book for kids and old kids.",
+    )
+    OFFER_DESCRIPTION_WITH_MAX_LENGTH = Field(
+        description="Offer description",
+        example="A great book for kids and old kids.",
+        max_length=1000,
+    )
+    OFFER_BOOKING_EMAIL = Field(
+        description="Recipient email for notifications about bookings, cancellations, etc.",
+        example="contact@yourcompany.com",
+    )
+    OFFER_BOOKING_CONTACT = Field(
+        description="Recipient email to contact if there is an issue with booking the offer. Mandatory if the offer has withdrawable tickets.",
+        example="support@yourcompany.com",
+    )
+    OFFER_PUBLICATION_DATE = Field(
+        description="Publication date",
+    )
+    OFFER_ENABLE_DOUBLE_BOOKINGS_WITH_DEFAULT = Field(
+        description="If set to true, users may book the offer for two persons. Second item will be delivered at the same price as the first one. Category must be compatible with this feature.",
+        example=True,
+        default=False,
+    )
 
-    # Products dields
+    # Products fields
     EANS_FILTER = Field(description="EANs list (max 100)", example="3700551782888,9782895761792")
+    EAN = Field(
+        description="European Article Number (EAN-13)",
+        example="3700551782888",
+    )
 
     # Event fields
     PRICE_CATEGORY_ID = Field(description="Price category id", example=12)
+    PRICE_CATEGORY_LABEL = Field(description="Price category label", example="Carré or")
+    PRICE_CATEGORIES = Field(description="Available price categories for this offer stocks")
     BEGINNING_DATETIME = Field(
         description="Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
         example=_example_datetime_with_tz,
@@ -113,6 +145,11 @@ class _FIELDS:
         description=descriptions.BOOKING_LIMIT_DATETIME_FIELD_DESCRIPTION,
         example=_example_datetime_with_tz,
     )
+    EVENT_HAS_TICKET = Field(
+        description="Indicated whether a ticket is mandatory to access to the event. True if it is the case, False otherwise. The ticket will be sent by you, the provider and you must have developed the pass Culture ticketing interface to do so.",
+        example=False,
+    )
+    EVENT_DURATION = Field(description="Event duration in minutes", example=60)
 
     # Booking fields
     BOOKING_STATUS = Field(description=descriptions.BOOKING_STATUS_DESCRIPTION, example="CONFIRMED")
@@ -126,6 +163,7 @@ class _FIELDS:
     PRICE = Field(description="Offer price in euro cents", example=1000)
 
     # Collective offer fields
+    COLLECTIVE_OFFER_ID = Field(description="Collective offer id", example=12345)
     COLLECTIVE_OFFER_STATUS = Field(
         description=descriptions.COLLECTIVE_OFFER_STATUS_FIELD_DESCRIPTION, example="ACTIVE"
     )
@@ -140,11 +178,11 @@ class _FIELDS:
         example=["some@email.com", "some.other@email.com"],
     )
     COLLECTIVE_OFFER_CONTACT_EMAIL = Field(
-        example="somebody.tocontact@gmail.com",
+        example="contact@yourcompany.com",
         description="Email of the person to contact if there is an issue with the offer.",
     )
     COLLECTIVE_OFFER_CONTACT_PHONE = Field(
-        example="somebody.tocontact@gmail.com",
+        example="0123456789",
         description="Phone of the person to contact if there is an issue with the offer.",
     )
     COLLECTIVE_OFFER_EDUCATIONAL_DOMAINS = Field(
@@ -156,10 +194,12 @@ class _FIELDS:
         example=["GENERAL2", "GENERAL1", "GENERAL0"],
     )
     COLLECTIVE_OFFER_IS_ACTIVE = Field(description="Is your offer active", example=True)
+    COLLECTIVE_OFFER_IS_SOLD_OUT = Field(description="Is your offer sold out", example=False)
     COLLECTIVE_OFFER_NATIONAL_PROGRAM_ID = Field(
         description="Id of the national program linked to your offer. The national programs list can be found on **[this endpoint (`Get all known national programs`)](#tag/Collective-educational-data/operation/GetNationalPrograms)**",
         example=123456,
     )
+    COLLECTIVE_OFFER_DATE_CREATED = Field(description="Collective offer creation date")
     COLLECTIVE_OFFER_BEGINNING_DATETIME = Field(
         description="Collective offer beginning datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
         example=_example_datetime_with_tz,
@@ -177,10 +217,18 @@ class _FIELDS:
         example=_example_datetime_with_tz,
     )
     COLLECTIVE_OFFER_TOTAL_PRICE = Field(example=100.00, description="Collective offer price (in €)")
-    COLLECTIVE_OFFER_NB_OF_TICKETS_FIELD = Field(example=10, description="Number of tickets for your collective offer")
+    COLLECTIVE_OFFER_NB_OF_TICKETS = Field(example=10, description="Number of tickets for your collective offer")
     COLLECTIVE_OFFER_EDUCATIONAL_PRICE_DETAIL = Field(
         description="The explanation of the offer price", example="10 tickets x 10 € = 100 €"
     )
+    # Collective booking
+    COLLECTIVE_BOOKING_ID = Field(description="Collective booking id")
+    COLLECTIVE_BOOKING_STATUS = Field(description="Collective booking status", example="PENDING")
+    COLLECTIVE_BOOKING_DATE_CREATED = Field(description="When the booking was made")
+    COLLECTIVE_BOOKING_CONFIRMATION_DATE = Field(description="When the booking was confirmed")
+    COLLECTIVE_BOOKING_REIMBURSED_DATA = Field(description="When the booking was reimbursed")
+    COLLECTIVE_BOOKING_DATE_USED = Field(description="When the booking was used")
+    COLLECTIVE_BOOKING_CANCELLATION_LIMIT_DATE = Field(description="Deadline to cancel the booking")
     # Educational institution fields
     EDUCATIONAL_INSTITUTION_ID = Field(
         description="Educational institution id in the pass Culture application. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
