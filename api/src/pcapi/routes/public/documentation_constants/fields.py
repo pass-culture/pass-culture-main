@@ -178,11 +178,11 @@ class _FIELDS:
         example=["some@email.com", "some.other@email.com"],
     )
     COLLECTIVE_OFFER_CONTACT_EMAIL = Field(
-        example="somebody.tocontact@gmail.com",
+        example="contact@yourcompany.com",
         description="Email of the person to contact if there is an issue with the offer.",
     )
     COLLECTIVE_OFFER_CONTACT_PHONE = Field(
-        example="somebody.tocontact@gmail.com",
+        example="0123456789",
         description="Phone of the person to contact if there is an issue with the offer.",
     )
     COLLECTIVE_OFFER_EDUCATIONAL_DOMAINS = Field(
