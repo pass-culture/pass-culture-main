@@ -70,6 +70,11 @@
   }
 }
 
+.menu-item-pdf {
+  padding-top: rem.torem(4px);
+  padding-bottom: rem.torem(4px);
+}
+
 .document-type-content {
   display: flex;
   gap: rem.torem(4px);

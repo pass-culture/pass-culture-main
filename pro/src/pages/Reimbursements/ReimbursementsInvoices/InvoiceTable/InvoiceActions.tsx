@@ -12,6 +12,8 @@ import { DropdownItem } from 'ui-kit/DropdownMenuWrapper/DropdownItem'
 import { DropdownMenuWrapper } from 'ui-kit/DropdownMenuWrapper/DropdownMenuWrapper'
 import { downloadFile } from 'utils/downloadFile'
 
+import styles from './InvoiceTable.module.scss'
+
 type InvoiceActionsProps = {
   invoice: InvoiceResponseV2Model
 }
@@ -37,9 +39,19 @@ export function InvoiceActions({ invoice }: InvoiceActionsProps) {
   }
 
   return (
-    <DropdownMenuWrapper title="Téléchargment des justificatifs">
+    <DropdownMenuWrapper title="Téléchargement des justificatifs">
       <>
-        <DropdownItem title="Télécharger le justificatif comptable (.pdf)">
+        <DropdownItem
+          title="Télécharger le justificatif comptable (.pdf)"
+          onSelect={() => {
+            logEvent(Events.CLICKED_INVOICES_DOWNLOAD, {
+              fileType: 'justificatif',
+              filesCount: 1,
+              buttonType: 'unique',
+            })
+            window.open(invoice.url, '_blank')
+          }}
+        >
           <ButtonLink
             link={{
               isExternal: true,
@@ -50,13 +62,7 @@ export function InvoiceActions({ invoice }: InvoiceActionsProps) {
             icon={fullDownloadIcon}
             svgAlt=""
             variant={ButtonVariant.TERNARY}
-            onClick={() =>
-              logEvent(Events.CLICKED_INVOICES_DOWNLOAD, {
-                fileType: 'justificatif',
-                filesCount: 1,
-                buttonType: 'unique',
-              })
-            }
+            className={styles['menu-item-pdf']}
           >
             Télécharger le justificatif comptable (.pdf)
           </ButtonLink>
