@@ -1,11 +1,14 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import { getErrorCode, isErrorAPIError } from 'apiClient/helpers'
 import { CollectiveBookingResponseModel } from 'apiClient/v1'
 import { CancelCollectiveBookingModal } from 'components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
-import { GET_BOOKINGS_QUERY_KEY } from 'config/swrQueryKeys'
+import {
+  GET_BOOKINGS_QUERY_KEY,
+  GET_COLLECTIVE_BOOKING_BY_ID_QUERY_KEY,
+} from 'config/swrQueryKeys'
 import { BOOKING_STATUS } from 'core/Bookings/constants'
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'core/Notification/constants'
 import { useNotification } from 'hooks/useNotification'
@@ -29,9 +32,9 @@ export const CollectiveActionButtons = ({
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const notify = useNotification()
+
   const offerId = bookingRecap.stock.offerId
-  const nonHumanizedOfferId = bookingRecap.stock.offerId
-  const offerEditionUrl = useOfferEditionURL(true, nonHumanizedOfferId, false)
+  const offerEditionUrl = useOfferEditionURL(true, offerId, false)
 
   const cancelBooking = async () => {
     setIsModalOpen(false)
@@ -44,6 +47,10 @@ export const CollectiveActionButtons = ({
       await mutate(
         (key) => Array.isArray(key) && key.includes(GET_BOOKINGS_QUERY_KEY)
       )
+      await mutate([
+        GET_COLLECTIVE_BOOKING_BY_ID_QUERY_KEY,
+        Number(bookingRecap.bookingId),
+      ])
       notify.success(
         'La réservation sur cette offre a été annulée avec succès, votre offre sera à nouveau visible sur ADAGE.',
         {
