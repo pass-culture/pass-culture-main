@@ -89,14 +89,14 @@ export const Layout = ({ children, layout = 'basic' }: LayoutProps) => {
               navPanel={navPanel}
             />
           )}
-          <div
-            className={cn(styles['content-container'], {
-              [styles['content-container-funnel']]: layout === 'funnel',
-              [styles['content-container-without-frame']]: isWithoutFrame,
-            })}
-          >
-            <div>
-              {shouldDisplayNewNavReview && <NewNavReview />}
+          <div className={styles['content-wrapper']}>
+            {shouldDisplayNewNavReview && <NewNavReview />}
+            <div
+              className={cn(styles['content-container'], {
+                [styles['content-container-funnel']]: layout === 'funnel',
+                [styles['content-container-without-frame']]: isWithoutFrame,
+              })}
+            >
               <main id="content">
                 {layout === 'funnel' || layout === 'without-nav' ? (
                   children
@@ -110,8 +110,8 @@ export const Layout = ({ children, layout = 'basic' }: LayoutProps) => {
                   </div>
                 )}
               </main>
+              {layout !== 'funnel' && <Footer layout={layout} />}
             </div>
-            {layout !== 'funnel' && <Footer layout={layout} />}
           </div>
         </div>
       </div>

@@ -65,7 +65,7 @@
 @media (min-width: size.$tablet) {
   .actions-bar {
     position: fixed;
-    box-shadow: 0 2px rem.torem(16px) var(--color-large-shadow);
+    box-shadow: 0 rem.torem(-2px) rem.torem(16px) var(--color-large-shadow);
     border-top: unset;
 
     &-new-interface {
