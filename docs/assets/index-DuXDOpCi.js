@@ -1,5 +1,5 @@
-import{r as n,$ as z}from"./index-uCp2LrAq.js";import{R as B}from"./index-C74Dn3Vq.js";import{N as H,s as W,a as $,b as j,u as I,c as G,d as k,D as X,e as Y,R as q,f as J}from"./index-DoMt6nTV.js";/**
- * React Router DOM v6.23.1
+import{r as n,$ as z}from"./index-uCp2LrAq.js";import{R as B}from"./index-C74Dn3Vq.js";import{N as H,s as W,a as $,b as j,u as I,c as G,d as k,D as X,e as Y,R as q,f as J}from"./index-CsMSrRXf.js";/**
+ * React Router DOM v6.24.0
  *
  * Copyright (c) Remix Software Inc.
  *
