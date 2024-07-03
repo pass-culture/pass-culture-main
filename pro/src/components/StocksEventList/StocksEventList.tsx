@@ -17,7 +17,6 @@ import { Events } from 'core/FirebaseEvents/constants'
 import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'
 import { useNotification } from 'hooks/useNotification'
 import { usePaginationWithSearchParams } from 'hooks/usePagination'
-import { useWithoutFrame } from 'hooks/useWithoutFrame'
 import fullTrashIcon from 'icons/full-trash.svg'
 import { serializeStockEvents } from 'pages/IndividualOfferWizard/Stocks/serializeStockEvents'
 import { AddRecurrencesButton } from 'screens/IndividualOffer/StocksEventCreation/AddRecurrencesButton'
@@ -87,7 +86,6 @@ export const StocksEventList = ({
   const notify = useNotification()
   const [searchParams, setSearchParams] = useSearchParams()
   const { mutate } = useSWRConfig()
-  const isWithoutFrame = useWithoutFrame()
 
   // states
   const [allStocksChecked, setAllStocksChecked] = useState<PartialCheck>(
@@ -434,9 +432,7 @@ export const StocksEventList = ({
 
                 <th
                   scope="col"
-                  className={cn(styles['price-column'], styles['header'], {
-                    [styles['price-column-without-frame']]: isWithoutFrame,
-                  })}
+                  className={cn(styles['price-column'], styles['header'])}
                 >
                   <span className={styles['header-name']}>Tarif</span>
 

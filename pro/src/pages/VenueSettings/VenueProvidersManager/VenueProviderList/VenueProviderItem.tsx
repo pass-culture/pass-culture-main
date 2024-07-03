@@ -1,13 +1,9 @@
-import cn from 'classnames'
-import React from 'react'
-
 import { GetVenueResponseModel, VenueProviderResponse } from 'apiClient/v1'
 import { getProviderInfo } from 'core/Providers/utils/getProviderInfo'
 import {
   isAllocineProvider,
   isCinemaProvider,
 } from 'core/Providers/utils/utils'
-import { useWithoutFrame } from 'hooks/useWithoutFrame'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
 import { AllocineProviderParameters } from './AllocineProviderParameters'
@@ -32,19 +28,10 @@ export const VenueProviderItem = ({
   const { lastSyncDate, provider, venueIdAtOfferProvider } = venueProvider
 
   const providerInfo = getProviderInfo(provider.name)
-  const isWithoutFrame = useWithoutFrame()
 
   return (
-    <li
-      className={cn(style['venue-provider-row'], {
-        [style['venue-provider-row-without-frame']]: isWithoutFrame,
-      })}
-    >
-      <div
-        className={cn(style['venue-provider-item-info'], {
-          [style['venue-provider-item-info-without-frame']]: isWithoutFrame,
-        })}
-      >
+    <li className={style['venue-provider-row']}>
+      <div className={style['venue-provider-item-info']}>
         <div className={style['provider-name-container']}>
           <div className={style['provider-name']}>
             {providerInfo?.name ?? provider.name}
