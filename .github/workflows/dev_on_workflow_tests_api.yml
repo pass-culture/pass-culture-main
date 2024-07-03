@@ -39,10 +39,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.image }}-${{ inputs.tag }}.tar
+          path: ${{ runner.temp }}
       - name: "Docker load artifact."
         if: ${{ inputs.tag }} != 'latest'
         run: |
-          docker load --input $GITHUB_WORKSPACE/${{ inputs.image }}-${{ inputs.tag }}.tar
+          docker load --input ${{ runner.temp }}/${{ inputs.image }}-${{ inputs.tag }}.tar
       - name: "Authentification to Google"
         uses: "google-github-actions/auth@v2"
         with:
@@ -130,10 +131,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.image }}-${{ inputs.tag }}.tar
+          path: ${{ runner.temp }}
       - name: "Docker load artifact."
         if: ${{ inputs.tag }} != 'latest'
         run: |
-          docker load --input $GITHUB_WORKSPACE/${{ inputs.image }}-${{ inputs.tag }}.tar
+          docker load --input ${{ runner.temp }}/${{ inputs.image }}-${{ inputs.tag }}.tar
       - name: "Authentification to Google"
         uses: "google-github-actions/auth@v2"
         with:
@@ -256,10 +258,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.image }}-${{ inputs.tag }}.tar
+          path: ${{ runner.temp }}
       - name: "Docker load artifact."
         if: ${{ inputs.tag }} != 'latest'
         run: |
-          docker load --input $GITHUB_WORKSPACE/${{ inputs.image }}-${{ inputs.tag }}.tar
+          docker load --input ${{ runner.temp }}/${{ inputs.image }}-${{ inputs.tag }}.tar
       - name: "Authentification to Google"
         uses: "google-github-actions/auth@v2"
         with:
@@ -444,10 +447,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.image }}-${{ inputs.tag }}.tar
+          path: ${{ runner.temp }}
       - name: "Docker load artifact."
         if: ${{ inputs.tag }} != 'latest'
         run: |
-          docker load --input $GITHUB_WORKSPACE/${{ inputs.image }}-${{ inputs.tag }}.tar
+          docker load --input ${{ runner.temp }}/${{ inputs.image }}-${{ inputs.tag }}.tar
       - name: "Authentification to Google"
         uses: "google-github-actions/auth@v2"
         with:
