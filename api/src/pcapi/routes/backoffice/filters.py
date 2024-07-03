@@ -9,6 +9,7 @@ from urllib.parse import urlparse
 from urllib.parse import urlunparse
 
 from flask import Flask
+from flask import url_for
 from markupsafe import Markup
 import psycopg2.extras
 import pytz
@@ -212,53 +213,6 @@ def format_offerer_rejection_reason(rejection_reason: offerers_models.OffererRej
             return rejection_reason
 
 
-def format_booking_cancellation_reason(
-    reason: bookings_models.BookingCancellationReasons | educational_models.CollectiveBookingCancellationReasons | None,
-) -> str:
-    match reason:
-        case (
-            bookings_models.BookingCancellationReasons.OFFERER
-            | educational_models.CollectiveBookingCancellationReasons.OFFERER
-        ):
-            return "Annulée par l'acteur culturel"
-        case (
-            bookings_models.BookingCancellationReasons.BENEFICIARY
-            | educational_models.CollectiveBookingCancellationReasons.BENEFICIARY
-        ):
-            return "Annulée par le bénéficiaire"
-        case (
-            bookings_models.BookingCancellationReasons.EXPIRED
-            | educational_models.CollectiveBookingCancellationReasons.EXPIRED
-        ):
-            return "Expirée"
-        case (
-            bookings_models.BookingCancellationReasons.FRAUD
-            | educational_models.CollectiveBookingCancellationReasons.FRAUD
-        ):
-            return "Fraude"
-        case (
-            educational_models.CollectiveBookingCancellationReasons.FINANCE_INCIDENT
-            | bookings_models.BookingCancellationReasons.FINANCE_INCIDENT
-        ):
-            return "Incident finance"
-        case (
-            educational_models.CollectiveBookingCancellationReasons.BACKOFFICE
-            | bookings_models.BookingCancellationReasons.BACKOFFICE
-        ):
-            return "Annulée sur le backoffice"
-        case (
-            bookings_models.BookingCancellationReasons.REFUSED_BY_INSTITUTE
-            | educational_models.CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE
-        ):
-            return "Refusée par l'institution"
-        case educational_models.CollectiveBookingCancellationReasons.REFUSED_BY_HEADMASTER:
-            return "Refusée par le chef d'établissement"
-        case None:
-            return ""
-        case _:
-            return reason.value
-
-
 def format_booking_status_long(booking: bookings_models.Booking | educational_models.CollectiveBooking) -> str:
     if booking.status in (
         bookings_models.BookingStatus.REIMBURSED,
@@ -323,6 +277,59 @@ def format_booking_status(
     if booking.status == educational_models.CollectiveBookingStatus.PENDING:
         return '<span class="text-nowrap">Pré-réservée</span>' if with_badge else "Pré-réservée"
     return "Réservée"
+
+
+def format_booking_cancellation(
+    reason: bookings_models.BookingCancellationReasons | educational_models.CollectiveBookingCancellationReasons | None,
+    author: users_models.User | None = None,
+) -> str:
+    match reason:
+        case (
+            bookings_models.BookingCancellationReasons.OFFERER
+            | educational_models.CollectiveBookingCancellationReasons.OFFERER
+        ):
+            return "Annulée par l'acteur culturel"
+        case (
+            bookings_models.BookingCancellationReasons.BENEFICIARY
+            | educational_models.CollectiveBookingCancellationReasons.BENEFICIARY
+        ):
+            return "Annulée par le bénéficiaire"
+        case (
+            bookings_models.BookingCancellationReasons.EXPIRED
+            | educational_models.CollectiveBookingCancellationReasons.EXPIRED
+        ):
+            return "Expirée"
+        case (
+            bookings_models.BookingCancellationReasons.FRAUD
+            | educational_models.CollectiveBookingCancellationReasons.FRAUD
+        ):
+            return "Fraude"
+        case (
+            educational_models.CollectiveBookingCancellationReasons.FINANCE_INCIDENT
+            | bookings_models.BookingCancellationReasons.FINANCE_INCIDENT
+        ):
+            return "Incident finance"
+        case (
+            educational_models.CollectiveBookingCancellationReasons.BACKOFFICE
+            | bookings_models.BookingCancellationReasons.BACKOFFICE
+        ):
+            if author:
+                return Markup('Annulée sur le backoffice par <a href="{url}">{full_name}</a>').format(
+                    url=url_for("backoffice_web.bo_users.get_bo_user", user_id=author.id),
+                    full_name=author.full_name,
+                )
+            return "Annulée sur le backoffice"
+        case (
+            bookings_models.BookingCancellationReasons.REFUSED_BY_INSTITUTE
+            | educational_models.CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE
+        ):
+            return "Refusée par l'institution"
+        case educational_models.CollectiveBookingCancellationReasons.REFUSED_BY_HEADMASTER:
+            return "Refusée par le chef d'établissement"
+        case None:
+            return ""
+        case _:
+            return reason.value
 
 
 def format_validation_status(status: validation_status_mixin.ValidationStatus) -> str:
@@ -1198,7 +1205,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.lstrip_blocks = True
     app.jinja_env.filters["empty_string_if_null"] = empty_string_if_null
     app.jinja_env.filters["format_amount"] = format_amount
-    app.jinja_env.filters["format_booking_cancellation_reason"] = format_booking_cancellation_reason
+    app.jinja_env.filters["format_booking_cancellation"] = format_booking_cancellation
     app.jinja_env.filters["format_booking_status"] = format_booking_status
     app.jinja_env.filters["format_booking_status_long"] = format_booking_status_long
     app.jinja_env.filters["format_booking_validation_author_type"] = format_booking_validation_author_type
@@ -1215,13 +1222,13 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_cutoff_date"] = format_cutoff_date
     app.jinja_env.filters["format_timespan"] = format_timespan
     app.jinja_env.filters["format_deposit_type"] = format_deposit_type
+    app.jinja_env.filters["format_offerer_rejection_reason"] = format_offerer_rejection_reason
     app.jinja_env.filters["format_active_deposit"] = format_active_deposit
     app.jinja_env.filters["format_validation_status"] = format_validation_status
     app.jinja_env.filters["format_offer_validation_status"] = format_offer_validation_status
     app.jinja_env.filters["format_offer_status"] = format_offer_status
     app.jinja_env.filters["format_offer_category"] = format_offer_category
     app.jinja_env.filters["format_offer_subcategory"] = format_offer_subcategory
-    app.jinja_env.filters["format_offerer_rejection_reason"] = format_offerer_rejection_reason
     app.jinja_env.filters["format_collective_offer_formats"] = format_collective_offer_formats
     app.jinja_env.filters["format_subcategories"] = format_subcategories
     app.jinja_env.filters["format_as_badges"] = format_as_badges
