@@ -459,6 +459,17 @@ class TestClient:
         self._print_spec("GET", route, None, result)
         return result
 
+    def get_with_invalid_json_body(self, route: str, headers=None, raw_json=None):
+        headers = headers or {}
+        result = self.client.get(
+            route,
+            data=raw_json,
+            content_type="application/json",
+            headers={**self.auth_header, **headers},
+        )
+        self._print_spec("GET", route, raw_json, result)
+        return result
+
     def post(
         self,
         route: str,
