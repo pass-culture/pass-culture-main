@@ -326,6 +326,40 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         adageId="98764",
     )
 
+    # eac_with_application_with_no_venue
+    offerer = next(offerer_iterator)
+    venue_with_accepted_dms_status = create_venue(
+        managingOfferer=offerer,
+        name=f"accepted_dms {offerer.name}",
+        venueEducationalStatusId=next(educational_status_iterator),
+        collectiveInterventionArea=ALL_INTERVENTION_AREA,
+        siret="95651315000384",
+    )
+    educational_factories.CollectiveDmsApplicationFactory(
+        venue=venue_with_accepted_dms_status,
+        application=next(application_id_generator),
+        procedure=57189,
+        lastChangeDate=datetime.fromisoformat("2023-03-26T16:08:35+01:00"),
+        depositDate=datetime.fromisoformat("2024-03-23T16:08:33+01:00"),
+        expirationDate=datetime.fromisoformat("2025-03-23T16:08:33+01:00"),
+        buildDate=datetime.fromisoformat("2023-03-23T16:08:35+01:00"),
+        instructionDate=datetime.fromisoformat("2025-03-24T16:08:33+01:00"),
+        processingDate=datetime.fromisoformat("2025-03-25T16:08:33+01:00"),
+        state="accepte",
+    )
+    educational_factories.CollectiveDmsApplicationWithNoVenueFactory(
+        siret="95651315000387",
+        application=next(application_id_generator),
+        procedure=57189,
+        lastChangeDate=datetime.fromisoformat("2023-03-25T16:08:35+01:00"),
+        depositDate=datetime.fromisoformat("2024-03-22T16:08:33+01:00"),
+        expirationDate=datetime.fromisoformat("2025-03-22T16:08:33+01:00"),
+        buildDate=datetime.fromisoformat("2023-03-22T16:08:35+01:00"),
+        instructionDate=datetime.fromisoformat("2025-03-23T16:08:33+01:00"),
+        processingDate=datetime.fromisoformat("2025-03-24T16:08:33+01:00"),
+        state="refuse",
+    )
+
 
 def create_venue(*, reimbursement: bool = False, **kwargs: typing.Any) -> offerers_models.Venue:
     venue = offerers_factories.VenueFactory(**kwargs)
