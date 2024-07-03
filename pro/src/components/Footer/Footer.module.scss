@@ -4,6 +4,7 @@
 
 .footer {
   display: flex;
+  justify-content: center;
   align-items: center;
 
   &-layout-sticky-actions {
@@ -34,14 +35,13 @@
     flex-direction: column;
     white-space: nowrap;
     margin: rem.torem(24px);
-    gap: rem.torem(16px);
+    gap: 0 rem.torem(16px);
     justify-content: center;
     align-items: flex-start;
 
     @media (min-width: size.$mobile) {
       flex-flow: row wrap;
       align-items: center;
-      margin: 0 auto;
     }
   }
 
