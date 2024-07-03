@@ -9,10 +9,9 @@
 }
 
 .offers-stats {
-  @include fonts.body-important;
+  @include fonts.caption;
 
   margin-top: rem.torem(24px);
-  font-size: rem.torem(12px);
 
   &-grid {
     margin-left: rem.torem(16px);
