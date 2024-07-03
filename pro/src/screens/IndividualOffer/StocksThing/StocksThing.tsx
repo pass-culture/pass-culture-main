@@ -342,6 +342,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                 data-testid="input-price"
                 rightIcon={strokeEuroIcon}
                 step="0.01"
+                className={styles['field-layout-small']}
               />
               <DatePicker
                 smallLabel
@@ -352,6 +353,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                 minDate={today}
                 maxDate={getMaximumBookingDatetime(maxDateTime)}
                 disabled={readOnlyFields.includes('bookingLimitDatetime')}
+                className={styles['field-layout-small']}
               />
 
               {showExpirationDate && (
@@ -361,6 +363,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                   label="Date d'expiration"
                   classNameFooter={styles['field-layout-footer']}
                   disabled={true}
+                  className={styles['field-layout-small']}
                 />
               )}
               <TextInput
@@ -374,6 +377,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                 type="number"
                 hasDecimal={false}
                 onChange={onChangeQuantity}
+                className={styles['field-layout-small']}
               />
               {mode === OFFER_WIZARD_MODE.EDITION && stocks.length > 0 && (
                 <>

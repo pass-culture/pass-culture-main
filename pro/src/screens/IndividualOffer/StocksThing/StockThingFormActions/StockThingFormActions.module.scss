@@ -29,8 +29,9 @@
 
 @media (min-width: size.$tablet) {
   .dropdown-actions {
-    align-self: center;
+    align-self: flex-start;
     display: flex;
+    margin-top: rem.torem(42px); // Vertically align with input field
   }
 
   .button-actions {

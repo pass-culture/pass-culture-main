@@ -3,14 +3,8 @@
 @use "styles/variables/size.scss" as size;
 
 .footer {
-  margin-left: rem.torem(32px);
-  margin-right: rem.torem(32px);
   display: flex;
   align-items: center;
-
-  @media (min-width: size.$tablet) {
-    min-height: size.$footer-height;
-  }
 
   &-layout-sticky-actions {
     margin-bottom: size.$action-bar-sticky-height;
@@ -23,9 +17,16 @@
   }
 
   @media (min-width: size.$tablet) {
+    min-height: size.$footer-height;
+
     &-layout-without-nav {
       margin: -#{size.$footer-height} 0 0 size.$side-logo-width;
     }
+  }
+
+  @media (min-width: size.$mobile) {
+    margin-left: rem.torem(32px);
+    margin-right: rem.torem(32px);
   }
 
   ul {

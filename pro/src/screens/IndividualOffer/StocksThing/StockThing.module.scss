@@ -2,7 +2,6 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/variables/_size.scss" as size;
 
-
 .row {
   display: flex;
   flex-direction: column;
@@ -27,12 +26,14 @@
   .row {
     flex-direction: row;
     gap: rem.torem(16px);
-    align-items: flex-end;
+    align-items: flex-start;
   }
 
+  .field-layout-small {
+    width: rem.torem(252px);
+  }
 
   .field-layout-footer {
     min-height: rem.torem(32px);
   }
 }
-
