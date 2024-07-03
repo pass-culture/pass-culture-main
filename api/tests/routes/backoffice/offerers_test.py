@@ -27,6 +27,7 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.routes.backoffice.filters import format_date
+from pcapi.routes.backoffice.filters import format_date_time
 from pcapi.routes.backoffice.offerers import offerer_blueprint
 from pcapi.routes.backoffice.pro.forms import TypeOptions
 
@@ -1834,9 +1835,17 @@ class ListOfferersToValidateTest(GetEndpointHelper):
         def test_dms_adage_additional_data(self, authenticated_client):
             user_offerer = offerers_factories.UserNotValidatedOffererFactory()
             venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-            educational_factories.CollectiveDmsApplicationFactory(venue=venue, state="accepte")
+            accepted_application = educational_factories.CollectiveDmsApplicationFactory(venue=venue, state="accepte")
             other_venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-            educational_factories.CollectiveDmsApplicationFactory(venue=other_venue, state="accepte")
+            other_accepted_application = educational_factories.CollectiveDmsApplicationFactory(
+                venue=other_venue, state="accepte"
+            )
+            other_rejected_application = educational_factories.CollectiveDmsApplicationFactory(
+                venue=other_venue, state="refuse"
+            )
+            venueless_application = educational_factories.CollectiveDmsApplicationWithNoVenueFactory(
+                siret=user_offerer.offerer.siren + "12345", state="accepte"
+            )
 
             with assert_num_queries(self.expected_num_queries):
                 response = authenticated_client.get(url_for("backoffice_web.validation.list_offerers_to_validate"))
@@ -1847,9 +1856,22 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             assert rows[0]["ID"] == str(user_offerer.offerer.id)
 
             dms_adage_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[0]
-            assert f"Nom : {venue.name}" in dms_adage_data
-            assert f"SIRET : {venue.siret}" in dms_adage_data
-            assert "Statut du dossier DMS ADAGE : Accepté" in dms_adage_data
+            assert (
+                f"Nom : {venue.name} SIRET : {accepted_application.siret} Statut du dossier DMS ADAGE : Accepté Date de dernière modification : {format_date_time(accepted_application.lastChangeDate)}"
+                in dms_adage_data
+            )
+            assert (
+                f"Nom : {other_venue.name} SIRET : {other_accepted_application.siret} Statut du dossier DMS ADAGE : Accepté Date de dernière modification : {format_date_time(other_accepted_application.lastChangeDate)}"
+                in dms_adage_data
+            )
+            assert (
+                f"Nom : {other_venue.name} SIRET : {other_rejected_application.siret} Statut du dossier DMS ADAGE : Refusé Date de dernière modification : {format_date_time(other_rejected_application.lastChangeDate)}"
+                in dms_adage_data
+            )
+            assert (
+                f"Dossier sans lieu SIRET : {venueless_application.siret} Statut du dossier DMS ADAGE : Accepté Date de dernière modification : {format_date_time(venueless_application.lastChangeDate)}"
+                in dms_adage_data
+            )
 
         @pytest.mark.parametrize(
             "total_items, pagination_config, expected_total_pages, expected_page, expected_items",

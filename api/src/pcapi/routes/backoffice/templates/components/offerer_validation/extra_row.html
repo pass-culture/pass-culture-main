@@ -17,9 +17,10 @@
               {% for dms_venue in dms_venues %}
                 {% if dms_venue.state %}
                   <ul>
-                    <li>Nom : {{ dms_venue.name }}</li>
+                    <li>{{ ("Nom : " + dms_venue.name) if dms_venue.name else "Dossier sans lieu" }}</li>
                     <li>SIRET : {{ dms_venue.siret }}</li>
                     <li>Statut du dossier DMS ADAGE : {{ dms_venue.state | format_dms_status }}</li>
+                    <li>Date de dernière modification : {{ dms_venue.lastChangeDate | format_string_to_date_time }}</li>
                   </ul>
                 {% endif %}
               {% endfor %}
