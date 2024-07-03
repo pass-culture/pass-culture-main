@@ -1150,7 +1150,7 @@ def generate_payment_files(batch: models.CashflowBatch) -> None:
     file_paths["bank_accounts"] = _generate_bank_accounts_file(batch.cutoff)
 
     logger.info("Generating payments file")
-    file_paths["payments"] = _generate_payments_file(batch.id)
+    file_paths["payments"] = _generate_payments_file(batch)
 
     logger.info(
         "Finance files have been generated",
@@ -1316,7 +1316,8 @@ def _clean_for_accounting(value: str) -> str:
     return value.strip().replace('"', "").replace(";", "").replace("\n", "")
 
 
-def _generate_payments_file(batch_id: int) -> pathlib.Path:
+def _generate_payments_file(batch: models.CashflowBatch) -> pathlib.Path:
+    batch_id = batch.id
     header = [
         "Identifiant des coordonnées bancaires",
         "SIREN de la structure",
@@ -1457,7 +1458,7 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
     )
 
     return _write_csv(
-        "down_payment",
+        f"down_payment_{batch.label}",
         header,
         rows=itertools.chain(indiv_data, collective_data),
         row_formatter=_payment_details_row_formatter,
@@ -1783,7 +1784,7 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
     )
 
     return _write_csv(
-        "invoices",
+        f"invoices_{batch.label}",
         header,
         rows=itertools.chain(indiv_data, collective_data),
         row_formatter=_invoice_row_formatter,

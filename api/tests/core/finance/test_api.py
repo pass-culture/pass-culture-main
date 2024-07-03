@@ -1775,7 +1775,7 @@ def test_generate_payment_files(mocked_gdrive_create_file):
     gdrive_file_names = {call.args[1] for call in mocked_gdrive_create_file.call_args_list}
     assert gdrive_file_names == {
         "bank_accounts_20230201_133456.csv",
-        "down_payment_20230201_133456.csv",
+        f"down_payment_{cashflow.batch.label}_20230201_133456.csv",
     }
 
 
@@ -2081,11 +2081,11 @@ def test_generate_payments_file():
         api.price_event(event)
 
     cutoff = datetime.datetime(actual_year, 2, 15)
-    batch_id = api.generate_cashflows(cutoff).id
+    batch = api.generate_cashflows(cutoff)
 
-    n_queries = 2  # select pricings
+    n_queries = 3  # select pricings + select batch
     with assert_num_queries(n_queries):
-        path = api._generate_payments_file(batch_id)
+        path = api._generate_payments_file(batch)
 
     with open(path, encoding="utf-8") as fp:
         reader = csv.DictReader(fp, quoting=csv.QUOTE_NONNUMERIC)
@@ -2306,7 +2306,7 @@ def test_generate_invoice_file():
     with time_machine.travel(datetime.datetime(2023, 2, 1, 12, 34, 56)):
         path = api.generate_invoice_file(cashflow1.batch)
     with zipfile.ZipFile(path) as zfile:
-        with zfile.open("invoices_20230201_133456.csv") as csv_bytefile:
+        with zfile.open(f"invoices_{cashflow1.batch.label}_20230201_133456.csv") as csv_bytefile:
             csv_textfile = io.TextIOWrapper(csv_bytefile)
             reader = csv.DictReader(csv_textfile, quoting=csv.QUOTE_NONNUMERIC)
             rows = list(reader)
