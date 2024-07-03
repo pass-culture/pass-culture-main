@@ -73,7 +73,7 @@
 }
 
 .table-header {
-  font-size: rem.torem(12px);
+  @include fonts.caption;
 
   &:first-child {
     padding-left: rem.torem(28px);

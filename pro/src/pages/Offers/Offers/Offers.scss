@@ -53,59 +53,8 @@
     th {
       @include fonts.caption;
 
-      color: var(--color-black);
       padding: 0 rem.torem(8px) rem.torem(10px);
       text-align: left;
-    }
-
-    .th-checkbox {
-      padding: 0;
-
-      input {
-        @include fonts.body-important;
-
-        &:disabled {
-          cursor: not-allowed;
-        }
-      }
-
-      &.label-disabled {
-        opacity: 0.5;
-
-        label {
-          cursor: not-allowed;
-        }
-      }
-    }
-
-    th.th-with-filter {
-      position: relative;
-
-      & > button {
-        align-items: center;
-        background-color: transparent;
-        border: none;
-        color: inherit;
-        display: flex;
-        font-size: inherit;
-        font-weight: inherit;
-        outline: none;
-
-        svg {
-          margin-left: rem.torem(10px);
-          margin-top: rem.torem(2px);
-        }
-
-        &:focus svg {
-          color: var(--color-primary);
-          border: rem.torem(1px) solid var(--color-primary);
-          border-radius: rem.torem(4px);
-        }
-
-        &:disabled {
-          cursor: not-allowed;
-        }
-      }
     }
 
     th.th-actions {
