@@ -396,6 +396,11 @@ class IndividualOfferResponseGetterDict(GetterDict):
                 offerer_address = self._obj.venue.offererAddress
             else:
                 offerer_address = self._obj.offererAddress
+            # TODO(xordoquy): the following code should be removed once the
+            # migration of offerer_address from venues is performed.
+            # Alternatively, might be a good idea to keep it and log a warning too
+            if not offerer_address:
+                return None
             offererAddress = GetOffererAddressWithIsEditableResponseModel.from_orm(offerer_address)
             offererAddress.label = offererAddress.label or self._obj.venue.common_name
             return AddressResponseIsEditableModel(
