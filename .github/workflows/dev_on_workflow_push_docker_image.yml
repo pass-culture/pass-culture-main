@@ -64,9 +64,10 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.image }}-${{ inputs.checksum-tag }}.tar
+          path: ${{ runner.temp }}
       - name: "Load and push docker image"
         run: |
-          docker load --input $GITHUB_WORKSPACE/${{ inputs.image }}-${{ inputs.checksum-tag }}.tar
+          docker load --input ${{ runner.temp }}/${{ inputs.image }}-${{ inputs.checksum-tag }}.tar
           docker image tag ${{ steps.compute-image-name.outputs.image_name }} "${{ env.registry }}/${{ inputs.image }}:${{ inputs.commit-hash }}"
           if [ ${{ inputs.tag-latest }} == 'true' ]; then
             docker image tag ${{ steps.compute-image-name.outputs.image_name }} "${{ env.registry }}/${{ inputs.image }}:latest"

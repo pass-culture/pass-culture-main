@@ -64,7 +64,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: pcapi-${{ inputs.PCAPI_DOCKER_TAG }}.tar
-          path: ${{ github.workspace }}
+          path: ${{ runner.temp }}
       - name: "Fix local permissions"
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         run: sudo chown -R $PCAPI_UID:$PCAPI_GID .
@@ -85,7 +85,7 @@ jobs:
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         run: |
           if [ "${{ inputs.PCAPI_DOCKER_TAG }}" != "latest" ]; then
-            docker load --input $GITHUB_WORKSPACE/pcapi-${{ inputs.PCAPI_DOCKER_TAG }}.tar
+            docker load --input ${{ runner.temp }}/pcapi-${{ inputs.PCAPI_DOCKER_TAG }}.tar
           fi
           docker run \
             --name pc-api \
