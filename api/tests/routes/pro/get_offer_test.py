@@ -360,6 +360,26 @@ class Returns200Test:
             "isEditable": offer_offerer_address.isEditable,
         }
 
+    def test_do_not_fail_if_no_address_at_all(self, client):
+        """If offer has no offererAddress nor its venue, it should be not fail"""
+        # Given
+        user_offerer = offerers_factories.UserOffererFactory()
+        offer = offers_factories.ThingOfferFactory(
+            venue__managingOfferer=user_offerer.offerer,
+            venue__offererAddress=None,
+            offererAddress=None,
+        )
+
+        # When
+        auth_client = client.with_session_auth(email=user_offerer.user.email)
+        offer_id = offer.id
+        with testing.assert_num_queries(self.num_queries):
+            response = auth_client.get(f"/offers/{offer_id}")
+
+        # Then
+        assert response.status_code == 200
+        assert not response.json["address"]
+
     def test_return_venue_offerer_address(self, client):
         # Given
         user_offerer = offerers_factories.UserOffererFactory()
