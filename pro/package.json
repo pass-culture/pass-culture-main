@@ -43,7 +43,7 @@
     "@firebase/remote-config": "0.4.7",
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-dropdown-menu": "^2.0.6",
-    "@reduxjs/toolkit": "^2.2.5",
+    "@reduxjs/toolkit": "^2.2.6",
     "@sentry/browser": "^8.13.0",
     "@sentry/react": "^8.13.0",
     "@zootools/email-spell-checker": "^1.12.0",
