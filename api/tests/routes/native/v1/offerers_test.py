@@ -61,6 +61,7 @@ class VenuesTest:
             "address": venue.street,
             "street": venue.street,
             "postalCode": venue.postalCode,
+            "timezone": venue.timezone,
             "venueTypeCode": "OTHER",
             "description": venue.description,
             "contact": {
