@@ -1603,7 +1603,7 @@ class GetTokenExpirationTest:
             response = client.get("/native/v1/profile/token_expiration")
             assert response.status_code == 200
 
-        expiration = datetime.fromisoformat(response.json["expiration"])
+        expiration = datetime.fromisoformat(response.json["expiration"]).replace(tzinfo=None)
         delta = abs(expiration - expiration_date)
         assert delta == timedelta(seconds=0)
 
