@@ -21,24 +21,21 @@ import pcapi.core.users.models as users_models
 from pcapi.core.users.utils import decode_jwt_token
 from pcapi.models.feature import FeatureToggle
 from pcapi.routes.native.v1.serialization import subscription as subscription_serialization
-from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.shared.price import convert_to_cent
-from pcapi.serialization.utils import to_camel
-from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.email import sanitize_email
 
 
-class TrustedDevice(BaseModel):
+class TrustedDevice(ConfiguredBaseModel):
     device_id: str
     os: str | None
     source: str | None
 
     class Config:
-        alias_generator = to_camel
         anystr_strip_whitespace = True
 
 
-class BaseAccountRequest(BaseModel):
+class BaseAccountRequest(ConfiguredBaseModel):
     birthdate: datetime.date
     marketing_email_subscription: bool | None = False
     token: str
@@ -46,9 +43,6 @@ class BaseAccountRequest(BaseModel):
     apps_flyer_platform: str | None = None
     firebase_pseudo_id: str | None = None
     trusted_device: TrustedDevice | None = None
-
-    class Config:
-        alias_generator = to_camel
 
 
 class AccountRequest(BaseAccountRequest):
@@ -60,56 +54,37 @@ class GoogleAccountRequest(BaseAccountRequest):
     account_creation_token: str
 
 
-class NotificationSubscriptions(BaseModel):
+class NotificationSubscriptions(ConfiguredBaseModel):
     marketing_email: bool
     marketing_push: bool
     subscribed_themes: list[str] = []
 
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        orm_mode = True
 
-
-class Credit(BaseModel):
+class Credit(ConfiguredBaseModel):
     initial: int
     remaining: int
 
     _convert_initial = validator("initial", pre=True, allow_reuse=True)(convert_to_cent)
     _convert_remaining = validator("remaining", pre=True, allow_reuse=True)(convert_to_cent)
 
-    class Config:
-        orm_mode = True
 
-
-class DomainsCredit(BaseModel):
+class DomainsCredit(ConfiguredBaseModel):
     all: Credit
     digital: Credit | None
     physical: Credit | None
 
-    class Config:
-        orm_mode = True
 
-
-class ChangeBeneficiaryEmailBody(BaseModel):
+class ChangeBeneficiaryEmailBody(ConfiguredBaseModel):
     token: str
     device_info: TrustedDevice | None = None
 
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
 
-
-class ChangeBeneficiaryEmailResponse(BaseModel):
+class ChangeBeneficiaryEmailResponse(ConfiguredBaseModel):
     access_token: str
     refresh_token: str
 
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
 
-
-class ChangeEmailTokenContent(BaseModel):
+class ChangeEmailTokenContent(ConfiguredBaseModel):
     current_email: pydantic_v1.EmailStr
     new_email: pydantic_v1.EmailStr
 
@@ -141,17 +116,12 @@ class ChangeEmailTokenContent(BaseModel):
         return cls(current_email=current_email, new_email=new_email)
 
 
-class YoungStatusResponse(BaseModel):
+class YoungStatusResponse(ConfiguredBaseModel):
     status_type: young_status.YoungStatusType
     subscription_status: young_status.SubscriptionStatus | None
 
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        orm_mode = True
 
-
-class UserProfileResponse(BaseModel):
+class UserProfileResponse(ConfiguredBaseModel):
     booked_offers: dict[str, int]
     birth_date: datetime.date | None
     deposit_activation_date: datetime.datetime | None
@@ -181,10 +151,6 @@ class UserProfileResponse(BaseModel):
     _convert_recredit_amount_to_show = validator("recreditAmountToShow", pre=True, allow_reuse=True)(convert_to_cent)
 
     class Config:
-        orm_mode = True
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        json_encoders = {datetime.datetime: format_into_utc_date}
         use_enum_values = True
 
     @validator("firstName", pre=True)
@@ -243,11 +209,11 @@ def _is_cultural_survey_active() -> bool:
     return FeatureToggle.ENABLE_NATIVE_CULTURAL_SURVEY.is_active() or FeatureToggle.ENABLE_CULTURAL_SURVEY.is_active()
 
 
-class UserProfileUpdateRequest(BaseModel):
+class UserProfileUpdateRequest(ConfiguredBaseModel):
     subscriptions: NotificationSubscriptions | None
 
 
-class UserProfileEmailUpdate(BaseModel):
+class UserProfileEmailUpdate(ConfiguredBaseModel):
     email: pydantic_v1.EmailStr  # the new email address
     if typing.TYPE_CHECKING:  # https://github.com/pydantic/pydantic/issues/156
         password: str
@@ -255,58 +221,49 @@ class UserProfileEmailUpdate(BaseModel):
         password: pydantic_v1.constr(strip_whitespace=True, min_length=8, strict=True)
 
 
-class ValidateEmailRequest(BaseModel):
+class ValidateEmailRequest(ConfiguredBaseModel):
     token: str
 
 
-class UpdateEmailTokenExpiration(BaseModel):
+class UpdateEmailTokenExpiration(ConfiguredBaseModel):
     expiration: datetime.datetime | None
 
 
-class EmailUpdateStatus(BaseModel):
+class EmailUpdateStatus(ConfiguredBaseModel):
     newEmail: str
     expired: bool
     status: users_models.EmailHistoryEventTypeEnum
 
 
-class ResendEmailValidationRequest(BaseModel):
+class ResendEmailValidationRequest(ConfiguredBaseModel):
     email: str
 
 
-class EmailValidationRemainingResendsResponse(BaseModel):
+class EmailValidationRemainingResendsResponse(ConfiguredBaseModel):
     remainingResends: int
     counterResetDatetime: datetime.datetime | None
 
-    class Config:
-        json_encoders = {datetime.datetime: format_into_utc_date}
 
-
-class ValidatePhoneNumberRequest(BaseModel):
+class ValidatePhoneNumberRequest(ConfiguredBaseModel):
     code: str
 
 
-class SendPhoneValidationRequest(BaseModel):
+class SendPhoneValidationRequest(ConfiguredBaseModel):
     phoneNumber: str
 
 
-class PhoneValidationRemainingAttemptsRequest(BaseModel):
+class PhoneValidationRemainingAttemptsRequest(ConfiguredBaseModel):
     remainingAttempts: int
     counterResetDatetime: datetime.datetime | None
 
-    class Config:
-        json_encoders = {datetime.datetime: format_into_utc_date}
 
-
-class UserSuspensionDateResponse(BaseModel):
+class UserSuspensionDateResponse(ConfiguredBaseModel):
     date: datetime.datetime | None
 
-    class Config:
-        json_encoders = {datetime.datetime: format_into_utc_date}
 
-
-class UserSuspensionStatusResponse(BaseModel):
+class UserSuspensionStatusResponse(ConfiguredBaseModel):
     status: users_models.AccountState
 
 
-class SuspendAccountForSuspiciousLoginRequest(BaseModel):
+class SuspendAccountForSuspiciousLoginRequest(ConfiguredBaseModel):
     token: str
