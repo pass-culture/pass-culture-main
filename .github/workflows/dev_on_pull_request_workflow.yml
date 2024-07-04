@@ -105,6 +105,7 @@ jobs:
         env:
           image: pcapi-console
           tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
+          token: ${{ steps.openid-auth.outputs.access_token }}
       - name: "Summary"
         run: |
           echo "[api] folder changed : ${{ steps.check-api-changes.outputs.any_modified }}"
