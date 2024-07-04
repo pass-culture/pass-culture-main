@@ -1,8 +1,10 @@
+import datetime
 from math import isfinite
 
 import pydantic.v1 as pydantic_v1
 
 from pcapi.serialization import utils as serialization_utils
+from pcapi.utils.date import format_into_utc_date
 
 
 class BaseModel(pydantic_v1.BaseModel):
@@ -35,3 +37,4 @@ class ConfiguredBaseModel(BaseModel):
         alias_generator = serialization_utils.to_camel
         allow_population_by_field_name = True
         orm_mode = True
+        json_encoders = {datetime.datetime: format_into_utc_date}
