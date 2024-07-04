@@ -4,14 +4,36 @@ import { FormLayout } from 'components/FormLayout/FormLayout'
 import { DetailsForm } from './DetailsForm'
 import { DEFAULT_DETAILS_INTITIAL_VALUES } from './constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
+import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
+import { ActionBar } from '../ActionBar/ActionBar'
+import { useNavigate } from 'react-router-dom'
+import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 
-type DetailsScreenProps = {}
+export const DetailsScreen = (): JSX.Element => {
+  const navigate = useNavigate()
 
-export const DetailsScreen = ({}: DetailsScreenProps): JSX.Element => {
   const formik = useFormik({
     initialValues: DEFAULT_DETAILS_INTITIAL_VALUES,
     onSubmit: () => {},
   })
+  const { offer } = useIndividualOfferContext()
+
+  const handlePreviousStepOrBackToReadOnly = () => {
+    const queryParams = new URLSearchParams(location.search)
+    const queryOffererId = queryParams.get('structure')
+    const queryVenueId = queryParams.get('lieu')
+    /* istanbul ignore next: DEBT, TO FIX */
+    navigate({
+      pathname: '/offre/creation',
+      search:
+        queryOffererId && queryVenueId
+          ? `lieu=${queryVenueId}&structure=${queryOffererId}`
+          : queryOffererId && !queryVenueId
+            ? `structure=${queryOffererId}`
+            : '',
+    })
+  }
 
   return (
     <FormikProvider value={formik}>
@@ -20,6 +42,15 @@ export const DetailsScreen = ({}: DetailsScreenProps): JSX.Element => {
           <FormLayout.MandatoryInfo />
           <DetailsForm />
         </FormLayout>
+        <ActionBar
+          onClickPrevious={handlePreviousStepOrBackToReadOnly}
+          step={OFFER_WIZARD_STEP_IDS.DETAILS}
+          isDisabled={
+            formik.isSubmitting ||
+            Boolean(offer && isOfferDisabled(offer.status))
+          }
+          dirtyForm={formik.dirty || offer === null}
+        />
       </Form>
       <RouteLeavingGuardIndividualOffer
         when={formik.dirty && !formik.isSubmitting}
