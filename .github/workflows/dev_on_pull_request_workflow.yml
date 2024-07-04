@@ -98,6 +98,7 @@ jobs:
         env:
           image: pcapi
           tag: ${{ steps.pcapi-tags.outputs.checksum-tag }} 
+          token: ${{ steps.auth.outputs.access_token }}
       - name: "pcapi-console"
         id: check-console-checksum-tag
         run: ./.github/workflows/scripts/check-image-tag-exists.sh
