@@ -115,6 +115,12 @@ jobs:
           echo "[pcapi] checksum-tag : ${{ steps.pcapi-tags.outputs.checksum-tag }}"
           echo "[pcapi] image tag ${{ steps.pcapi-tags.outputs.checksum-tag }} exists : ${{ steps.check-checksum-tag.outputs.tag-exists }}"
           echo "[pcapi-console] image tag ${{ steps.pcapi-tags.outputs.checksum-tag }} exists : ${{ steps.check-console-checksum-tag.outputs.tag-exists }}"
+          if [ ${{ steps.check-checksum-tag.outputs.tag-exists }} = true ]; then
+            echo "::notice:: pcapi:${{ steps.pcapi-tags.outputs.checksum-tag }} already exists in registry. Skipping build and tests"
+          fi
+          if [ ${{ steps.check-console-checksum-tag.outputs.tag-exists }} = true ]; then
+            echo "::notice:: pcapi-console:${{ steps.pcapi-tags.outputs.checksum-tag }} already exists in registry. Skipping build and tests"
+          fi
 
   build-pcapi:
     name: "[pcapi] build docker image."
@@ -271,8 +277,8 @@ jobs:
     needs: [pcapi-init-job, push-pcapi, push-pcapi-console]
     if: |
       always() &&
-      ${{ needs.push-pcapi.result == 'success' && needs.push-pcapi-console.result == 'success' }} ||
-      ${{ needs.pcapi-init-job.outputs.checksum-console-tag-exists == 'true' && needs.pcapi-init-job.outputs.checksum-console-tag-exists == 'true' }}
+      (needs.push-pcapi.result == 'success' && needs.push-pcapi-console.result == 'success') ||
+      (needs.pcapi-init-job.outputs.checksum-console-tag-exists == 'true' && needs.pcapi-init-job.outputs.checksum-console-tag-exists == 'true')
     uses: ./.github/workflows/dev_on_workflow_deploy_pullrequests.yml
     with:
       environment: pullrequests
