@@ -224,11 +224,14 @@ jobs:
     if: github.actor == 'dependabot[bot]'
     uses: ./.github/workflows/dev_on_workflow_dependabot_auto_merge.yml
 
+  # Deploy on firebase if pro tests are ok OR no changes in pro folder 
   deploy-pro-on-firebase-pullrequest:
     name: "[PRO] Deploy PR version for validation"
     needs: [pcapi-init-job, test-pro]
     uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
-    if: always() &&  needs.pcapi-init-job.outputs.pro-changed == 'true'
+    if: |
+      always() && 
+      ${{ test-pro.result == 'success' || needs.pcapi-init-job.outputs.pro-changed == 'false' }}
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
@@ -269,6 +272,7 @@ jobs:
     name: "Deploy PullRequest to testing environment"
     needs: [pcapi-init-job, push-pcapi, push-pcapi-console]
     if: |
+      always() &&
       ${{ needs.push-pcapi.result == 'success' && needs.push-pcapi-console.result == 'success' }} ||
       ${{ needs.pcapi-init-job.outputs.checksum-console-tag-exists == 'true' && needs.pcapi-init-job.outputs.checksum-console-tag-exists == 'true' }}
     uses: ./.github/workflows/dev_on_workflow_deploy_pullrequests.yml
