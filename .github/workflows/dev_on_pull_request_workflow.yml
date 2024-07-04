@@ -114,22 +114,6 @@ jobs:
           echo "[pcapi] image tag ${{ steps.pcapi-tags.outputs.checksum-tag }} exists : ${{ steps.check-checksum-tag.outputs.tag-exists }}"
           echo "[pcapi-console] image tag ${{ steps.pcapi-tags.outputs.checksum-tag }} exists : ${{ steps.check-console-checksum-tag.outputs.tag-exists }}"
 
-  check-image-tag-exists:
-    name: "Check if image tag already exists."
-    runs-on: ubuntu-latest
-    outputs:
-      image-tag-exists: ${{ steps.check-api-changes.outputs.any_modified }}
-    needs: check-folders-changes
-    steps:
-      - uses: tyriis/docker-image-tag-exists@v2.0.0
-        with:
-          # The container image registry
-          registry: europe-west1-docker.pkg.dev/passculture-infra-prod
-          # The container image name
-          repository: pass-culture-artifact-registry
-          # The container image tag
-          tag: ${{ github.event.pull_request.head.sha }}
-  
   build-pcapi:
     name: "[pcapi] build docker image."
     needs: [pcapi-init-job]
