@@ -231,7 +231,7 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
     if: |
       always() && 
-      ${{ test-pro.result == 'success' || needs.pcapi-init-job.outputs.pro-changed == 'false' }}
+      ${{ needs.test-pro.result == 'success' || needs.pcapi-init-job.outputs.pro-changed == 'false' }}
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
