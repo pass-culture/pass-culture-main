@@ -1,9 +1,5 @@
 import { When, Then } from '@badeball/cypress-cucumber-preprocessor'
-import dayjs from 'dayjs'
-
-import customParseFormat from '../../../node_modules/dayjs/plugin/customParseFormat.js'
-
-dayjs.extend(customParseFormat)
+import { format, addDays } from 'date-fns'
 
 When('I search with the text {string}', (title: string) => {
   cy.findByPlaceholderText('Rechercher par nom d’offre ou par EAN-13').type(
@@ -28,7 +24,7 @@ When('I select {string} in offer status', (filter: string) => {
 })
 
 When('I select a date in one month', () => {
-  const dateSearch = dayjs().add(30, 'days').format('YYYY-MM-DD')
+  const dateSearch = format(addDays(new Date(), 30), 'yyyy-MM-dd')
   cy.findByLabelText('Début de la période').type(dateSearch)
   cy.findByLabelText('Fin de la période').type(dateSearch)
 })
