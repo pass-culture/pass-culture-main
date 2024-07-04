@@ -40,7 +40,7 @@
     "@algolia/autocomplete-plugin-recent-searches": "^1.17.2",
     "@firebase/analytics": "^0.10.4",
     "@firebase/app": "^0.10.5",
-    "@firebase/remote-config": "0.4.7",
+    "@firebase/remote-config": "0.4.8",
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-dropdown-menu": "^2.0.6",
     "@reduxjs/toolkit": "^2.2.6",
