@@ -10,6 +10,7 @@ import {
 import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { useCurrentUser } from 'hooks/useCurrentUser'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
+import { DetailsScreen } from 'screens/IndividualOffer/DetailsScreen/DetailsScreen'
 import { IndivualOfferLayout } from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
 import { getTitle } from 'screens/IndividualOffer/IndivualOfferLayout/utils/getTitle'
 import { selectCurrentOffererId } from 'store/user/selectors'
@@ -53,7 +54,7 @@ const Details = (): JSX.Element | null => {
 
   return (
     <IndivualOfferLayout offer={offer} title={getTitle(mode)} mode={mode}>
-      <>Détails</>
+      <DetailsScreen />
     </IndivualOfferLayout>
   )
 }
