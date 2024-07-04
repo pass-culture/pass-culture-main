@@ -6,10 +6,21 @@ import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 import { DEFAULT_DETAILS_INTITIAL_VALUES } from './constants'
+import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
+import { buildCategoryOptions, buildSubcategoryOptions } from './utils'
+import { useFormikContext } from 'formik'
+import { DetailsFormValues } from './types'
 
-type DetailsScreenProps = {}
+export const DetailsForm = (): JSX.Element => {
+  const { categories, subCategories } = useIndividualOfferContext()
 
-export const DetailsForm = ({}: DetailsScreenProps): JSX.Element => {
+  const {
+    values: { categoryId },
+  } = useFormikContext<DetailsFormValues>()
+
+  const categoryOptions = buildCategoryOptions(categories)
+  const subcategoryOptions = buildSubcategoryOptions(subCategories, categoryId)
+
   const hasAuthor = true
   const hasPerformer = true
   const hasEan = true
@@ -64,7 +75,7 @@ export const DetailsForm = ({}: DetailsScreenProps): JSX.Element => {
           <Select
             label="Catégorie"
             name="categoryId"
-            options={[]}
+            options={categoryOptions}
             defaultOption={{
               label: 'Choisir une catégorie',
               value: DEFAULT_DETAILS_INTITIAL_VALUES.categoryId,
@@ -75,7 +86,7 @@ export const DetailsForm = ({}: DetailsScreenProps): JSX.Element => {
           <Select
             label="Sous-catégorie"
             name="subcategoryId"
-            options={[]}
+            options={subcategoryOptions}
             defaultOption={{
               label: 'Choisir une sous-catégorie',
               value: DEFAULT_DETAILS_INTITIAL_VALUES.subcategoryId,

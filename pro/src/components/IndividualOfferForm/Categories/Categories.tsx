@@ -11,7 +11,6 @@ import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers/constants'
-import { SelectOption } from 'custom_types/form'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import fullMoreIcon from 'icons/full-more.svg'
 import { Select } from 'ui-kit/form/Select/Select'
@@ -28,6 +27,10 @@ import { SUBCATEGORIES_FIELDS_DEFAULT_VALUES } from './constants'
 import { MusicTypes } from './MusicTypes/MusicTypes'
 import { OfferSubtypeTag } from './OfferSubtypeTag/OfferSubtypeTag'
 import { ShowTypes } from './ShowTypes/ShowTypes'
+import {
+  buildCategoryOptions,
+  buildSubcategoryOptions,
+} from 'screens/IndividualOffer/DetailsScreen/utils'
 
 export interface CategoriesProps {
   categories: CategoryResponseModel[]
@@ -38,27 +41,6 @@ export interface CategoriesProps {
   venueList: VenueListItemResponseModel[]
   isEvent: boolean | null
 }
-
-const buildCategoryOptions = (
-  categories: CategoryResponseModel[]
-): SelectOption[] =>
-  categories
-    .map((category: CategoryResponseModel) => ({
-      value: category.id,
-      label: category.proLabel,
-    }))
-    .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
-
-const buildSubcategoryOptions = (
-  subCategories: SubcategoryResponseModel[],
-  categoryId: string
-): SelectOption[] =>
-  buildCategoryOptions(
-    subCategories.filter(
-      (subCategory: SubcategoryResponseModel) =>
-        subCategory.categoryId === categoryId
-    )
-  )
 
 export const Categories = ({
   categories,
