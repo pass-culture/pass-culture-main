@@ -6,6 +6,7 @@ Further explanations at: https://guides.etalab.gouv.fr/apis-geo/1-api-adresse.ht
 
 import csv
 import enum
+from hashlib import md5
 from io import StringIO
 import json
 import logging
@@ -16,6 +17,7 @@ import pydantic.v1 as pydantic_v1
 from pcapi import settings
 from pcapi.core.geography.constants import MAX_LATITUDE
 from pcapi.core.geography.constants import MAX_LONGITUDE
+from pcapi.utils import cache as cache_utils
 from pcapi.utils import module_loading
 from pcapi.utils import requests
 
@@ -290,6 +292,19 @@ class ApiAdresseBackend(BaseBackend):
             raise AdresseApiException("Unexpected non-JSON response from Adresse API")
         return data
 
+    def _cached_search(self, params: dict) -> dict:
+        key_template = "cache:api:addresse:search:%(hash_params)s"
+        hash_params = md5(json.dumps(params).encode("utf-8")).hexdigest()
+        retriever = lambda: json.dumps(self._search(params))
+        cached_data = cache_utils.get_from_cache(
+            retriever=retriever,
+            key_template=key_template,
+            key_args={"hash_params": hash_params},
+            expire=60 * 60 * 24 * 7,  # time between 2 PC main releases
+        )
+
+        return json.loads(str(cached_data))
+
     def _search_csv(self, files: list) -> str:
         url = f"{self.base_url}/search/csv"
         response = self._request("POST", url, files=files, timeout=60)
@@ -307,7 +322,7 @@ class ApiAdresseBackend(BaseBackend):
             "autocomplete": 0,
             "limit": 1,
         }
-        data = self._search(params=params)
+        data = self._cached_search(params=params)
         if self._is_result_empty(data):
             logger.error(
                 "No result from API Adresse for a municipality",
@@ -338,7 +353,7 @@ class ApiAdresseBackend(BaseBackend):
             "limit": 1,
         }
 
-        data = self._search(params=params)
+        data = self._cached_search(params=params)
         if self._is_result_empty(data):
             logger.info(
                 "No result from API Adresse for queried address",
@@ -398,7 +413,7 @@ class ApiAdresseBackend(BaseBackend):
             "limit": limit,
         }
 
-        data = self._search(params=params)
+        data = self._cached_search(params=params)
         if self._is_result_empty(data):
             raise NoResultException
 

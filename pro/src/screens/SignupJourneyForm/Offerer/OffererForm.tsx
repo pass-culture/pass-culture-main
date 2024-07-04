@@ -28,7 +28,10 @@ export const OffererForm = ({
   }
 
   return (
-    <FormLayout.Section title="Renseignez le SIRET de votre structure">
+    <FormLayout.Section>
+      <h1 className={styles['title']}>
+        Renseignez le SIRET de votre structure
+      </h1>
       <FormLayout.MandatoryInfo className={styles['mandatory-info']} />
       <FormLayout.Row>
         <TextInput

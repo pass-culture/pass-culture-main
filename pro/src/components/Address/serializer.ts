@@ -1,5 +1,6 @@
 import { AdresseData } from 'apiClient/adresse/types'
-import { AutocompleteItemProps } from 'ui-kit/form/shared/AutocompleteList/type'
+
+import { AutocompleteItemProps } from './Address'
 
 export const serializeAdressData = (
   adressData: AdresseData[]

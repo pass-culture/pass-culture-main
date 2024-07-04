@@ -19,6 +19,7 @@ from pcapi.core.educational.adage_backends.serialize import serialize_collective
 from pcapi.core.educational.api import adage as educational_api_adage
 import pcapi.core.educational.api.national_program as national_program_api
 from pcapi.core.educational.exceptions import AdageException
+from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import HasImageMixin
 from pcapi.core.educational.utils import get_image_from_url
 from pcapi.core.mails import transactional as transactional_mails
@@ -172,7 +173,7 @@ def list_collective_offers_for_pro_user(
 def list_public_collective_offers(
     required_id: int,
     venue_id: int | None = None,
-    status: offer_mixin.OfferStatus | None = None,
+    status: offer_mixin.CollectiveOfferStatus | None = None,
     period_beginning_date: str | None = None,
     period_ending_date: str | None = None,
     limit: int = 500,
@@ -488,8 +489,8 @@ def create_collective_offer_public(
     collective_stock = educational_models.CollectiveStock(
         collectiveOffer=collective_offer,
         beginningDatetime=body.beginning_datetime,
-        startDatetime=body.start_datetime,
-        endDatetime=body.end_datetime,
+        startDatetime=body.start_datetime or body.beginning_datetime,
+        endDatetime=body.end_datetime or body.beginning_datetime,
         bookingLimitDatetime=body.booking_limit_datetime,
         price=body.total_price,
         numberOfTickets=body.number_of_tickets,
@@ -791,3 +792,7 @@ def get_offer_coordinates(offer: AnyCollectiveOffer) -> tuple[float | Decimal, f
         return (None, None)
 
     return latitude, longitude
+
+
+def query_has_any_archived(collective_query: BaseQuery) -> bool:
+    return collective_query.filter(CollectiveOffer.isArchived).count() > 0

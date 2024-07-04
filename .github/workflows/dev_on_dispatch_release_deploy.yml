@@ -59,6 +59,7 @@ jobs:
       teleport_kubernetes_cluster: passculture-metier-ehp
       deploy_api: true
       deploy_pro: true
+      doc-api-entrypoint: 'api/documentation'
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -76,6 +77,7 @@ jobs:
       teleport_kubernetes_cluster: passculture-metier-ehp
       deploy_api: true
       deploy_pro: true
+      doc-api-entrypoint: 'api/documentation'
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}

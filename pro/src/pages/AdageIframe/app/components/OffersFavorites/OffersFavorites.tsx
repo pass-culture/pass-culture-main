@@ -58,7 +58,7 @@ export const OffersFavorites = () => {
 
   return (
     <>
-      <h1>Mes Favoris</h1>
+      <h1 className={styles['title']}>Mes Favoris</h1>
       {favoriteOffers.length === 0 ? (
         <OffersFavoritesNoResult />
       ) : (

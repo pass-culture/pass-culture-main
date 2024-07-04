@@ -19,7 +19,7 @@ type CollectiveOfferItemProps = {
   disabled: boolean
   isSelected: boolean
   offer: CollectiveOfferResponseModel
-  selectOffer: (offerId: number, selected: boolean) => void
+  selectOffer: (offer: CollectiveOfferResponseModel) => void
   editionOfferLink: string
   venue: ListOffersVenueResponseModel
   audience: Audience
@@ -40,11 +40,10 @@ export const CollectiveOfferItem = ({
     <>
       <CheckboxCell
         offerName={offer.name}
-        offerId={offer.id}
         status={offer.status}
         disabled={disabled}
         isSelected={isSelected}
-        selectOffer={selectOffer}
+        selectOffer={() => selectOffer(offer)}
       />
 
       <ThumbCell offer={offer} editionOfferLink={editionOfferLink} />

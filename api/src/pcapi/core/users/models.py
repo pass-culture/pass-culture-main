@@ -42,6 +42,7 @@ if typing.TYPE_CHECKING:
     from pcapi.core.offers.models import Mediation
     from pcapi.core.offers.models import Offer
     from pcapi.core.permissions.models import BackOfficeUserProfile
+    from pcapi.core.reactions.models import Reaction
 
 
 VOID_FIRST_NAME = ""
@@ -163,7 +164,7 @@ class User(PcObject, Base, Model, DeactivableMixin):
         "DiscordUser", uselist=False, back_populates="user", cascade="all, delete-orphan", passive_deletes=True
     )
     email: str = sa.Column(sa.String(120), nullable=False, unique=True)
-    externalIds = sa.Column(postgresql.json.JSONB, nullable=True, default={}, server_default="{}")
+    externalIds: dict = sa.Column(postgresql.json.JSONB, nullable=True, default={}, server_default="{}")
     extraData: dict = sa.Column(
         MutableDict.as_mutable(postgresql.json.JSONB), nullable=True, default={}, server_default="{}"
     )
@@ -211,7 +212,7 @@ class User(PcObject, Base, Model, DeactivableMixin):
     gdprUserDataExtract: orm.Mapped["GdprUserDataExtract"] = orm.relationship(
         "GdprUserDataExtract", back_populates="user", foreign_keys="GdprUserDataExtract.userId"
     )
-
+    reactions: list["Reaction"] = orm.relationship("Reaction", back_populates="user", uselist=True)
     # unaccent is not immutable, so it can't be used for an index.
     # Searching by sa.func.unaccent(something) does not use the index and causes a sequential scan.
     # immutable_unaccent is a wrapper so that index uses an immutable function.
@@ -439,7 +440,7 @@ class User(PcObject, Base, Model, DeactivableMixin):
             key=lambda action: action.actionDate.isoformat() if action.actionDate else "",
         )
 
-    @property
+    @hybrid_property
     def suspension_reason(self) -> constants.SuspensionReason | None:
         """
         Reason for the active suspension.
@@ -457,7 +458,30 @@ class User(PcObject, Base, Model, DeactivableMixin):
                 return constants.SuspensionReason(reason)
         return None
 
-    @property
+    @suspension_reason.expression  # type: ignore[no-redef]
+    def suspension_reason(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+        import pcapi.core.history.models as history_models
+
+        return (
+            sa.select(history_models.ActionHistory.extraData["reason"])
+            .select_from(history_models.ActionHistory)
+            .where(
+                sa.and_(
+                    history_models.ActionHistory.userId == User.id,
+                    history_models.ActionHistory.actionType.in_(
+                        [history_models.ActionType.USER_SUSPENDED, history_models.ActionType.USER_UNSUSPENDED]
+                    ),
+                )
+            )
+            .order_by(history_models.ActionHistory.actionDate.desc())
+            .limit(1)
+            .correlate(User)
+            .scalar_subquery()
+        )
+
+    suspension_reason_expression: sa.orm.Mapped["str | None"] = sa.orm.query_expression()
+
+    @hybrid_property
     def suspension_date(self) -> datetime | None:
         """
         Date and time when the inactive account was suspended for the last time.
@@ -472,6 +496,29 @@ class User(PcObject, Base, Model, DeactivableMixin):
         ):
             return suspension_action_history[-1].actionDate
         return None
+
+    @suspension_date.expression  # type: ignore[no-redef]
+    def suspension_date(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+        import pcapi.core.history.models as history_models
+
+        return (
+            sa.select(history_models.ActionHistory.actionDate)
+            .select_from(history_models.ActionHistory)
+            .where(
+                sa.and_(
+                    history_models.ActionHistory.userId == User.id,
+                    history_models.ActionHistory.actionType.in_(
+                        [history_models.ActionType.USER_SUSPENDED, history_models.ActionType.USER_UNSUSPENDED]
+                    ),
+                )
+            )
+            .order_by(history_models.ActionHistory.actionDate.desc())
+            .limit(1)
+            .correlate(User)
+            .scalar_subquery()
+        )
+
+    suspension_date_expression: sa.orm.Mapped["datetime | None"] = sa.orm.query_expression()
 
     @property
     def account_state(self) -> AccountState:
@@ -488,12 +535,13 @@ class User(PcObject, Base, Model, DeactivableMixin):
             last_suspension_action = suspension_action_history[-1]
 
             if last_suspension_action.actionType == history_models.ActionType.USER_SUSPENDED:
-                if self.suspension_reason == constants.SuspensionReason.DELETED:
-                    return AccountState.DELETED
-                if self.suspension_reason == constants.SuspensionReason.UPON_USER_REQUEST:
-                    return AccountState.SUSPENDED_UPON_USER_REQUEST
-                if self.suspension_reason == constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER:
-                    return AccountState.SUSPICIOUS_LOGIN_REPORTED_BY_USER
+                match self.suspension_reason:
+                    case constants.SuspensionReason.DELETED:
+                        return AccountState.DELETED
+                    case constants.SuspensionReason.UPON_USER_REQUEST:
+                        return AccountState.SUSPENDED_UPON_USER_REQUEST
+                    case constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER:
+                        return AccountState.SUSPICIOUS_LOGIN_REPORTED_BY_USER
 
                 return AccountState.SUSPENDED
 
@@ -965,3 +1013,7 @@ class GdprUserDataExtract(PcObject, Base, Model):
     @expirationDate.expression  # type: ignore [no-redef]
     def expirationDate(cls):  # pylint: disable=no-self-argument
         return cls.dateCreated + timedelta(days=7)
+
+    @property
+    def is_expired(self) -> bool:
+        return datetime.utcnow() > self.expirationDate

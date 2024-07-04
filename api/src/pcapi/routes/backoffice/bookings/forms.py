@@ -15,6 +15,9 @@ from pcapi.routes.backoffice.forms import utils
 from pcapi.routes.backoffice.forms.empty import BatchForm
 
 
+DEPOSIT_DEFAULT_VALUE = "all"
+
+
 class BookingStatus(enum.Enum):
     BOOKED = "Réservée"
     CONFIRMED = "Confirmée"
@@ -159,11 +162,20 @@ class GetCollectiveBookingListForm(BaseBookingListForm):
 
 
 class GetIndividualBookingListForm(BaseBookingListForm):
+    category = fields.PCSelectMultipleField(
+        "Catégories", choices=utils.choices_from_enum(categories.CategoryIdLabelEnum)
+    )
     cancellation_reason = fields.PCSelectMultipleField(
         "Raison d'annulation",
         choices=utils.choices_from_enum(
             bookings_models.BookingCancellationReasons, formatter=filters.format_booking_cancellation_reason
         ),
+    )
+    deposit = fields.PCSelectField(
+        "État du crédit",
+        choices=((DEPOSIT_DEFAULT_VALUE, "Tous"), ("active", "Actif"), ("expired", "Expiré")),
+        default=DEPOSIT_DEFAULT_VALUE,
+        validators=(wtforms.validators.Optional(),),
     )
 
     def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
@@ -171,6 +183,8 @@ class GetIndividualBookingListForm(BaseBookingListForm):
         self.q.label.text = "Code contremarque ou liste, nom d'offre, email ou ID (offre, jeune ou résa)"
         self.status.choices = utils.choices_from_enum(BookingStatus)
 
+        self._fields.move_to_end("deposit")
+        self._fields.move_to_end("limit")
         self._fields.move_to_end("offerer")
         self._fields.move_to_end("venue")
         self._fields.move_to_end("category")
@@ -179,15 +193,21 @@ class GetIndividualBookingListForm(BaseBookingListForm):
         self._fields.move_to_end("cashflow_batches")
 
     def is_empty(self) -> bool:
-        return super().is_empty() and not self.category.data and not self.cancellation_reason.data
+        return (
+            super().is_empty()
+            and not self.category.data
+            and not self.cancellation_reason.data
+            and (not self.deposit.data or self.deposit.data == DEPOSIT_DEFAULT_VALUE)
+        )
 
     @property
     def is_single_venue_with_optional_dates(self) -> bool:
-        return super().is_single_venue_with_optional_dates and not self.category.data and not self.cancellation_reason
-
-    category = fields.PCSelectMultipleField(
-        "Catégories", choices=utils.choices_from_enum(categories.CategoryIdLabelEnum)
-    )
+        return (
+            super().is_single_venue_with_optional_dates
+            and not self.category.data
+            and not self.cancellation_reason
+            and not self.deposit
+        )
 
 
 class CancelCollectiveBookingForm(FlaskForm):

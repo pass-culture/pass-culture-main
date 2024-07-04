@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 from flask_jwt_extended import JWTManager
-from flask_wtf.csrf import CSRFProtect
 from sentry_sdk import set_tag
 
 from pcapi import settings
 from pcapi.flask_app import app
 from pcapi.flask_app import setup_metrics
+from pcapi.routes.backoffice.scss import preprocess_scss
 
 
 app.config["SESSION_COOKIE_HTTPONLY"] = True
@@ -22,8 +22,6 @@ app.config["JWT_ACCESS_TOKEN_EXPIRES"] = settings.JWT_ACCESS_TOKEN_EXPIRES
 app.config["WTF_CSRF_ENABLED"] = False
 
 jwt = JWTManager(app)
-csrf = CSRFProtect()
-csrf.init_app(app)
 
 
 with app.app_context():
@@ -31,12 +29,14 @@ with app.app_context():
     from pcapi.routes import install_all_routes
     import pcapi.utils.login_manager
 
+    preprocess_scss(settings.BACKOFFICE_WATCH_SCSS_CHANGE)
     install_all_routes(app)
 
     setup_metrics(app)
 
 
 if __name__ == "__main__":
+    ip = settings.FLASK_IP
     port = settings.FLASK_PORT
     is_debugger_enabled = settings.IS_DEV and settings.DEBUG_ACTIVATED
     if is_debugger_enabled:
@@ -53,4 +53,4 @@ if __name__ == "__main__":
             print("🎉 Code debugger attached, enjoy debugging 🎉", flush=True)
 
     set_tag("pcapi.app_type", "app")
-    app.run(host="0.0.0.0", port=port, debug=True, use_reloader=not is_debugger_enabled)
+    app.run(host=ip, port=port, debug=True, use_reloader=not is_debugger_enabled)

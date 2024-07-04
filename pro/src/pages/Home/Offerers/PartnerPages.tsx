@@ -15,7 +15,7 @@ import styles from './PartnerPages.module.scss'
 
 export const SAVED_VENUE_ID_KEY = 'homepageSelectedVenueId'
 
-const getSavedVenueId = (
+export const getSavedVenueId = (
   venues: GetOffererVenueResponseModel[]
 ): string | null => {
   const isLocalStorageAvailable = localStorageAvailable()

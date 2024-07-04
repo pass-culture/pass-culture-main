@@ -59,7 +59,11 @@ export const Reimbursements = (): JSX.Element => {
   }, [paramOffererId])
 
   if (isOfferersLoading) {
-    return <Spinner />
+    return (
+      <AppLayout>
+        <Spinner />
+      </AppLayout>
+    )
   }
 
   return (

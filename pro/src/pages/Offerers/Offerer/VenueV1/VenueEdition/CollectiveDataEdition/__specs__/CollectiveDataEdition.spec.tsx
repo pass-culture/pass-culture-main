@@ -321,7 +321,9 @@ describe('CollectiveDataEdition', () => {
       await userEvent.click(interventionAreaField)
       await waitFor(() =>
         expect(
-          screen.queryByText(mainlandInterventionOption.label)
+          screen.queryByRole('option', {
+            name: mainlandInterventionOption.label,
+          })
         ).toBeInTheDocument()
       )
       const mainlandOption = screen.getByLabelText(
@@ -361,14 +363,16 @@ describe('CollectiveDataEdition', () => {
       const interventionAreaField = screen.getByLabelText(/Zone de mobilité/)
       await userEvent.click(interventionAreaField)
 
-      const mainlandOption = await screen.findByLabelText(
-        'France métropolitaine'
-      )
+      const mainlandOption = screen.getByRole('checkbox', {
+        name: 'France métropolitaine',
+      })
       expect(mainlandOption).toBeInTheDocument()
 
       // check all mainland options
       for await (const option of mainlandOptions) {
-        await userEvent.click(screen.getByLabelText(option.label))
+        await userEvent.click(
+          screen.getByRole('checkbox', { name: option.label })
+        )
       }
 
       expect(mainlandOption).toBeChecked()
@@ -379,7 +383,9 @@ describe('CollectiveDataEdition', () => {
       }
 
       await userEvent.click(screen.getByLabelText(mainlandOptions[0].label))
-      expect(screen.getByLabelText('France métropolitaine')).not.toBeChecked()
+      expect(
+        screen.getByRole('option', { name: 'France métropolitaine' })
+      ).not.toBeChecked()
     })
   })
 

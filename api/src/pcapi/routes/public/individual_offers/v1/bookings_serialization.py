@@ -6,6 +6,7 @@ import pydantic.v1 as pydantic_v1
 from pcapi.core.bookings import models as booking_models
 from pcapi.core.finance import utils as finance_utils
 from pcapi.routes import serialization
+from pcapi.routes.public.documentation_constants.fields import fields
 from pcapi.routes.public.individual_offers.v1.base_serialization import IndexPaginationQueryParams
 from pcapi.utils import date as date_utils
 
@@ -80,13 +81,11 @@ class GetBookingResponse(serialization.ConfiguredBaseModel):
 
 
 class GetFilteredBookingsRequest(IndexPaginationQueryParams):
-    offer_id: int = pydantic_v1.Field(description="Id of the bookings' offer.")
-    price_category_id: int | None = pydantic_v1.Field(description="Price category of the bookings' stock.")
-    stock_id: int | None = pydantic_v1.Field(description="Id of the bookings' stock.")
-    status: booking_models.BookingStatus | None = pydantic_v1.Field(
-        description="Booking Status.\n\n* `CONFIRMED`: The bookings is confirmed.\n* `USED`: The bookings has been used.\n* `CANCELLED`: The bookings has been cancelled.\n* `REIMBURSED` The bookings has been reimbursed."
-    )
-    beginning_datetime: datetime | None = pydantic_v1.Field(description="Timezone aware datetime of the event.")
+    offer_id: int = fields.OFFER_ID
+    price_category_id: int | None = fields.PRICE_CATEGORY_ID
+    stock_id: int | None = fields.STOCK_ID
+    status: booking_models.BookingStatus | None = fields.BOOKING_STATUS
+    beginning_datetime: datetime | None = fields.BEGINNING_DATETIME
 
 
 class GetFilteredBookingsResponse(serialization.ConfiguredBaseModel):

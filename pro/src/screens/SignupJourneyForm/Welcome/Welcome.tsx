@@ -8,7 +8,7 @@ import styles from './Welcome.module.scss'
 export const Welcome = (): JSX.Element => {
   return (
     <div className={styles['welcome-layout']}>
-      <div className={styles['title']}>Finalisez votre inscription</div>
+      <h1 className={styles['title']}>Finalisez votre inscription</h1>
       <div className={styles['informations']}>
         Avant de commencer, munissez-vous du numéro de SIRET de votre structure.{' '}
       </div>

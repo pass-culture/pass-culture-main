@@ -1,5 +1,4 @@
 import { useFormikContext } from 'formik'
-import React from 'react'
 
 import { GetVenueResponseModel } from 'apiClient/v1'
 import { Button } from 'ui-kit/Button/Button'
@@ -26,10 +25,10 @@ export const VenueFormActionBar = ({ venue }: VenueFormActionBarProps) => {
           isExternal: false,
         }}
       >
-        Annuler et quitter
+        Annuler
       </ButtonLink>
       <Button type="submit" isLoading={isSubmitting}>
-        Enregistrer et quitter
+        Enregistrer
       </Button>
     </div>
   )

@@ -1,69 +1,99 @@
-{% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
-{% extends "layouts/connected.html" %}
-{% block page %}
-  <div class="pt-3 px-5">
-    <h2 class="fw-light">Synchronisation partenaires techniques</h2>
-    <button class="btn btn-outline-primary lead fw-bold mt-2"
-            data-bs-toggle="modal"
-            data-bs-target="#create-provider"
-            type="button">Créer un partenaire</button>
-    {{ build_lazy_modal(url_for("backoffice_web.providers.get_create_provider_form") , "create-provider") }}
-    <div>
-      <table class="table mb-4">
-        <thead>
-          <tr>
-            <th scope="col"></th>
-            <th scope="col">ID</th>
-            <th scope="col">Partenaire technique</th>
-            <th scope="col">SIREN</th>
-            <th scope="col">Ville</th>
-            <th scope="col">Code postal</th>
-            <th scope="col">Nombre de clés d'API</th>
-            <th scope="col">URL du logo</th>
-            <th scope="col">Actif pour les pros</th>
-            <th scope="col">Actif</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for provider in providers %}
-            <tr>
-              <td>
-                <div class="dropdown">
-                  <button type="button"
-                          data-bs-toggle="dropdown"
-                          aria-expanded="false"
-                          class="btn p-0">
-                    <i class="bi bi-three-dots-vertical"></i>
-                  </button>
-                  <ul class="dropdown-menu">
-                    <li class="dropdown-item p-0">
-                      <a class="btn btn-sm d-block w-100 text-start px-3"
-                         data-bs-toggle="modal"
-                         data-bs-target="#update-provider-{{ provider.id }}">Modifier le partenaire</a>
-                    </li>
-                  </ul>
-                  {{ build_lazy_modal(url_for("backoffice_web.providers.get_update_provider_form", provider_id=provider.id) , "update-provider-" + provider.id | string) }}
-                </div>
-              </td>
-              <td>{{ provider.id }}</td>
-              <td>{{ provider.name }}</td>
-              <td>
-                {% if provider.offererProvider is not none %}{{ provider.offererProvider.offerer.siren }}{% endif %}
-              </td>
-              <td>
-                {% if provider.offererProvider is not none %}{{ provider.offererProvider.offerer.city }}{% endif %}
-              </td>
-              <td>
-                {% if provider.offererProvider is not none %}{{ provider.offererProvider.offerer.postalCode }}{% endif %}
-              </td>
-              <td>{{ provider.apiKeys | length }}</td>
-              <td>{{ provider.logoUrl | empty_string_if_null }}</td>
-              <td>{{ provider.enabledForPro | format_bool }}</td>
-              <td>{{ provider.isActive | format_bool }}</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+{% import "components/clipboard.html" as clipboard %}
+{% from "components/generic_modal.html" import build_modal_form with context %}
+{% import "components/links.html" as links %}
+{% from "components/presentation/details/tabs.html" import build_details_tab %}
+{% from "components/presentation/details/tabs.html" import build_details_tabs_wrapper %}
+{% from "components/presentation/details/tabs.html" import build_details_tab_content %}
+{% from "components/presentation/details/tabs.html" import build_details_tabs_content_wrapper %}
+{% from "components/turbo/spinner.html" import build_loading_spinner with context %}
+{% extends "layouts/standard.html" %}
+{% block title %}Partenaires techniques{% endblock %}
+{% block main_content %}
+  <div class="row row-cols-1 g-4 py-3">
+    <div class="col">
+      <div class="card shadow">
+        <div class="card-body">
+          <div class="d-flex flex-fill align-items-center">
+            <h2 class="card-title text-primary">{{ provider.name }}</h2>
+            <div class="d-flex row-reverse justify-content-end flex-grow-1">
+              {% if edit_form %}
+                {% set edit_provider_aria_described_by_id = random_hash() %}
+                {{ build_modal_form("edit-provider", url_for("backoffice_web.providers.update_provider", provider_id=provider.id) , edit_form, "Modifier les informations", "Modifier les informations du partenaire technique", "Enregistrer") }}
+              {% endif %}
+            </div>
+          </div>
+          <p class="card-subtitle text-muted mb-3 h5">
+            Provider ID : {{ provider.id }} {{ clipboard.copy_to_clipboard(provider.id, "Copier l'ID du partenaire technique") }}
+          </p>
+          <div class="row pt-3">
+            <div class="col-4">
+              <div class="fs-6">
+                <p class="mb-1">
+                  <span class="fw-bold">SIREN :</span>
+                  {% if provider.offererProvider is not none %}{{ provider.offererProvider.offerer.siren }}{% endif %}
+                </p>
+                <p class="mb-1">
+                  <span class="fw-bold">Code postal :</span>
+                  {% if provider.offererProvider is not none %}{{ provider.offererProvider.offerer.postalCode }}{% endif %}
+                </p>
+                <p class="mb-1">
+                  <span class="fw-bold">Ville :</span>
+                  {% if provider.offererProvider is not none %}{{ provider.offererProvider.offerer.city }}{% endif %}
+                </p>
+                <p class="mb-1">
+                  <span class="fw-bold">Actif pour les pros :</span>
+                  {{ provider.enabledForPro | format_bool_badge }}
+                </p>
+                <p class="mb-1">
+                  <span class="fw-bold">Actif :</span>
+                  {{ provider.isActive | format_bool_badge }}
+                </p>
+                <p class="mb-1">
+                  <span class="fw-bold">Nombre de clés d'API :</span>
+                  {{ provider.apiKeys | length }}
+                </p>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="fs-6">
+                <p class="mb-1">
+                  <span class="fw-bold">URL du logo :</span>
+                  {{ provider.logoUrl | empty_string_if_null }}
+                </p>
+                <p class="mb-1">
+                  <span class="fw-bold">URL de réservation :</span>
+                  {{ provider.bookingExternalUrl | empty_string_if_null }}
+                </p>
+                <p class="mb-1">
+                  <span class="fw-bold">URL d'annulation :</span>
+                  {{ provider.cancelExternalUrl | empty_string_if_null }}
+                </p>
+                <p class="mb-1">
+                  <span class="fw-bold">URL de notification :</span>
+                  {{ provider.notificationExternalUrl | empty_string_if_null }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-4">
+        <turbo-frame id="venue_providers_count_frame" src="{{ url_for("backoffice_web.providers.get_stats", provider_id=provider.id) }}">
+        {{ build_loading_spinner() }}
+        </turbo-frame>
+      </div>
+      <div class="mt-4">
+        {% call build_details_tabs_wrapper() %}
+          {{ build_details_tab("venues", "Lieux synchronisés", active_tab == 'venues') }}
+        {% endcall %}
+        {% call build_details_tabs_content_wrapper() %}
+          {% call build_details_tab_content("venues", active_tab == 'venues') %}
+            <turbo-frame data-turbo="false" id="provider_venues_frame" loading="lazy" src="{{ url_for("backoffice_web.providers.get_venues", provider_id=provider.id) }}">
+            {{ build_loading_spinner() }}
+            </turbo-frame>
+          {% endcall %}
+        {% endcall %}
+      </div>
     </div>
   </div>
-{% endblock %}
+{% endblock main_content %}

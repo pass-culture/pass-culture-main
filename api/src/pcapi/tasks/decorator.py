@@ -38,7 +38,7 @@ def task(
 
         @wraps(f)
         def delay(payload: pydantic_v1.BaseModel) -> None:
-            if settings.IS_RUNNING_TESTS or settings.IS_REBUILD_STAGING:
+            if settings.IS_JOB_SYNCHRONOUS:
                 f(payload)
                 return
 

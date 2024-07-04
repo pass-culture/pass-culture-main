@@ -1,4 +1,5 @@
 import datetime
+from functools import partial
 import json
 import logging
 import typing
@@ -8,7 +9,6 @@ import sentry_sdk
 import sqlalchemy as sa
 from sqlalchemy.orm import joinedload
 
-from pcapi.analytics.amplitude import events as amplitude_events
 from pcapi.connectors.ems import EMSAPIException
 from pcapi.core import search
 from pcapi.core.bookings import exceptions as bookings_exceptions
@@ -22,6 +22,7 @@ from pcapi.core.educational import utils as educational_utils
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveStock
+from pcapi.core.external import batch
 from pcapi.core.external.attributes.api import update_external_pro
 from pcapi.core.external.attributes.api import update_external_user
 from pcapi.core.external.batch import track_offer_booked_event
@@ -52,6 +53,9 @@ from pcapi.core.users.repository import get_and_lock_user
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models.feature import FeatureToggle
+from pcapi.repository import is_managed_transaction
+from pcapi.repository import mark_transaction_as_invalid
+from pcapi.repository import on_commit
 from pcapi.repository import repository
 from pcapi.repository import transaction
 import pcapi.serialization.utils as serialization_utils
@@ -60,6 +64,7 @@ from pcapi.tasks.serialization.external_api_booking_notification_tasks import Bo
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import ExternalApiBookingNotificationRequest
 from pcapi.utils import queue
 import pcapi.utils.cinema_providers as cinema_providers_utils
+from pcapi.utils.requests import exceptions as requests_exceptions
 from pcapi.workers import push_notification_job
 from pcapi.workers import user_emails_job
 
@@ -148,6 +153,7 @@ def get_individual_bookings(user: User) -> list[Booking]:
         .options(joinedload(Booking.activationCode))
         .options(joinedload(Booking.externalBookings))
         .options(joinedload(Booking.deposit).load_only(finance_models.Deposit.type))
+        .options(joinedload(Booking.user).joinedload(User.reactions))
     ).all()
 
 
@@ -211,17 +217,6 @@ def _book_offer(
         if is_activation_code_applicable:
             validation.check_activation_code_available(stock)
 
-        # FIXME (dbaty, 2020-10-20): if we directly set relations (for
-        # example with `booking.user = beneficiary`) instead of foreign keys,
-        # the session tries to add the object when `get_user_expenses()`
-        # is called because autoflush is enabled. As such, the PostgreSQL
-        # exceptions (tooManyBookings and insufficientFunds) may raise at
-        # this point and will bubble up. If we want them to be caught, we
-        # have to set foreign keys, so that the session is NOT autoflushed
-        # in `get_user_expenses` and is only committed in `repository.save()`
-        # where exceptions are caught. Since we are using flask-sqlalchemy,
-        # I don't think that we should use autoflush, nor should we use
-        # the `pcapi.repository.repository` module.
         booking = Booking(
             userId=beneficiary.id,
             stockId=stock.id,
@@ -340,7 +335,6 @@ def book_offer(
             "stock_quantity": stock.quantity,
         },
     )
-    amplitude_events.track_book_offer_event(booking)
     track_offer_booked_event(beneficiary.id, stock.offer)
     _send_external_booking_notification_if_necessary(booking, BookingAction.BOOK)
 
@@ -467,14 +461,17 @@ def _cancel_booking(
         },
         technical_message_id="booking.cancelled",
     )
-    amplitude_events.track_cancel_booking_event(booking, reason)
+    batch.track_booking_cancellation(booking)
     _send_external_booking_notification_if_necessary(booking, BookingAction.CANCEL)
 
     update_external_user(booking.user)
     update_external_pro(booking.venue.bookingEmail)
-    search.async_index_offer_ids(
-        [booking.stock.offerId],
-        reason=search.IndexationReason.BOOKING_CANCELLATION,
+    on_commit(
+        partial(
+            search.async_index_offer_ids,
+            [booking.stock.offerId],
+            reason=search.IndexationReason.BOOKING_CANCELLATION,
+        )
     )
     return True
 
@@ -515,7 +512,10 @@ def _execute_cancel_booking(
             ) as e:
                 if raise_if_error:
                     raise
-                db.session.rollback()
+                if is_managed_transaction():
+                    mark_transaction_as_invalid()
+                else:
+                    db.session.rollback()
                 logger.info(
                     "%s: %s",
                     type(e).__name__,
@@ -665,7 +665,9 @@ def cancel_booking_for_fraud(booking: Booking) -> None:
 
 def cancel_booking_on_user_requested_account_suspension(booking: Booking) -> None:
     validation.check_booking_can_be_cancelled(booking)
-    _cancel_booking(booking, BookingCancellationReasons.BENEFICIARY)
+    cancelled = _cancel_booking(booking, BookingCancellationReasons.BENEFICIARY)
+    if not cancelled:
+        return
     logger.info(
         "Cancelled booking on user-requested account suspension",
         extra={"booking": booking.id},
@@ -687,7 +689,6 @@ def mark_as_used(booking: Booking, validation_author_type: BookingValidationAuth
         extra={"booking_id": booking.id},
         technical_message_id="booking.used",
     )
-    amplitude_events.track_mark_as_used_event(booking)
 
     update_external_user(booking.user)
 
@@ -712,12 +713,13 @@ def mark_as_used_with_uncancelling(booking: Booking, validation_author_type: Boo
         and booking.deposit.expirationDate < datetime.datetime.utcnow()
     ):
         raise bookings_exceptions.BookingDepositCreditExpired()
-    with transaction():
-        if booking.status == BookingStatus.CANCELLED:
-            booking.uncancel_booking_set_used()
-            stock = offers_repository.get_and_lock_stock(stock_id=booking.stockId)
-            stock.dnBookedQuantity += booking.quantity
-            db.session.add(stock)
+
+    if booking.status == BookingStatus.CANCELLED:
+        booking.uncancel_booking_set_used()
+        stock = offers_repository.get_and_lock_stock(stock_id=booking.stockId)
+        stock.dnBookedQuantity += booking.quantity
+        db.session.add(stock)
+        db.session.flush()
     booking.validationAuthorType = validation_author_type
     db.session.add(booking)
     finance_api.add_event(
@@ -725,7 +727,7 @@ def mark_as_used_with_uncancelling(booking: Booking, validation_author_type: Boo
         booking=booking,
     )
 
-    db.session.commit()
+    db.session.flush()
     logger.info("Booking was uncancelled and marked as used", extra={"bookingId": booking.id})
 
     update_external_user(booking.user)
@@ -871,7 +873,7 @@ def auto_mark_as_used_after_event() -> None:
     now = datetime.datetime.utcnow()
     threshold = now - constants.AUTO_USE_AFTER_EVENT_TIME_DELAY
 
-    # FIXME (dbaty, 2023-07-07): Revisit with SQLAlchemy 2.
+    # Revisit with SQLAlchemy 2.
     #
     # I tried to update and select bookings in a single query, like this:
     #     WITH updated AS (
@@ -1057,36 +1059,25 @@ def cancel_unstored_external_bookings() -> None:
             )
             break
 
-        external_bookings = ExternalBooking.query.filter_by(barcode=external_booking_info["barcode"]).all()
+        barcode = external_booking_info["barcode"]
+        external_bookings = ExternalBooking.query.filter_by(barcode=barcode).all()
         if not external_bookings:
-            if (
-                external_booking_info.get("booking_type")
-                and external_booking_info["booking_type"] == constants.RedisExternalBookingType.EVENT
-            ):
-                provider = providers_repository.get_provider_enabled_for_pro_by_id(
-                    external_booking_info["cancel_event_info"]["provider_id"]
-                )
-                stock = offers_models.Stock.query.filter_by(
-                    id=external_booking_info["cancel_event_info"]["stock_id"]
-                ).one_or_none()
-
+            booking_type = external_booking_info.get("booking_type")
+            if booking_type == constants.RedisExternalBookingType.EVENT:
+                provider_id = external_booking_info["cancel_event_info"]["provider_id"]
+                provider = providers_repository.get_provider_enabled_for_pro_by_id(provider_id)
+                stock_id = external_booking_info["cancel_event_info"]["stock_id"]
+                stock = offers_models.Stock.query.filter_by(id=stock_id).one_or_none()
                 if not stock or not provider:
                     logger.error("Couldn't find stock or provider for external booking", extra=external_booking_info)
                     raise external_bookings_exceptions.ExternalBookingException(
                         "Error while canceling unstored ticket. Barcode: ",
-                        str(external_booking_info["barcode"]),
+                        str(barcode),
                     )
-                external_bookings_api.cancel_event_ticket(
-                    provider,
-                    stock,
-                    [external_booking_info["barcode"]],
-                    False,
-                )
+                external_bookings_api.cancel_event_ticket(provider, stock, [barcode], False)
             else:
-                external_bookings_api.cancel_booking(
-                    int(external_booking_info["venue_id"]),
-                    [external_booking_info["barcode"]],
-                )
+                venue_id = int(external_booking_info["venue_id"])
+                external_bookings_api.cancel_booking(venue_id, [barcode])
 
 
 def cancel_ems_external_bookings() -> None:
@@ -1117,4 +1108,16 @@ def cancel_ems_external_bookings() -> None:
                 extra={"token": token, "cinema_id": cinema_id},
             )
             continue
-        client.cancel_booking_with_tickets(tickets)
+
+        try:
+            client.cancel_booking_with_tickets(tickets)
+        except (requests_exceptions.ReadTimeout, requests_exceptions.Timeout):
+            logger.info(
+                "Fail to cancel external booking due to timeout", extra={"token": token, "cinema_id": cinema_id}
+            )
+        except EMSAPIException as exc:
+            logger.info(
+                "Fail to cancel external booking due to EMSAPIException: %s",
+                str(exc),
+                extra={"token": token, "cinema_id": cinema_id},
+            )

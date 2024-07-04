@@ -991,6 +991,33 @@ class GetCappedOffersForFiltersTest:
 
 
 @pytest.mark.usefixtures("db_session")
+class GetOffersByPublicationDateTest:
+    def test_get_offers_by_publication_date(self):
+        factories.OfferFactory()  # Offer not in the future, i.e. no publication_date
+
+        publication_date = datetime.datetime.utcnow().replace(minute=0, second=0, microsecond=0) + datetime.timedelta(
+            days=30
+        )
+
+        offer_before = factories.OfferFactory()
+        publication_date_before = publication_date - datetime.timedelta(hours=1)
+        factories.FutureOfferFactory(offerId=offer_before.id, publicationDate=publication_date_before)
+
+        offer_to_publish_1 = factories.OfferFactory()
+        factories.FutureOfferFactory(offerId=offer_to_publish_1.id, publicationDate=publication_date)
+        offer_to_publish_2 = factories.OfferFactory()
+        factories.FutureOfferFactory(offerId=offer_to_publish_2.id, publicationDate=publication_date)
+
+        offer_after = factories.OfferFactory()
+        publication_date_after = publication_date + datetime.timedelta(hours=1)
+        factories.FutureOfferFactory(offerId=offer_after.id, publicationDate=publication_date_after)
+
+        query = repository.get_offers_by_publication_date(publication_date=publication_date)
+        assert query.count() == 2
+        assert query.all() == [offer_to_publish_1, offer_to_publish_2]
+
+
+@pytest.mark.usefixtures("db_session")
 class GetOffersByIdsTest:
     def test_filter_on_user_offerer(self):
         offer1 = factories.OfferFactory()
@@ -1441,6 +1468,23 @@ class GetFilteredCollectiveOffersTest:
             formats=[subcategories.EacFormat.CONCERT],
         )
         assert offers.one() == collective_offer
+
+    def test_get_collective_offers_archived(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+
+        _collective_offer_unarchived = educational_factories.CollectiveOfferFactory(
+            venue__managingOfferer=user_offerer.offerer
+        )
+        collective_offer_archived = educational_factories.CollectiveOfferFactory(
+            venue__managingOfferer=user_offerer.offerer, dateArchived=datetime.datetime(year=2000, month=1, day=1)
+        )
+
+        offers = repository.get_collective_offers_by_filters(
+            user_offerer.userId,
+            user_is_admin=False,
+            status=educational_models.CollectiveOfferDisplayedStatus.ARCHIVED.value,
+        )
+        assert offers.one() == collective_offer_archived
 
 
 @pytest.mark.usefixtures("db_session")

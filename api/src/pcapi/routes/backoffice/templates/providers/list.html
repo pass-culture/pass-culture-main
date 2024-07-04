@@ -1,0 +1,56 @@
+{% import "components/links.html" as links %}
+{% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
+{% extends "layouts/connected.html" %}
+{% block page %}
+  <div class="pt-3 px-5">
+    <h2 class="fw-light">Synchronisation partenaires techniques</h2>
+    <button class="btn btn-outline-primary lead fw-bold mt-2"
+            data-bs-toggle="modal"
+            data-bs-target="#create-provider"
+            type="button">Créer un partenaire</button>
+    {{ build_lazy_modal(url_for("backoffice_web.providers.get_create_provider_form") , "create-provider") }}
+    <div>
+      <table class="table mb-4">
+        <thead>
+          <tr>
+            <th scope="col"></th>
+            <th scope="col">ID</th>
+            <th scope="col">Partenaire technique</th>
+            <th scope="col">Lieux synchronisés au partenaire</th>
+            <th scope="col">SIREN</th>
+            <th scope="col">Ville</th>
+            <th scope="col">Code postal</th>
+            <th scope="col">Nombre de clés d'API</th>
+            <th scope="col">URL du logo</th>
+            <th scope="col">Actif pour les pros</th>
+            <th scope="col">Actif</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in rows %}
+            {% set provider = row.Provider %}
+            <tr>
+              <th scope="row"></th>
+              <td>{{ provider.id }}</td>
+              <td>{{ links.build_provider_name_to_details_link(provider) }}</td>
+              <td>{{ row.is_active_count | format_venue_provider_count }}</td>
+              <td>
+                {% if provider.offererProvider is not none %}{{ provider.offererProvider.offerer.siren }}{% endif %}
+              </td>
+              <td>
+                {% if provider.offererProvider is not none %}{{ provider.offererProvider.offerer.city }}{% endif %}
+              </td>
+              <td>
+                {% if provider.offererProvider is not none %}{{ provider.offererProvider.offerer.postalCode }}{% endif %}
+              </td>
+              <td>{{ provider.apiKeys | length }}</td>
+              <td>{{ provider.logoUrl | empty_string_if_null }}</td>
+              <td>{{ provider.enabledForPro | format_bool_badge }}</td>
+              <td>{{ provider.isActive | format_bool_badge }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}

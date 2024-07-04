@@ -32,11 +32,11 @@ import { VenueEditionFormScreen } from './VenueEditionFormScreen'
 import { VenueEditionHeader } from './VenueEditionHeader'
 
 export const VenueEdition = (): JSX.Element | null => {
-  const [selectedVenueId, setSelectedVenueId] = useState('')
   const { offererId, venueId } = useParams<{
     offererId: string
     venueId: string
   }>()
+  const [selectedVenueId, setSelectedVenueId] = useState(venueId ?? '')
   const location = useLocation()
   const dispatch = useDispatch()
   const isNewSideBarNavigation = useIsNewInterfaceActive()

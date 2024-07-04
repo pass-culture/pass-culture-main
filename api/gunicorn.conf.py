@@ -2,6 +2,7 @@ import logging
 import os
 import pathlib
 
+import gunicorn.config
 import prometheus_client
 import prometheus_client.registry
 from prometheus_flask_exporter.multiprocess import GunicornPrometheusMetrics
@@ -65,6 +66,7 @@ def post_fork(server, worker):
 
 
 def pre_request(worker, req):
+    gunicorn.config.PreRequest.default(worker, req)
     if ENABLE_FLASK_PROMETHEUS_EXPORTER:
         worker.available_threads.dec()
 

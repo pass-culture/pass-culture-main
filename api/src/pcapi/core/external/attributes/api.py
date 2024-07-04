@@ -23,7 +23,7 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repository
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
-from pcapi.models.offer_mixin import OfferStatus
+from pcapi.models.offer_mixin import CollectiveOfferStatus
 from pcapi.repository import on_commit
 
 
@@ -344,7 +344,7 @@ def _check_if_pro_attribute_has_collective_offers(user: users_models.User) -> bo
             offerers_models.Offerer.isValidated,
             offerers_models.UserOfferer.isValidated,
             offerers_models.UserOfferer.userId == user.id,
-            educational_models.CollectiveOffer.status.in_([OfferStatus.ACTIVE, OfferStatus.SOLD_OUT]),  # type: ignore[attr-defined]
+            educational_models.CollectiveOffer.status.in_([CollectiveOfferStatus.ACTIVE, CollectiveOfferStatus.SOLD_OUT]),  # type: ignore[attr-defined]
         )
         .exists()
     )
@@ -359,7 +359,7 @@ def _check_if_pro_attribute_has_collective_offers(user: users_models.User) -> bo
             offerers_models.Offerer.isValidated,
             offerers_models.UserOfferer.isValidated,
             offerers_models.UserOfferer.userId == user.id,
-            educational_models.CollectiveOfferTemplate.status == OfferStatus.ACTIVE,
+            educational_models.CollectiveOfferTemplate.status == CollectiveOfferStatus.ACTIVE,
         )
         .exists()
     )

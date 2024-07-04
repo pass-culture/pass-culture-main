@@ -33,7 +33,7 @@ def get_yearly_revenue(venue_id: int) -> Decimal:
         -- Add 1 hour for UTC -> CET conversion
         and date_part('year', "dateUsed" + interval '1 hour') = date_part('year', now() + interval '1 hour');
     """
-    rows = db.session.execute(query, {"venue_id": venue_id}).fetchone()
+    rows = db.session.execute(sa.text(query), {"venue_id": venue_id}).fetchone()
     return rows[0]
 
 
@@ -117,7 +117,7 @@ def move_siret(
         db.session.begin()
         for query in queries:
             db.session.execute(
-                query,
+                sa.text(query),
                 {
                     "source_id": source_venue.id,
                     "target_id": target_venue.id,
@@ -205,7 +205,7 @@ def _delete_ongoing_pricings(venue: offerers_models.Venue) -> None:
 
     for query in queries:
         db.session.execute(
-            query,
+            sa.text(query),
             {
                 "venue_id": venue.id,
                 "pending_finance_event_status": models.FinanceEventStatus.PENDING.value,

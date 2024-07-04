@@ -73,13 +73,14 @@ describe('route CollectiveOffers', () => {
       it('should filter offers given status filter when clicking on "Appliquer"', async () => {
         await renderOffers()
 
+        const statusSelect = screen.getByRole('combobox', {
+          name: 'Statut Nouveau',
+        })
+        await userEvent.selectOptions(statusSelect, 'Expirée')
+
         await userEvent.click(
-          screen.getByRole('button', {
-            name: 'Statut Afficher ou masquer le filtre par statut',
-          })
+          screen.getByRole('button', { name: 'Rechercher' })
         )
-        await userEvent.click(screen.getByLabelText('Expirée'))
-        await userEvent.click(screen.getByText('Appliquer'))
 
         await waitFor(() => {
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
@@ -103,13 +104,14 @@ describe('route CollectiveOffers', () => {
           .mockResolvedValueOnce([])
         await renderOffers()
 
+        const statusSelect = screen.getByRole('combobox', {
+          name: 'Statut Nouveau',
+        })
+        await userEvent.selectOptions(statusSelect, 'Expirée')
+
         await userEvent.click(
-          screen.getByRole('button', {
-            name: 'Statut Afficher ou masquer le filtre par statut',
-          })
+          screen.getByRole('button', { name: 'Rechercher' })
         )
-        await userEvent.click(screen.getByLabelText('Expirée'))
-        await userEvent.click(screen.getByText('Appliquer'))
 
         await waitFor(() => {
           expect(

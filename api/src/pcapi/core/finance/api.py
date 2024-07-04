@@ -68,6 +68,7 @@ import pcapi.core.users.constants as users_constants
 import pcapi.core.users.models as users_models
 from pcapi.domain import reimbursement
 from pcapi.models import db
+from pcapi.models import feature
 from pcapi.repository import transaction
 from pcapi.tasks import finance_tasks
 from pcapi.utils import human_ids
@@ -96,14 +97,18 @@ CASHFLOW_BATCH_LABEL_PREFIX = "VIR"
 def get_pricing_ordering_date(
     booking: bookings_models.Booking | educational_models.CollectiveBooking,
 ) -> datetime.datetime:
-    stock: offers_models.Stock | educational_models.CollectiveStock = (
-        booking.stock if isinstance(booking, bookings_models.Booking) else booking.collectiveStock
-    )
+    if isinstance(booking, bookings_models.Booking):
+        eventDatetime = booking.stock.beginningDatetime
+    else:
+        if feature.FeatureToggle.USE_END_DATE_FOR_COLLECTIVE_PRICING.is_active():
+            eventDatetime = booking.collectiveStock.endDatetime
+        else:
+            eventDatetime = booking.collectiveStock.beginningDatetime
     # IMPORTANT: if you change this, you must also adapt the SQL query
     # in `core.offerers.api.link_venue_to_pricing_point()`
     return max(
         get_pricing_point_link(booking).timespan.lower,
-        stock.beginningDatetime or booking.dateUsed,
+        eventDatetime or booking.dateUsed,
         booking.dateUsed,
     )
 
@@ -581,23 +586,18 @@ def _price_event(event: models.FinanceEvent) -> models.Pricing:
             ),
         ]
     elif event.motive == models.FinanceEventMotive.INCIDENT_COMMERCIAL_GESTURE:
-        original_pricing = models.Pricing.query.filter_by(
-            status=models.PricingStatus.CANCELLED,
-            booking=individual_booking,
-            collectiveBooking=collective_booking,
-        ).one()
-        rule = find_reimbursement_rule(original_pricing.customRuleId or original_pricing.standardRule)
-        amount = -rule.apply(booking, event.bookingFinanceIncident.commercial_gesture_amount)  # outgoing, thus negative
+        rule = reimbursement.CommercialGestureReimbursementRule()
+        amount = -event.bookingFinanceIncident.commercial_gesture_amount  # outgoing, thus negative
         offerer_revenue_amount = -event.bookingFinanceIncident.commercial_gesture_amount
         pricing_booking_id = None
         pricing_collective_booking_id = None
         lines = [
             models.PricingLine(
-                amount=offerer_revenue_amount,
+                amount=amount,
                 category=models.PricingLineCategory.OFFERER_REVENUE,
             ),
             models.PricingLine(
-                amount=amount - offerer_revenue_amount,
+                amount=0,
                 category=models.PricingLineCategory.OFFERER_CONTRIBUTION,
             ),
         ]
@@ -700,11 +700,20 @@ def _cancel_event_pricing(
     return pricing
 
 
-def _delete_dependent_pricings(event: models.FinanceEvent, log_message: str) -> None:
+def _delete_dependent_pricings(
+    event: models.FinanceEvent, log_message: str, pricing_points_overriding_pricing_ordering: typing.Iterable[int] = ()
+) -> None:
     """Delete pricings for events that should be priced after the
     requested ``event``.
 
     See note in the module docstring for further details.
+
+    pricing_points_overriding_pricing_ordering : a list of pricing point ids.
+    In a script, you might have to add new pricings to a cutoff period that already
+    has reimbursed pricings that can't be deleted (and so you can't compute the new
+    pricing order). But sometimes, the order would not change the pricing value (because
+    there is a custom reimbursement rule, or the pricing point's revenue would not change enough to
+    change the reimbursement rule, etc), so you can add the pricing point to the list, and the pricings will be moved as you needed.
     """
     revenue_period_start, revenue_period_end = _get_revenue_period(event.valueDate)
 
@@ -727,7 +736,11 @@ def _delete_dependent_pricings(event: models.FinanceEvent, log_message: str) -> 
     events_already_priced = {pricing.eventId for pricing in pricings}
     for pricing in pricings:
         if pricing.status not in models.DELETABLE_PRICING_STATUSES:
-            if event.pricingPointId in settings.FINANCE_OVERRIDE_PRICING_ORDERING_ON_PRICING_POINTS:
+            assert event.pricingPointId  # helps mypy
+            if event.pricingPointId in (
+                pricing_points_overriding_pricing_ordering
+                or settings.FINANCE_OVERRIDE_PRICING_ORDERING_ON_PRICING_POINTS
+            ):
                 pricing_ids.remove(pricing.id)
                 events_already_priced.remove(pricing.eventId)
                 logger.info(
@@ -863,6 +876,10 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
     # Store now otherwise SQLAlchemy will make a SELECT to fetch the
     # id again after each COMMIT.
     batch_id = batch.id
+    if feature.FeatureToggle.USE_END_DATE_FOR_COLLECTIVE_PRICING.is_active():
+        collective_cutoff_time = educational_models.CollectiveStock.endDatetime
+    else:
+        collective_cutoff_time = educational_models.CollectiveStock.beginningDatetime
     logger.info("Started to generate cashflows for batch %d", batch_id)
     filters = (
         models.Pricing.status == models.PricingStatus.VALIDATED,
@@ -885,7 +902,7 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
             ),
             sqla.and_(
                 models.Pricing.collectiveBookingId.is_not(None),
-                educational_models.CollectiveStock.beginningDatetime < batch.cutoff,
+                collective_cutoff_time < batch.cutoff,
             ),
             models.FinanceEvent.bookingFinanceIncidentId.is_not(None),
         ),
@@ -1245,6 +1262,7 @@ def _write_csv(
 
 def _generate_bank_accounts_file(cutoff: datetime.datetime) -> pathlib.Path:
     header = (
+        "Lieux liés au compte bancaire",
         "Identifiant des coordonnées bancaires",
         "SIREN de la structure",
         "Nom de la structure - Libellé des coordonnées bancaires",
@@ -1260,9 +1278,19 @@ def _generate_bank_accounts_file(cutoff: datetime.datetime) -> pathlib.Path:
             )
         )
         .join(models.BankAccount.offerer)
+        .join(models.BankAccount.venueLinks)
+        .group_by(
+            models.BankAccount.id,
+            models.BankAccount.label,
+            models.BankAccount.iban,
+            models.BankAccount.bic,
+            offerers_models.Offerer.name,
+            offerers_models.Offerer.siren,
+        )
         .order_by(models.BankAccount.id)
     ).with_entities(
         models.BankAccount.id,
+        sqla_func.array_agg(offerers_models.VenueBankAccountLink.venueId.distinct()).label("venue_ids"),
         offerers_models.Offerer.name.label("offerer_name"),
         offerers_models.Offerer.siren.label("offerer_siren"),
         models.BankAccount.label.label("label"),
@@ -1271,6 +1299,7 @@ def _generate_bank_accounts_file(cutoff: datetime.datetime) -> pathlib.Path:
     )
 
     row_formatter = lambda row: (
+        ", ".join(str(venue_id) for venue_id in sorted(row.venue_ids)),
         human_ids.humanize(row.id),
         _clean_for_accounting(row.offerer_siren),
         _clean_for_accounting(f"{row.offerer_name} - {row.label}"),
@@ -2488,7 +2517,7 @@ def edit_reimbursement_rule(
         db.session.expire(rule)
         raise
     db.session.add(rule)
-    db.session.commit()
+    db.session.flush()
     return rule
 
 
@@ -2924,16 +2953,16 @@ def create_finance_commercial_gesture(
 
     booking_finance_incidents_to_create = []
     total_bookings_quantity = sum(booking.quantity for booking in bookings)
-    total_amount = sum(booking.total_amount for booking in bookings)
+    total_amount = sum(utils.to_eurocents(booking.total_amount) for booking in bookings)
     for booking in bookings:
         # all bookings in a commercial gesture must be from the same stock → they all have the same amount
-        new_total_amount = total_amount - ((amount / total_bookings_quantity) * booking.quantity)
+        new_total_amount = total_amount - ((utils.to_eurocents(amount) * booking.quantity) // total_bookings_quantity)
         booking_finance_incidents_to_create.append(
             models.BookingFinanceIncident(
                 bookingId=booking.id,
                 incidentId=incident.id,
                 beneficiaryId=booking.userId,
-                newTotalAmount=utils.to_eurocents(new_total_amount),
+                newTotalAmount=new_total_amount,
             )
         )
 
@@ -3096,7 +3125,6 @@ def validate_finance_overpayment_incident(
 
 def validate_finance_commercial_gesture(
     finance_incident: models.FinanceIncident,
-    force_debit_note: bool,
     author: users_models.User,
 ) -> None:
     incident_validation_date = datetime.datetime.utcnow()
@@ -3122,7 +3150,7 @@ def validate_finance_commercial_gesture(
             )
 
     finance_incident.status = models.IncidentStatus.VALIDATED
-    finance_incident.forceDebitNote = force_debit_note
+    finance_incident.forceDebitNote = False
     db.session.add(finance_incident)
 
     history_api.add_action(
@@ -3130,11 +3158,7 @@ def validate_finance_commercial_gesture(
         author=author,
         venue=finance_incident.venue,
         finance_incident=finance_incident,
-        comment=(
-            "Génération d'une note de débit à la prochaine échéance."
-            if force_debit_note
-            else "Récupération sur les prochaines réservations."
-        ),
+        comment="Récupération sur les prochaines réservations.",
         linked_incident_id=finance_incident.id,
     )
 

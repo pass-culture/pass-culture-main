@@ -22,8 +22,7 @@ from pcapi.models import db
 from pcapi.tasks import gdpr_tasks
 from pcapi.tasks.serialization import gdpr_tasks as serializers
 
-
-STORAGE_FOLDER = settings.LOCAL_STORAGE_DIR / settings.GCP_GDPR_EXTRACT_BUCKET / settings.GCP_GDPR_EXTRACT_FOLDER
+from tests.test_utils import StorageFolderManager
 
 
 pytestmark = [
@@ -198,7 +197,7 @@ class GetUpdateExtractTest:
                 gdpr_tasks._get_and_update_extract(extract_id)
 
 
-class ExtractBeneficiaryDataTest:
+class ExtractBeneficiaryDataTest(StorageFolderManager):
     # 1 extract + user + admin
     # 2 login device history
     # 3 user_email_history
@@ -211,16 +210,7 @@ class ExtractBeneficiaryDataTest:
     expected_queries = 9
     # 1 json
     output_files_count = 1
-
-    def teardown_method(self) -> None:
-        """clear extracts after each tests"""
-        try:
-            for child in STORAGE_FOLDER.iterdir():
-                if not child.is_file():
-                    continue
-                child.unlink()
-        except FileNotFoundError:
-            pass
+    storage_folder = settings.LOCAL_STORAGE_DIR / settings.GCP_GDPR_EXTRACT_BUCKET / settings.GCP_GDPR_EXTRACT_FOLDER
 
     def test_json_output(self) -> None:
         user = generate_beneficiary()
@@ -231,7 +221,7 @@ class ExtractBeneficiaryDataTest:
         with assert_num_queries(self.expected_queries):
             gdpr_tasks.extract_beneficiary_data(payload)
 
-        file_path = STORAGE_FOLDER / f"{extract.id}.zip"
+        file_path = self.storage_folder / f"{extract.id}.zip"
 
         json_file_name = f"{user.firstName}_{user.lastName}.json"
         with ZipFile(file_path, mode="r") as zip_pointer:

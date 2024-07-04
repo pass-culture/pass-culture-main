@@ -3,6 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
 import {
+  CollectiveOfferStatus,
   ListOffersOfferResponseModel,
   OfferStatus,
   SharedCurrentUserResponseModel,
@@ -147,6 +148,7 @@ describe('screen Offers', () => {
 
     renderOffers({
       ...props,
+      audience: Audience.INDIVIDUAL,
       offers: [firstOffer, secondOffer],
     })
 
@@ -160,6 +162,7 @@ describe('screen Offers', () => {
 
     renderOffers({
       ...props,
+      audience: Audience.INDIVIDUAL,
       currentUser: { ...props.currentUser, isAdmin: false },
       offers: [firstOffer, secondOffer],
     })
@@ -173,6 +176,7 @@ describe('screen Offers', () => {
   it('should display total number of offers in plural if multiple offers', () => {
     renderOffers({
       ...props,
+      audience: Audience.INDIVIDUAL,
       offers: [...offersRecap, listOffersOfferFactory()],
     })
 
@@ -181,7 +185,11 @@ describe('screen Offers', () => {
   })
 
   it('should display total number of offers in singular if one or no offer', async () => {
-    renderOffers({ ...props, offers: offersRecap })
+    renderOffers({
+      ...props,
+      audience: Audience.INDIVIDUAL,
+      offers: offersRecap,
+    })
 
     screen.getByLabelText(offersRecap[0].name)
     expect(await screen.findByText('1 offre')).toBeInTheDocument()
@@ -190,7 +198,11 @@ describe('screen Offers', () => {
   it('should display 500+ for total number of offers if more than 500 offers are fetched', async () => {
     offersRecap = Array.from({ length: 501 }, () => listOffersOfferFactory())
 
-    renderOffers({ ...props, offers: offersRecap })
+    renderOffers({
+      ...props,
+      audience: Audience.INDIVIDUAL,
+      offers: offersRecap,
+    })
 
     screen.getByLabelText(offersRecap[0].name)
     expect(await screen.findByText('500+ offres')).toBeInTheDocument()
@@ -236,12 +248,6 @@ describe('screen Offers', () => {
     expect(venueSelect).toBeInTheDocument()
   })
 
-  it('should render creation mode filter with default option selected', () => {
-    renderOffers(props)
-
-    expect(screen.getByDisplayValue('Tous')).toBeInTheDocument()
-  })
-
   it('should render creation mode filter with given creation mode selected', () => {
     renderOffers({
       ...props,
@@ -265,7 +271,9 @@ describe('screen Offers', () => {
 
   it('should allow user to select imported creation mode filter', async () => {
     renderOffers(props)
-    const creationModeSelect = screen.getByDisplayValue('Tous')
+    const creationModeSelect = screen.getByRole('combobox', {
+      name: 'Mode de création',
+    })
 
     await userEvent.selectOptions(creationModeSelect, 'imported')
 
@@ -282,7 +290,11 @@ describe('screen Offers', () => {
   it('should not display status filters modal', () => {
     renderOffers(props)
 
-    expect(screen.getByText('Statut')).toBeInTheDocument()
+    expect(
+      screen.getByRole('combobox', {
+        name: 'Statut Nouveau',
+      })
+    ).toBeInTheDocument()
     expect(screen.queryByText('Afficher les offres')).not.toBeInTheDocument()
     expect(screen.queryByLabelText('Tous')).not.toBeInTheDocument()
     expect(screen.queryByLabelText('Publiée')).not.toBeInTheDocument()
@@ -296,34 +308,11 @@ describe('screen Offers', () => {
     expect(screen.queryByLabelText('Refusée')).not.toBeInTheDocument()
   })
 
-  it('should display status filters with "Toutes" as default value when clicking on "Statut" filter icon', async () => {
-    renderOffers(props)
-
-    await userEvent.click(
-      screen.getByRole('button', {
-        name: 'Statut Afficher ou masquer le filtre par statut',
-      })
-    )
-
-    expect(screen.queryByText('Afficher les offres')).toBeInTheDocument()
-    expect(screen.getByLabelText('Toutes')).toBeChecked()
-    expect(screen.getByLabelText('Publiée')).not.toBeChecked()
-    expect(screen.getByLabelText('Désactivée')).not.toBeChecked()
-    expect(screen.getByLabelText('Épuisée')).not.toBeChecked()
-    expect(screen.getByLabelText('Expirée')).not.toBeChecked()
-    expect(screen.getByLabelText('Brouillon')).not.toBeChecked()
-    expect(screen.getByLabelText('Validation en attente')).not.toBeChecked()
-    expect(screen.getByLabelText('Refusée')).not.toBeChecked()
-    expect(
-      screen.queryByText('Appliquer', { selector: 'button' })
-    ).toBeInTheDocument()
-  })
-
   it('should hide status filters when clicking outside the modal', async () => {
     renderOffers(props)
     await userEvent.click(
-      screen.getByRole('button', {
-        name: 'Statut Afficher ou masquer le filtre par statut',
+      screen.getByRole('combobox', {
+        name: 'Statut Nouveau',
       })
     )
 
@@ -349,115 +338,42 @@ describe('screen Offers', () => {
       props.currentUser.isAdmin = true
     })
 
-    describe('status filter can only be used with an offerer or a venue filter for performance reasons', () => {
-      it('should disable status filters when no venue nor offerer filter is selected', () => {
-        renderOffers(props)
+    it('should not be able to check all offers for performance reasons', () => {
+      renderOffers({ ...props, isRestrictedAsAdmin: true })
 
-        expect(
-          screen.getByRole('button', {
-            name: 'Statut Afficher ou masquer le filtre par statut',
-          })
-        ).toBeDisabled()
+      const selectAllOffersCheckbox = screen.getByLabelText('Tout sélectionner')
+      expect(selectAllOffersCheckbox).toBeDisabled()
+    })
+
+    it('should be able to check all offers because, a venue being filtered, there are no performance issues', async () => {
+      renderOffers({
+        ...props,
+        isRestrictedAsAdmin: false,
       })
 
-      it('should disable status filters when no venue filter is selected, even if one venue filter is currently applied', async () => {
-        renderOffers({
+      await userEvent.selectOptions(screen.getByLabelText('Lieu'), 'JI')
+
+      await userEvent.click(screen.getByText('Rechercher'))
+
+      const selectAllOffersCheckbox =
+        await screen.findByLabelText('Tout sélectionner')
+      expect(selectAllOffersCheckbox).not.toBeDisabled()
+    })
+
+    it('should be able to check all offers because, a offerer being filtered, there are no performance issues', () => {
+      renderOffers(
+        {
           ...props,
           initialSearchFilters: {
             ...DEFAULT_SEARCH_FILTERS,
-            venueId: 'JI',
+            offererId: 'A4',
           },
-        })
+        },
+        { user: currentUser }
+      )
 
-        await userEvent.selectOptions(
-          screen.getByDisplayValue('Ma venue'),
-          'all'
-        )
-
-        expect(
-          screen.getByRole('button', {
-            name: 'Statut Afficher ou masquer le filtre par statut',
-          })
-        ).toBeDisabled()
-      })
-
-      it('should enable status filters when venue is selected but filter is not applied', async () => {
-        renderOffers(props)
-        const venueOptionToSelect = screen.getByRole('option', {
-          name: proVenues[0].name,
-        })
-
-        await userEvent.selectOptions(
-          screen.getByLabelText('Lieu'),
-          venueOptionToSelect
-        )
-
-        expect(
-          screen.getByRole('button', {
-            name: 'Statut Afficher ou masquer le filtre par statut',
-          })
-        ).not.toBeDisabled()
-      })
-    })
-
-    describe('select all offers checkbox', () => {
-      it('should disable select all checkbox when no venue nor offerer filter is applied', () => {
-        renderOffers(props, { user: currentUser })
-
-        const selectAllOffersCheckbox =
-          screen.getByLabelText('Tout sélectionner')
-        expect(selectAllOffersCheckbox).toBeDisabled()
-      })
-
-      it('should disable select all checkbox when venue filter is not set', async () => {
-        renderOffers(props, { user: currentUser })
-
-        await userEvent.selectOptions(screen.getByLabelText('Lieu'), 'all')
-
-        await userEvent.click(screen.getByText('Rechercher'))
-
-        const selectAllOffersCheckbox =
-          screen.getByLabelText('Tout sélectionner')
-        expect(selectAllOffersCheckbox).toBeDisabled()
-      })
-
-      it('should enable select all checkbox when venue filter is applied', async () => {
-        renderOffers(
-          {
-            ...props,
-            initialSearchFilters: {
-              ...DEFAULT_SEARCH_FILTERS,
-              venueId: 'IJ',
-            },
-          },
-          { user: currentUser }
-        )
-
-        await userEvent.selectOptions(screen.getByLabelText('Lieu'), 'JI')
-
-        await userEvent.click(screen.getByText('Rechercher'))
-
-        const selectAllOffersCheckbox =
-          await screen.findByLabelText('Tout sélectionner')
-        expect(selectAllOffersCheckbox).not.toBeDisabled()
-      })
-
-      it('should enable select all checkbox when offerer filter is applied', () => {
-        renderOffers(
-          {
-            ...props,
-            initialSearchFilters: {
-              ...DEFAULT_SEARCH_FILTERS,
-              offererId: 'A4',
-            },
-          },
-          { user: currentUser }
-        )
-
-        const selectAllOffersCheckbox =
-          screen.getByLabelText('Tout sélectionner')
-        expect(selectAllOffersCheckbox).not.toBeDisabled()
-      })
+      const selectAllOffersCheckbox = screen.getByLabelText('Tout sélectionner')
+      expect(selectAllOffersCheckbox).not.toBeDisabled()
     })
   })
 
@@ -478,7 +394,7 @@ describe('screen Offers', () => {
       }),
     ]
 
-    renderOffers({ ...props, offers })
+    renderOffers({ ...props, offers, audience: Audience.INDIVIDUAL })
 
     expect(screen.queryByLabelText(offers[0].name)).toBeDisabled()
     expect(screen.queryByLabelText(offers[1].name)).toBeDisabled()
@@ -491,6 +407,19 @@ describe('screen Offers', () => {
     renderOffers(props)
 
     expect(screen.queryByText('Créer une offre')).toBeNull()
+  })
+
+  it('should not have "Tout Sélectionner" checked when there is no offer to be checked', () => {
+    const offers = [
+      collectiveOfferFactory({
+        isActive: false,
+        status: CollectiveOfferStatus.PENDING,
+      }),
+    ]
+
+    renderOffers({ ...props, audience: Audience.COLLECTIVE, offers })
+
+    expect(screen.getByLabelText('Tout sélectionner')).not.toBeChecked()
   })
 
   it('should display the button to create an offer when user is not an admin', async () => {
@@ -546,7 +475,7 @@ describe('screen Offers', () => {
         }),
       ]
 
-      renderOffers({ ...props, offers })
+      renderOffers({ ...props, offers, audience: Audience.INDIVIDUAL })
 
       await userEvent.click(screen.getByLabelText('Tout sélectionner'))
       await userEvent.click(screen.getByText('Publier'))
@@ -583,7 +512,7 @@ describe('screen Offers', () => {
 
     it('should display success message activate inactive collective offer', async () => {
       const offers = [
-        listOffersOfferFactory({
+        collectiveOfferFactory({
           isActive: false,
           hasBookingLimitDatetimesPassed: false,
         }),
@@ -605,13 +534,15 @@ describe('screen Offers', () => {
         listOffersOfferFactory({
           isActive: false,
           status: OfferStatus.REJECTED,
+          isEditable: false,
         }),
         listOffersOfferFactory({
           status: OfferStatus.PENDING,
+          isEditable: false,
         }),
       ]
 
-      renderOffers({ ...props, offers })
+      renderOffers({ ...props, offers, audience: Audience.INDIVIDUAL })
 
       const firstOfferCheckbox = screen.getByLabelText(offers[0].name)
       const secondOfferCheckbox = screen.getByLabelText(offers[1].name)
@@ -635,13 +566,20 @@ describe('screen Offers', () => {
   })
 
   it('should display the collective offers format', () => {
-    renderOffers({ ...props, audience: Audience.COLLECTIVE })
-
+    renderOffers({
+      ...props,
+      offers: [collectiveOfferFactory()],
+      audience: Audience.COLLECTIVE,
+    })
     expect(screen.getByRole('combobox', { name: 'Format' }))
   })
 
   it('should filter on the format', async () => {
-    renderOffers({ ...props, audience: Audience.COLLECTIVE })
+    renderOffers({
+      ...props,
+      offers: [collectiveOfferFactory()],
+      audience: Audience.COLLECTIVE,
+    })
 
     const formatSelect = screen.getByRole('combobox', { name: 'Format' })
 
@@ -683,5 +621,25 @@ describe('screen Offers', () => {
       expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
     })
     expect(screen.queryByText(/Créer une offre/)).not.toBeInTheDocument()
+  })
+
+  it('should display onboarding banner for archivage only in collective offer list', () => {
+    renderOffers({ ...props, audience: Audience.COLLECTIVE, offers: [] })
+
+    expect(
+      screen.getByText(
+        'C’est nouveau ! Vous pouvez désormais archiver vos offres collectives.'
+      )
+    ).toBeInTheDocument()
+  })
+
+  it('should not display onboarding banner for archivage when we are in individual offer list ', () => {
+    renderOffers(props)
+
+    expect(
+      screen.queryByText(
+        'C’est nouveau ! Vous pouvez désormais archiver vos offres collectives.'
+      )
+    ).not.toBeInTheDocument()
   })
 })

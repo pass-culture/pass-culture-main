@@ -102,9 +102,9 @@ class CreateVenueTest:
         }
 
     def test_basics(self):
-        offerer = offerers_factories.OffererFactory()
-        data = venues_serialize.PostVenueBodyModel(**self.base_data(offerer))
-        offerers_api.create_venue(data)
+        user_offerer = offerers_factories.UserOffererFactory()
+        data = venues_serialize.PostVenueBodyModel(**self.base_data(user_offerer.offerer))
+        offerers_api.create_venue(data, user_offerer.user)
 
         venue = offerers_models.Venue.query.one()
         assert venue.street == "rue du test"
@@ -113,18 +113,25 @@ class CreateVenueTest:
         assert venue.postalCode == "75000"
         assert venue.latitude == 1
         assert venue.longitude == 1
-        assert venue.managingOfferer == offerer
+        assert venue.managingOfferer == user_offerer.offerer
         assert venue.name == "La Venue"
         assert venue.bookingEmail == "venue@example.com"
         assert venue.dmsToken
         assert venue.current_pricing_point_id == venue.id
 
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.VENUE_CREATED
+        assert action.authorUser == user_offerer.user
+        assert action.user is None
+        assert action.offerer is None
+        assert action.venue == venue
+
     def test_venue_with_no_siret_has_no_pricing_point(self):
-        offerer = offerers_factories.OffererFactory()
-        data = self.base_data(offerer) | {"siret": None, "comment": "no siret"}
+        user_offerer = offerers_factories.UserOffererFactory()
+        data = self.base_data(user_offerer.offerer) | {"siret": None, "comment": "no siret"}
         data = venues_serialize.PostVenueBodyModel(**data)
 
-        offerers_api.create_venue(data)
+        offerers_api.create_venue(data, user_offerer.user)
 
         venue = offerers_models.Venue.query.one()
         assert venue.siret is None
@@ -456,302 +463,6 @@ class DeleteVenueTest:
         assert educational_models.AdageVenueAddress.query.count() == 0
 
 
-class EditVenueTest:
-    @patch("pcapi.core.search.async_index_offers_of_venue_ids")
-    def when_changes_on_public_name_algolia_indexing_is_triggered(self, mocked_async_index_offers_of_venue_ids):
-        # Given
-        user = users_factories.UserFactory()
-        venue = offerers_factories.VenueFactory(
-            name="old names",
-            publicName="old name",
-            city="old City",
-        )
-
-        # When
-        json_data = {"publicName": "my new name"}
-        offerers_api.update_venue(venue, author=user, **json_data)
-
-        # Then
-        mocked_async_index_offers_of_venue_ids.assert_called_once_with(
-            [venue.id],
-            reason=search.IndexationReason.VENUE_UPDATE,
-            log_extra={"changes": {"publicName"}},
-        )
-
-    @patch("pcapi.core.search.async_index_offers_of_venue_ids")
-    def when_changes_on_city_algolia_indexing_is_triggered(self, mocked_async_index_offers_of_venue_ids):
-        # Given
-        user = users_factories.UserFactory()
-        venue = offerers_factories.VenueFactory(
-            name="old names",
-            publicName="old name",
-            city="old City",
-        )
-
-        # When
-        json_data = {"city": "My new city"}
-        offerers_api.update_venue(venue, author=user, **json_data)
-
-        # Then
-        mocked_async_index_offers_of_venue_ids.assert_called_once_with(
-            [venue.id],
-            reason=search.IndexationReason.VENUE_UPDATE,
-            log_extra={"changes": {"city"}},
-        )
-
-    @patch("pcapi.core.search.async_index_offers_of_venue_ids")
-    def when_changes_are_not_on_algolia_fields_it_should_not_trigger_indexing(
-        self, mocked_async_index_offers_of_venue_ids
-    ):
-        # Given
-        user = users_factories.UserFactory()
-        venue = offerers_factories.VenueFactory(
-            name="old names",
-            publicName="old name",
-            city="old City",
-            bookingEmail="old@email.com",
-        )
-
-        # When
-        json_data = {"bookingEmail": "new@email.com"}
-        offerers_api.update_venue(venue, author=user, **json_data)
-
-        # Then
-        mocked_async_index_offers_of_venue_ids.assert_not_called()
-
-    @patch("pcapi.core.search.async_index_offers_of_venue_ids")
-    def when_changes_in_payload_are_same_as_previous_it_should_not_trigger_indexing(
-        self, mocked_async_index_offers_of_venue_ids
-    ):
-        # Given
-        user = users_factories.UserFactory()
-        venue = offerers_factories.VenueFactory(
-            name="old names",
-            publicName="old name",
-            city="old City",
-        )
-
-        # When
-        json_data = {"city": "old City"}
-        offerers_api.update_venue(venue, author=user, **json_data)
-
-        # Then
-        mocked_async_index_offers_of_venue_ids.assert_not_called()
-
-    def test_empty_siret_is_editable(self, app) -> None:
-        # Given
-        user = users_factories.UserFactory()
-        venue = offerers_factories.VenueWithoutSiretFactory()
-
-        venue_data = {
-            "siret": venue.managingOfferer.siren + "11111",
-        }
-
-        # when
-        updated_venue = offerers_api.update_venue(venue, author=user, **venue_data)
-
-        # Then
-        assert updated_venue.siret == venue_data["siret"]
-
-    @pytest.mark.parametrize(
-        "venue_data", [{"siret": "12345678954321", "name": "newName"}, {"siret": None, "comment": "test"}]
-    )
-    def test_existing_siret_is_editable(self, venue_data, app) -> None:
-        # Given
-        user = users_factories.UserFactory()
-        venue = offerers_factories.VenueFactory(siret="12345678900001", managingOfferer__siren="123456789")
-
-        # when
-        offerers_api.update_venue(venue, author=user, **venue_data)
-
-        # Then
-        assert venue.siret == venue_data["siret"]
-        if venue_data["siret"] is not None:
-            assert venue.name == venue_data["name"]
-
-    def test_remove_siret(self, app) -> None:
-        user = users_factories.UserFactory()
-        venue = offerers_factories.VenueFactory(
-            siret="12345678900001",
-            managingOfferer__siren="123456789",
-        )
-        with pytest.raises(api_errors.ApiErrors) as error:
-            offerers_api.update_venue(venue, author=user, name=venue.name, siret="")
-        assert error.value.errors["siret"] == ["Vous ne pouvez pas supprimer le siret d'un lieu"]
-
-    @pytest.mark.parametrize("venue_data", [{"name": "New name"}, {"name": None}])
-    def test_name_is_not_editable(self, venue_data, app) -> None:
-        # Given
-        user = users_factories.UserFactory()
-        venue = offerers_factories.VenueFactory()
-
-        # when
-        with pytest.raises(api_errors.ApiErrors) as error:
-            offerers_api.update_venue(venue, author=user, **venue_data)
-
-        # Then
-        assert error.value.errors["name"] == ["Vous ne pouvez pas modifier la raison sociale d'un lieu"]
-
-    def test_accessibility_fields_are_updated(self, app) -> None:
-        # given
-        user = users_factories.UserFactory()
-        venue = offerers_factories.VenueFactory()
-
-        # when
-        venue_data = {
-            "audioDisabilityCompliant": True,
-            "mentalDisabilityCompliant": True,
-            "motorDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-        }
-
-        offerers_api.update_venue(venue, author=user, **venue_data)
-
-        venue = offerers_models.Venue.query.get(venue.id)
-        assert venue.audioDisabilityCompliant
-        assert venue.mentalDisabilityCompliant
-        assert venue.motorDisabilityCompliant is False
-        assert venue.visualDisabilityCompliant is False
-
-    def test_no_modifications(self, app) -> None:
-        # given
-        user = users_factories.UserFactory()
-        venue = offerers_factories.VenueFactory()
-
-        # when
-        venue_data = {
-            "departementCode": venue.departementCode,
-            "city": venue.city,
-            "motorDisabilityCompliant": venue.motorDisabilityCompliant,
-        }
-        contact_data = serialize_base.VenueContactModel(
-            email=venue.contact.email,
-            phone_number=venue.contact.phone_number,
-            social_medias=venue.contact.social_medias,
-            website=venue.contact.website,
-        )
-
-        # Check FF Api Adresse
-        with assert_num_queries(1):
-            offerers_api.update_venue(venue, contact_data=contact_data, author=user, **venue_data)
-
-        assert history_models.ActionHistory.query.count() == 0
-
-    @patch("pcapi.connectors.virustotal.request_url_scan")
-    def test_update_only_venue_contact(self, mock_request_url_scan):
-        user_offerer = offerers_factories.UserOffererFactory(
-            user__email="user.pro@test.com",
-        )
-        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, contact=None)
-
-        contact_data = serialize_base.VenueContactModel(email="other.contact@venue.com", phone_number="0788888888")
-
-        offerers_api.update_venue(venue, contact_data=contact_data, author=user_offerer.user)
-
-        venue = offerers_models.Venue.query.get(venue.id)
-        assert venue.contact
-        assert venue.contact.phone_number == contact_data.phone_number
-        assert venue.contact.email == contact_data.email
-        mock_request_url_scan.assert_not_called()
-
-    @patch("pcapi.connectors.virustotal.request_url_scan")
-    def test_update_only_venue_website(self, mock_request_url_scan):
-        user_offerer = offerers_factories.UserOffererFactory(
-            user__email="user.pro@test.com",
-        )
-        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-
-        contact_data = serialize_base.VenueContactModel(
-            email=venue.contact.email, phone_number=venue.contact.phone_number, website="https://new.website.com"
-        )
-
-        offerers_api.update_venue(venue, contact_data=contact_data, author=user_offerer.user)
-
-        venue = offerers_models.Venue.query.get(venue.id)
-        assert venue.contact.phone_number == "+33102030405"
-        assert venue.contact.email == "contact@venue.com"
-        assert venue.contact.website == "https://new.website.com"
-        mock_request_url_scan.assert_called_once_with(contact_data.website, skip_if_recent_scan=True)
-
-    def test_no_venue_contact_created_if_no_data(self, app):
-        user_offerer = offerers_factories.UserOffererFactory(
-            user__email="user.pro@test.com",
-        )
-        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, contact=None)
-        empty_contact_data = serialize_base.VenueContactModel()
-
-        offerers_api.update_venue(venue, contact_data=empty_contact_data, author=user_offerer.user)
-
-        assert offerers_models.VenueContact.query.count() == 0
-
-    def test_cannot_update_virtual_venue_name(self):
-        user = users_factories.UserFactory()
-        offerer = offerers_factories.OffererFactory(siren="000000000")
-        virtual_venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
-
-        venue_data = {"name": "Toto"}
-        with pytest.raises(api_errors.ApiErrors) as error:
-            offerers_api.update_venue(virtual_venue, author=user, **venue_data)
-
-        msg = "Vous ne pouvez pas modifier un lieu Offre Numérique."
-        assert error.value.errors == {"venue": [msg]}
-
-    @patch("pcapi.connectors.virustotal.request_url_scan")
-    def test_no_venue_contact_no_modification(self, mock_request_url_scan) -> None:
-        # given
-        user = users_factories.UserFactory()
-        venue = offerers_factories.VenueFactory(contact=None)
-
-        # when
-        venue_data = {
-            "departementCode": venue.departementCode,
-            "city": venue.city,
-        }
-        # same behavior as when update_venue() is called from PC Pro API
-        contact_data = serialize_base.VenueContactModel(email=None, phone_number=None, social_medias=None, website=None)
-
-        offerers_api.update_venue(venue, contact_data=contact_data, author=user, **venue_data)
-
-        # then
-        # nothing has changed => nothing to save nor update
-        assert history_models.ActionHistory.query.count() == 0
-        mock_request_url_scan.assert_not_called()
-
-    @patch("pcapi.connectors.virustotal.request_url_scan")
-    def test_no_venue_contact_add_contact(self, mock_request_url_scan) -> None:
-        # given
-        user = users_factories.UserFactory()
-        venue = offerers_factories.VenueFactory(contact=None)
-
-        # when
-        venue_data = {
-            "departementCode": venue.departementCode,
-            "city": venue.city,
-        }
-        # same behavior as when update_venue() is called from PC Pro API
-        contact_data = serialize_base.VenueContactModel(
-            email="added@venue.com", phone_number=None, social_medias=None, website="https://www.venue.com"
-        )
-
-        offerers_api.update_venue(venue, contact_data=contact_data, author=user, **venue_data)
-
-        # then
-        assert venue.contact
-        assert venue.contact.email == contact_data.email
-        assert venue.contact.website == contact_data.website
-
-        # contact info added => an action should be logged in history
-        action = history_models.ActionHistory.query.one()
-        assert action.actionType == history_models.ActionType.INFO_MODIFIED
-        assert action.authorUserId == user.id
-        assert action.venueId == venue.id
-        assert action.extraData["modified_info"] == {
-            "contact.email": {"new_info": contact_data.email, "old_info": None},
-            "contact.website": {"new_info": contact_data.website, "old_info": None},
-        }
-        mock_request_url_scan.assert_called_once_with(contact_data.website, skip_if_recent_scan=True)
-
-
 class EditVenueContactTest:
     def test_create_venue_contact(self, app):
         user_offerer = offerers_factories.UserOffererFactory(
@@ -1057,6 +768,38 @@ class CreateOffererTest:
         assert actions_list[0].authorUser == user
         assert actions_list[0].user == user
         assert actions_list[0].offerer == created_offerer
+
+    def test_create_offerer_on_known_offerer_twice(self):
+        # Given
+        user = users_factories.UserFactory()
+        offerer_informations = offerers_serialize.CreateOffererQueryModel(
+            name="Test Offerer", siren="418166096", address="123 rue de Paris", postalCode="93100", city="Montreuil"
+        )
+        offerer = offerers_factories.OffererFactory(siren=offerer_informations.siren)
+        offerers_factories.RejectedUserOffererFactory(user=user, offerer=offerer)
+
+        # When
+        updated_user_offerer = offerers_api.create_offerer(user, offerer_informations)
+        updated_user_offerer = offerers_api.create_offerer(user, offerer_informations)
+
+        # Then
+        assert offerer.validationStatus == ValidationStatus.VALIDATED
+        assert updated_user_offerer.validationStatus == ValidationStatus.NEW
+        assert updated_user_offerer.dateCreated is not None
+
+        assert not updated_user_offerer.user.has_pro_role
+
+        actions_list = history_models.ActionHistory.query.order_by(history_models.ActionHistory.actionType).all()
+        created_offerer = updated_user_offerer.offerer
+        assert len(actions_list) == 2
+        assert actions_list[0].actionType == history_models.ActionType.USER_OFFERER_NEW
+        assert actions_list[0].authorUser == user
+        assert actions_list[0].user == user
+        assert actions_list[0].offerer == created_offerer
+        assert actions_list[1].actionType == history_models.ActionType.USER_OFFERER_NEW
+        assert actions_list[1].authorUser == user
+        assert actions_list[1].user == user
+        assert actions_list[1].offerer == created_offerer
 
     def test_create_new_offerer_on_known_offerer_by_user_deleted(self):
         # Given
@@ -2290,7 +2033,7 @@ class CreateFromOnboardingDataTest:
         )
 
     @override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
-    @override_features(ENABLE_API_ADRESSE_WHILE_CREATING_UPDATING_VENUE=True)
+    @override_features(ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE=True)
     def test_new_siren_new_siret(self, requests_mock):
         api_adresse_response = {
             "type": "FeatureCollection",
@@ -2370,7 +2113,7 @@ class CreateFromOnboardingDataTest:
         assert offerer_address.addressId == address.id
 
         # Action logs
-        assert history_models.ActionHistory.query.count() == 1
+        assert history_models.ActionHistory.query.count() == 2
         offerer_action = history_models.ActionHistory.query.filter(
             history_models.ActionHistory.actionType == history_models.ActionType.OFFERER_NEW
         ).one()
@@ -2378,6 +2121,12 @@ class CreateFromOnboardingDataTest:
         assert offerer_action.authorUser == user
         assert offerer_action.user == user
         self.assert_common_action_history_extra_data(offerer_action)
+        venue_action = history_models.ActionHistory.query.filter(
+            history_models.ActionHistory.actionType == history_models.ActionType.VENUE_CREATED
+        ).one()
+        assert venue_action.venue == created_venue
+        assert venue_action.authorUser == user
+
         self.assert_only_welcome_email_to_pro_was_sent()
         # Venue Registration
         self.assert_venue_registration_attrs(created_venue)
@@ -2417,15 +2166,9 @@ class CreateFromOnboardingDataTest:
         assert created_venue.current_pricing_point_id == created_venue.id
         assert not created_venue.offererAddressId
 
-        # Action logs
-        assert history_models.ActionHistory.query.count() == 1
-        offerer_action = history_models.ActionHistory.query.filter(
-            history_models.ActionHistory.actionType == history_models.ActionType.OFFERER_NEW
-        ).one()
-        assert offerer_action.offerer == created_offerer
-        assert offerer_action.authorUser == user
-        assert offerer_action.user == user
-        self.assert_common_action_history_extra_data(offerer_action)
+        # Action logs (content already checked in test_new_siren_new_siret)
+        assert history_models.ActionHistory.query.count() == 2
+
         self.assert_only_welcome_email_to_pro_was_sent()
         # Venue Registration
         self.assert_venue_registration_attrs(created_venue)
@@ -2454,7 +2197,7 @@ class CreateFromOnboardingDataTest:
         assert created_venue.siret == "85331845900031"
         assert created_venue.current_pricing_point_id == created_venue.id
         # Action logs
-        assert history_models.ActionHistory.query.count() == 1
+        assert history_models.ActionHistory.query.count() == 2
         offerer_action = history_models.ActionHistory.query.filter(
             history_models.ActionHistory.actionType == history_models.ActionType.USER_OFFERER_NEW
         ).one()
@@ -2462,6 +2205,12 @@ class CreateFromOnboardingDataTest:
         assert offerer_action.authorUser == user
         assert offerer_action.user == user
         self.assert_common_action_history_extra_data(offerer_action)
+        venue_action = history_models.ActionHistory.query.filter(
+            history_models.ActionHistory.actionType == history_models.ActionType.VENUE_CREATED
+        ).one()
+        assert venue_action.venue == created_venue
+        assert venue_action.authorUser == user
+
         assert len(mails_testing.outbox) == 0
         # Venue Registration
         self.assert_venue_registration_attrs(created_venue)
@@ -2491,7 +2240,7 @@ class CreateFromOnboardingDataTest:
         # No pricing point yet
         assert not created_venue.current_pricing_point_id
         # Action logs
-        assert history_models.ActionHistory.query.count() == 1
+        assert history_models.ActionHistory.query.count() == 2
         offerer_action = history_models.ActionHistory.query.filter(
             history_models.ActionHistory.actionType == history_models.ActionType.USER_OFFERER_NEW
         ).one()
@@ -2499,6 +2248,12 @@ class CreateFromOnboardingDataTest:
         assert offerer_action.authorUser == user
         assert offerer_action.user == user
         self.assert_common_action_history_extra_data(offerer_action)
+        offerer_action = history_models.ActionHistory.query.filter(
+            history_models.ActionHistory.actionType == history_models.ActionType.VENUE_CREATED
+        ).one()
+        assert offerer_action.venue == created_venue
+        assert offerer_action.authorUser == user
+
         assert len(mails_testing.outbox) == 0
         # Venue Registration
         self.assert_venue_registration_attrs(created_venue)

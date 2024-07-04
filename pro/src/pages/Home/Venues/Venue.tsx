@@ -78,7 +78,6 @@ export const Venue = ({ offerer, venue, isFirstVenue }: VenueProps) => {
                   isToggleOpen ? 'Masquer' : 'Afficher'
                 } les statistiques`}
                 className={styles['toggle-icon']}
-                viewBox="0 0 16 16"
                 src={isToggleOpen ? fullDisclosureOpen : fullDisclosureClose}
               />
               <span data-testid={'venue-name-span-' + venue.id}>

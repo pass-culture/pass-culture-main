@@ -59,7 +59,7 @@ def update_contact_attributes(
         email = user.email
 
     attributes: attributes_models.UserAttributes | attributes_models.ProAttributes | None = None
-    if user and not user.has_pro_role:
+    if user and not (user.has_pro_role or user.has_non_attached_pro_role):
         attributes = attributes_api.get_user_attributes(user)
     elif email:
         # get_pro_attributes also search for email in venues

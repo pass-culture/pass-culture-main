@@ -1,4 +1,4 @@
-import { Then, When } from '@badeball/cypress-cucumber-preprocessor'
+import { Then, When, DataTable } from '@badeball/cypress-cucumber-preprocessor'
 
 When('I download reimbursement details', () => {
   cy.findByTestId('dropdown-menu-trigger').click()
@@ -31,24 +31,77 @@ Then('I can see information message about reimbursement', () => {
 })
 
 Then('I can see a link to the next reimbursement help page', () => {
-  cy.findByText(/En savoir plus sur les prochains remboursements/)
-    .invoke('removeAttr', 'target') // removes target to not open it in a new tab (not supported by cypress)
-    .click()
-  cy.origin('https://passculture.zendesk.com', () => {
-    // cloudfare/zendesk "Verify you are human" page cannot be used by cypress robot
-    cy.url().should('include', '4411992051601')
+  cy.url().then((url: string) => {
+    cy.findByText(/En savoir plus sur les prochains remboursements/)
+      .invoke('removeAttr', 'target') // removes target to not open it in a new tab (not supported by cypress)
+      .click()
+    cy.origin('https://passculture.zendesk.com', () => {
+      // cloudfare/zendesk "Verify you are human" page cannot be used by cypress robot
+      cy.url().should('include', '4411992051601')
+    })
+    cy.visit(url)
   })
 })
 
 Then(
   'I can see a link to the terms and conditions of reimbursement help page',
   () => {
-    cy.findByText(/Connaître les modalités de remboursement/)
-      .invoke('removeAttr', 'target') // removes target to not open it in a new tab (not supported by cypress)
-      .click()
-    cy.origin('https://passculture.zendesk.com', () => {
-      // cloudfare/zendesk "Verify you are human" page cannot be used by cypress robot
-      cy.url().should('include', '4412007300369')
+    cy.url().then((url: string) => {
+      cy.findByText(/Connaître les modalités de remboursement/)
+        .invoke('removeAttr', 'target') // removes target to not open it in a new tab (not supported by cypress)
+        .click()
+      cy.origin('https://passculture.zendesk.com', () => {
+        // cloudfare/zendesk "Verify you are human" page cannot be used by cypress robot
+        cy.url().should('include', '4412007300369')
+      })
+      cy.visit(url)
     })
   }
 )
+
+Then('These receipt results should be displayed', (dataTable: DataTable) => {
+  const numRows = dataTable.rows().length
+  const numColumns = dataTable.raw()[0].length
+  const data = dataTable.raw()
+
+  cy.findAllByTestId('spinner').should('not.exist')
+  cy.findAllByTestId('invoice-item-row').should('have.length', numRows)
+
+  // Vérification des titres des colonnes
+  const titleArray = data[0]
+  cy.findAllByTestId('invoice-title-row').within(() => {
+    cy.get('th').then(($elt) => {
+      for (let column = 0; column < numColumns; column++) {
+        if (titleArray[column] !== '') {
+          cy.wrap($elt).eq(column).should('contain', titleArray[column])
+        }
+      }
+    })
+  })
+
+  // Vérification du contenu du tableau
+  for (let rowLine = 0; rowLine < numRows; rowLine++) {
+    const bookLineArray = data[rowLine + 1]
+
+    cy.findAllByTestId('invoice-item-row')
+      .eq(rowLine)
+      .within(() => {
+        cy.get('td').then(($elt) => {
+          for (let column = 0; column < numColumns; column++) {
+            if (bookLineArray[column] !== '') {
+              cy.wrap($elt).eq(column).should('contain', bookLineArray[column])
+            }
+          }
+        })
+      })
+  }
+})
+
+Then('No receipt results should be displayed', () => {
+  cy.findAllByTestId('spinner').should('not.exist')
+  cy.findAllByTestId('invoice-title-row').should('not.exist')
+  cy.findAllByTestId('invoice-item-row').should('not.exist')
+  cy.contains(
+    'Vous n’avez pas encore de justificatifs de remboursement disponibles'
+  )
+})

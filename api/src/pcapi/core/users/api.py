@@ -3,6 +3,7 @@ import datetime
 from decimal import Decimal
 import enum
 import logging
+from pathlib import Path
 import re
 import typing
 
@@ -21,6 +22,7 @@ from pcapi.connectors import api_adresse
 from pcapi.connectors.beamer import BeamerException
 from pcapi.connectors.beamer import delete_beamer_user
 from pcapi.core import mails as mails_api
+from pcapi.core import object_storage
 from pcapi.core import token as token_utils
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.bookings.repository as bookings_repository
@@ -153,10 +155,10 @@ def create_account(
         user.externalIds = {}
 
     if apps_flyer_user_id and apps_flyer_platform:
-        user.externalIds["apps_flyer"] = {"user": apps_flyer_user_id, "platform": apps_flyer_platform.upper()}  # type: ignore[index, call-overload]
+        user.externalIds["apps_flyer"] = {"user": apps_flyer_user_id, "platform": apps_flyer_platform.upper()}
 
     if firebase_pseudo_id:
-        user.externalIds["firebase_pseudo_id"] = firebase_pseudo_id  # type: ignore[index, call-overload]
+        user.externalIds["firebase_pseudo_id"] = firebase_pseudo_id
 
     repository.save(user)
     logger.info("Created user account", extra={"user": user.id})
@@ -819,9 +821,6 @@ def create_pro_user_V2(pro_user: ProUserCreationBodyV2Model) -> models.User:
 
     token = token_utils.Token.create(
         token_utils.TokenType.EMAIL_VALIDATION,
-        # FIXME (dbaty, 2024-02-27): for now, the pro user cannot re-send the token themselves.
-        # The default (30 minutes) TTL could thus be too low, so we use an augmented TTL. Once
-        # pro users can re-send tokens, we can use the default TTL (EMAIL_VALIDATION_TOKEN_LIFE_TIME).
         ttl=constants.EMAIL_VALIDATION_TOKEN_FOR_PRO_LIFE_TIME,
         user_id=new_pro_user.id,
     )
@@ -877,23 +876,14 @@ def create_pro_user(pro_user: ProUserCreationBodyV2Model) -> models.User:
                 newNavDate=datetime.datetime.utcnow(),
             )
             db.session.add(new_nav_pro)
-    elif feature.FeatureToggle.WIP_ENABLE_NEW_NAV_AB_TEST.is_active():
-        if new_pro_user.id % 2 == 0:
-            new_nav_pro = users_models.UserProNewNavState(
-                userId=new_pro_user.id,
-                newNavDate=datetime.datetime.utcnow(),
-            )
-            db.session.add(new_nav_pro)
+    else:
+        new_nav_pro = users_models.UserProNewNavState(
+            userId=new_pro_user.id,
+            newNavDate=datetime.datetime.utcnow(),
+        )
+        db.session.add(new_nav_pro)
 
     return new_pro_user
-
-
-def _set_offerer_departement_code(new_user: models.User, offerer: offerers_models.Offerer) -> models.User:
-    if offerer.postalCode:  # not None, not ""
-        new_user.departementCode = postal_code_utils.PostalCode(offerer.postalCode).get_departement_code()
-    else:
-        new_user.departementCode = None
-    return new_user
 
 
 def set_pro_tuto_as_seen(user: models.User) -> None:
@@ -1188,22 +1178,10 @@ def search_pro_account(search_query: str, *_: typing.Any) -> BaseQuery:
         )
     )
 
-    return (
-        _filter_user_accounts(pro_accounts, search_query)
-        .outerjoin(
-            # Join only suspension actions to limit the number of fetched rows
-            history_models.ActionHistory,
-            sa.and_(
-                history_models.ActionHistory.userId == models.User.id,
-                history_models.ActionHistory.actionType.in_(
-                    [history_models.ActionType.USER_SUSPENDED, history_models.ActionType.USER_UNSUSPENDED]
-                ),
-            ),
-        )
-        .options(
-            sa.orm.joinedload(users_models.User.UserOfferers).load_only(offerers_models.UserOfferer.validationStatus),
-            sa.orm.contains_eager(users_models.User.action_history),
-        )
+    return _filter_user_accounts(pro_accounts, search_query).options(
+        sa.orm.with_expression(users_models.User.suspension_reason_expression, users_models.User.suspension_reason.expression),  # type: ignore[attr-defined]
+        sa.orm.with_expression(users_models.User.suspension_date_expression, users_models.User.suspension_date.expression),  # type: ignore[attr-defined]
+        sa.orm.joinedload(users_models.User.UserOfferers).load_only(offerers_models.UserOfferer.validationStatus),
     )
 
 
@@ -1218,7 +1196,10 @@ def get_pro_account_base_query(pro_id: int) -> BaseQuery:
 
 
 def search_backoffice_accounts(search_query: str) -> BaseQuery:
-    bo_accounts = models.User.query.join(users_models.User.backoffice_profile)
+    bo_accounts = models.User.query.join(users_models.User.backoffice_profile).options(
+        sa.orm.with_expression(users_models.User.suspension_reason_expression, users_models.User.suspension_reason.expression),  # type: ignore[attr-defined]
+        sa.orm.with_expression(users_models.User.suspension_date_expression, users_models.User.suspension_date.expression),  # type: ignore[attr-defined]
+    )
 
     if not search_query:
         return bo_accounts
@@ -1790,3 +1771,42 @@ def enable_new_pro_nav(user: models.User) -> None:
     pro_new_nav_state.newNavDate = datetime.datetime.utcnow()
     db.session.add(pro_new_nav_state)
     db.session.commit()
+
+
+def clean_gdpr_extracts() -> None:
+    files = object_storage.list_files(
+        folder=settings.GCP_GDPR_EXTRACT_FOLDER,
+        bucket=settings.GCP_GDPR_EXTRACT_BUCKET,
+    )
+    files_ids = set()
+    for file_path in files:
+        try:
+            extract_id = int(Path(file_path).stem)
+            files_ids.add(extract_id)
+        except ValueError:
+            continue
+
+    ids_in_db_query = models.GdprUserDataExtract.query.filter(
+        models.GdprUserDataExtract.id.in_(files_ids)
+    ).with_entities(models.GdprUserDataExtract.id)
+    ids_in_db = {r.id for r in ids_in_db_query}
+
+    # files in bucket and not in db
+    for extract_id in files_ids - ids_in_db:
+        delete_gdpr_extract(extract_id)
+
+    extracts_to_delete = models.GdprUserDataExtract.query.filter(
+        models.GdprUserDataExtract.expirationDate < datetime.datetime.utcnow()  # type: ignore [operator]
+    ).with_entities(models.GdprUserDataExtract.id)
+    for extract in extracts_to_delete:
+        # expired extract
+        delete_gdpr_extract(extract.id)
+
+
+def delete_gdpr_extract(extract_id: int) -> None:
+    object_storage.delete_public_object(
+        folder=settings.GCP_GDPR_EXTRACT_FOLDER,
+        object_id=f"{extract_id}.zip",
+        bucket=settings.GCP_GDPR_EXTRACT_BUCKET,
+    )
+    models.GdprUserDataExtract.query.filter(models.GdprUserDataExtract.id == extract_id).delete()

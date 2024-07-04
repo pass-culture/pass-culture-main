@@ -4,8 +4,10 @@
 .description-text {
   margin-bottom: rem.torem(24px);
 
-  &-italic {
-    font-style: italic;
+  &-example {
+    @include fonts.caption;
+
+    color: var(--color-grey-dark);
   }
 }
 
@@ -28,5 +30,5 @@
 }
 
 .input-date {
-    width: rem.torem(150px);
+  width: rem.torem(150px);
 }

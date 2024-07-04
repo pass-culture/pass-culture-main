@@ -5,6 +5,7 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: rem.torem(16px);
+  max-width: rem.torem(486px);
 
   @media (min-width: size.$tablet) {
     grid-template-columns: 1fr 1fr;

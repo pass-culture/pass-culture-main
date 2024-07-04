@@ -3,12 +3,15 @@ import pytest
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
 import pcapi.core.offerers.factories as offerer_factories
 from pcapi.core.offerers.models import VenueTypeCode
+from pcapi.core.testing import assert_num_queries
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class VenuesTest:
+    expected_num_queries = 5  # venue + google_places_info + venue_contact + accessibility_provider + opening_hours
+
     def test_get_venue(self, client):
         venue = offerer_factories.VenueFactory(
             isPermanent=True,
@@ -39,9 +42,12 @@ class VenuesTest:
                 "transport_modality": [acceslibre_enum.PARKING_NEARBY],
             },
         )
-        response = client.get(f"/native/v1/venue/{venue.id}")
+        venue_id = venue.id
 
-        assert response.status_code == 200
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(f"/native/v1/venue/{venue_id}")
+            assert response.status_code == 200
+
         assert response.json == {
             "id": venue.id,
             "name": venue.name,
@@ -110,9 +116,12 @@ class VenuesTest:
             venue=venue,
             bannerMeta={"html_attributions": ['<a href="http://python.org">Henri</a>']},
         )
-        response = client.get(f"/native/v1/venue/{venue.id}")
 
-        assert response.status_code == 200
+        venue_id = venue.id
+        with assert_num_queries(self.expected_num_queries + 1):  # expected + feature
+            response = client.get(f"/native/v1/venue/{venue_id}")
+            assert response.status_code == 200
+
         assert response.json["bannerUrl"] == venue.bannerUrl
         assert response.json["bannerMeta"] == {
             "image_credit": "Henri",
@@ -131,9 +140,12 @@ class VenuesTest:
                 ]
             },
         )
-        response = client.get(f"/native/v1/venue/{venue.id}")
 
-        assert response.status_code == 200
+        venue_id = venue.id
+        with assert_num_queries(self.expected_num_queries + 1):  # expected + feature
+            response = client.get(f"/native/v1/venue/{venue_id}")
+            assert response.status_code == 200
+
         assert response.json["bannerUrl"] == venue.bannerUrl
         assert response.json["bannerMeta"] == {
             "image_credit": "Henri",
@@ -155,11 +167,15 @@ class VenuesTest:
         assert response.status_code == 404
 
     def test_get_non_existing_venue(self, client):
-        response = client.get("/native/v1/venue/123456789")
-        assert response.status_code == 404
+        with assert_num_queries(1):  # venue
+            response = client.get("/native/v1/venue/123456789")
+            assert response.status_code == 404
 
     def test_get_venue_always_has_banner_url(self, client):
         venue = offerer_factories.VenueFactory(venueTypeCode=VenueTypeCode.BOOKSTORE)
-        response = client.get(f"/native/v1/venue/{venue.id}")
-        assert response.status_code == 200
+        venue_id = venue.id
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(f"/native/v1/venue/{venue_id}")
+            assert response.status_code == 200
+
         assert response.json["bannerUrl"] is not None

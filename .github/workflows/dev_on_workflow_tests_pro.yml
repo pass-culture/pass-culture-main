@@ -18,7 +18,7 @@ defaults:
 
 jobs:
   type-check:
-    name: "Type check"
+    name: "Type check / Quality check / Style quality check"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.1.7
@@ -43,60 +43,8 @@ jobs:
             v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - run: yarn install --immutable
       - run: yarn tsc -b
-
-  quality-check:
-    name: "Quality check"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4.1.7
-      - uses: actions/setup-node@v3
-        with:
-          node-version-file: "pro/.nvmrc"
-      - name: "OpenID Connect Authentication"
-        uses: "google-github-actions/auth@v2"
-        with:
-          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      - name: "Cache the node_modules"
-        id: "yarn-modules-cache"
-        uses: pass-culture-github-actions/cache@v1.0.0
-        with:
-          compression-method: "gzip"
-          bucket: ${{ inputs.CACHE_BUCKET_NAME }}
-          path: |
-            **/node_modules
-          key: v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - run: yarn install --immutable
       - run: yarn lint:dead-code
       - run: yarn lint:js
-
-  style-quality-check:
-    name: "Style quality check"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4.1.7
-      - uses: actions/setup-node@v3
-        with:
-          node-version-file: "pro/.nvmrc"
-      - name: "OpenID Connect Authentication"
-        uses: "google-github-actions/auth@v2"
-        with:
-          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      - name: "Cache the node_modules"
-        id: "yarn-modules-cache"
-        uses: pass-culture-github-actions/cache@v1.0.0
-        with:
-          compression-method: "gzip"
-          bucket: ${{ inputs.CACHE_BUCKET_NAME }}
-          path: |
-            **/node_modules
-          key: v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - run: yarn install --immutable
       - run: yarn lint:scss
 
   tests-pro-unit-tests:

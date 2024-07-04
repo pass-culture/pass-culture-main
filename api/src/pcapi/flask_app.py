@@ -115,9 +115,6 @@ def add_security_headers(response: flask.wrappers.Response) -> flask.wrappers.Re
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-XSS-Protection"] = "1; mode=block"
     response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
-    response.headers["Content-Security-Policy-Report-Only"] = (
-        f"default-src 'self'; report-uri {settings.SENTRY_CSP_REPORT_ONLY_URI}; report-to {settings.SENTRY_CSP_REPORT_ONLY_URI}"
-    )
 
     return response
 

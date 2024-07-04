@@ -68,9 +68,11 @@ class HttpBackend:
         url = "/".join((settings.RECOMMENDATION_API_URL.rstrip("/"), path.lstrip("/")))
         try:
             if method == "get":
-                response = requests.get(url, params=params, timeout=HTTP_TIMEOUT)
+                response = requests.get(url, params=params, timeout=HTTP_TIMEOUT, disable_synchronous_retry=True)
             elif method == "post":
-                response = requests.post(url, params=params, json=body, timeout=HTTP_TIMEOUT)
+                response = requests.post(
+                    url, params=params, json=body, timeout=HTTP_TIMEOUT, disable_synchronous_retry=True
+                )
             else:
                 raise ValueError(f"Unexpected method: {method}")
             response.raise_for_status()

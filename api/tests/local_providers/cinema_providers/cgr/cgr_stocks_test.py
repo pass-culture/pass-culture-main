@@ -14,7 +14,6 @@ from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.testing import override_features
 from pcapi.local_providers import CGRStocks
-from pcapi.repository import transaction
 from pcapi.utils.human_ids import humanize
 
 import tests

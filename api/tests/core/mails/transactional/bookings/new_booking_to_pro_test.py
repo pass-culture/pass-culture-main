@@ -115,6 +115,7 @@ class OffererBookingRecapTest:
             stock__offer__venue__isVirtual=True,
             stock__offer__venue__postalCode=None,
             stock__offer__venue__siret=None,
+            stock__offer__venue__offererAddress=None,
         )
 
         email_data = get_new_booking_to_pro_email_data(booking)
@@ -144,6 +145,7 @@ class OffererBookingRecapTest:
             stock__offer__venue__isVirtual=True,
             stock__offer__venue__postalCode=None,
             stock__offer__venue__siret=None,
+            stock__offer__venue__offererAddress=None,
         )
 
         email_data = get_new_booking_to_pro_email_data(booking)

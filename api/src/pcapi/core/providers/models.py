@@ -108,6 +108,36 @@ class Provider(PcObject, Base, Model, DeactivableMixin):
         return sa.and_(cls.isActive.is_(True), cls.apiUrl.is_not(None), cls.name.not_ilike("%praxiel%"))
 
 
+class VenueProviderExternalUrls(PcObject, Base, Model, DeactivableMixin):
+    """
+    Stores external Urls specific for a Venue. It will be set by providers via API.
+    """
+
+    venueProviderId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("venue_provider.id", ondelete="CASCADE"), nullable=False, unique=True
+    )
+    venueProvider: sa_orm.Mapped["VenueProvider"] = sa_orm.relationship(
+        "VenueProvider", foreign_keys=[venueProviderId], back_populates="externalUrls"
+    )
+
+    # Ticketing urls
+    bookingExternalUrl: str = sa.Column(sa.Text(), nullable=True)
+    cancelExternalUrl: str = sa.Column(sa.Text(), nullable=True)
+    # Notification url
+    notificationExternalUrl: str = sa.Column(sa.Text(), nullable=True)
+
+    __table_args__ = (
+        sa.CheckConstraint(
+            '("bookingExternalUrl" IS NOT NULL AND "cancelExternalUrl" IS NOT NULL) OR ("bookingExternalUrl" IS NULL AND "cancelExternalUrl" IS NULL)',
+            name="check_ticketing_external_urls_both_set_or_null",
+        ),
+        sa.CheckConstraint(
+            '"bookingExternalUrl" IS NOT NULL OR "notificationExternalUrl" IS NOT NULL',
+            name="check_at_least_one_of_the_external_url_is_set",
+        ),
+    )
+
+
 class VenueProvider(PcObject, Base, Model, DeactivableMixin):
     """Stores specific sync settings for a Venue, and whether it is active"""
 
@@ -122,6 +152,11 @@ class VenueProvider(PcObject, Base, Model, DeactivableMixin):
     )
 
     venueIdAtOfferProvider: str = sa.Column(sa.String(70), nullable=True)
+
+    # external URLs
+    externalUrls: sa_orm.Mapped["VenueProviderExternalUrls"] = sa_orm.relationship(
+        "VenueProviderExternalUrls", uselist=False, back_populates="venueProvider"
+    )
 
     # This column is unused by our code but by the data team
     dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())

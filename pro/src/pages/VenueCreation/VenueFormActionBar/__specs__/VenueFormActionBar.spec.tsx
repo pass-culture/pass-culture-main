@@ -28,7 +28,7 @@ const renderVenueFormActionBar = (
 describe('VenueFormActionBar', () => {
   it('should display right message on edition', () => {
     renderVenueFormActionBar()
-    expect(screen.getByText('Enregistrer et quitter')).toBeInTheDocument()
+    expect(screen.getByText('Enregistrer')).toBeInTheDocument()
   })
 
   it('should display venue cancel link when not creating', () => {
@@ -36,7 +36,7 @@ describe('VenueFormActionBar', () => {
       venue: { ...defaultGetVenue },
     })
 
-    expect(screen.getByText('Annuler et quitter')).toHaveAttribute(
+    expect(screen.getByText('Annuler')).toHaveAttribute(
       'href',
       `/structures/${defaultGetVenue.managingOfferer.id}/lieux/${defaultGetVenue.id}`
     )

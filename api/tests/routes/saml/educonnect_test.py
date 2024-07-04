@@ -8,8 +8,6 @@ from flask_jwt_extended.utils import create_access_token
 import pytest
 import time_machine
 
-from pcapi.analytics.amplitude.backends.amplitude_connector import AmplitudeEventType
-import pcapi.analytics.amplitude.testing as amplitude_testing
 from pcapi.core.fraud import factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.mails.testing as mails_testing
@@ -514,27 +512,6 @@ class EduconnectTest:
 
         client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
         assert user.validatedBirthDate == birth_date
-
-    @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
-    def test_educonnect_error_is_tracked(self, mock_get_educonnect_user, client, app):
-        user, request_id = self.connect_to_educonnect(client, app)
-        mock_get_educonnect_user.return_value = users_factories.EduconnectUserFactory(
-            saml_request_id=request_id, age=20
-        )
-
-        client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
-
-        assert amplitude_testing.requests[0]["user_id"] == user.id
-        assert amplitude_testing.requests[0]["event_name"] == AmplitudeEventType.EDUCONNECT_ERROR.value
-
-        assert (
-            fraud_models.FraudReasonCode.NOT_ELIGIBLE.value
-            in amplitude_testing.requests[0]["event_properties"]["error_codes"]
-        )
-        assert (
-            fraud_models.FraudReasonCode.AGE_NOT_VALID.value
-            in amplitude_testing.requests[0]["event_properties"]["error_codes"]
-        )
 
 
 class PerformanceTest:

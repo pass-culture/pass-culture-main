@@ -157,13 +157,22 @@ SEARCH_FIELD_TO_PYTHON = {
         "column": offers_models.Offer.extraData["visa"].astext,
         "special": string_utils.format_ean_or_visa,
     },
-    "MUSIC_TYPE": {
-        "field": "music_type",
-        "column": offers_models.Offer.extraData["musicType"].astext,
-    },
-    "MUSIC_SUB_TYPE": {
-        "field": "music_sub_type",
-        "column": offers_models.Offer.extraData["musicSubType"].astext,
+    "MUSIC_TYPE_GTL": {
+        "field": "music_type_gtl",
+        "custom_filters": {
+            "IN": lambda values: (
+                sa.and_(
+                    offers_models.Offer.subcategoryId.in_(subcategories_v2.MUSIC_TITELIVE_SUBCATEGORY_SEARCH_IDS),
+                    sa.func.substring(offers_models.Offer.extraData["gtl_id"].astext, 1, 2).in_(values),
+                )
+            ),
+            "NOT_IN": lambda values: (
+                sa.and_(
+                    offers_models.Offer.subcategoryId.in_(subcategories_v2.MUSIC_TITELIVE_SUBCATEGORY_SEARCH_IDS),
+                    sa.func.substring(offers_models.Offer.extraData["gtl_id"].astext, 1, 2).not_in(values),
+                )
+            ),
+        },
     },
     "SHOW_TYPE": {
         "field": "show_type",
@@ -679,12 +688,14 @@ def _batch_validate_offers(offer_ids: list[int]) -> None:
             offers_models.Offer,
             max_price_subquery.label("max_price"),
         )
+        .outerjoin(offers_models.Offer.futureOffer)
         .filter(offers_models.Offer.id.in_(offer_ids))
         .options(
             sa.orm.joinedload(offers_models.Offer.venue).load_only(
                 offerers_models.Venue.bookingEmail, offerers_models.Venue.name, offerers_models.Venue.publicName
             ),
         )
+        .options(sa.orm.contains_eager(offers_models.Offer.futureOffer))
     ).all()
 
     for offer, max_price in offers:
@@ -694,7 +705,8 @@ def _batch_validate_offers(offer_ids: list[int]) -> None:
             offer.lastValidationDate = datetime.datetime.utcnow()
             offer.lastValidationType = OfferValidationType.MANUAL
             offer.lastValidationAuthorUserId = current_user.id
-            offer.isActive = True
+            if not (offer.futureOffer and offer.futureOffer.isWaitingForPublication):
+                offer.isActive = True
             if offer.isThing:
                 offer.lastValidationPrice = max_price
 

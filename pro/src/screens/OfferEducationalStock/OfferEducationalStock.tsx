@@ -23,7 +23,6 @@ import {
   EducationalOfferType,
   isCollectiveOfferTemplate,
 } from 'core/OfferEducational/types'
-import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
 import { NBSP } from 'core/shared/constants'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
@@ -65,7 +64,6 @@ export const OfferEducationalStock = <
   mode,
   requestId = '',
 }: OfferEducationalStockProps<T>): JSX.Element => {
-  const offerIsDisabled = isOfferDisabled(offer.status)
   const [isLoading, setIsLoading] = useState(false)
   const startDatetime =
     isCollectiveOffer(offer) && offer.collectiveStock?.startDatetime
@@ -153,15 +151,15 @@ export const OfferEducationalStock = <
               avec l’établissement scolaire tant que le chef d’établissement n’a
               pas validé la réservation.
             </Callout>
-            <FormLayout.Section title="Date et prix">
+            <FormLayout.Section title="Dates et prix">
               <>
                 <p className={styles['description-text']}>
                   Indiquez le prix total TTC de l’évènement et le nombre de
                   personnes qui y participeront.
                   <br />
-                  <span className={styles['description-text-italic']}>
-                    (Exemple : j’accueille 30 élèves à 5{NBSP}€ la place, le
-                    prix total de mon offre s’élève à 150{NBSP}€ TTC.)
+                  <span className={styles['description-text-example']}>
+                    Exemple : j’accueille 30 élèves à 5{NBSP}€ la place, le prix
+                    total de mon offre s’élève à 150{NBSP}€ TTC.
                   </span>
                 </p>
                 <FormStock
@@ -231,8 +229,7 @@ export const OfferEducationalStock = <
                   type="submit"
                   className=""
                   disabled={
-                    (offerIsDisabled || mode === Mode.READ_ONLY) &&
-                    disablePriceAndParticipantInputs
+                    mode === Mode.READ_ONLY && disablePriceAndParticipantInputs
                   }
                   isLoading={isLoading}
                 >

@@ -129,16 +129,11 @@ def test_update_external_pro_user_attributes(
         if attached == "all":
             offerers_factories.UserOffererFactory(user=ProFactory(), offerer=offerer2)
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer2)
-        venue2 = offerers_factories.VenueFactory(
+        venue2 = offerers_factories.VirtualVenueFactory(
             managingOfferer=offerer2,
             name="Théâtre en ligne",
-            departementCode=None,
-            postalCode=None,
-            city=None,
             bookingEmail=email,
-            siret=None,
             isPermanent=create_permanent,
-            isVirtual=True,
             venueTypeCode=VenueTypeCode.DIGITAL,
             venueLabelId=None,
         )

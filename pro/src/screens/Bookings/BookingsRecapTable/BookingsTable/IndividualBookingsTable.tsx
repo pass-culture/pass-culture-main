@@ -8,6 +8,7 @@ import { Events } from 'core/FirebaseEvents/constants'
 import { Audience } from 'core/shared/types'
 import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'
 import { usePagination } from 'hooks/usePagination'
+import strokeDuoIcon from 'icons/stroke-duo.svg'
 import { BookingsFilters } from 'screens/Bookings/BookingsRecapTable/types'
 import {
   sortByBeneficiaryName,
@@ -15,6 +16,7 @@ import {
   sortByOfferName,
 } from 'screens/Bookings/BookingsRecapTable/utils/sortingFunctions'
 import { Pagination } from 'ui-kit/Pagination/Pagination'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { FilterByBookingStatus } from '../Filters/FilterByBookingStatus'
 import { NoFilteredBookings } from '../NoFilteredBookings/NoFilteredBookings'
@@ -22,9 +24,7 @@ import { NoFilteredBookings } from '../NoFilteredBookings/NoFilteredBookings'
 import styles from './BookingsTable.module.scss'
 import { BeneficiaryCell } from './Cells/BeneficiaryCell'
 import { BookingDateCell } from './Cells/BookingDateCell'
-import { BookingIsDuoCell } from './Cells/BookingIsDuoCell'
 import { BookingOfferCell } from './Cells/BookingOfferCell'
-import { BookingTokenCell } from './Cells/BookingTokenCell'
 import { IndividualBookingStatusCell } from './Cells/IndividualBookingStatusCell'
 
 enum IndividualBookingsSortingColumn {
@@ -97,7 +97,7 @@ export const IndividualBookingsTable = ({
     <div className={styles['table-wrapper']}>
       {currentPageItems.length !== 0 && (
         <table className={styles['table']}>
-          <thead>
+          <thead className={styles['table-header']}>
             <tr>
               <th
                 scope="col"
@@ -122,14 +122,6 @@ export const IndividualBookingsTable = ({
                   }
                 />
               </th>
-
-              <th
-                scope="col"
-                className={cn(
-                  styles['column-booking-duo'],
-                  styles['table-header-cell']
-                )}
-              />
 
               <th
                 scope="col"
@@ -214,17 +206,24 @@ export const IndividualBookingsTable = ({
                     styles['table-cell'],
                     styles['column-offer-name']
                   )}
+                  data-label="Nom de l’offre"
                 >
-                  <BookingOfferCell booking={booking} />
-                </td>
+                  <div
+                    className={cn(
+                      styles['cell-item-wrapper'],
+                      styles['offer-details-wrapper']
+                    )}
+                  >
+                    <BookingOfferCell booking={booking} />
 
-                <td
-                  className={cn(
-                    styles['table-cell'],
-                    styles['column-booking-duo']
-                  )}
-                >
-                  <BookingIsDuoCell isDuo={booking.bookingIsDuo} />
+                    {booking.bookingIsDuo && (
+                      <SvgIcon
+                        src={strokeDuoIcon}
+                        alt="Réservation DUO"
+                        className={styles['bookings-duo-icon']}
+                      />
+                    )}
+                  </div>
                 </td>
 
                 <td
@@ -232,8 +231,12 @@ export const IndividualBookingsTable = ({
                     styles['table-cell'],
                     styles['column-beneficiary']
                   )}
+                  data-label="Bénéficiaire"
                 >
-                  <BeneficiaryCell beneficiaryInfos={booking.beneficiary} />
+                  <BeneficiaryCell
+                    beneficiaryInfos={booking.beneficiary}
+                    className={styles['cell-item-wrapper']}
+                  />
                 </td>
 
                 <td
@@ -241,9 +244,11 @@ export const IndividualBookingsTable = ({
                     styles['table-cell'],
                     styles['column-booking-date']
                   )}
+                  data-label="Réservation"
                 >
                   <BookingDateCell
                     bookingDateTimeIsoString={booking.bookingDate}
+                    className={styles['cell-item-wrapper']}
                   />
                 </td>
 
@@ -252,8 +257,11 @@ export const IndividualBookingsTable = ({
                     styles['table-cell'],
                     styles['column-booking-token']
                   )}
+                  data-label="Contremarque"
                 >
-                  <BookingTokenCell bookingToken={booking.bookingToken} />
+                  <span className={styles['cell-item-wrapper']}>
+                    {booking.bookingToken || '-'}
+                  </span>
                 </td>
 
                 <td
@@ -261,8 +269,12 @@ export const IndividualBookingsTable = ({
                     styles['table-cell'],
                     styles['column-booking-status']
                   )}
+                  data-label="Statut"
                 >
-                  <IndividualBookingStatusCell booking={booking} />
+                  <IndividualBookingStatusCell
+                    booking={booking}
+                    className={styles['cell-item-wrapper']}
+                  />
                 </td>
               </tr>
             ))}

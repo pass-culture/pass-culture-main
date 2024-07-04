@@ -207,7 +207,7 @@
               {% for venue_provider in venue.venueProviders %}
                 <p class="mb-1">
                   <span class="fw-bold">Provider :</span>
-                  {{ venue_provider.provider.name }}
+                  {{ links.build_provider_name_to_details_link(venue_provider.provider) }} |
                   {% if has_permission("ADVANCED_PRO_SUPPORT") and venue_provider.provider.localClass != 'AllocineStocks' %}
                     <i class="bi bi-trash3 text-primary"
                        data-bs-toggle="modal"

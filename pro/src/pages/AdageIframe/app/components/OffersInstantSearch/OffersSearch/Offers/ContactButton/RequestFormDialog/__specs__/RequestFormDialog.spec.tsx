@@ -18,8 +18,12 @@ const renderRequestFormDialog = (props?: Partial<RequestFormDialogProps>) => {
       offerId={1}
       userEmail={'contact@example.com'}
       userRole={AdageFrontRoles.REDACTOR}
-      {...props}
+      contactEmail=""
+      contactForm="form"
+      contactPhone=""
+      contactUrl=""
       isPreview={false}
+      {...props}
     />
   )
 }
@@ -28,14 +32,114 @@ vi.mock('apiClient/api', () => ({
   apiAdage: {
     createCollectiveRequest: vi.fn(),
     logRequestFormPopinDismiss: vi.fn(),
+    logContactUrlClick: vi.fn(),
   },
 }))
 
 describe('RequestFormDialog', () => {
-  it('should display user email', () => {
-    renderRequestFormDialog()
+  it('should display passCulture default form', () => {
+    renderRequestFormDialog({
+      contactEmail: '',
+      contactPhone: '',
+      contactForm: 'form',
+      contactUrl: '',
+    })
 
     expect(screen.getByLabelText('Email *')).toHaveValue('contact@example.com')
+  })
+
+  it('should only display mail ', () => {
+    renderRequestFormDialog({
+      contactEmail: 'test@example.com',
+      contactPhone: '',
+      contactForm: '',
+      contactUrl: '',
+    })
+
+    expect(
+      screen.getByText('Il vous propose de le faire par mail :')
+    ).toBeInTheDocument()
+    expect(screen.getByText('test@example.com')).toBeInTheDocument()
+  })
+
+  it('should only display phone number', () => {
+    renderRequestFormDialog({
+      contactEmail: '',
+      contactPhone: '0600000000',
+      contactForm: '',
+      contactUrl: '',
+    })
+
+    expect(
+      screen.getByText('Il vous propose de le faire par téléphone :')
+    ).toBeInTheDocument()
+    expect(screen.getByText('0600000000')).toBeInTheDocument()
+  })
+
+  it('should only display buttonlink of custom form', () => {
+    renderRequestFormDialog({
+      contactEmail: '',
+      contactPhone: '',
+      contactForm: '',
+      contactUrl: 'https://example.com',
+    })
+
+    const buttonLink = screen.getByText('Aller sur le site')
+
+    expect(buttonLink).toHaveAttribute('href', 'https://example.com')
+  })
+
+  it('should display mail and phone', () => {
+    renderRequestFormDialog({
+      contactEmail: 'test@example.com',
+      contactPhone: '0600000000',
+      contactForm: '',
+      contactUrl: '',
+    })
+
+    expect(
+      screen.getByText('Il vous propose de le faire :')
+    ).toBeInTheDocument()
+
+    expect(screen.getByText('test@example.com')).toBeInTheDocument()
+    expect(screen.getByText('0600000000')).toBeInTheDocument()
+  })
+
+  it('should display mail and phone and passCulture default form', () => {
+    renderRequestFormDialog({
+      contactEmail: 'test@example.com',
+      contactPhone: '0600000000',
+      contactForm: 'form',
+      contactUrl: '',
+    })
+
+    expect(
+      screen.getByText('Il vous propose de le faire :')
+    ).toBeInTheDocument()
+
+    expect(screen.getByText('test@example.com')).toBeInTheDocument()
+    expect(screen.getByText('0600000000')).toBeInTheDocument()
+    expect(screen.getByLabelText('Email *')).toHaveValue('contact@example.com')
+  })
+
+  it('should display mail and phone and custom form', () => {
+    renderRequestFormDialog({
+      contactEmail: 'test@example.com',
+      contactPhone: '0600000000',
+      contactForm: '',
+      contactUrl: 'https://example.com',
+    })
+
+    expect(
+      screen.getByText('Il vous propose de le faire :')
+    ).toBeInTheDocument()
+
+    expect(screen.getByText('test@example.com')).toBeInTheDocument()
+    expect(screen.getByText('0600000000')).toBeInTheDocument()
+
+    const buttonLink = screen.getByText('Aller sur le site')
+
+    expect(buttonLink).toHaveAttribute('href', 'https://example.com')
   })
 
   it('should submit valid form and close modal on submit', async () => {
@@ -169,6 +273,24 @@ describe('RequestFormDialog', () => {
       requestedDate: undefined,
       totalStudents: undefined,
       totalTeachers: undefined,
+    })
+  })
+
+  it('should log event when user click on custom link form', async () => {
+    renderRequestFormDialog({
+      contactEmail: '',
+      contactPhone: '',
+      contactForm: '',
+      contactUrl: 'https://example.com',
+    })
+
+    const buttonLink = screen.getByText('Aller sur le site')
+
+    await userEvent.click(buttonLink)
+
+    expect(apiAdage.logContactUrlClick).toHaveBeenCalledWith({
+      iframeFrom: '/',
+      offerId: 1,
     })
   })
 })

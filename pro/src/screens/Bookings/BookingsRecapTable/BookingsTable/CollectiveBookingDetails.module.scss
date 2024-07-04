@@ -27,10 +27,9 @@
 
 .contact-details {
   display: flex;
-  width: rem.torem(315px);
   flex-direction: column;
   gap: rem.torem(8px);
-  padding: rem.torem(16px);
+  padding: rem.torem(8px);
   background-color: var(--color-white);
   border-radius: rem.torem(6px);
   border: rem.torem(1px) solid var(--color-grey-medium);
@@ -87,5 +86,10 @@
 @media (min-width: size.$tablet) {
   .container {
     flex-wrap: nowrap;
+  }
+
+  .contact-details {
+    width: rem.torem(315px);
+    padding: rem.torem(16px);
   }
 }

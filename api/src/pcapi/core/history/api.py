@@ -1,5 +1,6 @@
 import decimal
 import enum
+import math
 import typing
 
 from sqlalchemy.ext.mutable import MutableDict
@@ -89,6 +90,17 @@ class ObjectUpdateSnapshot:
         self.snapshot.set(field_name, old, new)
         return self
 
+    def _is_different(self, field_name: str, old_value: typing.Any, new_value: typing.Any) -> bool:
+        if (
+            ("latitude" in field_name.lower() or "longitude" in field_name.lower())
+            and old_value is not None
+            and new_value is not None
+        ):
+            # Avoid diff: "Latitude : 46.66979 => 46.669789" because of different precision in APIn and db storage
+            return not math.isclose(float(old_value), float(new_value), rel_tol=0.00001)
+
+        return old_value != new_value
+
     def trace_update(
         self,
         data: typing.Mapping,
@@ -130,8 +142,8 @@ class ObjectUpdateSnapshot:
             else:
                 old_value = getattr(target, column)
 
-            if old_value != new_value:
-                field_name = field_name_template.format(column)
+            field_name = field_name_template.format(column)
+            if self._is_different(field_name, old_value, new_value):
                 self.snapshot.set(field_name, old=old_value, new=new_value)
 
         return self

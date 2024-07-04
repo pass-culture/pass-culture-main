@@ -4,11 +4,10 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
-import { Events, OffererLinkEvents } from 'core/FirebaseEvents/constants'
+import { OffererLinkEvents } from 'core/FirebaseEvents/constants'
 import { SAVED_OFFERER_ID_KEY } from 'core/shared/constants'
 import { SelectOption } from 'custom_types/form'
 import fullAddUserIcon from 'icons/full-add-user.svg'
-import fullEditIcon from 'icons/full-edit.svg'
 import { updateSelectedOffererId } from 'store/user/reducer'
 import { selectCurrentOffererId } from 'store/user/selectors'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
@@ -45,7 +44,7 @@ export const OffererDetails = ({
   const handleChangeOfferer = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newOffererId = event.target.value
     if (newOffererId === CREATE_OFFERER_SELECT_ID) {
-      navigate('/structures/creation')
+      navigate('/parcours-inscription/structure')
     } else if (Number(newOffererId) !== selectedOffererId) {
       searchParams.set('structure', newOffererId)
       setSearchParams(searchParams)
@@ -63,6 +62,7 @@ export const OffererDetails = ({
           <SelectInput
             onChange={handleChangeOfferer}
             name="offererId"
+            data-testid="offerer-details-offerId"
             options={[...offererOptions, addOffererOption]}
             value={selectedOffererId ? String(selectedOffererId) : ''}
             aria-label="Structure"
@@ -75,7 +75,7 @@ export const OffererDetails = ({
           <ButtonLink
             variant={ButtonVariant.TERNARY}
             link={{
-              to: `/structures/${selectedOffererId}`,
+              to: `/collaborateurs`,
               isExternal: false,
             }}
             icon={fullAddUserIcon}
@@ -87,25 +87,6 @@ export const OffererDetails = ({
             }}
           >
             Inviter
-          </ButtonLink>
-
-          <div className={cn(styles['separator'])} />
-
-          <ButtonLink
-            variant={ButtonVariant.TERNARY}
-            link={{
-              to: `/structures/${String(selectedOffererId)}`,
-              isExternal: false,
-            }}
-            icon={fullEditIcon}
-            isDisabled={!isUserOffererValidated}
-            onClick={() =>
-              logEvent(Events.CLICKED_MODIFY_OFFERER, {
-                offerer_id: selectedOffererId ?? undefined,
-              })
-            }
-          >
-            Modifier
           </ButtonLink>
         </div>
       </div>

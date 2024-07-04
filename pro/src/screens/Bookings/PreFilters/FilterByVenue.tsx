@@ -1,7 +1,9 @@
-import React from 'react'
+import isEqual from 'lodash.isequal'
+import React, { useState } from 'react'
 
 import { ALL_VENUES_OPTION } from 'core/Bookings/constants'
 import { PreFiltersParams } from 'core/Bookings/types'
+import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import { SelectInput } from 'ui-kit/form/Select/SelectInput'
 import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
 
@@ -24,6 +26,23 @@ export const FilterByVenue = ({
     value: venue.id,
     label: venue.displayName,
   }))
+  const isNewSideNavActive = useIsNewInterfaceActive()
+  const [previousVenues, setPreviousVenues] = useState(
+    venuesFormattedAndOrdered
+  )
+
+  if (
+    isNewSideNavActive &&
+    venuesFormattedAndOrdered.length &&
+    !isEqual(venuesFormattedAndOrdered, previousVenues)
+  ) {
+    if (previousVenues.length) {
+      setTimeout(() => {
+        updateFilters({ offerVenueId: venuesFormattedAndOrdered[0]?.id })
+      })
+    }
+    setPreviousVenues(venuesFormattedAndOrdered)
+  }
 
   return (
     <FieldLayout
@@ -33,7 +52,7 @@ export const FilterByVenue = ({
       isOptional
     >
       <SelectInput
-        defaultOption={ALL_VENUES_OPTION}
+        defaultOption={isNewSideNavActive ? null : ALL_VENUES_OPTION}
         onChange={(event) =>
           updateFilters({ offerVenueId: event.target.value })
         }

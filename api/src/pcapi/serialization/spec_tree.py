@@ -34,7 +34,7 @@ def build_operation_id(func: Callable) -> str:
 class ExtendedSpecTree(SpecTree):
     def __init__(self, *args: Any, humanize_operation_id: bool = False, tags: list[Tag] | None = None, **kwargs: Any):
         """
-        :tags:  An ordered list of tags to structure the swagger and the redoc generated
+        :tags:  An sorted list of tags to structure the swagger and the redoc generated
                 by spectree.
         """
         super().__init__(*args, **kwargs)
@@ -55,9 +55,9 @@ class ExtendedSpecTree(SpecTree):
                     path, _parameters = self.backend.parse_path(route, path_parameter_descriptions)
                     spec["paths"][path][method.lower()]["operationId"] = build_operation_id(func)
 
-        orderered_tags = self._generate_tags_list()
-        if orderered_tags:
-            spec["tags"] = orderered_tags
+        sorted_tags = self._generate_tags_list()
+        if sorted_tags:
+            spec["tags"] = sorted_tags
 
         return spec
 

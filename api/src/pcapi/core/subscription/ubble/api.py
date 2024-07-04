@@ -9,7 +9,6 @@ import flask
 from pydantic.v1.networks import HttpUrl
 
 from pcapi import settings
-from pcapi.analytics.amplitude import events as amplitude_events
 from pcapi.connectors.beneficiaries import outscale
 from pcapi.connectors.beneficiaries import ubble
 from pcapi.core.external.attributes import api as external_attributes_api
@@ -68,7 +67,6 @@ def update_ubble_workflow(fraud_check: fraud_models.BeneficiaryFraudCheck) -> No
 
         if fraud_check.status != fraud_models.FraudCheckStatus.OK:
             handle_validation_errors(user, fraud_check)
-            amplitude_events.track_ubble_error_event(user.id, fraud_check.reasonCodes or [])
 
             return
 

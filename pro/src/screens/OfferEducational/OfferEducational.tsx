@@ -82,9 +82,6 @@ export const OfferEducational = ({
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const isMarseilleEnabled = useActiveFeature('WIP_ENABLE_MARSEILLE')
-  const isCustomContactActive = useActiveFeature(
-    'WIP_ENABLE_COLLECTIVE_CUSTOM_CONTACT'
-  )
   const { mutate } = useSWRConfig()
 
   const {
@@ -99,8 +96,7 @@ export const OfferEducational = ({
     offer,
     offererId,
     venueId,
-    isMarseilleEnabled,
-    isCustomContactActive
+    isMarseilleEnabled
   )
   const isOfferCreated = offer !== undefined
   const initialValues =
@@ -118,17 +114,13 @@ export const OfferEducational = ({
     try {
       if (isTemplate) {
         if (offer === undefined) {
-          const payload = createCollectiveOfferTemplatePayload(
-            offerValues,
-            isCustomContactActive
-          )
+          const payload = createCollectiveOfferTemplatePayload(offerValues)
 
           response = await api.createCollectiveOfferTemplate(payload)
         } else {
           const payload = createPatchOfferTemplatePayload(
             offerValues,
-            initialValues,
-            isCustomContactActive
+            initialValues
           )
 
           response = await api.editCollectiveOfferTemplate(offer.id, payload)
@@ -189,9 +181,7 @@ export const OfferEducational = ({
   const { resetForm, ...formik } = useFormik({
     initialValues,
     onSubmit,
-    validationSchema: getOfferEducationalValidationSchema(
-      isCustomContactActive
-    ),
+    validationSchema: getOfferEducationalValidationSchema(),
   })
 
   if (

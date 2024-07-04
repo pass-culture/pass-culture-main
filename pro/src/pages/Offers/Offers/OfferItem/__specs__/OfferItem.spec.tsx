@@ -4,11 +4,12 @@ import { userEvent } from '@testing-library/user-event'
 import { api } from 'apiClient/api'
 import {
   ApiError,
+  CollectiveBookingStatus,
   CollectiveOfferResponseModel,
+  CollectiveOfferStatus,
   ListOffersOfferResponseModel,
   ListOffersStockResponseModel,
   OfferStatus,
-  CollectiveBookingStatus,
 } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
@@ -18,13 +19,13 @@ import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { Audience } from 'core/shared/types'
 import {
-  listOffersVenueFactory,
   collectiveOfferFactory,
+  listOffersVenueFactory,
 } from 'utils/collectiveApiFactories'
 import { getToday } from 'utils/date'
 import {
-  listOffersStockFactory,
   listOffersOfferFactory,
+  listOffersStockFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -119,11 +120,10 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
           renderOfferItem(props)
 
-          await userEvent.click(screen.getByRole('button'))
+          await userEvent.click(screen.getAllByRole('button')[1])
           const deleteButton = screen.getByRole('button', {
             name: 'Supprimer ce brouillon',
           })
-          expect(deleteButton).toBeInTheDocument()
           await userEvent.click(deleteButton)
           expect(api.deleteDraftOffers).toHaveBeenCalledTimes(1)
           expect(api.deleteDraftOffers).toHaveBeenCalledWith({
@@ -151,7 +151,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
             )
           )
 
-          await userEvent.click(screen.getByRole('button'))
+          await userEvent.click(screen.getAllByRole('button')[1])
           await userEvent.click(
             screen.getByRole('button', {
               name: 'Supprimer ce brouillon',
@@ -395,13 +395,14 @@ describe('src | components | pages | Offers | OfferItem', () => {
         expect(screen.queryByText(/épuisées/)).not.toBeInTheDocument()
       })
 
-      it('should display a warning with number of stocks sold out when at least one stock is sold out', () => {
+      it('should display a warning with number of stocks sold out when at least one stock is sold out', async () => {
         props.offer.stocks = [
           listOffersStockFactory({ remainingQuantity: 0 }),
           listOffersStockFactory({ remainingQuantity: 'unlimited' }),
         ]
 
         renderOfferItem(props)
+        await userEvent.click(screen.getAllByRole('button')[0])
 
         const numberOfStocks = screen.getByText('1 date épuisée', {
           selector: 'span',
@@ -409,7 +410,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         expect(numberOfStocks).toBeInTheDocument()
       })
 
-      it('should pluralize number of stocks sold out when at least two stocks are sold out', () => {
+      it('should pluralize number of stocks sold out when at least two stocks are sold out', async () => {
         props.offer.stocks = [
           listOffersStockFactory({ remainingQuantity: 0 }),
           listOffersStockFactory({ remainingQuantity: 0 }),
@@ -417,6 +418,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         ]
 
         renderOfferItem(props)
+        await userEvent.click(screen.getAllByRole('button')[0])
 
         expect(
           screen.queryByText('2 dates épuisées', { selector: 'span' })
@@ -532,7 +534,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       it('should display booking link for sold out offer with pending booking', () => {
         props.audience = Audience.COLLECTIVE
         props.offer = collectiveOfferFactory({
-          status: OfferStatus.SOLD_OUT,
+          status: CollectiveOfferStatus.SOLD_OUT,
           stocks: [
             listOffersStockFactory({
               remainingQuantity: 0,
@@ -555,7 +557,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
     it('should display booking link for expired offer with booking', () => {
       props.audience = Audience.COLLECTIVE
       props.offer = collectiveOfferFactory({
-        status: OfferStatus.EXPIRED,
+        status: CollectiveOfferStatus.EXPIRED,
         stocks: [
           listOffersStockFactory({
             remainingQuantity: 0,
@@ -588,7 +590,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         ...props,
         audience: Audience.COLLECTIVE,
         offer: collectiveOfferFactory({
-          status: OfferStatus.SOLD_OUT,
+          status: CollectiveOfferStatus.SOLD_OUT,
           stocks: [
             listOffersStockFactory({
               remainingQuantity: 0,
@@ -610,6 +612,8 @@ describe('src | components | pages | Offers | OfferItem', () => {
         CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING,
         {
           from: '/',
+          offerId: 10,
+          offerType: 'collective',
         }
       )
     })
@@ -618,7 +622,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       props.audience = Audience.COLLECTIVE
       props.offer = collectiveOfferFactory({
         stocks,
-        status: OfferStatus.SOLD_OUT,
+        status: CollectiveOfferStatus.SOLD_OUT,
         booking: { booking_status: CollectiveBookingStatus.PENDING, id: 1 },
       })
       renderOfferItem(props)
@@ -648,7 +652,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       props.audience = Audience.COLLECTIVE
       props.offer = collectiveOfferFactory({
         stocks,
-        status: OfferStatus.SOLD_OUT,
+        status: CollectiveOfferStatus.SOLD_OUT,
         booking: { booking_status: 'PENDING', id: 0 },
       })
 

@@ -12,7 +12,7 @@ def create_industrial_venues_with_timezone() -> None:
     offerers_factories.UserOffererFactory(offerer=offerer, user__email="offerer_with_timezone@exemple.com")
 
     # The virtual venue (so it will be on Europe/Paris)
-    offerers_factories.VenueFactory(managingOfferer=offerer, isVirtual=True, siret=None)
+    offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
 
     # America/Cayenne
     offerers_factories.VenueFactory(

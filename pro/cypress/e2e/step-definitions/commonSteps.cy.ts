@@ -16,6 +16,7 @@ When('I go to the {string} page', (page: string) => {
   })
 })
 
+// this account is also in the new interface now
 Given('I am logged in', () => {
   cy.login({
     email: 'retention_structures@example.com',
@@ -44,6 +45,7 @@ When('I select offerer {string}', (offererName: string) => {
   cy.findByTestId('offerer-select').click()
   cy.findByText(/Changer de structure/).click()
   cy.findByTestId('offerers-selection-menu').findByText(offererName).click()
+  cy.findAllByTestId('spinner').should('not.exist')
 })
 
 Then('These results should be displayed', (dataTable: DataTable) => {
@@ -66,7 +68,15 @@ Then('These results should be displayed', (dataTable: DataTable) => {
       .within(() => {
         cy.get('td').then(($elt) => {
           for (let column = 0; column < numColumns; column++) {
-            cy.wrap($elt).eq(column).should('contain', bookLineArray[column])
+            cy.wrap($elt)
+              .eq(column)
+              .then((cellValue) => {
+                if (cellValue.text().length && bookLineArray[column].length) {
+                  return cy.wrap(cellValue).contains(bookLineArray[column])
+                } else {
+                  return true
+                }
+              })
           }
         })
       })

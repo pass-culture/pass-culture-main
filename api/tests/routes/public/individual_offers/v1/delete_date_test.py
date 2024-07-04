@@ -77,7 +77,7 @@ class DeleteDateTest:
         )
 
         assert response.status_code == 404
-        assert response.json == {"date_id": ["The date could not be found"]}
+        assert response.json == {"stock_id": ["No stock could be found"]}
 
     def test_404_if_others_offerer_offer(self, client):
         utils.create_offerer_provider_linked_to_venue()

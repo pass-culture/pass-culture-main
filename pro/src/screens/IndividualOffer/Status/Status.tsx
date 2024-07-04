@@ -1,41 +1,29 @@
 import cn from 'classnames'
 import React from 'react'
 
-import { OfferStatus } from 'apiClient/v1'
+import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { StatusLabel } from 'components/StatusLabel/StatusLabel'
 import { StatusToggleButton } from 'screens/IndividualOffer/Status/StatusToggleButton'
 
 import styles from './Status.module.scss'
 
 interface StatusProps {
-  offerId: number
-  status: OfferStatus
-  isActive: boolean
-  canDeactivate: boolean
+  offer: GetIndividualOfferResponseModel
 }
 
-export const Status = ({
-  offerId,
-  status,
-  isActive,
-  canDeactivate,
-}: StatusProps) => (
+export const Status = ({ offer }: StatusProps) => (
   <div
     className={cn(styles['status'], {
-      [styles['multiple-columns']]: canDeactivate,
+      [styles['multiple-columns']]: offer.isActivable,
     })}
     data-testid="status"
   >
-    {canDeactivate && (
+    {offer.isActivable && (
       <>
-        <StatusToggleButton
-          offerId={offerId}
-          status={status}
-          isActive={isActive}
-        />
+        <StatusToggleButton offer={offer} />
         <div className={styles['separator']} />
       </>
     )}
-    <StatusLabel status={status} />
+    <StatusLabel status={offer.status} />
   </div>
 )

@@ -29,7 +29,6 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
-from pcapi.domain import music_types
 from pcapi.domain import show_types
 from pcapi.models import offer_mixin
 from pcapi.models import validation_status_mixin
@@ -596,7 +595,7 @@ def format_fraud_action_dict_url(fraud_action_dict: dict) -> str:
 
 
 def format_gdpr_date_processed(date_processed: datetime.datetime | None) -> str:
-    return "prêt" if date_processed else "en attente"
+    return "prête" if date_processed else "en attente"
 
 
 def _format_modified_info_value(value: typing.Any, name: str | None = None) -> str:
@@ -638,18 +637,11 @@ def format_modified_info_values(modified_info: typing.Any, name: str | None = No
     return str(modified_info)  # this should not happen if data is consistent
 
 
-def format_music_type(music_type_id: int | str) -> str:
-    try:
-        return music_types.MUSIC_TYPES_LABEL_BY_CODE.get(int(music_type_id), f"Autre[{music_type_id}]")
-    except ValueError:
-        return f"Autre[{music_type_id}]"
-
-
-def format_music_subtype(music_subtype_id: int | str) -> str:
-    try:
-        return music_types.MUSIC_SUB_TYPES_LABEL_BY_CODE.get(int(music_subtype_id), f"Autre[{music_subtype_id}]")
-    except ValueError:
-        return f"Autre[{music_subtype_id}]"
+def format_music_gtl_id(music_gtl_id: str) -> str:
+    return next(
+        (music_genre.label for music_genre in categories.TITELIVE_MUSIC_TYPES if music_genre.gtl_id == music_gtl_id),
+        f"Gtl inconnu [{music_gtl_id}]",
+    )
 
 
 def format_show_type(show_type_id: int | str) -> str:
@@ -756,6 +748,22 @@ def format_modified_info_name(info_name: str) -> str:
             return "Date d'éligibilité à la nouvelle interface Pro"
         case "confidenceRule.confidenceLevel":
             return "Validation des offres"
+        case "offererAddress.addressId":
+            return "Adresse - ID Adresse"
+        case "offererAddress.address.inseeCode":
+            return "Adresse - Code Insee"
+        case "offererAddress.address.city":
+            return "Adresse - Ville"
+        case "offererAddress.address.postalCode":
+            return "Adresse - Code postal"
+        case "offererAddress.address.street":
+            return "Adresse - Adresse"
+        case "offererAddress.address.banId":
+            return "Adresse - Identifiant Base Adresse Nationale"
+        case "offererAddress.address.latitude":
+            return "Adresse - Latitude"
+        case "offererAddress.address.longitude":
+            return "Adresse - Longitude"
 
     if day := match_opening_hours(info_name):
         return f"Horaires du {day}"
@@ -1163,6 +1171,12 @@ def format_legal_category_code(code: int | str) -> str:
     return offerers_constants.CODE_TO_CATEGORY_MAPPING.get(int(code), "Inconnu")
 
 
+def format_venue_provider_count(count: dict | None) -> str:
+    actives = count.get("active", 0) if count else 0
+    inactives = count.get("inactive", 0) if count else 0
+    return f"{actives} actif{'s' if actives>1 else ''} / {inactives} inactif{'s' if inactives>1 else ''}"
+
+
 def install_template_filters(app: Flask) -> None:
     app.jinja_env.trim_blocks = True
     app.jinja_env.lstrip_blocks = True
@@ -1221,8 +1235,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_sub_rules_info_type"] = format_sub_rules_info_type
     app.jinja_env.filters["format_offer_validation_sub_rule"] = format_offer_validation_sub_rule
     app.jinja_env.filters["format_offer_validation_operator"] = format_offer_validation_operator
-    app.jinja_env.filters["format_music_type"] = format_music_type
-    app.jinja_env.filters["format_music_subtype"] = format_music_subtype
+    app.jinja_env.filters["format_music_gtl_id"] = format_music_gtl_id
     app.jinja_env.filters["format_show_type"] = format_show_type
     app.jinja_env.filters["format_show_subtype"] = format_show_subtype
     app.jinja_env.filters["get_comparated_format_function"] = get_comparated_format_function
@@ -1242,6 +1255,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["pc_pro_venue_bookings_link"] = urls.build_pc_pro_venue_bookings_link
     app.jinja_env.filters["pc_pro_venue_offers_link"] = urls.build_pc_pro_venue_offers_link
     app.jinja_env.filters["pc_pro_venue_link"] = urls.build_pc_pro_venue_link
+    app.jinja_env.filters["pc_pro_venue_parameters_link"] = urls.build_pc_pro_venue_parameters_link
     app.jinja_env.filters["pc_backoffice_public_account_link"] = urls.build_backoffice_public_account_link
     app.jinja_env.filters["pc_backoffice_public_account_link_in_comment"] = (
         urls.build_backoffice_public_account_link_in_comment
@@ -1251,3 +1265,4 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_finance_incident_status_badge"] = format_finance_incident_status_badge
     app.jinja_env.filters["format_finance_incident_type"] = format_finance_incident_type
     app.jinja_env.filters["format_finance_incident_type_str"] = format_finance_incident_type_str
+    app.jinja_env.filters["format_venue_provider_count"] = format_venue_provider_count

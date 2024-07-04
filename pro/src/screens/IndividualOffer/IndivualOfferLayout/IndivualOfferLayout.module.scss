@@ -10,9 +10,7 @@
 }
 
 .offer-title {
-  @include fonts.title4;
-
-  font-weight: 500;
+  @include fonts.title4-light;
 }
 
 .title-container {
@@ -22,10 +20,27 @@
 }
 
 .title {
+  @include fonts.title1;
+
   flex: auto;
 }
 
 .status {
   align-self: baseline;
   margin-bottom: rem.torem(16px);
+}
+
+.publication-date {
+  @include fonts.body-important;
+
+  margin-top: rem.torem(4px);
+  display: flex;
+  gap: rem.torem(8px);
+  align-items: center;
+}
+
+.publication-icon {
+  color: var(--color-valid);
+  width: rem.torem(24px);
+  height: rem.torem(24px);
 }

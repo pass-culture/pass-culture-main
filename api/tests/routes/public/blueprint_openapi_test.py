@@ -1,3 +1,4 @@
+import copy
 import json
 
 
@@ -31,40 +32,40 @@ def test_public_api_openapi_json(client):
     response = client.get("/openapi.json")
     assert response.status_code == 200
 
-    # To regenerate the expected JSON use the generate_openapi_json function
+    # JSON to be tested
+    response_json = copy.deepcopy(response.json)
+
+    # To regenerate the expected JSON use the command `flask generate_expected_openapi_json` (in `/usr/src/app/`)
     expected = _get_expected_json()
 
-    # Test paths key
-    for _, path in enumerate(expected["paths"]):
-        # Check path exists
-        assert response.json["paths"][path] is not None
+    # Test paths key (assertions are split for better error readability)
+    # Step 1 : Test sub keys are the same
+    expected_paths_sub_keys = set(expected["paths"].keys())
+    response_paths_sub_keys = set(response_json["paths"].keys())
 
-        for _, http_method in enumerate(expected["paths"][path]):
-            # Check path http_method has not changed
-            assert response.json["paths"][path][http_method] == expected["paths"][path][http_method]
+    assert response_paths_sub_keys == expected_paths_sub_keys
+
+    # Step 2 : Test sub keys contents are equal
+    for path in expected_paths_sub_keys:
+        assert response_json["paths"][path] == expected["paths"][path]
+
+    # Test components keys
+    # -- Tests components.securitySchemes
+    assert response_json["components"]["securitySchemes"] == expected["components"]["securitySchemes"]
+    # -- Tests components.schemas (assertions are split for better error readability)
+    # -- Step 1 : Test sub keys are the same
+    expected_schemas_sub_keys = set(expected["components"]["schemas"].keys())
+    response_schemas_sub_keys = set(response_json["components"]["schemas"].keys())
+
+    assert response_schemas_sub_keys == expected_schemas_sub_keys
+
+    # -- Step 2 : Test sub keys contents are equal
+    for schema in expected_schemas_sub_keys:
+        assert response_json["components"]["schemas"][schema] == expected["components"]["schemas"][schema]
 
     # Test other keys
-    _assert_dicts_are_equal(response.json["components"], expected["components"], ["example"])
-    assert response.json["info"] == expected["info"]
-    assert response.json["tags"] == expected["tags"]
-    assert response.json["servers"] == expected["servers"]
-    assert response.json["openapi"] == expected["openapi"]
-    assert response.json["security"] == expected["security"]
-
-
-def _assert_dicts_are_equal(to_check, expected, keys_to_skip=None):
-    keys_to_skip = keys_to_skip or []
-
-    for _, key in enumerate(expected):
-        # Check key exists
-        assert key in to_check
-
-        if isinstance(expected[key], dict):
-            # Check value is also a dict
-            assert isinstance(to_check[key], dict)
-
-            # Check sub dict
-            _assert_dicts_are_equal(to_check[key], expected[key], keys_to_skip)
-        else:
-            if key not in keys_to_skip:
-                assert expected[key] == to_check[key]
+    assert response_json["info"] == expected["info"]
+    assert response_json["tags"] == expected["tags"]
+    assert response_json["servers"] == expected["servers"]
+    assert response_json["openapi"] == expected["openapi"]
+    assert response_json["security"] == expected["security"]

@@ -2,6 +2,8 @@ import pytest
 from sqlalchemy.exc import IntegrityError
 
 from pcapi.core.geography.factories import AddressFactory
+from pcapi.core.geography.models import Address
+from pcapi.models import db
 
 
 class AddressModelsTest:
@@ -16,14 +18,18 @@ class AddressModelsTest:
             latitude=48.87171,
         )
         with pytest.raises(IntegrityError):
-            AddressFactory(
-                street="89 Rue de la Boétie",
-                postalCode="75008",
-                inseeCode="75056",
-                city="Paris",
-                longitude=2.308289,
-                latitude=48.87171,
+            # We can't use a duplicate AddressFactory here because of `sqlalchemy_get_or_create`
+            db.session.add(
+                Address(
+                    street="89 Rue de la Boétie",
+                    postalCode="75008",
+                    inseeCode="75056",
+                    city="Paris",
+                    longitude=2.308289,
+                    latitude=48.87171,
+                )
             )
+            db.session.commit()
 
     def test_address_department_code_can_only_have_2_or_3_digits(self, db_session) -> None:
         # No departmentCode, should be fine as the field is nullable

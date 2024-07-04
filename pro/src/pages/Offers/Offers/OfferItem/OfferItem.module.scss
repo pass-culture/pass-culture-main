@@ -53,10 +53,11 @@
   }
 
   .title-column {
+    @include fonts.body-exergue;
+
     grid-column: head;
     grid-row: head / desc;
     align-self: center;
-    font-weight: 600;
     padding-top: rem.torem(4px);
 
     .offer-template-tag {
@@ -79,6 +80,7 @@
   .institution-column,
   .title-column {
     display: block;
+    overflow-wrap: anywhere;
   }
 
   .venue-column {
@@ -107,52 +109,52 @@
   }
 }
 
+.isbn {
+  @include fonts.caption;
+
+  color: var(--color-grey-dark);
+}
+
 .stocks {
   @include fonts.caption;
 
   color: var(--color-grey-dark);
   display: flex;
-  font-size: rem.torem(14px);
   align-items: center;
+  position: relative;
+}
 
-  a {
-    color: var(--color-primary);
-  }
+.sold-out-button {
+  border: none;
+  background-color: var(--color-white);
+}
 
-  .sold-out-dates {
-    background-color: var(--color-white);
-    border-radius: rem.torem(4px);
-    box-shadow: 0 rem.torem(2px) rem.torem(10px) 0
-      rgb(from var(--color-black) r g b / 30%);
-    display: none;
-    margin-left: rem.torem(8px);
-    padding: rem.torem(8px);
-    position: absolute;
-
-    img {
-      margin-left: 0;
-      margin-right: rem.torem(9px);
-      width: rem.torem(20px);
-      aspect-ratio: 1 / 1; // To avoid "layout-shift" effect
-    }
-  }
+.sold-out-dates {
+  background-color: var(--color-white);
+  border-radius: rem.torem(4px);
+  box-shadow: 0 rem.torem(2px) rem.torem(10px) 0
+    rgb(from var(--color-black) r g b / 30%);
+  position: absolute;
+  display: block;
+  top: rem.torem(20px);
+  left: rem.torem(40px);
+  width: max-content;
+  margin-left: rem.torem(8px);
+  padding: rem.torem(8px);
 
   .sold-out-icon {
-    width: rem.torem(16px);
-    height: rem.torem(16px);
-    color: var(--color-error-light);
-
-    // Center visually
-    position: relative;
-    top: 2px;
-
-    &:hover,
-    &:focus {
-      & ~ .sold-out-dates {
-        display: flex;
-      }
-    }
+    margin-left: 0;
+    margin-right: rem.torem(4px);
+    margin-top: rem.torem(4px);
   }
+}
+
+.sold-out-icon {
+  width: rem.torem(16px);
+  height: rem.torem(16px);
+  color: var(--color-error-light);
+  margin-left: rem.torem(4px);
+  margin-top: rem.torem(4px);
 }
 
 @media (min-width: size.$mobile) {
@@ -182,6 +184,10 @@
   .offer-item {
     display: table-row;
 
+    > td {
+      padding: rem.torem(8px);
+    }
+
     .venue-column,
     .institution-column,
     .title-column {
@@ -194,6 +200,8 @@
     }
 
     .thumb-column {
+      padding: rem.torem(8px);
+
       a {
         height: unset;
       }
@@ -212,7 +220,6 @@
 
     .actions-column {
       padding: 0 0 0 rem.torem(10px);
-
 
       & > div {
         justify-content: flex-end;
@@ -255,6 +262,10 @@
   &[data-state="open"] {
     color: var(--color-secondary-light);
   }
+
+  &-hide {
+    display: none;
+  }
 }
 
 .menu {
@@ -269,7 +280,7 @@
     justify-content: flex-start;
     width: 100%;
     padding: rem.torem(8px);
-  
+
     &:focus-visible {
       outline: rem.torem(1px) solid var(--color-input-text-color);
       outline-offset: rem.torem(2px);
@@ -293,4 +304,9 @@
 
 .button-cancel-booking {
   color: var(--color-error);
+}
+
+.status-filter-label {
+  cursor: pointer;
+  gap: rem.torem(8px);
 }

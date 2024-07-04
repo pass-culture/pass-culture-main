@@ -65,6 +65,7 @@ class Returns200Test:
         offer = Offer.query.get(offer_id)
         assert offer.bookingContact == "offer@example.com"
         assert offer.bookingEmail == "offer@example.com"
+        assert offer.publicationDate is None
         assert offer.subcategoryId == subcategories.SPECTACLE_REPRESENTATION.id
         assert offer.extraData == {"showType": 200, "showSubType": 201}
         assert offer.externalTicketOfficeUrl == "http://example.net"
@@ -76,6 +77,7 @@ class Returns200Test:
         assert offer.validation == OfferValidationStatus.DRAFT
         assert offer.isActive is False
         assert offer.offererAddress.id == venue.offererAddressId
+        assert not offer.futureOffer
 
     def when_creating_new_thing_offer(self, client):
         # Given
@@ -113,7 +115,7 @@ class Returns200Test:
         assert offer.visualDisabilityCompliant is False
         assert offer.audioDisabilityCompliant is True
         assert offer.mentalDisabilityCompliant is False
-        assert offer.offererAddress.id == venue.offererAddressId
+        assert offer.offererAddress is None
 
     def test_create_offer_with_ean(self, client):
         venue = offerers_factories.VenueFactory()

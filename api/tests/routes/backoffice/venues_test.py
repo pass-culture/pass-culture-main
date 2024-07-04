@@ -8,6 +8,7 @@ from unittest.mock import patch
 from flask import url_for
 import pytest
 
+from pcapi.connectors import api_adresse
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.criteria import models as criteria_models
@@ -65,11 +66,9 @@ def venue_fixture(offerer) -> offerers_models.Venue:
 
 @pytest.fixture(scope="function", name="venue_with_no_siret")
 def venue_with_no_siret_fixture(offerer) -> offerers_models.Venue:
-    venue = offerers_factories.VenueFactory(
+    venue = offerers_factories.VirtualVenueFactory(
         venueLabel=offerers_factories.VenueLabelFactory(label="Lieu test"),
         contact__website="www.example.com",
-        siret=None,
-        isVirtual=True,
     )
     offerers_factories.VenuePricingPointLinkFactory(venue=venue)
     return venue
@@ -378,7 +377,6 @@ class GetVenueTest(GetEndpointHelper):
             lastSyncDate=datetime(2024, 1, 5, 12, 0),
         )
         venue_id = random_venue.id
-
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
             assert response.status_code == 200
@@ -894,43 +892,22 @@ class UpdateVenueTest(PostEndpointHelper):
             "venue_type_code": venue.venueTypeCode.name,
         }
 
-    @override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
-    @override_features(ENABLE_API_ADRESSE_WHILE_CREATING_UPDATING_VENUE=True)
-    def test_update_venue(self, authenticated_client, offerer, requests_mock):
-        requests_mock.get(
-            "https://api-adresse.data.gouv.fr/search?q=23+Boulevard+de+la+Madeleine&postcode=75001&autocomplete=0&limit=1",
-            json={
-                "type": "FeatureCollection",
-                "version": "draft",
-                "features": [
-                    {
-                        "type": "Feature",
-                        "geometry": {"type": "Point", "coordinates": [2.325463, 48.869311]},
-                        "properties": {
-                            "label": "23 Boulevard de la Madeleine 75001 Paris",
-                            "score": 0.7555272727272727,
-                            "housenumber": "23",
-                            "id": "75101_5888_00023",
-                            "name": "23 Boulevard de la Madeleine",
-                            "postcode": "75001",
-                            "citycode": "75101",
-                            "x": 650519.37,
-                            "y": 6863465.04,
-                            "city": "Paris",
-                            "district": "Paris 1er Arrondissement",
-                            "context": "75, Paris, Île-de-France",
-                            "type": "housenumber",
-                            "importance": 0.5608,
-                            "street": "Boulevard de la Madeleine",
-                        },
-                    }
-                ],
-                "attribution": "BAN",
-                "licence": "ETALAB-2.0",
-                "query": "23 Bd de la madeleine, 75001 Paris",
-                "filters": {"postcode": "75001"},
-            },
-        )
+    @patch(
+        "pcapi.connectors.api_adresse.get_address",
+        return_value=api_adresse.AddressInfo(
+            id="75101_5888_00023",
+            label="23 Boulevard de la Madeleine 75001 Paris",
+            postcode="75001",
+            citycode="75101",
+            latitude=48.869311,
+            longitude=2.325463,
+            score=1,
+            city="Paris",
+            street="23 Boulevard de la Madeleine",
+        ),
+    )
+    @override_features(ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE=True)
+    def test_update_venue(self, mock_get_address, authenticated_client, offerer):
         contact_email = "contact.venue@example.com"
         website = "update.venue@example.com"
         social_medias = {"instagram": "https://instagram.com/update.venue"}
@@ -949,6 +926,8 @@ class UpdateVenueTest(PostEndpointHelper):
             "city": "Paris",
             "postal_code": "75001",
             "street": "23 Boulevard de la Madeleine",
+            "ban_id": "75101_5888_00023",
+            "is_manual_address": "",  # autocompletion used
             "booking_email": venue.bookingEmail + ".update",
             "phone_number": "+33102030456",
             "is_permanent": True,
@@ -973,12 +952,15 @@ class UpdateVenueTest(PostEndpointHelper):
         assert venue.city == address.city == data["city"]
         assert venue.postalCode == address.postalCode == data["postal_code"]
         assert venue.street == address.street == data["street"]
+        assert venue.banId == address.banId == data["ban_id"]
         assert venue.bookingEmail == data["booking_email"]
         assert venue.contact.phone_number == data["phone_number"]
         assert venue.isPermanent == data["is_permanent"]
         assert venue.latitude == address.latitude == Decimal("48.86931")
         assert venue.longitude == address.longitude == Decimal("2.32546")
         assert venue.venueTypeCode == offerers_models.VenueTypeCode.CREATIVE_ARTS_STORE
+        assert address.inseeCode == "75101"
+        assert address.isManualEdition is False
 
         assert venue.offererAddressId == offerer_address.id
         assert offerer_address.addressId == address.id
@@ -997,6 +979,10 @@ class UpdateVenueTest(PostEndpointHelper):
         assert update_snapshot["latitude"]["new_info"] == data["latitude"]
         assert update_snapshot["longitude"]["new_info"] == data["longitude"]
         assert update_snapshot["venueTypeCode"]["new_info"] == data["venue_type_code"]
+        assert update_snapshot["offererAddressId"]["new_info"] == offerer_address.id
+        assert update_snapshot["offererAddress.address.latitude"]["new_info"] == data["latitude"]
+        assert update_snapshot["offererAddress.address.longitude"]["new_info"] == data["longitude"]
+        assert update_snapshot["offererAddress.address.city"]["new_info"] == data["city"]
 
         assert len(mails_testing.outbox) == 1
         # check that email is sent when venue is set to permanent and has no image
@@ -1004,6 +990,272 @@ class UpdateVenueTest(PostEndpointHelper):
         assert mails_testing.outbox[0]["template"] == TransactionalEmail.VENUE_NEEDS_PICTURE.value.__dict__
         assert mails_testing.outbox[0]["params"]["VENUE_NAME"] == venue.common_name
         assert mails_testing.outbox[0]["params"]["VENUE_FORM_URL"] == urls.build_pc_pro_venue_link(venue)
+
+    @override_features(ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE=True)
+    def test_update_venue_location_with_offerer_address(self, authenticated_client, offerer):
+        contact_email = "contact.venue@example.com"
+        website = "update.venue@example.com"
+        social_medias = {"instagram": "https://instagram.com/update.venue"}
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=offerer,
+            contact__email=contact_email,
+            contact__website=website,
+            contact__social_medias=social_medias,
+        )
+
+        data = {
+            "name": "IKEA",
+            "public_name": "Ikea city",
+            "siret": venue.managingOfferer.siren + "98765",
+            "city": "Paris",
+            "postal_code": "75001",
+            "street": "23 Boulevard de la Madeleine",
+            "ban_id": "75101_5888_00023",
+            "is_manual_address": "",  # autocompletion used
+            "booking_email": venue.bookingEmail + ".update",
+            "phone_number": "+33102030456",
+            "is_permanent": True,
+            "latitude": "48.869311",
+            "longitude": "2.325463",
+            "venue_type_code": offerers_models.VenueTypeCode.CREATIVE_ARTS_STORE.name,
+            "acceslibre_url": "https://acceslibre.beta.gouv.fr/app/slug/",
+        }
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
+
+        db.session.refresh(venue)
+        offerer_address = offerers_models.OffererAddress.query.one()
+        addresses = geography_models.Address.query.all()
+        assert venue.offererAddressId == offerer_address.id
+
+        assert len(addresses) == 2
+        address = [address for address in addresses if address.id == offerer_address.addressId][0]
+        assert offerer_address.addressId == address.id
+        assert len(venue.action_history) == 1
+
+        update_snapshot = venue.action_history[0].extraData["modified_info"]
+
+        assert update_snapshot["offererAddress.addressId"]["new_info"] == offerer_address.addressId
+
+        assert update_snapshot["street"]["new_info"] == "3 Rue de Valois"
+        assert update_snapshot["bookingEmail"]["new_info"] == data["booking_email"]
+        assert update_snapshot["latitude"]["new_info"] == "48.87171"
+        assert update_snapshot["longitude"]["new_info"] == "2.308289"  # rounding due to Decimal column in db
+        assert update_snapshot["venueTypeCode"]["new_info"] == data["venue_type_code"]
+        assert update_snapshot["offererAddress.address.latitude"]["new_info"] == "48.87171"
+        assert update_snapshot["offererAddress.address.longitude"]["new_info"] == "2.308289"
+        assert "offererAddress.address.city" not in update_snapshot  # not changed
+
+    @pytest.mark.parametrize(
+        "api_adresse_patch_params,expected_insee_code",
+        [
+            ({"side_effect": api_adresse.NoResultException}, None),
+            (
+                {
+                    "return_value": api_adresse.AddressInfo(
+                        id="unused",
+                        label="unused",
+                        postcode="unused",
+                        citycode="97129",
+                        latitude=1,
+                        longitude=1,
+                        score=1,
+                        city="unused",
+                        street="unused",
+                    )
+                },
+                "97129",
+            ),
+        ],
+    )
+    @override_features(ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE=True)
+    def test_updating_venue_manual_address(
+        self, authenticated_client, offerer, api_adresse_patch_params, expected_insee_code
+    ):
+        contact_email = "contact.venue@example.com"
+        website = "update.venue@example.com"
+        social_medias = {"instagram": "https://instagram.com/update.venue"}
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=offerer,
+            contact__email=contact_email,
+            contact__website=website,
+            contact__social_medias=social_medias,
+            offererAddress=None,
+        )
+
+        data = {
+            "name": "Musée du Rhum",
+            "public_name": "Musée du Rhum",
+            "siret": venue.managingOfferer.siren + "98765",
+            "city": "Sainte-Rose",
+            "postal_code": "97115",
+            "street": "Chemin de Bellevue",
+            "ban_id": "97129_hz0hwa_00044",
+            "is_manual_address": "on",
+            "booking_email": venue.bookingEmail + ".update",
+            "phone_number": "+33102030456",
+            "is_permanent": True,
+            "latitude": "16.306774",
+            "longitude": "-61.703636",
+            "venue_type_code": offerers_models.VenueTypeCode.CULTURAL_CENTRE.name,
+            "acceslibre_url": "https://acceslibre.beta.gouv.fr/app/slug/",
+        }
+
+        with patch("pcapi.connectors.api_adresse.get_municipality_centroid", **api_adresse_patch_params):
+            response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
+
+        db.session.refresh(venue)
+        address = geography_models.Address.query.one()
+        offerer_address = offerers_models.OffererAddress.query.one()
+
+        assert venue.timezone == "America/Guadeloupe"
+
+        assert venue.offererAddressId == offerer_address.id
+        assert offerer_address.addressId == address.id
+        assert address.inseeCode == expected_insee_code
+        assert address.timezone == "America/Guadeloupe"
+        assert address.isManualEdition is True
+
+        # should not have been updated or erased
+        assert venue.contact.email == contact_email
+        assert venue.contact.website == website
+        assert venue.contact.social_medias == social_medias
+
+        assert len(venue.action_history) == 1
+
+        assert len(mails_testing.outbox) == 1
+        # check that email is sent when venue is set to permanent and has no image
+        assert mails_testing.outbox[0]["To"] == venue.bookingEmail
+        assert mails_testing.outbox[0]["template"] == TransactionalEmail.VENUE_NEEDS_PICTURE.value.__dict__
+        assert mails_testing.outbox[0]["params"]["VENUE_NAME"] == venue.common_name
+        assert mails_testing.outbox[0]["params"]["VENUE_FORM_URL"] == urls.build_pc_pro_venue_link(venue)
+
+    @patch(
+        "pcapi.connectors.api_adresse.get_municipality_centroid",
+        return_value=api_adresse.AddressInfo(
+            id="unused",
+            label="unused",
+            postcode="unused",
+            citycode="97411",
+            latitude=1,
+            longitude=1,
+            score=1,
+            city="Saint-Denis",
+            street="unused",
+        ),
+    )
+    @override_features(ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE=True)
+    def test_update_venue_manual_address_reuses_existing_address(
+        self, mock_get_municipality_centroid, authenticated_client
+    ):
+        venue = offerers_factories.VenueFactory()
+        offerer_address_id = venue.offererAddressId
+        other_venue = offerers_factories.VenueFactory(
+            street="1 Rue Poivre",
+            postalCode="97400",
+            city="97411",
+            latitude=-20.88756,
+            longitude=55.451442,
+            banId="97411_1120_00001",
+        )
+
+        data = {
+            "name": venue.name,
+            "public_name": venue.publicName,
+            "siret": venue.siret,
+            "city": other_venue.city,
+            "postal_code": other_venue.postalCode,
+            "street": other_venue.street,
+            "ban_id": other_venue.banId,
+            "is_manual_address": "on",
+            "booking_email": venue.bookingEmail,
+            "phone_number": venue.contact.phone_number,
+            "is_permanent": venue.isPermanent,
+            "latitude": other_venue.latitude,
+            "longitude": other_venue.longitude,
+            "venue_type_code": venue.venueTypeCode.name,
+            "acceslibre_url": "",
+        }
+
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+        assert response.status_code == 303
+
+        db.session.refresh(venue)
+
+        assert venue.banId == other_venue.banId
+        assert venue.timezone == "Indian/Reunion"
+
+        assert venue.offererAddressId == offerer_address_id  # unchanged
+        assert venue.offererAddress.addressId == other_venue.offererAddress.addressId
+        assert venue.offererAddress.address.isManualEdition is False
+
+    @patch(
+        "pcapi.connectors.api_adresse.get_municipality_centroid",
+        return_value=api_adresse.AddressInfo(
+            id="unused",
+            label="unused",
+            postcode="unused",
+            citycode="97411",
+            latitude=1,
+            longitude=1,
+            score=1,
+            city="Saint-Denis",
+            street="unused",
+        ),
+    )
+    @override_features(ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE=True)
+    def test_update_venue_manual_address_with_gps_difference(
+        self, mock_get_municipality_centroid, authenticated_client
+    ):
+        venue = offerers_factories.VenueFactory()
+        offerer_address_id = venue.offererAddressId
+        other_venue = offerers_factories.VenueFactory(
+            street="1 Rue Poivre",
+            postalCode="97400",
+            city="97411",
+            latitude=-20.88756,
+            longitude=55.451442,
+            banId="97411_1120_00001",
+        )
+
+        data = {
+            "name": venue.name,
+            "public_name": venue.publicName,
+            "siret": venue.siret,
+            "city": other_venue.city,
+            "postal_code": other_venue.postalCode,
+            "street": other_venue.street,
+            "ban_id": other_venue.banId,
+            "is_manual_address": "on",
+            "booking_email": venue.bookingEmail,
+            "phone_number": venue.contact.phone_number,
+            "is_permanent": venue.isPermanent,
+            "latitude": "-20.88754",
+            "longitude": "55.451008",
+            "venue_type_code": venue.venueTypeCode.name,
+            "acceslibre_url": "",
+        }
+
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+        assert response.status_code == 303
+
+        db.session.refresh(venue)
+
+        assert venue.banId == other_venue.banId
+        assert venue.timezone == "Indian/Reunion"
+
+        assert venue.offererAddressId == offerer_address_id  # unchanged
+        # same street and Insee code but different GPS position: new row because of manual edition
+        assert venue.offererAddress.addressId != other_venue.offererAddress.addressId
+        address = venue.offererAddress.address
+        assert address.latitude == Decimal("-20.88754")
+        assert address.longitude == Decimal("55.45101")
+        assert address.isManualEdition is True
 
     def test_update_venue_without_double_model_writing(self, authenticated_client, offerer):
         contact_email = "contact.venue@example.com"
@@ -1047,6 +1299,7 @@ class UpdateVenueTest(PostEndpointHelper):
         assert venue.siret == data["siret"]
         assert venue.city == data["city"]
         assert venue.postalCode == data["postal_code"]
+        assert venue.banId is None
         assert venue.street == data["street"]
         assert venue.bookingEmail == data["booking_email"]
         assert venue.contact.phone_number == data["phone_number"]
@@ -1125,15 +1378,27 @@ class UpdateVenueTest(PostEndpointHelper):
         db.session.refresh(venue)
         assert venue.contact.phone_number is None
 
-    def test_update_venue_empty_name(self, authenticated_client):
+    @pytest.mark.parametrize(
+        "field,value",
+        [
+            ("name", ""),
+            ("latitude", "48.87.004"),
+            ("latitude", "98.87004"),
+            ("longitude", "2.3785O"),
+            ("longitude", "237.850"),
+        ],
+    )
+    def test_update_venue_with_validation_error(self, authenticated_client, field, value):
         venue = offerers_factories.VenueFactory()
 
         data = self._get_current_data(venue)
-        data["name"] = ""
+        data[field] = value
 
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
 
         assert response.status_code == 400
+        assert "Les données envoyées comportent des erreurs" in response.data.decode("utf-8")
+
         db.session.refresh(venue)
         assert venue.name
 
@@ -1416,6 +1681,46 @@ class UpdateVenueTest(PostEndpointHelper):
                 "banId": {"new_info": "15152_0024_00003", "old_info": "75102_7560_00001"},
             }
         }
+
+    def test_update_venue_latitude_longitude_precision(self, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+
+        data = self._get_current_data(venue)
+        data["latitude"] = "48.870037"
+        data["longitude"] = "2.378504"
+
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+
+        assert response.status_code == 303
+
+        db.session.refresh(venue)
+
+        assert venue.latitude == Decimal("48.87004")
+        assert venue.longitude == Decimal("2.37850")
+        assert len(venue.action_history) == 0
+
+    def test_update_venue_latitude_longitude_not_changed(self, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+        data = self._get_current_data(venue)
+        data["city"] = "Rome"
+        data["is_manual_address"] = "on"
+
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+
+        assert response.status_code == 303
+
+        db.session.refresh(venue)
+        assert len(venue.action_history) == 1
+        update_snapshot = venue.action_history[0].extraData["modified_info"]
+        assert update_snapshot["city"]["new_info"] == "Rome"
+        assert venue.longitude == data["longitude"]
+        assert venue.latitude == data["latitude"]
+        assert venue.offererAddress.address.longitude == data["longitude"]
+        assert venue.offererAddress.address.latitude == data["latitude"]
+        assert "offererAddress.address.longitude" not in update_snapshot
+        assert "offererAddress.address.latitude" not in update_snapshot
+        assert "longitude" not in update_snapshot
+        assert "latitude" not in update_snapshot
 
     def test_update_venue_accessibility_provider_with_url(self, authenticated_client):
         venue = offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.LIBRARY)

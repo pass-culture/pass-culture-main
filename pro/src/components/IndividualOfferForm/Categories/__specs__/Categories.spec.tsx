@@ -21,7 +21,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { Categories, CategoriesProps } from '../Categories'
 import { CATEGORIES_DEFAULT_VALUES } from '../constants'
-import { getValidationSchema } from '../validationSchema'
+import { validationSchema } from '../validationSchema'
 
 const renderCategories = ({
   initialValues,
@@ -39,7 +39,7 @@ const renderCategories = ({
       <Formik
         initialValues={initialValues}
         onSubmit={onSubmit}
-        validationSchema={yup.object().shape(getValidationSchema(true))}
+        validationSchema={yup.object().shape(validationSchema)}
       >
         <Form>
           <Categories {...props} />
@@ -48,8 +48,7 @@ const renderCategories = ({
           </Button>
         </Form>
       </Formik>
-    </IndividualOfferContext.Provider>,
-    { features: ['ENABLE_PRO_TITELIVE_MUSIC_GENRES'] }
+    </IndividualOfferContext.Provider>
   )
 }
 
@@ -154,7 +153,7 @@ describe('IndividualOffer section: Categories', () => {
     )
   })
 
-  it('should display subCategories select when a category is choosed', async () => {
+  it('should display subCategories select when a category is chosen', async () => {
     renderCategories({
       initialValues,
       onSubmit,
@@ -171,7 +170,7 @@ describe('IndividualOffer section: Categories', () => {
     expect(screen.queryByLabelText('Genre musical *')).not.toBeInTheDocument()
   })
 
-  it('should not display type select when a standard subCategory is choosed', async () => {
+  it('should not display type select when a standard subCategory is chosen', async () => {
     renderCategories({
       initialValues,
       onSubmit,
@@ -230,7 +229,7 @@ describe('IndividualOffer section: Categories', () => {
     expect(screen.queryByLabelText('Sous-type')).not.toBeInTheDocument()
   })
 
-  it('should display showType selects when a music subCategory is choosed', async () => {
+  it('should display showType selects when a music subCategory is chosen', async () => {
     renderCategories({
       initialValues,
       onSubmit,

@@ -8,7 +8,6 @@ import {
   GetOffererResponseModel,
 } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
-import { SAVED_OFFERER_ID_KEY } from 'core/shared/constants'
 import { formatBrowserTimezonedDateAsUTC } from 'utils/date'
 import {
   defaultGetOffererResponseModel,
@@ -228,25 +227,6 @@ describe('Homepage', () => {
     expect(
       screen.getByText('Gérer votre page pour les enseignants')
     ).toBeInTheDocument()
-  })
-
-  it('should load saved offerer in localStorage if no get parameter', async () => {
-    const offererId = baseOfferers[1].id
-    localStorage.setItem(SAVED_OFFERER_ID_KEY, offererId.toString())
-
-    renderHomePage()
-    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-
-    expect(api.getOfferer).toHaveBeenCalledWith(offererId)
-  })
-
-  it('should not used saved offerer in localStorage if it is not an option', async () => {
-    localStorage.setItem(SAVED_OFFERER_ID_KEY, '123456')
-
-    renderHomePage()
-    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-
-    expect(api.getOfferer).toHaveBeenCalledWith(baseOfferers[0].id)
   })
 
   it('should display pending offerer banner when rattachement is pending', async () => {

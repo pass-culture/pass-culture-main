@@ -214,7 +214,7 @@ def delete_stock(stock_id: int) -> serialization.StockIdResponseModel:
     stock = (
         offers_models.Stock.queryNotSoftDeleted()
             .filter_by(id=stock_id)
-            .join(offers_models.Offer, Venue)
+            .join(offers_models.Offer).join(Venue)
             .first_or_404()
     )
     # fmt: on

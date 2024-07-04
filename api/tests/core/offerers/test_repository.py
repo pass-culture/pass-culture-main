@@ -218,7 +218,7 @@ class HasNoOfferAndAtLeastOnePhysicalVenueAndCreatedSinceXDaysTest:
 
         # Offerer with only virtual venue and no offer => venue should not be returned
         offerer_with_only_virtual_venue = offerers_factories.OffererFactory(dateValidated=five_days_ago)
-        offerers_factories.VenueFactory(managingOfferer=offerer_with_only_virtual_venue, isVirtual=True, siret=None)
+        offerers_factories.VirtualVenueFactory(managingOfferer=offerer_with_only_virtual_venue)
 
         # Offerer with two physical venues and no offer => venus should be returned
         offerer_with_physical_venue = offerers_factories.OffererFactory(dateValidated=five_days_ago)
@@ -227,9 +227,7 @@ class HasNoOfferAndAtLeastOnePhysicalVenueAndCreatedSinceXDaysTest:
 
         # Offerer with virtual venue and one offer => venue should not be returned
         offerer_with_virtual_offer = offerers_factories.OffererFactory(dateValidated=five_days_ago)
-        virtual_venue = offerers_factories.VenueFactory(
-            managingOfferer=offerer_with_virtual_offer, isVirtual=True, siret=None
-        )
+        virtual_venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer_with_virtual_offer)
         offerers_factories.VenueFactory(managingOfferer=offerer_with_virtual_offer)
         offers_factories.OfferFactory(venue=virtual_venue)
 

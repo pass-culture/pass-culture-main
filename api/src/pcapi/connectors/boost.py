@@ -49,6 +49,7 @@ class ResourceBoost(enum.Enum):
 
 
 LOGIN_ENDPOINT = "api/vendors/login"
+LOGOUT_ENDPOINT = "api/vendors/logout"
 
 
 def build_url(cinema_url: str, resource: ResourceBoost, pattern_values: dict[str, Any] | None = None) -> str:
@@ -96,6 +97,17 @@ def login(cinema_details: BoostCinemaDetails, ignore_device: bool = True) -> str
     cinema_details.tokenExpirationDate = request_date + datetime.timedelta(hours=24)
     repository.save(cinema_details)
     return token
+
+
+def logout(cinema_details: BoostCinemaDetails) -> None:
+    token = cinema_details.token
+    if not token:
+        return
+    url = cinema_details.cinemaUrl + LOGOUT_ENDPOINT
+
+    response = requests.post(url, headers=headers(token))
+
+    _check_response_is_ok(response, token, f"POST {LOGOUT_ENDPOINT}")
 
 
 def headers(token: str) -> dict[str, str]:

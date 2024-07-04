@@ -25,8 +25,7 @@
 }
 
 .offer-info {
-  font-size: rem.torem(12px);
-  font-weight: 600;
+  @include fonts.highlight;
 }
 
 .offer-selection {

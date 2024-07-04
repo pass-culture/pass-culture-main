@@ -71,7 +71,6 @@ export const BookingsSummaryScreen = ({
           src={strokeBookingHold}
           alt=""
           width="128"
-          viewBox="0 0 200 156"
         />
 
         <div>Vous n’avez pas encore de réservations</div>

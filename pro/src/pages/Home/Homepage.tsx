@@ -1,5 +1,5 @@
-import React, { useMemo, useRef, useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useMemo, useRef, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { useSearchParams } from 'react-router-dom'
 import useSWR from 'swr'
 
@@ -20,10 +20,12 @@ import { SAVED_OFFERER_ID_KEY } from 'core/shared/constants'
 import { useCurrentUser } from 'hooks/useCurrentUser'
 import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import { useNotification } from 'hooks/useNotification'
+import { useWelcomeToTheNewBetaBanner } from 'hooks/useWelcomeToTheNewBetaBanner'
 import strokeCloseIcon from 'icons/stroke-close.svg'
 import { WelcomeToTheNewBetaBanner } from 'pages/Home/WelcomeToTheNewBetaBanner/WelcomeToTheNewBetaBanner'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 import { updateSelectedOffererId, updateUser } from 'store/user/reducer'
+import { selectCurrentOffererId } from 'store/user/selectors'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
@@ -46,13 +48,13 @@ import {
 } from './venueUtils'
 
 const HAS_CLOSED_BETA_TEST_BANNER = 'HAS_CLOSED_BETA_TEST_BANNER'
+const HAS_CLOSED_WELCOME_BETA_BANNER = 'HAS_CLOSED_WELCOME_BETA_BANNER'
 
 export const Homepage = (): JSX.Element => {
   const dispatch = useDispatch()
   const hasNewSideBarNavigation = useIsNewInterfaceActive()
   const { currentUser } = useCurrentUser()
   const notify = useNotification()
-  const [searchParams] = useSearchParams()
   const profileRef = useRef<HTMLElement>(null)
   const offerersRef = useRef<HTMLElement>(null)
 
@@ -64,10 +66,20 @@ export const Homepage = (): JSX.Element => {
     new Date(currentUser.navState.eligibilityDate) <=
       new Date(formatBrowserTimezonedDateAsUTC(new Date()))
 
-  const [isNewNavEnabled, setIsNewNavEnabled] = useState(false)
+  const showWelcomeToTheNewBetaBanner = useWelcomeToTheNewBetaBanner()
+
+  const userClosedWelcomeToTheNewBetaBanner = localStorageAvailable()
+    ? localStorage.getItem(HAS_CLOSED_WELCOME_BETA_BANNER)
+    : true
+
+  const [isNewNavEnabled, setIsNewNavEnabled] = useState(
+    !userClosedWelcomeToTheNewBetaBanner && showWelcomeToTheNewBetaBanner
+  )
+
   const [seesNewNavAvailableBanner, setSeesNewNavAvailableBanner] = useState(
     userClosedBetaTestBanner && !hasNewSideBarNavigation && isEligibleToNewNav
   )
+  const [searchParams] = useSearchParams()
 
   const offererNamesQuery = useSWR([GET_OFFERER_NAMES_QUERY_KEY], () =>
     api.listOfferersNames()
@@ -86,20 +98,22 @@ export const Homepage = (): JSX.Element => {
     })) ?? []
   )
 
-  const selectedOffererId =
-    // TODO remove this when noUncheckedIndexedAccess is enabled in TS config
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    searchParams.get('structure') ??
-    getSavedOffererId(offererOptions) ??
-    offererOptions[0]?.value ??
-    ''
+  const headerOffererId = useSelector(selectCurrentOffererId)
+  const selectedOffererId = hasNewSideBarNavigation
+    ? headerOffererId ?? ''
+    : // TODO remove this when noUncheckedIndexedAccess is enabled in TS config
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      searchParams.get('structure') ??
+      getSavedOffererId(offererOptions) ??
+      offererOptions[0]?.value ??
+      ''
 
   const selectedOffererQuery = useSWR(
     offererNames ? [GET_OFFERER_QUERY_KEY, selectedOffererId] : null,
     async ([, offererIdParam]) => {
       try {
         const offerer = await api.getOfferer(Number(offererIdParam))
-        localStorage.setItem(SAVED_OFFERER_ID_KEY, offererIdParam)
+        localStorage.setItem(SAVED_OFFERER_ID_KEY, offererIdParam.toString())
         dispatch(updateSelectedOffererId(Number(offererIdParam)))
 
         return offerer
@@ -164,9 +178,17 @@ export const Homepage = (): JSX.Element => {
     setSeesNewNavAvailableBanner(false)
   }
 
+  function hideWelcomeNPPModal() {
+    localStorageAvailable() &&
+      localStorage.setItem(HAS_CLOSED_WELCOME_BETA_BANNER, 'true')
+    setIsNewNavEnabled(false)
+  }
+
   return (
     <AppLayout>
-      <h1>Bienvenue dans l’espace acteurs culturels</h1>
+      <h1 className={styles['title']}>
+        Bienvenue dans l’espace acteurs culturels
+      </h1>
 
       {seesNewNavAvailableBanner && (
         <div className={styles['beta-banner']}>
@@ -251,7 +273,10 @@ export const Homepage = (): JSX.Element => {
 
       <TutorialDialog />
       {isNewNavEnabled && hasNewSideBarNavigation && (
-        <WelcomeToTheNewBetaBanner setIsNewNavEnabled={setIsNewNavEnabled} />
+        <WelcomeToTheNewBetaBanner
+          onDismiss={hideWelcomeNPPModal}
+          onContinue={hideWelcomeNPPModal}
+        />
       )}
     </AppLayout>
   )

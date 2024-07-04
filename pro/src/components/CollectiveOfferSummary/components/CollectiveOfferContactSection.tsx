@@ -1,5 +1,3 @@
-import React from 'react'
-
 import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
@@ -10,7 +8,6 @@ import {
 } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 import { isCollectiveOfferTemplate } from 'core/OfferEducational/types'
-import { useActiveFeature } from 'hooks/useActiveFeature'
 
 interface CollectiveOfferContactSectionProps {
   offer:
@@ -21,10 +18,6 @@ interface CollectiveOfferContactSectionProps {
 export const CollectiveOfferContactSection = ({
   offer,
 }: CollectiveOfferContactSectionProps) => {
-  const isCustomContactActive = useActiveFeature(
-    'WIP_ENABLE_COLLECTIVE_CUSTOM_CONTACT'
-  )
-
   const isOfferTemplate = isCollectiveOfferTemplate(offer)
 
   const description: Description[] = [
@@ -32,7 +25,7 @@ export const CollectiveOfferContactSection = ({
     { title: 'Téléphone', text: offer.contactPhone ?? '-' },
   ]
 
-  if (isCustomContactActive && isOfferTemplate) {
+  if (isOfferTemplate) {
     const formDescriptionText = offer.contactForm
       ? 'Le formulaire standard Pass Culture'
       : offer.contactUrl

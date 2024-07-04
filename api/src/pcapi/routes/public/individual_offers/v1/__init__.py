@@ -6,3 +6,4 @@ def install_routes(app: Flask) -> None:
     from . import bookings
     from . import events
     from . import products
+    from . import providers

@@ -3,16 +3,16 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import { CollectiveBookingStatus, OfferStatus } from 'apiClient/v1'
+import { CollectiveBookingStatus, CollectiveOfferStatus } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY } from 'config/swrQueryKeys'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
 import { Mode } from 'core/OfferEducational/types'
 import * as useNotification from 'hooks/useNotification'
 import {
+  getCollectiveOfferCollectiveStockFactory,
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
-  getCollectiveOfferCollectiveStockFactory,
 } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -116,7 +116,7 @@ describe('OfferEducationalActions', () => {
     renderOfferEducationalActions({
       ...defaultValues,
       offer: getCollectiveOfferFactory({
-        status: OfferStatus.SOLD_OUT,
+        status: CollectiveOfferStatus.SOLD_OUT,
         lastBookingId: 1,
         lastBookingStatus: CollectiveBookingStatus.CONFIRMED,
       }),
@@ -134,7 +134,7 @@ describe('OfferEducationalActions', () => {
     renderOfferEducationalActions({
       ...defaultValues,
       offer: getCollectiveOfferFactory({
-        status: OfferStatus.EXPIRED,
+        status: CollectiveOfferStatus.EXPIRED,
         lastBookingId: 1,
         lastBookingStatus: CollectiveBookingStatus.USED,
       }),
@@ -152,7 +152,7 @@ describe('OfferEducationalActions', () => {
     renderOfferEducationalActions({
       ...defaultValues,
       offer: getCollectiveOfferFactory({
-        status: OfferStatus.ACTIVE,
+        status: CollectiveOfferStatus.ACTIVE,
         lastBookingId: 1,
         lastBookingStatus: CollectiveBookingStatus.CANCELLED,
       }),
@@ -173,7 +173,7 @@ describe('OfferEducationalActions', () => {
     renderOfferEducationalActions({
       ...defaultValues,
       offer: getCollectiveOfferFactory({
-        status: OfferStatus.ACTIVE,
+        status: CollectiveOfferStatus.ACTIVE,
         lastBookingId: 1,
         lastBookingStatus: CollectiveBookingStatus.CONFIRMED,
       }),
@@ -188,6 +188,8 @@ describe('OfferEducationalActions', () => {
       CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING,
       {
         from: '/offre/collectif/recapitulatif',
+        offerId: 7,
+        offerType: 'collective',
       }
     )
   })
@@ -256,7 +258,7 @@ describe('OfferEducationalActions', () => {
     renderOfferEducationalActions({
       ...defaultValues,
       offer: getCollectiveOfferFactory({
-        status: OfferStatus.PENDING,
+        status: CollectiveOfferStatus.PENDING,
       }),
     })
 

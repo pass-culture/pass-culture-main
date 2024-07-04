@@ -50,6 +50,7 @@ if typing.TYPE_CHECKING:
     from pcapi.core.offerers.models import OffererAddress
     from pcapi.core.offerers.models import Venue
     from pcapi.core.providers.models import Provider
+    from pcapi.core.reactions.models import Reaction
     from pcapi.core.users.models import User
 
 
@@ -157,6 +158,7 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
     name: str = sa.Column(sa.String(140), nullable=False)
     subcategoryId: str = sa.Column(sa.Text, nullable=False, index=True)
     thumb_path_component = "products"
+    reactions: list["Reaction"] = sa.orm.relationship("Reaction", back_populates="product", uselist=True)
     productMediations: sa_orm.Mapped[ProductMediation] = sa.orm.relationship(
         "ProductMediation",
         backref="product",
@@ -487,6 +489,24 @@ class WithdrawalTypeEnum(enum.Enum):
     ON_SITE = "on_site"
 
 
+class FutureOffer(PcObject, Base, Model):
+    __tablename__ = "future_offer"
+
+    offerId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), nullable=False, index=True, unique=True
+    )
+    offer: sa_orm.Mapped["Offer"] = sa.orm.relationship("Offer", back_populates="futureOffer")
+    publicationDate = sa.Column(sa.DateTime, index=True, nullable=False)
+
+    @hybrid_property
+    def isWaitingForPublication(self) -> bool:
+        return datetime.datetime.utcnow() < self.publicationDate
+
+    @isWaitingForPublication.expression  # type: ignore[no-redef]
+    def isWaitingForPublication(cls) -> bool:  # pylint: disable=no-self-argument
+        return sa.func.now() < cls.publicationDate
+
+
 class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, AccessibilityMixin):
     __tablename__ = "offer"
 
@@ -563,6 +583,12 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     offererAddress: sa_orm.Mapped["OffererAddress"] = sa_orm.relationship(
         "OffererAddress", foreign_keys=[offererAddressId], uselist=False
     )
+    futureOffer: sa_orm.Mapped["FutureOffer"] = sa_orm.relationship(
+        "FutureOffer", back_populates="offer", uselist=False
+    )
+    reactions: list["Reaction"] = sa.orm.relationship(
+        "Reaction", back_populates="offer", uselist=True, cascade="all, delete-orphan", passive_deletes=True
+    )
 
     sa.Index("idx_offer_trgm_name", name, postgresql_using="gin")
     sa.Index("offer_idAtProvider", idAtProvider)
@@ -570,9 +596,9 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     sa.Index("offer_visa_idx", extraData["visa"].astext)
     sa.Index("offer_music_type_idx", extraData["musicType"].astext, postgresql_where=extraData["musicType"] is not None)
     sa.Index(
-        "offer_music_sub_type_idx",
-        extraData["musicSubType"].astext,
-        postgresql_where=extraData["musicSubType"] is not None,
+        "offer_music_subcategory_with_gtl_id_substr_idx",
+        sa.func.substr(extraData["gtl_id"].astext, 1, 2),
+        postgresql_where=extraData["gtl_id"] is not None,
     )
     sa.Index("offer_show_type_idx", extraData["showType"].astext, postgresql_where=extraData["showType"] is not None)
     sa.Index(
@@ -886,6 +912,12 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         ):
             return False
         return True
+
+    @property
+    def publicationDate(self) -> datetime.datetime | None:
+        if not self.futureOffer:
+            return None
+        return self.futureOffer.publicationDate
 
 
 class ActivationCode(PcObject, Base, Model):

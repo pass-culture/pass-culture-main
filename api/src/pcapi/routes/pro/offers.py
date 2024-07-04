@@ -74,6 +74,7 @@ def get_offer(offer_id: int) -> offers_serialize.GetIndividualOfferWithAddressRe
         "venue",
         "bookings_count",
         "offerer_address",
+        "future_offer",
     ]
     try:
         offer = offers_repository.get_offer_by_id(offer_id, load_options=load_all)
@@ -297,7 +298,12 @@ def patch_publish_offer(
                 raise api_errors.ApiErrors({"offer": ["Cette offre n’existe pas"]}, status_code=404)
             if not offers_repository.offer_has_bookable_stocks(offer.id):
                 raise api_errors.ApiErrors({"offer": "Cette offre n’a pas de stock réservable"}, 400)
-            offers_api.publish_offer(offer, current_user)
+
+            try:
+                offers_api.publish_offer(offer, current_user, publication_date=body.publicationDate)
+            except exceptions.FutureOfferException as exc:
+                raise api_errors.ApiErrors(exc.errors, status_code=400)
+
             return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
 

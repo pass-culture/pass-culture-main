@@ -9,7 +9,7 @@ import { PhoneNumberInput } from 'ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
-import styles from './NewRequestFormDialog.module.scss'
+import styles from './RequestFormDialog.module.scss'
 import { RequestFormValues } from './type'
 
 type DefaultFormContactProps = {

@@ -12,6 +12,10 @@ BACKENDS_MAPPING = {
 }
 
 
+class FileNotFound(Exception):
+    pass
+
+
 def _check_backends_module_paths() -> None:
     """When the app starts, this checks if the module paths are correct"""
     for path in BACKENDS_MAPPING.values():
@@ -48,7 +52,23 @@ def store_public_object(folder: str, object_id: str, blob: bytes, content_type: 
         backend(bucket_name=bucket).store_public_object(folder, object_id, blob, content_type)
 
 
+def get_public_object(folder: str, object_id: str, *, bucket: str = "") -> list[bytes]:
+    files = []
+    for backend_path in _get_backends():
+        backend = import_string(backend_path)
+        files.append(backend(bucket_name=bucket).get_public_object(folder, object_id))
+    return files
+
+
 def delete_public_object(folder: str, object_id: str, *, bucket: str = "") -> None:
     for backend_path in _get_backends():
         backend = import_string(backend_path)
         backend(bucket_name=bucket).delete_public_object(folder, object_id)
+
+
+def list_files(folder: str, *, bucket: str = "", max_results: int = 1000) -> list[str]:
+    files = []
+    for backend_path in _get_backends():
+        backend = import_string(backend_path)
+        files.extend(backend(bucket_name=bucket).list_files(folder, max_results=max_results))
+    return files

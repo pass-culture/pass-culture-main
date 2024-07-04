@@ -3,42 +3,41 @@ import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 import type * as Redocusaurus from 'redocusaurus';
 
+const env = process.env['ENV'];
+
 const getOpenAPIJsonUrlFromEnv = (): string => {
-  const env = process.env['ENV'];
-
-  // TO DO: update once the proper devops config is available.
-  if (env === 'deploy') {
-    return 'https://backend.testing.passculture.team/openapi.json';
+  if (env === 'testing' || env === 'staging') {
+    return `https://backend.${env}.passculture.team/openapi.json`;
   }
-
-  return 'http://localhost/openapi.json';
+  if (env === 'integration') {
+    return 'https://backend.staging.passculture.team/openapi.json';
+  }
+  if (env === 'production') {
+    return 'https://backend.passculture.pro/openapi.json';
+  }
+  return 'http://localhost:5001/openapi.json';
 }
 
-
 const getDocumentationBaseUrlFromEnv = (): string => {
-  const env = process.env['ENV'];
-
-  // TO DO: update once the proper devops config is available.
-  if (env === 'deploy') {
-    return 'https://pass-culture.github.io';
+  if (env === 'testing' || env === 'staging') {
+    return `https://developers.${env}.passculture.team`;
   }
-
+  if (env === 'integration') {
+    return 'developers.staging.passculture.team';
+  }
+  if (env === 'production') {
+    return 'https://developers.passculture.pro';
+  }
   return 'http://localhost:3000';
 }
 
+
 const config: Config = {
-  title: 'Pass Culture documentation',
+  title: 'API documentation',
   tagline: '',
   favicon: 'img/favicon.ico',
-
-  // TO DO: update once the proper devops config is available.
   url: getDocumentationBaseUrlFromEnv(),
   baseUrl: '/',
-  organizationName: 'pass-culture',
-  projectName: 'pass-culture-api-documentation',
-  deploymentBranch: 'gh-pages',
-  // End TODO
-
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   trailingSlash: false,
@@ -70,7 +69,7 @@ const config: Config = {
           },
         ],
         theme: {
-          primaryColor: '#6123df',
+          primaryColor: '#320096',
         },
       },
     ] satisfies Redocusaurus.PresetEntry,
@@ -82,9 +81,9 @@ const config: Config = {
       disableSwitch: true,
     },
     navbar: {
-      title: 'Pass Culture Developers',
+      title: 'pass Culture Developers',
       logo: {
-        alt: 'Pass Culture Logo',
+        alt: 'pass Culture Logo',
         src: 'img/passculture_logo.jpeg',
       },
       items: [
@@ -117,44 +116,65 @@ const config: Config = {
       style: 'dark',
       links: [
         {
-          title: 'Docs',
+          title: 'pass Culture websites',
           items: [
             {
-              label: 'Documentation',
-              to: '/docs/category/mandatory-steps',
+              label: 'For cultural partners',
+              href: 'https://passculture.pro/accueil',
             },
             {
-              label: 'REST API',
-              to: '/rest-api',
+              label: 'For beneficiaries',
+              href: 'https://passculture.app/accueil',
             },
             {
-              label: 'Change logs',
-              to: '/change-logs',
+              label: 'General information',
+              href: 'https://pass.culture.fr/',
             },
           ],
         },
         {
-          title: 'Community',
+          title: 'Useful links',
           items: [
             {
-              label: 'X',
-              href: 'https://x.com/pass_Culture',
+              label: 'CGU',
+              href: 'https://www.notion.so/passcultureapp/Conditions-G-n-rales-d-Utilisation-des-API-pass-Culture-ed6df4e66ed048e292350285319e6d2a',
             },
-          ],
-        },
-        {
-          title: 'More',
-          items: [
+            {
+              label: 'Help Center',
+              href: 'https://aide.passculture.app/hc/fr',
+            },
             {
               label: 'GitHub',
               href: 'https://github.com/pass-culture/pass-culture-main',
             },
           ],
         },
+        {
+          title: 'Follow us',
+          items: [
+            {
+              label: 'LinkedIn',
+              href: 'https://fr.linkedin.com/company/pass-culture',
+            },
+            {
+              label: 'X',
+              href: 'https://x.com/pass_Culture',
+            },
+            {
+              label: 'Medium',
+              href: 'https://medium.com/passcultureofficiel',
+            },
+            {
+              label: 'TikTok',
+              href: 'https://www.tiktok.com/@passcultureofficiel',
+            },
+          ],
+        },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Pass Culture. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} pass Culture. Built with Docusaurus.`,
     },
     prism: {
+      additionalLanguages: ['php', 'json', 'bash'],
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
     },

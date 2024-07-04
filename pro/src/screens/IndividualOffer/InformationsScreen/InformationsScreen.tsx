@@ -77,10 +77,6 @@ export const InformationsScreen = ({
     'WIP_MANDATORY_BOOKING_CONTACT'
   )
 
-  const isTiteliveMusicGenreEnabled = useActiveFeature(
-    'ENABLE_PRO_TITELIVE_MUSIC_GENRES'
-  )
-
   const queryParams = new URLSearchParams(location.search)
   const queryOfferType = queryParams.get('offer-type')
 
@@ -148,7 +144,6 @@ export const InformationsScreen = ({
               offer,
               formValues,
               shouldSendMail: sendWithdrawalMail,
-              isTiteliveMusicGenreEnabled,
             })
           )
 
@@ -179,6 +174,7 @@ export const InformationsScreen = ({
         isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
         isDraft: mode === OFFER_WIZARD_MODE.CREATION,
         offerId: receivedOfferId,
+        offerType: 'individual',
         subcategoryId: formik.values.subcategoryId,
       })
 
@@ -211,10 +207,7 @@ export const InformationsScreen = ({
   }
 
   const readOnlyFields = setFormReadOnlyFields(offer, currentUser.isAdmin)
-  const validationSchema = getValidationSchema(
-    isTiteliveMusicGenreEnabled,
-    offer?.lastProvider?.name
-  )
+  const validationSchema = getValidationSchema(offer?.lastProvider?.name)
   const formik = useFormik({
     initialValues,
     onSubmit,
@@ -278,7 +271,7 @@ export const InformationsScreen = ({
               Boolean(offer && isOfferDisabled(offer.status)) ||
               isWithdrawalMailDialogOpen
             }
-            dirtyForm={formik.dirty}
+            dirtyForm={formik.dirty || offer === null}
           />
         </form>
       </FormLayout>

@@ -1,6 +1,5 @@
 """
 Add "dateArchived" column to "collective_offer" table.
-collective_offer.dateArchived: DateTime not null
 """
 
 from alembic import op

@@ -45,7 +45,7 @@ describe('CollectiveOfferStockCreation', () => {
     ).toBeInTheDocument()
     expect(
       screen.getByRole('heading', {
-        name: 'Date et prix',
+        name: 'Dates et prix',
       })
     ).toBeInTheDocument()
   })

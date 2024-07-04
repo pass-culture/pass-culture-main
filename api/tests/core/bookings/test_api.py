@@ -12,8 +12,7 @@ from sqlalchemy import create_engine
 import sqlalchemy.exc
 from sqlalchemy.sql import text
 
-from pcapi.analytics.amplitude.backends.amplitude_connector import AmplitudeEventType
-import pcapi.analytics.amplitude.testing as amplitude_testing
+from pcapi.connectors.ems import EMSAPIException
 from pcapi.connectors.ems import EMSBookingConnector
 from pcapi.core import search
 from pcapi.core.bookings import api
@@ -358,7 +357,7 @@ class BookOfferTest:
                 quantity=2,
             )
 
-    def test_logs_event_to_amplitude_and_batch(self):
+    def test_logs_event_to_batch(self):
         # Given
         stock = offers_factories.StockFactory(price=10)
         beneficiary = users_factories.BeneficiaryGrant18Factory()
@@ -367,18 +366,6 @@ class BookOfferTest:
         api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
 
         # Then
-        assert len(amplitude_testing.requests) == 1
-        assert amplitude_testing.requests[0] == {
-            "event_name": AmplitudeEventType.OFFER_BOOKED.value,
-            "event_properties": {
-                "booking_id": stock.bookings[0].id,
-                "category": "FILM",
-                "offer_id": stock.offer.id,
-                "price": 10.00,
-                "subcategory": "SUPPORT_PHYSIQUE_FILM",
-            },
-            "user_id": beneficiary.id,
-        }
         assert push_testing.requests[0] == {
             "can_be_asynchronously_retried": True,
             "event_name": "has_booked_offer",
@@ -811,6 +798,82 @@ class BookOfferTest:
             assert mock_cancel_booking.call_count == 0
             assert not Booking.query.all()
 
+        @patch("flask.current_app.redis_client.llen")
+        @patch("pcapi.core.external_bookings.ems.client.current_app.redis_client.rpop")
+        @patch("pcapi.core.external_bookings.ems.client.EMSClientAPI.cancel_booking_with_tickets")
+        @override_features(ENABLE_EMS_INTEGRATION=True, EMS_CANCEL_PENDING_EXTERNAL_BOOKING=True)
+        @pytest.mark.parametrize(
+            "exception", [requests_exception.Timeout, requests_exception.ReadTimeout, EMSAPIException]
+        )
+        def test_we_dont_crash_will_cancelling_external_booking_if_ems_api_timeout(
+            self,
+            mock_cancel_booking,
+            mock_rpop,
+            mock_llen,
+            exception,
+            requests_mock,
+            caplog,
+        ):
+            token = "AAAAAA"
+            ems_provider = get_provider_by_local_class("EMSStocks")
+            venue_provider = providers_factories.VenueProviderFactory(
+                provider=ems_provider, venueIdAtOfferProvider="9997"
+            )
+            providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
+
+            mock_llen.side_effect = [1, 0]
+            mock_rpop.return_value = json.dumps(
+                {
+                    "cinema_id": venue_provider.venueIdAtOfferProvider,
+                    "token": token,
+                    # Mocking an older booking, otherwise tests runs too fast
+                    "timestamp": (datetime.utcnow() - timedelta(seconds=180)).timestamp(),
+                }
+            )
+
+            payload = {"num_cine": venue_provider.venueIdAtOfferProvider, "num_cmde": token}
+            get_ticket_url = EMSBookingConnector()._build_url("STATUT", payload)
+            get_tickets_adapter = requests_mock.post(
+                url=get_ticket_url,
+                json={
+                    "statut": 1,
+                    "num_cine": "9997",
+                    "id_seance": "999700078774",
+                    "qte_place": 1,
+                    "pass_culture_price": 5.15,
+                    "total_price": 5.15,
+                    "email": "email@email.fr",
+                    "num_pass_culture": "",
+                    "num_cmde": "",
+                    "billets": [
+                        {
+                            "num_caisse": "255",
+                            "code_barre": "000000139863",
+                            "num_trans": 475,
+                            "num_ope": 139863,
+                            "code_tarif": "0RG",
+                            "num_serie": 5,
+                            "montant": 5.15,
+                            "num_place": "",
+                        }
+                    ],
+                },
+            )
+
+            # Cancelling external booking call time out
+            mock_cancel_booking.side_effect = [exception]
+
+            with caplog.at_level(logging.INFO):
+                api.cancel_ems_external_bookings()
+
+            assert get_tickets_adapter.call_count == 1
+            assert mock_rpop.call_count == 1
+            assert mock_cancel_booking.call_count == 1
+            if exception in (requests_exception.ReadTimeout, requests_exception.Timeout):
+                assert "Fail to cancel external booking due to timeout" in caplog.messages
+            else:
+                assert "Fail to cancel external booking due to EMSAPIException: " in caplog.messages
+
         @patch("pcapi.core.bookings.api.external_bookings_api.book_cinema_ticket")
         @override_features(ENABLE_CDS_IMPLEMENTATION=True)
         def test_solo_external_booking(self, mocked_book_cinema_ticket):
@@ -828,7 +891,7 @@ class BookOfferTest:
                 subcategoryId=subcategories.SEANCE_CINE.id,
                 lastProviderId=cinema_provider_pivot.provider.id,
             )
-            stock_solo = offers_factories.EventStockFactory(offer=offer_solo, idAtProviders="1111%4444#111/datetime")
+            stock_solo = offers_factories.EventStockFactory(offer=offer_solo, idAtProviders="1111%4444#111")
 
             # When
             booking = api.book_offer(beneficiary=beneficiary, stock_id=stock_solo.id, quantity=1)
@@ -856,7 +919,7 @@ class BookOfferTest:
                 subcategoryId=subcategories.SEANCE_CINE.id,
                 lastProviderId=cinema_provider_pivot.provider.id,
             )
-            stock_duo = offers_factories.EventStockFactory(offer=offer_duo, idAtProviders="1111%4444#111/datetime")
+            stock_duo = offers_factories.EventStockFactory(offer=offer_duo, idAtProviders="1111%4444#111")
 
             # When
             booking = api.book_offer(beneficiary=beneficiary, stock_id=stock_duo.id, quantity=1)
@@ -1372,24 +1435,6 @@ class CancelByBeneficiaryTest:
 
         mocked_cancel_booking.assert_called()
 
-    def test_cancel_booking_tracked_in_amplitude(self):
-        booking = bookings_factories.BookingFactory()
-
-        api.cancel_booking_by_beneficiary(booking.user, booking)
-
-        assert amplitude_testing.requests[0] == {
-            "event_name": "BOOKING_CANCELLED",
-            "event_properties": {
-                "booking_id": booking.id,
-                "category": "FILM",
-                "offer_id": booking.stock.offerId,
-                "price": 10.10,
-                "reason": BookingCancellationReasons.BENEFICIARY.value,
-                "subcategory": "SUPPORT_PHYSIQUE_FILM",
-            },
-            "user_id": booking.userId,
-        }
-
 
 @pytest.mark.usefixtures("db_session")
 class CancelByOffererTest:
@@ -1508,12 +1553,11 @@ class CancelForFraudTest:
 class CancelBookingTest:
     # Test `_cancel_booking()` internal function.
 
-    # FIXME (dbaty, 2023-09-11): the following test fails because
-    # `pytest_flask_sqlalchemy` introduces extra `SAVEPOINT` queries
-    # that change the behaviour of `ROLLBACK` queries. When run in
-    # tests, the `ROLLBACK` in `_cancel_booking()` does not roll back
-    # anything. When run outside tests, though, the `ROLLBACK` works
-    # well.
+    # The following test fails because `pytest_flask_sqlalchemy`
+    # introduces extra `SAVEPOINT` queries that change the behaviour
+    # of `ROLLBACK` queries. When run in tests, the `ROLLBACK` in
+    # `_cancel_booking()` does not roll back anything. When run
+    # outside tests, though, the `ROLLBACK` works well.
     @pytest.mark.xfail
     def test_cancel_already_used_no_override(self):
         finance_event = finance_factories.UsedBookingFinanceEventFactory(
@@ -1609,22 +1653,6 @@ class MarkAsUsedTest:
         with pytest.raises(exceptions.BookingIsNotConfirmed):
             api.mark_as_used(booking, models.BookingValidationAuthorType.OFFERER)
         assert booking.status is not BookingStatus.USED
-
-    def test_mark_as_used_tracked_to_amplitude(self):
-        booking = bookings_factories.BookingFactory()
-        api.mark_as_used(booking, models.BookingValidationAuthorType.OFFERER)
-        assert len(amplitude_testing.requests) == 1
-        assert amplitude_testing.requests[0] == {
-            "event_name": "BOOKING_USED",
-            "event_properties": {
-                "booking_id": booking.id,
-                "category": "FILM",
-                "offer_id": booking.stock.offerId,
-                "price": 10.10,
-                "subcategory": "SUPPORT_PHYSIQUE_FILM",
-            },
-            "user_id": booking.userId,
-        }
 
 
 @pytest.mark.usefixtures("db_session")

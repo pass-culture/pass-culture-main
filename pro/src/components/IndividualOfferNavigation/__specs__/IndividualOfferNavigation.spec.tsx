@@ -95,11 +95,10 @@ describe('test IndividualOfferNavigation', () => {
       renderIndividualOfferNavigation({
         offer: getIndividualOfferFactory({ isEvent: false }),
       })
-
       expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
       expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
       expect(screen.getByText('Récapitulatif')).toBeInTheDocument()
-      expect(screen.getByText('Confirmation')).toBeInTheDocument()
+      expect(screen.queryByText('Confirmation')).not.toBeInTheDocument()
 
       expect(screen.getByText('Informations screen')).toBeInTheDocument()
       expect(screen.getByTestId('stepper')).toBeInTheDocument()
@@ -121,15 +120,13 @@ describe('test IndividualOfferNavigation', () => {
       expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
       expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
       expect(screen.getByText('Récapitulatif')).toBeInTheDocument()
-      expect(screen.getByText('Confirmation')).toBeInTheDocument()
+      expect(screen.queryByText('Confirmation')).not.toBeInTheDocument()
 
       expect(screen.getByText('Informations screen')).toBeInTheDocument()
 
       await userEvent.click(screen.getByText('Stock & Prix'))
       expect(screen.getByText('Stocks screen')).toBeInTheDocument()
       await userEvent.click(screen.getByText('Récapitulatif'))
-      expect(screen.getByText('Stocks screen')).toBeInTheDocument()
-      await userEvent.click(screen.getByText('Confirmation'))
       expect(screen.getByText('Stocks screen')).toBeInTheDocument()
     })
 
@@ -143,15 +140,13 @@ describe('test IndividualOfferNavigation', () => {
       expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
       expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
       expect(screen.getByText('Récapitulatif')).toBeInTheDocument()
-      expect(screen.getByText('Confirmation')).toBeInTheDocument()
+      expect(screen.queryByText('Confirmation')).not.toBeInTheDocument()
 
       expect(screen.getByText('Informations screen')).toBeInTheDocument()
 
       await userEvent.click(screen.getByText('Stock & Prix'))
       expect(screen.getByText('Stocks screen')).toBeInTheDocument()
       await userEvent.click(screen.getByText('Récapitulatif'))
-      expect(screen.getByText('Summary screen')).toBeInTheDocument()
-      await userEvent.click(screen.getByText('Confirmation'))
       expect(screen.getByText('Summary screen')).toBeInTheDocument()
     })
 
@@ -170,7 +165,7 @@ describe('test IndividualOfferNavigation', () => {
       expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
       expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
       expect(screen.getByText('Récapitulatif')).toBeInTheDocument()
-      expect(screen.getByText('Confirmation')).toBeInTheDocument()
+      expect(screen.queryByText('Confirmation')).not.toBeInTheDocument()
       expect(screen.getByText('Informations screen')).toBeInTheDocument()
     })
 
@@ -189,7 +184,7 @@ describe('test IndividualOfferNavigation', () => {
       expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
       expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
       expect(screen.getByText('Récapitulatif')).toBeInTheDocument()
-      expect(screen.getByText('Confirmation')).toBeInTheDocument()
+      expect(screen.queryByText('Confirmation')).not.toBeInTheDocument()
       expect(screen.getByText('Stocks screen')).toBeInTheDocument()
     })
 
@@ -208,7 +203,7 @@ describe('test IndividualOfferNavigation', () => {
       expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
       expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
       expect(screen.getByText('Récapitulatif')).toBeInTheDocument()
-      expect(screen.getByText('Confirmation')).toBeInTheDocument()
+      expect(screen.queryByText('Confirmation')).not.toBeInTheDocument()
       expect(screen.getByText('Summary screen')).toBeInTheDocument()
     })
 
@@ -235,7 +230,7 @@ describe('test IndividualOfferNavigation', () => {
       expect(screen.getByText('Tarifs')).toBeInTheDocument()
 
       expect(screen.getByText('Récapitulatif')).toBeInTheDocument()
-      expect(screen.getByText('Confirmation')).toBeInTheDocument()
+      expect(screen.queryByText('Confirmation')).not.toBeInTheDocument()
       expect(screen.getByText('Tarifs screen')).toBeInTheDocument()
     })
 
@@ -261,7 +256,7 @@ describe('test IndividualOfferNavigation', () => {
       expect(screen.queryByText('Dates & Capacités')).not.toBeInTheDocument()
       expect(screen.queryByText('Tarifs')).not.toBeInTheDocument()
       expect(screen.getByText('Récapitulatif')).toBeInTheDocument()
-      expect(screen.getByText('Confirmation')).toBeInTheDocument()
+      expect(screen.queryByText('Confirmation')).not.toBeInTheDocument()
       expect(screen.getByText('Stocks screen')).toBeInTheDocument()
     })
   })

@@ -26,6 +26,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
+from pcapi.routes.backoffice.filters import format_date
 from pcapi.routes.backoffice.offerers import offerer_blueprint
 from pcapi.routes.backoffice.pro.forms import TypeOptions
 
@@ -3839,7 +3840,7 @@ class GetIndividualOffererSubscriptionTest(GetEndpointHelper):
         self._assert_steps(
             response.data,
             {
-                "Mail envoyé": None,
+                "Envoi du mail": None,
                 "Casier judiciaire": None,
                 "Diplômes": None,
                 "Certifications professionnelles": None,
@@ -3860,7 +3861,10 @@ class GetIndividualOffererSubscriptionTest(GetEndpointHelper):
         self._assert_steps(
             response.data,
             {
-                "Mail envoyé": ["bi-check-circle-fill", "text-success"],
+                f"Mail envoyé le {format_date(individual_subscription.dateEmailSent)}": [
+                    "bi-check-circle-fill",
+                    "text-success",
+                ],
                 "Casier judiciaire": ["bi-check-circle-fill", "text-success"],
                 "Diplômes": ["bi-exclamation-circle-fill", "text-warning"],
                 "Certifications professionnelles": ["bi-check-circle-fill", "text-success"],
@@ -3881,7 +3885,10 @@ class GetIndividualOffererSubscriptionTest(GetEndpointHelper):
         self._assert_steps(
             response.data,
             {
-                "Mail envoyé": ["bi-check-circle-fill", "text-success"],
+                f"Mail envoyé le {format_date(individual_subscription.dateEmailSent)}": [
+                    "bi-check-circle-fill",
+                    "text-success",
+                ],
                 "Casier judiciaire": ["bi-exclamation-circle-fill", "text-warning"],
                 "Diplômes": ["bi-check-circle-fill", "text-success"],
                 "Certifications professionnelles": ["bi-exclamation-circle-fill", "text-warning"],
@@ -3916,7 +3923,10 @@ class GetIndividualOffererSubscriptionTest(GetEndpointHelper):
         self._assert_steps(
             response.data,
             {
-                "Mail envoyé": ["bi-check-circle-fill", "text-success"],
+                f"Mail envoyé le {format_date(individual_subscription.dateEmailSent)}": [
+                    "bi-check-circle-fill",
+                    "text-success",
+                ],
                 "Casier judiciaire": ["bi-check-circle-fill", "text-success"],
                 "Diplômes": ["bi-check-circle-fill", "text-success"],
                 "Certifications professionnelles": ["bi-check-circle-fill", "text-success"],
@@ -3937,14 +3947,79 @@ class SaveIndividualSubscriptionButtonTest(button_helpers.ButtonHelper):
         )
 
 
+class CreateIndividualOffererSubscriptionTest(PostEndpointHelper):
+    endpoint = "backoffice_web.offerer.create_individual_subscription"
+    endpoint_kwargs = {"offerer_id": 1}
+    needed_permission = perm_models.Permissions.VALIDATE_OFFERER
+
+    def test_create(self, authenticated_client):
+        user_offerer = offerers_factories.UserOffererFactory()
+
+        response = self.post_to_endpoint(authenticated_client, offerer_id=user_offerer.offerer.id)
+        assert response.status_code == 303
+        assert response.location == url_for(
+            "backoffice_web.offerer.get", offerer_id=user_offerer.offerer.id, active_tab="subscription", _external=True
+        )
+        assert user_offerer.offerer.individualSubscription is not None
+        individual_subscription = user_offerer.offerer.individualSubscription
+
+        assert individual_subscription.isEmailSent is True
+        assert individual_subscription.dateEmailSent == datetime.date.today()
+        assert individual_subscription.isCriminalRecordReceived is False
+        assert individual_subscription.dateCriminalRecordReceived is None
+        assert individual_subscription.isCertificateReceived is False
+        assert individual_subscription.certificateDetails is None
+        assert individual_subscription.isExperienceReceived is False
+        assert individual_subscription.experienceDetails is None
+        assert individual_subscription.has1yrExperience is False
+        assert individual_subscription.has5yrExperience is False
+        assert individual_subscription.isCertificateValid is False
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["To"] == user_offerer.user.email
+        assert (
+            mails_testing.outbox[0]["template"]
+            == sendinblue_template_ids.TransactionalEmail.REMINDER_OFFERER_INDIVIDUAL_SUBSCRIPTION.value.__dict__
+        )
+
+    def test_create_if_individual_subscription_already_exists(self, authenticated_client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        individual_subscription = offerers_factories.IndividualOffererSubscriptionFactory(
+            offerer=user_offerer.offerer, isEmailSent=False
+        )
+
+        response = self.post_to_endpoint(authenticated_client, offerer_id=user_offerer.offerer.id)
+        assert response.status_code == 303
+        assert response.location == url_for(
+            "backoffice_web.offerer.get", offerer_id=user_offerer.offerer.id, active_tab="subscription", _external=True
+        )
+
+        assert individual_subscription.isEmailSent is True
+        assert individual_subscription.dateEmailSent == datetime.date.today()
+        assert individual_subscription.isCriminalRecordReceived is False
+        assert individual_subscription.dateCriminalRecordReceived is None
+        assert individual_subscription.isCertificateReceived is False
+        assert individual_subscription.certificateDetails is None
+        assert individual_subscription.isExperienceReceived is False
+        assert individual_subscription.experienceDetails is None
+        assert individual_subscription.has1yrExperience is False
+        assert individual_subscription.has5yrExperience is False
+        assert individual_subscription.isCertificateValid is False
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["To"] == user_offerer.user.email
+        assert (
+            mails_testing.outbox[0]["template"]
+            == sendinblue_template_ids.TransactionalEmail.REMINDER_OFFERER_INDIVIDUAL_SUBSCRIPTION.value.__dict__
+        )
+
+
 class UpdateIndividualOffererSubscriptionTest(PostEndpointHelper):
     endpoint = "backoffice_web.offerer.update_individual_subscription"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
     def _assert_data(self, individual_subscription: offerers_models.IndividualOffererSubscription, form_data: dict):
-        assert individual_subscription.isEmailSent is form_data["is_email_sent"]
-        assert individual_subscription.dateEmailSent == datetime.date.fromisoformat(form_data["date_email_sent"])
         assert individual_subscription.isCriminalRecordReceived is form_data["is_criminal_record_received"]
         assert individual_subscription.dateCriminalRecordReceived == (
             datetime.date.fromisoformat(form_data["date_criminal_record_received"])
@@ -3959,44 +4034,11 @@ class UpdateIndividualOffererSubscriptionTest(PostEndpointHelper):
         assert individual_subscription.has5yrExperience is form_data["has_4yr_experience"]
         assert individual_subscription.isCertificateValid is form_data["is_certificate_valid"]
 
-    def test_create(self, authenticated_client):
-        offerer = offerers_factories.NotValidatedOffererFactory()
-
-        form_data = {
-            "is_email_sent": True,
-            "date_email_sent": (datetime.date.today() - datetime.timedelta(days=2)).isoformat(),
-            "collective_offers": False,
-            "individual_offers": True,
-            "is_criminal_record_received": False,
-            "date_criminal_record_received": None,
-            "is_certificate_received": False,
-            "certificate_details": "",
-            "is_experience_received": False,
-            "experience_details": "",
-            "has_1yr_experience": False,
-            "has_4yr_experience": False,
-            "is_certificate_valid": False,
-        }
-
-        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id, form=form_data)
-
-        assert response.status_code == 303
-        assert response.location == url_for(
-            "backoffice_web.offerer.get", offerer_id=offerer.id, active_tab="subscription", _external=True
-        )
-
-        individual_subscription = offerers_models.IndividualOffererSubscription.query.filter_by(
-            offererId=offerer.id
-        ).one()
-        self._assert_data(individual_subscription, form_data)
-
     def test_update(self, authenticated_client):
         individual_subscription = offerers_factories.IndividualOffererSubscriptionFactory()
         offerer = individual_subscription.offerer
 
         form_data = {
-            "is_email_sent": True,
-            "date_email_sent": (datetime.date.today() - datetime.timedelta(days=2)).isoformat(),
             "collective_offers": True,
             "individual_offers": False,
             "is_criminal_record_received": True,

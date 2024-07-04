@@ -70,20 +70,9 @@
   }
 }
 
-.menu-item-icon {
-  width: rem.torem(20px);
-  height: rem.torem(20px);
-  flex-shrink: 0;
-  margin-right: rem.torem(8px);
-
-  path {
-    fill: var(--color-black);
-  }
-}
-
 .document-type-content {
- display: flex;
- gap: rem.torem(4px);
+  display: flex;
+  gap: rem.torem(4px);
 }
 
 .header-sort {

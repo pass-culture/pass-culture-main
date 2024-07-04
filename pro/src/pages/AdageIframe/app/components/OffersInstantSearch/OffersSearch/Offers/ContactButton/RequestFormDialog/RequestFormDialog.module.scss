@@ -2,11 +2,14 @@
 @use "styles/mixins/_rem.scss" as rem;
 
 .dialog-container {
-  max-width: rem.torem(600px);
+  align-items: flex-start;
+  text-align: left;
+  max-width: rem.torem(576px);
 }
 
-.subtitle {
-  @include fonts.body;
+.contact-callout,
+.contact-readonly {
+  margin-bottom: rem.torem(16px);
 }
 
 .contact-info-container {
@@ -22,30 +25,80 @@
   @include fonts.body-important;
 }
 
-.contact-callout {
-  margin-top: rem.torem(32px);
-  margin-bottom: rem.torem(16px);
-  text-align: left;
-}
-
 .form {
-  &-description {
-    @include fonts.body;
-
-    text-align: justify;
-    margin-top: rem.torem(32px);
-
-    &-text {
-      margin-bottom: rem.torem(32px);
-    }
-  }
-
   &-container {
     width: 100%;
   }
 
-  &-row {
-    width: 50%;
+  &-title {
+    @include fonts.title3;
+  }
+
+  &-description {
+    @include fonts.body;
+
+    display: flex;
+    flex-direction: column;
+    margin-top: rem.torem(32px);
+    width: 100%;
+
+    &-link {
+      display: flex;
+      align-items: center;
+      white-space: break-spaces;
+
+      &-text {
+        gap: rem.torem(8px);
+        align-items: center;
+      }
+
+      &-site {
+        display: block;
+        margin-top: rem.torem(32px);
+        margin-bottom: rem.torem(16px);
+      }
+    }
+
+    &-list {
+      display: flex;
+      flex-direction: column;
+      list-style: disc;
+      margin-left: rem.torem(16px);
+      margin-top: rem.torem(16px);
+
+      li {
+        padding: 0 0 rem.torem(8px) rem.torem(8px);
+      }
+
+      li::marker {
+        font-size: rem.torem(8px);
+      }
+    }
+
+    &-text {
+      &-value {
+        @include fonts.body-important;
+
+        color: var(--color-primary);
+      }
+
+      &-contact {
+        @include fonts.body-important;
+
+        display: block;
+        margin-top: rem.torem(16px);
+        color: var(--color-primary);
+      }
+    }
+  }
+
+  &-icon {
+    margin-left: rem.torem(8px);
+  }
+
+  &-mandatory {
+    margin-top: rem.torem(32px);
+    margin-bottom: rem.torem(16px);
   }
 }
 
@@ -53,5 +106,11 @@
   display: flex;
   margin-top: rem.torem(32px);
   gap: rem.torem(24px);
-  justify-content: center;
+  justify-content: space-between;
+}
+
+hr {
+  margin: rem.torem(16px) 0 0 0;
+  background-image: none;
+  background-color: var(--color-grey-light);
 }

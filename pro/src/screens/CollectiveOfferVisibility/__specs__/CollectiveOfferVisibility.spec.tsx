@@ -5,8 +5,8 @@ import React from 'react'
 import { api } from 'apiClient/api'
 import {
   CollectiveBookingStatus,
+  CollectiveOfferStatus,
   EducationalInstitutionResponseModel,
-  OfferStatus,
 } from 'apiClient/v1'
 import { DEFAULT_VISIBILITY_FORM_VALUES } from 'core/OfferEducational/constants'
 import { Mode } from 'core/OfferEducational/types'
@@ -98,7 +98,7 @@ describe('CollectiveOfferVisibility', () => {
 
   it('should display booking link for sold out offer with pending booking', () => {
     const offer = getCollectiveOfferFactory({
-      status: OfferStatus.SOLD_OUT,
+      status: CollectiveOfferStatus.SOLD_OUT,
       lastBookingStatus: CollectiveBookingStatus.PENDING,
       lastBookingId: 76,
     })

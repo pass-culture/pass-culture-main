@@ -20,6 +20,11 @@ class EditCollectiveOfferStocksTest:
         # Given
         initial_event_date = datetime.datetime.utcnow() + datetime.timedelta(days=5)
         initial_booking_limit_date = datetime.datetime.utcnow() + datetime.timedelta(days=3)
+        educational_factories.EducationalYearFactory(
+            beginningDate=initial_event_date - datetime.timedelta(days=100),
+            expirationDate=initial_event_date + datetime.timedelta(days=100),
+        )
+
         stock_to_be_updated = educational_factories.CollectiveStockFactory(
             beginningDatetime=initial_event_date,
             price=1200,
@@ -51,6 +56,10 @@ class EditCollectiveOfferStocksTest:
         # Given
         initial_event_date = datetime.datetime.utcnow() + datetime.timedelta(days=5)
         initial_booking_limit_date = datetime.datetime.utcnow() + datetime.timedelta(days=3)
+        educational_factories.EducationalYearFactory(
+            beginningDate=initial_event_date - datetime.timedelta(days=100),
+            expirationDate=initial_event_date + datetime.timedelta(days=100),
+        )
         stock_to_be_updated = educational_factories.CollectiveStockFactory(
             beginningDatetime=initial_event_date,
             price=1200,
@@ -79,6 +88,10 @@ class EditCollectiveOfferStocksTest:
         # Given
         initial_event_date = datetime.datetime.utcnow() + datetime.timedelta(days=5)
         initial_booking_limit_date = datetime.datetime.utcnow() + datetime.timedelta(days=3)
+        educational_factories.EducationalYearFactory(
+            beginningDate=initial_event_date - datetime.timedelta(days=100),
+            expirationDate=initial_event_date + datetime.timedelta(days=100),
+        )
         stock_to_be_updated = educational_factories.CollectiveStockFactory(
             beginningDatetime=initial_event_date,
             bookingLimitDatetime=initial_booking_limit_date,
@@ -106,6 +119,10 @@ class EditCollectiveOfferStocksTest:
         # Given
         initial_event_date = datetime.datetime.utcnow() + datetime.timedelta(days=5)
         initial_booking_limit_date = datetime.datetime.utcnow() + datetime.timedelta(days=3)
+        educational_factories.EducationalYearFactory(
+            beginningDate=initial_event_date - datetime.timedelta(days=100),
+            expirationDate=initial_event_date + datetime.timedelta(days=100),
+        )
         stock_to_be_updated = educational_factories.CollectiveStockFactory(
             beginningDatetime=initial_event_date,
             bookingLimitDatetime=initial_booking_limit_date,
@@ -151,6 +168,10 @@ class EditCollectiveOfferStocksTest:
 
     def test_should_not_allow_stock_edition_when_booking_status_is_REIMBURSED_or_USED(self) -> None:
         # Given
+        educational_factories.EducationalYearFactory(
+            beginningDate=datetime.datetime.utcnow() - datetime.timedelta(days=100),
+            expirationDate=datetime.datetime.utcnow() + datetime.timedelta(days=100),
+        )
         stock_to_be_updated = educational_factories.CollectiveStockFactory(
             price=1500,
             beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=2),
@@ -240,6 +261,11 @@ class EditCollectiveOfferStocksTest:
     def test_should_allow_stock_edition_and_not_modify_cancellation_limit_date_when_booking_cancelled(self) -> None:
         # Given
         initial_event_date = datetime.datetime.utcnow() + datetime.timedelta(days=20)
+        educational_factories.EducationalYearFactory(
+            beginningDate=initial_event_date - datetime.timedelta(days=100),
+            expirationDate=initial_event_date + datetime.timedelta(days=100),
+        )
+
         cancellation_limit_date = datetime.datetime.utcnow() + datetime.timedelta(days=5)
         stock_to_be_updated = educational_factories.CollectiveStockFactory(
             beginningDatetime=initial_event_date,
@@ -324,6 +350,10 @@ class returnErrorTest:
         self,
     ) -> None:
         # Given
+        educational_factories.EducationalYearFactory(
+            beginningDate="2021-09-01T22:00:00Z", expirationDate="2022-07-31T22:00:00Z"
+        )
+
         stock_to_be_updated = educational_factories.CollectiveStockFactory(
             beginningDatetime=datetime.datetime(2021, 12, 10), bookingLimitDatetime=datetime.datetime(2021, 12, 5)
         )
@@ -345,6 +375,12 @@ class returnErrorTest:
     def test_should_allow_stock_edition_and_not_modify_cancellation_limit_date_when_booking_cancelled(self) -> None:
         # Given
         initial_event_date = datetime.datetime.utcnow() + datetime.timedelta(days=20)
+
+        educational_factories.EducationalYearFactory(
+            beginningDate=initial_event_date - datetime.timedelta(days=100),
+            expirationDate=initial_event_date + datetime.timedelta(days=100),
+        )
+
         cancellation_limit_date = datetime.datetime.utcnow() + datetime.timedelta(days=5)
         stock_to_be_updated = educational_factories.CollectiveStockFactory(
             beginningDatetime=initial_event_date,
@@ -378,6 +414,10 @@ class returnErrorTest:
         # Given
         offer = educational_factories.CollectiveOfferFactory()
         initial_event_date = datetime.datetime.utcnow() + datetime.timedelta(days=7)
+        educational_factories.EducationalYearFactory(
+            beginningDate=initial_event_date - datetime.timedelta(days=100),
+            expirationDate=initial_event_date + datetime.timedelta(days=100),
+        )
         initial_booking_limit_date = datetime.datetime.utcnow() + datetime.timedelta(days=3)
         stock_to_be_updated = educational_factories.CollectiveStockFactory(
             collectiveOffer=offer,

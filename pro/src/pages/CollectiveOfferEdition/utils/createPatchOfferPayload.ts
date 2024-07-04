@@ -123,8 +123,7 @@ export const createPatchOfferPayload = (
 
 export const createPatchOfferTemplatePayload = (
   offer: OfferEducationalFormValues,
-  initialValues: OfferEducationalFormValues,
-  isCustomContactFormActive: boolean
+  initialValues: OfferEducationalFormValues
 ): PatchCollectiveOfferTemplateBodyModel => {
   const keysToOmmit: (keyof OfferEducationalFormValues)[] = [
     'imageUrl',
@@ -150,23 +149,19 @@ export const createPatchOfferTemplatePayload = (
       changedValues = templateSerializer[key]?.(changedValues, offer) ?? {}
     }
   })
-  // We use this to patch field when user want to make it empty
-  changedValues.contactPhone = offer.phone || null
 
-  if (isCustomContactFormActive) {
-    changedValues.contactEmail =
-      (offer.contactOptions?.email && offer.email) || null
-    changedValues.contactPhone =
-      (offer.contactOptions?.phone && offer.phone) || null
-    changedValues.contactForm =
-      offer.contactOptions?.form && offer.contactFormType === 'form'
-        ? OfferContactFormEnum.FORM
-        : null
-    changedValues.contactUrl =
-      offer.contactOptions?.form && offer.contactFormType === 'url'
-        ? offer.contactUrl
-        : null
-  }
+  changedValues.contactEmail =
+    (offer.contactOptions?.email && offer.email) || null
+  changedValues.contactPhone =
+    (offer.contactOptions?.phone && offer.phone) || null
+  changedValues.contactForm =
+    offer.contactOptions?.form && offer.contactFormType === 'form'
+      ? OfferContactFormEnum.FORM
+      : null
+  changedValues.contactUrl =
+    offer.contactOptions?.form && offer.contactFormType === 'url'
+      ? offer.contactUrl
+      : null
 
   changedValues.nationalProgramId = Number(offer.nationalProgramId) || null
   changedValues.dates =

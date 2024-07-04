@@ -700,7 +700,7 @@ class PriceEventTest:
         ###################################
         # Validate the commercial gesture #
         ###################################
-        api.validate_finance_commercial_gesture(commercial_gesture, force_debit_note=False, author=author_user)
+        api.validate_finance_commercial_gesture(commercial_gesture, author=author_user)
         assert commercial_gesture.status == models.IncidentStatus.VALIDATED
         commercial_gesture_finance_events = models.FinanceEvent.query.filter(
             models.FinanceEvent.id.not_in(
@@ -730,6 +730,7 @@ class PriceEventTest:
         assert commercial_gesture_pricing.pricingPointId == venue.id
         assert commercial_gesture_pricing.bookingId is None
         assert commercial_gesture_pricing.collectiveBookingId is None
+        assert commercial_gesture_pricing.standardRule == "Remboursement total pour les gestes commerciaux"
 
         assert {line.category for line in commercial_gesture_pricing.lines} == {
             models.PricingLineCategory.OFFERER_REVENUE,
@@ -913,6 +914,62 @@ class AddEventTest:
         assert event.pricingPoint == pricing_point
         assert event.pricingOrderingDate == booking.dateUsed
 
+    @override_features(USE_END_DATE_FOR_COLLECTIVE_PRICING=False)
+    def test_used_using_collective_beginningDatetime(self):
+        motive = models.FinanceEventMotive.BOOKING_USED
+        pricing_point = offerers_factories.VenueFactory()
+        booking = educational_factories.UsedCollectiveBookingFactory(
+            collectiveStock__collectiveOffer__venue__pricing_point=pricing_point,
+            collectiveStock__beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=1),
+            collectiveStock__startDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=2),
+            collectiveStock__endDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=3),
+        )
+
+        # Ensures booking.dateUsed, stock.startDatetime, stock.endDatetime and stock.beginningDatetime
+        # are all different. In real life, startDatetime and beginningDatetime should be the same
+        # They are different here to make sure we use beginningDatetime and not startDatetime
+        assert booking.dateUsed != booking.collectiveStock.startDatetime
+        assert booking.dateUsed != booking.collectiveStock.endDatetime
+        assert booking.collectiveStock.startDatetime != booking.collectiveStock.endDatetime
+        assert booking.collectiveStock.startDatetime != booking.collectiveStock.beginningDatetime
+
+        event = api.add_event(motive=motive, booking=booking)
+        db.session.flush()  # setup relations
+
+        assert event.collectiveBooking == booking
+        assert event.status == models.FinanceEventStatus.READY
+        assert event.motive == motive
+        assert event.valueDate == booking.dateUsed
+        assert event.venue == booking.venue
+        assert event.pricingPoint == pricing_point
+        assert event.pricingOrderingDate == booking.collectiveStock.beginningDatetime
+
+    @override_features(USE_END_DATE_FOR_COLLECTIVE_PRICING=True)
+    def test_used_using_collective_endDatetime(self):
+        motive = models.FinanceEventMotive.BOOKING_USED
+        pricing_point = offerers_factories.VenueFactory()
+        booking = educational_factories.UsedCollectiveBookingFactory(
+            collectiveStock__collectiveOffer__venue__pricing_point=pricing_point,
+            collectiveStock__startDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=1),
+            collectiveStock__endDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=2),
+        )
+
+        # Ensures booking.dateUsed, stock.startDatetime and stock.endDatetime are all different
+        assert booking.dateUsed != booking.collectiveStock.startDatetime
+        assert booking.dateUsed != booking.collectiveStock.endDatetime
+        assert booking.collectiveStock.startDatetime != booking.collectiveStock.endDatetime
+
+        event = api.add_event(motive=motive, booking=booking)
+        db.session.flush()  # setup relations
+
+        assert event.collectiveBooking == booking
+        assert event.status == models.FinanceEventStatus.READY
+        assert event.motive == motive
+        assert event.valueDate == booking.dateUsed
+        assert event.venue == booking.venue
+        assert event.pricingPoint == pricing_point
+        assert event.pricingOrderingDate == booking.collectiveStock.endDatetime
+
     def test_used_after_cancellation(self):
         motive = models.FinanceEventMotive.BOOKING_USED_AFTER_CANCELLATION
         pricing_point = offerers_factories.VenueFactory()
@@ -1030,17 +1087,13 @@ class CancelLatestEventTest:
             booking__stock__offer__venue__pricing_point="self",
             status=models.FinanceEventStatus.PRICED,
         )
-        factories.PricingFactory(event=event1, booking=event1.booking)
         event2 = factories.UsedBookingFinanceEventFactory(
             booking__stock__offer__venue__pricing_point=event1.pricingPoint,
             status=models.FinanceEventStatus.PRICED,
         )
         factories.PricingFactory(event=event2, booking=event2.booking)
 
-        api.cancel_latest_event(event1.booking)
-
-        assert event1.status == models.FinanceEventStatus.CANCELLED
-        assert event1.pricings[0].status == models.PricingStatus.CANCELLED
+        api._delete_dependent_pricings(event1, "test_delete_dependent_pricings")
 
         assert event2.status == models.FinanceEventStatus.READY
         assert not event2.pricings
@@ -1061,25 +1114,84 @@ class CancelLatestEventTest:
             booking=event2.booking,
             status=models.PricingStatus.PROCESSED,
         )
+        event3 = factories.UsedBookingFinanceEventFactory(
+            booking__stock__offer__venue__pricing_point=ppoint,
+            status=models.FinanceEventStatus.PRICED,
+        )
+        factories.PricingFactory(
+            event=event3,
+            booking=event3.booking,
+        )
 
         with pytest.raises(exceptions.NonCancellablePricingError):
-            api.cancel_latest_event(event1.booking)
+            api._delete_dependent_pricings(event1, "test_cannot_delete_dependent_pricings_that_are_not_deletable")
+        db.session.refresh(event2)
+        db.session.refresh(event3)
 
         # No changes!
-        assert event1.status == models.FinanceEventStatus.PRICED
-        assert event1.pricings[0].status == models.PricingStatus.VALIDATED
         assert event2.status == models.FinanceEventStatus.PRICED
         assert event2.pricings[0].status == models.PricingStatus.PROCESSED
+        assert event3.status == models.FinanceEventStatus.PRICED
+        assert event3.pricings[0].status == models.PricingStatus.VALIDATED
 
-        with override_settings(FINANCE_OVERRIDE_PRICING_ORDERING_ON_PRICING_POINTS=[ppoint.id]):
-            api.cancel_latest_event(event1.booking)
+        api._delete_dependent_pricings(
+            event1, "test_cannot_delete_dependent_pricings_that_are_not_deletable", [ppoint.id]
+        )
+        db.session.refresh(event2)
+        db.session.refresh(event3)
 
-        # This time, event1 and its pricing were cancelled. event2 and
-        # its pricing were left untouched.
-        assert event1.status == models.FinanceEventStatus.CANCELLED
-        assert event1.pricings[0].status == models.PricingStatus.CANCELLED
+        # This time, it works with no error
         assert event2.status == models.FinanceEventStatus.PRICED  # unchanged
         assert event2.pricings[0].status == models.PricingStatus.PROCESSED  # unchanged
+        assert event3.status == models.FinanceEventStatus.READY
+        assert not event3.pricings
+
+    def test_cannot_delete_dependent_pricings_that_are_not_deletable_with_override(self):
+        event1 = factories.UsedBookingFinanceEventFactory(
+            booking__stock__offer__venue__pricing_point="self",
+            status=models.FinanceEventStatus.PRICED,
+        )
+        ppoint = event1.pricingPoint
+        factories.PricingFactory(event=event1, booking=event1.booking)
+        event2 = factories.UsedBookingFinanceEventFactory(
+            booking__stock__offer__venue__pricing_point=ppoint,
+            status=models.FinanceEventStatus.PRICED,
+        )
+        factories.PricingFactory(
+            event=event2,
+            booking=event2.booking,
+            status=models.PricingStatus.PROCESSED,
+        )
+        event3 = factories.UsedBookingFinanceEventFactory(
+            booking__stock__offer__venue__pricing_point=ppoint,
+            status=models.FinanceEventStatus.PRICED,
+        )
+        factories.PricingFactory(
+            event=event3,
+            booking=event3.booking,
+        )
+
+        with pytest.raises(exceptions.NonCancellablePricingError):
+            api._delete_dependent_pricings(event1, "test_cannot_delete_dependent_pricings_that_are_not_deletable")
+        db.session.refresh(event2)
+        db.session.refresh(event3)
+
+        # No changes!
+        assert event2.status == models.FinanceEventStatus.PRICED
+        assert event2.pricings[0].status == models.PricingStatus.PROCESSED
+        assert event3.status == models.FinanceEventStatus.PRICED
+        assert event3.pricings[0].status == models.PricingStatus.VALIDATED
+
+        with override_settings(FINANCE_OVERRIDE_PRICING_ORDERING_ON_PRICING_POINTS=[ppoint.id]):
+            api._delete_dependent_pricings(event1, "test_cannot_delete_dependent_pricings_that_are_not_deletable")
+        db.session.refresh(event2)
+        db.session.refresh(event3)
+
+        # This time, it works with no error
+        assert event2.status == models.FinanceEventStatus.PRICED  # unchanged
+        assert event2.pricings[0].status == models.PricingStatus.PROCESSED  # unchanged
+        assert event3.status == models.FinanceEventStatus.READY
+        assert not event3.pricings
 
 
 class UpdateFinanceEventPricingDateTest:
@@ -1615,6 +1727,7 @@ class GenerateCashflowsTest:
         n_queries += 1  # compute next CashflowBatch.label
         n_queries += 1  # insert CashflowBatch
         n_queries += 1  # select CashflowBatch again after commit
+        n_queries += 1  # select feature flags
         n_queries += 1  # select reimbursement points and bank account ids to process
         n_queries += 2 * sum(  # 2 reimbursement points
             (
@@ -1729,6 +1842,9 @@ def test_generate_bank_accounts_file():
     assert len(rows) == 3
     for row, bank_account in zip(rows, [bank_account_2, bank_account_3, bank_account_4]):
         assert row == {
+            "Lieux liés au compte bancaire": ", ".join(
+                map(str, sorted(link.venueId for link in bank_account.venueLinks))
+            ),
             "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account.id),
             "SIREN de la structure": bank_account.offerer.siren,
             "Nom de la structure - Libellé des coordonnées bancaires": f"{bank_account.offerer.name} - {bank_account.label}",

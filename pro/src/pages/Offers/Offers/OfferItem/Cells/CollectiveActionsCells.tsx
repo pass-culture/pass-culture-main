@@ -9,9 +9,11 @@ import { getErrorCode, isErrorAPIError } from 'apiClient/helpers'
 import {
   CollectiveBookingStatus,
   CollectiveOfferResponseModel,
-  OfferStatus,
+  CollectiveOfferStatus,
 } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
+import { ArchiveConfirmationModal } from 'components/ArchiveConfirmationModal/ArchiveConfirmationModal'
+import { canArchiveCollectiveOffer } from 'components/ArchiveConfirmationModal/utils/canArchiveCollectiveOffer'
 import { CancelCollectiveBookingModal } from 'components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
 import { GET_COLLECTIVE_OFFERS_QUERY_KEY } from 'config/swrQueryKeys'
 import {
@@ -32,10 +34,12 @@ import fullPenIcon from 'icons/full-edit.svg'
 import fullNextIcon from 'icons/full-next.svg'
 import fullPlusIcon from 'icons/full-plus.svg'
 import fullThreeDotsIcon from 'icons/full-three-dots.svg'
+import strokeThingIcon from 'icons/stroke-thing.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
+import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 import {
   FORMAT_ISO_DATE_ONLY,
   formatBrowserTimezonedDateAsUTC,
@@ -48,7 +52,7 @@ import styles from '../OfferItem.module.scss'
 import { BookingLinkCell } from './BookingLinkCell'
 import { DuplicateOfferDialog } from './DuplicateOfferCell/DuplicateOfferDialog/DuplicateOfferDialog'
 
-interface CollectiveActionsCellsProps {
+export interface CollectiveActionsCellsProps {
   offer: CollectiveOfferResponseModel
   editionOfferLink: string
   urlSearchFilters: SearchFiltersParams
@@ -67,6 +71,7 @@ export const CollectiveActionsCells = ({
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isCancelledBookingModalOpen, setIsCancelledBookingModalOpen] =
     useState(false)
+  const [isArchivedModalOpen, setIsArchivedModalOpen] = useState(false)
   const isLocalStorageAvailable = localStorageAvailable()
   const shouldDisplayModal =
     !isLocalStorageAvailable ||
@@ -88,6 +93,8 @@ export const CollectiveActionsCells = ({
   const onDialogConfirm = async (shouldNotDisplayModalAgain: boolean) => {
     logEvent(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
       from: OFFER_FROM_TEMPLATE_ENTRIES.OFFERS_MODAL,
+      offerId: offer.id,
+      offerType: 'collective',
     })
     if (shouldNotDisplayModalAgain && isLocalStorageAvailable) {
       localStorage.setItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY, 'true')
@@ -106,6 +113,8 @@ export const CollectiveActionsCells = ({
       if (!shouldDisplayModal) {
         logEvent(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
           from: OFFER_FROM_TEMPLATE_ENTRIES.OFFERS,
+          offerId: offer.id,
+          offerType: 'collective',
         })
         await createOfferFromTemplate(
           navigate,
@@ -158,29 +167,63 @@ export const CollectiveActionsCells = ({
     }
   }
 
+  const archiveOffer = async () => {
+    if (!offer.id) {
+      notify.error('L’identifiant de l’offre n’est pas valide.')
+      return
+    }
+    try {
+      if (offer.isShowcase) {
+        await api.patchCollectiveOffersTemplateArchive({ ids: [offer.id] })
+      } else {
+        await api.patchCollectiveOffersArchive({ ids: [offer.id] })
+      }
+
+      await mutate([GET_COLLECTIVE_OFFERS_QUERY_KEY, apiFilters])
+      setIsArchivedModalOpen(false)
+      notify.success('Une offre a bien été archivée', {
+        duration: NOTIFICATION_LONG_SHOW_DURATION,
+      })
+    } catch (error) {
+      notify.error('Une erreur est survenue lors de l’archivage de l’offre', {
+        duration: NOTIFICATION_LONG_SHOW_DURATION,
+      })
+    }
+  }
+
   return (
     <td className={styles['actions-column']}>
       <div className={styles['actions-container']}>
-        {(offer.status === OfferStatus.SOLD_OUT ||
-          offer.status === OfferStatus.EXPIRED) &&
+        {(offer.status === CollectiveOfferStatus.SOLD_OUT ||
+          offer.status === CollectiveOfferStatus.EXPIRED) &&
           offer.booking && (
             <BookingLinkCell
               bookingId={offer.booking.id}
               bookingStatus={offer.booking.booking_status}
               offerEventDate={offer.stocks[0].beginningDatetime}
+              offerId={offer.id}
             />
           )}
         <DropdownMenu.Root modal={false}>
           <DropdownMenu.Trigger className={styles['dropdown-button']} asChild>
-            <ListIconButton icon={fullThreeDotsIcon} title="Action">
+            <ListIconButton
+              icon={fullThreeDotsIcon}
+              title="Action"
+              className={
+                offer.isShowcase &&
+                offer.status === CollectiveOfferStatus.ARCHIVED
+                  ? styles['dropdown-button-hide']
+                  : ''
+              }
+            >
               Voir les actions
             </ListIconButton>
           </DropdownMenu.Trigger>
           <DropdownMenu.Portal>
             <DropdownMenu.Content className={styles['pop-in']} align="start">
               <div className={styles['menu']}>
-                {(offer.status === OfferStatus.SOLD_OUT ||
-                  offer.status === OfferStatus.EXPIRED) &&
+                {(offer.status === CollectiveOfferStatus.SOLD_OUT ||
+                  offer.status === CollectiveOfferStatus.EXPIRED) &&
                   offer.booking && (
                     <>
                       <DropdownMenu.Item
@@ -195,6 +238,8 @@ export const CollectiveActionsCells = ({
                               CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING,
                               {
                                 from: location.pathname,
+                                offerId: offer.id,
+                                offerType: 'collective',
                               }
                             )
                           }
@@ -214,31 +259,44 @@ export const CollectiveActionsCells = ({
                       />
                     </>
                   )}
-                <DropdownMenu.Item
-                  className={styles['menu-item']}
-                  onSelect={handleCreateOfferClick}
-                >
-                  <Button
-                    icon={offer.isShowcase ? fullPlusIcon : fullCopyIcon}
-                    variant={ButtonVariant.TERNARY}
+                {!offer.isShowcase && (
+                  <DropdownMenu.Item
+                    className={styles['menu-item']}
+                    onSelect={handleCreateOfferClick}
                   >
-                    {offer.isShowcase
-                      ? 'Créer une offre réservable'
-                      : 'Dupliquer'}
-                  </Button>
-                </DropdownMenu.Item>
-                {offer.isEditable && !offer.isPublicApi && (
-                  <DropdownMenu.Item className={styles['menu-item']} asChild>
-                    <ButtonLink
-                      link={{ to: editionOfferLink, isExternal: false }}
-                      icon={fullPenIcon}
-                      className={styles['button']}
-                    >
-                      Modifier
-                    </ButtonLink>
+                    <Button icon={fullCopyIcon} variant={ButtonVariant.TERNARY}>
+                      Dupliquer
+                    </Button>
                   </DropdownMenu.Item>
                 )}
-                {offer.status === OfferStatus.SOLD_OUT &&
+                {offer.isShowcase &&
+                  offer.status !== CollectiveOfferStatus.ARCHIVED && (
+                    <DropdownMenu.Item
+                      className={styles['menu-item']}
+                      onSelect={handleCreateOfferClick}
+                    >
+                      <Button
+                        icon={fullPlusIcon}
+                        variant={ButtonVariant.TERNARY}
+                      >
+                        Créer une offre réservable
+                      </Button>
+                    </DropdownMenu.Item>
+                  )}
+                {offer.isEditable &&
+                  !offer.isPublicApi &&
+                  offer.status !== CollectiveOfferStatus.ARCHIVED && (
+                    <DropdownMenu.Item className={styles['menu-item']} asChild>
+                      <ButtonLink
+                        link={{ to: editionOfferLink, isExternal: false }}
+                        icon={fullPenIcon}
+                        className={styles['button']}
+                      >
+                        Modifier
+                      </ButtonLink>
+                    </DropdownMenu.Item>
+                  )}
+                {offer.status === CollectiveOfferStatus.SOLD_OUT &&
                   offer.booking &&
                   (offer.booking.booking_status ===
                     CollectiveBookingStatus.PENDING ||
@@ -266,6 +324,38 @@ export const CollectiveActionsCells = ({
                       </DropdownMenu.Item>
                     </>
                   )}
+
+                {offer.status !== CollectiveOfferStatus.ARCHIVED &&
+                  canArchiveCollectiveOffer(offer) && (
+                    <>
+                      <DropdownMenu.Separator
+                        className={cn(
+                          styles['separator'],
+                          styles['tablet-only']
+                        )}
+                      />
+                      <DropdownMenu.Item
+                        className={cn(styles['menu-item'])}
+                        onSelect={() => setIsArchivedModalOpen(true)}
+                        asChild
+                      >
+                        <div className={styles['status-filter-label']}>
+                          <Button
+                            icon={strokeThingIcon}
+                            variant={ButtonVariant.TERNARY}
+                          >
+                            Archiver
+                          </Button>
+                          <Tag
+                            variant={TagVariant.BLUE}
+                            className={styles['status-filter-tag']}
+                          >
+                            Nouveau
+                          </Tag>
+                        </div>
+                      </DropdownMenu.Item>
+                    </>
+                  )}
               </div>
             </DropdownMenu.Content>
           </DropdownMenu.Portal>
@@ -281,6 +371,12 @@ export const CollectiveActionsCells = ({
             onDismiss={() => setIsCancelledBookingModalOpen(false)}
             onValidate={cancelBooking}
             isFromOffer
+          />
+        )}
+        {isArchivedModalOpen && (
+          <ArchiveConfirmationModal
+            onDismiss={() => setIsArchivedModalOpen(false)}
+            onValidate={archiveOffer}
           />
         )}
       </div>

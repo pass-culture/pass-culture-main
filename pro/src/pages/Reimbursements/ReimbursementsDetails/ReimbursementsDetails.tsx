@@ -110,7 +110,6 @@ export const ReimbursementsDetails = (): JSX.Element => {
         <SvgIcon
           src={strokeNoBookingIcon}
           alt=""
-          viewBox="0 0 200 156"
           className="no-refunds-icon"
           width="124"
         />

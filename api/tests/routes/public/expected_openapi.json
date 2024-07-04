@@ -834,21 +834,29 @@
                 "description": "Accessibility for people with disabilities.",
                 "properties": {
                     "audioDisabilityCompliant": {
+                        "description": "Is accessible for people with hearing disability",
+                        "example": true,
                         "nullable": true,
                         "title": "Audiodisabilitycompliant",
                         "type": "boolean"
                     },
                     "mentalDisabilityCompliant": {
+                        "description": "Is accessible for people with mental or cognitive disability",
+                        "example": true,
                         "nullable": true,
                         "title": "Mentaldisabilitycompliant",
                         "type": "boolean"
                     },
                     "motorDisabilityCompliant": {
+                        "description": "Is accessible for people with motor disability",
+                        "example": true,
                         "nullable": true,
                         "title": "Motordisabilitycompliant",
                         "type": "boolean"
                     },
                     "visualDisabilityCompliant": {
+                        "description": "Is accessible for people with visual disability",
+                        "example": true,
                         "nullable": true,
                         "title": "Visualdisabilitycompliant",
                         "type": "boolean"
@@ -1449,40 +1457,52 @@
             "CollectiveBookingResponseModel": {
                 "properties": {
                     "cancellationLimitDate": {
+                        "description": "Deadline to cancel the booking",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Cancellationlimitdate",
                         "type": "string"
                     },
                     "confirmationDate": {
+                        "description": "When the booking was confirmed",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Confirmationdate",
                         "type": "string"
                     },
                     "dateCreated": {
+                        "description": "When the booking was made",
                         "format": "date-time",
                         "title": "Datecreated",
                         "type": "string"
                     },
                     "dateUsed": {
+                        "description": "When the booking was used",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Dateused",
                         "type": "string"
                     },
                     "id": {
+                        "description": "Collective booking id",
                         "title": "Id",
                         "type": "integer"
                     },
                     "reimbursementDate": {
+                        "description": "When the booking was reimbursed",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Reimbursementdate",
                         "type": "string"
                     },
                     "status": {
-                        "$ref": "#/components/schemas/CollectiveBookingStatus"
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/CollectiveBookingStatus"
+                            }
+                        ],
+                        "description": "Collective booking status",
+                        "example": "PENDING"
                     }
                 },
                 "required": [
@@ -1503,6 +1523,21 @@
                     "REIMBURSED"
                 ],
                 "title": "CollectiveBookingStatus"
+            },
+            "CollectiveOfferStatus": {
+                "description": "An enumeration.",
+                "enum": [
+                    "ACTIVE",
+                    "PENDING",
+                    "EXPIRED",
+                    "REJECTED",
+                    "SOLD_OUT",
+                    "INACTIVE",
+                    "DRAFT",
+                    "ARCHIVED"
+                ],
+                "title": "CollectiveOfferStatus",
+                "type": "string"
             },
             "CollectiveOffersCategoryResponseModel": {
                 "properties": {
@@ -1654,6 +1689,8 @@
             "CollectiveOffersResponseModel": {
                 "properties": {
                     "beginningDatetime": {
+                        "description": "Collective offer beginning datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "example": "2034-07-24T14:00:00+02:00",
                         "title": "Beginningdatetime",
                         "type": "string"
                     },
@@ -1665,22 +1702,32 @@
                         "type": "array"
                     },
                     "endDatetime": {
+                        "description": "Collective offer end datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "example": "2034-07-24T14:00:00+02:00",
                         "title": "Enddatetime",
                         "type": "string"
                     },
                     "id": {
+                        "description": "Collective offer id",
+                        "example": 12345,
                         "title": "Id",
                         "type": "integer"
                     },
                     "startDatetime": {
+                        "description": "Collective offer start datetime. Replaces beginning dateime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "example": "2034-07-24T14:00:00+02:00",
                         "title": "Startdatetime",
                         "type": "string"
                     },
                     "status": {
+                        "description": "\n**Offer status:**\n\n- `ACTIVE`: offer is validated and active. \n\n\n- `DRAFT`: offer is still a draft and not yet submitted for validation. This status is not applicable to offers created via this API.\n\n\n- `EXPIRED`: offer is validated but the booking limit datetime has passed.\n\n\n- `INACTIVE`: offer is not active and cannot be booked.\n\n\n- `PENDING`: offer is pending for pass Culture rules compliance validation. This step may take up to 72 hours.\n\n\n- `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n\n- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.\n\n\n- `ARCHIVED`: offer is archived by pro.",
+                        "example": "ACTIVE",
                         "title": "Status",
                         "type": "string"
                     },
                     "venueId": {
+                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
+                        "example": 1234,
                         "title": "Venueid",
                         "type": "integer"
                     }
@@ -1772,14 +1819,14 @@
                 "properties": {
                     "beginningDatetime": {
                         "description": "Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-14T14:00:00+02:00",
+                        "example": "2034-07-24T14:00:00+02:00",
                         "format": "date-time",
                         "title": "Beginningdatetime",
                         "type": "string"
                     },
                     "bookingLimitDatetime": {
                         "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-14T14:00:00+02:00",
+                        "example": "2034-07-24T14:00:00+02:00",
                         "format": "date-time",
                         "title": "Bookinglimitdatetime",
                         "type": "string"
@@ -1793,6 +1840,8 @@
                         "type": "string"
                     },
                     "priceCategoryId": {
+                        "description": "Price category id",
+                        "example": 12,
                         "title": "Pricecategoryid",
                         "type": "integer"
                     },
@@ -1808,7 +1857,7 @@
                                 "type": "string"
                             }
                         ],
-                        "description": "Quantity of items currently available to pass Culture. Value 'unlimited' is used for infinite quantity of items.",
+                        "description": "Quantity of items currently available to pass Culture. Value `'unlimited'` is used for infinite quantity of items.",
                         "example": 10,
                         "title": "Quantity"
                     }
@@ -1827,7 +1876,7 @@
                 "properties": {
                     "beginningDatetime": {
                         "description": "Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-14T14:00:00+02:00",
+                        "example": "2034-07-24T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Beginningdatetime",
@@ -1835,7 +1884,7 @@
                     },
                     "bookingLimitDatetime": {
                         "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-14T14:00:00+02:00",
+                        "example": "2034-07-24T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Bookinglimitdatetime",
@@ -1850,6 +1899,8 @@
                         "type": "string"
                     },
                     "priceCategoryId": {
+                        "description": "Price category id",
+                        "example": 12,
                         "nullable": true,
                         "title": "Pricecategoryid",
                         "type": "integer"
@@ -1866,7 +1917,7 @@
                                 "type": "string"
                             }
                         ],
-                        "description": "Quantity of items currently available to pass Culture. Value 'unlimited' is used for infinite quantity of items.",
+                        "description": "Quantity of items currently available to pass Culture. Value `'unlimited'` is used for infinite quantity of items.",
                         "example": 10,
                         "nullable": true,
                         "title": "Quantity"
@@ -1879,7 +1930,7 @@
                 "properties": {
                     "beginningDatetime": {
                         "description": "Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-14T14:00:00+02:00",
+                        "example": "2034-07-24T14:00:00+02:00",
                         "format": "date-time",
                         "title": "Beginningdatetime",
                         "type": "string"
@@ -1892,7 +1943,7 @@
                     },
                     "bookingLimitDatetime": {
                         "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-14T14:00:00+02:00",
+                        "example": "2034-07-24T14:00:00+02:00",
                         "format": "date-time",
                         "title": "Bookinglimitdatetime",
                         "type": "string"
@@ -1924,7 +1975,7 @@
                                 "type": "string"
                             }
                         ],
-                        "description": "Quantity of items currently available to pass Culture. Value 'unlimited' is used for infinite quantity of items.",
+                        "description": "Quantity of items currently available to pass Culture. Value `'unlimited'` is used for infinite quantity of items.",
                         "example": 10,
                         "title": "Quantity"
                     }
@@ -2368,6 +2419,7 @@
                     },
                     "bookingContact": {
                         "description": "Recipient email to contact if there is an issue with booking the offer. Mandatory if the offer has withdrawable tickets.",
+                        "example": "support@yourcompany.com",
                         "format": "email",
                         "nullable": true,
                         "title": "Bookingcontact",
@@ -2375,6 +2427,7 @@
                     },
                     "bookingEmail": {
                         "description": "Recipient email for notifications about bookings, cancellations, etc.",
+                        "example": "contact@yourcompany.com",
                         "format": "email",
                         "nullable": true,
                         "title": "Bookingemail",
@@ -2506,6 +2559,7 @@
                     "enableDoubleBookings": {
                         "default": false,
                         "description": "If set to true, users may book the offer for two persons. Second item will be delivered at the same price as the first one. Category must be compatible with this feature.",
+                        "example": true,
                         "nullable": true,
                         "title": "Enabledoublebookings",
                         "type": "boolean"
@@ -2518,7 +2572,7 @@
                         "type": "integer"
                     },
                     "externalTicketOfficeUrl": {
-                        "description": "Link displayed to users wishing to book the offer but who do not have (anymore) credit.",
+                        "description": "Link displayed to users wishing to book the offer but who do not have credit.",
                         "example": "https://example.com",
                         "format": "uri",
                         "maxLength": 2083,
@@ -2528,7 +2582,7 @@
                         "type": "string"
                     },
                     "hasTicket": {
-                        "description": "Indicates whether the offer has an associated ticket. True if a ticket is available, False otherwise. To create an offer with tickets you must have developed the pass culture ticketing interface.",
+                        "description": "Indicated whether a ticket is mandatory to access to the event. True if it is the case, False otherwise. The ticket will be sent by you, the provider and you must have developed the pass Culture ticketing interface to do so.",
                         "example": false,
                         "title": "Hasticket",
                         "type": "boolean"
@@ -2552,7 +2606,7 @@
                     },
                     "itemCollectionDetails": {
                         "description": "Further information that will be provided to attendees to ease the offer collection.",
-                        "example": "Opening hours, specific office, collection period, access code, email annoucement...",
+                        "example": "Opening hours, specific office, collection period, access code, email announcement...",
                         "nullable": true,
                         "title": "Itemcollectiondetails",
                         "type": "string"
@@ -2584,13 +2638,21 @@
                         "type": "string"
                     },
                     "priceCategories": {
-                        "description": "Available price categories for dates of this offer",
+                        "description": "Available price categories for this offer stocks",
                         "items": {
                             "$ref": "#/components/schemas/PriceCategoryCreation"
                         },
                         "nullable": true,
                         "title": "Pricecategories",
                         "type": "array"
+                    },
+                    "publicationDate": {
+                      "description": "Date and time when we want the offer to be published on the native app. It cannot be a date in the past, and the time must be on the exact hour. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime)",
+                      "example": "2034-07-24T14:00:00+02:00",
+                      "format": "date-time",
+                      "nullable": true,
+                      "title": "Publicationdate",
+                      "type": "string"
                     }
                 },
                 "required": [
@@ -2618,6 +2680,7 @@
                     },
                     "bookingContact": {
                         "description": "Recipient email to contact if there is an issue with booking the offer. Mandatory if the offer has withdrawable tickets.",
+                        "example": "support@yourcompany.com",
                         "format": "email",
                         "nullable": true,
                         "title": "Bookingcontact",
@@ -2625,6 +2688,7 @@
                     },
                     "bookingEmail": {
                         "description": "Recipient email for notifications about bookings, cancellations, etc.",
+                        "example": "contact@yourcompany.com",
                         "format": "email",
                         "nullable": true,
                         "title": "Bookingemail",
@@ -2726,6 +2790,7 @@
                     "enableDoubleBookings": {
                         "default": false,
                         "description": "If set to true, users may book the offer for two persons. Second item will be delivered at the same price as the first one. Category must be compatible with this feature.",
+                        "example": true,
                         "nullable": true,
                         "title": "Enabledoublebookings",
                         "type": "boolean"
@@ -2755,14 +2820,14 @@
                         "title": "ImageBody"
                     },
                     "isActive": {
-                        "description": "Whether the offer is activated. An inactive offer cannot be booked.",
+                        "description": "Set to `false` if you want to deactivate the offer. This will not cancel former bookings. ",
                         "nullable": true,
                         "title": "Isactive",
                         "type": "boolean"
                     },
                     "itemCollectionDetails": {
                         "description": "Further information that will be provided to attendees to ease the offer collection.",
-                        "example": "Opening hours, specific office, collection period, access code, email annoucement...",
+                        "example": "Opening hours, specific office, collection period, access code, email announcement...",
                         "nullable": true,
                         "title": "Itemcollectiondetails",
                         "type": "string"
@@ -2778,12 +2843,14 @@
                     },
                     "bookingContact": {
                         "description": "Recipient email to contact if there is an issue with booking the offer. Mandatory if the offer has withdrawable tickets.",
+                        "example": "support@yourcompany.com",
                         "nullable": true,
                         "title": "Bookingcontact",
                         "type": "string"
                     },
                     "bookingEmail": {
                         "description": "Recipient email for notifications about bookings, cancellations, etc.",
+                        "example": "contact@yourcompany.com",
                         "nullable": true,
                         "title": "Bookingemail",
                         "type": "string"
@@ -2921,6 +2988,7 @@
                     "enableDoubleBookings": {
                         "default": false,
                         "description": "If set to true, users may book the offer for two persons. Second item will be delivered at the same price as the first one. Category must be compatible with this feature.",
+                        "example": true,
                         "nullable": true,
                         "title": "Enabledoublebookings",
                         "type": "boolean"
@@ -2933,14 +3001,14 @@
                         "type": "integer"
                     },
                     "externalTicketOfficeUrl": {
-                        "description": "Link displayed to users wishing to book the offer but who do not have (anymore) credit.",
+                        "description": "Link displayed to users wishing to book the offer but who do not have credit.",
                         "example": "https://example.com",
                         "nullable": true,
                         "title": "Externalticketofficeurl",
                         "type": "string"
                     },
                     "hasTicket": {
-                        "description": "Indicates whether the offer has an associated ticket. True if a ticket is available, False otherwise. To create an offer with tickets you must have developed the pass culture ticketing interface.",
+                        "description": "Indicated whether a ticket is mandatory to access to the event. True if it is the case, False otherwise. The ticket will be sent by you, the provider and you must have developed the pass Culture ticketing interface to do so.",
                         "example": false,
                         "title": "Hasticket",
                         "type": "boolean"
@@ -2967,7 +3035,7 @@
                     },
                     "itemCollectionDetails": {
                         "description": "Further information that will be provided to attendees to ease the offer collection.",
-                        "example": "Opening hours, specific office, collection period, access code, email annoucement...",
+                        "example": "Opening hours, specific office, collection period, access code, email announcement...",
                         "nullable": true,
                         "title": "Itemcollectiondetails",
                         "type": "string"
@@ -2998,12 +3066,20 @@
                         "type": "string"
                     },
                     "priceCategories": {
-                        "description": "Available price categories for dates of this offer",
+                        "description": "Available price categories for this offer stocks",
                         "items": {
                             "$ref": "#/components/schemas/PriceCategoryResponse"
                         },
                         "title": "Pricecategories",
                         "type": "array"
+                    },
+                    "publicationDate": {
+                      "description": "Date and time when we want the offer to be published on the native app. It cannot be a date in the past, and the time must be on the exact hour. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime)",
+                      "example": "2034-07-24T14:00:00+02:00",
+                      "format": "date-time",
+                      "nullable": true,
+                      "title": "Publicationdate",
+                      "type": "string"
                     },
                     "status": {
                         "allOf": [
@@ -3628,7 +3704,8 @@
             "GetFilteredBookingsRequest": {
                 "properties": {
                     "beginningDatetime": {
-                        "description": "Timezone aware datetime of the event.",
+                        "description": "Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "example": "2034-07-24T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Beginningdatetime",
@@ -3650,12 +3727,14 @@
                         "type": "integer"
                     },
                     "offerId": {
-                        "description": "Id of the bookings' offer.",
+                        "description": "Offer id",
+                        "example": 12345,
                         "title": "Offerid",
                         "type": "integer"
                     },
                     "priceCategoryId": {
-                        "description": "Price category of the bookings' stock.",
+                        "description": "Price category id",
+                        "example": 12,
                         "nullable": true,
                         "title": "Pricecategoryid",
                         "type": "integer"
@@ -3666,11 +3745,13 @@
                                 "$ref": "#/components/schemas/BookingStatus"
                             }
                         ],
-                        "description": "Booking Status.\n\n* `CONFIRMED`: The bookings is confirmed.\n* `USED`: The bookings has been used.\n* `CANCELLED`: The bookings has been cancelled.\n* `REIMBURSED` The bookings has been reimbursed.",
+                        "description": "\nBooking status explanation:\n\n* `CONFIRMED`: The beneficiary has booked an offer but he didn\u2019t pick it up yet\n* `USED`: The booking has been validated by the venue and will be reimbursed in the next payment\n* `CANCELLED`: The booking has been cancelled by the beneficiary or by the provider\n* `REIMBURSED` The booking has been reimbursed by pass Culture to the venue\n",
+                        "example": "CONFIRMED",
                         "nullable": true
                     },
                     "stockId": {
-                        "description": "Id of the bookings' stock.",
+                        "description": "Stock id",
+                        "example": 45,
                         "nullable": true,
                         "title": "Stockid",
                         "type": "integer"
@@ -3861,12 +3942,14 @@
             "GetProductsListByEansQuery": {
                 "properties": {
                     "eans": {
-                        "example": "0123456789123,0123456789124",
+                        "description": "EANs list (max 100)",
+                        "example": "3700551782888,9782895761792",
                         "title": "Eans",
                         "type": "string"
                     },
                     "venueId": {
-                        "example": 1,
+                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
+                        "example": 1234,
                         "title": "Venueid",
                         "type": "integer"
                     }
@@ -3882,15 +3965,24 @@
                 "additionalProperties": false,
                 "properties": {
                     "audioDisabilityCompliant": {
+                        "description": "Is accessible for people with hearing disability",
+                        "example": true,
                         "nullable": true,
                         "title": "Audiodisabilitycompliant",
                         "type": "boolean"
                     },
                     "beginningDatetime": {
+                        "description": "Collective offer beginning datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "example": "2034-07-24T14:00:00+02:00",
                         "title": "Beginningdatetime",
                         "type": "string"
                     },
                     "bookingEmails": {
+                        "description": "Recipient emails for notifications about bookings, cancellations, etc.",
+                        "example": [
+                            "some@email.com",
+                            "some.other@email.com"
+                        ],
                         "items": {
                             "type": "string"
                         },
@@ -3899,6 +3991,8 @@
                         "type": "array"
                     },
                     "bookingLimitDatetime": {
+                        "description": "Booking limit datetime. It must be anterior to the `beginning_datetime`. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "example": "2034-07-24T14:00:00+02:00",
                         "title": "Bookinglimitdatetime",
                         "type": "string"
                     },
@@ -3910,23 +4004,35 @@
                         "type": "array"
                     },
                     "contactEmail": {
+                        "description": "Email of the person to contact if there is an issue with the offer.",
+                        "example": "contact@yourcompany.com",
                         "title": "Contactemail",
                         "type": "string"
                     },
                     "contactPhone": {
+                        "description": "Phone of the person to contact if there is an issue with the offer.",
+                        "example": "0123456789",
                         "title": "Contactphone",
                         "type": "string"
                     },
                     "dateCreated": {
+                        "description": "Collective offer creation date",
                         "title": "Datecreated",
                         "type": "string"
                     },
                     "description": {
+                        "description": "Collective offer description",
+                        "example": "Atelier de peinture \u00e0 la gouache pour \u00e9l\u00e8ves de 5\u00e8me",
                         "nullable": true,
                         "title": "Description",
                         "type": "string"
                     },
                     "domains": {
+                        "description": "Educational domains ids linked to the offer. Those domains are available on **[this endpoint (`Get the eductional domains`)](#tag/Collective-educational-data/operation/ListEducationalDomains)**",
+                        "example": [
+                            1,
+                            2
+                        ],
                         "items": {
                             "type": "integer"
                         },
@@ -3934,30 +4040,44 @@
                         "type": "array"
                     },
                     "durationMinutes": {
+                        "description": "Event duration in minutes",
+                        "example": 60,
                         "nullable": true,
                         "title": "Durationminutes",
                         "type": "integer"
                     },
                     "educationalInstitution": {
+                        "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
+                        "example": "0010008D",
                         "nullable": true,
                         "title": "Educationalinstitution",
                         "type": "string"
                     },
                     "educationalInstitutionId": {
+                        "description": "Educational institution id in the pass Culture application. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
+                        "example": 1234,
                         "nullable": true,
                         "title": "Educationalinstitutionid",
                         "type": "integer"
                     },
                     "educationalPriceDetail": {
+                        "description": "The explanation of the offer price",
+                        "example": "10 tickets x 10 \u20ac = 100 \u20ac",
                         "nullable": true,
                         "title": "Educationalpricedetail",
                         "type": "string"
                     },
                     "endDatetime": {
+                        "description": "Collective offer end datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "example": "2034-07-24T14:00:00+02:00",
                         "title": "Enddatetime",
                         "type": "string"
                     },
                     "formats": {
+                        "description": "Educational Formats",
+                        "example": [
+                            "Atelier de pratique"
+                        ],
                         "items": {
                             "$ref": "#/components/schemas/EacFormat"
                         },
@@ -3969,15 +4089,21 @@
                         "type": "boolean"
                     },
                     "id": {
+                        "description": "Collective offer id",
+                        "example": 12345,
                         "title": "Id",
                         "type": "integer"
                     },
                     "imageCredit": {
+                        "description": "Image owner or author",
+                        "example": "Jane Doe",
                         "nullable": true,
                         "title": "Imagecredit",
                         "type": "string"
                     },
                     "imageUrl": {
+                        "description": "Image URL publicly accessible",
+                        "example": "https://example.com/image.png",
                         "nullable": true,
                         "title": "Imageurl",
                         "type": "string"
@@ -3990,25 +4116,35 @@
                         "type": "array"
                     },
                     "isActive": {
+                        "description": "Is your offer active",
+                        "example": true,
                         "nullable": true,
                         "title": "Isactive",
                         "type": "boolean"
                     },
                     "isSoldOut": {
+                        "description": "Is your offer sold out",
+                        "example": false,
                         "title": "Issoldout",
                         "type": "boolean"
                     },
                     "mentalDisabilityCompliant": {
+                        "description": "Is accessible for people with mental or cognitive disability",
+                        "example": true,
                         "nullable": true,
                         "title": "Mentaldisabilitycompliant",
                         "type": "boolean"
                     },
                     "motorDisabilityCompliant": {
+                        "description": "Is accessible for people with motor disability",
+                        "example": true,
                         "nullable": true,
                         "title": "Motordisabilitycompliant",
                         "type": "boolean"
                     },
                     "name": {
+                        "description": "Collective offer name",
+                        "example": "Atelier de peinture",
                         "title": "Name",
                         "type": "string"
                     },
@@ -4022,6 +4158,8 @@
                         "title": "NationalProgramModel"
                     },
                     "numberOfTickets": {
+                        "description": "Number of tickets for your collective offer",
+                        "example": 10,
                         "title": "Numberoftickets",
                         "type": "integer"
                     },
@@ -4029,10 +4167,14 @@
                         "$ref": "#/components/schemas/OfferVenueModel"
                     },
                     "startDatetime": {
+                        "description": "Collective offer start datetime. Replaces beginning dateime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                        "example": "2034-07-24T14:00:00+02:00",
                         "title": "Startdatetime",
                         "type": "string"
                     },
                     "status": {
+                        "description": "\n**Offer status:**\n\n- `ACTIVE`: offer is validated and active. \n\n\n- `DRAFT`: offer is still a draft and not yet submitted for validation. This status is not applicable to offers created via this API.\n\n\n- `EXPIRED`: offer is validated but the booking limit datetime has passed.\n\n\n- `INACTIVE`: offer is not active and cannot be booked.\n\n\n- `PENDING`: offer is pending for pass Culture rules compliance validation. This step may take up to 72 hours.\n\n\n- `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n\n- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.\n\n\n- `ARCHIVED`: offer is archived by pro.",
+                        "example": "ACTIVE",
                         "title": "Status",
                         "type": "string"
                     },
@@ -4044,19 +4186,27 @@
                         "type": "array"
                     },
                     "subcategoryId": {
+                        "description": "Event subcategory id",
+                        "example": "FESTIVAL_MUSIQUE",
                         "nullable": true,
                         "title": "Subcategoryid",
                         "type": "string"
                     },
                     "totalPrice": {
+                        "description": "Collective offer price (in \u20ac)",
+                        "example": 100.0,
                         "title": "Totalprice",
                         "type": "number"
                     },
                     "venueId": {
+                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
+                        "example": 1234,
                         "title": "Venueid",
                         "type": "integer"
                     },
                     "visualDisabilityCompliant": {
+                        "description": "Is accessible for people with visual disability",
+                        "example": true,
                         "nullable": true,
                         "title": "Visualdisabilitycompliant",
                         "type": "boolean"
@@ -4098,7 +4248,7 @@
                 "description": "Image illustrating the offer. Offers with images are more likely to be booked.",
                 "properties": {
                     "credit": {
-                        "description": "Image owner or author.",
+                        "description": "Image owner or author",
                         "example": "Jane Doe",
                         "nullable": true,
                         "title": "Credit",
@@ -4121,14 +4271,14 @@
                 "description": "Image illustrating the offer. Offers with images are more likely to be booked.",
                 "properties": {
                     "credit": {
-                        "description": "Image owner or author.",
+                        "description": "Image owner or author",
                         "example": "Jane Doe",
                         "nullable": true,
                         "title": "Credit",
                         "type": "string"
                     },
                     "url": {
-                        "description": "Url where the image is accessible",
+                        "description": "Image URL publicly accessible",
                         "example": "https://example.com/image.png",
                         "title": "Url",
                         "type": "string"
@@ -4713,10 +4863,10 @@
                     "status": {
                         "allOf": [
                             {
-                                "$ref": "#/components/schemas/OfferStatus"
+                                "$ref": "#/components/schemas/CollectiveOfferStatus"
                             }
                         ],
-                        "description": "\n**Offer status:**\n\n- `ACTIVE`: offer is validated and active. \n\n\n- `DRAFT`: offer is still a draft and not yet submitted for validation. This status is not applicable to offers created via this API.\n\n\n- `EXPIRED`: offer is validated but the booking limit datetime has passed.\n\n\n- `INACTIVE`: offer is not active and cannot be booked.\n\n\n- `PENDING`: offer is pending for pass Culture rules compliance validation. This step may take up to 72 hours.\n\n\n- `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n\n- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.\n",
+                        "description": "\n**Offer status:**\n\n- `ACTIVE`: offer is validated and active. \n\n\n- `DRAFT`: offer is still a draft and not yet submitted for validation. This status is not applicable to offers created via this API.\n\n\n- `EXPIRED`: offer is validated but the booking limit datetime has passed.\n\n\n- `INACTIVE`: offer is not active and cannot be booked.\n\n\n- `PENDING`: offer is pending for pass Culture rules compliance validation. This step may take up to 72 hours.\n\n\n- `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n\n- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.\n\n\n- `ARCHIVED`: offer is archived by pro.",
                         "example": "ACTIVE",
                         "nullable": true
                     },
@@ -5395,7 +5545,7 @@
                     },
                     "beginningDatetime": {
                         "description": "Collective offer beginning datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-14T14:00:00+02:00",
+                        "example": "2034-07-24T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Beginningdatetime",
@@ -5416,7 +5566,7 @@
                     },
                     "bookingLimitDatetime": {
                         "description": "Booking limit datetime. It must be anterior to the `beginning_datetime`. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-14T14:00:00+02:00",
+                        "example": "2034-07-24T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Bookinglimitdatetime",
@@ -5424,14 +5574,14 @@
                     },
                     "contactEmail": {
                         "description": "Email of the person to contact if there is an issue with the offer.",
-                        "example": "somebody.tocontact@gmail.com",
+                        "example": "contact@yourcompany.com",
                         "nullable": true,
                         "title": "Contactemail",
                         "type": "string"
                     },
                     "contactPhone": {
                         "description": "Phone of the person to contact if there is an issue with the offer.",
-                        "example": "somebody.tocontact@gmail.com",
+                        "example": "0123456789",
                         "nullable": true,
                         "title": "Contactphone",
                         "type": "string"
@@ -5486,7 +5636,7 @@
                     },
                     "endDatetime": {
                         "description": "Collective offer end datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-14T14:00:00+02:00",
+                        "example": "2034-07-24T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Enddatetime",
@@ -5533,7 +5683,7 @@
                         "type": "boolean"
                     },
                     "mentalDisabilityCompliant": {
-                        "description": "Is accessible for people with mental disability",
+                        "description": "Is accessible for people with mental or cognitive disability",
                         "example": true,
                         "nullable": true,
                         "title": "Mentaldisabilitycompliant",
@@ -5578,7 +5728,7 @@
                     },
                     "startDatetime": {
                         "description": "Collective offer start datetime. Replaces beginning dateime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-14T14:00:00+02:00",
+                        "example": "2034-07-24T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Startdatetime",
@@ -5665,7 +5815,7 @@
                     },
                     "beginningDatetime": {
                         "description": "Collective offer beginning datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-14T14:00:00+02:00",
+                        "example": "2034-07-24T14:00:00+02:00",
                         "format": "date-time",
                         "title": "Beginningdatetime",
                         "type": "string"
@@ -5684,20 +5834,20 @@
                     },
                     "bookingLimitDatetime": {
                         "description": "Booking limit datetime. It must be anterior to the `beginning_datetime`. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-14T14:00:00+02:00",
+                        "example": "2034-07-24T14:00:00+02:00",
                         "format": "date-time",
                         "title": "Bookinglimitdatetime",
                         "type": "string"
                     },
                     "contactEmail": {
                         "description": "Email of the person to contact if there is an issue with the offer.",
-                        "example": "somebody.tocontact@gmail.com",
+                        "example": "contact@yourcompany.com",
                         "title": "Contactemail",
                         "type": "string"
                     },
                     "contactPhone": {
                         "description": "Phone of the person to contact if there is an issue with the offer.",
-                        "example": "somebody.tocontact@gmail.com",
+                        "example": "0123456789",
                         "title": "Contactphone",
                         "type": "string"
                     },
@@ -5749,8 +5899,9 @@
                     },
                     "endDatetime": {
                         "description": "Collective offer end datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-14T14:00:00+02:00",
+                        "example": "2034-07-24T14:00:00+02:00",
                         "format": "date-time",
+                        "nullable": true,
                         "title": "Enddatetime",
                         "type": "string"
                     },
@@ -5823,8 +5974,9 @@
                     },
                     "startDatetime": {
                         "description": "Collective offer start datetime. Replaces beginning dateime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-14T14:00:00+02:00",
+                        "example": "2034-07-24T14:00:00+02:00",
                         "format": "date-time",
+                        "nullable": true,
                         "title": "Startdatetime",
                         "type": "string"
                     },
@@ -5880,8 +6032,6 @@
                     "offerVenue",
                     "isActive",
                     "beginningDatetime",
-                    "startDatetime",
-                    "endDatetime",
                     "bookingLimitDatetime",
                     "totalPrice",
                     "numberOfTickets"
@@ -5910,7 +6060,7 @@
                 "additionalProperties": false,
                 "properties": {
                     "priceCategories": {
-                        "description": "Available price categories for dates of this offer",
+                        "description": "Available price categories for this offer stocks",
                         "items": {
                             "$ref": "#/components/schemas/PriceCategoryCreation"
                         },
@@ -5927,7 +6077,7 @@
             "PriceCategoriesResponse": {
                 "properties": {
                     "priceCategories": {
-                        "description": "Available price categories for dates of this offer",
+                        "description": "Available price categories for this offer stocks",
                         "items": {
                             "$ref": "#/components/schemas/PriceCategoryResponse"
                         },
@@ -5952,7 +6102,7 @@
                         "type": "string"
                     },
                     "price": {
-                        "description": "Offer price in euro cents.",
+                        "description": "Offer price in euro cents",
                         "example": 1000,
                         "maximum": 30000,
                         "minimum": 0,
@@ -5980,7 +6130,7 @@
                         "type": "string"
                     },
                     "price": {
-                        "description": "Offer price in euro cents.",
+                        "description": "Offer price in euro cents",
                         "example": 1000,
                         "maximum": 30000,
                         "minimum": 0,
@@ -6005,7 +6155,7 @@
                         "type": "string"
                     },
                     "price": {
-                        "description": "Offer price in euro cents.",
+                        "description": "Offer price in euro cents",
                         "example": 1000,
                         "title": "Price",
                         "type": "integer"
@@ -6053,7 +6203,7 @@
                 "properties": {
                     "ean": {
                         "description": "European Article Number (EAN-13)",
-                        "example": "1234567890123",
+                        "example": "3700551782888",
                         "maxLength": 13,
                         "minLength": 13,
                         "title": "Ean",
@@ -6078,6 +6228,7 @@
                     },
                     "bookingContact": {
                         "description": "Recipient email to contact if there is an issue with booking the offer. Mandatory if the offer has withdrawable tickets.",
+                        "example": "support@yourcompany.com",
                         "format": "email",
                         "nullable": true,
                         "title": "Bookingcontact",
@@ -6085,6 +6236,7 @@
                     },
                     "bookingEmail": {
                         "description": "Recipient email for notifications about bookings, cancellations, etc.",
+                        "example": "contact@yourcompany.com",
                         "format": "email",
                         "nullable": true,
                         "title": "Bookingemail",
@@ -6188,12 +6340,13 @@
                     "enableDoubleBookings": {
                         "default": false,
                         "description": "If set to true, users may book the offer for two persons. Second item will be delivered at the same price as the first one. Category must be compatible with this feature.",
+                        "example": true,
                         "nullable": true,
                         "title": "Enabledoublebookings",
                         "type": "boolean"
                     },
                     "externalTicketOfficeUrl": {
-                        "description": "Link displayed to users wishing to book the offer but who do not have (anymore) credit.",
+                        "description": "Link displayed to users wishing to book the offer but who do not have credit.",
                         "example": "https://example.com",
                         "format": "uri",
                         "maxLength": 2083,
@@ -6221,7 +6374,7 @@
                     },
                     "itemCollectionDetails": {
                         "description": "Further information that will be provided to attendees to ease the offer collection.",
-                        "example": "Opening hours, specific office, collection period, access code, email annoucement...",
+                        "example": "Opening hours, specific office, collection period, access code, email announcement...",
                         "nullable": true,
                         "title": "Itemcollectiondetails",
                         "type": "string"
@@ -6286,6 +6439,7 @@
                     },
                     "bookingContact": {
                         "description": "Recipient email to contact if there is an issue with booking the offer. Mandatory if the offer has withdrawable tickets.",
+                        "example": "support@yourcompany.com",
                         "format": "email",
                         "nullable": true,
                         "title": "Bookingcontact",
@@ -6293,6 +6447,7 @@
                     },
                     "bookingEmail": {
                         "description": "Recipient email for notifications about bookings, cancellations, etc.",
+                        "example": "contact@yourcompany.com",
                         "format": "email",
                         "nullable": true,
                         "title": "Bookingemail",
@@ -6397,6 +6552,7 @@
                     "enableDoubleBookings": {
                         "default": false,
                         "description": "If set to true, users may book the offer for two persons. Second item will be delivered at the same price as the first one. Category must be compatible with this feature.",
+                        "example": true,
                         "nullable": true,
                         "title": "Enabledoublebookings",
                         "type": "boolean"
@@ -6419,14 +6575,14 @@
                         "title": "ImageBody"
                     },
                     "isActive": {
-                        "description": "Whether the offer is activated. An inactive offer cannot be booked.",
+                        "description": "Set to `false` if you want to deactivate the offer. This will not cancel former bookings. ",
                         "nullable": true,
                         "title": "Isactive",
                         "type": "boolean"
                     },
                     "itemCollectionDetails": {
                         "description": "Further information that will be provided to attendees to ease the offer collection.",
-                        "example": "Opening hours, specific office, collection period, access code, email annoucement...",
+                        "example": "Opening hours, specific office, collection period, access code, email announcement...",
                         "nullable": true,
                         "title": "Itemcollectiondetails",
                         "type": "string"
@@ -6459,12 +6615,14 @@
                     },
                     "bookingContact": {
                         "description": "Recipient email to contact if there is an issue with booking the offer. Mandatory if the offer has withdrawable tickets.",
+                        "example": "support@yourcompany.com",
                         "nullable": true,
                         "title": "Bookingcontact",
                         "type": "string"
                     },
                     "bookingEmail": {
                         "description": "Recipient email for notifications about bookings, cancellations, etc.",
+                        "example": "contact@yourcompany.com",
                         "nullable": true,
                         "title": "Bookingemail",
                         "type": "string"
@@ -6670,12 +6828,13 @@
                     "enableDoubleBookings": {
                         "default": false,
                         "description": "If set to true, users may book the offer for two persons. Second item will be delivered at the same price as the first one. Category must be compatible with this feature.",
+                        "example": true,
                         "nullable": true,
                         "title": "Enabledoublebookings",
                         "type": "boolean"
                     },
                     "externalTicketOfficeUrl": {
-                        "description": "Link displayed to users wishing to book the offer but who do not have (anymore) credit.",
+                        "description": "Link displayed to users wishing to book the offer but who do not have credit.",
                         "example": "https://example.com",
                         "nullable": true,
                         "title": "Externalticketofficeurl",
@@ -6703,7 +6862,7 @@
                     },
                     "itemCollectionDetails": {
                         "description": "Further information that will be provided to attendees to ease the offer collection.",
-                        "example": "Opening hours, specific office, collection period, access code, email annoucement...",
+                        "example": "Opening hours, specific office, collection period, access code, email announcement...",
                         "nullable": true,
                         "title": "Itemcollectiondetails",
                         "type": "string"
@@ -6805,14 +6964,14 @@
                     },
                     "bookingLimitDatetime": {
                         "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-14T14:00:00+02:00",
+                        "example": "2034-07-24T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Bookinglimitdatetime",
                         "type": "string"
                     },
                     "price": {
-                        "description": "Offer price in euro cents.",
+                        "description": "Offer price in euro cents",
                         "example": 1000,
                         "title": "Price",
                         "type": "integer"
@@ -6829,7 +6988,7 @@
                                 "type": "string"
                             }
                         ],
-                        "description": "Quantity of items currently available to pass Culture. Value 'unlimited' is used for infinite quantity of items.",
+                        "description": "Quantity of items currently available to pass Culture. Value `'unlimited'` is used for infinite quantity of items.",
                         "example": 10,
                         "title": "Quantity"
                     }
@@ -6879,6 +7038,92 @@
                     "location"
                 ],
                 "title": "ProductsOfferByEanCreation",
+                "type": "object"
+            },
+            "ProviderResponse": {
+                "properties": {
+                    "bookingUrl": {
+                        "description": "Url on which tickets requests for events you created are sent",
+                        "example": "https://ultimate-ticketing-solution.com/pass-culture-booking-endpoint",
+                        "nullable": true,
+                        "title": "Bookingurl",
+                        "type": "string"
+                    },
+                    "cancelUrl": {
+                        "description": "Url on which tickets cancellation requests for events you created are sent",
+                        "example": "https://ultimate-ticketing-solution.com/pass-culture-cancellation-endpoint",
+                        "nullable": true,
+                        "title": "Cancelurl",
+                        "type": "string"
+                    },
+                    "id": {
+                        "description": "Provider id",
+                        "example": 123456,
+                        "title": "Id",
+                        "type": "integer"
+                    },
+                    "logoUrl": {
+                        "description": "Provider logo url",
+                        "example": "https://ultimate-ticketing-solution.com/logo.png",
+                        "nullable": true,
+                        "title": "Logourl",
+                        "type": "string"
+                    },
+                    "name": {
+                        "description": "Provider name",
+                        "example": "Ultimate ticketing solution",
+                        "title": "Name",
+                        "type": "string"
+                    },
+                    "notificationUrl": {
+                        "description": "Url on which booking notifications on offers you created are sent",
+                        "example": "https://ultimate-ticketing-solution.com/pass-culture-endpoint",
+                        "nullable": true,
+                        "title": "Notificationurl",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "name"
+                ],
+                "title": "ProviderResponse",
+                "type": "object"
+            },
+            "ProviderUpdate": {
+                "properties": {
+                    "bookingUrl": {
+                        "description": "Url on which tickets requests for events you created are sent",
+                        "example": "https://ultimate-ticketing-solution.com/pass-culture-booking-endpoint",
+                        "format": "uri",
+                        "maxLength": 2083,
+                        "minLength": 1,
+                        "nullable": true,
+                        "title": "Bookingurl",
+                        "type": "string"
+                    },
+                    "cancelUrl": {
+                        "description": "Url on which tickets cancellation requests for events you created are sent",
+                        "example": "https://ultimate-ticketing-solution.com/pass-culture-cancellation-endpoint",
+                        "format": "uri",
+                        "maxLength": 2083,
+                        "minLength": 1,
+                        "nullable": true,
+                        "title": "Cancelurl",
+                        "type": "string"
+                    },
+                    "notificationUrl": {
+                        "description": "Url on which booking notifications on offers you created are sent",
+                        "example": "https://ultimate-ticketing-solution.com/pass-culture-endpoint",
+                        "format": "uri",
+                        "maxLength": 2083,
+                        "minLength": 1,
+                        "nullable": true,
+                        "title": "Notificationurl",
+                        "type": "string"
+                    }
+                },
+                "title": "ProviderUpdate",
                 "type": "object"
             },
             "RENCONTRE_EN_LIGNE_create": {
@@ -7754,14 +7999,14 @@
                 "properties": {
                     "bookingLimitDatetime": {
                         "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-14T14:00:00+02:00",
+                        "example": "2034-07-24T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Bookinglimitdatetime",
                         "type": "string"
                     },
                     "price": {
-                        "description": "Offer price in euro cents.",
+                        "description": "Offer price in euro cents",
                         "example": 1000,
                         "maximum": 30000,
                         "minimum": 0,
@@ -7780,7 +8025,7 @@
                                 "type": "string"
                             }
                         ],
-                        "description": "Quantity of items currently available to pass Culture. Value 'unlimited' is used for infinite quantity of items.",
+                        "description": "Quantity of items currently available to pass Culture. Value `'unlimited'` is used for infinite quantity of items.",
                         "example": 10,
                         "title": "Quantity"
                     }
@@ -7797,14 +8042,14 @@
                 "properties": {
                     "bookingLimitDatetime": {
                         "description": "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
-                        "example": "2024-07-14T14:00:00+02:00",
+                        "example": "2034-07-24T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Bookinglimitdatetime",
                         "type": "string"
                     },
                     "price": {
-                        "description": "Offer price in euro cents.",
+                        "description": "Offer price in euro cents",
                         "example": 1000,
                         "maximum": 30000,
                         "minimum": 0,
@@ -7824,7 +8069,7 @@
                                 "type": "string"
                             }
                         ],
-                        "description": "Quantity of items currently available to pass Culture. Value 'unlimited' is used for infinite quantity of items.",
+                        "description": "Quantity of items currently available to pass Culture. Value `'unlimited'` is used for infinite quantity of items.",
                         "example": 10,
                         "nullable": true,
                         "title": "Quantity"
@@ -8355,19 +8600,43 @@
                         "$ref": "#/components/schemas/PartialAccessibility"
                     },
                     "activityDomain": {
-                        "$ref": "#/components/schemas/VenueTypeEnum"
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/VenueTypeEnum"
+                            }
+                        ],
+                        "description": "Venue activity domain",
+                        "example": "RECORD_STORE"
+                    },
+                    "bookingUrl": {
+                        "description": "Url on which requests for tickets are sent when a beneficiary tries to book tickets for an event linked to this venue. If not set, our system will use the booking url defined at provider level.",
+                        "example": "https://my-ticketing-solution.com/pass-culture-booking-endpoint",
+                        "nullable": true,
+                        "title": "Bookingurl",
+                        "type": "string"
+                    },
+                    "cancelUrl": {
+                        "description": "Url on which tickets cancellation requests are sent when a beneficiary cancels its tickets for an event linked to this venue. If not set, our system will use the cancel url defined at provider level.",
+                        "example": "https://my-ticketing-solution.com/pass-culture-cancellation-endpoint",
+                        "nullable": true,
+                        "title": "Cancelurl",
+                        "type": "string"
                     },
                     "createdDatetime": {
+                        "description": "When the venue was created",
                         "format": "date-time",
                         "title": "Createddatetime",
                         "type": "string"
                     },
                     "id": {
+                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
+                        "example": 1234,
                         "title": "Id",
                         "type": "integer"
                     },
                     "legalName": {
-                        "example": "Palais de l'\u00c9lys\u00e9e",
+                        "description": "Venue legal name",
+                        "example": "SAS pass Culture",
                         "title": "Legalname",
                         "type": "string"
                     },
@@ -8390,34 +8659,39 @@
                         ],
                         "title": "Location"
                     },
+                    "notificationUrl": {
+                        "description": "Url on which notifications for this venues will be sent. If not set, our system will use the notification url defined at provider level.",
+                        "example": "https://mysolution.com/pass-culture-endpoint",
+                        "nullable": true,
+                        "title": "Notificationurl",
+                        "type": "string"
+                    },
                     "publicName": {
-                        "description": "If null, legalName is used.",
-                        "example": "\u00c9lys\u00e9e",
+                        "description": "Venue public name. If `null`, `legalName` is used instead.",
+                        "example": "pass Culture",
                         "nullable": true,
                         "title": "Publicname",
                         "type": "string"
                     },
                     "siret": {
-                        "description": "Null when venue is digital or when siretComment field is not null.",
-                        "example": "12345678901234",
+                        "description": "Venue siret. `null` when the venue is digital or when the `siretComment` field is not `null`.",
+                        "example": "85331845900049",
                         "nullable": true,
                         "title": "Siret",
                         "type": "string"
                     },
                     "siretComment": {
-                        "description": "Applicable if siret is null and venue is physical.",
-                        "example": null,
+                        "description": "Applicable if siret is null and venue is physical",
                         "nullable": true,
                         "title": "Siretcomment",
                         "type": "string"
                     }
                 },
                 "required": [
-                    "createdDatetime",
                     "id",
+                    "createdDatetime",
                     "location",
                     "legalName",
-                    "publicName",
                     "activityDomain",
                     "accessibility"
                 ],
@@ -8462,8 +8736,8 @@
         }
     },
     "info": {
-        "description": "\nThis the documentation of the Pass Culture public REST API.\n\n# Important notice\n- Since January 2023, rate limiting has been implemented on the Pass Culture API.\n  You are limited to **200 requests/minute** per API key.\n  Once this limit reached, you will received a `429 Too Many Requests` error message. You will then need to back down.\n- Dates of event offers are stored in the **UTC format** to be able to format them correctly, according to the user timezone, in our application interface.\n- Any non-blank field sent using a `PATCH` method will be considered as changed, even if the new value is equal to old value.\n  _For example, if you update the stock of an event, you **should not resend the `beginningDate`** if it has not changed because, otherwise it is going to trigger the reschedule process on our side._\n\n# Authentication\nThe authentication system on the Pass Culture API uses an API key. For each of your requests, you should put your API key in the authorization header of the request following the `Bearer`pattern.\nThat is to say, in your request headers, you should have a line that looks like this : `Authorization: Bearer {you_api_key}` (**\u26a0\ufe0f Make sure to use the right API key for the right environment**)\nAn API key authenticates you as a provider. As a provider, you have access to the venues linked to your provider account by the offerers.\nFor in depth explanations about our authentication & authorization system, you [can read this documentation](/docs/understanding-our-api/authentication-authorization).\n",
-        "title": "Pass Culture REST API",
+        "description": "\nThis the documentation of the Pass Culture public REST API.\n\n# Important notice\n- Since January 2023, rate limiting has been implemented on the Pass Culture API.\n  You are limited to **200 requests/minute** per API key.\n  Once this limit reached, you will received a `429 Too Many Requests` error message. You will then need to back down.\n- Event offers dates are stored in the **UTC format**. This is necessary because dates are displayed according to the beneficiary timezone in our application.\n- Any non-blank field sent using a `PATCH` method will be considered as changed, even if the new value is equal to old value.\n  _For example, if you update the stock of an event, you **should not resend the `beginningDate`** if it has not changed because, otherwise it is going to trigger the reschedule process on our side._\n\n# Authentication\nThe authentication system on the Pass Culture API uses an API key. For each of your requests, you should put your API key in the authorization header of the request following the `Bearer`pattern.\nThat is to say, in your request headers, you should have a line that looks like this : `Authorization: Bearer {you_api_key}` (**\u26a0\ufe0f Make sure to use the right API key for the right environment**)\nAn API key authenticates you as a provider. As a provider, you have access to the venues linked to your provider account by the offerers.\nFor in depth explanations about our authentication & authorization system, you [can read this documentation](/docs/understanding-our-api/authentication-authorization).\n",
+        "title": "pass Culture REST API",
         "version": "1.0"
     },
     "openapi": "3.0.3",
@@ -8501,42 +8775,45 @@
                         }
                     },
                     {
-                        "description": "Id of the bookings' offer.",
+                        "description": "Offer id",
                         "in": "query",
                         "name": "offerId",
                         "required": true,
                         "schema": {
-                            "description": "Id of the bookings' offer.",
+                            "description": "Offer id",
+                            "example": 12345,
                             "title": "Offerid",
                             "type": "integer"
                         }
                     },
                     {
-                        "description": "Price category of the bookings' stock.",
+                        "description": "Price category id",
                         "in": "query",
                         "name": "priceCategoryId",
                         "required": false,
                         "schema": {
-                            "description": "Price category of the bookings' stock.",
+                            "description": "Price category id",
+                            "example": 12,
                             "nullable": true,
                             "title": "Pricecategoryid",
                             "type": "integer"
                         }
                     },
                     {
-                        "description": "Id of the bookings' stock.",
+                        "description": "Stock id",
                         "in": "query",
                         "name": "stockId",
                         "required": false,
                         "schema": {
-                            "description": "Id of the bookings' stock.",
+                            "description": "Stock id",
+                            "example": 45,
                             "nullable": true,
                             "title": "Stockid",
                             "type": "integer"
                         }
                     },
                     {
-                        "description": "Booking Status.\n\n* `CONFIRMED`: The bookings is confirmed.\n* `USED`: The bookings has been used.\n* `CANCELLED`: The bookings has been cancelled.\n* `REIMBURSED` The bookings has been reimbursed.",
+                        "description": "\nBooking status explanation:\n\n* `CONFIRMED`: The beneficiary has booked an offer but he didn\u2019t pick it up yet\n* `USED`: The booking has been validated by the venue and will be reimbursed in the next payment\n* `CANCELLED`: The booking has been cancelled by the beneficiary or by the provider\n* `REIMBURSED` The booking has been reimbursed by pass Culture to the venue\n",
                         "in": "query",
                         "name": "status",
                         "required": false,
@@ -8546,17 +8823,19 @@
                                     "$ref": "#/components/schemas/BookingStatus"
                                 }
                             ],
-                            "description": "Booking Status.\n\n* `CONFIRMED`: The bookings is confirmed.\n* `USED`: The bookings has been used.\n* `CANCELLED`: The bookings has been cancelled.\n* `REIMBURSED` The bookings has been reimbursed.",
+                            "description": "\nBooking status explanation:\n\n* `CONFIRMED`: The beneficiary has booked an offer but he didn\u2019t pick it up yet\n* `USED`: The booking has been validated by the venue and will be reimbursed in the next payment\n* `CANCELLED`: The booking has been cancelled by the beneficiary or by the provider\n* `REIMBURSED` The booking has been reimbursed by pass Culture to the venue\n",
+                            "example": "CONFIRMED",
                             "nullable": true
                         }
                     },
                     {
-                        "description": "Timezone aware datetime of the event.",
+                        "description": "Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
                         "in": "query",
                         "name": "beginningDatetime",
                         "required": false,
                         "schema": {
-                            "description": "Timezone aware datetime of the event.",
+                            "description": "Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
+                            "example": "2034-07-24T14:00:00+02:00",
                             "format": "date-time",
                             "nullable": true,
                             "title": "Beginningdatetime",
@@ -8609,13 +8888,13 @@
                 ],
                 "summary": "Get bookings for a given offer",
                 "tags": [
-                    "Booking"
+                    "Bookings"
                 ]
             }
         },
         "/public/bookings/v1/cancel/token/{token}": {
             "patch": {
-                "description": "Cancel a booking that has not been refunded. For events, the booking can be cancelled until 48 hours before the event.",
+                "description": "Cancel a booking that has not been used or refunded.\n\nFor events, a booking can only be cancelled if it is pending. Once it is confirmed, you cannot cancel it (for booking confirmation see [this page](/docs/understanding-our-api/resources/individual-offers#general-description-2)).",
                 "operationId": "CancelBookingByToken",
                 "parameters": [
                     {
@@ -8682,7 +8961,7 @@
                 ],
                 "summary": "Cancel a booking",
                 "tags": [
-                    "Booking"
+                    "Bookings"
                 ]
             }
         },
@@ -8745,7 +9024,7 @@
                 ],
                 "summary": "Cancel a booking validation",
                 "tags": [
-                    "Booking"
+                    "Bookings"
                 ]
             }
         },
@@ -8815,13 +9094,13 @@
                 ],
                 "summary": "Get a booking",
                 "tags": [
-                    "Booking"
+                    "Bookings"
                 ]
             }
         },
         "/public/bookings/v1/use/token/{token}": {
             "patch": {
-                "description": "Confirms that the booking has been successfully used by the beneficiary.",
+                "description": "Confirm that the booking has been used by the beneficiary.",
                 "operationId": "ValidateBookingByToken",
                 "parameters": [
                     {
@@ -8878,7 +9157,7 @@
                 ],
                 "summary": "Validate a booking",
                 "tags": [
-                    "Booking"
+                    "Bookings"
                 ]
             }
         },
@@ -8985,7 +9264,7 @@
                 ],
                 "summary": "Get events",
                 "tags": [
-                    "Event offer"
+                    "Event offers"
                 ]
             },
             "post": {
@@ -9056,13 +9335,13 @@
                 ],
                 "summary": "Create event offer",
                 "tags": [
-                    "Event offer"
+                    "Event offers"
                 ]
             }
         },
         "/public/offers/v1/events/categories": {
             "get": {
-                "description": "Return all the categories available for an event, with their conditional fields, and whether they are required for event creation.",
+                "description": "Return all the categories available, with their conditional fields, and whether they are required.",
                 "operationId": "GetEventCategories",
                 "parameters": [],
                 "responses": {
@@ -9172,7 +9451,7 @@
                 ],
                 "summary": "Get event offer",
                 "tags": [
-                    "Event offer"
+                    "Event offers"
                 ]
             },
             "patch": {
@@ -9254,14 +9533,14 @@
                 ],
                 "summary": "Update event offer",
                 "tags": [
-                    "Event offer"
+                    "Event offers"
                 ]
             }
         },
         "/public/offers/v1/events/{event_id}/dates": {
             "get": {
-                "description": "Return all the dates linked to an event. Results are paginated (by default there are `50` date per page).",
-                "operationId": "GetEventDates",
+                "description": "Return all stocks for given event. Results are paginated (by default there are `50` date per page).",
+                "operationId": "GetEventStocks",
                 "parameters": [
                     {
                         "description": "",
@@ -9354,14 +9633,14 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Get event dates",
+                "summary": "Get event stocks",
                 "tags": [
-                    "Event offer dates"
+                    "Event offer stocks"
                 ]
             },
             "post": {
-                "description": "Add a dates to given event. Each date is attached to a price category so if there are several prices categories, several dates must be added.",
-                "operationId": "PostEventDates",
+                "description": "Add stocks to given event. Each stock is attached to a price category and to a date. For a given date, you will have one stock per price category.\n\n**\u26a0\ufe0f Event must have less than 1 000 stocks** otherwise they will not be published.",
+                "operationId": "PostEventStocks",
                 "parameters": [
                     {
                         "description": "",
@@ -9436,16 +9715,16 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Add dates to event",
+                "summary": "Add stocks to an event",
                 "tags": [
-                    "Event offer dates"
+                    "Event offer stocks"
                 ]
             }
         },
-        "/public/offers/v1/events/{event_id}/dates/{date_id}": {
+        "/public/offers/v1/events/{event_id}/dates/{stock_id}": {
             "delete": {
-                "description": "When an event date is deleted, all cancellable bookings (i.e not used) are cancelled. To prevent from further bookings, you may alternatively update the date's quantity to the bookedQuantity (but not below).",
-                "operationId": "DeleteEventDate",
+                "description": "When an event stock is deleted, all cancellable bookings (i.e not used) are cancelled. To prevent from further bookings, you may alternatively update the stock's quantity to the bookedQuantity (but not below).",
+                "operationId": "DeleteEventStock",
                 "parameters": [
                     {
                         "description": "",
@@ -9460,7 +9739,7 @@
                     {
                         "description": "",
                         "in": "path",
-                        "name": "date_id",
+                        "name": "stock_id",
                         "required": true,
                         "schema": {
                             "format": "int32",
@@ -9514,14 +9793,14 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Delete event date",
+                "summary": "Delete event stock",
                 "tags": [
-                    "Event offer dates"
+                    "Event offer stocks"
                 ]
             },
             "patch": {
-                "description": "Update the price category and the beginning time of an event date.",
-                "operationId": "PatchEventDate",
+                "description": "Update the price category and the beginning time of an event stock.",
+                "operationId": "PatchEventStock",
                 "parameters": [
                     {
                         "description": "",
@@ -9536,7 +9815,7 @@
                     {
                         "description": "",
                         "in": "path",
-                        "name": "date_id",
+                        "name": "stock_id",
                         "required": true,
                         "schema": {
                             "format": "int32",
@@ -9606,9 +9885,9 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Update event date",
+                "summary": "Update event stock",
                 "tags": [
-                    "Event offer dates"
+                    "Event offer stocks"
                 ]
             }
         },
@@ -9844,7 +10123,7 @@
         },
         "/public/offers/v1/music_types/all": {
             "get": {
-                "description": "Return all the music types.",
+                "description": "Return music types. Not all the music types returned by this endpoint are suitable for events. For events, use the [Get events music types endpoint](/rest-api#tag/Offer-attributes/operation/GetEventTiteliveMusicTypes).",
                 "operationId": "GetAllTiteliveMusicTypes",
                 "parameters": [],
                 "responses": {
@@ -9895,7 +10174,7 @@
         },
         "/public/offers/v1/music_types/event": {
             "get": {
-                "description": "Return all eligible music types for events.",
+                "description": "Return eligible music types for events.",
                 "operationId": "GetEventTiteliveMusicTypes",
                 "parameters": [],
                 "responses": {
@@ -10005,7 +10284,7 @@
                 ],
                 "summary": "Get offerer venues",
                 "tags": [
-                    "Offerer and Venues"
+                    "Venues"
                 ]
             }
         },
@@ -10112,7 +10391,7 @@
                 ],
                 "summary": "Get venue products",
                 "tags": [
-                    "Product offer"
+                    "Product offers"
                 ]
             },
             "patch": {
@@ -10183,7 +10462,7 @@
                 ],
                 "summary": "Update product offer",
                 "tags": [
-                    "Product offer"
+                    "Product offers"
                 ]
             },
             "post": {
@@ -10254,7 +10533,7 @@
                 ],
                 "summary": "Create product",
                 "tags": [
-                    "Product offer"
+                    "Product offers"
                 ]
             }
         },
@@ -10305,7 +10584,7 @@
                 ],
                 "summary": "Get product categories",
                 "tags": [
-                    "Product offer"
+                    "Product offers"
                 ]
             }
         },
@@ -10315,23 +10594,25 @@
                 "operationId": "GetProductByEan",
                 "parameters": [
                     {
-                        "description": "",
+                        "description": "EANs list (max 100)",
                         "in": "query",
                         "name": "eans",
                         "required": true,
                         "schema": {
-                            "example": "0123456789123,0123456789124",
+                            "description": "EANs list (max 100)",
+                            "example": "3700551782888,9782895761792",
                             "title": "Eans",
                             "type": "string"
                         }
                     },
                     {
-                        "description": "",
+                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
                         "in": "query",
                         "name": "venueId",
                         "required": true,
                         "schema": {
-                            "example": 1,
+                            "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
+                            "example": 1234,
                             "title": "Venueid",
                             "type": "integer"
                         }
@@ -10508,13 +10789,13 @@
                 ],
                 "summary": "Get product offer",
                 "tags": [
-                    "Product offer"
+                    "Product offers"
                 ]
             }
         },
         "/public/offers/v1/show_types": {
             "get": {
-                "description": "",
+                "description": "Return show types.",
                 "operationId": "GetShowTypes",
                 "parameters": [],
                 "responses": {
@@ -10557,7 +10838,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Get all the show types",
+                "summary": "Get show types",
                 "tags": [
                     "Offer attributes"
                 ]
@@ -10623,7 +10904,126 @@
                 ],
                 "summary": "Upload an image",
                 "tags": [
-                    "Image"
+                    "Images"
+                ]
+            }
+        },
+        "/public/providers/v1/provider": {
+            "get": {
+                "description": "Return your provider information.",
+                "operationId": "GetProvider",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProviderResponse"
+                                }
+                            }
+                        },
+                        "description": "Your provider has been returned"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "Authentication is necessary to use this API."
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Entity"
+                    },
+                    "429": {
+                        "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "summary": "Get my provider",
+                "tags": [
+                    "Providers"
+                ]
+            },
+            "patch": {
+                "description": "Endpoint to set the urls used by our notification system to notify/request your solution.",
+                "operationId": "UpdateProvider",
+                "parameters": [],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ProviderUpdate"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProviderResponse"
+                                }
+                            }
+                        },
+                        "description": "Your provider has been returned"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "The request is invalid. The response body contains a list of errors."
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "Authentication is necessary to use this API."
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Entity"
+                    },
+                    "429": {
+                        "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "summary": "Update my provider",
+                "tags": [
+                    "Providers"
                 ]
             }
         },
@@ -10688,7 +11088,7 @@
                 ],
                 "summary": "Cancel collective booking",
                 "tags": [
-                    "Collective booking"
+                    "Collective bookings"
                 ]
             }
         },
@@ -10738,9 +11138,9 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Get collective offers categories",
+                "summary": "[LEGACY] Get collective offers categories",
                 "tags": [
-                    "Collective categories"
+                    "[DEPRECATED] Collective categories"
                 ]
             }
         },
@@ -10791,7 +11191,7 @@
                 ],
                 "summary": "Get the eductional domains",
                 "tags": [
-                    "Collective educational data"
+                    "Collective offer attributes"
                 ]
             }
         },
@@ -10944,7 +11344,7 @@
                 ],
                 "summary": "Get all educational institutions",
                 "tags": [
-                    "Collective educational data"
+                    "Collective offer attributes"
                 ]
             }
         },
@@ -10995,15 +11395,15 @@
                 ],
                 "summary": "Get all known national programs",
                 "tags": [
-                    "Collective educational data"
+                    "Collective offer attributes"
                 ]
             }
         },
         "/v2/collective/offerer_venues": {
             "get": {
                 "deprecated": true,
-                "description": "You should be using **/public/offer/v1/offerer_venues endpoint**.",
-                "operationId": "GetOffererVenues",
+                "description": "You should be using [**/public/offer/v1/offerer_venues endpoint**](/rest-api#tag/Venues/operation/GetOffererVenues).",
+                "operationId": "DeprecatedGetOffererVenues",
                 "parameters": [
                     {
                         "description": "",
@@ -11059,29 +11459,29 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "[LEGACY] R\u00e9cup\u00e9ration des lieux associ\u00e9s au fournisseur authentifi\u00e9 par le jeton d'API; group\u00e9s par structures",
+                "summary": "[DEPRECATED]",
                 "tags": [
-                    "Collective venues"
+                    "[DEPRECATED] Collective venues"
                 ]
             }
         },
         "/v2/collective/offers/": {
             "get": {
-                "description": "Return filtered collective offers. It doesn't return the showcase offers or the collective offers that have been started on the pro interface and that are in the draft status.",
+                "description": "Return collective offers. It will only return collective offers created by API (collective offers created manually in the pro interface won't show up).",
                 "operationId": "GetCollectiveOffersPublic",
                 "parameters": [
                     {
-                        "description": "\n**Offer status:**\n\n- `ACTIVE`: offer is validated and active. \n\n\n- `DRAFT`: offer is still a draft and not yet submitted for validation. This status is not applicable to offers created via this API.\n\n\n- `EXPIRED`: offer is validated but the booking limit datetime has passed.\n\n\n- `INACTIVE`: offer is not active and cannot be booked.\n\n\n- `PENDING`: offer is pending for pass Culture rules compliance validation. This step may take up to 72 hours.\n\n\n- `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n\n- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.\n",
+                        "description": "\n**Offer status:**\n\n- `ACTIVE`: offer is validated and active. \n\n\n- `DRAFT`: offer is still a draft and not yet submitted for validation. This status is not applicable to offers created via this API.\n\n\n- `EXPIRED`: offer is validated but the booking limit datetime has passed.\n\n\n- `INACTIVE`: offer is not active and cannot be booked.\n\n\n- `PENDING`: offer is pending for pass Culture rules compliance validation. This step may take up to 72 hours.\n\n\n- `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n\n- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.\n\n\n- `ARCHIVED`: offer is archived by pro.",
                         "in": "query",
                         "name": "status",
                         "required": false,
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/components/schemas/OfferStatus"
+                                    "$ref": "#/components/schemas/CollectiveOfferStatus"
                                 }
                             ],
-                            "description": "\n**Offer status:**\n\n- `ACTIVE`: offer is validated and active. \n\n\n- `DRAFT`: offer is still a draft and not yet submitted for validation. This status is not applicable to offers created via this API.\n\n\n- `EXPIRED`: offer is validated but the booking limit datetime has passed.\n\n\n- `INACTIVE`: offer is not active and cannot be booked.\n\n\n- `PENDING`: offer is pending for pass Culture rules compliance validation. This step may take up to 72 hours.\n\n\n- `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n\n- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.\n",
+                            "description": "\n**Offer status:**\n\n- `ACTIVE`: offer is validated and active. \n\n\n- `DRAFT`: offer is still a draft and not yet submitted for validation. This status is not applicable to offers created via this API.\n\n\n- `EXPIRED`: offer is validated but the booking limit datetime has passed.\n\n\n- `INACTIVE`: offer is not active and cannot be booked.\n\n\n- `PENDING`: offer is pending for pass Culture rules compliance validation. This step may take up to 72 hours.\n\n\n- `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n\n- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.\n\n\n- `ARCHIVED`: offer is archived by pro.",
                             "example": "ACTIVE",
                             "nullable": true
                         }
@@ -11521,14 +11921,14 @@
                 ],
                 "summary": "Get student levels eligible for collective offers",
                 "tags": [
-                    "Collective educational data"
+                    "Collective offer attributes"
                 ]
             }
         },
         "/v2/collective/subcategories": {
             "get": {
                 "deprecated": true,
-                "description": "Return subcategories for collective offerS.",
+                "description": "Return subcategories for collective offers.",
                 "operationId": "ListSubcategories",
                 "parameters": [],
                 "responses": {
@@ -11571,15 +11971,16 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Get collective offers subcatgories",
+                "summary": "[LEGACY] Get collective offers subcatgories",
                 "tags": [
-                    "Collective categories"
+                    "[DEPRECATED] Collective categories"
                 ]
             }
         },
         "/v2/collective/venues": {
             "get": {
-                "description": "Get all venues linked to your API key.",
+                "deprecated": true,
+                "description": "This route is deprecated and should not be used anymore.",
                 "operationId": "ListVenues",
                 "parameters": [],
                 "responses": {
@@ -11624,7 +12025,7 @@
                 ],
                 "summary": "Get all venues",
                 "tags": [
-                    "Collective venues"
+                    "[DEPRECATED] Collective venues"
                 ]
             }
         }
@@ -11644,27 +12045,12 @@
         {
             "description": "",
             "externalDocs": null,
-            "name": "Offerer and Venues"
+            "name": "Providers"
         },
         {
-            "description": "Endpoints to manage event offers data of a venue (except prices and dates).",
+            "description": "",
             "externalDocs": null,
-            "name": "Event offer"
-        },
-        {
-            "description": "Endpoints to create and update price categories of an event.",
-            "externalDocs": null,
-            "name": "Event offer prices"
-        },
-        {
-            "description": "Endpoints to manage the dates of an event. The date of an event is composed of a price category and an actual date.         Hence for a given performance, you might have several dates (one per category).",
-            "externalDocs": null,
-            "name": "Event offer dates"
-        },
-        {
-            "description": "Endpoints to manage product offers of a venue.",
-            "externalDocs": null,
-            "name": "Product offer"
+            "name": "Venues"
         },
         {
             "description": "Endpoints to create and get products usings European Article Number (EAN-13).",
@@ -11672,19 +12058,39 @@
             "name": "Product offer bulk operations"
         },
         {
-            "description": "Endpoints to manage the bookings of an offer (event and product).",
+            "description": "Endpoints to manage product offers of a venue.",
             "externalDocs": null,
-            "name": "Booking"
+            "name": "Product offers"
+        },
+        {
+            "description": "Endpoints to manage event offers data of a venue (except prices and dates).",
+            "externalDocs": null,
+            "name": "Event offers"
+        },
+        {
+            "description": "Endpoints to create and update price categories of an event.",
+            "externalDocs": null,
+            "name": "Event offer prices"
+        },
+        {
+            "description": "Endpoints to manage events stocks. An event stock has a price category, a date and a quantity.         Hence for a given performance date, you might have several stocks (one per category).",
+            "externalDocs": null,
+            "name": "Event offer stocks"
         },
         {
             "description": "",
             "externalDocs": null,
-            "name": "Image"
+            "name": "Images"
         },
         {
             "description": "",
             "externalDocs": null,
             "name": "Offer attributes"
+        },
+        {
+            "description": "Endpoints to manage the bookings of an offer (event and product).",
+            "externalDocs": null,
+            "name": "Bookings"
         },
         {
             "description": "Endpoints to manage collective offers that are \"bookable\", not those that are displayed in the showcase.",
@@ -11694,22 +12100,22 @@
         {
             "description": "",
             "externalDocs": null,
-            "name": "Collective booking"
+            "name": "Collective bookings"
         },
         {
             "description": "",
             "externalDocs": null,
-            "name": "Collective categories"
+            "name": "Collective offer attributes"
         },
         {
             "description": "",
             "externalDocs": null,
-            "name": "Collective venues"
+            "name": "[DEPRECATED] Collective categories"
         },
         {
             "description": "",
             "externalDocs": null,
-            "name": "Collective educational data"
+            "name": "[DEPRECATED] Collective venues"
         }
     ]
 }

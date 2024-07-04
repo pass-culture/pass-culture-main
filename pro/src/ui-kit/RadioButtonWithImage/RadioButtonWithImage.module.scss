@@ -10,7 +10,6 @@ $radio-size: rem.torem(16px);
   border: rem.torem(1px) solid var(--color-grey-dark);
   border-radius: rem.torem(8px);
   position: relative;
-  font-size: rem.torem(15px);
 
   // reserve space for border
   padding: $border-size-selected;
@@ -52,7 +51,9 @@ $radio-size: rem.torem(16px);
 
   &.is-selected {
     border: $border-size-selected solid var(--color-secondary-light);
-    font-weight: 700;
+
+    @include fonts.button;
+
     background-color: var(--color-background-secondary);
   }
 

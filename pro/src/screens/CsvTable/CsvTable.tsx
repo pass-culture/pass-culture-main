@@ -5,6 +5,7 @@ import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { API_URL } from 'utils/config'
 import { getKey } from 'utils/strings'
 
+import styles from './CsvTable.module.scss'
 import { TableData } from './types'
 
 export interface CsvTableProps {
@@ -37,13 +38,13 @@ export const CsvTableScreen = ({ getCsvData }: CsvTableProps): JSX.Element => {
   }, [getCsvData, search])
 
   return isLoading ? (
-    <div id="spinner-container">
+    <div className={styles['spinner-container']}>
       <Spinner />
     </div>
   ) : dataFromCsv?.data.length ? (
-    <main id="content" className="csv-main-container">
-      <div id="csv-container">
-        <table id="csv-table">
+    <main className={styles['csv-main-container']}>
+      <div className={styles['csv-container']}>
+        <table className={styles['csv-table']}>
           <thead>
             <tr>
               {dataFromCsv.headers.map((header) => (
@@ -69,7 +70,7 @@ export const CsvTableScreen = ({ getCsvData }: CsvTableProps): JSX.Element => {
       <hr />
     </main>
   ) : (
-    <main id="content" className="no-data-container">
+    <main className={styles['no-data-container']}>
       <p>Il n’y a pas de données à afficher.</p>
     </main>
   )

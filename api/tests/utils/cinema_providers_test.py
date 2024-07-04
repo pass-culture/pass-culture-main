@@ -6,8 +6,6 @@ import pcapi.utils.cinema_providers as cinema_providers_utils
 @pytest.mark.parametrize(
     "uuid,result",
     [
-        ("123%12345678912345#111/2022-12-12 11:00:00", 111),
-        ("123%12345678912345#3/2022-12-12 11:00:00", 3),
         ("123%12345678912345#111", 111),
         ("123%12345678912345#5", 5),
         ("123445+43423", None),
@@ -61,7 +59,6 @@ def test_get_ems_showtime_id_from_uuid(stock_uuid, result):
 @pytest.mark.parametrize(
     "stock_uuid,provider_name,result",
     [
-        ("123%12345678912345#111/2022-12-12 11:00:00", "CDSStocks", 111),
         ("123%12345678912345#111", "BoostStocks", 111),
         ("123%12354114%CGR#111", "CGRStocks", 111),
         ("123%12354114%CGR#111", "EMSStocks", 111),

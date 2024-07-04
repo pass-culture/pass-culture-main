@@ -36,7 +36,9 @@ LIMIT_STOCKS_PER_PAGE = 20
 STOCK_LIMIT_TO_DELETE = 50
 
 OFFER_LOAD_OPTIONS = typing.Iterable[
-    typing.Literal["stock", "mediations", "product", "price_category", "venue", "bookings_count", "offerer_address"]
+    typing.Literal[
+        "stock", "mediations", "product", "price_category", "venue", "bookings_count", "offerer_address", "future_offer"
+    ]
 ]
 
 
@@ -142,11 +144,22 @@ def get_capped_offers_for_filters(
     return offers
 
 
+def get_offers_by_publication_date(publication_date: datetime.datetime | None = None) -> flask_sqlalchemy.BaseQuery:
+    if publication_date is None:
+        publication_date = datetime.datetime.utcnow()
+    publication_date = publication_date.replace(minute=0, second=0, microsecond=0, tzinfo=None)
+    future_offers_subquery = db.session.query(models.FutureOffer.offerId).filter_by(publicationDate=publication_date)
+    return models.Offer.query.filter(models.Offer.id.in_(future_offers_subquery))
+
+
 def get_offers_by_ids(user: users_models.User, offer_ids: list[int]) -> flask_sqlalchemy.BaseQuery:
     query = models.Offer.query
     if not user.has_admin_role:
-        query = query.join(offerers_models.Venue, offerers_models.Offerer, offerers_models.UserOfferer).filter(
-            offerers_models.UserOfferer.userId == user.id, offerers_models.UserOfferer.isValidated
+        query = (
+            query.join(offerers_models.Venue)
+            .join(offerers_models.Offerer)
+            .join(offerers_models.UserOfferer)
+            .filter(offerers_models.UserOfferer.userId == user.id, offerers_models.UserOfferer.isValidated)
         )
     query = query.filter(models.Offer.id.in_(offer_ids))
     return query
@@ -303,18 +316,22 @@ def get_collective_offers_by_filters(
         match status:
             # Status BOOKED == offer is sold out and last booking link to this reservation is not PENDING
             case educational_models.CollectiveOfferDisplayedStatus.BOOKED.value:
-                booking_subquery = (
-                    educational_models.CollectiveStock.query.with_entities(
-                        educational_models.CollectiveStock.collectiveOfferId
-                    )
-                    .join(educational_models.CollectiveBooking, educational_models.CollectiveStock.collectiveBookings)
-                    .filter(
-                        educational_models.CollectiveBooking.status
-                        != educational_models.CollectiveBookingStatus.PENDING
-                    )
+                booking_subquery = educational_models.CollectiveStock.query.with_entities(
+                    educational_models.CollectiveStock.collectiveOfferId
+                ).join(
+                    educational_models.CollectiveBooking,
+                    sa.and_(
+                        educational_models.CollectiveStock.id == educational_models.CollectiveBooking.collectiveStockId,
+                        educational_models.CollectiveBooking.status.not_in(
+                            [
+                                educational_models.CollectiveBookingStatus.PENDING.value,
+                                educational_models.CollectiveBookingStatus.CANCELLED.value,
+                            ]
+                        ),
+                    ),
                 )
                 query = query.filter(
-                    educational_models.CollectiveOffer.status == offer_mixin.OfferStatus.SOLD_OUT.name,
+                    educational_models.CollectiveOffer.status == offer_mixin.CollectiveOfferStatus.SOLD_OUT.name,
                     educational_models.CollectiveOffer.id.in_(booking_subquery),
                 )
             # Status PREBOOKED == offer is sold out and last booking link to this reservation is PENDING
@@ -343,7 +360,7 @@ def get_collective_offers_by_filters(
                     .subquery()
                 )
                 query = query.filter(
-                    educational_models.CollectiveOffer.status == offer_mixin.OfferStatus.SOLD_OUT.name,
+                    educational_models.CollectiveOffer.status == offer_mixin.CollectiveOfferStatus.SOLD_OUT.name,
                     offer_id_query.c.status == educational_models.CollectiveBookingStatus.PENDING.name,
                 ).join(offer_id_query, offer_id_query.c.collectiveOfferId == educational_models.CollectiveOffer.id)
             # Status ENDED == event is passed with a reservation not cancelled
@@ -361,7 +378,7 @@ def get_collective_offers_by_filters(
                 )
                 query = query.join(
                     hasBookingQuery, hasBookingQuery.c.collectiveOfferId == educational_models.CollectiveOffer.id
-                ).filter(educational_models.CollectiveOffer.status == offer_mixin.OfferStatus.EXPIRED.name)
+                ).filter(educational_models.CollectiveOffer.status == offer_mixin.CollectiveOfferStatus.EXPIRED.name)
             # Status EXPIRED == event is passed without any reservation or cancelled ones
             case educational_models.CollectiveOfferDisplayedStatus.EXPIRED.value:
                 hasNoBookingOrCancelledQuery = (
@@ -383,9 +400,11 @@ def get_collective_offers_by_filters(
                 query = query.join(
                     hasNoBookingOrCancelledQuery,
                     hasNoBookingOrCancelledQuery.c.collectiveOfferId == educational_models.CollectiveOffer.id,
-                ).filter(educational_models.CollectiveOffer.status == offer_mixin.OfferStatus.EXPIRED.name)
+                ).filter(educational_models.CollectiveOffer.status == offer_mixin.CollectiveOfferStatus.EXPIRED.name)
             case _:
-                query = query.filter(educational_models.CollectiveOffer.status == offer_mixin.OfferStatus[status].name)
+                query = query.filter(
+                    educational_models.CollectiveOffer.status == offer_mixin.CollectiveOfferStatus[status].name
+                )
     if period_beginning_date is not None or period_ending_date is not None:
         subquery = (
             educational_models.CollectiveStock.query.with_entities(educational_models.CollectiveStock.collectiveOfferId)
@@ -482,18 +501,18 @@ def get_collective_offers_template_by_filters(
             educational_models.CollectiveOfferDisplayedStatus.PREBOOKED.value,
         ):
             query = query.filter(
-                educational_models.CollectiveOfferTemplate.status == offer_mixin.OfferStatus.SOLD_OUT.name
+                educational_models.CollectiveOfferTemplate.status == offer_mixin.CollectiveOfferStatus.SOLD_OUT.name
             )
         elif status in (
             educational_models.CollectiveOfferDisplayedStatus.ENDED.value,
             educational_models.CollectiveOfferDisplayedStatus.EXPIRED.value,
         ):
             query = query.filter(
-                educational_models.CollectiveOfferTemplate.status == offer_mixin.OfferStatus.EXPIRED.name
+                educational_models.CollectiveOfferTemplate.status == offer_mixin.CollectiveOfferStatus.EXPIRED.name
             )
         else:
             query = query.filter(
-                educational_models.CollectiveOfferTemplate.status == offer_mixin.OfferStatus[status].name
+                educational_models.CollectiveOfferTemplate.status == offer_mixin.CollectiveOfferStatus[status].name
             )
     if formats:
         query = query.filter(
@@ -591,7 +610,7 @@ def get_active_offers_count_for_venue(venue_id: int) -> int:
 
     n_active_collective_offer = (
         educational_models.CollectiveOffer.query.filter(educational_models.CollectiveOffer.venueId == venue_id)
-        .filter(educational_models.CollectiveOffer.status == offer_mixin.OfferStatus.ACTIVE.name)
+        .filter(educational_models.CollectiveOffer.status == offer_mixin.CollectiveOfferStatus.ACTIVE.name)
         .distinct(educational_models.CollectiveOffer.id)
         .count()
     )
@@ -600,7 +619,7 @@ def get_active_offers_count_for_venue(venue_id: int) -> int:
         educational_models.CollectiveOfferTemplate.query.filter(
             educational_models.CollectiveOfferTemplate.venueId == venue_id
         )
-        .filter(educational_models.CollectiveOfferTemplate.status == offer_mixin.OfferStatus.ACTIVE.name)
+        .filter(educational_models.CollectiveOfferTemplate.status == offer_mixin.CollectiveOfferStatus.ACTIVE.name)
         .distinct(educational_models.CollectiveOfferTemplate.id)
         .count()
     )
@@ -610,13 +629,13 @@ def get_active_offers_count_for_venue(venue_id: int) -> int:
 
 def get_sold_out_offers_count_for_venue(venue_id: int) -> int:
     sold_out_offers_query = models.Offer.query.filter(models.Offer.venueId == venue_id)
-    sold_out_offers_query = _filter_by_status(sold_out_offers_query, offer_mixin.OfferStatus.SOLD_OUT.name)
+    sold_out_offers_query = _filter_by_status(sold_out_offers_query, offer_mixin.CollectiveOfferStatus.SOLD_OUT.name)
 
     n_sold_out_offers = sold_out_offers_query.distinct(models.Offer.id).count()
 
     n_sold_out_collective_offers = (
         educational_models.CollectiveOffer.query.filter(educational_models.CollectiveOffer.venueId == venue_id)
-        .filter(educational_models.CollectiveOffer.status == offer_mixin.OfferStatus.SOLD_OUT.name)
+        .filter(educational_models.CollectiveOffer.status == offer_mixin.CollectiveOfferStatus.SOLD_OUT.name)
         .distinct(educational_models.CollectiveOffer.id)
         .count()
     )
@@ -753,6 +772,10 @@ def delete_past_draft_collective_offers() -> None:
     db.session.commit()
 
 
+def delete_future_offer(offer_id: int) -> None:
+    models.FutureOffer.query.filter_by(offerId=offer_id).delete()
+
+
 def get_available_activation_code(stock: models.Stock) -> models.ActivationCode | None:
     activable_code = next(
         (
@@ -818,7 +841,17 @@ def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> mod
                 sa_orm.joinedload(models.Offer.offererAddress).with_expression(
                     offerers_models.OffererAddress._isEditable, offerers_models.OffererAddress.isEditable.expression  # type: ignore [attr-defined]
                 ),
+                sa_orm.joinedload(models.Offer.venue)
+                .joinedload(offerers_models.Venue.offererAddress)
+                .joinedload(offerers_models.OffererAddress.address),
+                sa_orm.joinedload(models.Offer.venue)
+                .joinedload(offerers_models.Venue.offererAddress)
+                .with_expression(
+                    offerers_models.OffererAddress._isEditable, offerers_models.OffererAddress.isEditable.expression  # type: ignore [attr-defined]
+                ),
             )
+        if "future_offer" in load_options:
+            query = query.outerjoin(models.Offer.futureOffer).options(sa_orm.contains_eager(models.Offer.futureOffer))
 
         return query.one()
     except sa_orm.exc.NoResultFound:

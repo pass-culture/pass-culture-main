@@ -239,10 +239,10 @@ class override_features(TestContextDecorator):
             pass  # [...]
     """
 
-    # FIXME (dbaty, 2020-02-09): the `db_session` fixture does not
-    # play well with the decorator when the latter is used on a class:
-    # changes made by the decorator (during `setup_method()`) are not
-    # seen when in the tests. I should try to fix that.
+    # The `db_session` fixture does not play well with the decorator
+    # when the latter is used on a class: changes made by the
+    # decorator (during `setup_method()`) are not seen when in the
+    # tests.
     CAN_BE_USED_ON_CLASSES = False
 
     def __init__(self, **overrides: bool) -> None:

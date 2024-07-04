@@ -97,12 +97,7 @@ export const routes: RouteConfig[] = [
     meta: { public: true },
   },
   {
-    lazy: () => import('pages/Offerers/OffererCreation/OffererCreation'),
-    path: '/structures/creation',
-    title: 'Créer une structure',
-  },
-  {
-    lazy: () => import('pages/Offerers/Offerer/OffererDetails/OffererDetails'),
+    element: <Navigate to="/collaborateurs" />,
     path: '/structures/:offererId',
     title: 'Détails de la structure',
   },
@@ -148,7 +143,7 @@ export const routes: RouteConfig[] = [
     lazy: () =>
       import('pages/CollectiveOfferStockCreation/CollectiveOfferStockCreation'),
     path: '/offre/:offerId/collectif/stocks',
-    title: 'Date et prix - Créer une offre réservable',
+    title: 'Dates et prix - Créer une offre réservable',
   },
   {
     lazy: () => import('pages/CollectiveOfferCreation/CollectiveOfferCreation'),
@@ -255,7 +250,7 @@ export const routes: RouteConfig[] = [
     lazy: () =>
       import('pages/CollectiveOfferStockEdition/CollectiveOfferStockEdition'),
     path: '/offre/:offerId/collectif/stocks/edition',
-    title: 'Date et prix - Modifier une offre collective réservable',
+    title: 'Dates et prix - Modifier une offre collective réservable',
   },
   {
     lazy: () =>
@@ -345,5 +340,10 @@ export const routes: RouteConfig[] = [
     lazy: () => import('pages/Collaborators/Collaborators'),
     path: '/collaborateurs',
     title: 'Collaborateurs',
+  },
+  {
+    lazy: () => import('pages/Errors/NotFound/NotFound'),
+    path: '/404',
+    title: 'Erreur 404 - Page indisponible',
   },
 ]

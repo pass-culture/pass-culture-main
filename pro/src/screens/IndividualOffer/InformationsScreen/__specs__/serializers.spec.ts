@@ -18,7 +18,7 @@ describe('test updateIndividualOffer::serializers', () => {
   it('test serializeDurationMinutes with empty input', () => {
     expect(serializeDurationMinutes('  ')).toBeUndefined()
   })
-  it('test serializeExtraData with enabled feature flag', () => {
+  it('test serializeExtraData', () => {
     const formValues: IndividualOfferFormValues = {
       author: 'author value',
       ean: 'ean value',
@@ -45,36 +45,7 @@ describe('test updateIndividualOffer::serializers', () => {
       stageDirector: 'stageDirector value',
       visa: 'visa value',
     }
-    expect(serializeExtraData(formValues, true)).toEqual(extraData)
-  })
-
-  it('test serializeExtraData with disbaled feature flag', () => {
-    const formValues: IndividualOfferFormValues = {
-      author: 'author value',
-      ean: 'ean value',
-      gtl_id: '',
-      performer: 'performer value',
-      showType: 'showType value',
-      showSubType: 'showSubType value',
-      speaker: 'speaker value',
-      stageDirector: 'stageDirector value',
-      visa: 'visa value',
-      // some not extra data fields
-      name: 'Test name',
-      description: 'Test description',
-    } as IndividualOfferFormValues
-
-    const extraData: OfferExtraData = {
-      author: 'author value',
-      ean: 'ean value',
-      performer: 'performer value',
-      showType: 'showType value',
-      showSubType: 'showSubType value',
-      speaker: 'speaker value',
-      stageDirector: 'stageDirector value',
-      visa: 'visa value',
-    }
-    expect(serializeExtraData(formValues, false)).toEqual(extraData)
+    expect(serializeExtraData(formValues)).toEqual(extraData)
   })
 
   describe('test serializePatchOffer', () => {
@@ -121,7 +92,7 @@ describe('test updateIndividualOffer::serializers', () => {
       patchBody = {
         audioDisabilityCompliant: true,
         description: 'test description',
-        extraData: serializeExtraData(formValues, false),
+        extraData: serializeExtraData(formValues),
         isNational: false,
         isDuo: false,
         mentalDisabilityCompliant: true,
@@ -144,10 +115,10 @@ describe('test updateIndividualOffer::serializers', () => {
         serializePatchOffer({
           offer: getIndividualOfferFactory(),
           formValues,
-          isTiteliveMusicGenreEnabled: false,
         })
       ).toEqual(patchBody)
     })
+
     it('should serialize patchBody with default', () => {
       formValues = {
         ...formValues,
@@ -167,7 +138,6 @@ describe('test updateIndividualOffer::serializers', () => {
         serializePatchOffer({
           offer: getIndividualOfferFactory(),
           formValues,
-          isTiteliveMusicGenreEnabled: false,
         })
       ).toEqual(patchBody)
     })

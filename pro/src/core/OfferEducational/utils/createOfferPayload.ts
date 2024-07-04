@@ -79,8 +79,7 @@ function getCommonOfferPayload(
 }
 
 export const createCollectiveOfferTemplatePayload = (
-  offer: OfferEducationalFormValues,
-  isCustomContactActive: boolean
+  offer: OfferEducationalFormValues
 ): PostCollectiveOfferTemplateBodyModel => {
   return {
     ...getCommonOfferPayload(offer),
@@ -91,24 +90,14 @@ export const createCollectiveOfferTemplatePayload = (
         ? serializeDates(offer.beginningDate, offer.endingDate, offer.hour)
         : undefined,
     priceDetail: offer.priceDetail,
-    contactEmail:
-      !isCustomContactActive || offer.contactOptions?.email
-        ? offer.email
-        : undefined,
-    contactPhone:
-      !isCustomContactActive || offer.contactOptions?.phone
-        ? offer.phone
-        : undefined,
+    contactEmail: offer.contactOptions?.email ? offer.email : undefined,
+    contactPhone: offer.contactOptions?.phone ? offer.phone : undefined,
     contactForm:
-      isCustomContactActive &&
-      offer.contactOptions?.form &&
-      offer.contactFormType === 'form'
+      offer.contactOptions?.form && offer.contactFormType === 'form'
         ? OfferContactFormEnum.FORM
         : undefined,
     contactUrl:
-      isCustomContactActive &&
-      offer.contactOptions?.form &&
-      offer.contactFormType === 'url'
+      offer.contactOptions?.form && offer.contactFormType === 'url'
         ? offer.contactUrl
         : undefined,
   }

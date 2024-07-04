@@ -7,10 +7,10 @@ description: How authentication and authorization work
 
 ## Users
 
-### Non technical users: teenagers and offerers
+### Non technical users: beneficiaries and offerers
 
 There are two main users of the pass Culture application :
-- the **teenagers** who are using their credit to buy cultural offers through the **[web application](https://passculture.app/accueil)** or the **mobile application**
+- the **beneficiaries** who are using their credit to buy cultural offers through the **[web application](https://passculture.app/accueil)** or the **mobile application**
 - the **offerers** who are providing those cultural offers through the **[pro interface](https://passculture.pro/)**
 
 ### Technical users: providers
@@ -36,7 +36,7 @@ You will be given **a pair of API keys** by our support team :
 
 Once you have your API key, add it in your request headers to authenticate your request. The API key should be located in the **Authorization header**, using the **`Bearer` pattern** (see example below).
 
-```shell
+```bash
 # Example of an authenticated request using curl
 # Fetch event categories on the integration test environment
 
@@ -71,10 +71,10 @@ The access to the venue will be given to you either :
 - **_by our support team_ if you are developing a _private_ integration**. This situation is relevant for internal technical teams that are developing an integration for their company that won't be used by other **`offerers`**.
 
 :::tip
-If you want **to know which venues are linked to your provider account**, you can use this **[endpoint](/rest-api/#tag/Offerer-and-Venues/operation/GetOffererVenues)**. It is possible to filter by offerer, using the offerer's SIREN.
+If you want **to know which venues are linked to your provider account**, you can use this **[endpoint](/rest-api/#tag/Venues/operation/GetOffererVenues)**. It is possible to filter by offerer, using the offerer's SIREN.
 
 
-```shell
+```bash
 # Example requests with curl
 
 # Return all the venues linked to your provider account

@@ -631,7 +631,7 @@ def _get_filtered_collective_bookings_query(
 
 def list_public_collective_offers(
     required_id: int,
-    status: offer_mixin.OfferStatus | None = None,
+    status: offer_mixin.CollectiveOfferStatus | None = None,
     venue_id: int | None = None,
     period_beginning_date: str | None = None,
     period_ending_date: str | None = None,
@@ -937,22 +937,6 @@ def get_collective_offer_template_by_id(offer_id: int) -> educational_models.Col
         raise educational_exceptions.CollectiveOfferTemplateNotFound()
 
 
-def get_collective_offer_template_by_ids(offer_ids: list[int]) -> list[educational_models.CollectiveOfferTemplate]:
-    query = educational_models.CollectiveOfferTemplate.query
-    query = query.filter(educational_models.CollectiveOfferTemplate.id.in_(offer_ids))
-    query = query.options(
-        sa.orm.joinedload(
-            educational_models.CollectiveOfferTemplate.venue,
-            innerjoin=True,
-        ).joinedload(
-            offerers_models.Venue.managingOfferer,
-            innerjoin=True,
-        )
-    )
-    query = query.options(sa.orm.joinedload(educational_models.CollectiveOfferTemplate.domains))
-    return query
-
-
 def get_collective_offer_templates_for_playlist_query(
     institution_id: int,
     playlist_type: educational_models.PlaylistType,
@@ -1247,40 +1231,6 @@ def get_educational_institution_public(
             educational_models.EducationalInstitution.id == institution_id,
         ),
     ).one_or_none()
-
-
-def get_all_collective_offers_by_institutionUAI(uai: str) -> list[educational_models.CollectiveOffer]:
-    query = (
-        educational_models.CollectiveOffer.query.join(
-            educational_models.EducationalInstitution, educational_models.CollectiveOffer.institution
-        )
-        .options(
-            sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
-                educational_models.CollectiveStock.collectiveBookings
-            ),
-        )
-        .options(
-            sa_orm.joinedload(educational_models.CollectiveOffer.nationalProgram),
-        )
-        .options(
-            sa_orm.joinedload(educational_models.CollectiveOffer.domains),
-        )
-        .options(
-            sa_orm.joinedload(educational_models.CollectiveOffer.teacher),
-        )
-        .options(
-            sa_orm.joinedload(educational_models.CollectiveOffer.venue)
-            .joinedload(offerers_models.Venue.managingOfferer)
-            .load_only(
-                offerers_models.Offerer.name,
-                offerers_models.Offerer.isActive,
-                offerers_models.Offerer.validationStatus,
-            ),
-        )
-        .filter(educational_models.EducationalInstitution.institutionId == uai)
-    )
-
-    return query.all()
 
 
 def get_all_offer_by_redactor_id(redactor_id: int) -> list[educational_models.CollectiveOffer]:

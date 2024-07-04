@@ -43,3 +43,7 @@ docs-build/
 
 # Backoffice scss to css tmp assets
 /api/src/pcapi/static/backoffice/css/compiled/
+
+
+# Certificate to start the api with a proxy
+*.pem

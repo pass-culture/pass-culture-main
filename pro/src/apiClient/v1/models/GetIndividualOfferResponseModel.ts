@@ -37,6 +37,7 @@ export type GetIndividualOfferResponseModel = {
   motorDisabilityCompliant?: boolean | null;
   name: string;
   priceCategories?: Array<PriceCategoryResponseModel> | null;
+  publicationDate?: string | null;
   status: OfferStatus;
   subcategoryId: SubcategoryIdEnum;
   thumbUrl?: string | null;

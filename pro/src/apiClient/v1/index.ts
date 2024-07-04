@@ -50,6 +50,7 @@ export type { CollectiveOfferResponseIdModel } from './models/CollectiveOfferRes
 export type { CollectiveOfferResponseModel } from './models/CollectiveOfferResponseModel';
 export type { CollectiveOffersBookingResponseModel } from './models/CollectiveOffersBookingResponseModel';
 export type { CollectiveOffersStockResponseModel } from './models/CollectiveOffersStockResponseModel';
+export { CollectiveOfferStatus } from './models/CollectiveOfferStatus';
 export type { CollectiveOfferTemplateBodyModel } from './models/CollectiveOfferTemplateBodyModel';
 export type { CollectiveOfferTemplateResponseIdModel } from './models/CollectiveOfferTemplateResponseIdModel';
 export { CollectiveOfferType } from './models/CollectiveOfferType';
@@ -178,7 +179,6 @@ export type { OffererStatsResponseModel } from './models/OffererStatsResponseMod
 export type { OffererViewsModel } from './models/OffererViewsModel';
 export type { OfferImage } from './models/OfferImage';
 export { OfferStatus } from './models/OfferStatus';
-export { OfferType } from './models/OfferType';
 export type { OpeningHoursModel } from './models/OpeningHoursModel';
 export type { PatchAllCollectiveOffersActiveStatusBodyModel } from './models/PatchAllCollectiveOffersActiveStatusBodyModel';
 export type { PatchAllOffersActiveStatusBodyModel } from './models/PatchAllOffersActiveStatusBodyModel';

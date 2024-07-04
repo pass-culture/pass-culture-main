@@ -3,10 +3,10 @@ import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import {
+  CollectiveBookingStatus,
+  CollectiveOfferStatus,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
-  CollectiveBookingStatus,
-  OfferStatus,
 } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import {
@@ -140,12 +140,16 @@ export const OfferEducationalActions = ({
 
   const shouldDisplayAdagePublicationButton =
     !isBooked &&
-    ![OfferStatus.EXPIRED, OfferStatus.PENDING].includes(offer.status)
+    ![
+      CollectiveOfferStatus.EXPIRED,
+      CollectiveOfferStatus.PENDING,
+      CollectiveOfferStatus.ARCHIVED,
+    ].includes(offer.status)
 
   const shouldDisplayBookingLink =
     lastBookingId &&
     (lastBookingStatus !== CollectiveBookingStatus.CANCELLED ||
-      offer.status === OfferStatus.EXPIRED)
+      offer.status === CollectiveOfferStatus.EXPIRED)
 
   const shouldDisplayStatusSeparator =
     shouldDisplayAdagePublicationButton || shouldDisplayBookingLink
@@ -180,6 +184,8 @@ export const OfferEducationalActions = ({
                   CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING,
                   {
                     from: '/offre/collectif/recapitulatif',
+                    offerId: offer.id,
+                    offerType: 'collective',
                   }
                 )
               }

@@ -5,7 +5,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
-from pcapi.models.offer_mixin import OfferStatus
+from pcapi.models.offer_mixin import CollectiveOfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 
 
@@ -20,7 +20,7 @@ class Returns204Test:
         response = client.with_session_auth(user_offerer.user.email).patch(url)
 
         assert response.status_code == 200
-        assert response.json["status"] == OfferStatus.ACTIVE.value
+        assert response.json["status"] == CollectiveOfferStatus.ACTIVE.value
         assert not offer.lastValidationAuthor
 
     def expect_offer_to_be_pending(self, client):
@@ -43,7 +43,7 @@ class Returns204Test:
         response = client.with_session_auth(user_offerer.user.email).patch(url)
 
         assert response.status_code == 200
-        assert response.json["status"] == OfferStatus.PENDING.value
+        assert response.json["status"] == CollectiveOfferStatus.PENDING.value
         assert not response.json["isActive"]
         assert not offer.lastValidationAuthor
 

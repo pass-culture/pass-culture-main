@@ -26,8 +26,8 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
   CollectiveOfferNavigation,
-  CollectiveOfferStep,
   CollectiveOfferNavigationProps,
+  CollectiveOfferStep,
 } from '../CollectiveOfferNavigation'
 
 const renderCollectiveOfferNavigation = (
@@ -42,6 +42,7 @@ describe('CollectiveOfferNavigation', () => {
   const offerId = 1
   const mockLogEvent = vi.fn()
   const notifyError = vi.fn()
+  const notifySuccess = vi.fn()
 
   beforeEach(async () => {
     offer = getCollectiveOfferTemplateFactory({ isTemplate: true })
@@ -72,6 +73,7 @@ describe('CollectiveOfferNavigation', () => {
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,
       error: notifyError,
+      success: notifySuccess,
     }))
 
     props = {
@@ -92,7 +94,7 @@ describe('CollectiveOfferNavigation', () => {
 
     expect(listItems).toHaveLength(6)
     expect(listItems[0]).toHaveTextContent('Détails de l’offre')
-    expect(listItems[1]).toHaveTextContent('Date et prix')
+    expect(listItems[1]).toHaveTextContent('Dates et prix')
     expect(listItems[2]).toHaveTextContent('Établissement et enseignant')
     expect(listItems[3]).toHaveTextContent('Récapitulatif')
     expect(listItems[4]).toHaveTextContent('Aperçu')
@@ -109,7 +111,7 @@ describe('CollectiveOfferNavigation', () => {
 
     const listItems = await screen.findAllByRole('listitem')
     expect(listItems).toHaveLength(4)
-    expect(screen.queryByText('Date et prix')).not.toBeInTheDocument()
+    expect(screen.queryByText('Dates et prix')).not.toBeInTheDocument()
     expect(screen.queryByText('Visibilité')).not.toBeInTheDocument()
 
     const links = screen.queryAllByRole('link')
@@ -192,7 +194,7 @@ describe('CollectiveOfferNavigation', () => {
     renderCollectiveOfferNavigation(props)
 
     expect(
-      screen.getByRole('link', { name: 'Date et prix' })
+      screen.getByRole('link', { name: 'Dates et prix' })
     ).toBeInTheDocument()
 
     const linkItems = await screen.findAllByRole('link')
@@ -232,6 +234,8 @@ describe('CollectiveOfferNavigation', () => {
       Events.CLICKED_DUPLICATE_TEMPLATE_OFFER,
       {
         from: OFFER_FROM_TEMPLATE_ENTRIES.OFFER_TEMPLATE_RECAP,
+        offerId: 1,
+        offerType: 'collective',
       }
     )
   })
@@ -308,5 +312,119 @@ describe('CollectiveOfferNavigation', () => {
     await userEvent.click(duplicateOffer)
 
     expect(notifyError).toHaveBeenCalledWith('Impossible de dupliquer l’image')
+  })
+
+  it('should archive an offer template', async () => {
+    renderCollectiveOfferNavigation({
+      ...props,
+      isTemplate: true,
+      isCreatingOffer: false,
+      isArchivable: true,
+    })
+
+    const archiveButton = screen.getByRole('button', {
+      name: 'Archiver',
+    })
+
+    await userEvent.click(archiveButton)
+    const confirmArchivingButton = screen.getByText('Archiver l’offre')
+    await userEvent.click(confirmArchivingButton)
+
+    expect(notifySuccess).toHaveBeenCalledWith(
+      'Une offre a bien été archivée',
+      {
+        duration: 8000,
+      }
+    )
+  })
+
+  it('should archive an offer bookable', async () => {
+    renderCollectiveOfferNavigation({
+      ...props,
+      isTemplate: false,
+      isCreatingOffer: false,
+      isArchivable: true,
+    })
+
+    const archiveButton = screen.getByRole('button', {
+      name: 'Archiver',
+    })
+
+    await userEvent.click(archiveButton)
+    const confirmArchivingButton = screen.getByText('Archiver l’offre')
+    await userEvent.click(confirmArchivingButton)
+
+    expect(notifySuccess).toHaveBeenCalledWith(
+      'Une offre a bien été archivée',
+      {
+        duration: 8000,
+      }
+    )
+  })
+
+  it('should not see archive button when offer is not archivable', () => {
+    renderCollectiveOfferNavigation({
+      ...props,
+      isTemplate: true,
+      isCreatingOffer: false,
+      isArchivable: false,
+    })
+
+    const archiveButton = screen.queryByRole('button', {
+      name: 'Archiver',
+    })
+
+    expect(archiveButton).not.to.toBeInTheDocument()
+  })
+
+  it('should return an error on offer archiving when the offer id is not valid', async () => {
+    renderCollectiveOfferNavigation({
+      ...props,
+      offerId: undefined,
+      isTemplate: true,
+      isCreatingOffer: false,
+      isArchivable: true,
+    })
+
+    const archiveButton = screen.getByRole('button', {
+      name: 'Archiver',
+    })
+
+    await userEvent.click(archiveButton)
+    const confirmArchivingButton = screen.getByText('Archiver l’offre')
+    await userEvent.click(confirmArchivingButton)
+
+    expect(notifyError).toHaveBeenNthCalledWith(
+      1,
+      'L’identifiant de l’offre n’est pas valide.'
+    )
+  })
+
+  it('should return an error on offer archiving when there is an api error', async () => {
+    renderCollectiveOfferNavigation({
+      ...props,
+      isTemplate: true,
+      isCreatingOffer: false,
+      isArchivable: true,
+    })
+
+    vi.spyOn(api, 'patchCollectiveOffersTemplateArchive').mockRejectedValueOnce(
+      {}
+    )
+
+    const archiveButton = screen.getByRole('button', {
+      name: 'Archiver',
+    })
+
+    await userEvent.click(archiveButton)
+    const confirmArchivingButton = screen.getByText('Archiver l’offre')
+    await userEvent.click(confirmArchivingButton)
+
+    expect(notifyError).toHaveBeenCalledWith(
+      'Une erreur est survenue lors de l’archivage de l’offre',
+      {
+        duration: 8000,
+      }
+    )
   })
 })

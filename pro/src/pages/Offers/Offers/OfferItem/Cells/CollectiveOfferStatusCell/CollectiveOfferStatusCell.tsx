@@ -1,7 +1,10 @@
 import cn from 'classnames'
 import React from 'react'
 
-import { CollectiveOfferResponseModel, OfferStatus } from 'apiClient/v1'
+import {
+  CollectiveOfferResponseModel,
+  CollectiveOfferStatus,
+} from 'apiClient/v1'
 import { CollectiveStatusLabel } from 'components/CollectiveStatusLabel/CollectiveStatusLabel'
 import fullHideIcon from 'icons/full-hide.svg'
 import strokeCalendarIcon from 'icons/stroke-calendar.svg'
@@ -10,6 +13,7 @@ import strokeClockIcon from 'icons/stroke-clock.svg'
 import strokeCloseIcon from 'icons/stroke-close.svg'
 import strokeDoubleCheckIcon from 'icons/stroke-double-check.svg'
 import strokeHourglassIcon from 'icons/stroke-hourglass.svg'
+import strokeThing from 'icons/stroke-thing.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from '../../OfferItem.module.scss'
@@ -17,11 +21,11 @@ import styles from '../../OfferItem.module.scss'
 import style from './CollectiveOfferStatusCell.module.scss'
 
 export const getCollectiveStatusLabel = (
-  offerStatus: OfferStatus,
+  offerStatus: CollectiveOfferStatus,
   lastBookingStatus?: string
 ) => {
   switch (offerStatus) {
-    case OfferStatus.PENDING:
+    case CollectiveOfferStatus.PENDING:
       return (
         <CollectiveStatusLabel
           className={style['status-pending']}
@@ -36,7 +40,7 @@ export const getCollectiveStatusLabel = (
         />
       )
 
-    case OfferStatus.REJECTED:
+    case CollectiveOfferStatus.REJECTED:
       return (
         <CollectiveStatusLabel
           className={style['status-rejected']}
@@ -50,7 +54,7 @@ export const getCollectiveStatusLabel = (
           label="refusée"
         />
       )
-    case OfferStatus.INACTIVE:
+    case CollectiveOfferStatus.INACTIVE:
       return (
         <CollectiveStatusLabel
           className={style['status-inactive']}
@@ -61,10 +65,10 @@ export const getCollectiveStatusLabel = (
               className={style['status-label-icon']}
             />
           }
-          label="désactivée"
+          label="masquée"
         />
       )
-    case OfferStatus.ACTIVE:
+    case CollectiveOfferStatus.ACTIVE:
       return (
         <CollectiveStatusLabel
           className={style['status-active']}
@@ -78,7 +82,7 @@ export const getCollectiveStatusLabel = (
           label="publiée"
         />
       )
-    case OfferStatus.SOLD_OUT:
+    case CollectiveOfferStatus.SOLD_OUT:
       return lastBookingStatus === 'PENDING' ? (
         <CollectiveStatusLabel
           className={style['status-pre-booked']}
@@ -107,7 +111,7 @@ export const getCollectiveStatusLabel = (
           label="réservée"
         />
       )
-    case OfferStatus.EXPIRED:
+    case CollectiveOfferStatus.EXPIRED:
       return lastBookingStatus && lastBookingStatus !== 'CANCELLED' ? (
         <CollectiveStatusLabel
           className={style['status-ended']}
@@ -131,6 +135,23 @@ export const getCollectiveStatusLabel = (
             />
           }
           label="expirée"
+        />
+      )
+    case CollectiveOfferStatus.ARCHIVED:
+      return (
+        <CollectiveStatusLabel
+          className={style['status-archived']}
+          icon={
+            <SvgIcon
+              alt=""
+              src={strokeThing}
+              className={cn(
+                style['status-label-icon'],
+                style['status-archived-icon']
+              )}
+            />
+          }
+          label="archivée"
         />
       )
     default:

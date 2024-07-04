@@ -10,6 +10,7 @@ from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.ubble import models as ubble_fraud_models
 from pcapi.core.subscription.models import SubscriptionStepCompletionState
 import pcapi.core.subscription.ubble.models as ubble_models
+from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -22,6 +23,10 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class NextStepTest:
+    expected_num_queries = (
+        5  # user + beneficiary_fraud_review + feature + beneficiary_fraud_check + beneficiary_fraud_check(exists)
+    )
+
     @override_features(ENABLE_EDUCONNECT_AUTHENTICATION=False)
     def test_next_subscription(self, client):
         user = users_factories.UserFactory(
@@ -31,9 +36,10 @@ class NextStepTest:
 
         client.with_token(user.email)
 
-        response = client.get("/native/v1/subscription/next_step")
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get("/native/v1/subscription/next_step")
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json["nextSubscriptionStep"] == "phone-validation"
         assert response.json["allowedIdentityCheckMethods"] == ["ubble"]
         assert response.json["maintenancePageType"] is None
@@ -50,9 +56,10 @@ class NextStepTest:
 
         client.with_token(user.email)
 
-        response = client.get("/native/v1/subscription/next_step")
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get("/native/v1/subscription/next_step")
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json["nextSubscriptionStep"] == "profile-completion"
         assert response.json["allowedIdentityCheckMethods"] == ["ubble"]
         assert response.json["maintenancePageType"] is None
@@ -77,10 +84,10 @@ class NextStepTest:
         )
 
         client.with_token(user.email)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get("/native/v1/subscription/next_step")
+            assert response.status_code == 200
 
-        response = client.get("/native/v1/subscription/next_step")
-
-        assert response.status_code == 200
         assert response.json["nextSubscriptionStep"] == "maintenance"
         assert response.json["allowedIdentityCheckMethods"] == []
         assert response.json["maintenancePageType"] == "with-dms"
@@ -525,6 +532,10 @@ class NextStepTest:
 
 
 class StepperTest:
+    expected_num_queries = (
+        5  # user + beneficiary_fraud_review + feature + beneficiary_fraud_check + beneficiary_fraud_check(exists)
+    )
+
     def setup_method(self):
         self.phone_validation_step = {
             "name": "phone-validation",
@@ -567,9 +578,10 @@ class StepperTest:
         )
 
         client.with_token(user.email)
-        response = client.get("/native/v2/subscription/stepper")
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get("/native/v2/subscription/stepper")
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json["subscriptionStepsToDisplay"] == [
             self.get_step("phone_validation_step", SubscriptionStepCompletionState.CURRENT.value),
             self.get_step("profile_completion_step", SubscriptionStepCompletionState.DISABLED.value),
@@ -587,9 +599,9 @@ class StepperTest:
         )
 
         client.with_token(user.email)
-        response = client.get("/native/v2/subscription/stepper")
-
-        assert response.status_code == 200
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get("/native/v2/subscription/stepper")
+            assert response.status_code == 200
 
         assert response.json["subscriptionStepsToDisplay"] == [
             self.get_step("profile_completion_step", SubscriptionStepCompletionState.CURRENT.value),
@@ -613,7 +625,8 @@ class StepperTest:
         )
 
         client.with_token(user.email)
-        response = client.get("/native/v2/subscription/stepper")
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get("/native/v2/subscription/stepper")
 
         assert response.json["subscriptionStepsToDisplay"] == [
             self.get_step("phone_validation_step", SubscriptionStepCompletionState.CURRENT.value),
@@ -633,7 +646,8 @@ class StepperTest:
         )
 
         client.with_token(user.email)
-        response = client.get("/native/v2/subscription/stepper")
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get("/native/v2/subscription/stepper")
 
         assert response.json["subscriptionStepsToDisplay"] == [
             self.get_step("phone_validation_step", SubscriptionStepCompletionState.CURRENT.value),
@@ -798,10 +812,10 @@ class StepperTest:
         )
 
         client.with_token(user.email)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get("/native/v2/subscription/stepper")
+            assert response.status_code == 200
 
-        response = client.get("/native/v2/subscription/stepper")
-
-        assert response.status_code == 200
         assert response.json["nextSubscriptionStep"] == "phone-validation"
         assert response.json["allowedIdentityCheckMethods"] == ["ubble"]
         assert response.json["maintenancePageType"] is None
@@ -817,10 +831,10 @@ class StepperTest:
         )
 
         client.with_token(user.email)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get("/native/v2/subscription/stepper")
+            assert response.status_code == 200
 
-        response = client.get("/native/v2/subscription/stepper")
-
-        assert response.status_code == 200
         assert response.json["nextSubscriptionStep"] == "profile-completion"
         assert response.json["allowedIdentityCheckMethods"] == ["ubble"]
         assert response.json["maintenancePageType"] is None
@@ -845,10 +859,10 @@ class StepperTest:
         )
 
         client.with_token(user.email)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get("/native/v2/subscription/stepper")
+            assert response.status_code == 200
 
-        response = client.get("/native/v2/subscription/stepper")
-
-        assert response.status_code == 200
         assert response.json["nextSubscriptionStep"] == "maintenance"
         assert response.json["allowedIdentityCheckMethods"] == []
         assert response.json["maintenancePageType"] == "with-dms"
@@ -1176,9 +1190,10 @@ class StepperTest:
         fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
 
         client.with_token(user.email)
-        response = client.get("/native/v2/subscription/stepper")
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get("/native/v2/subscription/stepper")
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json["nextSubscriptionStep"] == "honor-statement"
         assert response.json["allowedIdentityCheckMethods"] == ["ubble"]
         assert response.json["maintenancePageType"] is None
@@ -1297,6 +1312,8 @@ class StepperTest:
 
 
 class GetProfileTest:
+    expected_num_queries = 2  # user + beneficiary_fraud_check
+
     def test_get_profile(self, client):
         user = users_factories.BeneficiaryGrant18Factory()
         fraud_check = fraud_factories.ProfileCompletionFraudCheckFactory(
@@ -1304,12 +1321,13 @@ class GetProfileTest:
         )
 
         client.with_token(user.email)
-        response = client.get("/native/v1/subscription/profile")
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get("/native/v1/subscription/profile")
+            assert response.status_code == 200
 
         content: fraud_models.ProfileCompletionContent = fraud_check.source_data()
         profile_content = response.json["profile"]
 
-        assert response.status_code == 200
         assert profile_content["firstName"] == content.first_name
         assert profile_content["lastName"] == content.last_name
         assert profile_content["address"] == content.address
@@ -1322,9 +1340,9 @@ class GetProfileTest:
         user = users_factories.BeneficiaryGrant18Factory()
 
         client.with_token(user.email)
-        response = client.get("/native/v1/subscription/profile")
-
-        assert response.status_code == 404
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get("/native/v1/subscription/profile")
+            assert response.status_code == 404
 
     def test_get_profile_with_obsolete_profile_info(self, client):
         user = users_factories.BeneficiaryGrant18Factory()
@@ -1335,9 +1353,9 @@ class GetProfileTest:
         fraud_check.resultContent["activity"] = "NOT_AN_ACTIVITY"
 
         client.with_token(user.email)
-        response = client.get("/native/v1/subscription/profile")
-
-        assert response.status_code == 200
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get("/native/v1/subscription/profile")
+            assert response.status_code == 200
         assert response.json["profile"] is None
 
     def test_post_profile_then_get(self, client):
@@ -1679,46 +1697,3 @@ class HonorStatementTest:
         assert fraud_check.reason == "statement from /subscription/honor_statement endpoint"
         assert fraud_check.eligibilityType == eligibility_type
         assert fraud_check.eligibilityType == eligibility_type
-
-
-@pytest.mark.usefixtures("db_session")
-class ActivateUserTest:
-    @pytest.mark.parametrize(
-        "age, fraud_check_type",
-        [
-            (15, fraud_models.FraudCheckType.EDUCONNECT.value),
-            (16, fraud_models.FraudCheckType.EDUCONNECT.value),
-            (17, fraud_models.FraudCheckType.EDUCONNECT.value),
-            (18, fraud_models.FraudCheckType.UBBLE.value),
-        ],
-    )
-    def test_grant_notify_amplitude(self, client, age, fraud_check_type):
-        from pcapi.analytics.amplitude.backends.amplitude_connector import AmplitudeEventType
-        import pcapi.analytics.amplitude.testing as amplitude_testing
-
-        if age == 18:
-            user = users_factories.EligibleActivableFactory()
-        else:
-            user = users_factories.EligibleActivableUnderageFactory(age=age)
-
-        profile_data = {
-            "firstName": user.firstName,
-            "lastName": user.lastName,
-            "address": user.address,
-            "city": user.city,
-            "postalCode": user.postalCode,
-            "activityId": "HIGH_SCHOOL_STUDENT",
-            "schoolTypeId": "PUBLIC_HIGH_SCHOOL",
-        }
-
-        client.with_token(user.email)
-        client.post("/native/v1/subscription/profile", profile_data)
-
-        assert len(amplitude_testing.requests) == 1
-        assert amplitude_testing.requests[0] == {
-            "event_name": AmplitudeEventType.DEPOSIT_GRANTED.value,
-            "event_properties": {
-                "from": fraud_check_type,
-            },
-            "user_id": user.id,
-        }

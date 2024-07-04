@@ -1,5 +1,3 @@
-import React from 'react'
-
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import strokePassIcon from 'icons/stroke-pass.svg'
 
@@ -22,10 +20,9 @@ export const PrebookingModal = ({
       title="Êtes-vous sûr de vouloir préréserver ?"
       confirmText="Préréserver"
       cancelText="Fermer"
-      extraClassNames="prebooking-modal"
       confirmButtonDisabled={isPreview}
     >
-      <p className="prebooking-modal-text">
+      <p>
         Si oui, une fois votre préréservation confirmée :
         <br />
         <br />

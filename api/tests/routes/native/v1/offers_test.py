@@ -116,8 +116,6 @@ class OffersTest:
 
         assert response.status_code == 200
 
-        print(response.json)
-
         assert response.json["id"] == offer.id
         assert response.json["accessibility"] == {
             "audioDisability": False,
@@ -406,7 +404,7 @@ class OffersTest:
         )
         stock = offers_factories.EventStockFactory(
             offer=offer,
-            idAtProviders=f"{offer_id_at_provider}#{show_id}/2022-12-03",
+            idAtProviders=f"{offer_id_at_provider}#{show_id}",
         )
 
         response = client.get(f"/native/v1/offer/{offer.id}")
@@ -1009,7 +1007,7 @@ class OffersV2Test:
         )
         stock = offers_factories.EventStockFactory(
             offer=offer,
-            idAtProviders=f"{offer_id_at_provider}#{show_id}/2022-12-03",
+            idAtProviders=f"{offer_id_at_provider}#{show_id}",
         )
 
         response = client.get(f"/native/v2/offer/{offer.id}")

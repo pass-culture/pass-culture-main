@@ -12,6 +12,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.validation import check_for_duplicated_price_categories
 from pcapi.models import api_errors
 from pcapi.models import db
+from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.documentation_constants import http_responses
 from pcapi.routes.public.documentation_constants import tags
@@ -20,7 +21,6 @@ from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.validation.routes.users_authentifications import api_key_required
 from pcapi.validation.routes.users_authentifications import current_api_key
 
-from . import blueprint
 from . import serialization
 from . import utils
 
@@ -42,10 +42,10 @@ def _deserialize_has_ticket(
     return offers_models.WithdrawalTypeEnum.IN_APP
 
 
-@blueprint.v1_offers_blueprint.route("/events", methods=["POST"])
+@blueprints.public_api.route("/public/offers/v1/events", methods=["POST"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.EVENT_OFFER_INFO_TAG],
+    tags=[tags.EVENT_OFFERS],
     response_model=serialization.EventOfferResponse,
     resp=SpectreeResponse(
         **(
@@ -72,10 +72,10 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
                 booking_contact=body.booking_contact,
                 booking_email=body.booking_email,
                 description=body.description,
-                duration_minutes=body.duration_minutes,
+                duration_minutes=body.event_duration,
                 external_ticket_office_url=body.external_ticket_office_url,
                 extra_data=serialization.deserialize_extra_data(body.category_related_fields),
-                is_duo=body.is_duo,
+                is_duo=body.enable_double_bookings,
                 mental_disability_compliant=body.accessibility.mental_disability_compliant,
                 motor_disability_compliant=body.accessibility.motor_disability_compliant,
                 name=body.name,
@@ -99,18 +99,22 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
             if body.image:
                 utils.save_image(body.image, created_offer)
 
-            offers_api.publish_offer(created_offer, user=None)
+            offers_api.publish_offer(created_offer, user=None, publication_date=body.publication_date)
 
-    except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as error:
+    except (
+        offers_exceptions.OfferCreationBaseException,
+        offers_exceptions.OfferEditionBaseException,
+        offers_exceptions.FutureOfferException,
+    ) as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
     return serialization.EventOfferResponse.build_event_offer(created_offer)
 
 
-@blueprint.v1_offers_blueprint.route("/events/<int:event_id>", methods=["GET"])
+@blueprints.public_api.route("/public/offers/v1/events/<int:event_id>", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.EVENT_OFFER_INFO_TAG],
+    tags=[tags.EVENT_OFFERS],
     response_model=serialization.EventOfferResponse,
     resp=SpectreeResponse(
         **(
@@ -139,10 +143,10 @@ def get_event(event_id: int) -> serialization.EventOfferResponse:
     return serialization.EventOfferResponse.build_event_offer(offer)
 
 
-@blueprint.v1_offers_blueprint.route("/events", methods=["GET"])
+@blueprints.public_api.route("/public/offers/v1/events", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.EVENT_OFFER_INFO_TAG],
+    tags=[tags.EVENT_OFFERS],
     response_model=serialization.EventOffersResponse,
     resp=SpectreeResponse(
         **(
@@ -174,10 +178,10 @@ def get_events(query: serialization.GetOffersQueryParams) -> serialization.Event
     )
 
 
-@blueprint.v1_offers_blueprint.route("/events/<int:event_id>", methods=["PATCH"])
+@blueprints.public_api.route("/public/offers/v1/events/<int:event_id>", methods=["PATCH"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.EVENT_OFFER_INFO_TAG],
+    tags=[tags.EVENT_OFFERS],
     response_model=serialization.EventOfferResponse,
     resp=SpectreeResponse(
         **(
@@ -214,14 +218,14 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
                 offer,
                 bookingContact=update_body.get("booking_contact", offers_api.UNCHANGED),
                 bookingEmail=update_body.get("booking_email", offers_api.UNCHANGED),
-                durationMinutes=update_body.get("duration_minutes", offers_api.UNCHANGED),
+                durationMinutes=update_body.get("event_duration", offers_api.UNCHANGED),
                 extraData=(
                     serialization.deserialize_extra_data(body.category_related_fields, copy.deepcopy(offer.extraData))
                     if body.category_related_fields
                     else offers_api.UNCHANGED
                 ),
                 isActive=update_body.get("is_active", offers_api.UNCHANGED),
-                isDuo=update_body.get("is_duo", offers_api.UNCHANGED),
+                isDuo=update_body.get("enable_double_bookings", offers_api.UNCHANGED),
                 withdrawalDetails=update_body.get("withdrawal_details", offers_api.UNCHANGED),
                 description=update_body.get("description", offers_api.UNCHANGED),
                 idAtProvider=update_body.get("id_at_provider", offers_api.UNCHANGED),
@@ -235,10 +239,10 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
     return serialization.EventOfferResponse.build_event_offer(offer)
 
 
-@blueprint.v1_offers_blueprint.route("/events/<int:event_id>/price_categories", methods=["POST"])
+@blueprints.public_api.route("/public/offers/v1/events/<int:event_id>/price_categories", methods=["POST"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.EVENT_OFFER_PRICES_TAG],
+    tags=[tags.EVENT_OFFER_PRICES],
     response_model=serialization.PriceCategoriesResponse,
     resp=SpectreeResponse(
         **(
@@ -281,12 +285,12 @@ def post_event_price_categories(
     return serialization.PriceCategoriesResponse.build_price_categories(created_price_categories)
 
 
-@blueprint.v1_offers_blueprint.route(
-    "/events/<int:event_id>/price_categories/<int:price_category_id>", methods=["PATCH"]
+@blueprints.public_api.route(
+    "/public/offers/v1/events/<int:event_id>/price_categories/<int:price_category_id>", methods=["PATCH"]
 )
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.EVENT_OFFER_PRICES_TAG],
+    tags=[tags.EVENT_OFFER_PRICES],
     response_model=serialization.PriceCategoryResponse,
     resp=SpectreeResponse(
         **(
@@ -339,10 +343,10 @@ def patch_event_price_categories(
     return serialization.PriceCategoryResponse.from_orm(price_category_to_edit)
 
 
-@blueprint.v1_offers_blueprint.route("/events/<int:event_id>/dates", methods=["POST"])
+@blueprints.public_api.route("/public/offers/v1/events/<int:event_id>/dates", methods=["POST"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.EVENT_OFFER_DATES_TAG],
+    tags=[tags.EVENT_OFFER_STOCKS],
     response_model=serialization.PostDatesResponse,
     resp=SpectreeResponse(
         **(
@@ -355,11 +359,14 @@ def patch_event_price_categories(
     ),
 )
 @api_key_required
-def post_event_dates(event_id: int, body: serialization.DatesCreation) -> serialization.PostDatesResponse:
+def post_event_stocks(event_id: int, body: serialization.DatesCreation) -> serialization.PostDatesResponse:
     """
-    Add dates to event
+    Add stocks to an event
 
-    Add a dates to given event. Each date is attached to a price category so if there are several prices categories, several dates must be added.
+    Add stocks to given event. Each stock is attached to a price category and to a date.
+    For a given date, you will have one stock per price category.
+
+    **⚠️ Event must have less than 1 000 stocks** otherwise they will not be published.
     """
     offer = (
         utils.retrieve_offer_query(event_id)
@@ -399,10 +406,10 @@ def post_event_dates(event_id: int, body: serialization.DatesCreation) -> serial
     )
 
 
-@blueprint.v1_offers_blueprint.route("/events/<int:event_id>/dates", methods=["GET"])
+@blueprints.public_api.route("/public/offers/v1/events/<int:event_id>/dates", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.EVENT_OFFER_DATES_TAG],
+    tags=[tags.EVENT_OFFER_STOCKS],
     response_model=serialization.GetDatesResponse,
     resp=SpectreeResponse(
         **(
@@ -415,11 +422,11 @@ def post_event_dates(event_id: int, body: serialization.DatesCreation) -> serial
     ),
 )
 @api_key_required
-def get_event_dates(event_id: int, query: serialization.GetDatesQueryParams) -> serialization.GetDatesResponse:
+def get_event_stocks(event_id: int, query: serialization.GetDatesQueryParams) -> serialization.GetDatesResponse:
     """
-    Get event dates
+    Get event stocks
 
-    Return all the dates linked to an event. Results are paginated (by default there are `50` date per page).
+    Return all stocks for given event. Results are paginated (by default there are `50` date per page).
     """
     offer = utils.retrieve_offer_query(event_id).filter(offers_models.Offer.isEvent).one_or_none()
     if not offer:
@@ -448,10 +455,10 @@ def get_event_dates(event_id: int, query: serialization.GetDatesQueryParams) -> 
     )
 
 
-@blueprint.v1_offers_blueprint.route("/events/<int:event_id>/dates/<int:date_id>", methods=["DELETE"])
+@blueprints.public_api.route("/public/offers/v1/events/<int:event_id>/dates/<int:stock_id>", methods=["DELETE"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.EVENT_OFFER_DATES_TAG],
+    tags=[tags.EVENT_OFFER_STOCKS],
     on_success_status=204,
     resp=SpectreeResponse(
         **(
@@ -464,12 +471,12 @@ def get_event_dates(event_id: int, query: serialization.GetDatesQueryParams) -> 
     ),
 )
 @api_key_required
-def delete_event_date(event_id: int, date_id: int) -> None:
+def delete_event_stock(event_id: int, stock_id: int) -> None:
     """
-    Delete event date
+    Delete event stock
 
-    When an event date is deleted, all cancellable bookings (i.e not used) are cancelled.
-    To prevent from further bookings, you may alternatively update the date's quantity to the bookedQuantity (but not below).
+    When an event stock is deleted, all cancellable bookings (i.e not used) are cancelled.
+    To prevent from further bookings, you may alternatively update the stock's quantity to the bookedQuantity (but not below).
     """
     offer = (
         utils.retrieve_offer_query(event_id)
@@ -479,19 +486,19 @@ def delete_event_date(event_id: int, date_id: int) -> None:
     )
     if not offer:
         raise api_errors.ApiErrors({"event_id": ["The event could not be found"]}, status_code=404)
-    stock_to_delete = next((stock for stock in offer.stocks if stock.id == date_id and not stock.isSoftDeleted), None)
+    stock_to_delete = next((stock for stock in offer.stocks if stock.id == stock_id and not stock.isSoftDeleted), None)
     if not stock_to_delete:
-        raise api_errors.ApiErrors({"date_id": ["The date could not be found"]}, status_code=404)
+        raise api_errors.ApiErrors({"stock_id": ["No stock could be found"]}, status_code=404)
     try:
         offers_api.delete_stock(stock_to_delete)
     except offers_exceptions.OfferEditionBaseException as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
 
-@blueprint.v1_offers_blueprint.route("/events/<int:event_id>/dates/<int:date_id>", methods=["PATCH"])
+@blueprints.public_api.route("/public/offers/v1/events/<int:event_id>/dates/<int:stock_id>", methods=["PATCH"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.EVENT_OFFER_DATES_TAG],
+    tags=[tags.EVENT_OFFER_STOCKS],
     response_model=serialization.DateResponse,
     resp=SpectreeResponse(
         **(
@@ -504,15 +511,15 @@ def delete_event_date(event_id: int, date_id: int) -> None:
     ),
 )
 @api_key_required
-def patch_event_date(
+def patch_event_stock(
     event_id: int,
-    date_id: int,
+    stock_id: int,
     body: serialization.DateEdition,
 ) -> serialization.DateResponse:
     """
-    Update event date
+    Update event stock
 
-    Update the price category and the beginning time of an event date.
+    Update the price category and the beginning time of an event stock.
     """
     offer: offers_models.Offer | None = (
         utils.retrieve_offer_relations_query(utils.retrieve_offer_query(event_id))
@@ -522,9 +529,9 @@ def patch_event_date(
     if not offer:
         raise api_errors.ApiErrors({"event_id": ["The event could not be found"]}, status_code=404)
 
-    stock_to_edit = next((stock for stock in offer.stocks if stock.id == date_id and not stock.isSoftDeleted), None)
+    stock_to_edit = next((stock for stock in offer.stocks if stock.id == stock_id and not stock.isSoftDeleted), None)
     if not stock_to_edit:
-        raise api_errors.ApiErrors({"date_id": ["No date could be found"]}, status_code=404)
+        raise api_errors.ApiErrors({"stock_id": ["No stock could be found"]}, status_code=404)
 
     update_body = body.dict(exclude_unset=True)
     try:
@@ -565,7 +572,7 @@ def patch_event_date(
     return serialization.DateResponse.build_date(edited_stock or stock_to_edit)
 
 
-@blueprint.v1_offers_blueprint.route("/events/categories", methods=["GET"])
+@blueprints.public_api.route("/public/offers/v1/events/categories", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.OFFER_ATTRIBUTES],
@@ -583,7 +590,7 @@ def get_event_categories() -> serialization.GetEventCategoriesResponse:
     """
     Get event categories
 
-    Return all the categories available for an event, with their conditional fields, and whether they are required for event creation.
+    Return all the categories available, with their conditional fields, and whether they are required.
     """
     # Individual offers API only relies on subcategories, not categories.
     # To make it simpler for the provider using this API, we only expose subcategories and call them categories.

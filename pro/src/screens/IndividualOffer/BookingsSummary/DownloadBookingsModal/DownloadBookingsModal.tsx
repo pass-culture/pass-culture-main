@@ -69,6 +69,7 @@ export const DownloadBookingsModal = ({
       format: fileFormat,
       bookingStatus: bookingsType,
       offerId,
+      offerType: 'individual',
     })
   }
 

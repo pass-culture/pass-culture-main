@@ -1470,6 +1470,30 @@ class BatchUpdateOffersTest:
 
 
 @pytest.mark.usefixtures("db_session")
+class ActivateFutureOffersTest:
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_activate_future_offers_empty(self, mocked_async_index_offer_ids):
+        offer = factories.OfferFactory(isActive=False)  # Offer not in the future, i.e. no publication_date
+
+        api.activate_future_offers()
+
+        assert not models.Offer.query.get(offer.id).isActive
+        mocked_async_index_offer_ids.assert_not_called()
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_activate_future_offers(self, mocked_async_index_offer_ids):
+        offer = factories.OfferFactory(isActive=False)
+        publication_date = datetime.utcnow().replace(minute=0, second=0, microsecond=0) + timedelta(days=30)
+        factories.FutureOfferFactory(offerId=offer.id, publicationDate=publication_date)
+
+        api.activate_future_offers(publication_date=publication_date)
+
+        assert models.Offer.query.get(offer.id).isActive
+        mocked_async_index_offer_ids.assert_called_once()
+        assert set(mocked_async_index_offer_ids.call_args[0][0]) == set([offer.id])
+
+
+@pytest.mark.usefixtures("db_session")
 class OfferExpenseDomainsTest:
     def test_offer_expense_domains(self):
         assert api.get_expense_domains(factories.OfferFactory(subcategoryId=subcategories.EVENEMENT_JEU.id)) == [
@@ -2488,6 +2512,16 @@ class FormatExtraDataTest:
         }
 
 
+class FormatPublicationDateTest:
+    def test_format_publication_date(self):
+        assert api._format_publication_date(None, "UTC") is None
+        publication_date = datetime(2024, 3, 20, 9, 0, 0)
+        assert api._format_publication_date(publication_date, "Europe/Paris") == datetime(2024, 3, 20, 8, 0, 0)
+        # Pacific/Marquesas: UTC-09:30
+        # 9:00 Pacific/Marquesas -> 18:30 UTC -> rounded to next hour = 19:00 UTC
+        assert api._format_publication_date(publication_date, "Pacific/Marquesas") == datetime(2024, 3, 20, 19, 0)
+
+
 @pytest.mark.usefixtures("db_session")
 class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
     DATETIME_10_DAYS_AFTER = datetime.today() + timedelta(days=10)
@@ -2529,11 +2563,10 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         offer = factories.EventOfferFactory(
             venue=venue_provider.venue, idAtProvider=offer_id_at_provider, lastProviderId=cds_provider.id
         )
-        showtime = "2023-02-08"
         stock = factories.EventStockFactory(
             offer=offer,
             quantity=10,
-            idAtProviders=f"{offer_id_at_provider}#{show_id}/{showtime}",
+            idAtProviders=f"{offer_id_at_provider}#{show_id}",
             beginningDatetime=show_beginning_datetime,
         )
 
@@ -2574,11 +2607,10 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         offer = factories.EventOfferFactory(
             venue=venue_provider.venue, idAtProvider=offer_id_at_provider, lastProviderId=cds_provider.id
         )
-        show_time = "2023-02-08"
         stock = factories.EventStockFactory(
             offer=offer,
             quantity=10,
-            idAtProviders=f"{offer_id_at_provider}#{showtime_id}/{show_time}",
+            idAtProviders=f"{offer_id_at_provider}#{showtime_id}",
             beginningDatetime=self.DATETIME_10_DAYS_AFTER,
         )
 

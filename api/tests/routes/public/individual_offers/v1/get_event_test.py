@@ -1,3 +1,6 @@
+from datetime import datetime
+from datetime import timedelta
+
 import pytest
 
 from pcapi.core import testing
@@ -40,6 +43,7 @@ class GetEventTest:
         num_query = 1  # retrieve API key
         num_query += 1  # retrieve offer
         num_query += 1  # retrieve feature_flags for api key validation
+        num_query += 1  # future_offer (a backref)
 
         with testing.assert_num_queries(num_query):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
@@ -57,6 +61,7 @@ class GetEventTest:
             "bookingContact": None,
             "bookingEmail": None,
             "categoryRelatedFields": {"author": None, "category": "SEANCE_CINE", "stageDirector": None, "visa": None},
+            "publicationDate": None,
             "description": "Un livre de contrepèterie",
             "enableDoubleBookings": False,
             "externalTicketOfficeUrl": None,
@@ -74,6 +79,38 @@ class GetEventTest:
             "priceCategories": [],
             "idAtProvider": "Oh le bel id <3",
         }
+
+    def test_get_future_event(self, client):
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        product = offers_factories.ProductFactory(thumbCount=1)
+        publication_date = datetime.utcnow().replace(minute=0, second=0, microsecond=0) + timedelta(days=30)
+        event_offer = offers_factories.EventOfferFactory(
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            venue=venue,
+            extraData=None,
+            description="Un livre de contrepèterie",
+            name="Vieux motard que jamais",
+            product=product,
+            idAtProvider="Oh le bel id <3",
+        )
+        event_offer_id = event_offer.id
+        offers_factories.FutureOfferFactory(
+            offerId=event_offer_id,
+            publicationDate=publication_date,
+        )
+
+        num_query = 1  # retrieve API key
+        num_query += 1  # retrieve offer
+        num_query += 1  # retrieve feature_flags for api key validation
+        num_query += 1  # future_offer (a backref)
+
+        with testing.assert_num_queries(num_query):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+                f"/public/offers/v1/events/{event_offer_id}"
+            )
+
+        assert response.status_code == 200
+        assert response.json["publicationDate"] == publication_date.strftime("%Y-%m-%dT%H:%M:%SZ")
 
     def test_event_with_not_selectable_category_can_be_retrieved(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()

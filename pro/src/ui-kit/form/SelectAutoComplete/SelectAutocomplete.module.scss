@@ -1,5 +1,6 @@
 @use "styles/mixins/_forms.scss" as forms;
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 .multi-select-autocomplete-container {
   box-sizing: border-box;
@@ -18,14 +19,15 @@
   height: 0;
 
   .pellet {
+    @include fonts.body-exergue;
+
+    font-size: rem.torem(9px);
     align-items: center;
     background-color: var(--color-grey-light);
     border-radius: rem.torem(100px);
     color: var(--color-black);
-    font-weight: 600;
     cursor: pointer;
     display: flex;
-    font-size: rem.torem(9px);
     height: rem.torem(18px);
     justify-content: center;
     padding: rem.torem(6px);

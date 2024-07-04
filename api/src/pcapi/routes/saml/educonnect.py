@@ -8,7 +8,6 @@ from flask import request
 from werkzeug.wrappers import Response
 
 from pcapi import settings
-from pcapi.analytics.amplitude import events as amplitude_events
 from pcapi.connectors.beneficiaries.educonnect import educonnect_connector
 from pcapi.connectors.beneficiaries.educonnect import exceptions as educonnect_exceptions
 from pcapi.connectors.beneficiaries.educonnect import models as educonnect_models
@@ -173,7 +172,6 @@ def _on_educonnect_authentication_errors(
         else:
             error_query_param |= {"code": "UserAgeNotValid"}
 
-    amplitude_events.track_educonnect_error_event(user.id, error_codes)
     return redirect(ERROR_PAGE_URL + urlencode(error_query_param), code=302)
 
 

@@ -17,7 +17,6 @@ import {
 } from 'core/OfferEducational/types'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeOffersUrl'
 import { SelectOption } from 'custom_types/form'
-import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
@@ -82,10 +81,6 @@ export const OfferEducationalForm = ({
 
   const { values, setFieldValue, initialValues } =
     useFormikContext<OfferEducationalFormValues>()
-
-  const isCustomContactFormEnabled = useActiveFeature(
-    'WIP_ENABLE_COLLECTIVE_CUSTOM_CONTACT'
-  )
 
   const onOffererChange = useCallback(
     async (newOffererId: string) => {
@@ -189,7 +184,7 @@ export const OfferEducationalForm = ({
               isTemplate={isTemplate}
             />
             <FormAccessibility disableForm={mode === Mode.READ_ONLY} />
-            {isCustomContactFormEnabled && isTemplate ? (
+            {isTemplate ? (
               <FormContactTemplate disableForm={mode === Mode.READ_ONLY} />
             ) : (
               <FormContact disableForm={mode === Mode.READ_ONLY} />

@@ -44,11 +44,9 @@ class VenueAutomationsTest:
         )
         offers_factories.EventOfferFactory(venue=venue_festival, validation=OfferValidationStatus.APPROVED)
 
-        venue_digital = offerers_factories.VenueFactory(
+        venue_digital = offerers_factories.VirtualVenueFactory(
             managingOfferer=offerer_validated_92_days_ago,
             venueTypeCode=offerers_models.VenueTypeCode.DIGITAL,
-            isVirtual=True,
-            siret=None,
             bookingEmail="venue_type_digital@example.com",
         )
         offers_factories.EventOfferFactory(venue=venue_digital, validation=OfferValidationStatus.APPROVED)

@@ -92,7 +92,7 @@ def post_create_venue(body: venues_serialize.PostVenueBodyModel) -> venues_seria
             raise ApiErrors(errors={"siret": ["SIRET is no longer active"]})
         body.name = siret_info.name  # type: ignore[assignment]
     validation.check_accessibility_compliance(body)
-    venue = offerers_api.create_venue(body)
+    venue = offerers_api.create_venue(body, current_user)
 
     return venues_serialize.VenueResponseModel.from_orm(venue)
 
@@ -127,9 +127,20 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
         (field in update_venue_attrs and update_venue_attrs[field] != getattr(venue, field))
         for field in accessibility_fields
     )
+
+    modifications = {
+        field: value for field, value in update_venue_attrs.items() if venue.field_exists_and_has_changed(field, value)
+    }
+    validation.check_venue_edition(modifications, venue)
+
     have_withdrawal_details_changes = body.withdrawalDetails != venue.withdrawalDetails
+
     venue = offerers_api.update_venue(
-        venue, author=current_user, contact_data=body.contact, opening_hours=body.openingHours, **update_venue_attrs
+        venue,
+        modifications,
+        author=current_user,
+        contact_data=body.contact,
+        opening_hours=body.openingHours,
     )
 
     if have_accessibility_changes and body.isAccessibilityAppliedOnAllOffers:

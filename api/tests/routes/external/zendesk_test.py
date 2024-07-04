@@ -177,8 +177,9 @@ class ZendeskWebhookTest:
         assert expected_bo_url in str(users_testing.zendesk_requests[1]["data"]["ticket"]["comment"]["html_body"])
         assert users_testing.zendesk_requests[1]["data"]["ticket"]["comment"]["public"] is False
 
-    def test_webhook_update_pro_by_user_email(self, client):
-        pro_user = users_factories.ProFactory(email="pro@example.com")
+    @pytest.mark.parametrize("pro_factory", [users_factories.ProFactory, users_factories.NonAttachedProFactory])
+    def test_webhook_update_pro_by_user_email(self, client, pro_factory):
+        pro_user = pro_factory(email="pro@example.com")
         venue = offerers_factories.VenueFactory(bookingEmail=pro_user.email, postalCode="75018")
 
         response = client.post(

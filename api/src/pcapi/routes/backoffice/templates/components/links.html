@@ -75,6 +75,11 @@
      class="link-primary"
      target="_top">{{ bank_account[text_attr] }}</a>
 {% endmacro %}
+{% macro build_provider_name_to_details_link(provider, text_attr="name") %}
+  <a href="{{ url_for('backoffice_web.providers.get_provider', provider_id=provider.id) }}"
+     class="link-primary"
+     target="_top">{{ provider[text_attr] }}</a>
+{% endmacro %}
 {# ----- PC Pro links ----- #}
 {% macro build_offerer_name_to_pc_pro_link(offerer) %}
   <a href="{{ offerer | pc_pro_offerer_link }}"
@@ -83,6 +88,11 @@
 {% endmacro %}
 {% macro build_venue_name_to_pc_pro_link(venue, public_name=true, siret=false) %}
   <a href="{{ venue | pc_pro_venue_link }}"
+     class="link-primary"
+     target="_blank">{{ ((public_name and venue.publicName) or venue.name) + ((" - " + venue.siret) if siret else "") }} <i class="bi bi-box-arrow-up-right"></i></a>
+{% endmacro %}
+{% macro build_venue_parameters_name_to_pc_pro_link(venue, public_name=true, siret=false) %}
+  <a href="{{ venue | pc_pro_venue_parameters_link }}"
      class="link-primary"
      target="_blank">{{ ((public_name and venue.publicName) or venue.name) + ((" - " + venue.siret) if siret else "") }} <i class="bi bi-box-arrow-up-right"></i></a>
 {% endmacro %}

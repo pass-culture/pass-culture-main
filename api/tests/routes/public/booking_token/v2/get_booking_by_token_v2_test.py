@@ -104,6 +104,26 @@ class Returns200Test:
         assert response.status_code == 200
 
 
+class NonStandardGetTest:
+    def test_non_standard_get_on_token_endpoint(self, client):
+        # This is a test following the incident caused by a check on the JSON sent by API user (PR #12928 introduced the bug, PR #13062 fixed it)
+        # Some legacy users are sending us an invalid JSON in a GET request to /v2/bookings/token/<token>
+        # We must not raise an error in those cases otherwise it breaks their integrations.
+        booking = bookings_factories.BookingFactory()
+        offerers_factories.ApiKeyFactory(offerer=booking.offerer, prefix="test_prefix")
+
+        # When
+        url = f"/v2/bookings/token/{booking.token}"
+        response = client.get_with_invalid_json_body(
+            url,
+            headers={"Authorization": "Bearer test_prefix_clearSecret"},
+            raw_json="ABC",  # both sad an irritating
+        )
+
+        # Then
+        assert response.status_code == 200
+
+
 class Returns401Test:
     def test_when_user_no_auth_nor_api_key(self, client):
         response = client.get("/v2/bookings/token/TOKEN")

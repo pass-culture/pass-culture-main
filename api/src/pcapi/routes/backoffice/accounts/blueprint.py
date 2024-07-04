@@ -43,11 +43,15 @@ from pcapi.core.users.models import EligibilityType
 from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
+from pcapi.models.feature import FeatureToggle
 from pcapi.repository import atomic
+from pcapi.repository import on_commit
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.users import forms as user_forms
+from pcapi.tasks.gdpr_tasks import extract_beneficiary_data
+from pcapi.tasks.serialization import gdpr_tasks
 from pcapi.utils import email as email_utils
 
 from . import forms as account_forms
@@ -62,19 +66,15 @@ public_accounts_blueprint = utils.child_backoffice_blueprint(
 )
 
 
-def _join_suspension_history(query: BaseQuery) -> BaseQuery:
-    # Joinedload with ActionHistory avoids N+1 query to show suspension reason.
-    # Join only suspension actions to limit the number of fetched rows.
-    # It should be OK because per_page is 20 on this search page and can not be set to thousands
-    return query.outerjoin(
-        history_models.ActionHistory,
-        sa.and_(
-            history_models.ActionHistory.userId == users_models.User.id,
-            history_models.ActionHistory.actionType.in_(
-                [history_models.ActionType.USER_SUSPENDED, history_models.ActionType.USER_UNSUSPENDED]
-            ),
-        ),
-    ).options(sa.orm.contains_eager(users_models.User.action_history))
+def _load_suspension_info(query: BaseQuery) -> BaseQuery:
+    # Partial joined load with ActionHistory avoids N+1 query to show suspension reason, but the number of fetched rows
+    # would be greater than the number of results when a single user has several suspension actions.
+    # So these expressions use a subquery so that result count is accurate, and the redirection well forced when a
+    # single card would be displayed.
+    return query.options(
+        sa.orm.with_expression(users_models.User.suspension_reason_expression, users_models.User.suspension_reason.expression),  # type: ignore[attr-defined]
+        sa.orm.with_expression(users_models.User.suspension_date_expression, users_models.User.suspension_date.expression),  # type: ignore[attr-defined]
+    )
 
 
 def _apply_search_filters(query: BaseQuery, search_filters: list[str]) -> BaseQuery:
@@ -114,19 +114,24 @@ def _apply_search_filters(query: BaseQuery, search_filters: list[str]) -> BaseQu
 
 
 def is_beneficiary_anonymizable(user: users_models.User) -> bool:
+    # Check if the user is admin, pro or anonymised
+    beneficiary_roles = {
+        users_models.UserRole.BENEFICIARY,
+        users_models.UserRole.UNDERAGE_BENEFICIARY,
+    }
+    if not beneficiary_roles.issuperset(user.roles):
+        return False
 
+    # Check if the user never had credits.
+    if len(user.deposits) == 0:
+        return True
+
+    # Check if the user is over 21.
     if (
-        not user.has_pro_role
-        and not user.has_non_attached_pro_role
-        and not user.has_admin_role
-        and not user.is_beneficiary
-        and not user.beneficiaryFraudChecks
+        user.validatedBirthDate
+        and users_utils.get_age_at_date(user.validatedBirthDate, datetime.datetime.utcnow()) >= 21
     ):
-        if users_models.UserRole.ANONYMIZED not in user.roles:
-            if not user.deposit_expiration_date or (
-                user.deposit_expiration_date and user.deposit_expiration_date < datetime.datetime.utcnow()
-            ):
-                return True
+        return True
     return False
 
 
@@ -179,14 +184,14 @@ def search_public_accounts() -> utils.BackofficeResponse:
 
     users_query = users_api.search_public_account(form.q.data)
     users_query = _apply_search_filters(users_query, form.filter.data)
-    users_query = _join_suspension_history(users_query)
+    users_query = _load_suspension_info(users_query)
     paginated_rows = users_query.paginate(page=form.page.data, per_page=form.per_page.data)
 
     # Do NOT call users.count() after search_public_account, this would make one more request on all users every time
     # (so it would select count twice: in users.count() and in users.paginate)
     if paginated_rows.total == 0 and email_utils.is_valid_email(email_utils.sanitize_email(form.q.data)):
         users_query = users_api.search_public_account_in_history_email(form.q.data)
-        users_query = _join_suspension_history(users_query)
+        users_query = _load_suspension_info(users_query)
         paginated_rows = users_query.paginate(page=form.page.data, per_page=form.per_page.data)
 
     if paginated_rows.total == 1:
@@ -284,6 +289,7 @@ def render_public_account_details(
             .joinedload(history_models.ActionHistory.authorUser)
             .load_only(users_models.User.firstName, users_models.User.lastName),
             sa.orm.joinedload(users_models.User.email_history),
+            sa.orm.joinedload(users_models.User.gdprUserDataExtract),
         )
         .one_or_none()
     )
@@ -350,6 +356,11 @@ def render_public_account_details(
                 "manual_review_dst": url_for(".review_public_account", user_id=user.id),
                 "send_validation_code_form": empty_forms.EmptyForm(),
                 "manual_phone_validation_form": empty_forms.EmptyForm(),
+                "extract_user_form": (
+                    empty_forms.EmptyForm()
+                    if utils.has_current_user_permission(perm_models.Permissions.EXTRACT_PUBLIC_ACCOUNT)
+                    else None
+                ),
                 "anonymize_form": (
                     empty_forms.EmptyForm()
                     if is_beneficiary_anonymizable(user)
@@ -393,6 +404,7 @@ def render_public_account_details(
         bookings=sorted(user.userBookings, key=lambda booking: booking.dateCreated, reverse=True),
         active_tab=request.args.get("active_tab", "registration"),
         show_personal_info=True,
+        has_gdpr_extract=has_gdpr_extract(user=user),
         **kwargs,
     )
 
@@ -1232,3 +1244,52 @@ def get_public_account_history(
     history = sorted(history, key=lambda item: item.actionDate or datetime.datetime.min, reverse=True)
 
     return history
+
+
+@public_accounts_blueprint.route("/<int:user_id>/gdpr-extract", methods=["POST"])
+@atomic()
+@utils.permission_required(perm_models.Permissions.EXTRACT_PUBLIC_ACCOUNT)
+def create_extract_user_gdpr_data(user_id: int) -> utils.BackofficeResponse:
+    if not FeatureToggle.WIP_BENEFICIARY_EXTRACT_TOOL.is_active():
+        return redirect(url_for(".get_public_account", user_id=user_id))
+
+    user = (
+        users_models.User.query.filter(
+            users_models.User.id == user_id,
+            users_models.User.is_beneficiary,
+        )
+        .options(
+            sa.orm.load_only(users_models.User.firstName, users_models.User.lastName),
+            sa.orm.joinedload(users_models.User.gdprUserDataExtract),
+        )
+        .one_or_none()
+    )
+    if not user:
+        raise NotFound()
+
+    if has_gdpr_extract(user=user):
+        flash("Une extraction de données est déjà en cours pour cet utilisateur.", "warning")
+        return redirect(url_for(".get_public_account", user_id=user_id))
+
+    gdpr_data = users_models.GdprUserDataExtract(
+        userId=user_id,
+        authorUserId=current_user.id,
+    )
+    db.session.add(gdpr_data)
+    db.session.flush()
+
+    on_commit(
+        partial(
+            extract_beneficiary_data.delay,
+            payload=gdpr_tasks.ExtractBeneficiaryDataRequest(extract_id=gdpr_data.id),
+        )
+    )
+    flash(f"L'extraction des données de l'utilisateur {user.full_name} a été demandée.", "success")
+
+    return redirect(url_for(".get_public_account", user_id=user_id))
+
+
+def has_gdpr_extract(user: users_models.User) -> bool:
+    if not user.gdprUserDataExtract:
+        return False
+    return any(not extract.is_expired for extract in user.gdprUserDataExtract)

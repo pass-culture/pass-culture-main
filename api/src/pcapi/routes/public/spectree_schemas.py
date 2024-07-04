@@ -19,7 +19,7 @@ _servers = [_INTEGRATION_SERVER, _PRODUCTION_SERVER]
 # Schema of current public API
 public_api_schema = ExtendedSpecTree(
     "flask",
-    title="Pass Culture REST API",
+    title="pass Culture REST API",
     description=descriptions.PUBLIC_API_DESCRIPTION,
     PATH="/",
     MODE="strict",
@@ -43,7 +43,7 @@ deprecated_public_api_schema = ExtendedSpecTree(
     MODE="strict",
     before=serialization_utils.before_handler,
     PATH="/deprecated",
-    tags=tags.DEPRACTED_TAGS,
+    tags=tags.DEPRECATED_TAGS,
     security_schemes=[
         SecurityScheme(
             name=users_authentifications.API_KEY_AUTH_NAME,

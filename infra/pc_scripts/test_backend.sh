@@ -10,7 +10,7 @@ function test_backend {
         docker rm -v pc-postgres-pytest;
         docker-compose -f "$ROOT_PATH"/docker-compose-backend.yml up -d postgres-test;
         while ! docker-compose -f "$ROOT_PATH"/docker-compose-backend.yml logs postgres-test 2> /dev/null | grep -q "PostgreSQL init process complete; ready for start up."; do echo "waiting for test-database"; sleep 0.5; done;
-        docker exec -it pc-api bash -c "cd /usr/src/app/ && rm -rf static/object_store_data/thumbs/* && RUN_ENV=tests pytest -m \"not backoffice\" --durations=5 --color=yes -rsx -v $PYTEST_ARGS"
+        docker exec -it pc-api bash -c "cd /usr/src/app/ && rm -rf static/object_store_data/thumbs/* && RUN_ENV=tests SQLALCHEMY_WARN_20=1 pytest -m \"not backoffice\" --durations=5 --color=yes -rsx -v $PYTEST_ARGS"
         '
 }
 
@@ -24,6 +24,6 @@ function test_backoffice {
         docker rm -v pc-postgres-pytest;
         docker-compose -f "$ROOT_PATH"/docker-compose-backend.yml up -d postgres-test;
         while ! docker-compose -f "$ROOT_PATH"/docker-compose-backend.yml logs postgres-test 2> /dev/null | grep -q "PostgreSQL init process complete; ready for start up."; do echo "waiting for test-database"; sleep 0.5; done;
-        docker exec -it pc-backoffice bash -c "cd /usr/src/app/ && rm -rf static/object_store_data/thumbs/* && RUN_ENV=tests pytest -m backoffice --durations=5 --color=yes -rsx -v $PYTEST_ARGS"
+        docker exec -it pc-backoffice bash -c "cd /usr/src/app/ && rm -rf static/object_store_data/thumbs/* && RUN_ENV=tests SQLALCHEMY_WARN_20=1 pytest -m backoffice --durations=5 --color=yes -rsx -v $PYTEST_ARGS"
         '
 }

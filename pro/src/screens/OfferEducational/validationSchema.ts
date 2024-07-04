@@ -28,9 +28,7 @@ const isPhoneValid = (phone: string | undefined): boolean => {
 const isNotEmpty = (description: string | undefined): boolean =>
   description ? Boolean(description.trim().length > 0) : false
 
-export function getOfferEducationalValidationSchema(
-  isCustomContactActive: boolean
-) {
+export function getOfferEducationalValidationSchema() {
   return yup.object().shape({
     title: yup.string().max(110).required('Veuillez renseigner un titre'),
     description: yup
@@ -94,7 +92,7 @@ export function getOfferEducationalValidationSchema(
         is: (
           contactOptions: OfferEducationalFormValues['contactOptions'],
           isTemplate: boolean
-        ) => isCustomContactActive && isTemplate && contactOptions?.phone,
+        ) => isTemplate && contactOptions?.phone,
         then: (schema) =>
           schema.required('Veuillez renseigner un numéro de téléphone'),
       })
@@ -110,7 +108,7 @@ export function getOfferEducationalValidationSchema(
         is: (
           contactOptions: OfferEducationalFormValues['contactOptions'],
           isTemplate: boolean
-        ) => !isTemplate || !isCustomContactActive || contactOptions?.email,
+        ) => !isTemplate || contactOptions?.email,
         then: (schema) =>
           schema.required('Veuillez renseigner une adresse email'),
       })
@@ -121,10 +119,7 @@ export function getOfferEducationalValidationSchema(
       is: (
         contactOptions: OfferEducationalFormValues['contactOptions'],
         contactFormType: OfferEducationalFormValues['contactFormType']
-      ) =>
-        isCustomContactActive &&
-        contactOptions?.form &&
-        contactFormType === 'url',
+      ) => contactOptions?.form && contactFormType === 'url',
       then: (schema) =>
         schema
           .required('Veuillez renseigner une URL de contact')
@@ -133,7 +128,7 @@ export function getOfferEducationalValidationSchema(
           ),
     }),
     contactOptions: yup.object().when('isTemplate', {
-      is: (isTemplate: boolean) => isTemplate && isCustomContactActive,
+      is: (isTemplate: boolean) => isTemplate,
       then: (schema) =>
         schema.required().test({
           name: 'is-one-true',

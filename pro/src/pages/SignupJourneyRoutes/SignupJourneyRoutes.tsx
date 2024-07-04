@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { useSelector } from 'react-redux'
 import { Link, Outlet, useLocation } from 'react-router-dom'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
@@ -10,6 +11,7 @@ import { Events } from 'core/FirebaseEvents/constants'
 import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import fullLogoutIcon from 'icons/full-logout.svg'
 import logoPassCultureProIcon from 'icons/logo-pass-culture-pro.svg'
+import { selectCurrentUser } from 'store/user/selectors'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './SignupJourney.module.scss'
@@ -18,6 +20,7 @@ export const SignupJourneyRoutes = () => {
   const { logEvent } = useAnalytics()
   const location = useLocation()
   const hasNewInterface = useIsNewInterfaceActive()
+  const currentUser = useSelector(selectCurrentUser)
 
   useEffect(() => {
     if (window.Beamer !== undefined) {
@@ -30,12 +33,11 @@ export const SignupJourneyRoutes = () => {
       }
     }
   }, [])
-
   return (
     <>
       <AppLayout layout="funnel">
         {hasNewInterface ? (
-          <Header disableHomeLink />
+          <Header disableHomeLink={!currentUser?.hasUserOfferer} />
         ) : (
           <header className={styles['header']}>
             <div className={styles['header-content']}>

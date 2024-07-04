@@ -11,8 +11,8 @@ export const Sitemap = () => {
 
   return (
     <AppLayout>
-      <h1>Plan du site</h1>
-      <ul className={styles['sitemap-list']}>
+      <h1 className={styles['title']}>Plan du site</h1>
+      <ul className={styles['sitemap-list']} data-testid="sitemap">
         <li className={styles['sitemap-list-item']}>
           <Link
             to={`/offre/creation?structure=${selectedOffererId}`}
@@ -101,14 +101,6 @@ export const Sitemap = () => {
         <li className={styles['sitemap-list-item']}>
           <Link to="/collaborateurs" className={styles['sitemap-link']}>
             Collaborateurs
-          </Link>
-        </li>
-        <li className={styles['sitemap-list-item']}>
-          <Link
-            to={`/structures/${selectedOffererId}`}
-            className={styles['sitemap-link']}
-          >
-            Structure
           </Link>
         </li>
         <li className={styles['sitemap-list-item']}>

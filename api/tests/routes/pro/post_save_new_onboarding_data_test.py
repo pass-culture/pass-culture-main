@@ -3,6 +3,7 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.connectors.entreprise import exceptions as sirene_exceptions
+from pcapi.core.history import models as history_models
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
@@ -68,6 +69,13 @@ class Returns200Test:
         assert adage_addr.venueId == created_venue.id
         assert adage_addr.adageId == created_venue.adageId
         assert adage_addr.adageInscriptionDate == created_venue.adageInscriptionDate
+
+        assert len(created_offerer.action_history) == 1
+        assert created_offerer.action_history[0].actionType == history_models.ActionType.OFFERER_NEW
+        assert created_offerer.action_history[0].authorUser == user
+        assert len(created_venue.action_history) == 1
+        assert created_venue.action_history[0].actionType == history_models.ActionType.VENUE_CREATED
+        assert created_venue.action_history[0].authorUser == user
 
     def test_returns_public_information_only(self, client):
         user = users_factories.UserFactory(email="pro@example.com")

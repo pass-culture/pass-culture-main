@@ -1,15 +1,22 @@
-import { useField, useFormikContext } from 'formik'
-import React, { useEffect, useState } from 'react'
+import { FieldInputProps, useField, useFormikContext } from 'formik'
+import { useEffect, useState } from 'react'
 
 import { apiAdresse } from 'apiClient/adresse/apiAdresse'
+import { AdresseData } from 'apiClient/adresse/types'
 import { serializeAdressData } from 'components/Address/serializer'
 import { SelectOption } from 'custom_types/form'
 import { SelectAutocomplete } from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
-import { AutocompleteItemProps } from 'ui-kit/form/shared/AutocompleteList/type'
 
 interface AddressProps {
   description?: string
   suggestionLimit?: number
+}
+
+export interface AutocompleteItemProps {
+  value: string | number
+  label: string
+  disabled?: boolean
+  extraData?: Partial<AdresseData>
 }
 
 export const AddressSelect = ({
@@ -101,15 +108,15 @@ export const AddressSelect = ({
 export const handleAddressSelect = (
   setFieldValue: any,
   selectedItem?: AutocompleteItemProps,
-  searchField?: any
+  searchField?: FieldInputProps<string>
 ) => {
-  setFieldValue('street', selectedItem?.extraData.address)
+  setFieldValue('street', selectedItem?.extraData?.address)
   if (searchField) {
-    setFieldValue('addressAutocomplete', searchField?.value)
+    setFieldValue('addressAutocomplete', searchField.value)
   }
-  setFieldValue('postalCode', selectedItem?.extraData.postalCode)
-  setFieldValue('city', selectedItem?.extraData.city)
-  setFieldValue('latitude', selectedItem?.extraData.latitude)
-  setFieldValue('longitude', selectedItem?.extraData.longitude)
+  setFieldValue('postalCode', selectedItem?.extraData?.postalCode)
+  setFieldValue('city', selectedItem?.extraData?.city)
+  setFieldValue('latitude', selectedItem?.extraData?.latitude)
+  setFieldValue('longitude', selectedItem?.extraData?.longitude)
   setFieldValue('banId', selectedItem?.value)
 }

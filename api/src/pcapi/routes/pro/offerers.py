@@ -351,6 +351,16 @@ def create_offerer_address(
 
     with transaction():
         with db.session.no_autoflush:
-            address = api.get_or_create_address(address_info)
+            address = api.get_or_create_address(
+                api.LocationData(
+                    postal_code=address_info.postcode,
+                    city=address_info.city,
+                    latitude=address_info.latitude,
+                    longitude=address_info.longitude,
+                    street=address_info.street,
+                    insee_code=address_info.citycode,
+                    ban_id=address_info.id,
+                )
+            )
             offerer_address = api.get_or_create_offerer_address(offerer_id, address.id, body.label)
             return offerers_serialize.OffererAddressResponseModel.from_orm(offerer_address)

@@ -12,9 +12,9 @@ from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import validation as offers_validation
 from pcapi.core.providers import exceptions as provider_exceptions
 from pcapi.models.api_errors import ApiErrors
+from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public import utils
-from pcapi.routes.public.collective.blueprint import collective_offers_blueprint
 from pcapi.routes.public.collective.serialization import offers as offers_serialization
 from pcapi.routes.public.documentation_constants import http_responses
 from pcapi.routes.public.documentation_constants import tags
@@ -26,10 +26,10 @@ from pcapi.validation.routes.users_authentifications import api_key_required
 from pcapi.validation.routes.users_authentifications import current_api_key
 
 
-@collective_offers_blueprint.route("/collective/offers/", methods=["GET"])
+@blueprints.public_api.route("/v2/collective/offers/", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.COLLECTIVE_OFFERS_TAG],
+    tags=[tags.COLLECTIVE_OFFERS],
     resp=SpectreeResponse(
         **(
             {
@@ -48,8 +48,8 @@ def get_collective_offers_public(
     """
     Get collective offers
 
-    Return filtered collective offers.
-    It doesn't return the showcase offers or the collective offers that have been started on the pro interface and that are in the draft status.
+    Return collective offers. It will only return collective offers created by API
+    (collective offers created manually in the pro interface won't show up).
     """
 
     offers = educational_api_offer.list_public_collective_offers(
@@ -65,10 +65,10 @@ def get_collective_offers_public(
     )
 
 
-@collective_offers_blueprint.route("/collective/offers/<int:offer_id>", methods=["GET"])
+@blueprints.public_api.route("/v2/collective/offers/<int:offer_id>", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.COLLECTIVE_OFFERS_TAG],
+    tags=[tags.COLLECTIVE_OFFERS],
     resp=SpectreeResponse(
         **(
             {"HTTP_200": (offers_serialization.GetPublicCollectiveOfferResponseModel, http_responses.HTTP_200_MESSAGE)}
@@ -115,10 +115,10 @@ def get_collective_offer_public(
     return offers_serialization.GetPublicCollectiveOfferResponseModel.from_orm(offer)
 
 
-@collective_offers_blueprint.route("/collective/offers/", methods=["POST"])
+@blueprints.public_api.route("/v2/collective/offers/", methods=["POST"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.COLLECTIVE_OFFERS_TAG],
+    tags=[tags.COLLECTIVE_OFFERS],
     resp=SpectreeResponse(
         **(
             {
@@ -249,10 +249,10 @@ def post_collective_offer_public(
     return offers_serialization.GetPublicCollectiveOfferResponseModel.from_orm(offer)
 
 
-@collective_offers_blueprint.route("/collective/offers/<int:offer_id>", methods=["PATCH"])
+@blueprints.public_api.route("/v2/collective/offers/<int:offer_id>", methods=["PATCH"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.COLLECTIVE_OFFERS_TAG],
+    tags=[tags.COLLECTIVE_OFFERS],
     resp=SpectreeResponse(
         **(
             {
@@ -537,10 +537,10 @@ def patch_collective_offer_public(
     return offers_serialization.GetPublicCollectiveOfferResponseModel.from_orm(offer)
 
 
-@collective_offers_blueprint.route("/collective/offers/formats", methods=["GET"])
+@blueprints.public_api.route("/v2/collective/offers/formats", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.COLLECTIVE_OFFERS_TAG],
+    tags=[tags.COLLECTIVE_OFFERS],
     resp=SpectreeResponse(**(http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS)),
 )
 @api_key_required

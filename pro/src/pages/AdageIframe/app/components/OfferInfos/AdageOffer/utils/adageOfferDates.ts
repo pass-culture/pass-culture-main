@@ -29,13 +29,27 @@ export function getFormattedDatesForTemplateOffer(
 export function getFormattedDatesForBookableOffer(
   offer: CollectiveOfferResponseModel
 ) {
-  return offer.stock.startDatetime
-    ? `Le ${getDateTimeToFrenchText(
-        getLocalDepartementDateTimeFromUtc(
-          offer.stock.startDatetime,
-          offer.venue.departmentCode
-        ),
-        { dateStyle: 'long', timeStyle: 'short' }
-      )}`
-    : null
+  if (!offer.stock.startDatetime || !offer.stock.endDatetime) {
+    return null
+  }
+  if (offer.stock.startDatetime === offer.stock.endDatetime) {
+    return `Le ${getDateTimeToFrenchText(
+      getLocalDepartementDateTimeFromUtc(
+        offer.stock.startDatetime,
+        offer.venue.departmentCode
+      ),
+      { dateStyle: 'long', timeStyle: 'short' }
+    )}`
+  }
+
+  return getRangeToFrenchText(
+    getLocalDepartementDateTimeFromUtc(
+      offer.stock.startDatetime,
+      offer.venue.departmentCode
+    ),
+    getLocalDepartementDateTimeFromUtc(
+      offer.stock.endDatetime,
+      offer.venue.departmentCode
+    )
+  )
 }

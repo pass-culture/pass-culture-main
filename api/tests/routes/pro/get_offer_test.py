@@ -21,7 +21,9 @@ class Returns403Test:
     def test_access_by_beneficiary(self, client):
         # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory()
-        offer = offers_factories.ThingOfferFactory(venue__latitude=None, venue__longitude=None)
+        offer = offers_factories.ThingOfferFactory(
+            venue__latitude=None, venue__longitude=None, venue__offererAddress=None
+        )
 
         # When
         response = client.with_session_auth(email=beneficiary.email).get(f"/offers/{offer.id}")
@@ -32,7 +34,9 @@ class Returns403Test:
     def test_access_by_unauthorized_pro_user(self, client):
         # Given
         pro_user = users_factories.ProFactory()
-        offer = offers_factories.ThingOfferFactory(venue__latitude=None, venue__longitude=None)
+        offer = offers_factories.ThingOfferFactory(
+            venue__latitude=None, venue__longitude=None, venue__offererAddress=None
+        )
 
         # When
         response = client.with_session_auth(email=pro_user.email).get(f"/offers/{offer.id}")
@@ -53,8 +57,12 @@ class Returns200Test:
     def test_access_by_pro_user(self, client):
         # Given
         user_offerer = offerers_factories.UserOffererFactory()
+        offerer_address = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer)
         offer = offers_factories.ThingOfferFactory(
-            venue__latitude=None, venue__longitude=None, venue__managingOfferer=user_offerer.offerer
+            venue__latitude=None,
+            venue__longitude=None,
+            venue__offererAddress=offerer_address,
+            venue__managingOfferer=user_offerer.offerer,
         )
 
         # When
@@ -82,8 +90,10 @@ class Returns200Test:
         # When
         client.with_session_auth(email=user_offerer.user.email)
 
-        with testing.assert_no_duplicated_queries():
-            client.get(f"/offers/{offer.id}")
+        offer_id = offer.id
+        with testing.assert_num_queries(self.num_queries):
+            with testing.assert_no_duplicated_queries():
+                client.get(f"/offers/{offer_id}")
 
     def test_access_even_if_offerer_has_no_siren(self, client):
         # Given
@@ -158,7 +168,6 @@ class Returns200Test:
             bookingLimitDatetime=now + timedelta(hours=1),
             priceCategory__priceCategoryLabel__label="Au pied du mur",
         )
-        offer = stock.offer
         venue = offer.venue
         offerer = venue.managingOfferer
         finance_factories.BankInformationFactory(venue=venue)
@@ -177,6 +186,7 @@ class Returns200Test:
             "bookingsCount": 0,
             "bookingEmail": "offer.booking.email@example.com",
             "dateCreated": "2020-10-15T00:00:00Z",
+            "publicationDate": None,
             "description": "Tatort, but slower",
             "durationMinutes": 60,
             "extraData": None,
@@ -204,7 +214,18 @@ class Returns200Test:
             "subcategoryId": "SEANCE_CINE",
             "thumbUrl": None,
             "url": None,
-            "address": None,
+            "address": {
+                "label": venue.offererAddress.label or venue.common_name,
+                "id": venue.offererAddress.address.id,
+                "banId": venue.offererAddress.address.banId,
+                "inseeCode": venue.offererAddress.address.inseeCode,
+                "city": venue.offererAddress.address.city,
+                "latitude": float(venue.offererAddress.address.latitude),
+                "longitude": float(venue.offererAddress.address.longitude),
+                "postalCode": venue.offererAddress.address.postalCode,
+                "street": venue.offererAddress.address.street,
+                "isEditable": venue.offererAddress.isEditable,
+            },
             "venue": {
                 "street": "1 boulevard Poissonnière",
                 "audioDisabilityCompliant": False,
@@ -305,13 +326,70 @@ class Returns200Test:
         assert response.json["bookingsCount"] == 2
         assert response.json["hasStocks"] == True
 
-    def test_return_offerer_address(self, client):
+    def test_return_offer_offerer_address(self, client):
+        """If offer has an offererAddress, it should be used"""
+        # Given
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue_offerer_address = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer)
+        offer_offerer_address = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer)
+        offer = offers_factories.ThingOfferFactory(
+            venue__managingOfferer=user_offerer.offerer,
+            venue__offererAddress=venue_offerer_address,
+            offererAddress=offer_offerer_address,
+        )
+        assert offer.venue.offererAddress != offer.offererAddress
+
+        # When
+        auth_client = client.with_session_auth(email=user_offerer.user.email)
+        offer_id = offer.id
+        with testing.assert_num_queries(self.num_queries):
+            response = auth_client.get(f"/offers/{offer_id}")
+
+        # Then
+        assert response.status_code == 200
+        assert response.json["address"] == {
+            "label": offer_offerer_address.label,
+            "id": offer_offerer_address.address.id,
+            "banId": offer_offerer_address.address.banId,
+            "inseeCode": offer_offerer_address.address.inseeCode,
+            "city": offer_offerer_address.address.city,
+            "latitude": float(offer_offerer_address.address.latitude),
+            "longitude": float(offer_offerer_address.address.longitude),
+            "postalCode": offer_offerer_address.address.postalCode,
+            "street": offer_offerer_address.address.street,
+            "isEditable": offer_offerer_address.isEditable,
+        }
+
+    def test_do_not_fail_if_no_address_at_all(self, client):
+        """If offer has no offererAddress nor its venue, it should be not fail"""
+        # Given
+        user_offerer = offerers_factories.UserOffererFactory()
+        offer = offers_factories.ThingOfferFactory(
+            venue__managingOfferer=user_offerer.offerer,
+            venue__offererAddress=None,
+            offererAddress=None,
+        )
+
+        # When
+        auth_client = client.with_session_auth(email=user_offerer.user.email)
+        offer_id = offer.id
+        with testing.assert_num_queries(self.num_queries):
+            response = auth_client.get(f"/offers/{offer_id}")
+
+        # Then
+        assert response.status_code == 200
+        assert not response.json["address"]
+
+    def test_return_venue_offerer_address(self, client):
         # Given
         user_offerer = offerers_factories.UserOffererFactory()
         offerer_address = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer)
         offer = offers_factories.ThingOfferFactory(
-            venue__managingOfferer=user_offerer.offerer, offererAddress=offerer_address
+            venue__managingOfferer=user_offerer.offerer,
+            venue__offererAddress=offerer_address,
+            offererAddress=None,
         )
+        assert offer.offererAddress is None
 
         # When
         auth_client = client.with_session_auth(email=user_offerer.user.email)
@@ -333,3 +411,49 @@ class Returns200Test:
             "street": offerer_address.address.street,
             "isEditable": offerer_address.isEditable,
         }
+
+    @time_machine.travel("2020-10-15 00:00:00")
+    def test_future_offer(self, client):
+        # Given
+        now = datetime.utcnow()
+        user_offerer = offerers_factories.UserOffererFactory(
+            offerer__dateCreated=now,
+            offerer__siren="123456789",
+            offerer__name="Test Offerer",
+        )
+        publication_date = now.replace(minute=0, second=0, microsecond=0) + timedelta(days=30)
+        offer = offers_factories.EventOfferFactory(
+            dateCreated=now,
+            dateModifiedAtLastProvider=now,
+            bookingEmail="offer.booking.email@example.com",
+            name="Derrick",
+            description="Tatort, but slower",
+            durationMinutes=60,
+            extraData=None,
+            mentalDisabilityCompliant=True,
+            externalTicketOfficeUrl="http://example.net",
+            withdrawalDetails="Veuillez chercher votre billet au guichet",
+            withdrawalType=WithdrawalTypeEnum.ON_SITE,
+            withdrawalDelay=60 * 30,
+            venue__siret="12345678912345",
+            venue__name="La petite librairie",
+            venue__dateCreated=now,
+            venue__bookingEmail="test@test.com",
+            venue__managingOfferer=user_offerer.offerer,
+            offererAddress=None,
+        )
+        offer_id = offer.id
+        offers_factories.FutureOfferFactory(
+            offerId=offer_id,
+            publicationDate=publication_date,
+        )
+
+        # When
+        auth_client = client.with_session_auth(email=user_offerer.user.email)
+        with testing.assert_num_queries(self.num_queries):
+            response = auth_client.get(f"/offers/{offer_id}")
+
+        # Then
+        assert response.status_code == 200
+
+        assert response.json["publicationDate"] == publication_date.strftime("%Y-%m-%dT%H:%M:%SZ")

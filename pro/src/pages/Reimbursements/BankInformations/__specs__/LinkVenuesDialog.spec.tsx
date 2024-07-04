@@ -161,6 +161,7 @@ describe('LinkVenueDialog', () => {
       'Une erreur est survenue. Merci de réessayer plus tard'
     )
   })
+
   it('should display banner if at least one venue has no pricing point', () => {
     const managedVenues = [
       { ...defaultManagedVenues, id: 1, hasPricingPoint: true },
@@ -172,5 +173,47 @@ describe('LinkVenueDialog', () => {
     expect(
       screen.getByText('Certains de vos lieux n’ont pas de SIRET')
     ).toBeInTheDocument()
+  })
+
+  it('should display "Sélectionner un SIRET" button for venue that has no pricing point', () => {
+    const managedVenues = [
+      {
+        ...defaultManagedVenues,
+        id: 1,
+        hasPricingPoint: false,
+        commonName: 'Lieu sans SIRET',
+      },
+    ]
+
+    renderLinkVenuesDialog(1, defaultBankAccount, managedVenues)
+
+    expect(
+      screen.getByRole('checkbox', { name: 'Lieu sans SIRET' })
+    ).toBeDisabled()
+
+    expect(
+      screen.getByRole('button', {
+        name: 'Sélectionner un SIRET',
+      })
+    ).toBeInTheDocument()
+  })
+
+  it('should not display "Sélectionner un SIRET" button for venue that has pricing point', () => {
+    const managedVenues = [
+      {
+        ...defaultManagedVenues,
+        id: 1,
+        hasPricingPoint: true,
+        commonName: 'Lieu avec SIRET',
+      },
+    ]
+
+    renderLinkVenuesDialog(1, defaultBankAccount, managedVenues)
+
+    expect(
+      screen.getByRole('checkbox', { name: 'Lieu avec SIRET' })
+    ).toBeEnabled()
+
+    expect(screen.queryByText('Sélectionner un SIRET')).not.toBeInTheDocument()
   })
 })

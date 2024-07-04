@@ -10,21 +10,16 @@ on:
         required: true
       teleport_version:
         type: string
-        required: true
+        required: false
+        default: 15.2.5
       teleport_proxy:
         type: string
-        required: true
+        required: false
+        default: teleport.ehp.passculture.team:443
       teleport_kubernetes_cluster:
         type: string
-        required: true
-      deploy_api:
-        type: boolean
         required: false
-        default: false
-      deploy_pro:
-        type: boolean
-        required: false
-        default: false
+        default: passculture-metier-ehp
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
         required: true
@@ -34,7 +29,6 @@ on:
 jobs:
   deploy-api:
     name: "Deploy api"
-    if: ${{ inputs.deploy_api }}
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     permissions:

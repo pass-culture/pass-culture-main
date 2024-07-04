@@ -1,5 +1,6 @@
 import csv
 from io import StringIO
+from unittest.mock import patch
 
 import pytest
 
@@ -165,3 +166,53 @@ def test_search_csv(requests_mock):
         ],
     )
     assert list(results) == list(csv.DictReader(StringIO(text)))
+
+
+@override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+def test_cache_api(requests_mock):
+    payload = {
+        "type": "FeatureCollection",
+        "version": "draft",
+        "features": [
+            {
+                "type": "Feature",
+                "geometry": {"type": "Point", "coordinates": [2.031161, 48.773473]},
+                "properties": {
+                    "label": "2 Rue de Valois 78180 Montigny-le-Bretonneux",
+                    "score": 0.524468831168831,
+                    "housenumber": "2",
+                    "id": "78423_1855_00002",
+                    "name": "2 Rue de Valois",
+                    "postcode": "78180",
+                    "citycode": "78423",
+                    "x": 628801.04,
+                    "y": 6853034.12,
+                    "city": "Montigny-le-Bretonneux",
+                    "context": "78, Yvelines, Île-de-France",
+                    "type": "housenumber",
+                    "importance": 0.6263,
+                    "street": "Rue de Valois",
+                },
+            }
+        ],
+        "attribution": "BAN",
+        "licence": "ETALAB-2.0",
+        "query": "2 rue le valois 7500",
+        "limit": 1,
+    }
+    requests_mock.get("https://api-adresse.data.gouv.fr/search", json=payload)
+    api_adresse.get_address(address="3 Rue de Valois 75001 Paris")
+    with patch("pcapi.connectors.api_adresse.ApiAdresseBackend._search") as _search_function:
+        response = api_adresse.get_address(address="3 Rue de Valois 75001 Paris")
+        _search_function.assert_not_called()
+        assert response == api_adresse.AddressInfo(
+            id="78423_1855_00002",
+            label="2 Rue de Valois 78180 Montigny-le-Bretonneux",
+            postcode="78180",
+            citycode="78423",
+            latitude=48.773473,
+            longitude=2.031161,
+            score=0.524468831168831,
+            street="2 Rue de Valois",
+            city="Montigny-le-Bretonneux",
+        )

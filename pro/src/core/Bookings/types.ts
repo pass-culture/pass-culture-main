@@ -6,7 +6,6 @@ export type PreFiltersParams = {
   bookingBeginningDate: string
   bookingEndingDate: string
   bookingStatusFilter: BookingStatusFilter
-  offerType: string
   offerId?: string
 }
 
@@ -16,7 +15,6 @@ export type APIFilters = {
   bookingPeriodBeginningDate: string
   bookingPeriodEndingDate: string
   bookingStatusFilter: BookingStatusFilter
-  offerType: string
   offerId?: string
   page: number
 }

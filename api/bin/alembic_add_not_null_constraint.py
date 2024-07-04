@@ -72,12 +72,10 @@ STEP_2 = {
 from pcapi import settings
     """,
     "upgrade": """
-    op.execute("COMMIT")
-    # The timeout here has the same value (5 minutes) as `helm upgrade`.
-    # If this migration fails, you'll have to execute it manually.
-    op.execute("SET SESSION statement_timeout = '300s'")
-    op.execute('ALTER TABLE "$table" VALIDATE CONSTRAINT "$constraint"')
-    op.execute(f"SET SESSION statement_timeout={settings.DATABASE_STATEMENT_TIMEOUT}")
+    with op.get_context().autocommit_block():
+        op.execute("SET SESSION statement_timeout = '300s'")
+        op.execute('ALTER TABLE "$table" VALIDATE CONSTRAINT "$constraint"')
+        op.execute(f"SET SESSION statement_timeout={settings.DATABASE_STATEMENT_TIMEOUT}")
     """,
     "downgrade": """
     pass
@@ -147,23 +145,22 @@ def main():
             + ".py"
         )
 
-        alembic_util.status(
-            f"Generating {path}",
-            alembic_util.template_to_file,
-            str(ALEMBIC_TEMPLATE),
-            path,
-            "utf-8",
-            # The following kwargs are used to populate the template.
-            message=message,
-            imports=imports,
-            config=config,
-            up_revision=rev_id,
-            down_revision=down_revision,
-            branch_labels=None,
-            depends_on=None,
-            upgrades=upgrade,
-            downgrades=downgrade,
-        )
+        with alembic_util.status(f"Generating {path}"):
+            alembic_util.template_to_file(
+                str(ALEMBIC_TEMPLATE),
+                path,
+                "utf-8",
+                # The following kwargs are used to populate the template.
+                message=message,
+                imports=imports,
+                config=config,
+                up_revision=rev_id,
+                down_revision=down_revision,
+                branch_labels=None,
+                depends_on=None,
+                upgrades=upgrade,
+                downgrades=downgrade,
+            )
         down_revision = rev_id
 
 

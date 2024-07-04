@@ -2,6 +2,7 @@ import dataclasses
 import datetime
 from decimal import Decimal
 import logging
+import os
 import pathlib
 from unittest import mock
 
@@ -9,7 +10,6 @@ from dateutil.relativedelta import relativedelta
 import fakeredis
 from flask_jwt_extended.utils import decode_token
 import pytest
-import requests_mock
 import time_machine
 
 from pcapi import settings
@@ -45,6 +45,7 @@ from pcapi.routes.native.v1.serialization import account as account_serializatio
 from pcapi.routes.serialization.users import ProUserCreationBodyV2Model
 
 import tests
+from tests.test_utils import StorageFolderManager
 
 
 DATA_DIR = pathlib.Path(tests.__path__[0]) / "files"
@@ -507,7 +508,58 @@ class CreateBeneficiaryTest:
         assert user.has_active_deposit
         assert user.deposit.amount == 30
 
-    def test_apps_flyer_called(self):
+    def test_apps_flyer_called_for_underage_beneficiary(self, requests_mock):
+        apps_flyer_data = {
+            "apps_flyer": {"user": "some-user-id", "platform": "ANDROID"},
+            "firebase_pseudo_id": "firebase_pseudo_id",
+        }
+        user = users_factories.UserFactory(
+            externalIds=apps_flyer_data, validatedBirthDate=datetime.date.today() - relativedelta(years=16, months=4)
+        )
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+        )
+        posted = requests_mock.post("https://api2.appsflyer.com/inappevent/app.passculture.webapp")
+        user = subscription_api.activate_beneficiary_for_eligibility(
+            user, fraud_check, users_models.EligibilityType.UNDERAGE
+        )
+
+        first_request, second_request, third_request = posted.request_history
+        assert first_request.json() == {
+            "appsflyer_id": "some-user-id",
+            "eventName": "af_complete_beneficiary",
+            "eventValue": {
+                "af_user_id": str(user.id),
+                "af_firebase_pseudo_id": "firebase_pseudo_id",
+                "type": "GRANT_15_17",
+            },
+        }
+        assert second_request.json() == {
+            "appsflyer_id": "some-user-id",
+            "eventName": "af_complete_beneficiary_underage",
+            "eventValue": {
+                "af_user_id": str(user.id),
+                "af_firebase_pseudo_id": "firebase_pseudo_id",
+                "type": "GRANT_15_17",
+            },
+        }
+        assert third_request.json() == {
+            "appsflyer_id": "some-user-id",
+            "eventName": "af_complete_beneficiary_16",
+            "eventValue": {
+                "af_user_id": str(user.id),
+                "af_firebase_pseudo_id": "firebase_pseudo_id",
+                "type": "GRANT_15_17",
+            },
+        }
+
+        assert user.has_underage_beneficiary_role
+        assert len(user.deposits) == 1
+
+    def test_apps_flyer_called_for_eighteen_beneficiary(self, requests_mock):
         apps_flyer_data = {
             "apps_flyer": {"user": "some-user-id", "platform": "ANDROID"},
             "firebase_pseudo_id": "firebase_pseudo_id",
@@ -516,7 +568,13 @@ class CreateBeneficiaryTest:
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
         )
-        expected = {
+        posted = requests_mock.post("https://api2.appsflyer.com/inappevent/app.passculture.webapp")
+        user = subscription_api.activate_beneficiary_for_eligibility(
+            user, fraud_check, users_models.EligibilityType.AGE18
+        )
+
+        first_request, second_request = posted.request_history
+        assert first_request.json() == {
             "appsflyer_id": "some-user-id",
             "eventName": "af_complete_beneficiary",
             "eventValue": {
@@ -525,17 +583,18 @@ class CreateBeneficiaryTest:
                 "type": "GRANT_18",
             },
         }
+        assert second_request.json() == {
+            "appsflyer_id": "some-user-id",
+            "eventName": "af_complete_beneficiary_18",
+            "eventValue": {
+                "af_user_id": str(user.id),
+                "af_firebase_pseudo_id": "firebase_pseudo_id",
+                "type": "GRANT_18",
+            },
+        }
 
-        with requests_mock.Mocker() as request_mock:
-            posted = request_mock.post("https://api2.appsflyer.com/inappevent/app.passculture.webapp")
-            user = subscription_api.activate_beneficiary_for_eligibility(
-                user, fraud_check, users_models.EligibilityType.AGE18
-            )
-
-            assert posted.last_request.json() == expected
-
-            assert user.has_beneficiary_role
-            assert len(user.deposits) == 1
+        assert user.has_beneficiary_role
+        assert len(user.deposits) == 1
 
     def test_external_users_updated(self):
         user = users_factories.UserFactory(roles=[])
@@ -572,30 +631,6 @@ class CreateBeneficiaryTest:
 
         assert fifteen_year_old.is_beneficiary
         assert fifteen_year_old.deposit.amount == 20
-
-
-class SetOffererDepartementCodeTest:
-    def test_with_empty_postal_code(self):
-        # Given
-        new_user = users_factories.ProFactory.build()
-        offerer = offerers_factories.OffererFactory.build(postalCode=None)
-
-        # When
-        updated_user = users_api._set_offerer_departement_code(new_user, offerer)
-
-        # Then
-        assert updated_user.departementCode is None
-
-    def test_with_set_postal_code(self):
-        # Given
-        new_user = users_factories.ProFactory.build()
-        offerer = offerers_factories.OffererFactory.build(postalCode="75019")
-
-        # When
-        updated_user = users_api._set_offerer_departement_code(new_user, offerer)
-
-        # Then
-        assert updated_user.departementCode == "75"
 
 
 @pytest.mark.usefixtures("db_session")
@@ -2196,3 +2231,79 @@ class EnableNewProNavTest:
         users_api.enable_new_pro_nav(pro_new_nav_state.user)
 
         assert pro_new_nav_state.newNavDate == yesterday_date
+
+
+class DeleteGdprExtractTest(StorageFolderManager):
+    storage_folder = settings.LOCAL_STORAGE_DIR / settings.GCP_GDPR_EXTRACT_BUCKET / settings.GCP_GDPR_EXTRACT_FOLDER
+
+    def test_nominal(self):
+        # given
+        extract = users_factories.GdprUserDataExtractBeneficiaryFactory(dateProcessed=datetime.datetime.utcnow())
+        with open(self.storage_folder / f"{extract.id}.zip", "wb") as fp:
+            fp.write(b"[personal data compressed with deflate]")
+        # when
+        users_api.delete_gdpr_extract(extract.id)
+
+        # then
+        assert users_models.GdprUserDataExtract.query.count() == 0
+        assert len(os.listdir(self.storage_folder)) == 0
+
+    def test_extract_file_does_not_exists(self):
+        # given
+        extract = users_factories.GdprUserDataExtractBeneficiaryFactory(dateProcessed=datetime.datetime.utcnow())
+        # when
+        users_api.delete_gdpr_extract(extract.id)
+
+        # then
+        assert users_models.GdprUserDataExtract.query.count() == 0
+
+
+class CleanGdprExtractTest(StorageFolderManager):
+    storage_folder = settings.LOCAL_STORAGE_DIR / settings.GCP_GDPR_EXTRACT_BUCKET / settings.GCP_GDPR_EXTRACT_FOLDER
+
+    def test_delete_expired_extracts(self):
+        # given
+        extract = users_factories.GdprUserDataExtractBeneficiaryFactory(
+            dateProcessed=datetime.datetime.utcnow() - datetime.timedelta(days=6),
+            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=8),
+        )
+        with open(self.storage_folder / f"{extract.id}.zip", "wb") as fp:
+            fp.write(b"[personal data compressed with deflate]")
+        # when
+        users_api.clean_gdpr_extracts()
+        # then
+        assert users_models.GdprUserDataExtract.query.count() == 0
+        assert len(os.listdir(self.storage_folder)) == 0
+
+    def test_delete_extracts_files_not_in_db(self):
+        # given
+        with open(self.storage_folder / "1.zip", "wb") as fp:
+            fp.write(b"[personal data compressed with deflate]")
+        # when
+        users_api.clean_gdpr_extracts()
+        # then
+        assert len(os.listdir(self.storage_folder)) == 0
+
+    def test_delete_expired_unprocessed_extracts(self):
+        # given
+        users_factories.GdprUserDataExtractBeneficiaryFactory(
+            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=8)
+        )
+        # when
+        users_api.clean_gdpr_extracts()
+        # then
+        assert users_models.GdprUserDataExtract.query.count() == 0
+
+    def test_keep_unexpired_extracts(self):
+        # given
+        extract = users_factories.GdprUserDataExtractBeneficiaryFactory(
+            dateProcessed=datetime.datetime.utcnow() - datetime.timedelta(days=5),
+            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=6),
+        )
+        with open(self.storage_folder / f"{extract.id}.zip", "wb") as fp:
+            fp.write(b"[personal data compressed with deflate]")
+        # when
+        users_api.clean_gdpr_extracts()
+        # then
+        assert users_models.GdprUserDataExtract.query.count() == 1
+        assert len(os.listdir(self.storage_folder)) == 1

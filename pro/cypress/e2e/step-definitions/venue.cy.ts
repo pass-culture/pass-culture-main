@@ -11,15 +11,14 @@ let randomSeed: number
 let venueNameWithSiret: string
 let venueNameWithoutSiret: string
 
-beforeEach(() => {
-  // siret of Bar des amis
+function initValuesAndIntercept(): void {
   siret = '222222233' + Math.random().toString().substring(2, 7)
   randomSeed = new Date().getTime()
   venueNameWithSiret = 'Lieu avec Siret ' + randomSeed
   venueNameWithoutSiret = 'Lieu sans Siret ' + randomSeed // just to distinguish them
 
   // mettre l'intercept à part?
-  cy.intercept('GET', `http://localhost:5001/sirene/siret/${siret}`, (req) =>
+  cy.intercept('GET', `/sirene/siret/${siret}`, (req) =>
     req.reply({
       statusCode: 200,
       body: {
@@ -35,12 +34,12 @@ beforeEach(() => {
         legal_category_code: '1000',
       },
     })
-  ).as('getSiret')
-  cy.visit('/connexion')
-})
+  ).as('getSiretVenue')
+  cy.intercept({ method: 'PATCH', url: '/venues/*' }).as('patchVenue')
+}
 
 Given('I want to add a venue', () => {
-  cy.findByLabelText('Structure').select('Bar des amis')
+  initValuesAndIntercept()
   cy.findByText('Ajouter un lieu').click()
 })
 
@@ -50,7 +49,6 @@ When('I choose a venue which already has a Siret', () => {
 
 When('I add a valid Siret', () => {
   cy.findByLabelText('SIRET du lieu *').type(siret)
-  cy.wait('@getSiret').its('response.statusCode').should('eq', 200)
   cy.findByTestId('error-siret').should('not.exist')
 })
 
@@ -73,9 +71,9 @@ When('I add venue without Siret details', () => {
 })
 
 When('I validate venue step', () => {
-  cy.intercept({ method: 'GET', url: '/venue-types' }).as('getVenues')
+  cy.intercept({ method: 'POST', url: '/venues' }).as('postVenues')
   cy.findByText('Enregistrer et créer le lieu').click()
-  cy.wait('@getVenues').its('response.statusCode').should('eq', 200)
+  cy.wait('@postVenues').its('response.statusCode').should('eq', 201)
 })
 
 When('I add venue with Siret details', () => {
@@ -101,6 +99,7 @@ When('I open my venue without Siret resume', () => {
 })
 
 Then('I should see my venue with Siret resume', () => {
+  cy.reload() // newly created venue sometimes not displayed
   cy.findByRole('link', {
     name: 'Gérer la page de ' + venueNameWithSiret + '',
   }).click()
@@ -129,20 +128,12 @@ Then('I should see details of my venue', () => {
 })
 
 When('I go to the venue page in Individual section', () => {
-  cy.findByLabelText('Structure').select('Lieu non dit')
-  cy.findByText('Vos pages partenaire').should('be.visible')
+  initValuesAndIntercept()
+  cy.findByText('Votre page partenaire').should('be.visible')
   cy.findByText('Carnet d’adresses').should('be.visible')
-  cy.findByLabelText('Sélectionnez votre page partenaire *').select(
-    'Cinéma de la fin Bis'
-  )
-
-  // findByText() et findByRole() marchent pas ici
-  cy.contains('Gérer votre page pour le grand public').click()
-  cy.findByText('Vos informations pour le grand public').should('be.visible')
+  cy.get('a[aria-label^="Gérer la page de Lieu avec Siret"]').eq(0).click()
   cy.findByText('À propos de votre activité').should('be.visible')
   cy.findByText('Modifier').click()
-
-  cy.findByText('Cinéma de la fin Bis').should('be.visible')
 })
 
 When('I update Individual section data', () => {
@@ -152,13 +143,21 @@ When('I update Individual section data', () => {
   cy.findByText('Non accessible').click()
   cy.findByText('Psychique ou cognitif').click()
   cy.findByText('Auditif').click()
-  cy.intercept({ method: 'PATCH', url: '/venues/*' }).as('patchVenue')
-  cy.findByText('Enregistrer et quitter').click()
+  cy.findByText('Enregistrer').click()
   cy.wait('@patchVenue')
 })
 
 When('I go to the venue page in Paramètres généraux', () => {
+  cy.findAllByTestId('spinner').should('not.exist')
+  cy.url().should('not.include', '/parametres')
   cy.findByText('Paramètres généraux').click()
+  cy.url().should('include', '/structures').and('include', 'lieux')
+  cy.findAllByTestId('spinner').should('not.exist')
+})
+
+When('I update Paramètres généraux data', () => {
+  cy.url().should('include', '/parametres').and('include', 'structures')
+  cy.findAllByTestId('spinner').should('not.exist')
   cy.findByLabelText(
     'Label du ministère de la Culture ou du Centre national du cinéma et de l’image animée'
   ).select('Musée de France')
@@ -167,13 +166,13 @@ When('I go to the venue page in Paramètres généraux', () => {
     .type(
       'En main bien propres, avec un masque et un gel hydroalcoolique, didiou !'
     )
-})
-
-When('I update Paramètres généraux data', () => {
-  cy.findByText('Paramètres généraux').click()
+  cy.findByText('Enregistrer').click()
+  cy.wait('@patchVenue')
+  cy.findAllByTestId('spinner').should('not.exist')
 })
 
 Then('Individual section data should be updated', () => {
+  cy.url().should('not.include', '/edition')
   cy.findByText('Annuler et quitter').should('not.exist')
   cy.findByText('Vos informations pour le grand public').should('be.visible')
   cy.findByText('On peut ajouter des choses, vraiment fantastique !!!').should(
@@ -182,7 +181,23 @@ Then('Individual section data should be updated', () => {
 })
 
 Then('Paramètres généraux data should be updated', () => {
-  cy.findByText('Musée de France').should('be.visible')
+  cy.findAllByTestId('spinner').should('not.exist')
+  cy.findByText(
+    'En main bien propres, avec un masque et un gel hydroalcoolique, didiou !'
+  )
+    .scrollIntoView()
+    .should('be.visible')
+
+  cy.findByTestId('wrapper-venueLabel').within(() => {
+    cy.get('select')
+      .invoke('val')
+      .then((identifiant) => {
+        cy.get('option[value="' + identifiant + '"]').should(
+          'have.text',
+          'Musée de France'
+        )
+      })
+  })
 })
 
 Then('I should only see these venues', (venues: DataTable) => {

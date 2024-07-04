@@ -38,11 +38,11 @@
           </p>
         {% endif %}
       {% endif %}
-      {% set suspension_reason = row.suspension_reason %}
+      {% set suspension_reason = row.suspension_reason_expression %}
       {% if suspension_reason %}
         <p>
           <span class="fw-bold">Raison de suspension :</span> {{ suspension_reason | format_reason_label }}
-          <span class="fw-bold">le</span> {{ row.suspension_date | format_date }}
+          <span class="fw-bold">le</span> {{ row.suspension_date_expression | format_date }}
         </p>
       {% endif %}
     </div>

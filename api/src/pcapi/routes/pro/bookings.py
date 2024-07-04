@@ -33,6 +33,7 @@ def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel
     per_page_limit = 1000
     venue_id = query.venue_id
     offer_id = query.offer_id
+    offerer_address_id = query.offerer_address_id
     event_date = query.event_date
     booking_status = query.booking_status_filter
     booking_period = None
@@ -41,7 +42,6 @@ def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel
             query.booking_period_beginning_date,
             query.booking_period_ending_date,
         )
-    offer_type = query.offer_type
 
     bookings_query, total = booking_repository.find_by_pro_user(
         user=current_user._get_current_object(),  # for tests to succeed, because current_user is actually a LocalProxy
@@ -50,7 +50,7 @@ def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel
         event_date=event_date,
         venue_id=venue_id,
         offer_id=offer_id,
-        offer_type=offer_type,
+        offerer_address_id=offerer_address_id,
         page=int(page),
         per_page_limit=per_page_limit,
     )
@@ -224,7 +224,6 @@ def _create_booking_export_file(query: ListBookingsQueryModel, export_type: Book
             query.booking_period_ending_date,
         )
     booking_status = query.booking_status_filter
-    offer_type = query.offer_type
 
     export_data = booking_repository.get_export(
         user=current_user._get_current_object(),  # for tests to succeed, because current_user is actually a LocalProxy
@@ -232,7 +231,6 @@ def _create_booking_export_file(query: ListBookingsQueryModel, export_type: Book
         status_filter=booking_status,
         event_date=event_date,
         venue_id=venue_id,
-        offer_type=offer_type,
         export_type=export_type,
     )
 

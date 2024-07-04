@@ -3,7 +3,6 @@ import datetime
 from pcapi.core.categories import subcategories_v2
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
-from pcapi.repository import repository
 
 
 def create_complex_offers(offerers_by_name: dict[str, offerers_models.Offerer]) -> None:
@@ -139,8 +138,7 @@ Ut quis egestas neque. Fusce sem nulla, luctus ac sagittis eu, mattis quis purus
             "diffusionVersion": "VO",
         },
     )
-    movie_stock = offers_factories.StockFactory(offer=movie_offer, bookingLimitDatetime=datetime.datetime.utcnow())
-    repository.save(movie_stock)
+    offers_factories.StockFactory(offer=movie_offer, bookingLimitDatetime=datetime.datetime.utcnow())
 
     book_product = offers_factories.ProductFactory(
         subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
@@ -203,5 +201,36 @@ Ut quis egestas neque. Fusce sem nulla, luctus ac sagittis eu, mattis quis purus
             "num_in_collection": "0",
         },
     )
-    book_stock = offers_factories.StockFactory(offer=book_offer)
-    repository.save(book_stock)
+    offers_factories.StockFactory(offer=book_offer)
+
+    electro_cd_offer = offers_factories.ThingOfferFactory(
+        venue=next(offerers_iterator).managedVenues[0],
+        name="Un super CD d'électro",
+        subcategoryId=subcategories_v2.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+        extraData={"gtl_id": "04000000"},
+    )
+    offers_factories.StockFactory(offer=electro_cd_offer)
+
+    classical_cd_offer = offers_factories.ThingOfferFactory(
+        venue=next(offerers_iterator).managedVenues[0],
+        name="Un CD de musique classique incroyable",
+        subcategoryId=subcategories_v2.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+        extraData={"gtl_id": "01000000"},
+    )
+    offers_factories.StockFactory(offer=classical_cd_offer)
+
+    electro_event_offer = offers_factories.EventOfferFactory(
+        venue=next(offerers_iterator).managedVenues[0],
+        name="Un concert d'electro inoubliable",
+        subcategoryId=subcategories_v2.CONCERT.id,
+        extraData={"gtl_id": "04000000"},
+    )
+    offers_factories.StockFactory(offer=electro_event_offer)
+
+    rock_event_offer = offers_factories.EventOfferFactory(
+        venue=next(offerers_iterator).managedVenues[0],
+        name="Un concert de rock un peu nul",
+        subcategoryId=subcategories_v2.CONCERT.id,
+        extraData={"gtl_id": "06000000"},
+    )
+    offers_factories.StockFactory(offer=rock_event_offer)

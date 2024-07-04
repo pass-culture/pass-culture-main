@@ -165,6 +165,7 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
 
 class PatchOfferPublishBodyModel(BaseModel):
     id: int
+    publicationDate: datetime.datetime | None
 
 
 class PatchOfferActiveStatusBodyModel(BaseModel):
@@ -392,15 +393,22 @@ class IndividualOfferResponseGetterDict(GetterDict):
     def get(self, key: str, default: Any | None = None) -> Any:
         if key == "address":
             if not self._obj.offererAddress:
+                offerer_address = self._obj.venue.offererAddress
+            else:
+                offerer_address = self._obj.offererAddress
+            # TODO(xordoquy): the following code should be removed once the
+            # migration of offerer_address from venues is performed.
+            # Alternatively, might be a good idea to keep it and log a warning too
+            if not offerer_address:
                 return None
-            offererAddress = GetOffererAddressWithIsEditableResponseModel.from_orm(self._obj.offererAddress)
+            offererAddress = GetOffererAddressWithIsEditableResponseModel.from_orm(offerer_address)
             offererAddress.label = offererAddress.label or self._obj.venue.common_name
             return AddressResponseIsEditableModel(
-                id=self._obj.offererAddress.addressId,
-                banId=self._obj.offererAddress.address.banId,
-                inseeCode=self._obj.offererAddress.address.inseeCode,
-                longitude=self._obj.offererAddress.address.longitude,
-                latitude=self._obj.offererAddress.address.latitude,
+                id=offerer_address.addressId,
+                banId=offerer_address.address.banId,
+                inseeCode=offerer_address.address.inseeCode,
+                longitude=offerer_address.address.longitude,
+                latitude=offerer_address.address.latitude,
                 **offererAddress.dict(exclude={"id"}),
             )
         return super().get(key, default)
@@ -417,6 +425,7 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     bookingsCount: int | None
     bookingEmail: str | None
     dateCreated: datetime.datetime
+    publicationDate: datetime.datetime | None
     description: str | None
     durationMinutes: int | None
     extraData: Any

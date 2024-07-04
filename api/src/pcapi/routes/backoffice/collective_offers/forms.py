@@ -10,7 +10,7 @@ from flask_wtf import FlaskForm
 import wtforms
 
 from pcapi.core.categories import subcategories_v2 as subcategories
-from pcapi.models.offer_mixin import OfferStatus
+from pcapi.models.offer_mixin import CollectiveOfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import filters
@@ -184,7 +184,7 @@ class CollectiveOfferAdvancedSearchSubForm(forms_utils.PCForm):
     status = fields.PCSelectMultipleField(
         "Statut",
         choices=forms_utils.choices_from_enum(
-            OfferStatus,
+            CollectiveOfferStatus,
             formatter=filters.format_offer_status,
         ),
         search_inline=True,

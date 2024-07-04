@@ -8,7 +8,7 @@ import styles from './SignupConfirmation.module.scss'
 export const SignupConfirmation = () => (
   <section className={styles['content']}>
     <div className={styles['hero-body']}>
-      <h1>Merci !</h1>
+      <h1 className={styles['title']}>Merci !</h1>
       <div className={styles['confirmation-text']}>
         Votre compte est en cours de création.
       </div>

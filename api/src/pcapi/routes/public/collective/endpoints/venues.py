@@ -1,7 +1,7 @@
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.providers import repository as providers_repository
+from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
-from pcapi.routes.public.collective.blueprint import collective_offers_blueprint
 from pcapi.routes.public.collective.serialization import venues as serialization
 from pcapi.routes.public.documentation_constants import http_responses
 from pcapi.routes.public.documentation_constants import tags
@@ -12,10 +12,11 @@ from pcapi.validation.routes.users_authentifications import api_key_required
 from pcapi.validation.routes.users_authentifications import current_api_key
 
 
-@collective_offers_blueprint.route("/collective/venues", methods=["GET"])
+@blueprints.public_api.route("/v2/collective/venues", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.COLLECTIVE_VENUES_TAG],
+    tags=[tags.COLLECTIVE_VENUES],
+    deprecated=True,
     resp=SpectreeResponse(
         **(
             {
@@ -33,7 +34,7 @@ def list_venues() -> serialization.CollectiveOffersListVenuesResponseModel:
     """
     Get all venues
 
-    Get all venues linked to your API key.
+    This route is deprecated and should not be used anymore.
     """
     venues = providers_repository.get_providers_venues(current_api_key.providerId)
 
@@ -42,10 +43,10 @@ def list_venues() -> serialization.CollectiveOffersListVenuesResponseModel:
     )
 
 
-@collective_offers_blueprint.route("/collective/offerer_venues", methods=["GET"])
+@blueprints.public_api.route("/v2/collective/offerer_venues", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    tags=[tags.COLLECTIVE_VENUES_TAG],
+    tags=[tags.COLLECTIVE_VENUES],
     deprecated=True,
     resp=SpectreeResponse(
         **(
@@ -60,13 +61,13 @@ def list_venues() -> serialization.CollectiveOffersListVenuesResponseModel:
     ),
 )
 @api_key_required
-def get_offerer_venues(
+def deprecated_get_offerer_venues(
     query: venues_serialization.GetOfferersVenuesQuery,
 ) -> venues_serialization.GetOfferersVenuesResponse:
     """
-    [LEGACY] Récupération des lieux associés au fournisseur authentifié par le jeton d'API; groupés par structures
+    [DEPRECATED]
 
-    You should be using **/public/offer/v1/offerer_venues endpoint**.
+    You should be using [**/public/offer/v1/offerer_venues endpoint**](/rest-api#tag/Venues/operation/GetOffererVenues).
     """
     rows = offerers_api.get_providers_offerer_and_venues(current_api_key.provider, query.siren)
     return venues_serialization.GetOfferersVenuesResponse.serialize_offerers_venues(rows)

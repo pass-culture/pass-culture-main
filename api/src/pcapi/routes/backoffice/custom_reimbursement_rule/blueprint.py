@@ -21,6 +21,8 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
+from pcapi.repository import atomic
+from pcapi.repository import mark_transaction_as_invalid
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import utils
 from pcapi.utils import date as date_utils
@@ -151,6 +153,7 @@ def _get_custom_reimbursement_rules(
 
 
 @custom_reimbursement_rules_blueprint.route("", methods=["GET"])
+@atomic()
 def list_custom_reimbursement_rules() -> utils.BackofficeResponse:
     form = custom_reimbursement_rule_forms.GetCustomReimbursementRulesListForm(formdata=utils.get_query_params())
     if not form.validate():
@@ -190,6 +193,7 @@ def _get_custom_reimburement_rule_stats() -> dict[str, int]:
 
 
 @custom_reimbursement_rules_blueprint.route("/stats", methods=["GET"])
+@atomic()
 def get_stats() -> utils.BackofficeResponse:
     stats = _get_custom_reimburement_rule_stats()
 
@@ -200,6 +204,7 @@ def get_stats() -> utils.BackofficeResponse:
 
 
 @custom_reimbursement_rules_blueprint.route("/create", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.CREATE_REIMBURSEMENT_RULES)
 def create_custom_reimbursement_rule() -> utils.BackofficeResponse:
     form = custom_reimbursement_rule_forms.CreateCustomReimbursementRuleForm()
@@ -238,7 +243,7 @@ def create_custom_reimbursement_rule() -> utils.BackofficeResponse:
     except (ValueError, finance_exceptions.ReimbursementRuleValidationError) as exc:
         flash(get_error_message(exc), "warning")
     except sa.exc.IntegrityError as err:
-        db.session.rollback()
+        mark_transaction_as_invalid()
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(err)), "warning")
     else:
         flash("Le nouveau tarif dérogatoire a été créé", "success")
@@ -247,6 +252,7 @@ def create_custom_reimbursement_rule() -> utils.BackofficeResponse:
 
 
 @custom_reimbursement_rules_blueprint.route("/new", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.CREATE_REIMBURSEMENT_RULES)
 def get_create_custom_reimbursement_rule_form() -> utils.BackofficeResponse:
     form = custom_reimbursement_rule_forms.CreateCustomReimbursementRuleForm()
@@ -262,6 +268,7 @@ def get_create_custom_reimbursement_rule_form() -> utils.BackofficeResponse:
 
 
 @custom_reimbursement_rules_blueprint.route("/<int:reimbursement_rule_id>/edit", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.CREATE_REIMBURSEMENT_RULES)
 def get_edit_custom_reimbursement_rule_form(reimbursement_rule_id: int) -> utils.BackofficeResponse:
     custom_reimbursement_rule = finance_models.CustomReimbursementRule.query.filter_by(
@@ -295,6 +302,7 @@ def get_edit_custom_reimbursement_rule_form(reimbursement_rule_id: int) -> utils
 
 
 @custom_reimbursement_rules_blueprint.route("/<int:reimbursement_rule_id>/edit", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.CREATE_REIMBURSEMENT_RULES)
 def edit_custom_reimbursement_rule(reimbursement_rule_id: int) -> utils.BackofficeResponse:
     custom_reimbursement_rule = finance_models.CustomReimbursementRule.query.filter_by(
@@ -316,7 +324,7 @@ def edit_custom_reimbursement_rule(reimbursement_rule_id: int) -> utils.Backoffi
     except (ValueError, finance_exceptions.ReimbursementRuleValidationError) as exc:
         flash(get_error_message(exc), "warning")
     except sa.exc.IntegrityError as err:
-        db.session.rollback()
+        mark_transaction_as_invalid()
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(err)), "warning")
     else:
         flash("Le tarif dérogatoire a été mis à jour", "success")

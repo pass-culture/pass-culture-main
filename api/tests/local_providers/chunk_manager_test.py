@@ -23,8 +23,8 @@ def test_save_chunks_insert_1_offer_in_chunk():
     venue = offerers_factories.VenueFactory()
     offer = offers_factories.OfferFactory.build(
         idAtProvider="1%12345678912345",
-        productId=product.id,
-        venueId=venue.id,
+        product=product,
+        venue=venue,
     )
 
     save_chunks({"1|Offer": offer}, chunk_to_update={})
@@ -38,8 +38,8 @@ def test_save_chunks_insert_1_offer_and_1_stock_in_chunk():
     offer = offers_factories.OfferFactory.build(
         id=1,
         idAtProvider="1%12345678912345",
-        productId=product.id,
-        venueId=venue.id,
+        product=product,
+        venue=venue,
     )
     # Do not use a factory since StockFactory will create an offer that will be saved
     # by add_all

@@ -20,7 +20,7 @@ export const OffererCreationLinks = () => (
       <div className={styles['actions-container']}>
         <ButtonLink
           variant={ButtonVariant.PRIMARY}
-          link={{ isExternal: false, to: '/structures/creation' }}
+          link={{ isExternal: false, to: '/parcours-inscription/structure' }}
         >
           Ajouter une nouvelle structure
         </ButtonLink>

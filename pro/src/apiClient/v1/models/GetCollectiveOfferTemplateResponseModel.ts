@@ -3,12 +3,12 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { CollectiveOfferOfferVenueResponseModel } from './CollectiveOfferOfferVenueResponseModel';
+import type { CollectiveOfferStatus } from './CollectiveOfferStatus';
 import type { EacFormat } from './EacFormat';
 import type { GetCollectiveOfferVenueResponseModel } from './GetCollectiveOfferVenueResponseModel';
 import type { NationalProgramModel } from './NationalProgramModel';
 import type { OfferContactFormEnum } from './OfferContactFormEnum';
 import type { OfferDomain } from './OfferDomain';
-import type { OfferStatus } from './OfferStatus';
 import type { StudentLevels } from './StudentLevels';
 import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
 import type { TemplateDatesModel } from './TemplateDatesModel';
@@ -42,7 +42,7 @@ export type GetCollectiveOfferTemplateResponseModel = {
   nationalProgram?: NationalProgramModel | null;
   offerId?: number | null;
   offerVenue: CollectiveOfferOfferVenueResponseModel;
-  status: OfferStatus;
+  status: CollectiveOfferStatus;
   students: Array<StudentLevels>;
   subcategoryId?: (SubcategoryIdEnum | string) | null;
   venue: GetCollectiveOfferVenueResponseModel;

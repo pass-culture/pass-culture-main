@@ -12,10 +12,12 @@ import { BookingStatusCellHistory } from './BookingStatusCellHistory'
 
 export type IndividualBookingStatusCellProps = {
   booking: BookingRecapResponseModel
+  className?: string
 }
 
 export const IndividualBookingStatusCell = ({
   booking,
+  className,
 }: IndividualBookingStatusCellProps) => {
   const { isTooltipHidden, ...tooltipProps } = useTooltipProps({})
   const bookingDisplayInfo = getBookingStatusDisplayInformations(
@@ -32,34 +34,38 @@ export const IndividualBookingStatusCell = ({
   }
 
   return (
-    <button
-      type="button"
-      {...tooltipProps}
-      className={cn(
-        styles['booking-status-label'],
-        bookingDisplayInfo?.statusClassName
-      )}
-    >
-      {bookingDisplayInfo && (
-        <SvgIcon
-          src={bookingDisplayInfo.icon}
-          alt=""
-          className={styles['booking-status-icon']}
-          width="300"
-        />
-      )}
-
-      <span>{statusName}</span>
-      {!isTooltipHidden && (
-        <div className={styles['bs-tooltip']}>
-          <div className={styles['bs-offer-title']}>{offerName}</div>
-          <div className={styles['bs-offer-amount']}>{`Prix : ${amount}`}</div>
-          <div className={styles['bs-history-title']}>Historique</div>
-          <BookingStatusCellHistory
-            bookingStatusHistory={booking.bookingStatusHistory}
+    <div className={cn(className)}>
+      <button
+        type="button"
+        {...tooltipProps}
+        className={cn(
+          styles['booking-status-label'],
+          bookingDisplayInfo?.statusClassName
+        )}
+      >
+        {bookingDisplayInfo && (
+          <SvgIcon
+            src={bookingDisplayInfo.icon}
+            alt=""
+            className={styles['booking-status-icon']}
+            width="300"
           />
-        </div>
-      )}
-    </button>
+        )}
+
+        <span>{statusName}</span>
+        {!isTooltipHidden && (
+          <div className={styles['bs-tooltip']}>
+            <div className={styles['bs-offer-title']}>{offerName}</div>
+            <div
+              className={styles['bs-offer-amount']}
+            >{`Prix : ${amount}`}</div>
+            <div className={styles['bs-history-title']}>Historique</div>
+            <BookingStatusCellHistory
+              bookingStatusHistory={booking.bookingStatusHistory}
+            />
+          </div>
+        )}
+      </button>
+    </div>
   )
 }

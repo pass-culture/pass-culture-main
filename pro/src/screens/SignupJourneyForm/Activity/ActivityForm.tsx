@@ -37,10 +37,8 @@ export const ActivityForm = ({
   const venueTypesOptions = buildVenueTypesOptions(venueTypes)
 
   return (
-    <FormLayout.Section
-      title="Activité"
-      className={styles['activity-form-wrapper']}
-    >
+    <FormLayout.Section>
+      <h1 className={styles['activity-form-wrapper']}>Activité</h1>
       <FormLayout.Row className={styles['input-gap']}>
         <Select
           options={[
@@ -65,6 +63,7 @@ export const ActivityForm = ({
                   name={`socialUrls[${index}]`}
                   label="Site internet, réseau social"
                   placeholder="https://www.siteinternet.com"
+                  data-testid="activity-form-social-url"
                   type="url"
                   className={styles['url-input']}
                   isLabelHidden={index !== 0}

@@ -45,8 +45,14 @@ class GetOffererVenuesTest:
             siret="12345678112345",
             venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE,
         )
-        providers_factories.VenueProviderFactory(
+        venue_provider = providers_factories.VenueProviderFactory(
             venue=other_physical_venue, provider=provider, venueIdAtOfferProvider="Test"
+        )
+        providers_factories.VenueProviderExternalUrlsFactory(
+            venueProvider=venue_provider,
+            bookingExternalUrl="https://mysolution.com/booking",
+            cancelExternalUrl="https://mysolution.com/cancel",
+            notificationExternalUrl="https://mysolution.com/notif",
         )
         return offerer_with_two_venues, digital_venue, physical_venue, offerer_with_one_venue, other_physical_venue
 
@@ -81,6 +87,9 @@ class GetOffererVenuesTest:
                     },
                     "activityDomain": "ARTISTIC_COURSE",
                     "createdDatetime": "2023-01-16T00:00:00Z",
+                    "bookingUrl": None,
+                    "cancelUrl": None,
+                    "notificationUrl": None,
                     "id": digital_venue.id,
                     "legalName": "Do you diji",
                     "location": {"type": "digital"},
@@ -108,6 +117,9 @@ class GetOffererVenuesTest:
                     "publicName": "Tiff tuff",
                     "siret": "12345678912345",
                     "siretComment": None,
+                    "bookingUrl": None,
+                    "cancelUrl": None,
+                    "notificationUrl": None,
                 },
             ],
         }
@@ -139,6 +151,9 @@ class GetOffererVenuesTest:
                     "publicName": "wiff wuff",
                     "siret": "12345678112345",
                     "siretComment": None,
+                    "bookingUrl": "https://mysolution.com/booking",
+                    "cancelUrl": "https://mysolution.com/cancel",
+                    "notificationUrl": "https://mysolution.com/notif",
                 }
             ],
         }

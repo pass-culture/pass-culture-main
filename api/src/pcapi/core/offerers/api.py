@@ -3,6 +3,7 @@ from datetime import datetime
 import decimal
 import itertools
 import logging
+import math
 from math import ceil
 import re
 import secrets
@@ -19,11 +20,9 @@ from sqlalchemy.dialects.postgresql import INTERVAL
 import sqlalchemy.orm as sa_orm
 
 from pcapi import settings
+from pcapi.connectors import api_adresse
 from pcapi.connectors import virustotal
 import pcapi.connectors.acceslibre as accessibility_provider
-from pcapi.connectors.api_adresse import AddressInfo
-from pcapi.connectors.api_adresse import get_address
-from pcapi.connectors.api_adresse import get_municipality_centroid
 from pcapi.connectors.entreprise import exceptions as sirene_exceptions
 from pcapi.connectors.entreprise import models as sirene_models
 from pcapi.connectors.entreprise import sirene
@@ -53,6 +52,7 @@ import pcapi.core.users.repository as users_repository
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models import pc_object
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.repository import repository
 from pcapi.routes.serialization import offerers_serialize
@@ -97,27 +97,21 @@ def create_digital_venue(offerer: models.Offerer) -> models.Venue:
 
 def update_venue(
     venue: models.Venue,
+    modifications: dict,
     author: users_models.User,
     opening_hours: list[serialize_base.OpeningHoursModel] | None = None,
     contact_data: serialize_base.VenueContactModel | None = None,
     criteria: list[criteria_models.Criterion] | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
     external_accessibility_url: str | None | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
-    admin_update: bool = False,
-    **attrs: typing.Any,
+    is_manual_edition: bool = False,
 ) -> models.Venue:
-    modifications = {field: value for field, value in attrs.items() if venue.field_exists_and_has_changed(field, value)}
-    new_permanent = not venue.isPermanent and attrs.get("isPermanent")
-
-    if feature.FeatureToggle.ENABLE_API_ADRESSE_WHILE_CREATING_UPDATING_VENUE.is_active():
-        update_venue_location(venue, modifications)
-
-    if not admin_update:
-        # run validation when the venue update is triggered by a pro
-        # user. This can be bypassed when done by and admin/backoffice
-        # user.
-        validation.check_venue_edition(modifications, venue)
+    new_permanent = not venue.isPermanent and modifications.get("isPermanent")
 
     venue_snapshot = history_api.ObjectUpdateSnapshot(venue, author)
+    if not venue.isVirtual and FeatureToggle.ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE.is_active():
+        update_venue_location(
+            venue, modifications, author=author, venue_snapshot=venue_snapshot, is_manual_edition=is_manual_edition
+        )
 
     if contact_data:
         # target must not be None, otherwise contact_data fields will be compared to fields in Venue, which do not exist
@@ -208,35 +202,106 @@ def update_venue(
     return venue
 
 
-def update_venue_location(venue: models.Venue, modifications: dict) -> None:
-    if any(field in modifications for field in ("street", "city", "postalCode")):
-        street = modifications.get("street") or venue.street
-        city = modifications.get("city") or venue.city
-        postalCode = modifications.get("postalCode") or venue.postalCode
-        logger.info(
-            "Updating venue location",
-            extra={"venue_id": venue.id, "venue_street": street, "venue_city": city, "venue_postalCode": postalCode},
-        )
-        address_info = get_address(street, postalCode, city)
-        address = get_or_create_address(address_info)
-        if not venue.offererAddressId:
-            offerer_address = get_or_create_offerer_address(venue.managingOffererId, address.id)
-            venue.offererAddress = offerer_address
-            db.session.add(venue)
-            db.session.flush()
-        else:
-            update_offerer_address(venue.offererAddressId, address.id)
+def update_venue_location(
+    venue: models.Venue,
+    modifications: dict,
+    author: users_models.User,
+    venue_snapshot: history_api.ObjectUpdateSnapshot,
+    is_manual_edition: bool = False,
+) -> None:
+    """
+    Update the venue location and also populate the newly created Address & OffererAddress.
+    You might want to skip the API Adresse call and force the location update with incoming data.
+    If we receive untrusted user input, we want to double check data consistency using the API Adresse.
+    On the other side, BO users might want to force a location to a venue, for example if the address is unknown
+    for the API.
+    """
+    if not any(field in modifications for field in ("street", "city", "postalCode")):
+        return
 
-        if modifications.get("street"):
-            modifications["street"] = address.street
-        if modifications.get("city"):
-            modifications["city"] = address.city
-        if modifications.get("postalCode"):
-            modifications["postalCode"] = address.postalCode
-        if modifications.get("latitude"):
-            modifications["latitude"] = address.latitude
-        if modifications.get("longitude"):
-            modifications["longitude"] = address.longitude
+    street = modifications.get("street") or venue.street
+    city = modifications.get("city") or venue.city
+    postal_code = modifications.get("postalCode") or venue.postalCode
+    latitude = modifications.get("latitude") or venue.latitude
+    longitude = modifications.get("longitude") or venue.longitude
+    ban_id = modifications.get("banId") or venue.banId
+    logger.info(
+        "Updating venue location",
+        extra={"venue_id": venue.id, "venue_street": street, "venue_city": city, "venue_postalCode": postal_code},
+    )
+
+    if not is_manual_edition:
+        address_info = api_adresse.get_address(street, postal_code, city)
+        location_data = LocationData(
+            city=address_info.city,
+            postal_code=address_info.postcode,
+            latitude=address_info.latitude,
+            longitude=address_info.longitude,
+            street=address_info.street,
+            insee_code=address_info.citycode,
+            ban_id=address_info.id,
+        )
+    else:
+        insee_code = None
+        if city and postal_code:
+            # Address entered manually does not provide INSEE code, find it
+            try:
+                insee_code = api_adresse.get_municipality_centroid(city, postal_code).citycode
+            except api_adresse.AdresseException:
+                pass
+
+        location_data = LocationData(
+            city=typing.cast(str, city),
+            postal_code=typing.cast(str, postal_code),
+            latitude=typing.cast(float, latitude),
+            longitude=typing.cast(float, longitude),
+            street=street,
+            ban_id=ban_id,
+            insee_code=insee_code,
+        )
+
+    address = get_or_create_address(location_data, is_manual_edition=is_manual_edition)
+    snapshot_location_data = {
+        "city": address.city,
+        "postalCode": address.postalCode,
+        "latitude": address.latitude,
+        "longitude": address.longitude,
+        "street": address.street,
+        "banId": address.banId,
+        "inseeCode": address.inseeCode,
+    }
+
+    if not venue.offererAddressId:
+        offerer_address = get_or_create_offerer_address(venue.managingOffererId, address.id)
+        venue_snapshot.trace_update({"offererAddressId": offerer_address.id})
+        venue_snapshot.trace_update(
+            snapshot_location_data,
+            target=geography_models.Address(),
+            field_name_template="offererAddress.address.{}",
+        )
+        venue.offererAddress = offerer_address
+        db.session.add(venue)
+        db.session.flush()
+    else:
+        target = venue.offererAddress.address  # type: ignore[union-attr]
+        venue_snapshot.trace_update(
+            snapshot_location_data, target=target, field_name_template="offererAddress.address.{}"
+        )
+        venue_snapshot.trace_update(
+            {"addressId": address.id}, target=venue.offererAddress, field_name_template="offererAddress.{}"
+        )
+        update_offerer_address(venue.offererAddressId, address.id)
+
+    if modifications.get("street"):
+        modifications["street"] = address.street
+    if modifications.get("city"):
+        modifications["city"] = address.city
+    if modifications.get("postalCode"):
+        modifications["postalCode"] = address.postalCode
+    if modifications.get("latitude"):
+        modifications["latitude"] = address.latitude
+    if modifications.get("longitude"):
+        modifications["longitude"] = address.longitude
 
 
 def update_venue_collective_data(
@@ -320,17 +385,27 @@ def upsert_venue_opening_hours(venue: models.Venue, opening_hours: serialize_bas
     return venue
 
 
-def create_venue(venue_data: venues_serialize.PostVenueBodyModel) -> models.Venue:
+def create_venue(venue_data: venues_serialize.PostVenueBodyModel, author: users_models.User) -> models.Venue:
     venue = models.Venue()
 
-    if feature.FeatureToggle.ENABLE_API_ADRESSE_WHILE_CREATING_UPDATING_VENUE.is_active():
+    if feature.FeatureToggle.ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE.is_active():
         if utils_regions.NON_DIFFUSIBLE_TAG in venue_data.street:
-            address_info = get_municipality_centroid(venue_data.city, venue_data.postalCode)
+            address_info = api_adresse.get_municipality_centroid(venue_data.city, venue_data.postalCode)
             address_info.street = utils_regions.NON_DIFFUSIBLE_TAG
         else:
-            address_info = get_address(venue_data.street, venue_data.postalCode, venue_data.city)
+            address_info = api_adresse.get_address(venue_data.street, venue_data.postalCode, venue_data.city)
 
-        address = get_or_create_address(address_info)
+        address = get_or_create_address(
+            LocationData(
+                city=address_info.city,
+                postal_code=address_info.postcode,
+                latitude=address_info.latitude,
+                longitude=address_info.longitude,
+                street=address_info.street,
+                insee_code=address_info.citycode,
+                ban_id=address_info.id,
+            )
+        )
         offerer_address = get_or_create_offerer_address(venue_data.managingOffererId, address.id)
         venue.offererAddressId = offerer_address.id
 
@@ -351,6 +426,9 @@ def create_venue(venue_data: venues_serialize.PostVenueBodyModel) -> models.Venu
         venue.adageInscriptionDate = datetime.utcnow()
 
     ava = educational_address_api.new_venue_address(venue)
+
+    history_api.add_action(history_models.ActionType.VENUE_CREATED, author, venue=venue)
+
     repository.save(venue, ava)
 
     if venue.siret:
@@ -567,6 +645,11 @@ def link_venue_to_pricing_point(
     Creates a VenuePricingPointLink if the venue had not been previously linked to a pricing point.
     If it had, then it will raise an error, unless the force_link parameter is True, in exceptional circumstances.
     """
+    if feature.FeatureToggle.USE_END_DATE_FOR_COLLECTIVE_PRICING.is_active():
+        collective_stock_datetime = "endDatetime"
+    else:
+        collective_stock_datetime = "beginningDatetime"
+
     validation.check_venue_can_be_linked_to_pricing_point(venue, pricing_point_id)
     if not timestamp:
         timestamp = datetime.utcnow()
@@ -589,12 +672,13 @@ def link_venue_to_pricing_point(
         pricingPointId=pricing_point_id, venueId=venue.id, timespan=(timestamp, None)
     )
     db.session.add(new_link)
-    for from_tables, where_clauses in (
+    for from_tables, where_clauses, stock_datetime in (
         (
             "booking, stock",
             'finance_event."bookingId" is not null '
             'and booking.id = finance_event."bookingId" '
             'and stock.id = booking."stockId"',
+            "beginningDatetime",
         ),
         (
             # use aliases to have the same `set` clause
@@ -602,6 +686,7 @@ def link_venue_to_pricing_point(
             'finance_event."collectiveBookingId" is not null '
             'and booking.id = finance_event."collectiveBookingId" '
             'and stock.id = booking."collectiveStockId"',
+            collective_stock_datetime,
         ),
     ):
         ppoint_update_result = db.session.execute(
@@ -613,7 +698,7 @@ def link_venue_to_pricing_point(
                 status = :finance_event_status_ready,
                 "pricingOrderingDate" = greatest(
                   booking."dateUsed",
-                  stock."beginningDatetime",
+                  stock."{stock_datetime}",
                   :new_link_start
                 )
               from {from_tables}
@@ -823,15 +908,8 @@ def create_offerer(
     if offerer is not None:
         # The user can have his attachment rejected or deleted to the structure,
         # in this case it is passed to NEW if the structure is not rejected
-        user_offerer = (
-            offerers_models.UserOfferer.query.filter_by(userId=user.id, offererId=offerer.id)
-            .filter(sa.or_(offerers_models.UserOfferer.isRejected, offerers_models.UserOfferer.isDeleted))  # type: ignore[type-var]
-            .first()
-        )
-        if user_offerer:
-            user_offerer.validationStatus = ValidationStatus.VALIDATED
-            db.session.add(user_offerer)
-        else:
+        user_offerer = offerers_models.UserOfferer.query.filter_by(userId=user.id, offererId=offerer.id).one_or_none()
+        if not user_offerer:
             user_offerer = grant_user_offerer_access(offerer, user)
 
         if offerer.isRejected:
@@ -840,6 +918,7 @@ def create_offerer(
             is_new = True
             _fill_in_offerer(offerer, offerer_informations)
             comment = (comment + "\n" if comment else "") + "Nouvelle demande sur un SIREN précédemment rejeté"
+            user_offerer.validationStatus = ValidationStatus.VALIDATED
         else:
             user_offerer.validationStatus = ValidationStatus.NEW
             user_offerer.dateCreated = datetime.utcnow()
@@ -1877,7 +1956,7 @@ def create_from_onboarding_data(
             )
         venue_kwargs = common_kwargs | comment_and_siret
         venue_creation_info = venues_serialize.PostVenueBodyModel(**venue_kwargs)  # type: ignore[arg-type]
-        venue = create_venue(venue_creation_info)
+        venue = create_venue(venue_creation_info, user)
         create_venue_registration(venue.id, new_onboarding_info.target, new_onboarding_info.webPresence)
 
     # Send welcome email only in the case of offerer creation
@@ -1937,10 +2016,10 @@ def delete_offerer(offerer_id: int) -> None:
     if offerer_has_bookings or offerer_has_collective_bookings:
         raise exceptions.CannotDeleteOffererWithBookingsException()
 
-    venue_ids_subquery = offerers_models.Venue.query.filter_by(managingOffererId=offerer_id).with_entities(
+    venue_ids_query = offerers_models.Venue.query.filter_by(managingOffererId=offerer_id).with_entities(
         offerers_models.Venue.id
     )
-    venue_ids = [venue_id[0] for venue_id in venue_ids_subquery.all()]
+    venue_ids = [venue_id[0] for venue_id in venue_ids_query.all()]
 
     offer_ids_to_delete: dict = {
         "individual_offer_ids_to_delete": [],
@@ -1961,12 +2040,12 @@ def delete_offerer(offerer_id: int) -> None:
     )
 
     offerers_models.VenuePricingPointLink.query.filter(
-        offerers_models.VenuePricingPointLink.venueId.in_(venue_ids_subquery)
-        | offerers_models.VenuePricingPointLink.pricingPointId.in_(venue_ids_subquery),
+        offerers_models.VenuePricingPointLink.venueId.in_(venue_ids)
+        | offerers_models.VenuePricingPointLink.pricingPointId.in_(venue_ids),
     ).delete(synchronize_session=False)
     offerers_models.VenueReimbursementPointLink.query.filter(
-        offerers_models.VenueReimbursementPointLink.venueId.in_(venue_ids_subquery)
-        | offerers_models.VenueReimbursementPointLink.reimbursementPointId.in_(venue_ids_subquery),
+        offerers_models.VenueReimbursementPointLink.venueId.in_(venue_ids)
+        | offerers_models.VenueReimbursementPointLink.reimbursementPointId.in_(venue_ids),
     ).delete(synchronize_session=False)
     offerers_models.Venue.query.filter(offerers_models.Venue.managingOffererId == offerer_id).delete(
         synchronize_session=False
@@ -1986,7 +2065,7 @@ def delete_offerer(offerer_id: int) -> None:
 
     search.unindex_offer_ids(offer_ids_to_delete["individual_offer_ids_to_delete"])
     search.unindex_collective_offer_template_ids(offer_ids_to_delete["collective_offer_template_ids_to_delete"])
-    search.unindex_venue_ids(venue_ids_subquery)
+    search.unindex_venue_ids(venue_ids)
 
 
 def invite_member(offerer: models.Offerer, email: str, current_user: users_models.User) -> None:
@@ -2487,42 +2566,81 @@ def update_offerer_address_label(offerer_address_id: int, new_label: str) -> Non
         raise exceptions.OffererAddressLabelAlreadyUsed()
 
 
-def get_or_create_address(address_info: AddressInfo) -> geography_models.Address:
-    departmentCode = utils_regions.get_department_code_from_city_code(address_info.citycode)
-    timezone = date_utils.get_department_timezone(departmentCode)
+LocationData = typing.TypedDict(
+    "LocationData",
+    {
+        "street": str | None,
+        "city": str,
+        "postal_code": str,
+        "insee_code": str | None,
+        "latitude": float,
+        "longitude": float,
+        "ban_id": str | None,
+    },
+)
+
+
+def get_or_create_address(location_data: LocationData, is_manual_edition: bool = False) -> geography_models.Address:
+    department_code = None
+    timezone = None
+    insee_code = location_data.get("insee_code")
+    postal_code = location_data["postal_code"]
+    latitude = typing.cast(decimal.Decimal, location_data["latitude"])
+    longitude = typing.cast(decimal.Decimal, location_data["longitude"])
+    street = location_data.get("street")
+    city = location_data["city"]
+    ban_id = location_data.get("ban_id")
+    city_code = insee_code or postal_code
+
+    if city_code:
+        department_code = utils_regions.get_department_code_from_city_code(city_code)
+        timezone = date_utils.get_department_timezone(department_code)
+
     try:
         address = geography_models.Address(
-            banId=address_info.id,
-            inseeCode=address_info.citycode,
-            street=address_info.street,
-            postalCode=address_info.postcode,
-            city=address_info.city,
-            latitude=address_info.latitude,
-            longitude=address_info.longitude,
-            departmentCode=departmentCode,
+            banId=ban_id,
+            inseeCode=insee_code,
+            street=street,
+            postalCode=postal_code,
+            city=city,
+            latitude=latitude,
+            longitude=longitude,
+            departmentCode=department_code,
             timezone=timezone,
+            isManualEdition=is_manual_edition,
         )
         db.session.add(address)
         db.session.flush()
     except sa.exc.IntegrityError:
         db.session.rollback()
         address = geography_models.Address.query.filter(
-            geography_models.Address.street == address_info.street,
-            geography_models.Address.inseeCode == address_info.citycode,
+            geography_models.Address.street == street,
+            geography_models.Address.inseeCode == insee_code,
+            sa.or_(
+                geography_models.Address.isManualEdition.is_not(True),  # false or null
+                sa.and_(
+                    geography_models.Address.banId == ban_id,
+                    geography_models.Address.inseeCode == insee_code,
+                    geography_models.Address.street == street,
+                    geography_models.Address.postalCode == postal_code,
+                    geography_models.Address.city == city,
+                    geography_models.Address.latitude == decimal.Decimal(latitude),
+                    geography_models.Address.longitude == decimal.Decimal(longitude),
+                ),
+            ),
         ).one()
-        if (float(address.latitude), float(address.longitude)) != (
-            round(address_info.latitude, 5),
-            round(address_info.longitude, 5),
+        if not math.isclose(float(address.latitude), float(latitude), rel_tol=0.00001) or not math.isclose(
+            float(address.longitude), float(longitude), rel_tol=0.00001
         ):
             logger.error(
                 "Unique constraint over street and inseeCode matched different coordinates",
                 extra={
                     "address_id": address.id,
-                    "address_info_banId": address_info.id,
+                    "incoming_banId": ban_id,
                     "address_latitude": address.latitude,
                     "address_longitude": address.longitude,
-                    "address_info_latitude": address_info.latitude,
-                    "address_info_longitude": address_info.longitude,
+                    "incoming_latitude": latitude,
+                    "incoming_longitude": longitude,
                 },
             )
 

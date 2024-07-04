@@ -136,17 +136,9 @@ class ObjectUpdateSnapshotTest:
         author = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory()
 
-        # Reproduce the same process as through the form
-        longitude = float(str(venue.longitude))
-        latitude = float(str(venue.latitude))
-        venue_type_code = venue.venueTypeCode.name
+        modifications = {}
 
-        attrs = {
-            "longitude": longitude,
-            "latitude": latitude,
-            "venueTypeCode": venue_type_code,
-        }
-        offerers_api.update_venue(venue, author=author, contact_data=None, **attrs)
+        offerers_api.update_venue(venue, modifications, author=author, contact_data=None)
 
         assert history_models.ActionHistory.query.count() == 0
 

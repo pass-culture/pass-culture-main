@@ -75,13 +75,13 @@ describe('components | BookingsRecapTable', () => {
     }
     renderBookingRecap(props)
 
-    // 2 lines = 12 cells
-    expect(screen.getAllByRole('cell')).toHaveLength(12)
+    // 2 lines = 10 cells
+    expect(screen.getAllByRole('cell')).toHaveLength(10)
 
     await userEvent.type(screen.getByRole('textbox'), 'Le nom de l’offre 2')
     await waitFor(() => {
-      // 1 line = 6 cells
-      expect(screen.getAllByRole('cell')).toHaveLength(6)
+      // 1 line = 5 cells
+      expect(screen.getAllByRole('cell')).toHaveLength(5)
     })
 
     await userEvent.selectOptions(
@@ -91,13 +91,13 @@ describe('components | BookingsRecapTable', () => {
     await userEvent.clear(screen.getByRole('textbox'))
 
     await waitFor(() => {
-      // 2 lines = 12 cells
-      expect(screen.getAllByRole('cell')).toHaveLength(12)
+      // 2 lines = 10 cells
+      expect(screen.getAllByRole('cell')).toHaveLength(10)
     })
     await userEvent.type(screen.getByRole('textbox'), 'Parjeot')
     await waitFor(() => {
-      // 1 line = 6 cells
-      expect(screen.getAllByRole('cell')).toHaveLength(6)
+      // 1 line = 5
+      expect(screen.getAllByRole('cell')).toHaveLength(5)
     })
   })
 
@@ -176,15 +176,14 @@ describe('components | BookingsRecapTable', () => {
     renderBookingRecap(props)
 
     // Then
-    // 1 line = 6 cells
+    // 1 line = 5 cells
     const cells = screen.getAllByRole('columnheader')
-    expect(cells).toHaveLength(6)
+    expect(cells).toHaveLength(5)
     expect(cells[0]).toHaveTextContent('Nom de l’offre')
-    expect(cells[1]).toHaveTextContent('')
-    expect(cells[2]).toHaveTextContent('Bénéficiaire')
-    expect(cells[3]).toHaveTextContent('Réservation')
-    expect(cells[4]).toHaveTextContent('Contremarque')
-    expect(cells[5]).toHaveTextContent('Statut')
+    expect(cells[1]).toHaveTextContent('Bénéficiaire')
+    expect(cells[2]).toHaveTextContent('Réservation')
+    expect(cells[3]).toHaveTextContent('Contremarque')
+    expect(cells[4]).toHaveTextContent('Statut')
   })
 
   it('should render the expected table for collective audience', () => {
@@ -203,7 +202,7 @@ describe('components | BookingsRecapTable', () => {
     renderBookingRecap(props)
 
     // Then
-    // 1 line = 6 cells
+    // 1 line = 6
     const cells = screen.getAllByRole('columnheader')
     expect(cells).toHaveLength(6)
     expect(cells[0]).toHaveTextContent('Réservation')

@@ -14,7 +14,6 @@
   }
 
   .title {
-    @include fonts.gabarit;
     @include fonts.title3;
 
     margin-bottom: rem.torem(32px);

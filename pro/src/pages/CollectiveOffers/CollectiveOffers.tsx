@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
 
@@ -10,7 +10,11 @@ import {
   GET_OFFERER_QUERY_KEY,
   GET_VENUES_QUERY_KEY,
 } from 'config/swrQueryKeys'
-import { DEFAULT_PAGE, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
+import {
+  ALL_STATUS,
+  DEFAULT_PAGE,
+  DEFAULT_SEARCH_FILTERS,
+} from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeOffersUrl'
@@ -18,8 +22,10 @@ import { hasSearchFilters } from 'core/Offers/utils/hasSearchFilters'
 import { serializeApiFilters } from 'core/Offers/utils/serializer'
 import { Audience } from 'core/shared/types'
 import { useCurrentUser } from 'hooks/useCurrentUser'
+import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import { formatAndOrderVenues } from 'repository/venuesService'
 import { Offers } from 'screens/Offers/Offers'
+import { selectCurrentOffererId } from 'store/user/selectors'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 export const CollectiveOffers = (): JSX.Element => {
@@ -27,14 +33,16 @@ export const CollectiveOffers = (): JSX.Element => {
   const currentPageNumber = urlSearchFilters.page ?? DEFAULT_PAGE
   const navigate = useNavigate()
   const { currentUser } = useCurrentUser()
-
-  const [initialSearchFilters, setInitialSearchFilters] =
-    useState<SearchFiltersParams | null>(null)
+  const isNewInterfaceActive = useIsNewInterfaceActive()
+  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const offererId = isNewInterfaceActive
+    ? selectedOffererId
+    : urlSearchFilters.offererId
 
   const offererQuery = useSWR(
-    [GET_OFFERER_QUERY_KEY, urlSearchFilters.offererId],
+    [GET_OFFERER_QUERY_KEY, offererId],
     ([, offererIdParam]) =>
-      urlSearchFilters.offererId === DEFAULT_SEARCH_FILTERS.offererId
+      offererId === DEFAULT_SEARCH_FILTERS.offererId
         ? null
         : api.getOfferer(Number(offererIdParam)),
     { fallbackData: null }
@@ -54,26 +62,32 @@ export const CollectiveOffers = (): JSX.Element => {
     navigate(computeCollectiveOffersUrl(filters))
   }
 
-  useEffect(() => {
-    const filters = { ...urlSearchFilters }
-    if (currentUser.isAdmin) {
-      const isFilterByVenueOrOfferer = hasSearchFilters(urlSearchFilters, [
-        'venueId',
-        'offererId',
-      ])
+  const isFilterByVenueOrOfferer = hasSearchFilters(urlSearchFilters, [
+    'venueId',
+    'offererId',
+  ])
+  //  Admin users are not allowed to check all offers at once or to use the status filter for performance reasons. Unless there is a venue or offerer filter active.
+  const isRestrictedAsAdmin = currentUser.isAdmin && !isFilterByVenueOrOfferer
 
-      if (!isFilterByVenueOrOfferer) {
-        filters.status = DEFAULT_SEARCH_FILTERS.status
-      }
-    }
-    setInitialSearchFilters(filters)
-  }, [setInitialSearchFilters, urlSearchFilters, currentUser.isAdmin])
-
-  const apiFilters = {
+  const apiFilters: SearchFiltersParams = {
     ...DEFAULT_SEARCH_FILTERS,
     ...urlSearchFilters,
+    ...(isRestrictedAsAdmin ? { status: ALL_STATUS } : {}),
+    ...(isNewInterfaceActive
+      ? { offererId: selectedOffererId?.toString() ?? '' }
+      : {}),
   }
   delete apiFilters.page
+
+  if (
+    isNewInterfaceActive &&
+    selectedOffererId &&
+    selectedOffererId.toString() !== urlSearchFilters.offererId
+  ) {
+    setTimeout(() => {
+      redirectWithUrlFilters(apiFilters)
+    })
+  }
 
   const offersQuery = useSWR(
     [GET_COLLECTIVE_OFFERS_QUERY_KEY, apiFilters],
@@ -109,20 +123,21 @@ export const CollectiveOffers = (): JSX.Element => {
 
   return (
     <AppLayout>
-      {!initialSearchFilters || offersQuery.isLoading ? (
+      {offersQuery.isLoading ? (
         <Spinner />
       ) : (
         <Offers
           audience={Audience.COLLECTIVE}
           currentPageNumber={currentPageNumber}
           currentUser={currentUser}
-          initialSearchFilters={initialSearchFilters}
+          initialSearchFilters={apiFilters}
           isLoading={offersQuery.isLoading}
           offerer={offerer}
           offers={offersQuery.data}
           redirectWithUrlFilters={redirectWithUrlFilters}
           urlSearchFilters={urlSearchFilters}
           venues={venues}
+          isRestrictedAsAdmin={isRestrictedAsAdmin}
         />
       )}
     </AppLayout>

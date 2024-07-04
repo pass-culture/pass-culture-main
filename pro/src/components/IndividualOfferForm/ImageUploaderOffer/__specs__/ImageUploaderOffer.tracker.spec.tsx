@@ -76,6 +76,7 @@ describe('ImageUploaderOffer::tracker', () => {
       offerId: TEST_OFFER_ID,
       imageType: UploaderModeEnum.OFFER,
       isEdition: false,
+      offerType: 'individual',
     })
   })
 })

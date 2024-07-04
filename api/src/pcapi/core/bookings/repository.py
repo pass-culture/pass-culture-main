@@ -46,7 +46,7 @@ from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users.models import User
 from pcapi.domain.booking_recap import utils as booking_recap_utils
 from pcapi.models import db
-from pcapi.routes.serialization.bookings_recap_serialize import OfferType
+from pcapi.models.feature import FeatureToggle
 from pcapi.utils.token import random_token
 
 
@@ -67,12 +67,34 @@ BOOKING_DATE_STATUS_MAPPING: dict[BookingStatusFilter, InstrumentedAttribute] = 
     BookingStatusFilter.REIMBURSED: Booking.reimbursementDate,
 }
 
-BOOKING_EXPORT_HEADER = [
+LEGACY_BOOKING_EXPORT_HEADER = [
     "Lieu",
     "Nom de l’offre",
     "Date de l'évènement",
     "EAN",
-    "Nom et prénom du bénéficiaire",
+    "Prénom du bénéficiaire",
+    "Nom du bénéficiaire",
+    "Email du bénéficiaire",
+    "Téléphone du bénéficiaire",
+    "Date et heure de réservation",
+    "Date et heure de validation",
+    "Contremarque",
+    "Intitulé du tarif",
+    "Prix de la réservation",
+    "Statut de la contremarque",
+    "Date et heure de remboursement",
+    "Type d'offre",
+    "Code postal du bénéficiaire",
+    "Duo",
+]
+
+BOOKING_EXPORT_HEADER = [
+    "Partenaire culturel",
+    "Nom de l’offre",
+    "Date de l'évènement",
+    "EAN",
+    "Prénom du bénéficiaire",
+    "Nom du bénéficiaire",
     "Email du bénéficiaire",
     "Téléphone du bénéficiaire",
     "Date et heure de réservation",
@@ -88,6 +110,12 @@ BOOKING_EXPORT_HEADER = [
 ]
 
 
+def booking_export_header() -> list[str]:
+    if FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
+        return BOOKING_EXPORT_HEADER
+    return LEGACY_BOOKING_EXPORT_HEADER
+
+
 def find_by_pro_user(
     user: User,
     booking_period: tuple[date, date] | None = None,
@@ -95,7 +123,7 @@ def find_by_pro_user(
     event_date: date | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
-    offer_type: OfferType | None = None,
+    offerer_address_id: int | None = None,
     page: int = 1,
     per_page_limit: int = 1000,
 ) -> tuple[BaseQuery, int]:
@@ -106,7 +134,7 @@ def find_by_pro_user(
         event_date=event_date,
         venue_id=venue_id,
         offer_id=offer_id,
-        offer_type=offer_type,
+        offerer_address_id=offerer_address_id,
     )
 
     bookings_query = _get_filtered_booking_pro(
@@ -115,8 +143,8 @@ def find_by_pro_user(
         status_filter=status_filter,
         event_date=event_date,
         venue_id=venue_id,
-        offer_type=offer_type,
         offer_id=offer_id,
+        offerer_address_id=offerer_address_id,
     )
     bookings_query = _duplicate_booking_when_quantity_is_two(bookings_query)
     bookings_query = (
@@ -393,7 +421,6 @@ def get_export(
     event_date: date | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
-    offer_type: OfferType | None = None,
     export_type: BookingExportType | None = BookingExportType.CSV,
 ) -> str | bytes:
     bookings_query = _get_filtered_booking_report(
@@ -403,7 +430,6 @@ def get_export(
         event_date=event_date,
         venue_id=venue_id,
         offer_id=offer_id,
-        offer_type=offer_type,
     )
     bookings_query = _duplicate_booking_when_quantity_is_two(bookings_query)
     if export_type == BookingExportType.EXCEL:
@@ -423,7 +449,7 @@ def _get_filtered_bookings_query(
     event_date: date | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
-    offer_type: OfferType | None = None,
+    offerer_address_id: int | None = None,
     extra_joins: Iterable[Column] | None = None,
 ) -> BaseQuery:
     extra_joins = extra_joins or tuple()
@@ -432,6 +458,7 @@ def _get_filtered_bookings_query(
         Booking.query.join(Booking.offerer)
         .join(Offerer.UserOfferers)
         .join(Booking.stock)
+        .join(Stock.offer)
         .join(Booking.externalBookings, isouter=True)
         .join(Booking.venue, isouter=True)
     )
@@ -460,6 +487,9 @@ def _get_filtered_bookings_query(
     if offer_id is not None:
         bookings_query = bookings_query.filter(Stock.offerId == offer_id)
 
+    if offerer_address_id:
+        bookings_query = bookings_query.filter(Offer.offererAddressId == offerer_address_id)
+
     if event_date:
         bookings_query = bookings_query.filter(field_to_venue_timezone(Stock.beginningDatetime) == event_date)
     return bookings_query
@@ -472,10 +502,12 @@ def _get_filtered_bookings_count(
     event_date: date | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
-    offer_type: OfferType | None = None,
+    offerer_address_id: int | None = None,
 ) -> int:
     bookings = (
-        _get_filtered_bookings_query(pro_user, period, status_filter, event_date, venue_id, offer_id, offer_type)
+        _get_filtered_bookings_query(
+            pro_user, period, status_filter, event_date, venue_id, offer_id, offerer_address_id
+        )
         .with_entities(Booking.id, Booking.quantity)
         .distinct(Booking.id)
     ).cte()
@@ -492,7 +524,6 @@ def _get_filtered_booking_report(
     event_date: date | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
-    offer_type: OfferType | None = None,
 ) -> str:
     bookings_query = (
         _get_filtered_bookings_query(
@@ -502,7 +533,6 @@ def _get_filtered_booking_report(
             event_date,
             venue_id,
             offer_id,
-            offer_type,
             extra_joins=(Stock.offer, Booking.user),
         )
         .with_entities(
@@ -548,7 +578,7 @@ def _get_filtered_booking_pro(
     event_date: date | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
-    offer_type: OfferType | None = None,
+    offerer_address_id: int | None = None,
 ) -> BaseQuery:
     bookings_query = (
         _get_filtered_bookings_query(
@@ -558,7 +588,7 @@ def _get_filtered_booking_pro(
             event_date,
             venue_id,
             offer_id,
-            offer_type,
+            offerer_address_id,
             extra_joins=(
                 Stock.offer,
                 Booking.user,
@@ -609,7 +639,7 @@ def _get_booking_status(status: BookingStatus, is_confirmed: bool) -> str:
 def _write_bookings_to_csv(query: BaseQuery) -> str:
     output = StringIO()
     writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
-    writer.writerow(BOOKING_EXPORT_HEADER)
+    writer.writerow(booking_export_header())
     for booking in query.yield_per(1000):
         if booking.quantity == DUO_QUANTITY:
             _write_csv_row(writer, booking, "DUO 1")
@@ -627,7 +657,8 @@ def _write_csv_row(csv_writer: typing.Any, booking: Booking, booking_duo_column:
             booking.offerName,
             convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking),
             booking.ean,
-            f"{booking.beneficiaryLastName} {booking.beneficiaryFirstName}",
+            booking.beneficiaryFirstName,
+            booking.beneficiaryLastName,
             booking.beneficiaryEmail,
             booking.beneficiaryPhoneNumber,
             convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking),
@@ -660,7 +691,7 @@ def _write_bookings_to_excel(query: BaseQuery) -> bytes:
     worksheet = workbook.add_worksheet()
     row = 0
 
-    for col_num, title in enumerate(BOOKING_EXPORT_HEADER):
+    for col_num, title in enumerate(booking_export_header()):
         worksheet.write(row, col_num, title, bold)
         worksheet.set_column(col_num, col_num, col_width)
 
@@ -684,14 +715,15 @@ def _write_excel_row(
     worksheet.write(row, 1, booking.offerName)
     worksheet.write(row, 2, str(convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking)))
     worksheet.write(row, 3, booking.ean)
-    worksheet.write(row, 4, f"{booking.beneficiaryLastName} {booking.beneficiaryFirstName}")
-    worksheet.write(row, 5, booking.beneficiaryEmail)
-    worksheet.write(row, 6, booking.beneficiaryPhoneNumber)
-    worksheet.write(row, 7, str(convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking)))
-    worksheet.write(row, 8, str(convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking)))
+    worksheet.write(row, 4, booking.beneficiaryFirstName)
+    worksheet.write(row, 5, booking.beneficiaryLastName)
+    worksheet.write(row, 6, booking.beneficiaryEmail)
+    worksheet.write(row, 7, booking.beneficiaryPhoneNumber)
+    worksheet.write(row, 8, str(convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking)))
+    worksheet.write(row, 9, str(convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking)))
     worksheet.write(
         row,
-        9,
+        10,
         booking_recap_utils.get_booking_token(
             booking.token,
             booking.status,
@@ -699,15 +731,15 @@ def _write_excel_row(
             booking.stockBeginningDatetime,
         ),
     )
-    worksheet.write(row, 10, booking.priceCategoryLabel)
-    worksheet.write(row, 11, booking.amount, currency_format)
-    worksheet.write(row, 12, _get_booking_status(booking.status, booking.isConfirmed))
-    worksheet.write(row, 13, str(convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking)))
-    worksheet.write(row, 14, serialize_offer_type_educational_or_individual(offer_is_educational=False))
-    worksheet.write(row, 15, booking.beneficiaryPostalCode)
+    worksheet.write(row, 11, booking.priceCategoryLabel)
+    worksheet.write(row, 12, booking.amount, currency_format)
+    worksheet.write(row, 13, _get_booking_status(booking.status, booking.isConfirmed))
+    worksheet.write(row, 14, str(convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking)))
+    worksheet.write(row, 15, serialize_offer_type_educational_or_individual(offer_is_educational=False))
+    worksheet.write(row, 16, booking.beneficiaryPostalCode)
     worksheet.write(
         row,
-        16,
+        17,
         duo_column,
     )
 
@@ -715,7 +747,7 @@ def _write_excel_row(
 def _serialize_csv_report(query: BaseQuery) -> str:
     output = StringIO()
     writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
-    writer.writerow(BOOKING_EXPORT_HEADER)
+    writer.writerow(LEGACY_BOOKING_EXPORT_HEADER)
     for booking in query.yield_per(1000):
         writer.writerow(
             (
@@ -723,7 +755,8 @@ def _serialize_csv_report(query: BaseQuery) -> str:
                 booking.offerName,
                 convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking),
                 booking.ean,
-                f"{booking.beneficiaryLastName} {booking.beneficiaryFirstName}",
+                booking.beneficiaryFirstName,
+                booking.beneficiaryLastName,
                 booking.beneficiaryEmail,
                 booking.beneficiaryPhoneNumber,
                 convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking),
@@ -759,7 +792,7 @@ def _serialize_excel_report(query: BaseQuery) -> bytes:
     worksheet = workbook.add_worksheet()
     row = 0
 
-    for col_num, title in enumerate(BOOKING_EXPORT_HEADER):
+    for col_num, title in enumerate(LEGACY_BOOKING_EXPORT_HEADER):
         worksheet.write(row, col_num, title, bold)
         worksheet.set_column(col_num, col_num, col_width)
     row = 1
@@ -770,14 +803,15 @@ def _serialize_excel_report(query: BaseQuery) -> bytes:
             row, 2, str(convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking))
         )
         worksheet.write(row, 3, booking.ean)
-        worksheet.write(row, 4, f"{booking.beneficiaryLastName} {booking.beneficiaryFirstName}")
-        worksheet.write(row, 5, booking.beneficiaryEmail)
-        worksheet.write(row, 6, booking.beneficiaryPhoneNumber)
-        worksheet.write(row, 7, str(convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking)))
-        worksheet.write(row, 8, str(convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking)))
+        worksheet.write(row, 4, booking.beneficiaryFirstName)
+        worksheet.write(row, 5, booking.beneficiaryLastName)
+        worksheet.write(row, 6, booking.beneficiaryEmail)
+        worksheet.write(row, 7, booking.beneficiaryPhoneNumber)
+        worksheet.write(row, 8, str(convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking)))
+        worksheet.write(row, 9, str(convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking)))
         worksheet.write(
             row,
-            9,
+            10,
             booking_recap_utils.get_booking_token(
                 booking.token,
                 booking.status,
@@ -785,15 +819,15 @@ def _serialize_excel_report(query: BaseQuery) -> bytes:
                 booking.stockBeginningDatetime,
             ),
         )
-        worksheet.write(row, 10, booking.priceCategoryLabel)
-        worksheet.write(row, 11, booking.amount, currency_format)
-        worksheet.write(row, 12, _get_booking_status(booking.status, booking.isConfirmed))
-        worksheet.write(row, 13, str(convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking)))
-        worksheet.write(row, 14, serialize_offer_type_educational_or_individual(offer_is_educational=False))
-        worksheet.write(row, 15, booking.beneficiaryPostalCode)
+        worksheet.write(row, 11, booking.priceCategoryLabel)
+        worksheet.write(row, 12, booking.amount, currency_format)
+        worksheet.write(row, 13, _get_booking_status(booking.status, booking.isConfirmed))
+        worksheet.write(row, 14, str(convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking)))
+        worksheet.write(row, 15, serialize_offer_type_educational_or_individual(offer_is_educational=False))
+        worksheet.write(row, 16, booking.beneficiaryPostalCode)
         worksheet.write(
             row,
-            16,
+            17,
             "Oui" if booking.quantity == DUO_QUANTITY else "Non",
         )
         row += 1

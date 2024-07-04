@@ -2,8 +2,8 @@ from collections import defaultdict
 
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories_v2
+from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
-from pcapi.routes.public.collective.blueprint import collective_offers_blueprint
 from pcapi.routes.public.collective.serialization import offers as offers_serialization
 from pcapi.routes.public.documentation_constants import http_responses
 from pcapi.routes.public.documentation_constants import tags
@@ -12,11 +12,11 @@ from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.validation.routes.users_authentifications import api_key_required
 
 
-@collective_offers_blueprint.route("/collective/categories", methods=["GET"])
+@blueprints.public_api.route("/v2/collective/categories", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     deprecated=True,
-    tags=[tags.COLLECTIVE_CATEGORIES_TAG],
+    tags=[tags.COLLECTIVE_CATEGORIES],
     resp=SpectreeResponse(
         **(
             {
@@ -32,7 +32,7 @@ from pcapi.validation.routes.users_authentifications import api_key_required
 @api_key_required
 def list_categories() -> offers_serialization.CollectiveOffersListCategoriesResponseModel:
     """
-    Get collective offers categories
+    [LEGACY] Get collective offers categories
 
     Return categories for collective offers.
     """
@@ -45,11 +45,11 @@ def list_categories() -> offers_serialization.CollectiveOffersListCategoriesResp
     )
 
 
-@collective_offers_blueprint.route("/collective/subcategories", methods=["GET"])
+@blueprints.public_api.route("/v2/collective/subcategories", methods=["GET"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     deprecated=True,
-    tags=[tags.COLLECTIVE_CATEGORIES_TAG],
+    tags=[tags.COLLECTIVE_CATEGORIES],
     resp=SpectreeResponse(
         **(
             {
@@ -65,9 +65,9 @@ def list_categories() -> offers_serialization.CollectiveOffersListCategoriesResp
 @api_key_required
 def list_subcategories() -> offers_serialization.CollectiveOffersListSubCategoriesResponseModel:
     """
-    Get collective offers subcatgories
+    [LEGACY] Get collective offers subcatgories
 
-    Return subcategories for collective offerS.
+    Return subcategories for collective offers.
     """
     result_dict = defaultdict(list)
     for _, subcategory in subcategories_v2.COLLECTIVE_SUBCATEGORIES.items():
