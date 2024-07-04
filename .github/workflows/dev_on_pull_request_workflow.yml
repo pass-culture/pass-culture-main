@@ -207,7 +207,7 @@ jobs:
     name: "Tests pro E2E"
     needs: [pcapi-init-job, build-pcapi]
     uses: ./.github/workflows/dev_on_workflow_tests_pro_e2e.yml
-    if: |
+    if: 
       always() &&
       needs.pcapi-init-job.outputs.checksum-tag-exists == 'false' || 
       needs.pcapi-init-job.outputs.checksum-console-tag-exists == 'false'
@@ -229,9 +229,7 @@ jobs:
     name: "[PRO] Deploy PR version for validation"
     needs: [pcapi-init-job, test-pro]
     uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
-    if: |
-      always() && 
-      ${{ needs.test-pro.result == 'success' || needs.test-pro.result == 'skipped' }}
+    if: ${{ needs.test-pro.result == 'success' || needs.test-pro.result == 'skipped' }} 
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
