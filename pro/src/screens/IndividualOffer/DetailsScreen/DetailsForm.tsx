@@ -11,7 +11,7 @@ import {
   buildCategoryOptions,
   buildSubcategoryOptions,
   buildVenueOptions,
-  getShowSubTypeOptions,
+  buildShowSubTypeOptions,
   onSubcategoryChange,
 } from './utils'
 import { useFormikContext } from 'formik'
@@ -59,7 +59,7 @@ export const DetailsForm = ({ venues }: DetailsFormProps): JSX.Element => {
       value: data.code.toString(),
     }))
     .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
-  const showSubTypeOptions = getShowSubTypeOptions(showType)
+  const showSubTypeOptions = buildShowSubTypeOptions(showType)
 
   const venueOptions = buildVenueOptions(venues)
 

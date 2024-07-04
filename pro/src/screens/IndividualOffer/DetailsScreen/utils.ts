@@ -14,6 +14,7 @@ export const buildCategoryOptions = (
   categories: CategoryResponseModel[]
 ): SelectOption[] =>
   categories
+    .filter((category: CategoryResponseModel) => category.isSelectable)
     .map((category: CategoryResponseModel) => ({
       value: category.id,
       label: category.proLabel,
@@ -31,7 +32,7 @@ export const buildSubcategoryOptions = (
     )
   )
 
-export const getShowSubTypeOptions = (showType: string): SelectOption[] => {
+export const buildShowSubTypeOptions = (showType: string): SelectOption[] => {
   if (showType === DEFAULT_DETAILS_INTITIAL_VALUES.showType) {
     return []
   }
@@ -52,19 +53,21 @@ export const getShowSubTypeOptions = (showType: string): SelectOption[] => {
     .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
 }
 
-const buildSubcategoryFields = (
+export const buildSubcategoryConditonalFields = (
   subcategory?: SubcategoryResponseModel
 ): {
-  subcategoryFields: string[]
+  subcategoryConditionalFields: string[]
 } => {
-  const subcategoryFields = [...new Set(subcategory?.conditionalFields)]
+  const subcategoryConditionalFields = [
+    ...new Set(subcategory?.conditionalFields),
+  ]
   const isEvent = Boolean(subcategory?.isEvent)
 
   if (isEvent) {
-    subcategoryFields.push('durationMinutes')
+    subcategoryConditionalFields.push('durationMinutes')
   }
 
-  return { subcategoryFields }
+  return { subcategoryConditionalFields }
 }
 
 type onSubcategoryChangeProps = {
@@ -86,8 +89,12 @@ export const onSubcategoryChange = async ({
     (subcategory) => subcategory.id === newSubCategoryId
   )
 
-  const { subcategoryFields } = buildSubcategoryFields(newSubcategory)
-  await setFieldValue('subcategoryConditionalFields', subcategoryFields)
+  const { subcategoryConditionalFields } =
+    buildSubcategoryConditonalFields(newSubcategory)
+  await setFieldValue(
+    'subcategoryConditionalFields',
+    subcategoryConditionalFields
+  )
 }
 
 export const buildVenueOptions = (venues: VenueListItemResponseModel[]) => {
