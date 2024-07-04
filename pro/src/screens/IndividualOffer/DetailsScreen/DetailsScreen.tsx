@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { VenueListItemResponseModel } from 'apiClient/v1'
 
-type DetailsScreenProps = {
+export type DetailsScreenProps = {
   venues: VenueListItemResponseModel[]
 }
 
