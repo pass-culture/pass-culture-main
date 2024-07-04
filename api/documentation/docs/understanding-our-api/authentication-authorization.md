@@ -10,8 +10,21 @@ description: How authentication and authorization work
 ### Non technical users: beneficiaries and offerers
 
 There are two main users of the pass Culture application :
-- the **beneficiaries** who are using their credit to buy cultural offers through the **[web application](https://passculture.app/accueil)** or the **mobile application**
-- the **offerers** who are providing those cultural offers through the **[pro interface](https://passculture.pro/)**
+
+#### Individual part
+
+* **Beneficiary**, who are using their credit to buy cultural offers through the [web application](https://passculture.app/accueil) or the mobile application. A beneficiary is between 15 and 20 years and 11 months old.
+
+:::note
+For now, in the integration environment, your beneficiary account fakes an 18-year-old beneficiary with a € 300 credit.
+:::
+
+* **the cultural partners** who are providing those cultural offers through the **[pro interface](https://passculture.pro/) to the app**
+
+#### Collective part
+
+* The cultural partners who are providing those cultural offers through the **[pro interface](https://passculture.pro/) on the Adage plateform**
+* There’s also the teaching staff, but they don’t book collective offer on the app, but on Adage interface. You can’t try this plateforme for now.
 
 ### Technical users: providers
 
