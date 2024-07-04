@@ -224,12 +224,12 @@ jobs:
     if: github.actor == 'dependabot[bot]'
     uses: ./.github/workflows/dev_on_workflow_dependabot_auto_merge.yml
 
-  # Deploy on firebase if pro tests are ok OR no changes in pro folder 
+  # Deploy on firebase if pro tests are ok OR job was skipped (= no changes in pro folder) 
   deploy-pro-on-firebase-pullrequest:
     name: "[PRO] Deploy PR version for validation"
     needs: [pcapi-init-job, test-pro]
     uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
-    if: ${{ needs.test-pro.result == 'success' || needs.test-pro.result == 'skipped' }} 
+    if: needs.test-pro.result == 'success' || needs.test-pro.result == 'skipped'
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
