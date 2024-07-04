@@ -116,28 +116,6 @@
   @include size.input-center-with-top-margin(fonts.$body-font-size, true);
 }
 
-// Temporary code
-.coming-soon {
-  position: relative;
-
-  &::before {
-    @include fonts.mini-highlight;
-
-    line-height: rem.torem(12px);
-    content: "Bientôt";
-    background-color: var(--color-secondary-light);
-    color: var(--color-white);
-    border-radius: rem.torem(2px);
-    padding: rem.torem(2px) rem.torem(4px);
-    transform: rotate(-6deg) translateY(-50%);
-
-    // Magic values to make the label looks good
-    position: absolute;
-    top: 0;
-    right: rem.torem(20px);
-  }
-}
-
 @media (min-width: size.$tablet) {
   .align-icon {
     @include size.input-center-with-top-margin(size.$button-icon-size);

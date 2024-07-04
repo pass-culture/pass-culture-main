@@ -85,11 +85,6 @@ $caption-line-height: rem.torem(16px);
   font-weight: 600;
 }
 
-@mixin mini-highlight() {
-  font-size: rem.torem(10px);
-  font-weight: 600;
-}
-
 @mixin gabarit() {
   font-size: rem.torem(18px);
   font-style: normal;
