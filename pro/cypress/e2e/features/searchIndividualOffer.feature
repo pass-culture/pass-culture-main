@@ -33,19 +33,19 @@ Feature: Search individual offers
     When I select "Jeux" in "Catégories"
     And I validate my filters
     Then These 1 results should be displayed
-      |  |  | Titre      | Lieu          | Stocks | Status  |
-      |  |  | Offer 1872 | Terrain vague |     16 | expirée |
+      |  |  | Titre | Lieu          | Stocks | Status  |
+      |  |  | Offer | Terrain vague |     16 | expirée |
 
   Scenario: A search by offer status should display expected results
     And I select "Publiée" in offer status
     And I validate my filters
     Then These 5 results should be displayed
-      |  |  | Titre      | Lieu                           | Stocks | Status  |
-      |  |  | Offer 1875 | Terrain vague                  |     20 | publiée |
-      |  |  | Offer 1873 | Bar des amis - Offre numérique |     20 | publiée |
-      |  |  | Offer 1816 | Terrain vague                  |     40 | publiée |
-      |  |  | Offer 1815 | Terrain vague                  |     40 | publiée |
-      |  |  | Offer 1812 | Terrain vague                  |     40 | publiée |
+      |  |  | Titre | Lieu                           | Stocks | Status  |
+      |  |  | Offer | Terrain vague                  |     20 | publiée |
+      |  |  | Offer | Bar des amis - Offre numérique |     20 | publiée |
+      |  |  | Offer | Terrain vague                  |     40 | publiée |
+      |  |  | Offer | Terrain vague                  |     40 | publiée |
+      |  |  | Offer | Terrain vague                  |     40 | publiée |
 
   Scenario: A search by date should display expected results
     When I select offerer "Michel Léon" in offer page
@@ -62,24 +62,24 @@ Feature: Search individual offers
     And I select "Publiée" in offer status
     And I validate my filters
     Then These 3 results should be displayed
-      |  |  | Titre      | Lieu          | Stocks | Status  |
-      |  |  | Offer 1816 | Terrain vague |     40 | publiée |
-      |  |  | Offer 1815 | Terrain vague |     40 | publiée |
-      |  |  | Offer 1812 | Terrain vague |     40 | publiée |
+      |  |  | Titre | Lieu          | Stocks | Status  |
+      |  |  | Offer | Terrain vague |     40 | publiée |
+      |  |  | Offer | Terrain vague |     40 | publiée |
+      |  |  | Offer | Terrain vague |     40 | publiée |
     When I reset all filters
     Then All filters are empty
     And These 12 results should be displayed
       |  |  | Titre                          | Lieu                           | Stocks | Status     |
       |  |  | Mon offre brouillon avec stock | Terrain vague                  |  1 000 | brouillon  |
       |  |  | Mon offre brouillon            | Terrain vague                  |      0 | brouillon  |
-      |  |  | Offer 1876                     | Terrain vague                  |     16 | expirée    |
-      |  |  | Offer 1875                     | Terrain vague                  |     20 | publiée    |
-      |  |  | Offer 1874                     | Terrain vague                  |      0 | désactivée |
-      |  |  | Offer 1873                     | Bar des amis - Offre numérique |     20 | publiée    |
-      |  |  | Offer 1872                     | Terrain vague                  |     16 | expirée    |
-      |  |  | Offer 1816                     | Terrain vague                  |     40 | publiée    |
-      |  |  | Offer 1815                     | Terrain vague                  |     40 | publiée    |
-      |  |  | Offer 1814                     | Terrain vague                  |      0 | désactivée |
+      |  |  | Offer                          | Terrain vague                  |     16 | expirée    |
+      |  |  | Offer                          | Terrain vague                  |     20 | publiée    |
+      |  |  | Offer                          | Terrain vague                  |      0 | désactivée |
+      |  |  | Offer                          | Bar des amis - Offre numérique |     20 | publiée    |
+      |  |  | Offer                          | Terrain vague                  |     16 | expirée    |
+      |  |  | Offer                          | Terrain vague                  |     40 | publiée    |
+      |  |  | Offer                          | Terrain vague                  |     40 | publiée    |
+      |  |  | Offer                          | Terrain vague                  |      0 | désactivée |
   # comme tout est "Manuel" dans la sandbox, automatiser ce test en l'état n'aurait pas beaucoup de sens
   # Scenario: A search by creation mode should display expected results
   #   When I select "Manuel" in "Mode de création"
