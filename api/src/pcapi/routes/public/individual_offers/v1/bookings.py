@@ -220,7 +220,7 @@ def validate_booking_by_token(token: str) -> None:
 @api_key_required
 def cancel_booking_validation_by_token(token: str) -> None:
     """
-    Cancel a booking validation
+    Revert token validation
 
     Mark a booking as `unused`.
     """
@@ -262,12 +262,14 @@ def cancel_booking_validation_by_token(token: str) -> None:
 @api_key_required
 def cancel_booking_by_token(token: str) -> None:
     """
-    Cancel a booking
+    Delete a booking
 
     Cancel a booking that has not been used or refunded.
 
+    ::warning
     For events, a booking can only be cancelled if it is pending.
     Once it is confirmed, you cannot cancel it (for booking confirmation see [this page](/docs/understanding-our-api/resources/individual-offers#general-description-2)).
+    :::
     """
     booking = _get_booking_by_token(token)
     if booking is None:
