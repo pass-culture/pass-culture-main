@@ -72,7 +72,9 @@ def offers_fixture(criteria) -> tuple:
         validation=offers_models.OfferValidationStatus.APPROVED,
         extraData={"visa": "2023123456", "showType": 100, "showSubType": 104},
     )
+    product = offers_factories.ProductFactory(description="A product description")
     offer_with_two_criteria = offers_factories.OfferFactory(
+        product=product,
         name="A Very Specific Name That Is Longer",
         criteria=[criteria[0], criteria[1]],
         dateCreated=datetime.date.today() - datetime.timedelta(days=2),
@@ -1515,7 +1517,10 @@ class GetOfferDetailsTest(GetEndpointHelper):
     expected_num_queries = 3
 
     def test_get_detail_offer(self, authenticated_client):
+        product = offers_factories.ProductFactory(description="[Product Description]")
         offer = offers_factories.OfferFactory(
+            product=product,
+            description="[Offer Description]",
             withdrawalDetails="Demander à la caisse",
             extraData={
                 "ean": "1234567891234",
@@ -1547,6 +1552,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert "Resynchroniser l'offre dans Algolia" in card_text
         assert "Modifier le lieu" not in card_text
         assert "Demander à la caisse" in card_text
+        assert b"[Product Description]" in response.data
         assert b"Auteur :</span> Author" in response.data
         assert b"EAN :</span> 1234567891234" in response.data
         assert "Éditeur :</span> Editor".encode() in response.data

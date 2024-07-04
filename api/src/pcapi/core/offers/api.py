@@ -100,7 +100,6 @@ def build_new_offer_from_product(
 ) -> models.Offer:
     return models.Offer(
         bookingEmail=venue.bookingEmail,
-        description=product.description,
         extraData=product.extraData,
         idAtProvider=id_at_provider,
         lastProviderId=provider_id,
@@ -162,7 +161,7 @@ def create_offer(
 
     is_national = True if url else bool(is_national)
 
-    offer = models.Offer(
+    offer = models.Offer(  # type: ignore [call-arg]
         audioDisabilityCompliant=audio_disability_compliant,
         bookingContact=booking_contact,
         bookingEmail=booking_email,
