@@ -953,7 +953,7 @@ def create_account_creation_token(google_user: "google_oauth.GoogleUser") -> str
 
 
 def update_notification_subscription(
-    user: models.User, subscriptions: "account_serialization.NotificationSubscriptions | None"
+    user: models.User, subscriptions: "account_serialization.NotificationSubscriptions | None", origin: str | None
 ) -> None:
     if subscriptions is None:
         return
@@ -985,6 +985,7 @@ def update_notification_subscription(
                 "themes": set(old_subscriptions.subscribed_themes) - set(subscriptions.subscribed_themes),
             },
             "subscriptions": user.notificationSubscriptions,
+            "origin": origin,
         },
         technical_message_id="subscription_update",
     )
