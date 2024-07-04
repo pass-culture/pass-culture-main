@@ -68,15 +68,13 @@ describe('OffersInstitutionList', () => {
     ).toHaveAttribute('href', 'adage/passculture/index')
   })
 
-  it('should show the new offer card if the ff is enabled', async () => {
+  it('should show an offer card', async () => {
     vi.spyOn(
       apiAdage,
       'getCollectiveOffersForMyInstitution'
     ).mockResolvedValueOnce({ collectiveOffers: [defaultCollectiveOffer] })
 
-    renderOffersForMyInstitution(defaultAdageUser, [
-      'WIP_ENABLE_ADAGE_VISUALIZATION',
-    ])
+    renderOffersForMyInstitution(defaultAdageUser)
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     expect(
