@@ -133,7 +133,7 @@ jobs:
   build-pcapi-tests:
     name: "[pcapi-tests] build docker image."
     needs: [pcapi-init-job]
-    if: needs.pcapi-init-job.outputs.api-changed == 'true'
+    if: needs.pcapi-init-job.outputs.api-changed == 'true' && needs.pcapi-init-job.outputs.checksum-tag-exists == 'false'
     uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
     with:
       ref: ${{ github.event.pull_request.head.sha }}
