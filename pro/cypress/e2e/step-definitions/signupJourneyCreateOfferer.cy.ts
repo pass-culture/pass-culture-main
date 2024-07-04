@@ -92,6 +92,7 @@ When('I fill activity form without target audience', () => {
 
 When('I validate the registration', () => {
   cy.intercept({ method: 'POST', url: '/offerers/new' }).as('createOfferer')
+  cy.wait(2000)
   cy.findByText('Valider et créer ma structure').click()
 })
 
