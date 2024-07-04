@@ -14,4 +14,5 @@ export const DEFAULT_DETAILS_INTITIAL_VALUES = {
   performer: '',
   ean: '',
   durationMinutes: '',
+  subcategoryConditionalFields: [],
 }

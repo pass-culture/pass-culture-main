@@ -11,6 +11,7 @@ import {
   buildCategoryOptions,
   buildSubcategoryOptions,
   getShowSubTypeOptions,
+  onSubcategoryChange,
 } from './utils'
 import { useFormikContext } from 'formik'
 import { DetailsFormValues } from './types'
@@ -23,7 +24,14 @@ export const DetailsForm = (): JSX.Element => {
   const { categories, subCategories } = useIndividualOfferContext()
 
   const {
-    values: { categoryId, showType },
+    values: {
+      categoryId,
+      subcategoryId,
+      showType,
+      subcategoryConditionalFields,
+    },
+    handleChange,
+    setFieldValue,
   } = useFormikContext<DetailsFormValues>()
 
   const musicTypesQuery = useSWR(
@@ -45,14 +53,26 @@ export const DetailsForm = (): JSX.Element => {
     .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
   const showSubTypeOptions = getShowSubTypeOptions(showType)
 
-  const hasAuthor = true
-  const hasPerformer = true
-  const hasEan = true
-  const hasSpeaker = true
-  const hasStageDirector = true
-  const hasVisa = true
-  const hasDurationMinutes = true
+  // this condition exists in the original code
+  // but it is not clear why it is needed
+  const hasMusicType =
+    categoryId !== 'LIVRE'
+      ? subcategoryConditionalFields.includes('gtl_id')
+      : subcategoryConditionalFields.includes('musicType')
 
+  const artisticInformationsFields = [
+    'speaker',
+    'author',
+    'visa',
+    'stageDirector',
+    'performer',
+    'ean',
+    'durationMinutes',
+  ]
+
+  const displayArtisticInformations = artisticInformationsFields.some((field) =>
+    subcategoryConditionalFields.includes(field)
+  )
   return (
     <>
       <FormLayout.Section title="A propos de votre offre">
@@ -106,129 +126,156 @@ export const DetailsForm = (): JSX.Element => {
             }}
           />
         </FormLayout.Row>
-        <FormLayout.Row>
-          <Select
-            label="Sous-catégorie"
-            name="subcategoryId"
-            options={subcategoryOptions}
-            defaultOption={{
-              label: 'Choisir une sous-catégorie',
-              value: DEFAULT_DETAILS_INTITIAL_VALUES.subcategoryId,
-            }}
-          />
-        </FormLayout.Row>
-        <FormLayout.Row>
-          <Select
-            label="Genre musical"
-            name="gtl_id"
-            options={musicTypesOptions}
-            defaultOption={{
-              label: 'Choisir un genre musical',
-              value: DEFAULT_DETAILS_INTITIAL_VALUES.gtl_id,
-            }}
-          />
-        </FormLayout.Row>
-        <FormLayout.Row>
-          <Select
-            label="Type de spectacle"
-            name="showType"
-            options={showTypesOptions}
-            defaultOption={{
-              label: 'Choisir un type de spectacle',
-              value: DEFAULT_DETAILS_INTITIAL_VALUES.showType,
-            }}
-          />
-        </FormLayout.Row>
-        <FormLayout.Row>
-          <Select
-            label="Sous-type"
-            name="showSubType"
-            options={showSubTypeOptions}
-            defaultOption={{
-              label: 'Choisir un sous-type',
-              value: DEFAULT_DETAILS_INTITIAL_VALUES.showSubType,
-            }}
-          />
-        </FormLayout.Row>
+        {categoryId !== DEFAULT_DETAILS_INTITIAL_VALUES.categoryId && (
+          <FormLayout.Row>
+            <Select
+              label="Sous-catégorie"
+              name="subcategoryId"
+              options={subcategoryOptions}
+              defaultOption={{
+                label: 'Choisir une sous-catégorie',
+                value: DEFAULT_DETAILS_INTITIAL_VALUES.subcategoryId,
+              }}
+              onChange={async (event: React.ChangeEvent<HTMLSelectElement>) => {
+                await onSubcategoryChange({
+                  newSubCategoryId: event.target.value,
+                  subCategories,
+                  setFieldValue,
+                })
+                handleChange(event)
+              }}
+            />
+          </FormLayout.Row>
+        )}
+        {hasMusicType && (
+          <FormLayout.Row>
+            <Select
+              label="Genre musical"
+              name="gtl_id"
+              options={musicTypesOptions}
+              defaultOption={{
+                label: 'Choisir un genre musical',
+                value: DEFAULT_DETAILS_INTITIAL_VALUES.gtl_id,
+              }}
+            />
+          </FormLayout.Row>
+        )}
+        {subcategoryConditionalFields.includes('showType') && (
+          <>
+            <FormLayout.Row>
+              <Select
+                label="Type de spectacle"
+                name="showType"
+                options={showTypesOptions}
+                defaultOption={{
+                  label: 'Choisir un type de spectacle',
+                  value: DEFAULT_DETAILS_INTITIAL_VALUES.showType,
+                }}
+              />
+            </FormLayout.Row>
+            <FormLayout.Row>
+              <Select
+                label="Sous-type"
+                name="showSubType"
+                options={showSubTypeOptions}
+                defaultOption={{
+                  label: 'Choisir un sous-type',
+                  value: DEFAULT_DETAILS_INTITIAL_VALUES.showSubType,
+                }}
+              />
+            </FormLayout.Row>
+          </>
+        )}
       </FormLayout.Section>
-      <ImageUploaderOffer
-        onImageUpload={async () => {}}
-        onImageDelete={async () => {}}
-        imageOffer={{
-          originalUrl: '',
-          url: '',
-          credit: '',
-        }}
-      />
-      <FormLayout.Section title="Informations artistiques">
-        {hasSpeaker && (
-          <FormLayout.Row>
-            <TextInput
-              isOptional
-              label="Intervenant"
-              maxLength={1000}
-              name="speaker"
-            />
-          </FormLayout.Row>
-        )}
-        {hasAuthor && (
-          <FormLayout.Row>
-            <TextInput
-              isOptional
-              label="Auteur"
-              maxLength={1000}
-              name="author"
-            />
-          </FormLayout.Row>
-        )}
-        {hasVisa && (
-          <FormLayout.Row>
-            <TextInput
-              isOptional
-              label="Visa d’exploitation"
-              maxLength={1000}
-              name="visa"
-            />
-          </FormLayout.Row>
-        )}
-        {hasStageDirector && (
-          <FormLayout.Row>
-            <TextInput
-              isOptional
-              label="Metteur en scène"
-              maxLength={1000}
-              name="stageDirector"
-            />
-          </FormLayout.Row>
-        )}
-        {hasPerformer && (
-          <FormLayout.Row>
-            <TextInput
-              isOptional
-              label="Interprète"
-              maxLength={1000}
-              name="performer"
-            />
-          </FormLayout.Row>
-        )}
-        {hasEan && (
-          <FormLayout.Row>
-            <TextInput
-              isOptional
-              label="EAN-13 (European Article Numbering)"
-              countCharacters
-              name="ean"
-              maxLength={13}
-            />
-          </FormLayout.Row>
-        )}
+      {subcategoryId !== DEFAULT_DETAILS_INTITIAL_VALUES.subcategoryId && (
+        <>
+          <ImageUploaderOffer
+            onImageUpload={async () => {}}
+            onImageDelete={async () => {}}
+            imageOffer={{
+              originalUrl: '',
+              url: '',
+              credit: '',
+            }}
+          />
 
-        {hasDurationMinutes && (
-          <FormLayout.Row>
-            <DurationInput isOptional label={'Durée'} name="durationMinutes" />
-          </FormLayout.Row>
-        )}
-      </FormLayout.Section>
+          {displayArtisticInformations && (
+            <FormLayout.Section title="Informations artistiques">
+              {subcategoryConditionalFields.includes('speaker') && (
+                <FormLayout.Row>
+                  <TextInput
+                    isOptional
+                    label="Intervenant"
+                    maxLength={1000}
+                    name="speaker"
+                  />
+                </FormLayout.Row>
+              )}
+              {subcategoryConditionalFields.includes('author') && (
+                <FormLayout.Row>
+                  <TextInput
+                    isOptional
+                    label="Auteur"
+                    maxLength={1000}
+                    name="author"
+                  />
+                </FormLayout.Row>
+              )}
+              {subcategoryConditionalFields.includes('visa') && (
+                <FormLayout.Row>
+                  <TextInput
+                    isOptional
+                    label="Visa d’exploitation"
+                    maxLength={1000}
+                    name="visa"
+                  />
+                </FormLayout.Row>
+              )}
+              {subcategoryConditionalFields.includes('stageDirector') && (
+                <FormLayout.Row>
+                  <TextInput
+                    isOptional
+                    label="Metteur en scène"
+                    maxLength={1000}
+                    name="stageDirector"
+                  />
+                </FormLayout.Row>
+              )}
+              {subcategoryConditionalFields.includes('performer') && (
+                <FormLayout.Row>
+                  <TextInput
+                    isOptional
+                    label="Interprète"
+                    maxLength={1000}
+                    name="performer"
+                  />
+                </FormLayout.Row>
+              )}
+              {subcategoryConditionalFields.includes('ean') && (
+                <FormLayout.Row>
+                  <TextInput
+                    isOptional
+                    label="EAN-13 (European Article Numbering)"
+                    countCharacters
+                    name="ean"
+                    maxLength={13}
+                  />
+                </FormLayout.Row>
+              )}
+
+              {subcategoryConditionalFields.includes('durationMinutes') && (
+                <FormLayout.Row>
+                  <DurationInput
+                    isOptional
+                    label={'Durée'}
+                    name="durationMinutes"
+                  />
+                </FormLayout.Row>
+              )}
+            </FormLayout.Section>
+          )}
+        </>
+      )}
     </>
   )
 }

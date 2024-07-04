@@ -18,4 +18,5 @@ export type DetailsFormValues = {
   stageDirector?: string
   visa?: string
   durationMinutes?: string | null
+  subcategoryConditionalFields: string[]
 }

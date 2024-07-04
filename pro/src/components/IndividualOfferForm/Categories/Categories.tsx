@@ -20,7 +20,6 @@ import { FORM_DEFAULT_VALUES } from '../constants'
 import styles from '../IndividualOfferForm.module.scss'
 import { IndividualOfferFormValues } from '../types'
 import { onVenueChange } from '../UsefulInformations/Venue/Venue'
-import { buildSubcategoryFields } from '../utils/buildSubCategoryFields'
 import { getFilteredVenueListBySubcategory } from '../utils/getFilteredVenueList'
 
 import { SUBCATEGORIES_FIELDS_DEFAULT_VALUES } from './constants'
@@ -31,6 +30,7 @@ import {
   buildCategoryOptions,
   buildSubcategoryOptions,
 } from 'screens/IndividualOffer/DetailsScreen/utils'
+import { buildSubcategoryFields } from '../utils/buildSubCategoryFields'
 
 export interface CategoriesProps {
   categories: CategoryResponseModel[]
@@ -135,7 +135,7 @@ export const Categories = ({
     await onSubCategoryChange(subCategoryId)
   }
 
-  const hasSubCategory = categoryId !== FORM_DEFAULT_VALUES.categoryId
+  const hasCategory = categoryId !== FORM_DEFAULT_VALUES.categoryId
   const hasMusicType =
     categoryId !== 'LIVRE'
       ? subCategoryFields.includes('gtl_id')
@@ -158,7 +158,7 @@ export const Categories = ({
     >
       <FormLayout.Row
         className={cn({
-          [styles['category-row']]: !(hasSubCategory || showAddVenueBanner),
+          [styles['category-row']]: !(hasCategory || showAddVenueBanner),
         })}
         sideComponent={
           <InfoBox
@@ -191,7 +191,7 @@ export const Categories = ({
         />
       </FormLayout.Row>
 
-      {hasSubCategory && (
+      {hasCategory && (
         <FormLayout.Row>
           <Select
             label="Sous-catégorie"
