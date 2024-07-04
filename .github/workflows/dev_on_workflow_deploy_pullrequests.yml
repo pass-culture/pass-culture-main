@@ -94,6 +94,7 @@ jobs:
       - uses: actions/checkout@v4.1.7
         with:
           repository: pass-culture/pass-culture-deployment
+          ref: values-for-pullrequests
           token: ${{ steps.get-github-token.outputs.API_TOKEN_GITHUB }}
           path: ./pass-culture-deployment
 
@@ -159,21 +160,3 @@ jobs:
           #CHANNEL: "live"
           #REF: ${{ github.ref }}
           #CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
-
-  deploy-image-resizing-ehp:
-    name: "Deploy image-resizing EHP"
-    permissions:
-      contents: 'read'
-      id-token: 'write'
-    uses: ./.github/workflows/dev_on_workflow_deploy_app_engine_image_resizing.yml
-    if: ${{ inputs.environment != 'production' && inputs.environment != 'ops' }}
-    with:
-      workload_identity_provider_secret_name: passculture-metier-ehp/gcp_metier_ehp_workload_identity_provider
-      service_account_secret_name: passculture-metier-ehp/app_engine_image_resizing_service_account
-      image_resizing_url: https://image-resizing.testing.passculture.team
-      environment: testing
-      google_project: passculture-metier-ehp
-      base_ref: ${{ github.ref }}
-    secrets:
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
