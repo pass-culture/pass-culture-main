@@ -88,6 +88,7 @@ class VenueResponse(base.BaseVenueResponse):
     accessibility: VenueAccessibilityModel
     venueTypeCode: VenueTypeCodeKey
     bannerMeta: BannerMetaModel | None
+    timezone: str
 
     class Config:
         getter_dict = VenueResponseGetterDict
