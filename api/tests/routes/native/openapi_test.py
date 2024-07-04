@@ -2281,11 +2281,12 @@ def test_public_api(client):
                 },
                 "UserProfileUpdateRequest": {
                     "properties": {
+                        "origin": {"nullable": True, "title": "Origin", "type": "string"},
                         "subscriptions": {
                             "anyOf": [{"$ref": "#/components/schemas/NotificationSubscriptions"}],
                             "nullable": True,
                             "title": "NotificationSubscriptions",
-                        }
+                        },
                     },
                     "title": "UserProfileUpdateRequest",
                     "type": "object",

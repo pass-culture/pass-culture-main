@@ -211,6 +211,7 @@ def _is_cultural_survey_active() -> bool:
 
 class UserProfileUpdateRequest(ConfiguredBaseModel):
     subscriptions: NotificationSubscriptions | None
+    origin: str | None
 
 
 class UserProfileEmailUpdate(ConfiguredBaseModel):

@@ -943,7 +943,8 @@ class UserProfileUpdateTest:
                         "marketingPush": True,
                         "marketingEmail": False,
                         "subscribedThemes": ["visites", "cinema"],
-                    }
+                    },
+                    "origin": "profile",
                 },
             )
 
@@ -957,6 +958,7 @@ class UserProfileUpdateTest:
                 "subscribed_themes": ["visites", "cinema"],
             },
             "analyticsSource": "app-native",
+            "origin": "profile",
         }
         assert caplog.records[0].technical_message_id == "subscription_update"
 

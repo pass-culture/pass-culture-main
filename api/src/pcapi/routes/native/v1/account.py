@@ -61,7 +61,7 @@ def get_user_profile(user: users_models.User) -> serializers.UserProfileResponse
 def update_user_profile(
     user: users_models.User, body: serializers.UserProfileUpdateRequest
 ) -> serializers.UserProfileResponse:
-    api.update_notification_subscription(user, body.subscriptions)
+    api.update_notification_subscription(user, body.subscriptions, body.origin)
     external_attributes_api.update_external_user(user)
     return serializers.UserProfileResponse.from_orm(user)
 
