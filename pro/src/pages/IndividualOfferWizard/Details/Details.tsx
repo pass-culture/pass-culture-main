@@ -42,19 +42,14 @@ const Details = (): JSX.Element | null => {
     ([, offererIdParam]) => api.getVenues(null, true, offererIdParam),
     { fallbackData: { venues: [] } }
   )
-  const offererNamesQuery = useSWR(
-    [GET_OFFERER_NAMES_QUERY_KEY, offererId],
-    ([, offererIdParam]) => api.listOfferersNames(null, null, offererIdParam),
-    { fallbackData: { offerersNames: [] } }
-  )
 
-  if (venuesQuery.isLoading || offererNamesQuery.isLoading) {
+  if (venuesQuery.isLoading) {
     return <Spinner />
   }
 
   return (
     <IndivualOfferLayout offer={offer} title={getTitle(mode)} mode={mode}>
-      <DetailsScreen />
+      <DetailsScreen venues={venuesQuery.data.venues} />
     </IndivualOfferLayout>
   )
 }

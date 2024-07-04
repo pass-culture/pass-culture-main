@@ -1,9 +1,14 @@
-import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
+import {
+  CategoryResponseModel,
+  SubcategoryResponseModel,
+  VenueListItemResponseModel,
+} from 'apiClient/v1'
 import { showOptionsTree } from 'core/Offers/categoriesSubTypes'
 import { SelectOption } from 'custom_types/form'
 import { DEFAULT_DETAILS_INTITIAL_VALUES } from './constants'
 import { FormikErrors } from 'formik'
 import { DetailsFormValues } from './types'
+import { computeVenueDisplayName } from 'repository/venuesService'
 
 export const buildCategoryOptions = (
   categories: CategoryResponseModel[]
@@ -47,7 +52,7 @@ export const getShowSubTypeOptions = (showType: string): SelectOption[] => {
     .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
 }
 
-export const buildSubcategoryFields = (
+const buildSubcategoryFields = (
   subcategory?: SubcategoryResponseModel
 ): {
   subcategoryFields: string[]
@@ -83,4 +88,21 @@ export const onSubcategoryChange = async ({
 
   const { subcategoryFields } = buildSubcategoryFields(newSubcategory)
   await setFieldValue('subcategoryConditionalFields', subcategoryFields)
+}
+
+export const buildVenueOptions = (venues: VenueListItemResponseModel[]) => {
+  let venueOptions = venues
+    .map((venue) => ({
+      value: venue.id.toString(),
+      label: computeVenueDisplayName(venue),
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
+  if (venueOptions.length !== 1) {
+    venueOptions = [
+      { value: '', label: 'Sélectionner un lieu' },
+      ...venueOptions,
+    ]
+  }
+
+  return venueOptions
 }

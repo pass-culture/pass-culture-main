@@ -10,6 +10,7 @@ import { useIndividualOfferContext } from 'context/IndividualOfferContext/Indivi
 import {
   buildCategoryOptions,
   buildSubcategoryOptions,
+  buildVenueOptions,
   getShowSubTypeOptions,
   onSubcategoryChange,
 } from './utils'
@@ -19,8 +20,14 @@ import { api } from 'apiClient/api'
 import { GET_MUSIC_TYPES_QUERY_KEY } from 'config/swrQueryKeys'
 import useSWR from 'swr'
 import { showOptionsTree } from 'core/Offers/categoriesSubTypes'
+import { VenueListItemResponseModel } from 'apiClient/v1'
+import { useSearchParams } from 'react-router-dom'
 
-export const DetailsForm = (): JSX.Element => {
+type DetailsFormProps = {
+  venues: VenueListItemResponseModel[]
+}
+
+export const DetailsForm = ({ venues }: DetailsFormProps): JSX.Element => {
   const { categories, subCategories } = useIndividualOfferContext()
 
   const {
@@ -39,6 +46,7 @@ export const DetailsForm = (): JSX.Element => {
     () => api.getMusicTypes(),
     { fallbackData: [] }
   )
+
   const categoryOptions = buildCategoryOptions(categories)
   const subcategoryOptions = buildSubcategoryOptions(subCategories, categoryId)
   const musicTypesOptions = musicTypesQuery.data.map((data) => ({
@@ -52,6 +60,8 @@ export const DetailsForm = (): JSX.Element => {
     }))
     .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
   const showSubTypeOptions = getShowSubTypeOptions(showType)
+
+  const venueOptions = buildVenueOptions(venues)
 
   // this condition exists in the original code
   // but it is not clear why it is needed
@@ -94,7 +104,7 @@ export const DetailsForm = (): JSX.Element => {
           />
         </FormLayout.Row>
         <FormLayout.Row>
-          <Select label="Lieu" name="venueId" options={[]} />
+          <Select label="Lieu" name="venueId" options={venueOptions} />
         </FormLayout.Row>
       </FormLayout.Section>
 

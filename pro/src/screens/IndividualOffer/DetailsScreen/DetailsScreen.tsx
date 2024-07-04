@@ -9,8 +9,13 @@ import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
 import { ActionBar } from '../ActionBar/ActionBar'
 import { useNavigate } from 'react-router-dom'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
+import { VenueListItemResponseModel } from 'apiClient/v1'
 
-export const DetailsScreen = (): JSX.Element => {
+type DetailsScreenProps = {
+  venues: VenueListItemResponseModel[]
+}
+
+export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
   const navigate = useNavigate()
 
   const formik = useFormik({
@@ -40,7 +45,7 @@ export const DetailsScreen = (): JSX.Element => {
       <Form>
         <FormLayout fullWidthActions>
           <FormLayout.MandatoryInfo />
-          <DetailsForm />
+          <DetailsForm venues={venues} />
         </FormLayout>
         <ActionBar
           onClickPrevious={handlePreviousStepOrBackToReadOnly}
