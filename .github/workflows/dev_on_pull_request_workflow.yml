@@ -264,10 +264,13 @@ jobs:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   # Deploy pullrequest to testing environment
+  # If image builds were successfull OR image was already present in registry
   deploy:
     name: "Deploy PullRequest to testing environment"
-    needs: [push-pcapi, push-pcapi-console]
-    if: ${{ needs.push-pcapi.result == 'success' && needs.push-pcapi-console.result == 'success' }}
+    needs: [pcapi-init-job, push-pcapi, push-pcapi-console]
+    if: |
+      ${{ needs.push-pcapi.result == 'success' && needs.push-pcapi-console.result == 'success' }} ||
+      ${{ needs.pcapi-init-job.outputs.checksum-console-tag-exists == 'true' && needs.pcapi-init-job.outputs.checksum-console-tag-exists == 'true' }}
     uses: ./.github/workflows/dev_on_workflow_deploy_pullrequests.yml
     with:
       environment: pullrequests
