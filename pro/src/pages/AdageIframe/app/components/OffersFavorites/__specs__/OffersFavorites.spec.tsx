@@ -114,13 +114,13 @@ describe('OffersFavorites', () => {
     expect(screen.getByRole('heading', { name: 'Accueil' })).toBeInTheDocument()
   })
 
-  it('should show the new offer card if the ff is enabled', async () => {
+  it('should show an offer card', async () => {
     vi.spyOn(apiAdage, 'getCollectiveFavorites').mockResolvedValueOnce({
       favoritesOffer: [],
       favoritesTemplate: [mockOffer],
     })
 
-    renderAdageFavoritesOffers(user, ['WIP_ENABLE_ADAGE_VISUALIZATION'])
+    renderAdageFavoritesOffers(user)
 
     await waitFor(() =>
       expect(screen.queryAllByTestId('spinner')).toHaveLength(0)

@@ -3,7 +3,6 @@ import useSWR from 'swr'
 import { apiAdage } from 'apiClient/api'
 import { Callout } from 'components/Callout/Callout'
 import { GET_COLLECTIVE_OFFERS_FOR_INSTITUTION_QUERY_KEY } from 'config/swrQueryKeys'
-import { useActiveFeature } from 'hooks/useActiveFeature'
 import strokeMyInstitution from 'icons/stroke-my-institution.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -11,7 +10,6 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { AnalyticsContextProvider } from '../../providers/AnalyticsContextProvider'
 import { AdageOfferListCard } from '../OffersInstantSearch/OffersSearch/Offers/AdageOfferListCard/AdageOfferListCard'
-import { Offer } from '../OffersInstantSearch/OffersSearch/Offers/Offer'
 import { AdageSkeleton } from '../Skeleton/AdageSkeleton'
 
 import styles from './OffersForMyInstitution.module.scss'
@@ -19,10 +17,6 @@ import styles from './OffersForMyInstitution.module.scss'
 export const OffersForMyInstitution = () => {
   const params = new URLSearchParams(location.search)
   const adageAuthToken = params.get('token')
-
-  const isNewOfferCardEnabled = useActiveFeature(
-    'WIP_ENABLE_ADAGE_VISUALIZATION'
-  )
 
   const { data: offers, isLoading } = useSWR(
     [GET_COLLECTIVE_OFFERS_FOR_INSTITUTION_QUERY_KEY],
@@ -97,14 +91,10 @@ export const OffersForMyInstitution = () => {
         </div>
       ) : (
         <ul className={styles['offers-list']}>
-          {offers.collectiveOffers.map((offer, i) => {
+          {offers.collectiveOffers.map((offer) => {
             return (
               <li key={offer.id} data-testid="offer-listitem">
-                {isNewOfferCardEnabled ? (
-                  <AdageOfferListCard offer={offer} />
-                ) : (
-                  <Offer offer={offer} queryId="" position={i} />
-                )}
+                <AdageOfferListCard offer={offer} />
               </li>
             )
           })}

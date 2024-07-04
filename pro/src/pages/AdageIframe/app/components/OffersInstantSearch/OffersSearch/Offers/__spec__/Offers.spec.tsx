@@ -577,13 +577,11 @@ describe('offers', () => {
     })
   })
 
-  it('should show the new offer cards if the ff is enabled', async () => {
+  it('should show the offer cards', async () => {
     vi.spyOn(apiAdage, 'getCollectiveOfferTemplates').mockResolvedValueOnce({
       collectiveOffers: [offerInParis, offerInCayenne],
     })
-    renderOffers({ ...offersProps, isBackToTopVisibile: true }, adageUser, {
-      features: ['WIP_ENABLE_ADAGE_VISUALIZATION'],
-    })
+    renderOffers({ ...offersProps, isBackToTopVisibile: true }, adageUser)
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(
@@ -599,9 +597,7 @@ describe('offers', () => {
     vi.spyOn(apiAdage, 'getCollectiveOfferTemplates').mockResolvedValueOnce({
       collectiveOffers: [offerInParis, offerInCayenne],
     })
-    renderOffers({ ...offersProps, isBackToTopVisibile: true }, adageUser, {
-      features: ['WIP_ENABLE_ADAGE_VISUALIZATION'],
-    })
+    renderOffers({ ...offersProps, isBackToTopVisibile: true }, adageUser)
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(screen.getByText('Une offre vraiment chouette')).toBeInTheDocument()
@@ -629,9 +625,7 @@ describe('offers', () => {
     vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
       offerInCayenne
     )
-    renderOffers({ ...offersProps, isBackToTopVisibile: true }, adageUser, {
-      features: ['WIP_ENABLE_ADAGE_VISUALIZATION'],
-    })
+    renderOffers({ ...offersProps, isBackToTopVisibile: true }, adageUser)
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(
@@ -648,7 +642,7 @@ describe('offers', () => {
     })
   })
 
-  it('should trigger a log event when clicking the offer with the FF WIP_ENABLE_ADAGE_VISUALIZATION is active and the offers are in list mode', async () => {
+  it('should trigger a log event when clicking the offer when the offers are in list mode', async () => {
     vi.spyOn(apiAdage, 'getCollectiveOfferTemplates').mockResolvedValueOnce({
       collectiveOffers: [otherOffer],
     })
@@ -658,9 +652,7 @@ describe('offers', () => {
       currentPageHits: [otherFakeSearchResult],
     }))
 
-    renderOffers(offersProps, adageUser, {
-      features: ['WIP_ENABLE_ADAGE_VISUALIZATION'],
-    })
+    renderOffers(offersProps, adageUser)
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     const link = screen.getByRole('link', {
@@ -674,7 +666,7 @@ describe('offers', () => {
     expect(apiAdage.logOfferTemplateDetailsButtonClick).toHaveBeenCalled()
   })
 
-  it('should trigger a log event when clicking the offer with the FF WIP_ENABLE_ADAGE_VISUALIZATION is active and the offers are in grid mode', async () => {
+  it('should trigger a log event when clicking the offer when the offers are in grid mode', async () => {
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
       value: () => ({
@@ -693,9 +685,7 @@ describe('offers', () => {
       currentPageHits: [otherFakeSearchResult],
     }))
 
-    renderOffers(offersProps, adageUser, {
-      features: ['WIP_ENABLE_ADAGE_VISUALIZATION'],
-    })
+    renderOffers(offersProps, adageUser)
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     const link = screen.getByRole('link', {
@@ -731,9 +721,7 @@ describe('offers', () => {
     vi.spyOn(apiAdage, 'getCollectiveOfferTemplates').mockResolvedValueOnce({
       collectiveOffers: [offerInCayenne, offerInParis],
     })
-    renderOffers({ ...offersProps, isBackToTopVisibile: true }, adageUser, {
-      features: ['WIP_ENABLE_ADAGE_VISUALIZATION'],
-    })
+    renderOffers({ ...offersProps, isBackToTopVisibile: true }, adageUser)
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     const toggleButtonView = screen.getByTestId('toggle-button')

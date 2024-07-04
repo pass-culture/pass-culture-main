@@ -5,10 +5,8 @@ import {
   CollectiveOfferTemplateResponseModel,
 } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import { useActiveFeature } from 'hooks/useActiveFeature'
 
 import { AdageOfferListCard } from '../OffersInstantSearch/OffersSearch/Offers/AdageOfferListCard/AdageOfferListCard'
-import { Offer } from '../OffersInstantSearch/OffersSearch/Offers/Offer'
 import { AdageSkeleton } from '../Skeleton/AdageSkeleton'
 
 import styles from './OffersFavorites.module.scss'
@@ -20,10 +18,6 @@ export const OffersFavorites = () => {
   >([])
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
-
-  const isNewOfferCardEnabled = useActiveFeature(
-    'WIP_ENABLE_ADAGE_VISUALIZATION'
-  )
 
   // TODO use SWR
   useEffect(() => {
@@ -63,26 +57,17 @@ export const OffersFavorites = () => {
         <OffersFavoritesNoResult />
       ) : (
         <ul className={styles['favorite-list']}>
-          {favoriteOffers.map((offer, i) => {
+          {favoriteOffers.map((offer) => {
             return (
               <li key={offer.id} data-testid="offer-listitem">
-                {isNewOfferCardEnabled ? (
+                {
                   <AdageOfferListCard
                     offer={offer}
                     afterFavoriteChange={(isFavorite) => {
                       favoriteChangeHandler(isFavorite, offer.id)
                     }}
                   />
-                ) : (
-                  <Offer
-                    offer={offer}
-                    queryId=""
-                    position={i}
-                    afterFavoriteChange={(isFavorite) => {
-                      favoriteChangeHandler(isFavorite, offer.id)
-                    }}
-                  />
-                )}
+                }
               </li>
             )
           })}
