@@ -7,19 +7,43 @@ import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 import { DEFAULT_DETAILS_INTITIAL_VALUES } from './constants'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
-import { buildCategoryOptions, buildSubcategoryOptions } from './utils'
+import {
+  buildCategoryOptions,
+  buildSubcategoryOptions,
+  getShowSubTypeOptions,
+} from './utils'
 import { useFormikContext } from 'formik'
 import { DetailsFormValues } from './types'
+import { api } from 'apiClient/api'
+import { GET_MUSIC_TYPES_QUERY_KEY } from 'config/swrQueryKeys'
+import useSWR from 'swr'
+import { showOptionsTree } from 'core/Offers/categoriesSubTypes'
 
 export const DetailsForm = (): JSX.Element => {
   const { categories, subCategories } = useIndividualOfferContext()
 
   const {
-    values: { categoryId },
+    values: { categoryId, showType },
   } = useFormikContext<DetailsFormValues>()
 
+  const musicTypesQuery = useSWR(
+    GET_MUSIC_TYPES_QUERY_KEY,
+    () => api.getMusicTypes(),
+    { fallbackData: [] }
+  )
   const categoryOptions = buildCategoryOptions(categories)
   const subcategoryOptions = buildSubcategoryOptions(subCategories, categoryId)
+  const musicTypesOptions = musicTypesQuery.data.map((data) => ({
+    value: data.gtl_id,
+    label: data.label,
+  }))
+  const showTypesOptions = showOptionsTree
+    .map((data) => ({
+      label: data.label,
+      value: data.code.toString(),
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
+  const showSubTypeOptions = getShowSubTypeOptions(showType)
 
   const hasAuthor = true
   const hasPerformer = true
@@ -97,7 +121,7 @@ export const DetailsForm = (): JSX.Element => {
           <Select
             label="Genre musical"
             name="gtl_id"
-            options={[]}
+            options={musicTypesOptions}
             defaultOption={{
               label: 'Choisir un genre musical',
               value: DEFAULT_DETAILS_INTITIAL_VALUES.gtl_id,
@@ -108,7 +132,7 @@ export const DetailsForm = (): JSX.Element => {
           <Select
             label="Type de spectacle"
             name="showType"
-            options={[]}
+            options={showTypesOptions}
             defaultOption={{
               label: 'Choisir un type de spectacle',
               value: DEFAULT_DETAILS_INTITIAL_VALUES.showType,
@@ -119,7 +143,7 @@ export const DetailsForm = (): JSX.Element => {
           <Select
             label="Sous-type"
             name="showSubType"
-            options={[]}
+            options={showSubTypeOptions}
             defaultOption={{
               label: 'Choisir un sous-type',
               value: DEFAULT_DETAILS_INTITIAL_VALUES.showSubType,
