@@ -1553,6 +1553,15 @@ def test_public_api(client):
                     "enum": ["INFO", "ERROR", "WARNING", "CLOCK", "FILE", "MAGNIFYING_GLASS"],
                     "title": "PopOverIcon",
                 },
+                "PostReactionRequest": {
+                    "properties": {
+                        "offerId": {"title": "Offerid", "type": "integer"},
+                        "reactionType": {"$ref": "#/components/schemas/ReactionTypeEnum"},
+                    },
+                    "required": ["offerId", "reactionType"],
+                    "title": "PostReactionRequest",
+                    "type": "object",
+                },
                 "ProfileUpdateRequest": {
                     "properties": {
                         "activityId": {"$ref": "#/components/schemas/ActivityIdEnum"},
@@ -3579,6 +3588,31 @@ def test_public_api(client):
                         },
                     },
                     "summary": "update_user_email <POST>",
+                    "tags": [],
+                }
+            },
+            "/native/v1/reaction": {
+                "post": {
+                    "description": "",
+                    "operationId": "post__native_v1_reaction",
+                    "parameters": [],
+                    "requestBody": {
+                        "content": {
+                            "application/json": {"schema": {"$ref": "#/components/schemas/PostReactionRequest"}}
+                        }
+                    },
+                    "responses": {
+                        "204": {"description": "No Content"},
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "security": [{"JWTAuth": []}],
+                    "summary": "post_reaction <POST>",
                     "tags": [],
                 }
             },
