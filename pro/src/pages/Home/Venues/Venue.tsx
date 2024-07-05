@@ -9,9 +9,7 @@ import { useAnalytics } from 'app/App/analytics/firebase'
 import { VenueEvents } from 'core/FirebaseEvents/constants'
 import fullDisclosureClose from 'icons/full-disclosure-close.svg'
 import fullDisclosureOpen from 'icons/full-disclosure-open.svg'
-import fullErrorIcon from 'icons/full-error.svg'
 import strokeConnectIcon from 'icons/stroke-connect.svg'
-import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -91,24 +89,6 @@ export const Venue = ({ offerer, venue, isFirstVenue }: VenueProps) => {
             >
               {venueDisplayName}
             </div>
-          )}
-
-          {shouldShowVenueOfferSteps && !venue.isVirtual && (
-            <Button
-              icon={fullErrorIcon}
-              className={styles['needs-payment-icon']}
-              variant={ButtonVariant.TERNARY}
-              hasTooltip
-              onClick={() => {
-                setIsToggleOpen((prev) => !prev)
-                logEvent(
-                  VenueEvents.CLICKED_VENUE_ACCORDION_BUTTON,
-                  venueIdTrackParam
-                )
-              }}
-            >
-              Cliquer pour voir les prochaines étapes
-            </Button>
           )}
 
           {venue.hasVenueProviders && (
