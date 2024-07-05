@@ -123,7 +123,10 @@ export const HeaderDropdown = () => {
           align="end"
           sideOffset={7}
         >
-          <div className={styles['menu']}>
+          <div
+            className={styles['menu']}
+            data-testid="dropdown-menu-data-testid"
+          >
             <DropdownMenu.Item className={styles['close-item']}>
               <button className={styles['close-button']}>
                 <SvgIcon

@@ -35,7 +35,9 @@ function initValuesAndIntercept(): void {
       },
     })
   ).as('getSiretVenue')
-  cy.intercept({ method: 'PATCH', url: '/venues/*' }).as('patchVenue')
+  cy.intercept({ method: 'PATCH', url: '/venues/*' }).as('patchVenues')
+  cy.intercept({ method: 'GET', url: '/venues/*' }).as('getVenues')
+  cy.intercept({ method: 'GET', url: '/venue-types' }).as('getVenueTypes')
 }
 
 Given('I want to add a venue', () => {
@@ -129,8 +131,8 @@ Then('I should see details of my venue', () => {
 
 When('I go to the venue page in Individual section', () => {
   initValuesAndIntercept()
-  cy.findByText('Votre page partenaire').should('be.visible')
-  cy.findByText('Carnet d’adresses').should('be.visible')
+  cy.findByText('Votre page partenaire').scrollIntoView().should('be.visible')
+  cy.findByText('Carnet d’adresses').scrollIntoView().should('be.visible')
   cy.get('a[aria-label^="Gérer la page de Lieu avec Siret"]').eq(0).click()
   cy.findByText('À propos de votre activité').should('be.visible')
   cy.findByText('Modifier').click()
@@ -144,31 +146,43 @@ When('I update Individual section data', () => {
   cy.findByText('Psychique ou cognitif').click()
   cy.findByText('Auditif').click()
   cy.findByText('Enregistrer').click()
-  cy.wait('@patchVenue')
+  cy.wait('@patchVenues')
 })
 
 When('I go to the venue page in Paramètres généraux', () => {
   cy.findAllByTestId('spinner').should('not.exist')
   cy.url().should('not.include', '/parametres')
   cy.findByText('Paramètres généraux').click()
-  cy.url().should('include', '/structures').and('include', 'lieux')
+  cy.url().should('include', '/parametres')
   cy.findAllByTestId('spinner').should('not.exist')
 })
 
 When('I update Paramètres généraux data', () => {
   cy.url().should('include', '/parametres').and('include', 'structures')
   cy.findAllByTestId('spinner').should('not.exist')
-  cy.findByLabelText(
-    'Label du ministère de la Culture ou du Centre national du cinéma et de l’image animée'
-  ).select('Musée de France')
   cy.findByLabelText('Informations de retrait')
     .clear()
     .type(
       'En main bien propres, avec un masque et un gel hydroalcoolique, didiou !'
     )
+  cy.findByLabelText(
+    'Label du ministère de la Culture ou du Centre national du cinéma et de l’image animée'
+  ).select('Musée de France')
+
   cy.findByText('Enregistrer').click()
-  cy.wait('@patchVenue')
-  cy.findAllByTestId('spinner').should('not.exist')
+  cy.wait(['@patchVenues', '@getVenueTypes', '@getVenues']).then(
+    (interception) => {
+      if (interception[0].response) {
+        expect(interception[0].response.statusCode).to.equal(200)
+      }
+      if (interception[1].response) {
+        expect(interception[1].response.statusCode).to.equal(200)
+      }
+      if (interception[2].response) {
+        expect(interception[2].response.statusCode).to.equal(200)
+      }
+    }
+  )
 })
 
 Then('Individual section data should be updated', () => {
