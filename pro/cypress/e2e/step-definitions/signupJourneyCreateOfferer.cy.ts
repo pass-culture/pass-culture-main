@@ -92,7 +92,7 @@ When('I fill activity form without target audience', () => {
 
 When('I validate the registration', () => {
   cy.intercept({ method: 'POST', url: '/offerers/new' }).as('createOfferer')
-  cy.wait(2000)
+  cy.wait(2000) // @todo: delete this when random failures fixed
   cy.findByText('Valider et créer ma structure').click()
 })
 
