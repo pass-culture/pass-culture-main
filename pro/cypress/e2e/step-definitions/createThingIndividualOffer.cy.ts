@@ -2,7 +2,7 @@ import { Then, When } from '@badeball/cypress-cucumber-preprocessor'
 
 When('I fill in details for physical offer', () => {
   cy.setFeatureFlags([{ name: 'WIP_SPLIT_OFFER', isActive: true }])
-  cy.findByLabelText('Titre de l’offre *').type(
+  cy.findByLabelText('Titre de l’offre *', { timeout: 30000 }).type(
     'H2G2 Le Guide du voyageur galactique'
   )
   cy.findByLabelText('Description').type(
@@ -15,13 +15,18 @@ When('I fill in details for physical offer', () => {
   cy.findByLabelText('Sous-catégorie *').select('Livre papier')
   cy.findByLabelText('Auteur').type('Douglas Adams')
   cy.findByLabelText('EAN-13 (European Article Numbering)').type(ean)
+})
+
+When('I add a zoomed image', () => {
   cy.findByText('Ajouter une image').click()
-  cy.get('input[type=file]').selectFile('cypress/data/offer-image.jpg', {
+  cy.get('input[type=file]').selectFile('cypress/data/librairie.jpeg', {
     force: true,
   })
   cy.findByLabelText('Crédit de l’image').type(
     'Les êtres les plus intelligents de l’univers'
   )
+  cy.get('input[type=range]').setSliderValue(1.7)
+
   cy.findByText('Suivant').click()
   cy.findByText('Enregistrer').click()
 })
@@ -73,11 +78,19 @@ When('I go to my offers list', () => {
   })
 })
 
-Then('my new physical offer should be displayed', () => {
+Then('my new physical offer with zoomed image should be displayed', () => {
   cy.contains('H2G2 Le Guide du voyageur galactique')
   cy.get('@ean').then((ean) => {
     cy.contains(ean.toString())
   })
+  cy.findAllByTestId('offer-item-row')
+    .get('img')
+    .eq(0)
+    .should('be.visible')
+    .and(($img) => {
+      expect($img[0].naturalWidth).to.eq(470) // 750 if not zoomed
+      expect($img[0].naturalHeight).to.eq(705) // 1125 if not zoomed
+    })
 })
 
 When('I validate offer details step', () => {

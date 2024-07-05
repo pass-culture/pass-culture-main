@@ -12,6 +12,8 @@ declare namespace Cypress {
     refuseCookies(): Chainable
 
     getFakeAdageToken(): Chainable
+
+    setSliderValue(value: number): Chainable<void>
   }
 }
 
