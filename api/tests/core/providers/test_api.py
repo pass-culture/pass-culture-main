@@ -643,3 +643,209 @@ class UpdateProviderExternalUrlsTest:
         assert provider.bookingExternalUrl == previous_booking_url
         assert provider.cancelExternalUrl == "https://aurevoir.com"
         assert provider.notificationExternalUrl == previous_notification_url
+
+
+class UpdateVenueProviderExternalUrlsTest:
+
+    def test_should_raise_because_ticketing_urls_cannot_be_unset(self):
+        provider_without_ticketing_urls = providers_factories.ProviderFactory()
+        venue = offerers_factories.VenueFactory()
+        venue_provider = providers_factories.VenueProviderFactory(provider=provider_without_ticketing_urls, venue=venue)
+        venue_provider_external_urls = providers_factories.VenueProviderExternalUrlsFactory(
+            venueProvider=venue_provider
+        )
+        previous_booking_url = venue_provider_external_urls.bookingExternalUrl
+        previous_cancel_url = venue_provider_external_urls.cancelExternalUrl
+        event_offer = offers_factories.EventOfferFactory(
+            lastProvider=provider_without_ticketing_urls,
+            venue=venue,
+            withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
+        )
+        offers_factories.StockFactory(offer=event_offer)
+
+        with pytest.raises(exceptions.TicketingUrlsCannotBeUnset) as e:
+            api.update_venue_provider_external_urls(venue_provider, booking_external_url=None, cancel_external_url=None)
+
+        assert e.value.blocking_events_ids == [event_offer.id]
+        # Should not have changed
+        assert venue_provider_external_urls.bookingExternalUrl == previous_booking_url
+        assert venue_provider_external_urls.cancelExternalUrl == previous_cancel_url
+
+    def test_should_raise_because_update_unset_only_one_ticketing_url(self):
+        provider_without_ticketing_urls = providers_factories.ProviderFactory()
+        venue = offerers_factories.VenueFactory()
+        venue_provider = providers_factories.VenueProviderFactory(provider=provider_without_ticketing_urls, venue=venue)
+        venue_provider_external_urls = providers_factories.VenueProviderExternalUrlsFactory(
+            venueProvider=venue_provider
+        )
+        previous_booking_url = venue_provider_external_urls.bookingExternalUrl
+        previous_cancel_url = venue_provider_external_urls.cancelExternalUrl
+
+        # Try to unset only `booking_external_url`
+        with pytest.raises(exceptions.TicketingUrlsMustBeBothSet):
+            api.update_venue_provider_external_urls(venue_provider, booking_external_url=None)
+
+        # Try to unset only `cancel_external_url`
+        with pytest.raises(exceptions.TicketingUrlsMustBeBothSet):
+            api.update_venue_provider_external_urls(venue_provider, cancel_external_url=None)
+
+        # Should not have changed
+        assert venue_provider_external_urls.bookingExternalUrl == previous_booking_url
+        assert venue_provider_external_urls.cancelExternalUrl == previous_cancel_url
+
+    def test_should_raise_because_update_set_only_one_ticketing_url(self):
+        provider_without_ticketing_urls = providers_factories.ProviderFactory()
+        venue = offerers_factories.VenueFactory()
+        venue_provider = providers_factories.VenueProviderFactory(provider=provider_without_ticketing_urls, venue=venue)
+
+        # Try to set only `booking_external_url`
+        with pytest.raises(exceptions.TicketingUrlsMustBeBothSet):
+            api.update_venue_provider_external_urls(venue_provider, booking_external_url="https://coucou.com")
+
+        # Try to set only `cancel_external_url`
+        with pytest.raises(exceptions.TicketingUrlsMustBeBothSet):
+            api.update_venue_provider_external_urls(venue_provider, cancel_external_url="https://aurevoir.com")
+
+    def test_should_do_nothing(self):
+        provider = providers_factories.ProviderFactory()
+        venue = offerers_factories.VenueFactory()
+        venue_provider = providers_factories.VenueProviderFactory(provider=provider, venue=venue)
+        venue_provider_external_urls = providers_factories.VenueProviderExternalUrlsFactory(
+            venueProvider=venue_provider
+        )
+        previous_booking_url = venue_provider_external_urls.bookingExternalUrl
+        previous_cancel_url = venue_provider_external_urls.cancelExternalUrl
+        previous_notification_url = venue_provider_external_urls.notificationExternalUrl
+
+        api.update_venue_provider_external_urls(venue_provider)
+
+        # Should not have changed
+        assert venue_provider_external_urls.bookingExternalUrl == previous_booking_url
+        assert venue_provider_external_urls.cancelExternalUrl == previous_cancel_url
+        assert venue_provider_external_urls.notificationExternalUrl == previous_notification_url
+
+    def test_should_update_notification_url(self):
+        provider = providers_factories.ProviderFactory()
+        venue = offerers_factories.VenueFactory()
+        venue_provider = providers_factories.VenueProviderFactory(provider=provider, venue=venue)
+        venue_provider_external_urls = providers_factories.VenueProviderExternalUrlsFactory(
+            venueProvider=venue_provider
+        )
+        previous_booking_url = venue_provider_external_urls.bookingExternalUrl
+        previous_cancel_url = venue_provider_external_urls.cancelExternalUrl
+
+        api.update_venue_provider_external_urls(venue_provider, notification_external_url="https://jado.re/les/notifs")
+
+        # Should have updated `notificationExternalUrl`
+        assert venue_provider_external_urls.bookingExternalUrl == previous_booking_url
+        assert venue_provider_external_urls.cancelExternalUrl == previous_cancel_url
+        assert venue_provider_external_urls.notificationExternalUrl == "https://jado.re/les/notifs"
+
+    def test_should_update_cancel_url(self):
+        provider = providers_factories.ProviderFactory()
+        venue = offerers_factories.VenueFactory()
+        venue_provider = providers_factories.VenueProviderFactory(provider=provider, venue=venue)
+        venue_provider_external_urls = providers_factories.VenueProviderExternalUrlsFactory(
+            venueProvider=venue_provider
+        )
+        previous_booking_url = venue_provider_external_urls.bookingExternalUrl
+        previous_notification_url = venue_provider_external_urls.notificationExternalUrl
+
+        api.update_venue_provider_external_urls(venue_provider, cancel_external_url="https://adieu.com")
+
+        # Should have updated `cancelExternalUrl`
+        assert venue_provider_external_urls.bookingExternalUrl == previous_booking_url
+        assert venue_provider_external_urls.cancelExternalUrl == "https://adieu.com"
+        assert venue_provider_external_urls.notificationExternalUrl == previous_notification_url
+
+    def test_should_update_booking_url(self):
+        provider = providers_factories.ProviderFactory()
+        venue = offerers_factories.VenueFactory()
+        venue_provider = providers_factories.VenueProviderFactory(provider=provider, venue=venue)
+        venue_provider_external_urls = providers_factories.VenueProviderExternalUrlsFactory(
+            venueProvider=venue_provider
+        )
+        previous_cancel_url = venue_provider_external_urls.cancelExternalUrl
+        previous_notification_url = venue_provider_external_urls.notificationExternalUrl
+
+        api.update_venue_provider_external_urls(venue_provider, booking_external_url="https://bonjour.com")
+
+        # Should have updated `bookingExternalUrl`
+        assert venue_provider_external_urls.bookingExternalUrl == "https://bonjour.com"
+        assert venue_provider_external_urls.cancelExternalUrl == previous_cancel_url
+        assert venue_provider_external_urls.notificationExternalUrl == previous_notification_url
+
+    def test_should_unset_ticketing_urls_because_no_linked_events(self):
+        provider = providers_factories.ProviderFactory()
+        venue = offerers_factories.VenueFactory()
+        venue_provider = providers_factories.VenueProviderFactory(provider=provider, venue=venue)
+        venue_provider_external_urls = providers_factories.VenueProviderExternalUrlsFactory(
+            venueProvider=venue_provider
+        )
+        previous_notification_url = venue_provider_external_urls.notificationExternalUrl
+
+        api.update_venue_provider_external_urls(venue_provider, booking_external_url=None, cancel_external_url=None)
+
+        # Should have unset ticketing urls
+        assert venue_provider_external_urls.bookingExternalUrl == None
+        assert venue_provider_external_urls.cancelExternalUrl == None
+        assert venue_provider_external_urls.notificationExternalUrl == previous_notification_url
+
+    def test_should_unset_ticketing_urls_because_ticketing_urls_are_defined_at_provider_level(self):
+        provider_with_ticketing_urls = providers_factories.PublicApiProviderFactory()
+        # Venue
+        venue = offerers_factories.VenueFactory()
+        venue_provider = providers_factories.VenueProviderFactory(provider=provider_with_ticketing_urls, venue=venue)
+        venue_provider_external_urls = providers_factories.VenueProviderExternalUrlsFactory(
+            venueProvider=venue_provider
+        )
+        # Event
+        event_offer = offers_factories.EventOfferFactory(
+            lastProvider=provider_with_ticketing_urls,
+            venue=venue,
+            withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
+        )
+        offers_factories.StockFactory(offer=event_offer)
+        previous_notification_url = venue_provider_external_urls.notificationExternalUrl
+
+        api.update_venue_provider_external_urls(venue_provider, booking_external_url=None, cancel_external_url=None)
+
+        # Should have unset ticketing urls
+        assert venue_provider_external_urls.bookingExternalUrl == None
+        assert venue_provider_external_urls.cancelExternalUrl == None
+        assert venue_provider_external_urls.notificationExternalUrl == previous_notification_url
+
+    def test_should_delete_venue_provider_external_urls(self):
+        provider = providers_factories.ProviderFactory()
+        # Venue
+        venue = offerers_factories.VenueFactory()
+        venue_provider = providers_factories.VenueProviderFactory(provider=provider, venue=venue)
+        venue_provider_external_urls = providers_factories.VenueProviderExternalUrlsFactory(
+            venueProvider=venue_provider
+        )
+
+        assert venue_provider.externalUrls == venue_provider_external_urls
+
+        api.update_venue_provider_external_urls(
+            venue_provider, booking_external_url=None, cancel_external_url=None, notification_external_url=None
+        )
+
+        # Should have deleted `venue_provider_external_urls`
+        assert venue_provider.externalUrls == None
+
+    def test_should_create_venue_provider_external_urls(self):
+        provider = providers_factories.ProviderFactory()
+        # Venue
+        venue = offerers_factories.VenueFactory()
+        venue_provider = providers_factories.VenueProviderFactory(provider=provider, venue=venue)
+
+        assert venue_provider.externalUrls == None
+
+        api.update_venue_provider_external_urls(
+            venue_provider, booking_external_url="https://helloooooo.co", cancel_external_url="https://byyyyyye.co"
+        )
+
+        # Should have created `venue_provider_external_urls`
+        assert venue_provider.externalUrls.bookingExternalUrl == "https://helloooooo.co"
+        assert venue_provider.externalUrls.cancelExternalUrl == "https://byyyyyye.co"
+        assert venue_provider.externalUrls.notificationExternalUrl == None
