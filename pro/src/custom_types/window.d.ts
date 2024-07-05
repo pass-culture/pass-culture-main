@@ -17,7 +17,7 @@ declare global {
       show: () => void
     }
 
-    grecaptcha: {
+    grecaptcha?: {
       execute: (siteKey: string, action: { action: string }) => Promise<string>
       ready: (callback: () => Promise<void>) => void
     }

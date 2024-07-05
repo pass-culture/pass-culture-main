@@ -13,6 +13,7 @@ import { GET_VENUE_TYPES_QUERY_KEY } from 'config/swrQueryKeys'
 import { DEFAULT_ACTIVITY_VALUES } from 'context/SignupJourneyContext/constants'
 import { useSignupJourneyContext } from 'context/SignupJourneyContext/SignupJourneyContext'
 import { Events } from 'core/FirebaseEvents/constants'
+import { RECAPTCHA_ERROR, RECAPTCHA_ERROR_MESSAGE } from 'core/shared/constants'
 import { useCurrentUser } from 'hooks/useCurrentUser'
 import { useInitReCaptcha } from 'hooks/useInitReCaptcha'
 import { useNotification } from 'hooks/useNotification'
@@ -76,37 +77,41 @@ export const Validation = (): JSX.Element => {
   }
 
   const onSubmit = async () => {
-    /* istanbul ignore next: ENV dependant */
-    const token = await getReCaptchaToken('saveNewOnboardingData')
-
-    const data: SaveNewOnboardingDataQueryModel = {
-      publicName: offerer.publicName ?? '',
-      siret: offerer.siret.replaceAll(' ', ''),
-      venueTypeCode:
-        /* istanbul ignore next: should not have empty or null venueTypeCode at this step */
-        activity.venueTypeCode,
-      webPresence: activity.socialUrls.join(', '),
-      target:
-        /* istanbul ignore next: the form validation already handles this */
-        activity.targetCustomer ?? Target.EDUCATIONAL,
-      createVenueWithoutSiret: offerer.createVenueWithoutSiret ?? false,
-      banId: offerer.banId,
-      longitude: offerer.longitude ?? 0,
-      latitude: offerer.latitude ?? 0,
-      city: offerer.city,
-      postalCode: offerer.postalCode,
-      street: offerer.street,
-      token,
-    }
-
     try {
+      /* istanbul ignore next: ENV dependant */
+      const token = await getReCaptchaToken('saveNewOnboardingData')
+
+      const data: SaveNewOnboardingDataQueryModel = {
+        publicName: offerer.publicName ?? '',
+        siret: offerer.siret.replaceAll(' ', ''),
+        venueTypeCode:
+          /* istanbul ignore next: should not have empty or null venueTypeCode at this step */
+          activity.venueTypeCode,
+        webPresence: activity.socialUrls.join(', '),
+        target:
+          /* istanbul ignore next: the form validation already handles this */
+          activity.targetCustomer ?? Target.EDUCATIONAL,
+        createVenueWithoutSiret: offerer.createVenueWithoutSiret ?? false,
+        banId: offerer.banId,
+        longitude: offerer.longitude ?? 0,
+        latitude: offerer.latitude ?? 0,
+        city: offerer.city,
+        postalCode: offerer.postalCode,
+        street: offerer.street,
+        token,
+      }
+
       const response = await api.saveNewOnboardingData(data)
       dispatch(updateUser({ ...currentUser, hasUserOfferer: true }))
       notify.success('Votre structure a bien été créée')
       navigate('/accueil')
       dispatch(updateSelectedOffererId(response.id))
     } catch (error) {
-      notify.error('Erreur lors de la création de votre structure')
+      if (error === RECAPTCHA_ERROR) {
+        notify.error(RECAPTCHA_ERROR_MESSAGE)
+      } else {
+        notify.error('Erreur lors de la création de votre structure')
+      }
     }
   }
 
