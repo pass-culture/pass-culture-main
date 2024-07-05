@@ -69,6 +69,20 @@ export const BookingsScreen = <
   const isNewInterfaceActive = useIsNewInterfaceActive()
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
+  const initialAppliedFilters = {
+    ...DEFAULT_PRE_FILTERS,
+    ...{
+      offerId: isNewInterfaceActive ? selectedOffererId?.toString() : undefined,
+    },
+  }
+  const [appliedPreFilters, setAppliedPreFilters] = useState<PreFiltersParams>(
+    initialAppliedFilters
+  )
+  const [wereBookingsRequested, setWereBookingsRequested] = useState(false)
+  const [urlParams, setUrlParams] = useState<PreFiltersParams>(
+    initialAppliedFilters
+  )
+
   const venuesQuery = useSWR(
     [
       GET_VENUES_QUERY_KEY,
@@ -82,20 +96,6 @@ export const BookingsScreen = <
       id: String(venue.value),
       displayName: venue.label,
     })
-  )
-
-  const initialAppliedFilters = {
-    ...DEFAULT_PRE_FILTERS,
-    ...{
-      offerVenueId: isNewInterfaceActive ? venues[0]?.id : 'all',
-    },
-  }
-  const [appliedPreFilters, setAppliedPreFilters] = useState<PreFiltersParams>(
-    initialAppliedFilters
-  )
-  const [wereBookingsRequested, setWereBookingsRequested] = useState(false)
-  const [urlParams, setUrlParams] = useState<PreFiltersParams>(
-    initialAppliedFilters
   )
 
   const bookingsQuery = useSWR(
