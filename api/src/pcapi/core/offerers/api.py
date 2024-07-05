@@ -422,6 +422,13 @@ def create_venue(venue_data: venues_serialize.PostVenueBodyModel, author: users_
 
     if settings.IS_INTEGRATION:
         # Always enable collective features for new venues in integration
+        # Update managing offerer now and not when it is created to avoid
+        # some environment specific code spread here and there.
+        offerer = offerers_models.Offerer.query.get(venue.managingOffererId)
+        if offerer:
+            # if no offerer is found, venue won't be saved because of invalid
+            # foreign key id. No need to handle this here, let it fail later.
+            offerer.allowedOnAdage = True
         venue.adageId = str(int(time.time()))
         venue.adageInscriptionDate = datetime.utcnow()
 
