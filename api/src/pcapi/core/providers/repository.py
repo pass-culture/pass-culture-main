@@ -223,7 +223,7 @@ def get_future_events_requiring_provider_ticketing_system(
         .outerjoin(models.VenueProviderExternalUrls, models.VenueProvider.externalUrls)
     )
 
-    # Events linked to the the provider & requiring a ticketing system
+    # Events linked to the provider & requiring a ticketing system
     events_query = events_query.filter(
         offers_models.Offer.lastProvider == provider,
         offers_models.Offer.isEvent,
