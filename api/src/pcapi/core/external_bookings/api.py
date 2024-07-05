@@ -104,17 +104,26 @@ def book_event_ticket(
     stock: offers_models.Stock,
     beneficiary: users_models.User,
     provider: providers_models.Provider,
+    venue_provider: providers_models.VenueProvider | None,
 ) -> tuple[list[external_bookings_models.Ticket], int | None]:
     payload = serialize.ExternalEventBookingRequest.build_external_booking(stock, booking, beneficiary)
     json_payload = payload.json()
     hmac_signature = generate_hmac_signature(provider.hmacKey, json_payload)
+
+    # Booking Url (Venue booking url > provider booking url)
+    booking_url = provider.bookingExternalUrl
+
+    if venue_provider and venue_provider.externalUrls and venue_provider.externalUrls.bookingExternalUrl:
+        booking_url = venue_provider.externalUrls.bookingExternalUrl
+
     response = requests.post(
-        provider.bookingExternalUrl,
+        booking_url,
         json=json_payload,
         hmac=hmac_signature,
         headers={"Content-Type": "application/json"},
     )
     _check_external_booking_response_is_ok(response)
+
     try:
         parsed_response = pydantic_v1.parse_obj_as(serialize.ExternalEventBookingResponse, response.json())
     except (pydantic_v1.ValidationError, json.JSONDecodeError) as err:
@@ -126,6 +135,7 @@ def book_event_ticket(
     parsed_response.tickets = _verify_and_return_tickets_with_same_quantity_as_booking(
         parsed_response.tickets, booking, stock
     )
+
     for ticket in parsed_response.tickets:
         add_to_queue(
             REDIS_EXTERNAL_BOOKINGS_NAME,
@@ -139,6 +149,7 @@ def book_event_ticket(
                 },
             },
         )
+
     return [
         Ticket(barcode=ticket.barcode, seat_number=ticket.seat) for ticket in parsed_response.tickets
     ], parsed_response.remainingQuantity
