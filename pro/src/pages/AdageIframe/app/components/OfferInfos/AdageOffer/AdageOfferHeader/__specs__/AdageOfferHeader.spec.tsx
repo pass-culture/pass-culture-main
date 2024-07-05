@@ -70,10 +70,10 @@ describe('AdageOfferHeader', () => {
     renderAdageOfferHeader()
 
     expect(
-      screen.getByRole('button', { name: 'Enregistrer en favoris' })
+      screen.getByRole('button', { name: 'Mettre en favoris' })
     ).toBeInTheDocument()
     expect(
-      screen.getByRole('link', { name: 'Partager l’offre par email' })
+      screen.getByRole('link', { name: 'Partager par email' })
     ).toBeInTheDocument()
   })
 
@@ -84,10 +84,10 @@ describe('AdageOfferHeader', () => {
     })
 
     expect(
-      screen.queryByRole('button', { name: 'Enregistrer en favoris' })
+      screen.queryByRole('button', { name: 'Mettre en favoris' })
     ).not.toBeInTheDocument()
     expect(
-      screen.queryByRole('link', { name: 'Partager l’offre par email' })
+      screen.queryByRole('link', { name: 'Partager par email' })
     ).not.toBeInTheDocument()
   })
 
@@ -98,7 +98,7 @@ describe('AdageOfferHeader', () => {
     })
 
     expect(
-      screen.queryByRole('button', { name: 'Enregistrer en favoris' })
+      screen.queryByRole('button', { name: 'Mettre en favoris' })
     ).not.toBeInTheDocument()
   })
 
