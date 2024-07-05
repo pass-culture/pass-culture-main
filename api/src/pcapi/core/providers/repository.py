@@ -244,3 +244,29 @@ def get_future_events_requiring_provider_ticketing_system(
     )
 
     return events_query.all()
+
+
+def get_future_venue_events_requiring_a_ticketing_system(
+    venue_provider: models.VenueProvider,
+) -> list[offers_models.Offer]:
+    # base query
+    events_query = (
+        offers_models.Offer.query.join(offers_models.Stock, offers_models.Offer.stocks)
+        .join(Venue, offers_models.Offer.venue)
+        .join(models.VenueProvider, Venue.venueProviders)
+    )
+
+    # Events linked to the provider and venue, requiring a ticketing system
+    events_query = events_query.filter(
+        offers_models.Offer.lastProvider == venue_provider.provider,
+        offers_models.Offer.venue == venue_provider.venue,
+        offers_models.Offer.isEvent,
+        offers_models.Offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP,
+    )
+
+    # Events with future stocks
+    events_query = events_query.filter(
+        offers_models.Stock.beginningDatetime >= datetime.datetime.utcnow(),
+    )
+
+    return events_query.all()
