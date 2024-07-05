@@ -135,20 +135,6 @@ When('I validate recurrence step', () => {
   cy.contains('Accepter les réservations "Duo" : Oui')
 })
 
-When('I publish my offer', () => {
-  cy.intercept({ method: 'PATCH', url: '/offers/publish', times: 1 }).as(
-    'publishOffer'
-  )
-  cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
-  cy.findByText('Publier l’offre').click()
-  cy.wait('@publishOffer', {
-    timeout: 60000,
-    requestTimeout: 60000,
-    responseTimeout: 60000,
-  })
-  cy.wait('@getOffer', { timeout: 60000 })
-})
-
 When('I go to the offers list', () => {
   cy.intercept({ method: 'GET', url: '/offerers/names' }).as('getOfferersNames')
   cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')

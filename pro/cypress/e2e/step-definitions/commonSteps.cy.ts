@@ -97,3 +97,17 @@ Then(
 When('I select {string} in {string}', (option: string, filter: string) => {
   cy.findByLabelText(filter).select(option)
 })
+
+When('I publish my offer', () => {
+  cy.intercept({ method: 'PATCH', url: '/offers/publish', times: 1 }).as(
+    'publishOffer'
+  )
+  cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
+  cy.findByText('Publier l’offre').click()
+  cy.wait('@publishOffer', {
+    timeout: 60000,
+    requestTimeout: 60000,
+    responseTimeout: 60000,
+  })
+  cy.wait('@getOffer', { timeout: 60000 })
+})
