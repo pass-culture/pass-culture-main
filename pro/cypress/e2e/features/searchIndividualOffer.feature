@@ -2,7 +2,9 @@
 Feature: Search individual offers
 
   Background:
-    Given I am logged in
+    Given pro user new nav has been created
+    And individual offers has been created
+    And I am logged in
     And I go to the "Offres" page
 
   Scenario: A search with a name should display expected results

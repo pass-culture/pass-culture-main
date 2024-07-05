@@ -5,6 +5,39 @@ import {
   When,
 } from '@badeball/cypress-cucumber-preprocessor'
 
+let user_email = ''
+Given('pro user has been created', () => {
+  cy.request(
+    'http://localhost:5001/sanboxes/pro_01_create_pro_user/create_pro_user_with_venue_bank_account_and_userofferer'
+  ).then((response) => {
+    expect(response.status).to.eq(200)
+    user_email = response.body.user.email
+    cy.log('Email used: ' + user_email)
+  })
+})
+
+Given('pro user new nav has been created', () => {
+  cy.request(
+    'http://localhost:5001/sanboxes/pro_01_create_pro_user/create_pro_user_new_nav'
+  ).then((response) => {
+    expect(response.status).to.eq(200)
+    user_email = response.body.user.email
+    cy.log('Email used: ' + user_email)
+  })
+})
+
+Given('create specific invoice', () => {
+  cy.request(
+    'http://localhost:5001/sanboxes/pro_02_create_specific_invoice/create_specific_invoice'
+  )
+})
+
+Given('individual offers has been created', () => {
+  cy.request(
+    'http://localhost:5001/sanboxes/pro_03_offers/create_individual_offers'
+  )
+})
+
 Given('I open the {string} page', (page: string) => {
   cy.visit('/' + page)
 })
@@ -20,15 +53,24 @@ When('I go to the {string} page', (page: string) => {
 // this account is also in the new interface now
 Given('I am logged in', () => {
   cy.login({
-    email: 'retention_structures@example.com',
+    email: user_email,
     password: 'user@AZERTY123',
+  })
+  cy.findAllByTestId('spinner').should('not.exist')
+})
+
+Given('I am logged in with an empty account', () => {
+  cy.login({
+    email: user_email,
+    password: 'user@AZERTY123',
+    redirectUrl: '/parcours-inscription',
   })
   cy.findAllByTestId('spinner').should('not.exist')
 })
 
 Given('I am logged in with the new interface', () => {
   cy.login({
-    email: 'activation_new_nav@example.com',
+    email: user_email,
     password: 'user@AZERTY123',
   })
   cy.findAllByTestId('spinner').should('not.exist')

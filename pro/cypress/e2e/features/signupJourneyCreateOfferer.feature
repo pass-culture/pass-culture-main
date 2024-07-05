@@ -1,8 +1,11 @@
 @P0 @retries(runMode=0)
 Feature: Signup journey
 
+  Background:
+    Given pro user new nav has been created
+    And I am logged in with an empty account
+
   Scenario: With a new account, create a new offerer with an unknown SIRET
-    Given I log in with a "first" new account
     When I start offerer creation
     And I specify an offerer with a SIRET
     And I fill identification form with a public name
@@ -14,8 +17,8 @@ Feature: Signup journey
     Then the offerer is created
 
   Scenario: With a new account and a known offerer, create a new offerer in the space
-    Given I log in with a "second" new account
-    When I start offerer creation
+    When individual offers has been created
+    And I start offerer creation
     And I specify an offerer with a SIRET
     And I add a new offerer
     And I fill identification form with a new address
@@ -28,8 +31,8 @@ Feature: Signup journey
     And the attachment is in progress
 
   Scenario: With a new account and a known offerer, ask to join space
-    Given I log in with a "third" new account
-    When I start offerer creation
+    When individual offers has been created
+    And I start offerer creation
     And I specify an offerer with a SIRET
     And I chose to join the space
     Then I am redirected to homepage
