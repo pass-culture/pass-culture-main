@@ -85,4 +85,22 @@ Cypress.Commands.add('getFakeAdageToken', () => {
   })
 })
 
+// See https://github.com/cypress-io/cypress/issues/1570#issuecomment-891244917
+// Workaround bc onChange not triggered for an input type='range' rendered by React
+Cypress.Commands.add(
+  'setSliderValue',
+  { prevSubject: 'element' },
+  (subject, value) => {
+    const element = subject[0]
+
+    const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+      window.HTMLInputElement.prototype,
+      'value'
+    )?.set
+
+    nativeInputValueSetter?.call(element, value)
+    element.dispatchEvent(new Event('input', { bubbles: true }))
+  }
+)
+
 export {}

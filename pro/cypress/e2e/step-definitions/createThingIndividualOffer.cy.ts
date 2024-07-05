@@ -1,13 +1,13 @@
 import { Then, When } from '@badeball/cypress-cucumber-preprocessor'
+const offerTitle = 'H2G2 Le Guide du voyageur galactique'
+const offerDesc =
+  'Une quête pour obtenir la question ultime sur la vie, l’univers et tout le reste.'
 
 When('I fill in details for physical offer', () => {
   cy.setFeatureFlags([{ name: 'WIP_SPLIT_OFFER', isActive: true }])
-  cy.findByLabelText('Titre de l’offre *').type(
-    'H2G2 Le Guide du voyageur galactique'
-  )
-  cy.findByLabelText('Description').type(
-    'Une quête pour obtenir la question ultime sur la vie, l’univers et tout le reste.'
-  )
+  cy.findByLabelText('Titre de l’offre *').type(offerTitle)
+  cy.findByLabelText('Description').type(offerDesc)
+
   // Random 13-digit number because we can't use the same EAN twice
   const ean = String(Math.floor(1000000000000 + Math.random() * 9000000000000))
   cy.wrap(ean).as('ean')
@@ -16,14 +16,34 @@ When('I fill in details for physical offer', () => {
   cy.findByLabelText('Auteur').type('Douglas Adams')
   cy.findByLabelText('EAN-13 (European Article Numbering)').type(ean)
   cy.findByText('Ajouter une image').click()
-  cy.get('input[type=file]').selectFile('cypress/data/offer-image.jpg', {
+  cy.get('input[type=file]').selectFile('cypress/data/librairie.jpeg', {
     force: true,
   })
   cy.findByLabelText('Crédit de l’image').type(
     'Les êtres les plus intelligents de l’univers'
   )
+  cy.get('input[type=range]').setSliderValue(1.7)
+
   cy.findByText('Suivant').click()
   cy.findByText('Enregistrer').click()
+})
+
+Then('the details of {string} offer should be correct', (venueName: string) => {
+  cy.findByLabelText('Lieu *').should('have.text', venueName)
+  cy.findByLabelText('Titre de l’offre *').should('have.value', offerTitle)
+  cy.findByLabelText('Description').should('have.text', offerDesc)
+
+  // With a 1.7x zoom, width=470 and height=705
+  cy.findAllByTestId('image-preview').then(($img) => {
+    cy.wrap($img)
+      .should('be.visible')
+      .should('have.prop', 'naturalWidth')
+      .and('eq', 470)
+    cy.wrap($img)
+      .should('be.visible')
+      .should('have.prop', 'naturalHeight')
+      .and('eq', 705)
+  })
 })
 
 When('I fill in useful informations for physical offer', () => {
