@@ -7,7 +7,11 @@ export const useInitReCaptcha = (): void => {
     const gcaptchaScript = initReCaptchaScript()
 
     return function cleanup() {
-      gcaptchaScript.remove()
+      // Can be undefined according to sentry errors
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      if (gcaptchaScript) {
+        gcaptchaScript.remove()
+      }
     }
   }, [])
 }
