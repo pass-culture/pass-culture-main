@@ -8602,6 +8602,42 @@
                 "title": "VenuePhysicalLocation",
                 "type": "object"
             },
+            "VenueProviderExternalUrlsUpdate": {
+                "properties": {
+                    "bookingUrl": {
+                        "description": "Url on which tickets requests for events you created are sent",
+                        "example": "https://ultimate-ticketing-solution.com/pass-culture-booking-endpoint",
+                        "format": "uri",
+                        "maxLength": 2083,
+                        "minLength": 1,
+                        "nullable": true,
+                        "title": "Bookingurl",
+                        "type": "string"
+                    },
+                    "cancelUrl": {
+                        "description": "Url on which tickets cancellation requests for events you created are sent",
+                        "example": "https://ultimate-ticketing-solution.com/pass-culture-cancellation-endpoint",
+                        "format": "uri",
+                        "maxLength": 2083,
+                        "minLength": 1,
+                        "nullable": true,
+                        "title": "Cancelurl",
+                        "type": "string"
+                    },
+                    "notificationUrl": {
+                        "description": "Url on which booking notifications on offers you created are sent",
+                        "example": "https://ultimate-ticketing-solution.com/pass-culture-endpoint",
+                        "format": "uri",
+                        "maxLength": 2083,
+                        "minLength": 1,
+                        "nullable": true,
+                        "title": "Notificationurl",
+                        "type": "string"
+                    }
+                },
+                "title": "VenueProviderExternalUrlsUpdate",
+                "type": "object"
+            },
             "VenueResponse": {
                 "properties": {
                     "accessibility": {
@@ -11030,6 +11066,83 @@
                     }
                 ],
                 "summary": "Update my provider",
+                "tags": [
+                    "Providers"
+                ]
+            }
+        },
+        "/public/providers/v1/venues/{venue_id}": {
+            "patch": {
+                "description": "Endpoint to set the urls used by our notification system to notify/request your solution.",
+                "operationId": "UpdateVenueExternalUrls",
+                "parameters": [
+                    {
+                        "description": "",
+                        "in": "path",
+                        "name": "venue_id",
+                        "required": true,
+                        "schema": {
+                            "format": "int32",
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/VenueProviderExternalUrlsUpdate"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "This venue external urls have been successfully updated"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "The request is invalid. The response body contains a list of errors."
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
+                                }
+                            }
+                        },
+                        "description": "Authentication is necessary to use this API."
+                    },
+                    "404": {
+                        "description": "The venue could not found for your API key."
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Entity"
+                    },
+                    "429": {
+                        "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "summary": "Update external urls for specific venues",
                 "tags": [
                     "Providers"
                 ]
