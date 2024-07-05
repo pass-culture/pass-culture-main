@@ -14,6 +14,9 @@ class ErrorResponseModel(BaseModel):
 HTTP_200_MESSAGE = "Your request was succesful."
 
 HTTP_200_REQUEST_SUCCESSFUL = {"HTTP_200": (None, "Your request was succesful.")}
+HTTP_204_VENUE_PROVIDER_EXTERNAL_URLS_UPDATE_SUCCESS = {
+    "HTTP_204": (None, "This venue external urls have been successfully updated"),
+}
 HTTP_204_BOOKING_VALIDATION_SUCCESS = {
     "HTTP_204": (None, "This booking has been successfully validated"),
 }
