@@ -7,10 +7,10 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import models as offers_models
-from pcapi.core.providers.allocine_movie_list import create_product
+from pcapi.core.providers.allocine import create_product
+from pcapi.core.providers.allocine import get_movie_poster
+from pcapi.core.providers.allocine import get_movies_showtimes
 import pcapi.core.providers.models as providers_models
-from pcapi.domain.allocine import get_movie_poster
-from pcapi.domain.allocine import get_movies_showtimes
 from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo

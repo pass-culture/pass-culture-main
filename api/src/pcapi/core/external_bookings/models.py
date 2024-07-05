@@ -22,9 +22,9 @@ class Movie:
     title: str
     duration: int  # duration in minutes
     description: str
-    posterpath: str | None
+    poster_url: str | None
     visa: str | None
-    allocineid: str | None = None
+    allocine_id: str | None = None
 
 
 class ExternalBookingsClientAPI:

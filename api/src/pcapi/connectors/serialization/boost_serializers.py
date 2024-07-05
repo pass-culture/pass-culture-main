@@ -30,7 +30,7 @@ class Film2(BaseModel):
             title=self.titleCnc,
             duration=self.duration,
             description="",  # FIXME
-            posterpath=self.posterUrl,
+            poster_url=self.posterUrl,
             visa=str(self.numVisa),
         )
 
