@@ -49,6 +49,7 @@ export const Slider = ({
         min={min}
         max={max}
         step={inputAttrs.step || DEFAULT_SLIDER_STEP_VALUE}
+        data-testid="image-zoom-slider"
       />
       {displayMinMaxValues && (
         <div className={styles['min-max-container']}>

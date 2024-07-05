@@ -18,6 +18,8 @@ When('I fill in details for physical offer', () => {
   cy.get('input[type=file]').selectFile('cypress/data/offer-image.jpg', {
     force: true,
   })
+  // Check zoom
+  cy.findByTestId('image-zoom-slider').move({ deltaX: 1.04, deltaY: 0 })
   cy.findByLabelText('Crédit de l’image').type(
     'Les êtres les plus intelligents de l’univers'
   )
