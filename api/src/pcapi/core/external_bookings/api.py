@@ -133,7 +133,7 @@ def book_event_ticket(
         )
         raise exceptions.ExternalBookingException("External booking failed.")
     parsed_response.tickets = _verify_and_return_tickets_with_same_quantity_as_booking(
-        parsed_response.tickets, booking, stock
+        parsed_response.tickets, booking, stock, venue_provider
     )
 
     for ticket in parsed_response.tickets:
@@ -156,7 +156,10 @@ def book_event_ticket(
 
 
 def _verify_and_return_tickets_with_same_quantity_as_booking(
-    tickets: list[serialize.ExternalEventTicket], booking: bookings_models.Booking, stock: offers_models.Stock
+    tickets: list[serialize.ExternalEventTicket],
+    booking: bookings_models.Booking,
+    stock: offers_models.Stock,
+    venue_provider: providers_models.VenueProvider | None,
 ) -> list[serialize.ExternalEventTicket]:
     if len(tickets) == booking.quantity:
         return tickets
@@ -175,7 +178,7 @@ def _verify_and_return_tickets_with_same_quantity_as_booking(
         )
         return [tickets[1]]
     if len(tickets) == 1 and booking.quantity == 2:
-        cancel_event_ticket(stock.offer.lastProvider, stock, [tickets[0].barcode], False)
+        cancel_event_ticket(stock.offer.lastProvider, stock, [tickets[0].barcode], False, venue_provider)
         raise exceptions.ExternalBookingException(
             "External booking failed with status code 201 but only one ticket was returned for duo reservation"
         )
@@ -189,13 +192,22 @@ def cancel_event_ticket(
     stock: offers_models.Stock,
     barcodes: list[str],
     is_booking_saved: bool,
+    venue_provider: providers_models.VenueProvider | None,
 ) -> None:
     payload = serialize.ExternalEventCancelBookingRequest.build_external_cancel_booking(barcodes)
     json_payload = payload.json()
     hmac_signature = generate_hmac_signature(provider.hmacKey, json_payload)
     headers = {"Content-Type": "application/json"}
-    response = requests.post(provider.cancelExternalUrl, json=json_payload, headers=headers, hmac=hmac_signature)
+
+    # Cancel Url (Venue cancel url > provider cancel url)
+    cancel_url = provider.cancelExternalUrl
+
+    if venue_provider and venue_provider.externalUrls and venue_provider.externalUrls.cancelExternalUrl:
+        cancel_url = venue_provider.externalUrls.cancelExternalUrl
+
+    response = requests.post(cancel_url, json=json_payload, headers=headers, hmac=hmac_signature)
     _check_external_booking_response_is_ok(response)
+
     try:
         parsed_response = pydantic_v1.parse_obj_as(serialize.ExternalEventCancelBookingResponse, response.json())
         if parsed_response.remainingQuantity is None:
