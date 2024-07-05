@@ -8,6 +8,7 @@ import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.utils import generate_hmac_signature
 from pcapi.core.external_bookings.api import _get_external_bookings_client_api
 from pcapi.core.external_bookings.api import book_event_ticket
+from pcapi.core.external_bookings.api import cancel_event_ticket
 from pcapi.core.external_bookings.api import get_active_cinema_venue_provider
 from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
 import pcapi.core.external_bookings.exceptions as external_bookings_exceptions
@@ -312,3 +313,94 @@ class BookEventTicketTest:
             book_event_ticket(booking, stock, user, provider, None)
 
         assert str(error.value) == "External booking failed with status code 500 and message on est en carafe !!"
+
+
+@pytest.mark.usefixtures("db_session")
+class CancelEventTicketTest:
+
+    @patch("pcapi.core.external_bookings.api.requests.post")
+    def test_should_successfully_cancel_an_event_ticket(self, requests_post):
+        booking_creation_date = datetime.datetime(2024, 5, 12)
+        provider = providers_factories.PublicApiProviderFactory()
+        offer = offers_factories.EventOfferFactory(
+            withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
+            lastProviderId=provider.id,
+        )
+        stock = offers_factories.EventStockFactory(
+            offer=offer,
+        )
+        bookings_factories.BookingFactory(stock=stock, dateCreated=booking_creation_date, quantity=2)
+
+        # expected data
+        expected_json_string = json.dumps({"barcodes": ["ABCDEF"]})
+        expected_hmac_signature = generate_hmac_signature(provider.hmacKey, expected_json_string)
+
+        # mocks
+        requests_post.return_value.status_code = 200
+        requests_post.return_value.json.return_value = {
+            "remainingQuantity": 10,
+        }
+
+        # book
+        cancel_event_ticket(
+            barcodes=["ABCDEF"],
+            provider=provider,
+            stock=stock,
+            is_booking_saved=True,
+            venue_provider=None,
+        )
+
+        # checks
+        requests_post.assert_called_with(
+            provider.bookingExternalUrl,
+            json=expected_json_string,
+            hmac=expected_hmac_signature,
+            headers={"Content-Type": "application/json"},
+        )
+
+    @patch("pcapi.core.external_bookings.api.requests.post")
+    def test_should_successfully_cancel_an_event_ticket_using_venue_cancel_url(self, requests_post):
+        booking_creation_date = datetime.datetime(2024, 5, 12)
+        provider = providers_factories.PublicApiProviderFactory()
+        venue = offerers_factories.VenueFactory()
+        venue_provider = providers_factories.VenueProviderFactory(venue=venue, provider=provider)
+        providers_factories.VenueProviderExternalUrlsFactory(
+            venueProvider=venue_provider, bookingExternalUrl="https://coucou.com", cancelExternalUrl="https://bye.co"
+        )
+        offer = offers_factories.EventOfferFactory(
+            withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
+            lastProviderId=provider.id,
+            id=42,
+            venueId=venue.id,
+        )
+        stock = offers_factories.EventStockFactory(
+            offer=offer,
+        )
+        bookings_factories.BookingFactory(stock=stock, dateCreated=booking_creation_date, quantity=2)
+
+        # expected data
+        expected_json_string = json.dumps({"barcodes": ["ABCDEF"]})
+        expected_hmac_signature = generate_hmac_signature(provider.hmacKey, expected_json_string)
+
+        # mocks
+        requests_post.return_value.status_code = 200
+        requests_post.return_value.json.return_value = {
+            "remainingQuantity": 10,
+        }
+
+        # book
+        cancel_event_ticket(
+            barcodes=["ABCDEF"],
+            provider=provider,
+            stock=stock,
+            is_booking_saved=True,
+            venue_provider=venue_provider,
+        )
+
+        # checks
+        requests_post.assert_called_with(
+            "https://bye.co",
+            json=expected_json_string,
+            hmac=expected_hmac_signature,
+            headers={"Content-Type": "application/json"},
+        )
