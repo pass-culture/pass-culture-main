@@ -73,8 +73,8 @@ class CDSStocks(LocalProvider):
         if not self.product:
             logger.info(
                 "Product not found for allocine Id %s",
-                self.movie_information.allocineid,
-                extra={"allocineId": self.movie_information.allocineid, "venueId": self.venue.id},
+                self.movie_information.allocine_id,
+                extra={"allocineId": self.movie_information.allocine_id, "venueId": self.venue.id},
                 technical_message_id="allocineId.not_found",
             )
 
@@ -137,8 +137,8 @@ class CDSStocks(LocalProvider):
             if self.movie_information.duration:
                 offer.durationMinutes = self.movie_information.duration
 
-        if self.movie_information.allocineid:
-            offer.extraData["allocineId"] = offer.extraData.get("allocineId") or int(self.movie_information.allocineid)
+        if self.movie_information.allocine_id:
+            offer.extraData["allocineId"] = offer.extraData.get("allocineId") or int(self.movie_information.allocine_id)
 
         offer.extraData["visa"] = offer.extraData.get("visa") or self.movie_information.visa
 
@@ -159,8 +159,8 @@ class CDSStocks(LocalProvider):
         last_update_for_current_provider = get_last_update_for_provider(self.provider.id, offer)
 
         if not last_update_for_current_provider or last_update_for_current_provider.date() != datetime.today().date():
-            if self.movie_information.posterpath:
-                image_url = self.movie_information.posterpath
+            if self.movie_information.poster_url:
+                image_url = self.movie_information.poster_url
                 image = self.client_cds.get_movie_poster(image_url)
                 if image:
                     offers_api.create_mediation(
@@ -186,7 +186,7 @@ class CDSStocks(LocalProvider):
         if not showtime:
             raise ValueError(
                 "Could not find showtime for show %s, allocine id %s, venue id %s"
-                % (showtime_uuid, self.movie_information.allocineid, self.venue.id)
+                % (showtime_uuid, self.movie_information.allocine_id, self.venue.id)
             )
 
         show: ShowCDS = showtime["show_information"]
@@ -257,8 +257,8 @@ class CDSStocks(LocalProvider):
         return price_category_label
 
     def get_object_thumb(self) -> bytes:
-        if self.movie_information.posterpath:
-            image_url = self.movie_information.posterpath
+        if self.movie_information.poster_url:
+            image_url = self.movie_information.poster_url
             return self.client_cds.get_movie_poster(image_url)
         return bytes()
 
@@ -287,8 +287,8 @@ class CDSStocks(LocalProvider):
 
     def get_movie_product(self, film: Movie) -> offers_models.Product | None:
         product = None
-        if film.allocineid:
-            product = offers_repository.get_movie_product_by_allocine_id(str(film.allocineid))
+        if film.allocine_id:
+            product = offers_repository.get_movie_product_by_allocine_id(str(film.allocine_id))
 
         if not product and film.visa:
             product = offers_repository.get_movie_product_by_visa(str(film.visa))

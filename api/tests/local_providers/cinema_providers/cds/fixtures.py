@@ -13,8 +13,8 @@ MOVIE_1 = Movie(
     duration=120,
     description="Ca tourne mal",
     visa="123456",
-    allocineid="291483",
-    posterpath="https://example.com/coupez.png",
+    allocine_id="291483",
+    poster_url="https://example.com/coupez.png",
 )
 
 MOVIE_2 = Movie(
@@ -23,8 +23,8 @@ MOVIE_2 = Movie(
     duration=150,
     description="Film sur les avions",
     visa="333333",
-    allocineid="2133",
-    posterpath="https://example.com/topgun.png",
+    allocine_id="2133",
+    poster_url="https://example.com/topgun.png",
 )
 
 MOVIE_1_SHOW_1 = ShowCDS(

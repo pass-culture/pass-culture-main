@@ -96,7 +96,7 @@ class MediaCDS(BaseModel):
             title=self.title,
             duration=self.duration // 60,
             description=self.storyline,
-            posterpath=self.posterpath,
+            poster_url=self.posterpath,
             visa=self.visanumber,
         )
 

@@ -272,7 +272,7 @@ class Returns201Test:
                 duration=120,
                 description="Ca tourne mal",
                 visa="123456",
-                posterpath="fakeUrl/coupez.png",
+                poster_url="fakeUrl/coupez.png",
             ),
             Movie(
                 id="51",
@@ -280,7 +280,7 @@ class Returns201Test:
                 duration=150,
                 description="Film sur les avions",
                 visa="333333",
-                posterpath="fakeUrl/topgun.png",
+                poster_url="fakeUrl/topgun.png",
             ),
         ]
         mock_get_venue_movies.return_value = mocked_movies
