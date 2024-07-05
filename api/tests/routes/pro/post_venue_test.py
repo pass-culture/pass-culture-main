@@ -21,6 +21,39 @@ pytestmark = pytest.mark.usefixtures("db_session")
 IMAGES_DIR = pathlib.Path(tests.__path__[0]) / "files"
 
 
+def get_api_address_response():
+    return {
+        "type": "FeatureCollection",
+        "version": "draft",
+        "features": [
+            {
+                "type": "Feature",
+                "geometry": {"type": "Point", "coordinates": [3.893166, 44.626322]},
+                "properties": {
+                    "label": "Chemin de Chaniaux 48250 Laveyrune",
+                    "score": 0.928571818181818,
+                    "type": "locality",
+                    "importance": 0.21429,
+                    "id": "07136_0040",
+                    "name": "Chemin de Chaniaux",
+                    "postcode": "48250",
+                    "citycode": "07136",
+                    "x": 770848.89,
+                    "y": 6392314.73,
+                    "city": "Laveyrune",
+                    "context": "07, Ardèche, Auvergne-Rhône-Alpes",
+                    "locality": "Chemin de Chaniaux",
+                },
+            }
+        ],
+        "attribution": "BAN",
+        "licence": "ETALAB-2.0",
+        "query": "Chemin de chaniaux Laveyrune",
+        "filters": {"postcode": "48250"},
+        "limit": 1,
+    }
+
+
 def create_valid_venue_data(user=None):
     user_offerer_data = {"offerer__siren": "302559178"}
     if user:
@@ -66,36 +99,7 @@ class Returns201Test:
         ENABLE_ZENDESK_SELL_CREATION=True, ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE=True
     )
     def test_register_new_venue(self, client, requests_mock):
-        api_adresse_response = {
-            "type": "FeatureCollection",
-            "version": "draft",
-            "features": [
-                {
-                    "type": "Feature",
-                    "geometry": {"type": "Point", "coordinates": [3.893166, 44.626322]},
-                    "properties": {
-                        "label": "Chemin de Chaniaux 48250 Laveyrune",
-                        "score": 0.928571818181818,
-                        "type": "locality",
-                        "importance": 0.21429,
-                        "id": "07136_0040",
-                        "name": "Chemin de Chaniaux",
-                        "postcode": "48250",
-                        "citycode": "07136",
-                        "x": 770848.89,
-                        "y": 6392314.73,
-                        "city": "Laveyrune",
-                        "context": "07, Ardèche, Auvergne-Rhône-Alpes",
-                        "locality": "Chemin de Chaniaux",
-                    },
-                }
-            ],
-            "attribution": "BAN",
-            "licence": "ETALAB-2.0",
-            "query": "Chemin de chaniaux Laveyrune",
-            "filters": {"postcode": "48250"},
-            "limit": 1,
-        }
+        api_adresse_response = get_api_address_response()
         user = ProFactory()
         venue_data = create_valid_venue_data(user)
         requests_mock.get(
@@ -160,6 +164,36 @@ class Returns201Test:
         assert len(venue.action_history) == 1
         assert venue.action_history[0].actionType == history_models.ActionType.VENUE_CREATED
         assert venue.action_history[0].authorUser == user
+
+    @testing.override_settings(
+        ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend",
+        IS_INTEGRATION=True,
+    )
+    @testing.override_features(
+        ENABLE_ZENDESK_SELL_CREATION=True, ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE=True
+    )
+    def test_register_new_venue_from_integration_env(self, client, requests_mock):
+        api_adresse_response = get_api_address_response()
+        user = ProFactory()
+
+        requests_mock.get(
+            """https://api-adresse.data.gouv.fr/search?q=Chemin+de+Chaniaux+48250+Laveyrune&postcode=48250&autocomplete=0&limit=1""",
+            json=api_adresse_response,
+        )
+
+        client = client.with_session_auth(email=user.email)
+        venue_data = create_valid_venue_data(user)
+
+        response = client.post("/venues", json=venue_data)
+
+        assert response.status_code == 201
+
+        venue = Venue.query.filter_by(id=response.json["id"]).one()
+
+        assert venue.name == venue_data["name"]
+        assert venue.adageId
+        assert venue.adageInscriptionDate
+        assert venue.managingOfferer.allowedOnAdage
 
     @testing.override_features(ENABLE_ZENDESK_SELL_CREATION=True)
     def test_register_new_venue_without_double_model_writing(self, client, requests_mock):
