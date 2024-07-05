@@ -419,9 +419,13 @@ def _book_event_external_ticket(booking: Booking, stock: Stock, beneficiary: Use
     if not provider:
         raise providers_exceptions.InactiveProvider()
 
+    venue_provider = providers_repository.get_venue_provider_or_none(stock.offer.venueId, provider_id=provider.id)
+
     sentry_sdk.set_tag("external-provider", provider.name)
     try:
-        tickets, remaining_quantity = external_bookings_api.book_event_ticket(booking, stock, beneficiary, provider)
+        tickets, remaining_quantity = external_bookings_api.book_event_ticket(
+            booking, stock, beneficiary, provider, venue_provider
+        )
     except external_bookings_exceptions.ExternalBookingException as exc:
         logger.exception("Could not book external ticket: %s", exc)
         raise exc
