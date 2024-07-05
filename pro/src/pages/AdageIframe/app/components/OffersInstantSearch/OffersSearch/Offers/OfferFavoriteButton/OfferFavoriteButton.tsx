@@ -112,9 +112,7 @@ export const OfferFavoriteButton = ({
     }
   }
 
-  const buttonText = `${
-    isFavorite ? 'Supprimer des ' : 'Enregistrer en '
-  } favoris`
+  const buttonText = `${isFavorite ? 'Supprimer des ' : 'Mettre en '} favoris`
 
   return (
     <ListIconButton

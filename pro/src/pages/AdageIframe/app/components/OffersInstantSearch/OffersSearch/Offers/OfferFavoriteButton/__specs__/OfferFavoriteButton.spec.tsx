@@ -40,7 +40,7 @@ describe('OfferFavoriteButton', () => {
     renderOfferFavoriteButton(defaultProps)
 
     await userEvent.click(
-      screen.getByRole('button', { name: 'Enregistrer en favoris' })
+      screen.getByRole('button', { name: 'Mettre en favoris' })
     )
     expect(apiAdage.logFavOfferButtonClick).toHaveBeenCalledWith({
       offerId: defaultProps.offer.id,

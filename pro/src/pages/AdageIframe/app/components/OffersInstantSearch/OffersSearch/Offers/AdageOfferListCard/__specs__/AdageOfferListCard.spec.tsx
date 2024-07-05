@@ -47,7 +47,7 @@ describe('AdageOfferListCard', () => {
     renderAdageOfferListCard()
 
     expect(
-      screen.getByRole('button', { name: 'Enregistrer en favoris' })
+      screen.getByRole('button', { name: 'Mettre en favoris' })
     ).toBeInTheDocument()
   })
 
@@ -55,7 +55,7 @@ describe('AdageOfferListCard', () => {
     renderAdageOfferListCard()
 
     expect(
-      screen.getByRole('link', { name: 'Partager l’offre par email' })
+      screen.getByRole('link', { name: 'Partager par email' })
     ).toBeInTheDocument()
   })
 })

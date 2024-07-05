@@ -47,7 +47,7 @@ Bonjour, \n\nJe partage avec vous l’offre pass Culture “${offer.name}”. \n
       tooltipContentClassName={tooltipContentClassName}
       variant={ListIconButtonVariant.PRIMARY}
     >
-      Partager l’offre par email
+      Partager par email
     </ListIconButton>
   )
 }
