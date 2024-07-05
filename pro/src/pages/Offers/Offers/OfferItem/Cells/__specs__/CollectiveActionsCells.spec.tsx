@@ -16,6 +16,8 @@ const renderCollectiveActionsCell = ({
   offer,
   editionOfferLink,
   urlSearchFilters,
+  isSelected,
+  deselectOffer,
 }: CollectiveActionsCellsProps) => {
   return renderWithProviders(
     <table>
@@ -25,6 +27,8 @@ const renderCollectiveActionsCell = ({
             offer={offer}
             editionOfferLink={editionOfferLink}
             urlSearchFilters={urlSearchFilters}
+            isSelected={isSelected}
+            deselectOffer={deselectOffer}
           />
         </tr>
       </tbody>
@@ -52,6 +56,8 @@ describe('CollectiveActionsCells', () => {
       }),
       editionOfferLink: '',
       urlSearchFilters: DEFAULT_SEARCH_FILTERS,
+      isSelected: false,
+      deselectOffer: vi.fn(),
     })
 
     await userEvent.click(screen.getByTitle('Action'))
@@ -79,8 +85,45 @@ describe('CollectiveActionsCells', () => {
       }),
       editionOfferLink: '',
       urlSearchFilters: DEFAULT_SEARCH_FILTERS,
+      isSelected: false,
+      deselectOffer: vi.fn(),
     })
 
     expect(screen.queryByTitle('Action')).not.toBeInTheDocument()
+  })
+
+  it('should deselect an offer selected when the offer has just been archived', async () => {
+    const mockDeselectOffer = vi.fn()
+    renderCollectiveActionsCell({
+      offer: collectiveOfferFactory({
+        stocks: [
+          {
+            beginningDatetime: String(new Date()),
+            hasBookingLimitDatetimePassed: true,
+            remainingQuantity: 1,
+          },
+        ],
+      }),
+      editionOfferLink: '',
+      urlSearchFilters: DEFAULT_SEARCH_FILTERS,
+      isSelected: true,
+      deselectOffer: mockDeselectOffer,
+    })
+
+    await userEvent.click(screen.getByTitle('Action'))
+
+    const archiveOfferButton = screen.getByText('Archiver')
+    await userEvent.click(archiveOfferButton)
+
+    const modalTitle = screen.getByText(
+      'Êtes-vous sûr de vouloir archiver cette offre ?'
+    )
+    expect(modalTitle).toBeInTheDocument()
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Archiver l’offre' })
+    )
+
+    expect(mockDeselectOffer).toHaveBeenCalledTimes(1)
   })
 })

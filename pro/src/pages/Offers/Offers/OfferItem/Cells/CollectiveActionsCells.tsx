@@ -56,6 +56,8 @@ export interface CollectiveActionsCellsProps {
   offer: CollectiveOfferResponseModel
   editionOfferLink: string
   urlSearchFilters: SearchFiltersParams
+  deselectOffer: (offer: CollectiveOfferResponseModel) => void
+  isSelected: boolean
 }
 
 const LOCAL_STORAGE_HAS_SEEN_MODAL_KEY = 'DUPLICATE_OFFER_MODAL_SEEN'
@@ -64,6 +66,8 @@ export const CollectiveActionsCells = ({
   offer,
   editionOfferLink,
   urlSearchFilters,
+  deselectOffer,
+  isSelected,
 }: CollectiveActionsCellsProps) => {
   const navigate = useNavigate()
   const notify = useNotification()
@@ -144,6 +148,7 @@ export const CollectiveActionsCells = ({
     try {
       await api.cancelCollectiveOfferBooking(offer.id)
       await mutate([GET_COLLECTIVE_OFFERS_QUERY_KEY, apiFilters])
+      isSelected && deselectOffer(offer)
       setIsCancelledBookingModalOpen(false)
       notify.success(
         'La réservation sur cette offre a été annulée avec succès, votre offre sera à nouveau visible sur ADAGE.',
@@ -180,6 +185,7 @@ export const CollectiveActionsCells = ({
       }
 
       await mutate([GET_COLLECTIVE_OFFERS_QUERY_KEY, apiFilters])
+      isSelected && deselectOffer(offer)
       setIsArchivedModalOpen(false)
       notify.success('Une offre a bien été archivée', {
         duration: NOTIFICATION_LONG_SHOW_DURATION,
