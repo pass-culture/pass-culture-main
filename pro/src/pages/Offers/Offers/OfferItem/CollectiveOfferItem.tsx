@@ -66,6 +66,8 @@ export const CollectiveOfferItem = ({
         offer={offer}
         editionOfferLink={editionOfferLink}
         urlSearchFilters={urlSearchFilters}
+        isSelected={isSelected}
+        deselectOffer={() => selectOffer(offer)}
       />
     </>
   )
