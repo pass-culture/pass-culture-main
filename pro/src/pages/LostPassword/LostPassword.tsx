@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 
 import { api } from 'apiClient/api'
 import { AppLayout } from 'app/AppLayout'
+import { RECAPTCHA_ERROR, RECAPTCHA_ERROR_MESSAGE } from 'core/shared/constants'
 import { useInitReCaptcha } from 'hooks/useInitReCaptcha'
 import { useNotification } from 'hooks/useNotification'
 import { useRedirectLoggedUser } from 'hooks/useRedirectLoggedUser'
@@ -26,12 +27,14 @@ export const LostPassword = (): JSX.Element => {
   const notification = useNotification()
 
   const submitChangePasswordRequest = async (formValues: FormValues) => {
-    const token = await getReCaptchaToken('resetPassword')
-
     try {
+      const token = await getReCaptchaToken('resetPassword')
       await api.resetPassword({ token, email: formValues.email })
       setMailSent(true)
-    } catch {
+    } catch (e) {
+      if (e === RECAPTCHA_ERROR) {
+        notification.error(RECAPTCHA_ERROR_MESSAGE)
+      }
       notification.error('Une erreur est survenue')
     }
   }
