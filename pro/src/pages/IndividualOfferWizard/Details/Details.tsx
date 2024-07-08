@@ -15,7 +15,7 @@ import { getTitle } from 'screens/IndividualOffer/IndivualOfferLayout/utils/getT
 import { selectCurrentOffererId } from 'store/user/selectors'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
-export const Details = (): JSX.Element | null => {
+const Details = (): JSX.Element | null => {
   const mode = useOfferWizardMode()
   const { currentUser } = useCurrentUser()
   const { offer } = useIndividualOfferContext()
