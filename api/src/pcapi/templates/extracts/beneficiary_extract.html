@@ -2,7 +2,7 @@
 <html lang="fr">
     <head>
         <meta charset="utf-8">
-        <title>Réponse à ta demande d'accès</title>
+        <title>Réponse à ta demande d’accès</title>
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,600;0,700;0,800;1,400');
 
@@ -18,14 +18,12 @@
                     content: counter(page) "/" counter(pages);
                 }
             }
-
             html {
                 font-family: Montserrat;
                 font-size: 8pt;
                 line-height: 1.5;
                 font-weight: normal;
             }
-
             h1 {
                 color: #870087;
                 position: relative;
@@ -33,13 +31,12 @@
                 font-size: 16pt;
                 font-weight: bold;
             }
-
             h3 {
                 color: #870087;
                 font-size: 10pt;
                 font-style: normal;
                 font-weight: normal;
-                text-decoration: none;
+                text-decoration: underline;
             }
             .headerImage {
                 position: absolute;
@@ -50,7 +47,6 @@
                 background-color:rgba(135, 0, 135, 0.1);
 
             }
-
             table {
                 border-left-color: black;
                 border-left-width: 1px;
@@ -61,15 +57,9 @@
             td{
                 padding-right: 0.5cm;
             }
-            .underline {
-                text-decoration: underline;
-            }
-
-
-
         </style>
 
-        <meta name="description" content="Réponse à ta demande d'accès">
+        <meta name="description" content="Réponse à ta demande d’accès">
     </head>
     <body>
         <svg class="headerImage" width="563" height="125" viewBox="0 0 563 125" fill="none" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
@@ -85,7 +75,7 @@
                 </clipPath>
             </defs>
         </svg>
-        <h1>Réponse à ta demande d'accès</h1>
+        <h1>Réponse à ta demande d’accès</h1>
         <div class="purple-background">
             <p>
                 <i>
@@ -94,11 +84,11 @@
             </p>
             <p>
                 <i>
-                    Pour plus d'informations, tu peux également consulter notre <a href="https://pass.culture.fr/donnees-personnelles/">charte des données personnelles</a> ou contacter directement notre Délégué à la protection des données (DPO) : <a href="mailto:dpo@passculture.app">dpo@passculture.app</a>. 
+                    Pour plus d’informations, tu peux également consulter notre <a href="https://pass.culture.fr/donnees-personnelles/">charte des données personnelles</a> ou contacter directement notre Délégué à la protection des données (DPO) : <a href="mailto:dpo@passculture.app">dpo@passculture.app</a>. 
                 </i>
             </p>
         </div>
-        <h3>📱 <span class=underline>Données de l’utilisateur</span></h3>
+        <h3>Données de l’utilisateur</h3>
         <table class="borderless">
             {% if container.internal.user.firstName %}<tr><td>Nom</td><td>{{container.internal.user.firstName}}</td></tr>{% endif %}
             {% if container.internal.user.lastName %}<tr><td>Prénom</td><td>{{container.internal.user.lastName}}</td></tr>{% endif %}
@@ -116,26 +106,26 @@
             {% if container.internal.user.schoolType %}<tr><td>Type d'école</td><td>{{container.internal.user.schoolType.value}}</td></tr>{% endif %}
         </table>
 
-        <h3>🎯 <span class=underline>Informations marketing</span></h3>
+        <h3>Informations marketing</h3>
         <table class="borderless">
             <tr><td>Accepte la récéption de mails</td><td>{% if container.internal.marketing.marketingEmails%}oui{%else%}non{%endif%}</td></tr>
             <tr><td>Accepte les notifications mobiles</td><td>{% if container.internal.marketing.marketingNotifications%}oui{%else%}non{%endif%}</td></tr>
         </table>
 
         {% if container.internal.loginDevices %}
-            <h3>🌐 <span class=underline>Historique des moyens de connexion</span></h3>
+            <h3>Historique des moyens de connexion</h3>
             {% for device in container.internal.loginDevices%}
                 <table class="borderless">
                     <tr><td>Date de première connexion</td><td>{{device.dateCreated.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>
-                    {% if device.deviceId %}<tr><td>Identifiant de l'appareil</td><td>{{device.deviceId}}</td></tr>{% endif %}
-                    {% if device.source %}<tr><td>Type d'appareil</td><td>{{device.source}}</td></tr>{% endif %}
-                    {% if device.os %}<tr><td>Système d'exploitation</td><td>{{device.os}}</td></tr>{% endif %}
+                    {% if device.deviceId %}<tr><td>Identifiant de l’appareil</td><td>{{device.deviceId}}</td></tr>{% endif %}
+                    {% if device.source %}<tr><td>Type d’appareil</td><td>{{device.source}}</td></tr>{% endif %}
+                    {% if device.os %}<tr><td>Système d’exploitation</td><td>{{device.os}}</td></tr>{% endif %}
                 </table>
             {% endfor %}
         {% endif %}
 
         {% if  container.internal.emailsHistory %}
-            <h3>📧 <span class=underline>Historique des changements d'adresse de messagerie</span></h3>
+            <h3>Historique des changements d’adresse de messagerie</h3>
             {% for history in container.internal.emailsHistory %}
                 <table class="borderless">
                     <tr><td>Date de la demande</td><td>{{history.dateCreated.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>
@@ -146,7 +136,7 @@
         {% endif %}
 
         {% if container.internal.actionsHistory %}
-            <h3>⛔ <span class=underline>Historique des blocages du compte « pass Culture »</span></h3>
+            <h3>Historique des blocages du compte « pass Culture »</h3>
             {% for action in container.internal.actionsHistory %}
                 <table class="borderless">
                     <tr><td>Date</td><td>{{action.actionDate.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>
@@ -156,7 +146,7 @@
         {% endif %}
 
         {% if container.internal.beneficiaryValidations %}
-            <h3>👌 <span class=underline>Validations d'identité</span></h3>
+            <h3>Validations d’identité</h3>
             {% for validation in container.internal.beneficiaryValidations %}
                 <table class="borderless">
                     <tr><td>Date de la validation</td><td>{{validation.dateCreated.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>
@@ -168,11 +158,11 @@
         {% endif %}
 
         {% if container.internal.deposits %}
-            <h3>💰 <span class=underline>Crédits</span></h3>
+            <h3>Crédits</h3>
             {% for deposit in container.internal.deposits %}
                 <table class="borderless">
-                    <tr><td>Date d'obtention</td><td>{{deposit.dateCreated.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>
-                    {% if deposit.expirationDate %}<tr><td>Date d'expiration</td><td>{{deposit.expirationDate.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>{% endif %}
+                    <tr><td>Date d’obtention</td><td>{{deposit.dateCreated.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>
+                    {% if deposit.expirationDate %}<tr><td>Date d’expiration</td><td>{{deposit.expirationDate.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>{% endif %}
                     <tr><td>Valeur</td><td>{{('%0.2f' % deposit.amount|float)|replace('.', ',')}}€</td></tr>
                     <tr><td>Source</td><td>{{deposit.source}}</td></tr>
                     {% if deposit.dateUpdated %}<tr><td>Dernière modification</td><td>{{deposit.dateUpdated.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>{% endif %}
@@ -182,7 +172,7 @@
         {% endif %}
 
         {% if container.internal.bookings %}
-            <h3>📅 <span class=underline>Réservations effectuées depuis l’application « pass Culture »</span></h3>
+            <h3>Réservations effectuées depuis l’application « pass Culture »</h3>
             {% for booking in container.internal.bookings %}
                 <table class="borderless">
                     <tr><td>Nom</td><td>{{booking.name}}</td></tr>
@@ -190,7 +180,7 @@
                     <tr><td>Prix unitaire</td><td>{{('%0.2f' % booking.amount|float)|replace('.', ',') }}€</td></tr>
                     <tr><td>Date de réservation</td><td>{{booking.dateCreated.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>
                     {% if booking.dateUsed %}<tr><td>Date de retrait</td><td>{{booking.dateUsed.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>{% endif %}
-                    {% if booking.cancellationDate %}<tr><td>Date d'annulation</td><td>{{booking.cancellationDate.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>{% endif %}
+                    {% if booking.cancellationDate %}<tr><td>Date d’annulation</td><td>{{booking.cancellationDate.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>{% endif %}
                     <tr><td>État</td><td>{{booking.status}}</td></tr>
                     <tr><td>Lieu de vente</td><td>{{booking.venue}}</td></tr>
                     <tr><td>Vendeur</td><td>{{booking.offerer}}</td></tr>
@@ -198,7 +188,7 @@
             {% endfor %}
         {% endif %}
     <div class="purple-background">
-        💡 Bon à savoir : si tu souhaites récupérer ces données dans un format « interopérable » (fichier « .json »), lisible par une machine, tu peux contacter le DPO (dpo@passculture.app) afin d’exercer ton droit à la portabilité.
+        Bon à savoir : si tu souhaites récupérer ces données dans un format « interopérable » (fichier « .json »), lisible par une machine, tu peux contacter le DPO (dpo@passculture.app) afin d’exercer ton droit à la portabilité.
     </div>
     </body>
 </html>
