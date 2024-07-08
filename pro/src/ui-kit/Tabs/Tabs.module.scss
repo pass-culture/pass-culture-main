@@ -73,7 +73,7 @@
   }
 }
 
-@media (min-width: size.$mobile) {
+@media (min-width: size.$tablet) {
   .tabs {
     flex-direction: row;
     gap: rem.torem(32px);
