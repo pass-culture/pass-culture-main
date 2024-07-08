@@ -109,7 +109,7 @@ def spectree_serialize(
         raw_response: transmit the route response without touching it. Defaults to False.
         response_headers: a dict of headers to be added to the response. defaults to {}.
         resp: a Spectree.Response explicitly listing the possible responses.
-        query_params_as_list: a list of query parameters to be passed to the spectree. defaults to [].
+        query_params_as_list: a list of query parameters that will be cast to a list. Defaults to [].
 
     Returns:
         Callable[[Any], Any]: [description]

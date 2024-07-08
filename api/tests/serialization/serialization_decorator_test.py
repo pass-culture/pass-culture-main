@@ -199,3 +199,9 @@ class TransformQueryArgsToDictTest:
         use_as_list = []
         expected = {"a": "1", "b": "2", "c": "3"}
         assert _transform_query_args_to_dict(query_params, use_as_list) == expected
+
+    def test_empty_string_as_list_param(self, client):
+        query_params = MultiDict([("a", "1"), ("b", ""), ("c", "3")])
+        use_as_list = ["b"]
+        expected = {"a": "1", "b": [""], "c": "3"}
+        assert _transform_query_args_to_dict(query_params, use_as_list) == expected

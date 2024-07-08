@@ -71,7 +71,7 @@ EmptyStringToNone = EmptyAsNullString | None
 class ListCollectiveOffersQueryModel(BaseModel):
     nameOrIsbn: str | None
     offerer_id: int | None
-    # CollectiveOfferDisplayedStatus is required for front retro-compatibility
+    # TODO: (raphaelpra, 2024-07-08): Remove the type CollectiveOfferDisplayedStatus when front only use list in request
     status: list[CollectiveOfferDisplayedStatus] | CollectiveOfferDisplayedStatus | None
     venue_id: int | None
     categoryId: str | None
