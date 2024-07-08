@@ -15,7 +15,7 @@ import { getTitle } from 'screens/IndividualOffer/IndivualOfferLayout/utils/getT
 import { selectCurrentOffererId } from 'store/user/selectors'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
-export const Details = (): JSX.Element | null => {
+const Details = (): JSX.Element | null => {
   const mode = useOfferWizardMode()
   const { currentUser } = useCurrentUser()
   const { offer } = useIndividualOfferContext()
@@ -58,6 +58,6 @@ export const Details = (): JSX.Element | null => {
   )
 }
 
-// Below exports are used by react-router-dom
+// Lazy-loaded by react-router-dom
 // ts-unused-exports:disable-next-line
 export const Component = Details
