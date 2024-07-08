@@ -1,5 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/variables/_size.scss" as size;
 
 .partner-panel {
   width: 100%;
@@ -69,5 +70,11 @@
   .partner-panel {
     position: sticky;
     top: rem.torem(24px);
+  }
+}
+
+@media (max-width: rem.torem(size.$tablet)) {
+  .partner-panel-info {
+    flex-direction: column;
   }
 }
