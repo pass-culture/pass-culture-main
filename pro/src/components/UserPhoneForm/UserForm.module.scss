@@ -2,7 +2,7 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .profile-form-field {
-  width: rem.torem(400px);
+  max-width: rem.torem(400px);
   margin-bottom: rem.torem(32px);
 }
 
@@ -10,6 +10,6 @@
   margin-top: rem.torem(24px);
 
   & > button:nth-child(2) {
-    margin-left: rem.torem(16px);
+    margin-left: rem.torem(8px);
   }
 }

@@ -10,11 +10,12 @@
 }
 
 .box-form-layout-fields {
-  width: rem.torem(400px);
+  max-width: rem.torem(400px);
 }
 
 .box-form-layout-form-header {
   margin-bottom: rem.torem(16px);
+  word-break: break-word;
 }
 
 .box-form-layout-form-header-secondary {
