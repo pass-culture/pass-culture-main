@@ -6,6 +6,8 @@ from flask import url_for
 import pytest
 
 from pcapi import settings
+from pcapi.core.finance import models as finance_models
+from pcapi.core.fraud import models as fraud_models
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.mails import testing as mails_testing
@@ -777,6 +779,37 @@ class DeleteProUserTest(PostEndpointHelper):
         assert users_models.User.query.filter(users_models.User.id == user_id).count() == 0
         assert users_models.Favorite.query.filter(users_models.Favorite.userId == user_id).count() == 0
         assert offers_models.Mediation.query.one().authorId is None
+
+    @patch("pcapi.routes.backoffice.pro_users.blueprint.mails_api")
+    @patch("pcapi.routes.backoffice.pro_users.blueprint.DeleteBatchUserAttributesRequest", return_value="canary")
+    @patch("pcapi.routes.backoffice.pro_users.blueprint.delete_user_attributes_task")
+    def test_delete_pro_user_with_beneficiary_dependencies(
+        self, delete_user_attributes_task, DeleteBatchUserAttributesRequest, mails_api, authenticated_client
+    ):
+        user = users_factories.BeneficiaryGrant18Factory(roles=[users_models.UserRole.NON_ATTACHED_PRO])
+        history_factories.SuspendedUserActionHistoryFactory(user=user)
+        user_id = user.id
+        deposit_id = user.deposits[0].id
+        beneficiary_fraud_check_id = user.beneficiaryFraudChecks[0].id
+        user_email = user.email
+        form = {"email": user.email}
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user_id, form=form, follow_redirects=True)
+
+        assert response.status_code == 200
+
+        mails_api.delete_contact.assert_called_once_with(user_email)
+        DeleteBatchUserAttributesRequest.assert_called_once_with(user_id=user_id)
+        delete_user_attributes_task.delay.assert_called_once_with("canary")
+        assert users_models.User.query.filter(users_models.User.id == user_id).count() == 0
+        assert finance_models.Deposit.query.filter(finance_models.Deposit.id == deposit_id).count() == 0
+        assert (
+            fraud_models.BeneficiaryFraudCheck.query.filter(
+                fraud_models.BeneficiaryFraudCheck.id == beneficiary_fraud_check_id
+            ).count()
+            == 0
+        )
+        assert history_models.ActionHistory.query.filter(history_models.ActionHistory.userId == user_id).count() == 0
 
 
 class GetConnectAsProUserTest(GetEndpointHelper):

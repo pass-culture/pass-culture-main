@@ -13,6 +13,8 @@ from werkzeug.exceptions import NotFound
 from pcapi import settings
 from pcapi.core import mails as mails_api
 from pcapi.core.external.attributes import api as external_attributes_api
+from pcapi.core.finance import models as finance_models
+from pcapi.core.fraud import models as fraud_models
 from pcapi.core.history import repository as history_repository
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
@@ -22,6 +24,8 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as users_models
 from pcapi.core.users.email import update as email_update
+from pcapi.models import beneficiary_import as beneficiary_import_models
+from pcapi.models import beneficiary_import_status as beneficiary_import_status_models
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.routes.backoffice import utils
@@ -234,6 +238,31 @@ def delete(user_id: int) -> utils.BackofficeResponse:
     # clear from push notifications
     payload = DeleteBatchUserAttributesRequest(user_id=user.id)
     delete_user_attributes_task.delay(payload)
+
+    # Delete all related objects if the user has already been created as a beneficiary
+    beneficiary_import_status_models.BeneficiaryImportStatus.query.filter(
+        beneficiary_import_status_models.BeneficiaryImportStatus.id.in_(
+            beneficiary_import_status_models.BeneficiaryImportStatus.query.with_entities(
+                beneficiary_import_status_models.BeneficiaryImportStatus.id,
+            )
+            .join(
+                beneficiary_import_status_models.BeneficiaryImportStatus.beneficiaryImport,
+            )
+            .filter(
+                beneficiary_import_models.BeneficiaryImport.beneficiaryId == user_id,
+            )
+            .scalar_subquery()
+        )
+    ).delete(
+        synchronize_session=False,
+    )
+    finance_models.Deposit.query.filter(finance_models.Deposit.userId == user_id).delete(synchronize_session=False)
+    beneficiary_import_models.BeneficiaryImport.query.filter(
+        beneficiary_import_models.BeneficiaryImport.beneficiaryId == user_id
+    ).delete(synchronize_session=False)
+    fraud_models.BeneficiaryFraudCheck.query.filter(fraud_models.BeneficiaryFraudCheck.userId == user_id).delete(
+        synchronize_session=False
+    )
 
     users_models.User.query.filter(users_models.User.id == user_id).delete(synchronize_session=False)
     db.session.commit()
