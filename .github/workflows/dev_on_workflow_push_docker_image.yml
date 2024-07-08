@@ -42,11 +42,12 @@ jobs:
           secrets: |-
             ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
             ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
+            COSIGN_KMS_KEY:passculture-metier-ehp/cosign_kms_key
       - name: "OpenID Connect Authentication"
         id: openid-auth
         uses: 'google-github-actions/auth@v2'
         with:
-          create_credentials_file: false
+          create_credentials_file: true
           token_format: 'access_token'
           workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
@@ -57,6 +58,8 @@ jobs:
           registry: 'europe-west1-docker.pkg.dev'
           username: 'oauth2accesstoken'
           password: '${{ steps.openid-auth.outputs.access_token }}'
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3.5.0
       - name: "Compute docker image name:tag"
         id: compute-image-name
         run: echo "image_name=${{ env.registry }}/${{ inputs.image }}:${{ inputs.checksum-tag }}" | tee -a ${GITHUB_OUTPUT}
@@ -73,3 +76,8 @@ jobs:
             docker image tag ${{ steps.compute-image-name.outputs.image_name }} "${{ env.registry }}/${{ inputs.image }}:latest"
           fi
           docker image push --all-tags ${{ env.registry }}/${{ inputs.image }} 
+      - name: "Get the image digest"
+        id: get_digest
+        run: echo "digest=$(docker inspect --format='{{index .Id}}' ${{ steps.compute-image-name.outputs.image_name }})" >> $GITHUB_OUTPUT
+      - name: Sign image with a kms key
+        run: cosign sign --tlog-upload=false --key gcpkms://${{ steps.secrets.outputs.COSIGN_KMS_KEY }} ${{ env.registry }}/${{ inputs.image }}@${{ steps.get_digest.outputs.digest }}
