@@ -61,7 +61,7 @@ def fetch_all_events(venue_id: int, items_per_page: int = 50):
         events = data.get("events",[])
         all_data.extend(events)
 
-        has_more_data = len(events) >= items_per_page
+        has_more_data = len(events) == items_per_page
 
         if has_more_data:
             # Update params to fetch next page using the last event id + 1
@@ -103,7 +103,7 @@ async function fetchAllEvents(venueId, itemsPerPage = 50) {
 
         allData = allData.concat(events);
 
-        hasMoreData = events.length >= itemsPerPage
+        hasMoreData = events.length === itemsPerPage
 
         if (hasMoreData) {
             // Update params to fetch next page using the last event id + 1
@@ -154,7 +154,7 @@ function fetchAllEvents($venueId, $itemsPerPage = 50) {
 
         $allData = array_merge($allData, $events);
 
-        $hasMoreData = count($events) >= $itemsPerPage;
+        $hasMoreData = count($events) === $itemsPerPage;
 
         if ($hasMoreData) {
             // Update params to fetch next page using the last event id + 1
