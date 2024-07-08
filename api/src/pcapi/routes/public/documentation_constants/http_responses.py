@@ -1,15 +1,3 @@
-from pcapi.routes.serialization import BaseModel
-
-
-# only used as documentation for openapi
-class AuthErrorResponseModel(BaseModel):
-    errors: dict[str, str]
-
-
-class ErrorResponseModel(BaseModel):
-    errors: dict[str, list[str]]
-
-
 # Success
 HTTP_200_MESSAGE = "Your request was succesful."
 
@@ -33,13 +21,13 @@ HTTP_204_COLLECTIVE_BOOKING_CANCELLATION_SUCCESS = {
 
 # Client errors
 HTTP_400_BAD_REQUEST = {
-    "HTTP_400": (ErrorResponseModel, "The request is invalid. The response body contains a list of errors."),
+    "HTTP_400": (None, "The request is invalid. The response body contains a list of errors."),
 }
 HTTP_401_UNAUTHENTICATED = {
-    "HTTP_401": (AuthErrorResponseModel, "Authentication is necessary to use this API."),
+    "HTTP_401": (None, "Authentication is necessary to use this API."),
 }
 HTTP_403_UNTHAUTHORIZED = {
-    "HTTP_403": (ErrorResponseModel, "You do not have the necessary rights to use this API."),
+    "HTTP_403": (None, "You do not have the necessary rights to use this API."),
 }
 HTTP_429_TOO_MANY_REQUESTS = {
     "HTTP_429": (None, "You have made too many requests. (**rate limit: 200 requests/minute**)"),
@@ -79,10 +67,10 @@ HTTP_403_BOOKING_REIMBURSED_OR_CONFIRMED_OR_NOT_USED = {
     )
 }
 HTTP_403_COLLECTIVE_OFFER_INACTIVE_INSTITUTION = {
-    "HTTP_403": (ErrorResponseModel, "The educational institution is not active."),
+    "HTTP_403": (None, "The educational institution is not active."),
 }
 HTTP_403_COLLECTIVE_OFFER_INSUFFICIENT_RIGHTS = {
-    "HTTP_403": (ErrorResponseModel, "You don't have enough rights to access or edit the collective offer"),
+    "HTTP_403": (None, "You don't have enough rights to access or edit the collective offer"),
 }
 
 # Specific 410

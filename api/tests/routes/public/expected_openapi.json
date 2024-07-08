@@ -865,22 +865,6 @@
                 "title": "AccessibilityResponse",
                 "type": "object"
             },
-            "AuthErrorResponseModel": {
-                "properties": {
-                    "errors": {
-                        "additionalProperties": {
-                            "type": "string"
-                        },
-                        "title": "Errors",
-                        "type": "object"
-                    }
-                },
-                "required": [
-                    "errors"
-                ],
-                "title": "AuthErrorResponseModel",
-                "type": "object"
-            },
             "BON_ACHAT_INSTRUMENT_read": {
                 "description": "Bon d'achat instrument",
                 "properties": {
@@ -2370,25 +2354,6 @@
                     "Visite libre"
                 ],
                 "title": "EacFormat"
-            },
-            "ErrorResponseModel": {
-                "properties": {
-                    "errors": {
-                        "additionalProperties": {
-                            "items": {
-                                "type": "string"
-                            },
-                            "type": "array"
-                        },
-                        "title": "Errors",
-                        "type": "object"
-                    }
-                },
-                "required": [
-                    "errors"
-                ],
-                "title": "ErrorResponseModel",
-                "type": "object"
             },
             "EventCategoryResponse": {
                 "properties": {
@@ -8899,13 +8864,6 @@
                         "description": "Your request was succesful."
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "404": {
@@ -8956,23 +8914,9 @@
                         "description": "This booking has been successfully cancelled"
                     },
                     "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "The request is invalid. The response body contains a list of errors."
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "403": {
@@ -9029,13 +8973,6 @@
                         "description": "The booking's validation has been successfully cancelled"
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "403": {
@@ -9099,13 +9036,6 @@
                         "description": "The booking has been found successfully"
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "403": {
@@ -9162,13 +9092,6 @@
                         "description": "This booking has been successfully validated"
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "403": {
@@ -9275,13 +9198,6 @@
                         "description": "The event offers have been returned"
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "404": {
@@ -9336,23 +9252,9 @@
                         "description": "The event offer has been created successfully"
                     },
                     "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "The request is invalid. The response body contains a list of errors."
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "404": {
@@ -9400,13 +9302,6 @@
                         "description": "The event categories have been returned"
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "422": {
@@ -9462,13 +9357,6 @@
                         "description": "The event offer has been returned"
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "404": {
@@ -9534,23 +9422,9 @@
                         "description": "The event offer has been returned"
                     },
                     "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "The request is invalid. The response body contains a list of errors."
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "404": {
@@ -9636,23 +9510,9 @@
                         "description": "The event dates have been returned"
                     },
                     "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "The request is invalid. The response body contains a list of errors."
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "404": {
@@ -9718,23 +9578,9 @@
                         "description": "The event dates have been created successfully"
                     },
                     "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "The request is invalid. The response body contains a list of errors."
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "404": {
@@ -9796,23 +9642,9 @@
                         "description": "The event date has been deleted successfully"
                     },
                     "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "The request is invalid. The response body contains a list of errors."
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "404": {
@@ -9888,23 +9720,9 @@
                         "description": "The event date has been modified successfully"
                     },
                     "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "The request is invalid. The response body contains a list of errors."
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "404": {
@@ -9972,23 +9790,9 @@
                         "description": "The price category has been created successfully"
                     },
                     "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "The request is invalid. The response body contains a list of errors."
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "404": {
@@ -10066,23 +9870,9 @@
                         "description": "The price category has been modified successfully"
                     },
                     "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "The request is invalid. The response body contains a list of errors."
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "404": {
@@ -10131,13 +9921,6 @@
                         "description": "Your request was succesful."
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "422": {
@@ -10182,13 +9965,6 @@
                         "description": "Your request was succesful."
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "422": {
@@ -10233,13 +10009,6 @@
                         "description": "Your request was succesful."
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "422": {
@@ -10298,13 +10067,6 @@
                         "description": "Your request was succesful."
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "422": {
@@ -10402,13 +10164,6 @@
                         "description": "The product offers"
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "404": {
@@ -10463,23 +10218,9 @@
                         "description": "The product offer have been edited successfully"
                     },
                     "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "The request is invalid. The response body contains a list of errors."
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "404": {
@@ -10534,23 +10275,9 @@
                         "description": "The product offer have been created successfully"
                     },
                     "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "The request is invalid. The response body contains a list of errors."
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "404": {
@@ -10598,13 +10325,6 @@
                         "description": "The product categories have been returned"
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "422": {
@@ -10674,13 +10394,6 @@
                         "description": "The product offers"
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "422": {
@@ -10725,23 +10438,9 @@
                         "description": "The product offers have been created successfully"
                     },
                     "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "The request is invalid. The response body contains a list of errors."
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "404": {
@@ -10800,13 +10499,6 @@
                         "description": "The product offer"
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "404": {
@@ -10854,13 +10546,6 @@
                         "description": "Your request was succesful."
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "422": {
@@ -10918,13 +10603,6 @@
                         "description": "Image updated successfully"
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "422": {
@@ -10969,13 +10647,6 @@
                         "description": "Your provider has been returned"
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "422": {
@@ -11027,23 +10698,9 @@
                         "description": "Your provider has been returned"
                     },
                     "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "The request is invalid. The response body contains a list of errors."
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "422": {
@@ -11101,23 +10758,9 @@
                         "description": "This venue external urls have been successfully updated"
                     },
                     "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "The request is invalid. The response body contains a list of errors."
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "404": {
@@ -11169,23 +10812,9 @@
                         "description": "This collective booking has been successfully cancelled"
                     },
                     "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "The request is invalid. The response body contains a list of errors."
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "422": {
@@ -11231,13 +10860,6 @@
                         "description": "Your request was succesful."
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "422": {
@@ -11282,13 +10904,6 @@
                         "description": "Your request was succesful."
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "422": {
@@ -11425,23 +11040,9 @@
                         "description": "Your request was succesful."
                     },
                     "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "The request is invalid. The response body contains a list of errors."
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "422": {
@@ -11486,13 +11087,6 @@
                         "description": "Your request was succesful."
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "422": {
@@ -11552,13 +11146,6 @@
                         "description": "Your request was succesful."
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "422": {
@@ -11659,13 +11246,6 @@
                         "description": "Your request was succesful."
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "404": {
@@ -11720,33 +11300,12 @@
                         "description": "Your request was succesful."
                     },
                     "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "The request is invalid. The response body contains a list of errors."
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "403": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "The educational institution is not active."
                     },
                     "404": {
@@ -11784,13 +11343,6 @@
                 "parameters": [],
                 "responses": {
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "422": {
@@ -11846,33 +11398,12 @@
                         "description": "Your request was succesful."
                     },
                     "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "The request is invalid. The response body contains a list of errors."
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "403": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "You don't have enough rights to access or edit the collective offer"
                     },
                     "404": {
@@ -11938,33 +11469,12 @@
                         "description": "Your request was succesful."
                     },
                     "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "The request is invalid. The response body contains a list of errors."
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "403": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "You don't have enough rights to access or edit the collective offer"
                     },
                     "404": {
@@ -12012,13 +11522,6 @@
                         "description": "Your request was succesful."
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "422": {
@@ -12064,13 +11567,6 @@
                         "description": "Your request was succesful."
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "422": {
@@ -12116,13 +11612,6 @@
                         "description": "Your request was succesful."
                     },
                     "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/AuthErrorResponseModel"
-                                }
-                            }
-                        },
                         "description": "Authentication is necessary to use this API."
                     },
                     "422": {

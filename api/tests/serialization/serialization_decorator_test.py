@@ -4,9 +4,11 @@ from unittest.mock import patch
 from flask.blueprints import Blueprint
 from werkzeug.datastructures import MultiDict
 
+from pcapi.routes.public.documentation_constants import http_responses
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.decorator import _transform_query_args_to_dict
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 
 
 class TestBodyModel(BaseModel):
@@ -39,6 +41,24 @@ def spectree_get_test_endpoint():
 @spectree_serialize(on_success_status=204)
 def spectree_post_test_endpoint():
     endpoint_method()
+
+
+@test_blueprint.route("/body-validation-with-http-responses", methods=["POST"])
+@spectree_serialize(
+    on_success_status=204,
+    resp=SpectreeResponse(
+        **(
+            http_responses.HTTP_204_BOOKING_CANCELLATION_SUCCESS
+            # errors
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+            | http_responses.HTTP_400_BAD_REQUEST
+            | http_responses.HTTP_403_COLLECTIVE_OFFER_INACTIVE_INSTITUTION
+            | http_responses.HTTP_404_SOME_RESOURCE_NOT_FOUND
+        )
+    ),
+)
+def spectree_body_validation_2(body: TestQueryModel):
+    return
 
 
 @test_blueprint.route("/body-validation", methods=["POST"])
@@ -167,6 +187,16 @@ class SerializationDecoratorTest:
     def test_post_without_content_type_throws_400(self, client):
         response = client.post("/test-blueprint/body-validation", headers={})
         assert response.status_code == 400
+        assert response.get_data() == b'Please send a "Content-Type: application/json" HTTP header'
+
+    def test_post_without_content_with_incorrect_content_type_throws_400(self, client):
+        response = client.post(
+            "/test-blueprint/body-validation-with-http-responses",
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+            json={},
+        )
+        assert response.status_code == 400
+        assert response.get_data() == b'Please send a "Content-Type: application/json" HTTP header'
 
 
 class TransformQueryArgsToDictTest:
