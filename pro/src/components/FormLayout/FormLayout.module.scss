@@ -134,7 +134,7 @@ $info-box-margin-left: rem.torem(24px);
   color: var(--color-grey-dark);
 }
 
-@media (min-width: size.$tablet) {
+@media (min-width: size.$laptop) {
   .form-layout {
     &-row.inline-group {
       flex-wrap: unset;
