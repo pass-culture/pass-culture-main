@@ -150,7 +150,7 @@ export const SummaryScreen = () => {
 
   return (
     <>
-      {mode === OFFER_WIZARD_MODE.CREATION ? (
+      {mode === OFFER_WIZARD_MODE.CREATION && (
         <FormikProvider value={formik}>
           <Form>
             <div className={styles['offer-preview-banners']}>
@@ -178,12 +178,6 @@ export const SummaryScreen = () => {
             />
           </Form>
         </FormikProvider>
-      ) : (
-        <ActionBar
-          onClickPrevious={handlePreviousStep}
-          step={OFFER_WIZARD_STEP_IDS.SUMMARY}
-          isDisabled={false}
-        />
       )}
 
       <SummaryLayout>
@@ -238,6 +232,13 @@ export const SummaryScreen = () => {
           )}
         </SummaryAside>
       </SummaryLayout>
+      {mode !== OFFER_WIZARD_MODE.CREATION && (
+        <ActionBar
+          onClickPrevious={handlePreviousStep}
+          step={OFFER_WIZARD_STEP_IDS.SUMMARY}
+          isDisabled={false}
+        />
+      )}
 
       {displayRedirectDialog && (
         <RedirectToBankAccountDialog
