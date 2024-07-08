@@ -10,6 +10,7 @@ import pcapi.core.users.api as user_api
 import pcapi.core.users.constants as users_constants
 from pcapi.core.users.models import User
 from pcapi.core.users.young_status import YoungStatus
+from pcapi.models import db
 import pcapi.scheduled_tasks.decorators as cron_decorators
 from pcapi.utils.blueprint import Blueprint
 
@@ -108,3 +109,5 @@ def get_unknown_status_by_user_id(from_id: int) -> None:
 @cron_decorators.log_cron_with_transaction
 def clean_gdpr_extracts() -> None:
     user_api.clean_gdpr_extracts()
+    # deletion do not mark the session as dirty therefor the decorator rolls back the session
+    db.session.commit()
