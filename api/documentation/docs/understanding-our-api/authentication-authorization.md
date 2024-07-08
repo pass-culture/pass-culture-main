@@ -56,10 +56,13 @@ To be able to perform those actions, **you need to be given access to the `venue
 
 An **`offerer`** corresponds to the **main company**, identified in the French administrative system by a **SIREN** (_système d'identification du répertoire des entreprises_).
 
-A **`venue`** is a **physical selling point**, identified in the French administrative system by a **SIRET** (_système d'identification du répertoire des établissements_). A **`venue`** is always owned by an **`offerer`**.
+A `venue` is the offer location. It can be:
 
-_For instance, the shop **FNAC Paris - Saint-Lazare** is a **`venue`** (SIRET: 35012746000151), owned by the **`offerer`** **FNAC Darty SA** (SIREN: 055800296)._
+* a physical selling point owned by the offerer in the case of physical product,
+* an address when the offer is a festival located in a field,
+* a digital address when the offer is digital.
 
+For instance, the shop Pass Culture Office is a `venue` (SIRET: *853 318 459 00049*), owned by the offerer Pass Culture (SIREN: *853 318 459*).
 
 ### Gaining access to a `venue`
 
