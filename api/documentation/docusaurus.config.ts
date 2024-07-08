@@ -9,9 +9,6 @@ const getOpenAPIJsonUrlFromEnv = (): string => {
   if (env === 'testing' || env === 'staging') {
     return `https://backend.${env}.passculture.team/openapi.json`;
   }
-  if (env === 'integration') {
-    return 'https://backend.staging.passculture.team/openapi.json';
-  }
   if (env === 'production') {
     return 'https://backend.passculture.pro/openapi.json';
   }
@@ -21,9 +18,6 @@ const getOpenAPIJsonUrlFromEnv = (): string => {
 const getDocumentationBaseUrlFromEnv = (): string => {
   if (env === 'testing' || env === 'staging') {
     return `https://developers.${env}.passculture.team`;
-  }
-  if (env === 'integration') {
-    return 'developers.staging.passculture.team';
   }
   if (env === 'production') {
     return 'https://developers.passculture.pro';
