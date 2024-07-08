@@ -81,11 +81,7 @@ def download_gdpr_extract(extract_id: int) -> utils.BackofficeResponse:
             users_models.GdprUserDataExtract.id == extract_id,
             users_models.GdprUserDataExtract.expirationDate > datetime.utcnow(),  # type: ignore [operator]
         )
-        .options(
-            joinedload(users_models.GdprUserDataExtract.user).load_only(
-                users_models.User.firstName, users_models.User.lastName
-            )
-        )
+        .options(joinedload(users_models.GdprUserDataExtract.user).load_only(users_models.User.email))
         .one_or_none()
     )
 
@@ -111,7 +107,7 @@ def download_gdpr_extract(extract_id: int) -> utils.BackofficeResponse:
 
     response = make_response(files[0])
     response.headers["Content-Type"] = "application/zip"
-    response.headers["Content-Disposition"] = f'attachment; filename="{extract.user.full_name}.zip"'
+    response.headers["Content-Disposition"] = f'attachment; filename="{extract.user.email}.zip"'
     logger.info(
         "An admin downloaded a user's data",
         extra={
