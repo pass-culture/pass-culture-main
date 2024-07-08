@@ -67,6 +67,14 @@ class _FIELDS:
         description="List of your ids to filter on", example="5edd982915c2a74b9302e443,5edd982915e2a74vb9302e443"
     )
 
+    # Pagination Fields
+    PAGINATION_LIMIT_WITH_DEFAULT = Field(default=50, le=50, gt=0, description="Maximum number of items per page.")
+    PAGINATION_FIRST_INDEX_WITH_DEFAULT = Field(
+        default=1,
+        ge=1,
+        description="The page of results will be fetched starting from `firstIndex` (which is a resource id). **To learn more about cursor-based pagination [see this page](/understanding-our-api/resources/cursor-pagination)**.",
+    )
+
     # Image Fields
     IMAGE_CREDIT = Field(description="Image owner or author", example="Jane Doe")
     IMAGE_FILE = Field(

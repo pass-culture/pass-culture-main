@@ -3661,7 +3661,7 @@
                 "properties": {
                     "firstIndex": {
                         "default": 1,
-                        "description": "Index of the first item in page.",
+                        "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id). **To learn more about cursor-based pagination [see this page](/understanding-our-api/resources/cursor-pagination)**.",
                         "minimum": 1,
                         "title": "Firstindex",
                         "type": "integer"
@@ -3713,7 +3713,7 @@
                     },
                     "firstIndex": {
                         "default": 1,
-                        "description": "Index of the first item in page.",
+                        "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id). **To learn more about cursor-based pagination [see this page](/understanding-our-api/resources/cursor-pagination)**.",
                         "minimum": 1,
                         "title": "Firstindex",
                         "type": "integer"
@@ -3899,7 +3899,7 @@
                 "properties": {
                     "firstIndex": {
                         "default": 1,
-                        "description": "Index of the first item in page.",
+                        "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id). **To learn more about cursor-based pagination [see this page](/understanding-our-api/resources/cursor-pagination)**.",
                         "minimum": 1,
                         "title": "Firstindex",
                         "type": "integer"
@@ -8806,13 +8806,13 @@
                         }
                     },
                     {
-                        "description": "Index of the first item in page.",
+                        "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id). **To learn more about cursor-based pagination [see this page](/understanding-our-api/resources/cursor-pagination)**.",
                         "in": "query",
                         "name": "firstIndex",
                         "required": false,
                         "schema": {
                             "default": 1,
-                            "description": "Index of the first item in page.",
+                            "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id). **To learn more about cursor-based pagination [see this page](/understanding-our-api/resources/cursor-pagination)**.",
                             "minimum": 1,
                             "title": "Firstindex",
                             "type": "integer"
@@ -9225,13 +9225,13 @@
                         }
                     },
                     {
-                        "description": "Index of the first item in page.",
+                        "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id). **To learn more about cursor-based pagination [see this page](/understanding-our-api/resources/cursor-pagination)**.",
                         "in": "query",
                         "name": "firstIndex",
                         "required": false,
                         "schema": {
                             "default": 1,
-                            "description": "Index of the first item in page.",
+                            "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id). **To learn more about cursor-based pagination [see this page](/understanding-our-api/resources/cursor-pagination)**.",
                             "minimum": 1,
                             "title": "Firstindex",
                             "type": "integer"
@@ -9611,13 +9611,13 @@
                         }
                     },
                     {
-                        "description": "Index of the first item in page.",
+                        "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id). **To learn more about cursor-based pagination [see this page](/understanding-our-api/resources/cursor-pagination)**.",
                         "in": "query",
                         "name": "firstIndex",
                         "required": false,
                         "schema": {
                             "default": 1,
-                            "description": "Index of the first item in page.",
+                            "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id). **To learn more about cursor-based pagination [see this page](/understanding-our-api/resources/cursor-pagination)**.",
                             "minimum": 1,
                             "title": "Firstindex",
                             "type": "integer"
@@ -10352,13 +10352,13 @@
                         }
                     },
                     {
-                        "description": "Index of the first item in page.",
+                        "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id). **To learn more about cursor-based pagination [see this page](/understanding-our-api/resources/cursor-pagination)**.",
                         "in": "query",
                         "name": "firstIndex",
                         "required": false,
                         "schema": {
                             "default": 1,
-                            "description": "Index of the first item in page.",
+                            "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id). **To learn more about cursor-based pagination [see this page](/understanding-our-api/resources/cursor-pagination)**.",
                             "minimum": 1,
                             "title": "Firstindex",
                             "type": "integer"
