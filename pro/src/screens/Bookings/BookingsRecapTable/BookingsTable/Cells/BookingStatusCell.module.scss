@@ -1,5 +1,6 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_size.scss" as size;
 
 .booking-status-label {
   @include fonts.caption;
@@ -36,10 +37,15 @@
   display: block;
   padding: rem.torem(16px) rem.torem(24px) rem.torem(16px) rem.torem(24px);
   position: absolute;
-  right: 0;
   top: rem.torem(30px);
   width: rem.torem(340px);
+  right: 0;
   z-index: 1;
+
+  @media (max-width: rem.torem(size.$tablet)) {
+    translate: -50%;
+    right: unset;
+  }
 }
 
 .bs-offer-title {
