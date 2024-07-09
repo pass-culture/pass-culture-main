@@ -21,6 +21,7 @@ export type FieldLayoutBaseProps = {
   className?: string
   classNameLabel?: string
   classNameFooter?: string
+  classNameInput?: string
   filterVariant?: boolean
   smallLabel?: boolean
   hideFooter?: boolean
@@ -57,6 +58,7 @@ export const FieldLayout = ({
   inline = false,
   classNameLabel,
   classNameFooter,
+  classNameInput,
   description,
   clearButtonProps,
   ErrorDetails,
@@ -103,7 +105,7 @@ export const FieldLayout = ({
       </div>
 
       <div className={styles['field-layout-content']}>
-        <div className={styles['input-wrapper']}>
+        <div className={cn(styles['input-wrapper'], classNameInput)}>
           {children}
           {clearButtonProps && (
             <div className={styles['clear-button-container']}>

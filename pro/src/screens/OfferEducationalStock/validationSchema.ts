@@ -40,7 +40,7 @@ export const generateValidationSchema = (
     .nullable()
     .min(0, 'Nombre positif attendu')
     .max(60000, 'Le prix ne doit pas dépasser 60 000€')
-    .required('Champ requis')
+    .required('Le prix total TTC est obligatoire')
   if (preventPriceIncrease && initialPrice) {
     totalPriceValidation = totalPriceValidation.max(
       initialPrice,
@@ -52,7 +52,7 @@ export const generateValidationSchema = (
     startDatetime: yup
       .date()
       .nullable()
-      .required('Champ requis')
+      .required('La date de début est obligatoire')
       .when([], {
         is: () => !preventPriceIncrease,
         then: (schema) =>
@@ -64,7 +64,7 @@ export const generateValidationSchema = (
     endDatetime: yup
       .date()
       .nullable()
-      .required('Champ requis')
+      .required('La date de fin est obligatoire')
       .when([], {
         is: () => !preventPriceIncrease,
         then: (schema) =>
@@ -82,7 +82,7 @@ export const generateValidationSchema = (
     eventTime: yup
       .string()
       .nullable()
-      .required('Champ requis')
+      .required('L’horaire est obligatoire')
       .when('startDatetime', {
         is: (startDatetime: string) =>
           isSameDay(new Date(startDatetime), new Date()) &&
@@ -106,7 +106,7 @@ export const generateValidationSchema = (
       .nullable()
       .min(1, 'Minimum 1 participant')
       .max(3000, 'Le nombre de participants ne doit pas dépasser 3000')
-      .required('Champ requis'),
+      .required('Le nombre de participants est obligatoire'),
     totalPrice: totalPriceValidation,
     bookingLimitDatetime: yup
       .date()
@@ -118,7 +118,10 @@ export const generateValidationSchema = (
         test: (value, context) => isBeforeEventDate(value, context),
       })
       .nullable(),
-    priceDetail: yup.string().required('Champ requis').max(MAX_DETAILS_LENGTH),
+    priceDetail: yup
+      .string()
+      .required('L’information sur le prix est obligatoire')
+      .max(MAX_DETAILS_LENGTH),
   })
 }
 
