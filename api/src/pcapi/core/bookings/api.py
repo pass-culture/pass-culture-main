@@ -419,7 +419,9 @@ def _book_event_external_ticket(booking: Booking, stock: Stock, beneficiary: Use
     if not provider:
         raise providers_exceptions.InactiveProvider()
 
-    venue_provider = providers_repository.get_venue_provider_or_none(stock.offer.venueId, provider_id=provider.id)
+    venue_provider = providers_repository.get_venue_provider_by_venue_and_provider_ids(
+        stock.offer.venueId, provider_id=provider.id
+    )
 
     sentry_sdk.set_tag("external-provider", provider.name)
     try:
@@ -573,7 +575,9 @@ def _cancel_external_booking(booking: Booking, stock: Stock) -> None:
     if offer.lastProvider and offer.lastProvider.hasProviderEnableCharlie:
         sentry_sdk.set_tag("external-provider", offer.lastProvider.name)
         barcodes = [external_booking.barcode for external_booking in booking.externalBookings]
-        venue_provider = providers_repository.get_venue_provider_or_none(offer.venueId, offer.lastProviderId)
+        venue_provider = providers_repository.get_venue_provider_by_venue_and_provider_ids(
+            offer.venueId, offer.lastProviderId
+        )
         try:
             external_bookings_api.cancel_event_ticket(offer.lastProvider, stock, barcodes, True, venue_provider)
         except external_bookings_exceptions.ExternalBookingException:
@@ -1079,7 +1083,9 @@ def cancel_unstored_external_bookings() -> None:
                         "Error while canceling unstored ticket. Barcode: ",
                         str(barcode),
                     )
-                venue_provider = providers_repository.get_venue_provider_or_none(stock.offer.venueId, provider.id)
+                venue_provider = providers_repository.get_venue_provider_by_venue_and_provider_ids(
+                    stock.offer.venueId, provider.id
+                )
                 external_bookings_api.cancel_event_ticket(provider, stock, [barcode], False, venue_provider)
             else:
                 venue_id = int(external_booking_info["venue_id"])

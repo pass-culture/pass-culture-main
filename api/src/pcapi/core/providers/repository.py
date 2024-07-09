@@ -33,11 +33,7 @@ def get_active_venue_providers_by_provider(provider_id: int) -> list[models.Venu
     return models.VenueProvider.query.filter_by(providerId=provider_id, isActive=True).all()
 
 
-def get_venue_provider_by_venue_and_provider_ids(venue_id: int, provider_id: int) -> models.VenueProvider:
-    return models.VenueProvider.query.filter_by(venueId=venue_id, providerId=provider_id).one()
-
-
-def get_venue_provider_or_none(venue_id: int, provider_id: int) -> models.VenueProvider | None:
+def get_venue_provider_by_venue_and_provider_ids(venue_id: int, provider_id: int) -> models.VenueProvider | None:
     return models.VenueProvider.query.filter_by(venueId=venue_id, providerId=provider_id).one_or_none()
 
 
