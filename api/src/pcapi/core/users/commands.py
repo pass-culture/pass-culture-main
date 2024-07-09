@@ -1,15 +1,11 @@
 import logging
-from typing import Any
 
 import click
 
 from pcapi import settings
 from pcapi.core.mails.transactional.users import online_event_reminder
-from pcapi.core.subscription.api import get_user_subscription_state
 import pcapi.core.users.api as user_api
 import pcapi.core.users.constants as users_constants
-from pcapi.core.users.models import User
-from pcapi.core.users.young_status import YoungStatus
 from pcapi.models import db
 import pcapi.scheduled_tasks.decorators as cron_decorators
 from pcapi.utils.blueprint import Blueprint
@@ -70,39 +66,6 @@ def anonymize_inactive_users(category: str, force: bool) -> None:
     if category in ("pro", "all"):
         print("Anonymizing pro users X years after their last connection")
         user_api.anonymize_pro_users()
-
-
-# TODO (2024-02-19, cepehang) delete after usage
-@blueprint.cli.command("get_unknown_status_by_user_id")
-@click.option(
-    "--from-id",
-    type=int,
-    help="User id from which to check for unknown young status",
-    default=0,
-)
-def get_unknown_status_by_user_id(from_id: int) -> None:
-    last_id = from_id
-    unknown_status_by_user_id: dict[int, Any] = {}
-    while True:
-        users = User.query.filter(User.id > last_id).order_by(User.id).limit(1000).all()
-        if not users:
-            break
-
-        for user in users:
-            try:
-                young_status = get_user_subscription_state(user).young_status
-                if not isinstance(young_status, YoungStatus):
-                    unknown_status_by_user_id[user.id] = young_status
-            except Exception:  # pylint: disable=broad-exception-caught
-                unknown_status_by_user_id[user.id] = young_status
-
-        last_id = users[-1].id
-        logger.info("last checked user id: %s", last_id)
-
-    if unknown_status_by_user_id:
-        logger.warning(unknown_status_by_user_id)
-    else:
-        logger.info("all good, no unknown young status was found")
 
 
 @blueprint.cli.command("clean_gdpr_extracts")
