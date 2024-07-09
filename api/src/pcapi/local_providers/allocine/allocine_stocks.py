@@ -7,7 +7,8 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import models as offers_models
-from pcapi.core.providers.allocine import create_product
+from pcapi.core.providers.allocine import build_movie_id_at_providers
+from pcapi.core.providers.allocine import create_generic_movie
 from pcapi.core.providers.allocine import get_movie_poster
 from pcapi.core.providers.allocine import get_movies_showtimes
 import pcapi.core.providers.models as providers_models
@@ -15,8 +16,6 @@ from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
-from pcapi.repository import db
-from pcapi.repository import transaction
 from pcapi.repository.providable_queries import get_last_update_for_provider
 from pcapi.utils.date import get_department_timezone
 from pcapi.utils.date import local_datetime_to_default_timezone
@@ -48,18 +47,11 @@ class AllocineStocks(LocalProvider):
         self.showtimes: list[allocine_serializers.AllocineShowtime]
         self.label: offers_models.PriceCategoryLabel = offers_api.get_or_create_label("Tarif unique", self.venue)
         self.price_categories_by_offer: dict[offers_models.Offer, list[offers_models.PriceCategory]] = {}
+        self.provider = allocine_venue_provider.provider
 
     def __next__(self) -> list[ProvidableInfo]:
         movie_showtimes = next(self.movies_showtimes)
         self.movie = movie_showtimes.movie
-
-        # FIXME (thconte: 2024-02-23)
-        # We take advantage of the data received with this synchro to speed up
-        # the completion of our product table with allocine movies until we are
-        # confident that almost all scheduled movies are already known.
-        # On the long term, this line should only be `get_movie_product`.
-        # This can be measured with the occurrences of the logs with
-        # `technical_message_id=allocineId.not_found`
         self.product = self.get_or_create_movie_product(self.movie)
 
         self.showtimes = _filter_only_digital_and_non_experience_showtimes(movie_showtimes.showtimes)
@@ -198,21 +190,10 @@ class AllocineStocks(LocalProvider):
         return price_category
 
     def get_or_create_movie_product(self, movie: allocine_serializers.AllocineMovie) -> offers_models.Product:
-        product = offers_models.Product.query.filter(
-            offers_models.Product.extraData["allocineId"] == str(movie.internalId)
-        ).one_or_none()
-
-        if not product:
-            with transaction():
-                product = create_product(movie)
-                db.session.add(product)
-
-            logger.info(
-                "Product created for allocine Id %d",
-                movie.internalId,
-                extra={"allocineId": movie.internalId, "theaterId": self.theater_id},
-                technical_message_id="allocineId.not_found",
-            )
+        id_at_providers = build_movie_id_at_providers(self.provider.id, movie.internalId)
+        generic_movie = create_generic_movie(movie)
+        product = offers_api.upsert_movie_product_from_provider(generic_movie, self.provider, id_at_providers)
+        assert product
 
         return product
 
