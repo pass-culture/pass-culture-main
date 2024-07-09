@@ -1,4 +1,4 @@
-@P0 @retries(runMode=0)
+@P10 @retries(runMode=0)
 Feature: Signup journey
 
   Background:
