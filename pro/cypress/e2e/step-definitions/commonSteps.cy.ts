@@ -48,6 +48,7 @@ When('I select offerer {string}', (offererName: string) => {
   cy.findByTestId('offerer-select').click()
   cy.findByText(/Changer de structure/).click()
   cy.findByTestId('offerers-selection-menu').findByText(offererName).click()
+  cy.findByTestId('header-dropdown-menu-div').should('not.exist')
   cy.findAllByTestId('spinner').should('not.exist')
 })
 
