@@ -1,5 +1,3 @@
-import sqlalchemy.orm as sa_orm
-
 from pcapi.core.providers import api as providers_api
 from pcapi.core.providers import exceptions as providers_exceptions
 from pcapi.core.providers import repository as providers_repository
@@ -113,11 +111,12 @@ def update_venue_external_urls(
 
     Endpoint to set the urls used by our notification system to notify/request your solution.
     """
-    try:
-        venue_provider = providers_repository.get_venue_provider_by_venue_and_provider_ids(
-            venue_id=venue_id, provider_id=current_api_key.provider.id
-        )
-    except sa_orm.exc.NoResultFound:
+
+    venue_provider = providers_repository.get_venue_provider_by_venue_and_provider_ids(
+        venue_id=venue_id, provider_id=current_api_key.provider.id
+    )
+
+    if not venue_provider:
         raise api_errors.ResourceNotFoundError({"global": "This venue cannot be found"})
 
     update_body = body.dict(exclude_unset=True)
