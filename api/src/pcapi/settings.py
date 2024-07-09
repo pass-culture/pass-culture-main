@@ -382,7 +382,6 @@ GOOGLE_DRIVE_SERVICE_ACCOUNT_INFO = os.environ.get("GOOGLE_DRIVE_SERVICE_ACCOUNT
 GOOGLE_BIG_QUERY_BACKEND = os.environ.get("GOOGLE_BIG_QUERY_BACKEND")
 GCP_GDPR_EXTRACT_BUCKET = os.environ.get("GCP_GDPR_EXTRACT_BUCKET", "gdpr-extract-bucket")
 GCP_GDPR_EXTRACT_FOLDER = os.environ.get("GCP_GDPR_EXTRACT_FOLDER", "gdpr-extract-folder")
-GCP_GDPR_EXTRACT_QUEUE = os.environ.get("GCP_GDPR_EXTRACT_QUEUE", "gdpr-extract-queue")
 
 # Backoffice Google SSO
 GOOGLE_CLIENT_ID = secrets_utils.get("GOOGLE_CLIENT_ID")
@@ -575,3 +574,7 @@ VIRUSTOTAL_API_KEY = secrets_utils.get("VIRUSTOTAL_API_KEY")
 
 # DB STATS CSV EXPORT TO DRIVE
 PG_STAT_FOLDER_ID = secrets_utils.get("PG_STAT_FOLDER_ID", "")
+
+# GDPR configuration
+GDPR_MAX_EXTRACT_PER_DAY = int(os.environ.get("GDPR_MAX_EXTRACT_PER_DAY", "10"))
+GDPR_LOCK_TIMEOUT = int(os.environ.get("GDPR_LOCK_TIMEOUT", "900"))

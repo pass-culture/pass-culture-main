@@ -68,6 +68,12 @@ def anonymize_inactive_users(category: str, force: bool) -> None:
         user_api.anonymize_pro_users()
 
 
+@blueprint.cli.command("execute_gdpr_extract")
+@cron_decorators.log_cron_with_transaction
+def execute_gdpr_extract() -> None:
+    user_api.extract_beneficiary_data_command()
+
+
 @blueprint.cli.command("clean_gdpr_extracts")
 @cron_decorators.log_cron_with_transaction
 def clean_gdpr_extracts() -> None:
