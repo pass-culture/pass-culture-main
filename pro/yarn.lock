@@ -10192,10 +10192,10 @@ scheduler@^0.23.2:
   dependencies:
     loose-envify "^1.1.0"
 
-search-insights@^2.13.0, search-insights@^2.14.0:
-  version "2.14.0"
-  resolved "https://registry.yarnpkg.com/search-insights/-/search-insights-2.14.0.tgz#212626f1c5ee8d8e232af1f35c9afaa760a56d24"
-  integrity sha512-OLN6MsPMCghDOqlCtsIsYgtsC0pnwVTyT9Mu6A3ewOj1DxvzZF6COrn2g86E/c05xbktB0XN04m/t1Z+n+fTGw==
+search-insights@^2.13.0, search-insights@^2.15.0:
+  version "2.15.0"
+  resolved "https://registry.yarnpkg.com/search-insights/-/search-insights-2.15.0.tgz#61c7db9d13218ee966937ad2462385b05c0df624"
+  integrity sha512-ch2sPCUDD4sbPQdknVl9ALSi9H7VyoeVbsxznYz6QV55jJ8CI3EtwpO1i84keN4+hF5IeHWIeGvc08530JkVXQ==
 
 seed-random@~2.2.0:
   version "2.2.0"
