@@ -81,7 +81,7 @@ export const SelectAutocomplete = ({
   useEffect(() => {
     const resetSearchField = async () => {
       await setFieldValue(`search-${name}`, '', false)
-      await setFieldValue(name, '', false)
+      await setFieldValue(name, multi ? [] : '', false)
       onReset()
     }
     if (isOpen && resetOnOpen && searchField.value !== '') {
