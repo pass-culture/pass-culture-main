@@ -1,17 +1,19 @@
 import { FormikProvider, useFormik } from 'formik'
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
 import {
-  VenueProviderResponse,
   GetOffererResponseModel,
   GetVenueResponseModel,
+  VenueProviderResponse,
   VenueTypeResponseModel,
 } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
+import { GET_VENUE_QUERY_KEY } from 'config/swrQueryKeys'
 import { Events } from 'core/FirebaseEvents/constants'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared/constants'
 import { SelectOption } from 'custom_types/form'
@@ -51,6 +53,7 @@ export const VenueSettingsFormScreen = ({
   const notify = useNotification()
   const [isSiretValued, setIsSiretValued] = useState(Boolean(venue.siret))
   const { logEvent } = useAnalytics()
+  const { mutate } = useSWRConfig()
 
   const { currentUser } = useCurrentUser()
 
@@ -97,6 +100,7 @@ export const VenueSettingsFormScreen = ({
           shouldSendMail
         )
       )
+      await mutate([GET_VENUE_QUERY_KEY, String(venue.id)])
 
       navigate(`/structures/${venue.managingOfferer.id}/lieux/${venue.id}`)
 
