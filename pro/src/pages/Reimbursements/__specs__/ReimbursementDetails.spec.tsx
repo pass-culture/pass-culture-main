@@ -108,7 +108,9 @@ describe('reimbursementsWithFilters', () => {
         name: /Télécharger/i,
       })
     ).toBeEnabled()
-    expect(screen.getByRole('link', { name: 'Afficher' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: 'Nouvelle fenêtre Afficher' })
+    ).toBeInTheDocument()
   })
 
   it('should disable buttons if user is admin and no bank account filter is selected', async () => {
@@ -122,7 +124,9 @@ describe('reimbursementsWithFilters', () => {
       })
     ).toBeDisabled()
     expect(
-      screen.getByRole('link', { name: 'Afficher Action non disponible' })
+      screen.getByRole('link', {
+        name: 'Nouvelle fenêtre Afficher Action non disponible',
+      })
     ).toBeInTheDocument()
   })
 

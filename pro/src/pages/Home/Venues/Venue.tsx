@@ -105,11 +105,8 @@ export const Venue = ({ offerer, venue, isFirstVenue }: VenueProps) => {
         <div className={styles['button-group']}>
           <ButtonLink
             variant={ButtonVariant.SECONDARY}
-            link={{
-              to: editVenueLink,
-              isExternal: false,
-              'aria-label': `Gérer la page de ${venueDisplayName}`,
-            }}
+            to={editVenueLink}
+            aria-label={`Gérer la page de ${venueDisplayName}`}
             onClick={() =>
               logEvent(
                 VenueEvents.CLICKED_VENUE_PUBLISHED_OFFERS_LINK,

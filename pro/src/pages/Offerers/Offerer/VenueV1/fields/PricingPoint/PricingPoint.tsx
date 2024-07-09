@@ -111,10 +111,8 @@ export const PricingPoint = ({ offerer, venue }: PricingPointProps) => {
           </p>
           <ButtonLink
             icon={fullLinkIcon}
-            link={{
-              to: 'https://aide.passculture.app/hc/fr/sections/4411991876241-Modalités-de-remboursements',
-              isExternal: true,
-            }}
+            to="https://aide.passculture.app/hc/fr/sections/4411991876241-Modalités-de-remboursements"
+            isExternal
           >
             En savoir plus sur les remboursements
           </ButtonLink>

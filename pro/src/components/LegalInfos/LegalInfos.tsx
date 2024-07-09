@@ -31,11 +31,9 @@ export const LegalInfos = ({
         onClick={() =>
           logEvent(Events.CLICKED_CONSULT_CGU, { from: location.pathname })
         }
-        link={{
-          to: 'https://pass.culture.fr/cgu-professionnels/',
-          isExternal: true,
-          target: '_blank',
-        }}
+        to="https://pass.culture.fr/cgu-professionnels/"
+        isExternal
+        opensInNewTab
         variant={ButtonVariant.QUATERNARY}
       >
         <SvgIcon
@@ -52,11 +50,9 @@ export const LegalInfos = ({
         onClick={() =>
           logEvent(Events.CLICKED_PERSONAL_DATA, { from: location.pathname })
         }
-        link={{
-          to: 'https://pass.culture.fr/donnees-personnelles/',
-          isExternal: true,
-          target: '_blank',
-        }}
+        to="https://pass.culture.fr/donnees-personnelles/"
+        isExternal
+        opensInNewTab
         variant={ButtonVariant.QUATERNARY}
       >
         <SvgIcon
@@ -80,11 +76,9 @@ export const LegalInfos = ({
             from: location.pathname,
           })
         }
-        link={{
-          to: 'mailto:support-pro@passculture.app',
-          isExternal: true,
-          target: '_blank',
-        }}
+        to="mailto:support-pro@passculture.app"
+        isExternal
+        opensInNewTab
       >
         <SvgIcon
           src={fullMailIcon}

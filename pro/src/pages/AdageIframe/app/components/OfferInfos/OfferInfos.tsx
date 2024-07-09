@@ -138,10 +138,7 @@ export const OfferInfos = () => {
             Cette offre est introuvable
           </h1>
           <ButtonLink
-            link={{
-              isExternal: false,
-              to: `/adage-iframe/recherche?token=${adageAuthToken}`,
-            }}
+            to={`/adage-iframe/recherche?token=${adageAuthToken}`}
             variant={ButtonVariant.PRIMARY}
           >
             Explorer le catalogue

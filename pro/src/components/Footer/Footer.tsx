@@ -33,13 +33,10 @@ export const Footer = ({ layout }: FooterProps) => {
         <li>
           <ButtonLink
             variant={ButtonVariant.QUATERNARY}
-            link={{
-              to: 'https://pass.culture.fr/cgu-professionnels/',
-              isExternal: true,
-              target: '_blank',
-            }}
+            to="https://pass.culture.fr/cgu-professionnels/"
+            isExternal
+            opensInNewTab
             icon={fullLinkIcon}
-            svgAlt="Nouvelle fenêtre"
           >
             CGU professionnels
           </ButtonLink>
@@ -47,35 +44,22 @@ export const Footer = ({ layout }: FooterProps) => {
         <li>
           <ButtonLink
             variant={ButtonVariant.QUATERNARY}
-            link={{
-              to: 'https://pass.culture.fr/donnees-personnelles/',
-              isExternal: true,
-              target: '_blank',
-            }}
+            to="https://pass.culture.fr/donnees-personnelles/"
+            isExternal
+            opensInNewTab
             icon={fullLinkIcon}
-            svgAlt="Nouvelle fenêtre"
           >
             Charte des Données Personnelles
           </ButtonLink>
         </li>
         <li>
-          <ButtonLink
-            variant={ButtonVariant.QUATERNARY}
-            link={{
-              to: '/accessibilite',
-            }}
-          >
+          <ButtonLink variant={ButtonVariant.QUATERNARY} to="/accessibilite">
             Accessibilité : non conforme
           </ButtonLink>
         </li>
         {currentUser && (
           <li>
-            <ButtonLink
-              variant={ButtonVariant.QUATERNARY}
-              link={{
-                to: '/plan-du-site',
-              }}
-            >
+            <ButtonLink variant={ButtonVariant.QUATERNARY} to="/plan-du-site">
               Plan du site
             </ButtonLink>
           </li>

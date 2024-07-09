@@ -29,18 +29,15 @@ export const Support: () => JSX.Element | null = () => {
         <ul>
           <li>
             <ButtonLink
-              link={{
-                to: 'https://aide.passculture.app',
-                isExternal: true,
-                target: '_blank',
-              }}
+              to="https://aide.passculture.app"
+              isExternal
+              opensInNewTab
               icon={fullLinkIcon}
               onClick={() =>
                 logEvent(Events.CLICKED_HELP_CENTER, {
                   from: location.pathname,
                 })
               }
-              svgAlt="Nouvelle fenêtre"
             >
               Centre d’aide
             </ButtonLink>
@@ -48,18 +45,15 @@ export const Support: () => JSX.Element | null = () => {
 
           <li>
             <ButtonLink
-              link={{
-                to: 'https://passcultureapp.notion.site/pass-Culture-Documentation-323b1a0ec309406192d772e7d803fbd0',
-                isExternal: true,
-                target: '_blank',
-              }}
+              to="https://passcultureapp.notion.site/pass-Culture-Documentation-323b1a0ec309406192d772e7d803fbd0"
+              isExternal
+              opensInNewTab
               icon={fullLinkIcon}
               onClick={() =>
                 logEvent(Events.CLICKED_BEST_PRACTICES_STUDIES, {
                   from: location.pathname,
                 })
               }
-              svgAlt="Nouvelle fenêtre"
             >
               Bonnes pratiques et études
             </ButtonLink>
@@ -67,11 +61,9 @@ export const Support: () => JSX.Element | null = () => {
 
           <li>
             <ButtonLink
-              link={{
-                to: 'mailto:support-pro@passculture.app',
-                isExternal: true,
-                target: '_blank',
-              }}
+              to="mailto:support-pro@passculture.app"
+              isExternal
+              opensInNewTab
               icon={fullMailIcon}
               onClick={() =>
                 logEvent(Events.CLICKED_CONSULT_SUPPORT, {
@@ -87,18 +79,15 @@ export const Support: () => JSX.Element | null = () => {
             <>
               <li>
                 <ButtonLink
-                  link={{
-                    to: 'https://pass.culture.fr/cgu-professionnels/',
-                    isExternal: true,
-                    target: '_blank',
-                  }}
+                  to="https://pass.culture.fr/cgu-professionnels/"
+                  isExternal
+                  opensInNewTab
                   icon={fullLinkIcon}
                   onClick={() =>
                     logEvent(Events.CLICKED_CONSULT_CGU, {
                       from: location.pathname,
                     })
                   }
-                  svgAlt="Nouvelle fenêtre"
                 >
                   Conditions Générales d’Utilisation
                 </ButtonLink>

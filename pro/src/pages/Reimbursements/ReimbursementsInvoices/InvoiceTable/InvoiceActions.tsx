@@ -41,14 +41,11 @@ export function InvoiceActions({ invoice }: InvoiceActionsProps) {
       <>
         <DropdownItem title="Télécharger le justificatif comptable (.pdf)">
           <ButtonLink
-            link={{
-              isExternal: true,
-              to: invoice.url,
-              target: '_blank',
-              download: true,
-            }}
+            isExternal
+            to={invoice.url}
+            opensInNewTab
+            download
             icon={fullDownloadIcon}
-            svgAlt=""
             variant={ButtonVariant.TERNARY}
             onClick={() =>
               logEvent(Events.CLICKED_INVOICES_DOWNLOAD, {

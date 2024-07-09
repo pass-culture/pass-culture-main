@@ -43,10 +43,7 @@ export const VenueCreationLinks = ({ offerer }: VenueCreationLinksProps) => {
       <div className={styles['add-venue-button']}>
         <ButtonLink
           variant={ButtonVariant.SECONDARY}
-          link={{
-            to: venueCreationUrl,
-            isExternal: false,
-          }}
+          to={venueCreationUrl}
           onClick={() => {
             logEvent(Events.CLICKED_CREATE_VENUE, {
               from: location.pathname,

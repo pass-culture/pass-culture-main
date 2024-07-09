@@ -77,12 +77,9 @@ export function PartnerPageCollectiveSection({
         <ButtonLink
           variant={ButtonVariant.TERNARY}
           icon={fullLinkIcon}
-          link={{
-            to: 'https://www.demarches-simplifiees.fr/commencer/demande-de-referencement-sur-adage',
-            isExternal: true,
-            target: '_blank',
-          }}
-          svgAlt="Nouvelle fenêtre"
+          to="https://www.demarches-simplifiees.fr/commencer/demande-de-referencement-sur-adage"
+          isExternal
+          opensInNewTab
           className={styles['details-link']}
           onClick={logDMSApplicationLinkClick}
         >
@@ -92,12 +89,9 @@ export function PartnerPageCollectiveSection({
         <ButtonLink
           variant={ButtonVariant.TERNARY}
           icon={fullInfoIcon}
-          link={{
-            to: 'https://aide.passculture.app/hc/fr/categories/4410482280977--Acteurs-Culturels-Tout-savoir-sur-le-pass-Culture-collectif-%C3%A0-destination-des-groupes-scolaires',
-            isExternal: true,
-            target: '_blank',
-          }}
-          svgAlt="Nouvelle fenêtre"
+          to="https://aide.passculture.app/hc/fr/categories/4410482280977--Acteurs-Culturels-Tout-savoir-sur-le-pass-Culture-collectif-%C3%A0-destination-des-groupes-scolaires"
+          isExternal
+          opensInNewTab
           className={styles['details-link']}
           onClick={logCollectiveHelpLinkClick}
         >
@@ -140,12 +134,9 @@ export function PartnerPageCollectiveSection({
       <ButtonLink
         variant={ButtonVariant.TERNARY}
         icon={fullInfoIcon}
-        link={{
-          to: 'https://aide.passculture.app/hc/fr/categories/4410482280977--Acteurs-Culturels-Tout-savoir-sur-le-pass-Culture-collectif-%C3%A0-destination-des-groupes-scolaires',
-          isExternal: true,
-          target: '_blank',
-        }}
-        svgAlt="Nouvelle fenêtre"
+        to="https://aide.passculture.app/hc/fr/categories/4410482280977--Acteurs-Culturels-Tout-savoir-sur-le-pass-Culture-collectif-%C3%A0-destination-des-groupes-scolaires"
+        isExternal
+        opensInNewTab
         className={styles['details-link']}
         onClick={logCollectiveHelpLinkClick}
       >
@@ -199,10 +190,8 @@ function AdageInformations({
         <ButtonLink
           variant={ButtonVariant.TERNARY}
           className={styles['details-link']}
-          link={{
-            to: `/structures/${offererId}/lieux/${venueId}/collectif`,
-            'aria-label': `Gérer la page pour les enseignants ${venueName}`,
-          }}
+          to={`/structures/${offererId}/lieux/${venueId}/collectif`}
+          aria-label={`Gérer la page pour les enseignants ${venueName}`}
           icon={fullNextIcon}
           onClick={() =>
             logEvent(Events.CLICKED_PAGE_FOR_ADAGE_HOME, {

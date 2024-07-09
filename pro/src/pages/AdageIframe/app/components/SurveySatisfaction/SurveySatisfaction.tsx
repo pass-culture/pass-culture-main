@@ -77,13 +77,10 @@ export const SurveySatisfaction = ({
 
           <ButtonLink
             variant={ButtonVariant.PRIMARY}
-            link={{
-              to: 'https://passculture.qualtrics.com/jfe/form/SV_8w5mdHmrxly9bcW',
-              isExternal: true,
-              target: '_blank',
-            }}
+            to="https://passculture.qualtrics.com/jfe/form/SV_8w5mdHmrxly9bcW"
+            isExternal
+            opensInNewTab
             icon={fullLinkIcon}
-            svgAlt="Nouvelle fenêtre"
             className={styles['survey-button']}
             onClick={logOpenSatisfactionSurvey}
           >

@@ -33,7 +33,7 @@ export const ConfirmedAttachment = (): JSX.Element => {
         onClick={logNavigation}
         className={styles['home-button']}
         variant={ButtonVariant.PRIMARY}
-        link={{ isExternal: false, to: '/accueil' }}
+        to="/accueil"
       >
         Accéder à votre espace
       </ButtonLink>

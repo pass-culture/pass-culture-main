@@ -28,10 +28,8 @@ export const SkipLinks = ({
               return (
                 <li key={button.anchor}>
                   <ButtonLink
-                    link={{
-                      to: button.anchor,
-                      isExternal: true,
-                    }}
+                    to={button.anchor}
+                    isExternal
                     icon={fullNextIcon}
                     className={styles['skip-list-button']}
                     variant={ButtonVariant.QUATERNARY}
@@ -45,10 +43,8 @@ export const SkipLinks = ({
         ) : (
           <div className={styles['skip-list']}>
             <ButtonLink
-              link={{
-                to: '#content',
-                isExternal: true,
-              }}
+              to="#content"
+              isExternal
               icon={fullNextIcon}
               className={styles['skip-list-button']}
               variant={ButtonVariant.QUATERNARY}

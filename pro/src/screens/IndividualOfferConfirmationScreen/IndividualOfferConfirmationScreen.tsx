@@ -96,7 +96,6 @@ export const IndividualOfferConfirmationScreen = ({
         <div className={styles['display-in-app-link']}>
           <DisplayOfferInAppLink
             id={offer.id}
-            svgAlt="Nouvelle fenêtre"
             icon={fullLinkIcon}
             onClick={() => {
               logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
@@ -116,10 +115,8 @@ export const IndividualOfferConfirmationScreen = ({
 
       <div className={styles['confirmation-actions']}>
         <ButtonLink
-          link={{
-            to: '/offre/creation' + queryString,
-            isExternal: true,
-          }}
+          to={`/offre/creation${queryString}`}
+          isExternal
           className={styles['confirmation-action']}
           variant={ButtonVariant.SECONDARY}
         >
@@ -127,10 +124,7 @@ export const IndividualOfferConfirmationScreen = ({
         </ButtonLink>
 
         <ButtonLink
-          link={{
-            to: `/offres`,
-            isExternal: false,
-          }}
+          to="/offres"
           className={styles['confirmation-action']}
           variant={ButtonVariant.PRIMARY}
         >

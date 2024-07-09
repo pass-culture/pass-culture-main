@@ -74,10 +74,7 @@ export const OffererDetails = ({
 
           <ButtonLink
             variant={ButtonVariant.TERNARY}
-            link={{
-              to: `/collaborateurs`,
-              isExternal: false,
-            }}
+            to="/collaborateurs"
             icon={fullAddUserIcon}
             isDisabled={!isUserOffererValidated}
             onClick={() => {

@@ -121,10 +121,7 @@ export const Validation = (): JSX.Element => {
         <h2 className={styles['subtitle']}>
           Identification
           <ButtonLink
-            link={{
-              to: '/parcours-inscription/identification',
-              isExternal: false,
-            }}
+            to="/parcours-inscription/identification"
             onClick={() => {
               logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
                 from: location.pathname,
@@ -154,10 +151,7 @@ export const Validation = (): JSX.Element => {
         <h2 className={styles['subtitle']}>
           Activité
           <ButtonLink
-            link={{
-              to: '/parcours-inscription/activite',
-              isExternal: false,
-            }}
+            to="/parcours-inscription/activite"
             onClick={() => {
               logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
                 from: location.pathname,

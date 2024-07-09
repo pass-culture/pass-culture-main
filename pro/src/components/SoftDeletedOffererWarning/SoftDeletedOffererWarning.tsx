@@ -17,16 +17,14 @@ export const SoftDeletedOffererWarning = (): JSX.Element => {
         <div className="actions-container">
           <ButtonLink
             variant={ButtonVariant.PRIMARY}
-            link={{ isExternal: false, to: '/parcours-inscription/structure' }}
+            to="/parcours-inscription/structure"
           >
             Ajouter une nouvelle structure
           </ButtonLink>
           <ButtonLink
             variant={ButtonVariant.SECONDARY}
-            link={{
-              isExternal: true,
-              to: 'mailto:support-pro@passculture.app',
-            }}
+            isExternal
+            to="mailto:support-pro@passculture.app"
           >
             Contacter le support
           </ButtonLink>

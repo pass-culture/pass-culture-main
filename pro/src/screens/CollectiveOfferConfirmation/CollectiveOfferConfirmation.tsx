@@ -138,19 +138,14 @@ export const CollectiveOfferConfirmationScreen = ({
           <ButtonLink
             variant={ButtonVariant.SECONDARY}
             className={styles['confirmation-action']}
-            link={{ to: '/offres/collectives', isExternal: false }}
+            to="/offres/collectives"
           >
             Voir mes offres
           </ButtonLink>
           <ButtonLink
             variant={ButtonVariant.PRIMARY}
             className={styles['confirmation-action']}
-            link={{
-              to: `/offre/creation${
-                offererId ? `?structure=${offererId}` : ''
-              }`,
-              isExternal: false,
-            }}
+            to={`/offre/creation${offererId ? `?structure=${offererId}` : ''}`}
           >
             Créer une nouvelle offre
           </ButtonLink>

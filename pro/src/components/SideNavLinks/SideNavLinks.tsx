@@ -112,10 +112,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
       <div className={styles['nav-links-first-group']}>
         {selectedOffererQuery.data && isUserOffererValidated && (
           <li className={styles['nav-links-create-offer-wrapper']}>
-            <ButtonLink
-              variant={ButtonVariant.PRIMARY}
-              link={{ isExternal: false, to: createOfferPageUrl }}
-            >
+            <ButtonLink variant={ButtonVariant.PRIMARY} to={createOfferPageUrl}>
               Créer une offre
             </ButtonLink>
           </li>

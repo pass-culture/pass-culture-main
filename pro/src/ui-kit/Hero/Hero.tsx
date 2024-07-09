@@ -22,10 +22,7 @@ export const Hero = ({
     <div className={styles['hero-body']}>
       <h1 className={styles['title']}>{title}</h1>
       <h2 className={styles['subtitle']}>{text}</h2>
-      <ButtonLink
-        variant={ButtonVariant.PRIMARY}
-        link={{ isExternal: false, to: linkTo }}
-      >
+      <ButtonLink variant={ButtonVariant.PRIMARY} to={linkTo}>
         {linkLabel}
       </ButtonLink>
     </div>

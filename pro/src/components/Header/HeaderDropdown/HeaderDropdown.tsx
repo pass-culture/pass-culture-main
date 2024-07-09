@@ -223,7 +223,7 @@ export const HeaderDropdown = () => {
                           <ButtonLink
                             icon={fullMoreIcon}
                             className={styles['menu-item']}
-                            link={{ to: '/parcours-inscription/structure' }}
+                            to="/parcours-inscription/structure"
                           >
                             Ajouter une nouvelle structure
                           </ButtonLink>
@@ -241,7 +241,7 @@ export const HeaderDropdown = () => {
             </DropdownMenu.Label>
             <div className={styles['menu-email']}>{currentUser?.email}</div>
             <DropdownMenu.Item className={styles['menu-item']} asChild>
-              <ButtonLink icon={fullProfilIcon} link={{ to: '/profil' }}>
+              <ButtonLink icon={fullProfilIcon} to="/profil">
                 Voir mon profil
               </ButtonLink>
             </DropdownMenu.Item>
@@ -260,7 +260,7 @@ export const HeaderDropdown = () => {
             <DropdownMenu.Item className={styles['menu-item']} asChild>
               <ButtonLink
                 icon={fullLogoutIcon}
-                link={{ to: `${location.pathname}?logout}` }}
+                to={`${location.pathname}?logout}`}
                 onClick={() =>
                   logEvent(Events.CLICKED_LOGOUT, {
                     from: location.pathname,
