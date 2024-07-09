@@ -83,6 +83,19 @@ export const BookingsScreen = <
     initialAppliedFilters
   )
 
+  // FIXME: Needed because `isNewInterfaceActive` can change, and the initial state won't.
+  useEffect(() => {
+    const initialFilters = {
+      ...DEFAULT_PRE_FILTERS,
+      ...{
+        offerId: isNewInterfaceActive
+          ? selectedOffererId?.toString()
+          : undefined,
+      },
+    }
+    setAppliedPreFilters(initialFilters)
+  }, [isNewInterfaceActive])
+
   const venuesQuery = useSWR(
     [
       GET_VENUES_QUERY_KEY,
