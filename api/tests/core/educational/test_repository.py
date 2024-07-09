@@ -5,10 +5,15 @@ import pytest
 
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import repository as educational_repository
+from pcapi.core.educational.factories import create_collective_offer_by_status
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveBookingStatusFilter
+from pcapi.core.educational.models import CollectiveOffer
+from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offers.repository import _filter_collective_offers_by_statuses
 from pcapi.core.users import factories as users_factories
+from pcapi.models import offer_mixin
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -432,3 +437,131 @@ class FindByProUserTest:
         assert len(collective_bookings) == 2
         collective_bookings_ids = {booking.id for booking in collective_bookings}
         assert {cayenne_booking.id, mayotte_booking.id} == collective_bookings_ids
+
+
+class FilterCollectiveOfferByStatusesTest:
+    def test_filter_by_booked_status(self, app):
+        # Given
+        booked_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.BOOKED)
+
+        pending_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.PENDING)
+
+        base_query = CollectiveOffer.query
+
+        # When
+        filtered_booked_query = _filter_collective_offers_by_statuses(
+            base_query, [CollectiveOfferDisplayedStatus.BOOKED.value]
+        )
+
+        # Then
+        assert filtered_booked_query.count() == 1
+        assert filtered_booked_query.first() == booked_offer
+
+        # When
+        filtered_pending_query = _filter_collective_offers_by_statuses(
+            base_query, [CollectiveOfferDisplayedStatus.PENDING.value]
+        )
+
+        # Then
+        assert filtered_pending_query.count() == 1
+        assert filtered_pending_query.first() == pending_offer
+
+    @pytest.mark.parametrize(
+        "status",
+        [
+            # All but PENDING
+            CollectiveOfferDisplayedStatus.ACTIVE,
+            CollectiveOfferDisplayedStatus.REJECTED,
+            CollectiveOfferDisplayedStatus.PREBOOKED,
+            CollectiveOfferDisplayedStatus.BOOKED,
+            CollectiveOfferDisplayedStatus.INACTIVE,
+            CollectiveOfferDisplayedStatus.EXPIRED,
+            CollectiveOfferDisplayedStatus.ENDED,
+            CollectiveOfferDisplayedStatus.CANCELLED,
+            CollectiveOfferDisplayedStatus.ARCHIVED,
+        ],
+    )
+    def test_filter_by_multiple_status(self, app, status):
+        # Given
+        booked_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.BOOKED)
+        _pending_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.PENDING)
+
+        base_query = CollectiveOffer.query
+
+        # When
+        filtered_booked_query = _filter_collective_offers_by_statuses(
+            base_query, [CollectiveOfferDisplayedStatus.BOOKED.value, status.value]
+        )
+
+        # Then
+        assert filtered_booked_query.count() == 1
+        assert filtered_booked_query.first() == booked_offer
+
+    @pytest.mark.parametrize(
+        "status",
+        [
+            CollectiveOfferDisplayedStatus.REJECTED,
+            CollectiveOfferDisplayedStatus.PREBOOKED,
+            CollectiveOfferDisplayedStatus.BOOKED,
+            CollectiveOfferDisplayedStatus.INACTIVE,
+            CollectiveOfferDisplayedStatus.EXPIRED,
+            CollectiveOfferDisplayedStatus.ENDED,
+            CollectiveOfferDisplayedStatus.ARCHIVED,
+        ],
+    )
+    def test_filter_by_status(self, app, status):
+        # Given
+        offer = create_collective_offer_by_status(status)
+        _pending_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.PENDING)
+
+        base_query = CollectiveOffer.query
+
+        # When
+        filtered_booked_query = _filter_collective_offers_by_statuses(base_query, [status.value])
+
+        # Then
+        assert filtered_booked_query.count() == 1
+        assert filtered_booked_query.first() == offer
+
+    def test_filter_with_no_statuses(self, app):
+        # Given
+        booked_offer = educational_factories.CollectiveOfferFactory(
+            validation=offer_mixin.OfferValidationStatus.APPROVED
+        )
+        stock = educational_factories.CollectiveStockFactory(collectiveOffer=booked_offer)
+        _booking = educational_factories.CollectiveBookingFactory(
+            collectiveStock=stock, status=CollectiveBookingStatus.CONFIRMED
+        )
+
+        _pending_offer = educational_factories.CollectiveOfferFactory(
+            validation=offer_mixin.OfferValidationStatus.PENDING
+        )
+
+        base_query = CollectiveOffer.query
+        # When
+        filtered_nostatus_query = _filter_collective_offers_by_statuses(base_query, [])
+
+        # Then
+        assert filtered_nostatus_query.count() == 0
+
+    def test_filter_with_statuses_has_none(self, app):
+        # Given
+        booked_offer = educational_factories.CollectiveOfferFactory(
+            validation=offer_mixin.OfferValidationStatus.APPROVED
+        )
+        stock = educational_factories.CollectiveStockFactory(collectiveOffer=booked_offer)
+        _booking = educational_factories.CollectiveBookingFactory(
+            collectiveStock=stock, status=CollectiveBookingStatus.CONFIRMED
+        )
+
+        pending_offer = educational_factories.CollectiveOfferFactory(
+            validation=offer_mixin.OfferValidationStatus.PENDING
+        )
+
+        base_query = CollectiveOffer.query
+        # When
+        filtered_nostatus_query = _filter_collective_offers_by_statuses(base_query, None)
+
+        # Then
+        assert filtered_nostatus_query.count() == 2
+        assert set(filtered_nostatus_query.all()) == {pending_offer, booked_offer}
