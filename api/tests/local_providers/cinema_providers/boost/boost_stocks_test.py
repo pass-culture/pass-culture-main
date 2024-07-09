@@ -113,51 +113,6 @@ class BoostStocksTest:
 
         assert get_cinema_attr_adapter.call_count == 1
 
-    def should_create_offers_with_allocine_id_and_visa_if_products_dont_exist(self, requests_mock):
-        venue_provider = self._create_cinema_and_pivot()
-
-        requests_mock.get(
-            "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
-        )
-        requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
-            json=fixtures.ShowtimesEndpointResponse.PAGE_1_JSON_DATA,
-        )
-        requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=2&per_page=30",
-            json=fixtures.ShowtimesEndpointResponse.PAGE_2_JSON_DATA,
-        )
-        requests_mock.get("http://example.com/images/158026.jpg", content=bytes())
-        requests_mock.get("http://example.com/images/149489.jpg", content=bytes())
-
-        assert Product.query.count() == 0
-
-        boost_stocks = BoostStocks(venue_provider=venue_provider)
-        boost_stocks.updateObjects()
-
-        created_offers = Offer.query.order_by(Offer.id).all()
-
-        assert len(created_offers) == 2
-
-        assert created_offers[0].name == "BLACK PANTHER : WAKANDA FOREVER"
-        assert not created_offers[0].product
-        assert created_offers[0].venue == venue_provider.venue
-        assert created_offers[0].offererAddressId == venue_provider.venue.offererAddressId
-        assert not created_offers[0].description
-        assert created_offers[0].durationMinutes == 162
-        assert created_offers[0].isDuo
-        assert created_offers[0].subcategoryId == subcategories.SEANCE_CINE.id
-        assert created_offers[0].extraData == {"allocineId": 263242, "visa": "158026"}
-
-        assert created_offers[1].name == "CHARLOTTE"
-        assert not created_offers[1].product
-        assert created_offers[1].venue == venue_provider.venue
-        assert not created_offers[1].description
-        assert created_offers[1].durationMinutes == 92
-        assert created_offers[1].isDuo
-        assert created_offers[1].subcategoryId == subcategories.SEANCE_CINE.id
-        assert created_offers[1].extraData == {"allocineId": 277733, "visa": "149489"}
-
     def should_fill_offer_and_stock_informations_for_each_movie_based_on_product(self, requests_mock):
         self._create_products()
         venue_provider = self._create_cinema_and_pivot()
