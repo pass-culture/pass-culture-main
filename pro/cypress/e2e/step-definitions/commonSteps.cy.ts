@@ -7,6 +7,7 @@ import {
 
 let user_email = ''
 Given('pro user has been created', () => {
+  cy.visit('/')
   cy.request(
     'http://localhost:5001/sanboxes/pro_01_create_pro_user/create_pro_user_with_venue_bank_account_and_userofferer'
   ).then((response) => {
@@ -17,6 +18,7 @@ Given('pro user has been created', () => {
 })
 
 Given('pro user new nav has been created', () => {
+  cy.visit('/')
   cy.request(
     'http://localhost:5001/sanboxes/pro_01_create_pro_user/create_pro_user_new_nav'
   ).then((response) => {
