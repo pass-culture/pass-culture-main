@@ -165,11 +165,9 @@ export const RequestFormDialog = ({
                 onClick={logContactUrl}
                 variant={ButtonVariant.TERNARYPINK}
                 className={styles['form-description-link-text']}
-                link={{
-                  to: contactUrl,
-                  isExternal: true,
-                  target: '_blank',
-                }}
+                to={contactUrl}
+                isExternal
+                opensInNewTab
               >
                 <SvgIcon
                   className={styles['form-icon']}
@@ -227,11 +225,9 @@ export const RequestFormDialog = ({
         onClick={logContactUrl}
         variant={ButtonVariant.TERNARYPINK}
         className={styles['form-description-link-text']}
-        link={{
-          to: contactUrl,
-          isExternal: true,
-          target: '_blank',
-        }}
+        to={contactUrl}
+        isExternal
+        opensInNewTab
       >
         <SvgIcon width="20" alt="Nouvelle fenêtre" src={fullLinkIcon} />
         Aller sur le site

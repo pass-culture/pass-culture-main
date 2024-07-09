@@ -20,10 +20,7 @@ export const VenueFormActionBar = ({ venue }: VenueFormActionBarProps) => {
     <div className={styles['action-bar']}>
       <ButtonLink
         variant={ButtonVariant.SECONDARY}
-        link={{
-          to: `/structures/${venue?.managingOfferer.id}/lieux/${venue?.id}`,
-          isExternal: false,
-        }}
+        to={`/structures/${venue?.managingOfferer.id}/lieux/${venue?.id}`}
       >
         Annuler
       </ButtonLink>

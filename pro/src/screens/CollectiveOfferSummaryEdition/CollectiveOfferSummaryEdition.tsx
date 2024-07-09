@@ -60,7 +60,7 @@ export const CollectiveOfferSummaryEditionScreen = ({
         <ActionsBarSticky.Left>
           <ButtonLink
             variant={ButtonVariant.PRIMARY}
-            link={{ isExternal: false, to: computeCollectiveOffersUrl({}) }}
+            to={computeCollectiveOffersUrl({})}
           >
             Retour à la liste des offres
           </ButtonLink>

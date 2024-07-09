@@ -59,10 +59,7 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
         {displayCreateOfferButton && (
           <ButtonLink
             variant={ButtonVariant.PRIMARY}
-            link={{
-              isExternal: false,
-              to: createOfferLink,
-            }}
+            to={createOfferLink}
             icon={fullMoreIcon}
           >
             Créer une offre

@@ -153,10 +153,7 @@ export const CollectiveTimeLine = ({
               </div>
               <ButtonLink
                 variant={ButtonVariant.TERNARY}
-                link={{
-                  to: `/offre/${bookingRecap.stock.offerId}/collectif/stocks/edition`,
-                  isExternal: false,
-                }}
+                to={`/offre/${bookingRecap.stock.offerId}/collectif/stocks/edition`}
                 icon={fullEditIcon}
                 onClick={logModifyBookingLimitDateClick}
               >
@@ -174,10 +171,7 @@ export const CollectiveTimeLine = ({
                 </div>
                 <ButtonLink
                   variant={ButtonVariant.TERNARY}
-                  link={{
-                    to: `/offre/${bookingRecap.stock.offerId}/collectif/stocks/edition`,
-                    isExternal: false,
-                  }}
+                  to={`/offre/${bookingRecap.stock.offerId}/collectif/stocks/edition`}
                   icon={fullEditIcon}
                   onClick={logModifyBookingLimitDateClick}
                 >
@@ -185,10 +179,8 @@ export const CollectiveTimeLine = ({
                 </ButtonLink>
                 <ButtonLink
                   variant={ButtonVariant.TERNARY}
-                  link={{
-                    to: 'https://aide.passculture.app/hc/fr/articles/4405297381788--Acteurs-Culturels-Que-faire-si-le-groupe-scolaire-n-est-pas-au-complet-ou-doit-annuler-sa-participation-',
-                    isExternal: true,
-                  }}
+                  to="https://aide.passculture.app/hc/fr/articles/4405297381788--Acteurs-Culturels-Que-faire-si-le-groupe-scolaire-n-est-pas-au-complet-ou-doit-annuler-sa-participation-"
+                  isExternal
                   icon={fullLinkIcon}
                 >
                   Je rencontre un problème à cette étape
@@ -217,10 +209,7 @@ export const CollectiveTimeLine = ({
           </div>
           <ButtonLink
             variant={ButtonVariant.TERNARY}
-            link={{
-              to: `/offre/${bookingRecap.stock.offerId}/collectif/stocks/edition`,
-              isExternal: false,
-            }}
+            to={`/offre/${bookingRecap.stock.offerId}/collectif/stocks/edition`}
             icon={fullEditIcon}
             onClick={logModifyBookingLimitDateClick}
           >
@@ -270,10 +259,8 @@ export const CollectiveTimeLine = ({
           Nous espérons que votre évènement s’est bien déroulé.
           <ButtonLink
             variant={ButtonVariant.TERNARY}
-            link={{
-              to: 'https://aide.passculture.app/hc/fr/articles/4405297381788--Acteurs-Culturels-Que-faire-si-le-groupe-scolaire-n-est-pas-au-complet-ou-doit-annuler-sa-participation-',
-              isExternal: true,
-            }}
+            to="https://aide.passculture.app/hc/fr/articles/4405297381788--Acteurs-Culturels-Que-faire-si-le-groupe-scolaire-n-est-pas-au-complet-ou-doit-annuler-sa-participation-"
+            isExternal
             icon={fullLinkIcon}
           >
             Je rencontre un problème à cette étape
@@ -332,10 +319,8 @@ export const CollectiveTimeLine = ({
         </div>
         <ButtonLink
           variant={ButtonVariant.TERNARY}
-          link={{
-            to: 'https://aide.passculture.app/hc/fr/articles/4411992051601',
-            isExternal: true,
-          }}
+          to="https://aide.passculture.app/hc/fr/articles/4411992051601"
+          isExternal
           icon={fullLinkIcon}
         >
           Voir le calendrier des remboursements
@@ -398,10 +383,7 @@ export const CollectiveTimeLine = ({
         </div>
         <ButtonLink
           variant={ButtonVariant.TERNARY}
-          link={{
-            to: `remboursements/informations-bancaires?structure=${bookingDetails.offererId}`,
-            isExternal: false,
-          }}
+          to={`remboursements/informations-bancaires?structure=${bookingDetails.offererId}`}
           icon={fullLinkIcon}
           className={styles['button-important']}
         >
@@ -425,10 +407,8 @@ export const CollectiveTimeLine = ({
         </div>
         <ButtonLink
           variant={ButtonVariant.TERNARY}
-          link={{
-            to: `https://www.demarches-simplifiees.fr/dossiers/${bookingDetails.venueDMSApplicationId}/messagerie`,
-            isExternal: true,
-          }}
+          to={`https://www.demarches-simplifiees.fr/dossiers/${bookingDetails.venueDMSApplicationId}/messagerie`}
+          isExternal
           icon={fullLinkIcon}
         >
           Voir le dossier en cours

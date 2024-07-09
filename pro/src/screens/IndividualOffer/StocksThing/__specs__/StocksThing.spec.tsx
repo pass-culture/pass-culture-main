@@ -67,9 +67,7 @@ const renderStockThingScreen = async (
           element={
             <IndividualOfferContext.Provider value={contextValue}>
               <StocksThing {...props} />
-              <ButtonLink link={{ to: '/outside', isExternal: false }}>
-                Go outside !
-              </ButtonLink>
+              <ButtonLink to="/outside">Go outside !</ButtonLink>
             </IndividualOfferContext.Provider>
           }
         />

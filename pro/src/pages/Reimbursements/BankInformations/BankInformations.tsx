@@ -118,11 +118,9 @@ export const BankInformations = (): JSX.Element => {
         )}
 
         <ButtonLink
-          link={{
-            to: '', // TODO: le liens manque
-            isExternal: true,
-            target: '_blank',
-          }}
+          to="" // TODO: le liens manque
+          isExternal
+          opensInNewTab
           icon={fullLinkIcon}
           className={styles['information-link-button']}
         >

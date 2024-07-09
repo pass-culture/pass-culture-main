@@ -306,15 +306,13 @@ export const CollectiveOfferVisibilityScreen = ({
               <ActionsBarSticky.Left>
                 <ButtonLink
                   variant={ButtonVariant.SECONDARY}
-                  link={{
-                    to:
-                      mode === Mode.CREATION
-                        ? `/offre/${offer.id}/collectif/stocks${
-                            requestId ? `?requete=${requestId}` : ''
-                          }`
-                        : '/offres/collectives',
-                    isExternal: false,
-                  }}
+                  to={
+                    mode === Mode.CREATION
+                      ? `/offre/${offer.id}/collectif/stocks${
+                          requestId ? `?requete=${requestId}` : ''
+                        }`
+                      : '/offres/collectives'
+                  }
                 >
                   {mode === Mode.CREATION
                     ? 'Étape précédente'

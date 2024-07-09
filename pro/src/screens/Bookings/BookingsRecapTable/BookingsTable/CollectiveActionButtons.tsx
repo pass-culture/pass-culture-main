@@ -88,10 +88,7 @@ export const CollectiveActionButtons = ({
           </Button>
         )}
         {bookingRecap.bookingStatus === BOOKING_STATUS.PENDING && (
-          <ButtonLink
-            link={{ isExternal: false, to: offerEditionUrl }}
-            variant={ButtonVariant.PRIMARY}
-          >
+          <ButtonLink to={offerEditionUrl} variant={ButtonVariant.PRIMARY}>
             Modifier l’offre
           </ButtonLink>
         )}

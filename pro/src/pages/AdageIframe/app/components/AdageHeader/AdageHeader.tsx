@@ -70,11 +70,9 @@ export const AdageHeader = () => {
           Besoin d’aide pour réserver des offres pass Culture ?
           <ButtonLink
             variant={ButtonVariant.TERNARY}
-            link={{
-              to: `${document.referrer}adage/index/docGet/format/pptx/doc/PRESENTATION_J_UTILISE_PASS_CULTURE`,
-              isExternal: true,
-              download: true,
-            }}
+            to={`${document.referrer}adage/index/docGet/format/pptx/doc/PRESENTATION_J_UTILISE_PASS_CULTURE`}
+            isExternal
+            download
             icon={fullDownloadIcon}
           >
             Télécharger l’aide

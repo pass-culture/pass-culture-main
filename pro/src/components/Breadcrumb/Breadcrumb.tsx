@@ -1,5 +1,5 @@
 import rightIcon from 'icons/stroke-right.svg'
-import { ButtonLink, ButtonLinkProps } from 'ui-kit/Button/ButtonLink'
+import { ButtonLink, LinkProps } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
@@ -7,7 +7,7 @@ import styles from './Breadcrumb.module.scss'
 
 export type Crumb = {
   title: string
-  link: ButtonLinkProps['link']
+  link: LinkProps
   icon?: string
 }
 
@@ -29,9 +29,7 @@ export const Breadcrumb = ({ crumbs }: BreadcrumbProps) => {
                 </span>
               ) : (
                 <ButtonLink
-                  link={{
-                    ...crumb.link,
-                  }}
+                  {...crumb.link}
                   className={styles['breadcrumb-list-item-link']}
                   variant={ButtonVariant.QUATERNARYPINK}
                 >

@@ -39,7 +39,7 @@ export const AccessibilityLayout = ({
         <div className={styles['content']}>{children}</div>
         {showBackToSignInButton && (
           <ButtonLink
-            link={{ to: 'connexion' }}
+            to="connexion"
             icon={fullBackIcon}
             className={styles['back-to-signin-button']}
           >

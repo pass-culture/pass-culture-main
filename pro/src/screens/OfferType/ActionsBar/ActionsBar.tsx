@@ -22,7 +22,7 @@ export const ActionsBar = ({
     <ActionsBarSticky>
       <ActionsBarSticky.Left>
         <ButtonLink
-          link={{ to: computeOffersUrl({}), isExternal: false }}
+          to={computeOffersUrl({})}
           variant={ButtonVariant.SECONDARY}
           onClick={() => logEvent(Events.CLICKED_CANCEL_OFFER_CREATION)}
         >

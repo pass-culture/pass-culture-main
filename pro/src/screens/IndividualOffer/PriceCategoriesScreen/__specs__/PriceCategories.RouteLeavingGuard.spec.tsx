@@ -39,17 +39,12 @@ const renderPriceCategories = (
           element={
             <>
               <PriceCategoriesScreen {...props} />
-              <ButtonLink link={{ to: '/outside', isExternal: false }}>
-                Go outside !
-              </ButtonLink>
+              <ButtonLink to="/outside">Go outside !</ButtonLink>
               <ButtonLink
-                link={{
-                  to: getIndividualOfferPath({
-                    step: OFFER_WIZARD_STEP_IDS.STOCKS,
-                    mode: OFFER_WIZARD_MODE.CREATION,
-                  }),
-                  isExternal: false,
-                }}
+                to={getIndividualOfferPath({
+                  step: OFFER_WIZARD_STEP_IDS.STOCKS,
+                  mode: OFFER_WIZARD_MODE.CREATION,
+                })}
               >
                 Go to stocks !
               </ButtonLink>

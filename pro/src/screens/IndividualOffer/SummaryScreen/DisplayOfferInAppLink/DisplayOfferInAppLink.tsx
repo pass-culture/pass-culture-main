@@ -7,22 +7,21 @@ import { WEBAPP_URL } from 'utils/config'
 interface DisplayOfferInAppLinkProps extends SharedButtonProps {
   id: number
   icon?: string
-  svgAlt?: string
   children: React.ReactNode
   onClick?: () => void
 }
 
 export const DisplayOfferInAppLink: FunctionComponent<
   DisplayOfferInAppLinkProps
-> = ({ id, icon, children, variant, svgAlt, onClick }) => {
+> = ({ id, icon, children, variant, onClick }) => {
   const offerPreviewUrl = `${WEBAPP_URL}/offre/${id}`
 
   return (
     <ButtonLink
-      link={{ to: offerPreviewUrl, isExternal: true }}
+      to={offerPreviewUrl}
+      isExternal
       variant={variant}
       icon={icon}
-      svgAlt={svgAlt}
       onClick={(event) => {
         event.preventDefault()
         onClick?.()

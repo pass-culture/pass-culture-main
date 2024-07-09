@@ -187,13 +187,7 @@ export const VenueCreationForm = ({
 
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
-          <ButtonLink
-            variant={ButtonVariant.SECONDARY}
-            link={{
-              to: '/accueil',
-              isExternal: false,
-            }}
-          >
+          <ButtonLink variant={ButtonVariant.SECONDARY} to="/accueil">
             Annuler et quitter
           </ButtonLink>
         </ActionsBarSticky.Left>

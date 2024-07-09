@@ -23,7 +23,7 @@ describe('Banner', () => {
     // then
     expect(screen.getByText('This is the banner content')).toBeInTheDocument()
     const link = screen.getByRole('link', {
-      name: props.links?.[0]?.label,
+      name: `Nouvelle fenêtre ${props.links?.[0]?.label}`,
     })
     expect(link).toBeInTheDocument()
     expect(link).toHaveAttribute('href', props.links?.[0]?.href)

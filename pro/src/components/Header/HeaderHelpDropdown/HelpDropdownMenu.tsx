@@ -13,18 +13,15 @@ export const HelpDropdownMenu = () => {
     <>
       <DropdownMenu.Item className={dropdownStyles['menu-item']} asChild>
         <ButtonLink
-          link={{
-            to: 'https://aide.passculture.app',
-            isExternal: true,
-            target: '_blank',
-          }}
+          to="https://aide.passculture.app"
+          isExternal
+          opensInNewTab
           icon={fullLinkIcon}
           onClick={() =>
             logEvent(Events.CLICKED_HELP_CENTER, {
               from: location.pathname,
             })
           }
-          svgAlt="Nouvelle fenêtre"
         >
           Consulter le centre d’aide
         </ButtonLink>
@@ -32,17 +29,14 @@ export const HelpDropdownMenu = () => {
       <DropdownMenu.Item className={dropdownStyles['menu-item']} asChild>
         <ButtonLink
           icon={fullLinkIcon}
-          link={{
-            to: 'https://aide.passculture.app/hc/fr/articles/13155602579356--Acteurs-Culturels-Quelle-%C3%A9quipe-contacter-selon-votre-demande',
-            isExternal: true,
-            target: '_blank',
-          }}
+          to="https://aide.passculture.app/hc/fr/articles/13155602579356--Acteurs-Culturels-Quelle-%C3%A9quipe-contacter-selon-votre-demande"
+          isExternal
+          opensInNewTab
           onClick={() =>
             logEvent(Events.CLICKED_CONTACT_OUR_TEAMS, {
               from: location.pathname,
             })
           }
-          svgAlt="Nouvelle fenêtre"
         >
           Contacter nos équipes
         </ButtonLink>
@@ -50,17 +44,14 @@ export const HelpDropdownMenu = () => {
       <DropdownMenu.Item className={dropdownStyles['menu-item']} asChild>
         <ButtonLink
           icon={fullLinkIcon}
-          link={{
-            to: 'https://passcultureapp.notion.site/pass-Culture-Documentation-323b1a0ec309406192d772e7d803fbd0',
-            isExternal: true,
-            target: '_blank',
-          }}
+          to="https://passcultureapp.notion.site/pass-Culture-Documentation-323b1a0ec309406192d772e7d803fbd0"
+          isExternal
+          opensInNewTab
           onClick={() =>
             logEvent(Events.CLICKED_BEST_PRACTICES_STUDIES, {
               from: location.pathname,
             })
           }
-          svgAlt="Nouvelle fenêtre"
         >
           Bonnes pratiques et études
         </ButtonLink>

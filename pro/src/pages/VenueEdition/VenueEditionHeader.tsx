@@ -148,9 +148,7 @@ export const VenueEditionHeader = ({
         <ButtonLink
           variant={ButtonVariant.TERNARY}
           icon={fullParametersIcon}
-          link={{
-            to: `/structures/${venue.managingOfferer.id}/lieux/${venue.id}/parametres`,
-          }}
+          to={`/structures/${venue.managingOfferer.id}/lieux/${venue.id}/parametres`}
         >
           Paramètres généraux
         </ButtonLink>
@@ -172,9 +170,7 @@ export const VenueEditionHeader = ({
             variant={ButtonVariant.PRIMARY}
             icon={fullPlusIcon}
             className={styles['venue-button']}
-            link={{
-              to: `/offre/creation?lieu=${venue.id}&structure=${offerer.id}`,
-            }}
+            to={`/offre/creation?lieu=${venue.id}&structure=${offerer.id}`}
           >
             Créer une offre
           </ButtonLink>

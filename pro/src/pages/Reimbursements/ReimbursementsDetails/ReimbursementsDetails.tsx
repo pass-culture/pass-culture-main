@@ -155,11 +155,8 @@ export const ReimbursementsDetails = (): JSX.Element => {
 
         <ButtonLink
           isDisabled={shouldDisableButtons}
-          link={{
-            to: `/remboursements-details?${getCsvQueryParams(bankAccount, selectedOfferer?.id, periodStart, periodEnd)}`,
-            target: '_blank',
-            isExternal: false,
-          }}
+          to={`/remboursements-details?${getCsvQueryParams(bankAccount, selectedOfferer?.id, periodStart, periodEnd)}`}
+          opensInNewTab
           variant={ButtonVariant.SECONDARY}
           icon={fullLinkIcon}
         >

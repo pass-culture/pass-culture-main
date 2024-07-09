@@ -122,10 +122,7 @@ export const Offers = ({
   const actionLink = displayCreateOfferButton ? (
     <ButtonLink
       variant={ButtonVariant.PRIMARY}
-      link={{
-        isExternal: false,
-        to: `/offre/creation${selectedOffererId ? `?structure=${selectedOffererId}` : ''}`,
-      }}
+      to={`/offre/creation${selectedOffererId ? `?structure=${selectedOffererId}` : ''}`}
       icon={fullPlusIcon}
     >
       Créer une offre

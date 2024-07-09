@@ -27,10 +27,8 @@ export const AccesLibreSection = ({ venue }: AccesLibreSectionProps) => {
       title="Modalités d’accessibilité via acceslibre"
       editLink={
         <ButtonLink
-          link={{
-            to: `https://acceslibre.beta.gouv.fr/contrib/edit-infos/${venue.externalAccessibilityId}/`,
-            isExternal: true,
-          }}
+          to={`https://acceslibre.beta.gouv.fr/contrib/edit-infos/${venue.externalAccessibilityId}/`}
+          isExternal
           icon={fullLinkIcon}
         >
           Éditer sur acceslibre
@@ -41,12 +39,10 @@ export const AccesLibreSection = ({ venue }: AccesLibreSectionProps) => {
         Les modalités ci-dessous sont issues de la plateforme{' '}
         <ButtonLink
           variant={ButtonVariant.TERNARY}
-          link={{
-            isExternal: true,
-            to:
-              venue.externalAccessibilityUrl ??
-              'https://acceslibre.beta.gouv.fr/',
-          }}
+          isExternal
+          to={
+            venue.externalAccessibilityUrl ?? 'https://acceslibre.beta.gouv.fr/'
+          }
         >
           acceslibre.gouv.fr
         </ButtonLink>

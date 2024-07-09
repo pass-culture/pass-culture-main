@@ -27,12 +27,9 @@ export const FormContactTemplateCustomForm = ({
           value="form"
         />
         <ButtonLink
-          link={{
-            isExternal: true,
-            to: 'https://aide.passculture.app/hc/fr/articles/12957173606940--Acteurs-Culturels-Comment-paramétrer-les-options-de-contact-pour-les-enseignants-dans-le-cadre-d-une-offre-vitrine',
-            target: '_blank',
-          }}
-          svgAlt="Nouvelle fenêtre"
+          isExternal
+          to="https://aide.passculture.app/hc/fr/articles/12957173606940--Acteurs-Culturels-Comment-paramétrer-les-options-de-contact-pour-les-enseignants-dans-le-cadre-d-une-offre-vitrine"
+          opensInNewTab
           icon={fullLinkIcon}
           className={styles['custom-form-radio-link']}
         >

@@ -237,7 +237,7 @@ export const CollectiveActionsCells = ({
                         asChild
                       >
                         <ButtonLink
-                          link={{ to: bookingLink, isExternal: false }}
+                          to={bookingLink}
                           icon={fullNextIcon}
                           onClick={() =>
                             logEvent(
@@ -294,7 +294,7 @@ export const CollectiveActionsCells = ({
                   offer.status !== CollectiveOfferStatus.ARCHIVED && (
                     <DropdownMenu.Item className={styles['menu-item']} asChild>
                       <ButtonLink
-                        link={{ to: editionOfferLink, isExternal: false }}
+                        to={editionOfferLink}
                         icon={fullPenIcon}
                         className={styles['button']}
                       >

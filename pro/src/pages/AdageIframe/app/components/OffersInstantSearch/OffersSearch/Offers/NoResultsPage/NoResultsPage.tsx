@@ -39,14 +39,11 @@ export const NoResultsPage = ({
       </p>
       {venue?.adageId && (
         <ButtonLink
-          link={{
-            isExternal: true,
-            to: `${document.referrer}adage/ressource/partenaires/id/${venue.adageId}`,
-            target: '_blank',
-          }}
+          isExternal
+          to={`${document.referrer}adage/ressource/partenaires/id/${venue.adageId}`}
+          opensInNewTab
           variant={ButtonVariant.TERNARY}
           icon={fullLinkIcon}
-          svgAlt="Nouvelle fenêtre"
         >
           Voir la fiche du partenaire
         </ButtonLink>

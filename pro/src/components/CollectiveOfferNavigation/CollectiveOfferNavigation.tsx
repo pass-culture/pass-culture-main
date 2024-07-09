@@ -212,23 +212,11 @@ export const CollectiveOfferNavigation = ({
     <>
       <div className={styles['duplicate-offer']}>
         {!location.pathname.includes('edition') && (
-          <ButtonLink
-            link={{
-              to: offerEditLink,
-              isExternal: false,
-            }}
-            icon={fullEditIcon}
-          >
+          <ButtonLink to={offerEditLink} icon={fullEditIcon}>
             Modifier l’offre
           </ButtonLink>
         )}
-        <ButtonLink
-          link={{
-            to: previewLink,
-            isExternal: false,
-          }}
-          icon={fullShowIcon}
-        >
+        <ButtonLink to={previewLink} icon={fullShowIcon}>
           Aperçu dans ADAGE
         </ButtonLink>
 
