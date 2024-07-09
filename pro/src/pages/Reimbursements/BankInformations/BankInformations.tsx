@@ -11,12 +11,10 @@ import { useAnalytics } from 'app/App/analytics/firebase'
 import { ReimbursementBankAccount } from 'components/ReimbursementBankAccount/ReimbursementBankAccount'
 import { BankAccountEvents } from 'core/FirebaseEvents/constants'
 import { useNotification } from 'hooks/useNotification'
-import fullLinkIcon from 'icons/full-link.svg'
 import fullMoreIcon from 'icons/full-more.svg'
 import { LinkVenuesDialog } from 'pages/Reimbursements/BankInformations/LinkVenuesDialog'
 import { ReimbursementsContextProps } from 'pages/Reimbursements/Reimbursements'
 import { Button } from 'ui-kit/Button/Button'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
@@ -116,16 +114,6 @@ export const BankInformations = (): JSX.Element => {
             distincts. <br />
           </>
         )}
-
-        <ButtonLink
-          to="" // TODO: le liens manque
-          isExternal
-          opensInNewTab
-          icon={fullLinkIcon}
-          className={styles['information-link-button']}
-        >
-          En savoir plus
-        </ButtonLink>
       </div>
       {selectedOffererBankAccounts &&
         selectedOffererBankAccounts.bankAccounts.length > 0 && (
