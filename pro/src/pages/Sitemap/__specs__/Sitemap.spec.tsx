@@ -42,7 +42,6 @@ describe('Sitemap', () => {
       { name: 'Réservations', href: '/reservations/collectives' },
       { name: 'Statistiques', href: '/statistiques' },
       { name: 'Justificatifs', href: '/remboursements' },
-      { name: 'Détails', href: '/remboursements/details' },
       {
         name: 'Informations bancaires',
         href: '/remboursements/informations-bancaires',
@@ -95,11 +94,6 @@ describe('Sitemap', () => {
         parent: 'Gestion financière',
         name: 'Justificatifs',
         href: '/remboursements',
-      },
-      {
-        parent: 'Gestion financière',
-        name: 'Détails',
-        href: '/remboursements/details',
       },
       {
         parent: 'Gestion financière',
