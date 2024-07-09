@@ -30,6 +30,7 @@ export const TextInput = ({
   className,
   classNameFooter,
   classNameLabel,
+  classNameInput,
   disabled,
   readOnly,
   hideFooter,
@@ -69,6 +70,7 @@ export const TextInput = ({
       className={className}
       classNameLabel={classNameLabel}
       classNameFooter={classNameFooter}
+      classNameInput={classNameInput}
       count={countCharacters ? field.value.length : undefined}
       error={meta.error}
       isOptional={isOptional}
