@@ -301,6 +301,33 @@ class GetOffererTest(GetEndpointHelper):
         response = authenticated_client.get(url_for(self.endpoint, offerer_id=12345))
         assert response.status_code == 404
 
+    class ValidateButtonTest(button_helpers.ButtonHelper):
+        needed_permission = perm_models.Permissions.VALIDATE_OFFERER
+        button_label = "Valider"
+
+        @property
+        def path(self):
+            offerer = offerers_factories.OffererFactory(validationStatus=ValidationStatus.NEW)
+            return url_for("backoffice_web.offerer.get", offerer_id=offerer.id)
+
+    class PendingButtonTest(button_helpers.ButtonHelper):
+        needed_permission = perm_models.Permissions.VALIDATE_OFFERER
+        button_label = "Mettre en attente"
+
+        @property
+        def path(self):
+            offerer = offerers_factories.OffererFactory(validationStatus=ValidationStatus.NEW)
+            return url_for("backoffice_web.offerer.get", offerer_id=offerer.id)
+
+    class RejectButtonTest(button_helpers.ButtonHelper):
+        needed_permission = perm_models.Permissions.VALIDATE_OFFERER
+        button_label = "Rejeter"
+
+        @property
+        def path(self):
+            offerer = offerers_factories.OffererFactory(validationStatus=ValidationStatus.NEW)
+            return url_for("backoffice_web.offerer.get", offerer_id=offerer.id)
+
 
 class SuspendOffererTest(PostEndpointHelper):
     endpoint = "backoffice_web.offerer.suspend_offerer"

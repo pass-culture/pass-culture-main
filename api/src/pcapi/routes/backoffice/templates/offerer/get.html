@@ -7,6 +7,7 @@
 {% from "components/presentation/details/tabs.html" import build_details_tabs_wrapper %}
 {% from "components/presentation/details/tabs.html" import build_details_tab_content %}
 {% from "components/presentation/details/tabs.html" import build_details_tabs_content_wrapper %}
+{% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
 {% from "components/turbo/spinner.html" import build_loading_spinner with context %}
 {% import "components/clipboard.html" as clipboard %}
 {% extends "layouts/pro.html" %}
@@ -47,6 +48,32 @@
               {% endif %}
             </div>
           </div>
+          {% if has_permission("VALIDATE_OFFERER") %}
+            <div class="d-flex row-reverse justify-content-end flex-grow-1">
+              {% if offerer.validationStatus != offerer.validationStatus.VALIDATED %}
+                <form action="{{ url_for('backoffice_web.validation.validate_offerer', offerer_id=offerer.id) }}"
+                      name="{{ url_for('backoffice_web.validation.validate_offerer', offerer_id=offerer.id) | action_to_name }}"
+                      method="post">
+                  {{ csrf_token }}
+                  <button class="btn btn-outline-primary">Valider</button>
+                </form>
+              {% endif %}
+              {% if offerer.validationStatus != offerer.validationStatus.PENDING %}
+                <a data-bs-toggle="modal"
+                   data-bs-target="#pending-modal-{{ offerer.id }}">
+                  <button class="btn btn-outline-primary">Mettre en attente</button>
+                </a>
+                {{ build_lazy_modal(url_for('backoffice_web.validation.get_offerer_pending_form', offerer_id=offerer.id) , "pending-modal-" + offerer.id|string) }}
+              {% endif %}
+              {% if offerer.validationStatus != offerer.validationStatus.REJECTED %}
+                <a data-bs-toggle="modal"
+                   data-bs-target="#reject-modal-{{ offerer.id }}">
+                  <button class="btn btn-outline-primary">Rejeter</button>
+                </a>
+                {{ build_lazy_modal(url_for('backoffice_web.validation.get_reject_offerer_form', offerer_id=offerer.id) , "reject-modal-" + offerer.id|string) }}
+              {% endif %}
+            </div>
+          {% endif %}
           <p class="card-subtitle text-muted mb-3 h5">
             Offerer ID : {{ offerer.id }} {{ clipboard.copy_to_clipboard(offerer.id, "Copier l'ID de la structure") }}
           </p>
