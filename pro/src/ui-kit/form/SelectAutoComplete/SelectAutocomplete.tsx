@@ -134,28 +134,37 @@ export const SelectAutocomplete = ({
           if (hoveredOptionIndex <= 0) {
             setHoveredOptionIndex(null)
           } else {
-            setHoveredOptionIndex(hoveredOptionIndex - 1)
+            //  Activate and scroll to the previous element in the list
+            const newIndex = hoveredOptionIndex - 1
+            setHoveredOptionIndex(newIndex)
+            const nextHoveredElement =
+              listRef.current?.getElementsByTagName('li')[newIndex]
+            nextHoveredElement?.scrollIntoView({ block: 'nearest' })
           }
         }
         if (!isOpen) {
           setIsOpen(true)
         }
-        listRef.current?.focus()
         break
       case 'ArrowDown':
         if (hoveredOptionIndex === null) {
           if (filteredOptions.length > 0) {
             setHoveredOptionIndex(0)
           }
-        } else if (hoveredOptionIndex >= filteredOptions.length - 1) {
-          setHoveredOptionIndex(filteredOptions.length - 1)
         } else {
-          setHoveredOptionIndex(hoveredOptionIndex + 1)
+          //  Activate and scroll to the next element in the list
+          const newIndex = Math.min(
+            filteredOptions.length - 1,
+            hoveredOptionIndex + 1
+          )
+          setHoveredOptionIndex(newIndex)
+          const nextHoveredElement =
+            listRef.current?.getElementsByTagName('li')[newIndex]
+          nextHoveredElement?.scrollIntoView({ block: 'nearest' })
         }
         if (!isOpen) {
           setIsOpen(true)
         }
-        listRef.current?.focus()
         break
       case 'Space':
         await openField()
@@ -176,7 +185,6 @@ export const SelectAutocomplete = ({
         setIsOpen(false)
         break
       default:
-        //
         break
     }
   }
