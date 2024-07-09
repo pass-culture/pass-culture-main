@@ -32,35 +32,17 @@ export const LinkNode = ({
   'aria-label': ariaLabel,
 }: Link): React.ReactNode => {
   const forwardLink: LinkProps = { to: href, isExternal }
-  if (isExternal) {
-    forwardLink.target = '_blank'
-  }
   if (ariaLabel) {
     forwardLink['aria-label'] = ariaLabel
   }
   return (
     <ButtonLink
-      link={forwardLink}
-      icon={
-        icon === null
-          ? undefined
-          : icon
-            ? icon.src
-            : isExternal
-              ? fullLinkIcon
-              : fullNextIcon
-      }
+      {...forwardLink}
+      //  If the link is external, the link automatically opens in a new tab
+      opensInNewTab={isExternal}
+      icon={isExternal ? fullLinkIcon : icon?.src ?? fullNextIcon}
       className={styles['bi-link']}
       onClick={onClick}
-      svgAlt={
-        icon === null
-          ? undefined
-          : icon?.alt
-            ? icon.alt
-            : isExternal
-              ? 'Nouvelle fenêtre'
-              : ''
-      }
     >
       {label}
     </ButtonLink>

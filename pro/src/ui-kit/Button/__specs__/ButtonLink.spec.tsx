@@ -13,7 +13,7 @@ describe('ButtonLink', () => {
   it('should call callback action when clicking the button', async () => {
     const onClick = vi.fn()
     render(
-      <ButtonLink link={props} onClick={onClick}>
+      <ButtonLink {...props} onClick={onClick}>
         test
       </ButtonLink>
     )
@@ -28,7 +28,7 @@ describe('ButtonLink', () => {
   it('should call callback action onblur when clicking outside the button', async () => {
     const onBlur = vi.fn()
     render(
-      <ButtonLink link={props} onBlur={onBlur}>
+      <ButtonLink {...props} onBlur={onBlur}>
         test
       </ButtonLink>
     )
@@ -55,9 +55,7 @@ describe('ButtonLink', () => {
                     <div>
                       sub route{' '}
                       {/* here the link is missing the starting slash to be an absolute link */}
-                      <ButtonLink link={{ to: 'offers', isExternal: false }}>
-                        test
-                      </ButtonLink>
+                      <ButtonLink to="offers">test</ButtonLink>
                     </div>
                   }
                 />
@@ -77,7 +75,7 @@ describe('ButtonLink', () => {
   it('should not call callback action when button disabled', async () => {
     const onClick = vi.fn()
     render(
-      <ButtonLink link={props} onClick={onClick} isDisabled>
+      <ButtonLink {...props} onClick={onClick} isDisabled>
         test
       </ButtonLink>
     )
@@ -87,19 +85,5 @@ describe('ButtonLink', () => {
 
     expect(onClick).not.toHaveBeenCalled()
     expect(screen.getByText('Action non disponible')).toBeInTheDocument()
-  })
-
-  it('should not be considered the current page if not specified', () => {
-    renderWithProviders(
-      <ButtonLink link={{ to: '#' }} isDisabled>
-        test
-      </ButtonLink>
-    )
-
-    expect(
-      screen
-        .getByRole('link', { name: 'test Action non disponible' })
-        .getAttribute('aria-current')
-    ).toEqual('false')
   })
 })

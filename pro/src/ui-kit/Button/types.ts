@@ -15,7 +15,7 @@ export enum IconPositionEnum {
 }
 
 export type SharedButtonProps = {
-  icon?: string
+  icon?: string | null
   variant?: ButtonVariant
   iconPosition?: IconPositionEnum
   testId?: string
