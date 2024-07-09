@@ -40,25 +40,6 @@ def create_generic_movie(movie: allocine_serializers.AllocineMovie) -> Movie:
     )
 
 
-def create_product(movie: allocine_serializers.AllocineMovie, provider_id: int | None = None) -> Product:
-    if not provider_id:
-        provider_id = get_allocine_products_provider_id()
-
-    allocine_id = movie.internalId
-    movie_data = build_movie_data(movie)
-    id_at_providers = build_movie_id_at_providers(provider_id, allocine_id)
-    product = Product(
-        description=build_description(movie),
-        durationMinutes=movie.runtime,
-        extraData=movie_data,
-        idAtProviders=id_at_providers,
-        lastProviderId=provider_id,
-        name=movie.title,
-        subcategoryId=SEANCE_CINE.id,
-    )
-    return product
-
-
 def get_movie_list() -> list[allocine_serializers.AllocineMovie]:
     movie_list = []
     has_next_page = True
