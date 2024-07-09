@@ -25,9 +25,3 @@
   padding-left: rem.torem(16px);
   margin-top: rem.torem(8px);
 }
-
-.sitemap-link {
-  @include fonts.body-important;
-
-  text-decoration: underline;
-}

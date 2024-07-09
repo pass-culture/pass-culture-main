@@ -4,7 +4,6 @@ import React from 'react'
 import { Navigate } from 'react-router'
 
 import { BankInformations } from 'pages/Reimbursements/BankInformations/BankInformations'
-import { ReimbursementsDetails } from 'pages/Reimbursements/ReimbursementsDetails/ReimbursementsDetails'
 import { ReimbursementsInvoices } from 'pages/Reimbursements/ReimbursementsInvoices/ReimbursementsInvoices'
 
 import type { RouteConfig } from './routesMap'
@@ -20,11 +19,6 @@ export const routesReimbursements: RouteConfig[] = [
     element: <Navigate to="/remboursements" />,
     path: '/remboursements/justificatifs',
     title: 'Gestion financière',
-  },
-  {
-    element: <ReimbursementsDetails />,
-    path: '/remboursements/details',
-    title: 'Détails',
   },
   {
     element: <BankInformations />,
