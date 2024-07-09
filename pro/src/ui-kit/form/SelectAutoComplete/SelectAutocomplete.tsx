@@ -166,10 +166,7 @@ export const SelectAutocomplete = ({
           setIsOpen(true)
         }
         break
-      case 'Space':
-        await openField()
-        listRef.current?.focus()
-        break
+      case ' ': //  Space key
       case 'Enter':
         if (isOpen && hoveredOptionIndex !== null) {
           event.preventDefault()
