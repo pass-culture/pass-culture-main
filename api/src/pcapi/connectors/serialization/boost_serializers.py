@@ -3,7 +3,7 @@ from decimal import Decimal
 
 import pydantic.v1 as pydantic_v1
 
-import pcapi.core.external_bookings.models as external_bookings_models
+from pcapi.core.offers import models as offers_models
 from pcapi.routes.serialization import BaseModel
 
 
@@ -24,13 +24,14 @@ class Film2(BaseModel):
     duration: int  # in minutes
     idFilmAllocine: int
 
-    def to_generic_movie(self) -> external_bookings_models.Movie:
-        return external_bookings_models.Movie(
-            id=str(self.id),
-            title=self.titleCnc,
+    def to_generic_movie(self) -> offers_models.Movie:
+        return offers_models.Movie(
+            allocine_id=str(self.idFilmAllocine),
+            description=None,
             duration=self.duration,
-            description="",  # FIXME
+            extra_data=None,
             poster_url=self.posterUrl,
+            title=self.titleCnc,
             visa=str(self.numVisa),
         )
 
