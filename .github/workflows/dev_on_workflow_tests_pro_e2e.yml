@@ -146,7 +146,7 @@ jobs:
           working-directory: pro
           browser: chrome
           config-file: cypress/cypress.config.ts
-          env: TAGS="@P0"
+          env: TAGS="@P10"
           record: ${{ github.ref != 'refs/heads/master' }} # pour Cypress Cloud
         env:
           CYPRESS_RECORD_KEY: ${{ steps.secrets.outputs.CYPRESS_CLOUD_RECORD_KEY }}
