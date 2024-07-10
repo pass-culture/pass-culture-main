@@ -30,13 +30,13 @@ import {
 type DetailsFormProps = {
   filteredVenues: VenueListItemResponseModel[]
   filteredCategories: CategoryResponseModel[]
-  filteredSubCategories: SubcategoryResponseModel[]
+  filteredSubcategories: SubcategoryResponseModel[]
 }
 
 export const DetailsForm = ({
   filteredVenues,
   filteredCategories,
-  filteredSubCategories,
+  filteredSubcategories,
 }: DetailsFormProps): JSX.Element => {
   const {
     values: {
@@ -57,7 +57,7 @@ export const DetailsForm = ({
 
   const categoryOptions = buildCategoryOptions(filteredCategories)
   const subcategoryOptions = buildSubcategoryOptions(
-    filteredSubCategories,
+    filteredSubcategories,
     categoryId
   )
   const musicTypesOptions = musicTypesQuery.data.map((data) => ({
@@ -160,7 +160,7 @@ export const DetailsForm = ({
               onChange={async (event: React.ChangeEvent<HTMLSelectElement>) => {
                 await onSubcategoryChange({
                   newSubCategoryId: event.target.value,
-                  subCategories: filteredSubCategories,
+                  subcategories: filteredSubcategories,
                   setFieldValue,
                 })
                 handleChange(event)

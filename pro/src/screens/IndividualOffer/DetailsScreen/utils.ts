@@ -2,6 +2,7 @@ import { FormikErrors } from 'formik'
 
 import {
   CategoryResponseModel,
+  GetIndividualOfferResponseModel,
   SubcategoryResponseModel,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
@@ -74,7 +75,7 @@ export const buildSubcategoryConditonalFields = (
 
 type OnSubcategoryChangeProps = {
   newSubCategoryId: string
-  subCategories: SubcategoryResponseModel[]
+  subcategories: SubcategoryResponseModel[]
   setFieldValue: (
     field: string,
     value: any,
@@ -84,10 +85,10 @@ type OnSubcategoryChangeProps = {
 
 export const onSubcategoryChange = async ({
   newSubCategoryId,
-  subCategories,
+  subcategories,
   setFieldValue,
 }: OnSubcategoryChangeProps) => {
-  const newSubcategory = subCategories.find(
+  const newSubcategory = subcategories.find(
     (subcategory) => subcategory.id === newSubCategoryId
   )
 
@@ -133,4 +134,59 @@ export function setDefaultInitialValues({
     ...DEFAULT_DETAILS_INTITIAL_VALUES,
     venueId,
   }
+}
+
+type setDefaultInitialValuesFromOfferProps = {
+  offer: GetIndividualOfferResponseModel
+  subcategories: SubcategoryResponseModel[]
+}
+
+export function setDefaultInitialValuesFromOffer({
+  offer,
+  subcategories,
+}: setDefaultInitialValuesFromOfferProps): DetailsFormValues {
+  const subcategory = subcategories.find(
+    (subcategory: SubcategoryResponseModel) =>
+      subcategory.id === offer.subcategoryId
+  )
+
+  if (subcategory === undefined) {
+    throw Error('La categorie de l’offre est introuvable')
+  }
+
+  return {
+    ...DEFAULT_DETAILS_INTITIAL_VALUES,
+    name: offer.name,
+    description:
+      offer.description ?? DEFAULT_DETAILS_INTITIAL_VALUES.description,
+    venueId: String(offer.venue.id),
+    categoryId: subcategory.categoryId,
+    subcategoryId: offer.subcategoryId,
+    showType:
+      offer.extraData.showType ?? DEFAULT_DETAILS_INTITIAL_VALUES.showType,
+    showSubType:
+      offer.extraData.showSubType ??
+      DEFAULT_DETAILS_INTITIAL_VALUES.showSubType,
+    subcategoryConditionalFields: [],
+    durationMinutes: offer.durationMinutes
+      ? serializeDurationHour(offer.durationMinutes)
+      : DEFAULT_DETAILS_INTITIAL_VALUES.durationMinutes,
+    ean: offer.extraData?.ean ?? DEFAULT_DETAILS_INTITIAL_VALUES.ean,
+    visa: offer.extraData?.visa ?? DEFAULT_DETAILS_INTITIAL_VALUES.visa,
+    gtl_id: offer.extraData?.gtl_id ?? DEFAULT_DETAILS_INTITIAL_VALUES.gtl_id,
+    speaker:
+      offer.extraData?.speaker ?? DEFAULT_DETAILS_INTITIAL_VALUES.speaker,
+    author: offer.extraData?.author ?? DEFAULT_DETAILS_INTITIAL_VALUES.author,
+    performer:
+      offer.extraData?.performer ?? DEFAULT_DETAILS_INTITIAL_VALUES.performer,
+    stageDirector:
+      offer.extraData?.stageDirector ??
+      DEFAULT_DETAILS_INTITIAL_VALUES.stageDirector,
+  }
+}
+
+export function serializeDurationHour(durationMinute: number): string {
+  const hours = Math.floor(durationMinute / 60)
+  const minutes = (durationMinute % 60).toString().padStart(2, '0')
+  return `${hours}:${minutes}`
 }

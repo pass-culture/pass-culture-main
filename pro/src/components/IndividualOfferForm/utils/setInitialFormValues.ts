@@ -3,17 +3,12 @@ import {
   SubcategoryResponseModel,
 } from 'apiClient/v1'
 import { AccessibilityEnum } from 'core/shared/types'
+import { serializeDurationHour } from 'screens/IndividualOffer/DetailsScreen/utils'
 
 import { FORM_DEFAULT_VALUES } from '../constants'
 import { IndividualOfferFormValues } from '../types'
 
 import { buildSubcategoryFields } from './buildSubCategoryFields'
-
-const serializeDurationHour = (durationMinute: number): string => {
-  const hours = Math.floor(durationMinute / 60)
-  const minutes = (durationMinute % 60).toString().padStart(2, '0')
-  return `${hours}:${minutes}`
-}
 
 export const setInitialFormValues = (
   offer: GetIndividualOfferResponseModel,

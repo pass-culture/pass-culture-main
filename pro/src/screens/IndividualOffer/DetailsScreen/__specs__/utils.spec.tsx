@@ -1,4 +1,6 @@
+import { SubcategoryIdEnum } from 'apiClient/v1'
 import {
+  getIndividualOfferFactory,
   subcategoryFactory,
   venueListItemFactory,
 } from 'utils/individualApiFactories'
@@ -9,7 +11,9 @@ import {
   buildSubcategoryConditonalFields,
   buildSubcategoryOptions,
   buildVenueOptions,
+  serializeDurationHour,
   setDefaultInitialValues,
+  setDefaultInitialValuesFromOffer,
 } from '../utils'
 
 describe('buildCategoryOptions', () => {
@@ -187,5 +191,46 @@ describe('setDefaultInitialValues', () => {
         venueId: '666',
       })
     )
+  })
+})
+
+describe('setDefaultInitialValuesFromOffer', () => {
+  it('should set default initial values from offer', () => {
+    expect(
+      setDefaultInitialValuesFromOffer({
+        offer: getIndividualOfferFactory({
+          subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
+        }),
+        subcategories: [
+          subcategoryFactory({ id: SubcategoryIdEnum.SEANCE_CINE }),
+        ],
+      })
+    ).toStrictEqual({
+      author: 'Chuck Norris',
+      categoryId: 'A',
+      description: '',
+      durationMinutes: '',
+      ean: 'Chuck n’est pas identifiable par un EAN',
+      gtl_id: '',
+      name: 'Le nom de l’offre 1',
+      performer: 'Le Poing de Chuck',
+      showSubType: 'PEGI 18',
+      showType: 'Cinéma',
+      speaker: "Chuck Norris n'a pas besoin de doubleur",
+      stageDirector: 'JCVD',
+      subcategoryConditionalFields: [],
+      subcategoryId: 'SEANCE_CINE',
+      venueId: '6',
+      visa: 'USA',
+    })
+  })
+})
+
+describe('serializeDurationHour', () => {
+  it('should correctly seiralize duration hours', () => {
+    expect(serializeDurationHour(0)).toStrictEqual('0:00')
+    expect(serializeDurationHour(21)).toStrictEqual('0:21')
+    expect(serializeDurationHour(183)).toStrictEqual('3:03')
+    expect(serializeDurationHour(1838)).toStrictEqual('30:38')
   })
 })

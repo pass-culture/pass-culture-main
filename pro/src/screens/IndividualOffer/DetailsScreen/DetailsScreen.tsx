@@ -19,7 +19,10 @@ import {
 } from '../InformationsScreen/utils/filterCategories/filterCategories'
 
 import { DetailsForm } from './DetailsForm'
-import { setDefaultInitialValues } from './utils'
+import {
+  setDefaultInitialValues,
+  setDefaultInitialValuesFromOffer,
+} from './utils'
 import { validationSchema } from './validationSchema'
 
 export type DetailsScreenProps = {
@@ -32,10 +35,10 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
   const queryParams = new URLSearchParams(search)
   const queryOfferType = queryParams.get('offer-type')
 
-  const { categories, subCategories } = useIndividualOfferContext()
+  const { categories, subCategories, offer } = useIndividualOfferContext()
   const offerSubtype = getOfferSubtypeFromParam(queryOfferType)
   const categoryStatus = getCategoryStatusFromOfferSubtype(offerSubtype)
-  const [filteredCategories, filteredSubCategories] = filterCategories(
+  const [filteredCategories, filteredSubcategories] = filterCategories(
     categories,
     subCategories,
     categoryStatus,
@@ -46,14 +49,19 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
     venues,
     categoryStatus
   )
-  const initialValues = setDefaultInitialValues({ filteredVenues })
+  const initialValues =
+    offer === null
+      ? setDefaultInitialValues({ filteredVenues })
+      : setDefaultInitialValuesFromOffer({
+          offer,
+          subcategories: subCategories,
+        })
 
   const formik = useFormik({
     initialValues,
     validationSchema,
     onSubmit: () => {},
   })
-  const { offer } = useIndividualOfferContext()
 
   const handlePreviousStepOrBackToReadOnly = () => {
     const queryParams = new URLSearchParams(location.search)
@@ -80,7 +88,7 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
           <DetailsForm
             filteredVenues={filteredVenues}
             filteredCategories={filteredCategories}
-            filteredSubCategories={filteredSubCategories}
+            filteredSubcategories={filteredSubcategories}
           />
         </FormLayout>
         <ActionBar
