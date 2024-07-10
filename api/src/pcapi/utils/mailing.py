@@ -6,6 +6,7 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.offers.models import Stock
+from pcapi.models import feature
 from pcapi.utils.date import utc_datetime_to_department_timezone
 
 
@@ -43,7 +44,13 @@ def get_event_datetime(stock: CollectiveStock | Stock) -> datetime:
     if not stock.beginningDatetime:
         raise ValueError("Event stock is missing a beginningDatetime")
     if isinstance(stock, Stock):
-        departement_code = stock.offer.venue.departementCode
+        if feature.FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
+            if stock.offer.offererAddress:
+                departement_code = stock.offer.offererAddress.address.departmentCode
+            else:
+                departement_code = stock.offer.venue.offererAddress.address.departmentCode
+        else:
+            departement_code = stock.offer.venue.departementCode
     else:
         departement_code = stock.collectiveOffer.venue.departementCode
     if not departement_code:
