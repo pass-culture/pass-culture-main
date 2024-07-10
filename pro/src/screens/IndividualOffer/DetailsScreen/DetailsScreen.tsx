@@ -22,6 +22,7 @@ import { DetailsForm } from './DetailsForm'
 import {
   setDefaultInitialValues,
   setDefaultInitialValuesFromOffer,
+  setFormReadOnlyFields,
 } from './utils'
 import { validationSchema } from './validationSchema'
 
@@ -79,6 +80,8 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
     })
   }
 
+  const readOnlyFields = setFormReadOnlyFields(offer)
+
   return (
     <FormikProvider value={formik}>
       <Form>
@@ -89,6 +92,7 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
             filteredVenues={filteredVenues}
             filteredCategories={filteredCategories}
             filteredSubcategories={filteredSubcategories}
+            readonlyFields={readOnlyFields}
           />
         </FormLayout>
         <ActionBar

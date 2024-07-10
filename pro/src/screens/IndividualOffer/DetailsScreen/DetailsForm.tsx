@@ -17,7 +17,7 @@ import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
-import { DEFAULT_DETAILS_INTITIAL_VALUES } from './constants'
+import { DEFAULT_DETAILS_FORM_VALUES } from './constants'
 import { DetailsFormValues } from './types'
 import {
   buildCategoryOptions,
@@ -31,12 +31,14 @@ type DetailsFormProps = {
   filteredVenues: VenueListItemResponseModel[]
   filteredCategories: CategoryResponseModel[]
   filteredSubcategories: SubcategoryResponseModel[]
+  readonlyFields: string[]
 }
 
 export const DetailsForm = ({
   filteredVenues,
   filteredCategories,
   filteredSubcategories,
+  readonlyFields,
 }: DetailsFormProps): JSX.Element => {
   const {
     values: {
@@ -104,6 +106,7 @@ export const DetailsForm = ({
             label="Titre de l’offre"
             maxLength={90}
             name="name"
+            disabled={readonlyFields.includes('name')}
           />
         </FormLayout.Row>
         <FormLayout.Row>
@@ -113,10 +116,16 @@ export const DetailsForm = ({
             label="Description"
             maxLength={1000}
             name="description"
+            disabled={readonlyFields.includes('description')}
           />
         </FormLayout.Row>
         <FormLayout.Row>
-          <Select label="Lieu" name="venueId" options={venueOptions} />
+          <Select
+            label="Lieu"
+            name="venueId"
+            options={venueOptions}
+            disabled={readonlyFields.includes('venueId')}
+          />
         </FormLayout.Row>
       </FormLayout.Section>
 
@@ -143,11 +152,12 @@ export const DetailsForm = ({
             options={categoryOptions}
             defaultOption={{
               label: 'Choisir une catégorie',
-              value: DEFAULT_DETAILS_INTITIAL_VALUES.categoryId,
+              value: DEFAULT_DETAILS_FORM_VALUES.categoryId,
             }}
+            disabled={readonlyFields.includes('categoryId')}
           />
         </FormLayout.Row>
-        {categoryId !== DEFAULT_DETAILS_INTITIAL_VALUES.categoryId && (
+        {categoryId !== DEFAULT_DETAILS_FORM_VALUES.categoryId && (
           <FormLayout.Row>
             <Select
               label="Sous-catégorie"
@@ -155,7 +165,7 @@ export const DetailsForm = ({
               options={subcategoryOptions}
               defaultOption={{
                 label: 'Choisir une sous-catégorie',
-                value: DEFAULT_DETAILS_INTITIAL_VALUES.subcategoryId,
+                value: DEFAULT_DETAILS_FORM_VALUES.subcategoryId,
               }}
               onChange={async (event: React.ChangeEvent<HTMLSelectElement>) => {
                 await onSubcategoryChange({
@@ -165,6 +175,7 @@ export const DetailsForm = ({
                 })
                 handleChange(event)
               }}
+              disabled={readonlyFields.includes('subcategoryId')}
             />
           </FormLayout.Row>
         )}
@@ -176,8 +187,9 @@ export const DetailsForm = ({
               options={musicTypesOptions}
               defaultOption={{
                 label: 'Choisir un genre musical',
-                value: DEFAULT_DETAILS_INTITIAL_VALUES.gtl_id,
+                value: DEFAULT_DETAILS_FORM_VALUES.gtl_id,
               }}
+              disabled={readonlyFields.includes('gtl_id')}
             />
           </FormLayout.Row>
         )}
@@ -190,8 +202,9 @@ export const DetailsForm = ({
                 options={showTypesOptions}
                 defaultOption={{
                   label: 'Choisir un type de spectacle',
-                  value: DEFAULT_DETAILS_INTITIAL_VALUES.showType,
+                  value: DEFAULT_DETAILS_FORM_VALUES.showType,
                 }}
+                disabled={readonlyFields.includes('showType')}
               />
             </FormLayout.Row>
             <FormLayout.Row>
@@ -201,14 +214,15 @@ export const DetailsForm = ({
                 options={showSubTypeOptions}
                 defaultOption={{
                   label: 'Choisir un sous-type',
-                  value: DEFAULT_DETAILS_INTITIAL_VALUES.showSubType,
+                  value: DEFAULT_DETAILS_FORM_VALUES.showSubType,
                 }}
+                disabled={readonlyFields.includes('showSubType')}
               />
             </FormLayout.Row>
           </>
         )}
       </FormLayout.Section>
-      {subcategoryId !== DEFAULT_DETAILS_INTITIAL_VALUES.subcategoryId && (
+      {subcategoryId !== DEFAULT_DETAILS_FORM_VALUES.subcategoryId && (
         <>
           <ImageUploaderOffer
             onImageUpload={async () => {}}
@@ -229,6 +243,7 @@ export const DetailsForm = ({
                     label="Intervenant"
                     maxLength={1000}
                     name="speaker"
+                    disabled={readonlyFields.includes('speaker')}
                   />
                 </FormLayout.Row>
               )}
@@ -239,6 +254,7 @@ export const DetailsForm = ({
                     label="Auteur"
                     maxLength={1000}
                     name="author"
+                    disabled={readonlyFields.includes('author')}
                   />
                 </FormLayout.Row>
               )}
@@ -249,6 +265,7 @@ export const DetailsForm = ({
                     label="Visa d’exploitation"
                     maxLength={1000}
                     name="visa"
+                    disabled={readonlyFields.includes('visa')}
                   />
                 </FormLayout.Row>
               )}
@@ -259,6 +276,7 @@ export const DetailsForm = ({
                     label="Metteur en scène"
                     maxLength={1000}
                     name="stageDirector"
+                    disabled={readonlyFields.includes('stageDirector')}
                   />
                 </FormLayout.Row>
               )}
@@ -269,6 +287,7 @@ export const DetailsForm = ({
                     label="Interprète"
                     maxLength={1000}
                     name="performer"
+                    disabled={readonlyFields.includes('performer')}
                   />
                 </FormLayout.Row>
               )}
@@ -280,6 +299,7 @@ export const DetailsForm = ({
                     countCharacters
                     name="ean"
                     maxLength={13}
+                    disabled={readonlyFields.includes('ean')}
                   />
                 </FormLayout.Row>
               )}
@@ -290,6 +310,7 @@ export const DetailsForm = ({
                     isOptional
                     label={'Durée'}
                     name="durationMinutes"
+                    disabled={readonlyFields.includes('durationMinutes')}
                   />
                 </FormLayout.Row>
               )}

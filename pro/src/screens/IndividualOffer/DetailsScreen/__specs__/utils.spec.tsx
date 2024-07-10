@@ -1,4 +1,4 @@
-import { SubcategoryIdEnum } from 'apiClient/v1'
+import { OfferStatus, SubcategoryIdEnum } from 'apiClient/v1'
 import {
   getIndividualOfferFactory,
   subcategoryFactory,
@@ -14,6 +14,7 @@ import {
   serializeDurationHour,
   setDefaultInitialValues,
   setDefaultInitialValuesFromOffer,
+  setFormReadOnlyFields,
 } from '../utils'
 
 describe('buildCategoryOptions', () => {
@@ -227,10 +228,88 @@ describe('setDefaultInitialValuesFromOffer', () => {
 })
 
 describe('serializeDurationHour', () => {
-  it('should correctly seiralize duration hours', () => {
+  it('should correctly serialize duration hours', () => {
     expect(serializeDurationHour(0)).toStrictEqual('0:00')
     expect(serializeDurationHour(21)).toStrictEqual('0:21')
     expect(serializeDurationHour(183)).toStrictEqual('3:03')
     expect(serializeDurationHour(1838)).toStrictEqual('30:38')
+  })
+})
+
+describe('setFormReadOnlyFields', () => {
+  it('should not disable fields when there is no offer ', () => {
+    expect(setFormReadOnlyFields(null)).toStrictEqual([])
+  })
+  it('should disable som fields when updating offer ', () => {
+    expect(setFormReadOnlyFields(getIndividualOfferFactory({}))).toStrictEqual([
+      'categoryId',
+      'subcategoryId',
+      'venueId',
+    ])
+  })
+
+  it('should disable all fields when there offer is rejected or pending', () => {
+    const expectedKeys = [
+      'name',
+      'description',
+      'venueId',
+      'categoryId',
+      'subcategoryId',
+      'gtl_id',
+      'showType',
+      'showSubType',
+      'speaker',
+      'author',
+      'visa',
+      'stageDirector',
+      'performer',
+      'ean',
+      'durationMinutes',
+      'subcategoryConditionalFields',
+    ]
+
+    expect(
+      setFormReadOnlyFields(
+        getIndividualOfferFactory({
+          status: OfferStatus.REJECTED,
+        })
+      )
+    ).toStrictEqual(expectedKeys)
+    expect(
+      setFormReadOnlyFields(
+        getIndividualOfferFactory({
+          status: OfferStatus.PENDING,
+        })
+      )
+    ).toStrictEqual(expectedKeys)
+  })
+
+  it('should disable all fields for provided offers', () => {
+    const expectedKeys = [
+      'name',
+      'description',
+      'venueId',
+      'categoryId',
+      'subcategoryId',
+      'gtl_id',
+      'showType',
+      'showSubType',
+      'speaker',
+      'author',
+      'visa',
+      'stageDirector',
+      'performer',
+      'ean',
+      'durationMinutes',
+      'subcategoryConditionalFields',
+    ]
+
+    expect(
+      setFormReadOnlyFields(
+        getIndividualOfferFactory({
+          lastProvider: { name: 'provider' },
+        })
+      )
+    ).toStrictEqual(expectedKeys)
   })
 })

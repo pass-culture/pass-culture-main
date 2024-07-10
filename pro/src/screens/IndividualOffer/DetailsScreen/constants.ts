@@ -1,4 +1,4 @@
-export const DEFAULT_DETAILS_INTITIAL_VALUES = {
+export const DEFAULT_DETAILS_FORM_VALUES = {
   name: '',
   description: '',
   venueId: '',
