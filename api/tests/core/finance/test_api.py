@@ -22,6 +22,7 @@ import pcapi.core.educational.models as educational_models
 from pcapi.core.educational.models import Ministry
 from pcapi.core.educational.validation import check_institution_fund
 from pcapi.core.finance import api
+from pcapi.core.finance import conf
 from pcapi.core.finance import exceptions
 from pcapi.core.finance import factories
 from pcapi.core.finance import models
@@ -3852,56 +3853,42 @@ class UserRecreditTest:
         assert api._can_be_recredited(user) is False
         assert mock_has_been_recredited.call_count == 0
 
-    @pytest.mark.parametrize(
-        "user_age,user_recredits,expected_result",
-        [
-            (15, [], False),
-            (16, [], False),
-            (17, [], False),
-            (
-                16,
-                [{"type": models.RecreditType.RECREDIT_16, "date_created": datetime.datetime(2020, 1, 1)}],
-                True,
-            ),
-            (
-                17,
-                [{"type": models.RecreditType.RECREDIT_16, "date_created": datetime.datetime(2020, 1, 1)}],
-                False,
-            ),
-            (
-                17,
-                [
-                    {"type": models.RecreditType.RECREDIT_16, "date_created": datetime.datetime(2019, 1, 1)},
-                    {"type": models.RecreditType.RECREDIT_17, "date_created": datetime.datetime(2020, 1, 1)},
-                ],
-                True,
-            ),
-            (
-                17,
-                [{"type": models.RecreditType.RECREDIT_17, "date_created": datetime.datetime(2020, 1, 1)}],
-                True,
-            ),
-        ],
-    )
-    def test_has_been_recredited(self, user_age, user_recredits, expected_result):
-        if 15 <= user_age <= 17:
-            user = users_factories.UnderageBeneficiaryFactory(
-                dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
-                - relativedelta(years=user_age)
-            )
-        elif user_age == 18:
-            user = users_factories.BeneficiaryGrant18Factory(
-                dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
-                - relativedelta(years=user_age)
-            )
-        else:
-            raise ValueError(f"Unexpected age: {user_age}")
+    @pytest.mark.parametrize("user_age", [15, 16, 17])
+    def test_has_not_been_recredited(self, user_age):
+        user = users_factories.UnderageBeneficiaryFactory(
+            dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
+            - relativedelta(years=user_age)
+        )
 
-        for recredit in user_recredits:
-            factories.RecreditFactory(
-                deposit=user.deposit, recreditType=recredit["type"], dateCreated=recredit["date_created"]
-            )
-        assert api._has_been_recredited(user) == expected_result
+        assert not api._has_been_recredited(user)
+
+    @pytest.mark.parametrize("user_age", [16, 17])
+    def test_has_been_recredited_with_current_recredit(self, user_age):
+        user = users_factories.UnderageBeneficiaryFactory(
+            dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
+            - relativedelta(years=user_age)
+        )
+        factories.RecreditFactory(
+            deposit=user.deposit,
+            recreditType=conf.RECREDIT_TYPE_AGE_MAPPING[user_age],
+            dateCreated=datetime.datetime(2020, 1, 1),
+        )
+
+        assert api._has_been_recredited(user)
+
+    def test_has_not_been_recredited_for_current_age(self):
+        user_age = 17
+        user = users_factories.UnderageBeneficiaryFactory(
+            dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
+            - relativedelta(years=user_age)
+        )
+        factories.RecreditFactory(
+            deposit=user.deposit,
+            recreditType=models.RecreditType.RECREDIT_16,
+            dateCreated=datetime.datetime(2020, 1, 1),
+        )
+
+        assert not api._has_been_recredited(user)
 
     def test_has_been_recredited_logs_error_if_no_age(self, caplog):
         user = users_factories.BaseUserFactory(dateOfBirth=None)
