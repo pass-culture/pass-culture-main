@@ -75,6 +75,7 @@ export const SelectAutocomplete = ({
   >({})
   const containerRef = useRef<HTMLDivElement>(null)
   const listRef = useRef<HTMLUListElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
   const [isOpen, setIsOpen] = useState(false)
   const [filteredOptions, setFilteredOptions] = useState(options)
 
@@ -174,6 +175,7 @@ export const SelectAutocomplete = ({
         }
         break
       case 'Escape':
+        inputRef.current?.focus()
         setHoveredOptionIndex(null)
         setIsOpen(false)
         break
@@ -271,6 +273,7 @@ export const SelectAutocomplete = ({
           aria-required={!isOptional}
           role="combobox"
           leftIcon={leftIcon}
+          ref={inputRef}
         />
         <div
           aria-live="polite"
