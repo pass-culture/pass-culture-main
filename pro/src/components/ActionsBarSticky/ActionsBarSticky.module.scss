@@ -16,7 +16,7 @@
 
   .actions-bar-content {
     width: 100%;
-    max-width: rem.torem(size.$desktop);
+    max-width: rem.torem(size.$main-content-width);
     margin: 0 auto;
     align-items: center;
     display: flex;
@@ -54,14 +54,17 @@
       flex-direction: column-reverse;
     }
   }
+
+  &-new-interface {
+    .actions-bar-content {
+      max-width: rem.torem(size.$desktop);
+    }
+  }
 }
 
 @media (min-width: size.$laptop) {
-  .actions-bar {
-    padding-right: size.$main-content-padding;
-  }
-
   .actions-bar-new-interface {
+    padding-right: size.$main-content-padding;
     padding-left: calc(rem.torem(size.$side-nav-width) + rem.torem(32px));
   }
 }
