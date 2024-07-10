@@ -1,26 +1,21 @@
 import { useFormikContext } from 'formik'
-import { useLocation } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import { VenueListItemResponseModel } from 'apiClient/v1'
+import {
+  CategoryResponseModel,
+  SubcategoryResponseModel,
+  VenueListItemResponseModel,
+} from 'apiClient/v1'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { ImageUploaderOffer } from 'components/IndividualOfferForm/ImageUploaderOffer/ImageUploaderOffer'
 import { GET_MUSIC_TYPES_QUERY_KEY } from 'config/swrQueryKeys'
-import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { showOptionsTree } from 'core/Offers/categoriesSubTypes'
 import { DurationInput } from 'ui-kit/form/DurationInput/DurationInput'
 import { Select } from 'ui-kit/form/Select/Select'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
-
-import {
-  filterCategories,
-  getCategoryStatusFromOfferSubtype,
-  getOfferSubtypeFromParam,
-  isOfferSubtypeEvent,
-} from '../InformationsScreen/utils/filterCategories/filterCategories'
 
 import { DEFAULT_DETAILS_INTITIAL_VALUES } from './constants'
 import { DetailsFormValues } from './types'
@@ -33,24 +28,16 @@ import {
 } from './utils'
 
 type DetailsFormProps = {
-  venues: VenueListItemResponseModel[]
+  filteredVenues: VenueListItemResponseModel[]
+  filteredCategories: CategoryResponseModel[]
+  filteredSubCategories: SubcategoryResponseModel[]
 }
 
-export const DetailsForm = ({ venues }: DetailsFormProps): JSX.Element => {
-  const { search } = useLocation()
-  const queryParams = new URLSearchParams(search)
-  const queryOfferType = queryParams.get('offer-type')
-
-  const { categories, subCategories } = useIndividualOfferContext()
-  const offerSubtype = getOfferSubtypeFromParam(queryOfferType)
-  const categoryStatus = getCategoryStatusFromOfferSubtype(offerSubtype)
-  const [filteredCategories, filteredSubCategories] = filterCategories(
-    categories,
-    subCategories,
-    categoryStatus,
-    isOfferSubtypeEvent(offerSubtype)
-  )
-
+export const DetailsForm = ({
+  filteredVenues,
+  filteredCategories,
+  filteredSubCategories,
+}: DetailsFormProps): JSX.Element => {
   const {
     values: {
       categoryId,
@@ -85,7 +72,7 @@ export const DetailsForm = ({ venues }: DetailsFormProps): JSX.Element => {
     .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
   const showSubTypeOptions = buildShowSubTypeOptions(showType)
 
-  const venueOptions = buildVenueOptions(venues)
+  const venueOptions = buildVenueOptions(filteredVenues)
 
   // this condition exists in the original code
   // but it is not clear why it is needed
@@ -107,6 +94,7 @@ export const DetailsForm = ({ venues }: DetailsFormProps): JSX.Element => {
   const displayArtisticInformations = artisticInformationsFields.some((field) =>
     subcategoryConditionalFields.includes(field)
   )
+
   return (
     <>
       <FormLayout.Section title="A propos de votre offre">
@@ -172,7 +160,7 @@ export const DetailsForm = ({ venues }: DetailsFormProps): JSX.Element => {
               onChange={async (event: React.ChangeEvent<HTMLSelectElement>) => {
                 await onSubcategoryChange({
                   newSubCategoryId: event.target.value,
-                  subCategories,
+                  subCategories: filteredSubCategories,
                   setFieldValue,
                 })
                 handleChange(event)

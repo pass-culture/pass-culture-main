@@ -106,7 +106,7 @@ export const buildVenueOptions = (venues: VenueListItemResponseModel[]) => {
       label: computeVenueDisplayName(venue),
     }))
     .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
-  if (venueOptions.length !== 1) {
+  if (venueOptions.length > 1) {
     venueOptions = [
       { value: '', label: 'Sélectionner un lieu' },
       ...venueOptions,
@@ -114,4 +114,23 @@ export const buildVenueOptions = (venues: VenueListItemResponseModel[]) => {
   }
 
   return venueOptions
+}
+
+type setDefaultInitialValuesProps = {
+  filteredVenues: VenueListItemResponseModel[]
+}
+
+export function setDefaultInitialValues({
+  filteredVenues,
+}: setDefaultInitialValuesProps): DetailsFormValues {
+  let venueId = ''
+
+  if (filteredVenues.length === 1) {
+    venueId = String(filteredVenues[0].id)
+  }
+
+  return {
+    ...DEFAULT_DETAILS_INTITIAL_VALUES,
+    venueId,
+  }
 }

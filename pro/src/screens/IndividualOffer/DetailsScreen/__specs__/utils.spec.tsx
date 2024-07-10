@@ -9,6 +9,7 @@ import {
   buildSubcategoryConditonalFields,
   buildSubcategoryOptions,
   buildVenueOptions,
+  setDefaultInitialValues,
 } from '../utils'
 
 describe('buildCategoryOptions', () => {
@@ -149,5 +150,42 @@ describe('buildVenueOptions', () => {
         value: '2',
       },
     ])
+  })
+})
+
+describe('setDefaultInitialValues', () => {
+  it('should set default initial values', () => {
+    expect(
+      setDefaultInitialValues({
+        filteredVenues: [venueListItemFactory({}), venueListItemFactory({})],
+      })
+    ).toStrictEqual({
+      author: '',
+      categoryId: '',
+      description: '',
+      durationMinutes: '',
+      ean: '',
+      gtl_id: '',
+      name: '',
+      performer: '',
+      showSubType: '',
+      showType: '',
+      speaker: '',
+      stageDirector: '',
+      subcategoryConditionalFields: [],
+      subcategoryId: '',
+      venueId: '',
+      visa: '',
+    })
+
+    expect(
+      setDefaultInitialValues({
+        filteredVenues: [venueListItemFactory({ id: 666 })],
+      })
+    ).toStrictEqual(
+      expect.objectContaining({
+        venueId: '666',
+      })
+    )
   })
 })

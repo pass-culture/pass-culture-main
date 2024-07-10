@@ -1,8 +1,9 @@
 import { Form, FormikProvider, useFormik } from 'formik'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 import { VenueListItemResponseModel } from 'apiClient/v1'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import { getFilteredVenueListByCategoryStatus } from 'components/IndividualOfferForm/utils/getFilteredVenueList'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
@@ -10,9 +11,15 @@ import { useIndividualOfferContext } from 'context/IndividualOfferContext/Indivi
 import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
 
 import { ActionBar } from '../ActionBar/ActionBar'
+import {
+  getOfferSubtypeFromParam,
+  getCategoryStatusFromOfferSubtype,
+  filterCategories,
+  isOfferSubtypeEvent,
+} from '../InformationsScreen/utils/filterCategories/filterCategories'
 
-import { DEFAULT_DETAILS_INTITIAL_VALUES } from './constants'
 import { DetailsForm } from './DetailsForm'
+import { setDefaultInitialValues } from './utils'
 import { validationSchema } from './validationSchema'
 
 export type DetailsScreenProps = {
@@ -21,9 +28,28 @@ export type DetailsScreenProps = {
 
 export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
   const navigate = useNavigate()
+  const { search } = useLocation()
+  const queryParams = new URLSearchParams(search)
+  const queryOfferType = queryParams.get('offer-type')
+
+  const { categories, subCategories } = useIndividualOfferContext()
+  const offerSubtype = getOfferSubtypeFromParam(queryOfferType)
+  const categoryStatus = getCategoryStatusFromOfferSubtype(offerSubtype)
+  const [filteredCategories, filteredSubCategories] = filterCategories(
+    categories,
+    subCategories,
+    categoryStatus,
+    isOfferSubtypeEvent(offerSubtype)
+  )
+
+  const filteredVenues = getFilteredVenueListByCategoryStatus(
+    venues,
+    categoryStatus
+  )
+  const initialValues = setDefaultInitialValues({ filteredVenues })
 
   const formik = useFormik({
-    initialValues: DEFAULT_DETAILS_INTITIAL_VALUES,
+    initialValues,
     validationSchema,
     onSubmit: () => {},
   })
@@ -51,7 +77,11 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
         <FormLayout fullWidthActions>
           <ScrollToFirstErrorAfterSubmit />
           <FormLayout.MandatoryInfo />
-          <DetailsForm venues={venues} />
+          <DetailsForm
+            filteredVenues={filteredVenues}
+            filteredCategories={filteredCategories}
+            filteredSubCategories={filteredSubCategories}
+          />
         </FormLayout>
         <ActionBar
           onClickPrevious={handlePreviousStepOrBackToReadOnly}
