@@ -1,15 +1,17 @@
 import { Form, FormikProvider, useFormik } from 'formik'
-
-import { FormLayout } from 'components/FormLayout/FormLayout'
-import { DetailsForm } from './DetailsForm'
-import { DEFAULT_DETAILS_INTITIAL_VALUES } from './constants'
-import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
-import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
-import { ActionBar } from '../ActionBar/ActionBar'
 import { useNavigate } from 'react-router-dom'
-import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
+
 import { VenueListItemResponseModel } from 'apiClient/v1'
+import { FormLayout } from 'components/FormLayout/FormLayout'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
+import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
+import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
+import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
+
+import { ActionBar } from '../ActionBar/ActionBar'
+
+import { DEFAULT_DETAILS_INTITIAL_VALUES } from './constants'
+import { DetailsForm } from './DetailsForm'
 
 export type DetailsScreenProps = {
   venues: VenueListItemResponseModel[]

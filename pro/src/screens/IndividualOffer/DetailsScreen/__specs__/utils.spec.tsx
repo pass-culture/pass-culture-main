@@ -1,4 +1,8 @@
-import { is } from 'date-fns/locale'
+import {
+  subcategoryFactory,
+  venueListItemFactory,
+} from 'utils/individualApiFactories'
+
 import {
   buildCategoryOptions,
   buildShowSubTypeOptions,
@@ -6,11 +10,6 @@ import {
   buildSubcategoryOptions,
   buildVenueOptions,
 } from '../utils'
-import { SubcategoryResponseModel } from 'apiClient/adage'
-import {
-  subcategoryFactory,
-  venueListItemFactory,
-} from 'utils/individualApiFactories'
 
 describe('buildCategoryOptions', () => {
   it('should build category options', () => {
