@@ -78,6 +78,6 @@ jobs:
           docker image push --all-tags ${{ env.registry }}/${{ inputs.image }} 
       - name: "Get the image digest"
         id: get_digest
-        run: echo "digest=$(docker inspect --format='{{index .Id}}' ${{ steps.compute-image-name.outputs.image_name }})" >> $GITHUB_OUTPUT
+        run: echo "digest=$(docker inspect --format='{{index .RepoDigests 0}}' ${{ steps.compute-image-name.outputs.image_name }})" >> $GITHUB_OUTPUT
       - name: Sign image with a kms key
-        run: cosign sign --tlog-upload=false --key gcpkms://${{ steps.secrets.outputs.COSIGN_KMS_KEY }} ${{ env.registry }}/${{ inputs.image }}@${{ steps.get_digest.outputs.digest }}
+        run: cosign sign --tlog-upload=false --key gcpkms://${{ steps.secrets.outputs.COSIGN_KMS_KEY }} ${{ steps.get_digest.outputs.digest }}
