@@ -3,10 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import {
-  GET_VENUES_QUERY_KEY,
-  GET_OFFERER_NAMES_QUERY_KEY,
-} from 'config/swrQueryKeys'
+import { GET_VENUES_QUERY_KEY } from 'config/swrQueryKeys'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { useCurrentUser } from 'hooks/useCurrentUser'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'

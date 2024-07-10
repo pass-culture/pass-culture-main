@@ -1,3 +1,5 @@
+import { FormikErrors } from 'formik'
+
 import {
   CategoryResponseModel,
   SubcategoryResponseModel,
@@ -5,10 +7,10 @@ import {
 } from 'apiClient/v1'
 import { showOptionsTree } from 'core/Offers/categoriesSubTypes'
 import { SelectOption } from 'custom_types/form'
-import { DEFAULT_DETAILS_INTITIAL_VALUES } from './constants'
-import { FormikErrors } from 'formik'
-import { DetailsFormValues } from './types'
 import { computeVenueDisplayName } from 'repository/venuesService'
+
+import { DEFAULT_DETAILS_INTITIAL_VALUES } from './constants'
+import { DetailsFormValues } from './types'
 
 export const buildCategoryOptions = (
   categories: CategoryResponseModel[]

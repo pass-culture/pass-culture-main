@@ -13,6 +13,10 @@ import { FormLayout } from 'components/FormLayout/FormLayout'
 import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers/constants'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import fullMoreIcon from 'icons/full-more.svg'
+import {
+  buildCategoryOptions,
+  buildSubcategoryOptions,
+} from 'screens/IndividualOffer/DetailsScreen/utils'
 import { Select } from 'ui-kit/form/Select/Select'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
@@ -20,17 +24,13 @@ import { FORM_DEFAULT_VALUES } from '../constants'
 import styles from '../IndividualOfferForm.module.scss'
 import { IndividualOfferFormValues } from '../types'
 import { onVenueChange } from '../UsefulInformations/Venue/Venue'
+import { buildSubcategoryFields } from '../utils/buildSubCategoryFields'
 import { getFilteredVenueListBySubcategory } from '../utils/getFilteredVenueList'
 
 import { SUBCATEGORIES_FIELDS_DEFAULT_VALUES } from './constants'
 import { MusicTypes } from './MusicTypes/MusicTypes'
 import { OfferSubtypeTag } from './OfferSubtypeTag/OfferSubtypeTag'
 import { ShowTypes } from './ShowTypes/ShowTypes'
-import {
-  buildCategoryOptions,
-  buildSubcategoryOptions,
-} from 'screens/IndividualOffer/DetailsScreen/utils'
-import { buildSubcategoryFields } from '../utils/buildSubCategoryFields'
 
 export interface CategoriesProps {
   categories: CategoryResponseModel[]

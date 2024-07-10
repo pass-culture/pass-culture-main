@@ -1,12 +1,21 @@
+import { useFormikContext } from 'formik'
+import useSWR from 'swr'
+
+import { api } from 'apiClient/api'
+import { VenueListItemResponseModel } from 'apiClient/v1'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { ImageUploaderOffer } from 'components/IndividualOfferForm/ImageUploaderOffer/ImageUploaderOffer'
+import { GET_MUSIC_TYPES_QUERY_KEY } from 'config/swrQueryKeys'
+import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
+import { showOptionsTree } from 'core/Offers/categoriesSubTypes'
 import { DurationInput } from 'ui-kit/form/DurationInput/DurationInput'
 import { Select } from 'ui-kit/form/Select/Select'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
+
 import { DEFAULT_DETAILS_INTITIAL_VALUES } from './constants'
-import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
+import { DetailsFormValues } from './types'
 import {
   buildCategoryOptions,
   buildSubcategoryOptions,
@@ -14,14 +23,6 @@ import {
   buildShowSubTypeOptions,
   onSubcategoryChange,
 } from './utils'
-import { useFormikContext } from 'formik'
-import { DetailsFormValues } from './types'
-import { api } from 'apiClient/api'
-import { GET_MUSIC_TYPES_QUERY_KEY } from 'config/swrQueryKeys'
-import useSWR from 'swr'
-import { showOptionsTree } from 'core/Offers/categoriesSubTypes'
-import { VenueListItemResponseModel } from 'apiClient/v1'
-import { useSearchParams } from 'react-router-dom'
 
 type DetailsFormProps = {
   venues: VenueListItemResponseModel[]
@@ -116,9 +117,8 @@ export const DetailsForm = ({ venues }: DetailsFormProps): JSX.Element => {
                 isExternal: true,
                 to: 'https://aide.passculture.app/hc/fr/articles/4411999013265--Acteurs-Culturels-Quelle-cat%C3%A9gorie-et-sous-cat%C3%A9gorie-choisir-lors-de-la-cr%C3%A9ation-d-offres-',
                 text: 'Quelles catégories choisir ?',
-                target: '_blank',
+                opensInNewTab: true,
               }}
-              svgAlt="Nouvelle fenêtre"
             >
               Une sélection précise de vos catégories permettra au grand public
               de facilement trouver votre offre. Une fois validées, vous ne

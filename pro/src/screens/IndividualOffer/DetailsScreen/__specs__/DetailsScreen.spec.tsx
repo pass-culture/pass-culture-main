@@ -12,6 +12,7 @@ import {
   subcategoryFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+
 import { DetailsScreen, DetailsScreenProps } from '../DetailsScreen'
 
 vi.mock('apiClient/api', () => ({
