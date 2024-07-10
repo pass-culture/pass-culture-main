@@ -2678,8 +2678,7 @@ def _has_been_recredited(user: users_models.User) -> bool:
     if len(user.deposit.recredits) == 0:
         return False
 
-    sorted_recredits = sorted(user.deposit.recredits, key=lambda recredit: recredit.dateCreated)
-    return sorted_recredits[-1].recreditType == conf.RECREDIT_TYPE_AGE_MAPPING[user.age]
+    return conf.RECREDIT_TYPE_AGE_MAPPING[user.age] in [recredit.recreditType for recredit in user.deposit.recredits]
 
 
 def _get_known_age_at_deposit(user: users_models.User) -> int | None:

@@ -3886,6 +3886,16 @@ class UserRecreditTest:
             can_be_recredited_for_17 = api._can_be_recredited(user)
             assert not can_be_recredited_for_17
 
+    def test_cannot_be_recredited_when_recredit_was_already_given(self):
+        user = users_factories.BeneficiaryFactory(age=15)
+        factories.RecreditFactory(deposit=user.deposit, recreditType=models.RecreditType.RECREDIT_16)
+        factories.RecreditFactory(deposit=user.deposit, recreditType=models.RecreditType.RECREDIT_17)
+
+        next_year = datetime.datetime.utcnow() + relativedelta(years=1)
+        with time_machine.travel(next_year):
+            can_be_recredited_for_16 = api._can_be_recredited(user)
+            assert not can_be_recredited_for_16
+
     def test_can_be_recredited_no_registration_datetime(self):
         with time_machine.travel("2020-05-02"):
             user = users_factories.UnderageBeneficiaryFactory(
