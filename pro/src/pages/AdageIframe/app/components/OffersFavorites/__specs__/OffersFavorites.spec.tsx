@@ -8,6 +8,7 @@ import {
   CollectiveOfferTemplateResponseModel,
 } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
+import { GET_COLLECTIVE_FAVORITES } from 'config/swrQueryKeys'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import { defaultCollectiveTemplateOffer } from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -16,7 +17,16 @@ import { OffersFavorites } from '../OffersFavorites'
 
 const mockOffer: CollectiveOfferTemplateResponseModel = {
   ...defaultCollectiveTemplateOffer,
+  isFavorite: true,
 }
+
+const mockMutate = vi.fn()
+vi.mock('swr', async () => ({
+  ...(await vi.importActual('swr')),
+  useSWRConfig: vi.fn(() => ({
+    mutate: mockMutate,
+  })),
+}))
 
 const renderAdageFavoritesOffers = (
   user: AuthenticatedResponse,
@@ -129,5 +139,28 @@ describe('OffersFavorites', () => {
     expect(
       screen.getByRole('link', { name: mockOffer.name })
     ).toBeInTheDocument()
+  })
+
+  it('should reload favorites when favorite is removed', async () => {
+    vi.spyOn(apiAdage, 'getCollectiveFavorites').mockResolvedValue({
+      favoritesOffer: [],
+      favoritesTemplate: [mockOffer],
+    })
+    vi.spyOn(apiAdage, 'deleteFavoriteForCollectiveOffer').mockResolvedValue()
+
+    renderAdageFavoritesOffers(user)
+
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Supprimer des favoris' })
+    )
+
+    expect(mockMutate).toHaveBeenNthCalledWith(
+      1,
+      [GET_COLLECTIVE_FAVORITES],
+      { favoritesOffer: [], favoritesTemplate: [] },
+      {
+        revalidate: false,
+      }
+    )
   })
 })
