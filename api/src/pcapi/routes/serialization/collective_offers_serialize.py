@@ -101,6 +101,8 @@ class CollectiveOffersStockResponseModel(BaseModel):
     remainingQuantity: int | str
     beginningDatetime: datetime | None
     bookingLimitDatetime: datetime | None
+    startDatetime: datetime | None
+    endDatetime: datetime | None
 
     @validator("remainingQuantity", pre=True)
     def validate_remaining_quantity(cls, remainingQuantity: int | str) -> int | str:

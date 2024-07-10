@@ -1,7 +1,9 @@
 import datetime
 import random
 
+import dateutil
 import pytest
+import time_machine
 
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.educational.models as educational_models
@@ -46,6 +48,50 @@ class Returns200Test:
         assert response_json[0]["imageCredit"] is None
         assert response_json[0]["imageUrl"] is None
         assert response_json[0]["nationalProgram"] == {"id": national_program.id, "name": national_program.name}
+
+    @time_machine.travel("2024-06-1")
+    def test_one_simple_collective_offer_dates(self, client):
+        # Given
+        user = users_factories.UserFactory()
+        offerer = offerer_factories.OffererFactory()
+        offerer_factories.UserOffererFactory(user=user, offerer=offerer)
+        venue = offerer_factories.VenueFactory(managingOfferer=offerer)
+        institution = educational_factories.EducationalInstitutionFactory()
+        national_program = educational_factories.NationalProgramFactory()
+        offer = educational_factories.CollectiveOfferFactory(
+            venue=venue, offerId=1, institution=institution, nationalProgramId=national_program.id
+        )
+        next_week = datetime.datetime.utcnow() + datetime.timedelta(days=7)
+        in_two_weeks = datetime.datetime.utcnow() + datetime.timedelta(days=14)
+        educational_factories.CollectiveStockFactory(
+            collectiveOffer=offer, stockId=1, startDatetime=next_week, endDatetime=in_two_weeks
+        )
+
+        client = client.with_session_auth(user.email)
+
+        # When
+        queries = 0
+        queries += 1  # load session
+        queries += 1  # load user
+        queries += 1  # load collective offers
+        queries += 1  # load collective offers template
+        queries += 1  # load national program
+
+        with assert_num_queries(queries):
+            response = client.get("/collective/offers")
+
+            # Then
+            assert response.status_code == 200
+            response_json = response.json
+            assert isinstance(response_json, list)
+            assert len(response_json) == 1
+            assert len(response_json[0]["stocks"]) == 1
+            stock = response_json[0]["stocks"][0]
+
+            startDatetime = dateutil.parser.parse(stock["startDatetime"]).date()
+            assert startDatetime == datetime.date(2024, 6, 8)
+            endDatetime = dateutil.parser.parse(stock["endDatetime"]).date()
+            assert endDatetime == datetime.date(2024, 6, 15)
 
     def test_one_inactive_offer(self, client):
         # Given
