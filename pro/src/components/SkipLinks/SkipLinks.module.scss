@@ -1,5 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_size.scss" as size;
+@use "styles/variables/_z-index.scss" as zIndex;
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .skip-links {
@@ -11,7 +12,7 @@
   &:focus-within {
     height: rem.torem(32px);
     position: relative;
-    z-index: 13;
+    z-index: zIndex.$cookies-popup-z-index;
     top: 0;
   }
 
