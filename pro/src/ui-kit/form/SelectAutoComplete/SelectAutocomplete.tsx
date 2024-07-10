@@ -1,6 +1,6 @@
 import cx from 'classnames'
 import { useField, useFormikContext } from 'formik'
-import React, { KeyboardEventHandler, useEffect, useRef, useState } from 'react'
+import { KeyboardEventHandler, useEffect, useRef, useState } from 'react'
 
 import { SelectOption } from 'custom_types/form'
 import { getLabelString } from 'utils/getLabelString'
@@ -101,7 +101,6 @@ export const SelectAutocomplete = ({
     )
   }, [options])
 
-  /* istanbul ignore next */
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent): void => {
       if (!containerRef.current?.contains(e.target as Node)) {
@@ -126,9 +125,7 @@ export const SelectAutocomplete = ({
     setFilteredOptions(searchInOptions(options, searchField.value))
   }, [searchField.value, options])
 
-  /* istanbul ignore next: DEBT TO FIX */
   const handleKeyDown: KeyboardEventHandler<HTMLDivElement> = async (event) => {
-    /* istanbul ignore next */
     switch (event.key) {
       case 'ArrowUp':
         if (hoveredOptionIndex !== null) {
@@ -210,7 +207,6 @@ export const SelectAutocomplete = ({
   }
 
   const openField = async () => {
-    /* istanbul ignore next */
     if (!isOpen) {
       setIsOpen(true)
     }
