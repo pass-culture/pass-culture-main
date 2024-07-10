@@ -16,7 +16,7 @@
 
   .actions-bar-content {
     width: 100%;
-    max-width: rem.torem(size.$main-content-width);
+    max-width: rem.torem(size.$desktop);
     margin: 0 auto;
     align-items: center;
     display: flex;
@@ -57,6 +57,10 @@
 }
 
 @media (min-width: size.$laptop) {
+  .actions-bar {
+    padding-right: size.$main-content-padding;
+  }
+
   .actions-bar-new-interface {
     padding-left: calc(rem.torem(size.$side-nav-width) + rem.torem(32px));
   }
