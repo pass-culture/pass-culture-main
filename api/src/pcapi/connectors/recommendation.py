@@ -20,6 +20,10 @@ class RecommendationApiException(Exception):
     pass
 
 
+class RecommendationApiTimeoutException(Exception):
+    pass
+
+
 def _get_backend() -> "BaseBackend":
     backend_class = module_loading.import_string(settings.RECOMMENDATION_BACKEND)
     return backend_class()
@@ -73,6 +77,8 @@ class HttpBackend:
             else:
                 raise ValueError(f"Unexpected method: {method}")
             response.raise_for_status()
+        except requests.exceptions.Timeout:
+            raise RecommendationApiTimeoutException()
         except requests.exceptions.RequestException as exc:
             logger.info("Got error from Recommendation API", extra={"exc": str(exc)}, exc_info=True)
             raise RecommendationApiException(str(exc)) from exc
