@@ -21,6 +21,12 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
+vi.mock('utils/windowMatchMedia', () => ({
+  doesUserPreferReducedMotion: vi.fn(() => true),
+}))
+
+const scrollIntoViewMock = vi.fn()
+
 const renderDetailsScreen = (
   props: DetailsScreenProps,
   contextValue: IndividualOfferContextValues
@@ -37,6 +43,7 @@ describe('screens:IndividualOffer::Informations', () => {
   let contextValue: IndividualOfferContextValues
 
   beforeEach(() => {
+    Element.prototype.scrollIntoView = scrollIntoViewMock
     const categories = [
       categoryFactory({
         id: 'A',
