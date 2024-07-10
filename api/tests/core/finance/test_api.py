@@ -3822,16 +3822,17 @@ class UserRecreditTest:
             assert user.recreditAmountToShow == 30
             assert api._can_be_recredited(user) is False
 
-    def test_can_be_recredited_after_age_substraction(self):
+    @pytest.mark.parametrize("validated_age", [15, 16])
+    def test_can_be_recredited_after_age_substraction(self, validated_age):
         user = users_factories.UnderageBeneficiaryFactory(subscription_age=17)
 
-        sixteen_years_ago = datetime.datetime.utcnow() - relativedelta(years=16)
+        validated_birth_date = datetime.datetime.utcnow() - relativedelta(years=validated_age)
         users_api.update_user_info(
-            user, users_factories.UserFactory(roles=["ADMIN"]), validated_birth_date=sixteen_years_ago.date()
+            user, users_factories.UserFactory(roles=["ADMIN"]), validated_birth_date=validated_birth_date.date()
         )
 
-        can_be_recredited_for_16 = api._can_be_recredited(user)
-        assert can_be_recredited_for_16
+        can_be_recredited_for_validated_age = api._can_be_recredited(user)
+        assert can_be_recredited_for_validated_age
 
     def test_cannot_be_recredited_for_deposit_using_identity_provider_checks(self):
         user = users_factories.UnderageBeneficiaryFactory(subscription_age=17)
@@ -3923,7 +3924,7 @@ class UserRecreditTest:
         assert api._can_be_recredited(user) is False
         assert mock_has_been_recredited.call_count == 0
 
-    @pytest.mark.parametrize("user_age", [15, 16, 17])
+    @pytest.mark.parametrize("user_age", [16, 17])
     def test_has_not_been_recredited(self, user_age):
         user = users_factories.UnderageBeneficiaryFactory(
             dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
@@ -3932,7 +3933,7 @@ class UserRecreditTest:
 
         assert not api._has_been_recredited(user)
 
-    @pytest.mark.parametrize("user_age", [16, 17])
+    @pytest.mark.parametrize("user_age", [15, 16, 17])
     def test_has_been_recredited_with_current_recredit(self, user_age):
         user = users_factories.UnderageBeneficiaryFactory(
             dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
