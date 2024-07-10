@@ -358,7 +358,14 @@ class OffererBookingRecapTest:
         venue = offerers_factories.VenueFactory()
         offerers_factories.VenueBankAccountLinkFactory(venue=venue)
         booking = make_booking(stock__offer__venue=venue)
-        with assert_num_queries(7):
+        # Preload available data - calling functions should do that
+        _ = booking.stock.offer.venue.offererAddress.address
+        _ = booking.user
+        # 1 - SELECT venue with bank account
+        # 1 - SELECT feature (WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE)
+        # 1 - SELECT external booking (might be preloaded ?)
+        # 1 - SELECT activation code (might be preloaded ?)
+        with assert_num_queries(4):
             email_data = get_new_booking_to_pro_email_data(booking)
 
         assert not email_data.params["NEEDS_BANK_INFORMATION_REMINDER"]
