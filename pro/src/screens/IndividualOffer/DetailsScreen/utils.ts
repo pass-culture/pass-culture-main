@@ -8,6 +8,7 @@ import {
   VenueListItemResponseModel,
 } from 'apiClient/v1'
 import { showOptionsTree } from 'core/Offers/categoriesSubTypes'
+import { OfferExtraData } from 'core/Offers/types'
 import { isOfferSynchronized } from 'core/Offers/utils/synchronization'
 import { SelectOption } from 'custom_types/form'
 import { computeVenueDisplayName } from 'repository/venuesService'
@@ -168,7 +169,7 @@ export function setDefaultInitialValuesFromOffer({
       offer.extraData.showSubType ?? DEFAULT_DETAILS_FORM_VALUES.showSubType,
     subcategoryConditionalFields: [],
     durationMinutes: offer.durationMinutes
-      ? serializeDurationHour(offer.durationMinutes)
+      ? deSerializeDurationMinutes(offer.durationMinutes)
       : DEFAULT_DETAILS_FORM_VALUES.durationMinutes,
     ean: offer.extraData?.ean ?? DEFAULT_DETAILS_FORM_VALUES.ean,
     visa: offer.extraData?.visa ?? DEFAULT_DETAILS_FORM_VALUES.visa,
@@ -183,10 +184,27 @@ export function setDefaultInitialValuesFromOffer({
   }
 }
 
-export function serializeDurationHour(durationMinute: number): string {
+export function deSerializeDurationMinutes(durationMinute: number): string {
   const hours = Math.floor(durationMinute / 60)
   const minutes = (durationMinute % 60).toString().padStart(2, '0')
   return `${hours}:${minutes}`
+}
+
+export const serializeDurationMinutes = (
+  durationHour: string
+): number | null => {
+  /* istanbul ignore next: DEBT, TO FIX */
+  if (durationHour.trim().length === 0) {
+    return null
+  }
+
+  /* istanbul ignore next: DEBT, TO FIX */
+  const [hours, minutes] = durationHour
+    .split(':')
+    .map((s: string) => parseInt(s, 10))
+
+  /* istanbul ignore next: DEBT, TO FIX */
+  return minutes + hours * 60
 }
 
 export function setFormReadOnlyFields(
@@ -205,4 +223,39 @@ export function setFormReadOnlyFields(
   }
 
   return ['categoryId', 'subcategoryId', 'venueId']
+}
+
+export const serializeExtraData = (
+  formValues: DetailsFormValues
+): OfferExtraData => {
+  const extraData: OfferExtraData = {}
+  if (formValues.author) {
+    extraData.author = formValues.author
+  }
+  if (formValues.gtl_id) {
+    extraData.gtl_id = formValues.gtl_id
+  }
+  if (formValues.performer) {
+    extraData.performer = formValues.performer
+  }
+  if (formValues.ean) {
+    extraData.ean = formValues.ean
+  }
+  if (formValues.showType) {
+    extraData.showType = formValues.showType
+  }
+  if (formValues.showSubType) {
+    extraData.showSubType = formValues.showSubType
+  }
+  if (formValues.speaker) {
+    extraData.speaker = formValues.speaker
+  }
+  if (formValues.stageDirector) {
+    extraData.stageDirector = formValues.stageDirector
+  }
+  if (formValues.visa) {
+    extraData.visa = formValues.visa
+  }
+
+  return extraData
 }

@@ -11,7 +11,9 @@ import {
   buildSubcategoryConditonalFields,
   buildSubcategoryOptions,
   buildVenueOptions,
-  serializeDurationHour,
+  deSerializeDurationMinutes,
+  serializeDurationMinutes,
+  serializeExtraData,
   setDefaultInitialValues,
   setDefaultInitialValuesFromOffer,
   setFormReadOnlyFields,
@@ -227,12 +229,22 @@ describe('setDefaultInitialValuesFromOffer', () => {
   })
 })
 
-describe('serializeDurationHour', () => {
-  it('should correctly serialize duration hours', () => {
-    expect(serializeDurationHour(0)).toStrictEqual('0:00')
-    expect(serializeDurationHour(21)).toStrictEqual('0:21')
-    expect(serializeDurationHour(183)).toStrictEqual('3:03')
-    expect(serializeDurationHour(1838)).toStrictEqual('30:38')
+describe('deSerializeDurationMinutes', () => {
+  it('should correctly de serialize duration minutes', () => {
+    expect(deSerializeDurationMinutes(0)).toStrictEqual('0:00')
+    expect(deSerializeDurationMinutes(21)).toStrictEqual('0:21')
+    expect(deSerializeDurationMinutes(183)).toStrictEqual('3:03')
+    expect(deSerializeDurationMinutes(1838)).toStrictEqual('30:38')
+  })
+})
+
+describe('serializeDurationMinutes', () => {
+  it('should correctly serialize duration minutes', () => {
+    expect(serializeDurationMinutes('')).toStrictEqual(null)
+    expect(serializeDurationMinutes('0:00')).toStrictEqual(0)
+    expect(serializeDurationMinutes('0:21')).toStrictEqual(21)
+    expect(serializeDurationMinutes('3:03')).toStrictEqual(183)
+    expect(serializeDurationMinutes('30:38')).toStrictEqual(1838)
   })
 })
 
@@ -311,5 +323,63 @@ describe('setFormReadOnlyFields', () => {
         })
       )
     ).toStrictEqual(expectedKeys)
+  })
+})
+
+describe('serializeExtraData', () => {
+  it('should correctly serialize extra data', () => {
+    const formValues = {
+      name: 'anything',
+      description: 'anything',
+      venueId: 'anything',
+      categoryId: 'anything',
+      subcategoryId: 'anything',
+      showType: 'a showtype',
+      showSubType: 'a showSubtype',
+      gtl_id: 'a gtl id',
+      author: 'Boris Vian',
+      performer: 'Marcel et son orchestre',
+      ean: 'any ean',
+      speaker: 'Robert Smith',
+      stageDirector: 'Bob Sinclar',
+      visa: '123456789',
+      durationMinutes: '',
+      subcategoryConditionalFields: [],
+    }
+
+    expect(serializeExtraData(formValues)).toStrictEqual({
+      author: 'Boris Vian',
+      ean: 'any ean',
+      gtl_id: 'a gtl id',
+      performer: 'Marcel et son orchestre',
+      showSubType: 'a showSubtype',
+      showType: 'a showtype',
+      speaker: 'Robert Smith',
+      stageDirector: 'Bob Sinclar',
+      visa: '123456789',
+    })
+  })
+
+  it('should correctly serialize extra data with empty values', () => {
+    const formValues = {
+      name: '',
+      description: '',
+      venueId: '',
+      categoryId: '',
+      subcategoryId: '',
+      showType: '',
+      showSubType: '',
+      gtl_id: '',
+      author: '',
+      performer: '',
+      ean: '',
+      speaker: '',
+      stageDirector: '',
+      visa: '',
+      durationMinutes: '',
+      subcategoryConditionalFields: [],
+    }
+
+    expect(serializeExtraData(formValues)).toStrictEqual({})
   })
 })

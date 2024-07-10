@@ -6,8 +6,6 @@ export type DetailsFormValues = {
   subcategoryId: string
   showType: string
   showSubType: string
-  musicType?: string
-  musicSubType?: string
   gtl_id?: string
   author?: string
   performer?: string

@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
+import { api } from 'apiClient/api'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
@@ -8,8 +9,10 @@ import {
 import { CATEGORY_STATUS } from 'core/Offers/constants'
 import {
   categoryFactory,
+  getIndividualOfferFactory,
   individualOfferContextValuesFactory,
   subcategoryFactory,
+  venueListItemFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -18,6 +21,7 @@ import { DetailsScreen, DetailsScreenProps } from '../DetailsScreen'
 vi.mock('apiClient/api', () => ({
   api: {
     getMusicTypes: vi.fn(),
+    postOffer: vi.fn(),
   },
 }))
 
@@ -154,5 +158,79 @@ describe('screens:IndividualOffer::Informations', () => {
     expect(
       screen.getByText('Veuillez sélectionner un genre musical')
     ).toBeInTheDocument()
+  })
+
+  it('should submit the form with correct payload', async () => {
+    vi.spyOn(api, 'postOffer').mockResolvedValue(
+      getIndividualOfferFactory({
+        id: 12,
+      })
+    )
+    vi.spyOn(api, 'getMusicTypes').mockResolvedValue([
+      { canBeEvent: true, label: 'Pop', gtl_id: 'pop' },
+    ])
+    props.venues = [venueListItemFactory({ id: 189 })]
+
+    renderDetailsScreen(props, contextValue)
+
+    await userEvent.type(
+      screen.getByLabelText(/Titre de l’offre/),
+      'My super offer'
+    )
+    await userEvent.type(
+      screen.getByLabelText(/Description/),
+      'My super description'
+    )
+
+    await userEvent.selectOptions(await screen.findByLabelText(/Lieu/), '189')
+
+    await userEvent.selectOptions(
+      await screen.findByLabelText('Catégorie *'),
+      'A'
+    )
+
+    await userEvent.selectOptions(
+      await screen.findByLabelText('Sous-catégorie *'),
+      'physical'
+    )
+
+    await userEvent.type(screen.getByLabelText(/EAN/), '1234567891234')
+    await userEvent.selectOptions(
+      await screen.findByLabelText(/Type de spectacle/),
+      'Cirque'
+    )
+    await userEvent.selectOptions(
+      await screen.findByLabelText(/Sous-type/),
+      'Clown'
+    )
+    await userEvent.selectOptions(
+      await screen.findByLabelText(/Sous-type/),
+      'Clown'
+    )
+    await userEvent.selectOptions(
+      await screen.findByLabelText(/Genre musical/),
+      'Pop'
+    )
+
+    await userEvent.click(screen.getByText('Enregistrer les modifications'))
+
+    expect(api.postOffer).toHaveBeenCalledOnce()
+    expect(api.postOffer).toHaveBeenCalledWith({
+      audioDisabilityCompliant: false,
+      description: 'My super description',
+      durationMinutes: undefined,
+      extraData: {
+        ean: '1234567891234',
+        gtl_id: 'pop',
+        showSubType: '205',
+        showType: '200',
+      },
+      mentalDisabilityCompliant: false,
+      motorDisabilityCompliant: false,
+      name: 'My super offer',
+      subcategoryId: 'physical',
+      venueId: 189,
+      visualDisabilityCompliant: false,
+    })
   })
 })
