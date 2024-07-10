@@ -1,6 +1,6 @@
 import * as yup from 'yup'
 
-import { DEFAULT_DETAILS_INTITIAL_VALUES } from './constants'
+import { DEFAULT_DETAILS_FORM_VALUES } from './constants'
 
 export const validationSchema = yup.object().shape({
   name: yup.string().max(90).required('Veuillez renseigner un titre'),
@@ -42,7 +42,7 @@ export const validationSchema = yup.object().shape({
   showSubType: yup.string().when(['subcategoryConditionalFields', 'showType'], {
     is: (subcategoryConditionalFields: string[], showType: string) =>
       subcategoryConditionalFields.includes('showType') &&
-      showType !== DEFAULT_DETAILS_INTITIAL_VALUES.showType,
+      showType !== DEFAULT_DETAILS_FORM_VALUES.showType,
     then: (schema) =>
       schema.required('Veuillez sélectionner un sous-type de spectacle'),
   }),

@@ -3,14 +3,16 @@ import { FormikErrors } from 'formik'
 import {
   CategoryResponseModel,
   GetIndividualOfferResponseModel,
+  OfferStatus,
   SubcategoryResponseModel,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
 import { showOptionsTree } from 'core/Offers/categoriesSubTypes'
+import { isOfferSynchronized } from 'core/Offers/utils/synchronization'
 import { SelectOption } from 'custom_types/form'
 import { computeVenueDisplayName } from 'repository/venuesService'
 
-import { DEFAULT_DETAILS_INTITIAL_VALUES } from './constants'
+import { DEFAULT_DETAILS_FORM_VALUES } from './constants'
 import { DetailsFormValues } from './types'
 
 export const buildCategoryOptions = (
@@ -36,7 +38,7 @@ export const buildSubcategoryOptions = (
   )
 
 export const buildShowSubTypeOptions = (showType: string): SelectOption[] => {
-  if (showType === DEFAULT_DETAILS_INTITIAL_VALUES.showType) {
+  if (showType === DEFAULT_DETAILS_FORM_VALUES.showType) {
     return []
   }
 
@@ -131,7 +133,7 @@ export function setDefaultInitialValues({
   }
 
   return {
-    ...DEFAULT_DETAILS_INTITIAL_VALUES,
+    ...DEFAULT_DETAILS_FORM_VALUES,
     venueId,
   }
 }
@@ -155,33 +157,29 @@ export function setDefaultInitialValuesFromOffer({
   }
 
   return {
-    ...DEFAULT_DETAILS_INTITIAL_VALUES,
+    ...DEFAULT_DETAILS_FORM_VALUES,
     name: offer.name,
-    description:
-      offer.description ?? DEFAULT_DETAILS_INTITIAL_VALUES.description,
+    description: offer.description ?? DEFAULT_DETAILS_FORM_VALUES.description,
     venueId: String(offer.venue.id),
     categoryId: subcategory.categoryId,
     subcategoryId: offer.subcategoryId,
-    showType:
-      offer.extraData.showType ?? DEFAULT_DETAILS_INTITIAL_VALUES.showType,
+    showType: offer.extraData.showType ?? DEFAULT_DETAILS_FORM_VALUES.showType,
     showSubType:
-      offer.extraData.showSubType ??
-      DEFAULT_DETAILS_INTITIAL_VALUES.showSubType,
+      offer.extraData.showSubType ?? DEFAULT_DETAILS_FORM_VALUES.showSubType,
     subcategoryConditionalFields: [],
     durationMinutes: offer.durationMinutes
       ? serializeDurationHour(offer.durationMinutes)
-      : DEFAULT_DETAILS_INTITIAL_VALUES.durationMinutes,
-    ean: offer.extraData?.ean ?? DEFAULT_DETAILS_INTITIAL_VALUES.ean,
-    visa: offer.extraData?.visa ?? DEFAULT_DETAILS_INTITIAL_VALUES.visa,
-    gtl_id: offer.extraData?.gtl_id ?? DEFAULT_DETAILS_INTITIAL_VALUES.gtl_id,
-    speaker:
-      offer.extraData?.speaker ?? DEFAULT_DETAILS_INTITIAL_VALUES.speaker,
-    author: offer.extraData?.author ?? DEFAULT_DETAILS_INTITIAL_VALUES.author,
+      : DEFAULT_DETAILS_FORM_VALUES.durationMinutes,
+    ean: offer.extraData?.ean ?? DEFAULT_DETAILS_FORM_VALUES.ean,
+    visa: offer.extraData?.visa ?? DEFAULT_DETAILS_FORM_VALUES.visa,
+    gtl_id: offer.extraData?.gtl_id ?? DEFAULT_DETAILS_FORM_VALUES.gtl_id,
+    speaker: offer.extraData?.speaker ?? DEFAULT_DETAILS_FORM_VALUES.speaker,
+    author: offer.extraData?.author ?? DEFAULT_DETAILS_FORM_VALUES.author,
     performer:
-      offer.extraData?.performer ?? DEFAULT_DETAILS_INTITIAL_VALUES.performer,
+      offer.extraData?.performer ?? DEFAULT_DETAILS_FORM_VALUES.performer,
     stageDirector:
       offer.extraData?.stageDirector ??
-      DEFAULT_DETAILS_INTITIAL_VALUES.stageDirector,
+      DEFAULT_DETAILS_FORM_VALUES.stageDirector,
   }
 }
 
@@ -189,4 +187,22 @@ export function serializeDurationHour(durationMinute: number): string {
   const hours = Math.floor(durationMinute / 60)
   const minutes = (durationMinute % 60).toString().padStart(2, '0')
   return `${hours}:${minutes}`
+}
+
+export function setFormReadOnlyFields(
+  offer: GetIndividualOfferResponseModel | null
+): string[] {
+  if (offer === null) {
+    return []
+  }
+
+  if ([OfferStatus.REJECTED, OfferStatus.PENDING].includes(offer.status)) {
+    return Object.keys(DEFAULT_DETAILS_FORM_VALUES)
+  }
+
+  if (isOfferSynchronized(offer)) {
+    return Object.keys(DEFAULT_DETAILS_FORM_VALUES)
+  }
+
+  return ['categoryId', 'subcategoryId', 'venueId']
 }
