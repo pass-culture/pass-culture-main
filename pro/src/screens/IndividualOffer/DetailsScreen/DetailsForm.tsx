@@ -1,4 +1,5 @@
 import { useFormikContext } from 'formik'
+import { useLocation } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -13,6 +14,13 @@ import { Select } from 'ui-kit/form/Select/Select'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
+
+import {
+  filterCategories,
+  getCategoryStatusFromOfferSubtype,
+  getOfferSubtypeFromParam,
+  isOfferSubtypeEvent,
+} from '../InformationsScreen/utils/filterCategories/filterCategories'
 
 import { DEFAULT_DETAILS_INTITIAL_VALUES } from './constants'
 import { DetailsFormValues } from './types'
@@ -29,7 +37,19 @@ type DetailsFormProps = {
 }
 
 export const DetailsForm = ({ venues }: DetailsFormProps): JSX.Element => {
+  const { search } = useLocation()
+  const queryParams = new URLSearchParams(search)
+  const queryOfferType = queryParams.get('offer-type')
+
   const { categories, subCategories } = useIndividualOfferContext()
+  const offerSubtype = getOfferSubtypeFromParam(queryOfferType)
+  const categoryStatus = getCategoryStatusFromOfferSubtype(offerSubtype)
+  const [filteredCategories, filteredSubCategories] = filterCategories(
+    categories,
+    subCategories,
+    categoryStatus,
+    isOfferSubtypeEvent(offerSubtype)
+  )
 
   const {
     values: {
@@ -48,8 +68,11 @@ export const DetailsForm = ({ venues }: DetailsFormProps): JSX.Element => {
     { fallbackData: [] }
   )
 
-  const categoryOptions = buildCategoryOptions(categories)
-  const subcategoryOptions = buildSubcategoryOptions(subCategories, categoryId)
+  const categoryOptions = buildCategoryOptions(filteredCategories)
+  const subcategoryOptions = buildSubcategoryOptions(
+    filteredSubCategories,
+    categoryId
+  )
   const musicTypesOptions = musicTypesQuery.data.map((data) => ({
     value: data.gtl_id,
     label: data.label,
