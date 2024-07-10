@@ -4,7 +4,7 @@ import typing
 from pydantic.v1 import Field
 from pydantic.v1 import validator
 
-import pcapi.core.external_bookings.models as external_bookings_models
+import pcapi.core.offers.models as offers_models
 from pcapi.routes.serialization import BaseModel
 
 
@@ -90,13 +90,14 @@ class MediaCDS(BaseModel):
     class Config:
         allow_population_by_field_name = True
 
-    def to_generic_movie(self) -> external_bookings_models.Movie:
-        return external_bookings_models.Movie(
-            id=str(self.id),
-            title=self.title,
+    def to_generic_movie(self) -> offers_models.Movie:
+        return offers_models.Movie(
+            allocine_id=str(self.allocineid) if self.allocineid else None,
             duration=self.duration // 60,
             description=self.storyline,
+            extra_data=None,
             poster_url=self.posterpath,
+            title=self.title,
             visa=self.visanumber,
         )
 
