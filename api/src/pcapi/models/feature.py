@@ -125,6 +125,7 @@ class FeatureToggle(enum.Enum):
     USE_END_DATE_FOR_COLLECTIVE_PRICING = "Utiliser la date de fin du stock collectif comme date de valorisation."
     WIP_ENABLE_OFFER_ADDRESS = "Activer l'association des offres à des adresses."
     WIP_SPLIT_OFFER = "Activer le nouveau parcours de création/édition d'offre individuelle"
+    ENABLE_COLLECTIVE_OFFERS_EXPIRATION = "Activer la mise en avant des offres collectives sur le point d'expirer"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -167,6 +168,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ENABLE_EMS_INTEGRATION,
     FeatureToggle.ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION,
     FeatureToggle.WIP_ENABLE_NEW_HASHING_ALGORITHM,
+    FeatureToggle.ENABLE_COLLECTIVE_OFFERS_EXPIRATION,
     FeatureToggle.ENABLE_PRO_BOOKINGS_V2,
     FeatureToggle.ENABLE_PRO_NEW_NAV_MODIFICATION,
     FeatureToggle.ENABLE_SWITCH_ALLOCINE_SYNC_TO_EMS_SYNC,
